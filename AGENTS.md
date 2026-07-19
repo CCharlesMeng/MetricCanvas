@@ -11,7 +11,7 @@
 
 ### Issue tracker
 
-本仓库的 issue 以本地 Markdown 文件形式存放在 `.scratch/` 目录。详见 `docs/agents/issue-tracker.md`。
+本仓库的 issue 和 PRD 存放于 GitHub Issues(`CCharlesMeng/MetricCanvas`),使用 `gh` CLI 操作。详见 `docs/agents/issue-tracker.md`。
 
 ### Triage labels
 
