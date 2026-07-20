@@ -1,0 +1,19 @@
+{
+  "retCode": "CBC.0000",
+  "retDesc": "成功",
+  "data": {
+    "detailData": [
+      {
+        "serviceCode": "P001_ADS_T_IOC_SPD_METRIC_ACC_D",
+        "serviceName": "IOC 指标累计日表",
+        "serviceType": 1,
+        "description": "构造样例:按《中间层分析.md》§4.3.1 DataServiceModel 字段形状录制"
+      },
+      {
+        "serviceCode": "F34_ioc",
+        "serviceName": "IOC 收入汇总",
+        "serviceType": 1
+      }
+    ]
+  }
+}

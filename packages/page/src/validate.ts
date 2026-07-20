@@ -1,21 +1,27 @@
 import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import type { Page } from './page';
+import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSchema);
 
 /**
- * 两级校验入口:结构校验(JSON Schema + 布局/唯一性不变式)。
+ * 两级校验入口:结构校验(JSON Schema + 布局/唯一性不变式)+ 语义校验(对元数据快照)。
  * 文档进、页面出:输入是不可信的页面文档,通过后才可视为 Page(ADR-0007)。
- * 语义校验(指标/维度存在性,需 CatalogSnapshot)在切片3(#4)落地。
+ * catalog 缺省时只做结构校验;结构不过时不做语义校验,避免对坏文档级联报错。
  */
-export function validate(document: unknown): TypedError[] {
-  if (validateStructure(document)) {
-    return invariantErrors(document as unknown as Page);
+export function validate(document: unknown, catalog?: CatalogSnapshot): TypedError[] {
+  if (!validateStructure(document)) {
+    return (validateStructure.errors ?? []).map(toTypedError);
   }
-  return (validateStructure.errors ?? []).map(toTypedError);
+  const page = document as unknown as Page;
+  const errors = invariantErrors(page);
+  if (catalog) {
+    errors.push(...semanticErrors(page, catalog));
+  }
+  return errors;
 }
 
 function toTypedError(err: ErrorObject): TypedError {
@@ -63,5 +69,67 @@ function invariantErrors(page: Page): TypedError[] {
     }
     seen.add(widget.id);
   });
+  return errors;
+}
+
+/**
+ * 语义校验:结构化查询引用的指标/维度/聚合须在元数据快照(供给侧清单)允许范围内。
+ * 分型原则:指标不存在是 METRIC_GAP(需求与供给的差集,走 metric-gap 需求通道);
+ * 维度不存在、维度不可用于指标、聚合不合法都是"写错了"(SCHEMA_ERROR)。
+ */
+function semanticErrors(page: Page, catalog: CatalogSnapshot): TypedError[] {
+  const metricsByCode = new Map(catalog.metrics.map((m) => [m.code, m]));
+  const dimensionCodes = new Set(catalog.dimensions.map((d) => d.code));
+  const errors: TypedError[] = [];
+
+  page.widgets.forEach((widget, i) => {
+    const queryPath = `/widgets/${i}/query`;
+    // 快照中存在的指标才参与维度/聚合的组合校验,缺失指标只报一次 METRIC_GAP
+    const knownMetrics = widget.query.metrics.flatMap((code) => metricsByCode.get(code) ?? []);
+
+    widget.query.metrics.forEach((code, j) => {
+      if (!metricsByCode.has(code)) {
+        errors.push({
+          type: 'METRIC_GAP',
+          path: `${queryPath}/metrics/${j}`,
+          message: `指标 ${code} 不存在于元数据快照:若为业务新需求,请走 metric-gap 需求通道,而非修改页面文档`
+        });
+      }
+    });
+
+    (widget.query.dimensions ?? []).forEach((code, j) => {
+      if (!dimensionCodes.has(code)) {
+        errors.push({
+          type: 'SCHEMA_ERROR',
+          path: `${queryPath}/dimensions/${j}`,
+          message: `维度 ${code} 不存在于元数据快照(拼写错误?)`
+        });
+        return;
+      }
+      for (const metric of knownMetrics) {
+        if (!metric.availableDimensions.includes(code)) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `${queryPath}/dimensions/${j}`,
+            message: `维度 ${code} 不可用于指标 ${metric.code}(可用维度:${metric.availableDimensions.join('、')})`
+          });
+        }
+      }
+    });
+
+    const aggregation = widget.query.aggregation;
+    if (aggregation !== undefined) {
+      for (const metric of knownMetrics) {
+        if (!metric.availableAggregations.includes(aggregation)) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `${queryPath}/aggregation`,
+            message: `聚合方式 ${aggregation} 对指标 ${metric.code} 不合法(可用聚合:${metric.availableAggregations.join('、')})`
+          });
+        }
+      }
+    }
+  });
+
   return errors;
 }

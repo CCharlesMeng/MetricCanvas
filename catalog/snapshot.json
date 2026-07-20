@@ -1,0 +1,43 @@
+{
+  "formatVersion": "1.0",
+  "syncedAt": "2026-07-20T06:00:00.000Z",
+  "source": "手工构造初版(数据服务指标/维度目录缺失,走\"残缺→共建\"路线;联调后由 pnpm sync-catalog 重新生成)",
+  "metrics": [
+    {
+      "code": "gmv",
+      "name": "成交总额",
+      "valueType": "decimal",
+      "availableDimensions": ["region", "channel", "stat-date"],
+      "availableAggregations": ["sum", "avg", "count"]
+    },
+    {
+      "code": "order-count",
+      "name": "订单量",
+      "valueType": "integer",
+      "availableDimensions": ["region", "channel", "stat-date"],
+      "availableAggregations": ["sum", "count"]
+    },
+    {
+      "code": "target-rate",
+      "name": "目标完成率",
+      "valueType": "percent",
+      "availableDimensions": ["region"],
+      "availableAggregations": ["avg"]
+    }
+  ],
+  "dimensions": [
+    {
+      "code": "region",
+      "name": "区域",
+      "cardinality": 3,
+      "sampleValues": ["华东", "华北", "华南"]
+    },
+    {
+      "code": "channel",
+      "name": "渠道",
+      "cardinality": 2,
+      "sampleValues": ["线上", "线下"]
+    },
+    { "code": "stat-date", "name": "统计日期", "cardinality": 7 }
+  ]
+}
