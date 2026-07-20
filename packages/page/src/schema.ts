@@ -55,7 +55,9 @@ export const pageSchema = {
           { $ref: '#/definitions/barChartWidget' },
           { $ref: '#/definitions/lineChartWidget' },
           { $ref: '#/definitions/pieChartWidget' },
-          { $ref: '#/definitions/tableWidget' }
+          { $ref: '#/definitions/tableWidget' },
+          { $ref: '#/definitions/mapChartWidget' },
+          { $ref: '#/definitions/textWidget' }
         ]
       }
     }
@@ -77,8 +79,9 @@ export const pageSchema = {
         label: { type: 'string', description: '筛选器标签,显示于筛选器区' },
         display: {
           type: 'string',
-          enum: ['select', 'tabs'],
-          description: '展示形态:下拉多选(默认)| tab 单选;树选/搜索形态由切片8(#9)补齐'
+          enum: ['select', 'tabs', 'tree', 'search'],
+          description:
+            "展示形态:下拉多选(默认)| tab 单选 | 树形多选(层级按候选值的 '/' 分隔符约定)| 输入过滤 + 多选"
         },
         default: {
           type: 'array',
@@ -406,6 +409,78 @@ export const pageSchema = {
           type: 'integer',
           minimum: 1,
           description: '每页行数,缺省 20;分页经运行时映射 @limit/@offset'
+        }
+      }
+    },
+    mapChartWidget: {
+      type: 'object',
+      description: '地图:单指标按第一个维度的值给区域着色(visualMap),可叠加散点;点击区域可经 interactions 下钻',
+      required: ['id', 'type', 'position', 'query', 'display'],
+      additionalProperties: false,
+      properties: {
+        id: { $ref: '#/definitions/widgetId' },
+        type: { type: 'string', enum: ['mapChart'] },
+        title: { type: 'string', description: '组件标题,显示于卡片头部' },
+        position: { $ref: '#/definitions/position' },
+        query: { $ref: '#/definitions/structuredQuery' },
+        display: {
+          type: 'object',
+          description: '地图展示配置;底图为必选项',
+          required: ['map'],
+          additionalProperties: false,
+          properties: {
+            map: {
+              type: 'string',
+              enum: ['china', 'world'],
+              description: '底图:china=中国省级 | world=世界国家(geojson 静态资产随组件入库)'
+            },
+            scatter: {
+              type: 'string',
+              enum: ['point', 'effect'],
+              description: '散点叠加:point=普通散点 | effect=涟漪散点;缺省不叠加,坐标取底图资产的区域中心点'
+            },
+            nameMap: {
+              type: 'object',
+              description: '维度值 → 底图区域名的声明式映射(纯数据映射,非表达式);未列出的值按原名匹配',
+              additionalProperties: { type: 'string' }
+            }
+          }
+        },
+        interactions: { $ref: '#/definitions/interactions' }
+      }
+    },
+    textWidget: {
+      type: 'object',
+      description: '文本:标题/说明静态文案 + 带参跳转链接;无查询,不产生数据快照',
+      required: ['id', 'type', 'position'],
+      additionalProperties: false,
+      properties: {
+        id: { $ref: '#/definitions/widgetId' },
+        type: { type: 'string', enum: ['text'] },
+        position: { $ref: '#/definitions/position' },
+        heading: { type: 'string', description: '标题文案' },
+        body: { type: 'string', description: '说明文案(静态纯文本,不允许表达式,ADR-0003)' },
+        links: {
+          type: 'array',
+          description: '带参跳转链接:形态与 navigate 声明对齐,链接参数经同一 URL 序列化机制携带筛选器当前值',
+          items: {
+            type: 'object',
+            required: ['label', 'page'],
+            additionalProperties: false,
+            properties: {
+              label: { type: 'string', minLength: 1, description: '链接文案' },
+              page: {
+                type: 'string',
+                pattern: '^[a-z0-9][a-z0-9-]*$',
+                description: '目标看板页面 id;存在性由 validate CLI 跨文档校验'
+              },
+              carryFilters: {
+                type: 'array',
+                items: { type: 'string' },
+                description: '携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器(校验器额外检查)'
+              }
+            }
+          }
         }
       }
     }

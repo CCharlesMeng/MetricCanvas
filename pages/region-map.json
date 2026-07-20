@@ -1,0 +1,82 @@
+{
+  "formatVersion": "1.0",
+  "id": "region-map",
+  "title": "区域地图(长尾组件演示)",
+  "description": "切片8 演示:地图区域着色/散点叠加、文本带参链接、筛选器树选与搜索形态",
+  "filters": [
+    { "id": "f-time", "type": "timeRange", "label": "时间范围", "default": "last30d" },
+    { "id": "f-city", "type": "dimension", "dimension": "city", "label": "城市", "display": "tree" },
+    { "id": "f-region", "type": "dimension", "dimension": "region", "label": "区域", "display": "search" }
+  ],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-intro",
+      "type": "text",
+      "position": { "x": 0, "y": 0, "w": 12, "h": 1 },
+      "heading": "区域分布总览",
+      "body": "地图按区域展示 GMV,mock 的大区值经 nameMap 声明映射到底图区域着色(演示映射);点击地图区域回写区域筛选,城市树选与区域搜索筛选器写入同一筛选状态。",
+      "links": [
+        { "label": "打开演示看板", "page": "demo", "carryFilters": ["f-time", "f-region"] },
+        { "label": "查看销售明细", "page": "sales-detail", "carryFilters": ["f-time"] }
+      ]
+    },
+    {
+      "id": "w-map-china",
+      "type": "mapChart",
+      "title": "GMV 区域分布(中国底图,点击区域下钻)",
+      "position": { "x": 0, "y": 1, "w": 7, "h": 6 },
+      "display": {
+        "map": "china",
+        "scatter": "effect",
+        "nameMap": { "华东": "上海市", "华北": "北京市", "华南": "广东省" }
+      },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["region"],
+        "filters": { "subscribe": ["f-time", "f-city"] }
+      },
+      "interactions": [
+        { "on": "click", "writeFilter": "f-region", "value": "$dimension.region" }
+      ]
+    },
+    {
+      "id": "w-map-world",
+      "type": "mapChart",
+      "title": "GMV 区域分布(世界底图,演示映射)",
+      "position": { "x": 7, "y": 1, "w": 5, "h": 6 },
+      "display": {
+        "map": "world",
+        "scatter": "point",
+        "nameMap": { "华东": "China", "华北": "Mongolia", "华南": "Vietnam" }
+      },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["region"],
+        "filters": { "subscribe": ["f-time", "f-city"] }
+      }
+    },
+    {
+      "id": "w-by-region",
+      "type": "barChart",
+      "title": "GMV 按区域(随全部筛选器联动)",
+      "position": { "x": 0, "y": 7, "w": 7, "h": 4 },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["region"],
+        "filters": { "subscribe": ["f-time", "f-region", "f-city"] }
+      }
+    },
+    {
+      "id": "w-gmv",
+      "type": "metricCard",
+      "title": "GMV(随筛选联动)",
+      "position": { "x": 7, "y": 7, "w": 5, "h": 2 },
+      "query": {
+        "metrics": ["gmv"],
+        "filters": { "subscribe": ["f-time", "f-region", "f-city"] }
+      },
+      "display": { "prefix": "¥", "thousandsSeparator": true }
+    }
+  ]
+}

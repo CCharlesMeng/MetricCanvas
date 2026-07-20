@@ -1,6 +1,7 @@
 import type {
   BarChartDisplay,
   LineChartDisplay,
+  MapChartDisplay,
   PieChartDisplay,
   Row
 } from '@metriccanvas/page';
@@ -87,6 +88,78 @@ export function pieOption(
           value: numberOrGap(row[metric]) ?? 0
         }))
       }
+    ]
+  };
+}
+
+/**
+ * 地图:第一个维度的值定位底图区域(可经 display.nameMap 声明式改名),单指标 visualMap 着色;
+ * 散点叠加坐标取底图资产的区域中心点(centers,见 map-register)。
+ * 页面文档声明的是"维度值 → 底图区域名",构造 series 数据时已完成改名,
+ * 因此点击事件的 name 恒为底图区域名,组件按它映射回数据行。
+ */
+export function mapOption(
+  rows: Row[],
+  metric: string,
+  dimension: string,
+  display: MapChartDisplay,
+  centers: ReadonlyMap<string, [number, number]>
+): EChartsOption {
+  const geoName = (row: Row) => {
+    const raw = String(row[dimension] ?? '');
+    return display.nameMap?.[raw] ?? raw;
+  };
+  const values = rows.map((row) => numberOrGap(row[metric]) ?? 0);
+  const lo = Math.min(...values);
+  const hi = Math.max(...values);
+
+  const scatterData = rows.flatMap((row) => {
+    const cp = centers.get(geoName(row));
+    return cp ? [{ name: geoName(row), value: [...cp, numberOrGap(row[metric]) ?? 0] }] : [];
+  });
+
+  return {
+    tooltip: { trigger: 'item' },
+    // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
+    geo: {
+      map: display.map,
+      roam: true,
+      label: { show: false },
+      itemStyle: { borderColor: '#d4d4d8', areaColor: '#fafafa' },
+      emphasis: {
+        label: { show: true },
+        itemStyle: { areaColor: '#dbeafe' }
+      },
+      select: { disabled: true }
+    },
+    visualMap: {
+      type: 'continuous',
+      min: lo < hi ? lo : 0,
+      max: hi > lo ? hi : hi || 1,
+      seriesIndex: 0,
+      left: 8,
+      bottom: 8,
+      itemHeight: 80,
+      inRange: { color: ['#dbeafe', '#2563eb'] }
+    },
+    series: [
+      {
+        type: 'map',
+        map: display.map,
+        geoIndex: 0,
+        data: rows.map((row) => ({ name: geoName(row), value: numberOrGap(row[metric]) ?? 0 }))
+      },
+      ...(display.scatter
+        ? [
+            {
+              type: display.scatter === 'effect' ? ('effectScatter' as const) : ('scatter' as const),
+              coordinateSystem: 'geo' as const,
+              symbolSize: 10,
+              itemStyle: { color: '#f59e0b' },
+              data: scatterData
+            }
+          ]
+        : [])
     ]
   };
 }

@@ -146,11 +146,79 @@ export interface TableHeaderFilter {
   mode: 'select' | 'dateRange';
 }
 
-export type Widget = MetricCardWidget | BarChartWidget | LineChartWidget | PieChartWidget | TableWidget;
+/** 一期组件集之一:地图(单指标,按第一个维度的值给区域着色,可叠加散点) */
+export interface MapChartWidget {
+  id: string;
+  type: 'mapChart';
+  title?: string;
+  position: WidgetPosition;
+  query: StructuredQuery;
+  display: MapChartDisplay;
+  interactions?: WidgetInteraction[];
+}
+
+export interface MapChartDisplay {
+  /** 底图:china=中国省级 | world=世界国家(geojson 静态资产随组件入库,无运行时网络依赖) */
+  map: 'china' | 'world';
+  /** 散点叠加:point=普通散点 | effect=涟漪散点;缺省不叠加。散点坐标取底图资产的区域中心点 */
+  scatter?: 'point' | 'effect';
+  /**
+   * 维度值 → 底图区域名的声明式映射(如 "华东" → "上海市"),直通 ECharts nameMap;
+   * 未列出的维度值按原名匹配底图区域。纯数据映射,不是表达式(ADR-0003)
+   */
+  nameMap?: Record<string, string>;
+}
+
+/** 一期组件集之一:文本(标题/说明/带参跳转链接;无查询,不产生数据快照) */
+export interface TextWidget {
+  id: string;
+  type: 'text';
+  position: WidgetPosition;
+  /** 标题文案 */
+  heading?: string;
+  /** 说明文案(静态纯文本,不允许表达式,ADR-0003) */
+  body?: string;
+  /** 带参跳转链接:与 navigate 声明同形态,链接参数经同一 URL 序列化机制携带筛选器当前值 */
+  links?: TextLink[];
+}
+
+/**
+ * 文本带参链接:形态与 navigate 声明对齐(page + carryFilters)。
+ * 不支持 setFilters——文本无点击行上下文,取值占位无从解析。
+ */
+export interface TextLink {
+  /** 链接文案 */
+  label: string;
+  /** 目标看板页面 id;存在性由 validate CLI 跨文档校验 */
+  page: string;
+  /** 携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器 */
+  carryFilters?: string[];
+}
+
+/** 声明结构化查询、经查询编排产生数据快照的 widget(文本组件不在其中) */
+export type DataWidget =
+  | MetricCardWidget
+  | BarChartWidget
+  | LineChartWidget
+  | PieChartWidget
+  | TableWidget
+  | MapChartWidget;
+
+export type Widget = DataWidget | TextWidget;
 
 /** 带交互声明的图表类 widget(校验器与壳对 interactions 的处理共用此判别) */
-export type ChartWidget = BarChartWidget | LineChartWidget | PieChartWidget;
+export type ChartWidget = BarChartWidget | LineChartWidget | PieChartWidget | MapChartWidget;
 
 export function isChartWidget(widget: Widget): widget is ChartWidget {
-  return widget.type === 'barChart' || widget.type === 'lineChart' || widget.type === 'pieChart';
+  return (
+    widget.type === 'barChart' ||
+    widget.type === 'lineChart' ||
+    widget.type === 'pieChart' ||
+    widget.type === 'mapChart'
+  );
+}
+
+/** 文本组件无查询:编排取数与语义校验只面向数据 widget,分发处共用此判别 */
+export function isDataWidget(widget: Widget): widget is DataWidget {
+  return widget.type !== 'text';
 }

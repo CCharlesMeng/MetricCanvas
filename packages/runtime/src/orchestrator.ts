@@ -1,14 +1,14 @@
 import type {
   DataSnapshot,
+  DataWidget,
   EffectiveQuery,
   FilterCondition,
-  OrderByRule,
-  Widget
+  OrderByRule
 } from '@metriccanvas/page';
 import type { FilterState, FilterValues } from './filter-state';
 import type { DataGateway } from './ports';
 
-/** 页面全部 widget 的数据快照,键集恒等于 widget id 集合 */
+/** 页面全部数据 widget 的数据快照,键集恒等于传入的 widget id 集合(文本组件无查询,由壳过滤后不入编排) */
 export type PageSnapshots = ReadonlyMap<string, DataSnapshot>;
 
 /**
@@ -72,7 +72,7 @@ function defaultView(widget: Widget): WidgetView {
  * 分页/排序/表头筛选经视图状态进入生效查询合成,视图变更只重查该 widget。
  */
 export function orchestrate(
-  widgets: Widget[],
+  widgets: DataWidget[],
   gateway: DataGateway,
   filters?: FilterState
 ): PageSnapshotStream {
@@ -124,7 +124,7 @@ function notify(run: (value: PageSnapshots) => void, snapshots: PageSnapshots): 
 }
 
 function startSession(
-  widgets: Widget[],
+  widgets: DataWidget[],
   gateway: DataGateway,
   filters: FilterState | undefined,
   views: ReadonlyMap<string, WidgetView>,
@@ -170,7 +170,7 @@ function startSession(
     push(snapshots);
   }
 
-  function refetch(targets: Widget[], options: { publishLoading: boolean }) {
+  function refetch(targets: DataWidget[], options: { publishLoading: boolean }) {
     // 初始轮快照本就全为 loading(不变式2 已由首发同步覆盖),不必再推一轮
     if (options.publishLoading) {
       publish((next) => {
@@ -258,7 +258,7 @@ function startSession(
  * widget 视图并入:表头筛选条件排在页面筛选之后,分页/排序原样承载。
  */
 function composeEffectiveQuery(
-  widget: Widget,
+  widget: DataWidget,
   values: FilterValues,
   view: WidgetView
 ): EffectiveQuery {

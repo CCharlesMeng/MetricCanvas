@@ -1,0 +1,50 @@
+{
+  "formatVersion": "1.0",
+  "id": "with-map-and-text",
+  "title": "带地图与文本组件的页面",
+  "filters": [
+    { "id": "f-time", "type": "timeRange", "label": "时间范围", "default": "last30d" },
+    { "id": "f-region", "type": "dimension", "dimension": "region", "label": "区域", "display": "tree" },
+    { "id": "f-channel", "type": "dimension", "dimension": "channel", "label": "渠道", "display": "search" }
+  ],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-intro",
+      "type": "text",
+      "position": { "x": 0, "y": 0, "w": 12, "h": 1 },
+      "heading": "区域分布",
+      "body": "按区域查看 GMV 分布,点击地图区域下钻。",
+      "links": [
+        { "label": "查看明细", "page": "sales-detail", "carryFilters": ["f-time", "f-region"] }
+      ]
+    },
+    {
+      "id": "w-map",
+      "type": "mapChart",
+      "title": "GMV 区域分布",
+      "position": { "x": 0, "y": 1, "w": 8, "h": 5 },
+      "display": {
+        "map": "china",
+        "scatter": "effect",
+        "nameMap": { "华东": "上海市", "华北": "北京市", "华南": "广东省" }
+      },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["region"],
+        "filters": { "subscribe": ["f-time", "f-channel"] }
+      },
+      "interactions": [
+        { "on": "click", "writeFilter": "f-region", "value": "$dimension.region" }
+      ]
+    },
+    {
+      "id": "w-world",
+      "type": "mapChart",
+      "title": "世界底图",
+      "position": { "x": 8, "y": 1, "w": 4, "h": 5 },
+      "display": { "map": "world" },
+      "query": { "metrics": ["gmv"], "dimensions": ["region"] }
+    }
+  ]
+}

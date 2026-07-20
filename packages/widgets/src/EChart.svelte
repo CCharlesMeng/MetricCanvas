@@ -9,8 +9,11 @@
    */
   interface Props {
     option: EChartsOption;
-    /** 数据项点击,上抛数据行下标(组件据此映射回 Row) */
-    onitemclick?: (dataIndex: number) => void;
+    /**
+     * 数据项点击,上抛数据行下标与数据项名(组件据此映射回 Row)。
+     * 地图点击可能来自 geo 组件(无 dataIndex),此时靠 name 定位区域
+     */
+    onitemclick?: (dataIndex: number, name?: string) => void;
   }
 
   let { option, onitemclick }: Props = $props();
@@ -22,7 +25,9 @@
     const instance = echarts.init(el);
     chart = instance;
     if (onitemclick) {
-      instance.on('click', (params) => onitemclick(params.dataIndex));
+      instance.on('click', (params) =>
+        onitemclick(params.dataIndex, typeof params.name === 'string' ? params.name : undefined)
+      );
     }
     const observer = new ResizeObserver(() => instance.resize());
     observer.observe(el);
