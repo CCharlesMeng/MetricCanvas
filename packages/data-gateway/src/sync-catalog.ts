@@ -87,10 +87,11 @@ async function introspectFields(
   fetchImpl: typeof fetch,
   serviceCode: string
 ): Promise<string[]> {
+  // 别名使响应以 serviceCode 为键(《中间层分析.md》§4.3.4 的录制样例即此形状)
   const data = await graphql<Record<string, { fields: Array<{ name: string }> }>>(
     baseUrl,
     fetchImpl,
-    `{__type(name:"${serviceCode}"){fields{name}}}`
+    `{${serviceCode}:__type(name:"${serviceCode}"){fields{name}}}`
   );
   return (data[serviceCode]?.fields ?? []).map((f) => f.name);
 }
@@ -99,9 +100,14 @@ async function getMetricBaseInfo(
   baseUrl: string,
   fetchImpl: typeof fetch
 ): Promise<Array<{ metric_code: string; metric_name_zh: string }>> {
+  // request 参数形状按《中间层分析.md》§3.4/§8.7 录制样例保真;不带 metric_code 取全量
   const data = await graphql<{
     restQuery: { MetricBaseInfo: Array<{ metric_code: string; metric_name_zh: string }> };
-  }>(baseUrl, fetchImpl, `{restQuery{MetricBaseInfo{metric_code metric_name_zh scope}}}`);
+  }>(
+    baseUrl,
+    fetchImpl,
+    `{restQuery{MetricBaseInfo(request:{metric_type:"element", limit:-1, offset:0}){metric_code metric_name_zh scope}}}`
+  );
   return data.restQuery.MetricBaseInfo;
 }
 

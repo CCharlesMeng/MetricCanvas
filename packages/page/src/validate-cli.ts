@@ -9,7 +9,7 @@ import type { TypedError } from './errors';
  * validate CLI:对页面目录全量两级校验(结构 + 对元数据快照的语义)+ 文件名一致性。
  * 本地 / pre-commit / CI 同一套逻辑(#10 的 CI 流水线直接调用)。
  * 用法:tsx validate-cli.ts [页面目录=pages] [--catalog 快照路径=catalog/snapshot.json]
- * 退出码:0 全部通过;1 存在校验错误;2 目录/快照本身不可用。
+ * 退出码:0 全部通过;1 存在校验错误;2 页面目录或元数据快照不可用(快照已入库,缺失即环境坏)。
  */
 function main(argv: string[]): number {
   const args = argv.filter((a) => !a.startsWith('--'));
@@ -21,11 +21,17 @@ function main(argv: string[]): number {
     console.error(`页面目录不存在:${pagesDir}`);
     return 2;
   }
-  let catalog: CatalogSnapshot | undefined;
-  if (existsSync(catalogPath)) {
+  // 快照已入库,缺失/损坏视为环境坏掉而非"跳过语义校验"——否则 CI 会静默放行坏页面
+  if (!existsSync(catalogPath)) {
+    console.error(`元数据快照不存在:${catalogPath}(先跑 pnpm sync-catalog 或恢复入库快照)`);
+    return 2;
+  }
+  let catalog: CatalogSnapshot;
+  try {
     catalog = JSON.parse(readFileSync(catalogPath, 'utf8')) as CatalogSnapshot;
-  } else {
-    console.warn(`警告:元数据快照不存在(${catalogPath}),跳过语义校验;先跑 pnpm sync-catalog`);
+  } catch (cause) {
+    console.error(`元数据快照不是合法 JSON:${catalogPath}(${String(cause)})`);
+    return 2;
   }
 
   const files = readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
