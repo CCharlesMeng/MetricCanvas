@@ -2,6 +2,8 @@
  * widget 交互声明:组件事件如何作用于筛选状态。
  * 页面只声明"点击写哪个筛选器、取什么值",事件捕获与回写/跳转动作全部由运行时执行,
  * 组件保持纯渲染(ADR-0003)。
+ * 执行顺序语义:同一 widget 的多个交互按声明顺序执行;navigate 命中即终止
+ * (跳转离页后,本页的后续回写不再有意义),writeFilter 可多条依次执行。
  */
 export type WidgetInteraction = WriteFilterInteraction | NavigateInteraction;
 

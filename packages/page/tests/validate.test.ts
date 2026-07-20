@@ -3,6 +3,7 @@ import { validate } from '../src/validate';
 
 import minimal from '../fixtures/valid/minimal.json';
 import withFilters from '../fixtures/valid/with-filters.json';
+import withNavigate from '../fixtures/valid/with-navigate.json';
 import missingFormatVersion from '../fixtures/invalid/missing-format-version.json';
 import misspelledPosition from '../fixtures/invalid/misspelled-position.json';
 import wrongTypeWidth from '../fixtures/invalid/wrong-type-width.json';
@@ -15,6 +16,9 @@ import subscribeUnknownFilter from '../fixtures/invalid/subscribe-unknown-filter
 import writeFilterNotDimension from '../fixtures/invalid/write-filter-not-dimension.json';
 import interactionDimensionNotQueried from '../fixtures/invalid/interaction-dimension-not-queried.json';
 import interactionDimensionMismatch from '../fixtures/invalid/interaction-dimension-mismatch.json';
+import navigateMissingPage from '../fixtures/invalid/navigate-missing-page.json';
+import navigateCarryUnknownFilter from '../fixtures/invalid/navigate-carry-unknown-filter.json';
+import navigateSetDimensionNotQueried from '../fixtures/invalid/navigate-set-dimension-not-queried.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
   it('合法的最小页面文档通过,无错误', () => {
@@ -23,6 +27,10 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
 
   it('带筛选器声明与交互回写的页面文档通过,无错误', () => {
     expect(validate(withFilters)).toEqual([]);
+  });
+
+  it('带 navigate 跨页下钻声明的页面文档通过,无错误(目标页存在性属 CLI 层跨文档校验)', () => {
+    expect(validate(withNavigate)).toEqual([]);
   });
 
   const invalidCases: Array<{ name: string; document: unknown; path: string }> = [
@@ -53,6 +61,21 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: '交互取值占位的维度与回写目标筛选器约束的维度不一致(channel 值写不进 region 筛选器)',
       document: interactionDimensionMismatch,
       path: '/widgets/0/interactions/0/value'
+    },
+    {
+      name: 'navigate 缺少必填的目标页 id',
+      document: navigateMissingPage,
+      path: '/widgets/0/interactions/0/navigate/page'
+    },
+    {
+      name: 'navigate.carryFilters 引用了本页未声明的筛选器',
+      document: navigateCarryUnknownFilter,
+      path: '/widgets/0/interactions/0/navigate/carryFilters/0'
+    },
+    {
+      name: 'navigate.setFilters 占位引用了查询之外的维度',
+      document: navigateSetDimensionNotQueried,
+      path: '/widgets/0/interactions/0/navigate/setFilters/f-channel'
     }
   ];
 

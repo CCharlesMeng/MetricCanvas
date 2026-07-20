@@ -85,7 +85,10 @@
     // ④ 筛选状态:按声明的 default 初始化;URL 带筛选参数则整体恢复(可分享还原)
     const fromDeclarations = initialFilterValues(declarations);
     const fromURL = parseFilterURL(location.search, declarations);
-    const state = createFilterState(fromURL.size > 0 ? fromURL : fromDeclarations);
+    // 逐筛选器合并:URL 有该 id 的值则优先,缺席回落声明的 default——跨页下钻只携带
+    // 部分筛选器,目标页其余筛选器的 default 不应被整体作废。已知边界:被清除的
+    // 筛选器不入 URL,分享后对方会回落 default(完全还原需显式清除标记,暂不建)。
+    const state = createFilterState(new Map([...fromDeclarations, ...fromURL]));
     filterState = state;
 
     let primed = false;
@@ -169,7 +172,8 @@
     for (const interaction of widget.interactions ?? []) {
       if (interaction.on !== 'click') continue;
       if ('navigate' in interaction) {
-        // 跨页下钻:组装目标页 URL(序列化复用筛选状态的 toURL 编码),目标页生命周期④从 URL 恢复
+        // 跨页下钻:组装目标页 URL(序列化复用筛选状态的 toURL 编码),目标页生命周期④从 URL 恢复;
+        // navigate 命中即终止后续交互(interaction.ts 的顺序语义:离页后回写无意义)
         const search = drillThroughSearch(interaction.navigate, filterValues, row);
         void goto(`/pages/${interaction.navigate.page}${search ? `?${search}` : ''}`);
         return;
