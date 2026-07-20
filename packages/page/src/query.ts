@@ -1,6 +1,6 @@
 /**
- * 结构化查询 (Structured Query):规格中声明数据需求的形态,
- * 指标+维度+筛选+粒度组成的对象,规格中不出现查询语句字符串。
+ * 结构化查询 (Structured Query):看板页面中声明数据需求的形态,
+ * 指标+维度+筛选+粒度组成的对象,页面文档中不出现查询语句字符串。
  */
 export interface StructuredQuery {
   metrics: string[];
