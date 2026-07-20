@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { replaceState } from '$app/navigation';
+  import { goto, replaceState } from '$app/navigation';
   import {
     placeholderDimension,
     validate,
@@ -13,6 +13,7 @@
   } from '@metriccanvas/page';
   import {
     createFilterState,
+    drillThroughSearch,
     initialFilterValues,
     orchestrate,
     type FilterState,
@@ -160,10 +161,19 @@
     filterState?.write(declId, range ? { type: 'timeRange', ...range } : null);
   }
 
-  /** ⑨ 按页面 interactions 将点击事件写回筛选状态(页内下钻),组件不感知联动 */
+  /**
+   * ⑨ 按页面 interactions 执行点击事件:回写筛选状态(页内下钻)或跳转目标页(跨页下钻),
+   * 组件不感知联动与路由——navigate 由壳执行,组件仍只上抛 {row}(纯渲染原则)。
+   */
   function handleBarClick(widget: BarChartWidget, row: Row) {
     for (const interaction of widget.interactions ?? []) {
       if (interaction.on !== 'click') continue;
+      if ('navigate' in interaction) {
+        // 跨页下钻:组装目标页 URL(序列化复用筛选状态的 toURL 编码),目标页生命周期④从 URL 恢复
+        const search = drillThroughSearch(interaction.navigate, filterValues, row);
+        void goto(`/pages/${interaction.navigate.page}${search ? `?${search}` : ''}`);
+        return;
+      }
       const code = placeholderDimension(interaction.value);
       const clicked = row[code];
       const target = declarations.find((decl) => decl.id === interaction.writeFilter);

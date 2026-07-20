@@ -2,11 +2,14 @@ import { readdirSync, readFileSync, existsSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { validate } from './validate';
 import { fileNameErrors } from './file-name';
+import { navigateErrors } from './navigate';
 import type { CatalogSnapshot } from './catalog';
+import type { Page } from './page';
 import type { TypedError } from './errors';
 
 /**
- * validate CLI:对页面目录全量两级校验(结构 + 对元数据快照的语义)+ 文件名一致性。
+ * validate CLI:对页面目录全量两级校验(结构 + 对元数据快照的语义)+ 文件名一致性
+ * + navigate 跨文档校验(目标页存在、目标筛选器 id 有效——需要全量页面清单,故落在此层)。
  * 本地 / pre-commit / CI 同一套逻辑(#10 的 CI 流水线直接调用)。
  * 用法:tsx validate-cli.ts [页面目录=pages] [--catalog 快照路径=catalog/snapshot.json]
  * 退出码:0 全部通过;1 存在校验错误;2 页面目录或元数据快照不可用(快照已入库,缺失即环境坏)。
@@ -35,18 +38,38 @@ function main(argv: string[]): number {
   }
 
   const files = readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
-  let failed = 0;
+  // 第一遍:逐页两级校验 + 文件名一致性,顺便收集跨文档校验所需的仓库知识
+  const results: Array<{ file: string; errors: TypedError[]; page?: Page }> = [];
+  // 文件名与 id 一致已单独校验,文件名清单即全量页面 id 清单
+  const knownPageIds = new Set(files.map((f) => f.replace(/\.json$/, '')));
+  const pagesById = new Map<string, Page>();
   for (const file of files) {
     const raw = readFileSync(join(pagesDir, file), 'utf8');
     let document: unknown;
     try {
       document = JSON.parse(raw);
     } catch (cause) {
-      report(file, [{ type: 'SCHEMA_ERROR', path: '/', message: `不是合法 JSON:${String(cause)}` }]);
-      failed++;
+      results.push({
+        file,
+        errors: [{ type: 'SCHEMA_ERROR', path: '/', message: `不是合法 JSON:${String(cause)}` }]
+      });
       continue;
     }
     const errors = [...validate(document, catalog), ...fileNameErrors(file, document)];
+    if (errors.length === 0) {
+      // 通过自身校验才可视为 Page,才够资格当跨文档校验的参照与被检对象
+      const page = document as Page;
+      pagesById.set(page.id, page);
+      results.push({ file, errors, page });
+    } else {
+      results.push({ file, errors });
+    }
+  }
+
+  // 第二遍:navigate 跨文档校验(目标页存在、目标筛选器 id 有效)
+  let failed = 0;
+  for (const { file, errors, page } of results) {
+    if (page) errors.push(...navigateErrors(page, knownPageIds, pagesById));
     if (errors.length > 0) {
       report(file, errors);
       failed++;
