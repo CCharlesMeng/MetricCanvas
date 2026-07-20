@@ -37,7 +37,7 @@ jobs:
             {
               echo '## 页面文档校验失败'
               if grep -q 'SCHEMA_ERROR' validate.log; then
-                echo '- **SCHEMA_ERROR**:页面文档写错,修改文档本身即可(错误明细见「校验页面文档」步骤日志)。'
+                echo '- **SCHEMA_ERROR**:页面文档写错,修改文档本身即可;版本类错误按日志提示执行 `pnpm migrate`(错误明细见「校验页面文档」步骤日志)。'
               fi
               if grep -q 'METRIC_GAP' validate.log; then
                 echo '- **METRIC_GAP**:业务想要、数据服务没有的指标缺口——这是需求信号,不是 bug。请按模板开 issue 同步数据服务团队:[新建 metric-gap issue](https://github.com/CCharlesMeng/MetricCanvas/issues/new?template=metric-gap.yml)。'

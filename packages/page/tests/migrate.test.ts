@@ -51,6 +51,16 @@ describe('migrate:按注册表批量升版,幂等', () => {
     });
   });
 
+  it('注册表成环(0.8→0.9→0.8)时报 no-path 而非死循环', () => {
+    const cyclic: MigrationRegistry = {
+      '0.8': { to: '0.9', apply: (d) => d },
+      '0.9': { to: '0.8', apply: (d) => d }
+    };
+    expect(migrateDocument({ formatVersion: '0.8' }, cyclic, policy)).toMatchObject({
+      outcome: 'no-path'
+    });
+  });
+
   it('生产注册表当前为空:除当前版本外一律 no-path(出 2.0 时登记迁移)', () => {
     expect(migrateDocument({ formatVersion: '1.0' })).toEqual({ outcome: 'current' });
     expect(migrateDocument({ formatVersion: '0.9' })).toMatchObject({ outcome: 'no-path' });

@@ -36,7 +36,11 @@ export function migrateDocument(
 
   let migrated = document;
   const steps: string[] = [];
+  const visited = new Set<string>();
   while (version !== policy.current) {
+    // 成环护栏:注册表写错(如 0.9→0.8→0.9)时如实报 no-path,而不是死循环
+    if (visited.has(version)) return { outcome: 'no-path', from: version };
+    visited.add(version);
     const migration = registry[version];
     if (!migration) return { outcome: 'no-path', from: version };
     migrated = { ...migration.apply(migrated), formatVersion: migration.to };

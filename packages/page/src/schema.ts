@@ -1,4 +1,4 @@
-import { supportedVersions } from './version';
+import { supportedVersions, versionPolicy } from './version';
 
 /**
  * 看板页面文档的 JSON Schema(DSL v1.0)。
@@ -6,7 +6,7 @@ import { supportedVersions } from './version';
  */
 export const pageSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
-  $id: 'https://metriccanvas/page/v1.0',
+  $id: `https://metriccanvas/page/v${versionPolicy.current}`,
   title: '看板页面',
   description: '平台的聚合根与核心资产,以严格声明式文档形式存在',
   type: 'object',
