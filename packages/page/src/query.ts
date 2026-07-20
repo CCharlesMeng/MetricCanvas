@@ -5,6 +5,8 @@
 export interface StructuredQuery {
   metrics: string[];
   dimensions?: string[];
+  /** 聚合方式(如 sum/avg/count),作用于本查询全部指标;合法性依元数据快照按指标校验 */
+  aggregation?: string;
   granularity?: string;
   filters?: { subscribe: string[] };
 }
@@ -16,6 +18,7 @@ export interface StructuredQuery {
 export interface EffectiveQuery {
   metrics: string[];
   dimensions?: string[];
+  aggregation?: string;
   granularity?: string;
   conditions: FilterCondition[];
 }

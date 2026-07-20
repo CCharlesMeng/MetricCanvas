@@ -6,9 +6,11 @@
 
 ```bash
 pnpm install
-pnpm dev     # 启动应用壳(SvelteKit),访问 http://localhost:5173
-pnpm test    # Vitest 全量测试
-pnpm check   # packages tsc --noEmit + 应用壳 svelte-check
+pnpm dev            # 启动应用壳(SvelteKit),访问 http://localhost:5173
+pnpm test           # Vitest 全量测试
+pnpm check          # packages tsc --noEmit + 应用壳 svelte-check
+pnpm validate       # 页面文档全量校验:结构 + 语义(对元数据快照)+ 文件名一致性
+pnpm sync-catalog --base-url <数据服务地址>   # 重新生成元数据快照(catalog/snapshot.json)
 ```
 
 改动 `pages/*.json` 页面文档,浏览器秒级热刷新。
@@ -22,4 +24,5 @@ pnpm check   # packages tsc --noEmit + 应用壳 svelte-check
 | `packages/runtime` | 应用层 | `PageRepository` / `DataGateway` 端口、查询编排器、筛选状态 |
 | `packages/widgets` | 表现层 | 纯渲染组件集(props 进、事件出) |
 | `apps/canvas` | 表现层(壳) | 路由、组装、依赖注入、索引页 |
-| `pages/` | 领域资产 | 看板页面文档 JSON + 元数据快照 |
+| `pages/` | 领域资产 | 看板页面文档 JSON |
+| `catalog/` | 领域资产 | 元数据快照(供给侧清单,语义校验的确定性参照;不放 `pages/` 是因为应用壳按 glob 把该目录所有 JSON 当页面加载) |

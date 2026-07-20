@@ -1,0 +1,15 @@
+{
+  "formatVersion": "1.0",
+  "id": "dimension-not-available",
+  "title": "维度存在于目录,但不可用于所引用的指标",
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-order-count",
+      "type": "metricCard",
+      "title": "按日订单量",
+      "position": { "x": 0, "y": 0, "w": 3, "h": 2 },
+      "query": { "metrics": ["order-count"], "dimensions": ["stat-date"] }
+    }
+  ]
+}

@@ -69,6 +69,10 @@ export const pageSchema = {
           items: { type: 'string' },
           description: '维度 code 列表,引用数据服务定义的维度'
         },
+        aggregation: {
+          type: 'string',
+          description: '聚合方式(如 sum/avg/count),作用于全部指标;合法性依元数据快照按指标校验'
+        },
         granularity: {
           type: 'string',
           description: '时间粒度;映射到数据服务预定义的粒度字段(服务定义时固定)'

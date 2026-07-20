@@ -1,0 +1,31 @@
+{
+  "formatVersion": "1.0",
+  "syncedAt": "2026-07-20T00:00:00.000Z",
+  "source": "测试构造样例(独立事实,勿与实现互相推导)",
+  "metrics": [
+    {
+      "code": "gmv",
+      "name": "成交总额",
+      "valueType": "decimal",
+      "availableDimensions": ["region", "stat-date"],
+      "availableAggregations": ["sum", "avg"]
+    },
+    {
+      "code": "order-count",
+      "name": "订单量",
+      "valueType": "integer",
+      "availableDimensions": ["region"],
+      "availableAggregations": ["sum", "count"]
+    }
+  ],
+  "dimensions": [
+    {
+      "code": "region",
+      "name": "区域",
+      "cardinality": 3,
+      "sampleValues": ["华东", "华北", "华南"]
+    },
+    { "code": "stat-date", "name": "统计日期", "cardinality": 7 },
+    { "code": "channel", "name": "渠道", "cardinality": 2 }
+  ]
+}

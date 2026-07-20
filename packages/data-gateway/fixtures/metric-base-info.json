@@ -1,0 +1,20 @@
+{
+  "retCode": "CBC.0000",
+  "retDesc": "成功",
+  "data": {
+    "restQuery": {
+      "MetricBaseInfo": [
+        {
+          "metric_code": "revenue-external_customer",
+          "metric_name_zh": "外部客户收入",
+          "scope": "IOC"
+        },
+        {
+          "metric_code": "contribution-profit_hc",
+          "metric_name_zh": "贡献利润",
+          "scope": "IOC"
+        }
+      ]
+    }
+  }
+}
