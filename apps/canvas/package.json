@@ -1,0 +1,26 @@
+{
+  "name": "canvas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@metriccanvas/components": "workspace:*",
+    "@metriccanvas/runtime": "workspace:*",
+    "@metriccanvas/spec-schema": "workspace:*",
+    "@metriccanvas/table-service-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.70.1",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "@types/node": "^26.1.1",
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "vite": "^8.1.5"
+  }
+}

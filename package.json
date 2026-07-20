@@ -1,0 +1,15 @@
+{
+  "name": "metriccanvas",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --filter canvas dev",
+    "build": "pnpm --filter canvas build",
+    "test": "vitest run",
+    "check": "pnpm --filter canvas check"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}
