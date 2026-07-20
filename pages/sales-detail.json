@@ -35,8 +35,9 @@
     {
       "id": "w-by-region",
       "type": "barChart",
-      "title": "GMV 按区域(点击柱条页内下钻)",
+      "title": "GMV 按区域(横向,点击柱条页内下钻)",
       "position": { "x": 0, "y": 2, "w": 6, "h": 4 },
+      "display": { "horizontal": true, "rounded": true },
       "query": {
         "metrics": ["gmv"],
         "dimensions": ["region"],
@@ -45,6 +46,18 @@
       "interactions": [
         { "on": "click", "writeFilter": "f-region", "value": "$dimension.region" }
       ]
+    },
+    {
+      "id": "w-trend-dual",
+      "type": "lineChart",
+      "title": "GMV 与订单数趋势(双轴)",
+      "position": { "x": 0, "y": 6, "w": 12, "h": 4 },
+      "display": { "dualAxis": true },
+      "query": {
+        "metrics": ["gmv", "order-count"],
+        "dimensions": ["mtime"],
+        "filters": { "subscribe": ["f-time", "f-region", "f-channel"] }
+      }
     },
     {
       "id": "w-by-channel",

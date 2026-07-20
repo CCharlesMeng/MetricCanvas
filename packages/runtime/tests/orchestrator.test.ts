@@ -56,6 +56,85 @@ function collect(stream: ReturnType<typeof orchestrate>) {
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
+function metricCardFor(id: string, metric: string): Widget {
+  return {
+    id,
+    type: 'metricCard',
+    position: { x: 0, y: 0, w: 3, h: 2 },
+    query: { metrics: [metric] }
+  };
+}
+
+describe('查询编排器:并发分批(数据服务批量上限 5)与会话内缓存', () => {
+  it('单页 7 个不同查询:同时在途不超过 5,先到先补,最终全部就绪', async () => {
+    const { pending, gateway } = deferredGateway();
+    const widgets = Array.from({ length: 7 }, (_, i) => metricCardFor(`w-${i}`, `m-${i}`));
+    const { latest } = collect(orchestrate(widgets, gateway));
+    await flush();
+    expect(pending.length).toBe(5);
+
+    pending[0].resolve([{ 'm-0': 1 }]);
+    await flush();
+    // 释放一个名额,第 6 个查询入场
+    expect(pending.length).toBe(6);
+
+    for (const p of pending.slice(1)) p.resolve([{ x: 1 }]);
+    await flush();
+    await flush();
+    expect(pending.length).toBe(7);
+    pending[6].resolve([{ 'm-6': 1 }]);
+    await flush();
+    const finals = latest();
+    expect([...finals.values()].every((s) => s.status === 'ready')).toBe(true);
+  });
+
+  it('会话内缓存:筛选来回切换后回到同一生效查询,不再发网关请求', async () => {
+    const { received, gateway } = immediateGateway([{ gmv: 1 }]);
+    const filters = createFilterState();
+    const region: FilterValue = { type: 'dimension', dimension: 'region', values: ['华东'] };
+    const { unsubscribe } = collect(orchestrate([metricCard('w-1', ['f-region'])], gateway, filters));
+    await flush();
+    expect(received.length).toBe(1);
+
+    filters.write('f-region', region);
+    await flush();
+    expect(received.length).toBe(2);
+
+    // 清除筛选:回到与首轮相同的生效查询——应命中缓存,不发第 3 个请求
+    filters.write('f-region', null);
+    await flush();
+    expect(received.length).toBe(2);
+    unsubscribe();
+  });
+
+  it('错误快照不入缓存:失败后回到同一生效查询会重新请求', async () => {
+    let calls = 0;
+    const gateway: DataGateway = {
+      async fetchData() {
+        calls++;
+        if (calls === 1) throw new Error('数据服务不可达');
+        return [{ gmv: 1 }];
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    };
+    const filters = createFilterState();
+    const region: FilterValue = { type: 'dimension', dimension: 'region', values: ['华东'] };
+    const { latest, unsubscribe } = collect(orchestrate([metricCard('w-1', ['f-region'])], gateway, filters));
+    await flush();
+    expect(latest().get('w-1')?.status).toBe('error');
+
+    // 走开再回来:同一生效查询因失败未入缓存,重新请求并成功
+    filters.write('f-region', region);
+    await flush();
+    filters.write('f-region', null);
+    await flush();
+    expect(latest().get('w-1')).toEqual({ status: 'ready', rows: [{ gmv: 1 }] });
+    unsubscribe();
+  });
+});
+
 describe('查询编排器:冷流与快照时间线', () => {
   it('冷流:订阅者到达前不发任何查询', async () => {
     const { gateway, received } = immediateGateway([{ gmv: 1 }]);

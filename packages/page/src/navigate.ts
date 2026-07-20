@@ -1,5 +1,5 @@
 import { placeholderDimension } from './interaction';
-import type { Page } from './page';
+import { isChartWidget, type Page } from './page';
 import type { TypedError } from './errors';
 
 /**
@@ -19,7 +19,7 @@ export function navigateErrors(
   const errors: TypedError[] = [];
 
   page.widgets.forEach((widget, i) => {
-    if (widget.type !== 'barChart') return;
+    if (!isChartWidget(widget)) return;
     (widget.interactions ?? []).forEach((interaction, j) => {
       if (!('navigate' in interaction)) return;
       const basePath = `/widgets/${i}/interactions/${j}/navigate`;

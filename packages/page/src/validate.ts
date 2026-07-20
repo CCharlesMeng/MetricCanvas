@@ -2,7 +2,7 @@ import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import { placeholderDimension } from './interaction';
 import { versionErrors } from './version';
-import type { Page } from './page';
+import { isChartWidget, type Page } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
 
@@ -107,7 +107,7 @@ function invariantErrors(page: Page): TypedError[] {
       }
     });
 
-    if (widget.type === 'barChart') {
+    if (isChartWidget(widget)) {
       (widget.interactions ?? []).forEach((interaction, j) => {
         if ('navigate' in interaction) {
           // 跨页下钻的页内可校验部分;目标页存在性与目标筛选器有效性属仓库知识,归 validate CLI(navigateErrors)

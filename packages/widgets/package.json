@@ -11,7 +11,8 @@
     }
   },
   "dependencies": {
-    "@metriccanvas/page": "workspace:*"
+    "@metriccanvas/page": "workspace:*",
+    "echarts": "^6.1.0"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
