@@ -163,7 +163,7 @@ export interface MapChartDisplay {
   /** 散点叠加:point=普通散点 | effect=涟漪散点;缺省不叠加。散点坐标取底图资产的区域中心点 */
   scatter?: 'point' | 'effect';
   /**
-   * 维度值 → 底图区域名的声明式映射(如 "华东" → "上海市"),直通 ECharts nameMap;
+   * 维度值 → 底图区域名的声明式映射(如 "华东" → "上海市"),构造地图数据与点击索引时应用;
    * 未列出的维度值按原名匹配底图区域。纯数据映射,不是表达式(ADR-0003)
    */
   nameMap?: Record<string, string>;

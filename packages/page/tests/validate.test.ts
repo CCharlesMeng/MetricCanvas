@@ -29,6 +29,8 @@ import tableMultipleMetrics from '../fixtures/invalid/table-multiple-metrics.jso
 import tableDuplicateColumnField from '../fixtures/invalid/table-duplicate-column-field.json';
 import withMapAndText from '../fixtures/valid/with-map-and-text.json';
 import mapMultipleMetrics from '../fixtures/invalid/map-multiple-metrics.json';
+import mapMissingDimensions from '../fixtures/invalid/map-missing-dimensions.json';
+import mapMultipleDimensions from '../fixtures/invalid/map-multiple-dimensions.json';
 import mapMissingBasemap from '../fixtures/invalid/map-missing-basemap.json';
 import mapNameMapDuplicateTarget from '../fixtures/invalid/map-namemap-duplicate-target.json';
 import textLinkCarryUnknownFilter from '../fixtures/invalid/text-link-carry-unknown-filter.json';
@@ -137,6 +139,16 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: '地图声明多指标(区域着色无多指标语义,不静默取第一个)',
       document: mapMultipleMetrics,
       path: '/widgets/0/query/metrics'
+    },
+    {
+      name: '地图缺少维度(区域着色没有切分角度,不静默取空)',
+      document: mapMissingDimensions,
+      path: '/widgets/0/query/dimensions'
+    },
+    {
+      name: '地图声明多个维度(区域着色只能使用一个切分角度,不静默取第一个)',
+      document: mapMultipleDimensions,
+      path: '/widgets/0/query/dimensions'
     },
     {
       name: '地图缺少必选的底图声明(display.map)',

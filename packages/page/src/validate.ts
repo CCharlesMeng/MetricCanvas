@@ -132,6 +132,17 @@ function invariantErrors(page: Page): TypedError[] {
       });
     }
 
+    if (widget.type === 'mapChart') {
+      const dimensionCount = widget.query.dimensions?.length ?? 0;
+      if (dimensionCount !== 1) {
+        errors.push({
+          type: 'SCHEMA_ERROR',
+          path: `/widgets/${i}/query/dimensions`,
+          message: `地图的结构化查询必须恰好声明一个维度,收到 ${dimensionCount} 个`
+        });
+      }
+    }
+
     if (widget.type === 'table') {
       errors.push(...tableErrors(widget, i));
     }
