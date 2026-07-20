@@ -1,5 +1,6 @@
 import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
+import { placeholderDimension } from './interaction';
 import type { Page } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
@@ -47,9 +48,29 @@ function describe(err: ErrorObject): string {
   return err.message ?? '结构不合法';
 }
 
-/** JSON Schema 表达不了的页面不变式:12 列网格越界、widget id 唯一 */
+/**
+ * JSON Schema 表达不了的页面不变式:12 列网格越界、widget/筛选器 id 唯一、
+ * 筛选订阅与交互回写的引用完整性(联动只通过已声明的筛选状态传递)。
+ */
 function invariantErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
+  const filters = page.filters ?? [];
+
+  const filterIds = new Set<string>();
+  filters.forEach((filter, i) => {
+    if (filterIds.has(filter.id)) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/filters/${i}/id`,
+        message: `筛选器 id 重复:${filter.id}`
+      });
+    }
+    filterIds.add(filter.id);
+  });
+  const dimensionFiltersById = new Map(
+    filters.flatMap((filter) => (filter.type === 'dimension' ? [[filter.id, filter] as const] : []))
+  );
+
   const seen = new Set<string>();
   page.widgets.forEach((widget, i) => {
     const { x, w } = widget.position;
@@ -68,6 +89,45 @@ function invariantErrors(page: Page): TypedError[] {
       });
     }
     seen.add(widget.id);
+
+    (widget.query.filters?.subscribe ?? []).forEach((filterId, j) => {
+      if (!filterIds.has(filterId)) {
+        errors.push({
+          type: 'SCHEMA_ERROR',
+          path: `/widgets/${i}/query/filters/subscribe/${j}`,
+          message: `订阅了未声明的筛选器:${filterId}`
+        });
+      }
+    });
+
+    if (widget.type === 'barChart') {
+      (widget.interactions ?? []).forEach((interaction, j) => {
+        const target = dimensionFiltersById.get(interaction.writeFilter);
+        if (!target) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/interactions/${j}/writeFilter`,
+            message: `回写目标须为已声明的 dimension 型筛选器:${interaction.writeFilter}`
+          });
+        }
+        const code = placeholderDimension(interaction.value);
+        if (!(widget.query.dimensions ?? []).includes(code)) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/interactions/${j}/value`,
+            message: `取值占位引用的维度 ${code} 不在本组件查询的 dimensions 中`
+          });
+        }
+        // 占位维度须与目标筛选器约束的维度一致,否则运行时会把 A 维度的值写进 B 维度的条件
+        if (target && code !== target.dimension) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/interactions/${j}/value`,
+            message: `取值占位的维度 ${code} 与回写目标筛选器 ${target.id} 约束的维度 ${target.dimension} 不一致`
+          });
+        }
+      });
+    }
   });
   return errors;
 }

@@ -1,5 +1,5 @@
 /**
- * 看板页面文档的 JSON Schema(DSL v1.0,切片1 范围:metricCard 单组件)。
+ * 看板页面文档的 JSON Schema(DSL v1.0)。
  * description 字段同时服务两个消费方:校验错误消息与编辑器悬浮提示(User Story 5)。
  */
 export const pageSchema = {
@@ -23,6 +23,16 @@ export const pageSchema = {
     },
     title: { type: 'string', minLength: 1, description: '页面标题,显示于页头与看板目录' },
     description: { type: 'string', description: '页面说明,显示于看板目录' },
+    filters: {
+      type: 'array',
+      description: '页面级筛选器声明,共同构成筛选状态(联动唯一总线)',
+      items: {
+        oneOf: [
+          { $ref: '#/definitions/dimensionFilter' },
+          { $ref: '#/definitions/timeRangeFilter' }
+        ]
+      }
+    },
     layout: {
       type: 'object',
       description: '布局声明。一期固定 12 列网格',
@@ -36,10 +46,98 @@ export const pageSchema = {
     widgets: {
       type: 'array',
       description: '页面组件清单,封闭组件集',
-      items: { $ref: '#/definitions/metricCardWidget' }
+      items: {
+        oneOf: [
+          { $ref: '#/definitions/metricCardWidget' },
+          { $ref: '#/definitions/barChartWidget' }
+        ]
+      }
     }
   },
   definitions: {
+    dimensionFilter: {
+      type: 'object',
+      description: '维度筛选器:约束某个维度的取值集合;候选值由运行时经数据网关查询',
+      required: ['id', 'type', 'dimension'],
+      additionalProperties: false,
+      properties: {
+        id: {
+          type: 'string',
+          pattern: '^[a-z0-9][a-z0-9-]*$',
+          description: '筛选器唯一标识,页面内不可重复(校验器额外检查)'
+        },
+        type: { type: 'string', enum: ['dimension'] },
+        dimension: { type: 'string', description: '约束的维度 code,引用数据服务定义的维度' },
+        label: { type: 'string', description: '筛选器标签,显示于筛选器区' },
+        display: {
+          type: 'string',
+          enum: ['select', 'tabs'],
+          description: '展示形态:下拉多选(默认)| tab 单选;树选/搜索形态由切片8(#9)补齐'
+        },
+        default: {
+          type: 'array',
+          items: { type: 'string' },
+          description: '初始选中的维度值;缺省为不筛选'
+        }
+      }
+    },
+    timeRangeFilter: {
+      type: 'object',
+      description: '时间范围筛选器:约束查询的时间范围',
+      required: ['id', 'type'],
+      additionalProperties: false,
+      properties: {
+        id: {
+          type: 'string',
+          pattern: '^[a-z0-9][a-z0-9-]*$',
+          description: '筛选器唯一标识,页面内不可重复(校验器额外检查)'
+        },
+        type: { type: 'string', enum: ['timeRange'] },
+        label: { type: 'string', description: '筛选器标签,显示于筛选器区' },
+        precision: {
+          type: 'string',
+          enum: ['date', 'datetime'],
+          description: '时间精度:date=日期(默认)| datetime=日期时间'
+        },
+        default: {
+          description: '初始范围:相对预设(按打开时刻解析)或绝对范围;缺省为不筛选',
+          oneOf: [
+            {
+              type: 'string',
+              enum: ['today', 'last7d', 'last30d', 'last90d'],
+              description: '相对时间预设'
+            },
+            {
+              type: 'object',
+              required: ['from', 'to'],
+              additionalProperties: false,
+              properties: {
+                from: { type: 'string', description: '起点,YYYY-MM-DD 或 YYYY-MM-DDTHH:mm' },
+                to: { type: 'string', description: '终点,YYYY-MM-DD 或 YYYY-MM-DDTHH:mm' }
+              }
+            }
+          ]
+        }
+      }
+    },
+    writeFilterInteraction: {
+      type: 'object',
+      description: '页内下钻交互:点击回写筛选状态,联动其它订阅 widget;由运行时执行',
+      required: ['on', 'writeFilter', 'value'],
+      additionalProperties: false,
+      properties: {
+        on: { type: 'string', enum: ['click'] },
+        writeFilter: {
+          type: 'string',
+          description: '回写目标筛选器 id,须为页面声明的 dimension 型筛选器(校验器额外检查)'
+        },
+        value: {
+          type: 'string',
+          pattern: '^\\$dimension\\.[A-Za-z0-9_]+$',
+          description: '取值占位 $dimension.<code>,运行时从点击上下文取该维度的值'
+        }
+      }
+    },
     position: {
       type: 'object',
       description: '组件在 12 列网格中的位置与尺寸;x+w 不得超过 12(校验器额外检查)',
@@ -116,6 +214,28 @@ export const pageSchema = {
             prefix: { type: 'string', description: '前缀,如 ¥/$' },
             thousandsSeparator: { type: 'boolean', description: '数值千分位格式化' }
           }
+        }
+      }
+    },
+    barChartWidget: {
+      type: 'object',
+      description: '柱状图:按维度展示指标分布;点击柱条可经 interactions 页内下钻。本切片为最简形态,ECharts 化与展示配置面归切片5(#6)',
+      required: ['id', 'type', 'position', 'query'],
+      additionalProperties: false,
+      properties: {
+        id: {
+          type: 'string',
+          pattern: '^[a-z0-9][a-z0-9-]*$',
+          description: '组件唯一标识,页面内不可重复(校验器额外检查)'
+        },
+        type: { type: 'string', enum: ['barChart'] },
+        title: { type: 'string', description: '组件标题,显示于卡片头部' },
+        position: { $ref: '#/definitions/position' },
+        query: { $ref: '#/definitions/structuredQuery' },
+        interactions: {
+          type: 'array',
+          description: '交互声明清单;navigate 跨页下钻由切片7(#8)加入',
+          items: { $ref: '#/definitions/writeFilterInteraction' }
         }
       }
     }

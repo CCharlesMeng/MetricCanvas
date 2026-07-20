@@ -90,4 +90,44 @@ describe('mock 适配器:按元数据快照造形状正确的假数据', () => {
     expect(rows).toHaveLength(1);
     expect(typeof rows[0].gmv).toBe('number');
   });
+
+  it('维度自身的 in 条件收窄行集(过滤切行):region in [华东,华南] → 2 行', async () => {
+    const rows = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [{ dimension: 'region', operator: 'in', value: ['华东', '华南'] }]
+    });
+    expect(rows.map((r) => r.region)).toEqual(['华东', '华南']);
+  });
+
+  it('查询维度之外的条件与时间范围参与数值扰动(条件改数),无筛选时保持原种子', async () => {
+    const base = await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] });
+    const filtered = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [{ dimension: 'channel', operator: 'in', value: ['线上'] }]
+    });
+    const timed = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [],
+      timeRange: { from: '2026-07-01', to: '2026-07-20' }
+    });
+    // 切行数不变(channel 不在查询维度里),但数值被扰动;时间范围同理
+    expect(filtered).toHaveLength(base.length);
+    expect(filtered.map((r) => r.gmv)).not.toEqual(base.map((r) => r.gmv));
+    expect(timed.map((r) => r.gmv)).not.toEqual(base.map((r) => r.gmv));
+    // 无筛选查询与切片3 种子一致:重复查询结果完全相同
+    expect(await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] })).toEqual(base);
+  });
+
+  it('fetchDimensionValues:样例值优先、不足基数按 code 补造;快照缺失该维度时造 3 个', async () => {
+    expect(await gateway.fetchDimensionValues('region')).toEqual(['华东', '华北', '华南']);
+    expect(await gateway.fetchDimensionValues('channel')).toEqual(['channel-1', 'channel-2']);
+    expect(await gateway.fetchDimensionValues('unknown')).toEqual([
+      'unknown-1',
+      'unknown-2',
+      'unknown-3'
+    ]);
+  });
 });

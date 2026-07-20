@@ -19,4 +19,10 @@ export interface PageRepository {
  */
 export interface DataGateway {
   fetchData(query: EffectiveQuery): Promise<Row[]>;
+  /**
+   * 维度候选值查询:维度筛选器候选项的唯一来源。
+   * 候选项是业务数据(随数据演化),不入页面文档、不入元数据快照(零数据行原则),
+   * 永远实时经网关查询;一期由 mock 适配器供数,二期数据服务适配器翻译为去重取值查询。
+   */
+  fetchDimensionValues(dimension: string): Promise<string[]>;
 }

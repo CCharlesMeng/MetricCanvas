@@ -1,3 +1,5 @@
+import type { FilterDeclaration } from './filter';
+import type { WidgetInteraction } from './interaction';
 import type { StructuredQuery } from './query';
 
 /**
@@ -10,6 +12,8 @@ export interface Page {
   id: string;
   title: string;
   description?: string;
+  /** 页面级筛选器声明,共同构成筛选状态(联动唯一总线) */
+  filters?: FilterDeclaration[];
   layout: GridLayout;
   widgets: Widget[];
 }
@@ -27,7 +31,7 @@ export interface WidgetPosition {
   h: number;
 }
 
-/** 一期组件集之一:指标卡(切片1 唯一组件,后续切片扩展联合类型) */
+/** 一期组件集之一:指标卡 */
 export interface MetricCardWidget {
   id: string;
   type: 'metricCard';
@@ -44,4 +48,18 @@ export interface MetricCardDisplay {
   thousandsSeparator?: boolean;
 }
 
-export type Widget = MetricCardWidget;
+/**
+ * 一期组件集之一:柱状图。本切片(#5)引入最简形态以贯通页内下钻
+ * (点击柱条经 interactions 回写筛选状态);ECharts 化与完整展示配置面归切片5(#6)。
+ */
+export interface BarChartWidget {
+  id: string;
+  type: 'barChart';
+  title?: string;
+  position: WidgetPosition;
+  query: StructuredQuery;
+  /** 交互声明:事件如何作用于筛选状态,由运行时执行(组件纯渲染) */
+  interactions?: WidgetInteraction[];
+}
+
+export type Widget = MetricCardWidget | BarChartWidget;
