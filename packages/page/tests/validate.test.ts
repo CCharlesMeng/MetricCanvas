@@ -30,6 +30,7 @@ import tableDuplicateColumnField from '../fixtures/invalid/table-duplicate-colum
 import withMapAndText from '../fixtures/valid/with-map-and-text.json';
 import mapMultipleMetrics from '../fixtures/invalid/map-multiple-metrics.json';
 import mapMissingBasemap from '../fixtures/invalid/map-missing-basemap.json';
+import mapNameMapDuplicateTarget from '../fixtures/invalid/map-namemap-duplicate-target.json';
 import textLinkCarryUnknownFilter from '../fixtures/invalid/text-link-carry-unknown-filter.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
@@ -141,6 +142,11 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: '地图缺少必选的底图声明(display.map)',
       document: mapMissingBasemap,
       path: '/widgets/0/display/map'
+    },
+    {
+      name: 'nameMap 多个维度值映射到同一底图区域名(着色与点击回写相互覆盖,不静默取后写者)',
+      document: mapNameMapDuplicateTarget,
+      path: '/widgets/0/display/nameMap'
     },
     {
       name: '文本带参链接的 carryFilters 引用了本页未声明的筛选器',

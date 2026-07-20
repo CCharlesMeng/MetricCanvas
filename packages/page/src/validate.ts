@@ -136,6 +136,23 @@ function invariantErrors(page: Page): TypedError[] {
       errors.push(...tableErrors(widget, i));
     }
 
+    // nameMap 多个维度值映射同一底图区域名:着色与点击回写相互覆盖,报错而非静默取后写者
+    if (widget.type === 'mapChart') {
+      const mappedBy = new Map<string, string>();
+      for (const [from, to] of Object.entries(widget.display.nameMap ?? {})) {
+        const prior = mappedBy.get(to);
+        if (prior !== undefined) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/display/nameMap`,
+            message: `nameMap 目标值重复:维度值 ${prior} 与 ${from} 都映射到底图区域名 ${to}`
+          });
+        } else {
+          mappedBy.set(to, from);
+        }
+      }
+    }
+
     if (isChartWidget(widget)) {
       (widget.interactions ?? []).forEach((interaction, j) => {
         if ('navigate' in interaction) {

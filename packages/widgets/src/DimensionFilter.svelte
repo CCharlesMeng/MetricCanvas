@@ -1,51 +1,16 @@
-<script lang="ts" module>
-  /**
-   * 树选的层级节点:一期按候选值的 '/' 分隔符约定建层级(如 '华东/上海'),
-   * 完整路径即维度值本身;无分隔符的候选值退化为根层平面复选。
-   * 层级元数据由数据服务供给后,只需替换建树输入,契约不变。
-   */
-  export interface FilterTreeNode {
-    /** 当前层级段文案 */
-    label: string;
-    /** 完整路径;仅当它本身是候选值时可直接选中 */
-    value: string | null;
-    path: string;
-    children: FilterTreeNode[];
-    /** 本节点与后代中出现在候选项里的完整值(父节点复选批量作用于这些值) */
-    leaves: string[];
-  }
-
-  export function buildFilterTree(options: string[]): FilterTreeNode[] {
-    const roots: FilterTreeNode[] = [];
-    const byPath = new Map<string, FilterTreeNode>();
-    for (const option of options) {
-      const segments = option.split('/');
-      let path = '';
-      let siblings = roots;
-      let node: FilterTreeNode | undefined;
-      for (const segment of segments) {
-        path = path ? `${path}/${segment}` : segment;
-        node = byPath.get(path);
-        if (!node) {
-          node = { label: segment, value: null, path, children: [], leaves: [] };
-          byPath.set(path, node);
-          siblings.push(node);
-        }
-        node.leaves.push(option);
-        siblings = node.children;
-      }
-      node!.value = option;
-    }
-    return roots;
-  }
-</script>
-
 <script lang="ts">
   /**
    * 维度筛选器(纯渲染):候选项与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。
    * 四种展示形态共用同一契约:select=下拉多选,tabs=tab 单选(存量 ti-tabs 场景),
    * tree=树形多选(存量 ti-treeselect 场景),search=输入过滤 + 多选(存量 ti-searchbox 场景)。
    */
+  import {
+    buildFilterTree,
+    nodeState as treeNodeState,
+    toggleNodeValues,
+    type FilterTreeNode
+  } from './filter-tree';
+
   interface Props {
     label?: string;
     /** 候选维度值,运行时经数据网关查询后传入 */
@@ -70,23 +35,17 @@
     value.length === 0 ? '全部' : value.length <= 2 ? value.join('、') : `已选 ${value.length} 项`
   );
 
-  // —— 树选:'/' 分隔符约定建层级;父节点复选批量作用于后代候选值 ——
+  // —— 树选:'/' 分隔符约定建层级(纯逻辑在 filter-tree.ts);父节点复选批量作用于后代候选值 ——
   const tree = $derived(display === 'tree' ? buildFilterTree(options) : []);
   /** 折叠的节点路径(缺省全展开,候选值集合本就不大) */
   let collapsed = $state<Record<string, boolean>>({});
 
   function nodeState(node: FilterTreeNode): 'all' | 'some' | 'none' {
-    const count = node.leaves.filter((leaf) => selected.has(leaf)).length;
-    return count === 0 ? 'none' : count === node.leaves.length ? 'all' : 'some';
+    return treeNodeState(node, selected);
   }
 
   function toggleNode(node: FilterTreeNode) {
-    if (nodeState(node) === 'all') {
-      const drop = new Set(node.leaves);
-      onchange(value.filter((v) => !drop.has(v)));
-    } else {
-      onchange([...new Set([...value, ...node.leaves])]);
-    }
+    onchange(toggleNodeValues(node, value, selected));
   }
 
   // —— 搜索:输入过滤候选 + 多选;已选项即使被过滤掉也仍在筛选状态中 ——

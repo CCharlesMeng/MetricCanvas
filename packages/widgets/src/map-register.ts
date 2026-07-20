@@ -28,11 +28,13 @@ export function ensureBasemap(name: BasemapName): Promise<BasemapMeta> {
 }
 
 async function load(name: BasemapName): Promise<BasemapMeta> {
-  // 两个 import 写成字面量而非模板串:vite 静态分析各自成 chunk
-  const geoJson =
+  // 两个 import 写成字面量而非模板串:vite 静态分析各自成 chunk。
+  // 资产结构由制备脚本保证({name, cp?}),经 unknown 收窄而非携带巨型 JSON 推断类型
+  const geoJson = (
     name === 'china'
       ? (await import('./maps/china.json')).default
-      : (await import('./maps/world.json')).default;
+      : (await import('./maps/world.json')).default
+  ) as unknown;
   echarts.registerMap(name, geoJson as Parameters<typeof echarts.registerMap>[1]);
 
   const centers = new Map<string, [number, number]>();

@@ -218,7 +218,10 @@ export function isChartWidget(widget: Widget): widget is ChartWidget {
   );
 }
 
-/** 文本组件无查询:编排取数与语义校验只面向数据 widget,分发处共用此判别 */
+/**
+ * 文本组件无查询:编排取数与语义校验只面向数据 widget,分发处共用此判别。
+ * "数据 widget"是代码层判别,不是领域概念,不入 CONTEXT.md 词汇表。
+ */
 export function isDataWidget(widget: Widget): widget is DataWidget {
   return widget.type !== 'text';
 }
