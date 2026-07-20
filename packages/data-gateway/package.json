@@ -1,5 +1,5 @@
 {
-  "name": "@metriccanvas/runtime",
+  "name": "@metriccanvas/data-gateway",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -7,9 +7,7 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
-    "@metriccanvas/page": "workspace:*"
-  },
-  "peerDependencies": {
-    "svelte": "^5.0.0"
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/runtime": "workspace:*"
   }
 }

@@ -6,7 +6,8 @@
     "dev": "pnpm --filter canvas dev",
     "build": "pnpm --filter canvas build",
     "test": "vitest run",
-    "check": "pnpm --filter canvas check"
+    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway",
+    "check": "pnpm typecheck && pnpm --filter canvas check"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

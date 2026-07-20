@@ -1,5 +1,5 @@
 {
-  "name": "@metriccanvas/components",
+  "name": "@metriccanvas/widgets",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     }
   },
   "dependencies": {
-    "@metriccanvas/spec-schema": "workspace:*"
+    "@metriccanvas/page": "workspace:*"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"

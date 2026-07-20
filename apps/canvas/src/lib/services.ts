@@ -1,6 +1,6 @@
-import { createMockClient } from '@metriccanvas/table-service-client';
-import { createStaticSpecProvider } from './spec-provider.js';
+import { createMockGateway } from '@metriccanvas/data-gateway';
+import { createStaticSpecProvider } from './spec-provider';
 
-/** 应用壳的依赖注入点:切片2(#3)在此按环境切换真实表服务实现 */
+/** 应用壳的依赖注入点:切片2(#3)在此按环境切换数据服务真实适配器 */
 export const specProvider = createStaticSpecProvider();
-export const tableService = createMockClient();
+export const dataGateway = createMockGateway();

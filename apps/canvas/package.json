@@ -9,10 +9,10 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
-    "@metriccanvas/components": "workspace:*",
+    "@metriccanvas/data-gateway": "workspace:*",
+    "@metriccanvas/page": "workspace:*",
     "@metriccanvas/runtime": "workspace:*",
-    "@metriccanvas/spec-schema": "workspace:*",
-    "@metriccanvas/table-service-client": "workspace:*"
+    "@metriccanvas/widgets": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.10",

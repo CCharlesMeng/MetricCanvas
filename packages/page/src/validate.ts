@@ -1,20 +1,18 @@
-export * from './types.js';
-export { pageSpecSchema } from './schema.js';
-
 import { Ajv, type ErrorObject } from 'ajv';
-import { pageSpecSchema } from './schema.js';
-import type { PageSpec, TypedError } from './types.js';
+import { pageSpecSchema } from './schema';
+import type { PageSpec } from './spec';
+import type { TypedError } from './errors';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSpecSchema);
 
 /**
- * 两级校验入口:结构校验(JSON Schema + 布局/唯一性规则)。
- * 语义校验(指标/维度存在性,需 CatalogSnapshot)在切片3 落地。
+ * 两级校验入口:结构校验(JSON Schema + 布局/唯一性不变式)。
+ * 语义校验(指标/维度存在性,需 CatalogSnapshot)在切片3(#4)落地。
  */
 export function validate(spec: unknown): TypedError[] {
   if (validateStructure(spec)) {
-    return layoutAndIdentityErrors(spec as unknown as PageSpec);
+    return invariantErrors(spec as unknown as PageSpec);
   }
   return (validateStructure.errors ?? []).map(toTypedError);
 }
@@ -42,8 +40,8 @@ function describe(err: ErrorObject): string {
   return err.message ?? '结构不合法';
 }
 
-/** JSON Schema 表达不了的结构规则:12 列网格越界、widget id 唯一 */
-function layoutAndIdentityErrors(spec: PageSpec): TypedError[] {
+/** JSON Schema 表达不了的页面不变式:12 列网格越界、widget id 唯一 */
+function invariantErrors(spec: PageSpec): TypedError[] {
   const errors: TypedError[] = [];
   const seen = new Set<string>();
   spec.widgets.forEach((widget, i) => {

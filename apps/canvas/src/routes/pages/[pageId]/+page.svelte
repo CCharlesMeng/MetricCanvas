@@ -5,10 +5,10 @@
     type DataSnapshot,
     type PageSpec,
     type TypedError
-  } from '@metriccanvas/spec-schema';
+  } from '@metriccanvas/page';
   import { orchestrate } from '@metriccanvas/runtime';
-  import { MetricCard } from '@metriccanvas/components';
-  import { specProvider, tableService } from '$lib/services';
+  import { MetricCard } from '@metriccanvas/widgets';
+  import { specProvider, dataGateway } from '$lib/services';
 
   type PageState =
     | { phase: 'loading' }
@@ -47,7 +47,7 @@
 
     const spec = raw as PageSpec;
     pageState = { phase: 'ready', spec };
-    await orchestrate(spec.widgets, tableService, (widgetId, snapshot) => {
+    await orchestrate(spec.widgets, dataGateway, (widgetId, snapshot) => {
       snapshots[widgetId] = snapshot;
     });
   }
@@ -93,7 +93,7 @@
         {:else if snapshot.status === 'empty'}
           <div class="state">暂无数据</div>
         {:else if widget.type === 'metricCard'}
-          <MetricCard {snapshot} display={widget.display} metric={widget.query.metrics[0]} />
+          <MetricCard {snapshot} config={{ ...widget.display, metric: widget.query.metrics[0] }} />
         {/if}
       </section>
     {/each}

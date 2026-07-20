@@ -17,18 +17,18 @@ importers:
 
   apps/canvas:
     dependencies:
-      '@metriccanvas/components':
+      '@metriccanvas/data-gateway':
         specifier: workspace:*
-        version: link:../../packages/components
+        version: link:../../packages/data-gateway
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../packages/page
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
-      '@metriccanvas/spec-schema':
+      '@metriccanvas/widgets':
         specifier: workspace:*
-        version: link:../../packages/spec-schema
-      '@metriccanvas/table-service-client':
-        specifier: workspace:*
-        version: link:../../packages/table-service-client
+        version: link:../../packages/widgets
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
@@ -52,38 +52,38 @@ importers:
         specifier: ^8.1.5
         version: 8.1.5(@types/node@26.1.1)
 
-  packages/components:
+  packages/data-gateway:
     dependencies:
-      '@metriccanvas/spec-schema':
+      '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../spec-schema
-      svelte:
-        specifier: ^5.0.0
-        version: 5.56.6
-
-  packages/runtime:
-    dependencies:
-      '@metriccanvas/spec-schema':
+        version: link:../page
+      '@metriccanvas/runtime':
         specifier: workspace:*
-        version: link:../spec-schema
-      svelte:
-        specifier: ^5.0.0
-        version: 5.56.6
+        version: link:../runtime
 
-  packages/spec-schema:
+  packages/page:
     dependencies:
       ajv:
         specifier: ^8.17.1
         version: 8.20.0
 
-  packages/table-service-client:
+  packages/runtime:
     dependencies:
-      '@metriccanvas/runtime':
+      '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../runtime
-      '@metriccanvas/spec-schema':
+        version: link:../page
+      svelte:
+        specifier: ^5.0.0
+        version: 5.56.6
+
+  packages/widgets:
+    dependencies:
+      '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../spec-schema
+        version: link:../page
+      svelte:
+        specifier: ^5.0.0
+        version: 5.56.6
 
 packages:
 
