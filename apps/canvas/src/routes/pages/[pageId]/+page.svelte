@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { goto, replaceState } from '$app/navigation';
   import {
+    isChartWidget,
     placeholderDimension,
     validate,
     type ChartWidget,
@@ -258,9 +259,10 @@
         <!-- 快照态(骨架/错误/空)由 WidgetHost 统一呈现,组件只接就绪快照 -->
         <WidgetHost {snapshot}>
           {#snippet ready(readySnapshot)}
+            {@const chart = isChartWidget(widget) ? widget : null}
             {@const onclick =
-              'interactions' in widget && widget.interactions?.length
-                ? ({ row }: { row: Row }) => handleChartClick(widget as ChartWidget, row)
+              chart?.interactions?.length
+                ? ({ row }: { row: Row }) => handleChartClick(chart, row)
                 : undefined}
             {#if widget.type === 'metricCard'}
               <MetricCard

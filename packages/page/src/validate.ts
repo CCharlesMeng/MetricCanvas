@@ -107,6 +107,15 @@ function invariantErrors(page: Page): TypedError[] {
       }
     });
 
+    // 饼图是单指标组件(按维度切分占比):多指标无占比语义,报错而非静默取第一个
+    if (widget.type === 'pieChart' && widget.query.metrics.length > 1) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/query/metrics`,
+        message: `饼图只支持单指标,收到 ${widget.query.metrics.length} 个`
+      });
+    }
+
     if (isChartWidget(widget)) {
       (widget.interactions ?? []).forEach((interaction, j) => {
         if ('navigate' in interaction) {

@@ -7,14 +7,14 @@
       "code": "gmv",
       "name": "成交总额",
       "valueType": "decimal",
-      "availableDimensions": ["region", "channel", "stat-date", "mtime"],
+      "availableDimensions": ["region", "channel", "mtime"],
       "availableAggregations": ["sum", "avg", "count"]
     },
     {
       "code": "order-count",
       "name": "订单量",
       "valueType": "integer",
-      "availableDimensions": ["region", "channel", "stat-date", "mtime"],
+      "availableDimensions": ["region", "channel", "mtime"],
       "availableAggregations": ["sum", "count"]
     },
     {
@@ -38,7 +38,6 @@
       "cardinality": 2,
       "sampleValues": ["线上", "线下"]
     },
-    { "code": "stat-date", "name": "统计日期", "cardinality": 7 },
     {
       "code": "mtime",
       "name": "统计时间",

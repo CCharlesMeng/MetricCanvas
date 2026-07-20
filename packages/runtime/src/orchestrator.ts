@@ -91,6 +91,7 @@ function startSession(
   let inFlight = 0;
   const waiters: Array<() => void> = [];
   function withSlot(task: () => void): void {
+    if (disposed) return; // 退订即取消:不再启动任何新请求(不变式5)
     if (inFlight < MAX_IN_FLIGHT) {
       inFlight++;
       task();
@@ -99,6 +100,7 @@ function startSession(
     }
   }
   function release(): void {
+    if (disposed) return; // 会话已作废:排队任务不再链式启动
     const next = waiters.shift();
     if (next) next();
     else inFlight--;
@@ -142,6 +144,8 @@ function startSession(
         });
       };
 
+      // 缓存命中同步落定:时间线仍是 loading→ready(publishLoading 在前),
+      // 视觉上会闪一帧骨架——这是不变式3 的保序代价,刻意保留
       const cached = cache.get(key);
       if (cached) {
         land(cached);
@@ -181,6 +185,7 @@ function startSession(
     current: () => snapshots,
     dispose() {
       disposed = true;
+      waiters.length = 0; // 排队中的查询一并作废,不得在退订后发出
       unsubscribeFilters?.();
     }
   };
