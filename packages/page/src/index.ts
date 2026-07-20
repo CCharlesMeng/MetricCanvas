@@ -9,3 +9,6 @@ export { pageSchema } from './schema';
 export { validate } from './validate';
 export { fileNameErrors } from './file-name';
 export { navigateErrors } from './navigate';
+export * from './version';
+export { migrateDocument, migrations } from './migrate';
+export type { MigrationRegistry, Migration, MigrateResult } from './migrate';

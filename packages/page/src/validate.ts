@@ -1,6 +1,7 @@
 import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import { placeholderDimension } from './interaction';
+import { versionErrors } from './version';
 import type { Page } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
@@ -15,7 +16,13 @@ const validateStructure = ajv.compile(pageSchema);
  */
 export function validate(document: unknown, catalog?: CatalogSnapshot): TypedError[] {
   if (!validateStructure(document)) {
-    return (validateStructure.errors ?? []).map(toTypedError);
+    const structural = (validateStructure.errors ?? []).map(toTypedError);
+    // 不受支持的版本换成版本判定的结果:同一事实只报一条,且带迁移指引(版本策略是唯一真源)
+    const guided = versionErrors(document);
+    if (guided.length > 0) {
+      return [...guided, ...structural.filter((error) => error.path !== '/formatVersion')];
+    }
+    return structural;
   }
   const page = document as unknown as Page;
   const errors = invariantErrors(page);

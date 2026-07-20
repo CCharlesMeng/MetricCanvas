@@ -9,7 +9,8 @@ pnpm install
 pnpm dev            # 启动应用壳(SvelteKit),访问 http://localhost:5173
 pnpm test           # Vitest 全量测试
 pnpm check          # packages tsc --noEmit + 应用壳 svelte-check
-pnpm validate       # 页面文档全量校验:结构 + 语义(对元数据快照)+ 文件名一致性
+pnpm validate       # 页面文档全量校验:结构 + 语义(对元数据快照)+ 文件名一致性 + N-1 升版警告
+pnpm migrate        # 历史版本页面文档批量升至当前版本(幂等,git diff 评审)
 pnpm sync-catalog --base-url <数据服务地址>   # 重新生成元数据快照(catalog/snapshot.json)
 ```
 

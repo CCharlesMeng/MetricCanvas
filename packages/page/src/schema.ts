@@ -1,3 +1,5 @@
+import { supportedVersions } from './version';
+
 /**
  * 看板页面文档的 JSON Schema(DSL v1.0)。
  * description 字段同时服务两个消费方:校验错误消息与编辑器悬浮提示(User Story 5)。
@@ -13,8 +15,9 @@ export const pageSchema = {
   properties: {
     formatVersion: {
       type: 'string',
-      enum: ['1.0'],
-      description: '文档格式(DSL)大版本。运行时兼容 N/N-1 两个大版本(ADR 见 PRD)'
+      // 受支持版本集合以 version.ts 的版本策略为唯一真源(运行时兼容 N/N-1)
+      enum: supportedVersions(),
+      description: `文档格式(DSL)大版本;当前支持 ${supportedVersions().join(' / ')},历史文档用 pnpm migrate 升版`
     },
     id: {
       type: 'string',

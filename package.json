@@ -7,6 +7,7 @@
     "build": "pnpm --filter canvas build",
     "test": "vitest run",
     "validate": "tsx packages/page/src/validate-cli.ts",
+    "migrate": "tsx packages/page/src/migrate-cli.ts",
     "sync-catalog": "tsx packages/data-gateway/src/sync-catalog-cli.ts",
     "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json",
     "check": "pnpm typecheck && pnpm --filter canvas check"
