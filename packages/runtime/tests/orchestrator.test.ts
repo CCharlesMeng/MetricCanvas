@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery, Row, Widget } from '@metriccanvas/page';
-import { orchestrate } from './orchestrator';
-import type { DataGateway } from './ports';
+import { orchestrate } from '../src/orchestrator';
+import type { DataGateway } from '../src/ports';
 
 /** mock 在系统边界(数据网关端口),非内部协作者 */
 function gatewayReturning(rows: Row[] | Error) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validate } from './validate';
+import { validate } from '../src/validate';
 
 import minimal from '../fixtures/valid/minimal.json';
 import missingSpecVersion from '../fixtures/invalid/missing-spec-version.json';
