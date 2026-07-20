@@ -1,11 +1,11 @@
-import type { EffectiveQuery, Row } from '@metriccanvas/spec-schema';
-import type { TableServicePort } from '@metriccanvas/runtime';
+import type { EffectiveQuery, Row } from '@metriccanvas/page';
+import type { DataGateway } from '@metriccanvas/runtime';
 
 /**
- * mock 实现:按生效查询的形状造确定性假数据,供离线开发与演示。
- * 真实表服务实现(apiQuery 方言翻译/归一化/批量分批)在切片2(#3)落地。
+ * mock 适配器:按生效查询的形状造确定性假数据,供离线开发与演示。
+ * delayMs 模拟网络延迟,让骨架屏在开发期可见。
  */
-export function createMockClient(options: { delayMs?: number } = {}): TableServicePort {
+export function createMockGateway(options: { delayMs?: number } = {}): DataGateway {
   const { delayMs = 400 } = options;
   return {
     async fetchData(query: EffectiveQuery): Promise<Row[]> {

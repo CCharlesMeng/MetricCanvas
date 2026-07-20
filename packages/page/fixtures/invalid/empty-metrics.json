@@ -1,0 +1,14 @@
+{
+  "specVersion": "1.0",
+  "id": "demo",
+  "title": "演示看板",
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-gmv",
+      "type": "metricCard",
+      "position": { "x": 0, "y": 0, "w": 3, "h": 2 },
+      "query": { "metrics": [] }
+    }
+  ]
+}

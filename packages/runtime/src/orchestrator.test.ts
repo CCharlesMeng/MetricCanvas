@@ -1,20 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery, Row, Widget } from '@metriccanvas/spec-schema';
-import { orchestrate } from './index.js';
+import type { EffectiveQuery, Row, Widget } from '@metriccanvas/page';
+import { orchestrate } from './orchestrator';
+import type { DataGateway } from './ports';
 
-/** mock 在系统边界(表服务端口),非内部协作者 */
-function portReturning(rows: Row[] | Error) {
+/** mock 在系统边界(数据网关端口),非内部协作者 */
+function gatewayReturning(rows: Row[] | Error) {
   const received: EffectiveQuery[] = [];
-  return {
-    received,
-    port: {
-      async fetchData(query: EffectiveQuery): Promise<Row[]> {
-        received.push(query);
-        if (rows instanceof Error) throw rows;
-        return rows;
-      }
+  const gateway: DataGateway = {
+    async fetchData(query: EffectiveQuery): Promise<Row[]> {
+      received.push(query);
+      if (rows instanceof Error) throw rows;
+      return rows;
     }
   };
+  return { received, gateway };
 }
 
 const widget: Widget = {
@@ -24,9 +23,9 @@ const widget: Widget = {
   query: { metrics: ['gmv'] }
 };
 
-async function collect(widgets: Widget[], port: { fetchData(q: EffectiveQuery): Promise<Row[]> }) {
+async function collect(widgets: Widget[], gateway: DataGateway) {
   const timeline: Array<{ widgetId: string; status: string }> = [];
-  const final = await orchestrate(widgets, port, (widgetId, snapshot) => {
+  const final = await orchestrate(widgets, gateway, (widgetId, snapshot) => {
     timeline.push({ widgetId, status: snapshot.status });
   });
   return { timeline, final };
@@ -34,8 +33,8 @@ async function collect(widgets: Widget[], port: { fetchData(q: EffectiveQuery): 
 
 describe('查询编排器(切片1 最简版)', () => {
   it('widget 先收到加载态快照,数据返回后收到就绪快照', async () => {
-    const { port } = portReturning([{ gmv: 1000 }]);
-    const { timeline, final } = await collect([widget], port);
+    const { gateway } = gatewayReturning([{ gmv: 1000 }]);
+    const { timeline, final } = await collect([widget], gateway);
     expect(timeline).toEqual([
       { widgetId: 'w-gmv', status: 'loading' },
       { widgetId: 'w-gmv', status: 'ready' }
@@ -44,23 +43,23 @@ describe('查询编排器(切片1 最简版)', () => {
   });
 
   it('结构化查询被合成为生效查询(切片1 无筛选器,conditions 为空)', async () => {
-    const { port, received } = portReturning([{ gmv: 1 }]);
-    await collect([widget], port);
+    const { gateway, received } = gatewayReturning([{ gmv: 1 }]);
+    await collect([widget], gateway);
     expect(received).toEqual([{ metrics: ['gmv'], conditions: [] }]);
   });
 
   it('查询结果为空数组时,快照为空态而非就绪态', async () => {
-    const { port } = portReturning([]);
-    const { final } = await collect([widget], port);
+    const { gateway } = gatewayReturning([]);
+    const { final } = await collect([widget], gateway);
     expect(final.get('w-gmv')).toEqual({ status: 'empty' });
   });
 
   it('查询失败时,快照为错误态且携带错误信息,不抛出', async () => {
-    const { port } = portReturning(new Error('表服务不可达'));
-    const { final } = await collect([widget], port);
+    const { gateway } = gatewayReturning(new Error('数据服务不可达'));
+    const { final } = await collect([widget], gateway);
     expect(final.get('w-gmv')).toEqual({
       status: 'error',
-      error: { message: '表服务不可达' }
+      error: { message: '数据服务不可达' }
     });
   });
 });
