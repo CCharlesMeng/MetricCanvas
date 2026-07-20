@@ -11,9 +11,13 @@ export interface StructuredQuery {
   filters?: { subscribe: string[] };
 }
 
+import type { TimeRangeValue } from './filter';
+
 /**
  * 生效查询 (Effective Query):结构化查询 × 订阅筛选器当前值合成后的最终查询,
- * 是真正发往数据服务的查询。切片1 尚无筛选状态,conditions 恒空。
+ * 是真正发往数据服务的查询。conditions 来自订阅的维度筛选器,timeRange 来自
+ * 订阅的时间范围筛选器(时间是数据服务的特殊轴:粒度在服务定义时固定,
+ * 故不混入 conditions,由适配层单独翻译为时间字段约束)。
  */
 export interface EffectiveQuery {
   metrics: string[];
@@ -21,6 +25,7 @@ export interface EffectiveQuery {
   aggregation?: string;
   granularity?: string;
   conditions: FilterCondition[];
+  timeRange?: TimeRangeValue;
 }
 
 export interface FilterCondition {

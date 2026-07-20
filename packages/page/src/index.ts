@@ -1,4 +1,6 @@
 export * from './page';
+export * from './filter';
+export * from './interaction';
 export * from './query';
 export * from './snapshot';
 export * from './catalog';

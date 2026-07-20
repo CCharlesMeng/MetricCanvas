@@ -1,13 +1,24 @@
 <script lang="ts">
   import { page } from '$app/state';
+  import { replaceState } from '$app/navigation';
   import {
     validate,
+    type BarChartWidget,
     type DataSnapshot,
+    type FilterDeclaration,
     type Page,
+    type Row,
     type TypedError
   } from '@metriccanvas/page';
-  import { orchestrate } from '@metriccanvas/runtime';
-  import { MetricCard } from '@metriccanvas/widgets';
+  import {
+    createFilterState,
+    initialFilterValues,
+    orchestrate,
+    type FilterState,
+    type FilterValues,
+    type PageSnapshots
+  } from '@metriccanvas/runtime';
+  import { BarChart, DimensionFilter, MetricCard, TimeRangeFilter } from '@metriccanvas/widgets';
   import { pageRepository, dataGateway } from '$lib/services';
 
   type PageState =
@@ -17,27 +28,47 @@
     | { phase: 'ready'; page: Page };
 
   let pageState = $state<PageState>({ phase: 'loading' });
-  let snapshots = $state<Record<string, DataSnapshot>>({});
+  let snapshots = $state<PageSnapshots>(new Map());
+  let filterValues = $state<FilterValues>(new Map());
+  /** 维度筛选器候选项(经数据网关实时查询,不入页面文档) */
+  let filterOptions = $state<Record<string, string[]>>({});
 
-  // 页面生命周期 ②加载 → ③校验 → ⑤~⑦编排取数 → ⑧组件渲染
+  let declarations = $state<FilterDeclaration[]>([]);
+  let filterState: FilterState | null = null;
+  let session = 0;
+  let disposers: Array<() => void> = [];
+
+  // 页面生命周期 ②加载 → ③校验 → ④筛选状态初始化(URL 有值则恢复)→ ⑤~⑦编排取数 → ⑧组件渲染
   $effect(() => {
     void run(page.params.pageId!);
+    return dispose;
   });
 
+  function dispose() {
+    for (const fn of disposers) fn();
+    disposers = [];
+    filterState = null;
+  }
+
   async function run(pageId: string) {
+    const mySession = ++session;
     pageState = { phase: 'loading' };
-    snapshots = {};
+    snapshots = new Map();
+    filterValues = new Map();
+    filterOptions = {};
 
     let raw: unknown;
     try {
       raw = await pageRepository.load(pageId);
     } catch (cause) {
+      if (session !== mySession) return;
       pageState = {
         phase: 'missing',
         message: cause instanceof Error ? cause.message : String(cause)
       };
       return;
     }
+    if (session !== mySession) return;
 
     const errors = validate(raw);
     if (errors.length > 0) {
@@ -47,10 +78,96 @@
 
     // 文档进、页面出:通过校验后才可视为 Page 聚合(ADR-0007)
     const loaded = raw as Page;
+    declarations = loaded.filters ?? [];
+
+    // ④ 筛选状态:按声明的 default 初始化;URL 带筛选参数则整体恢复(可分享还原)
+    const fromDeclarations = initialFilterValues(declarations);
+    const fromURL = parseFilterURL(location.search);
+    const state = createFilterState(fromURL.size > 0 ? fromURL : fromDeclarations);
+    filterState = state;
+
+    let primed = false;
+    disposers.push(
+      state.subscribe((values) => {
+        filterValues = values;
+        // 首推是初值(URL 已一致),之后每次变更同步回 URL,筛选状态可分享
+        if (primed) syncURL(state);
+        primed = true;
+      })
+    );
+
     pageState = { phase: 'ready', page: loaded };
-    await orchestrate(loaded.widgets, dataGateway, (widgetId, snapshot) => {
-      snapshots[widgetId] = snapshot;
-    });
+    disposers.push(
+      orchestrate(loaded.widgets, dataGateway, state).subscribe((next) => {
+        snapshots = next;
+      })
+    );
+
+    // 维度筛选器候选项:业务数据,永远实时经数据网关查询(ADR-0003:不入页面文档)
+    for (const decl of declarations) {
+      if (decl.type !== 'dimension') continue;
+      void dataGateway.fetchDimensionValues(decl.dimension).then((values) => {
+        if (session !== mySession) return;
+        filterOptions = { ...filterOptions, [decl.id]: values };
+      });
+    }
+  }
+
+  /** 从 URL 查询串解析筛选状态(借 store 的 fromURL,一处序列化逻辑) */
+  function parseFilterURL(search: string): FilterValues {
+    const probe = createFilterState();
+    probe.fromURL(search);
+    let values: FilterValues = new Map();
+    probe.subscribe((v) => {
+      values = v;
+    })();
+    return values;
+  }
+
+  /** 筛选状态 → URL:只替换筛选参数,保留无关查询参数 */
+  function syncURL(state: FilterState) {
+    const params = new URLSearchParams(location.search);
+    for (const decl of declarations) params.delete(decl.id);
+    for (const [key, value] of new URLSearchParams(state.toURL())) params.set(key, value);
+    const query = params.toString();
+    replaceState(`${location.pathname}${query ? `?${query}` : ''}`, {});
+  }
+
+  function dimensionValue(filterId: string): string[] {
+    const value = filterValues.get(filterId);
+    return value?.type === 'dimension' ? value.values : [];
+  }
+
+  function timeRangeValue(filterId: string) {
+    const value = filterValues.get(filterId);
+    return value?.type === 'timeRange' ? { from: value.from, to: value.to } : null;
+  }
+
+  function writeDimension(decl: Extract<FilterDeclaration, { type: 'dimension' }>, values: string[]) {
+    filterState?.write(
+      decl.id,
+      values.length > 0 ? { type: 'dimension', dimension: decl.dimension, values } : null
+    );
+  }
+
+  function writeTimeRange(declId: string, range: { from: string; to: string } | null) {
+    filterState?.write(declId, range ? { type: 'timeRange', ...range } : null);
+  }
+
+  /** ⑨ 按页面 interactions 将点击事件写回筛选状态(页内下钻),组件不感知联动 */
+  function handleBarClick(widget: BarChartWidget, row: Row) {
+    for (const interaction of widget.interactions ?? []) {
+      if (interaction.on !== 'click') continue;
+      const code = interaction.value.slice('$dimension.'.length);
+      const clicked = row[code];
+      const target = declarations.find((decl) => decl.id === interaction.writeFilter);
+      if (clicked == null || target?.type !== 'dimension') continue;
+      filterState?.write(interaction.writeFilter, {
+        type: 'dimension',
+        dimension: target.dimension,
+        values: [String(clicked)]
+      });
+    }
   }
 </script>
 
@@ -77,9 +194,33 @@
   </div>
 {:else}
   <h1 class="page-title">{pageState.page.title}</h1>
+
+  {#if declarations.length > 0}
+    <div class="filter-bar">
+      {#each declarations as decl (decl.id)}
+        {#if decl.type === 'dimension'}
+          <DimensionFilter
+            label={decl.label}
+            options={filterOptions[decl.id] ?? []}
+            value={dimensionValue(decl.id)}
+            display={decl.display ?? 'select'}
+            onchange={(values) => writeDimension(decl, values)}
+          />
+        {:else}
+          <TimeRangeFilter
+            label={decl.label}
+            precision={decl.precision ?? 'date'}
+            value={timeRangeValue(decl.id)}
+            onchange={(range) => writeTimeRange(decl.id, range)}
+          />
+        {/if}
+      {/each}
+    </div>
+  {/if}
+
   <div class="grid" style="grid-template-columns: repeat({pageState.page.layout.columns}, 1fr);">
     {#each pageState.page.widgets as widget (widget.id)}
-      {@const snapshot = snapshots[widget.id] ?? { status: 'loading' }}
+      {@const snapshot = snapshots.get(widget.id) ?? { status: 'loading' } as DataSnapshot}
       <section
         class="cell"
         style="grid-column: {widget.position.x + 1} / span {widget.position.w};
@@ -95,6 +236,14 @@
           <div class="state">暂无数据</div>
         {:else if widget.type === 'metricCard'}
           <MetricCard {snapshot} config={{ ...widget.display, metric: widget.query.metrics[0] }} />
+        {:else if widget.type === 'barChart'}
+          <BarChart
+            {snapshot}
+            config={{ metric: widget.query.metrics[0], dimension: widget.query.dimensions?.[0] ?? '' }}
+            onbarclick={widget.interactions?.length
+              ? ({ row }) => handleBarClick(widget, row)
+              : undefined}
+          />
         {/if}
       </section>
     {/each}
@@ -108,6 +257,17 @@
   .page-title {
     font-size: 20px;
     margin: 8px 0 20px;
+  }
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px solid #e4e4e7;
+    border-radius: 10px;
   }
   .grid {
     display: grid;

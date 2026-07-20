@@ -1,0 +1,185 @@
+<script lang="ts">
+  /**
+   * 维度筛选器(纯渲染):候选项与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。
+   * 两种展示形态共用同一契约:select=下拉多选,tabs=tab 单选(存量 ti-tabs 场景)。
+   * 树形选择与搜索形态由切片8(#9)在同一契约下补齐。
+   */
+  interface Props {
+    label?: string;
+    /** 候选维度值,运行时经数据网关查询后传入 */
+    options: string[];
+    /** 当前选中值;空数组表示不筛选 */
+    value: string[];
+    display?: 'select' | 'tabs';
+    onchange: (values: string[]) => void;
+  }
+
+  let { label, options, value, display = 'select', onchange }: Props = $props();
+
+  const selected = $derived(new Set(value));
+
+  function toggle(option: string) {
+    onchange(
+      selected.has(option) ? value.filter((v) => v !== option) : [...value, option]
+    );
+  }
+
+  const summary = $derived(
+    value.length === 0 ? '全部' : value.length <= 2 ? value.join('、') : `已选 ${value.length} 项`
+  );
+</script>
+
+<div class="filter">
+  {#if label}<span class="label">{label}</span>{/if}
+
+  {#if display === 'tabs'}
+    <div class="tabs" role="tablist">
+      <button
+        type="button"
+        role="tab"
+        class="tab"
+        class:active={value.length === 0}
+        aria-selected={value.length === 0}
+        onclick={() => onchange([])}
+      >
+        全部
+      </button>
+      {#each options as option (option)}
+        <button
+          type="button"
+          role="tab"
+          class="tab"
+          class:active={selected.has(option)}
+          aria-selected={selected.has(option)}
+          onclick={() => onchange([option])}
+        >
+          {option}
+        </button>
+      {/each}
+    </div>
+  {:else}
+    <details class="select">
+      <summary>
+        <span>{summary}</span>
+        <span class="caret" aria-hidden="true">▾</span>
+      </summary>
+      <div class="menu">
+        {#each options as option (option)}
+          <label class="option">
+            <input
+              type="checkbox"
+              checked={selected.has(option)}
+              onchange={() => toggle(option)}
+            />
+            <span>{option}</span>
+          </label>
+        {:else}
+          <span class="empty">候选项加载中…</span>
+        {/each}
+        {#if value.length > 0}
+          <button type="button" class="clear" onclick={() => onchange([])}>清除筛选</button>
+        {/if}
+      </div>
+    </details>
+  {/if}
+</div>
+
+<style>
+  .filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+  }
+  .label {
+    color: #71717a;
+    white-space: nowrap;
+  }
+  .tabs {
+    display: flex;
+    background: #f4f4f5;
+    border-radius: 8px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .tab {
+    border: 0;
+    background: transparent;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #52525b;
+    cursor: pointer;
+  }
+  .tab.active {
+    background: #fff;
+    color: #18181b;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
+  }
+  .select {
+    position: relative;
+  }
+  .select summary {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #fff;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    cursor: pointer;
+    user-select: none;
+    min-width: 96px;
+  }
+  .select summary::-webkit-details-marker {
+    display: none;
+  }
+  .caret {
+    margin-left: auto;
+    color: #a1a1aa;
+    font-size: 11px;
+  }
+  .menu {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 160px;
+    max-height: 260px;
+    overflow: auto;
+    background: #fff;
+    border: 1px solid #e4e4e7;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 0.1);
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+  }
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  .option:hover {
+    background: #f4f4f5;
+  }
+  .empty {
+    padding: 6px 8px;
+    color: #a1a1aa;
+  }
+  .clear {
+    margin-top: 4px;
+    border: 0;
+    border-top: 1px solid #f4f4f5;
+    background: transparent;
+    padding: 8px;
+    color: #2563eb;
+    font-size: 13px;
+    cursor: pointer;
+  }
+</style>

@@ -1,0 +1,16 @@
+{
+  "formatVersion": "1.0",
+  "id": "interaction-dimension-not-queried",
+  "title": "交互占位引用了查询之外的维度",
+  "filters": [{ "id": "f-channel", "type": "dimension", "dimension": "channel" }],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-by-region",
+      "type": "barChart",
+      "position": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "query": { "metrics": ["gmv"], "dimensions": ["region"] },
+      "interactions": [{ "on": "click", "writeFilter": "f-channel", "value": "$dimension.channel" }]
+    }
+  ]
+}

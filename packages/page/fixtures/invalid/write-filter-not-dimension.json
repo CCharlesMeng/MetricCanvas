@@ -1,0 +1,16 @@
+{
+  "formatVersion": "1.0",
+  "id": "write-filter-not-dimension",
+  "title": "回写目标不是 dimension 型筛选器",
+  "filters": [{ "id": "f-time", "type": "timeRange" }],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-by-region",
+      "type": "barChart",
+      "position": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "query": { "metrics": ["gmv"], "dimensions": ["region"] },
+      "interactions": [{ "on": "click", "writeFilter": "f-time", "value": "$dimension.region" }]
+    }
+  ]
+}
