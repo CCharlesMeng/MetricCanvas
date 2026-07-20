@@ -1,0 +1,13 @@
+{
+  "name": "@metriccanvas/table-service-client",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@metriccanvas/runtime": "workspace:*",
+    "@metriccanvas/spec-schema": "workspace:*"
+  }
+}
