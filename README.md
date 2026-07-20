@@ -11,7 +11,7 @@ pnpm test    # Vitest 全量测试
 pnpm check   # packages tsc --noEmit + 应用壳 svelte-check
 ```
 
-改动 `specs/*.json` 页面规格,浏览器秒级热刷新。
+改动 `pages/*.json` 页面文档,浏览器秒级热刷新。
 
 ## 结构(四层,依赖箭头全部指向领域层)
 
@@ -19,7 +19,7 @@ pnpm check   # packages tsc --noEmit + 应用壳 svelte-check
 |---|---|---|
 | `packages/page` | 领域层 | 聚合根"看板页面":DSL 类型 + 校验不变式(SCHEMA_ERROR / METRIC_GAP) |
 | `packages/data-gateway` | 基础设施层 | `DataGateway` 端口的适配器集:数据服务(真实)+ mock |
-| `packages/runtime` | 应用层 | `SpecProvider` / `DataGateway` 端口、查询编排器、筛选状态 |
+| `packages/runtime` | 应用层 | `PageRepository` / `DataGateway` 端口、查询编排器、筛选状态 |
 | `packages/widgets` | 表现层 | 纯渲染组件集(props 进、事件出) |
 | `apps/canvas` | 表现层(壳) | 路由、组装、依赖注入、索引页 |
-| `specs/` | 领域资产 | 页面规格 JSON + 元数据快照 |
+| `pages/` | 领域资产 | 看板页面文档 JSON + 元数据快照 |

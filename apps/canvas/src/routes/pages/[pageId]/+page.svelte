@@ -3,18 +3,18 @@
   import {
     validate,
     type DataSnapshot,
-    type PageSpec,
+    type Page,
     type TypedError
   } from '@metriccanvas/page';
   import { orchestrate } from '@metriccanvas/runtime';
   import { MetricCard } from '@metriccanvas/widgets';
-  import { specProvider, dataGateway } from '$lib/services';
+  import { pageRepository, dataGateway } from '$lib/services';
 
   type PageState =
     | { phase: 'loading' }
     | { phase: 'missing'; message: string }
     | { phase: 'invalid'; errors: TypedError[] }
-    | { phase: 'ready'; spec: PageSpec };
+    | { phase: 'ready'; page: Page };
 
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<Record<string, DataSnapshot>>({});
@@ -30,7 +30,7 @@
 
     let raw: unknown;
     try {
-      raw = await specProvider.load(pageId);
+      raw = await pageRepository.load(pageId);
     } catch (cause) {
       pageState = {
         phase: 'missing',
@@ -45,16 +45,17 @@
       return;
     }
 
-    const spec = raw as PageSpec;
-    pageState = { phase: 'ready', spec };
-    await orchestrate(spec.widgets, dataGateway, (widgetId, snapshot) => {
+    // 文档进、页面出:通过校验后才可视为 Page 聚合(ADR-0007)
+    const loaded = raw as Page;
+    pageState = { phase: 'ready', page: loaded };
+    await orchestrate(loaded.widgets, dataGateway, (widgetId, snapshot) => {
       snapshots[widgetId] = snapshot;
     });
   }
 </script>
 
 {#if pageState.phase === 'loading'}
-  <p class="muted">加载页面规格…</p>
+  <p class="muted">加载页面…</p>
 {:else if pageState.phase === 'missing'}
   <div class="error-page">
     <h1>页面加载失败</h1>
@@ -62,7 +63,7 @@
   </div>
 {:else if pageState.phase === 'invalid'}
   <div class="error-page">
-    <h1>页面规格未通过校验</h1>
+    <h1>页面文档未通过校验</h1>
     <p class="muted">修复以下错误后保存,页面会自动刷新。</p>
     <ul class="errors">
       {#each pageState.errors as error}
@@ -75,9 +76,9 @@
     </ul>
   </div>
 {:else}
-  <h1 class="page-title">{pageState.spec.title}</h1>
-  <div class="grid" style="grid-template-columns: repeat({pageState.spec.layout.columns}, 1fr);">
-    {#each pageState.spec.widgets as widget (widget.id)}
+  <h1 class="page-title">{pageState.page.title}</h1>
+  <div class="grid" style="grid-template-columns: repeat({pageState.page.layout.columns}, 1fr);">
+    {#each pageState.page.widgets as widget (widget.id)}
       {@const snapshot = snapshots[widget.id] ?? { status: 'loading' }}
       <section
         class="cell"

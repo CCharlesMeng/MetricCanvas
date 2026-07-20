@@ -1,11 +1,12 @@
 import type { StructuredQuery } from './query';
 
 /**
- * 页面规格 (Page Spec):描述一个看板页面的结构化声明式文档,平台的核心资产。
- * 页面是聚合根,规格是它的唯一真源;校验规则(schema + validate)是它的不变式。
+ * 看板页面 (Dashboard Page):平台的聚合根与核心资产,
+ * 以严格声明式文档形式存在,同一性由 id 承载(ADR-0007)。
+ * 加载得到的是不可信文档(unknown),通过 validate 后才可视为 Page。
  */
-export interface PageSpec {
-  specVersion: string;
+export interface Page {
+  formatVersion: string;
   id: string;
   title: string;
   description?: string;
