@@ -150,7 +150,21 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
         },
         { serviceCode: SERVICE, timeColumn: 'mtime' }
       )
-    ).toThrow('排序字段');
+    ).toThrow('排序字段不在查询的 dimensions/metrics 中');
+  });
+
+  it('多指标查询按指标列排序:按真实原因报错(字段在 metrics 中,而非"不在查询里")', () => {
+    expect(() =>
+      translateQuery(
+        {
+          metrics: ['gmv', 'order-count'],
+          dimensions: ['region'],
+          conditions: [],
+          orderBy: [{ field: 'gmv', direction: 'desc' }]
+        },
+        { serviceCode: SERVICE, timeColumn: 'mtime' }
+      )
+    ).toThrow('多指标查询不支持按指标列排序');
   });
 
   it('多指标 + 分页拒绝:行式指标表的透视行会被 @limit 切开,盲翻语义不成立', () => {

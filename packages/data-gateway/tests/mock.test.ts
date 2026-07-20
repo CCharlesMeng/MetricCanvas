@@ -131,8 +131,10 @@ describe('mock 适配器:按元数据快照造形状正确的假数据', () => {
     expect(rows.map((r) => r.region)).toEqual(['华南', '华北', '华东']);
   });
 
+  // 以下两例的期望值为一次性录得的字面量(mock 造数确定性=刷新不跳变的既定契约,
+  // 本文件「造数确定性」测例守护该前提):华东 61882.07、华北 78668.34、华南 79510.94,
+  // 行序即快照样例值序。不在断言里复算排序/切片,期望独立于实现。
   it('遵守 limit/offset:offset 跳行、limit 截断,行序与不分页时一致', async () => {
-    const all = await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] });
     const paged = await gateway.fetchData({
       metrics: ['gmv'],
       dimensions: ['region'],
@@ -140,18 +142,24 @@ describe('mock 适配器:按元数据快照造形状正确的假数据', () => {
       limit: 2,
       offset: 1
     });
-    expect(paged).toEqual(all.slice(1, 3));
+    expect(paged).toEqual([
+      { region: '华北', gmv: 78668.34 },
+      { region: '华南', gmv: 79510.94 }
+    ]);
   });
 
   it('遵守指标列排序:按造出的 gmv 数值降序', async () => {
-    const all = await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] });
     const sorted = await gateway.fetchData({
       metrics: ['gmv'],
       dimensions: ['region'],
       conditions: [],
       orderBy: [{ field: 'gmv', direction: 'desc' }]
     });
-    expect(sorted.map((r) => r.gmv)).toEqual(all.map((r) => Number(r.gmv)).sort((a, b) => b - a));
+    expect(sorted).toEqual([
+      { region: '华南', gmv: 79510.94 },
+      { region: '华北', gmv: 78668.34 },
+      { region: '华东', gmv: 61882.07 }
+    ]);
   });
 
   it('fetchDimensionValues:样例值优先、不足基数按 code 补造;快照缺失该维度时造 3 个', async () => {

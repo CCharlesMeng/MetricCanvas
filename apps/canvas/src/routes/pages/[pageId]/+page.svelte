@@ -12,7 +12,8 @@
     type Page,
     type Row,
     type TableWidget,
-    type TypedError
+    type TypedError,
+    type Widget
   } from '@metriccanvas/page';
   import {
     createFilterState,
@@ -119,9 +120,13 @@
     let primed = false;
     disposers.push(
       state.subscribe((values) => {
+        const previous = filterValues;
         filterValues = values;
         // 首推是初值(URL 已一致),之后每次变更同步回 URL,筛选状态可分享
-        if (primed) syncURL(state);
+        if (primed) {
+          syncURL(state);
+          resetTablePages(loaded.widgets, previous, values);
+        }
         primed = true;
       })
     );
@@ -221,6 +226,30 @@
     if (value === null) delete headerFilters[field];
     else headerFilters[field] = value;
     pushTableView(widget, { ...current, headerFilters, pageIndex: 0 });
+  }
+
+  /**
+   * 页面筛选变更后,订阅了该筛选器的表格页码回第一页:行集已变,
+   * 旧 offset 指向的"第 N 页"不复存在(筛选变了还停在第 3 页是存量看板经典缺陷)。
+   * 落壳层而非编排器:页码语义(offset = 页码 × pageSize)本就由壳持有,
+   * 编排器 #5 六条不变式面不动。时序说明:本回调先于编排器的筛选订阅执行,
+   * setView 触发的重查按旧筛选值合成——首页×旧值多半已在会话缓存(初载即查过),
+   * 即便发出也会被随后按新筛选值的重查以更高序号覆盖(不变式4 竞态丢弃兜底)。
+   * 测试口径:按 PRD「Testing Decisions」应用壳不做自动化测试(壳无独立 seam,
+   * 行为依赖 svelte 组件生命周期),该行为随验收看板目验兜底。
+   */
+  function resetTablePages(widgets: Widget[], previous: FilterValues, next: FilterValues) {
+    const changed = new Set<string>();
+    for (const id of new Set([...previous.keys(), ...next.keys()])) {
+      if (JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))) changed.add(id);
+    }
+    for (const widget of widgets) {
+      if (widget.type !== 'table') continue;
+      const view = tableViewOf(widget);
+      if (view.pageIndex === 0) continue;
+      if (!(widget.query.filters?.subscribe ?? []).some((id) => changed.has(id))) continue;
+      pushTableView(widget, { ...view, pageIndex: 0 });
+    }
   }
 
   /**

@@ -154,7 +154,16 @@ export function translateQuery(
     valueField + (query.metrics.length === 1 ? takeOrder(orderOf, query.metrics[0]) : '')
   ];
   if (orderOf.size > 0) {
-    throw new Error(`排序字段不在查询的 dimensions/metrics 中:${[...orderOf.keys()].join('、')}`);
+    // 剩余排序字段按真实原因分型报错:字段确实在 metrics 中(多指标查询按指标列排序,
+    // 行式指标表的透视行无单一排序值)≠ 字段根本不在查询里(写错了)
+    const unattached = [...orderOf.keys()];
+    const knownMetrics = unattached.filter((field) => query.metrics.includes(field));
+    if (knownMetrics.length > 0) {
+      throw new Error(
+        `多指标查询不支持按指标列排序(行式指标表的透视行无单一排序值):${knownMetrics.join('、')}`
+      );
+    }
+    throw new Error(`排序字段不在查询的 dimensions/metrics 中:${unattached.join('、')}`);
   }
 
   const globals = [
