@@ -19,6 +19,7 @@ import interactionDimensionMismatch from '../fixtures/invalid/interaction-dimens
 import navigateMissingPage from '../fixtures/invalid/navigate-missing-page.json';
 import navigateCarryUnknownFilter from '../fixtures/invalid/navigate-carry-unknown-filter.json';
 import navigateSetDimensionNotQueried from '../fixtures/invalid/navigate-set-dimension-not-queried.json';
+import pieMultipleMetrics from '../fixtures/invalid/pie-multiple-metrics.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
   it('合法的最小页面文档通过,无错误', () => {
@@ -76,6 +77,11 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: 'navigate.setFilters 占位引用了查询之外的维度',
       document: navigateSetDimensionNotQueried,
       path: '/widgets/0/interactions/0/navigate/setFilters/f-channel'
+    },
+    {
+      name: '饼图声明多指标(占比无多指标语义,不静默取第一个)',
+      document: pieMultipleMetrics,
+      path: '/widgets/0/query/metrics'
     }
   ];
 

@@ -2,9 +2,10 @@
   import { page } from '$app/state';
   import { goto, replaceState } from '$app/navigation';
   import {
+    isChartWidget,
     placeholderDimension,
     validate,
-    type BarChartWidget,
+    type ChartWidget,
     type DataSnapshot,
     type FilterDeclaration,
     type Page,
@@ -20,7 +21,15 @@
     type FilterValues,
     type PageSnapshots
   } from '@metriccanvas/runtime';
-  import { BarChart, DimensionFilter, MetricCard, TimeRangeFilter } from '@metriccanvas/widgets';
+  import {
+    BarChart,
+    DimensionFilter,
+    LineChart,
+    MetricCard,
+    PieChart,
+    TimeRangeFilter,
+    WidgetHost
+  } from '@metriccanvas/widgets';
   import { pageRepository, dataGateway } from '$lib/services';
 
   type PageState =
@@ -168,7 +177,7 @@
    * ⑨ 按页面 interactions 执行点击事件:回写筛选状态(页内下钻)或跳转目标页(跨页下钻),
    * 组件不感知联动与路由——navigate 由壳执行,组件仍只上抛 {row}(纯渲染原则)。
    */
-  function handleBarClick(widget: BarChartWidget, row: Row) {
+  function handleChartClick(widget: ChartWidget, row: Row) {
     for (const interaction of widget.interactions ?? []) {
       if (interaction.on !== 'click') continue;
       if ('navigate' in interaction) {
@@ -247,24 +256,52 @@
                grid-row: {widget.position.y + 1} / span {widget.position.h};"
       >
         {#if widget.title}<h2 class="cell-title">{widget.title}</h2>{/if}
-        <!-- 加载/错误/空态呈现暂由壳承担,切片5(#6)下沉到运行时统一呈现;组件只接就绪快照 -->
-        {#if snapshot.status === 'loading'}
-          <div class="skeleton"></div>
-        {:else if snapshot.status === 'error'}
-          <div class="state error">查询失败:{snapshot.error.message}</div>
-        {:else if snapshot.status === 'empty'}
-          <div class="state">暂无数据</div>
-        {:else if widget.type === 'metricCard'}
-          <MetricCard {snapshot} config={{ ...widget.display, metric: widget.query.metrics[0] }} />
-        {:else if widget.type === 'barChart'}
-          <BarChart
-            {snapshot}
-            config={{ metric: widget.query.metrics[0], dimension: widget.query.dimensions?.[0] ?? '' }}
-            onbarclick={widget.interactions?.length
-              ? ({ row }) => handleBarClick(widget, row)
-              : undefined}
-          />
-        {/if}
+        <!-- 快照态(骨架/错误/空)由 WidgetHost 统一呈现,组件只接就绪快照 -->
+        <WidgetHost {snapshot}>
+          {#snippet ready(readySnapshot)}
+            {@const chart = isChartWidget(widget) ? widget : null}
+            {@const onclick =
+              chart?.interactions?.length
+                ? ({ row }: { row: Row }) => handleChartClick(chart, row)
+                : undefined}
+            {#if widget.type === 'metricCard'}
+              <MetricCard
+                snapshot={readySnapshot}
+                config={{ ...widget.display, metric: widget.query.metrics[0] }}
+              />
+            {:else if widget.type === 'barChart'}
+              <BarChart
+                snapshot={readySnapshot}
+                config={{
+                  metrics: widget.query.metrics,
+                  dimension: widget.query.dimensions?.[0] ?? '',
+                  display: widget.display
+                }}
+                onbarclick={onclick}
+              />
+            {:else if widget.type === 'lineChart'}
+              <LineChart
+                snapshot={readySnapshot}
+                config={{
+                  metrics: widget.query.metrics,
+                  dimension: widget.query.dimensions?.[0] ?? '',
+                  display: widget.display
+                }}
+                onpointclick={onclick}
+              />
+            {:else if widget.type === 'pieChart'}
+              <PieChart
+                snapshot={readySnapshot}
+                config={{
+                  metric: widget.query.metrics[0],
+                  dimension: widget.query.dimensions?.[0] ?? '',
+                  display: widget.display
+                }}
+                onsliceclick={onclick}
+              />
+            {/if}
+          {/snippet}
+        </WidgetHost>
       </section>
     {/each}
   </div>
@@ -309,31 +346,6 @@
     font-size: 13px;
     font-weight: 500;
     color: #71717a;
-  }
-  .skeleton {
-    flex: 1;
-    border-radius: 6px;
-    background: linear-gradient(90deg, #f4f4f5 25%, #e4e4e7 50%, #f4f4f5 75%);
-    background-size: 200% 100%;
-    animation: pulse 1.2s ease-in-out infinite;
-  }
-  @keyframes pulse {
-    from {
-      background-position: 200% 0;
-    }
-    to {
-      background-position: -200% 0;
-    }
-  }
-  .state {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    color: #71717a;
-    font-size: 14px;
-  }
-  .state.error {
-    color: #b91c1c;
   }
   .error-page h1 {
     font-size: 20px;

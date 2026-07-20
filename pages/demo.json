@@ -51,6 +51,7 @@
       "type": "barChart",
       "title": "GMV 按渠道(点击柱条跳销售明细)",
       "position": { "x": 6, "y": 2, "w": 6, "h": 4 },
+      "display": { "rounded": true },
       "query": {
         "metrics": ["gmv"],
         "dimensions": ["channel"],
@@ -65,6 +66,33 @@
             "setFilters": { "f-channel": "$dimension.channel" }
           }
         }
+      ]
+    },
+    {
+      "id": "w-trend",
+      "type": "lineChart",
+      "title": "GMV 趋势(平滑 + 面积渐变)",
+      "position": { "x": 0, "y": 6, "w": 8, "h": 4 },
+      "display": { "smooth": true, "areaGradient": true },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["mtime"],
+        "filters": { "subscribe": ["f-time", "f-region", "f-channel"] }
+      }
+    },
+    {
+      "id": "w-channel-share",
+      "type": "pieChart",
+      "title": "GMV 渠道占比(环形,点击扇区下钻)",
+      "position": { "x": 8, "y": 6, "w": 4, "h": 4 },
+      "display": { "ring": "55%" },
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["channel"],
+        "filters": { "subscribe": ["f-time", "f-region"] }
+      },
+      "interactions": [
+        { "on": "click", "writeFilter": "f-channel", "value": "$dimension.channel" }
       ]
     }
   ]

@@ -2,7 +2,7 @@ import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import { placeholderDimension } from './interaction';
 import { versionErrors } from './version';
-import type { Page } from './page';
+import { isChartWidget, type Page } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
 
@@ -107,7 +107,16 @@ function invariantErrors(page: Page): TypedError[] {
       }
     });
 
-    if (widget.type === 'barChart') {
+    // 饼图是单指标组件(按维度切分占比):多指标无占比语义,报错而非静默取第一个
+    if (widget.type === 'pieChart' && widget.query.metrics.length > 1) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/query/metrics`,
+        message: `饼图只支持单指标,收到 ${widget.query.metrics.length} 个`
+      });
+    }
+
+    if (isChartWidget(widget)) {
       (widget.interactions ?? []).forEach((interaction, j) => {
         if ('navigate' in interaction) {
           // 跨页下钻的页内可校验部分;目标页存在性与目标筛选器有效性属仓库知识,归 validate CLI(navigateErrors)

@@ -52,7 +52,9 @@ export const pageSchema = {
       items: {
         oneOf: [
           { $ref: '#/definitions/metricCardWidget' },
-          { $ref: '#/definitions/barChartWidget' }
+          { $ref: '#/definitions/barChartWidget' },
+          { $ref: '#/definitions/lineChartWidget' },
+          { $ref: '#/definitions/pieChartWidget' }
         ]
       }
     }
@@ -256,31 +258,96 @@ export const pageSchema = {
         }
       }
     },
+    interactions: {
+      type: 'array',
+      description: '交互声明清单:页内下钻(writeFilter)与跨页下钻(navigate)',
+      items: {
+        oneOf: [
+          { $ref: '#/definitions/writeFilterInteraction' },
+          { $ref: '#/definitions/navigateInteraction' }
+        ]
+      }
+    },
+    widgetId: {
+      type: 'string',
+      pattern: '^[a-z0-9][a-z0-9-]*$',
+      description: '组件唯一标识,页面内不可重复(校验器额外检查)'
+    },
     barChartWidget: {
       type: 'object',
-      description: '柱状图:按维度展示指标分布;点击柱条可经 interactions 页内下钻。本切片为最简形态,ECharts 化与展示配置面归切片5(#6)',
+      description: '柱状图:按维度展示指标分布;点击柱条可经 interactions 下钻',
       required: ['id', 'type', 'position', 'query'],
       additionalProperties: false,
       properties: {
-        id: {
-          type: 'string',
-          pattern: '^[a-z0-9][a-z0-9-]*$',
-          description: '组件唯一标识,页面内不可重复(校验器额外检查)'
-        },
+        id: { $ref: '#/definitions/widgetId' },
         type: { type: 'string', enum: ['barChart'] },
         title: { type: 'string', description: '组件标题,显示于卡片头部' },
         position: { $ref: '#/definitions/position' },
         query: { $ref: '#/definitions/structuredQuery' },
-        interactions: {
-          type: 'array',
-          description: '交互声明清单:页内下钻(writeFilter)与跨页下钻(navigate)',
-          items: {
-            oneOf: [
-              { $ref: '#/definitions/writeFilterInteraction' },
-              { $ref: '#/definitions/navigateInteraction' }
-            ]
+        display: {
+          type: 'object',
+          description: '柱状图展示配置(《组件分析.md》§2 定死的配置面)',
+          additionalProperties: false,
+          properties: {
+            stacked: { type: 'boolean', description: '多指标堆叠' },
+            rounded: { type: 'boolean', description: '圆角柱' },
+            horizontal: { type: 'boolean', description: '横向条形' },
+            dualAxis: { type: 'boolean', description: '双轴:第二个及之后的指标走右轴' }
           }
-        }
+        },
+        interactions: { $ref: '#/definitions/interactions' }
+      }
+    },
+    lineChartWidget: {
+      type: 'object',
+      description: '折线图:按维度(通常为时间)展示指标趋势',
+      required: ['id', 'type', 'position', 'query'],
+      additionalProperties: false,
+      properties: {
+        id: { $ref: '#/definitions/widgetId' },
+        type: { type: 'string', enum: ['lineChart'] },
+        title: { type: 'string', description: '组件标题,显示于卡片头部' },
+        position: { $ref: '#/definitions/position' },
+        query: { $ref: '#/definitions/structuredQuery' },
+        display: {
+          type: 'object',
+          description: '折线图展示配置(《组件分析.md》§2 定死的配置面)',
+          additionalProperties: false,
+          properties: {
+            smooth: { type: 'boolean', description: '平滑曲线' },
+            areaGradient: { type: 'boolean', description: '面积渐变' },
+            stacked: { type: 'boolean', description: '多指标堆叠' },
+            dualAxis: { type: 'boolean', description: '双轴:第二个及之后的指标走右轴' }
+          }
+        },
+        interactions: { $ref: '#/definitions/interactions' }
+      }
+    },
+    pieChartWidget: {
+      type: 'object',
+      description: '饼图:单指标按第一个维度切分占比',
+      required: ['id', 'type', 'position', 'query'],
+      additionalProperties: false,
+      properties: {
+        id: { $ref: '#/definitions/widgetId' },
+        type: { type: 'string', enum: ['pieChart'] },
+        title: { type: 'string', description: '组件标题,显示于卡片头部' },
+        position: { $ref: '#/definitions/position' },
+        query: { $ref: '#/definitions/structuredQuery' },
+        display: {
+          type: 'object',
+          description: '饼图展示配置(《组件分析.md》§2 定死的配置面)',
+          additionalProperties: false,
+          properties: {
+            ring: {
+              type: 'string',
+              pattern: '^\\d{1,2}%$',
+              description: "环形内半径百分比(如 '55%');缺省实心饼"
+            },
+            labelLine: { type: 'boolean', description: '引导线开关,缺省开' }
+          }
+        },
+        interactions: { $ref: '#/definitions/interactions' }
       }
     }
   }

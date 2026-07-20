@@ -81,6 +81,31 @@ function startSession(
   let disposed = false;
   let values: FilterValues = new Map();
 
+  // 会话内缓存:同一生效查询的成功结果(就绪/空)复用,筛选来回切换不重复取数;
+  // 错误不入缓存——失败该重试。会话即页面生命周期,退订即弃,无失效策略负担
+  const cache = new Map<string, DataSnapshot>();
+
+  // 并发分批:同时在途请求不超过数据服务批量上限 5(PRD「数据服务对接事实」),
+  // 超过的排队,先到先补。名额未满时任务同步启动(订阅即发查的既有时序不变)
+  const MAX_IN_FLIGHT = 5;
+  let inFlight = 0;
+  const waiters: Array<() => void> = [];
+  function withSlot(task: () => void): void {
+    if (disposed) return; // 退订即取消:不再启动任何新请求(不变式5)
+    if (inFlight < MAX_IN_FLIGHT) {
+      inFlight++;
+      task();
+    } else {
+      waiters.push(task);
+    }
+  }
+  function release(): void {
+    if (disposed) return; // 会话已作废:排队任务不再链式启动
+    const next = waiters.shift();
+    if (next) next();
+    else inFlight--;
+  }
+
   function publish(mutate: (next: Map<string, DataSnapshot>) => void) {
     const next = new Map(snapshots);
     mutate(next);
@@ -109,13 +134,30 @@ function startSession(
       groups.set(key, group);
     }
 
-    for (const { query, members } of groups.values()) {
-      void execute(query, gateway).then((snapshot) => {
+    for (const [key, { query, members }] of groups) {
+      const land = (snapshot: DataSnapshot) => {
         if (disposed) return;
         const landed = members.filter(([id, seq]) => sequences.get(id) === seq);
         if (landed.length === 0) return;
         publish((next) => {
           for (const [id] of landed) next.set(id, snapshot);
+        });
+      };
+
+      // 缓存命中同步落定:时间线仍是 loading→ready(publishLoading 在前),
+      // 视觉上会闪一帧骨架——这是不变式3 的保序代价,刻意保留
+      const cached = cache.get(key);
+      if (cached) {
+        land(cached);
+        continue;
+      }
+      withSlot(() => {
+        void execute(query, gateway).then((snapshot) => {
+          release();
+          if (snapshot.status === 'ready' || snapshot.status === 'empty') {
+            cache.set(key, snapshot);
+          }
+          land(snapshot);
         });
       });
     }
@@ -143,6 +185,7 @@ function startSession(
     current: () => snapshots,
     dispose() {
       disposed = true;
+      waiters.length = 0; // 排队中的查询一并作废,不得在退订后发出
       unsubscribeFilters?.();
     }
   };
