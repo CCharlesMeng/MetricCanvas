@@ -1,12 +1,12 @@
-import type { SpecProvider } from '@metriccanvas/runtime';
+import type { PageRepository } from '@metriccanvas/runtime';
 
 /**
- * SpecProvider 静态文件实现(一期,ADR-0004):规格来自仓库根 specs/ 目录($specs 别名)。
- * dev 模式下 Vite 监听 JSON 模块,改规格即热刷新;二期换平台 API 实现,运行时零改动。
+ * PageRepository 静态文件实现(一期,ADR-0004):页面文档来自仓库根 pages/ 目录($pages 别名)。
+ * dev 模式下 Vite 监听 JSON 模块,改页面即热刷新;二期换平台 API 实现,运行时零改动。
  */
-const modules = import.meta.glob<{ default: unknown }>('$specs/*.json');
+const modules = import.meta.glob<{ default: unknown }>('$pages/*.json');
 
-export function createStaticSpecProvider(): SpecProvider {
+export function createStaticPageRepository(): PageRepository {
   const loaders = new Map<string, () => Promise<{ default: unknown }>>();
   for (const [path, loader] of Object.entries(modules)) {
     const id = path.split('/').pop()!.replace(/\.json$/, '');
@@ -16,7 +16,7 @@ export function createStaticSpecProvider(): SpecProvider {
   return {
     async load(pageId: string): Promise<unknown> {
       const loader = loaders.get(pageId);
-      if (!loader) throw new Error(`页面规格不存在:${pageId}`);
+      if (!loader) throw new Error(`页面不存在:${pageId}`);
       return (await loader()).default;
     },
 

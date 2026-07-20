@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { specProvider } from '$lib/services';
+  import { pageRepository } from '$lib/services';
 </script>
 
 <h1>看板目录</h1>
 
-{#await specProvider.list()}
+{#await pageRepository.list()}
   <p class="muted">加载中…</p>
 {:then pages}
   {#if pages.length === 0}
-    <p class="muted">specs/ 目录还没有页面规格。</p>
+    <p class="muted">pages/ 目录还没有页面。</p>
   {:else}
     <ul class="catalog">
       {#each pages as p (p.id)}

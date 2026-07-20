@@ -1,18 +1,19 @@
 import { Ajv, type ErrorObject } from 'ajv';
-import { pageSpecSchema } from './schema';
-import type { PageSpec } from './spec';
+import { pageSchema } from './schema';
+import type { Page } from './page';
 import type { TypedError } from './errors';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
-const validateStructure = ajv.compile(pageSpecSchema);
+const validateStructure = ajv.compile(pageSchema);
 
 /**
  * 两级校验入口:结构校验(JSON Schema + 布局/唯一性不变式)。
+ * 文档进、页面出:输入是不可信的页面文档,通过后才可视为 Page(ADR-0007)。
  * 语义校验(指标/维度存在性,需 CatalogSnapshot)在切片3(#4)落地。
  */
-export function validate(spec: unknown): TypedError[] {
-  if (validateStructure(spec)) {
-    return invariantErrors(spec as unknown as PageSpec);
+export function validate(document: unknown): TypedError[] {
+  if (validateStructure(document)) {
+    return invariantErrors(document as unknown as Page);
   }
   return (validateStructure.errors ?? []).map(toTypedError);
 }
@@ -41,16 +42,16 @@ function describe(err: ErrorObject): string {
 }
 
 /** JSON Schema 表达不了的页面不变式:12 列网格越界、widget id 唯一 */
-function invariantErrors(spec: PageSpec): TypedError[] {
+function invariantErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const seen = new Set<string>();
-  spec.widgets.forEach((widget, i) => {
+  page.widgets.forEach((widget, i) => {
     const { x, w } = widget.position;
-    if (x + w > spec.layout.columns) {
+    if (x + w > page.layout.columns) {
       errors.push({
         type: 'SCHEMA_ERROR',
         path: `/widgets/${i}/position`,
-        message: `布局越界:x(${x}) + w(${w}) 超出 ${spec.layout.columns} 列网格`
+        message: `布局越界:x(${x}) + w(${w}) 超出 ${page.layout.columns} 列网格`
       });
     }
     if (seen.has(widget.id)) {

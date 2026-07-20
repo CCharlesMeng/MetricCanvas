@@ -1,7 +1,7 @@
 <script lang="ts" module>
   import type { MetricCardDisplay } from '@metriccanvas/page';
 
-  /** 指标卡的展示配置 = 规格 display + 运行时派生的取值字段 */
+  /** 指标卡的展示配置 = 页面文档 display + 运行时派生的取值字段 */
   export interface MetricCardConfig extends MetricCardDisplay {
     /** 数据快照中承载指标值的字段(运行时从结构化查询派生) */
     metric: string;

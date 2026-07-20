@@ -1,7 +1,7 @@
-export * from './spec';
+export * from './page';
 export * from './query';
 export * from './snapshot';
 export * from './catalog';
 export * from './errors';
-export { pageSpecSchema } from './schema';
+export { pageSchema } from './schema';
 export { validate } from './validate';

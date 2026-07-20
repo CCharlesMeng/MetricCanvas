@@ -1,25 +1,25 @@
 /**
- * 页面规格 JSON Schema(DSL v1.0,切片1 范围:metricCard 单组件)。
+ * 看板页面文档的 JSON Schema(DSL v1.0,切片1 范围:metricCard 单组件)。
  * description 字段同时服务两个消费方:校验错误消息与编辑器悬浮提示(User Story 5)。
  */
-export const pageSpecSchema = {
+export const pageSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
-  $id: 'https://metriccanvas/page-spec/v1.0',
-  title: '页面规格',
-  description: '描述一个看板页面的结构化声明式文档,平台的核心资产',
+  $id: 'https://metriccanvas/page/v1.0',
+  title: '看板页面',
+  description: '平台的聚合根与核心资产,以严格声明式文档形式存在',
   type: 'object',
-  required: ['specVersion', 'id', 'title', 'layout', 'widgets'],
+  required: ['formatVersion', 'id', 'title', 'layout', 'widgets'],
   additionalProperties: false,
   properties: {
-    specVersion: {
+    formatVersion: {
       type: 'string',
       enum: ['1.0'],
-      description: 'DSL 大版本。运行时兼容 N/N-1 两个大版本(ADR 见 PRD)'
+      description: '文档格式(DSL)大版本。运行时兼容 N/N-1 两个大版本(ADR 见 PRD)'
     },
     id: {
       type: 'string',
       pattern: '^[a-z0-9][a-z0-9-]*$',
-      description: '页面唯一标识,小写字母/数字/连字符;须与规格文件名一致'
+      description: '页面唯一标识,小写字母/数字/连字符;须与页面文件名一致'
     },
     title: { type: 'string', minLength: 1, description: '页面标题,显示于页头与看板目录' },
     description: { type: 'string', description: '页面说明,显示于看板目录' },
