@@ -1,0 +1,44 @@
+# METRIC_GAP 需求通道(docs/solution.md §7 第 4 条):validate CLI / CI 报 METRIC_GAP 时按本模板开 issue。
+name: 指标缺口(METRIC_GAP)
+description: 业务想要、数据服务没有的指标——这是需求信号,不是 bug;用于同步数据服务团队补齐指标。
+title: '[metric-gap] '
+labels: ['metric-gap']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        `METRIC_GAP` 是需求与供给的差集:看板页面引用了元数据快照中不存在的指标。
+        请填写以下信息,供数据服务团队评估落库。
+  - type: input
+    id: metric-name
+    attributes:
+      label: 指标名
+      description: 页面文档中引用的指标标识(validate 输出的 METRIC_GAP 条目)
+      placeholder: 例:gmv_refund
+    validations:
+      required: true
+  - type: textarea
+    id: business-context
+    attributes:
+      label: 业务语境
+      description: 哪个页面、哪个 widget 要它,口径预期是什么(计算逻辑、时间粒度、同环比等)
+      placeholder: |
+        例:销售总览页(sales-overview)的退款趋势折线图需要按日粒度的退款 GMV,口径为已完成退款金额。
+    validations:
+      required: true
+  - type: input
+    id: page-path
+    attributes:
+      label: 来源页面文档路径
+      description: 引用该指标的页面文档在仓库中的路径
+      placeholder: 例:pages/sales-overview.json
+    validations:
+      required: true
+  - type: input
+    id: expected-date
+    attributes:
+      label: 期望时间
+      description: 业务期望该指标可用的时间
+      placeholder: 例:2026-08-15
+    validations:
+      required: false
