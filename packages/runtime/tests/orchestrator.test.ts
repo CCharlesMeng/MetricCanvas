@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery, Row, Widget } from '@metriccanvas/page';
+import type { DataWidget, EffectiveQuery, Row } from '@metriccanvas/page';
 import { orchestrate, type PageSnapshots } from '../src/orchestrator';
 import { createFilterState, type FilterValue } from '../src/filter-state';
 import type { DataGateway } from '../src/ports';
@@ -36,7 +36,7 @@ function deferredGateway() {
   return { pending, gateway };
 }
 
-function metricCard(id: string, subscribe?: string[]): Widget {
+function metricCard(id: string, subscribe?: string[]): DataWidget {
   return {
     id,
     type: 'metricCard',
@@ -56,7 +56,7 @@ function collect(stream: ReturnType<typeof orchestrate>) {
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
-function metricCardFor(id: string, metric: string): Widget {
+function metricCardFor(id: string, metric: string): DataWidget {
   return {
     id,
     type: 'metricCard',
@@ -276,7 +276,7 @@ describe('查询编排器:筛选变更与差量重查', () => {
 });
 
 /** 表格 widget:默认视图 = 首页 pageSize 行 */
-function tableWidget(id: string, pageSize: number, subscribe?: string[]): Widget {
+function tableWidget(id: string, pageSize: number, subscribe?: string[]): DataWidget {
   return {
     id,
     type: 'table',

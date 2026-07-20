@@ -10,7 +10,7 @@
     "migrate": "tsx packages/page/src/migrate-cli.ts",
     "sync-catalog": "tsx packages/data-gateway/src/sync-catalog-cli.ts",
     "sim": "tsx tools/data-service-sim/src/server.ts",
-    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json && tsc --noEmit -p tools/data-service-sim",
+    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json && tsc --noEmit -p packages/widgets/tsconfig.test.json && tsc --noEmit -p tools/data-service-sim",
     "check": "pnpm typecheck && pnpm --filter canvas check"
   },
   "devDependencies": {

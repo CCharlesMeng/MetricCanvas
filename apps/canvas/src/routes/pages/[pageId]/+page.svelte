@@ -3,6 +3,7 @@
   import { goto, replaceState } from '$app/navigation';
   import {
     isChartWidget,
+    isDataWidget,
     placeholderDimension,
     validate,
     type ChartWidget,
@@ -12,6 +13,7 @@
     type Page,
     type Row,
     type TableWidget,
+    type TextLink,
     type TypedError,
     type Widget
   } from '@metriccanvas/page';
@@ -30,9 +32,11 @@
     BarChart,
     DimensionFilter,
     LineChart,
+    MapChart,
     MetricCard,
     PieChart,
     Table,
+    TextBlock,
     TimeRangeFilter,
     WidgetHost,
     type TableHeaderFilterValue,
@@ -141,7 +145,8 @@
     tableViews = initialViews;
 
     pageState = { phase: 'ready', page: loaded };
-    const pageStream = orchestrate(loaded.widgets, dataGateway, state);
+    // 文本组件无查询、不产生数据快照:只有数据 widget 进查询编排
+    const pageStream = orchestrate(loaded.widgets.filter(isDataWidget), dataGateway, state);
     stream = pageStream;
     disposers.push(
       pageStream.subscribe((next) => {
@@ -333,6 +338,19 @@
       });
     }
   }
+
+  /**
+   * 文本带参链接 → 目标页 href:与跨页下钻(drillThroughSearch)同一 URL 序列化机制,
+   * carryFilters 取筛选状态当前值;文本无点击行上下文,故无 setFilters(传空行)。
+   */
+  function textLinkHref(link: TextLink): string {
+    const search = drillThroughSearch(
+      { page: link.page, carryFilters: link.carryFilters },
+      filterValues,
+      {}
+    );
+    return `/pages/${link.page}${search ? `?${search}` : ''}`;
+  }
 </script>
 
 {#if pageState.phase === 'loading'}
@@ -384,14 +402,25 @@
 
   <div class="grid" style="grid-template-columns: repeat({pageState.page.layout.columns}, 1fr);">
     {#each pageState.page.widgets as widget (widget.id)}
-      {@const raw = snapshots.get(widget.id) ?? { status: 'loading' } as DataSnapshot}
-      {@const snapshot = widget.type === 'table' ? tableSnapshot(raw) : raw}
       <section
         class="cell"
         style="grid-column: {widget.position.x + 1} / span {widget.position.w};
                grid-row: {widget.position.y + 1} / span {widget.position.h};"
       >
-        {#if widget.title}<h2 class="cell-title">{widget.title}</h2>{/if}
+        {#if widget.type !== 'text' && widget.title}<h2 class="cell-title">{widget.title}</h2>{/if}
+        {#if widget.type === 'text'}
+          <!-- 文本无查询、无数据快照,不进 WidgetHost;链接 href 随筛选状态实时组装 -->
+          <TextBlock
+            heading={widget.heading}
+            body={widget.body}
+            links={(widget.links ?? []).map((link) => ({
+              label: link.label,
+              href: textLinkHref(link)
+            }))}
+          />
+        {:else}
+        {@const raw = snapshots.get(widget.id) ?? { status: 'loading' } as DataSnapshot}
+        {@const snapshot = widget.type === 'table' ? tableSnapshot(raw) : raw}
         <!-- 快照态(骨架/错误/空)由 WidgetHost 统一呈现,组件只接就绪快照 -->
         <WidgetHost {snapshot}>
           {#snippet ready(readySnapshot)}
@@ -445,9 +474,20 @@
                 onsort={(sort) => handleTableSort(widget, sort)}
                 onheaderfilter={(field, value) => handleTableHeaderFilter(widget, field, value)}
               />
+            {:else if widget.type === 'mapChart'}
+              <MapChart
+                snapshot={readySnapshot}
+                config={{
+                  metric: widget.query.metrics[0],
+                  dimension: widget.query.dimensions?.[0] ?? '',
+                  display: widget.display
+                }}
+                onregionclick={onclick}
+              />
             {/if}
           {/snippet}
         </WidgetHost>
+        {/if}
       </section>
     {/each}
   </div>

@@ -2,7 +2,7 @@ import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import { placeholderDimension } from './interaction';
 import { versionErrors } from './version';
-import { isChartWidget, type Page, type TableWidget } from './page';
+import { isChartWidget, isDataWidget, type ChartWidget, type Page, type TableWidget } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
 
@@ -97,6 +97,22 @@ function invariantErrors(page: Page): TypedError[] {
     }
     seen.add(widget.id);
 
+    // 文本组件无查询:只校验链接 carryFilters 的页内引用完整性(目标页存在性归 CLI 跨文档校验)
+    if (widget.type === 'text') {
+      (widget.links ?? []).forEach((link, j) => {
+        (link.carryFilters ?? []).forEach((filterId, k) => {
+          if (!filterIds.has(filterId)) {
+            errors.push({
+              type: 'SCHEMA_ERROR',
+              path: `/widgets/${i}/links/${j}/carryFilters/${k}`,
+              message: `carryFilters 引用了本页未声明的筛选器:${filterId}`
+            });
+          }
+        });
+      });
+      return;
+    }
+
     (widget.query.filters?.subscribe ?? []).forEach((filterId, j) => {
       if (!filterIds.has(filterId)) {
         errors.push({
@@ -107,17 +123,34 @@ function invariantErrors(page: Page): TypedError[] {
       }
     });
 
-    // 饼图是单指标组件(按维度切分占比):多指标无占比语义,报错而非静默取第一个
-    if (widget.type === 'pieChart' && widget.query.metrics.length > 1) {
+    // 饼图/地图是单指标组件(占比切分/区域着色):多指标无语义,报错而非静默取第一个
+    if ((widget.type === 'pieChart' || widget.type === 'mapChart') && widget.query.metrics.length > 1) {
       errors.push({
         type: 'SCHEMA_ERROR',
         path: `/widgets/${i}/query/metrics`,
-        message: `饼图只支持单指标,收到 ${widget.query.metrics.length} 个`
+        message: `${widget.type === 'pieChart' ? '饼图' : '地图'}只支持单指标,收到 ${widget.query.metrics.length} 个`
       });
     }
 
     if (widget.type === 'table') {
       errors.push(...tableErrors(widget, i));
+    }
+
+    // nameMap 多个维度值映射同一底图区域名:着色与点击回写相互覆盖,报错而非静默取后写者
+    if (widget.type === 'mapChart') {
+      const mappedBy = new Map<string, string>();
+      for (const [from, to] of Object.entries(widget.display.nameMap ?? {})) {
+        const prior = mappedBy.get(to);
+        if (prior !== undefined) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/display/nameMap`,
+            message: `nameMap 目标值重复:维度值 ${prior} 与 ${from} 都映射到底图区域名 ${to}`
+          });
+        } else {
+          mappedBy.set(to, from);
+        }
+      }
     }
 
     if (isChartWidget(widget)) {
@@ -222,7 +255,7 @@ function tableErrors(widget: TableWidget, i: number): TypedError[] {
 
 /** 取值占位引用的维度必须在本组件查询的 dimensions 中(writeFilter 与 navigate.setFilters 共用) */
 function placeholderNotQueriedError(
-  widget: Page['widgets'][number],
+  widget: ChartWidget,
   placeholder: string,
   path: string
 ): TypedError | null {
@@ -246,6 +279,8 @@ function semanticErrors(page: Page, catalog: CatalogSnapshot): TypedError[] {
   const errors: TypedError[] = [];
 
   page.widgets.forEach((widget, i) => {
+    // 文本组件无查询,不参与语义校验
+    if (!isDataWidget(widget)) return;
     const queryPath = `/widgets/${i}/query`;
     // 快照中存在的指标才参与维度/聚合的组合校验,缺失指标只报一次 METRIC_GAP
     const knownMetrics = widget.query.metrics.flatMap((code) => metricsByCode.get(code) ?? []);

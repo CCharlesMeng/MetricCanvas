@@ -39,6 +39,12 @@
       "sampleValues": ["线上", "线下"]
     },
     {
+      "code": "city",
+      "name": "城市",
+      "cardinality": 5,
+      "sampleValues": ["华东/上海", "华东/杭州", "华北/北京", "华南/广州", "华南/深圳"]
+    },
+    {
       "code": "mtime",
       "name": "统计时间",
       "cardinality": 5,

@@ -113,6 +113,82 @@ describe('navigateErrors:跨文档校验(由 validate CLI 组合调用)', () => 
     expect(navigateErrors(page, knownIds, pagesById)).toEqual([]);
   });
 
+  /** 构造带一个文本组件的源页面(文本带参链接与 navigate 共用跨文档校验) */
+  function textPage(links: Array<{ label: string; page: string; carryFilters?: string[] }>): Page {
+    return makePage('overview', [
+      { id: 'f-time', type: 'timeRange' },
+      { id: 'f-region', type: 'dimension', dimension: 'region' }
+    ], [
+      {
+        id: 'w-intro',
+        type: 'text',
+        position: { x: 0, y: 0, w: 12, h: 1 },
+        body: '说明文案',
+        links
+      }
+    ]);
+  }
+
+  it('文本链接目标页存在且 carryFilters 命中目标页同名筛选器,无错误', () => {
+    const page = textPage([
+      { label: '查看明细', page: 'sales-detail', carryFilters: ['f-time', 'f-region'] }
+    ]);
+    expect(navigateErrors(page, knownIds, pagesById)).toEqual([]);
+  });
+
+  it('文本链接指向不存在的页面,报 SCHEMA_ERROR 定位到 links/page', () => {
+    const page = textPage([{ label: '查看明细', page: 'no-such-page' }]);
+    const errors = navigateErrors(page, knownIds, pagesById);
+    expect(errors).toEqual([
+      expect.objectContaining({
+        type: 'SCHEMA_ERROR',
+        path: '/widgets/0/links/0/page'
+      })
+    ]);
+    expect(errors[0].message).toContain('no-such-page');
+  });
+
+  it('文本链接 carryFilters 的 id 在目标页没有同名筛选器,报 SCHEMA_ERROR 定位到该项', () => {
+    const page = textPage([
+      { label: '查看明细', page: 'sales-detail', carryFilters: ['f-time', 'f-region'] }
+    ]);
+    const detailWithoutRegion = makePage('sales-detail', [{ id: 'f-time', type: 'timeRange' }]);
+    const errors = navigateErrors(page, knownIds, new Map([['sales-detail', detailWithoutRegion]]));
+    expect(errors).toEqual([
+      expect.objectContaining({
+        type: 'SCHEMA_ERROR',
+        path: '/widgets/0/links/0/carryFilters/1'
+      })
+    ]);
+    expect(errors[0].message).toContain('f-region');
+  });
+
+  it('文本链接目标页在清单中但文档不可用,只做存在性校验、不误报筛选器错误', () => {
+    const page = textPage([
+      { label: '查看明细', page: 'broken-page', carryFilters: ['f-anything'] }
+    ]);
+    expect(navigateErrors(page, knownIds, pagesById)).toEqual([]);
+  });
+
+  it('地图组件的 navigate 交互沿用图表类跨文档校验规则', () => {
+    const page = makePage('overview', [], [
+      {
+        id: 'w-map',
+        type: 'mapChart',
+        position: { x: 0, y: 0, w: 8, h: 5 },
+        display: { map: 'china' },
+        query: { metrics: ['gmv'], dimensions: ['region'] },
+        interactions: [{ on: 'click', navigate: { page: 'no-such-page' } }]
+      }
+    ]);
+    expect(navigateErrors(page, knownIds, pagesById)).toEqual([
+      expect.objectContaining({
+        type: 'SCHEMA_ERROR',
+        path: '/widgets/0/interactions/0/navigate/page'
+      })
+    ]);
+  });
+
   it('页内下钻交互(writeFilter)不参与跨文档校验', () => {
     const page = makePage('overview', [{ id: 'f-region', type: 'dimension', dimension: 'region' }], [
       {

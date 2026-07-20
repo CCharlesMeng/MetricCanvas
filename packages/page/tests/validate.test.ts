@@ -27,6 +27,11 @@ import tableColumnNotInQuery from '../fixtures/invalid/table-column-not-in-query
 import tableFilterableMetricColumn from '../fixtures/invalid/table-filterable-metric-column.json';
 import tableMultipleMetrics from '../fixtures/invalid/table-multiple-metrics.json';
 import tableDuplicateColumnField from '../fixtures/invalid/table-duplicate-column-field.json';
+import withMapAndText from '../fixtures/valid/with-map-and-text.json';
+import mapMultipleMetrics from '../fixtures/invalid/map-multiple-metrics.json';
+import mapMissingBasemap from '../fixtures/invalid/map-missing-basemap.json';
+import mapNameMapDuplicateTarget from '../fixtures/invalid/map-namemap-duplicate-target.json';
+import textLinkCarryUnknownFilter from '../fixtures/invalid/text-link-carry-unknown-filter.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
   it('合法的最小页面文档通过,无错误', () => {
@@ -43,6 +48,10 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
 
   it('带表格 widget(列定义含宽度/固定列/可排序/表头筛选两模式)的页面文档通过,无错误', () => {
     expect(validate(withTable)).toEqual([]);
+  });
+
+  it('带地图(china/world 底图、散点、nameMap)与文本(文案 + 带参链接)组件的页面文档通过,无错误', () => {
+    expect(validate(withMapAndText)).toEqual([]);
   });
 
   const invalidCases: Array<{ name: string; document: unknown; path: string }> = [
@@ -123,6 +132,26 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: '表格列 field 重复,定位到后一个',
       document: tableDuplicateColumnField,
       path: '/widgets/0/columns/1/field'
+    },
+    {
+      name: '地图声明多指标(区域着色无多指标语义,不静默取第一个)',
+      document: mapMultipleMetrics,
+      path: '/widgets/0/query/metrics'
+    },
+    {
+      name: '地图缺少必选的底图声明(display.map)',
+      document: mapMissingBasemap,
+      path: '/widgets/0/display/map'
+    },
+    {
+      name: 'nameMap 多个维度值映射到同一底图区域名(着色与点击回写相互覆盖,不静默取后写者)',
+      document: mapNameMapDuplicateTarget,
+      path: '/widgets/0/display/nameMap'
+    },
+    {
+      name: '文本带参链接的 carryFilters 引用了本页未声明的筛选器',
+      document: textLinkCarryUnknownFilter,
+      path: '/widgets/0/links/0/carryFilters/0'
     }
   ];
 
