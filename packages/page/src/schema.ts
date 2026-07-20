@@ -54,7 +54,8 @@ export const pageSchema = {
           { $ref: '#/definitions/metricCardWidget' },
           { $ref: '#/definitions/barChartWidget' },
           { $ref: '#/definitions/lineChartWidget' },
-          { $ref: '#/definitions/pieChartWidget' }
+          { $ref: '#/definitions/pieChartWidget' },
+          { $ref: '#/definitions/tableWidget' }
         ]
       }
     }
@@ -348,6 +349,64 @@ export const pageSchema = {
           }
         },
         interactions: { $ref: '#/definitions/interactions' }
+      }
+    },
+    tableColumn: {
+      type: 'object',
+      description: '表格列定义:field 引用查询的维度或指标(校验器额外检查),展示与交互能力显式建模',
+      required: ['field'],
+      additionalProperties: false,
+      properties: {
+        field: {
+          type: 'string',
+          minLength: 1,
+          description: '数据快照中的行字段,须为本组件查询的维度或指标 code(校验器额外检查)'
+        },
+        title: { type: 'string', description: '列头文案,缺省显示 field' },
+        width: { type: 'integer', minimum: 1, description: '列宽(px);缺省按内容自适应' },
+        fixed: {
+          type: 'string',
+          enum: ['left', 'right'],
+          description: '固定列:横向滚动时钉在左/右侧'
+        },
+        sortable: { type: 'boolean', description: '可排序列:排序经运行时映射 @order(多列优先级)' },
+        filterable: {
+          type: 'object',
+          description: '表头筛选(widget 局部视图状态,不进页面筛选状态);列须为查询维度(校验器额外检查)',
+          required: ['mode'],
+          additionalProperties: false,
+          properties: {
+            mode: {
+              type: 'string',
+              enum: ['select', 'dateRange'],
+              description: '筛选模式:select=下拉多选(候选项经数据网关实时查询)| dateRange=日期范围'
+            }
+          }
+        }
+      }
+    },
+    tableWidget: {
+      type: 'object',
+      description: '表格:按列定义展示明细行;分页为盲翻设计(数据服务响应不返回总条数,不显示总页数)',
+      required: ['id', 'type', 'position', 'query', 'columns'],
+      additionalProperties: false,
+      properties: {
+        id: { $ref: '#/definitions/widgetId' },
+        type: { type: 'string', enum: ['table'] },
+        title: { type: 'string', description: '组件标题,显示于卡片头部' },
+        position: { $ref: '#/definitions/position' },
+        query: { $ref: '#/definitions/structuredQuery' },
+        columns: {
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/definitions/tableColumn' },
+          description: '列定义清单,列序即展示序;field 页内不可重复(校验器额外检查)'
+        },
+        pageSize: {
+          type: 'integer',
+          minimum: 1,
+          description: '每页行数,缺省 20;分页经运行时映射 @limit/@offset'
+        }
       }
     }
   }

@@ -72,6 +72,24 @@
       "interactions": [
         { "on": "click", "writeFilter": "f-channel", "value": "$dimension.channel" }
       ]
+    },
+    {
+      "id": "w-detail-table",
+      "type": "table",
+      "title": "销售明细(盲翻分页,列头可排序/表头筛选)",
+      "position": { "x": 0, "y": 10, "w": 12, "h": 5 },
+      "pageSize": 5,
+      "columns": [
+        { "field": "mtime", "title": "日期", "width": 130, "fixed": "left", "sortable": true, "filterable": { "mode": "dateRange" } },
+        { "field": "region", "title": "区域", "width": 110, "sortable": true, "filterable": { "mode": "select" } },
+        { "field": "channel", "title": "渠道", "width": 110, "filterable": { "mode": "select" } },
+        { "field": "gmv", "title": "GMV", "width": 130, "fixed": "right", "sortable": true }
+      ],
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["mtime", "region", "channel"],
+        "filters": { "subscribe": ["f-time", "f-region", "f-channel"] }
+      }
     }
   ]
 }

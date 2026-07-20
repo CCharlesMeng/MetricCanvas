@@ -121,6 +121,39 @@ describe('mock 适配器:按元数据快照造形状正确的假数据', () => {
     expect(await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] })).toEqual(base);
   });
 
+  it('遵守 orderBy:按维度值排序(盲翻在 mock 模式可验的前提;码位序手算:东<北<南)', async () => {
+    const rows = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [],
+      orderBy: [{ field: 'region', direction: 'desc' }]
+    });
+    expect(rows.map((r) => r.region)).toEqual(['华南', '华北', '华东']);
+  });
+
+  it('遵守 limit/offset:offset 跳行、limit 截断,行序与不分页时一致', async () => {
+    const all = await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] });
+    const paged = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [],
+      limit: 2,
+      offset: 1
+    });
+    expect(paged).toEqual(all.slice(1, 3));
+  });
+
+  it('遵守指标列排序:按造出的 gmv 数值降序', async () => {
+    const all = await gateway.fetchData({ metrics: ['gmv'], dimensions: ['region'], conditions: [] });
+    const sorted = await gateway.fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [],
+      orderBy: [{ field: 'gmv', direction: 'desc' }]
+    });
+    expect(sorted.map((r) => r.gmv)).toEqual(all.map((r) => Number(r.gmv)).sort((a, b) => b - a));
+  });
+
   it('fetchDimensionValues:样例值优先、不足基数按 code 补造;快照缺失该维度时造 3 个', async () => {
     expect(await gateway.fetchDimensionValues('region')).toEqual(['华东', '华北', '华南']);
     expect(await gateway.fetchDimensionValues('channel')).toEqual(['channel-1', 'channel-2']);

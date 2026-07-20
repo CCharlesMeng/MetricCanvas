@@ -4,6 +4,7 @@ import { validate } from '../src/validate';
 import minimal from '../fixtures/valid/minimal.json';
 import withFilters from '../fixtures/valid/with-filters.json';
 import withNavigate from '../fixtures/valid/with-navigate.json';
+import withTable from '../fixtures/valid/with-table.json';
 import missingFormatVersion from '../fixtures/invalid/missing-format-version.json';
 import misspelledPosition from '../fixtures/invalid/misspelled-position.json';
 import wrongTypeWidth from '../fixtures/invalid/wrong-type-width.json';
@@ -20,6 +21,12 @@ import navigateMissingPage from '../fixtures/invalid/navigate-missing-page.json'
 import navigateCarryUnknownFilter from '../fixtures/invalid/navigate-carry-unknown-filter.json';
 import navigateSetDimensionNotQueried from '../fixtures/invalid/navigate-set-dimension-not-queried.json';
 import pieMultipleMetrics from '../fixtures/invalid/pie-multiple-metrics.json';
+import tableFilterableMissingMode from '../fixtures/invalid/table-filterable-missing-mode.json';
+import tableColumnFieldEmpty from '../fixtures/invalid/table-column-field-empty.json';
+import tableColumnNotInQuery from '../fixtures/invalid/table-column-not-in-query.json';
+import tableFilterableMetricColumn from '../fixtures/invalid/table-filterable-metric-column.json';
+import tableMultipleMetrics from '../fixtures/invalid/table-multiple-metrics.json';
+import tableDuplicateColumnField from '../fixtures/invalid/table-duplicate-column-field.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
   it('合法的最小页面文档通过,无错误', () => {
@@ -32,6 +39,10 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
 
   it('带 navigate 跨页下钻声明的页面文档通过,无错误(目标页存在性属 CLI 层跨文档校验)', () => {
     expect(validate(withNavigate)).toEqual([]);
+  });
+
+  it('带表格 widget(列定义含宽度/固定列/可排序/表头筛选两模式)的页面文档通过,无错误', () => {
+    expect(validate(withTable)).toEqual([]);
   });
 
   const invalidCases: Array<{ name: string; document: unknown; path: string }> = [
@@ -82,6 +93,36 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
       name: '饼图声明多指标(占比无多指标语义,不静默取第一个)',
       document: pieMultipleMetrics,
       path: '/widgets/0/query/metrics'
+    },
+    {
+      name: '表格列 filterable 缺少表头筛选模式 mode',
+      document: tableFilterableMissingMode,
+      path: '/widgets/0/columns/0/filterable/mode'
+    },
+    {
+      name: '表格列 field 为空串',
+      document: tableColumnFieldEmpty,
+      path: '/widgets/0/columns/0/field'
+    },
+    {
+      name: '表格列 field 未出现在查询的 dimensions/metrics 中(该列必然无数据)',
+      document: tableColumnNotInQuery,
+      path: '/widgets/0/columns/1/field'
+    },
+    {
+      name: '表头筛选列的 field 不是查询维度(指标值筛选无 @where 语义)',
+      document: tableFilterableMetricColumn,
+      path: '/widgets/0/columns/1/filterable'
+    },
+    {
+      name: '表格声明多指标(行式指标表下多指标透视与 @limit/@offset 行级分页语义冲突)',
+      document: tableMultipleMetrics,
+      path: '/widgets/0/query/metrics'
+    },
+    {
+      name: '表格列 field 重复,定位到后一个',
+      document: tableDuplicateColumnField,
+      path: '/widgets/0/columns/1/field'
     }
   ];
 

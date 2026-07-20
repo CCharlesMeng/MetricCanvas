@@ -4,6 +4,7 @@ import type {
   CatalogMetric,
   EffectiveQuery,
   FilterCondition,
+  OrderByRule,
   Row
 } from '@metriccanvas/page';
 import type { DataGateway } from '@metriccanvas/runtime';
@@ -32,7 +33,7 @@ export function createMockGateway(options: MockGatewayOptions = {}): DataGateway
       const dimensions = query.dimensions ?? [];
       const combos = dimensionCombos(dimensions, query.conditions, catalog);
       const context = contextKey(query, dimensions);
-      return combos.map((combo) => {
+      const rows = combos.map((combo) => {
         const row: Row = { ...combo };
         for (const metric of query.metrics) {
           const seed = metric + JSON.stringify(combo) + context;
@@ -40,6 +41,9 @@ export function createMockGateway(options: MockGatewayOptions = {}): DataGateway
         }
         return row;
       });
+      // 与真实适配器同样遵守 orderBy 与 limit/offset(否则盲翻分页在 mock 模式不可验:
+      // 编排器多取一行的探测依赖网关忠实截断)
+      return paginate(sortRows(rows, query.orderBy ?? []), query.limit, query.offset);
     },
 
     async fetchDimensionValues(dimension: string): Promise<string[]> {
@@ -83,6 +87,25 @@ function contextKey(query: EffectiveQuery, dimensions: string[]): string {
   );
   if (external.length === 0 && !query.timeRange) return '';
   return JSON.stringify({ conditions: external, timeRange: query.timeRange ?? null });
+}
+
+/** 多列排序:数组序即优先级,与仿真的 @order 语义一致(值按 < / > 直接比较) */
+function sortRows(rows: Row[], orderBy: OrderByRule[]): Row[] {
+  if (orderBy.length === 0) return rows;
+  return [...rows].sort((a, b) => {
+    for (const { field, direction } of orderBy) {
+      const left = a[field] ?? '';
+      const right = b[field] ?? '';
+      const cmp = left < right ? -1 : left > right ? 1 : 0;
+      if (cmp !== 0) return direction === 'desc' ? -cmp : cmp;
+    }
+    return 0;
+  });
+}
+
+function paginate(rows: Row[], limit?: number, offset?: number): Row[] {
+  const start = offset ?? 0;
+  return rows.slice(start, limit !== undefined ? start + limit : undefined);
 }
 
 /** 维度枚举值:优先快照样例值,不足基数时按 code 补造;快照缺失该维度时造 3 个 */

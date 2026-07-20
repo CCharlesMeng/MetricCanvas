@@ -102,7 +102,8 @@ export class DataServiceError extends Error {
 /**
  * 生效查询 → apiQuery(指标行式表):
  * 指标集合进 metric_code 过滤,维度做分组键,聚合走 *_sum 保留字段(默认)或 @function;
- * conditions 与 timeRange 拼进 @where(操作符白名单,值禁单引号防注入)。
+ * conditions 与 timeRange 拼进 @where(操作符白名单,值禁单引号防注入);
+ * 分页进全局 @limit/@offset,排序按数组序映射 @order(type,priority) 挂到对应字段。
  * 【假设,#3 核对】granularity 不参与翻译:时间粒度在数据服务定义期固定(§2.3.4),
  * DSL granularity → 预定义服务的映射表随元数据快照落地。
  */
@@ -126,11 +127,58 @@ export function translateQuery(
   if (!['sum', 'avg', 'count'].includes(aggregation)) {
     throw new Error(`聚合方式不在白名单(sum/avg/count):${aggregation}`);
   }
+
+  // 行式指标表下,一条透视行 = 每指标一条原始行:@limit/@offset 的行级分页会把
+  // 多指标的透视行切开,盲翻语义不成立——单指标时两者一一对应,故分页限单指标
+  // (page 校验器对 table widget 有同款不变式,这里是运行时最后防线)
+  if ((query.limit !== undefined || query.offset !== undefined) && query.metrics.length > 1) {
+    throw new Error(`分页查询限单指标(行式指标表的透视行会被 @limit 切开),收到 ${query.metrics.length} 个`);
+  }
+
+  // 排序:数组序即优先级(1 起);维度列挂本列,指标列挂聚合值字段
+  const orderOf = new Map<string, string>();
+  (query.orderBy ?? []).forEach((rule, index) => {
+    if (rule.direction !== 'asc' && rule.direction !== 'desc') {
+      throw new Error(`排序方向须为 asc/desc:${String(rule.direction)}`);
+    }
+    if (orderOf.has(rule.field)) throw new Error(`排序字段重复:${rule.field}`);
+    orderOf.set(rule.field, ` @order(type:"${rule.direction}",priority:${index + 1})`);
+  });
+
   const valueField =
     aggregation === 'sum' ? 'metric_value_sum' : `metric_value @function(value:"${aggregation}")`;
-  const fields = [...(query.dimensions ?? []).map(assertColumn), 'metric_code', valueField];
+  const fields = [
+    ...(query.dimensions ?? []).map((code) => assertColumn(code) + takeOrder(orderOf, code)),
+    'metric_code',
+    // 指标列的排序作用于聚合值字段;单指标之外的场景已被上方分页约束与下方兜底拦住
+    valueField + (query.metrics.length === 1 ? takeOrder(orderOf, query.metrics[0]) : '')
+  ];
+  if (orderOf.size > 0) {
+    throw new Error(`排序字段不在查询的 dimensions/metrics 中:${[...orderOf.keys()].join('、')}`);
+  }
 
-  return `{query{${assertColumn(options.serviceCode)} @where(value:"${conditions.join(' and ')}"){${fields.join(' ')}}}}`;
+  const globals = [
+    ...(query.limit !== undefined ? [`@limit(value:${assertPageNumber('limit', query.limit)})`] : []),
+    ...(query.offset !== undefined ? [`@offset(value:${assertPageNumber('offset', query.offset)})`] : [])
+  ];
+  const globalPart = globals.length > 0 ? ` ${globals.join(' ')}` : '';
+
+  return `{query${globalPart}{${assertColumn(options.serviceCode)} @where(value:"${conditions.join(' and ')}"){${fields.join(' ')}}}}`;
+}
+
+/** 取走某字段的 @order 指令(取走后剩余即"引用了查询外字段"的排序,一律拒绝) */
+function takeOrder(orderOf: Map<string, string>, field: string): string {
+  const directive = orderOf.get(field) ?? '';
+  orderOf.delete(field);
+  return directive;
+}
+
+/** @limit/@offset 的值直接内插 apiQuery,与其余注入面同等设防:须非负整数 */
+function assertPageNumber(name: string, value: number): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error(`${name} 须为非负整数:${value}`);
+  }
+  return value;
 }
 
 /** @where 操作符白名单(eq/in/between),生成类 SQL 条件;白名单外与含引号的值一律拒绝 */

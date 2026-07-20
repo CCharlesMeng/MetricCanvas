@@ -111,7 +111,42 @@ export interface PieChartDisplay {
   labelLine?: boolean;
 }
 
-export type Widget = MetricCardWidget | BarChartWidget | LineChartWidget | PieChartWidget;
+/** 一期组件集之一:表格(存量使用频率最高的重交互组件,《组件分析.md》§1.1) */
+export interface TableWidget {
+  id: string;
+  type: 'table';
+  title?: string;
+  position: WidgetPosition;
+  query: StructuredQuery;
+  /** 列定义清单,列序即展示序 */
+  columns: TableColumn[];
+  /** 每页行数,缺省 20;分页经运行时映射 @limit/@offset,盲翻设计(响应不返回总条数) */
+  pageSize?: number;
+}
+
+/** 表格列定义:field 引用查询的维度或指标,展示与交互能力显式建模 */
+export interface TableColumn {
+  /** 数据快照中的行字段,须为本组件查询的维度或指标 code */
+  field: string;
+  /** 列头文案,缺省显示 field */
+  title?: string;
+  /** 列宽(px);缺省按内容自适应 */
+  width?: number;
+  /** 固定列:横向滚动时钉在左/右侧 */
+  fixed?: 'left' | 'right';
+  /** 可排序列:排序经运行时映射 @order(多列优先级) */
+  sortable?: boolean;
+  /** 表头筛选(widget 局部视图状态,不进页面筛选状态);列须为查询维度 */
+  filterable?: TableHeaderFilter;
+}
+
+/** 表头筛选声明:对应存量 ti-head-filter 的两种真实用法 */
+export interface TableHeaderFilter {
+  /** select=下拉多选(候选项经数据网关实时查询)| dateRange=日期范围 */
+  mode: 'select' | 'dateRange';
+}
+
+export type Widget = MetricCardWidget | BarChartWidget | LineChartWidget | PieChartWidget | TableWidget;
 
 /** 带交互声明的图表类 widget(校验器与壳对 interactions 的处理共用此判别) */
 export type ChartWidget = BarChartWidget | LineChartWidget | PieChartWidget;

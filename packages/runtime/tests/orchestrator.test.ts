@@ -275,6 +275,182 @@ describe('查询编排器:筛选变更与差量重查', () => {
   });
 });
 
+/** 表格 widget:默认视图 = 首页 pageSize 行 */
+function tableWidget(id: string, pageSize: number, subscribe?: string[]): Widget {
+  return {
+    id,
+    type: 'table',
+    position: { x: 0, y: 0, w: 12, h: 5 },
+    columns: [{ field: 'region' }, { field: 'gmv' }],
+    pageSize,
+    query: {
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      ...(subscribe ? { filters: { subscribe } } : {})
+    }
+  };
+}
+
+describe('查询编排器:widget 视图通道(setView)与盲翻分页', () => {
+  it('表格首查即带声明的默认视图:limit 多取一行探测下一页,展示行裁回 pageSize', async () => {
+    const { gateway, received } = immediateGateway([{ region: '华东', gmv: 3 }, { region: '华北', gmv: 2 }, { region: '华南', gmv: 1 }]);
+    const { latest } = collect(orchestrate([tableWidget('w-t', 2)], gateway));
+    await flush();
+    // 生效查询 limit=pageSize(2),发往网关时 +1 探测(响应无总条数)
+    expect(received).toEqual([
+      { metrics: ['gmv'], dimensions: ['region'], conditions: [], limit: 3, offset: 0 }
+    ]);
+    expect(latest().get('w-t')).toEqual({
+      status: 'ready',
+      rows: [{ region: '华东', gmv: 3 }, { region: '华北', gmv: 2 }],
+      hasMore: true
+    });
+  });
+
+  it('末页:返回行数不超过 pageSize 时 hasMore 为 false(下一页禁用依据)', async () => {
+    const { gateway } = immediateGateway([{ region: '华南', gmv: 1 }]);
+    const { latest } = collect(orchestrate([tableWidget('w-t', 2)], gateway));
+    await flush();
+    expect(latest().get('w-t')).toEqual({
+      status: 'ready',
+      rows: [{ region: '华南', gmv: 1 }],
+      hasMore: false
+    });
+  });
+
+  it('setView 翻页:只该 widget 重走 loading→终态,其余快照引用不变;offset 进生效查询', async () => {
+    const { gateway, received } = immediateGateway([{ region: '华南', gmv: 1 }]);
+    const stream = orchestrate([tableWidget('w-t', 2), metricCard('w-other')], gateway);
+    const { latest } = collect(stream);
+    await flush();
+    const before = latest();
+
+    stream.setView('w-t', { limit: 2, offset: 2 });
+    expect(latest().get('w-t')).toEqual({ status: 'loading' });
+    expect(latest().get('w-other')).toBe(before.get('w-other'));
+    await flush();
+
+    expect(received.at(-1)).toEqual({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [],
+      limit: 3,
+      offset: 2
+    });
+    expect(latest().get('w-other')).toBe(before.get('w-other'));
+  });
+
+  it('排序与表头筛选进生效查询:orderBy 保持多列优先级,表头筛选并进 conditions(页面筛选在前)', async () => {
+    const { gateway, received } = immediateGateway([{ region: '华东', gmv: 3 }]);
+    const filters = createFilterState(
+      new Map<string, FilterValue>([
+        ['f-channel', { type: 'dimension' as const, dimension: 'channel', values: ['线上'] }]
+      ])
+    );
+    const stream = orchestrate([tableWidget('w-t', 2, ['f-channel'])], gateway, filters);
+    // 冷流:订阅者到达前 setView 只记录视图,不发查询
+    stream.setView('w-t', {
+      limit: 2,
+      offset: 0,
+      orderBy: [
+        { field: 'gmv', direction: 'desc' },
+        { field: 'region', direction: 'asc' }
+      ],
+      conditions: [{ dimension: 'region', operator: 'in', value: ['华东', '华北'] }]
+    });
+    collect(stream);
+    await flush();
+    expect(received).toEqual([
+      {
+        metrics: ['gmv'],
+        dimensions: ['region'],
+        conditions: [
+          { dimension: 'channel', operator: 'in', value: ['线上'] },
+          { dimension: 'region', operator: 'in', value: ['华东', '华北'] }
+        ],
+        limit: 3,
+        offset: 0,
+        orderBy: [
+          { field: 'gmv', direction: 'desc' },
+          { field: 'region', direction: 'asc' }
+        ]
+      }
+    ]);
+  });
+
+  it('缓存 key 含视图:翻页去而复返命中会话缓存,不发第 3 个请求且 hasMore 保留', async () => {
+    const { gateway, received } = immediateGateway([
+      { region: '华东', gmv: 3 },
+      { region: '华北', gmv: 2 },
+      { region: '华南', gmv: 1 }
+    ]);
+    const stream = orchestrate([tableWidget('w-t', 2)], gateway);
+    const { latest } = collect(stream);
+    await flush();
+    const firstPage = latest().get('w-t');
+    expect(received.length).toBe(1);
+
+    stream.setView('w-t', { limit: 2, offset: 2 });
+    await flush();
+    expect(received.length).toBe(2);
+
+    stream.setView('w-t', { limit: 2, offset: 0 });
+    await flush();
+    expect(received.length).toBe(2);
+    expect(latest().get('w-t')).toEqual(firstPage);
+  });
+
+  it('视图变更沿用竞态丢弃:连续两次 setView,过期在途结果一律丢弃', async () => {
+    const { gateway, pending } = deferredGateway();
+    const stream = orchestrate([tableWidget('w-t', 2)], gateway);
+    const { latest } = collect(stream);
+
+    stream.setView('w-t', { limit: 2, offset: 2 });
+    stream.setView('w-t', { limit: 2, offset: 4 });
+    expect(pending).toHaveLength(3); // 初始 + 两次视图变更
+
+    // 故意让最新视图的查询先返回,过期查询后返回
+    pending[2].resolve([{ region: '华南', gmv: 1 }]);
+    await flush();
+    expect(latest().get('w-t')).toEqual({
+      status: 'ready',
+      rows: [{ region: '华南', gmv: 1 }],
+      hasMore: false
+    });
+
+    pending[0].resolve([{ region: '华东', gmv: 9 }]);
+    pending[1].resolve([{ region: '华北', gmv: 8 }]);
+    await flush();
+    expect(latest().get('w-t')).toEqual({
+      status: 'ready',
+      rows: [{ region: '华南', gmv: 1 }],
+      hasMore: false
+    });
+  });
+
+  it('setView 永不 throw:未知 widget id 静默忽略;退订后 setView 不再触发查询', async () => {
+    const { gateway, pending } = deferredGateway();
+    const stream = orchestrate([tableWidget('w-t', 2)], gateway);
+    const { unsubscribe } = collect(stream);
+    expect(pending).toHaveLength(1);
+
+    expect(() => stream.setView('w-unknown', { limit: 2, offset: 0 })).not.toThrow();
+    expect(pending).toHaveLength(1);
+
+    unsubscribe();
+    stream.setView('w-t', { limit: 2, offset: 2 });
+    await flush();
+    expect(pending).toHaveLength(1);
+  });
+
+  it('分页查询空结果为空态(超出末页边界)', async () => {
+    const { gateway } = immediateGateway([]);
+    const { latest } = collect(orchestrate([tableWidget('w-t', 2)], gateway));
+    await flush();
+    expect(latest().get('w-t')).toEqual({ status: 'empty' });
+  });
+});
+
 describe('查询编排器:退订即取消', () => {
   it('最后一个订阅者退订后,在途查询结果作废,订阅者永不再被回调', async () => {
     const { gateway, pending } = deferredGateway();
