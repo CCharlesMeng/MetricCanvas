@@ -10,7 +10,7 @@ import type { SimRow } from './tables';
  */
 export type Predicate = (row: SimRow) => boolean;
 
-export function parseWhere(text: string): Predicate {
+export function parseWhere(text: string, knownColumns?: string[]): Predicate {
   const parts = splitTopLevel(text, /\s+and\s+/i);
   // between 自带一个 and:被顶层切分吃掉时,把上界段并回去
   const merged: string[] = [];
@@ -22,16 +22,25 @@ export function parseWhere(text: string): Predicate {
       merged.push(part);
     }
   }
-  const clauses = merged.map(parseClause);
+  const clauses = merged.map((clause) => parseClause(clause, knownColumns));
   return (row) => clauses.every((clause) => clause(row));
 }
 
-function parseClause(clause: string): Predicate {
+/** 条件引用未知列即报错:配置错误(如时间列名不对)不该化为"过滤永假"的静默空集 */
+function assertKnown(column: string, knownColumns?: string[]): string {
+  if (knownColumns && !knownColumns.includes(column)) {
+    throw new DialectError(`@where 引用了不存在的列:${column}(可用:${knownColumns.join('、')})`);
+  }
+  return column;
+}
+
+function parseClause(clause: string, knownColumns?: string[]): Predicate {
   const trimmed = clause.trim();
 
   const between = /^([A-Za-z_][A-Za-z0-9_]*)\s+between\s+(.+?)\s+and\s+(.+)$/i.exec(trimmed);
   if (between) {
-    const [, column, low, high] = between;
+    const [, rawColumn, low, high] = between;
+    const column = assertKnown(rawColumn, knownColumns);
     const lo = literal(low);
     const hi = literal(high);
     return (row) => row[column] >= lo && row[column] <= hi;
@@ -39,14 +48,16 @@ function parseClause(clause: string): Predicate {
 
   const inClause = /^([A-Za-z_][A-Za-z0-9_]*)\s+in\s*\((.+)\)$/i.exec(trimmed);
   if (inClause) {
-    const [, column, list] = inClause;
+    const [, rawColumn, list] = inClause;
+    const column = assertKnown(rawColumn, knownColumns);
     const values = splitTopLevel(list, /,/).map((v) => literal(v.trim()));
     return (row) => values.some((v) => looseEqual(row[column], v));
   }
 
   const cmp = /^([A-Za-z_][A-Za-z0-9_]*)\s*(>=|<=|!=|=|>|<)\s*(.+)$/.exec(trimmed);
   if (cmp) {
-    const [, column, op, raw] = cmp;
+    const [, rawColumn, op, raw] = cmp;
+    const column = assertKnown(rawColumn, knownColumns);
     const value = literal(raw.trim());
     return (row) => {
       const cell = row[column];
@@ -80,7 +91,10 @@ function literal(raw: string): string | number {
   throw new DialectError(`@where 字面量无法解析:${raw}(须为 '字符串' 或数字)`);
 }
 
-/** 数字列与数字字面量、字符串列与字符串字面量比较;跨类型按字符串比(与松散后端一致的保守假设) */
+/**
+ * 【假设,#3 核对】跨类型比较按字符串比:真实后端(SQL 层)的隐式类型转换行为未记录,
+ * 仿真取"数字列与数字字面量、字符串列与字符串字面量各自原样比,跨类型退化为字符串比"的保守口径。
+ */
 function looseEqual(cell: string | number | undefined, value: string | number): boolean {
   if (cell === undefined) return false;
   return typeof cell === typeof value ? cell === value : String(cell) === String(value);

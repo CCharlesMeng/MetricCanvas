@@ -72,6 +72,9 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
         base
       )
     ).toThrow('白名单');
+    expect(() =>
+      translateQuery({ metrics: ['gmv'], aggregation: 'max) @where(value:"1=1', conditions: [] }, base)
+    ).toThrow('白名单');
   });
 });
 
@@ -129,7 +132,7 @@ describe('适配器对仿真端到端(期望值由种子表手算)', () => {
     );
   });
 
-  it('非 CBC.0000 信封抛 DataServiceError(未知表服务)', async () => {
+  it('非 CBC.0000 信封抛 DataServiceError(未知服务码)', async () => {
     const bad = createDataServiceGateway({ baseUrl, serviceCode: 'NOT_A_TABLE', headers: AUTH, retries: 0 });
     await expect(bad.fetchData({ metrics: ['gmv'], conditions: [] })).rejects.toBeInstanceOf(
       DataServiceError

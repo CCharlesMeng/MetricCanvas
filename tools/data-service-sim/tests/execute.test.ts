@@ -80,9 +80,15 @@ describe('方言执行:现实怪癖与报错', () => {
     expect(() => run(`{query @connect(value:"a|b"){${T}{region}}}`)).toThrow('@connect');
   });
 
-  it('未知表服务与未知字段报错', () => {
-    expect(() => run(`{query{NOT_A_TABLE{col}}}`)).toThrow('表服务不存在');
+  it('未知服务与未知字段报错', () => {
+    expect(() => run(`{query{NOT_A_TABLE{col}}}`)).toThrow('服务不存在');
     expect(() => run(`{query{${T}{no_such_col}}}`)).toThrow('字段不存在');
+  });
+
+  it('@where 引用不存在的列报错(配置错不化为静默空集)', () => {
+    expect(() => run(`{query{${T} @where(value:"no_such_col = 'x'"){region}}}`)).toThrow(
+      '不存在的列'
+    );
   });
 });
 

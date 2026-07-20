@@ -32,7 +32,9 @@ export function executeQuery(query: ParsedQuery): Record<string, unknown> {
     return { restQuery: { MetricBaseInfo: list.map((m) => pick(m, query.fields)) } };
   }
 
-  // COMMON 模式:【假设,#3 核对】批量上限 5 按"单请求表块数"执行
+  // 【假设,#3 核对——且是对已记录机制的改写】报告 §1.1 记录的批量是 `?ids=ds1,...` 查询参数
+  // 上限 5;仿真按"单请求表块数 ≤ 5"执行同等约束(适配器/编排器不用 ?ids 通道)。
+  // 真实服务对多表块单请求的上限行为未记录,联调时核对两种口径。
   if (query.tables.length > 5) {
     throw new DialectError(`单请求查询数超上限 5(收到 ${query.tables.length} 个表块)`);
   }
@@ -45,13 +47,14 @@ export function executeQuery(query: ParsedQuery): Record<string, unknown> {
 
 function executeTable(node: TableNode, query: Extract<ParsedQuery, { kind: 'common' }>): SimRow[] {
   const table = findTable(node.name);
-  if (!table) throw new DialectError(`表服务不存在:${node.name}(可用:${tables.map((t) => t.serviceCode).join('、')})`);
+  if (!table) throw new DialectError(`服务不存在:${node.name}(数据服务目录内可用:${tables.map((t) => t.serviceCode).join('、')})`);
 
-  // 过滤:全局 @where 与表级 @where 取合取
+  // 过滤:全局 @where 与表级 @where 取合取;条件引用未知列即报错,
+  // 防止"时间列名配错→过滤永假→静默空集"这类适配层配置错误被吞掉
   let rows = table.rows;
   for (const condition of [query.where, node.where]) {
     if (condition) {
-      const predicate = parseWhere(condition);
+      const predicate = parseWhere(condition, table.columns);
       rows = rows.filter(predicate);
     }
   }
@@ -105,6 +108,8 @@ function groupAggregate(
     const key = JSON.stringify(keys.map((k) => row[k]));
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(row);
   }
+  // 【假设,#3 核对】分组结果顺序(按首次出现序)与聚合值两位小数舍入均为仿真选择,
+  // 真实服务的返回序与数值精度未记录;适配器不得依赖顺序,展示精度归组件展示配置
   return [...groups.values()].map((members) => {
     const out: SimRow = {};
     for (const key of keys) out[key] = members[0][key];

@@ -81,7 +81,8 @@ export function createDataServiceGateway(config: DataServiceConfig): DataGateway
     },
 
     async fetchDimensionValues(dimension: string): Promise<string[]> {
-      // 去重取值:维度列 + cnt 保留字段构成分组查询,方言内完成 distinct
+      // 【假设,#3 核对】去重取值借"维度列 + cnt 保留字段"的分组查询实现 distinct,
+      // 方言无 distinct 指令是报告空白;真实服务若有专用取值接口,联调后替换
       const apiQuery = `{query{${serviceCode}{${assertColumn(dimension)} cnt}}}`;
       const data = await graphql(apiQuery);
       return rowsOf(data, serviceCode).map((row) => String(row[dimension]));
@@ -115,16 +116,21 @@ export function translateQuery(
   ];
   if (query.timeRange) {
     conditions.push(
-      `${options.timeColumn} between ${quote(query.timeRange.from)} and ${quote(query.timeRange.to)}`
+      `${assertColumn(options.timeColumn)} between ${quote(query.timeRange.from)} and ${quote(query.timeRange.to)}`
     );
   }
 
+  // 聚合白名单与元数据快照默认口径一致(@function 完整清单待 #3 联调确认后扩);
+  // aggregation 与其余注入面同等设防:白名单外不内插 apiQuery
   const aggregation = query.aggregation ?? 'sum';
+  if (!['sum', 'avg', 'count'].includes(aggregation)) {
+    throw new Error(`聚合方式不在白名单(sum/avg/count):${aggregation}`);
+  }
   const valueField =
     aggregation === 'sum' ? 'metric_value_sum' : `metric_value @function(value:"${aggregation}")`;
   const fields = [...(query.dimensions ?? []).map(assertColumn), 'metric_code', valueField];
 
-  return `{query{${options.serviceCode} @where(value:"${conditions.join(' and ')}"){${fields.join(' ')}}}}`;
+  return `{query{${assertColumn(options.serviceCode)} @where(value:"${conditions.join(' and ')}"){${fields.join(' ')}}}}`;
 }
 
 /** @where 操作符白名单(eq/in/between),生成类 SQL 条件;白名单外与含引号的值一律拒绝 */
