@@ -135,4 +135,29 @@ describe('筛选状态初值:按页面 filters 声明初始化', () => {
       to: '2026-07-20'
     });
   });
+
+  it('datetime 精度的预设解析为 YYYY-MM-DDTHH:mm(datetime-local 可直接回显)', () => {
+    const now = new Date(2026, 6, 20, 9, 5); // 2026-07-20 09:05(本地时区)
+    const values = initialFilterValues(
+      [{ id: 'f-time', type: 'timeRange', precision: 'datetime', default: 'today' }],
+      now
+    );
+    expect(values.get('f-time')).toEqual({
+      type: 'timeRange',
+      from: '2026-07-20T00:00',
+      to: '2026-07-20T09:05'
+    });
+  });
+});
+
+describe('筛选状态 store:订阅方异常隔离(write 永不 throw)', () => {
+  it('某个订阅方回调抛异常,write 不抛出、状态照常更新、其余订阅方照常收到通知', () => {
+    const state = createFilterState();
+    state.subscribe(() => {
+      throw new Error('坏订阅方');
+    });
+    const { pushes } = collect(state);
+    expect(() => state.write('f-region', region)).not.toThrow();
+    expect(pushes[pushes.length - 1].get('f-region')).toEqual(region);
+  });
 });

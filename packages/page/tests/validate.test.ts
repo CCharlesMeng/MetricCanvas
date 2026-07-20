@@ -14,6 +14,7 @@ import duplicateFilterId from '../fixtures/invalid/duplicate-filter-id.json';
 import subscribeUnknownFilter from '../fixtures/invalid/subscribe-unknown-filter.json';
 import writeFilterNotDimension from '../fixtures/invalid/write-filter-not-dimension.json';
 import interactionDimensionNotQueried from '../fixtures/invalid/interaction-dimension-not-queried.json';
+import interactionDimensionMismatch from '../fixtures/invalid/interaction-dimension-mismatch.json';
 
 describe('validate:结构校验(样例集来自 fixtures/)', () => {
   it('合法的最小页面文档通过,无错误', () => {
@@ -46,6 +47,11 @@ describe('validate:结构校验(样例集来自 fixtures/)', () => {
     {
       name: '交互取值占位引用了查询之外的维度',
       document: interactionDimensionNotQueried,
+      path: '/widgets/0/interactions/0/value'
+    },
+    {
+      name: '交互取值占位的维度与回写目标筛选器约束的维度不一致(channel 值写不进 region 筛选器)',
+      document: interactionDimensionMismatch,
       path: '/widgets/0/interactions/0/value'
     }
   ];

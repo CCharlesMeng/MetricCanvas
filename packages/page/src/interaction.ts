@@ -13,3 +13,8 @@ export interface WriteFilterInteraction {
   /** 取值占位:$dimension.<code>,运行时从点击上下文取该维度的值 */
   value: string;
 }
+
+/** 取值占位解析的唯一实现:校验器与运行时共用,防止两处各自切字符串产生分歧 */
+export function placeholderDimension(value: string): string {
+  return value.slice('$dimension.'.length);
+}

@@ -1,5 +1,6 @@
 import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
+import { placeholderDimension } from './interaction';
 import type { Page } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
@@ -66,8 +67,8 @@ function invariantErrors(page: Page): TypedError[] {
     }
     filterIds.add(filter.id);
   });
-  const dimensionFilterIds = new Set(
-    filters.filter((filter) => filter.type === 'dimension').map((filter) => filter.id)
+  const dimensionFiltersById = new Map(
+    filters.flatMap((filter) => (filter.type === 'dimension' ? [[filter.id, filter] as const] : []))
   );
 
   const seen = new Set<string>();
@@ -101,19 +102,28 @@ function invariantErrors(page: Page): TypedError[] {
 
     if (widget.type === 'barChart') {
       (widget.interactions ?? []).forEach((interaction, j) => {
-        if (!dimensionFilterIds.has(interaction.writeFilter)) {
+        const target = dimensionFiltersById.get(interaction.writeFilter);
+        if (!target) {
           errors.push({
             type: 'SCHEMA_ERROR',
             path: `/widgets/${i}/interactions/${j}/writeFilter`,
             message: `回写目标须为已声明的 dimension 型筛选器:${interaction.writeFilter}`
           });
         }
-        const code = interaction.value.slice('$dimension.'.length);
+        const code = placeholderDimension(interaction.value);
         if (!(widget.query.dimensions ?? []).includes(code)) {
           errors.push({
             type: 'SCHEMA_ERROR',
             path: `/widgets/${i}/interactions/${j}/value`,
             message: `取值占位引用的维度 ${code} 不在本组件查询的 dimensions 中`
+          });
+        }
+        // 占位维度须与目标筛选器约束的维度一致,否则运行时会把 A 维度的值写进 B 维度的条件
+        if (target && code !== target.dimension) {
+          errors.push({
+            type: 'SCHEMA_ERROR',
+            path: `/widgets/${i}/interactions/${j}/value`,
+            message: `取值占位的维度 ${code} 与回写目标筛选器 ${target.id} 约束的维度 ${target.dimension} 不一致`
           });
         }
       });

@@ -44,13 +44,13 @@ export function createFilterState(initial?: FilterValues): FilterState {
   function replace(next: Map<string, FilterValue>) {
     // 先构造新 Map 再整体替换:已推送出去的实例永不被原地修改,订阅方可安全持有与比较
     current = next;
-    for (const run of subscribers) run(current);
+    for (const run of subscribers) notify(run, current);
   }
 
   return {
     subscribe(run) {
       subscribers.add(run);
-      run(current);
+      notify(run, current);
       return () => {
         subscribers.delete(run);
       };
@@ -82,6 +82,15 @@ export function createFilterState(initial?: FilterValues): FilterState {
       replace(next);
     }
   };
+}
+
+/** 兑现"subscribe/write 永不 throw":单个订阅方的异常不得中断写入与其余订阅方的通知 */
+function notify(run: (values: FilterValues) => void, values: FilterValues): void {
+  try {
+    run(values);
+  } catch (cause) {
+    console.error('筛选状态订阅方回调抛出异常(已隔离):', cause);
+  }
 }
 
 /** 空维度值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
@@ -178,7 +187,9 @@ export function initialFilterValues(
       }
     } else if (decl.default) {
       const range =
-        typeof decl.default === 'string' ? resolvePreset(decl.default, now) : decl.default;
+        typeof decl.default === 'string'
+          ? resolvePreset(decl.default, now, decl.precision ?? 'date')
+          : decl.default;
       values.set(decl.id, { type: 'timeRange', from: range.from, to: range.to });
     }
   }
@@ -187,9 +198,20 @@ export function initialFilterValues(
 
 const PRESET_DAYS = { today: 1, last7d: 7, last30d: 30, last90d: 90 } as const;
 
-function resolvePreset(preset: keyof typeof PRESET_DAYS, now: Date): { from: string; to: string } {
+/**
+ * 预设解析的值格式跟随筛选器精度:date 为 YYYY-MM-DD;
+ * datetime 为 YYYY-MM-DDTHH:mm(起点取当日 00:00、终点取解析时刻,datetime-local 可直接回显)。
+ */
+function resolvePreset(
+  preset: keyof typeof PRESET_DAYS,
+  now: Date,
+  precision: 'date' | 'datetime'
+): { from: string; to: string } {
   const from = new Date(now);
   from.setDate(from.getDate() - (PRESET_DAYS[preset] - 1));
+  if (precision === 'datetime') {
+    return { from: `${toLocalDate(from)}T00:00`, to: `${toLocalDate(now)}T${toLocalTime(now)}` };
+  }
   return { from: toLocalDate(from), to: toLocalDate(now) };
 }
 
@@ -198,4 +220,8 @@ function toLocalDate(date: Date): string {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${date.getFullYear()}-${month}-${day}`;
+}
+
+function toLocalTime(date: Date): string {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }

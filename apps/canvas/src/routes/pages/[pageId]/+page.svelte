@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { replaceState } from '$app/navigation';
   import {
+    placeholderDimension,
     validate,
     type BarChartWidget,
     type DataSnapshot,
@@ -82,7 +83,7 @@
 
     // ④ 筛选状态:按声明的 default 初始化;URL 带筛选参数则整体恢复(可分享还原)
     const fromDeclarations = initialFilterValues(declarations);
-    const fromURL = parseFilterURL(location.search);
+    const fromURL = parseFilterURL(location.search, declarations);
     const state = createFilterState(fromURL.size > 0 ? fromURL : fromDeclarations);
     filterState = state;
 
@@ -113,15 +114,20 @@
     }
   }
 
-  /** 从 URL 查询串解析筛选状态(借 store 的 fromURL,一处序列化逻辑) */
-  function parseFilterURL(search: string): FilterValues {
+  /**
+   * 从 URL 查询串解析筛选状态(借 store 的 fromURL,一处序列化逻辑)。
+   * 只保留本页声明的筛选器 id:无关参数不入 store、不被 toURL 回带;
+   * URL 只带无关参数时视为"URL 无筛选值",正常回落到声明的 default。
+   */
+  function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
     const probe = createFilterState();
     probe.fromURL(search);
-    let values: FilterValues = new Map();
+    let parsed: FilterValues = new Map();
     probe.subscribe((v) => {
-      values = v;
+      parsed = v;
     })();
-    return values;
+    const ids = new Set(declared.map((decl) => decl.id));
+    return new Map([...parsed].filter(([id]) => ids.has(id)));
   }
 
   /** 筛选状态 → URL:只替换筛选参数,保留无关查询参数 */
@@ -158,7 +164,7 @@
   function handleBarClick(widget: BarChartWidget, row: Row) {
     for (const interaction of widget.interactions ?? []) {
       if (interaction.on !== 'click') continue;
-      const code = interaction.value.slice('$dimension.'.length);
+      const code = placeholderDimension(interaction.value);
       const clicked = row[code];
       const target = declarations.find((decl) => decl.id === interaction.writeFilter);
       if (clicked == null || target?.type !== 'dimension') continue;

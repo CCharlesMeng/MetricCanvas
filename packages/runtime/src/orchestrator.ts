@@ -39,9 +39,9 @@ export function orchestrate(
       subscribers.add(run);
       // 冷流:首个订阅者到达才启动执行;中途加入的订阅者共享同一次执行
       session ??= startSession(widgets, gateway, filters, (snapshots) => {
-        for (const notify of subscribers) notify(snapshots);
+        for (const subscriber of subscribers) notify(subscriber, snapshots);
       });
-      run(session.current());
+      notify(run, session.current());
       return () => {
         if (!subscribers.delete(run)) return;
         if (subscribers.size === 0) {
@@ -56,6 +56,15 @@ export function orchestrate(
 interface Session {
   current(): PageSnapshots;
   dispose(): void;
+}
+
+/** 兑现"subscribe 永不 throw":单个订阅方的异常不得中断分发与其余订阅方 */
+function notify(run: (value: PageSnapshots) => void, snapshots: PageSnapshots): void {
+  try {
+    run(snapshots);
+  } catch (cause) {
+    console.error('数据快照订阅方回调抛出异常(已隔离):', cause);
+  }
 }
 
 function startSession(
