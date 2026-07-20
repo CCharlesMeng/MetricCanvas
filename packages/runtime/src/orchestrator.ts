@@ -48,7 +48,7 @@ export interface PageSnapshotStream extends Subscribable<PageSnapshots> {
 export const DEFAULT_TABLE_PAGE_SIZE = 20;
 
 /** 声明的默认视图:表格 widget 首查即分页(首页 pageSize 行),其余 widget 无视图 */
-function defaultView(widget: Widget): WidgetView {
+function defaultView(widget: DataWidget): WidgetView {
   if (widget.type === 'table') {
     return { limit: widget.pageSize ?? DEFAULT_TABLE_PAGE_SIZE, offset: 0 };
   }

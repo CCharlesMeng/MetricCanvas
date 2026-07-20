@@ -276,7 +276,7 @@ describe('查询编排器:筛选变更与差量重查', () => {
 });
 
 /** 表格 widget:默认视图 = 首页 pageSize 行 */
-function tableWidget(id: string, pageSize: number, subscribe?: string[]): Widget {
+function tableWidget(id: string, pageSize: number, subscribe?: string[]): DataWidget {
   return {
     id,
     type: 'table',
