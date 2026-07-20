@@ -40,6 +40,48 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
         conditions: [{ dimension: 'region', operator: 'eq', value: '华东' }]
       },
       apiQuery: `{query{${SERVICE} @where(value:"metric_code in ('gmv') and region = '华东'"){metric_code metric_value_sum}}}`
+    },
+    {
+      name: '分页:limit/offset 翻译为全局 @limit/@offset',
+      query: { metrics: ['gmv'], dimensions: ['region'], conditions: [], limit: 10, offset: 20 },
+      apiQuery: `{query @limit(value:10) @offset(value:20){${SERVICE} @where(value:"metric_code in ('gmv')"){region metric_code metric_value_sum}}}`
+    },
+    {
+      name: '多列排序:数组序映射 @order priority,维度列与指标值列各归其位',
+      query: {
+        metrics: ['gmv'],
+        dimensions: ['region', 'channel'],
+        conditions: [],
+        orderBy: [
+          { field: 'gmv', direction: 'desc' },
+          { field: 'region', direction: 'asc' }
+        ]
+      },
+      apiQuery: `{query{${SERVICE} @where(value:"metric_code in ('gmv')"){region @order(type:"asc",priority:2) channel metric_code metric_value_sum @order(type:"desc",priority:1)}}}`
+    },
+    {
+      name: '排序与 @function 聚合共存:指令并列挂在 metric_value 上',
+      query: {
+        metrics: ['target-rate'],
+        aggregation: 'avg',
+        conditions: [],
+        orderBy: [{ field: 'target-rate', direction: 'asc' }]
+      },
+      apiQuery: `{query{${SERVICE} @where(value:"metric_code in ('target-rate')"){metric_code metric_value @function(value:"avg") @order(type:"asc",priority:1)}}}`
+    },
+    {
+      name: '表头筛选(日期范围模式)以 between 条件并入 @where',
+      query: {
+        metrics: ['gmv'],
+        dimensions: ['mtime', 'region'],
+        conditions: [
+          { dimension: 'region', operator: 'in', value: ['华东'] },
+          { dimension: 'mtime', operator: 'between', value: ['2026-07-14', '2026-07-20'] }
+        ],
+        limit: 5,
+        offset: 0
+      },
+      apiQuery: `{query @limit(value:5) @offset(value:0){${SERVICE} @where(value:"metric_code in ('gmv') and region in ('华东') and mtime between '2026-07-14' and '2026-07-20'"){mtime region metric_code metric_value_sum}}}`
     }
   ];
 
@@ -75,6 +117,63 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
     expect(() =>
       translateQuery({ metrics: ['gmv'], aggregation: 'max) @where(value:"1=1', conditions: [] }, base)
     ).toThrow('白名单');
+  });
+
+  it('分页/排序的注入面同等设防:limit/offset 须非负整数,direction 须 asc/desc', () => {
+    const base = { serviceCode: SERVICE, timeColumn: 'mtime' };
+    expect(() => translateQuery({ metrics: ['gmv'], conditions: [], limit: 1.5 }, base)).toThrow(
+      '非负整数'
+    );
+    expect(() =>
+      translateQuery({ metrics: ['gmv'], conditions: [], limit: 10, offset: -1 }, base)
+    ).toThrow('非负整数');
+    expect(() =>
+      translateQuery(
+        {
+          metrics: ['gmv'],
+          conditions: [],
+          orderBy: [{ field: 'gmv', direction: 'desc; drop' as never }]
+        },
+        base
+      )
+    ).toThrow('asc/desc');
+  });
+
+  it('排序字段须为查询的维度或指标,否则拒绝', () => {
+    expect(() =>
+      translateQuery(
+        {
+          metrics: ['gmv'],
+          dimensions: ['region'],
+          conditions: [],
+          orderBy: [{ field: 'channel', direction: 'asc' }]
+        },
+        { serviceCode: SERVICE, timeColumn: 'mtime' }
+      )
+    ).toThrow('排序字段不在查询的 dimensions/metrics 中');
+  });
+
+  it('多指标查询按指标列排序:按真实原因报错(字段在 metrics 中,而非"不在查询里")', () => {
+    expect(() =>
+      translateQuery(
+        {
+          metrics: ['gmv', 'order-count'],
+          dimensions: ['region'],
+          conditions: [],
+          orderBy: [{ field: 'gmv', direction: 'desc' }]
+        },
+        { serviceCode: SERVICE, timeColumn: 'mtime' }
+      )
+    ).toThrow('多指标查询不支持按指标列排序');
+  });
+
+  it('多指标 + 分页拒绝:行式指标表的透视行会被 @limit 切开,盲翻语义不成立', () => {
+    expect(() =>
+      translateQuery(
+        { metrics: ['gmv', 'order-count'], dimensions: ['region'], conditions: [], limit: 10 },
+        { serviceCode: SERVICE, timeColumn: 'mtime' }
+      )
+    ).toThrow('单指标');
   });
 });
 
@@ -120,6 +219,38 @@ describe('适配器对仿真端到端(期望值由种子表手算)', () => {
       timeRange: { from: '2026-07-20', to: '2026-07-20' }
     });
     expect(rows).toEqual([{ region: '华东', gmv: 190, 'order-count': 11 }]);
+  });
+
+  it('盲翻分页对仿真:按 gmv 降序,limit 2/offset 0 得前两名,offset 2 得末名(7-20 手算:190/135/100)', async () => {
+    const paged = (offset: number) =>
+      gateway().fetchData({
+        metrics: ['gmv'],
+        dimensions: ['region'],
+        conditions: [],
+        timeRange: { from: '2026-07-20', to: '2026-07-20' },
+        orderBy: [{ field: 'gmv', direction: 'desc' }],
+        limit: 2,
+        offset
+      });
+    expect(await paged(0)).toEqual([
+      { region: '华东', gmv: 190 },
+      { region: '华北', gmv: 135 }
+    ]);
+    expect(await paged(2)).toEqual([{ region: '华南', gmv: 100 }]);
+  });
+
+  it('表头筛选条件对仿真:region 多选收窄行集,按维度升序返回', async () => {
+    const rows = await gateway().fetchData({
+      metrics: ['gmv'],
+      dimensions: ['region'],
+      conditions: [{ dimension: 'region', operator: 'in', value: ['华东', '华南'] }],
+      timeRange: { from: '2026-07-20', to: '2026-07-20' },
+      orderBy: [{ field: 'gmv', direction: 'asc' }]
+    });
+    expect(rows).toEqual([
+      { region: '华南', gmv: 100 },
+      { region: '华东', gmv: 190 }
+    ]);
   });
 
   it('fetchDimensionValues 去重取值:region → 华东/华北/华南', async () => {

@@ -6,6 +6,8 @@ export { default as LineChart } from './LineChart.svelte';
 export type { LineChartConfig } from './LineChart.svelte';
 export { default as PieChart } from './PieChart.svelte';
 export type { PieChartConfig } from './PieChart.svelte';
+export { default as Table } from './Table.svelte';
+export type { TableHeaderFilterValue, TableViewState } from './Table.svelte';
 export { default as WidgetHost } from './WidgetHost.svelte';
 export { default as DimensionFilter } from './DimensionFilter.svelte';
 export { default as TimeRangeFilter } from './TimeRangeFilter.svelte';

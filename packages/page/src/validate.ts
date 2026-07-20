@@ -2,7 +2,7 @@ import { Ajv, type ErrorObject } from 'ajv';
 import { pageSchema } from './schema';
 import { placeholderDimension } from './interaction';
 import { versionErrors } from './version';
-import { isChartWidget, type Page } from './page';
+import { isChartWidget, type Page, type TableWidget } from './page';
 import type { CatalogSnapshot } from './catalog';
 import type { TypedError } from './errors';
 
@@ -116,6 +116,10 @@ function invariantErrors(page: Page): TypedError[] {
       });
     }
 
+    if (widget.type === 'table') {
+      errors.push(...tableErrors(widget, i));
+    }
+
     if (isChartWidget(widget)) {
       (widget.interactions ?? []).forEach((interaction, j) => {
         if ('navigate' in interaction) {
@@ -164,6 +168,52 @@ function invariantErrors(page: Page): TypedError[] {
             message: `取值占位的维度 ${code} 与回写目标筛选器 ${target.id} 约束的维度 ${target.dimension} 不一致`
           });
         }
+      });
+    }
+  });
+  return errors;
+}
+
+/**
+ * 表格 widget 的不变式:
+ * - 单指标:数据服务是指标行式表,多指标透视行由多条原始行拼成,@limit/@offset 的
+ *   行级分页会切开透视行,盲翻语义不成立(多指标列是 P1,需协议层支持后再放开);
+ * - 列 field 引用查询的维度或指标(否则该列必然无数据),且页内不重复;
+ * - 表头筛选列须为查询维度:筛选条件经运行时进 @where,指标值筛选是 having 语义,不支持。
+ */
+function tableErrors(widget: TableWidget, i: number): TypedError[] {
+  const errors: TypedError[] = [];
+  if (widget.query.metrics.length > 1) {
+    errors.push({
+      type: 'SCHEMA_ERROR',
+      path: `/widgets/${i}/query/metrics`,
+      message: `表格只支持单指标(行式指标表下多指标与盲翻分页语义冲突),收到 ${widget.query.metrics.length} 个`
+    });
+  }
+  const dimensions = new Set(widget.query.dimensions ?? []);
+  const queryFields = new Set([...dimensions, ...widget.query.metrics]);
+  const seenFields = new Set<string>();
+  widget.columns.forEach((column, j) => {
+    if (!queryFields.has(column.field)) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/columns/${j}/field`,
+        message: `列 field ${column.field} 未出现在查询的 dimensions/metrics 中,该列不会有数据`
+      });
+    }
+    if (seenFields.has(column.field)) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/columns/${j}/field`,
+        message: `表格列 field 重复:${column.field}`
+      });
+    }
+    seenFields.add(column.field);
+    if (column.filterable && !dimensions.has(column.field)) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/columns/${j}/filterable`,
+        message: `表头筛选列 ${column.field} 须为查询的维度(筛选条件进 @where,指标值筛选不支持)`
       });
     }
   });

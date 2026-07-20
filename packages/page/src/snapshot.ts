@@ -6,6 +6,10 @@ export type Row = Record<string, string | number | null>;
  */
 export type DataSnapshot =
   | { status: 'loading' }
-  | { status: 'ready'; rows: Row[] }
+  /**
+   * hasMore 仅在分页查询(生效查询带 limit)时出现:数据服务响应不返回总条数,
+   * 编排器以盲翻探测(多取一行)判定是否存在下一页,组件据此禁用"下一页"。
+   */
+  | { status: 'ready'; rows: Row[]; hasMore?: boolean }
   | { status: 'empty' }
   | { status: 'error'; error: { message: string } };

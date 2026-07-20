@@ -7,19 +7,24 @@
     validate,
     type ChartWidget,
     type DataSnapshot,
+    type FilterCondition,
     type FilterDeclaration,
     type Page,
     type Row,
-    type TypedError
+    type TableWidget,
+    type TypedError,
+    type Widget
   } from '@metriccanvas/page';
   import {
     createFilterState,
     drillThroughSearch,
     initialFilterValues,
     orchestrate,
+    DEFAULT_TABLE_PAGE_SIZE,
     type FilterState,
     type FilterValues,
-    type PageSnapshots
+    type PageSnapshots,
+    type PageSnapshotStream
   } from '@metriccanvas/runtime';
   import {
     BarChart,
@@ -27,8 +32,11 @@
     LineChart,
     MetricCard,
     PieChart,
+    Table,
     TimeRangeFilter,
-    WidgetHost
+    WidgetHost,
+    type TableHeaderFilterValue,
+    type TableViewState
   } from '@metriccanvas/widgets';
   import { pageRepository, dataGateway } from '$lib/services';
 
@@ -43,9 +51,15 @@
   let filterValues = $state<FilterValues>(new Map());
   /** 维度筛选器候选项(经数据网关实时查询,不入页面文档) */
   let filterOptions = $state<Record<string, string[]>>({});
+  /** 表格视图状态(分页/排序/表头筛选):widget 局部状态由壳持有,组件纯渲染 */
+  let tableViews = $state<Record<string, TableViewState>>({});
+  /** 表头筛选(select 模式)候选项,key = 列 field(即维度 code),经数据网关实时查询 */
+  let headerFilterOptions = $state<Record<string, string[]>>({});
 
   let declarations = $state<FilterDeclaration[]>([]);
   let filterState: FilterState | null = null;
+  /** 页面快照流:保留引用以便向视图通道写入(setView) */
+  let stream: PageSnapshotStream | null = null;
   let session = 0;
   let disposers: Array<() => void> = [];
 
@@ -59,6 +73,7 @@
     for (const fn of disposers) fn();
     disposers = [];
     filterState = null;
+    stream = null;
   }
 
   async function run(pageId: string) {
@@ -67,6 +82,8 @@
     snapshots = new Map();
     filterValues = new Map();
     filterOptions = {};
+    tableViews = {};
+    headerFilterOptions = {};
 
     let raw: unknown;
     try {
@@ -103,16 +120,31 @@
     let primed = false;
     disposers.push(
       state.subscribe((values) => {
+        const previous = filterValues;
         filterValues = values;
         // 首推是初值(URL 已一致),之后每次变更同步回 URL,筛选状态可分享
-        if (primed) syncURL(state);
+        if (primed) {
+          syncURL(state);
+          resetTablePages(loaded.widgets, previous, values);
+        }
         primed = true;
       })
     );
 
+    // 表格视图初值:首页、无排序、无表头筛选(编排器按声明的 pageSize 合成默认视图)
+    const initialViews: Record<string, TableViewState> = {};
+    for (const widget of loaded.widgets) {
+      if (widget.type === 'table') {
+        initialViews[widget.id] = { pageIndex: 0, sort: [], headerFilters: {} };
+      }
+    }
+    tableViews = initialViews;
+
     pageState = { phase: 'ready', page: loaded };
+    const pageStream = orchestrate(loaded.widgets, dataGateway, state);
+    stream = pageStream;
     disposers.push(
-      orchestrate(loaded.widgets, dataGateway, state).subscribe((next) => {
+      pageStream.subscribe((next) => {
         snapshots = next;
       })
     );
@@ -125,6 +157,109 @@
         filterOptions = { ...filterOptions, [decl.id]: values };
       });
     }
+
+    // 表头筛选(select 模式)候选项:与筛选器候选项同源,key 直接用列 field(维度 code)
+    const filterableFields = new Set(
+      loaded.widgets.flatMap((widget) =>
+        widget.type === 'table'
+          ? widget.columns.flatMap((column) =>
+              column.filterable?.mode === 'select' ? [column.field] : []
+            )
+          : []
+      )
+    );
+    for (const field of filterableFields) {
+      void dataGateway.fetchDimensionValues(field).then((values) => {
+        if (session !== mySession) return;
+        headerFilterOptions = { ...headerFilterOptions, [field]: values };
+      });
+    }
+  }
+
+  // ── 表格视图通道:壳持有视图状态,组件事件 → setView 只重查该 widget ──
+
+  function pageSizeOf(widget: TableWidget): number {
+    return widget.pageSize ?? DEFAULT_TABLE_PAGE_SIZE;
+  }
+
+  /** 表头筛选当前值 → 生效查询条件(select→in,dateRange→between;经运行时并进 @where) */
+  function headerFilterConditions(
+    filters: Record<string, TableHeaderFilterValue>
+  ): FilterCondition[] {
+    return Object.entries(filters).map(([field, value]) =>
+      value.mode === 'select'
+        ? { dimension: field, operator: 'in', value: value.values }
+        : { dimension: field, operator: 'between', value: [value.from, value.to] }
+    );
+  }
+
+  function pushTableView(widget: TableWidget, next: TableViewState) {
+    tableViews = { ...tableViews, [widget.id]: next };
+    stream?.setView(widget.id, {
+      limit: pageSizeOf(widget),
+      offset: next.pageIndex * pageSizeOf(widget),
+      orderBy: next.sort,
+      conditions: headerFilterConditions(next.headerFilters)
+    });
+  }
+
+  function tableViewOf(widget: TableWidget): TableViewState {
+    return tableViews[widget.id] ?? { pageIndex: 0, sort: [], headerFilters: {} };
+  }
+
+  function handleTablePage(widget: TableWidget, pageIndex: number) {
+    pushTableView(widget, { ...tableViewOf(widget), pageIndex });
+  }
+
+  /** 排序/表头筛选变更后回到首页:行集已变,旧页码无意义 */
+  function handleTableSort(widget: TableWidget, sort: TableViewState['sort']) {
+    pushTableView(widget, { ...tableViewOf(widget), sort, pageIndex: 0 });
+  }
+
+  function handleTableHeaderFilter(
+    widget: TableWidget,
+    field: string,
+    value: TableHeaderFilterValue | null
+  ) {
+    const current = tableViewOf(widget);
+    const headerFilters = { ...current.headerFilters };
+    if (value === null) delete headerFilters[field];
+    else headerFilters[field] = value;
+    pushTableView(widget, { ...current, headerFilters, pageIndex: 0 });
+  }
+
+  /**
+   * 页面筛选变更后,订阅了该筛选器的表格页码回第一页:行集已变,
+   * 旧 offset 指向的"第 N 页"不复存在(筛选变了还停在第 3 页是存量看板经典缺陷)。
+   * 落壳层而非编排器:页码语义(offset = 页码 × pageSize)本就由壳持有,
+   * 编排器 #5 六条不变式面不动。时序说明:本回调先于编排器的筛选订阅执行,
+   * setView 触发的重查按旧筛选值合成——首页×旧值多半已在会话缓存(初载即查过),
+   * 即便发出也会被随后按新筛选值的重查以更高序号覆盖(不变式4 竞态丢弃兜底)。
+   * 测试口径:按 PRD「Testing Decisions」应用壳不做自动化测试(壳无独立 seam,
+   * 行为依赖 svelte 组件生命周期),该行为随验收看板目验兜底。
+   */
+  function resetTablePages(widgets: Widget[], previous: FilterValues, next: FilterValues) {
+    const changed = new Set<string>();
+    for (const id of new Set([...previous.keys(), ...next.keys()])) {
+      if (JSON.stringify(previous.get(id)) !== JSON.stringify(next.get(id))) changed.add(id);
+    }
+    for (const widget of widgets) {
+      if (widget.type !== 'table') continue;
+      const view = tableViewOf(widget);
+      if (view.pageIndex === 0) continue;
+      if (!(widget.query.filters?.subscribe ?? []).some((id) => changed.has(id))) continue;
+      pushTableView(widget, { ...view, pageIndex: 0 });
+    }
+  }
+
+  /**
+   * 表格的空快照转空行就绪快照:空态必须保留表头与分页/筛选控件,
+   * 否则表头筛选筛出空集后用户无法清除筛选、翻过末页后无法翻回。
+   */
+  function tableSnapshot(snapshot: DataSnapshot): DataSnapshot {
+    return snapshot.status === 'empty'
+      ? { status: 'ready', rows: [], hasMore: false }
+      : snapshot;
   }
 
   /**
@@ -249,7 +384,8 @@
 
   <div class="grid" style="grid-template-columns: repeat({pageState.page.layout.columns}, 1fr);">
     {#each pageState.page.widgets as widget (widget.id)}
-      {@const snapshot = snapshots.get(widget.id) ?? { status: 'loading' } as DataSnapshot}
+      {@const raw = snapshots.get(widget.id) ?? { status: 'loading' } as DataSnapshot}
+      {@const snapshot = widget.type === 'table' ? tableSnapshot(raw) : raw}
       <section
         class="cell"
         style="grid-column: {widget.position.x + 1} / span {widget.position.w};
@@ -298,6 +434,16 @@
                   display: widget.display
                 }}
                 onsliceclick={onclick}
+              />
+            {:else if widget.type === 'table'}
+              <Table
+                snapshot={readySnapshot}
+                columns={widget.columns}
+                view={tableViewOf(widget)}
+                filterOptions={headerFilterOptions}
+                onpage={(pageIndex) => handleTablePage(widget, pageIndex)}
+                onsort={(sort) => handleTableSort(widget, sort)}
+                onheaderfilter={(field, value) => handleTableHeaderFilter(widget, field, value)}
               />
             {/if}
           {/snippet}

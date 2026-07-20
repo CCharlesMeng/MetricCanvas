@@ -1,4 +1,10 @@
-import type { DataSnapshot, EffectiveQuery, FilterCondition, Widget } from '@metriccanvas/page';
+import type {
+  DataSnapshot,
+  EffectiveQuery,
+  FilterCondition,
+  OrderByRule,
+  Widget
+} from '@metriccanvas/page';
 import type { FilterState, FilterValues } from './filter-state';
 import type { DataGateway } from './ports';
 
@@ -14,6 +20,42 @@ export interface Subscribable<T> {
 }
 
 /**
+ * widget 视图状态(issue #7 视图通道):分页/排序/表头筛选是 widget 局部状态,
+ * 不进页面筛选状态;由壳持有并经 setView 整体写入(null 清除,回落声明的默认视图)。
+ */
+export interface WidgetView {
+  /** 每页行数(生效查询的 limit;盲翻探测的 +1 由编排器执行,视图不感知) */
+  limit?: number;
+  /** 跳过的行数 = 页码 × 每页行数 */
+  offset?: number;
+  /** 多列排序,数组序即优先级 */
+  orderBy?: OrderByRule[];
+  /** 表头筛选条件:并进生效查询 conditions(排在页面筛选条件之后) */
+  conditions?: FilterCondition[];
+}
+
+/** orchestrate 的返回:页面快照流 + per-widget 视图写入口(#7 对 #5 接口的增量扩展) */
+export interface PageSnapshotStream extends Subscribable<PageSnapshots> {
+  /**
+   * 写入 widget 视图:只重查该 widget,沿用 loading→终态时间线、竞态丢弃与
+   * 会话缓存语义(缓存 key 含视图)。未知 widget id 静默忽略,永不 throw。
+   * 冷流期(无订阅者)只记录视图,首个订阅者到达后的首查即按视图合成。
+   */
+  setView(widgetId: string, view: WidgetView | null): void;
+}
+
+/** 表格缺省每页行数(schema 对 pageSize 的文档口径,唯一实现处;壳计算 offset 时复用) */
+export const DEFAULT_TABLE_PAGE_SIZE = 20;
+
+/** 声明的默认视图:表格 widget 首查即分页(首页 pageSize 行),其余 widget 无视图 */
+function defaultView(widget: Widget): WidgetView {
+  if (widget.type === 'table') {
+    return { limit: widget.pageSize ?? DEFAULT_TABLE_PAGE_SIZE, offset: 0 };
+  }
+  return {};
+}
+
+/**
  * 查询编排器:页面唯一的有状态调度台。
  * 生效查询合成(结构化查询 × 订阅筛选器当前值)→ 同轮去重 → 经数据网关取数 →
  * 包装数据快照分发;筛选变更只重查订阅了该筛选器的 widget(差量重查)。
@@ -25,20 +67,25 @@ export interface Subscribable<T> {
  * 4. 只有该 widget 最新生效查询的结果能落成快照,过期在途结果一律丢弃;
  * 5. 最后一个订阅者退订后在途查询全部作废、永不再回调(取消=退订);
  * 6. 网关异常只化为 error 快照,subscribe 永不 throw;每次变更推送新 Map 实例。
+ *
+ * 视图通道(#7 增量扩展,不变式不回退):返回对象增设 setView,
+ * 分页/排序/表头筛选经视图状态进入生效查询合成,视图变更只重查该 widget。
  */
 export function orchestrate(
   widgets: Widget[],
   gateway: DataGateway,
   filters?: FilterState
-): Subscribable<PageSnapshots> {
+): PageSnapshotStream {
   const subscribers = new Set<(value: PageSnapshots) => void>();
   let session: Session | null = null;
+  // 视图状态归属流本身而非会话:冷流期即可写入,退订重订后视图不丢
+  const views = new Map<string, WidgetView>();
 
   return {
     subscribe(run) {
       subscribers.add(run);
       // 冷流:首个订阅者到达才启动执行;中途加入的订阅者共享同一次执行
-      session ??= startSession(widgets, gateway, filters, (snapshots) => {
+      session ??= startSession(widgets, gateway, filters, views, (snapshots) => {
         for (const subscriber of subscribers) notify(subscriber, snapshots);
       });
       notify(run, session.current());
@@ -49,12 +96,21 @@ export function orchestrate(
           session = null;
         }
       };
+    },
+
+    setView(widgetId, view) {
+      if (!widgets.some((widget) => widget.id === widgetId)) return;
+      if (view === null) views.delete(widgetId);
+      else views.set(widgetId, view);
+      // 冷流期只记录;会话在跑才触发该 widget 重查(时间线/竞态/缓存语义同筛选变更)
+      session?.refetchWidget(widgetId);
     }
   };
 }
 
 interface Session {
   current(): PageSnapshots;
+  refetchWidget(widgetId: string): void;
   dispose(): void;
 }
 
@@ -71,6 +127,7 @@ function startSession(
   widgets: Widget[],
   gateway: DataGateway,
   filters: FilterState | undefined,
+  views: ReadonlyMap<string, WidgetView>,
   push: (snapshots: PageSnapshots) => void
 ): Session {
   let snapshots = new Map<string, DataSnapshot>(
@@ -127,7 +184,7 @@ function startSession(
     // 同轮去重:相同生效查询只发一次网关请求(US24)
     const groups = new Map<string, { query: EffectiveQuery; members: Array<[string, number]> }>();
     for (const widget of targets) {
-      const query = composeEffectiveQuery(widget, values);
+      const query = composeEffectiveQuery(widget, values, views.get(widget.id) ?? defaultView(widget));
       const key = JSON.stringify(query);
       const group = groups.get(key) ?? { query, members: [] };
       group.members.push([widget.id, sequences.get(widget.id)!]);
@@ -183,6 +240,10 @@ function startSession(
 
   return {
     current: () => snapshots,
+    refetchWidget(widgetId) {
+      const widget = widgets.find((candidate) => candidate.id === widgetId);
+      if (widget) refetch([widget], { publishLoading: true });
+    },
     dispose() {
       disposed = true;
       waiters.length = 0; // 排队中的查询一并作废,不得在退订后发出
@@ -193,9 +254,14 @@ function startSession(
 
 /**
  * 生效查询合成(包内纯函数,暂不导出):
- * 订阅的维度筛选器值进 conditions(按订阅声明顺序),时间范围筛选器值进 timeRange。
+ * 订阅的维度筛选器值进 conditions(按订阅声明顺序),时间范围筛选器值进 timeRange;
+ * widget 视图并入:表头筛选条件排在页面筛选之后,分页/排序原样承载。
  */
-function composeEffectiveQuery(widget: Widget, values: FilterValues): EffectiveQuery {
+function composeEffectiveQuery(
+  widget: Widget,
+  values: FilterValues,
+  view: WidgetView
+): EffectiveQuery {
   const { metrics, dimensions, granularity } = widget.query;
   const conditions: FilterCondition[] = [];
   let timeRange: { from: string; to: string } | undefined;
@@ -208,19 +274,33 @@ function composeEffectiveQuery(widget: Widget, values: FilterValues): EffectiveQ
       timeRange = { from: value.from, to: value.to };
     }
   }
+  conditions.push(...(view.conditions ?? []));
   return {
     metrics,
     ...(dimensions ? { dimensions } : {}),
     ...(granularity ? { granularity } : {}),
     conditions,
-    ...(timeRange ? { timeRange } : {})
+    ...(timeRange ? { timeRange } : {}),
+    ...(view.limit !== undefined ? { limit: view.limit } : {}),
+    ...(view.offset !== undefined ? { offset: view.offset } : {}),
+    ...(view.orderBy?.length ? { orderBy: view.orderBy } : {})
   };
 }
 
 async function execute(query: EffectiveQuery, gateway: DataGateway): Promise<DataSnapshot> {
   try {
-    const rows = await gateway.fetchData(query);
-    return rows.length === 0 ? { status: 'empty' } : { status: 'ready', rows };
+    if (query.limit === undefined) {
+      const rows = await gateway.fetchData(query);
+      return rows.length === 0 ? { status: 'empty' } : { status: 'ready', rows };
+    }
+    // 盲翻探测:数据服务响应不返回总条数(PRD「数据服务对接事实」),
+    // 多取一行——归来行数超过 limit 即存在下一页,展示行裁回 limit。
+    // 放编排器而非适配器:探测是编排语义,mock 与数据服务适配器只需忠实执行 limit,
+    // 且裁剪后的快照(含 hasMore)直接进会话缓存,翻回旧页零额外请求。
+    const rows = await gateway.fetchData({ ...query, limit: query.limit + 1 });
+    const hasMore = rows.length > query.limit;
+    const visible = hasMore ? rows.slice(0, query.limit) : rows;
+    return visible.length === 0 ? { status: 'empty' } : { status: 'ready', rows: visible, hasMore };
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);
     return { status: 'error', error: { message } };

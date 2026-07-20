@@ -1,0 +1,29 @@
+{
+  "formatVersion": "1.0",
+  "id": "demo",
+  "title": "演示看板",
+  "filters": [
+    { "id": "f-time", "type": "timeRange", "label": "时间范围", "default": "last7d" }
+  ],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-detail",
+      "type": "table",
+      "title": "销售明细",
+      "position": { "x": 0, "y": 0, "w": 12, "h": 5 },
+      "pageSize": 10,
+      "columns": [
+        { "field": "mtime", "title": "日期", "width": 120, "fixed": "left", "sortable": true, "filterable": { "mode": "dateRange" } },
+        { "field": "region", "title": "区域", "sortable": true, "filterable": { "mode": "select" } },
+        { "field": "channel", "title": "渠道" },
+        { "field": "gmv", "title": "GMV", "width": 120, "fixed": "right", "sortable": true }
+      ],
+      "query": {
+        "metrics": ["gmv"],
+        "dimensions": ["mtime", "region", "channel"],
+        "filters": { "subscribe": ["f-time"] }
+      }
+    }
+  ]
+}
