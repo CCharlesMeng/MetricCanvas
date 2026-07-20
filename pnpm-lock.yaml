@@ -78,6 +78,9 @@ importers:
 
   packages/table-service-client:
     dependencies:
+      '@metriccanvas/runtime':
+        specifier: workspace:*
+        version: link:../runtime
       '@metriccanvas/spec-schema':
         specifier: workspace:*
         version: link:../spec-schema

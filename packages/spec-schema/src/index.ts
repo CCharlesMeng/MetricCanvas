@@ -20,18 +20,19 @@ export function validate(spec: unknown): TypedError[] {
 }
 
 function toTypedError(err: ErrorObject): TypedError {
-  // 缺失必填字段时 Ajv 定位到父节点,拼上缺失字段名使定位可直接使用
-  const path =
-    err.keyword === 'required'
-      ? `${err.instancePath}/${(err.params as { missingProperty: string }).missingProperty}`
-      : err.instancePath || '/';
-  return { type: 'SCHEMA_ERROR', path, message: describe(err) };
+  if (err.keyword === 'required') {
+    const missing = (err.params as { missingProperty: string }).missingProperty;
+    // Ajv 将缺失字段定位到父节点,拼上字段名使定位可直接使用
+    return {
+      type: 'SCHEMA_ERROR',
+      path: `${err.instancePath}/${missing}`,
+      message: `缺少必填字段 ${missing}`
+    };
+  }
+  return { type: 'SCHEMA_ERROR', path: err.instancePath || '/', message: describe(err) };
 }
 
 function describe(err: ErrorObject): string {
-  if (err.keyword === 'required') {
-    return `缺少必填字段 ${(err.params as { missingProperty: string }).missingProperty}`;
-  }
   if (err.keyword === 'additionalProperties') {
     return `存在未定义字段 ${(err.params as { additionalProperty: string }).additionalProperty}(拼写错误?)`;
   }

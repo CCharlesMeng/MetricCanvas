@@ -57,7 +57,7 @@
   <p class="muted">加载页面规格…</p>
 {:else if pageState.phase === 'missing'}
   <div class="error-page">
-    <h1>页面不存在</h1>
+    <h1>页面加载失败</h1>
     <p>{pageState.message}</p>
   </div>
 {:else if pageState.phase === 'invalid'}
@@ -85,7 +85,7 @@
                grid-row: {widget.position.y + 1} / span {widget.position.h};"
       >
         {#if widget.title}<h2 class="cell-title">{widget.title}</h2>{/if}
-        <!-- 数据快照的加载/错误/空态由运行时(壳)统一呈现,组件只接就绪快照 -->
+        <!-- 加载/错误/空态呈现暂由壳承担,切片5(#6)下沉到运行时统一呈现;组件只接就绪快照 -->
         {#if snapshot.status === 'loading'}
           <div class="skeleton"></div>
         {:else if snapshot.status === 'error'}

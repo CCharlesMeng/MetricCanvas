@@ -1,15 +1,11 @@
 import type { EffectiveQuery, Row } from '@metriccanvas/spec-schema';
-
-/** 与 @metriccanvas/runtime 的 TableServicePort 结构一致,由应用壳注入 */
-export interface TableServiceClient {
-  fetchData(query: EffectiveQuery): Promise<Row[]>;
-}
+import type { TableServicePort } from '@metriccanvas/runtime';
 
 /**
  * mock 实现:按生效查询的形状造确定性假数据,供离线开发与演示。
  * 真实表服务实现(apiQuery 方言翻译/归一化/批量分批)在切片2(#3)落地。
  */
-export function createMockClient(options: { delayMs?: number } = {}): TableServiceClient {
+export function createMockClient(options: { delayMs?: number } = {}): TableServicePort {
   const { delayMs = 400 } = options;
   return {
     async fetchData(query: EffectiveQuery): Promise<Row[]> {
