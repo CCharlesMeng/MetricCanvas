@@ -3,6 +3,7 @@ import { join, resolve } from 'node:path';
 import { validate } from './validate';
 import { fileNameErrors } from './file-name';
 import { navigateErrors } from './navigate';
+import { upgradeWarnings } from './version';
 import type { CatalogSnapshot } from './catalog';
 import type { Page } from './page';
 import type { TypedError } from './errors';
@@ -68,17 +69,29 @@ function main(argv: string[]): number {
 
   // 第二遍:navigate 跨文档校验(目标页存在、目标筛选器 id 有效)
   let failed = 0;
+  let warned = 0;
   for (const { file, errors, page } of results) {
     if (page) errors.push(...navigateErrors(page, knownPageIds, pagesById));
+    // N-1 升版警告:文档仍受支持、正常渲染,CI 提示不阻断(不改退出码)
+    const warnings = page ? upgradeWarnings(page) : [];
     if (errors.length > 0) {
       report(file, errors);
       failed++;
+    } else if (warnings.length > 0) {
+      console.log(`✓ ${file}(有升版警告)`);
+      warned++;
     } else {
       console.log(`✓ ${file}`);
     }
+    for (const warning of warnings) {
+      console.warn(`  ⚠ [UPGRADE_WARNING] ${warning.path} ${warning.message}`);
+    }
   }
 
-  console.log(`\n共 ${files.length} 个页面文档,${files.length - failed} 通过,${failed} 失败`);
+  console.log(
+    `\n共 ${files.length} 个页面文档,${files.length - failed} 通过,${failed} 失败` +
+      (warned > 0 ? `;${warned} 个有升版警告(不阻断)` : '')
+  );
   return failed > 0 ? 1 : 0;
 }
 
