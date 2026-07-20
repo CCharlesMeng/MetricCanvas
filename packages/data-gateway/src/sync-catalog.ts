@@ -8,7 +8,9 @@ export const DEFAULT_AGGREGATIONS = ['sum', 'avg', 'count'];
 
 export interface SyncCatalogOptions {
   baseUrl: string;
-  /** 注入 HTTP 边界,便于测试与后续加请求头(鉴权在 #3 接入) */
+  /** 鉴权头(x-operator-id/tenantId 等);真实值 #3 联调注入,对仿真可用占位值 */
+  headers?: Record<string, string>;
+  /** 注入 HTTP 边界,便于测试 */
   fetchImpl?: typeof fetch;
   now?: () => Date;
 }
@@ -28,13 +30,14 @@ interface Envelope<T> {
  * 活服务联调(鉴权头、isTest 语义)在切片2(#3)落实。
  */
 export async function syncCatalog(options: SyncCatalogOptions): Promise<CatalogSnapshot> {
-  const { baseUrl, fetchImpl = fetch, now = () => new Date() } = options;
+  const { baseUrl, headers = {}, fetchImpl = fetch, now = () => new Date() } = options;
+  const client: Client = { baseUrl, headers, fetchImpl };
 
-  const services = await getServices(baseUrl, fetchImpl);
+  const services = await getServices(client);
 
   const fieldNames = new Set<string>();
   for (const serviceCode of services) {
-    for (const name of await introspectFields(baseUrl, fetchImpl, serviceCode)) {
+    for (const name of await introspectFields(client, serviceCode)) {
       fieldNames.add(name);
     }
   }
@@ -49,7 +52,7 @@ export async function syncCatalog(options: SyncCatalogOptions): Promise<CatalogS
     }));
 
   const dimensionCodes = dimensions.map((d) => d.code);
-  const metrics: CatalogMetric[] = (await getMetricBaseInfo(baseUrl, fetchImpl))
+  const metrics: CatalogMetric[] = (await getMetricBaseInfo(client))
     .sort((a, b) => (a.metric_code < b.metric_code ? -1 : 1))
     .map((m) => ({
       code: m.metric_code,
@@ -74,48 +77,47 @@ function isMeasureField(name: string): boolean {
   return name.startsWith('metric_') || name === 'cnt' || name.endsWith('_sum');
 }
 
-async function getServices(baseUrl: string, fetchImpl: typeof fetch): Promise<string[]> {
-  const url = `${baseUrl}/rest/cbc/cbcbidataservice/v1/services/list?serviceType=1`;
+interface Client {
+  baseUrl: string;
+  headers: Record<string, string>;
+  fetchImpl: typeof fetch;
+}
+
+async function getServices(client: Client): Promise<string[]> {
+  const url = `${client.baseUrl}/rest/cbc/cbcbidataservice/v1/services/list?serviceType=1`;
   const envelope = await unwrap<{ detailData: Array<{ serviceCode: string }> }>(
-    await fetchImpl(url, { method: 'GET' })
+    await client.fetchImpl(url, { method: 'GET', headers: client.headers })
   );
   return envelope.detailData.map((s) => s.serviceCode);
 }
 
-async function introspectFields(
-  baseUrl: string,
-  fetchImpl: typeof fetch,
-  serviceCode: string
-): Promise<string[]> {
+async function introspectFields(client: Client, serviceCode: string): Promise<string[]> {
   // 别名使响应以 serviceCode 为键(《中间层分析.md》§4.3.4 的录制样例即此形状)
   const data = await graphql<Record<string, { fields: Array<{ name: string }> }>>(
-    baseUrl,
-    fetchImpl,
+    client,
     `{${serviceCode}:__type(name:"${serviceCode}"){fields{name}}}`
   );
   return (data[serviceCode]?.fields ?? []).map((f) => f.name);
 }
 
 async function getMetricBaseInfo(
-  baseUrl: string,
-  fetchImpl: typeof fetch
+  client: Client
 ): Promise<Array<{ metric_code: string; metric_name_zh: string }>> {
   // request 参数形状按《中间层分析.md》§3.4/§8.7 录制样例保真;不带 metric_code 取全量
   const data = await graphql<{
     restQuery: { MetricBaseInfo: Array<{ metric_code: string; metric_name_zh: string }> };
   }>(
-    baseUrl,
-    fetchImpl,
+    client,
     `{restQuery{MetricBaseInfo(request:{metric_type:"element", limit:-1, offset:0}){metric_code metric_name_zh scope}}}`
   );
   return data.restQuery.MetricBaseInfo;
 }
 
 /** GraphQL-over-HTTP:非标准协议,查询体包装为 {apiQuery, isTest}(《中间层分析.md》§3.1) */
-async function graphql<T>(baseUrl: string, fetchImpl: typeof fetch, apiQuery: string): Promise<T> {
-  const response = await fetchImpl(`${baseUrl}/rest/cbc/cbcbidynamicapiservice/v1/graphql`, {
+async function graphql<T>(client: Client, apiQuery: string): Promise<T> {
+  const response = await client.fetchImpl(`${client.baseUrl}/rest/cbc/cbcbidynamicapiservice/v1/graphql`, {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
+    headers: { 'content-type': 'application/json', ...client.headers },
     body: JSON.stringify({ apiQuery, isTest: true })
   });
   return unwrap<T>(response);

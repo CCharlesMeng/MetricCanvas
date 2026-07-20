@@ -66,6 +66,10 @@ importers:
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../runtime
+    devDependencies:
+      '@metriccanvas/data-service-sim':
+        specifier: workspace:*
+        version: link:../../tools/data-service-sim
 
   packages/page:
     dependencies:
@@ -90,6 +94,8 @@ importers:
       svelte:
         specifier: ^5.0.0
         version: 5.56.6
+
+  tools/data-service-sim: {}
 
 packages:
 

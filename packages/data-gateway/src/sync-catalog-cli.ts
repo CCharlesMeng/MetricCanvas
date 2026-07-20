@@ -15,7 +15,14 @@ async function main(argv: string[]): Promise<number> {
   }
   const out = resolve(flagValue(argv, '--out') ?? 'catalog/snapshot.json');
 
-  const snapshot = await syncCatalog({ baseUrl });
+  // 鉴权头:真实值 #3 联调后接入;占位值对数据服务仿真可用
+  const snapshot = await syncCatalog({
+    baseUrl,
+    headers: {
+      'x-operator-id': flagValue(argv, '--operator') ?? 'dev',
+      tenantId: flagValue(argv, '--tenant') ?? 'dev'
+    }
+  });
   mkdirSync(dirname(out), { recursive: true });
   writeFileSync(out, JSON.stringify(snapshot, null, 2) + '\n');
   console.log(
