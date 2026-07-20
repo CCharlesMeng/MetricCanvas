@@ -102,6 +102,29 @@ function invariantErrors(page: Page): TypedError[] {
 
     if (widget.type === 'barChart') {
       (widget.interactions ?? []).forEach((interaction, j) => {
+        if ('navigate' in interaction) {
+          // 跨页下钻的页内可校验部分;目标页存在性与目标筛选器有效性属仓库知识,归 validate CLI(navigateErrors)
+          const { carryFilters, setFilters } = interaction.navigate;
+          (carryFilters ?? []).forEach((filterId, k) => {
+            if (!filterIds.has(filterId)) {
+              errors.push({
+                type: 'SCHEMA_ERROR',
+                path: `/widgets/${i}/interactions/${j}/navigate/carryFilters/${k}`,
+                message: `carryFilters 引用了本页未声明的筛选器:${filterId}`
+              });
+            }
+          });
+          for (const [targetId, placeholder] of Object.entries(setFilters ?? {})) {
+            const notQueried = placeholderNotQueriedError(
+              widget,
+              placeholder,
+              `/widgets/${i}/interactions/${j}/navigate/setFilters/${targetId}`
+            );
+            if (notQueried) errors.push(notQueried);
+          }
+          return;
+        }
+
         const target = dimensionFiltersById.get(interaction.writeFilter);
         if (!target) {
           errors.push({
@@ -111,13 +134,12 @@ function invariantErrors(page: Page): TypedError[] {
           });
         }
         const code = placeholderDimension(interaction.value);
-        if (!(widget.query.dimensions ?? []).includes(code)) {
-          errors.push({
-            type: 'SCHEMA_ERROR',
-            path: `/widgets/${i}/interactions/${j}/value`,
-            message: `取值占位引用的维度 ${code} 不在本组件查询的 dimensions 中`
-          });
-        }
+        const notQueried = placeholderNotQueriedError(
+          widget,
+          interaction.value,
+          `/widgets/${i}/interactions/${j}/value`
+        );
+        if (notQueried) errors.push(notQueried);
         // 占位维度须与目标筛选器约束的维度一致,否则运行时会把 A 维度的值写进 B 维度的条件
         if (target && code !== target.dimension) {
           errors.push({
@@ -130,6 +152,21 @@ function invariantErrors(page: Page): TypedError[] {
     }
   });
   return errors;
+}
+
+/** 取值占位引用的维度必须在本组件查询的 dimensions 中(writeFilter 与 navigate.setFilters 共用) */
+function placeholderNotQueriedError(
+  widget: Page['widgets'][number],
+  placeholder: string,
+  path: string
+): TypedError | null {
+  const code = placeholderDimension(placeholder);
+  if ((widget.query.dimensions ?? []).includes(code)) return null;
+  return {
+    type: 'SCHEMA_ERROR',
+    path,
+    message: `取值占位引用的维度 ${code} 不在本组件查询的 dimensions 中`
+  };
 }
 
 /**

@@ -1,0 +1,27 @@
+{
+  "formatVersion": "1.0",
+  "id": "navigate-carry-unknown-filter",
+  "title": "carryFilters 引用了本页未声明的筛选器",
+  "filters": [
+    { "id": "f-time", "type": "timeRange", "label": "时间范围" }
+  ],
+  "layout": { "type": "grid", "columns": 12 },
+  "widgets": [
+    {
+      "id": "w-by-channel",
+      "type": "barChart",
+      "position": { "x": 0, "y": 0, "w": 6, "h": 4 },
+      "query": { "metrics": ["gmv"], "dimensions": ["channel"] },
+      "interactions": [
+        {
+          "on": "click",
+          "navigate": {
+            "page": "sales-detail",
+            "carryFilters": ["f-nonexistent"],
+            "setFilters": { "f-channel": "$dimension.channel" }
+          }
+        }
+      ]
+    }
+  ]
+}

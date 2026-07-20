@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import { replaceState } from '$app/navigation';
+  import { goto, replaceState } from '$app/navigation';
   import {
     placeholderDimension,
     validate,
@@ -13,6 +13,7 @@
   } from '@metriccanvas/page';
   import {
     createFilterState,
+    drillThroughSearch,
     initialFilterValues,
     orchestrate,
     type FilterState,
@@ -84,7 +85,10 @@
     // ④ 筛选状态:按声明的 default 初始化;URL 带筛选参数则整体恢复(可分享还原)
     const fromDeclarations = initialFilterValues(declarations);
     const fromURL = parseFilterURL(location.search, declarations);
-    const state = createFilterState(fromURL.size > 0 ? fromURL : fromDeclarations);
+    // 逐筛选器合并:URL 有该 id 的值则优先,缺席回落声明的 default——跨页下钻只携带
+    // 部分筛选器,目标页其余筛选器的 default 不应被整体作废。已知边界:被清除的
+    // 筛选器不入 URL,分享后对方会回落 default(完全还原需显式清除标记,暂不建)。
+    const state = createFilterState(new Map([...fromDeclarations, ...fromURL]));
     filterState = state;
 
     let primed = false;
@@ -160,10 +164,20 @@
     filterState?.write(declId, range ? { type: 'timeRange', ...range } : null);
   }
 
-  /** ⑨ 按页面 interactions 将点击事件写回筛选状态(页内下钻),组件不感知联动 */
+  /**
+   * ⑨ 按页面 interactions 执行点击事件:回写筛选状态(页内下钻)或跳转目标页(跨页下钻),
+   * 组件不感知联动与路由——navigate 由壳执行,组件仍只上抛 {row}(纯渲染原则)。
+   */
   function handleBarClick(widget: BarChartWidget, row: Row) {
     for (const interaction of widget.interactions ?? []) {
       if (interaction.on !== 'click') continue;
+      if ('navigate' in interaction) {
+        // 跨页下钻:组装目标页 URL(序列化复用筛选状态的 toURL 编码),目标页生命周期④从 URL 恢复;
+        // navigate 命中即终止后续交互(interaction.ts 的顺序语义:离页后回写无意义)
+        const search = drillThroughSearch(interaction.navigate, filterValues, row);
+        void goto(`/pages/${interaction.navigate.page}${search ? `?${search}` : ''}`);
+        return;
+      }
       const code = placeholderDimension(interaction.value);
       const clicked = row[code];
       const target = declarations.find((decl) => decl.id === interaction.writeFilter);

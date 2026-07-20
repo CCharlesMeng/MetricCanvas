@@ -120,6 +120,42 @@ export const pageSchema = {
         }
       }
     },
+    navigateInteraction: {
+      type: 'object',
+      description: '跨页下钻交互:点击跳转目标页并经 URL 携带筛选条件;由运行时执行',
+      required: ['on', 'navigate'],
+      additionalProperties: false,
+      properties: {
+        on: { type: 'string', enum: ['click'] },
+        navigate: {
+          type: 'object',
+          description: '跳转声明:目标页 + 随行筛选条件(物理载体是 URL)',
+          required: ['page'],
+          additionalProperties: false,
+          properties: {
+            page: {
+              type: 'string',
+              pattern: '^[a-z0-9][a-z0-9-]*$',
+              description: '目标看板页面 id;存在性由 validate CLI 跨文档校验'
+            },
+            carryFilters: {
+              type: 'array',
+              items: { type: 'string' },
+              description: '携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器(校验器额外检查)'
+            },
+            setFilters: {
+              type: 'object',
+              description: '用点击上下文写入目标页筛选器:{ 目标筛选器 id: "$dimension.<code>" }',
+              additionalProperties: {
+                type: 'string',
+                pattern: '^\\$dimension\\.[A-Za-z0-9_]+$',
+                description: '取值占位 $dimension.<code>,运行时从点击上下文取该维度的值'
+              }
+            }
+          }
+        }
+      }
+    },
     writeFilterInteraction: {
       type: 'object',
       description: '页内下钻交互:点击回写筛选状态,联动其它订阅 widget;由运行时执行',
@@ -234,8 +270,13 @@ export const pageSchema = {
         query: { $ref: '#/definitions/structuredQuery' },
         interactions: {
           type: 'array',
-          description: '交互声明清单;navigate 跨页下钻由切片7(#8)加入',
-          items: { $ref: '#/definitions/writeFilterInteraction' }
+          description: '交互声明清单:页内下钻(writeFilter)与跨页下钻(navigate)',
+          items: {
+            oneOf: [
+              { $ref: '#/definitions/writeFilterInteraction' },
+              { $ref: '#/definitions/navigateInteraction' }
+            ]
+          }
         }
       }
     }
