@@ -6,7 +6,7 @@
     "dev": "pnpm --filter canvas dev",
     "build": "pnpm --filter canvas build",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway",
+    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json",
     "check": "pnpm typecheck && pnpm --filter canvas check"
   },
   "devDependencies": {
