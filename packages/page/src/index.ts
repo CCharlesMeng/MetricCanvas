@@ -6,6 +6,7 @@ export * from './query';
 export * from './snapshot';
 export * from './catalog';
 export * from './canonical-json';
+export * from './component-catalog';
 export * from './errors';
 export { pageSchema } from './schema';
 export { validate } from './validate';

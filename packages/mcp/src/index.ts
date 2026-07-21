@@ -3,7 +3,12 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
-import { pageSchema, validate, versionPolicy } from '@metriccanvas/page';
+import {
+  componentCatalog,
+  pageSchema,
+  validate,
+  versionPolicy
+} from '@metriccanvas/page';
 import type { CatalogDiscovery } from '@metriccanvas/catalog-discovery';
 import type { McpClient } from '@metriccanvas/agent-runner';
 import type {
@@ -31,6 +36,15 @@ const pageRevisionSelectorSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('exact'), revisionId: z.string().min(1) })
 ]);
 
+export const COMPONENT_SELECTION_GUIDE = componentCatalog
+  .map(
+    (component) =>
+      `${component.type}: ${component.purpose};适用=${component.chooseWhen.join('、')};` +
+      `数据=${component.dataShape};必填=${component.requiredProps.join('、') || '无'};` +
+      `建议跨度=${component.defaultSpan}`
+  )
+  .join('\n');
+
 export const PAGE_BUILDING_PROMPT = [
   '你是 MetricCanvas 页面搭建 Agent。',
   '新建看板页面时严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 申请发布”执行。',
@@ -39,6 +53,10 @@ export const PAGE_BUILDING_PROMPT = [
   '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
   '只保存 validate_page 返回 valid=true 的当前 schemaVersion 页面。',
   '结构化查询只允许放在 query 页面数据源中;组件必须经 data 数据槽引用页面数据源,不得携带 query 或数据行。',
+  '先把用户诉求拆成分析任务,再按组件能力选择一个或多个组件:当前值用 metricCard,类别比较用 barChart,时间变化用 lineChart,少量类别占比用 pieChart,Top N 用 rankingCard,逐行核对用 table;完整页面通常先放 reportHeader。',
+  '同一诉求包含多个分析任务时组合多个组件,每个组件绑定形状匹配的命名页面数据源;不得为了“看起来丰富”添加与诉求无关的图表。',
+  '开发期可由 mock 数据网关执行 query 页面数据源;mock 只替代数据服务供数,页面仍必须声明合法指标、维度、字段契约和结构化查询,不得把假数据塞进组件 props。',
+  `组件能力目录:\n${COMPONENT_SELECTION_GUIDE}`,
   '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;props.rows 只声明该指标行。',
   '没有筛选器时省略 query 页面数据源中的 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
   `单指标卡最小合法示例:{"schemaVersion":"${versionPolicy.current}","id":"<confirmed-id>","dataSources":{"main":{"fields":{"<metric-code>":{"type":"number","role":"metric"}},"source":{"type":"query","query":{"metrics":["<metric-code>"],"aggregation":"sum"}}}},"sections":[{"id":"overview","title":"<title>","layout":{"type":"grid","columns":12},"components":[{"id":"w-metric","type":"metricCard","layout":{"span":3},"data":{"main":"main"},"props":{"title":"<title>","rows":[{"label":"<metric-name>","valueField":"<metric-code>"}]}}]}]}`,
@@ -83,6 +101,24 @@ export function createMetricCanvasMcpServer(
           uri: uri.toString(),
           mimeType: 'application/schema+json',
           text: JSON.stringify(pageSchema)
+        }
+      ]
+    })
+  );
+
+  server.registerResource(
+    'component-catalog',
+    'metriccanvas://page/components',
+    {
+      title: '组件能力目录',
+      mimeType: 'application/json'
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.toString(),
+          mimeType: 'application/json',
+          text: JSON.stringify(componentCatalog)
         }
       ]
     })

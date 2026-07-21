@@ -78,16 +78,17 @@ describe('页面搭建工作台状态', () => {
     expect(input.document).toMatchObject({
       schemaVersion: '1.0',
       dataSources: {
-        sales: {
+        'summary-gmv': {
           source: { type: 'query' }
         }
       },
       sections: [
         {
           components: [
+            expect.objectContaining({ type: 'reportHeader' }),
             expect.objectContaining({
               type: 'metricCard',
-              data: { main: 'sales' }
+              data: { main: 'summary-gmv' }
             })
           ]
         }

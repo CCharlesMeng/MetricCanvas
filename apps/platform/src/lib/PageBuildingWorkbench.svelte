@@ -13,7 +13,8 @@
   } from './workbench-state';
 
   const STORAGE_KEY = 'metriccanvas-workbench-session-v2';
-  const DEFAULT_INTENT = '创建一个展示成交总额的单指标卡页面';
+  const DEFAULT_INTENT =
+    '创建销售经营概览：展示成交总额和订单量、区域对比、成交趋势、渠道占比和区域明细';
 
   interface StoredSession {
     runId: string;

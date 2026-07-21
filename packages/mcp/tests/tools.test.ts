@@ -118,6 +118,25 @@ describe('MetricCanvas MCP 工具契约', () => {
     expect(promptText).not.toContain('\\"widgets\\"');
     expect(promptText).toContain('get_page(selector=latest)');
     expect(promptText).toContain('不得再次请求页面 id 确认');
+    expect(promptText).toContain('类别比较用 barChart');
+    expect(promptText).toContain('时间变化用 lineChart');
+    expect(promptText).toContain('mock 数据网关');
+
+    const resources = await client.listResources();
+    expect(resources.resources).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ uri: 'metriccanvas://page/components' })
+      ])
+    );
+    const componentResource = await client.readResource({
+      uri: 'metriccanvas://page/components'
+    });
+    const componentText = componentResource.contents
+      .map((content) => ('text' in content ? content.text : ''))
+      .join('');
+    expect(componentText).toContain('"type":"metricCard"');
+    expect(componentText).toContain('"type":"lineChart"');
+    expect(componentText).toContain('"type":"table"');
 
     const result = await client.callTool({
       name: 'search_catalog',

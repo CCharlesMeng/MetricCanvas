@@ -19,7 +19,7 @@ import {
   createPageIdConfirmationMcpClient,
   createMetricCanvasMcpServer
 } from '@metriccanvas/mcp';
-import { createSingleMetricCardScriptedProvider } from './scripted-model.server';
+import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 
 export interface PlatformServices {
   lifecycle: PageLifecycle;
@@ -76,7 +76,7 @@ async function createServices(): Promise<PlatformServices> {
     lifecycle,
     createRunner({ confirmedPageIds, runId }) {
       return createAgentRunner({
-        model: deepSeekModel ?? createSingleMetricCardScriptedProvider(runId),
+        model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
         mcp: createPageIdConfirmationMcpClient({
           client: mcp.client,
           confirmedPageIds
