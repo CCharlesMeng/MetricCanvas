@@ -50,6 +50,21 @@ const unusedLifecycle: PageLifecycle = {
   confirmPublish: async () => {
     throw new Error('MCP 不提供确认发布');
   },
+  rejectPublish: async () => {
+    throw new Error('MCP 不提供拒绝发布');
+  },
+  cancelPublish: async () => {
+    throw new Error('本用例不应取消发布');
+  },
+  forceReleasePublish: async () => {
+    throw new Error('MCP 不提供强制释放');
+  },
+  listPublishAudit: async () => {
+    throw new Error('本用例不应读取发布审计');
+  },
+  rollbackRevision: async () => {
+    throw new Error('本用例不应回滚');
+  },
   getPublished: async () => {
     throw new Error('本用例不应读取已发布页面');
   },

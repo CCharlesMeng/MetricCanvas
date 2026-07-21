@@ -57,7 +57,7 @@ async function createServices(): Promise<PlatformServices> {
   const mcpServer = createMetricCanvasMcpServer({
     catalog,
     lifecycle,
-    context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
+    context: () => ({ actorId: 'developer-1', clientId: 'workbench', roles: [] }),
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
   });
@@ -89,10 +89,11 @@ async function createServices(): Promise<PlatformServices> {
 }
 
 function createDataServiceSimCatalogProvider(baseUrl: string): CatalogProvider {
-  let current: ReturnType<CatalogProvider['current']> | undefined;
+  let inFlight: ReturnType<CatalogProvider['current']> | undefined;
   return {
-    current() {
-      current ??= syncCatalog({
+    async current() {
+      if (inFlight) return inFlight;
+      const pending = syncCatalog({
         baseUrl,
         headers: {
           'x-operator-id': 'developer-1',
@@ -100,13 +101,13 @@ function createDataServiceSimCatalogProvider(baseUrl: string): CatalogProvider {
           appId: 'metriccanvas',
           cftk: 'dev'
         }
-      })
-        .then((snapshot) => ({ version: catalogVersionFor(snapshot), snapshot }))
-        .catch((cause) => {
-          current = undefined;
-          throw cause;
-        });
-      return current;
+      }).then((snapshot) => ({ version: catalogVersionFor(snapshot), snapshot }));
+      inFlight = pending;
+      try {
+        return await pending;
+      } finally {
+        if (inFlight === pending) inFlight = undefined;
+      }
     }
   };
 }

@@ -19,7 +19,7 @@ const catalog: CatalogSnapshot = {
   dimensions: []
 };
 
-const context = { actorId: 'developer-1', clientId: 'workbench' };
+const context = { actorId: 'developer-1', clientId: 'workbench', roles: ['publisher'] as const };
 let nextId = 100;
 
 function revisionId(): string {

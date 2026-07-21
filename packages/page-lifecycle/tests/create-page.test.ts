@@ -138,7 +138,11 @@ describe('页面生命周期:首次保存', () => {
           `https://platform.example/publish/${id}/confirm?token=${encodeURIComponent(token)}`
       }
     });
-    const context = { actorId: 'developer-1', clientId: 'workbench' };
+    const context = {
+      actorId: 'developer-1',
+      clientId: 'workbench',
+      roles: ['publisher'] as const
+    };
 
     const saved = await lifecycle.saveRevision(
       {
@@ -182,8 +186,12 @@ describe('页面生命周期:首次保存', () => {
         pageId: 'sales-total-published',
         revisionId,
         requestedBy: 'developer-1',
+        requestedClientId: 'workbench',
         status: 'pending',
-        expiresAt: '2026-07-20T12:45:00.000Z'
+        expiresAt: '2026-07-20T12:45:00.000Z',
+        decidedBy: null,
+        decidedClientId: null,
+        decidedAt: null
       }
     });
 

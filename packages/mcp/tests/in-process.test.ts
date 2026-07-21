@@ -88,6 +88,21 @@ const unusedLifecycle = {
   confirmPublish: async () => {
     throw new Error('未调用');
   },
+  rejectPublish: async () => {
+    throw new Error('未调用');
+  },
+  cancelPublish: async () => {
+    throw new Error('未调用');
+  },
+  forceReleasePublish: async () => {
+    throw new Error('未调用');
+  },
+  listPublishAudit: async () => {
+    throw new Error('未调用');
+  },
+  rollbackRevision: async () => {
+    throw new Error('未调用');
+  },
   getPublished: async () => {
     throw new Error('未调用');
   },

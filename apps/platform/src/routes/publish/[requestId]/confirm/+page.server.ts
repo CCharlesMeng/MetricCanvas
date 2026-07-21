@@ -4,7 +4,8 @@ import type { Actions, PageServerLoad } from './$types';
 
 const confirmationContext = {
   actorId: 'developer-1',
-  clientId: 'publish-confirmation'
+  clientId: 'publish-confirmation',
+  roles: ['publisher'] as const
 };
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -25,8 +26,16 @@ export const load: PageServerLoad = async ({ params }) => {
   if (!revision.ok) {
     error(404, { message: revision.error.message });
   }
+  const audit = await lifecycle.listPublishAudit(
+    { requestId: params.requestId },
+    confirmationContext
+  );
+  if (!audit.ok) {
+    error(403, { message: audit.error.message });
+  }
   return {
     request: result.request,
+    audit: audit.events,
     revision: {
       revisionNumber: revision.revision.revisionNumber,
       metadataVersion: revision.revision.metadataVersion,
@@ -41,7 +50,7 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ params, url }) => {
+  default: async ({ params, url, request }) => {
     const token = url.searchParams.get('token');
     if (!token) {
       return fail(400, {
@@ -49,6 +58,33 @@ export const actions: Actions = {
       });
     }
     const { lifecycle, runtimeOrigin } = await getPlatformServices();
+    const data = await request.formData();
+    const decision = data.get('decision');
+    const reason = String(data.get('reason') ?? '').trim() || undefined;
+    if (decision === 'reject') {
+      const result = await lifecycle.rejectPublish(
+        { requestId: params.requestId, token, reason },
+        confirmationContext
+      );
+      if (!result.ok) return fail(409, { error: result.error });
+      return { success: true, decision: 'rejected' as const };
+    }
+    if (decision === 'cancel') {
+      const result = await lifecycle.cancelPublish(
+        { requestId: params.requestId, reason },
+        confirmationContext
+      );
+      if (!result.ok) return fail(409, { error: result.error });
+      return { success: true, decision: 'cancelled' as const };
+    }
+    if (decision !== 'approve') {
+      return fail(400, {
+        error: {
+          code: 'INVALID_PUBLISH_DECISION',
+          message: '必须明确选择批准、拒绝或取消'
+        }
+      });
+    }
     const result = await lifecycle.confirmPublish(
       { requestId: params.requestId, token },
       confirmationContext
@@ -58,6 +94,7 @@ export const actions: Actions = {
     }
     return {
       success: true,
+      decision: 'published' as const,
       pageId: result.revision.pageId,
       revisionId: result.revision.revisionId,
       publishedUrl: `${runtimeOrigin}/pages/${result.revision.pageId}`

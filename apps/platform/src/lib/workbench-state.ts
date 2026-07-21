@@ -93,7 +93,8 @@ export type WorkbenchPublishStatus =
   | 'expired'
   | 'validation_failed'
   | 'rejected'
-  | 'cancelled';
+  | 'cancelled'
+  | 'force_released';
 
 export interface WorkbenchState {
   stages: WorkbenchStage[];

@@ -33,6 +33,10 @@
       <dd>{data.revision.createdBy} · {data.revision.createdAt}</dd>
     </div>
     <div>
+      <dt>发起人</dt>
+      <dd>{data.request.requestedBy} · <code>{data.request.requestedClientId}</code></dd>
+    </div>
+    <div>
       <dt>租约到期</dt>
       <dd><time datetime={data.request.expiresAt}>{data.request.expiresAt}</time></dd>
     </div>
@@ -44,6 +48,17 @@
 
   <iframe title="待发布页面修订预览" src={data.previewUrl}></iframe>
 
+  <h2>发布审计</h2>
+  <ol class="audit">
+    {#each data.audit as event}
+      <li>
+        <strong>{event.action}</strong>
+        <span>{event.actorId ?? '系统'} · {event.clientId ?? '超时任务'} · {event.occurredAt}</span>
+        {#if event.reason}<small>{event.reason}</small>{/if}
+      </li>
+    {/each}
+  </ol>
+
   {#if form?.error}
     <div class="error">
       <strong>{form.error.code}</strong>
@@ -51,15 +66,27 @@
     </div>
   {/if}
 
-  {#if form?.success}
+  {#if form?.success && form.decision === 'published'}
     <div class="success">
       <strong>发布成功</strong>
       <span>R{data.revision.revisionNumber} · {form.revisionId} 已成为当前发布修订。</span>
       <a href={form.publishedUrl}>打开稳定页面 URL</a>
     </div>
+  {:else if form?.success}
+    <div class="closed">发布请求已{form.decision === 'rejected' ? '拒绝' : '取消'}，发布租约已释放。</div>
   {:else if data.request.status === 'pending'}
     <form method="POST">
-      <button type="submit">确认发布 R{data.revision.revisionNumber}</button>
+      <label>
+        决定说明（可选）
+        <input name="reason" placeholder="例如：指标口径待确认" />
+      </label>
+      <div class="actions">
+        <button name="decision" value="approve" type="submit">确认发布 R{data.revision.revisionNumber}</button>
+        <button class="secondary" name="decision" value="reject" type="submit">拒绝</button>
+        {#if data.request.requestedBy === 'developer-1'}
+          <button class="secondary" name="decision" value="cancel" type="submit">取消申请</button>
+        {/if}
+      </div>
     </form>
   {:else}
     <div class="closed">
@@ -106,6 +133,45 @@
     font: inherit;
     font-weight: 650;
     cursor: pointer;
+  }
+  form,
+  label {
+    display: grid;
+    gap: 10px;
+  }
+  input {
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font: inherit;
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  button.secondary {
+    color: #3f3f46;
+    background: #e4e4e7;
+  }
+  h2 {
+    margin: 8px 0;
+    font-size: 18px;
+  }
+  .audit {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 20px;
+    padding-left: 22px;
+  }
+  .audit li {
+    padding-left: 4px;
+  }
+  .audit span,
+  .audit small {
+    display: block;
+    color: #71717a;
+    font-size: 12px;
   }
   .error,
   .success,

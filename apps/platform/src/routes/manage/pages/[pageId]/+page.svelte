@@ -27,6 +27,11 @@
   let loadingDiff = $state(false);
   let error = $state('');
   let diffError = $state('');
+  let rollbackMessage = $state('');
+  let rollingBack = $state(false);
+  let publishMessage = $state('');
+  let confirmationUrl = $state('');
+  let requestingPublish = $state(false);
 
   const pageId = $derived(page.params.pageId ?? '');
   const comparison = $derived(selectRevisionComparison(revisions, selectedRevisionId));
@@ -98,6 +103,57 @@
     }
   }
 
+  async function rollbackSelected() {
+    if (!comparison || comparison.selected.revisionId === revisions[0]?.revisionId) return;
+    rollingBack = true;
+    rollbackMessage = '';
+    try {
+      const response = await fetch(`/api/pages/${encodeURIComponent(pageId)}/rollback`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          targetRevisionId: comparison.selected.revisionId,
+          idempotencyKey: crypto.randomUUID()
+        })
+      });
+      if (!response.ok) throw new Error(await responseMessage(response));
+      const result = (await response.json()) as { revision: Revision };
+      rollbackMessage = `已复制为 R${result.revision.revisionNumber}，请预览后重新申请发布。`;
+      await loadPage();
+    } catch (cause) {
+      rollbackMessage = cause instanceof Error ? cause.message : '回滚失败';
+    } finally {
+      rollingBack = false;
+    }
+  }
+
+  async function requestPublishSelected() {
+    if (!comparison || comparison.selected.revisionId !== revisions[0]?.revisionId) return;
+    requestingPublish = true;
+    publishMessage = '';
+    confirmationUrl = '';
+    try {
+      const response = await fetch(`/api/pages/${encodeURIComponent(pageId)}/publish`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          revisionId: comparison.selected.revisionId,
+          idempotencyKey: crypto.randomUUID()
+        })
+      });
+      if (!response.ok) throw new Error(await responseMessage(response));
+      const result = (await response.json()) as {
+        request: { confirmationUrl: string; expiresAt: string };
+      };
+      confirmationUrl = result.request.confirmationUrl;
+      publishMessage = `发布租约已取得，将于 ${result.request.expiresAt} 到期。`;
+    } catch (cause) {
+      publishMessage = cause instanceof Error ? cause.message : '发起发布失败';
+    } finally {
+      requestingPublish = false;
+    }
+  }
+
   async function responseMessage(response: Response): Promise<string> {
     const payload = (await response.json().catch(() => null)) as {
       error?: { message?: string };
@@ -161,6 +217,24 @@
             <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash}</code></dd></div>
             <div><dt>元数据版本</dt><dd>{comparison.selected.metadataVersion}</dd></div>
           </dl>
+          <div class="revision-actions">
+            {#if comparison.selected.revisionId === revisions[0]?.revisionId}
+              <button disabled={requestingPublish} onclick={requestPublishSelected}>
+                {requestingPublish ? '正在取得发布租约…' : `发起发布 R${comparison.selected.revisionNumber}`}
+              </button>
+            {:else}
+              <button disabled={rollingBack} onclick={rollbackSelected}>
+                {rollingBack ? '正在复制旧内容…' : `回滚到 R${comparison.selected.revisionNumber}`}
+              </button>
+            {/if}
+            {#if confirmationUrl}
+              <a class="button-link" href={confirmationUrl} target="_blank" rel="noreferrer">
+                打开发布确认页 ↗
+              </a>
+            {/if}
+          </div>
+          {#if rollbackMessage}<p class="muted">{rollbackMessage}</p>{/if}
+          {#if publishMessage}<p class="muted">{publishMessage}</p>{/if}
         </section>
 
         <section>
@@ -313,6 +387,20 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 14px;
     margin: 0;
+  }
+  .revision-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .button-link {
+    border: 1px solid #27272a;
+    border-radius: 7px;
+    padding: 8px 12px;
+    color: #27272a;
+    font: inherit;
+    text-decoration: none;
   }
   .audit dl div {
     min-width: 0;

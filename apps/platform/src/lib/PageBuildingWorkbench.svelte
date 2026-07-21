@@ -311,7 +311,8 @@
           expired: '租约已到期',
           validation_failed: '发布复验失败',
           rejected: '已拒绝',
-          cancelled: '已取消'
+          cancelled: '已取消',
+          force_released: '已强制释放'
         }[workbench.publish.status];
       }
       return '需要处理';
@@ -414,7 +415,8 @@
       value === 'expired' ||
       value === 'validation_failed' ||
       value === 'rejected' ||
-      value === 'cancelled'
+      value === 'cancelled' ||
+      value === 'force_released'
     );
   }
 

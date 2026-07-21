@@ -21,7 +21,10 @@ export interface CatalogProvider {
 export interface LifecycleContext {
   actorId: string;
   clientId: string;
+  roles?: readonly LifecycleRole[];
 }
+
+export type LifecycleRole = 'publisher' | 'admin';
 
 export interface PageRevision {
   revisionId: string;
@@ -116,6 +119,28 @@ export interface ConfirmPublishCommand {
   token: string;
 }
 
+export interface RejectPublishCommand {
+  requestId: string;
+  token: string;
+  reason?: string;
+}
+
+export interface CancelPublishCommand {
+  requestId: string;
+  reason?: string;
+}
+
+export interface ForceReleasePublishCommand {
+  requestId: string;
+  reason: string;
+}
+
+export interface RollbackRevisionCommand {
+  pageId: string;
+  targetRevisionId: string;
+  idempotencyKey: string;
+}
+
 export interface PublishRequest {
   requestId: string;
   pageId: string;
@@ -130,16 +155,46 @@ export type PublishRequestStatus =
   | 'expired'
   | 'validation_failed'
   | 'rejected'
-  | 'cancelled';
+  | 'cancelled'
+  | 'force_released';
 
 export interface PublishRequestDetails {
   requestId: string;
   pageId: string;
   revisionId: string;
   requestedBy: string;
+  requestedClientId: string;
   status: PublishRequestStatus;
   expiresAt: string;
+  decidedBy: string | null;
+  decidedClientId: string | null;
+  decidedAt: string | null;
 }
+
+export type PublishAuditAction =
+  | 'requested'
+  | 'approved'
+  | 'rejected'
+  | 'cancelled'
+  | 'expired'
+  | 'force_released'
+  | 'validation_failed';
+
+export interface PublishAuditEvent {
+  auditId: string;
+  requestId: string;
+  pageId: string;
+  revisionId: string;
+  action: PublishAuditAction;
+  actorId: string | null;
+  clientId: string | null;
+  occurredAt: string;
+  reason: string | null;
+}
+
+export type PublishAuditResult =
+  | { ok: true; events: PublishAuditEvent[] }
+  | { ok: false; error: LifecycleError };
 
 export type LifecycleErrorCode =
   | 'INVALID_PAGE'
@@ -204,6 +259,26 @@ export interface PageLifecycle {
     command: ConfirmPublishCommand,
     context: LifecycleContext
   ): Promise<RevisionResult>;
+  rejectPublish(
+    command: RejectPublishCommand,
+    context: LifecycleContext
+  ): Promise<PublishRequestDetailsResult>;
+  cancelPublish(
+    command: CancelPublishCommand,
+    context: LifecycleContext
+  ): Promise<PublishRequestDetailsResult>;
+  forceReleasePublish(
+    command: ForceReleasePublishCommand,
+    context: LifecycleContext
+  ): Promise<PublishRequestDetailsResult>;
+  listPublishAudit(
+    reference: { requestId: string },
+    context: LifecycleContext
+  ): Promise<PublishAuditResult>;
+  rollbackRevision(
+    command: RollbackRevisionCommand,
+    context: LifecycleContext
+  ): Promise<RevisionResult>;
   getPublished(reference: PublishedReference): Promise<RevisionResult>;
   close(): Promise<void>;
 }
@@ -235,9 +310,13 @@ interface PublishRequestRow {
   page_id: string;
   revision_id: string;
   requested_by: string;
+  requested_client_id: string;
   status: PublishRequestStatus;
   token_hash: string;
   expires_at: Date | string;
+  decided_by: string | null;
+  decided_client_id: string | null;
+  decided_at: Date | string | null;
 }
 
 export async function createPostgresPageLifecycle(
@@ -257,7 +336,7 @@ export async function createPostgresPageLifecycle(
     } satisfies NonNullable<PostgresPageLifecycleOptions['urls']>);
   const publishLeaseMs = options.publishLeaseMs ?? 15 * 60 * 1000;
 
-  return {
+  const lifecycle: PageLifecycle = {
     async saveRevision(command, context) {
       const completed = await idempotentResult<RevisionResult>(
         sql,
@@ -401,9 +480,21 @@ export async function createPostgresPageLifecycle(
           if (expiredPublishRequestId) {
             await tx`
               UPDATE publish_requests
-              SET status = 'expired'
+              SET
+                status = 'expired',
+                decided_at = ${createdAt}
               WHERE request_id = ${expiredPublishRequestId}
             `;
+            await insertPublishAudit(tx, {
+              requestId: expiredPublishRequestId,
+              pageId: command.pageId,
+              revisionId: page.latest_revision_id ?? command.baseRevisionId ?? '',
+              action: 'expired',
+              actorId: null,
+              clientId: null,
+              occurredAt: createdAt,
+              reason: '15 分钟发布租约已到期'
+            });
           }
           await tx`
             UPDATE dashboard_pages
@@ -688,9 +779,21 @@ export async function createPostgresPageLifecycle(
           if (active?.status === 'pending') {
             await tx`
               UPDATE publish_requests
-              SET status = 'expired'
+              SET
+                status = 'expired',
+                decided_at = ${now}
               WHERE request_id = ${active.request_id}
             `;
+            await insertPublishAudit(tx, {
+              requestId: active.request_id,
+              pageId: command.pageId,
+              revisionId: command.revisionId,
+              action: 'expired',
+              actorId: null,
+              clientId: null,
+              occurredAt: now,
+              reason: '15 分钟发布租约已到期'
+            });
           }
         }
 
@@ -700,6 +803,7 @@ export async function createPostgresPageLifecycle(
             page_id,
             revision_id,
             requested_by,
+            requested_client_id,
             status,
             token_hash,
             created_at,
@@ -710,6 +814,7 @@ export async function createPostgresPageLifecycle(
             ${command.pageId},
             ${command.revisionId},
             ${context.actorId},
+            ${context.clientId},
             'pending',
             ${hash(token)},
             ${now},
@@ -721,6 +826,16 @@ export async function createPostgresPageLifecycle(
           SET active_publish_request_id = ${requestId}
           WHERE page_id = ${command.pageId}
         `;
+        await insertPublishAudit(tx, {
+          requestId,
+          pageId: command.pageId,
+          revisionId: command.revisionId,
+          action: 'requested',
+          actorId: context.actorId,
+          clientId: context.clientId,
+          occurredAt: now,
+          reason: null
+        });
 
         const result: PublishRequestResult = { ok: true, request };
         await tx`
@@ -744,38 +859,23 @@ export async function createPostgresPageLifecycle(
     },
 
     async getPublishRequest(reference, context) {
-      const rows = (await sql`
-        SELECT
-          request_id,
-          page_id,
-          revision_id,
-          requested_by,
-          status,
-          token_hash,
-          expires_at
-        FROM publish_requests
-        WHERE request_id = ${reference.requestId}
-      `) as unknown as PublishRequestRow[];
-      const request = rows[0];
+      const request = await refreshPublishRequest(sql, reference.requestId, clock.now());
       if (!request) {
         return lifecycleFailure(
           'PUBLISH_REQUEST_NOT_FOUND',
           `发布请求不存在:${reference.requestId}`
         );
       }
-      if (context.actorId !== request.requested_by) {
+      if (
+        context.actorId !== request.requested_by &&
+        !hasRole(context, 'publisher') &&
+        !hasRole(context, 'admin')
+      ) {
         return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能查看该发布请求');
       }
       return {
         ok: true,
-        request: {
-          requestId: request.request_id,
-          pageId: request.page_id,
-          revisionId: request.revision_id,
-          requestedBy: request.requested_by,
-          status: request.status,
-          expiresAt: new Date(request.expires_at).toISOString()
-        }
+        request: toPublishRequestDetails(request)
       };
     },
 
@@ -786,9 +886,13 @@ export async function createPostgresPageLifecycle(
           page_id,
           revision_id,
           requested_by,
+          requested_client_id,
           status,
           token_hash,
-          expires_at
+          expires_at,
+          decided_by,
+          decided_client_id,
+          decided_at
         FROM publish_requests
         WHERE request_id = ${command.requestId}
       `) as unknown as PublishRequestRow[];
@@ -812,15 +916,20 @@ export async function createPostgresPageLifecycle(
       const validationErrors = validate(revision.document, currentCatalog.snapshot);
 
       return sql.begin(async (tx) => {
+        await lockDashboardPage(tx, request.page_id);
         const lockedRows = (await tx`
           SELECT
             request_id,
             page_id,
             revision_id,
             requested_by,
+            requested_client_id,
             status,
             token_hash,
-            expires_at
+            expires_at,
+            decided_by,
+            decided_client_id,
+            decided_at
           FROM publish_requests
           WHERE request_id = ${command.requestId}
           FOR UPDATE
@@ -841,17 +950,8 @@ export async function createPostgresPageLifecycle(
 
         const now = clock.now();
         if (new Date(locked.expires_at).getTime() <= now.getTime()) {
-          await tx`
-            UPDATE publish_requests
-            SET status = 'expired'
-            WHERE request_id = ${command.requestId}
-          `;
-          await tx`
-            UPDATE dashboard_pages
-            SET active_publish_request_id = NULL
-            WHERE page_id = ${locked.page_id}
-              AND active_publish_request_id = ${command.requestId}
-          `;
+          await finishPublishRequest(tx, locked, 'expired', null, now,
+            '15 分钟发布租约已到期');
           return lifecycleFailure(
             'PUBLISH_REQUEST_EXPIRED',
             `发布租约已于 ${new Date(locked.expires_at).toISOString()} 到期`
@@ -860,8 +960,8 @@ export async function createPostgresPageLifecycle(
         if (hash(command.token) !== locked.token_hash) {
           return lifecycleFailure('INVALID_CONFIRMATION_TOKEN', '发布确认 token 无效');
         }
-        if (context.actorId !== locked.requested_by) {
-          return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能确认该发布请求');
+        if (!hasRole(context, 'publisher') && !hasRole(context, 'admin')) {
+          return lifecycleFailure('PUBLISH_FORBIDDEN', '确认发布需要 publisher 权限');
         }
 
         const pageRows = (await tx`
@@ -886,16 +986,14 @@ export async function createPostgresPageLifecycle(
         }
 
         if (validationErrors.length > 0) {
-          await tx`
-            UPDATE publish_requests
-            SET status = 'validation_failed'
-            WHERE request_id = ${locked.request_id}
-          `;
-          await tx`
-            UPDATE dashboard_pages
-            SET active_publish_request_id = NULL
-            WHERE page_id = ${locked.page_id}
-          `;
+          await finishPublishRequest(
+            tx,
+            locked,
+            'validation_failed',
+            context,
+            now,
+            '最新元数据复验失败'
+          );
           return {
             ok: false,
             error: {
@@ -920,11 +1018,149 @@ export async function createPostgresPageLifecycle(
           SET
             status = 'published',
             confirmed_by = ${context.actorId},
-            confirmed_at = ${now}
+            confirmed_at = ${now},
+            decided_by = ${context.actorId},
+            decided_client_id = ${context.clientId},
+            decided_at = ${now}
           WHERE request_id = ${locked.request_id}
         `;
+        await insertPublishAudit(tx, {
+          requestId: locked.request_id,
+          pageId: locked.page_id,
+          revisionId: locked.revision_id,
+          action: 'approved',
+          actorId: context.actorId,
+          clientId: context.clientId,
+          occurredAt: now,
+          reason: null
+        });
         return { ok: true, revision: toRevision(revision) } satisfies RevisionResult;
       });
+    },
+
+    async rejectPublish(command, context) {
+      return decidePublishRequest(sql, command.requestId, clock.now(), async (tx, locked, now) => {
+        if (hash(command.token) !== locked.token_hash) {
+          return lifecycleFailure('INVALID_CONFIRMATION_TOKEN', '发布确认 token 无效');
+        }
+        if (!hasRole(context, 'publisher') && !hasRole(context, 'admin')) {
+          return lifecycleFailure('PUBLISH_FORBIDDEN', '拒绝发布需要 publisher 权限');
+        }
+        await finishPublishRequest(tx, locked, 'rejected', context, now, command.reason ?? null);
+        return { ok: true, request: toPublishRequestDetails({
+          ...locked,
+          status: 'rejected',
+          decided_by: context.actorId,
+          decided_client_id: context.clientId,
+          decided_at: now
+        }) };
+      });
+    },
+
+    async cancelPublish(command, context) {
+      return decidePublishRequest(sql, command.requestId, clock.now(), async (tx, locked, now) => {
+        if (context.actorId !== locked.requested_by && !hasRole(context, 'admin')) {
+          return lifecycleFailure('PUBLISH_FORBIDDEN', '只有发起人或管理员可取消发布请求');
+        }
+        await finishPublishRequest(tx, locked, 'cancelled', context, now, command.reason ?? null);
+        return { ok: true, request: toPublishRequestDetails({
+          ...locked,
+          status: 'cancelled',
+          decided_by: context.actorId,
+          decided_client_id: context.clientId,
+          decided_at: now
+        }) };
+      });
+    },
+
+    async forceReleasePublish(command, context) {
+      return decidePublishRequest(sql, command.requestId, clock.now(), async (tx, locked, now) => {
+        if (!hasRole(context, 'admin')) {
+          return lifecycleFailure('PUBLISH_FORBIDDEN', '强制释放发布租约需要 admin 权限');
+        }
+        await finishPublishRequest(tx, locked, 'force_released', context, now, command.reason);
+        return { ok: true, request: toPublishRequestDetails({
+          ...locked,
+          status: 'force_released',
+          decided_by: context.actorId,
+          decided_client_id: context.clientId,
+          decided_at: now
+        }) };
+      });
+    },
+
+    async listPublishAudit(reference, context) {
+      const request = await refreshPublishRequest(sql, reference.requestId, clock.now());
+      if (!request) {
+        return lifecycleFailure('PUBLISH_REQUEST_NOT_FOUND', `发布请求不存在:${reference.requestId}`);
+      }
+      if (
+        context.actorId !== request.requested_by &&
+        !hasRole(context, 'publisher') &&
+        !hasRole(context, 'admin')
+      ) {
+        return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能查看该发布审计');
+      }
+      const rows = (await sql`
+        SELECT
+          audit_id,
+          request_id,
+          page_id,
+          revision_id,
+          action,
+          actor_id,
+          client_id,
+          occurred_at,
+          reason
+        FROM publish_audit_events
+        WHERE request_id = ${reference.requestId}
+        ORDER BY audit_id ASC
+      `) as unknown as Array<{
+        audit_id: string | number;
+        request_id: string;
+        page_id: string;
+        revision_id: string;
+        action: PublishAuditAction;
+        actor_id: string | null;
+        client_id: string | null;
+        occurred_at: Date | string;
+        reason: string | null;
+      }>;
+      return {
+        ok: true,
+        events: rows.map((row) => ({
+          auditId: String(row.audit_id),
+          requestId: row.request_id,
+          pageId: row.page_id,
+          revisionId: row.revision_id,
+          action: row.action,
+          actorId: row.actor_id,
+          clientId: row.client_id,
+          occurredAt: toIso(row.occurred_at),
+          reason: row.reason
+        }))
+      };
+    },
+
+    async rollbackRevision(command, context) {
+      const [latest, target] = await Promise.all([
+        selectPageRevision(sql, { pageId: command.pageId, selector: { type: 'latest' } }),
+        selectPageRevision(sql, {
+          pageId: command.pageId,
+          selector: { type: 'exact', revisionId: command.targetRevisionId }
+        })
+      ]);
+      if (!latest.ok) return latest;
+      if (!target.ok) return target;
+      return lifecycle.saveRevision(
+        {
+          pageId: command.pageId,
+          baseRevisionId: latest.revision.revisionId,
+          document: target.revision.document,
+          idempotencyKey: `rollback:${command.idempotencyKey}`
+        },
+        context
+      );
     },
 
     async getPublished(reference) {
@@ -961,6 +1197,7 @@ export async function createPostgresPageLifecycle(
       await sql.end();
     }
   };
+  return lifecycle;
 }
 
 async function ensureSchema(sql: Sql): Promise<void> {
@@ -1003,12 +1240,45 @@ async function ensureSchema(sql: Sql): Promise<void> {
       page_id text NOT NULL REFERENCES dashboard_pages(page_id),
       revision_id uuid NOT NULL REFERENCES page_revisions(revision_id),
       requested_by text NOT NULL,
+      requested_client_id text NOT NULL DEFAULT 'unknown',
       status text NOT NULL,
       token_hash text NOT NULL,
       created_at timestamptz NOT NULL,
       expires_at timestamptz NOT NULL,
       confirmed_by text,
-      confirmed_at timestamptz
+      confirmed_at timestamptz,
+      decided_by text,
+      decided_client_id text,
+      decided_at timestamptz
+    )
+  `;
+  await sql`
+    ALTER TABLE publish_requests
+    ADD COLUMN IF NOT EXISTS requested_client_id text NOT NULL DEFAULT 'unknown'
+  `;
+  await sql`
+    ALTER TABLE publish_requests
+    ADD COLUMN IF NOT EXISTS decided_by text
+  `;
+  await sql`
+    ALTER TABLE publish_requests
+    ADD COLUMN IF NOT EXISTS decided_client_id text
+  `;
+  await sql`
+    ALTER TABLE publish_requests
+    ADD COLUMN IF NOT EXISTS decided_at timestamptz
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS publish_audit_events (
+      audit_id bigserial PRIMARY KEY,
+      request_id uuid NOT NULL REFERENCES publish_requests(request_id),
+      page_id text NOT NULL REFERENCES dashboard_pages(page_id),
+      revision_id uuid NOT NULL REFERENCES page_revisions(revision_id),
+      action text NOT NULL,
+      actor_id text,
+      client_id text,
+      occurred_at timestamptz NOT NULL,
+      reason text
     )
   `;
   await sql`
@@ -1021,6 +1291,219 @@ async function ensureSchema(sql: Sql): Promise<void> {
       PRIMARY KEY (operation, client_id, idempotency_key)
     )
   `;
+}
+
+async function selectPublishRequest(
+  sql: Sql | TransactionSql,
+  requestId: string,
+  forUpdate = false
+): Promise<PublishRequestRow | null> {
+  const rows = forUpdate
+    ? ((await sql`
+        SELECT
+          request_id,
+          page_id,
+          revision_id,
+          requested_by,
+          requested_client_id,
+          status,
+          token_hash,
+          expires_at,
+          decided_by,
+          decided_client_id,
+          decided_at
+        FROM publish_requests
+        WHERE request_id = ${requestId}
+        FOR UPDATE
+      `) as unknown as PublishRequestRow[])
+    : ((await sql`
+        SELECT
+          request_id,
+          page_id,
+          revision_id,
+          requested_by,
+          requested_client_id,
+          status,
+          token_hash,
+          expires_at,
+          decided_by,
+          decided_client_id,
+          decided_at
+        FROM publish_requests
+        WHERE request_id = ${requestId}
+      `) as unknown as PublishRequestRow[]);
+  return rows[0] ?? null;
+}
+
+async function refreshPublishRequest(
+  sql: Sql,
+  requestId: string,
+  now: Date
+): Promise<PublishRequestRow | null> {
+  const request = await selectPublishRequest(sql, requestId);
+  if (
+    !request ||
+    request.status !== 'pending' ||
+    new Date(request.expires_at).getTime() > now.getTime()
+  ) {
+    return request;
+  }
+  return sql.begin(async (tx) => {
+    await lockDashboardPage(tx, request.page_id);
+    const locked = await selectPublishRequest(tx, requestId, true);
+    if (!locked) return null;
+    if (
+      locked.status === 'pending' &&
+      new Date(locked.expires_at).getTime() <= now.getTime()
+    ) {
+      await finishPublishRequest(
+        tx,
+        locked,
+        'expired',
+        null,
+        now,
+        '15 分钟发布租约已到期'
+      );
+      return { ...locked, status: 'expired', decided_at: now };
+    }
+    return locked;
+  });
+}
+
+async function decidePublishRequest(
+  sql: Sql,
+  requestId: string,
+  now: Date,
+  decide: (
+    tx: TransactionSql,
+    request: PublishRequestRow,
+    now: Date
+  ) => Promise<PublishRequestDetailsResult>
+): Promise<PublishRequestDetailsResult> {
+  const request = await selectPublishRequest(sql, requestId);
+  if (!request) {
+    return lifecycleFailure('PUBLISH_REQUEST_NOT_FOUND', `发布请求不存在:${requestId}`);
+  }
+  return sql.begin(async (tx) => {
+    await lockDashboardPage(tx, request.page_id);
+    const locked = await selectPublishRequest(tx, requestId, true);
+    if (!locked) {
+      return lifecycleFailure('PUBLISH_REQUEST_NOT_FOUND', `发布请求不存在:${requestId}`);
+    }
+    if (locked.status !== 'pending') {
+      return lifecycleFailure('PUBLISH_REQUEST_CLOSED', `发布请求已结束:${locked.status}`);
+    }
+    if (new Date(locked.expires_at).getTime() <= now.getTime()) {
+      await finishPublishRequest(
+        tx,
+        locked,
+        'expired',
+        null,
+        now,
+        '15 分钟发布租约已到期'
+      );
+      return lifecycleFailure(
+        'PUBLISH_REQUEST_EXPIRED',
+        `发布租约已于 ${toIso(locked.expires_at)} 到期`
+      );
+    }
+    return decide(tx, locked, now);
+  });
+}
+
+async function finishPublishRequest(
+  tx: TransactionSql,
+  request: PublishRequestRow,
+  status: Exclude<PublishRequestStatus, 'pending' | 'published'>,
+  context: LifecycleContext | null,
+  now: Date,
+  reason: string | null
+): Promise<void> {
+  await tx`
+    UPDATE publish_requests
+    SET
+      status = ${status},
+      decided_by = ${context?.actorId ?? null},
+      decided_client_id = ${context?.clientId ?? null},
+      decided_at = ${now}
+    WHERE request_id = ${request.request_id}
+      AND status = 'pending'
+  `;
+  await tx`
+    UPDATE dashboard_pages
+    SET active_publish_request_id = NULL
+    WHERE page_id = ${request.page_id}
+      AND active_publish_request_id = ${request.request_id}
+  `;
+  await insertPublishAudit(tx, {
+    requestId: request.request_id,
+    pageId: request.page_id,
+    revisionId: request.revision_id,
+    action: status,
+    actorId: context?.actorId ?? null,
+    clientId: context?.clientId ?? null,
+    occurredAt: now,
+    reason
+  });
+}
+
+async function insertPublishAudit(
+  tx: TransactionSql,
+  event: Omit<PublishAuditEvent, 'auditId' | 'occurredAt'> & { occurredAt: Date }
+): Promise<void> {
+  await tx`
+    INSERT INTO publish_audit_events (
+      request_id,
+      page_id,
+      revision_id,
+      action,
+      actor_id,
+      client_id,
+      occurred_at,
+      reason
+    )
+    VALUES (
+      ${event.requestId},
+      ${event.pageId},
+      ${event.revisionId},
+      ${event.action},
+      ${event.actorId},
+      ${event.clientId},
+      ${event.occurredAt},
+      ${event.reason}
+    )
+  `;
+}
+
+async function lockDashboardPage(tx: TransactionSql, pageId: string): Promise<void> {
+  await tx`
+    SELECT pg_advisory_xact_lock(
+      hashtextextended(${`dashboard_page:${pageId}`}, 0)
+    )
+  `;
+}
+
+function toPublishRequestDetails(request: PublishRequestRow): PublishRequestDetails {
+  return {
+    requestId: request.request_id,
+    pageId: request.page_id,
+    revisionId: request.revision_id,
+    requestedBy: request.requested_by,
+    requestedClientId: request.requested_client_id,
+    status: request.status,
+    expiresAt: toIso(request.expires_at),
+    decidedBy: request.decided_by,
+    decidedClientId: request.decided_client_id,
+    decidedAt: request.decided_at ? toIso(request.decided_at) : null
+  };
+}
+
+function hasRole(context: LifecycleContext, role: LifecycleRole): boolean {
+  return context.roles?.includes(role) === true;
+}
+
+function toIso(value: Date | string): string {
+  return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
 
 async function idempotentResult<T>(
