@@ -1,12 +1,17 @@
 <script lang="ts">
+  import { page } from '$app/state';
+
   let { children } = $props();
+  const authoring = $derived(page.url.pathname === '/authoring');
 </script>
 
-<div class="shell">
-  <header class="topbar">
-    <a href="/" class="brand">MetricCanvas</a>
-  </header>
-  <main>{@render children()}</main>
+<div class:authoring class="shell">
+  {#if !authoring}
+    <header class="topbar">
+      <a href="/" class="brand">MetricCanvas</a>
+    </header>
+  {/if}
+  <main class:authoring>{@render children()}</main>
 </div>
 
 <style>
@@ -37,5 +42,10 @@
     padding: 24px;
     max-width: 1440px;
     margin: 0 auto;
+  }
+  main.authoring {
+    max-width: none;
+    min-height: 100vh;
+    padding: 42px 24px 24px;
   }
 </style>

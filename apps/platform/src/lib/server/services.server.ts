@@ -3,6 +3,7 @@ import { syncCatalog } from '@metriccanvas/data-gateway';
 import {
   catalogVersionFor,
   createCatalogDiscovery,
+  type CatalogDiscovery,
   type CatalogProvider
 } from '@metriccanvas/catalog-discovery';
 import {
@@ -20,10 +21,16 @@ import {
   createMetricCanvasMcpServer
 } from '@metriccanvas/mcp';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
+import { createAuthoringMcpClient } from './authoring-mcp.server';
 
 export interface PlatformServices {
   lifecycle: PageLifecycle;
-  createRunner(input: { confirmedPageIds: string[]; runId: string }): AgentRunner;
+  catalog: CatalogDiscovery;
+  createRunner(input: {
+    confirmedPageIds: string[];
+    runId: string;
+    mode?: 'authoring' | 'lifecycle';
+  }): AgentRunner;
   runtimeOrigin: string;
 }
 
@@ -74,11 +81,13 @@ async function createServices(): Promise<PlatformServices> {
 
   return {
     lifecycle,
-    createRunner({ confirmedPageIds, runId }) {
+    catalog,
+    createRunner({ confirmedPageIds, runId, mode = 'lifecycle' }) {
+      const client = mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
       return createAgentRunner({
         model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
         mcp: createPageIdConfirmationMcpClient({
-          client: mcp.client,
+          client,
           confirmedPageIds
         }),
         maxModelTurns: 12

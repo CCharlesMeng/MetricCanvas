@@ -14,7 +14,8 @@
     "@metriccanvas/data-gateway": "workspace:*",
     "@metriccanvas/mcp": "workspace:*",
     "@metriccanvas/page": "workspace:*",
-    "@metriccanvas/page-lifecycle": "workspace:*"
+    "@metriccanvas/page-lifecycle": "workspace:*",
+    "@metriccanvas/runtime": "workspace:*"
   },
   "devDependencies": {
     "@sveltejs/adapter-node": "^5.5.7",

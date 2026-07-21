@@ -22,6 +22,8 @@
     drillThroughSearch,
     initialFilterValues,
     orchestrate,
+    type AuthoringComponentLocator,
+    type AuthoringIntent,
     type ComponentSnapshots,
     type FilterState,
     type FilterValues,
@@ -60,7 +62,12 @@
     | { phase: 'invalid'; errors: TypedError[] }
     | { phase: 'ready'; page: Page; capabilities: PageCapabilities };
 
-  let { document }: { document?: unknown } = $props();
+  interface AuthoringOptions {
+    selected?: AuthoringComponentLocator;
+    onintent(intent: AuthoringIntent): void;
+  }
+
+  let { document, authoring }: { document?: unknown; authoring?: AuthoringOptions } = $props();
 
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageSnapshots>(new Map());
@@ -76,6 +83,7 @@
   let filterState: FilterState | null = null;
   let stream: PageSnapshotStream | null = null;
   let session = 0;
+  let dragged = $state<AuthoringComponentLocator | null>(null);
   let disposers: Array<() => void> = [];
 
   $effect(() => {
@@ -479,6 +487,93 @@
   function componentCellStyle(component: Component): string {
     return `grid-column: span ${component.layout.span};`;
   }
+
+  function locator(sectionId: string, componentId: string): AuthoringComponentLocator {
+    return { sectionId, componentId };
+  }
+
+  function selected(sectionId: string, componentId: string): boolean {
+    return (
+      authoring?.selected?.sectionId === sectionId &&
+      authoring.selected.componentId === componentId
+    );
+  }
+
+  function componentTitleForEditor(component: Component): string {
+    return component.type === 'text'
+      ? component.props.heading ?? ''
+      : component.props.title ?? '';
+  }
+
+  function authoringSelect(event: MouseEvent, sectionId: string, componentId: string) {
+    if (!authoring || (event.target as HTMLElement).closest('.authoring-controls')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    authoring.onintent({
+      type: 'select_component',
+      locator: locator(sectionId, componentId)
+    });
+  }
+
+  function authoringDragStart(
+    event: DragEvent,
+    sectionId: string,
+    componentId: string
+  ) {
+    if (!authoring) return;
+    dragged = locator(sectionId, componentId);
+    event.dataTransfer?.setData(
+      'application/x-metriccanvas-component',
+      JSON.stringify(dragged)
+    );
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
+  }
+
+  function authoringDrop(event: DragEvent, sectionId: string, componentId: string) {
+    if (!authoring) return;
+    event.preventDefault();
+    let source = dragged;
+    try {
+      const encoded = event.dataTransfer?.getData(
+        'application/x-metriccanvas-component'
+      );
+      if (encoded) source = JSON.parse(encoded) as AuthoringComponentLocator;
+    } catch {
+      // 拖动会话仍可使用进程内定位。
+    }
+    const before = locator(sectionId, componentId);
+    if (
+      source &&
+      source.sectionId === before.sectionId &&
+      source.componentId !== before.componentId
+    ) {
+      authoring.onintent({ type: 'move_component', locator: source, before });
+    }
+    dragged = null;
+  }
+
+  function editTitle(
+    event: Event,
+    sectionId: string,
+    component: Component
+  ) {
+    if (!authoring) return;
+    const title = (event.currentTarget as HTMLInputElement).value;
+    if (title === componentTitleForEditor(component)) return;
+    authoring.onintent({
+      type: 'edit_component',
+      locator: locator(sectionId, component.id),
+      edit: { title }
+    });
+  }
+
+  function resize(sectionId: string, component: Component, delta: number) {
+    authoring?.onintent({
+      type: 'edit_component',
+      locator: locator(sectionId, component.id),
+      edit: { span: Math.min(12, Math.max(1, component.layout.span + delta)) }
+    });
+  }
 </script>
 
 {#snippet renderComponent(component: Component, loaded: Page)}
@@ -608,9 +703,37 @@
                 class:chart-cell={isChartComponent(component)}
                 class:header-cell={component.type === 'reportHeader'}
                 class:table-cell={component.type === 'table'}
+                class:authoring-cell={Boolean(authoring)}
+                class:authoring-selected={selected(section.id, component.id)}
                 class="cell"
+                data-authoring-component={`${section.id}/${component.id}`}
                 style={componentCellStyle(component)}
+                draggable={Boolean(authoring)}
+                onclickcapture={(event) => authoringSelect(event, section.id, component.id)}
+                ondragstart={(event) =>
+                  authoringDragStart(event, section.id, component.id)}
+                ondragover={(event) => {
+                  if (authoring) event.preventDefault();
+                }}
+                ondrop={(event) => authoringDrop(event, section.id, component.id)}
+                ondragend={() => (dragged = null)}
               >
+                {#if authoring && selected(section.id, component.id)}
+                  <div class="authoring-controls">
+                    <span class="authoring-drag" title="拖动组件">⠿</span>
+                    <label>
+                      <span>画布内标题</span>
+                      <input
+                        aria-label={`${component.id} 画布内标题`}
+                        value={componentTitleForEditor(component)}
+                        onchange={(event) => editTitle(event, section.id, component)}
+                      />
+                    </label>
+                    <span class="authoring-span">{component.layout.span}/12</span>
+                    <button type="button" aria-label="缩小组件" onclick={() => resize(section.id, component, -1)}>−</button>
+                    <button type="button" aria-label="加宽组件" onclick={() => resize(section.id, component, 1)}>＋</button>
+                  </div>
+                {/if}
                 {@render renderComponent(component, pageState.page)}
               </article>
             {/each}
@@ -665,6 +788,7 @@
     gap: 16px;
   }
   .cell {
+    position: relative;
     display: flex;
     min-width: 0;
     min-height: 112px;
@@ -676,6 +800,80 @@
     border: 1px solid rgb(91 114 234 / 0.12);
     border-radius: 10px;
     box-shadow: 0 8px 22px rgb(53 65 130 / 0.06);
+  }
+  .authoring-cell {
+    cursor: pointer;
+    transition: border-color 120ms ease, box-shadow 120ms ease;
+  }
+  .authoring-cell:hover {
+    border-color: rgb(79 70 229 / 0.45);
+  }
+  .authoring-selected {
+    z-index: 2;
+    overflow: visible;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgb(79 70 229 / 0.18), 0 12px 30px rgb(53 65 130 / 0.14);
+  }
+  .authoring-controls {
+    position: absolute;
+    top: -38px;
+    right: -1px;
+    left: -1px;
+    z-index: 20;
+    display: flex;
+    height: 34px;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 6px;
+    color: #fff;
+    background: #3730a3;
+    border-radius: 7px;
+    box-shadow: 0 8px 20px rgb(49 46 129 / 0.2);
+    cursor: default;
+  }
+  .authoring-drag {
+    padding: 0 4px;
+    cursor: grab;
+  }
+  .authoring-controls label {
+    display: flex;
+    min-width: 0;
+    flex: 1;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .authoring-controls label span {
+    flex: none;
+  }
+  .authoring-controls input {
+    min-width: 80px;
+    height: 24px;
+    flex: 1;
+    padding: 3px 7px;
+    color: #27272a;
+    background: #fff;
+    border: 0;
+    border-radius: 4px;
+    outline: 0;
+    font: inherit;
+  }
+  .authoring-span {
+    flex: none;
+    font-size: 10px;
+  }
+  .authoring-controls button {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    place-items: center;
+    padding: 0;
+    color: #3730a3;
+    background: #fff;
+    border: 0;
+    border-radius: 4px;
+    cursor: pointer;
   }
   .chart-cell {
     min-height: 320px;

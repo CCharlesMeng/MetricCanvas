@@ -5,10 +5,13 @@ import type {
 } from '@metriccanvas/agent-runner';
 
 export function createComponentSelectingScriptedProvider(runId = 'local'): ModelProvider {
-  const pageId = `ai-dashboard-${runId.replace(/[^a-zA-Z0-9]/gu, '').slice(0, 8) || 'local'}`;
+const pageId = `ai-dashboard-${runId.replace(/[^a-zA-Z0-9]/gu, '').slice(0, 8) || 'local'}`;
 
   return {
     async complete({ messages }) {
+      if (isAuthoringConversation(messages)) {
+        return authoringResponse(messages, pageId);
+      }
       const called = new Set(
         messages.flatMap((message) => (message.role === 'tool' ? [message.name] : []))
       );
@@ -115,6 +118,160 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
       };
     }
   };
+}
+
+const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
+
+function isAuthoringConversation(messages: AgentMessage[]): boolean {
+  return messages.some(
+    (message) =>
+      message.role === 'system' &&
+      (message.content.includes('METRICCANVAS_AUTHORING_MODE') ||
+        message.content.startsWith(AUTHORING_CONTEXT_PREFIX))
+  );
+}
+
+function authoringResponse(messages: AgentMessage[], pageId: string): ModelResponse {
+  const called = calledSinceLatestUser(messages);
+  const context = authoringContext(messages);
+  const intent = latestUserIntent(messages);
+
+  if (context) {
+    const document = applyAuthoringIntent(context.document, context.target, intent);
+    if (!called.has('validate_page')) {
+      return toolCall(`validate-authoring-${called.size + 1}`, 'validate_page', {
+        document
+      });
+    }
+    return {
+      content: context.target
+        ? `已按你的描述调整 ${context.target.sectionId}/${context.target.componentId}，并更新同一份未保存工作副本。`
+        : '已按你的描述调整并校验当前未保存工作副本。',
+      toolCalls: []
+    };
+  }
+
+  const document = pageDocumentFor(pageId, intent);
+  const searched = searchedCatalogQueries(messages);
+  const pendingCatalogQuery = requiredCatalogQueries(intent).find(
+    (query) => !searched.has(query)
+  );
+  if (pendingCatalogQuery) {
+    return toolCall(`search-authoring-${searched.size + 1}`, 'search_catalog', {
+      query: pendingCatalogQuery,
+      limit: 10
+    });
+  }
+  if (!called.has('validate_page')) {
+    return toolCall('validate-authoring-1', 'validate_page', { document });
+  }
+  return {
+    content: '看板页面已生成并通过校验，当前仍是未保存工作副本。',
+    toolCalls: []
+  };
+}
+
+function authoringContext(messages: AgentMessage[]): {
+  document: Record<string, unknown>;
+  target?: { sectionId: string; componentId: string };
+} | null {
+  const message = [...messages]
+    .reverse()
+    .find(
+      (candidate) =>
+        candidate.role === 'system' &&
+        candidate.content.startsWith(AUTHORING_CONTEXT_PREFIX)
+    );
+  if (!message) return null;
+  try {
+    const parsed: unknown = JSON.parse(
+      message.content.slice(AUTHORING_CONTEXT_PREFIX.length)
+    );
+    if (!isRecord(parsed) || !isRecord(parsed.document)) return null;
+    const target = isRecord(parsed.target) &&
+      typeof parsed.target.sectionId === 'string' &&
+      typeof parsed.target.componentId === 'string'
+        ? {
+            sectionId: parsed.target.sectionId,
+            componentId: parsed.target.componentId
+          }
+        : undefined;
+    return { document: parsed.document, ...(target ? { target } : {}) };
+  } catch {
+    return null;
+  }
+}
+
+function calledSinceLatestUser(messages: AgentMessage[]): Set<string> {
+  let start = -1;
+  for (let index = messages.length - 1; index >= 0; index -= 1) {
+    if (messages[index]?.role === 'user') {
+      start = index;
+      break;
+    }
+  }
+  return new Set(
+    messages
+      .slice(start + 1)
+      .flatMap((message) => (message.role === 'tool' ? [message.name] : []))
+  );
+}
+
+function latestUserIntent(messages: AgentMessage[]): string {
+  return (
+    [...messages].reverse().find((message) => message.role === 'user')?.content ??
+    '创建一个展示成交总额的指标页面'
+  );
+}
+
+function applyAuthoringIntent(
+  document: Record<string, unknown>,
+  target: { sectionId: string; componentId: string } | undefined,
+  intent: string
+): Record<string, unknown> {
+  const edited = structuredClone(document);
+  if (!target || !Array.isArray(edited.sections)) return edited;
+  const section = edited.sections.find(
+    (candidate) => isRecord(candidate) && candidate.id === target.sectionId
+  );
+  if (!isRecord(section) || !Array.isArray(section.components)) return edited;
+  const component = section.components.find(
+    (candidate) => isRecord(candidate) && candidate.id === target.componentId
+  );
+  if (!isRecord(component) || !isRecord(component.props)) return edited;
+
+  const titleMatch = intent.match(
+    /(?:标题)?(?:改成|改为|叫作)[「“"]?([^」”"，。]+)[」”"]?/u
+  );
+  if (titleMatch?.[1]) {
+    if (component.type === 'text') component.props.heading = titleMatch[1].trim();
+    else component.props.title = titleMatch[1].trim();
+  }
+  if (isRecord(component.layout) && typeof component.layout.span === 'number') {
+    let span = component.layout.span;
+    if (/加宽|放大|更宽/u.test(intent)) {
+      span = Math.min(12, span + 2);
+    }
+    if (/缩小|窄一点/u.test(intent)) {
+      span = Math.max(1, span - 2);
+    }
+    component.layout.span = span;
+  }
+  if (/最前|顶部|第一个/u.test(intent)) {
+    section.components = [
+      component,
+      ...section.components.filter((candidate) => candidate !== component)
+    ];
+  }
+  if (!titleMatch && !/加宽|放大|更宽|缩小|窄一点|最前|顶部|第一个/u.test(intent)) {
+    if (component.type === 'text') component.props.body = intent;
+    else if (component.type === 'reportHeader' || component.type === 'table') {
+      component.props.subtitle = intent;
+    } else {
+      component.props.title = `${typeof component.props.title === 'string' ? component.props.title : target.componentId}（已调整）`;
+    }
+  }
+  return edited;
 }
 
 /** 向后兼容既有测试和调用方；实现已从单指标卡扩展为按诉求选择组件。 */

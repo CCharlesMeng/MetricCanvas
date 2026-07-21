@@ -78,6 +78,9 @@ importers:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../../packages/page-lifecycle
+      '@metriccanvas/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.5.7

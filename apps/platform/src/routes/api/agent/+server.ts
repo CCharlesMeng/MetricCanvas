@@ -4,9 +4,13 @@ import { PAGE_BUILDING_PROMPT } from '@metriccanvas/mcp';
 import { getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
-const WORKBENCH_PROMPT = `${PAGE_BUILDING_PROMPT}
+const WORKBENCH_PROMPT = `METRICCANVAS_AUTHORING_MODE
 
-当前客户端是页面搭建工作台。生成页面文档后先调用 validate_page；校验通过时工作台会自动暂停并展示结构化页面 id 确认，不要用普通文本索取该确认。收到工作台确认消息后才调用 save_page。若会话中已有 get_page 回执，表示正在编辑已存在看板页面：使用其 revision.revisionId 作为 save_page.baseRevisionId，先校验编辑后的页面文档，再保存新的页面修订。若 save_page 返回 REVISION_CONFLICT，绝不能自动重试或改用其他基线；明确告知用户在工作台重新加载当前页面修订。不要在回复中回显发布确认 URL 或 token，工作台会提供安全按钮。`;
+${PAGE_BUILDING_PROMPT}
+
+当前客户端是单页页面搭建工作台。你只负责检索、生成、修改和调用 validate_page 校验未保存工作副本；不得保存页面修订、创建精确预览或申请发布租约，这些动作只能由用户点击明确的界面按钮触发。若提供了当前未保存工作副本，必须以它为基线修改，保留用户未要求改变的内容。若提供了组件定位，只把它视为默认修改目标，不得未经用户描述自动修改。生成或修改后必须调用 validate_page；校验通过后停止工具调用并简要说明调整结果。新建看板页面首次校验通过时，工作台会展示结构化页面 id 确认，不要用普通文本重复索取确认。`;
+
+const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 
 export const POST: RequestHandler = async ({ request }) => {
   let body: unknown;
@@ -22,13 +26,26 @@ export const POST: RequestHandler = async ({ request }) => {
     );
   }
 
-  let messages: AgentMessage[] = body.messages.some((message) => message.role === 'system')
-    ? body.messages
-    : [{ role: 'system', content: WORKBENCH_PROMPT }, ...body.messages];
-  const { createRunner } = await getPlatformServices();
+  const conversation = body.messages.filter((message) => message.role !== 'system');
+  let messages: AgentMessage[] = [
+    { role: 'system', content: WORKBENCH_PROMPT },
+    ...(body.draft
+      ? [
+          {
+            role: 'system' as const,
+            content:
+              AUTHORING_CONTEXT_PREFIX +
+              JSON.stringify({ document: body.draft, target: body.target ?? null })
+          }
+        ]
+      : []),
+    ...conversation
+  ];
+  const { createRunner, runtimeOrigin } = await getPlatformServices();
   const runner = createRunner({
     confirmedPageIds: (body.confirmations ?? []).map((confirmation) => confirmation.pageId),
-    runId: body.runId
+    runId: body.runId,
+    mode: 'authoring'
   });
   const events: AgentEvent[] = [];
 
@@ -60,22 +77,27 @@ export const POST: RequestHandler = async ({ request }) => {
     );
   }
   if (terminal.type === 'interaction_required') {
+    const document = validatedDocument(events);
     return json(
       {
-        messages: terminal.messages,
+        messages: clientMessages(terminal.messages),
         events: events.filter(
           (event) =>
             event.type !== 'completed' && event.type !== 'interaction_required'
         ),
-        interaction: terminal.interaction
+        interaction: terminal.interaction,
+        ...(document ? { document } : {}),
+        runtimeOrigin
       },
       { headers: { 'cache-control': 'no-store' } }
     );
   }
   return json(
     {
-      messages: terminal.messages,
-      events: events.filter((event) => event.type !== 'completed')
+      messages: clientMessages(terminal.messages),
+      events: events.filter((event) => event.type !== 'completed'),
+      ...(validatedDocument(events) ? { document: validatedDocument(events) } : {}),
+      runtimeOrigin
     },
     { headers: { 'cache-control': 'no-store' } }
   );
@@ -85,6 +107,8 @@ interface AgentRequest {
   runId: string;
   messages: AgentMessage[];
   confirmations?: Array<{ kind: 'page_id'; pageId: string }>;
+  draft?: Record<string, unknown>;
+  target?: { sectionId: string; componentId: string };
 }
 
 function isAgentRequest(value: unknown): value is AgentRequest {
@@ -93,6 +117,8 @@ function isAgentRequest(value: unknown): value is AgentRequest {
     runId?: unknown;
     messages?: unknown;
     confirmations?: unknown;
+    draft?: unknown;
+    target?: unknown;
   };
   if (
     typeof request.runId !== 'string' ||
@@ -117,6 +143,17 @@ function isAgentRequest(value: unknown): value is AgentRequest {
   ) {
     return false;
   }
+  if (request.draft !== undefined && !isRecord(request.draft)) return false;
+  if (
+    request.target !== undefined &&
+    (!isRecord(request.target) ||
+      typeof request.target.sectionId !== 'string' ||
+      request.target.sectionId.length === 0 ||
+      typeof request.target.componentId !== 'string' ||
+      request.target.componentId.length === 0)
+  ) {
+    return false;
+  }
   return messages.every((message) => {
     if (
       typeof message !== 'object' ||
@@ -136,4 +173,29 @@ function isAgentRequest(value: unknown): value is AgentRequest {
       typeof (message as { isError?: unknown }).isError === 'boolean'
     );
   });
+}
+
+function validatedDocument(events: AgentEvent[]): Record<string, unknown> | null {
+  for (const event of [...events].reverse()) {
+    if (
+      event.type === 'tool_started' &&
+      event.call.name === 'validate_page' &&
+      isRecord(event.call.input) &&
+      isRecord(event.call.input.document)
+    ) {
+      return event.call.input.document;
+    }
+  }
+  return null;
+}
+
+function clientMessages(messages: AgentMessage[]): AgentMessage[] {
+  return messages.filter(
+    (message) =>
+      message.role !== 'system' || !message.content.startsWith(AUTHORING_CONTEXT_PREFIX)
+  );
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

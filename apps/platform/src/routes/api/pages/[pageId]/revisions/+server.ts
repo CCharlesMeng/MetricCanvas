@@ -26,7 +26,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
     return commandError('baseRevisionId、document 和 idempotencyKey 不能为空');
   }
 
-  const { lifecycle } = await getPlatformServices();
+  const { lifecycle, runtimeOrigin } = await getPlatformServices();
   const result = await lifecycle.saveRevision(
     {
       pageId: params.pageId,
@@ -36,22 +36,22 @@ export const POST: RequestHandler = async ({ params, request }) => {
     },
     { actorId: 'developer-1', clientId: 'page-editor' }
   );
-  return json(result, {
+  return json({ ...result, runtimeOrigin }, {
     status: result.ok ? 201 : saveFailureStatus(result.error.code),
     headers: { 'cache-control': 'no-store' }
   });
 };
 
 function isSaveCommand(value: unknown): value is {
-  baseRevisionId: string;
+  baseRevisionId: string | null;
   document: Record<string, unknown>;
   idempotencyKey: string;
 } {
   if (typeof value !== 'object' || value === null) return false;
   const body = value as Record<string, unknown>;
   return (
-    typeof body.baseRevisionId === 'string' &&
-    body.baseRevisionId.length > 0 &&
+    (body.baseRevisionId === null ||
+      (typeof body.baseRevisionId === 'string' && body.baseRevisionId.length > 0)) &&
     typeof body.document === 'object' &&
     body.document !== null &&
     !Array.isArray(body.document) &&

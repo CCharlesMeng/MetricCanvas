@@ -77,6 +77,57 @@ describe('Agent 按诉求选择组件', () => {
       'text'
     ]);
   });
+
+  it('编辑上下文中只修改未保存工作副本，不请求页面生命周期写操作', async () => {
+    const provider = createComponentSelectingScriptedProvider('authoring');
+    const draft = await generatedDocument('展示成交总额');
+    const messages: AgentMessage[] = [
+      {
+        role: 'system',
+        content:
+          'METRICCANVAS_AUTHORING_CONTEXT:' +
+          JSON.stringify({
+            document: draft,
+            target: { sectionId: 'overview', componentId: 'gmv-card' }
+          })
+      },
+      { role: 'user', content: '标题改成成交总额目标，再加宽' }
+    ];
+    const tools = [
+      { name: 'search_catalog', description: '', inputSchema: {} },
+      { name: 'validate_page', description: '', inputSchema: {} }
+    ];
+
+    const validation = await provider.complete({ messages, tools });
+    expect(validation.toolCalls).toHaveLength(1);
+    expect(validation.toolCalls[0]?.name).toBe('validate_page');
+    const edited = validation.toolCalls[0]?.input as { document: Record<string, unknown> };
+    const component = (
+      edited.document.sections as Array<{
+        id: string;
+        components: Array<{
+          id: string;
+          layout: { span: number };
+          props: { title: string };
+        }>;
+      }>
+    )[0]?.components.find(({ id }) => id === 'gmv-card');
+    expect(edited.document.id).toBe(draft.id);
+    expect(component?.props.title).toBe('成交总额目标');
+    expect(component?.layout.span).toBe(5);
+
+    messages.push(assistant(validation));
+    messages.push({
+      role: 'tool',
+      toolCallId: validation.toolCalls[0]!.id,
+      name: 'validate_page',
+      content: JSON.stringify({ ok: true, valid: true, errors: [] }),
+      isError: false
+    });
+    const completed = await provider.complete({ messages, tools });
+    expect(completed.toolCalls).toEqual([]);
+    expect(completed.content).toContain('未保存工作副本');
+  });
 });
 
 async function generatedDocument(intent: string): Promise<Record<string, unknown>> {
