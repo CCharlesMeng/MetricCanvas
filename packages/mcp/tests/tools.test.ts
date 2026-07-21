@@ -29,6 +29,18 @@ const unusedLifecycle: PageLifecycle = {
   getRevision: async () => {
     throw new Error('本用例不应读取修订');
   },
+  getPage: async () => {
+    throw new Error('本用例不应读取页面');
+  },
+  listPages: async () => {
+    throw new Error('本用例不应列出页面');
+  },
+  listRevisionHistory: async () => {
+    throw new Error('本用例不应读取修订历史');
+  },
+  diffRevisions: async () => {
+    throw new Error('本用例不应比较修订');
+  },
   requestPublish: async () => {
     throw new Error('本用例不应申请发布');
   },
@@ -51,7 +63,7 @@ describe('MetricCanvas MCP 工具契约', () => {
     await Promise.all(closeCallbacks.splice(0).map((close) => close()));
   });
 
-  it('通过 MCP client 发现切片一工具并按业务名称检索指标', async () => {
+  it('通过 MCP client 发现页面管理工具并按业务名称检索指标', async () => {
     const server = createMetricCanvasMcpServer({
       catalog: createCatalogDiscovery({
         current: async () => ({ version: 'catalog-v1', snapshot })
@@ -74,11 +86,15 @@ describe('MetricCanvas MCP 工具契约', () => {
       'search_catalog',
       'validate_page',
       'save_page',
+      'list_pages',
+      'get_page',
       'preview_page',
       'request_publish'
     ]);
     const prompt = await client.getPrompt({ name: 'build_dashboard_page' });
     expect(JSON.stringify(prompt)).toContain('\\"type\\":\\"metricCard\\"');
+    expect(JSON.stringify(prompt)).toContain('get_page(selector=latest)');
+    expect(JSON.stringify(prompt)).toContain('不得再次请求页面 id 确认');
 
     const result = await client.callTool({
       name: 'search_catalog',

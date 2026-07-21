@@ -25,12 +25,18 @@ export interface PageIdConfirmationMcpClientOptions {
 }
 
 const pageDocumentSchema = z.record(z.string(), z.unknown());
+const pageRevisionSelectorSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('latest') }),
+  z.object({ type: z.literal('published') }),
+  z.object({ type: z.literal('exact'), revisionId: z.string().min(1) })
+]);
 
 export const PAGE_BUILDING_PROMPT = [
   '你是 MetricCanvas 页面搭建 Agent。',
-  '严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 申请发布”执行。',
+  '新建看板页面时严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 申请发布”执行。',
   '不得猜测指标 code、口径、维度、时间范围或粒度;有歧义必须提问。',
   '首次 save_page 前必须展示可读且唯一的页面 id,并等待用户明确确认。',
+  '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
   '只保存 validate_page 返回 valid=true 的当前 formatVersion 页面。',
   '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;metricCard 的 metrics 必须且只能有一个。',
   '没有筛选器时省略 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
@@ -138,7 +144,8 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'save_page',
     {
-      description: '校验并首次保存看板页面,产生不可变 R1。',
+      description:
+        '校验并保存看板页面: baseRevisionId 为 null 时产生不可变 R1;传入当前最新 revisionId 时追加不可变页面修订。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         baseRevisionId: z.string().nullable(),
@@ -152,6 +159,45 @@ export function createMetricCanvasMcpServer(
         command,
         dependencies.context()
       );
+      return toolResult(result, !result.ok);
+    }
+  );
+
+  server.registerTool(
+    'list_pages',
+    {
+      description: '按 pageId 升序分页列出看板页面摘要;cursor 是上一页最后一个 pageId。',
+      inputSchema: z.object({
+        cursor: z.string().min(1).optional(),
+        limit: z.number().int().min(1).max(100).default(50)
+      }),
+      annotations: { readOnlyHint: true }
+    },
+    async ({ cursor, limit }) => {
+      const result = await dependencies.lifecycle.listPages({
+        ...(cursor ? { afterPageId: cursor } : {}),
+        limit
+      });
+      return toolResult({
+        ok: true,
+        pages: result.pages,
+        nextCursor: result.nextPageId
+      });
+    }
+  );
+
+  server.registerTool(
+    'get_page',
+    {
+      description: '读取看板页面的 latest、published 或精确指定的页面修订。',
+      inputSchema: z.object({
+        pageId: z.string().min(1),
+        selector: pageRevisionSelectorSchema
+      }),
+      annotations: { readOnlyHint: true }
+    },
+    async (reference) => {
+      const result = await dependencies.lifecycle.getPage(reference);
       return toolResult(result, !result.ok);
     }
   );
@@ -260,6 +306,7 @@ export function createPageIdConfirmationMcpClient(
         request.name === 'save_page' &&
         isRecord(request.arguments) &&
         typeof request.arguments.pageId === 'string' &&
+        request.arguments.baseRevisionId === null &&
         !confirmedPageIds.has(request.arguments.pageId)
       ) {
         return {

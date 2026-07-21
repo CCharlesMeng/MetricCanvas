@@ -6,7 +6,7 @@ import type { RequestHandler } from './$types';
 
 const WORKBENCH_PROMPT = `${PAGE_BUILDING_PROMPT}
 
-当前客户端是页面搭建工作台。生成页面文档后先调用 validate_page；校验通过时工作台会自动暂停并展示结构化页面 id 确认，不要用普通文本索取该确认。收到工作台确认消息后才调用 save_page。不要在回复中回显发布确认 URL 或 token，工作台会提供安全按钮。`;
+当前客户端是页面搭建工作台。生成页面文档后先调用 validate_page；校验通过时工作台会自动暂停并展示结构化页面 id 确认，不要用普通文本索取该确认。收到工作台确认消息后才调用 save_page。若会话中已有 get_page 回执，表示正在编辑已存在看板页面：使用其 revision.revisionId 作为 save_page.baseRevisionId，先校验编辑后的页面文档，再保存新的页面修订。若 save_page 返回 REVISION_CONFLICT，绝不能自动重试或改用其他基线；明确告知用户在工作台重新加载当前页面修订。不要在回复中回显发布确认 URL 或 token，工作台会提供安全按钮。`;
 
 export const POST: RequestHandler = async ({ request }) => {
   let body: unknown;
@@ -22,7 +22,7 @@ export const POST: RequestHandler = async ({ request }) => {
     );
   }
 
-  const messages: AgentMessage[] = body.messages.some((message) => message.role === 'system')
+  let messages: AgentMessage[] = body.messages.some((message) => message.role === 'system')
     ? body.messages
     : [{ role: 'system', content: WORKBENCH_PROMPT }, ...body.messages];
   const { createRunner } = await getPlatformServices();

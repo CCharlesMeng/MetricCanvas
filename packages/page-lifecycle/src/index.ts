@@ -47,6 +47,60 @@ export interface RevisionReference {
   revisionId: string;
 }
 
+export type CatalogVisibility = 'visible' | 'hidden';
+
+export type PageRevisionSelector =
+  | { type: 'latest' }
+  | { type: 'published' }
+  | { type: 'exact'; revisionId: string };
+
+export interface PageReference {
+  pageId: string;
+  selector: PageRevisionSelector;
+}
+
+export interface PageListQuery {
+  afterPageId?: string;
+  limit?: number;
+}
+
+export interface PageListItem {
+  pageId: string;
+  latestRevision: RevisionReference | null;
+  publishedRevision: RevisionReference | null;
+  catalogVisibility: CatalogVisibility;
+}
+
+export interface PageList {
+  pages: PageListItem[];
+  nextPageId: string | null;
+}
+
+export interface RevisionHistory {
+  pageId: string;
+  revisions: PageRevision[];
+}
+
+export interface RevisionDiffReference {
+  pageId: string;
+  fromRevisionId: string;
+  toRevisionId: string;
+}
+
+export interface JsonDiffEntry {
+  op: 'add' | 'remove' | 'replace';
+  path: string;
+  before?: JSONValue;
+  after?: JSONValue;
+}
+
+export interface RevisionDiff {
+  pageId: string;
+  fromRevisionId: string;
+  toRevisionId: string;
+  changes: JsonDiffEntry[];
+}
+
 export interface PublishedReference {
   pageId: string;
 }
@@ -108,10 +162,19 @@ export interface LifecycleError {
   code: LifecycleErrorCode;
   message: string;
   validationErrors?: TypedError[];
+  currentLatestRevision?: PageRevision | null;
 }
 
 export type RevisionResult =
   | { ok: true; revision: PageRevision }
+  | { ok: false; error: LifecycleError };
+
+export type RevisionHistoryResult =
+  | { ok: true; history: RevisionHistory }
+  | { ok: false; error: LifecycleError };
+
+export type RevisionDiffResult =
+  | { ok: true; diff: RevisionDiff }
   | { ok: false; error: LifecycleError };
 
 export type PublishRequestResult =
@@ -125,6 +188,10 @@ export type PublishRequestDetailsResult =
 export interface PageLifecycle {
   saveRevision(command: SaveRevisionCommand, context: LifecycleContext): Promise<RevisionResult>;
   getRevision(reference: RevisionReference): Promise<RevisionResult>;
+  getPage(reference: PageReference): Promise<RevisionResult>;
+  listPages(query?: PageListQuery): Promise<PageList>;
+  listRevisionHistory(reference: { pageId: string }): Promise<RevisionHistoryResult>;
+  diffRevisions(reference: RevisionDiffReference): Promise<RevisionDiffResult>;
   requestPublish(
     command: RequestPublishCommand,
     context: LifecycleContext
@@ -200,60 +267,6 @@ export async function createPostgresPageLifecycle(
       );
       if (completed) return completed;
 
-      const catalog = await options.catalog.current();
-      const validationErrors = validate(command.document, catalog.snapshot);
-      if (validationErrors.length > 0) {
-        return {
-          ok: false,
-          error: {
-            code: validationErrors.some((error) => error.type === 'METRIC_GAP')
-              ? 'METRIC_GAP'
-              : 'INVALID_PAGE',
-            message: '页面文档未通过校验',
-            validationErrors
-          }
-        };
-      }
-
-      const document = command.document as Page;
-      if (document.formatVersion !== versionPolicy.current) {
-        return {
-          ok: false,
-          error: {
-            code: 'INVALID_PAGE',
-            message: `保存只接受当前 formatVersion ${versionPolicy.current}`
-          }
-        };
-      }
-      if (document.id !== command.pageId) {
-        return {
-          ok: false,
-          error: {
-            code: 'PAGE_ID_MISMATCH',
-            message: `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
-          }
-        };
-      }
-      if (command.baseRevisionId !== null) {
-        return lifecycleFailure(
-          'REVISION_CONFLICT',
-          '首次保存的 baseRevisionId 必须为 null'
-        );
-      }
-
-      const createdAt = clock.now();
-      const revision: PageRevision = {
-        revisionId: ids.next(),
-        revisionNumber: 1,
-        pageId: command.pageId,
-        baseRevisionId: command.baseRevisionId,
-        document,
-        contentHash: hash(canonicalizeJson(document)),
-        metadataVersion: catalog.version,
-        createdBy: context.actorId,
-        createdAt: createdAt.toISOString()
-      };
-
       return sql.begin(async (tx) => {
         await tx`
           SELECT pg_advisory_xact_lock(
@@ -277,37 +290,140 @@ export async function createPostgresPageLifecycle(
           )
         `;
         const pages = (await tx`
-          SELECT page_id
+          SELECT page_id, latest_revision_id, active_publish_request_id
           FROM dashboard_pages
           WHERE page_id = ${command.pageId}
           FOR UPDATE
-        `) as unknown as Array<{ page_id: string }>;
-        if (pages.length > 0) {
+        `) as unknown as Array<{
+          page_id: string;
+          latest_revision_id: string | null;
+          active_publish_request_id: string | null;
+        }>;
+        const page = pages[0];
+        const createdAt = clock.now();
+
+        let revisionNumber: number;
+        let expiredPublishRequestId: string | null = null;
+        if (!page) {
+          if (command.baseRevisionId !== null) {
+            return revisionConflict(
+              '首次保存的 baseRevisionId 必须为 null',
+              null
+            );
+          }
+          revisionNumber = 1;
+        } else {
+          const latestRows = page.latest_revision_id
+            ? await selectRevision(tx, command.pageId, page.latest_revision_id)
+            : [];
+          const latest = latestRows[0] ? toRevision(latestRows[0]) : null;
+          if (command.baseRevisionId !== page.latest_revision_id || !latest) {
+            return revisionConflict(
+              `保存基线不是当前最新页面修订:${page.latest_revision_id ?? '无'}`,
+              latest
+            );
+          }
+
+          if (page.active_publish_request_id) {
+            const requests = (await tx`
+              SELECT request_id, status, expires_at
+              FROM publish_requests
+              WHERE request_id = ${page.active_publish_request_id}
+              FOR UPDATE
+            `) as unknown as Array<{
+              request_id: string;
+              status: PublishRequestStatus;
+              expires_at: Date | string;
+            }>;
+            const active = requests[0];
+            if (
+              active?.status === 'pending' &&
+              new Date(active.expires_at).getTime() > createdAt.getTime()
+            ) {
+              return lifecycleFailure(
+                'PAGE_LOCKED',
+                `看板页面有活动发布租约:${active.request_id}`
+              );
+            }
+            if (active?.status === 'pending') {
+              expiredPublishRequestId = active.request_id;
+            }
+          }
+          revisionNumber = latest.revisionNumber + 1;
+        }
+
+        const catalog = await options.catalog.current();
+        const validationErrors = validate(command.document, catalog.snapshot);
+        if (validationErrors.length > 0) {
           return {
             ok: false,
             error: {
-              code: 'PAGE_ID_TAKEN',
-              message: `看板页面 id 已存在:${command.pageId}`
+              code: validationErrors.some((error) => error.type === 'METRIC_GAP')
+                ? 'METRIC_GAP'
+                : 'INVALID_PAGE',
+              message: '页面文档未通过校验',
+              validationErrors
             }
           } satisfies RevisionResult;
         }
+        const document = command.document as Page;
+        if (document.formatVersion !== versionPolicy.current) {
+          return lifecycleFailure(
+            'INVALID_PAGE',
+            `保存只接受当前 formatVersion ${versionPolicy.current}`
+          );
+        }
+        if (document.id !== command.pageId) {
+          return lifecycleFailure(
+            'PAGE_ID_MISMATCH',
+            `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
+          );
+        }
 
-        await tx`
-          INSERT INTO dashboard_pages (
-            page_id,
-            latest_revision_id,
-            published_revision_id,
-            created_by,
-            created_at
-          )
-          VALUES (
-            ${command.pageId},
-            NULL,
-            NULL,
-            ${context.actorId},
-            ${createdAt}
-          )
-        `;
+        if (!page) {
+          await tx`
+            INSERT INTO dashboard_pages (
+              page_id,
+              latest_revision_id,
+              published_revision_id,
+              created_by,
+              created_at
+            )
+            VALUES (
+              ${command.pageId},
+              NULL,
+              NULL,
+              ${context.actorId},
+              ${createdAt}
+            )
+          `;
+        } else if (page.active_publish_request_id) {
+          if (expiredPublishRequestId) {
+            await tx`
+              UPDATE publish_requests
+              SET status = 'expired'
+              WHERE request_id = ${expiredPublishRequestId}
+            `;
+          }
+          await tx`
+            UPDATE dashboard_pages
+            SET active_publish_request_id = NULL
+            WHERE page_id = ${command.pageId}
+              AND active_publish_request_id = ${page.active_publish_request_id}
+          `;
+        }
+
+        const revision: PageRevision = {
+          revisionId: ids.next(),
+          revisionNumber,
+          pageId: command.pageId,
+          baseRevisionId: command.baseRevisionId,
+          document,
+          contentHash: hash(canonicalizeJson(document)),
+          metadataVersion: catalog.version,
+          createdBy: context.actorId,
+          createdAt: createdAt.toISOString()
+        };
         await tx`
           INSERT INTO page_revisions (
             revision_id,
@@ -386,6 +502,110 @@ export async function createPostgresPageLifecycle(
         };
       }
       return { ok: true, revision: toRevision(rows[0]) };
+    },
+
+    async getPage(reference) {
+      return selectPageRevision(sql, reference);
+    },
+
+    async listPages(query = {}) {
+      const limit = pageListLimit(query.limit);
+      const rows = (await sql`
+        SELECT
+          page_id,
+          latest_revision_id,
+          published_revision_id,
+          catalog_visibility
+        FROM dashboard_pages
+        WHERE page_id > ${query.afterPageId ?? ''}
+        ORDER BY page_id ASC
+        LIMIT ${limit + 1}
+      `) as unknown as Array<{
+        page_id: string;
+        latest_revision_id: string | null;
+        published_revision_id: string | null;
+        catalog_visibility: CatalogVisibility;
+      }>;
+      const pages = rows.slice(0, limit);
+      return {
+        pages: pages.map((page) => ({
+          pageId: page.page_id,
+          latestRevision: page.latest_revision_id
+            ? { pageId: page.page_id, revisionId: page.latest_revision_id }
+            : null,
+          publishedRevision: page.published_revision_id
+            ? { pageId: page.page_id, revisionId: page.published_revision_id }
+            : null,
+          catalogVisibility: page.catalog_visibility
+        })),
+        nextPageId: rows.length > limit ? pages.at(-1)?.page_id ?? null : null
+      };
+    },
+
+    async listRevisionHistory(reference) {
+      const pages = (await sql`
+        SELECT page_id
+        FROM dashboard_pages
+        WHERE page_id = ${reference.pageId}
+      `) as unknown as Array<{ page_id: string }>;
+      if (pages.length === 0) {
+        return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+      }
+      const rows = (await sql`
+        SELECT
+          revision_id,
+          revision_number,
+          page_id,
+          base_revision_id,
+          document,
+          content_hash,
+          metadata_version,
+          created_by,
+          created_at
+        FROM page_revisions
+        WHERE page_id = ${reference.pageId}
+        ORDER BY revision_number DESC, revision_id DESC
+      `) as unknown as RevisionRow[];
+      return {
+        ok: true,
+        history: {
+          pageId: reference.pageId,
+          revisions: rows.map(toRevision)
+        }
+      };
+    },
+
+    async diffRevisions(reference) {
+      const [fromRows, toRows] = await Promise.all([
+        selectRevision(sql, reference.pageId, reference.fromRevisionId),
+        selectRevision(sql, reference.pageId, reference.toRevisionId)
+      ]);
+      const from = fromRows[0];
+      if (!from) {
+        return lifecycleFailure(
+          'REVISION_NOT_FOUND',
+          `页面修订不存在:${reference.fromRevisionId}`
+        );
+      }
+      const to = toRows[0];
+      if (!to) {
+        return lifecycleFailure(
+          'REVISION_NOT_FOUND',
+          `页面修订不存在:${reference.toRevisionId}`
+        );
+      }
+      return {
+        ok: true,
+        diff: {
+          pageId: reference.pageId,
+          fromRevisionId: reference.fromRevisionId,
+          toRevisionId: reference.toRevisionId,
+          changes: diffJson(
+            from.document as unknown as JSONValue,
+            to.document as unknown as JSONValue
+          )
+        }
+      };
     },
 
     async requestPublish(command, context) {
@@ -750,6 +970,7 @@ async function ensureSchema(sql: Sql): Promise<void> {
       latest_revision_id uuid,
       published_revision_id uuid,
       active_publish_request_id uuid,
+      catalog_visibility text NOT NULL DEFAULT 'visible',
       created_by text NOT NULL,
       created_at timestamptz NOT NULL
     )
@@ -757,6 +978,10 @@ async function ensureSchema(sql: Sql): Promise<void> {
   await sql`
     ALTER TABLE dashboard_pages
     ADD COLUMN IF NOT EXISTS active_publish_request_id uuid
+  `;
+  await sql`
+    ALTER TABLE dashboard_pages
+    ADD COLUMN IF NOT EXISTS catalog_visibility text NOT NULL DEFAULT 'visible'
   `;
   await sql`
     CREATE TABLE IF NOT EXISTS page_revisions (
@@ -815,7 +1040,7 @@ async function idempotentResult<T>(
 }
 
 async function selectRevision(
-  sql: Sql,
+  sql: Sql | TransactionSql,
   pageId: string,
   revisionId: string
 ): Promise<RevisionRow[]> {
@@ -836,11 +1061,110 @@ async function selectRevision(
   `) as unknown as RevisionRow[];
 }
 
+async function selectPageRevision(
+  sql: Sql,
+  reference: PageReference
+): Promise<RevisionResult> {
+  if (reference.selector.type === 'exact') {
+    const rows = await selectRevision(sql, reference.pageId, reference.selector.revisionId);
+    if (!rows[0]) {
+      return lifecycleFailure(
+        'REVISION_NOT_FOUND',
+        `页面修订不存在:${reference.selector.revisionId}`
+      );
+    }
+    return { ok: true, revision: toRevision(rows[0]) };
+  }
+
+  const column =
+    reference.selector.type === 'latest' ? 'latest_revision_id' : 'published_revision_id';
+  const pages = (await sql.unsafe(
+    `
+      SELECT ${column} AS revision_id
+      FROM dashboard_pages
+      WHERE page_id = $1
+    `,
+    [reference.pageId]
+  )) as unknown as Array<{ revision_id: string | null }>;
+  const page = pages[0];
+  if (!page) {
+    return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+  }
+  if (!page.revision_id) {
+    return lifecycleFailure(
+      reference.selector.type === 'published' ? 'PAGE_NOT_PUBLISHED' : 'REVISION_NOT_FOUND',
+      reference.selector.type === 'published'
+        ? `看板页面尚未发布:${reference.pageId}`
+        : `页面没有最新修订:${reference.pageId}`
+    );
+  }
+  const rows = await selectRevision(sql, reference.pageId, page.revision_id);
+  if (!rows[0]) {
+    return lifecycleFailure('REVISION_NOT_FOUND', `页面修订不存在:${page.revision_id}`);
+  }
+  return { ok: true, revision: toRevision(rows[0]) };
+}
+
 function lifecycleFailure(
   code: LifecycleErrorCode,
   message: string
 ): { ok: false; error: LifecycleError } {
   return { ok: false, error: { code, message } };
+}
+
+function revisionConflict(
+  message: string,
+  currentLatestRevision: PageRevision | null
+): RevisionResult {
+  return {
+    ok: false,
+    error: {
+      code: 'REVISION_CONFLICT',
+      message,
+      ...(currentLatestRevision ? { currentLatestRevision } : {})
+    }
+  };
+}
+
+function pageListLimit(value: number | undefined): number {
+  if (!Number.isInteger(value) || value === undefined || value < 1) return 50;
+  return Math.min(value, 100);
+}
+
+function diffJson(before: JSONValue, after: JSONValue, path = ''): JsonDiffEntry[] {
+  if (canonicalizeJson(before) === canonicalizeJson(after)) return [];
+  if (isJsonObject(before) && isJsonObject(after)) {
+    const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])].sort();
+    return keys.flatMap((key) => {
+      const childPath = `${path}/${escapeJsonPointer(key)}`;
+      if (!(key in before)) return [{ op: 'add', path: childPath, after: after[key] }];
+      if (!(key in after)) return [{ op: 'remove', path: childPath, before: before[key] }];
+      return diffJson(before[key], after[key], childPath);
+    });
+  }
+  if (Array.isArray(before) && Array.isArray(after)) {
+    const changes: JsonDiffEntry[] = [];
+    const sharedLength = Math.min(before.length, after.length);
+    for (let index = 0; index < sharedLength; index += 1) {
+      changes.push(...diffJson(before[index], after[index], `${path}/${index}`));
+    }
+    for (let index = sharedLength; index < before.length; index += 1) {
+      changes.push({ op: 'remove', path: `${path}/${index}`, before: before[index] });
+    }
+    for (let index = sharedLength; index < after.length; index += 1) {
+      changes.push({ op: 'add', path: `${path}/${index}`, after: after[index] });
+    }
+    return changes;
+  }
+  return [{ op: 'replace', path, before, after }];
+}
+
+function isJsonObject(value: JSONValue): value is Record<string, JSONValue> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function escapeJsonPointer(value: string): string {
+  return value.replaceAll('~', '~0').replaceAll('/', '~1');
 }
 
 function hash(value: string): string {

@@ -79,6 +79,44 @@ describe('页面 id 确认 MCP Client adapter', () => {
     });
   });
 
+  it('追加页面修订时不要求再次确认页面 id', async () => {
+    const delegatedCalls: string[] = [];
+    const client = createPageIdConfirmationMcpClient({
+      client: {
+        async listTools() {
+          return [];
+        },
+        async callTool({ name }) {
+          delegatedCalls.push(name);
+          return {
+            structuredContent: {
+              ok: true,
+              revision: { pageId: 'sales-total', revisionId: 'revision-2' }
+            },
+            isError: false
+          };
+        }
+      },
+      confirmedPageIds: []
+    });
+
+    const result = await client.callTool({
+      name: 'save_page',
+      arguments: {
+        pageId: 'sales-total',
+        baseRevisionId: 'revision-1',
+        document: pageDocument,
+        idempotencyKey: 'save-2'
+      }
+    });
+
+    expect(delegatedCalls).toEqual(['save_page']);
+    expect(result.structuredContent).toEqual({
+      ok: true,
+      revision: { pageId: 'sales-total', revisionId: 'revision-2' }
+    });
+  });
+
   it('页面 id 已确认时允许校验结果继续并委托保存', async () => {
     const delegatedCalls: string[] = [];
     const baseClient: McpClient = {
