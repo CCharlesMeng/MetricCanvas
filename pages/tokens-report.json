@@ -42,11 +42,11 @@
         "type": "inline",
         "rows": [
           {
-            "tokens_consumed": 866160000000,
-            "tokens_consumed_dod_pct": 4.24,
-            "tokens_consumed_wow_pct": -2.52,
-            "tokens_consumed_mtd": 23194860000000,
-            "tokens_consumed_mom_pct": 5.43
+            "tokens_consumed": 632300000000,
+            "tokens_consumed_dod_pct": 5.51,
+            "tokens_consumed_wow_pct": -3.5,
+            "tokens_consumed_mtd": 16932250000000,
+            "tokens_consumed_mom_pct": 6.9
           }
         ]
       }
@@ -88,9 +88,9 @@
         "type": "inline",
         "rows": [
           {
-            "tokens_flow": 1070000,
-            "tokens_flow_dod_pct": 7.75,
-            "tokens_flow_wow_pct": -7.61,
+            "tokens_flow": 870000,
+            "tokens_flow_dod_pct": 9.62,
+            "tokens_flow_wow_pct": -9.45,
             "tokens_flow_mtd": null,
             "tokens_flow_mom_pct": null
           }
@@ -117,43 +117,43 @@
         "rows": [
           {
             "stat_date": "2026-06-14",
-            "tokens_consumed": 610420000000
+            "tokens_consumed": 445610000000
           },
           {
             "stat_date": "2026-06-15",
-            "tokens_consumed": 805200000000
+            "tokens_consumed": 587800000000
           },
           {
             "stat_date": "2026-06-16",
-            "tokens_consumed": 888580000000
+            "tokens_consumed": 648660000000
           },
           {
             "stat_date": "2026-06-17",
-            "tokens_consumed": 908550000000
+            "tokens_consumed": 663240000000
           },
           {
             "stat_date": "2026-06-18",
-            "tokens_consumed": 838340000000
+            "tokens_consumed": 611990000000
           },
           {
             "stat_date": "2026-06-19",
-            "tokens_consumed": 684530000000
+            "tokens_consumed": 499710000000
           },
           {
             "stat_date": "2026-06-20",
-            "tokens_consumed": 559330000000
+            "tokens_consumed": 408310000000
           },
           {
             "stat_date": "2026-06-21",
-            "tokens_consumed": 619670000000
+            "tokens_consumed": 452360000000
           },
           {
             "stat_date": "2026-06-22",
-            "tokens_consumed": 830960000000
+            "tokens_consumed": 606600000000
           },
           {
             "stat_date": "2026-06-23",
-            "tokens_consumed": 866160000000
+            "tokens_consumed": 632300000000
           }
         ]
       }
@@ -178,43 +178,43 @@
         "rows": [
           {
             "stat_date": "2026-06-14",
-            "tokens_flow": 710000
+            "tokens_flow": 580000
           },
           {
             "stat_date": "2026-06-15",
-            "tokens_flow": 980000
+            "tokens_flow": 790000
           },
           {
             "stat_date": "2026-06-16",
-            "tokens_flow": 1150000
+            "tokens_flow": 930000
           },
           {
             "stat_date": "2026-06-17",
-            "tokens_flow": 1280000
+            "tokens_flow": 1040000
           },
           {
             "stat_date": "2026-06-18",
-            "tokens_flow": 1050000
+            "tokens_flow": 850000
           },
           {
             "stat_date": "2026-06-19",
-            "tokens_flow": 750000
-          },
-          {
-            "stat_date": "2026-06-20",
             "tokens_flow": 610000
           },
           {
+            "stat_date": "2026-06-20",
+            "tokens_flow": 490000
+          },
+          {
             "stat_date": "2026-06-21",
-            "tokens_flow": 630000
+            "tokens_flow": 510000
           },
           {
             "stat_date": "2026-06-22",
-            "tokens_flow": 990000
+            "tokens_flow": 800000
           },
           {
             "stat_date": "2026-06-23",
-            "tokens_flow": 1070000
+            "tokens_flow": 870000
           }
         ]
       }
@@ -292,10 +292,10 @@
         "type": "inline",
         "rows": [
           {
-            "representative_office": "北京代表处",
-            "tokens_consumed": 724610000000,
-            "tokens_consumed_share_pct": 83.7,
-            "tokens_consumed_dod_pct": 2.84,
+            "representative_office": "京畿代表处",
+            "tokens_consumed": 528970000000,
+            "tokens_consumed_share_pct": 84.0,
+            "tokens_consumed_dod_pct": 3.87,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -305,10 +305,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "上海代表处",
-            "tokens_consumed": 50740000000,
+            "representative_office": "浦江代表处",
+            "tokens_consumed": 37040000000,
             "tokens_consumed_share_pct": 5.9,
-            "tokens_consumed_dod_pct": 8.87,
+            "tokens_consumed_dod_pct": 10.93,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -318,10 +318,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "中国总部",
-            "tokens_consumed": 38670000000,
+            "representative_office": "集团总部",
+            "tokens_consumed": 28230000000,
             "tokens_consumed_share_pct": 4.5,
-            "tokens_consumed_dod_pct": 23.8,
+            "tokens_consumed_dod_pct": 28.4,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -331,10 +331,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "安徽代表处",
-            "tokens_consumed": 19540000000,
+            "representative_office": "江淮代表处",
+            "tokens_consumed": 14260000000,
             "tokens_consumed_share_pct": 2.3,
-            "tokens_consumed_dod_pct": 4.95,
+            "tokens_consumed_dod_pct": 6.34,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -344,10 +344,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "福建代表处",
-            "tokens_consumed": 13780000000,
+            "representative_office": "闽江代表处",
+            "tokens_consumed": 10060000000,
             "tokens_consumed_share_pct": 1.6,
-            "tokens_consumed_dod_pct": 15.3,
+            "tokens_consumed_dod_pct": 18.45,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -357,10 +357,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "广东代表处",
-            "tokens_consumed": 7420000000,
+            "representative_office": "珠江代表处",
+            "tokens_consumed": 5420000000,
             "tokens_consumed_share_pct": 0.9,
-            "tokens_consumed_dod_pct": 6.54,
+            "tokens_consumed_dod_pct": 8.2,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -370,10 +370,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "浙江代表处",
-            "tokens_consumed": 3580000000,
+            "representative_office": "钱塘代表处",
+            "tokens_consumed": 2610000000,
             "tokens_consumed_share_pct": 0.4,
-            "tokens_consumed_dod_pct": 6.84,
+            "tokens_consumed_dod_pct": 8.55,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -383,10 +383,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "湖北代表处",
-            "tokens_consumed": 2190000000,
+            "representative_office": "江汉代表处",
+            "tokens_consumed": 1600000000,
             "tokens_consumed_share_pct": 0.3,
-            "tokens_consumed_dod_pct": -0.71,
+            "tokens_consumed_dod_pct": -1.38,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -396,10 +396,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "湖南代表处",
-            "tokens_consumed": 1470000000,
+            "representative_office": "湘江代表处",
+            "tokens_consumed": 1070000000,
             "tokens_consumed_share_pct": 0.2,
-            "tokens_consumed_dod_pct": 10.7,
+            "tokens_consumed_dod_pct": 13.07,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -409,10 +409,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "representative_office": "重庆代表处",
-            "tokens_consumed": 1100000000,
+            "representative_office": "山城代表处",
+            "tokens_consumed": 800000000,
             "tokens_consumed_share_pct": 0.1,
-            "tokens_consumed_dod_pct": -5.81,
+            "tokens_consumed_dod_pct": -7.35,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -497,10 +497,10 @@
         "type": "inline",
         "rows": [
           {
-            "model_service": "GLM-5.1",
-            "tokens_consumed": 262350000000,
-            "tokens_consumed_share_pct": 30.3,
-            "tokens_consumed_dod_pct": 19.3,
+            "model_service": "Nova-Pro-2.1",
+            "tokens_consumed": 191520000000,
+            "tokens_consumed_share_pct": 30.4,
+            "tokens_consumed_dod_pct": 23.13,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -510,10 +510,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "DeepSeek-V3",
-            "tokens_consumed": 248020000000,
-            "tokens_consumed_share_pct": 28.6,
-            "tokens_consumed_dod_pct": -8.4,
+            "model_service": "Orion-Max",
+            "tokens_consumed": 181050000000,
+            "tokens_consumed_share_pct": 28.8,
+            "tokens_consumed_dod_pct": -10.38,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -523,10 +523,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "DeepSeek-V3.2",
-            "tokens_consumed": 225140000000,
-            "tokens_consumed_share_pct": 26,
-            "tokens_consumed_dod_pct": 8.25,
+            "model_service": "Orion-Max-2",
+            "tokens_consumed": 164350000000,
+            "tokens_consumed_share_pct": 26.1,
+            "tokens_consumed_dod_pct": 10.2,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -536,10 +536,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "GLM-5",
-            "tokens_consumed": 44830000000,
+            "model_service": "Nova-Pro",
+            "tokens_consumed": 32730000000,
             "tokens_consumed_share_pct": 5.2,
-            "tokens_consumed_dod_pct": 1.84,
+            "tokens_consumed_dod_pct": 2.7,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -549,10 +549,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "DeepSeek-R1-0528",
-            "tokens_consumed": 32430000000,
-            "tokens_consumed_share_pct": 3.7,
-            "tokens_consumed_dod_pct": -1.81,
+            "model_service": "Helix-Reasoner",
+            "tokens_consumed": 23670000000,
+            "tokens_consumed_share_pct": 3.8,
+            "tokens_consumed_dod_pct": -2.67,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -562,10 +562,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "longcat-flash-chat",
-            "tokens_consumed": 17920000000,
+            "model_service": "FlashCat-Lite",
+            "tokens_consumed": 13080000000,
             "tokens_consumed_share_pct": 2.1,
-            "tokens_consumed_dod_pct": -8.48,
+            "tokens_consumed_dod_pct": -10.47,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -575,10 +575,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "Kimi-K2.6",
-            "tokens_consumed": 16340000000,
+            "model_service": "Luna-K2",
+            "tokens_consumed": 11930000000,
             "tokens_consumed_share_pct": 1.9,
-            "tokens_consumed_dod_pct": 0.78,
+            "tokens_consumed_dod_pct": 1.46,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -588,10 +588,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "DeepSeek-V4-Flash",
-            "tokens_consumed": 7190000000,
+            "model_service": "Orion-Flash",
+            "tokens_consumed": 5250000000,
             "tokens_consumed_share_pct": 0.8,
-            "tokens_consumed_dod_pct": -2.98,
+            "tokens_consumed_dod_pct": -4.04,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -601,10 +601,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "GLM-5.2",
-            "tokens_consumed": 6900000000,
+            "model_service": "Nova-Pro-2.2",
+            "tokens_consumed": 5040000000,
             "tokens_consumed_share_pct": 0.8,
-            "tokens_consumed_dod_pct": 55.3,
+            "tokens_consumed_dod_pct": 65.25,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -614,10 +614,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "model_service": "Qwen3-32B",
-            "tokens_consumed": 1490000000,
+            "model_service": "Quill-32B",
+            "tokens_consumed": 1090000000,
             "tokens_consumed_share_pct": 0.2,
-            "tokens_consumed_dod_pct": -61.1,
+            "tokens_consumed_dod_pct": -72.04,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -702,10 +702,10 @@
         "type": "inline",
         "rows": [
           {
-            "customer_name": "百度在线网络技术（北京）有限公司",
-            "tokens_consumed": 236680000000,
-            "tokens_consumed_share_pct": 27.3,
-            "tokens_consumed_dod_pct": -7.83,
+            "customer_name": "星河在线网络技术（京海）有限公司",
+            "tokens_consumed": 172780000000,
+            "tokens_consumed_share_pct": 32.0,
+            "tokens_consumed_dod_pct": -9.71,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -715,10 +715,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "北京智谱华章科技股份有限公司",
-            "tokens_consumed": 141450000000,
-            "tokens_consumed_share_pct": 16.3,
-            "tokens_consumed_dod_pct": 58.1,
+            "customer_name": "京海智算华章科技股份有限公司",
+            "tokens_consumed": 103260000000,
+            "tokens_consumed_share_pct": 19.1,
+            "tokens_consumed_dod_pct": 68.53,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -728,10 +728,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "北京百度网讯科技有限公司",
-            "tokens_consumed": 134370000000,
-            "tokens_consumed_share_pct": 15.5,
-            "tokens_consumed_dod_pct": 5.55,
+            "customer_name": "京海云讯科技有限公司",
+            "tokens_consumed": 98090000000,
+            "tokens_consumed_share_pct": 18.2,
+            "tokens_consumed_dod_pct": 7.04,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -741,10 +741,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "云计算-DMZ服务",
-            "tokens_consumed": 85910000000,
-            "tokens_consumed_share_pct": 9.9,
-            "tokens_consumed_dod_pct": -3.34,
+            "customer_name": "平台共享-边缘网关",
+            "tokens_consumed": 62710000000,
+            "tokens_consumed_share_pct": 11.6,
+            "tokens_consumed_dod_pct": -4.46,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -754,10 +754,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "北京三快在线科技有限公司",
-            "tokens_consumed": 37590000000,
-            "tokens_consumed_share_pct": 4.3,
-            "tokens_consumed_dod_pct": -3.01,
+            "customer_name": "京海迅达在线科技有限公司",
+            "tokens_consumed": 27440000000,
+            "tokens_consumed_share_pct": 5.1,
+            "tokens_consumed_dod_pct": -4.07,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -767,10 +767,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "上海任意门科技有限公司",
-            "tokens_consumed": 24500000000,
-            "tokens_consumed_share_pct": 2.8,
-            "tokens_consumed_dod_pct": 20.6,
+            "customer_name": "浦江任意行科技有限公司",
+            "tokens_consumed": 17880000000,
+            "tokens_consumed_share_pct": 3.3,
+            "tokens_consumed_dod_pct": 24.65,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -780,10 +780,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "北京中炘科技集团有限公司",
-            "tokens_consumed": 22770000000,
-            "tokens_consumed_share_pct": 2.6,
-            "tokens_consumed_dod_pct": -21.1,
+            "customer_name": "京海中启科技集团有限公司",
+            "tokens_consumed": 16620000000,
+            "tokens_consumed_share_pct": 3.1,
+            "tokens_consumed_dod_pct": -25.24,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -793,10 +793,23 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "慧科讯业（北京）网络科技有限公司",
-            "tokens_consumed": 21960000000,
+            "customer_name": "慧联讯业（京海）网络科技有限公司",
+            "tokens_consumed": 16030000000,
+            "tokens_consumed_share_pct": 3.0,
+            "tokens_consumed_dod_pct": 3.21,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "科言智声股份有限公司",
+            "tokens_consumed": 13370000000,
             "tokens_consumed_share_pct": 2.5,
-            "tokens_consumed_dod_pct": 2.27,
+            "tokens_consumed_dod_pct": 0.71,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -806,23 +819,10 @@
             "tokens_flow_mom_pct": null
           },
           {
-            "customer_name": "科大讯飞股份有限公司",
-            "tokens_consumed": 18320000000,
-            "tokens_consumed_share_pct": 2.1,
-            "tokens_consumed_dod_pct": 0.14,
-            "tokens_consumed_mtd": null,
-            "tokens_consumed_mom_pct": null,
-            "tokens_flow": null,
-            "tokens_flow_share_pct": null,
-            "tokens_flow_dod_pct": null,
-            "tokens_flow_mtd": null,
-            "tokens_flow_mom_pct": null
-          },
-          {
-            "customer_name": "北京揽月星辰科技有限公司",
-            "tokens_consumed": 16150000000,
-            "tokens_consumed_share_pct": 1.9,
-            "tokens_consumed_dod_pct": 0.22,
+            "customer_name": "京海揽云星河科技有限公司",
+            "tokens_consumed": 11790000000,
+            "tokens_consumed_share_pct": 2.2,
+            "tokens_consumed_dod_pct": 0.81,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
             "tokens_flow": null,
@@ -859,29 +859,29 @@
         "type": "inline",
         "rows": [
           {
-            "customer_name": "宁波飞搜科技有限公司",
-            "tokens_consumed": 1790000,
-            "tokens_consumed_dod_pct": 276142
+            "customer_name": "甬城飞索科技有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": 185138
           },
           {
-            "customer_name": "中宇联云计算服务（上海）有限公司",
-            "tokens_consumed": 1480000,
-            "tokens_consumed_dod_pct": 72095
+            "customer_name": "申联云计算服务（浦江）有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": 48427
           },
           {
-            "customer_name": "吕晓东",
-            "tokens_consumed": 150000,
-            "tokens_consumed_dod_pct": 16187
+            "customer_name": "陈启明",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": 10968
           },
           {
-            "customer_name": "温氏食品集团股份有限公司",
-            "tokens_consumed": 6820000,
-            "tokens_consumed_dod_pct": 15324
+            "customer_name": "绿野食品集团股份有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": 10390
           },
           {
-            "customer_name": "彭立璞",
-            "tokens_consumed": 14500000,
-            "tokens_consumed_dod_pct": 13294
+            "customer_name": "周景行",
+            "tokens_consumed": 10000000,
+            "tokens_consumed_dod_pct": 9030
           }
         ]
       }
@@ -911,27 +911,27 @@
         "type": "inline",
         "rows": [
           {
-            "customer_name": "河北慧日信息技术有限公司",
+            "customer_name": "冀北慧光信息技术有限公司",
             "tokens_consumed": 0,
             "tokens_consumed_dod_pct": -100
           },
           {
-            "customer_name": "云鼎科技股份有限公司",
+            "customer_name": "云桥科技股份有限公司",
             "tokens_consumed": 0,
             "tokens_consumed_dod_pct": -100
           },
           {
-            "customer_name": "成都书声科技有限公司",
+            "customer_name": "蓉城书澜科技有限公司",
             "tokens_consumed": 0,
             "tokens_consumed_dod_pct": -100
           },
           {
-            "customer_name": "黄宇城",
+            "customer_name": "林远舟",
             "tokens_consumed": 0,
             "tokens_consumed_dod_pct": -100
           },
           {
-            "customer_name": "张海瑞",
+            "customer_name": "赵清禾",
             "tokens_consumed": 0,
             "tokens_consumed_dod_pct": -100
           }
@@ -956,14 +956,14 @@
           },
           "props": {
             "title": "Tokens运营分析简报",
-            "subtitle": "2026年6月23日中国地区部 Tokens 运营情况",
-            "badge": "报告由云战地助手生成",
+            "subtitle": "2026年6月23日华东运营区 Tokens 运营情况",
+            "badge": "报告由运营简报助手生成",
             "asOf": {
               "label": "数据截至",
               "value": "2026-06-23"
             },
             "tags": [
-              "中国地区部"
+              "华东运营区"
             ]
           }
         },
@@ -975,7 +975,7 @@
           },
           "props": {
             "heading": "数据摘要",
-            "body": "【Token消耗趋势分析】2026年6月23日中国地区部Token消耗量为8,661.6亿，较昨日增长4.24%，近10天呈现波动上升趋势，从6月14日的6,104.2亿增长至6月23日，增幅达41.9%。6月15-17日连续三天增长，6月19-20日出现回调，6月21-23日再次回升。\n\n【代表处分布分析】北京代表处占据绝对主导地位，当日消耗7,246.1亿，占比83.7%，环比增长2.84%。上海代表处和中国总部分列二三位，分别消耗507.4亿和386.7亿。中国总部增速最快，环比增长23.8%。TOP3代表处合计占比94.1%，集中度较高。\n\n【模型服务驱动分析】GLM-5.1和DeepSeek-V3是两大主力模型，分别消耗2,623.5亿和2,480.2亿，合计占比59.0%。GLM-5.1环比增长19.3%，是当日增长的主要驱动力。DeepSeek-V3.2消耗2,251.4亿，环比增长8.25%。GLM-5.2虽然消耗量仅69.0亿，但环比增长55.3%，增速最快。",
+            "body": "【Token消耗趋势分析】2026年6月23日华东运营区Token消耗量为6,323.0亿，较昨日增长5.51%，近10天呈现波动上升趋势，从6月14日的4,456.1亿增长至6月23日，增幅达41.9%。6月15-17日连续三天增长，6月19-20日出现回调，6月21-23日再次回升。\n\n【代表处分布分析】京畿代表处占据绝对主导地位，当日消耗5,289.7亿，占比84.0%，环比增长3.87%。浦江代表处和集团总部分列二三位，分别消耗370.4亿和282.3亿。集团总部增速最快，环比增长28.40%。TOP3代表处合计占比94.4%，集中度较高。\n\n【模型服务驱动分析】Nova-Pro-2.1和Orion-Max是两大主力模型，分别消耗1,915.2亿和1,810.5亿，合计占比59.2%。Nova-Pro-2.1环比增长23.13%，是当日增长的主要驱动力。Orion-Max-2消耗1,643.5亿，环比增长10.20%。Nova-Pro-2.2虽然消耗量仅50.4亿，但环比增长65.25%，增速最快。",
             "variant": "insight"
           }
         }

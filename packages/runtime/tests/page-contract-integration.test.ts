@@ -52,7 +52,7 @@ describe('1.0 页面契约与统一运行时集成', () => {
     expect(result.latest().get('report-header')).toBeUndefined();
     expect(result.latest().get('gmv-card')?.get('main')).toEqual({
       status: 'ready',
-      rows: [{ gmv: 866160000000 }]
+      rows: [{ gmv: 632300000000 }]
     });
   });
 
