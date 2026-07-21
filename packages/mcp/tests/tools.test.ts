@@ -121,6 +121,7 @@ describe('MetricCanvas MCP 工具契约', () => {
     expect(promptText).toContain('类别比较用 barChart');
     expect(promptText).toContain('时间变化用 lineChart');
     expect(promptText).toContain('mock 数据网关');
+    expect(promptText).toContain('明确要求发布');
 
     const resources = await client.listResources();
     expect(resources.resources).toEqual(

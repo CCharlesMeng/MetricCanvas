@@ -379,6 +379,23 @@ describe('页面搭建工作台状态', () => {
       })
     ];
 
+    const waitingForPublish = await provider.complete({ messages, tools: [] });
+    expect(waitingForPublish.toolCalls).toEqual([]);
+    expect(waitingForPublish.content).toContain('明确要求发布');
+    const publishing = await provider.complete({
+      messages: [...messages, { role: 'user', content: '预览没有问题，确认发布' }],
+      tools: []
+    });
+    expect(publishing.toolCalls).toEqual([
+      expect.objectContaining({
+        name: 'request_publish',
+        input: expect.objectContaining({
+          pageId: 'sales-total',
+          revisionId: 'revision-2'
+        })
+      })
+    ]);
+
     const state = deriveWorkbenchState({
       messages,
       confirmedPageIds: ['sales-total']

@@ -219,6 +219,9 @@
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}
+              <a class="button-link" href={`/manage/pages/${encodeURIComponent(pageId)}/edit`}>
+                编辑当前页面修订
+              </a>
               <button disabled={requestingPublish} onclick={requestPublishSelected}>
                 {requestingPublish ? '正在取得发布租约…' : `发起发布 R${comparison.selected.revisionNumber}`}
               </button>

@@ -1,4 +1,9 @@
 {
   "extends": "../../tsconfig.base.json",
-  "include": ["src/lib/workbench-state.ts", "src/lib/management-state.ts", "tests"]
+  "include": [
+    "src/lib/workbench-state.ts",
+    "src/lib/management-state.ts",
+    "src/lib/page-editor.ts",
+    "tests"
+  ]
 }

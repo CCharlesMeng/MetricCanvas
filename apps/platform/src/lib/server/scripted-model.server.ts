@@ -50,8 +50,17 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
             revisionId
           });
         }
+        if (!called.has('request_publish') && publishRequested(messages)) {
+          return toolCall('publish-existing-1', 'request_publish', {
+            pageId: loadedPage.pageId,
+            revisionId,
+            idempotencyKey: `scripted-publish-${loadedPage.pageId}-${revisionId}`
+          });
+        }
         return {
-          content: 'R2 已保存并加载精确预览。',
+          content: called.has('request_publish')
+            ? '新页面修订已加载精确预览。发布租约已取得，请在工作台中完成人工确认。'
+            : '新页面修订已保存并加载精确预览。你可以继续编辑；确认内容后再明确要求发布。',
           toolCalls: []
         };
       }
@@ -90,7 +99,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
           revisionId
         });
       }
-      if (!called.has('request_publish')) {
+      if (!called.has('request_publish') && publishRequested(messages)) {
         return toolCall('publish-1', 'request_publish', {
           pageId,
           revisionId,
@@ -99,7 +108,9 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
       }
 
       return {
-        content: 'R1 已保存并加载精确预览。发布租约已取得，请在工作台中完成人工确认。',
+        content: called.has('request_publish')
+          ? 'R1 已加载精确预览。发布租约已取得，请在工作台中完成人工确认。'
+          : 'R1 已保存并加载精确预览。你可以继续编辑；确认内容后再明确要求发布。',
         toolCalls: []
       };
     }
@@ -409,6 +420,19 @@ function searchedCatalogQueries(messages: AgentMessage[]): Set<string> {
     });
   });
   return new Set(queries);
+}
+
+function publishRequested(messages: AgentMessage[]): boolean {
+  const lastUserMessage = [...messages]
+    .reverse()
+    .find((message) => message.role === 'user')?.content.trim();
+  if (!lastUserMessage || /(?:不要|暂不|先不|取消).*发布/u.test(lastUserMessage)) return false;
+  return (
+    lastUserMessage === '发布' ||
+    /(?:确认发布|同意发布|可以发布|发起发布|申请发布|请发布|现在发布|继续发布|发布页面|发布这个)/u.test(
+      lastUserMessage
+    )
+  );
 }
 
 function toolResult(

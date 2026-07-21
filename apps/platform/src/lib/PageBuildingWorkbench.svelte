@@ -561,6 +561,12 @@
           </div>
         </div>
 
+        <div class="preview-actions">
+          <a href={`/manage/pages/${encodeURIComponent(workbench.preview.pageId)}/edit`}>
+            编辑组件、内容与布局 →
+          </a>
+        </div>
+
         {#if workbench.preview.matchesRevision}
           <iframe
             title="统一运行时精确页面修订预览"
@@ -1150,6 +1156,15 @@
     border: 1px solid #dce1e7;
     border-radius: 10px 10px 0 0;
     background: #dce1e7;
+  }
+  .preview-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .preview-actions a {
+    color: #2457d6;
+    font-size: 13px;
+    font-weight: 700;
   }
   .source-strip > div {
     min-width: 0;
