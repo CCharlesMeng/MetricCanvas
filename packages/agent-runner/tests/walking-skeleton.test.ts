@@ -8,16 +8,35 @@ import {
 } from '@metriccanvas/agent-runner';
 
 const pageDocument = {
-  formatVersion: '1.0',
+  schemaVersion: '1.0',
   id: 'sales-total',
-  title: '成交总额',
-  layout: { type: 'grid', columns: 12 },
-  widgets: [
+  dataSources: {
+    sales: {
+      fields: {
+        gmv: { type: 'number', role: 'metric' }
+      },
+      source: {
+        type: 'query',
+        query: { metrics: ['gmv'], aggregation: 'sum' }
+      }
+    }
+  },
+  sections: [
     {
-      id: 'w-gmv',
-      type: 'metricCard',
-      position: { x: 0, y: 0, w: 3, h: 2 },
-      query: { metrics: ['gmv'], aggregation: 'sum' }
+      id: 'overview',
+      title: '成交总额',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'w-gmv',
+          type: 'metricCard',
+          layout: { span: 3 },
+          data: { main: 'sales' },
+          props: {
+            rows: [{ label: '成交总额', valueField: 'gmv' }]
+          }
+        }
+      ]
     }
   ]
 };

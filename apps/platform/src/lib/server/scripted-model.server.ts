@@ -105,18 +105,41 @@ interface LoadedExistingPage {
 
 function pageDocumentFor(pageId: string) {
   return {
-    formatVersion: '1.0',
+    schemaVersion: '1.0',
     id: pageId,
-    title: '成交总额',
-    layout: { type: 'grid', columns: 12 },
-    widgets: [
+    dataSources: {
+      sales: {
+        fields: {
+          gmv: {
+            type: 'number',
+            role: 'metric',
+            label: '成交总额',
+            format: 'number-grouped'
+          }
+        },
+        source: {
+          type: 'query',
+          query: { metrics: ['gmv'], aggregation: 'sum' }
+        }
+      }
+    },
+    sections: [
       {
-        id: 'w-gmv',
-        type: 'metricCard',
         title: '成交总额',
-        position: { x: 0, y: 0, w: 3, h: 2 },
-        query: { metrics: ['gmv'], aggregation: 'sum' },
-        display: { unit: '元', thousandsSeparator: true }
+        id: 'overview',
+        layout: { type: 'grid', columns: 12 },
+        components: [
+          {
+            id: 'w-gmv',
+            type: 'metricCard',
+            layout: { span: 3 },
+            data: { main: 'sales' },
+            props: {
+              title: '成交总额',
+              rows: [{ label: '成交总额', valueField: 'gmv' }]
+            }
+          }
+        ]
       }
     ]
   };
@@ -124,9 +147,8 @@ function pageDocumentFor(pageId: string) {
 
 function editedPageDocument(document: Record<string, unknown>): Record<string, unknown> {
   const edited = structuredClone(document);
-  if (typeof edited.title === 'string') {
-    edited.title = `${edited.title}（更新）`;
-  }
+  const section = Array.isArray(edited.sections) ? edited.sections.find(isRecord) : undefined;
+  if (section && typeof section.title === 'string') section.title = `${section.title}（更新）`;
   return edited;
 }
 

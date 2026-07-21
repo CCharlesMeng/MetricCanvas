@@ -37,10 +37,11 @@ export const PAGE_BUILDING_PROMPT = [
   '不得猜测指标 code、口径、维度、时间范围或粒度;有歧义必须提问。',
   '首次 save_page 前必须展示可读且唯一的页面 id,并等待用户明确确认。',
   '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
-  '只保存 validate_page 返回 valid=true 的当前 formatVersion 页面。',
-  '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;metricCard 的 metrics 必须且只能有一个。',
-  '没有筛选器时省略 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
-  `单指标卡最小合法示例:{"formatVersion":"${versionPolicy.current}","id":"<confirmed-id>","title":"<title>","layout":{"type":"grid","columns":12},"widgets":[{"id":"w-metric","type":"metricCard","title":"<metric-name>","position":{"x":0,"y":0,"w":3,"h":2},"query":{"metrics":["<metric-code>"],"aggregation":"sum"}}]}`,
+  '只保存 validate_page 返回 valid=true 的当前 schemaVersion 页面。',
+  '结构化查询只允许放在 query 页面数据源中;组件必须经 data 数据槽引用页面数据源,不得携带 query 或数据行。',
+  '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;props.rows 只声明该指标行。',
+  '没有筛选器时省略 query 页面数据源中的 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
+  `单指标卡最小合法示例:{"schemaVersion":"${versionPolicy.current}","id":"<confirmed-id>","dataSources":{"main":{"fields":{"<metric-code>":{"type":"number","role":"metric"}},"source":{"type":"query","query":{"metrics":["<metric-code>"],"aggregation":"sum"}}}},"sections":[{"id":"overview","title":"<title>","layout":{"type":"grid","columns":12},"components":[{"id":"w-metric","type":"metricCard","layout":{"span":3},"data":{"main":"main"},"props":{"title":"<title>","rows":[{"label":"<metric-name>","valueField":"<metric-code>"}]}}]}]}`,
   '校验失败时按 JSON Pointer 修正字段,同时保持用户指定的组件语义不变。',
   '保存后先调用 preview_page,再调用 request_publish;MCP 不负责确认发布。',
   '页面搭建工作台不是 JSON 编辑器,不要要求用户手写页面文档。'
@@ -99,7 +100,7 @@ export function createMetricCanvasMcpServer(
         {
           uri: uri.toString(),
           mimeType: 'text/plain',
-          text: `${PAGE_BUILDING_PROMPT}\n当前 formatVersion:${versionPolicy.current}`
+          text: `${PAGE_BUILDING_PROMPT}\n当前 schemaVersion:${versionPolicy.current}`
         }
       ]
     })
@@ -134,7 +135,7 @@ export function createMetricCanvasMcpServer(
       return toolResult({
         ok: true,
         valid: errors.length === 0,
-        currentFormatVersion: versionPolicy.current,
+        currentSchemaVersion: versionPolicy.current,
         metadataVersion: catalog.version,
         errors
       });
@@ -344,11 +345,11 @@ export function createPageIdConfirmationMcpClient(
           kind: 'confirm_page_id',
           payload: {
             pageId,
-            ...(typeof document.title === 'string' ? { title: document.title } : {}),
+            ...(documentTitle(document) ? { title: documentTitle(document) } : {}),
             stablePath: `/pages/${pageId}`,
             immutableAfterSave: true,
-            ...(typeof document.formatVersion === 'string'
-              ? { formatVersion: document.formatVersion }
+            ...(typeof document.schemaVersion === 'string'
+              ? { schemaVersion: document.schemaVersion }
               : {}),
             ...(typeof result.structuredContent.metadataVersion === 'string'
               ? { metadataVersion: result.structuredContent.metadataVersion }
@@ -383,4 +384,18 @@ function normalizeMcpContent(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function documentTitle(document: Record<string, unknown>): string | undefined {
+  if (!Array.isArray(document.sections)) return undefined;
+  for (const section of document.sections) {
+    if (!isRecord(section)) continue;
+    if (typeof section.title === 'string') return section.title;
+    if (!Array.isArray(section.components)) continue;
+    for (const component of section.components) {
+      if (!isRecord(component) || !isRecord(component.props)) continue;
+      if (typeof component.props.title === 'string') return component.props.title;
+    }
+  }
+  return undefined;
 }

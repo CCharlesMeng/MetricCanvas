@@ -29,16 +29,35 @@ function revisionId(): string {
 
 function pageDocument(pageId: string, title = '成交总额') {
   return {
-    formatVersion: '1.0',
+    schemaVersion: '1.0',
     id: pageId,
-    title,
-    layout: { type: 'grid' as const, columns: 12 },
-    widgets: [
+    dataSources: {
+      sales: {
+        fields: {
+          gmv: { type: 'number' as const, role: 'metric' as const }
+        },
+        source: {
+          type: 'query' as const,
+          query: { metrics: ['gmv'], aggregation: 'sum' as const }
+        }
+      }
+    },
+    sections: [
       {
-        id: 'w-gmv',
-        type: 'metricCard' as const,
-        position: { x: 0, y: 0, w: 3, h: 2 },
-        query: { metrics: ['gmv'], aggregation: 'sum' as const }
+        id: 'overview',
+        title,
+        layout: { type: 'grid' as const, columns: 12 as const },
+        components: [
+          {
+            id: 'w-gmv',
+            type: 'metricCard' as const,
+            layout: { span: 3 },
+            data: { main: 'sales' },
+            props: {
+              rows: [{ label: '成交总额', valueField: 'gmv' }]
+            }
+          }
+        ]
       }
     ]
   };
@@ -230,7 +249,20 @@ describe('页面生命周期:线性页面修订', () => {
         baseRevisionId: bR1.revision.revisionId,
         document: {
           ...pageDocument('list-b', '新的标题'),
-          widgets: [{ ...pageDocument('list-b').widgets[0], title: '指标卡标题' }]
+          sections: [
+            {
+              ...pageDocument('list-b', '新的标题').sections[0],
+              components: [
+                {
+                  ...pageDocument('list-b').sections[0].components[0],
+                  props: {
+                    ...pageDocument('list-b').sections[0].components[0].props,
+                    title: '指标卡标题'
+                  }
+                }
+              ]
+            }
+          ]
         },
         idempotencyKey: 'list-b-r2'
       },
@@ -318,8 +350,17 @@ describe('页面生命周期:线性页面修订', () => {
         fromRevisionId: bR1.revision.revisionId,
         toRevisionId: bR2.revision.revisionId,
         changes: [
-          { op: 'replace', path: '/title', before: '成交总额', after: '新的标题' },
-          { op: 'add', path: '/widgets/0/title', after: '指标卡标题' }
+          {
+            op: 'add',
+            path: '/sections/0/components/0/props/title',
+            after: '指标卡标题'
+          },
+          {
+            op: 'replace',
+            path: '/sections/0/title',
+            before: '成交总额',
+            after: '新的标题'
+          }
         ]
       }
     });

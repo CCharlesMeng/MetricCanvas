@@ -500,7 +500,7 @@
 
           <div class="identity-facts">
             <span><i>✓</i> 页面文档已通过结构与语义校验</span>
-            <span><i>✓</i> 当前 formatVersion {stringAt(pageIdInteraction.payload, ['formatVersion'])}</span>
+            <span><i>✓</i> 当前 schemaVersion {stringAt(pageIdInteraction.payload, ['schemaVersion'])}</span>
             <span><i>i</i> 唯一性将在保存事务中原子确认</span>
           </div>
 
@@ -684,7 +684,7 @@
           {#if workbench.validation}
             <strong>{workbench.validation.valid ? '结构与语义均通过' : '校验未通过'}</strong>
             <p>
-              formatVersion {workbench.validation.currentFormatVersion ?? '—'}
+              schemaVersion {workbench.validation.currentSchemaVersion ?? '—'}
               · {workbench.validation.errors.length} 个问题
             </p>
           {:else}

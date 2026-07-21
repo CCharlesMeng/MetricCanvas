@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { DataWidget, EffectiveQuery } from '@metriccanvas/page';
+import type { EffectiveQuery, Page } from '@metriccanvas/page';
 import { orchestrate, type DataGateway } from '@metriccanvas/runtime';
 
 describe('统一运行时的生效查询', () => {
@@ -14,14 +14,40 @@ describe('统一运行时的生效查询', () => {
         return [];
       }
     };
-    const widget: DataWidget = {
-      id: 'w-gmv',
-      type: 'metricCard',
-      position: { x: 0, y: 0, w: 3, h: 2 },
-      query: { metrics: ['gmv'], aggregation: 'avg' }
+    const page: Page = {
+      schemaVersion: '1.0',
+      id: 'aggregation',
+      dataSources: {
+        sales: {
+          fields: {
+            gmv: { type: 'number', role: 'metric' }
+          },
+          source: {
+            type: 'query',
+            query: { metrics: ['gmv'], aggregation: 'avg' }
+          }
+        }
+      },
+      sections: [
+        {
+          id: 'overview',
+          layout: { type: 'grid', columns: 12 },
+          components: [
+            {
+              id: 'w-gmv',
+              type: 'metricCard',
+              layout: { span: 3 },
+              data: { main: 'sales' },
+              props: {
+                rows: [{ label: '成交总额', valueField: 'gmv' }]
+              }
+            }
+          ]
+        }
+      ]
     };
 
-    const stream = orchestrate([widget], gateway);
+    const stream = orchestrate(page, gateway);
     const unsubscribe = stream.subscribe(() => {});
     await new Promise((resolve) => setTimeout(resolve, 0));
     unsubscribe();

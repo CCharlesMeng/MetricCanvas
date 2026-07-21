@@ -3,9 +3,24 @@ import type { McpClient } from '@metriccanvas/agent-runner';
 import { createPageIdConfirmationMcpClient } from '@metriccanvas/mcp';
 
 const pageDocument = {
-  formatVersion: '1.0',
+  schemaVersion: '1.0',
   id: 'sales-total',
-  title: '成交总额'
+  dataSources: {},
+  sections: [
+    {
+      id: 'overview',
+      title: '成交总额',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'intro',
+          type: 'text',
+          layout: { span: 12 },
+          props: { body: '成交总额' }
+        }
+      ]
+    }
+  ]
 };
 
 describe('页面 id 确认 MCP Client adapter', () => {
@@ -14,7 +29,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
       client: fakeClient({
         ok: true,
         valid: true,
-        currentFormatVersion: '1.0',
+        currentSchemaVersion: '1.0',
         metadataVersion: 'catalog-v1',
         errors: []
       }),
@@ -34,7 +49,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
         title: '成交总额',
         stablePath: '/pages/sales-total',
         immutableAfterSave: true,
-        formatVersion: '1.0',
+        schemaVersion: '1.0',
         metadataVersion: 'catalog-v1'
       }
     });

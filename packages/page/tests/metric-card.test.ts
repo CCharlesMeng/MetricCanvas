@@ -2,26 +2,44 @@ import { describe, expect, it } from 'vitest';
 import { validate } from '@metriccanvas/page';
 
 describe('指标卡页面', () => {
-  it('拒绝同时引用多个指标,避免统一运行时静默只呈现第一个', () => {
+  it('拒绝指标卡行引用数据槽契约外的字段', () => {
     const document = {
-      formatVersion: '1.0',
+      schemaVersion: '1.0',
       id: 'sales-summary',
-      title: '销售总览',
-      layout: { type: 'grid', columns: 12 },
-      widgets: [
+      dataSources: {
+        sales: {
+          fields: {
+            gmv: { type: 'number', role: 'metric' }
+          },
+          source: {
+            type: 'query',
+            query: { metrics: ['gmv'] }
+          }
+        }
+      },
+      sections: [
         {
-          id: 'w-sales',
-          type: 'metricCard',
-          position: { x: 0, y: 0, w: 3, h: 2 },
-          query: { metrics: ['gmv', 'order-count'] }
+          id: 'overview',
+          layout: { type: 'grid', columns: 12 },
+          components: [
+            {
+              id: 'w-sales',
+              type: 'metricCard',
+              layout: { span: 3 },
+              data: { main: 'sales' },
+              props: {
+                rows: [{ label: '订单数', valueField: 'order-count' }]
+              }
+            }
+          ]
         }
       ]
     };
 
     expect(validate(document)).toContainEqual({
       type: 'SCHEMA_ERROR',
-      path: '/widgets/0/query/metrics',
-      message: '指标卡只支持单指标,收到 2 个'
+      path: '/sections/0/components/0/props/rows/0/valueField',
+      message: '字段 order-count 不在数据槽 main 的数据源 sales 中'
     });
   });
 });

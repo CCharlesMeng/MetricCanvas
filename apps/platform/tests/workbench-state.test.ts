@@ -1,24 +1,102 @@
 import { describe, expect, it } from 'vitest';
 import type { AgentMessage } from '@metriccanvas/agent-runner';
+import { validate, type CatalogSnapshot } from '@metriccanvas/page';
 import { createSingleMetricCardScriptedProvider } from '../src/lib/server/scripted-model.server';
 import { deriveWorkbenchState } from '../src/lib/workbench-state';
 
 const pageDocument = {
-  formatVersion: '1.0',
+  schemaVersion: '1.0',
   id: 'sales-total',
-  title: '成交总额',
-  layout: { type: 'grid', columns: 12 },
-  widgets: [
+  dataSources: {
+    sales: {
+      fields: {
+        gmv: { type: 'number', role: 'metric' }
+      },
+      source: {
+        type: 'query',
+        query: { metrics: ['gmv'], aggregation: 'sum' }
+      }
+    }
+  },
+  sections: [
     {
-      id: 'w-gmv',
-      type: 'metricCard',
-      position: { x: 0, y: 0, w: 3, h: 2 },
-      query: { metrics: ['gmv'], aggregation: 'sum' }
+      id: 'overview',
+      title: '成交总额',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'w-gmv',
+          type: 'metricCard',
+          layout: { span: 3 },
+          data: { main: 'sales' },
+          props: {
+            rows: [{ label: '成交总额', valueField: 'gmv' }]
+          }
+        }
+      ]
     }
   ]
 };
 
 describe('页面搭建工作台状态', () => {
+  it('脚本模型生成可由当前领域 DSL 校验的页面文档', async () => {
+    const provider = createSingleMetricCardScriptedProvider('schema');
+    const validation = await provider.complete({
+      messages: [
+        assistantCall('search-1', 'search_catalog', { query: '成交总额', limit: 10 }),
+        toolResult('search-1', 'search_catalog', {
+          ok: true,
+          metadataVersion: 'catalog-v1',
+          matches: [{ kind: 'metric', code: 'gmv', name: '成交总额' }]
+        })
+      ],
+      tools: []
+    });
+    const input = validation.toolCalls[0]?.input as {
+      document: Record<string, unknown>;
+    };
+    const catalog: CatalogSnapshot = {
+      formatVersion: '1.0',
+      syncedAt: '2026-07-20T12:00:00.000Z',
+      source: 'data-service-sim',
+      metrics: [
+        {
+          code: 'gmv',
+          name: '成交总额',
+          valueType: 'decimal',
+          availableDimensions: [],
+          availableAggregations: ['sum']
+        }
+      ],
+      dimensions: []
+    };
+
+    expect(validation.toolCalls).toEqual([
+      expect.objectContaining({ name: 'validate_page' })
+    ]);
+    expect(validate(input.document, catalog)).toEqual([]);
+    expect(input.document).toMatchObject({
+      schemaVersion: '1.0',
+      dataSources: {
+        sales: {
+          source: { type: 'query' }
+        }
+      },
+      sections: [
+        {
+          components: [
+            expect.objectContaining({
+              type: 'metricCard',
+              data: { main: 'sales' }
+            })
+          ]
+        }
+      ]
+    });
+    expect(input.document).not.toHaveProperty('formatVersion');
+    expect(input.document).not.toHaveProperty('widgets');
+  });
+
   it('从浏览器会话恢复完整治理时间线与精确修订来源', () => {
     const messages: AgentMessage[] = [
       assistantCall('search-1', 'search_catalog', { query: '成交总额', limit: 10 }),
@@ -39,7 +117,7 @@ describe('页面搭建工作台状态', () => {
       toolResult('validate-1', 'validate_page', {
         ok: true,
         valid: true,
-        currentFormatVersion: '1.0',
+        currentSchemaVersion: '1.0',
         metadataVersion: 'catalog-v1',
         errors: []
       }),
@@ -164,7 +242,7 @@ describe('页面搭建工作台状态', () => {
       toolResult('validate-1', 'validate_page', {
         ok: true,
         valid: true,
-        currentFormatVersion: '1.0',
+        currentSchemaVersion: '1.0',
         metadataVersion: 'catalog-v1',
         errors: []
       })
@@ -180,7 +258,7 @@ describe('页面搭建工作台状态', () => {
           title: '成交总额',
           stablePath: '/pages/sales-total',
           immutableAfterSave: true,
-          formatVersion: '1.0',
+          schemaVersion: '1.0',
           metadataVersion: 'catalog-v1'
         }
       }
@@ -237,7 +315,7 @@ describe('页面搭建工作台状态', () => {
       toolResult('validate-existing-1', 'validate_page', {
         ok: true,
         valid: true,
-        currentFormatVersion: '1.0',
+        currentSchemaVersion: '1.0',
         metadataVersion: 'catalog-v1',
         errors: []
       })

@@ -92,9 +92,17 @@ describe('MetricCanvas MCP 工具契约', () => {
       'request_publish'
     ]);
     const prompt = await client.getPrompt({ name: 'build_dashboard_page' });
-    expect(JSON.stringify(prompt)).toContain('\\"type\\":\\"metricCard\\"');
-    expect(JSON.stringify(prompt)).toContain('get_page(selector=latest)');
-    expect(JSON.stringify(prompt)).toContain('不得再次请求页面 id 确认');
+    const promptText = JSON.stringify(prompt);
+    expect(promptText).toContain('\\"schemaVersion\\":\\"1.0\\"');
+    expect(promptText).toContain('\\"dataSources\\"');
+    expect(promptText).toContain('\\"sections\\"');
+    expect(promptText).toContain('\\"components\\"');
+    expect(promptText).toContain('\\"data\\":{\\"main\\":\\"main\\"}');
+    expect(promptText).toContain('\\"type\\":\\"metricCard\\"');
+    expect(promptText).not.toContain('\\"formatVersion\\"');
+    expect(promptText).not.toContain('\\"widgets\\"');
+    expect(promptText).toContain('get_page(selector=latest)');
+    expect(promptText).toContain('不得再次请求页面 id 确认');
 
     const result = await client.callTool({
       name: 'search_catalog',

@@ -20,16 +20,35 @@ const catalog: CatalogSnapshot = {
 };
 
 const document = {
-  formatVersion: '1.0',
+  schemaVersion: '1.0',
   id: 'sales-total',
-  title: '成交总额',
-  layout: { type: 'grid', columns: 12 },
-  widgets: [
+  dataSources: {
+    sales: {
+      fields: {
+        gmv: { type: 'number', role: 'metric' }
+      },
+      source: {
+        type: 'query',
+        query: { metrics: ['gmv'], aggregation: 'sum' }
+      }
+    }
+  },
+  sections: [
     {
-      id: 'w-gmv',
-      type: 'metricCard',
-      position: { x: 0, y: 0, w: 3, h: 2 },
-      query: { metrics: ['gmv'], aggregation: 'sum' }
+      id: 'overview',
+      title: '成交总额',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'w-gmv',
+          type: 'metricCard',
+          layout: { span: 3 },
+          data: { main: 'sales' },
+          props: {
+            rows: [{ label: '成交总额', valueField: 'gmv' }]
+          }
+        }
+      ]
     }
   ]
 };
@@ -222,10 +241,29 @@ describe('页面生命周期:首次保存', () => {
         document: {
           ...document,
           id: pageId,
-          widgets: [
+          dataSources: {
+            sales: {
+              ...document.dataSources.sales,
+              fields: {
+                'missing-metric': { type: 'number', role: 'metric' }
+              },
+              source: {
+                type: 'query',
+                query: { metrics: ['missing-metric'], aggregation: 'sum' }
+              }
+            }
+          },
+          sections: [
             {
-              ...document.widgets[0],
-              query: { metrics: ['missing-metric'], aggregation: 'sum' }
+              ...document.sections[0],
+              components: [
+                {
+                  ...document.sections[0].components[0],
+                  props: {
+                    rows: [{ label: '缺失指标', valueField: 'missing-metric' }]
+                  }
+                }
+              ]
             }
           ]
         },
@@ -241,7 +279,7 @@ describe('页面生命周期:首次保存', () => {
         validationErrors: [
           expect.objectContaining({
             type: 'METRIC_GAP',
-            path: '/widgets/0/query/metrics/0'
+            path: '/dataSources/sales/source/query/metrics/0'
           })
         ]
       }
@@ -446,18 +484,37 @@ describe('页面生命周期:首次保存', () => {
     const secondPostgres = await new PostgreSqlContainer('postgres:17-alpine').start();
     const pageId = 'canonical-content-hash';
     const reorderedDocument = {
-      widgets: [
+      sections: [
         {
-          query: { aggregation: 'sum', metrics: ['gmv'] },
-          position: { h: 2, w: 3, y: 0, x: 0 },
-          type: 'metricCard',
-          id: 'w-gmv'
+          components: [
+            {
+              props: {
+                rows: [{ valueField: 'gmv', label: '成交总额' }]
+              },
+              data: { main: 'sales' },
+              layout: { span: 3 },
+              type: 'metricCard',
+              id: 'w-gmv'
+            }
+          ],
+          layout: { columns: 12, type: 'grid' },
+          title: '成交总额',
+          id: 'overview'
         }
       ],
-      layout: { columns: 12, type: 'grid' },
-      title: '成交总额',
+      dataSources: {
+        sales: {
+          source: {
+            query: { aggregation: 'sum', metrics: ['gmv'] },
+            type: 'query'
+          },
+          fields: {
+            gmv: { role: 'metric', type: 'number' }
+          }
+        }
+      },
       id: pageId,
-      formatVersion: '1.0'
+      schemaVersion: '1.0'
     };
     const makeLifecycle = (databaseUrl: string, revisionId: string) =>
       createPostgresPageLifecycle({

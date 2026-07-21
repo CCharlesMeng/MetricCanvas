@@ -35,7 +35,7 @@ export interface CatalogReceipt {
 
 export interface ValidationReceipt {
   valid: boolean;
-  currentFormatVersion: string | null;
+  currentSchemaVersion: string | null;
   metadataVersion: string | null;
   errors: unknown[];
 }
@@ -266,7 +266,7 @@ function toCatalogReceipt(
   if (!result || typeof result.metadataVersion !== 'string' || !Array.isArray(result.matches)) {
     return undefined;
   }
-  const query = firstWidgetQuery(document);
+  const query = firstDataSourceQuery(document);
   const metricCode =
     query && Array.isArray(query.metrics) && typeof query.metrics[0] === 'string'
       ? query.metrics[0]
@@ -302,9 +302,9 @@ function toValidationReceipt(
   if (!result || typeof result.valid !== 'boolean') return undefined;
   return {
     valid: result.valid,
-    currentFormatVersion:
-      typeof result.currentFormatVersion === 'string'
-        ? result.currentFormatVersion
+    currentSchemaVersion:
+      typeof result.currentSchemaVersion === 'string'
+        ? result.currentSchemaVersion
         : null,
     metadataVersion:
       typeof result.metadataVersion === 'string' ? result.metadataVersion : null,
@@ -329,9 +329,7 @@ function toIdentityReceipt(
   const title =
     typeof payload?.title === 'string'
       ? payload.title
-      : typeof document?.title === 'string'
-        ? document.title
-        : null;
+      : documentTitle(document);
   return {
     pageId,
     title,
@@ -455,12 +453,31 @@ function toPublishReceipt(
   };
 }
 
-function firstWidgetQuery(
+function firstDataSourceQuery(
   document: Record<string, unknown> | undefined
 ): Record<string, unknown> | undefined {
-  if (!document || !Array.isArray(document.widgets)) return undefined;
-  const widget = document.widgets.find(isRecord);
-  return isRecord(widget?.query) ? widget.query : undefined;
+  if (!document || !isRecord(document.dataSources)) return undefined;
+  for (const dataSource of Object.values(document.dataSources)) {
+    if (!isRecord(dataSource) || !isRecord(dataSource.source)) continue;
+    if (dataSource.source.type === 'query' && isRecord(dataSource.source.query)) {
+      return dataSource.source.query;
+    }
+  }
+  return undefined;
+}
+
+function documentTitle(document: Record<string, unknown> | undefined): string | null {
+  if (!document || !Array.isArray(document.sections)) return null;
+  for (const section of document.sections) {
+    if (!isRecord(section)) continue;
+    if (typeof section.title === 'string') return section.title;
+    if (!Array.isArray(section.components)) continue;
+    for (const component of section.components) {
+      if (!isRecord(component) || !isRecord(component.props)) continue;
+      if (typeof component.props.title === 'string') return component.props.title;
+    }
+  }
+  return null;
 }
 
 function interactionDocument(

@@ -367,10 +367,10 @@ export async function createPostgresPageLifecycle(
           } satisfies RevisionResult;
         }
         const document = command.document as Page;
-        if (document.formatVersion !== versionPolicy.current) {
+        if (document.schemaVersion !== versionPolicy.current) {
           return lifecycleFailure(
             'INVALID_PAGE',
-            `保存只接受当前 formatVersion ${versionPolicy.current}`
+            `保存只接受当前 schemaVersion ${versionPolicy.current}`
           );
         }
         if (document.id !== command.pageId) {
