@@ -262,7 +262,7 @@ function composeEffectiveQuery(
   values: FilterValues,
   view: WidgetView
 ): EffectiveQuery {
-  const { metrics, dimensions, granularity } = widget.query;
+  const { metrics, dimensions, aggregation, granularity } = widget.query;
   const conditions: FilterCondition[] = [];
   let timeRange: { from: string; to: string } | undefined;
   for (const filterId of widget.query.filters?.subscribe ?? []) {
@@ -278,6 +278,7 @@ function composeEffectiveQuery(
   return {
     metrics,
     ...(dimensions ? { dimensions } : {}),
+    ...(aggregation ? { aggregation } : {}),
     ...(granularity ? { granularity } : {}),
     conditions,
     ...(timeRange ? { timeRange } : {}),

@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: metriccanvas
+      POSTGRES_USER: metriccanvas
+      POSTGRES_PASSWORD: metriccanvas
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U metriccanvas -d metriccanvas"]
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - metriccanvas-postgres:/var/lib/postgresql/data
+
+volumes:
+  metriccanvas-postgres:

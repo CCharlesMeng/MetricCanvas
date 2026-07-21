@@ -123,6 +123,14 @@ function invariantErrors(page: Page): TypedError[] {
       }
     });
 
+    if (widget.type === 'metricCard' && widget.query.metrics.length > 1) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `/widgets/${i}/query/metrics`,
+        message: `指标卡只支持单指标,收到 ${widget.query.metrics.length} 个`
+      });
+    }
+
     // 饼图/地图是单指标组件(占比切分/区域着色):多指标无语义,报错而非静默取第一个
     if ((widget.type === 'pieChart' || widget.type === 'mapChart') && widget.query.metrics.length > 1) {
       errors.push({

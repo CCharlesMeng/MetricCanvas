@@ -1,0 +1,863 @@
+import { createHash, randomUUID } from 'node:crypto';
+import postgres, { type JSONValue, type Sql, type TransactionSql } from 'postgres';
+import {
+  canonicalizeJson,
+  validate,
+  versionPolicy,
+  type CatalogSnapshot,
+  type Page,
+  type TypedError
+} from '@metriccanvas/page';
+
+export interface CatalogVersion {
+  version: string;
+  snapshot: CatalogSnapshot;
+}
+
+export interface CatalogProvider {
+  current(): Promise<CatalogVersion>;
+}
+
+export interface LifecycleContext {
+  actorId: string;
+  clientId: string;
+}
+
+export interface PageRevision {
+  revisionId: string;
+  revisionNumber: number;
+  pageId: string;
+  baseRevisionId: string | null;
+  document: Page;
+  contentHash: string;
+  metadataVersion: string;
+  createdBy: string;
+  createdAt: string;
+}
+
+export interface SaveRevisionCommand {
+  pageId: string;
+  baseRevisionId: string | null;
+  document: unknown;
+  idempotencyKey: string;
+}
+
+export interface RevisionReference {
+  pageId: string;
+  revisionId: string;
+}
+
+export interface PublishedReference {
+  pageId: string;
+}
+
+export interface RequestPublishCommand {
+  pageId: string;
+  revisionId: string;
+  idempotencyKey: string;
+}
+
+export interface ConfirmPublishCommand {
+  requestId: string;
+  token: string;
+}
+
+export interface PublishRequest {
+  requestId: string;
+  pageId: string;
+  revisionId: string;
+  expiresAt: string;
+  confirmationUrl: string;
+}
+
+export type PublishRequestStatus =
+  | 'pending'
+  | 'published'
+  | 'expired'
+  | 'validation_failed'
+  | 'rejected'
+  | 'cancelled';
+
+export interface PublishRequestDetails {
+  requestId: string;
+  pageId: string;
+  revisionId: string;
+  requestedBy: string;
+  status: PublishRequestStatus;
+  expiresAt: string;
+}
+
+export type LifecycleErrorCode =
+  | 'INVALID_PAGE'
+  | 'METRIC_GAP'
+  | 'PAGE_ID_MISMATCH'
+  | 'PAGE_ID_TAKEN'
+  | 'PAGE_NOT_FOUND'
+  | 'REVISION_NOT_FOUND'
+  | 'REVISION_CONFLICT'
+  | 'REVISION_NOT_LATEST'
+  | 'PAGE_LOCKED'
+  | 'PAGE_NOT_PUBLISHED'
+  | 'PUBLISH_REQUEST_NOT_FOUND'
+  | 'PUBLISH_REQUEST_EXPIRED'
+  | 'PUBLISH_REQUEST_CLOSED'
+  | 'INVALID_CONFIRMATION_TOKEN'
+  | 'PUBLISH_FORBIDDEN';
+
+export interface LifecycleError {
+  code: LifecycleErrorCode;
+  message: string;
+  validationErrors?: TypedError[];
+}
+
+export type RevisionResult =
+  | { ok: true; revision: PageRevision }
+  | { ok: false; error: LifecycleError };
+
+export type PublishRequestResult =
+  | { ok: true; request: PublishRequest }
+  | { ok: false; error: LifecycleError };
+
+export type PublishRequestDetailsResult =
+  | { ok: true; request: PublishRequestDetails }
+  | { ok: false; error: LifecycleError };
+
+export interface PageLifecycle {
+  saveRevision(command: SaveRevisionCommand, context: LifecycleContext): Promise<RevisionResult>;
+  getRevision(reference: RevisionReference): Promise<RevisionResult>;
+  requestPublish(
+    command: RequestPublishCommand,
+    context: LifecycleContext
+  ): Promise<PublishRequestResult>;
+  getPublishRequest(
+    reference: { requestId: string },
+    context: LifecycleContext
+  ): Promise<PublishRequestDetailsResult>;
+  confirmPublish(
+    command: ConfirmPublishCommand,
+    context: LifecycleContext
+  ): Promise<RevisionResult>;
+  getPublished(reference: PublishedReference): Promise<RevisionResult>;
+  close(): Promise<void>;
+}
+
+export interface PostgresPageLifecycleOptions {
+  databaseUrl: string;
+  catalog: CatalogProvider;
+  clock?: { now(): Date };
+  ids?: { next(): string };
+  tokens?: { next(): string };
+  urls?: { confirmation(requestId: string, token: string): string };
+  publishLeaseMs?: number;
+}
+
+interface RevisionRow {
+  revision_id: string;
+  revision_number: number;
+  page_id: string;
+  base_revision_id: string | null;
+  document: Page;
+  content_hash: string;
+  metadata_version: string;
+  created_by: string;
+  created_at: Date | string;
+}
+
+interface PublishRequestRow {
+  request_id: string;
+  page_id: string;
+  revision_id: string;
+  requested_by: string;
+  status: PublishRequestStatus;
+  token_hash: string;
+  expires_at: Date | string;
+}
+
+export async function createPostgresPageLifecycle(
+  options: PostgresPageLifecycleOptions
+): Promise<PageLifecycle> {
+  const sql = postgres(options.databaseUrl, { max: 5, onnotice: () => {} });
+  await ensureSchema(sql);
+
+  const clock = options.clock ?? { now: () => new Date() };
+  const ids = options.ids ?? { next: () => randomUUID() };
+  const tokens = options.tokens ?? { next: () => randomUUID() };
+  const urls =
+    options.urls ??
+    ({
+      confirmation: (requestId: string, token: string) =>
+        `/publish/${requestId}/confirm?token=${encodeURIComponent(token)}`
+    } satisfies NonNullable<PostgresPageLifecycleOptions['urls']>);
+  const publishLeaseMs = options.publishLeaseMs ?? 15 * 60 * 1000;
+
+  return {
+    async saveRevision(command, context) {
+      const completed = await idempotentResult<RevisionResult>(
+        sql,
+        'save_revision',
+        context.clientId,
+        command.idempotencyKey
+      );
+      if (completed) return completed;
+
+      const catalog = await options.catalog.current();
+      const validationErrors = validate(command.document, catalog.snapshot);
+      if (validationErrors.length > 0) {
+        return {
+          ok: false,
+          error: {
+            code: validationErrors.some((error) => error.type === 'METRIC_GAP')
+              ? 'METRIC_GAP'
+              : 'INVALID_PAGE',
+            message: '页面文档未通过校验',
+            validationErrors
+          }
+        };
+      }
+
+      const document = command.document as Page;
+      if (document.formatVersion !== versionPolicy.current) {
+        return {
+          ok: false,
+          error: {
+            code: 'INVALID_PAGE',
+            message: `保存只接受当前 formatVersion ${versionPolicy.current}`
+          }
+        };
+      }
+      if (document.id !== command.pageId) {
+        return {
+          ok: false,
+          error: {
+            code: 'PAGE_ID_MISMATCH',
+            message: `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
+          }
+        };
+      }
+      if (command.baseRevisionId !== null) {
+        return lifecycleFailure(
+          'REVISION_CONFLICT',
+          '首次保存的 baseRevisionId 必须为 null'
+        );
+      }
+
+      const createdAt = clock.now();
+      const revision: PageRevision = {
+        revisionId: ids.next(),
+        revisionNumber: 1,
+        pageId: command.pageId,
+        baseRevisionId: command.baseRevisionId,
+        document,
+        contentHash: hash(canonicalizeJson(document)),
+        metadataVersion: catalog.version,
+        createdBy: context.actorId,
+        createdAt: createdAt.toISOString()
+      };
+
+      return sql.begin(async (tx) => {
+        await tx`
+          SELECT pg_advisory_xact_lock(
+            hashtextextended(
+              ${`save_revision:${context.clientId}:${command.idempotencyKey}`},
+              0
+            )
+          )
+        `;
+        const replay = await idempotentResult<RevisionResult>(
+          tx,
+          'save_revision',
+          context.clientId,
+          command.idempotencyKey
+        );
+        if (replay) return replay;
+
+        await tx`
+          SELECT pg_advisory_xact_lock(
+            hashtextextended(${`dashboard_page:${command.pageId}`}, 0)
+          )
+        `;
+        const pages = (await tx`
+          SELECT page_id
+          FROM dashboard_pages
+          WHERE page_id = ${command.pageId}
+          FOR UPDATE
+        `) as unknown as Array<{ page_id: string }>;
+        if (pages.length > 0) {
+          return {
+            ok: false,
+            error: {
+              code: 'PAGE_ID_TAKEN',
+              message: `看板页面 id 已存在:${command.pageId}`
+            }
+          } satisfies RevisionResult;
+        }
+
+        await tx`
+          INSERT INTO dashboard_pages (
+            page_id,
+            latest_revision_id,
+            published_revision_id,
+            created_by,
+            created_at
+          )
+          VALUES (
+            ${command.pageId},
+            NULL,
+            NULL,
+            ${context.actorId},
+            ${createdAt}
+          )
+        `;
+        await tx`
+          INSERT INTO page_revisions (
+            revision_id,
+            revision_number,
+            page_id,
+            base_revision_id,
+            document,
+            content_hash,
+            metadata_version,
+            created_by,
+            created_at
+          )
+          VALUES (
+            ${revision.revisionId},
+            ${revision.revisionNumber},
+            ${revision.pageId},
+            ${revision.baseRevisionId},
+            ${tx.json(revision.document as unknown as JSONValue)},
+            ${revision.contentHash},
+            ${revision.metadataVersion},
+            ${revision.createdBy},
+            ${createdAt}
+          )
+        `;
+        await tx`
+          UPDATE dashboard_pages
+          SET latest_revision_id = ${revision.revisionId}
+          WHERE page_id = ${command.pageId}
+        `;
+
+        const result: RevisionResult = { ok: true, revision };
+        await tx`
+          INSERT INTO lifecycle_idempotency (
+            operation,
+            client_id,
+            idempotency_key,
+            result,
+            created_at
+          )
+          VALUES (
+            'save_revision',
+            ${context.clientId},
+            ${command.idempotencyKey},
+            ${tx.json(result as unknown as JSONValue)},
+            ${createdAt}
+          )
+        `;
+        return result;
+      });
+    },
+
+    async getRevision(reference) {
+      const rows = (await sql`
+        SELECT
+          revision_id,
+          revision_number,
+          page_id,
+          base_revision_id,
+          document,
+          content_hash,
+          metadata_version,
+          created_by,
+          created_at
+        FROM page_revisions
+        WHERE page_id = ${reference.pageId}
+          AND revision_id = ${reference.revisionId}
+      `) as unknown as RevisionRow[];
+
+      if (rows.length === 0) {
+        return {
+          ok: false,
+          error: {
+            code: 'REVISION_NOT_FOUND',
+            message: `页面修订不存在:${reference.revisionId}`
+          }
+        };
+      }
+      return { ok: true, revision: toRevision(rows[0]) };
+    },
+
+    async requestPublish(command, context) {
+      const now = clock.now();
+      const expiresAt = new Date(now.getTime() + publishLeaseMs);
+      const requestId = ids.next();
+      const token = tokens.next();
+      const request: PublishRequest = {
+        requestId,
+        pageId: command.pageId,
+        revisionId: command.revisionId,
+        expiresAt: expiresAt.toISOString(),
+        confirmationUrl: urls.confirmation(requestId, token)
+      };
+
+      return sql.begin(async (tx) => {
+        await tx`
+          SELECT pg_advisory_xact_lock(
+            hashtextextended(
+              ${`request_publish:${context.clientId}:${command.idempotencyKey}`},
+              0
+            )
+          )
+        `;
+        const replay = await idempotentResult<PublishRequestResult>(
+          tx,
+          'request_publish',
+          context.clientId,
+          command.idempotencyKey
+        );
+        if (replay) return replay;
+
+        await tx`
+          SELECT pg_advisory_xact_lock(
+            hashtextextended(${`dashboard_page:${command.pageId}`}, 0)
+          )
+        `;
+        const pages = (await tx`
+          SELECT page_id, latest_revision_id, active_publish_request_id
+          FROM dashboard_pages
+          WHERE page_id = ${command.pageId}
+          FOR UPDATE
+        `) as unknown as Array<{
+          page_id: string;
+          latest_revision_id: string | null;
+          active_publish_request_id: string | null;
+        }>;
+        const page = pages[0];
+        if (!page) {
+          return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${command.pageId}`);
+        }
+        if (page.latest_revision_id !== command.revisionId) {
+          return lifecycleFailure(
+            'REVISION_NOT_LATEST',
+            `发布只能针对当前最新页面修订:${page.latest_revision_id ?? '无'}`
+          );
+        }
+
+        if (page.active_publish_request_id) {
+          const activeRows = (await tx`
+            SELECT request_id, status, expires_at
+            FROM publish_requests
+            WHERE request_id = ${page.active_publish_request_id}
+            FOR UPDATE
+          `) as unknown as Array<{
+            request_id: string;
+            status: string;
+            expires_at: Date | string;
+          }>;
+          const active = activeRows[0];
+          if (
+            active?.status === 'pending' &&
+            new Date(active.expires_at).getTime() > now.getTime()
+          ) {
+            return lifecycleFailure(
+              'PAGE_LOCKED',
+              `看板页面已有活动发布租约:${active.request_id}`
+            );
+          }
+          if (active?.status === 'pending') {
+            await tx`
+              UPDATE publish_requests
+              SET status = 'expired'
+              WHERE request_id = ${active.request_id}
+            `;
+          }
+        }
+
+        await tx`
+          INSERT INTO publish_requests (
+            request_id,
+            page_id,
+            revision_id,
+            requested_by,
+            status,
+            token_hash,
+            created_at,
+            expires_at
+          )
+          VALUES (
+            ${requestId},
+            ${command.pageId},
+            ${command.revisionId},
+            ${context.actorId},
+            'pending',
+            ${hash(token)},
+            ${now},
+            ${expiresAt}
+          )
+        `;
+        await tx`
+          UPDATE dashboard_pages
+          SET active_publish_request_id = ${requestId}
+          WHERE page_id = ${command.pageId}
+        `;
+
+        const result: PublishRequestResult = { ok: true, request };
+        await tx`
+          INSERT INTO lifecycle_idempotency (
+            operation,
+            client_id,
+            idempotency_key,
+            result,
+            created_at
+          )
+          VALUES (
+            'request_publish',
+            ${context.clientId},
+            ${command.idempotencyKey},
+            ${tx.json(result as unknown as JSONValue)},
+            ${now}
+          )
+        `;
+        return result;
+      });
+    },
+
+    async getPublishRequest(reference, context) {
+      const rows = (await sql`
+        SELECT
+          request_id,
+          page_id,
+          revision_id,
+          requested_by,
+          status,
+          token_hash,
+          expires_at
+        FROM publish_requests
+        WHERE request_id = ${reference.requestId}
+      `) as unknown as PublishRequestRow[];
+      const request = rows[0];
+      if (!request) {
+        return lifecycleFailure(
+          'PUBLISH_REQUEST_NOT_FOUND',
+          `发布请求不存在:${reference.requestId}`
+        );
+      }
+      if (context.actorId !== request.requested_by) {
+        return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能查看该发布请求');
+      }
+      return {
+        ok: true,
+        request: {
+          requestId: request.request_id,
+          pageId: request.page_id,
+          revisionId: request.revision_id,
+          requestedBy: request.requested_by,
+          status: request.status,
+          expiresAt: new Date(request.expires_at).toISOString()
+        }
+      };
+    },
+
+    async confirmPublish(command, context) {
+      const requestRows = (await sql`
+        SELECT
+          request_id,
+          page_id,
+          revision_id,
+          requested_by,
+          status,
+          token_hash,
+          expires_at
+        FROM publish_requests
+        WHERE request_id = ${command.requestId}
+      `) as unknown as PublishRequestRow[];
+      const request = requestRows[0];
+      if (!request) {
+        return lifecycleFailure(
+          'PUBLISH_REQUEST_NOT_FOUND',
+          `发布请求不存在:${command.requestId}`
+        );
+      }
+
+      const revisionRows = await selectRevision(sql, request.page_id, request.revision_id);
+      const revision = revisionRows[0];
+      if (!revision) {
+        return lifecycleFailure(
+          'REVISION_NOT_FOUND',
+          `页面修订不存在:${request.revision_id}`
+        );
+      }
+      const currentCatalog = await options.catalog.current();
+      const validationErrors = validate(revision.document, currentCatalog.snapshot);
+
+      return sql.begin(async (tx) => {
+        const lockedRows = (await tx`
+          SELECT
+            request_id,
+            page_id,
+            revision_id,
+            requested_by,
+            status,
+            token_hash,
+            expires_at
+          FROM publish_requests
+          WHERE request_id = ${command.requestId}
+          FOR UPDATE
+        `) as unknown as PublishRequestRow[];
+        const locked = lockedRows[0];
+        if (!locked) {
+          return lifecycleFailure(
+            'PUBLISH_REQUEST_NOT_FOUND',
+            `发布请求不存在:${command.requestId}`
+          );
+        }
+        if (locked.status !== 'pending') {
+          return lifecycleFailure(
+            'PUBLISH_REQUEST_CLOSED',
+            `发布请求已结束:${locked.status}`
+          );
+        }
+
+        const now = clock.now();
+        if (new Date(locked.expires_at).getTime() <= now.getTime()) {
+          await tx`
+            UPDATE publish_requests
+            SET status = 'expired'
+            WHERE request_id = ${command.requestId}
+          `;
+          await tx`
+            UPDATE dashboard_pages
+            SET active_publish_request_id = NULL
+            WHERE page_id = ${locked.page_id}
+              AND active_publish_request_id = ${command.requestId}
+          `;
+          return lifecycleFailure(
+            'PUBLISH_REQUEST_EXPIRED',
+            `发布租约已于 ${new Date(locked.expires_at).toISOString()} 到期`
+          );
+        }
+        if (hash(command.token) !== locked.token_hash) {
+          return lifecycleFailure('INVALID_CONFIRMATION_TOKEN', '发布确认 token 无效');
+        }
+        if (context.actorId !== locked.requested_by) {
+          return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能确认该发布请求');
+        }
+
+        const pageRows = (await tx`
+          SELECT latest_revision_id, active_publish_request_id
+          FROM dashboard_pages
+          WHERE page_id = ${locked.page_id}
+          FOR UPDATE
+        `) as unknown as Array<{
+          latest_revision_id: string | null;
+          active_publish_request_id: string | null;
+        }>;
+        const page = pageRows[0];
+        if (
+          !page ||
+          page.latest_revision_id !== locked.revision_id ||
+          page.active_publish_request_id !== locked.request_id
+        ) {
+          return lifecycleFailure(
+            'REVISION_NOT_LATEST',
+            '发布请求不再绑定当前最新页面修订'
+          );
+        }
+
+        if (validationErrors.length > 0) {
+          await tx`
+            UPDATE publish_requests
+            SET status = 'validation_failed'
+            WHERE request_id = ${locked.request_id}
+          `;
+          await tx`
+            UPDATE dashboard_pages
+            SET active_publish_request_id = NULL
+            WHERE page_id = ${locked.page_id}
+          `;
+          return {
+            ok: false,
+            error: {
+              code: validationErrors.some((error) => error.type === 'METRIC_GAP')
+                ? 'METRIC_GAP'
+                : 'INVALID_PAGE',
+              message: '页面修订未通过发布复验',
+              validationErrors
+            }
+          } satisfies RevisionResult;
+        }
+
+        await tx`
+          UPDATE dashboard_pages
+          SET
+            published_revision_id = ${locked.revision_id},
+            active_publish_request_id = NULL
+          WHERE page_id = ${locked.page_id}
+        `;
+        await tx`
+          UPDATE publish_requests
+          SET
+            status = 'published',
+            confirmed_by = ${context.actorId},
+            confirmed_at = ${now}
+          WHERE request_id = ${locked.request_id}
+        `;
+        return { ok: true, revision: toRevision(revision) } satisfies RevisionResult;
+      });
+    },
+
+    async getPublished(reference) {
+      const rows = (await sql`
+        SELECT
+          revision.revision_id,
+          revision.revision_number,
+          revision.page_id,
+          revision.base_revision_id,
+          revision.document,
+          revision.content_hash,
+          revision.metadata_version,
+          revision.created_by,
+          revision.created_at
+        FROM dashboard_pages AS page
+        LEFT JOIN page_revisions AS revision
+          ON revision.revision_id = page.published_revision_id
+        WHERE page.page_id = ${reference.pageId}
+      `) as unknown as Array<RevisionRow & { revision_id: string | null }>;
+
+      if (rows.length === 0) {
+        return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+      }
+      if (!rows[0].revision_id) {
+        return lifecycleFailure(
+          'PAGE_NOT_PUBLISHED',
+          `看板页面尚未发布:${reference.pageId}`
+        );
+      }
+      return { ok: true, revision: toRevision(rows[0] as RevisionRow) };
+    },
+
+    async close() {
+      await sql.end();
+    }
+  };
+}
+
+async function ensureSchema(sql: Sql): Promise<void> {
+  await sql`
+    CREATE TABLE IF NOT EXISTS dashboard_pages (
+      page_id text PRIMARY KEY,
+      latest_revision_id uuid,
+      published_revision_id uuid,
+      active_publish_request_id uuid,
+      created_by text NOT NULL,
+      created_at timestamptz NOT NULL
+    )
+  `;
+  await sql`
+    ALTER TABLE dashboard_pages
+    ADD COLUMN IF NOT EXISTS active_publish_request_id uuid
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS page_revisions (
+      revision_id uuid PRIMARY KEY,
+      revision_number integer NOT NULL,
+      page_id text NOT NULL REFERENCES dashboard_pages(page_id),
+      base_revision_id uuid,
+      document jsonb NOT NULL,
+      content_hash text NOT NULL,
+      metadata_version text NOT NULL,
+      created_by text NOT NULL,
+      created_at timestamptz NOT NULL,
+      UNIQUE (page_id, revision_number)
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS publish_requests (
+      request_id uuid PRIMARY KEY,
+      page_id text NOT NULL REFERENCES dashboard_pages(page_id),
+      revision_id uuid NOT NULL REFERENCES page_revisions(revision_id),
+      requested_by text NOT NULL,
+      status text NOT NULL,
+      token_hash text NOT NULL,
+      created_at timestamptz NOT NULL,
+      expires_at timestamptz NOT NULL,
+      confirmed_by text,
+      confirmed_at timestamptz
+    )
+  `;
+  await sql`
+    CREATE TABLE IF NOT EXISTS lifecycle_idempotency (
+      operation text NOT NULL,
+      client_id text NOT NULL,
+      idempotency_key text NOT NULL,
+      result jsonb NOT NULL,
+      created_at timestamptz NOT NULL,
+      PRIMARY KEY (operation, client_id, idempotency_key)
+    )
+  `;
+}
+
+async function idempotentResult<T>(
+  sql: Sql | TransactionSql,
+  operation: string,
+  clientId: string,
+  idempotencyKey: string
+): Promise<T | null> {
+  const rows = (await sql`
+    SELECT result
+    FROM lifecycle_idempotency
+    WHERE operation = ${operation}
+      AND client_id = ${clientId}
+      AND idempotency_key = ${idempotencyKey}
+  `) as unknown as Array<{ result: T }>;
+  return rows[0]?.result ?? null;
+}
+
+async function selectRevision(
+  sql: Sql,
+  pageId: string,
+  revisionId: string
+): Promise<RevisionRow[]> {
+  return (await sql`
+    SELECT
+      revision_id,
+      revision_number,
+      page_id,
+      base_revision_id,
+      document,
+      content_hash,
+      metadata_version,
+      created_by,
+      created_at
+    FROM page_revisions
+    WHERE page_id = ${pageId}
+      AND revision_id = ${revisionId}
+  `) as unknown as RevisionRow[];
+}
+
+function lifecycleFailure(
+  code: LifecycleErrorCode,
+  message: string
+): { ok: false; error: LifecycleError } {
+  return { ok: false, error: { code, message } };
+}
+
+function hash(value: string): string {
+  return createHash('sha256').update(value).digest('hex');
+}
+
+function toRevision(row: RevisionRow): PageRevision {
+  return {
+    revisionId: row.revision_id,
+    revisionNumber: row.revision_number,
+    pageId: row.page_id,
+    baseRevisionId: row.base_revision_id,
+    document: row.document,
+    contentHash: row.content_hash,
+    metadataVersion: row.metadata_version,
+    createdBy: row.created_by,
+    createdAt:
+      row.created_at instanceof Date ? row.created_at.toISOString() : new Date(row.created_at).toISOString()
+  };
+}

@@ -25,7 +25,7 @@ describe('validate:语义校验(以元数据快照为参照,样例集来自 fixt
   it('引用不存在的指标报 METRIC_GAP(需求信号,不是 bug),定位到该指标项', () => {
     const errors = validate(unknownMetric, catalog);
     expect(errors).toEqual([
-      expect.objectContaining({ type: 'METRIC_GAP', path: '/widgets/0/query/metrics/1' })
+      expect.objectContaining({ type: 'METRIC_GAP', path: '/widgets/0/query/metrics/0' })
     ]);
     expect(errors[0].message).toContain('cash-flow');
   });

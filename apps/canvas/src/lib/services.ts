@@ -1,9 +1,12 @@
 import type { CatalogSnapshot } from '@metriccanvas/page';
 import { createDataServiceGateway, createMockGateway } from '@metriccanvas/data-gateway';
 import { createStaticPageRepository } from './page-repository';
+import { createPlatformPageRepository } from './platform-page-repository';
 import snapshot from '../../../../catalog/snapshot.json';
 
-export const pageRepository = createStaticPageRepository();
+export const pageRepository = import.meta.env.VITE_PLATFORM_URL
+  ? createPlatformPageRepository(import.meta.env.VITE_PLATFORM_URL)
+  : createStaticPageRepository();
 
 /**
  * 应用壳的依赖注入点。数据网关按环境切换:
