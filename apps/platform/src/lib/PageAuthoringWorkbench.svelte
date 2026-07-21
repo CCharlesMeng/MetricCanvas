@@ -490,10 +490,6 @@
     dispatch({ type: 'redo' });
   }
 
-  function showInspector(tab: 'component' | 'source') {
-    inspectorTab = tab;
-  }
-
   function editSelected(edit: { title?: string; detail?: string; span?: number }) {
     if (!selected) return;
     dispatch({ type: 'edit_component', locator: selected.locator, edit });
@@ -656,57 +652,49 @@
       <button type="button" onclick={() => void openExistingPage()} disabled={pending || !pageIdInput.trim()}>打开</button>
     </section>
 
-    <section class="conversation-panel">
-      <div class="panel-heading">
-        <div><span class="eyebrow">AI COPILOT</span><h2>继续描述你的调整</h2></div>
-        <span class="provider"><i></i>{pending ? '执行中' : 'scripted fake / DeepSeek'}</span>
-      </div>
-      <div class="messages" aria-live="polite">
-        {#if visibleMessages.length === 0}
-          <div class="assistant-message">
-            描述这张看板页面要回答的问题。Agent 会先检索数据服务目录并生成未保存工作副本。
-          </div>
-        {/if}
-        {#each visibleMessages as message}
-          <div class:assistant-message={message.role === 'assistant'} class:user-message={message.role === 'user'}>
-            <small>{message.role === 'assistant' ? 'Agent' : '你'}</small>
-            <p>{message.content}</p>
-          </div>
-        {/each}
-        {#if interaction?.kind === 'confirm_page_id' && workspace}
-          <div class="identity-gate">
-            <strong>确认看板页面 id</strong>
-            <code>{workspace.current.id}</code>
-            <p>保存 R1 后不可更名。确认不会保存，仍需点击上方“保存 R1”。</p>
-            <button type="button" onclick={confirmPageId}>确认页面 id</button>
-          </div>
-        {/if}
-      </div>
-      {#if latestEvents.length > 0}
-        <div class="tool-strip">
-          {#each latestEvents.filter((event) => event.type === 'tool_finished') as event}
-            {#if event.type === 'tool_finished'}
-              <span class:error-tool={event.result.isError === true}>{event.result.isError === true ? '!' : '✓'} {event.call.name}</span>
-            {/if}
-          {/each}
-          {#if validationStatus}<strong class:invalid={!validationStatus.valid}>{validationStatus.valid ? '校验通过' : `${validationStatus.errors} 个问题`}</strong>{/if}
+    <div class="workspace-scroll">
+      <section class="conversation-panel">
+        <div class="panel-heading">
+          <div><span class="eyebrow">AI COPILOT</span><h2>继续描述你的调整</h2></div>
+          <span class="provider"><i></i>{pending ? '执行中' : 'scripted fake / DeepSeek'}</span>
         </div>
-      {/if}
-      <div class="target-context">
-        <span>正在调整</span>
-        <strong>{selected ? `${selected.typeLabel} / ${selected.locator.componentId}` : '整张看板页面'}</strong>
-        <small>结构化定位随请求发送；不会自动执行或保存。</small>
-      </div>
-      <div class="composer">
-        <textarea bind:value={input} rows="3" placeholder="描述如何调整当前组件或整张页面…"></textarea>
-        <button type="button" onclick={() => void submit()} disabled={pending || !input.trim()}>{pending ? '执行中…' : '应用调整 ↑'}</button>
-      </div>
-    </section>
+        <div class="messages" aria-live="polite">
+          {#if visibleMessages.length === 0}
+            <div class="assistant-message">
+              描述这张看板页面要回答的问题。Agent 会先检索数据服务目录并生成未保存工作副本。
+            </div>
+          {/if}
+          {#each visibleMessages as message}
+            <div class:assistant-message={message.role === 'assistant'} class:user-message={message.role === 'user'}>
+              <small>{message.role === 'assistant' ? 'Agent' : '你'}</small>
+              <p>{message.content}</p>
+            </div>
+          {/each}
+          {#if interaction?.kind === 'confirm_page_id' && workspace}
+            <div class="identity-gate">
+              <strong>确认看板页面 id</strong>
+              <code>{workspace.current.id}</code>
+              <p>保存 R1 后不可更名。确认不会保存，仍需点击上方“保存 R1”。</p>
+              <button type="button" onclick={confirmPageId}>确认页面 id</button>
+            </div>
+          {/if}
+        </div>
+        {#if latestEvents.length > 0}
+          <div class="tool-strip">
+            {#each latestEvents.filter((event) => event.type === 'tool_finished') as event}
+              {#if event.type === 'tool_finished'}
+                <span class:error-tool={event.result.isError === true}>{event.result.isError === true ? '!' : '✓'} {event.call.name}</span>
+              {/if}
+            {/each}
+            {#if validationStatus}<strong class:invalid={!validationStatus.valid}>{validationStatus.valid ? '校验通过' : `${validationStatus.errors} 个问题`}</strong>{/if}
+          </div>
+        {/if}
+      </section>
 
-    <section class="inspector-panel">
+      <section class="inspector-panel">
       <div class="tabs">
-        <button class:active={inspectorTab === 'component'} type="button" onclick={() => showInspector('component')}>组件</button>
-        <button class:active={inspectorTab === 'source'} type="button" onclick={() => showInspector('source')}>页面数据源</button>
+        <label class:active={inspectorTab === 'component'}><input type="radio" name="inspector-tab" value="component" bind:group={inspectorTab} /><span>组件</span></label>
+        <label class:active={inspectorTab === 'source'}><input type="radio" name="inspector-tab" value="source" bind:group={inspectorTab} /><span>页面数据源</span></label>
       </div>
 
       {#if inspectorTab === 'component'}
@@ -744,7 +732,8 @@
           </div>
         {:else}<p class="empty">当前没有可编辑的 query 页面数据源。</p>{/if}
       {/if}
-    </section>
+      </section>
+    </div>
 
     <footer class="lifecycle-panel">
       <div><span>页面修订</span><strong>{workspace?.revisionNumber ? `R${workspace.revisionNumber}` : '未保存'}</strong></div>
@@ -752,6 +741,18 @@
       <button type="button" onclick={() => void requestPublish()} disabled={!workspace?.baseRevisionId || dirty || previewedRevisionId !== workspace.baseRevisionId || publishing}>{publishing ? '申请中…' : '申请发布'}</button>
       {#if publishRequest}<a href={publishRequest.confirmationUrl} target="_blank" rel="noreferrer">核对并确认发布 ↗</a>{/if}
     </footer>
+
+    <section class="composer-dock" aria-label="Agent 调整输入区">
+      <div class="target-context">
+        <span>正在调整</span>
+        <strong>{selected ? `${selected.typeLabel} / ${selected.locator.componentId}` : '整张看板页面'}</strong>
+        <small>结构化定位随请求发送；不会自动执行或保存。</small>
+      </div>
+      <div class="composer">
+        <textarea bind:value={input} rows="3" placeholder="描述如何调整当前组件或整张页面…"></textarea>
+        <button type="button" onclick={() => void submit()} disabled={pending || !input.trim()}>{pending ? '执行中…' : '应用调整 ↑'}</button>
+      </div>
+    </section>
   </aside>
 
   <main class="canvas-column">
@@ -772,8 +773,8 @@
 </div>
 
 <style>
-  .authoring-workbench { display: grid; height: calc(100vh - 54px); grid-template-columns: minmax(390px, 38%) minmax(620px, 62%); overflow: hidden; background: #eef1f6; }
-  .control-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; background: #fff; border-right: 1px solid #dde2ea; }
+  .authoring-workbench { display: grid; height: calc(100vh - 54px); height: calc(100dvh - 54px); grid-template-columns: minmax(390px, 38%) minmax(620px, 62%); overflow: hidden; background: #eef1f6; }
+  .control-column { display: grid; min-width: 0; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr) auto auto; overflow: hidden; background: #fff; border-right: 1px solid #dde2ea; }
   .workbench-header { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; padding: 14px 18px 12px; border-bottom: 1px solid #e3e7ed; }
   h1, h2, p { margin: 0; } h1 { font-size: 17px; } h2 { font-size: 15px; }
   .eyebrow { display: block; margin-bottom: 4px; color: #6558d9; font-size: 9px; font-weight: 900; letter-spacing: .1em; }
@@ -786,27 +787,29 @@
   .existing-page { display: grid; grid-template-columns: 1fr auto; gap: 6px; padding: 9px 18px; border-bottom: 1px solid #edf0f4; }
   .existing-page input, .property-form input, .source-select select, .query-grid input, .query-grid select { width: 100%; min-height: 32px; padding: 6px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
   .existing-page button { width: auto; padding-inline: 12px; }
-  .conversation-panel { display: flex; min-height: 270px; flex: 1 1 48%; flex-direction: column; padding: 14px 18px; overflow: hidden; }
+  .workspace-scroll { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+  .conversation-panel { display: flex; min-height: 0; flex-direction: column; padding: 14px 18px 12px; }
   .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
   .provider { display: flex; align-items: center; gap: 5px; color: #7a8497; font-size: 8px; }.provider i { width: 6px; height: 6px; background: #22c55e; border-radius: 50%; }
-  .messages { display: flex; min-height: 80px; flex: 1; flex-direction: column; gap: 8px; overflow: auto; }
+  .messages { display: flex; min-height: 80px; flex-direction: column; gap: 8px; }
   .assistant-message, .user-message { max-width: 90%; padding: 9px 10px; color: #3f4a5f; background: #f0f2f7; border-radius: 10px 10px 10px 3px; font-size: 10px; line-height: 1.5; }
   .user-message { align-self: flex-end; color: #fff; background: #554dcc; border-radius: 10px 10px 3px 10px; }.assistant-message small, .user-message small { display: block; margin-bottom: 2px; opacity: .65; font-size: 7px; font-weight: 900; text-transform: uppercase; }
   .identity-gate { display: grid; gap: 6px; padding: 10px; color: #594f31; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 9px; }.identity-gate code { font-size: 12px; font-weight: 800; }.identity-gate button { justify-self: start; padding: 6px 9px; color: #fff; background: #a16207; border: 0; border-radius: 5px; }
   .tool-strip { display: flex; flex-wrap: wrap; gap: 4px; padding-top: 7px; }.tool-strip span, .tool-strip strong { padding: 3px 6px; color: #216e4e; background: #ecfdf3; border-radius: 999px; font-size: 8px; }.tool-strip .error-tool, .tool-strip .invalid { color: #991b1b; background: #fef2f2; }
-  .target-context { display: grid; gap: 2px; padding: 8px 10px; margin-top: 8px; color: #4b43aa; background: #f0efff; border: 1px solid #ddd9ff; border-radius: 7px; }.target-context span, .target-context small { color: #787496; font-size: 8px; }.target-context strong { font-size: 10px; }
-  .composer { position: relative; margin-top: 7px; }.composer textarea { width: 100%; resize: none; padding: 9px 96px 9px 9px; color: #273146; background: #fbfcfe; border: 1px solid #ccd3df; border-radius: 8px; outline: 0; font: inherit; font-size: 10px; line-height: 1.45; }.composer textarea:focus { background: #fff; border-color: #6c63dc; box-shadow: 0 0 0 3px rgb(99 102 241 / .12); }.composer button { position: absolute; right: 7px; bottom: 7px; padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; }
-  .inspector-panel { flex: 1 1 42%; min-height: 250px; padding: 10px 18px 14px; overflow: auto; border-top: 1px solid #e3e7ed; }
-  .tabs { display: grid; grid-template-columns: 1fr 1.3fr; padding: 3px; margin-bottom: 9px; background: #eff1f5; border-radius: 7px; }.tabs button { padding: 7px; color: #727c8e; background: transparent; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; }.tabs button.active { color: #31394a; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
+  .composer-dock { position: relative; z-index: 5; padding: 9px 18px 12px; background: #fff; border-top: 1px solid #dfe4ec; box-shadow: 0 -8px 24px rgb(15 23 42 / .05); }
+  .target-context { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 7px; padding: 7px 9px; color: #4b43aa; background: #f0efff; border: 1px solid #ddd9ff; border-radius: 7px; }.target-context span, .target-context small { color: #787496; font-size: 8px; }.target-context strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.target-context small { grid-column: 1 / -1; }
+  .composer { position: relative; margin-top: 7px; }.composer textarea { display: block; width: 100%; resize: none; padding: 9px 96px 9px 9px; color: #273146; background: #fbfcfe; border: 1px solid #ccd3df; border-radius: 8px; outline: 0; font: inherit; font-size: 10px; line-height: 1.45; }.composer textarea:focus { background: #fff; border-color: #6c63dc; box-shadow: 0 0 0 3px rgb(99 102 241 / .12); }.composer button { position: absolute; right: 7px; bottom: 7px; padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; }
+  .inspector-panel { min-height: 0; padding: 10px 18px 16px; border-top: 1px solid #e3e7ed; }
+  .tabs { display: grid; grid-template-columns: 1fr 1.3fr; padding: 3px; margin-bottom: 9px; background: #eff1f5; border-radius: 7px; }.tabs label { position: relative; display: grid; place-items: center; padding: 7px; color: #727c8e; border-radius: 5px; cursor: pointer; font-size: 9px; font-weight: 800; }.tabs label.active { color: #31394a; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }.tabs input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }.tabs label:focus-within { outline: 2px solid #818cf8; outline-offset: 1px; }
   .component-list { display: flex; gap: 5px; padding-bottom: 8px; overflow-x: auto; }.component-list button { display: grid; min-width: 108px; gap: 2px; padding: 7px 8px; color: #596377; text-align: left; background: #fff; border: 1px solid #dce1e9; border-radius: 6px; }.component-list button.selected { color: #4338ca; background: #f2f1ff; border-color: #7770e5; }.component-list span, .component-list small { font-size: 7px; }.component-list strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
   .property-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.property-form label, .source-select label, .query-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 9px; font-weight: 800; }.property-form label:last-of-type { grid-column: 1 / -1; }.property-form label span { float: right; color: #4f46e5; }.property-form input[type='range'] { padding: 0; accent-color: #4f46e5; }.property-form p { grid-column: 1 / -1; color: #8a93a4; font-size: 8px; }
   .query-editor { display: grid; gap: 8px; }.query-editor fieldset { display: flex; gap: 5px; padding: 7px; overflow-x: auto; border: 1px solid #e0e4eb; border-radius: 6px; }.query-editor legend { padding: 0 4px; color: #697386; font-size: 8px; font-weight: 900; }.query-editor fieldset label { display: flex; min-width: 102px; align-items: center; gap: 5px; padding: 5px; background: #f8f9fb; border-radius: 5px; font-size: 8px; }.query-editor fieldset label.disabled { opacity: .45; }.query-editor fieldset span { display: grid; }.query-editor fieldset code { color: #8a93a5; font-size: 7px; }.query-editor input[type='checkbox'] { accent-color: #4f46e5; }
   .query-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }.catalog-proof, .empty { color: #7c8698; font-size: 8px; }.catalog-proof code { color: #4f46e5; }
-  .lifecycle-panel { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px; padding: 9px 18px 12px; border-top: 1px solid #dfe4ec; }.lifecycle-panel div { display: grid; }.lifecycle-panel span { color: #8a93a4; font-size: 7px; }.lifecycle-panel strong { font-size: 10px; }.lifecycle-panel button, .lifecycle-panel a { padding: 7px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; text-decoration: none; }.lifecycle-panel a { grid-column: 1 / -1; color: #fff; text-align: center; background: #4f46e5; }
+  .lifecycle-panel { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px; padding: 8px 18px; background: #fafbfc; border-top: 1px solid #dfe4ec; }.lifecycle-panel div { display: grid; }.lifecycle-panel span { color: #8a93a4; font-size: 7px; }.lifecycle-panel strong { font-size: 10px; }.lifecycle-panel button, .lifecycle-panel a { padding: 7px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; text-decoration: none; }.lifecycle-panel a { grid-column: 1 / -1; color: #fff; text-align: center; background: #4f46e5; }
   .canvas-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; padding: 0; overflow: hidden; }
   .canvas-toolbar { display: flex; min-height: 44px; align-items: center; justify-content: space-between; padding: 0 14px; background: #fafbfc; border-bottom: 1px solid #dce1e8; }.canvas-toolbar > div { display: flex; align-items: center; gap: 7px; color: #727c8d; font-size: 9px; }.canvas-toolbar i { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; }.canvas-toolbar i.dirty { background: #f59e0b; }.canvas-toolbar strong { color: #424b5e; }.mode-switch { padding: 3px; background: #eef0f4; border-radius: 6px; }.mode-switch button { padding: 5px 8px; color: #7a8496; background: transparent; border: 0; border-radius: 4px; font-size: 8px; }.mode-switch button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
   iframe { width: 100%; min-height: 0; flex: 1; border: 0; background: #fafafa; }
   .canvas-empty { display: grid; min-height: 0; flex: 1; place-content: center; justify-items: center; gap: 7px; color: #7a8496; text-align: center; }.canvas-empty span { display: grid; width: 46px; height: 46px; place-items: center; color: #fff; background: #4f46e5; border-radius: 14px; font-size: 20px; box-shadow: 0 12px 30px rgb(79 70 229 / .24); }.canvas-empty h2 { color: #3f485a; }.canvas-empty p { max-width: 360px; font-size: 10px; }
   .error, .notice { position: absolute; top: 105px; right: 18px; z-index: 20; max-width: 420px; padding: 9px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 7px; box-shadow: 0 8px 24px rgb(15 23 42 / .12); font-size: 9px; }.notice { top: 105px; color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
-  @media (max-width: 980px) { .authoring-workbench { height: auto; min-height: calc(100vh - 54px); grid-template-columns: 1fr; overflow: visible; }.control-column { min-height: 760px; }.canvas-column { min-height: 760px; }.query-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 980px) { .authoring-workbench { height: auto; grid-template-columns: 1fr; overflow: visible; }.control-column { height: calc(100vh - 54px); height: calc(100dvh - 54px); }.canvas-column { min-height: 760px; }.query-grid { grid-template-columns: repeat(2, 1fr); } }
 </style>
