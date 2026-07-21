@@ -1,0 +1,27 @@
+{
+  "name": "platform",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 5174",
+    "build": "vite build",
+    "preview": "vite preview --port 4174",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@metriccanvas/agent-runner": "workspace:*",
+    "@metriccanvas/catalog-discovery": "workspace:*",
+    "@metriccanvas/data-gateway": "workspace:*",
+    "@metriccanvas/mcp": "workspace:*",
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/page-lifecycle": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/kit": "^2.70.1",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "vite": "^8.1.5"
+  }
+}

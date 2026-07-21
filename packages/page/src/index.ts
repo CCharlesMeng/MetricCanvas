@@ -4,6 +4,7 @@ export * from './interaction';
 export * from './query';
 export * from './snapshot';
 export * from './catalog';
+export * from './canonical-json';
 export * from './errors';
 export { pageSchema } from './schema';
 export { validate } from './validate';

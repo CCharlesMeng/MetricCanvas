@@ -1,0 +1,17 @@
+{
+  "name": "@metriccanvas/mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@metriccanvas/agent-runner": "workspace:*",
+    "@metriccanvas/catalog-discovery": "workspace:*",
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/page-lifecycle": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  }
+}

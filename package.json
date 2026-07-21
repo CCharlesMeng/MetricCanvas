@@ -3,15 +3,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter canvas dev",
-    "build": "pnpm --filter canvas build",
+    "dev": "pnpm --parallel --filter canvas --filter platform dev",
+    "dev:runtime": "pnpm --filter canvas dev",
+    "dev:platform": "pnpm --filter platform dev",
+    "db:up": "docker compose up -d postgres",
+    "db:down": "docker compose down",
+    "build": "pnpm --filter canvas build && pnpm --filter platform build",
     "test": "vitest run",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "migrate": "tsx packages/page/src/migrate-cli.ts",
     "sync-catalog": "tsx packages/data-gateway/src/sync-catalog-cli.ts",
     "sim": "tsx tools/data-service-sim/src/server.ts",
-    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json && tsc --noEmit -p packages/widgets/tsconfig.test.json && tsc --noEmit -p tools/data-service-sim",
-    "check": "pnpm typecheck && pnpm --filter canvas check"
+    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/catalog-discovery && tsc --noEmit -p packages/page-lifecycle && tsc --noEmit -p packages/agent-runner && tsc --noEmit -p packages/mcp && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json && tsc --noEmit -p packages/catalog-discovery/tsconfig.test.json && tsc --noEmit -p packages/page-lifecycle/tsconfig.test.json && tsc --noEmit -p packages/agent-runner/tsconfig.test.json && tsc --noEmit -p packages/mcp/tsconfig.test.json && tsc --noEmit -p packages/widgets/tsconfig.test.json && tsc --noEmit -p apps/platform/tsconfig.test.json && tsc --noEmit -p tools/data-service-sim",
+    "check": "pnpm typecheck && pnpm --filter canvas check && pnpm --filter platform check"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
