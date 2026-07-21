@@ -38,6 +38,7 @@
   let publishStatus = $state<WorkbenchPublishStatus>('pending');
   let checkingPublishStatus = false;
   let input = $state(DEFAULT_INTENT);
+  let existingPageIdInput = $state('');
   let pending = $state(false);
   let error = $state('');
   let now = $state(Date.now());
@@ -101,6 +102,29 @@
     await execute(outgoing, confirmedPageIds);
   }
 
+  async function openExistingPage() {
+    const pageId = existingPageIdInput.trim();
+    if (!pageId || pending) return;
+    const confirmations = Array.from(new Set([...confirmedPageIds, pageId]));
+    const outgoing: AgentMessage[] = [
+      {
+        role: 'user',
+        content: `请通过 get_page 打开看板页面 ${pageId} 的当前最新页面修订，基于它进行更新，先校验，再保存新的页面修订并加载精确预览。`
+      }
+    ];
+    confirmedPageIds = confirmations;
+    interaction = null;
+    publishStatus = 'pending';
+    await execute(outgoing, confirmations);
+  }
+
+  async function reloadCurrentRevision() {
+    const pageId = workbench.revisionConflict?.pageId;
+    if (!pageId || pending) return;
+    existingPageIdInput = pageId;
+    await openExistingPage();
+  }
+
   async function confirmPageId() {
     const pageId = stringAt(pageIdInteraction?.payload, ['pageId']);
     if (!pageId || pending) return;
@@ -134,7 +158,10 @@
     });
   }
 
-  async function execute(outgoing: AgentMessage[], confirmations: string[]) {
+  async function execute(
+    outgoing: AgentMessage[],
+    confirmations: string[]
+  ) {
     pending = true;
     error = '';
     latestEvents = [];
@@ -196,6 +223,7 @@
     interaction = null;
     latestEvents = [];
     publishStatus = 'pending';
+    existingPageIdInput = '';
     input = DEFAULT_INTENT;
     error = '';
     sessionStorage.removeItem(STORAGE_KEY);
@@ -268,7 +296,7 @@
       catalog: '目录检索',
       validation: '页面校验',
       identity: '页面身份',
-      revision: '保存 R1',
+      revision: '保存页面修订',
       preview: '精确预览',
       publish: '发布租约'
     }[key];
@@ -305,7 +333,9 @@
     if (stage.key === 'revision') {
       return workbench.revision ? `R${workbench.revision.revisionNumber} · 不可变` : '已保存';
     }
-    if (stage.key === 'preview') return '已绑定 R1';
+    if (stage.key === 'preview') {
+      return workbench.revision ? `已绑定 R${workbench.revision.revisionNumber}` : '已绑定';
+    }
     if (stage.key === 'publish' && workbench.publish?.status === 'published') {
       return '已发布';
     }
@@ -325,7 +355,7 @@
       .filter(Boolean);
   }
 
-  function short(value: string | undefined, length = 10): string {
+  function short(value: string | null | undefined, length = 10): string {
     if (!value) return '—';
     return value.length > length ? `${value.slice(0, length)}…` : value;
   }
@@ -403,6 +433,29 @@
       <span class:running={pending} class="provider-status">
         <i></i>{pending ? 'Agent 执行中' : 'DeepSeek / scripted fake'}
       </span>
+      <div class="existing-page-opener">
+        <label for="existing-page-id">已有页面</label>
+        <input
+          id="existing-page-id"
+          bind:value={existingPageIdInput}
+          disabled={pending}
+          placeholder="页面 id"
+          onkeydown={(event) => {
+            if (event.key === 'Enter') {
+              event.preventDefault();
+              void openExistingPage();
+            }
+          }}
+        />
+        <button
+          class="secondary"
+          type="button"
+          onclick={() => void openExistingPage()}
+          disabled={pending || existingPageIdInput.trim().length === 0}
+        >
+          打开并编辑
+        </button>
+      </div>
       <button class="secondary" type="button" onclick={clearSession}>新建搭建</button>
     </div>
   </header>
@@ -457,6 +510,25 @@
             </button>
             <button type="button" onclick={() => void confirmPageId()} disabled={pending}>
               确认页面 id 并继续
+            </button>
+          </div>
+        </div>
+      {:else if workbench.revisionConflict}
+        <div class="revision-conflict">
+          <span class="error-badge">页面修订冲突</span>
+          <h2>当前编辑基线已不是最新页面修订</h2>
+          <p>{workbench.revisionConflict.message}</p>
+          <p>
+            保存使用的基线：
+            <code>{short(workbench.revisionConflict.baseRevisionId)}</code>
+            {#if workbench.revisionConflict.currentLatestRevision}
+              。当前最新页面修订为 R{workbench.revisionConflict.currentLatestRevision.revisionNumber}
+              · <code>{short(workbench.revisionConflict.currentLatestRevision.revisionId)}</code>
+            {/if}
+          </p>
+          <div class="gate-actions">
+            <button type="button" onclick={() => void reloadCurrentRevision()} disabled={pending}>
+              重新加载当前页面修订
             </button>
           </div>
         </div>
@@ -638,15 +710,22 @@
         </div>
       </article>
 
-      <article class:available={Boolean(workbench.revision)} class="receipt">
+      <article class:available={Boolean(workbench.baseRevision || workbench.revision)} class="receipt">
         <span class="receipt-marker">{workbench.revision ? '✓' : '4'}</span>
         <div>
           <small>不可变页面修订</small>
+          {#if workbench.baseRevision}
+            <strong>
+              编辑基线 R{workbench.baseRevision.revisionNumber}
+              · <code>{short(workbench.baseRevision.baseRevisionId)}</code>
+            </strong>
+            <p>加载时的当前页面修订，保存将以此作为 baseRevisionId</p>
+          {/if}
           {#if workbench.revision}
             <strong>R{workbench.revision.revisionNumber} · <code>{short(workbench.revision.revisionId)}</code></strong>
             <p>内容指纹 {short(workbench.revision.contentHash, 14)}</p>
             <p>{workbench.revision.createdBy} · {workbench.revision.createdAt}</p>
-          {:else}
+          {:else if !workbench.baseRevision}
             <strong>尚未保存</strong>
           {/if}
         </div>
@@ -660,7 +739,7 @@
             <strong>{workbench.preview.matchesRevision ? '已绑定精确修订' : '修订绑定不一致'}</strong>
             <p>{workbench.preview.pageId} / {short(workbench.preview.revisionId)}</p>
           {:else}
-            <strong>等待 R1</strong>
+            <strong>等待已保存修订</strong>
           {/if}
         </div>
       </article>
@@ -780,6 +859,7 @@
     font-family: "SFMono-Regular", Consolas, monospace;
   }
   button,
+  input,
   textarea {
     font: inherit;
   }
@@ -807,6 +887,28 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+  .existing-page-opener {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .existing-page-opener label {
+    color: #697386;
+    font-size: 10px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .existing-page-opener input {
+    width: 120px;
+    border: 1px solid #d4dbe4;
+    border-radius: 7px;
+    padding: 7px 8px;
+    color: #27313f;
+  }
+  .existing-page-opener button {
+    padding: 8px 10px;
+    font-size: 11px;
   }
   .provider-status {
     display: flex;
@@ -962,6 +1064,20 @@
     border-radius: 14px;
     box-shadow: 0 14px 40px rgb(36 87 214 / 9%);
     background: #fff;
+  }
+  .revision-conflict {
+    width: min(680px, 100%);
+    margin: 28px auto;
+    padding: 28px;
+    border: 1px solid #e9a19b;
+    border-radius: 14px;
+    background: #fff;
+  }
+  .revision-conflict > p {
+    margin-top: 9px;
+    color: #697386;
+    font-size: 13px;
+    line-height: 1.7;
   }
   .identity-gate > p {
     max-width: 600px;
@@ -1378,6 +1494,12 @@
     }
     .provider-status {
       display: none;
+    }
+    .header-actions,
+    .existing-page-opener {
+      align-items: flex-end;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .timeline {
       grid-template-columns: repeat(2, 1fr);

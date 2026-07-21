@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { AgentMessage } from '@metriccanvas/agent-runner';
+import { createSingleMetricCardScriptedProvider } from '../src/lib/server/scripted-model.server';
 import { deriveWorkbenchState } from '../src/lib/workbench-state';
 
 const pageDocument = {
@@ -199,6 +200,170 @@ describe('页面搭建工作台状态', () => {
       stablePath: '/pages/sales-total',
       confirmed: false,
       immutableAfterSave: true
+    });
+  });
+
+  it('编辑已有页面时保留 R1 基线并保存、预览精确的 R2', async () => {
+    const r1 = {
+      pageId: 'sales-total',
+      revisionId: 'revision-1',
+      revisionNumber: 1,
+      contentHash: 'content-hash-1',
+      metadataVersion: 'catalog-v1',
+      createdBy: 'developer-1',
+      createdAt: '2026-07-20T12:30:00.000Z',
+      document: pageDocument
+    };
+    const provider = createSingleMetricCardScriptedProvider('existing-page');
+    const loaded: AgentMessage[] = [
+      assistantCall('get-page:revision-1', 'get_page', {
+        pageId: 'sales-total',
+        selector: { type: 'latest' }
+      }),
+      toolResult('get-page:revision-1', 'get_page', {
+        ok: true,
+        revision: r1,
+        baseRevisionId: 'revision-1'
+      })
+    ];
+
+    const validation = await provider.complete({ messages: loaded, tools: [] });
+    expect(validation.toolCalls).toEqual([
+      expect.objectContaining({ name: 'validate_page' })
+    ]);
+    const afterValidation: AgentMessage[] = [
+      ...loaded,
+      { role: 'assistant', content: validation.content, toolCalls: validation.toolCalls },
+      toolResult('validate-existing-1', 'validate_page', {
+        ok: true,
+        valid: true,
+        currentFormatVersion: '1.0',
+        metadataVersion: 'catalog-v1',
+        errors: []
+      })
+    ];
+
+    const save = await provider.complete({ messages: afterValidation, tools: [] });
+    expect(save.toolCalls).toEqual([
+      expect.objectContaining({
+        name: 'save_page',
+        input: expect.objectContaining({
+          pageId: 'sales-total',
+          baseRevisionId: 'revision-1'
+        })
+      })
+    ]);
+    const conflict = await provider.complete({
+      messages: [
+        ...afterValidation,
+        { role: 'assistant', content: save.content, toolCalls: save.toolCalls },
+        {
+          ...toolResult('save-existing-1', 'save_page', {
+            ok: false,
+            error: { code: 'REVISION_CONFLICT', message: '当前最新修订为 revision-2' }
+          }),
+          isError: true
+        }
+      ],
+      tools: []
+    });
+    expect(conflict.toolCalls).toEqual([]);
+    const saveInput = save.toolCalls[0]?.input as { document: Record<string, unknown> };
+    const r2 = {
+      ...r1,
+      revisionId: 'revision-2',
+      revisionNumber: 2,
+      contentHash: 'content-hash-2',
+      document: saveInput.document
+    };
+    const afterSave: AgentMessage[] = [
+      ...afterValidation,
+      { role: 'assistant', content: save.content, toolCalls: save.toolCalls },
+      toolResult('save-existing-1', 'save_page', { ok: true, revision: r2 })
+    ];
+
+    const preview = await provider.complete({ messages: afterSave, tools: [] });
+    expect(preview.toolCalls).toEqual([
+      expect.objectContaining({
+        name: 'preview_page',
+        input: { pageId: 'sales-total', revisionId: 'revision-2' }
+      })
+    ]);
+    const messages: AgentMessage[] = [
+      ...afterSave,
+      { role: 'assistant', content: preview.content, toolCalls: preview.toolCalls },
+      toolResult('preview-existing-1', 'preview_page', {
+        ok: true,
+        pageId: 'sales-total',
+        revisionId: 'revision-2',
+        previewUrl: 'http://localhost:5175/pages/sales-total?revision=revision-2'
+      })
+    ];
+
+    const state = deriveWorkbenchState({
+      messages,
+      confirmedPageIds: ['sales-total']
+    });
+    expect(state.baseRevision).toMatchObject({
+      pageId: 'sales-total',
+      baseRevisionId: 'revision-1',
+      revisionNumber: 1
+    });
+    expect(state.revision).toMatchObject({
+      revisionId: 'revision-2',
+      revisionNumber: 2
+    });
+    expect(state.preview).toEqual({
+      pageId: 'sales-total',
+      revisionId: 'revision-2',
+      previewUrl: 'http://localhost:5175/pages/sales-total?revision=revision-2',
+      matchesRevision: true
+    });
+  });
+
+  it('保留结构化修订冲突以便显式重新加载当前页面修订', () => {
+    const messages: AgentMessage[] = [
+      assistantCall('save-2', 'save_page', {
+        pageId: 'sales-total',
+        baseRevisionId: 'revision-1',
+        document: pageDocument,
+        idempotencyKey: 'save-2'
+      }),
+      {
+        ...toolResult('save-2', 'save_page', {
+          ok: false,
+          error: {
+            code: 'REVISION_CONFLICT',
+            message: '保存基线不是当前最新页面修订:revision-2',
+            currentLatestRevision: {
+              pageId: 'sales-total',
+              revisionId: 'revision-2',
+              revisionNumber: 2,
+              contentHash: 'content-hash-2',
+              metadataVersion: 'catalog-v1',
+              createdBy: 'developer-2',
+              createdAt: '2026-07-20T12:35:00.000Z',
+              document: pageDocument
+            }
+          }
+        }),
+        isError: true
+      }
+    ];
+
+    const state = deriveWorkbenchState({ messages });
+
+    expect(state.revisionConflict).toMatchObject({
+      pageId: 'sales-total',
+      baseRevisionId: 'revision-1',
+      currentLatestRevision: {
+        revisionId: 'revision-2',
+        revisionNumber: 2
+      }
+    });
+    expect(state.stages.find((stage) => stage.key === 'revision')).toEqual({
+      key: 'revision',
+      status: 'failed'
     });
   });
 });

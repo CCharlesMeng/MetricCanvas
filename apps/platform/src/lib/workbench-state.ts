@@ -59,6 +59,17 @@ export interface RevisionReceipt {
   document: Record<string, unknown>;
 }
 
+export interface BaseRevisionReceipt extends RevisionReceipt {
+  baseRevisionId: string;
+}
+
+export interface RevisionConflictReceipt {
+  pageId: string;
+  baseRevisionId: string | null;
+  message: string;
+  currentLatestRevision?: RevisionReceipt;
+}
+
 export interface PreviewReceipt {
   pageId: string;
   revisionId: string;
@@ -89,7 +100,9 @@ export interface WorkbenchState {
   catalog?: CatalogReceipt;
   validation?: ValidationReceipt;
   identity?: PageIdentityReceipt;
+  baseRevision?: BaseRevisionReceipt;
   revision?: RevisionReceipt;
+  revisionConflict?: RevisionConflictReceipt;
   preview?: PreviewReceipt;
   publish?: PublishReceipt;
 }
@@ -107,7 +120,10 @@ export function deriveWorkbenchState(input: DeriveWorkbenchStateInput): Workbenc
   let catalogResult: Record<string, unknown> | undefined;
   let validationResult: Record<string, unknown> | undefined;
   let validationDocument: Record<string, unknown> | undefined;
+  let baseRevisionResult: Record<string, unknown> | undefined;
   let revisionResult: Record<string, unknown> | undefined;
+  let revisionConflictResult: Record<string, unknown> | undefined;
+  let revisionConflictInput: Record<string, unknown> | undefined;
   let previewResult: Record<string, unknown> | undefined;
   let publishResult: Record<string, unknown> | undefined;
 
@@ -123,17 +139,31 @@ export function deriveWorkbenchState(input: DeriveWorkbenchStateInput): Workbenc
       validationResult = result;
       validationDocument = nestedRecord(call?.input, ['document']);
     }
-    if (message.name === 'save_page') revisionResult = nestedRecord(result, ['revision']);
+    if (message.name === 'get_page') baseRevisionResult = nestedRecord(result, ['revision']);
+    if (message.name === 'save_page') {
+      revisionResult = nestedRecord(result, ['revision']) ?? revisionResult;
+      const conflict = nestedRecord(result, ['error']);
+      if (conflict?.code === 'REVISION_CONFLICT') {
+        revisionConflictResult = conflict;
+        revisionConflictInput = isRecord(call?.input) ? call.input : undefined;
+      }
+    }
     if (message.name === 'preview_page') previewResult = result;
     if (message.name === 'request_publish') {
       publishResult = nestedRecord(result, ['request']);
     }
   }
 
+  const baseRevision = toBaseRevisionReceipt(baseRevisionResult);
   const revision = toRevisionReceipt(revisionResult);
+  const revisionConflict = toRevisionConflict(
+    revisionConflictResult,
+    revisionConflictInput
+  );
   const document =
     revision?.document ??
     validationDocument ??
+    baseRevision?.document ??
     interactionDocument(input.interaction);
   const confirmedPageIds = new Set(input.confirmedPageIds ?? []);
   if (revision) confirmedPageIds.add(revision.pageId);
@@ -180,7 +210,9 @@ export function deriveWorkbenchState(input: DeriveWorkbenchStateInput): Workbenc
       },
       {
         key: 'revision',
-        status: stageStatus(revision, failedTools.has('save_page'))
+        status: revisionConflict
+          ? 'failed'
+          : stageStatus(revision, failedTools.has('save_page'))
       },
       {
         key: 'preview',
@@ -210,7 +242,9 @@ export function deriveWorkbenchState(input: DeriveWorkbenchStateInput): Workbenc
     ...(catalog ? { catalog } : {}),
     ...(validation ? { validation } : {}),
     ...(identity ? { identity } : {}),
+    ...(baseRevision ? { baseRevision } : {}),
     ...(revision ? { revision } : {}),
+    ...(revisionConflict ? { revisionConflict } : {}),
     ...(preview ? { preview } : {}),
     ...(publish ? { publish } : {})
   };
@@ -335,6 +369,37 @@ function toRevisionReceipt(
     createdBy: revision.createdBy,
     createdAt: revision.createdAt,
     document: revision.document
+  };
+}
+
+function toBaseRevisionReceipt(
+  revision: Record<string, unknown> | undefined
+): BaseRevisionReceipt | undefined {
+  const receipt = toRevisionReceipt(revision);
+  return receipt ? { ...receipt, baseRevisionId: receipt.revisionId } : undefined;
+}
+
+function toRevisionConflict(
+  error: Record<string, unknown> | undefined,
+  input: Record<string, unknown> | undefined
+): RevisionConflictReceipt | undefined {
+  if (
+    !error ||
+    error.code !== 'REVISION_CONFLICT' ||
+    typeof error.message !== 'string' ||
+    typeof input?.pageId !== 'string'
+  ) {
+    return undefined;
+  }
+  const currentLatestRevision = toRevisionReceipt(
+    nestedRecord(error, ['currentLatestRevision'])
+  );
+  return {
+    pageId: input.pageId,
+    baseRevisionId:
+      typeof input.baseRevisionId === 'string' ? input.baseRevisionId : null,
+    message: error.message,
+    ...(currentLatestRevision ? { currentLatestRevision } : {})
   };
 }
 
