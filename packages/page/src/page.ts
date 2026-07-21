@@ -1,227 +1,330 @@
+import type { DataSourceMode, DataSources } from './data-source';
+import type { FieldBinding } from './field';
 import type { FilterDeclaration } from './filter';
-import type { WidgetInteraction } from './interaction';
-import type { StructuredQuery } from './query';
 
-/**
- * 看板页面 (Dashboard Page):平台的聚合根与核心资产,
- * 以严格声明式文档形式存在,同一性由 id 承载(ADR-0007)。
- * 加载得到的是不可信文档(unknown),通过 validate 后才可视为 Page。
- */
 export interface Page {
-  formatVersion: string;
+  schemaVersion: '1.0';
   id: string;
-  title: string;
-  description?: string;
-  /** 页面级筛选器声明,共同构成筛选状态(联动唯一总线) */
+  meta?: PageMeta;
+  dataSources: DataSources;
   filters?: FilterDeclaration[];
-  layout: GridLayout;
-  widgets: Widget[];
+  sections: PageSection[];
 }
 
-/** 12 列网格布局 */
+export interface PageMeta {
+  /** 页面资产说明，不参与渲染。 */
+  description?: string;
+}
+
+export interface PageSection {
+  id: string;
+  title?: string;
+  layout: GridLayout;
+  components: Component[];
+}
+
+/** 一期固定 12 列自动流布局。组件顺序决定排布，只声明跨度。 */
 export interface GridLayout {
   type: 'grid';
   columns: 12;
 }
 
-export interface WidgetPosition {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
+export interface ComponentLayout {
+  span: number;
 }
 
-/** 一期组件集之一:指标卡 */
-export interface MetricCardWidget {
+export type ComponentData = Record<string, string>;
+export type MainDataBinding = { main: string };
+export type MetricDataBinding = {
+  main: string;
+  compare?: string;
+  target?: string;
+};
+
+type ComponentBase<T extends string, P, D extends ComponentData | undefined = undefined> = {
   id: string;
-  type: 'metricCard';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  display?: MetricCardDisplay;
+  type: T;
+  layout: ComponentLayout;
+  props: P;
+} & (D extends ComponentData ? { data: D } : { data?: never });
+
+export interface ReportHeaderProps {
+  title: string;
+  subtitle?: string;
+  badge?: string;
+  asOf?: { label: string; value: string };
+  tags?: string[];
 }
 
-/** 指标卡展示配置(字段范围来自《组件分析.md》§2.1) */
-export interface MetricCardDisplay {
-  unit?: string;
-  prefix?: string;
-  thousandsSeparator?: boolean;
-}
+export type ReportHeaderComponent = ComponentBase<'reportHeader', ReportHeaderProps>;
 
-/** 一期组件集之一:柱状图(展示配置面来自《组件分析.md》§2,PRD 定死) */
-export interface BarChartWidget {
-  id: string;
-  type: 'barChart';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  display?: BarChartDisplay;
-  /** 交互声明:事件如何作用于筛选状态,由运行时执行(组件纯渲染) */
-  interactions?: WidgetInteraction[];
-}
-
-export interface BarChartDisplay {
-  /** 多指标堆叠 */
-  stacked?: boolean;
-  /** 圆角柱 */
-  rounded?: boolean;
-  /** 横向条形(覆盖存量两个自定义水平条形组件的场景) */
-  horizontal?: boolean;
-  /** 双轴:第二个及之后的指标走右轴 */
-  dualAxis?: boolean;
-}
-
-/** 一期组件集之一:折线图 */
-export interface LineChartWidget {
-  id: string;
-  type: 'lineChart';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  display?: LineChartDisplay;
-  interactions?: WidgetInteraction[];
-}
-
-export interface LineChartDisplay {
-  /** 平滑曲线 */
-  smooth?: boolean;
-  /** 面积渐变 */
-  areaGradient?: boolean;
-  /** 多指标堆叠 */
-  stacked?: boolean;
-  /** 双轴:第二个及之后的指标走右轴 */
-  dualAxis?: boolean;
-}
-
-/** 一期组件集之一:饼图(单指标,按第一个维度切分占比) */
-export interface PieChartWidget {
-  id: string;
-  type: 'pieChart';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  display?: PieChartDisplay;
-  interactions?: WidgetInteraction[];
-}
-
-export interface PieChartDisplay {
-  /** 环形:内半径百分比(如 '55%');缺省为实心饼 */
-  ring?: string;
-  /** 引导线开关,缺省开 */
-  labelLine?: boolean;
-}
-
-/** 一期组件集之一:表格(存量使用频率最高的重交互组件,《组件分析.md》§1.1) */
-export interface TableWidget {
-  id: string;
-  type: 'table';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  /** 列定义清单,列序即展示序 */
-  columns: TableColumn[];
-  /** 每页行数,缺省 20;分页经运行时映射 @limit/@offset,盲翻设计(响应不返回总条数) */
-  pageSize?: number;
-}
-
-/** 表格列定义:field 引用查询的维度或指标,展示与交互能力显式建模 */
-export interface TableColumn {
-  /** 数据快照中的行字段,须为本组件查询的维度或指标 code */
-  field: string;
-  /** 列头文案,缺省显示 field */
-  title?: string;
-  /** 列宽(px);缺省按内容自适应 */
-  width?: number;
-  /** 固定列:横向滚动时钉在左/右侧 */
-  fixed?: 'left' | 'right';
-  /** 可排序列:排序经运行时映射 @order(多列优先级) */
-  sortable?: boolean;
-  /** 表头筛选(widget 局部视图状态,不进页面筛选状态);列须为查询维度 */
-  filterable?: TableHeaderFilter;
-}
-
-/** 表头筛选声明:对应存量 ti-head-filter 的两种真实用法 */
-export interface TableHeaderFilter {
-  /** select=下拉多选(候选项经数据网关实时查询)| dateRange=日期范围 */
-  mode: 'select' | 'dateRange';
-}
-
-/** 一期组件集之一:地图(单指标,按第一个维度的值给区域着色,可叠加散点) */
-export interface MapChartWidget {
-  id: string;
-  type: 'mapChart';
-  title?: string;
-  position: WidgetPosition;
-  query: StructuredQuery;
-  display: MapChartDisplay;
-  interactions?: WidgetInteraction[];
-}
-
-export interface MapChartDisplay {
-  /** 底图:china=中国省级 | world=世界国家(geojson 静态资产随组件入库,无运行时网络依赖) */
-  map: 'china' | 'world';
-  /** 散点叠加:point=普通散点 | effect=涟漪散点;缺省不叠加。散点坐标取底图资产的区域中心点 */
-  scatter?: 'point' | 'effect';
-  /**
-   * 维度值 → 底图区域名的声明式映射(如 "华东" → "上海市"),构造地图数据与点击索引时应用;
-   * 未列出的维度值按原名匹配底图区域。纯数据映射,不是表达式(ADR-0003)
-   */
-  nameMap?: Record<string, string>;
-}
-
-/** 一期组件集之一:文本(标题/说明/带参跳转链接;无查询,不产生数据快照) */
-export interface TextWidget {
-  id: string;
-  type: 'text';
-  position: WidgetPosition;
-  /** 标题文案 */
-  heading?: string;
-  /** 说明文案(静态纯文本,不允许表达式,ADR-0003) */
-  body?: string;
-  /** 带参跳转链接:与 navigate 声明同形态,链接参数经同一 URL 序列化机制携带筛选器当前值 */
-  links?: TextLink[];
-}
-
-/**
- * 文本带参链接:形态与 navigate 声明对齐(page + carryFilters)。
- * 不支持 setFilters——文本无点击行上下文,取值占位无从解析。
- */
-export interface TextLink {
-  /** 链接文案 */
+export interface MetricCardChange {
   label: string;
-  /** 目标看板页面 id;存在性由 validate CLI 跨文档校验 */
+  field: FieldBinding;
+}
+
+export interface MetricCardRow {
+  label: string;
+  valueField: FieldBinding;
+  changes?: MetricCardChange[];
+}
+
+export interface MetricCardProps {
+  title?: string;
+  rows: MetricCardRow[];
+  actions?: ComponentAction[];
+}
+
+export type MetricCardComponent = ComponentBase<
+  'metricCard',
+  MetricCardProps,
+  MetricDataBinding
+>;
+
+export interface ChartSeries {
+  field: FieldBinding;
+  label?: string;
+}
+
+export interface BarChartProps {
+  title?: string;
+  categoryField: FieldBinding;
+  series: ChartSeries[];
+  stacked?: boolean;
+  rounded?: boolean;
+  horizontal?: boolean;
+  dualAxis?: boolean;
+  actions?: ComponentAction[];
+}
+
+export type BarChartComponent = ComponentBase<'barChart', BarChartProps, MainDataBinding>;
+
+export interface LineChartProps {
+  title?: string;
+  xField: FieldBinding;
+  series: ChartSeries[];
+  smooth?: boolean;
+  areaGradient?: boolean;
+  stacked?: boolean;
+  dualAxis?: boolean;
+  showPointLabels?: boolean;
+  hideYAxis?: boolean;
+  actions?: ComponentAction[];
+}
+
+export type LineChartComponent = ComponentBase<'lineChart', LineChartProps, MainDataBinding>;
+
+export interface PieChartProps {
+  title?: string;
+  categoryField: FieldBinding;
+  valueField: FieldBinding;
+  ring?: string;
+  labelLine?: boolean;
+  actions?: ComponentAction[];
+}
+
+export type PieChartComponent = ComponentBase<'pieChart', PieChartProps, MainDataBinding>;
+
+export interface TableColumn {
+  kind?: 'field';
+  field: FieldBinding;
+  title?: string;
+  width?: number;
+  fixed?: 'left' | 'right';
+  sortable?: boolean;
+  filterable?: { mode: 'select' | 'dateRange' };
+  align?: 'left' | 'right';
+  visual?: 'plain' | 'rateBar' | 'signed';
+}
+
+export interface TableColumnGroup {
+  kind: 'group';
+  id: string;
+  title: string;
+  children: TableColumnNode[];
+}
+
+export type TableColumnNode = TableColumn | TableColumnGroup;
+
+export interface TableProps {
+  title?: string;
+  subtitle?: string;
+  columns: TableColumnNode[];
+  pagination?: { mode: 'none' | 'paged'; pageSize?: number };
+  actions?: ComponentAction[];
+}
+
+export type TableComponent = ComponentBase<'table', TableProps, MainDataBinding>;
+
+export interface MapChartProps {
+  title?: string;
+  nameField: FieldBinding;
+  valueField: FieldBinding;
+  map: 'china' | 'world';
+  scatter?: 'point' | 'effect';
+  nameMap?: Record<string, string>;
+  actions?: ComponentAction[];
+}
+
+export type MapChartComponent = ComponentBase<'mapChart', MapChartProps, MainDataBinding>;
+
+export interface RankingCardProps {
+  title?: string;
+  nameField: FieldBinding;
+  valueField: FieldBinding;
+  changeField?: FieldBinding;
+  actions?: ComponentAction[];
+}
+
+export type RankingCardComponent = ComponentBase<
+  'rankingCard',
+  RankingCardProps,
+  MainDataBinding
+>;
+
+export interface TextLink {
+  label: string;
   page: string;
-  /** 携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器 */
   carryFilters?: string[];
 }
 
-/** 声明结构化查询、经查询编排产生数据快照的 widget(文本组件不在其中) */
-export type DataWidget =
-  | MetricCardWidget
-  | BarChartWidget
-  | LineChartWidget
-  | PieChartWidget
-  | TableWidget
-  | MapChartWidget;
+export interface TextProps {
+  heading?: string;
+  body?: string;
+  variant?: 'plain' | 'insight';
+  links?: TextLink[];
+}
 
-export type Widget = DataWidget | TextWidget;
+export type TextComponent = ComponentBase<'text', TextProps>;
 
-/** 带交互声明的图表类 widget(校验器与壳对 interactions 的处理共用此判别) */
-export type ChartWidget = BarChartWidget | LineChartWidget | PieChartWidget | MapChartWidget;
+export type Component =
+  | ReportHeaderComponent
+  | MetricCardComponent
+  | BarChartComponent
+  | LineChartComponent
+  | PieChartComponent
+  | TableComponent
+  | MapChartComponent
+  | RankingCardComponent
+  | TextComponent;
 
-export function isChartWidget(widget: Widget): widget is ChartWidget {
+export type DataComponent = Exclude<Component, ReportHeaderComponent | TextComponent>;
+export type ChartComponent =
+  | BarChartComponent
+  | LineChartComponent
+  | PieChartComponent
+  | MapChartComponent;
+
+export type ComponentAction = WriteFilterAction | NavigateAction;
+
+export interface WriteFilterAction {
+  on: 'click';
+  writeFilter: string;
+  field: FieldBinding;
+}
+
+export interface NavigateAction {
+  on: 'click';
+  navigate: {
+    page: string;
+    carryFilters?: string[];
+    setFilters?: Record<string, FieldBinding>;
+  };
+}
+
+export function isDataComponent(component: Component): component is DataComponent {
+  return component.type !== 'reportHeader' && component.type !== 'text';
+}
+
+export function isChartComponent(component: Component): component is ChartComponent {
   return (
-    widget.type === 'barChart' ||
-    widget.type === 'lineChart' ||
-    widget.type === 'pieChart' ||
-    widget.type === 'mapChart'
+    component.type === 'barChart' ||
+    component.type === 'lineChart' ||
+    component.type === 'pieChart' ||
+    component.type === 'mapChart'
   );
 }
 
+export type ComponentDataMode = DataSourceMode | 'none';
+
+export interface ComponentCapabilities {
+  dataMode: ComponentDataMode;
+  live: boolean;
+  filters: boolean;
+  actions: boolean;
+  remotePagination: boolean;
+}
+
+export interface PageCapabilities {
+  dataMode: DataSourceMode;
+  static: boolean;
+  live: boolean;
+  filters: boolean;
+  actions: boolean;
+  remotePagination: boolean;
+  components: Record<string, ComponentCapabilities>;
+}
+
 /**
- * 文本组件无查询:编排取数与语义校验只面向数据 widget,分发处共用此判别。
- * "数据 widget"是代码层判别,不是领域概念,不入 CONTEXT.md 词汇表。
+ * 能力只由组件实际绑定的数据源推导。mixed 页面中，inline 组件不会因页面上另有
+ * query 数据源而获得筛选、动作或远程分页能力。
  */
-export function isDataWidget(widget: Widget): widget is DataWidget {
-  return widget.type !== 'text';
+export function derivePageCapabilities(page: Page): PageCapabilities {
+  const components: Record<string, ComponentCapabilities> = {};
+  let hasInline = false;
+  let hasQuery = false;
+  let actions = false;
+  let remotePagination = false;
+
+  for (const section of page.sections) {
+    for (const component of section.components) {
+      const capability = deriveComponentCapabilities(page, component);
+      components[component.id] = capability;
+      hasInline ||= capability.dataMode === 'inline' || capability.dataMode === 'mixed';
+      hasQuery ||= capability.dataMode === 'query' || capability.dataMode === 'mixed';
+      actions ||= capability.actions;
+      remotePagination ||= capability.remotePagination;
+    }
+  }
+
+  // 未绑定的数据源仍决定页面数据形态，避免隐藏的 query source 被误判为静态。
+  for (const dataSource of Object.values(page.dataSources)) {
+    hasInline ||= dataSource.source.type === 'inline';
+    hasQuery ||= dataSource.source.type === 'query';
+  }
+
+  const dataMode: DataSourceMode = hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
+  return {
+    dataMode,
+    static: !hasQuery,
+    live: hasQuery,
+    filters: hasQuery,
+    actions,
+    remotePagination,
+    components
+  };
+}
+
+export function deriveComponentCapabilities(
+  page: Page,
+  component: Component
+): ComponentCapabilities {
+  const sourceTypes = new Set(
+    Object.values(component.data ?? {}).flatMap((sourceId) => {
+      const source = page.dataSources[sourceId];
+      return source ? [source.source.type] : [];
+    })
+  );
+  const hasInline = sourceTypes.has('inline');
+  const hasQuery = sourceTypes.has('query');
+  const dataMode: ComponentDataMode =
+    sourceTypes.size === 0 ? 'none' : hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
+  const props = component.props as { actions?: ComponentAction[]; pagination?: { mode: string } };
+  return {
+    dataMode,
+    live: hasQuery,
+    filters: hasQuery,
+    actions: hasQuery && (props.actions?.length ?? 0) > 0,
+    remotePagination: hasQuery && props.pagination?.mode === 'paged'
+  };
 }

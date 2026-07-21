@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "1.0",
+  "id": "inline-report",
+  "meta": {
+    "description": "内联报告契约样例"
+  },
+  "dataSources": {
+    "overview": {
+      "fields": {
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "compact-yi-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "gmv": 866160000000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营简报",
+            "asOf": {
+              "label": "数据截至",
+              "value": "2026-07-21"
+            }
+          }
+        },
+        {
+          "id": "gmv-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "overview"
+          },
+          "props": {
+            "title": "GMV",
+            "rows": [
+              {
+                "label": "当日",
+                "valueField": "gmv"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

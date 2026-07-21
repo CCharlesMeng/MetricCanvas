@@ -3,7 +3,8 @@ import { join, resolve } from 'node:path';
 import { migrateDocument } from './migrate';
 
 /**
- * migrate CLI:把页面目录中落后版本的文档批量升至当前版本,幂等(已是当前版本的跳过)。
+ * migrate CLI:把页面目录中的裸 Page 按 schemaVersion 批量升至当前版本。
+ * 1.0 不再接受或保留 live/snapshot 外层信封；已是当前版本的页面幂等跳过。
  * 升版直接写回文件(2 空格缩进),可评审 diff 即 git diff;控制台输出逐文件摘要。
  * 用法:tsx migrate-cli.ts [页面目录=pages]
  * 退出码:0 完成(含"全部已是当前版本");1 存在无迁移路径的文档;2 页面目录不可用。

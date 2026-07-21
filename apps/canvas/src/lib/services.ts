@@ -8,6 +8,28 @@ export const pageRepository = import.meta.env.VITE_PLATFORM_URL
   ? createPlatformPageRepository(import.meta.env.VITE_PLATFORM_URL)
   : createStaticPageRepository();
 
+function catalogFormatVersion(value: string): CatalogSnapshot['formatVersion'] {
+  if (value !== '1.0') throw new Error(`不支持的元数据快照版本:${value}`);
+  return value;
+}
+
+function catalogValueType(
+  value: string
+): CatalogSnapshot['metrics'][number]['valueType'] {
+  if (value === 'integer' || value === 'decimal' || value === 'percent') return value;
+  throw new Error(`不支持的指标值类型:${value}`);
+}
+
+/** JSON 导入经判别字段收窄后再导出,避免把整份元数据快照直接断言成领域类型。 */
+export const catalogSnapshot = {
+  ...snapshot,
+  formatVersion: catalogFormatVersion(snapshot.formatVersion),
+  metrics: snapshot.metrics.map((metric) => ({
+    ...metric,
+    valueType: catalogValueType(metric.valueType)
+  }))
+} satisfies CatalogSnapshot;
+
 /**
  * 应用壳的依赖注入点。数据网关按环境切换:
  * - 默认 mock(离线造数);
@@ -22,4 +44,4 @@ export const dataGateway =
         // 占位鉴权头:仿真接受;真实值 #3/#11 联调注入
         headers: { 'x-operator-id': 'dev', tenantId: 'dev', appId: 'metriccanvas', cftk: 'dev' }
       })
-    : createMockGateway({ catalog: snapshot as CatalogSnapshot });
+    : createMockGateway({ catalog: catalogSnapshot });

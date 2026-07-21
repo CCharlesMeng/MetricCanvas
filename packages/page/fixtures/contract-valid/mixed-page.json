@@ -1,0 +1,91 @@
+{
+  "schemaVersion": "1.0",
+  "id": "mixed-page",
+  "dataSources": {
+    "fixed-target": {
+      "fields": {
+        "target": {
+          "type": "number",
+          "role": "metric",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "target": 1000000
+          }
+        ]
+      }
+    },
+    "live-sales": {
+      "fields": {
+        "stat-date": {
+          "type": "date",
+          "role": "dimension",
+          "format": "date-month-day"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "format": "compact-yi-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": ["gmv"],
+          "dimensions": ["stat-date"]
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "target-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "fixed-target"
+          },
+          "props": {
+            "rows": [
+              {
+                "label": "目标",
+                "valueField": "target"
+              }
+            ]
+          }
+        },
+        {
+          "id": "sales-trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "live-sales"
+          },
+          "props": {
+            "xField": "stat-date",
+            "series": [
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

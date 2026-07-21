@@ -6,6 +6,29 @@ import { createDataServiceGateway, translateQuery, DataServiceError } from '../s
 
 const SERVICE = 'P001_ADS_T_IOC_SPD_METRIC_ACC_D';
 const AUTH = { 'x-operator-id': 'test-user', tenantId: 't-1', appId: 'metriccanvas', cftk: 'x' };
+const BASE_URL = 'https://data-service.example';
+
+function fakeDataService(
+  respond: (apiQuery: string, callIndex: number) => Array<Record<string, unknown>>
+) {
+  const requests: Array<{ url: string; body: { apiQuery: string; isTest: boolean } }> = [];
+  const fetchImpl = (async (input: unknown, init?: RequestInit) => {
+    const body = JSON.parse(String(init?.body)) as { apiQuery: string; isTest: boolean };
+    requests.push({ url: String(input), body });
+    const rows = respond(body.apiQuery, requests.length - 1);
+    return new Response(
+      JSON.stringify({ retCode: 'CBC.0000', data: { [SERVICE]: rows } }),
+      { status: 200 }
+    );
+  }) as typeof fetch;
+  const gateway = createDataServiceGateway({
+    baseUrl: BASE_URL,
+    serviceCode: SERVICE,
+    fetchImpl,
+    retries: 0
+  });
+  return { gateway, requests };
+}
 
 describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)', () => {
   const cases: Array<{ name: string; query: Parameters<typeof translateQuery>[0]; apiQuery: string }> = [
@@ -91,14 +114,27 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
     });
   }
 
-  it('防注入:筛选值含单引号、列名非标识符、白名单外操作符,一律拒绝', () => {
+  it('自由文本先双写 SQL-like 单引号,再统一编码 GraphQL 字符串', () => {
+    const apiQuery = translateQuery(
+      {
+        metrics: ['gmv'],
+        conditions: [
+          { dimension: 'publisher', operator: 'eq', value: "O'Reilly" },
+          { dimension: 'title', operator: 'eq', value: '"quoted"' },
+          { dimension: 'path', operator: 'eq', value: 'C:\\reports' },
+          { dimension: 'control', operator: 'eq', value: 'line1\nline2\r\tend' }
+        ]
+      },
+      { serviceCode: SERVICE, timeColumn: 'mtime' }
+    );
+
+    expect(apiQuery).toBe(
+      String.raw`{query{${SERVICE} @where(value:"metric_code in ('gmv') and publisher = 'O''Reilly' and title = '\"quoted\"' and path = 'C:\\reports' and control = 'line1\nline2\r\tend'"){metric_code metric_value_sum}}}`
+    );
+  });
+
+  it('防注入:列名非标识符、白名单外操作符与聚合方式仍一律拒绝', () => {
     const base = { serviceCode: SERVICE, timeColumn: 'mtime' };
-    expect(() =>
-      translateQuery(
-        { metrics: ['gmv'], conditions: [{ dimension: 'region', operator: 'eq', value: "华东' or '1'='1" }] },
-        base
-      )
-    ).toThrow('防注入');
     expect(() =>
       translateQuery(
         { metrics: ['gmv'], conditions: [{ dimension: "region'--", operator: 'eq', value: 'x' }] },
@@ -174,6 +210,233 @@ describe('翻译器:生效查询 → apiQuery(映射表驱动,期望值手写)',
         { serviceCode: SERVICE, timeColumn: 'mtime' }
       )
     ).toThrow('单指标');
+  });
+});
+
+describe('适配器多指标宽行策略(fetchImpl 边界测试)', () => {
+  it('增长排行按 change desc limit 5 两阶段取数,完整返回 value/change 并恢复首阶段顺序', async () => {
+    const firstRows = [
+      { product: 'A', metric_code: 'change', metric_value_sum: 50 },
+      { product: 'B', metric_code: 'change', metric_value_sum: 40 },
+      { product: 'C', metric_code: 'change', metric_value_sum: 30 },
+      { product: 'D', metric_code: 'change', metric_value_sum: 20 },
+      { product: 'E', metric_code: 'change', metric_value_sum: 10 }
+    ];
+    const fullRows = [
+      { product: 'C', metric_code: 'value', metric_value_sum: 300 },
+      { product: 'C', metric_code: 'change', metric_value_sum: 30 },
+      { product: 'A', metric_code: 'change', metric_value_sum: 50 },
+      { product: 'A', metric_code: 'value', metric_value_sum: 500 },
+      { product: 'E', metric_code: 'value', metric_value_sum: 100 },
+      { product: 'E', metric_code: 'change', metric_value_sum: 10 },
+      { product: 'B', metric_code: 'value', metric_value_sum: 400 },
+      { product: 'B', metric_code: 'change', metric_value_sum: 40 },
+      { product: 'D', metric_code: 'change', metric_value_sum: 20 },
+      { product: 'D', metric_code: 'value', metric_value_sum: 200 }
+    ];
+    const { gateway, requests } = fakeDataService((_apiQuery, callIndex) =>
+      callIndex === 0 ? firstRows : fullRows
+    );
+
+    const rows = await gateway.fetchData({
+      metrics: ['value', 'change'],
+      dimensions: ['product'],
+      aggregation: 'sum',
+      granularity: 'day',
+      conditions: [{ dimension: 'region', operator: 'eq', value: '华东' }],
+      timeRange: { from: '2026-07-01', to: '2026-07-20' },
+      orderBy: [{ field: 'change', direction: 'desc' }],
+      limit: 5,
+      offset: 0
+    });
+
+    expect(requests.map((request) => request.body.apiQuery)).toEqual([
+      `{query @limit(value:5) @offset(value:0){${SERVICE} @where(value:"metric_code in ('change') and region = '华东' and mtime between '2026-07-01' and '2026-07-20'"){product metric_code metric_value_sum @order(type:"desc",priority:1)}}}`,
+      `{query{${SERVICE} @where(value:"metric_code in ('value','change') and region = '华东' and product in ('A','B','C','D','E') and mtime between '2026-07-01' and '2026-07-20'"){product metric_code metric_value_sum}}}`
+    ]);
+    expect(rows).toEqual([
+      { product: 'A', change: 50, value: 500 },
+      { product: 'B', value: 400, change: 40 },
+      { product: 'C', value: 300, change: 30 },
+      { product: 'D', change: 20, value: 200 },
+      { product: 'E', value: 100, change: 10 }
+    ]);
+  });
+
+  it('两阶段返回的维度键也经过 SQL-like 与 GraphQL 分层编码', async () => {
+    const key = `O'Reilly "East" \\ retail`;
+    const { gateway, requests } = fakeDataService((_apiQuery, callIndex) =>
+      callIndex === 0
+        ? [{ product: key, metric_code: 'change', metric_value_sum: 20 }]
+        : [
+            { product: key, metric_code: 'value', metric_value_sum: 200 },
+            { product: key, metric_code: 'change', metric_value_sum: 20 }
+          ]
+    );
+
+    const rows = await gateway.fetchData({
+      metrics: ['value', 'change'],
+      dimensions: ['product'],
+      conditions: [],
+      orderBy: [{ field: 'change', direction: 'desc' }],
+      limit: 1
+    });
+
+    expect(requests.map((request) => request.body.apiQuery)).toEqual([
+      `{query @limit(value:1){${SERVICE} @where(value:"metric_code in ('change')"){product metric_code metric_value_sum @order(type:"desc",priority:1)}}}`,
+      String.raw`{query{${SERVICE} @where(value:"metric_code in ('value','change') and product in ('O''Reilly \"East\" \\ retail')"){product metric_code metric_value_sum}}}`
+    ]);
+    expect(rows).toEqual([{ product: key, value: 200, change: 20 }]);
+  });
+
+  it('首阶段无维度键时直接返回空数组,不发第二次请求', async () => {
+    const { gateway, requests } = fakeDataService(() => []);
+    await expect(
+      gateway.fetchData({
+        metrics: ['value', 'change'],
+        dimensions: ['product'],
+        conditions: [],
+        limit: 5
+      })
+    ).resolves.toEqual([]);
+    expect(requests).toHaveLength(1);
+    expect(requests[0].body.apiQuery).toBe(
+      `{query @limit(value:5){${SERVICE} @where(value:"metric_code in ('value')"){product metric_code metric_value_sum}}}`
+    );
+  });
+
+  it('无维度多指标查询先完整透视再应用窗口,offset 2 跳过唯一宽行', async () => {
+    const { gateway, requests } = fakeDataService(() => [
+      { metric_code: 'change', metric_value: 0.25 },
+      { metric_code: 'value', metric_value: 120 }
+    ]);
+    const rows = await gateway.fetchData({
+      metrics: ['value', 'change'],
+      aggregation: 'avg',
+      granularity: 'month',
+      conditions: [{ dimension: 'region', operator: 'eq', value: '华东' }],
+      timeRange: { from: '2026-07-01', to: '2026-07-20' },
+      orderBy: [{ field: 'change', direction: 'desc' }],
+      limit: 5,
+      offset: 2
+    });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0].body.apiQuery).toBe(
+      `{query{${SERVICE} @where(value:"metric_code in ('value','change') and region = '华东' and mtime between '2026-07-01' and '2026-07-20'"){metric_code metric_value @function(value:"avg")}}}`
+    );
+    expect(rows).toEqual([]);
+  });
+
+  it('多维度宽行取全量后本地稳定多列排序并应用 offset/limit,与 mock 语义一致', async () => {
+    const rawRows = [
+      { region: '华东', channel: 'channel-2', metric_code: 'value', metric_value_sum: 12 },
+      { region: '华北', channel: 'channel-2', metric_code: 'change', metric_value_sum: 22 },
+      { region: '华南', channel: 'channel-1', metric_code: 'change', metric_value_sum: 31 },
+      { region: '华东', channel: 'channel-1', metric_code: 'change', metric_value_sum: 11 },
+      { region: '华北', channel: 'channel-1', metric_code: 'value', metric_value_sum: 21 },
+      { region: '华南', channel: 'channel-2', metric_code: 'value', metric_value_sum: 32 },
+      { region: '华东', channel: 'channel-2', metric_code: 'change', metric_value_sum: 12 },
+      { region: '华北', channel: 'channel-2', metric_code: 'value', metric_value_sum: 22 },
+      { region: '华南', channel: 'channel-1', metric_code: 'value', metric_value_sum: 31 },
+      { region: '华东', channel: 'channel-1', metric_code: 'value', metric_value_sum: 11 },
+      { region: '华北', channel: 'channel-1', metric_code: 'change', metric_value_sum: 21 },
+      { region: '华南', channel: 'channel-2', metric_code: 'change', metric_value_sum: 32 }
+    ];
+    const { gateway, requests } = fakeDataService(() => rawRows);
+
+    const rows = await gateway.fetchData({
+      metrics: ['value', 'change'],
+      dimensions: ['region', 'channel'],
+      conditions: [],
+      orderBy: [
+        { field: 'region', direction: 'desc' },
+        { field: 'channel', direction: 'asc' }
+      ],
+      limit: 3,
+      offset: 1
+    });
+
+    expect(requests.map((request) => request.body.apiQuery)).toEqual([
+      `{query{${SERVICE} @where(value:"metric_code in ('value','change')"){region channel metric_code metric_value_sum}}}`
+    ]);
+    expect(rows).toEqual([
+      { region: '华南', channel: 'channel-2', value: 32, change: 32 },
+      { region: '华北', channel: 'channel-1', value: 21, change: 21 },
+      { region: '华北', channel: 'channel-2', change: 22, value: 22 }
+    ]);
+  });
+
+  it('orderBy 引用多个指标时取全量后按优先级本地排序', async () => {
+    const { gateway, requests } = fakeDataService(() => [
+      { product: 'A', metric_code: 'value', metric_value_sum: 100 },
+      { product: 'A', metric_code: 'change', metric_value_sum: 10 },
+      { product: 'B', metric_code: 'value', metric_value_sum: 100 },
+      { product: 'B', metric_code: 'change', metric_value_sum: 20 },
+      { product: 'C', metric_code: 'value', metric_value_sum: 90 },
+      { product: 'C', metric_code: 'change', metric_value_sum: 30 }
+    ]);
+
+    const rows = await gateway.fetchData({
+      metrics: ['value', 'change'],
+      dimensions: ['product'],
+      conditions: [],
+      orderBy: [
+        { field: 'value', direction: 'desc' },
+        { field: 'change', direction: 'desc' }
+      ],
+      limit: 2
+    });
+
+    expect(requests.map((request) => request.body.apiQuery)).toEqual([
+      `{query{${SERVICE} @where(value:"metric_code in ('value','change')"){product metric_code metric_value_sum}}}`
+    ]);
+    expect(rows).toEqual([
+      { product: 'B', value: 100, change: 20 },
+      { product: 'A', value: 100, change: 10 }
+    ]);
+  });
+
+  it('宽行策略仍拒绝重复与非法排序字段,不发送请求', async () => {
+    const { gateway, requests } = fakeDataService(() => []);
+    const base = {
+      metrics: ['value', 'change'],
+      dimensions: ['product'],
+      conditions: []
+    };
+
+    await expect(
+      gateway.fetchData({
+        ...base,
+        orderBy: [
+          { field: 'change', direction: 'desc' },
+          { field: 'change', direction: 'asc' }
+        ]
+      })
+    ).rejects.toThrow('排序字段重复:change');
+    await expect(
+      gateway.fetchData({
+        ...base,
+        limit: 5,
+        orderBy: [{ field: 'unknown', direction: 'asc' }]
+      })
+    ).rejects.toThrow('排序字段不在查询的 dimensions/metrics 中:unknown');
+    expect(requests).toHaveLength(0);
+  });
+
+  it('宽行本地策略仍复用分页数值防线,非法窗口不发送请求', async () => {
+    const { gateway, requests } = fakeDataService(() => []);
+
+    await expect(
+      gateway.fetchData({
+        metrics: ['value', 'change'],
+        dimensions: ['region', 'product'],
+        conditions: [],
+        limit: 1.5,
+        offset: -1
+      })
+    ).rejects.toThrow('非负整数');
+    expect(requests).toHaveLength(0);
   });
 });
 

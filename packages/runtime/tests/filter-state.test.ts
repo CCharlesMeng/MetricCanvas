@@ -51,6 +51,25 @@ describe('筛选状态 store:订阅与回写', () => {
     expect(pushes).toHaveLength(1);
   });
 
+  it('write 丢弃非法公历时间范围,不清除已有合法值且不通知', () => {
+    const state = createFilterState(
+      new Map<string, FilterValue>([['f-time', june]])
+    );
+    const { pushes } = collect(state);
+
+    for (const value of [
+      { type: 'timeRange' as const, from: '2026-02-29', to: '2026-03-01' },
+      { type: 'timeRange' as const, from: '2026-07-21', to: '2026-07-20' },
+      { type: 'timeRange' as const, from: '2026-07-20', to: '2026-07-20T18:00' },
+      { type: 'timeRange' as const, from: '2026-07-20T24:00', to: '2026-07-20T24:01' }
+    ]) {
+      expect(() => state.write('f-time', value)).not.toThrow();
+    }
+
+    expect(pushes).toHaveLength(1);
+    expect(pushes[0].get('f-time')).toEqual(june);
+  });
+
   it('退订后不再收到通知', () => {
     const state = createFilterState();
     const { pushes, unsubscribe } = collect(state);
@@ -93,6 +112,20 @@ describe('筛选状态 store:URL 序列化', () => {
       dimension: 'region',
       values: ['华东']
     });
+  });
+
+  it('fromURL 丢弃伪日期、非法时分、混合精度与倒序时间范围', () => {
+    const state = createFilterState();
+    expect(() =>
+      state.fromURL(
+        '?bad-date=t%3A2026-02-29~2026-03-01' +
+          '&bad-time=t%3A2026-07-20T24%3A00~2026-07-20T24%3A01' +
+          '&mixed=t%3A2026-07-20~2026-07-20T18%3A00' +
+          '&reversed=t%3A2026-07-21~2026-07-20'
+      )
+    ).not.toThrow();
+    const { pushes } = collect(state);
+    expect(pushes[0].size).toBe(0);
   });
 
   it('fromURL 以 URL 内容整体替换当前状态并通知订阅者', () => {

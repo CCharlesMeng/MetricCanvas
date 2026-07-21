@@ -6,7 +6,7 @@ export type ErrorType = 'SCHEMA_ERROR' | 'METRIC_GAP';
 
 export interface TypedError {
   type: ErrorType;
-  /** JSON Pointer 定位,如 "/widgets/0/position" */
+  /** JSON Pointer 定位,如 "/sections/0/components/0/layout/span" */
   path: string;
   message: string;
 }

@@ -1,91 +1,92 @@
-import type {
-  DataSnapshot,
-  DataWidget,
-  EffectiveQuery,
-  FilterCondition,
-  OrderByRule
+import {
+  isDataComponent,
+  type DataComponent,
+  type DataSnapshot,
+  type DataSource,
+  type EffectiveQuery,
+  type FilterCondition,
+  type OrderByRule,
+  type Page,
+  type StructuredQuery,
+  type TimeRangeValue,
+  type TimeWindow
 } from '@metriccanvas/page';
 import type { FilterState, FilterValues } from './filter-state';
 import type { DataGateway } from './ports';
 
-/** 页面全部数据 widget 的数据快照,键集恒等于传入的 widget id 集合(文本组件无查询,由壳过滤后不入编排) */
-export type PageSnapshots = ReadonlyMap<string, DataSnapshot>;
+/** 单个组件按命名数据槽分发的数据快照。 */
+export type ComponentSnapshots = ReadonlyMap<string, DataSnapshot>;
 
 /**
- * 兼容 svelte store 契约的结构化类型(零 svelte import):
- * subscribe 立即同步推送当前值,返回退订函数。
+ * 页面数据快照，第一层键是组件 id，第二层键是组件声明的数据槽。
+ * 同一数据源的不同组件绑定各有独立快照，因此表格局部视图不会互相污染。
+ */
+export type PageSnapshots = ReadonlyMap<string, ComponentSnapshots>;
+
+/**
+ * 兼容 svelte store 契约的结构化类型（零 svelte import）：
+ * subscribe 立即同步推送当前值，返回退订函数。
  */
 export interface Subscribable<T> {
   subscribe(run: (value: T) => void): () => void;
 }
 
 /**
- * widget 视图状态(issue #7 视图通道):分页/排序/表头筛选是 widget 局部状态,
- * 不进页面筛选状态;由壳持有并经 setView 整体写入(null 清除,回落声明的默认视图)。
+ * 组件局部视图。分页、排序和表头筛选不进入页面筛选状态。
  */
-export interface WidgetView {
-  /** 每页行数(生效查询的 limit;盲翻探测的 +1 由编排器执行,视图不感知) */
+export interface ComponentView {
   limit?: number;
-  /** 跳过的行数 = 页码 × 每页行数 */
   offset?: number;
-  /** 多列排序,数组序即优先级 */
   orderBy?: OrderByRule[];
-  /** 表头筛选条件:并进生效查询 conditions(排在页面筛选条件之后) */
   conditions?: FilterCondition[];
 }
 
-/** orchestrate 的返回:页面快照流 + per-widget 视图写入口(#7 对 #5 接口的增量扩展) */
 export interface PageSnapshotStream extends Subscribable<PageSnapshots> {
   /**
-   * 写入 widget 视图:只重查该 widget,沿用 loading→终态时间线、竞态丢弃与
-   * 会话缓存语义(缓存 key 含视图)。未知 widget id 静默忽略,永不 throw。
-   * 冷流期(无订阅者)只记录视图,首个订阅者到达后的首查即按视图合成。
+   * 更新组件主数据槽的局部视图。只有绑定 query 数据源的组件会重查；
+   * 未知组件、无数据组件及 inline 组件均静默忽略。
    */
-  setView(widgetId: string, view: WidgetView | null): void;
+  setView(componentId: string, view: ComponentView | null): void;
 }
 
-/** 表格缺省每页行数(schema 对 pageSize 的文档口径,唯一实现处;壳计算 offset 时复用) */
 export const DEFAULT_TABLE_PAGE_SIZE = 20;
 
-/** 声明的默认视图:表格 widget 首查即分页(首页 pageSize 行),其余 widget 无视图 */
-function defaultView(widget: DataWidget): WidgetView {
-  if (widget.type === 'table') {
-    return { limit: widget.pageSize ?? DEFAULT_TABLE_PAGE_SIZE, offset: 0 };
-  }
-  return {};
+interface DataBinding {
+  key: string;
+  component: DataComponent;
+  slot: string;
+  dataSource: DataSource;
+}
+
+interface QueryBinding extends DataBinding {
+  dataSource: DataSource & { source: { type: 'query'; query: StructuredQuery } };
 }
 
 /**
- * 查询编排器:页面唯一的有状态调度台。
- * 生效查询合成(结构化查询 × 订阅筛选器当前值)→ 同轮去重 → 经数据网关取数 →
- * 包装数据快照分发;筛选变更只重查订阅了该筛选器的 widget(差量重查)。
+ * 页面数据编排器：直接消费 Page，并统一执行 inline/query/mixed 数据源。
  *
- * 返回冷流,不变式(issue #5 定稿):
- * 1. orchestrate 本身零副作用,首个订阅者到达才取数;
- * 2. subscribe 立即同步收到含全部 widget id 的 Map(初值 loading);
- * 3. 每 widget 时间线 loading → ready|empty|error;未受筛选变更影响的快照引用不变;
- * 4. 只有该 widget 最新生效查询的结果能落成快照,过期在途结果一律丢弃;
- * 5. 最后一个订阅者退订后在途查询全部作废、永不再回调(取消=退订);
- * 6. 网关异常只化为 error 快照,subscribe 永不 throw;每次变更推送新 Map 实例。
- *
- * 视图通道(#7 增量扩展,不变式不回退):返回对象增设 setView,
- * 分页/排序/表头筛选经视图状态进入生效查询合成,视图变更只重查该 widget。
+ * - inline 数据槽在首个同步快照中直接进入 ready/empty；
+ * - query 数据槽保持 loading → ready|empty|error；
+ * - 查询按生效查询去重、缓存并限制并发，筛选变更只重查订阅的数据槽；
+ * - 只有每个组件数据槽的最新结果可以落地，最后一个订阅者退订即作废会话；
+ * - setView 只改变目标组件主数据槽，同源组件之间不共享视图状态。
  */
 export function orchestrate(
-  widgets: DataWidget[],
+  page: Page,
   gateway: DataGateway,
   filters?: FilterState
 ): PageSnapshotStream {
+  const bindings = collectBindings(page);
+  const queryBindings = bindings.filter(isQueryBinding);
+  const componentIds = new Set(bindings.map((binding) => binding.component.id));
   const subscribers = new Set<(value: PageSnapshots) => void>();
+  const views = new Map<string, ComponentView>();
   let session: Session | null = null;
-  // 视图状态归属流本身而非会话:冷流期即可写入,退订重订后视图不丢
-  const views = new Map<string, WidgetView>();
 
   return {
     subscribe(run) {
       subscribers.add(run);
-      // 冷流:首个订阅者到达才启动执行;中途加入的订阅者共享同一次执行
-      session ??= startSession(widgets, gateway, filters, views, (snapshots) => {
+      session ??= startSession(bindings, queryBindings, gateway, filters, views, (snapshots) => {
         for (const subscriber of subscribers) notify(subscriber, snapshots);
       });
       notify(run, session.current());
@@ -98,57 +99,104 @@ export function orchestrate(
       };
     },
 
-    setView(widgetId, view) {
-      if (!widgets.some((widget) => widget.id === widgetId)) return;
-      if (view === null) views.delete(widgetId);
-      else views.set(widgetId, view);
-      // 冷流期只记录;会话在跑才触发该 widget 重查(时间线/竞态/缓存语义同筛选变更)
-      session?.refetchWidget(widgetId);
+    setView(componentId, view) {
+      if (!componentIds.has(componentId)) return;
+      const main = queryBindings.find(
+        (binding) => binding.component.id === componentId && binding.slot === 'main'
+      );
+      if (!main) return;
+      if (view === null) views.delete(componentId);
+      else views.set(componentId, view);
+      session?.refetchBinding(main.key);
     }
   };
 }
 
 interface Session {
   current(): PageSnapshots;
-  refetchWidget(widgetId: string): void;
+  refetchBinding(key: string): void;
   dispose(): void;
 }
 
-/** 兑现"subscribe 永不 throw":单个订阅方的异常不得中断分发与其余订阅方 */
+function collectBindings(page: Page): DataBinding[] {
+  const bindings: DataBinding[] = [];
+  for (const section of page.sections) {
+    for (const component of section.components) {
+      if (!isDataComponent(component)) continue;
+      for (const [slot, sourceId] of Object.entries(component.data)) {
+        const dataSource = page.dataSources[sourceId];
+        // Page 应在进入运行时前完成校验。保留此防线，避免不可信对象导致编排器抛错。
+        if (!dataSource) continue;
+        bindings.push({
+          key: bindingKey(component.id, slot),
+          component,
+          slot,
+          dataSource
+        });
+      }
+    }
+  }
+  return bindings;
+}
+
+function bindingKey(componentId: string, slot: string): string {
+  return `${componentId}\u0000${slot}`;
+}
+
+function isQueryBinding(binding: DataBinding): binding is QueryBinding {
+  return binding.dataSource.source.type === 'query';
+}
+
+function initialSnapshots(bindings: DataBinding[]): Map<string, ComponentSnapshots> {
+  const snapshots = new Map<string, ComponentSnapshots>();
+  for (const binding of bindings) {
+    const slots = new Map(snapshots.get(binding.component.id) ?? []);
+    slots.set(
+      binding.slot,
+      binding.dataSource.source.type === 'inline'
+        ? rowsSnapshot(binding.dataSource.source.rows)
+        : { status: 'loading' }
+    );
+    snapshots.set(binding.component.id, slots);
+  }
+  return snapshots;
+}
+
+function rowsSnapshot(rows: ReadonlyArray<Record<string, unknown>>): DataSnapshot {
+  return rows.length === 0
+    ? { status: 'empty' }
+    : { status: 'ready', rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows'] };
+}
+
 function notify(run: (value: PageSnapshots) => void, snapshots: PageSnapshots): void {
   try {
     run(snapshots);
   } catch (cause) {
-    console.error('数据快照订阅方回调抛出异常(已隔离):', cause);
+    console.error('数据快照订阅方回调抛出异常（已隔离）：', cause);
   }
 }
 
 function startSession(
-  widgets: DataWidget[],
+  bindings: DataBinding[],
+  queryBindings: QueryBinding[],
   gateway: DataGateway,
   filters: FilterState | undefined,
-  views: ReadonlyMap<string, WidgetView>,
+  views: ReadonlyMap<string, ComponentView>,
   push: (snapshots: PageSnapshots) => void
 ): Session {
-  let snapshots = new Map<string, DataSnapshot>(
-    widgets.map((widget) => [widget.id, { status: 'loading' }])
-  );
-  // 每 widget 的查询序号:结果返回时序号已前进即视为过期,一律丢弃
+  let snapshots = initialSnapshots(bindings);
+  const byKey = new Map(queryBindings.map((binding) => [binding.key, binding]));
   const sequences = new Map<string, number>();
+  const cache = new Map<string, DataSnapshot>();
   let disposed = false;
   let values: FilterValues = new Map();
 
-  // 会话内缓存:同一生效查询的成功结果(就绪/空)复用,筛选来回切换不重复取数;
-  // 错误不入缓存——失败该重试。会话即页面生命周期,退订即弃,无失效策略负担
-  const cache = new Map<string, DataSnapshot>();
-
-  // 并发分批:同时在途请求不超过数据服务批量上限 5(PRD「数据服务对接事实」),
-  // 超过的排队,先到先补。名额未满时任务同步启动(订阅即发查的既有时序不变)
   const MAX_IN_FLIGHT = 5;
   let inFlight = 0;
   const waiters: Array<() => void> = [];
+
   function withSlot(task: () => void): void {
-    if (disposed) return; // 退订即取消:不再启动任何新请求(不变式5)
+    if (disposed) return;
     if (inFlight < MAX_IN_FLIGHT) {
       inFlight++;
       task();
@@ -156,63 +204,79 @@ function startSession(
       waiters.push(task);
     }
   }
+
   function release(): void {
-    if (disposed) return; // 会话已作废:排队任务不再链式启动
+    if (disposed) return;
     const next = waiters.shift();
     if (next) next();
     else inFlight--;
   }
 
-  function publish(mutate: (next: Map<string, DataSnapshot>) => void) {
+  function publish(updates: ReadonlyArray<[QueryBinding, DataSnapshot]>): void {
+    if (updates.length === 0) return;
     const next = new Map(snapshots);
-    mutate(next);
+    const changedComponents = new Map<string, Map<string, DataSnapshot>>();
+    for (const [binding, snapshot] of updates) {
+      let slots = changedComponents.get(binding.component.id);
+      if (!slots) {
+        slots = new Map(next.get(binding.component.id) ?? []);
+        changedComponents.set(binding.component.id, slots);
+        next.set(binding.component.id, slots);
+      }
+      slots.set(binding.slot, snapshot);
+    }
     snapshots = next;
     push(snapshots);
   }
 
-  function refetch(targets: DataWidget[], options: { publishLoading: boolean }) {
-    // 初始轮快照本就全为 loading(不变式2 已由首发同步覆盖),不必再推一轮
-    if (options.publishLoading) {
-      publish((next) => {
-        for (const widget of targets) next.set(widget.id, { status: 'loading' });
-      });
+  function refetch(targets: QueryBinding[], publishLoading: boolean): void {
+    if (targets.length === 0 || disposed) return;
+    if (publishLoading) {
+      publish(targets.map((binding) => [binding, { status: 'loading' }]));
     }
-    for (const widget of targets) {
-      sequences.set(widget.id, (sequences.get(widget.id) ?? 0) + 1);
+    for (const binding of targets) {
+      sequences.set(binding.key, (sequences.get(binding.key) ?? 0) + 1);
     }
 
-    // 同轮去重:相同生效查询只发一次网关请求(US24)
-    const groups = new Map<string, { query: EffectiveQuery; members: Array<[string, number]> }>();
-    for (const widget of targets) {
-      const query = composeEffectiveQuery(widget, values, views.get(widget.id) ?? defaultView(widget));
-      const key = JSON.stringify(query);
-      const group = groups.get(key) ?? { query, members: [] };
-      group.members.push([widget.id, sequences.get(widget.id)!]);
+    const groups = new Map<
+      string,
+      {
+        query: EffectiveQuery;
+        blindPagination: boolean;
+        members: Array<[QueryBinding, number]>;
+      }
+    >();
+
+    for (const binding of targets) {
+      const view = viewFor(binding, views);
+      const query = composeEffectiveQuery(binding.dataSource.source.query, values, view);
+      const blindPagination = view.limit !== undefined;
+      const key = JSON.stringify({ query, blindPagination });
+      const group = groups.get(key) ?? { query, blindPagination, members: [] };
+      group.members.push([binding, sequences.get(binding.key)!]);
       groups.set(key, group);
     }
 
-    for (const [key, { query, members }] of groups) {
+    for (const [cacheKey, { query, blindPagination, members }] of groups) {
       const land = (snapshot: DataSnapshot) => {
         if (disposed) return;
-        const landed = members.filter(([id, seq]) => sequences.get(id) === seq);
-        if (landed.length === 0) return;
-        publish((next) => {
-          for (const [id] of landed) next.set(id, snapshot);
-        });
+        const current = members
+          .filter(([binding, sequence]) => sequences.get(binding.key) === sequence)
+          .map(([binding]) => [binding, snapshot] as [QueryBinding, DataSnapshot]);
+        publish(current);
       };
 
-      // 缓存命中同步落定:时间线仍是 loading→ready(publishLoading 在前),
-      // 视觉上会闪一帧骨架——这是不变式3 的保序代价,刻意保留
-      const cached = cache.get(key);
+      const cached = cache.get(cacheKey);
       if (cached) {
         land(cached);
         continue;
       }
+
       withSlot(() => {
-        void execute(query, gateway).then((snapshot) => {
+        void execute(query, gateway, blindPagination).then((snapshot) => {
           release();
           if (snapshot.status === 'ready' || snapshot.status === 'empty') {
-            cache.set(key, snapshot);
+            cache.set(cacheKey, snapshot);
           }
           land(snapshot);
         });
@@ -220,7 +284,6 @@ function startSession(
     }
   }
 
-  // 订阅筛选状态:首次同步推送作为初值捕获,不算变更
   let primed = false;
   const unsubscribeFilters = filters?.subscribe((next) => {
     if (!primed) {
@@ -230,42 +293,62 @@ function startSession(
     }
     const changed = changedFilterIds(values, next);
     values = next;
-    const affected = widgets.filter((widget) =>
-      (widget.query.filters?.subscribe ?? []).some((id) => changed.has(id))
+    const affected = queryBindings.filter((binding) =>
+      (binding.dataSource.source.query.filters?.subscribe ?? []).some((id) => changed.has(id))
     );
-    if (affected.length > 0) refetch(affected, { publishLoading: true });
+    refetch(affected, true);
   });
 
-  refetch(widgets, { publishLoading: false });
+  refetch(queryBindings, false);
 
   return {
     current: () => snapshots,
-    refetchWidget(widgetId) {
-      const widget = widgets.find((candidate) => candidate.id === widgetId);
-      if (widget) refetch([widget], { publishLoading: true });
+    refetchBinding(key) {
+      const binding = byKey.get(key);
+      if (binding) refetch([binding], true);
     },
     dispose() {
       disposed = true;
-      waiters.length = 0; // 排队中的查询一并作废,不得在退订后发出
+      waiters.length = 0;
       unsubscribeFilters?.();
     }
   };
 }
 
-/**
- * 生效查询合成(包内纯函数,暂不导出):
- * 订阅的维度筛选器值进 conditions(按订阅声明顺序),时间范围筛选器值进 timeRange;
- * widget 视图并入:表头筛选条件排在页面筛选之后,分页/排序原样承载。
- */
+function viewFor(
+  binding: QueryBinding,
+  views: ReadonlyMap<string, ComponentView>
+): ComponentView {
+  if (binding.slot !== 'main') return {};
+  return views.get(binding.component.id) ?? defaultView(binding.component);
+}
+
+function defaultView(component: DataComponent): ComponentView {
+  if (component.type === 'table' && component.props.pagination?.mode === 'paged') {
+    return {
+      limit: component.props.pagination.pageSize ?? DEFAULT_TABLE_PAGE_SIZE,
+      offset: 0
+    };
+  }
+  return {};
+}
+
 function composeEffectiveQuery(
-  widget: DataWidget,
+  query: StructuredQuery,
   values: FilterValues,
-  view: WidgetView
+  view: ComponentView
 ): EffectiveQuery {
-  const { metrics, dimensions, aggregation, granularity } = widget.query;
+  const {
+    metrics,
+    dimensions,
+    aggregation,
+    granularity,
+    orderBy: declaredOrderBy,
+    limit: declaredLimit
+  } = query;
   const conditions: FilterCondition[] = [];
-  let timeRange: { from: string; to: string } | undefined;
-  for (const filterId of widget.query.filters?.subscribe ?? []) {
+  let timeRange: TimeRangeValue | undefined;
+  for (const filterId of query.filters?.subscribe ?? []) {
     const value = values.get(filterId);
     if (!value) continue;
     if (value.type === 'dimension') {
@@ -274,41 +357,116 @@ function composeEffectiveQuery(
       timeRange = { from: value.from, to: value.to };
     }
   }
+  if (query.time) {
+    const value = values.get(query.time.filter);
+    timeRange =
+      value?.type === 'timeRange' ? resolveQueryTime(value, query.time.window) : undefined;
+  }
   conditions.push(...(view.conditions ?? []));
+  const limit = view.limit !== undefined ? view.limit : declaredLimit;
+  const orderBy = view.orderBy !== undefined ? view.orderBy : declaredOrderBy;
   return {
     metrics,
     ...(dimensions ? { dimensions } : {}),
-    ...(aggregation ? { aggregation } : {}),
-    ...(granularity ? { granularity } : {}),
+    ...(aggregation !== undefined ? { aggregation } : {}),
+    ...(granularity !== undefined ? { granularity } : {}),
     conditions,
     ...(timeRange ? { timeRange } : {}),
-    ...(view.limit !== undefined ? { limit: view.limit } : {}),
+    ...(limit !== undefined ? { limit } : {}),
     ...(view.offset !== undefined ? { offset: view.offset } : {}),
-    ...(view.orderBy?.length ? { orderBy: view.orderBy } : {})
+    ...(orderBy?.length ? { orderBy } : {})
   };
 }
 
-async function execute(query: EffectiveQuery, gateway: DataGateway): Promise<DataSnapshot> {
+function resolveQueryTime(range: TimeRangeValue, window: TimeWindow): TimeRangeValue {
+  if (window.kind === 'selected') return { from: range.from, to: range.to };
+  if (window.kind === 'point') return { from: range.to, to: range.to };
+  return {
+    from: subtractCalendarUnits(range.to, window.previous, window.unit) ?? range.from,
+    to: range.to
+  };
+}
+
+function subtractCalendarUnits(
+  value: string,
+  previous: number,
+  unit: 'day' | 'week' | 'month'
+): string | undefined {
+  const parsed = parseCalendarValue(value);
+  if (!parsed) return undefined;
+
+  if (unit === 'month') {
+    const target = parsed.year * 12 + parsed.month - 1 - previous;
+    const year = Math.floor(target / 12);
+    const month = target - year * 12 + 1;
+    const day = Math.min(parsed.day, daysInMonth(year, month));
+    return `${formatDate(year, month, day)}${parsed.time}`;
+  }
+
+  const date = new Date(0);
+  date.setUTCHours(0, 0, 0, 0);
+  date.setUTCFullYear(parsed.year, parsed.month - 1, parsed.day);
+  date.setUTCDate(date.getUTCDate() - previous * (unit === 'week' ? 7 : 1));
+  if (Number.isNaN(date.getTime())) return undefined;
+  return `${formatDate(date.getUTCFullYear(), date.getUTCMonth() + 1, date.getUTCDate())}${parsed.time}`;
+}
+
+function parseCalendarValue(
+  value: string
+): { year: number; month: number; day: number; time: string } | undefined {
+  const match = /^(\d{4})-(\d{2})-(\d{2})(T(\d{2}):(\d{2}))?$/.exec(value);
+  if (!match) return undefined;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hour = match[5] === undefined ? undefined : Number(match[5]);
+  const minute = match[6] === undefined ? undefined : Number(match[6]);
+  if (
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > daysInMonth(year, month) ||
+    (hour !== undefined && (hour > 23 || minute === undefined || minute > 59))
+  ) {
+    return undefined;
+  }
+  return { year, month, day, time: match[4] ?? '' };
+}
+
+function daysInMonth(year: number, month: number): number {
+  if (month === 2) {
+    const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+    return leap ? 29 : 28;
+  }
+  return [4, 6, 9, 11].includes(month) ? 30 : 31;
+}
+
+function formatDate(year: number, month: number, day: number): string {
+  return `${String(year).padStart(4, '0')}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+async function execute(
+  query: EffectiveQuery,
+  gateway: DataGateway,
+  blindPagination: boolean
+): Promise<DataSnapshot> {
   try {
-    if (query.limit === undefined) {
+    if (!blindPagination || query.limit === undefined) {
       const rows = await gateway.fetchData(query);
-      return rows.length === 0 ? { status: 'empty' } : { status: 'ready', rows };
+      return rowsSnapshot(rows);
     }
-    // 盲翻探测:数据服务响应不返回总条数(PRD「数据服务对接事实」),
-    // 多取一行——归来行数超过 limit 即存在下一页,展示行裁回 limit。
-    // 放编排器而非适配器:探测是编排语义,mock 与数据服务适配器只需忠实执行 limit,
-    // 且裁剪后的快照(含 hasMore)直接进会话缓存,翻回旧页零额外请求。
     const rows = await gateway.fetchData({ ...query, limit: query.limit + 1 });
     const hasMore = rows.length > query.limit;
     const visible = hasMore ? rows.slice(0, query.limit) : rows;
-    return visible.length === 0 ? { status: 'empty' } : { status: 'ready', rows: visible, hasMore };
+    return visible.length === 0
+      ? { status: 'empty' }
+      : { status: 'ready', rows: visible, hasMore };
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);
     return { status: 'error', error: { message } };
   }
 }
 
-/** 变更的筛选器 id 集合:值改变、新增或被清除的都算 */
 function changedFilterIds(before: FilterValues, after: FilterValues): Set<string> {
   const changed = new Set<string>();
   for (const id of new Set([...before.keys(), ...after.keys()])) {

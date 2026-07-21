@@ -1,4 +1,7 @@
-import type { FilterDeclaration } from '@metriccanvas/page';
+import {
+  validateCalendarTimeRange,
+  type FilterDeclaration
+} from '@metriccanvas/page';
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。
@@ -25,7 +28,7 @@ export type FilterValues = ReadonlyMap<string, FilterValue>;
 
 /**
  * 筛选状态 store:页面级共享的筛选条件集合,联动的唯一总线。
- * 筛选器写入它,widget 声明订阅它,图表点击回写它;组件间不直接连线。
+ * 筛选器写入它,query 页面数据源声明订阅它,图表点击回写它;组件间不直接连线。
  * subscribe 兼容 svelte store 契约(立即同步推送当前值),subscribe/write 永不 throw。
  */
 export interface FilterState {
@@ -58,6 +61,8 @@ export function createFilterState(initial?: FilterValues): FilterState {
 
     write(filterId, value) {
       const next = normalize(value);
+      // 非法时间范围是无效写入,既不落状态也不清除已有合法值。
+      if (next === undefined) return;
       if (sameValue(current.get(filterId), next)) return;
       const map = new Map(current);
       if (next === null) map.delete(filterId);
@@ -94,8 +99,14 @@ function notify(run: (values: FilterValues) => void, values: FilterValues): void
 }
 
 /** 空维度值集合等同不筛选,归一为清除,保持 URL 与状态干净 */
-function normalize(value: FilterValue | null): FilterValue | null {
+function normalize(value: FilterValue | null): FilterValue | null | undefined {
   if (value && value.type === 'dimension' && value.values.length === 0) return null;
+  if (
+    value?.type === 'timeRange' &&
+    validateCalendarTimeRange(value).length > 0
+  ) {
+    return undefined;
+  }
   return value;
 }
 
@@ -151,11 +162,12 @@ function parseValue(raw: string): FilterValue | null {
       const rest = raw.slice(2);
       const tilde = rest.indexOf('~');
       if (tilde <= 0 || tilde === rest.length - 1) return null;
-      return {
+      const value: TimeRangeFilterValue = {
         type: 'timeRange',
         from: decodeURIComponent(rest.slice(0, tilde)),
         to: decodeURIComponent(rest.slice(tilde + 1))
       };
+      return validateCalendarTimeRange(value).length === 0 ? value : null;
     }
   } catch {
     // 畸形百分号序列:按不可识别处理(fromURL 永不 throw)

@@ -1,0 +1,1488 @@
+{
+  "schemaVersion": "1.0",
+  "id": "tokens-report",
+  "meta": {
+    "description": "固定时点 Tokens 运营报告页面资产"
+  },
+  "dataSources": {
+    "tokens-consumption-overview": {
+      "fields": {
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_consumed_wow_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较上周",
+          "format": "percent-2-signed"
+        },
+        "tokens_consumed_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗月环比",
+          "format": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "tokens_consumed": 866160000000,
+            "tokens_consumed_dod_pct": 4.24,
+            "tokens_consumed_wow_pct": -2.52,
+            "tokens_consumed_mtd": 23194860000000,
+            "tokens_consumed_mom_pct": 5.43
+          }
+        ]
+      }
+    },
+    "tokens-flow-overview": {
+      "fields": {
+        "tokens_flow": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow_wow_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水较上周",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水月环比",
+          "format": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "tokens_flow": 1070000,
+            "tokens_flow_dod_pct": 7.75,
+            "tokens_flow_wow_pct": -7.61,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          }
+        ]
+      }
+    },
+    "tokens-consumption-trend": {
+      "fields": {
+        "stat_date": {
+          "type": "date",
+          "role": "dimension",
+          "label": "日期",
+          "format": "date-month-day"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-yi-1"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "stat_date": "2026-06-14",
+            "tokens_consumed": 610420000000
+          },
+          {
+            "stat_date": "2026-06-15",
+            "tokens_consumed": 805200000000
+          },
+          {
+            "stat_date": "2026-06-16",
+            "tokens_consumed": 888580000000
+          },
+          {
+            "stat_date": "2026-06-17",
+            "tokens_consumed": 908550000000
+          },
+          {
+            "stat_date": "2026-06-18",
+            "tokens_consumed": 838340000000
+          },
+          {
+            "stat_date": "2026-06-19",
+            "tokens_consumed": 684530000000
+          },
+          {
+            "stat_date": "2026-06-20",
+            "tokens_consumed": 559330000000
+          },
+          {
+            "stat_date": "2026-06-21",
+            "tokens_consumed": 619670000000
+          },
+          {
+            "stat_date": "2026-06-22",
+            "tokens_consumed": 830960000000
+          },
+          {
+            "stat_date": "2026-06-23",
+            "tokens_consumed": 866160000000
+          }
+        ]
+      }
+    },
+    "tokens-flow-trend": {
+      "fields": {
+        "stat_date": {
+          "type": "date",
+          "role": "dimension",
+          "label": "日期",
+          "format": "date-month-day"
+        },
+        "tokens_flow": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水",
+          "format": "compact-wan-0"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "stat_date": "2026-06-14",
+            "tokens_flow": 710000
+          },
+          {
+            "stat_date": "2026-06-15",
+            "tokens_flow": 980000
+          },
+          {
+            "stat_date": "2026-06-16",
+            "tokens_flow": 1150000
+          },
+          {
+            "stat_date": "2026-06-17",
+            "tokens_flow": 1280000
+          },
+          {
+            "stat_date": "2026-06-18",
+            "tokens_flow": 1050000
+          },
+          {
+            "stat_date": "2026-06-19",
+            "tokens_flow": 750000
+          },
+          {
+            "stat_date": "2026-06-20",
+            "tokens_flow": 610000
+          },
+          {
+            "stat_date": "2026-06-21",
+            "tokens_flow": 630000
+          },
+          {
+            "stat_date": "2026-06-22",
+            "tokens_flow": 990000
+          },
+          {
+            "stat_date": "2026-06-23",
+            "tokens_flow": 1070000
+          }
+        ]
+      }
+    },
+    "region-distribution": {
+      "fields": {
+        "representative_office": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处",
+          "format": "text"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗占比",
+          "format": "percent-1"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_consumed_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗月环比",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水占比",
+          "format": "percent-1"
+        },
+        "tokens_flow_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水月环比",
+          "format": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "representative_office": "北京代表处",
+            "tokens_consumed": 724610000000,
+            "tokens_consumed_share_pct": 83.7,
+            "tokens_consumed_dod_pct": 2.84,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "上海代表处",
+            "tokens_consumed": 50740000000,
+            "tokens_consumed_share_pct": 5.9,
+            "tokens_consumed_dod_pct": 8.87,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "中国总部",
+            "tokens_consumed": 38670000000,
+            "tokens_consumed_share_pct": 4.5,
+            "tokens_consumed_dod_pct": 23.8,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "安徽代表处",
+            "tokens_consumed": 19540000000,
+            "tokens_consumed_share_pct": 2.3,
+            "tokens_consumed_dod_pct": 4.95,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "福建代表处",
+            "tokens_consumed": 13780000000,
+            "tokens_consumed_share_pct": 1.6,
+            "tokens_consumed_dod_pct": 15.3,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "广东代表处",
+            "tokens_consumed": 7420000000,
+            "tokens_consumed_share_pct": 0.9,
+            "tokens_consumed_dod_pct": 6.54,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "浙江代表处",
+            "tokens_consumed": 3580000000,
+            "tokens_consumed_share_pct": 0.4,
+            "tokens_consumed_dod_pct": 6.84,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "湖北代表处",
+            "tokens_consumed": 2190000000,
+            "tokens_consumed_share_pct": 0.3,
+            "tokens_consumed_dod_pct": -0.71,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "湖南代表处",
+            "tokens_consumed": 1470000000,
+            "tokens_consumed_share_pct": 0.2,
+            "tokens_consumed_dod_pct": 10.7,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "representative_office": "重庆代表处",
+            "tokens_consumed": 1100000000,
+            "tokens_consumed_share_pct": 0.1,
+            "tokens_consumed_dod_pct": -5.81,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          }
+        ]
+      }
+    },
+    "model-distribution": {
+      "fields": {
+        "model_service": {
+          "type": "string",
+          "role": "dimension",
+          "label": "模型",
+          "format": "text"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗占比",
+          "format": "percent-1"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_consumed_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗月环比",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水占比",
+          "format": "percent-1"
+        },
+        "tokens_flow_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水月环比",
+          "format": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "model_service": "GLM-5.1",
+            "tokens_consumed": 262350000000,
+            "tokens_consumed_share_pct": 30.3,
+            "tokens_consumed_dod_pct": 19.3,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "DeepSeek-V3",
+            "tokens_consumed": 248020000000,
+            "tokens_consumed_share_pct": 28.6,
+            "tokens_consumed_dod_pct": -8.4,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "DeepSeek-V3.2",
+            "tokens_consumed": 225140000000,
+            "tokens_consumed_share_pct": 26,
+            "tokens_consumed_dod_pct": 8.25,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "GLM-5",
+            "tokens_consumed": 44830000000,
+            "tokens_consumed_share_pct": 5.2,
+            "tokens_consumed_dod_pct": 1.84,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "DeepSeek-R1-0528",
+            "tokens_consumed": 32430000000,
+            "tokens_consumed_share_pct": 3.7,
+            "tokens_consumed_dod_pct": -1.81,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "longcat-flash-chat",
+            "tokens_consumed": 17920000000,
+            "tokens_consumed_share_pct": 2.1,
+            "tokens_consumed_dod_pct": -8.48,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "Kimi-K2.6",
+            "tokens_consumed": 16340000000,
+            "tokens_consumed_share_pct": 1.9,
+            "tokens_consumed_dod_pct": 0.78,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "DeepSeek-V4-Flash",
+            "tokens_consumed": 7190000000,
+            "tokens_consumed_share_pct": 0.8,
+            "tokens_consumed_dod_pct": -2.98,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "GLM-5.2",
+            "tokens_consumed": 6900000000,
+            "tokens_consumed_share_pct": 0.8,
+            "tokens_consumed_dod_pct": 55.3,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "model_service": "Qwen3-32B",
+            "tokens_consumed": 1490000000,
+            "tokens_consumed_share_pct": 0.2,
+            "tokens_consumed_dod_pct": -61.1,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          }
+        ]
+      }
+    },
+    "customer-distribution": {
+      "fields": {
+        "customer_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "format": "text"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗占比",
+          "format": "percent-1"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_consumed_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens消耗量",
+          "format": "compact-yi-1"
+        },
+        "tokens_consumed_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗月环比",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_share_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水占比",
+          "format": "percent-1"
+        },
+        "tokens_flow_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水较昨日",
+          "format": "percent-2-signed"
+        },
+        "tokens_flow_mtd": {
+          "type": "number",
+          "role": "metric",
+          "label": "本月Tokens流水",
+          "format": "compact-wan-0"
+        },
+        "tokens_flow_mom_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens流水月环比",
+          "format": "percent-2-signed"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customer_name": "百度在线网络技术（北京）有限公司",
+            "tokens_consumed": 236680000000,
+            "tokens_consumed_share_pct": 27.3,
+            "tokens_consumed_dod_pct": -7.83,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "北京智谱华章科技股份有限公司",
+            "tokens_consumed": 141450000000,
+            "tokens_consumed_share_pct": 16.3,
+            "tokens_consumed_dod_pct": 58.1,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "北京百度网讯科技有限公司",
+            "tokens_consumed": 134370000000,
+            "tokens_consumed_share_pct": 15.5,
+            "tokens_consumed_dod_pct": 5.55,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "云计算-DMZ服务",
+            "tokens_consumed": 85910000000,
+            "tokens_consumed_share_pct": 9.9,
+            "tokens_consumed_dod_pct": -3.34,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "北京三快在线科技有限公司",
+            "tokens_consumed": 37590000000,
+            "tokens_consumed_share_pct": 4.3,
+            "tokens_consumed_dod_pct": -3.01,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "上海任意门科技有限公司",
+            "tokens_consumed": 24500000000,
+            "tokens_consumed_share_pct": 2.8,
+            "tokens_consumed_dod_pct": 20.6,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "北京中炘科技集团有限公司",
+            "tokens_consumed": 22770000000,
+            "tokens_consumed_share_pct": 2.6,
+            "tokens_consumed_dod_pct": -21.1,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "慧科讯业（北京）网络科技有限公司",
+            "tokens_consumed": 21960000000,
+            "tokens_consumed_share_pct": 2.5,
+            "tokens_consumed_dod_pct": 2.27,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "科大讯飞股份有限公司",
+            "tokens_consumed": 18320000000,
+            "tokens_consumed_share_pct": 2.1,
+            "tokens_consumed_dod_pct": 0.14,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          },
+          {
+            "customer_name": "北京揽月星辰科技有限公司",
+            "tokens_consumed": 16150000000,
+            "tokens_consumed_share_pct": 1.9,
+            "tokens_consumed_dod_pct": 0.22,
+            "tokens_consumed_mtd": null,
+            "tokens_consumed_mom_pct": null,
+            "tokens_flow": null,
+            "tokens_flow_share_pct": null,
+            "tokens_flow_dod_pct": null,
+            "tokens_flow_mtd": null,
+            "tokens_flow_mom_pct": null
+          }
+        ]
+      }
+    },
+    "customer-growth-ranking": {
+      "fields": {
+        "customer_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "format": "text"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-wan-0"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-0"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customer_name": "宁波飞搜科技有限公司",
+            "tokens_consumed": 1790000,
+            "tokens_consumed_dod_pct": 276142
+          },
+          {
+            "customer_name": "中宇联云计算服务（上海）有限公司",
+            "tokens_consumed": 1480000,
+            "tokens_consumed_dod_pct": 72095
+          },
+          {
+            "customer_name": "吕晓东",
+            "tokens_consumed": 150000,
+            "tokens_consumed_dod_pct": 16187
+          },
+          {
+            "customer_name": "温氏食品集团股份有限公司",
+            "tokens_consumed": 6820000,
+            "tokens_consumed_dod_pct": 15324
+          },
+          {
+            "customer_name": "彭立璞",
+            "tokens_consumed": 14500000,
+            "tokens_consumed_dod_pct": 13294
+          }
+        ]
+      }
+    },
+    "customer-decline-ranking": {
+      "fields": {
+        "customer_name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称",
+          "format": "text"
+        },
+        "tokens_consumed": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗量",
+          "format": "compact-wan-0"
+        },
+        "tokens_consumed_dod_pct": {
+          "type": "number",
+          "role": "metric",
+          "label": "Tokens消耗较昨日",
+          "format": "percent-0"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "customer_name": "河北慧日信息技术有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": -100
+          },
+          {
+            "customer_name": "云鼎科技股份有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": -100
+          },
+          {
+            "customer_name": "成都书声科技有限公司",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": -100
+          },
+          {
+            "customer_name": "黄宇城",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": -100
+          },
+          {
+            "customer_name": "张海瑞",
+            "tokens_consumed": 0,
+            "tokens_consumed_dod_pct": -100
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "summary",
+      "title": "数据摘要",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "Tokens运营分析简报",
+            "subtitle": "2026年6月23日中国地区部 Tokens 运营情况",
+            "badge": "报告由云战地助手生成",
+            "asOf": {
+              "label": "数据截至",
+              "value": "2026-06-23"
+            },
+            "tags": [
+              "中国地区部"
+            ]
+          }
+        },
+        {
+          "id": "insight",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "数据摘要",
+            "body": "【Token消耗趋势分析】2026年6月23日中国地区部Token消耗量为8,661.6亿，较昨日增长4.24%，近10天呈现波动上升趋势，从6月14日的6,104.2亿增长至6月23日，增幅达41.9%。6月15-17日连续三天增长，6月19-20日出现回调，6月21-23日再次回升。\n\n【代表处分布分析】北京代表处占据绝对主导地位，当日消耗7,246.1亿，占比83.7%，环比增长2.84%。上海代表处和中国总部分列二三位，分别消耗507.4亿和386.7亿。中国总部增速最快，环比增长23.8%。TOP3代表处合计占比94.1%，集中度较高。\n\n【模型服务驱动分析】GLM-5.1和DeepSeek-V3是两大主力模型，分别消耗2,623.5亿和2,480.2亿，合计占比59.0%。GLM-5.1环比增长19.3%，是当日增长的主要驱动力。DeepSeek-V3.2消耗2,251.4亿，环比增长8.25%。GLM-5.2虽然消耗量仅69.0亿，但环比增长55.3%，增速最快。",
+            "variant": "insight"
+          }
+        }
+      ]
+    },
+    {
+      "id": "tokens-overview",
+      "title": "Tokens消耗概况",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "tokens-consumption-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "tokens-consumption-overview"
+          },
+          "props": {
+            "title": "Token消耗量",
+            "rows": [
+              {
+                "label": "当日",
+                "valueField": "tokens_consumed",
+                "changes": [
+                  {
+                    "label": "较昨日",
+                    "field": "tokens_consumed_dod_pct"
+                  },
+                  {
+                    "label": "较上周",
+                    "field": "tokens_consumed_wow_pct"
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": "tokens_consumed_mtd",
+                "changes": [
+                  {
+                    "label": "月环比",
+                    "field": "tokens_consumed_mom_pct"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tokens-flow-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "tokens-flow-overview"
+          },
+          "props": {
+            "title": "Tokens总流水",
+            "rows": [
+              {
+                "label": "当日",
+                "valueField": "tokens_flow",
+                "changes": [
+                  {
+                    "label": "较昨日",
+                    "field": "tokens_flow_dod_pct"
+                  },
+                  {
+                    "label": "较上周",
+                    "field": "tokens_flow_wow_pct"
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": "tokens_flow_mtd",
+                "changes": [
+                  {
+                    "label": "月环比",
+                    "field": "tokens_flow_mom_pct"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "id": "tokens-consumption-trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "tokens-consumption-trend"
+          },
+          "props": {
+            "title": "近10天Token消耗趋势",
+            "xField": "stat_date",
+            "series": [
+              {
+                "field": "tokens_consumed",
+                "label": "Tokens消耗总量"
+              }
+            ],
+            "smooth": true,
+            "areaGradient": true
+          }
+        },
+        {
+          "id": "tokens-flow-trend-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "tokens-flow-trend"
+          },
+          "props": {
+            "title": "近10天流水趋势",
+            "xField": "stat_date",
+            "series": [
+              {
+                "field": "tokens_flow",
+                "label": "Tokens总流水"
+              }
+            ],
+            "smooth": true,
+            "areaGradient": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "region-distribution",
+      "title": "区域分布",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "region-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-distribution"
+          },
+          "props": {
+            "title": "区域分布分析",
+            "subtitle": "区域消耗分布",
+            "columns": [
+              {
+                "field": "representative_office",
+                "title": "区域",
+                "width": 170,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "region-tokens-consumed",
+                "title": "Tokens消耗",
+                "children": [
+                  {
+                    "field": "tokens_consumed",
+                    "title": "当日",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_consumed_mtd",
+                    "title": "当月",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_mom_pct",
+                    "title": "月环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "region-tokens-flow",
+                "title": "Tokens流水",
+                "children": [
+                  {
+                    "field": "tokens_flow",
+                    "title": "当日",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_flow_mtd",
+                    "title": "当月",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_mom_pct",
+                    "title": "环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "model-distribution",
+      "title": "模型分布",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "model-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "model-distribution"
+          },
+          "props": {
+            "title": "模型分布分析",
+            "subtitle": "模型消耗分布",
+            "columns": [
+              {
+                "field": "model_service",
+                "title": "模型",
+                "width": 180,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "model-tokens-consumed",
+                "title": "Tokens消耗",
+                "children": [
+                  {
+                    "field": "tokens_consumed",
+                    "title": "当日",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_consumed_mtd",
+                    "title": "当月",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_mom_pct",
+                    "title": "月环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "model-tokens-flow",
+                "title": "Tokens流水",
+                "children": [
+                  {
+                    "field": "tokens_flow",
+                    "title": "当日",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_flow_mtd",
+                    "title": "当月",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_mom_pct",
+                    "title": "环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "customer-distribution",
+      "title": "客户分布",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "customer-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "customer-distribution"
+          },
+          "props": {
+            "title": "客户分布分析",
+            "subtitle": "客户消耗分布",
+            "columns": [
+              {
+                "field": "customer_name",
+                "title": "客户名称",
+                "width": 270,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "customer-tokens-consumed",
+                "title": "Tokens消耗",
+                "children": [
+                  {
+                    "field": "tokens_consumed",
+                    "title": "当日",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_consumed_mtd",
+                    "title": "当月",
+                    "width": 120,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_consumed_mom_pct",
+                    "title": "月环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "customer-tokens-flow",
+                "title": "Tokens流水",
+                "children": [
+                  {
+                    "field": "tokens_flow",
+                    "title": "当日",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_share_pct",
+                    "title": "占比",
+                    "width": 90,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_dod_pct",
+                    "title": "较昨日",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  },
+                  {
+                    "field": "tokens_flow_mtd",
+                    "title": "当月",
+                    "width": 110,
+                    "align": "right"
+                  },
+                  {
+                    "field": "tokens_flow_mom_pct",
+                    "title": "环比",
+                    "width": 100,
+                    "align": "right",
+                    "visual": "signed"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "customer-growth-ranking",
+          "type": "rankingCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customer-growth-ranking"
+          },
+          "props": {
+            "title": "TOP增长客户",
+            "nameField": "customer_name",
+            "valueField": "tokens_consumed",
+            "changeField": "tokens_consumed_dod_pct"
+          }
+        },
+        {
+          "id": "customer-decline-ranking",
+          "type": "rankingCard",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customer-decline-ranking"
+          },
+          "props": {
+            "title": "TOP下降客户",
+            "nameField": "customer_name",
+            "valueField": "tokens_consumed",
+            "changeField": "tokens_consumed_dod_pct"
+          }
+        }
+      ]
+    }
+  ]
+}

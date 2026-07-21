@@ -1,34 +1,58 @@
 import { supportedVersions, versionPolicy } from './version';
 
-/**
- * 看板页面文档的 JSON Schema(DSL v1.0)。
- * description 字段同时服务两个消费方:校验错误消息与编辑器悬浮提示(User Story 5)。
- */
+const idPattern = '^[a-z0-9][a-z0-9-]*$';
+const fieldPattern = '^[A-Za-z_][A-Za-z0-9_-]*$';
+const formatPresets = [
+  'text',
+  'number',
+  'number-1',
+  'number-2',
+  'number-grouped',
+  'compact-wan-0',
+  'compact-wan-1',
+  'compact-yi-1',
+  'percent-0',
+  'percent-1',
+  'percent-2',
+  'percent-2-signed',
+  'date',
+  'date-month-day'
+] as const;
+
+const componentId = { type: 'string', pattern: idPattern } as const;
+const componentLayout = { $ref: '#/definitions/componentLayout' } as const;
+const mainData = { $ref: '#/definitions/mainData' } as const;
+const metricData = { $ref: '#/definitions/metricData' } as const;
+const actions = { $ref: '#/definitions/actions' } as const;
+
 export const pageSchema = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   $id: `https://metriccanvas/page/v${versionPolicy.current}`,
   title: '看板页面',
-  description: '平台的聚合根与核心资产,以严格声明式文档形式存在',
   type: 'object',
-  required: ['formatVersion', 'id', 'title', 'layout', 'widgets'],
+  required: ['schemaVersion', 'id', 'dataSources', 'sections'],
   additionalProperties: false,
   properties: {
-    formatVersion: {
+    schemaVersion: {
       type: 'string',
-      // 受支持版本集合以 version.ts 的版本策略为唯一真源(运行时兼容 N/N-1)
       enum: supportedVersions(),
-      description: `文档格式(DSL)大版本;当前支持 ${supportedVersions().join(' / ')},历史文档用 pnpm migrate 升版`
+      description: `页面文档契约版本；当前支持 ${supportedVersions().join(' / ')}`
     },
-    id: {
-      type: 'string',
-      pattern: '^[a-z0-9][a-z0-9-]*$',
-      description: '页面唯一标识,小写字母/数字/连字符;须与页面文件名一致'
+    id: { type: 'string', pattern: idPattern },
+    meta: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        description: { type: 'string' }
+      }
     },
-    title: { type: 'string', minLength: 1, description: '页面标题,显示于页头与看板目录' },
-    description: { type: 'string', description: '页面说明,显示于看板目录' },
+    dataSources: {
+      type: 'object',
+      propertyNames: { pattern: idPattern },
+      additionalProperties: { $ref: '#/definitions/dataSource' }
+    },
     filters: {
       type: 'array',
-      description: '页面级筛选器声明,共同构成筛选状态(联动唯一总线)',
       items: {
         oneOf: [
           { $ref: '#/definitions/dimensionFilter' },
@@ -36,448 +60,634 @@ export const pageSchema = {
         ]
       }
     },
-    layout: {
-      type: 'object',
-      description: '布局声明。一期固定 12 列网格',
-      required: ['type', 'columns'],
-      additionalProperties: false,
-      properties: {
-        type: { const: 'grid' },
-        columns: { const: 12 }
-      }
-    },
-    widgets: {
+    sections: {
       type: 'array',
-      description: '页面组件清单,封闭组件集',
-      items: {
-        oneOf: [
-          { $ref: '#/definitions/metricCardWidget' },
-          { $ref: '#/definitions/barChartWidget' },
-          { $ref: '#/definitions/lineChartWidget' },
-          { $ref: '#/definitions/pieChartWidget' },
-          { $ref: '#/definitions/tableWidget' },
-          { $ref: '#/definitions/mapChartWidget' },
-          { $ref: '#/definitions/textWidget' }
-        ]
-      }
+      minItems: 1,
+      items: { $ref: '#/definitions/section' }
     }
   },
   definitions: {
+    scalar: {
+      type: ['string', 'number', 'boolean', 'null']
+    },
+    field: {
+      type: 'object',
+      required: ['type', 'role'],
+      additionalProperties: false,
+      properties: {
+        type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
+        role: { type: 'string', enum: ['dimension', 'metric'] },
+        label: { type: 'string', minLength: 1 },
+        format: { type: 'string', enum: formatPresets }
+      }
+    },
+    dataSource: {
+      type: 'object',
+      required: ['fields', 'source'],
+      additionalProperties: false,
+      properties: {
+        fields: {
+          type: 'object',
+          minProperties: 1,
+          propertyNames: { pattern: fieldPattern },
+          additionalProperties: { $ref: '#/definitions/field' }
+        },
+        source: {
+          oneOf: [
+            { $ref: '#/definitions/inlineSource' },
+            { $ref: '#/definitions/querySource' }
+          ]
+        }
+      }
+    },
+    inlineSource: {
+      type: 'object',
+      required: ['type', 'rows'],
+      additionalProperties: false,
+      properties: {
+        type: { const: 'inline' },
+        rows: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: { $ref: '#/definitions/scalar' }
+          }
+        }
+      }
+    },
+    querySource: {
+      type: 'object',
+      required: ['type', 'query'],
+      additionalProperties: false,
+      properties: {
+        type: { const: 'query' },
+        query: { $ref: '#/definitions/structuredQuery' }
+      }
+    },
+    orderByRule: {
+      type: 'object',
+      required: ['field', 'direction'],
+      additionalProperties: false,
+      properties: {
+        field: { type: 'string', pattern: fieldPattern },
+        direction: { type: 'string', enum: ['asc', 'desc'] }
+      }
+    },
+    timeWindow: {
+      oneOf: [
+        {
+          type: 'object',
+          required: ['kind'],
+          additionalProperties: false,
+          properties: { kind: { const: 'selected' } }
+        },
+        {
+          type: 'object',
+          required: ['kind', 'anchor'],
+          additionalProperties: false,
+          properties: { kind: { const: 'point' }, anchor: { const: 'to' } }
+        },
+        {
+          type: 'object',
+          required: ['kind', 'anchor', 'previous', 'unit'],
+          additionalProperties: false,
+          properties: {
+            kind: { const: 'lookback' },
+            anchor: { const: 'to' },
+            previous: { type: 'integer', minimum: 0 },
+            unit: { type: 'string', enum: ['day', 'week', 'month'] }
+          }
+        }
+      ]
+    },
+    structuredQuery: {
+      type: 'object',
+      required: ['metrics'],
+      additionalProperties: false,
+      properties: {
+        metrics: {
+          type: 'array',
+          minItems: 1,
+          uniqueItems: true,
+          items: { type: 'string', pattern: fieldPattern }
+        },
+        dimensions: {
+          type: 'array',
+          uniqueItems: true,
+          items: { type: 'string', pattern: fieldPattern }
+        },
+        aggregation: { type: 'string', minLength: 1 },
+        granularity: { type: 'string', minLength: 1 },
+        filters: {
+          type: 'object',
+          required: ['subscribe'],
+          additionalProperties: false,
+          properties: {
+            subscribe: {
+              type: 'array',
+              uniqueItems: true,
+              items: { type: 'string', pattern: idPattern }
+            }
+          }
+        },
+        time: {
+          type: 'object',
+          required: ['filter', 'window'],
+          additionalProperties: false,
+          properties: {
+            filter: { type: 'string', pattern: idPattern },
+            window: { $ref: '#/definitions/timeWindow' }
+          }
+        },
+        orderBy: {
+          type: 'array',
+          items: { $ref: '#/definitions/orderByRule' }
+        },
+        limit: { type: 'integer', minimum: 1 }
+      }
+    },
     dimensionFilter: {
       type: 'object',
-      description: '维度筛选器:约束某个维度的取值集合;候选值由运行时经数据网关查询',
       required: ['id', 'type', 'dimension'],
       additionalProperties: false,
       properties: {
-        id: {
-          type: 'string',
-          pattern: '^[a-z0-9][a-z0-9-]*$',
-          description: '筛选器唯一标识,页面内不可重复(校验器额外检查)'
-        },
-        type: { type: 'string', enum: ['dimension'] },
-        dimension: { type: 'string', description: '约束的维度 code,引用数据服务定义的维度' },
-        label: { type: 'string', description: '筛选器标签,显示于筛选器区' },
-        display: {
-          type: 'string',
-          enum: ['select', 'tabs', 'tree', 'search'],
-          description:
-            "展示形态:下拉多选(默认)| tab 单选 | 树形多选(层级按候选值的 '/' 分隔符约定)| 输入过滤 + 多选"
-        },
-        default: {
-          type: 'array',
-          items: { type: 'string' },
-          description: '初始选中的维度值;缺省为不筛选'
-        }
+        id: { type: 'string', pattern: idPattern },
+        type: { const: 'dimension' },
+        dimension: { type: 'string', pattern: fieldPattern },
+        label: { type: 'string' },
+        display: { type: 'string', enum: ['select', 'tabs', 'tree', 'search'] },
+        default: { type: 'array', items: { type: 'string' } }
       }
     },
     timeRangeFilter: {
       type: 'object',
-      description: '时间范围筛选器:约束查询的时间范围',
       required: ['id', 'type'],
       additionalProperties: false,
       properties: {
-        id: {
-          type: 'string',
-          pattern: '^[a-z0-9][a-z0-9-]*$',
-          description: '筛选器唯一标识,页面内不可重复(校验器额外检查)'
-        },
-        type: { type: 'string', enum: ['timeRange'] },
-        label: { type: 'string', description: '筛选器标签,显示于筛选器区' },
-        precision: {
-          type: 'string',
-          enum: ['date', 'datetime'],
-          description: '时间精度:date=日期(默认)| datetime=日期时间'
-        },
+        id: { type: 'string', pattern: idPattern },
+        type: { const: 'timeRange' },
+        label: { type: 'string' },
+        precision: { type: 'string', enum: ['date', 'datetime'] },
         default: {
-          description: '初始范围:相对预设(按打开时刻解析)或绝对范围;缺省为不筛选',
           oneOf: [
-            {
-              type: 'string',
-              enum: ['today', 'last7d', 'last30d', 'last90d'],
-              description: '相对时间预设'
-            },
+            { type: 'string', enum: ['today', 'last7d', 'last30d', 'last90d'] },
             {
               type: 'object',
               required: ['from', 'to'],
               additionalProperties: false,
               properties: {
-                from: { type: 'string', description: '起点,YYYY-MM-DD 或 YYYY-MM-DDTHH:mm' },
-                to: { type: 'string', description: '终点,YYYY-MM-DD 或 YYYY-MM-DDTHH:mm' }
+                from: { type: 'string' },
+                to: { type: 'string' }
               }
             }
           ]
         }
       }
     },
-    navigateInteraction: {
+    section: {
       type: 'object',
-      description: '跨页下钻交互:点击跳转目标页并经 URL 携带筛选条件;由运行时执行',
-      required: ['on', 'navigate'],
+      required: ['id', 'layout', 'components'],
       additionalProperties: false,
       properties: {
-        on: { type: 'string', enum: ['click'] },
-        navigate: {
+        id: { type: 'string', pattern: idPattern },
+        title: { type: 'string', minLength: 1 },
+        layout: {
           type: 'object',
-          description: '跳转声明:目标页 + 随行筛选条件(物理载体是 URL)',
-          required: ['page'],
+          required: ['type', 'columns'],
           additionalProperties: false,
           properties: {
-            page: {
-              type: 'string',
-              pattern: '^[a-z0-9][a-z0-9-]*$',
-              description: '目标看板页面 id;存在性由 validate CLI 跨文档校验'
-            },
-            carryFilters: {
-              type: 'array',
-              items: { type: 'string' },
-              description: '携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器(校验器额外检查)'
-            },
-            setFilters: {
+            type: { const: 'grid' },
+            columns: { const: 12 }
+          }
+        },
+        components: {
+          type: 'array',
+          minItems: 1,
+          items: {
+            oneOf: [
+              { $ref: '#/definitions/reportHeaderComponent' },
+              { $ref: '#/definitions/metricCardComponent' },
+              { $ref: '#/definitions/barChartComponent' },
+              { $ref: '#/definitions/lineChartComponent' },
+              { $ref: '#/definitions/pieChartComponent' },
+              { $ref: '#/definitions/tableComponent' },
+              { $ref: '#/definitions/mapChartComponent' },
+              { $ref: '#/definitions/rankingCardComponent' },
+              { $ref: '#/definitions/textComponent' }
+            ]
+          }
+        }
+      }
+    },
+    componentLayout: {
+      type: 'object',
+      required: ['span'],
+      additionalProperties: false,
+      properties: {
+        span: { type: 'integer', minimum: 1, maximum: 12 }
+      }
+    },
+    mainData: {
+      type: 'object',
+      required: ['main'],
+      additionalProperties: false,
+      properties: {
+        main: { type: 'string', pattern: idPattern }
+      }
+    },
+    metricData: {
+      type: 'object',
+      required: ['main'],
+      additionalProperties: false,
+      properties: {
+        main: { type: 'string', pattern: idPattern },
+        compare: { type: 'string', pattern: idPattern },
+        target: { type: 'string', pattern: idPattern }
+      }
+    },
+    fieldBinding: {
+      oneOf: [
+        { type: 'string', pattern: fieldPattern },
+        {
+          type: 'object',
+          required: ['data', 'field'],
+          additionalProperties: false,
+          properties: {
+            data: { type: 'string', pattern: idPattern },
+            field: { type: 'string', pattern: fieldPattern }
+          }
+        }
+      ]
+    },
+    componentAction: {
+      oneOf: [
+        {
+          type: 'object',
+          required: ['on', 'writeFilter', 'field'],
+          additionalProperties: false,
+          properties: {
+            on: { const: 'click' },
+            writeFilter: { type: 'string', pattern: idPattern },
+            field: { $ref: '#/definitions/fieldBinding' }
+          }
+        },
+        {
+          type: 'object',
+          required: ['on', 'navigate'],
+          additionalProperties: false,
+          properties: {
+            on: { const: 'click' },
+            navigate: {
               type: 'object',
-              description: '用点击上下文写入目标页筛选器:{ 目标筛选器 id: "$dimension.<code>" }',
-              additionalProperties: {
-                type: 'string',
-                pattern: '^\\$dimension\\.[A-Za-z0-9_]+$',
-                description: '取值占位 $dimension.<code>,运行时从点击上下文取该维度的值'
+              required: ['page'],
+              additionalProperties: false,
+              properties: {
+                page: { type: 'string', pattern: idPattern },
+                carryFilters: {
+                  type: 'array',
+                  uniqueItems: true,
+                  items: { type: 'string', pattern: idPattern }
+                },
+                setFilters: {
+                  type: 'object',
+                  additionalProperties: { $ref: '#/definitions/fieldBinding' }
+                }
               }
             }
           }
         }
-      }
+      ]
     },
-    writeFilterInteraction: {
-      type: 'object',
-      description: '页内下钻交互:点击回写筛选状态,联动其它订阅 widget;由运行时执行',
-      required: ['on', 'writeFilter', 'value'],
-      additionalProperties: false,
-      properties: {
-        on: { type: 'string', enum: ['click'] },
-        writeFilter: {
-          type: 'string',
-          description: '回写目标筛选器 id,须为页面声明的 dimension 型筛选器(校验器额外检查)'
-        },
-        value: {
-          type: 'string',
-          pattern: '^\\$dimension\\.[A-Za-z0-9_]+$',
-          description: '取值占位 $dimension.<code>,运行时从点击上下文取该维度的值'
-        }
-      }
-    },
-    position: {
-      type: 'object',
-      description: '组件在 12 列网格中的位置与尺寸;x+w 不得超过 12(校验器额外检查)',
-      required: ['x', 'y', 'w', 'h'],
-      additionalProperties: false,
-      properties: {
-        x: { type: 'integer', minimum: 0, maximum: 11, description: '起始列(0 起)' },
-        y: { type: 'integer', minimum: 0, description: '起始行(0 起)' },
-        w: { type: 'integer', minimum: 1, maximum: 12, description: '跨列数' },
-        h: { type: 'integer', minimum: 1, description: '跨行数' }
-      }
-    },
-    structuredQuery: {
-      type: 'object',
-      description: '结构化查询:指标+维度+筛选+粒度,不出现查询语句字符串',
-      required: ['metrics'],
-      additionalProperties: false,
-      properties: {
-        metrics: {
-          type: 'array',
-          items: { type: 'string' },
-          minItems: 1,
-          description: '指标 code 列表,引用数据服务定义的指标'
-        },
-        dimensions: {
-          type: 'array',
-          items: { type: 'string' },
-          description: '维度 code 列表,引用数据服务定义的维度'
-        },
-        aggregation: {
-          type: 'string',
-          description: '聚合方式(如 sum/avg/count),作用于全部指标;合法性依元数据快照按指标校验'
-        },
-        granularity: {
-          type: 'string',
-          description: '时间粒度;映射到数据服务预定义的粒度字段(服务定义时固定)'
-        },
-        filters: {
-          type: 'object',
-          description: '筛选订阅:声明本查询订阅哪些页面筛选器',
-          required: ['subscribe'],
-          additionalProperties: false,
-          properties: {
-            subscribe: {
-              type: 'array',
-              items: { type: 'string' },
-              description: '订阅的筛选器 id 列表'
-            }
-          }
-        }
-      }
-    },
-    metricCardWidget: {
-      type: 'object',
-      description: '指标卡:展示单一指标数值',
-      required: ['id', 'type', 'position', 'query'],
-      additionalProperties: false,
-      properties: {
-        id: {
-          type: 'string',
-          pattern: '^[a-z0-9][a-z0-9-]*$',
-          description: '组件唯一标识,页面内不可重复(校验器额外检查)'
-        },
-        type: { type: 'string', enum: ['metricCard'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        display: {
-          type: 'object',
-          description: '展示配置(字段范围来自《组件分析.md》§2.1)',
-          additionalProperties: false,
-          properties: {
-            unit: { type: 'string', description: '后缀单位,如 次/万/%' },
-            prefix: { type: 'string', description: '前缀,如 ¥/$' },
-            thousandsSeparator: { type: 'boolean', description: '数值千分位格式化' }
-          }
-        }
-      }
-    },
-    interactions: {
+    actions: {
       type: 'array',
-      description: '交互声明清单:页内下钻(writeFilter)与跨页下钻(navigate)',
-      items: {
-        oneOf: [
-          { $ref: '#/definitions/writeFilterInteraction' },
-          { $ref: '#/definitions/navigateInteraction' }
-        ]
-      }
+      minItems: 1,
+      items: { $ref: '#/definitions/componentAction' }
     },
-    widgetId: {
-      type: 'string',
-      pattern: '^[a-z0-9][a-z0-9-]*$',
-      description: '组件唯一标识,页面内不可重复(校验器额外检查)'
-    },
-    barChartWidget: {
+    reportHeaderComponent: {
       type: 'object',
-      description: '柱状图:按维度展示指标分布;点击柱条可经 interactions 下钻',
-      required: ['id', 'type', 'position', 'query'],
+      required: ['id', 'type', 'layout', 'props'],
       additionalProperties: false,
       properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['barChart'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        display: {
+        id: componentId,
+        type: { const: 'reportHeader' },
+        layout: componentLayout,
+        props: {
           type: 'object',
-          description: '柱状图展示配置(《组件分析.md》§2 定死的配置面)',
+          required: ['title'],
           additionalProperties: false,
           properties: {
-            stacked: { type: 'boolean', description: '多指标堆叠' },
-            rounded: { type: 'boolean', description: '圆角柱' },
-            horizontal: { type: 'boolean', description: '横向条形' },
-            dualAxis: { type: 'boolean', description: '双轴:第二个及之后的指标走右轴' }
-          }
-        },
-        interactions: { $ref: '#/definitions/interactions' }
-      }
-    },
-    lineChartWidget: {
-      type: 'object',
-      description: '折线图:按维度(通常为时间)展示指标趋势',
-      required: ['id', 'type', 'position', 'query'],
-      additionalProperties: false,
-      properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['lineChart'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        display: {
-          type: 'object',
-          description: '折线图展示配置(《组件分析.md》§2 定死的配置面)',
-          additionalProperties: false,
-          properties: {
-            smooth: { type: 'boolean', description: '平滑曲线' },
-            areaGradient: { type: 'boolean', description: '面积渐变' },
-            stacked: { type: 'boolean', description: '多指标堆叠' },
-            dualAxis: { type: 'boolean', description: '双轴:第二个及之后的指标走右轴' }
-          }
-        },
-        interactions: { $ref: '#/definitions/interactions' }
-      }
-    },
-    pieChartWidget: {
-      type: 'object',
-      description: '饼图:单指标按第一个维度切分占比',
-      required: ['id', 'type', 'position', 'query'],
-      additionalProperties: false,
-      properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['pieChart'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        display: {
-          type: 'object',
-          description: '饼图展示配置(《组件分析.md》§2 定死的配置面)',
-          additionalProperties: false,
-          properties: {
-            ring: {
-              type: 'string',
-              pattern: '^\\d{1,2}%$',
-              description: "环形内半径百分比(如 '55%');缺省实心饼"
+            title: { type: 'string', minLength: 1 },
+            subtitle: { type: 'string' },
+            badge: { type: 'string' },
+            asOf: {
+              type: 'object',
+              required: ['label', 'value'],
+              additionalProperties: false,
+              properties: {
+                label: { type: 'string', minLength: 1 },
+                value: { type: 'string', minLength: 1 }
+              }
             },
-            labelLine: { type: 'boolean', description: '引导线开关,缺省开' }
+            tags: { type: 'array', items: { type: 'string', minLength: 1 } }
           }
-        },
-        interactions: { $ref: '#/definitions/interactions' }
+        }
+      }
+    },
+    metricCardComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'data', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'metricCard' },
+        layout: componentLayout,
+        data: metricData,
+        props: {
+          type: 'object',
+          required: ['rows'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            rows: {
+              type: 'array',
+              minItems: 1,
+              items: {
+                type: 'object',
+                required: ['label', 'valueField'],
+                additionalProperties: false,
+                properties: {
+                  label: { type: 'string', minLength: 1 },
+                  valueField: { $ref: '#/definitions/fieldBinding' },
+                  changes: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      required: ['label', 'field'],
+                      additionalProperties: false,
+                      properties: {
+                        label: { type: 'string', minLength: 1 },
+                        field: { $ref: '#/definitions/fieldBinding' }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            actions
+          }
+        }
+      }
+    },
+    chartSeries: {
+      type: 'object',
+      required: ['field'],
+      additionalProperties: false,
+      properties: {
+        field: { $ref: '#/definitions/fieldBinding' },
+        label: { type: 'string' }
+      }
+    },
+    barChartComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'data', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'barChart' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
+          type: 'object',
+          required: ['categoryField', 'series'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            categoryField: { $ref: '#/definitions/fieldBinding' },
+            series: {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/definitions/chartSeries' }
+            },
+            stacked: { type: 'boolean' },
+            rounded: { type: 'boolean' },
+            horizontal: { type: 'boolean' },
+            dualAxis: { type: 'boolean' },
+            actions
+          }
+        }
+      }
+    },
+    lineChartComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'data', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'lineChart' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
+          type: 'object',
+          required: ['xField', 'series'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            xField: { $ref: '#/definitions/fieldBinding' },
+            series: {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/definitions/chartSeries' }
+            },
+            smooth: { type: 'boolean' },
+            areaGradient: { type: 'boolean' },
+            stacked: { type: 'boolean' },
+            dualAxis: { type: 'boolean' },
+            showPointLabels: { type: 'boolean' },
+            hideYAxis: { type: 'boolean' },
+            actions
+          }
+        }
+      }
+    },
+    pieChartComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'data', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'pieChart' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
+          type: 'object',
+          required: ['categoryField', 'valueField'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            categoryField: { $ref: '#/definitions/fieldBinding' },
+            valueField: { $ref: '#/definitions/fieldBinding' },
+            ring: { type: 'string', pattern: '^\\d{1,2}%$' },
+            labelLine: { type: 'boolean' },
+            actions
+          }
+        }
       }
     },
     tableColumn: {
       type: 'object',
-      description: '表格列定义:field 引用查询的维度或指标(校验器额外检查),展示与交互能力显式建模',
       required: ['field'],
       additionalProperties: false,
       properties: {
-        field: {
-          type: 'string',
-          minLength: 1,
-          description: '数据快照中的行字段,须为本组件查询的维度或指标 code(校验器额外检查)'
-        },
-        title: { type: 'string', description: '列头文案,缺省显示 field' },
-        width: { type: 'integer', minimum: 1, description: '列宽(px);缺省按内容自适应' },
-        fixed: {
-          type: 'string',
-          enum: ['left', 'right'],
-          description: '固定列:横向滚动时钉在左/右侧'
-        },
-        sortable: { type: 'boolean', description: '可排序列:排序经运行时映射 @order(多列优先级)' },
+        kind: { const: 'field' },
+        field: { $ref: '#/definitions/fieldBinding' },
+        title: { type: 'string' },
+        width: { type: 'integer', minimum: 1 },
+        fixed: { type: 'string', enum: ['left', 'right'] },
+        sortable: { type: 'boolean' },
         filterable: {
           type: 'object',
-          description: '表头筛选(widget 局部视图状态,不进页面筛选状态);列须为查询维度(校验器额外检查)',
           required: ['mode'],
           additionalProperties: false,
-          properties: {
-            mode: {
-              type: 'string',
-              enum: ['select', 'dateRange'],
-              description: '筛选模式:select=下拉多选(候选项经数据网关实时查询)| dateRange=日期范围'
-            }
-          }
-        }
+          properties: { mode: { type: 'string', enum: ['select', 'dateRange'] } }
+        },
+        align: { type: 'string', enum: ['left', 'right'] },
+        visual: { type: 'string', enum: ['plain', 'rateBar', 'signed'] }
       }
     },
-    tableWidget: {
+    tableColumnGroup: {
       type: 'object',
-      description: '表格:按列定义展示明细行;分页为盲翻设计(数据服务响应不返回总条数,不显示总页数)',
-      required: ['id', 'type', 'position', 'query', 'columns'],
+      required: ['kind', 'id', 'title', 'children'],
       additionalProperties: false,
       properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['table'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        columns: {
+        kind: { const: 'group' },
+        id: { type: 'string', pattern: idPattern },
+        title: { type: 'string', minLength: 1 },
+        children: {
           type: 'array',
           minItems: 1,
-          items: { $ref: '#/definitions/tableColumn' },
-          description: '列定义清单,列序即展示序;field 页内不可重复(校验器额外检查)'
-        },
-        pageSize: {
-          type: 'integer',
-          minimum: 1,
-          description: '每页行数,缺省 20;分页经运行时映射 @limit/@offset'
+          items: { $ref: '#/definitions/tableColumnNode' }
         }
       }
     },
-    mapChartWidget: {
+    tableColumnNode: {
+      oneOf: [
+        { $ref: '#/definitions/tableColumn' },
+        { $ref: '#/definitions/tableColumnGroup' }
+      ]
+    },
+    tableComponent: {
       type: 'object',
-      description: '地图:单指标按第一个维度的值给区域着色(visualMap),可叠加散点;点击区域可经 interactions 下钻',
-      required: ['id', 'type', 'position', 'query', 'display'],
+      required: ['id', 'type', 'layout', 'data', 'props'],
       additionalProperties: false,
       properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['mapChart'] },
-        title: { type: 'string', description: '组件标题,显示于卡片头部' },
-        position: { $ref: '#/definitions/position' },
-        query: { $ref: '#/definitions/structuredQuery' },
-        display: {
+        id: componentId,
+        type: { const: 'table' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
           type: 'object',
-          description: '地图展示配置;底图为必选项',
-          required: ['map'],
+          required: ['columns'],
           additionalProperties: false,
           properties: {
-            map: {
-              type: 'string',
-              enum: ['china', 'world'],
-              description: '底图:china=中国省级 | world=世界国家(geojson 静态资产随组件入库)'
+            title: { type: 'string' },
+            subtitle: { type: 'string' },
+            columns: {
+              type: 'array',
+              minItems: 1,
+              items: { $ref: '#/definitions/tableColumnNode' }
             },
-            scatter: {
-              type: 'string',
-              enum: ['point', 'effect'],
-              description: '散点叠加:point=普通散点 | effect=涟漪散点;缺省不叠加,坐标取底图资产的区域中心点'
-            },
-            nameMap: {
+            pagination: {
               type: 'object',
-              description: '维度值 → 底图区域名的声明式映射(纯数据映射,非表达式);未列出的值按原名匹配',
-              additionalProperties: { type: 'string' }
-            }
+              required: ['mode'],
+              additionalProperties: false,
+              properties: {
+                mode: { type: 'string', enum: ['none', 'paged'] },
+                pageSize: { type: 'integer', minimum: 1 }
+              }
+            },
+            actions
           }
-        },
-        interactions: { $ref: '#/definitions/interactions' }
+        }
       }
     },
-    textWidget: {
+    mapChartComponent: {
       type: 'object',
-      description: '文本:标题/说明静态文案 + 带参跳转链接;无查询,不产生数据快照',
-      required: ['id', 'type', 'position'],
+      required: ['id', 'type', 'layout', 'data', 'props'],
       additionalProperties: false,
       properties: {
-        id: { $ref: '#/definitions/widgetId' },
-        type: { type: 'string', enum: ['text'] },
-        position: { $ref: '#/definitions/position' },
-        heading: { type: 'string', description: '标题文案' },
-        body: { type: 'string', description: '说明文案(静态纯文本,不允许表达式,ADR-0003)' },
-        links: {
-          type: 'array',
-          description: '带参跳转链接:形态与 navigate 声明对齐,链接参数经同一 URL 序列化机制携带筛选器当前值',
-          items: {
-            type: 'object',
-            required: ['label', 'page'],
-            additionalProperties: false,
-            properties: {
-              label: { type: 'string', minLength: 1, description: '链接文案' },
-              page: {
-                type: 'string',
-                pattern: '^[a-z0-9][a-z0-9-]*$',
-                description: '目标看板页面 id;存在性由 validate CLI 跨文档校验'
-              },
-              carryFilters: {
-                type: 'array',
-                items: { type: 'string' },
-                description: '携带的本页筛选器 id 列表,取其当前值写入目标页同名筛选器(校验器额外检查)'
+        id: componentId,
+        type: { const: 'mapChart' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
+          type: 'object',
+          required: ['nameField', 'valueField', 'map'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            nameField: { $ref: '#/definitions/fieldBinding' },
+            valueField: { $ref: '#/definitions/fieldBinding' },
+            map: { type: 'string', enum: ['china', 'world'] },
+            scatter: { type: 'string', enum: ['point', 'effect'] },
+            nameMap: { type: 'object', additionalProperties: { type: 'string' } },
+            actions
+          }
+        }
+      }
+    },
+    rankingCardComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'data', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'rankingCard' },
+        layout: componentLayout,
+        data: mainData,
+        props: {
+          type: 'object',
+          required: ['nameField', 'valueField'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            nameField: { $ref: '#/definitions/fieldBinding' },
+            valueField: { $ref: '#/definitions/fieldBinding' },
+            changeField: { $ref: '#/definitions/fieldBinding' },
+            actions
+          }
+        }
+      }
+    },
+    textComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'text' },
+        layout: componentLayout,
+        props: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            heading: { type: 'string' },
+            body: { type: 'string' },
+            variant: { type: 'string', enum: ['plain', 'insight'] },
+            links: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['label', 'page'],
+                additionalProperties: false,
+                properties: {
+                  label: { type: 'string', minLength: 1 },
+                  page: { type: 'string', pattern: idPattern },
+                  carryFilters: {
+                    type: 'array',
+                    uniqueItems: true,
+                    items: { type: 'string', pattern: idPattern }
+                  }
+                }
               }
             }
           }

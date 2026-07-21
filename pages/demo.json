@@ -1,98 +1,376 @@
 {
-  "formatVersion": "1.0",
+  "schemaVersion": "1.0",
   "id": "demo",
-  "title": "演示看板(筛选联动)",
-  "description": "筛选联动演示:筛选器、页内下钻、跨页下钻(跳销售明细)、URL 可分享",
-  "filters": [
-    { "id": "f-time", "type": "timeRange", "label": "时间范围", "default": "last30d" },
-    { "id": "f-region", "type": "dimension", "dimension": "region", "label": "区域", "display": "select" },
-    { "id": "f-channel", "type": "dimension", "dimension": "channel", "label": "渠道", "display": "tabs" }
-  ],
-  "layout": { "type": "grid", "columns": 12 },
-  "widgets": [
-    {
-      "id": "w-gmv",
-      "type": "metricCard",
-      "title": "本月 GMV",
-      "position": { "x": 0, "y": 0, "w": 3, "h": 2 },
-      "query": {
-        "metrics": ["gmv"],
-        "filters": { "subscribe": ["f-time", "f-region", "f-channel"] }
+  "meta": {
+    "description": "筛选联动演示:筛选器、页内下钻、跨页下钻(跳销售明细)、URL 可分享"
+  },
+  "dataSources": {
+    "gmv": {
+      "fields": {
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
       },
-      "display": { "prefix": "¥", "thousandsSeparator": true }
-    },
-    {
-      "id": "w-order-count",
-      "type": "metricCard",
-      "title": "订单数(不随区域/渠道筛选)",
-      "position": { "x": 3, "y": 0, "w": 3, "h": 2 },
-      "query": {
-        "metrics": ["order-count"],
-        "filters": { "subscribe": ["f-time"] }
-      },
-      "display": { "unit": "单", "thousandsSeparator": true }
-    },
-    {
-      "id": "w-by-region",
-      "type": "barChart",
-      "title": "GMV 按区域(点击柱条下钻)",
-      "position": { "x": 0, "y": 2, "w": 6, "h": 4 },
-      "query": {
-        "metrics": ["gmv"],
-        "dimensions": ["region"],
-        "filters": { "subscribe": ["f-time", "f-channel"] }
-      },
-      "interactions": [
-        { "on": "click", "writeFilter": "f-region", "value": "$dimension.region" }
-      ]
-    },
-    {
-      "id": "w-by-channel",
-      "type": "barChart",
-      "title": "GMV 按渠道(点击柱条跳销售明细)",
-      "position": { "x": 6, "y": 2, "w": 6, "h": 4 },
-      "display": { "rounded": true },
-      "query": {
-        "metrics": ["gmv"],
-        "dimensions": ["channel"],
-        "filters": { "subscribe": ["f-time", "f-region"] }
-      },
-      "interactions": [
-        {
-          "on": "click",
-          "navigate": {
-            "page": "sales-detail",
-            "carryFilters": ["f-time", "f-region"],
-            "setFilters": { "f-channel": "$dimension.channel" }
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "gmv"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time",
+              "f-region",
+              "f-channel"
+            ]
           }
         }
-      ]
-    },
-    {
-      "id": "w-trend",
-      "type": "lineChart",
-      "title": "GMV 趋势(平滑 + 面积渐变)",
-      "position": { "x": 0, "y": 6, "w": 8, "h": 4 },
-      "display": { "smooth": true, "areaGradient": true },
-      "query": {
-        "metrics": ["gmv"],
-        "dimensions": ["mtime"],
-        "filters": { "subscribe": ["f-time", "f-region", "f-channel"] }
       }
     },
-    {
-      "id": "w-channel-share",
-      "type": "pieChart",
-      "title": "GMV 渠道占比(环形,点击扇区下钻)",
-      "position": { "x": 8, "y": 6, "w": 4, "h": 4 },
-      "display": { "ring": "55%" },
-      "query": {
-        "metrics": ["gmv"],
-        "dimensions": ["channel"],
-        "filters": { "subscribe": ["f-time", "f-region"] }
+    "order-count": {
+      "fields": {
+        "order-count": {
+          "type": "number",
+          "role": "metric",
+          "label": "订单数（单）",
+          "format": "number-grouped"
+        }
       },
-      "interactions": [
-        { "on": "click", "writeFilter": "f-channel", "value": "$dimension.channel" }
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "order-count"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time"
+            ]
+          }
+        }
+      }
+    },
+    "by-region": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "format": "text"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "gmv"
+          ],
+          "dimensions": [
+            "region"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time",
+              "f-channel"
+            ]
+          }
+        }
+      }
+    },
+    "by-channel": {
+      "fields": {
+        "channel": {
+          "type": "string",
+          "role": "dimension",
+          "label": "渠道",
+          "format": "text"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "gmv"
+          ],
+          "dimensions": [
+            "channel"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time",
+              "f-region"
+            ]
+          }
+        }
+      }
+    },
+    "trend": {
+      "fields": {
+        "mtime": {
+          "type": "date",
+          "role": "dimension",
+          "label": "日期",
+          "format": "date-month-day"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "gmv"
+          ],
+          "dimensions": [
+            "mtime"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time",
+              "f-region",
+              "f-channel"
+            ]
+          }
+        }
+      }
+    },
+    "channel-share": {
+      "fields": {
+        "channel": {
+          "type": "string",
+          "role": "dimension",
+          "label": "渠道",
+          "format": "text"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "gmv"
+          ],
+          "dimensions": [
+            "channel"
+          ],
+          "filters": {
+            "subscribe": [
+              "f-time",
+              "f-region"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "f-time",
+      "type": "timeRange",
+      "label": "时间范围",
+      "default": "last30d"
+    },
+    {
+      "id": "f-region",
+      "type": "dimension",
+      "dimension": "region",
+      "label": "区域",
+      "display": "select"
+    },
+    {
+      "id": "f-channel",
+      "type": "dimension",
+      "dimension": "channel",
+      "label": "渠道",
+      "display": "tabs"
+    }
+  ],
+  "sections": [
+    {
+      "id": "overview",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "演示看板(筛选联动)",
+            "subtitle": "筛选联动演示:筛选器、页内下钻、跨页下钻(跳销售明细)、URL 可分享"
+          }
+        },
+        {
+          "id": "gmv",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "gmv"
+          },
+          "props": {
+            "title": "本月 GMV",
+            "rows": [
+              {
+                "label": "本月 GMV",
+                "valueField": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "order-count",
+          "type": "metricCard",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "order-count"
+          },
+          "props": {
+            "title": "订单数(不随区域/渠道筛选)",
+            "rows": [
+              {
+                "label": "订单数(不随区域/渠道筛选)",
+                "valueField": "order-count"
+              }
+            ]
+          }
+        },
+        {
+          "id": "by-region",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "by-region"
+          },
+          "props": {
+            "title": "GMV 按区域(点击柱条下钻)",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "gmv"
+              }
+            ],
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "f-region",
+                "field": "region"
+              }
+            ]
+          }
+        },
+        {
+          "id": "by-channel",
+          "type": "barChart",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "by-channel"
+          },
+          "props": {
+            "title": "GMV 按渠道(点击柱条跳销售明细)",
+            "categoryField": "channel",
+            "series": [
+              {
+                "field": "gmv"
+              }
+            ],
+            "rounded": true,
+            "actions": [
+              {
+                "on": "click",
+                "navigate": {
+                  "page": "sales-detail",
+                  "carryFilters": [
+                    "f-time",
+                    "f-region"
+                  ],
+                  "setFilters": {
+                    "f-channel": "channel"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "trend"
+          },
+          "props": {
+            "title": "GMV 趋势(平滑 + 面积渐变)",
+            "xField": "mtime",
+            "series": [
+              {
+                "field": "gmv"
+              }
+            ],
+            "smooth": true,
+            "areaGradient": true
+          }
+        },
+        {
+          "id": "channel-share",
+          "type": "pieChart",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "channel-share"
+          },
+          "props": {
+            "title": "GMV 渠道占比(环形,点击扇区下钻)",
+            "categoryField": "channel",
+            "valueField": "gmv",
+            "ring": "55%",
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "f-channel",
+                "field": "channel"
+              }
+            ]
+          }
+        }
       ]
     }
   ]

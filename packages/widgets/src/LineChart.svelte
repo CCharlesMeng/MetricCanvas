@@ -1,33 +1,35 @@
-<script lang="ts" module>
-  import type { LineChartDisplay } from '@metriccanvas/page';
-
-  export interface LineChartConfig {
-    metrics: string[];
-    /** 数据快照中承载维度值的字段(类目轴,通常为时间) */
-    dimension: string;
-    display?: LineChartDisplay;
-  }
-</script>
-
 <script lang="ts">
-  import type { DataSnapshot, Row } from '@metriccanvas/page';
+  import type { LineChartProps, Row } from '@metriccanvas/page';
+  import type { MainDataSlots } from './component-data';
   import EChart from './EChart.svelte';
   import { lineOption } from './chart-options';
 
   /** 折线图(纯渲染,ECharts):数据快照进、事件出 */
   interface Props {
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>;
-    config: LineChartConfig;
+    data: MainDataSlots;
+    props: LineChartProps;
     /** 数据点点击,携带该点对应的数据行 */
     onpointclick?: (context: { row: Row }) => void;
   }
 
-  let { snapshot, config, onpointclick }: Props = $props();
+  let { data, props, onpointclick }: Props = $props();
 
-  const option = $derived(lineOption(snapshot.rows, config.metrics, config.dimension, config.display));
+  const option = $derived(lineOption(data, props));
 </script>
 
+{#if props.title}<h3>{props.title}</h3>{/if}
 <EChart
   {option}
-  onitemclick={onpointclick ? (dataIndex) => onpointclick({ row: snapshot.rows[dataIndex] }) : undefined}
+  onitemclick={onpointclick
+    ? (dataIndex) => onpointclick({ row: data.main.snapshot.rows[dataIndex] })
+    : undefined}
 />
+
+<style>
+  h3 {
+    margin: 0;
+    color: #18181b;
+    font-size: 13px;
+    font-weight: 500;
+  }
+</style>

@@ -6,6 +6,35 @@ import type { PageRepository } from '@metriccanvas/runtime';
  */
 const modules = import.meta.glob<{ default: unknown }>('$pages/*.json');
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function pageMetadata(raw: unknown, fallbackId: string) {
+  const document = isRecord(raw) ? raw : {};
+  const id = typeof document.id === 'string' ? document.id : fallbackId;
+  const meta = isRecord(document.meta) ? document.meta : {};
+  let title = id;
+  if (Array.isArray(document.sections)) {
+    for (const section of document.sections) {
+      if (!isRecord(section) || !Array.isArray(section.components)) continue;
+      const header = section.components.find(
+        (component) => isRecord(component) && component.type === 'reportHeader'
+      );
+      if (!isRecord(header) || !isRecord(header.props)) continue;
+      if (typeof header.props.title === 'string') title = header.props.title;
+      break;
+    }
+  }
+  return {
+    id,
+    title,
+    ...(typeof meta.description === 'string'
+      ? { description: meta.description }
+      : {})
+  };
+}
+
 export function createStaticPageRepository(): PageRepository {
   const loaders = new Map<string, () => Promise<{ default: unknown }>>();
   for (const [path, loader] of Object.entries(modules)) {
@@ -23,12 +52,7 @@ export function createStaticPageRepository(): PageRepository {
     async list() {
       const entries: Array<{ id: string; title: string; description?: string }> = [];
       for (const [id, loader] of loaders) {
-        const raw = (await loader()).default as { title?: string; description?: string } | null;
-        entries.push({
-          id,
-          title: typeof raw?.title === 'string' ? raw.title : id,
-          ...(typeof raw?.description === 'string' ? { description: raw.description } : {})
-        });
+        entries.push(pageMetadata((await loader()).default, id));
       }
       return entries;
     }

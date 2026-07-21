@@ -31,7 +31,7 @@ export function migrateDocument(
   registry: MigrationRegistry = migrations,
   policy: VersionPolicy = versionPolicy
 ): MigrateResult {
-  let version = String(document.formatVersion);
+  let version = String(document.schemaVersion);
   if (version === policy.current) return { outcome: 'current' };
 
   let migrated = document;
@@ -43,7 +43,7 @@ export function migrateDocument(
     visited.add(version);
     const migration = registry[version];
     if (!migration) return { outcome: 'no-path', from: version };
-    migrated = { ...migration.apply(migrated), formatVersion: migration.to };
+    migrated = { ...migration.apply(migrated), schemaVersion: migration.to };
     steps.push(`${version} → ${migration.to}`);
     version = migration.to;
   }

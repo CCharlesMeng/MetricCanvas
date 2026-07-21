@@ -148,6 +148,35 @@ describe('mock 适配器:按元数据快照造形状正确的假数据', () => {
     ]);
   });
 
+  it('无维度多指标同样在宽行上应用 offset,offset 2 跳过唯一一行', async () => {
+    await expect(
+      gateway.fetchData({
+        metrics: ['gmv', 'order-count'],
+        conditions: [],
+        offset: 2
+      })
+    ).resolves.toEqual([]);
+  });
+
+  it('多维度多指标按多列排序后分页,与真实适配器语义一致', async () => {
+    const rows = await gateway.fetchData({
+      metrics: ['gmv', 'order-count'],
+      dimensions: ['region', 'channel'],
+      conditions: [],
+      orderBy: [
+        { field: 'region', direction: 'desc' },
+        { field: 'channel', direction: 'asc' }
+      ],
+      limit: 3,
+      offset: 1
+    });
+    expect(rows.map(({ region, channel }) => ({ region, channel }))).toEqual([
+      { region: '华南', channel: 'channel-2' },
+      { region: '华北', channel: 'channel-1' },
+      { region: '华北', channel: 'channel-2' }
+    ]);
+  });
+
   it('遵守指标列排序:按造出的 gmv 数值降序', async () => {
     const sorted = await gateway.fetchData({
       metrics: ['gmv'],

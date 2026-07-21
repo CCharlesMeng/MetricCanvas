@@ -1,55 +1,100 @@
-<script lang="ts" module>
-  import type { MetricCardDisplay } from '@metriccanvas/page';
-
-  /** 指标卡的展示配置 = 页面文档 display + 运行时派生的取值字段 */
-  export interface MetricCardConfig extends MetricCardDisplay {
-    /** 数据快照中承载指标值的字段(运行时从结构化查询派生) */
-    metric: string;
-  }
-</script>
-
 <script lang="ts">
-  import type { DataSnapshot } from '@metriccanvas/page';
+  import type { FieldBinding, MetricCardProps } from '@metriccanvas/page';
+  import type { MetricDataSlots } from './component-data';
+  import { fieldValue, resolveField } from './component-data';
+  import { formatValue, valuePolarity } from './value-format';
 
   interface Props {
-    /** 就绪的数据快照(加载/错误/空态由运行时统一呈现,组件只认就绪数据) */
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>;
-    /** 展示配置 */
-    config: MetricCardConfig;
+    /** 已解析的 main/compare/target 命名槽。 */
+    data: MetricDataSlots;
+    props: MetricCardProps;
   }
 
-  let { snapshot, config }: Props = $props();
+  let { data, props }: Props = $props();
 
-  const value = $derived(snapshot.rows[0]?.[config.metric]);
-  const formatted = $derived(
-    typeof value === 'number' && config.thousandsSeparator
-      ? new Intl.NumberFormat('en-US').format(value)
-      : String(value ?? '—')
-  );
+  function fieldText(field: FieldBinding): string {
+    const resolved = resolveField(field, data);
+    return formatValue(fieldValue(field, data), resolved.definition?.format);
+  }
 </script>
 
 <div class="metric-card">
-  {#if config.prefix}<span class="affix">{config.prefix}</span>{/if}
-  <span class="value">{formatted}</span>
-  {#if config.unit}<span class="affix">{config.unit}</span>{/if}
+  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#each props.rows as row, index (`${row.label}:${index}`)}
+    <div class="metric-row">
+      <span class="row-label">{row.label}</span>
+      <span class="row-value">{fieldText(row.valueField)}</span>
+      {#if row.changes?.length}
+        <div class="changes">
+          {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
+            {@const raw = fieldValue(change.field, data)}
+            {@const polarity = valuePolarity(raw)}
+            <span
+              class:positive={polarity === 'positive'}
+              class:negative={polarity === 'negative'}
+              class="change"
+            >
+              <span class="change-label">{change.label}</span>
+              <span>{fieldText(change.field)}</span>
+            </span>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {/each}
 </div>
 
 <style>
   .metric-card {
     display: flex;
-    align-items: baseline;
-    gap: 0.25rem;
+    align-items: stretch;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.45rem;
     height: 100%;
   }
-  .value {
-    font-size: 2rem;
-    font-weight: 650;
-    letter-spacing: -0.02em;
+  h3 {
+    margin: 0 0 0.25rem;
     color: #18181b;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .metric-row {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    min-width: 0;
+  }
+  .row-label {
+    color: #595959;
+    font-size: 0.875rem;
+  }
+  .row-value {
+    color: #0f1a4d;
+    font-size: 1.625rem;
+    font-weight: 600;
+    line-height: 1.35;
     font-variant-numeric: tabular-nums;
   }
-  .affix {
-    font-size: 0.85rem;
+  .changes {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .change {
     color: #71717a;
+    font-size: 0.875rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .change-label {
+    margin-right: 0.2rem;
+  }
+  .positive {
+    color: #52c41a;
+  }
+  .negative {
+    color: #f5222d;
   }
 </style>

@@ -9,17 +9,40 @@ export interface StructuredQuery {
   aggregation?: string;
   granularity?: string;
   filters?: { subscribe: string[] };
+  /** 报告时间语义:以页面时间范围筛选器为锚点选取当前点或回看窗口 */
+  time?: QueryTime;
+  /** 静态排序规则,数组顺序即排序优先级 */
+  orderBy?: OrderByRule[];
+  /** 查询返回行数上限 */
+  limit?: number;
 }
 
 import type { TimeRangeValue } from './filter';
 
+export interface QueryTime {
+  /** 须引用已声明且被本查询订阅的 timeRange 筛选器 */
+  filter: string;
+  window: TimeWindow;
+}
+
+/** 报告时间窗口:selected=所选范围 | point=所选范围终点 | lookback=从终点向前回看 */
+export type TimeWindow =
+  | { kind: 'selected' }
+  | { kind: 'point'; anchor: 'to' }
+  | {
+      kind: 'lookback';
+      anchor: 'to';
+      previous: number;
+      unit: 'day' | 'week' | 'month';
+    };
+
 /**
- * 生效查询 (Effective Query):结构化查询 × 订阅筛选器当前值 × widget 视图状态
+ * 生效查询 (Effective Query):结构化查询 × 订阅筛选器当前值 × 组件局部视图
  * 合成后的最终查询,是真正发往数据服务的查询。conditions 来自订阅的维度筛选器与
- * 表头筛选(后者是 widget 局部视图,不进页面筛选状态),timeRange 来自订阅的
+ * 表头筛选(后者是组件局部视图,不进页面筛选状态),timeRange 来自订阅的
  * 时间范围筛选器(时间是数据服务的特殊轴:粒度在服务定义时固定,
  * 故不混入 conditions,由适配层单独翻译为时间字段约束)。
- * limit/offset/orderBy 来自表格类 widget 的视图状态(分页/排序),
+ * limit/offset/orderBy 来自表格组件的局部视图(分页/排序),
  * 由适配层翻译为 @limit/@offset/@order。
  */
 export interface EffectiveQuery {

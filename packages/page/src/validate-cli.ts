@@ -40,9 +40,12 @@ function main(argv: string[]): number {
 
   const files = readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
   // 第一遍:逐页两级校验 + 文件名一致性,顺便收集跨文档校验所需的仓库知识
-  const results: Array<{ file: string; errors: TypedError[]; page?: Page }> = [];
-  // 文件名与 id 一致已单独校验,文件名清单即全量页面 id 清单
-  const knownPageIds = new Set(files.map((f) => f.replace(/\.json$/, '')));
+  const results: Array<{
+    file: string;
+    errors: TypedError[];
+    page?: Page;
+  }> = [];
+  const knownPageIds = new Set(files.map((file) => file.replace(/\.json$/, '')));
   const pagesById = new Map<string, Page>();
   for (const file of files) {
     const raw = readFileSync(join(pagesDir, file), 'utf8');
@@ -56,10 +59,14 @@ function main(argv: string[]): number {
       });
       continue;
     }
-    const errors = [...validate(document, catalog), ...fileNameErrors(file, document)];
+    const errors = validate(document, catalog);
     if (errors.length === 0) {
-      // 通过自身校验才可视为 Page,才够资格当跨文档校验的参照与被检对象
       const page = document as Page;
+      errors.push(...fileNameErrors(file, page));
+      if (errors.length > 0) {
+        results.push({ file, errors });
+        continue;
+      }
       pagesById.set(page.id, page);
       results.push({ file, errors, page });
     } else {
@@ -67,7 +74,6 @@ function main(argv: string[]): number {
     }
   }
 
-  // 第二遍:navigate 跨文档校验(目标页存在、目标筛选器 id 有效)
   let failed = 0;
   let warned = 0;
   for (const { file, errors, page } of results) {

@@ -20,15 +20,15 @@ export function supportedVersions(policy: VersionPolicy = versionPolicy): string
 
 /**
  * 版本判定:N 与 N-1 受支持;其余(N-2、未知、非字符串)报 SCHEMA_ERROR,
- * 错误信息含迁移指引。formatVersion 缺失由结构校验的 required 负责,这里不重复。
+ * 错误信息含迁移指引。schemaVersion 缺失由结构校验的 required 负责,这里不重复。
  */
 export function versionErrors(document: unknown, policy: VersionPolicy = versionPolicy): TypedError[] {
-  const version = formatVersionOf(document);
+  const version = schemaVersionOf(document);
   if (version === undefined || supportedVersions(policy).includes(version)) return [];
   return [
     {
       type: 'SCHEMA_ERROR',
-      path: '/formatVersion',
+      path: '/schemaVersion',
       message:
         `不支持的文档格式版本 ${String(version)}:运行时只支持 ${supportedVersions(policy).join(' / ')}。` +
         `历史文档请执行 pnpm migrate 批量升版(迁移脚本按需执行,输出可评审 diff)`
@@ -47,11 +47,11 @@ export function upgradeWarnings(
   document: unknown,
   policy: VersionPolicy = versionPolicy
 ): UpgradeWarning[] {
-  const version = formatVersionOf(document);
+  const version = schemaVersionOf(document);
   if (version === undefined || version !== policy.previous) return [];
   return [
     {
-      path: '/formatVersion',
+      path: '/schemaVersion',
       message:
         `文档格式版本 ${version} 是前一个大版本(当前 ${policy.current}),仍可正常渲染;` +
         `请尽快执行 pnpm migrate 升版,${version} 将在下个大版本发布后拒绝加载`
@@ -59,7 +59,7 @@ export function upgradeWarnings(
   ];
 }
 
-function formatVersionOf(document: unknown): string | undefined {
-  const version = (document as { formatVersion?: unknown } | null)?.formatVersion;
+function schemaVersionOf(document: unknown): string | undefined {
+  const version = (document as { schemaVersion?: unknown } | null)?.schemaVersion;
   return typeof version === 'string' ? version : undefined;
 }

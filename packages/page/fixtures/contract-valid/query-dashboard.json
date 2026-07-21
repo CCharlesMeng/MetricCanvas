@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0",
+  "id": "query-dashboard",
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "gmv": {
+          "type": "number",
+          "role": "metric",
+          "label": "成交总额",
+          "format": "number-grouped"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": ["gmv"],
+          "dimensions": ["region"],
+          "aggregation": "sum",
+          "filters": {
+            "subscribe": ["region-filter"]
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "region-filter",
+      "type": "dimension",
+      "dimension": "region"
+    }
+  ],
+  "sections": [
+    {
+      "id": "details",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "gmv"
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 20
+            },
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "region-filter",
+                "field": "region"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

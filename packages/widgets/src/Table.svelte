@@ -1,24 +1,18 @@
 <script lang="ts" module>
-  import type { OrderByRule, TableColumn } from '@metriccanvas/page';
-
-  /** 表头筛选当前值:select=下拉多选值集合,dateRange=起止日期(都填妥才生效) */
-  export type TableHeaderFilterValue =
-    | { mode: 'select'; values: string[] }
-    | { mode: 'dateRange'; from: string; to: string };
-
-  /** 表格视图状态:由运行时/壳持有,组件只显示当前值并上抛变更(纯渲染) */
-  export interface TableViewState {
-    /** 当前页码(0 起);盲翻设计,不存在总页数 */
-    pageIndex: number;
-    /** 多列排序,数组序即优先级 */
-    sort: OrderByRule[];
-    /** 表头筛选当前值,key = 列 field */
-    headerFilters: Record<string, TableHeaderFilterValue>;
-  }
+  export type { TableHeaderFilterValue, TableViewState } from './table-view';
 </script>
 
 <script lang="ts">
-  import type { DataSnapshot } from '@metriccanvas/page';
+  import type {
+    OrderByRule,
+    TableColumn,
+    TableProps as TableComponentProps
+  } from '@metriccanvas/page';
+  import type { MainDataSlots } from './component-data';
+  import { resolveField } from './component-data';
+  import { buildTableColumnLayout } from './table-columns';
+  import type { TableHeaderFilterValue, TableViewState } from './table-view';
+  import { formatValue, valuePolarity } from './value-format';
 
   /**
    * 表格(纯渲染):行与列定义 props 进,翻页/排序/表头筛选事件出,自身零状态。
@@ -26,20 +20,38 @@
    * 排序状态显示在列头(多列时带优先级序号);盲翻分页:快照 hasMore 为假即禁用下一页。
    */
   interface Props {
-    /** 就绪的数据快照(加载/错误态由运行时统一呈现);rows 为空时表格自呈现空行提示 */
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>;
-    /** 列定义,来自页面文档(列序即展示序) */
-    columns: TableColumn[];
+    /** 已解析的 main 数据槽；rows 为空时表格仍呈现表头。 */
+    data: MainDataSlots;
+    props: TableComponentProps;
+    /** 是否呈现排序、表头筛选和分页交互;缺省 true 保持存量行为 */
+    interactive?: boolean;
     /** 当前视图状态(页码/排序/表头筛选),由壳持有 */
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
-    filterOptions: Record<string, string[]>;
-    onpage: (pageIndex: number) => void;
-    onsort: (sort: OrderByRule[]) => void;
-    onheaderfilter: (field: string, value: TableHeaderFilterValue | null) => void;
+    filterOptions?: Record<string, string[]>;
+    onpage?: (pageIndex: number) => void;
+    onsort?: (sort: OrderByRule[]) => void;
+    onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
   }
 
-  let { snapshot, columns, view, filterOptions, onpage, onsort, onheaderfilter }: Props = $props();
+  let {
+    data,
+    props,
+    interactive = true,
+    view,
+    filterOptions = {},
+    onpage,
+    onsort,
+    onheaderfilter
+  }: Props = $props();
+
+  const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
+  const leaves = $derived(columnLayout.leaves);
+  const rows = $derived(data.main.snapshot.rows);
+
+  function columnField(column: TableColumn): string {
+    return resolveField(column.field, data).field;
+  }
 
   // 固定列的 sticky 偏移:左固定列累计其前方左固定列宽度,右固定列累计其后方右固定列宽度。
   // 无显式宽度的固定列按 120px 参与累计(与 colgroup 缺省一致,保证偏移与实际渲染吻合)
@@ -47,15 +59,15 @@
   const stickyOffsets = $derived.by(() => {
     const offsets = new Map<string, number>();
     let left = 0;
-    for (const column of columns) {
+    for (const column of leaves) {
       if (column.fixed !== 'left') continue;
-      offsets.set(column.field, left);
+      offsets.set(columnField(column), left);
       left += column.width ?? FALLBACK_FIXED_WIDTH;
     }
     let right = 0;
-    for (const column of [...columns].reverse()) {
+    for (const column of [...leaves].reverse()) {
       if (column.fixed !== 'right') continue;
-      offsets.set(column.field, right);
+      offsets.set(columnField(column), right);
       right += column.width ?? FALLBACK_FIXED_WIDTH;
     }
     return offsets;
@@ -63,7 +75,7 @@
 
   function cellStyle(column: TableColumn): string {
     if (!column.fixed) return '';
-    const offset = stickyOffsets.get(column.field) ?? 0;
+    const offset = stickyOffsets.get(columnField(column)) ?? 0;
     return `position: sticky; ${column.fixed}: ${offset}px;`;
   }
 
@@ -75,18 +87,19 @@
    */
   function toggleSort(column: TableColumn, event: MouseEvent) {
     if (!column.sortable) return;
-    const current = view.sort.find((rule) => rule.field === column.field);
+    const field = columnField(column);
+    const current = view.sort.find((rule) => rule.field === field);
     const next: OrderByRule | null =
       !current
-        ? { field: column.field, direction: 'asc' }
+        ? { field, direction: 'asc' }
         : current.direction === 'asc'
-          ? { field: column.field, direction: 'desc' }
+          ? { field, direction: 'desc' }
           : null;
     if (event.shiftKey) {
-      const kept = view.sort.filter((rule) => rule.field !== column.field);
-      onsort(next ? [...kept, next] : kept);
+      const kept = view.sort.filter((rule) => rule.field !== field);
+      onsort?.(next ? [...kept, next] : kept);
     } else {
-      onsort(next ? [next] : []);
+      onsort?.(next ? [next] : []);
     }
   }
 
@@ -100,7 +113,7 @@
     const next = current.includes(option)
       ? current.filter((value) => value !== option)
       : [...current, option];
-    onheaderfilter(field, next.length > 0 ? { mode: 'select', values: next } : null);
+    onheaderfilter?.(field, next.length > 0 ? { mode: 'select', values: next } : null);
   }
 
   function dateRangeOf(field: string): { from: string; to: string } {
@@ -108,129 +121,207 @@
     return value?.mode === 'dateRange' ? value : { from: '', to: '' };
   }
 
-  /** 日期范围两端都填妥才上抛(半成品范围不触发重查),两端清空即清除 */
+  /** 每次端点变更都上抛草稿,由壳回显并决定何时重查;两端清空即清除。 */
   function emitDateRange(field: string, from: string, to: string) {
-    if (from && to) onheaderfilter(field, { mode: 'dateRange', from, to });
-    else if (!from && !to) onheaderfilter(field, null);
+    onheaderfilter?.(field, from || to ? { mode: 'dateRange', from, to } : null);
   }
 
   function hasActiveFilter(field: string): boolean {
     return view.headerFilters[field] !== undefined;
   }
+
+  const rateBarMaxima = $derived.by(() => {
+    const maxima = new Map<string, number>();
+    for (const column of leaves) {
+      if (column.visual !== 'rateBar') continue;
+      let maximum = 0;
+      for (const row of rows) {
+        const numeric = numericValue(row[columnField(column)]);
+        if (numeric !== undefined) maximum = Math.max(maximum, Math.abs(numeric));
+      }
+      maxima.set(columnField(column), maximum);
+    }
+    return maxima;
+  });
+
+  function rateBarWidth(
+    column: TableColumn,
+    value: string | number | boolean | null | undefined
+  ): number {
+    const numeric = numericValue(value);
+    const maximum = rateBarMaxima.get(columnField(column)) ?? 0;
+    if (numeric === undefined || maximum === 0) return 0;
+    return Math.min(100, (Math.abs(numeric) / maximum) * 100);
+  }
+
+  function numericValue(
+    value: string | number | boolean | null | undefined
+  ): number | undefined {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : undefined;
+    if (typeof value !== 'string' || value.trim() === '') return undefined;
+    const numeric = Number(value);
+    return Number.isFinite(numeric) ? numeric : undefined;
+  }
 </script>
 
 <div class="table-widget">
+  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.subtitle}<div class="subtitle">{props.subtitle}</div>{/if}
   <div class="scroll">
     <table>
       <colgroup>
-        {#each columns as column (column.field)}
+        {#each leaves as column (columnField(column))}
           <col style={column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : ''} />
         {/each}
       </colgroup>
       <thead>
-        <tr>
-          {#each columns as column (column.field)}
-            <th class:fixed={!!column.fixed} style={cellStyle(column)}>
-              <div class="head">
-                {#if column.sortable}
-                  <button
-                    type="button"
-                    class="sort-toggle"
-                    title="点击排序,Shift+点击追加多列排序"
-                    onclick={(event) => toggleSort(column, event)}
-                  >
-                    <span>{column.title ?? column.field}</span>
-                    {#if sortIndexOf.has(column.field)}
-                      {@const rule = view.sort[sortIndexOf.get(column.field)!]}
-                      <span class="sort-state" aria-label="排序:{rule.direction}">
-                        {rule.direction === 'asc' ? '↑' : '↓'}{#if view.sort.length > 1}<sup>{sortIndexOf.get(column.field)! + 1}</sup>{/if}
-                      </span>
-                    {:else}
-                      <span class="sort-hint" aria-hidden="true">⇅</span>
-                    {/if}
-                  </button>
-                {:else}
-                  <span>{column.title ?? column.field}</span>
-                {/if}
-
-                {#if column.filterable}
-                  <details class="filter">
-                    <summary class:active={hasActiveFilter(column.field)} title="表头筛选">▼</summary>
-                    <div class="menu">
-                      {#if column.filterable.mode === 'select'}
-                        {#each filterOptions[column.field] ?? [] as option (option)}
-                          <label class="option">
-                            <input
-                              type="checkbox"
-                              checked={selectedValues(column.field).includes(option)}
-                              onchange={() => toggleFilterValue(column.field, option)}
-                            />
-                            <span>{option}</span>
-                          </label>
+        {#each columnLayout.headerRows as headerRow, rowIndex (rowIndex)}
+          <tr>
+            {#each headerRow as cell (cell.key)}
+              {#if cell.kind === 'group'}
+                <th
+                  class="group-header"
+                  colspan={cell.colspan}
+                  rowspan={cell.rowspan}
+                  style={`top: ${rowIndex * 40}px;`}
+                >
+                  {cell.title}
+                </th>
+              {:else}
+                {@const column = cell.column}
+                <th
+                  class:align-right={column.align === 'right'}
+                  class:fixed={!!column.fixed}
+                  colspan={cell.colspan}
+                  rowspan={cell.rowspan}
+                  style={`${cellStyle(column)} top: ${rowIndex * 40}px;`}
+                >
+                  <div class="head">
+                    {#if interactive && column.sortable}
+                      <button
+                        type="button"
+                        class="sort-toggle"
+                        title="点击排序,Shift+点击追加多列排序"
+                        onclick={(event) => toggleSort(column, event)}
+                      >
+                        <span>{cell.title}</span>
+                        {#if sortIndexOf.has(columnField(column))}
+                          {@const rule = view.sort[sortIndexOf.get(columnField(column))!]}
+                          <span class="sort-state" aria-label="排序:{rule.direction}">
+                            {rule.direction === 'asc' ? '↑' : '↓'}{#if view.sort.length > 1}<sup>{sortIndexOf.get(columnField(column))! + 1}</sup>{/if}
+                          </span>
                         {:else}
-                          <span class="hint">候选项加载中…</span>
-                        {/each}
-                      {:else}
-                        {@const range = dateRangeOf(column.field)}
-                        <div class="range">
-                          <input
-                            type="date"
-                            value={range.from}
-                            onchange={(e) => emitDateRange(column.field, e.currentTarget.value, range.to)}
-                          />
-                          <span class="sep">至</span>
-                          <input
-                            type="date"
-                            value={range.to}
-                            onchange={(e) => emitDateRange(column.field, range.from, e.currentTarget.value)}
-                          />
+                          <span class="sort-hint" aria-hidden="true">⇅</span>
+                        {/if}
+                      </button>
+                    {:else}
+                      <span>{cell.title}</span>
+                    {/if}
+
+                    {#if interactive && column.filterable}
+                      <details class="filter">
+                        <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">▼</summary>
+                        <div class="menu">
+                          {#if column.filterable.mode === 'select'}
+                            {#each filterOptions[columnField(column)] ?? [] as option (option)}
+                              <label class="option">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedValues(columnField(column)).includes(option)}
+                                  onchange={() => toggleFilterValue(columnField(column), option)}
+                                />
+                                <span>{option}</span>
+                              </label>
+                            {:else}
+                              <span class="hint">候选项加载中…</span>
+                            {/each}
+                          {:else}
+                            {@const range = dateRangeOf(columnField(column))}
+                            <div class="range">
+                              <input
+                                type="date"
+                                value={range.from}
+                                onchange={(e) =>
+                                  emitDateRange(columnField(column), e.currentTarget.value, range.to)}
+                              />
+                              <span class="sep">至</span>
+                              <input
+                                type="date"
+                                value={range.to}
+                                onchange={(e) =>
+                                  emitDateRange(columnField(column), range.from, e.currentTarget.value)}
+                              />
+                            </div>
+                          {/if}
+                          {#if hasActiveFilter(columnField(column))}
+                            <button
+                              type="button"
+                              class="clear"
+                              onclick={() => onheaderfilter?.(columnField(column), null)}
+                            >
+                              清除筛选
+                            </button>
+                          {/if}
                         </div>
-                      {/if}
-                      {#if hasActiveFilter(column.field)}
-                        <button
-                          type="button"
-                          class="clear"
-                          onclick={() => onheaderfilter(column.field, null)}
-                        >
-                          清除筛选
-                        </button>
-                      {/if}
-                    </div>
-                  </details>
-                {/if}
-              </div>
-            </th>
-          {/each}
-        </tr>
+                      </details>
+                    {/if}
+                  </div>
+                </th>
+              {/if}
+            {/each}
+          </tr>
+        {/each}
       </thead>
       <tbody>
-        {#each snapshot.rows as row, i (i)}
+        {#each rows as row, i (i)}
           <tr>
-            {#each columns as column (column.field)}
-              <td class:fixed={!!column.fixed} style={cellStyle(column)}>
-                {row[column.field] ?? '—'}
+            {#each leaves as column (columnField(column))}
+              {@const resolved = resolveField(column.field, data)}
+              {@const rawValue = row[resolved.field]}
+              {@const polarity = valuePolarity(rawValue)}
+              <td
+                class:align-right={column.align === 'right'}
+                class:fixed={!!column.fixed}
+                class:negative={column.visual === 'signed' && polarity === 'negative'}
+                class:positive={column.visual === 'signed' && polarity === 'positive'}
+                style={cellStyle(column)}
+              >
+                {#if column.visual === 'rateBar'}
+                  <span class="rate-cell">
+                    <span
+                      aria-hidden="true"
+                      class="rate-bar"
+                      style={`width: ${rateBarWidth(column, rawValue)}%;`}
+                    ></span>
+                    <span class="cell-value">{formatValue(rawValue, resolved.definition?.format)}</span>
+                  </span>
+                {:else}
+                  {formatValue(rawValue, resolved.definition?.format)}
+                {/if}
               </td>
             {/each}
           </tr>
         {:else}
           <tr>
-            <td class="empty-row" colspan={columns.length}>暂无数据</td>
+            <td class="empty-row" colspan={Math.max(leaves.length, 1)}>暂无数据</td>
           </tr>
         {/each}
       </tbody>
     </table>
   </div>
 
-  <!-- 盲翻分页:响应无总条数,只有"是否有下一页"(hasMore 探测),不显示总页数 -->
-  <div class="pager">
-    <button type="button" disabled={view.pageIndex === 0} onclick={() => onpage(view.pageIndex - 1)}>
-      上一页
-    </button>
-    <span class="page-no">第 {view.pageIndex + 1} 页</span>
-    <button type="button" disabled={!snapshot.hasMore} onclick={() => onpage(view.pageIndex + 1)}>
-      下一页
-    </button>
-  </div>
+  {#if props.pagination?.mode === 'paged' && interactive}
+    <!-- 盲翻分页:响应无总条数,只有"是否有下一页"(hasMore 探测),不显示总页数 -->
+    <div class="pager">
+      <button type="button" disabled={view.pageIndex === 0} onclick={() => onpage?.(view.pageIndex - 1)}>
+        上一页
+      </button>
+      <span class="page-no">第 {view.pageIndex + 1} 页</span>
+      <button type="button" disabled={!data.main.snapshot.hasMore} onclick={() => onpage?.(view.pageIndex + 1)}>
+        下一页
+      </button>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -241,6 +332,18 @@
     flex-direction: column;
     gap: 8px;
     font-size: 13px;
+  }
+  h3 {
+    margin: 0;
+    color: #18181b;
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .subtitle {
+    color: #121e3b;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
   }
   /* 固定表头 + 表体滚动:thead sticky,滚动发生在容器上(纵横双向) */
   .scroll {
@@ -260,6 +363,8 @@
     position: sticky;
     top: 0;
     z-index: 2;
+    box-sizing: border-box;
+    height: 40px;
     background: #fafafa;
     text-align: left;
     font-weight: 600;
@@ -267,6 +372,14 @@
     padding: 8px 12px;
     border-bottom: 1px solid #e4e4e7;
     white-space: nowrap;
+  }
+  thead th.group-header {
+    color: #08359e;
+    text-align: center;
+  }
+  thead th.align-right,
+  tbody td.align-right {
+    text-align: right;
   }
   /* 固定列:sticky 左/右偏移由内联 style 提供;表头交叉区需更高层级 */
   thead th.fixed {
@@ -287,6 +400,33 @@
   tbody tr:last-child td {
     border-bottom: 0;
   }
+  tbody td.positive {
+    color: #52c41a;
+  }
+  tbody td.negative {
+    color: #f5222d;
+  }
+  .rate-cell {
+    position: relative;
+    display: inline-flex;
+    justify-content: flex-end;
+    min-width: 72px;
+    padding: 2px 4px;
+    overflow: hidden;
+    border-radius: 3px;
+  }
+  .rate-bar {
+    position: absolute;
+    inset: 0 auto 0 0;
+    max-width: 100%;
+    background: #dbeafe;
+    border-radius: inherit;
+  }
+  .cell-value {
+    position: relative;
+    z-index: 1;
+    font-variant-numeric: tabular-nums;
+  }
   .empty-row {
     text-align: center;
     color: #71717a;
@@ -296,6 +436,9 @@
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+  th.align-right .head {
+    justify-content: flex-end;
   }
   .sort-toggle {
     border: 0;

@@ -4,6 +4,11 @@
 
 <h1>看板目录</h1>
 
+<a class="preview-entry" href="/preview">
+  <span class="title">Page JSON 即时预览</span>
+  <span class="desc">粘贴或编辑页面文档，并直接查看严格校验后的渲染结果。</span>
+</a>
+
 {#await pageRepository.list()}
   <p class="muted">加载中…</p>
 {:then pages}
@@ -30,6 +35,19 @@
   }
   .muted {
     color: #71717a;
+  }
+  .preview-entry {
+    display: block;
+    padding: 16px;
+    margin-bottom: 20px;
+    color: #312e81;
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+    text-decoration: none;
+  }
+  .preview-entry:hover {
+    border-color: #818cf8;
   }
   .catalog {
     list-style: none;

@@ -4,7 +4,7 @@
  * 零数据行;业务数据永远实时查询、不落盘。
  */
 export interface CatalogSnapshot {
-  /** 快照格式大版本,独立于页面文档的 formatVersion 演进 */
+  /** 快照格式大版本,独立于页面文档的 schemaVersion 演进 */
   formatVersion: '1.0';
   /** 同步时刻(ISO 8601),由 sync-catalog 写入 */
   syncedAt: string;

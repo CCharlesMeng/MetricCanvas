@@ -1,18 +1,7 @@
-<script lang="ts" module>
-  import type { MapChartDisplay } from '@metriccanvas/page';
-
-  /** 地图配置 = 运行时从结构化查询派生的取值/定位字段 + 页面文档 display(底图必选) */
-  export interface MapChartConfig {
-    /** 数据快照中承载指标值的字段(visualMap 着色依据) */
-    metric: string;
-    /** 数据快照中承载维度值的字段,值定位底图区域(可经 display.nameMap 改名) */
-    dimension: string;
-    display: MapChartDisplay;
-  }
-</script>
-
 <script lang="ts">
-  import type { DataSnapshot, Row } from '@metriccanvas/page';
+  import type { MapChartProps, Row } from '@metriccanvas/page';
+  import type { MainDataSlots } from './component-data';
+  import { resolveField } from './component-data';
   import EChart from './EChart.svelte';
   import { mapOption } from './chart-options';
   import { ensureBasemap, type BasemapMeta } from './map-register';
@@ -23,19 +12,19 @@
    * 不违纯渲染原则——数据仍只来自快照。
    */
   interface Props {
-    /** 就绪的数据快照(加载/错误/空态由 WidgetHost 统一呈现) */
-    snapshot: Extract<DataSnapshot, { status: 'ready' }>;
-    config: MapChartConfig;
+    /** 已解析的 main 数据槽(加载/错误/空态由统一运行时呈现) */
+    data: MainDataSlots;
+    props: MapChartProps;
     /** 区域/散点点击,携带该区域对应的数据行 */
     onregionclick?: (context: { row: Row }) => void;
   }
 
-  let { snapshot, config, onregionclick }: Props = $props();
+  let { data, props, onregionclick }: Props = $props();
 
   let basemap = $state<BasemapMeta>();
   $effect(() => {
     let alive = true;
-    void ensureBasemap(config.display.map).then((meta) => {
+    void ensureBasemap(props.map).then((meta) => {
       if (alive) basemap = meta;
     });
     return () => {
@@ -49,9 +38,10 @@
    */
   const rowByGeoName = $derived(
     new Map(
-      snapshot.rows.map((row) => {
-        const raw = String(row[config.dimension] ?? '');
-        return [config.display.nameMap?.[raw] ?? raw, row] as const;
+      data.main.snapshot.rows.map((row) => {
+        const nameField = resolveField(props.nameField, data).field;
+        const raw = String(row[nameField] ?? '');
+        return [props.nameMap?.[raw] ?? raw, row] as const;
       })
     )
   );
@@ -62,9 +52,10 @@
   }
 </script>
 
+{#if props.title}<h3>{props.title}</h3>{/if}
 {#if basemap}
   <EChart
-    option={mapOption(snapshot.rows, config.metric, config.dimension, config.display, basemap.centers)}
+    option={mapOption(data, props, basemap.centers)}
     onitemclick={onregionclick ? handleClick : undefined}
   />
 {:else}
@@ -72,6 +63,12 @@
 {/if}
 
 <style>
+  h3 {
+    margin: 0;
+    color: #18181b;
+    font-size: 13px;
+    font-weight: 500;
+  }
   .loading {
     flex: 1;
     display: flex;
