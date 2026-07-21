@@ -9,7 +9,7 @@
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "build": "pnpm --filter canvas build && pnpm --filter platform build",
-    "test": "vitest run",
+    "test": "pnpm --filter platform exec svelte-kit sync && vitest run",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "migrate": "tsx packages/page/src/migrate-cli.ts",
     "sync-catalog": "tsx packages/data-gateway/src/sync-catalog-cli.ts",
