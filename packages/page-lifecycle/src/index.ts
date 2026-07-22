@@ -9,6 +9,9 @@ import {
   type TypedError
 } from '@metriccanvas/page';
 
+export { createMemoryPageLifecycle } from './memory';
+export type { MemoryPageLifecycleOptions } from './memory';
+
 export interface CatalogVersion {
   version: string;
   snapshot: CatalogSnapshot;

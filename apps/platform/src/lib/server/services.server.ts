@@ -12,6 +12,7 @@ import {
   type AgentRunner
 } from '@metriccanvas/agent-runner';
 import {
+  createMemoryPageLifecycle,
   createPostgresPageLifecycle,
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
@@ -22,6 +23,8 @@ import {
 } from '@metriccanvas/mcp';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
+import type { CatalogSnapshot } from '@metriccanvas/page';
+import bundledCatalog from '../../../../../catalog/snapshot.json';
 
 export interface PlatformServices {
   lifecycle: PageLifecycle;
@@ -47,20 +50,28 @@ export function getPlatformServices(): Promise<PlatformServices> {
 async function createServices(): Promise<PlatformServices> {
   const runtimeOrigin = env.RUNTIME_ORIGIN ?? 'http://localhost:5173';
   const platformOrigin = env.PLATFORM_ORIGIN ?? 'http://localhost:5174';
-  const catalogProvider = createDataServiceSimCatalogProvider(
-    env.DATA_SERVICE_URL ?? 'http://localhost:18226'
-  );
+  const offline = env.METRICCANVAS_OFFLINE === '1';
+  const catalogProvider = offline
+    ? createBundledCatalogProvider()
+    : createDataServiceSimCatalogProvider(
+        env.DATA_SERVICE_URL ?? 'http://localhost:18226'
+      );
   const catalog = createCatalogDiscovery(catalogProvider);
-  const lifecycle = await createPostgresPageLifecycle({
-    databaseUrl:
-      env.DATABASE_URL ??
-      'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas',
+  const lifecycleOptions = {
     catalog: catalogProvider,
     urls: {
-      confirmation: (requestId, token) =>
+      confirmation: (requestId: string, token: string) =>
         `${platformOrigin}/publish/${requestId}/confirm?token=${encodeURIComponent(token)}`
     }
-  });
+  };
+  const lifecycle = offline
+    ? createMemoryPageLifecycle(lifecycleOptions)
+    : await createPostgresPageLifecycle({
+        ...lifecycleOptions,
+        databaseUrl:
+          env.DATABASE_URL ??
+          'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas'
+      });
   const mcpServer = createMetricCanvasMcpServer({
     catalog,
     lifecycle,
@@ -95,6 +106,31 @@ async function createServices(): Promise<PlatformServices> {
     },
     runtimeOrigin
   };
+}
+
+function createBundledCatalogProvider(): CatalogProvider {
+  const snapshot = bundledCatalogSnapshot();
+  const version = catalogVersionFor(snapshot);
+  return { current: async () => ({ version, snapshot }) };
+}
+
+function bundledCatalogSnapshot(): CatalogSnapshot {
+  if (bundledCatalog.formatVersion !== '1.0') {
+    throw new Error(`不支持的内置元数据快照版本:${bundledCatalog.formatVersion}`);
+  }
+  return {
+    ...bundledCatalog,
+    formatVersion: bundledCatalog.formatVersion,
+    metrics: bundledCatalog.metrics.map((metric) => ({
+      ...metric,
+      valueType: catalogValueType(metric.valueType)
+    }))
+  };
+}
+
+function catalogValueType(value: string): CatalogSnapshot['metrics'][number]['valueType'] {
+  if (value === 'integer' || value === 'decimal' || value === 'percent') return value;
+  throw new Error(`不支持的内置指标值类型:${value}`);
 }
 
 function createDataServiceSimCatalogProvider(baseUrl: string): CatalogProvider {

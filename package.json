@@ -4,6 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm --parallel --filter canvas --filter platform dev",
+    "dev:offline": "METRICCANVAS_OFFLINE=1 PLATFORM_ORIGIN=http://localhost:5174 RUNTIME_ORIGIN=http://localhost:5173 VITE_DATA_GATEWAY=mock VITE_PLATFORM_URL=http://localhost:5174 pnpm dev",
     "dev:runtime": "pnpm --filter canvas dev",
     "dev:platform": "pnpm --filter platform dev",
     "db:up": "docker compose up -d postgres",
