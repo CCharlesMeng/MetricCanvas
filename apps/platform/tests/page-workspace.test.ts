@@ -150,6 +150,188 @@ describe('页面搭建工作台的未保存工作副本', () => {
     expect(undone.current.dataSources['orders-summary']).toBeUndefined();
   });
 
+  it('一次命令可新增五类维度数据组件及其合法 query 页面数据源', () => {
+    const scenarios = [
+      {
+        kind: 'bar_chart',
+        type: 'barChart',
+        props: {
+          categoryField: 'region',
+          series: [{ field: 'order-count', label: '订单量' }]
+        },
+        query: {
+          orderBy: [{ field: 'order-count', direction: 'desc' }],
+          limit: 10
+        }
+      },
+      {
+        kind: 'line_chart',
+        type: 'lineChart',
+        props: {
+          xField: 'region',
+          series: [{ field: 'order-count', label: '订单量' }]
+        },
+        query: {
+          orderBy: [{ field: 'region', direction: 'asc' }],
+          limit: 100
+        }
+      },
+      {
+        kind: 'pie_chart',
+        type: 'pieChart',
+        props: { categoryField: 'region', valueField: 'order-count' },
+        query: {
+          orderBy: [{ field: 'order-count', direction: 'desc' }],
+          limit: 10
+        }
+      },
+      {
+        kind: 'ranking_card',
+        type: 'rankingCard',
+        props: { nameField: 'region', valueField: 'order-count' },
+        query: {
+          orderBy: [{ field: 'order-count', direction: 'desc' }],
+          limit: 10
+        }
+      },
+      {
+        kind: 'table',
+        type: 'table',
+        props: {
+          columns: [
+            { field: 'region', title: '区域' },
+            { field: 'order-count', title: '订单量', sortable: true, align: 'right' }
+          ]
+        },
+        query: {
+          orderBy: [{ field: 'order-count', direction: 'desc' }],
+          limit: 100
+        }
+      }
+    ] as const;
+
+    for (const scenario of scenarios) {
+      const initial = createPageWorkspace({
+        document,
+        baseRevisionId: 'revision-3',
+        revisionNumber: 3
+      });
+      const componentId = `orders-${scenario.kind.replaceAll('_', '-')}`;
+      const dataSourceId = `${componentId}-source`;
+      const inserted = reducePageWorkspace(initial, {
+        type: 'insert_bound_component',
+        component: {
+          kind: scenario.kind,
+          componentId,
+          title: `区域订单量${scenario.type}`,
+          metricCode: 'order-count',
+          dimensionCode: 'region',
+          span: scenario.kind === 'table' ? 12 : 6
+        },
+        placement: { sectionId: 'overview' },
+        dataSource: {
+          mode: 'create_query',
+          dataSourceId,
+          aggregation: 'sum'
+        },
+        catalog
+      });
+
+      expect(inserted).not.toBe(initial);
+      expect(inserted.past).toHaveLength(1);
+      expect(inserted.current.dataSources[dataSourceId]).toMatchObject({
+        fields: {
+          region: { role: 'dimension', label: '区域' },
+          'order-count': { role: 'metric', label: '订单量' }
+        },
+        source: {
+          type: 'query',
+          query: {
+            metrics: ['order-count'],
+            dimensions: ['region'],
+            aggregation: 'sum',
+            ...scenario.query
+          }
+        }
+      });
+      expect(inserted.current.sections[0]?.components.at(-1)).toMatchObject({
+        id: componentId,
+        type: scenario.type,
+        data: { main: dataSourceId },
+        props: scenario.props
+      });
+      expect(validate(inserted.current, catalog)).toEqual([]);
+
+      const undone = reducePageWorkspace(inserted, { type: 'undo' });
+      expect(undone.current).toEqual(document);
+      const redone = reducePageWorkspace(undone, { type: 'redo' });
+      expect(redone.current).toEqual(inserted.current);
+    }
+  });
+
+  it('维度数据组件只接受兼容维度和同时供给指标与维度的 query 页面数据源', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const input = {
+      type: 'insert_bound_component' as const,
+      component: {
+        kind: 'bar_chart' as const,
+        componentId: 'orders-by-region',
+        title: '区域订单量',
+        metricCode: 'order-count',
+        dimensionCode: 'region',
+        span: 6
+      },
+      placement: { sectionId: 'overview' },
+      dataSource: { mode: 'reuse' as const, dataSourceId: 'summary' },
+      catalog
+    };
+
+    expect(reducePageWorkspace(initial, input)).toBe(initial);
+
+    const reused = reducePageWorkspace(initial, {
+      ...input,
+      component: {
+        ...input.component,
+        componentId: 'gmv-by-region',
+        metricCode: 'gmv'
+      },
+      dataSource: { mode: 'reuse', dataSourceId: 'by-region' }
+    });
+    expect(reused.current.dataSources).toEqual(document.dataSources);
+    expect(reused.current.sections[0]?.components.at(-1)).toMatchObject({
+      id: 'gmv-by-region',
+      type: 'barChart',
+      data: { main: 'by-region' }
+    });
+
+    const catalogWithUnsupportedDimension: CatalogSnapshot = {
+      ...catalog,
+      dimensions: [
+        ...catalog.dimensions,
+        { code: 'product', name: '产品', cardinality: 20 }
+      ]
+    };
+    expect(
+      reducePageWorkspace(initial, {
+        ...input,
+        component: {
+          ...input.component,
+          dimensionCode: 'product'
+        },
+        dataSource: {
+          mode: 'create_query',
+          dataSourceId: 'orders-by-product-source',
+          aggregation: 'sum'
+        },
+        catalog: catalogWithUnsupportedDimension
+      })
+    ).toBe(initial);
+  });
+
   it('删除指标卡时清理它独占的页面数据源，撤销同时恢复两者', () => {
     const initial = createPageWorkspace({
       document,

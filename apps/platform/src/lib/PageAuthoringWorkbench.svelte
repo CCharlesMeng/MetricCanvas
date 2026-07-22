@@ -25,6 +25,8 @@
     createPageWorkspace,
     reducePageWorkspace,
     workspaceIsDirty,
+    type BoundComponentInsertion,
+    type DimensionedVisualizationKind,
     type PageWorkspace
   } from './page-workspace';
 
@@ -54,9 +56,18 @@
 
   type InspectorMode = 'component' | 'dataSource' | 'add';
   type MobilePane = 'copilot' | 'canvas' | 'inspector';
+  type AddComponentKind = BoundComponentInsertion['kind'];
 
   const DEFAULT_INTENT =
     '创建销售经营概览：展示成交总额和订单量、区域对比、成交趋势、渠道占比和区域明细';
+  const ADD_COMPONENT_KINDS = [
+    'metric_card',
+    'bar_chart',
+    'line_chart',
+    'pie_chart',
+    'ranking_card',
+    'table'
+  ] as const satisfies readonly AddComponentKind[];
 
   let workspace = $state<PageWorkspace | null>(null);
   let catalog = $state<CatalogSnapshot | null>(null);
@@ -68,7 +79,9 @@
   let input = $state(DEFAULT_INTENT);
   let pageIdInput = $state('');
   let selectedDataSourceId = $state('');
+  let addComponentKind = $state<AddComponentKind>('metric_card');
   let addMetricCode = $state('');
+  let addDimensionCode = $state('');
   let addDataSourceChoice = $state('new');
   let addSectionId = $state('');
   let addSpan = $state(6);
@@ -114,21 +127,38 @@
       querySources[0] ??
       null
   );
-  const addMetricOptions = $derived.by(() => {
-    if (!catalog) return [];
-    if (addDataSourceChoice === 'new') return catalog.metrics;
-    const source = workspace?.current.dataSources[addDataSourceChoice];
-    if (!source || source.source.type !== 'query') return [];
-    return source.source.query.metrics.flatMap((code) => {
-      const field = source.fields[code];
-      const metric = catalog?.metrics.find((candidate) => candidate.code === code);
-      return field?.role === 'metric' && metric ? [metric] : [];
-    });
-  });
+  const addMetricOptions = $derived(catalog?.metrics ?? []);
   const addMetric = $derived(
     addMetricOptions.find((metric) => metric.code === addMetricCode) ??
       addMetricOptions[0] ??
       null
+  );
+  const addNeedsDimension = $derived(addComponentKind !== 'metric_card');
+  const addDimensionOptions = $derived(
+    catalog && addMetric
+      ? catalog.dimensions.filter((dimension) =>
+          addMetric.availableDimensions.includes(dimension.code)
+        )
+      : []
+  );
+  const addDimension = $derived(
+    addDimensionOptions.find((dimension) => dimension.code === addDimensionCode) ??
+      addDimensionOptions[0] ??
+      null
+  );
+  const addReusableSources = $derived(
+    querySources.filter(({ source }) =>
+      Boolean(
+        addMetric &&
+          source.fields[addMetric.code]?.role === 'metric' &&
+          source.source.type === 'query' &&
+          source.source.query.metrics.includes(addMetric.code) &&
+          (!addNeedsDimension ||
+            (addDimension &&
+              source.fields[addDimension.code]?.role === 'dimension' &&
+              source.source.query.dimensions?.includes(addDimension.code)))
+      )
+    )
   );
   const addAggregationOptions = $derived(addMetric?.availableAggregations ?? []);
   const dirty = $derived(workspace ? workspaceIsDirty(workspace) : false);
@@ -552,59 +582,103 @@
     dispatch({ type: 'edit_component', locator: selected.locator, edit });
   }
 
-  function openMetricCardComposer() {
+  function openComponentComposer() {
     if (!workspace || !catalog) return;
+    addComponentKind = 'metric_card';
     addDataSourceChoice = 'new';
     addMetricCode = catalog.metrics[0]?.code ?? '';
+    addDimensionCode = catalog.dimensions.find((dimension) =>
+      catalog?.metrics[0]?.availableDimensions.includes(dimension.code)
+    )?.code ?? '';
     addAggregation = preferredAggregation(catalog.metrics[0]);
     addSectionId = selected?.locator.sectionId ?? workspace.current.sections[0]?.id ?? '';
     addSpan = 6;
     revealInspector('add', true);
   }
 
+  function chooseAddComponentKind(kind: AddComponentKind) {
+    addComponentKind = kind;
+    addSpan = kind === 'table' ? 12 : 6;
+    if (kind !== 'metric_card' && !addDimensionOptions.some((item) => item.code === addDimensionCode)) {
+      addDimensionCode = addDimensionOptions[0]?.code ?? '';
+    }
+    retainCompatibleAddSource();
+  }
+
   function chooseAddDataSource(value: string) {
     addDataSourceChoice = value;
-    const source = value === 'new' ? null : workspace?.current.dataSources[value];
-    const firstMetricCode =
-      source?.source.type === 'query'
-        ? source.source.query.metrics.find(
-            (code) => source.fields[code]?.role === 'metric' && catalog?.metrics.some((metric) => metric.code === code)
-          )
-        : catalog?.metrics[0]?.code;
-    addMetricCode = firstMetricCode ?? '';
-    addAggregation = preferredAggregation(
-      catalog?.metrics.find((metric) => metric.code === addMetricCode)
-    );
   }
 
   function chooseAddMetric(code: string) {
     addMetricCode = code;
-    addAggregation = preferredAggregation(
-      catalog?.metrics.find((metric) => metric.code === code)
-    );
+    const metric = catalog?.metrics.find((candidate) => candidate.code === code);
+    addAggregation = preferredAggregation(metric);
+    if (!metric?.availableDimensions.includes(addDimensionCode)) {
+      addDimensionCode = catalog?.dimensions.find((dimension) =>
+        metric?.availableDimensions.includes(dimension.code)
+      )?.code ?? '';
+    }
+    retainCompatibleAddSource();
   }
 
-  function addMetricCard() {
-    if (!workspace || !catalog || !addMetric || !addSectionId) return;
-    const componentId = nextAvailableId(`${addMetric.code}-card`, componentIds());
+  function chooseAddDimension(code: string) {
+    addDimensionCode = code;
+    retainCompatibleAddSource();
+  }
+
+  function retainCompatibleAddSource() {
+    if (
+      addDataSourceChoice !== 'new' &&
+      !addReusableSources.some((source) => source.id === addDataSourceChoice)
+    ) {
+      addDataSourceChoice = 'new';
+    }
+  }
+
+  function addBoundComponent() {
+    if (
+      !workspace ||
+      !catalog ||
+      !addMetric ||
+      !addSectionId ||
+      (addNeedsDimension && !addDimension)
+    ) return;
+    const kindSlug = componentKindSlug(addComponentKind);
+    const componentId = nextAvailableId(`${addMetric.code}-${kindSlug}`, componentIds());
     const dataSourceId =
       addDataSourceChoice === 'new'
-        ? nextAvailableId(`${addMetric.code}-summary`, Object.keys(workspace.current.dataSources))
+        ? nextAvailableId(
+            addNeedsDimension && addDimension
+              ? `${addMetric.code}-by-${addDimension.code}`
+              : `${addMetric.code}-summary`,
+            Object.keys(workspace.current.dataSources)
+          )
         : addDataSourceChoice;
     const afterComponentId =
       selected?.locator.sectionId === addSectionId
         ? selected.locator.componentId
         : undefined;
     const previous = workspace;
+    const component: BoundComponentInsertion =
+      addComponentKind === 'metric_card'
+        ? {
+            kind: 'metric_card',
+            componentId,
+            title: addMetric.name,
+            metricCode: addMetric.code,
+            span: addSpan
+          }
+        : {
+            kind: addComponentKind as DimensionedVisualizationKind,
+            componentId,
+            title: `${addDimension!.name}${addMetric.name}`,
+            metricCode: addMetric.code,
+            dimensionCode: addDimension!.code,
+            span: addSpan
+          };
     dispatch({
       type: 'insert_bound_component',
-      component: {
-        kind: 'metric_card',
-        componentId,
-        title: addMetric.name,
-        metricCode: addMetric.code,
-        span: addSpan
-      },
+      component,
       placement: { sectionId: addSectionId, ...(afterComponentId ? { afterComponentId } : {}) },
       dataSource:
         addDataSourceChoice === 'new'
@@ -617,7 +691,7 @@
       catalog
     });
     if (workspace === previous) {
-      error = '无法添加指标卡：请重新选择兼容的页面数据源。';
+      error = `无法添加${componentKindLabel(addComponentKind)}：请重新选择兼容的指标、维度或页面数据源。`;
       return;
     }
     dispatch({
@@ -626,7 +700,29 @@
     });
     selectedDataSourceId = dataSourceId;
     revealInspector('component');
-    notice = `已添加“${addMetric.name}”指标卡，并${addDataSourceChoice === 'new' ? '创建' : '复用'} query 页面数据源 ${dataSourceId}。`;
+    notice = `已添加“${component.title}”${componentKindLabel(addComponentKind)}，并${addDataSourceChoice === 'new' ? '创建' : '复用'} query 页面数据源 ${dataSourceId}。`;
+  }
+
+  function componentKindSlug(kind: AddComponentKind): string {
+    return {
+      metric_card: 'card',
+      bar_chart: 'bar',
+      line_chart: 'line',
+      pie_chart: 'pie',
+      ranking_card: 'ranking',
+      table: 'table'
+    }[kind];
+  }
+
+  function componentKindLabel(kind: AddComponentKind): string {
+    return {
+      metric_card: '指标卡',
+      bar_chart: '柱状图',
+      line_chart: '折线图',
+      pie_chart: '饼图',
+      ranking_card: '排行卡',
+      table: '明细表'
+    }[kind];
   }
 
   function removeSelected() {
@@ -906,7 +1002,7 @@
     <section class="composer-dock" aria-label="Agent 调整输入区">
       <div class="ai-quick-actions">
         <span>AI 与手动编辑共用当前工作副本</span>
-        <button type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>＋ 手动添加</button>
+        <button type="button" onclick={openComponentComposer} disabled={!workspace || !catalog}>＋ 手动添加</button>
       </div>
       <div class="target-context">
         <span>正在调整</span>
@@ -945,7 +1041,7 @@
     <header class="inspector-toolbar">
       <div>
         <span>统一检查器</span>
-        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : '添加指标卡'}</strong>
+        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : '添加数据组件'}</strong>
       </div>
       <div class="inspector-toolbar-actions">
         {#if inspectorMode !== 'component'}<button type="button" onclick={() => revealInspector('component')}>返回</button>{/if}
@@ -958,7 +1054,7 @@
         <nav class="inspector-modes" aria-label="检查器模式">
           <button class:active={inspectorMode === 'component'} type="button" onclick={() => revealInspector('component')}>组件</button>
           <button class:active={inspectorMode === 'dataSource'} type="button" onclick={() => revealInspector('dataSource')} disabled={querySources.length === 0}>页面数据源</button>
-          <button class:active={inspectorMode === 'add'} type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>＋ 新增</button>
+          <button class:active={inspectorMode === 'add'} type="button" onclick={openComponentComposer} disabled={!workspace || !catalog}>＋ 新增</button>
         </nav>
 
         {#if inspectorMode === 'component'}
@@ -1024,18 +1120,30 @@
             </div>
           {:else}<div class="inspector-empty"><strong>没有可编辑的页面数据源</strong><p>当前看板页面尚未使用 query 页面数据源。</p></div>{/if}
         {:else if workspace && catalog}
-          <div class="mode-intro"><strong>添加指标卡</strong><p>组件 ID 和新页面数据源 ID 将自动生成。</p></div>
-          <div class="add-card-composer" aria-label="添加指标卡">
+          <div class="mode-intro"><strong>添加数据组件</strong><p>选择展示方式和数据组合，ID 与字段绑定将自动生成。</p></div>
+          <div class="add-card-composer" aria-label="添加数据组件">
+            <div class="component-kind-choice" aria-label="展示方式">
+              {#each ADD_COMPONENT_KINDS as kind}
+                <button type="button" class:active={addComponentKind === kind} onclick={() => chooseAddComponentKind(kind)}>{componentKindLabel(kind)}</button>
+              {/each}
+            </div>
             <div class="add-grid">
               <label>指标
                 <select value={addMetricCode} onchange={(event) => chooseAddMetric(valueOf(event))}>
                   {#each addMetricOptions as metric}<option value={metric.code}>{metric.name}</option>{/each}
                 </select>
               </label>
+              {#if addNeedsDimension}
+                <label>维度
+                  <select value={addDimensionCode} onchange={(event) => chooseAddDimension(valueOf(event))}>
+                    {#each addDimensionOptions as dimension}<option value={dimension.code}>{dimension.name}</option>{/each}
+                  </select>
+                </label>
+              {/if}
               <label>页面数据源
                 <select value={addDataSourceChoice} onchange={(event) => chooseAddDataSource(valueOf(event))}>
                   <option value="new">新建 query 页面数据源</option>
-                  {#each querySources as candidate}<option value={candidate.id}>复用 {candidate.id}</option>{/each}
+                  {#each addReusableSources as candidate}<option value={candidate.id}>复用 {candidate.id}</option>{/each}
                 </select>
               </label>
               {#if addDataSourceChoice === 'new'}
@@ -1044,8 +1152,8 @@
               <label>放入分区<select bind:value={addSectionId}>{#each workspace.current.sections as section}<option value={section.id}>{section.title ?? section.id}</option>{/each}</select></label>
             </div>
             <div class="layout-choice"><span>组件宽度</span>{#each [6, 12] as span}<button type="button" class:active={addSpan === span} onclick={() => (addSpan = span)}>{span}/12</button>{/each}</div>
-            <div class="add-summary"><span>{addDataSourceChoice === 'new' ? '自动创建 query 页面数据源' : `复用 ${addDataSourceChoice}`}</span><span>· 绑定到 main 数据槽</span></div>
-            <button class="confirm-add" type="button" onclick={addMetricCard} disabled={!addMetric || !addSectionId || (addDataSourceChoice === 'new' && !addAggregation)}>添加到未保存工作副本</button>
+            <div class="add-summary"><span>{componentKindLabel(addComponentKind)} · {addMetric?.name}{addNeedsDimension && addDimension ? ` / ${addDimension.name}` : ''}</span><span>{addDataSourceChoice === 'new' ? '自动创建 query 页面数据源' : `复用 ${addDataSourceChoice}`} · 绑定 main 数据槽</span></div>
+            <button class="confirm-add" type="button" onclick={addBoundComponent} disabled={!addMetric || !addSectionId || (addNeedsDimension && !addDimension) || (addDataSourceChoice === 'new' && !addAggregation)}>添加到未保存工作副本</button>
           </div>
         {/if}
       </section>
@@ -1165,6 +1273,9 @@
   .advanced-query fieldset, .advanced-query .query-grid { margin-top: 10px; }
   .return-to-component { justify-self: start; padding: 6px 8px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 5px; font-size: 8px; font-weight: 800; }
   .add-card-composer { gap: 12px; padding: 0; margin: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+  .component-kind-choice { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; }
+  .component-kind-choice button { min-width: 0; padding: 7px 4px; color: #697386; background: #f5f6f8; border: 1px solid transparent; border-radius: 6px; font-size: 8px; font-weight: 800; }
+  .component-kind-choice button.active { color: #4338ca; background: #eef2ff; border-color: #c7d2fe; }
   .add-grid { grid-template-columns: 1fr; gap: 10px; }
   .add-grid label:last-child { grid-column: auto; }
   .layout-choice { padding-top: 2px; }

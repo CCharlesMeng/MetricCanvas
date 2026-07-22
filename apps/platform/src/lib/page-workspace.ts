@@ -30,6 +30,26 @@ export interface MetricCardInsertion {
   span: number;
 }
 
+export type DimensionedVisualizationKind =
+  | 'bar_chart'
+  | 'line_chart'
+  | 'pie_chart'
+  | 'ranking_card'
+  | 'table';
+
+export interface DimensionedVisualizationInsertion {
+  kind: DimensionedVisualizationKind;
+  componentId: string;
+  title: string;
+  metricCode: string;
+  dimensionCode: string;
+  span: number;
+}
+
+export type BoundComponentInsertion =
+  | MetricCardInsertion
+  | DimensionedVisualizationInsertion;
+
 export type BoundDataSourceSelection =
   | {
       mode: 'create_query';
@@ -59,7 +79,7 @@ export type PageWorkspaceCommand =
     }
   | {
       type: 'insert_bound_component';
-      component: MetricCardInsertion;
+      component: BoundComponentInsertion;
       placement: { sectionId: string; afterComponentId?: string };
       dataSource: BoundDataSourceSelection;
       catalog: CatalogSnapshot;
@@ -230,9 +250,20 @@ function insertBoundComponent(
   const metric = command.catalog.metrics.find(
     (candidate) => candidate.code === command.component.metricCode
   );
+  const dimensionCode =
+    command.component.kind === 'metric_card'
+      ? null
+      : command.component.dimensionCode;
+  const dimension = dimensionCode
+    ? command.catalog.dimensions.find(
+        (candidate) => candidate.code === dimensionCode
+      ) ?? null
+    : null;
   if (
     !section ||
     !metric ||
+    (command.component.kind !== 'metric_card' &&
+      (!dimension || !metric.availableDimensions.includes(dimension.code))) ||
     !DOCUMENT_ID.test(command.component.componentId) ||
     !command.component.title.trim() ||
     !Number.isInteger(command.component.span) ||
@@ -270,7 +301,10 @@ function insertBoundComponent(
       !source ||
       source.source.type !== 'query' ||
       source.fields[metric.code]?.role !== 'metric' ||
-      !source.source.query.metrics.includes(metric.code)
+      !source.source.query.metrics.includes(metric.code) ||
+      (dimension !== null &&
+        (source.fields[dimension.code]?.role !== 'dimension' ||
+          !source.source.query.dimensions?.includes(dimension.code)))
     ) {
       return document;
     }
@@ -279,15 +313,15 @@ function insertBoundComponent(
   const next = clonePage(document);
   if (command.dataSource.mode === 'create_query') {
     next.dataSources[command.dataSource.dataSourceId] = {
-      fields: {
-        [metric.code]: metricField(metric)
-      },
+      fields: Object.fromEntries([
+        ...(dimension
+          ? [[dimension.code, dimensionField(dimension)] as const]
+          : []),
+        [metric.code, metricField(metric)]
+      ]),
       source: {
         type: 'query',
-        query: {
-          metrics: [metric.code],
-          aggregation: command.dataSource.aggregation
-        }
+        query: insertionQuery(command.component, command.dataSource.aggregation)
       }
     };
   }
@@ -300,17 +334,128 @@ function insertBoundComponent(
         (component) => component.id === command.placement.afterComponentId
       )
     : targetSection.components.length - 1;
-  targetSection.components.splice(afterIndex + 1, 0, {
-    id: command.component.componentId,
-    type: 'metricCard',
-    layout: { span: command.component.span },
-    data: { main: command.dataSource.dataSourceId },
-    props: {
-      title: command.component.title.trim(),
-      rows: [{ label: metric.name, valueField: metric.code }]
-    }
-  });
+  targetSection.components.splice(
+    afterIndex + 1,
+    0,
+    insertionComponent(
+      command.component,
+      metric.name,
+      dimension?.name,
+      command.dataSource.dataSourceId
+    )
+  );
   return next;
+}
+
+function insertionQuery(
+  insertion: BoundComponentInsertion,
+  aggregation: string
+): StructuredQuery {
+  if (insertion.kind === 'metric_card') {
+    return { metrics: [insertion.metricCode], aggregation };
+  }
+  const query: StructuredQuery = {
+    metrics: [insertion.metricCode],
+    dimensions: [insertion.dimensionCode],
+    aggregation
+  };
+  if (insertion.kind === 'line_chart') {
+    query.orderBy = [{ field: insertion.dimensionCode, direction: 'asc' }];
+    query.limit = 100;
+  } else {
+    query.orderBy = [{ field: insertion.metricCode, direction: 'desc' }];
+    query.limit = insertion.kind === 'table' ? 100 : 10;
+  }
+  return query;
+}
+
+function insertionComponent(
+  insertion: BoundComponentInsertion,
+  metricName: string,
+  dimensionName: string | undefined,
+  dataSourceId: string
+): Component {
+  const base = {
+    id: insertion.componentId,
+    layout: { span: insertion.span },
+    data: { main: dataSourceId }
+  };
+  const title = insertion.title.trim();
+  if (insertion.kind === 'metric_card') {
+    return {
+      ...base,
+      type: 'metricCard',
+      props: {
+        title,
+        rows: [{ label: metricName, valueField: insertion.metricCode }]
+      }
+    };
+  }
+  const series = [{ field: insertion.metricCode, label: metricName }];
+  if (insertion.kind === 'bar_chart') {
+    return {
+      ...base,
+      type: 'barChart',
+      props: {
+        title,
+        categoryField: insertion.dimensionCode,
+        series,
+        rounded: true
+      }
+    };
+  }
+  if (insertion.kind === 'line_chart') {
+    return {
+      ...base,
+      type: 'lineChart',
+      props: {
+        title,
+        xField: insertion.dimensionCode,
+        series,
+        smooth: true
+      }
+    };
+  }
+  if (insertion.kind === 'pie_chart') {
+    return {
+      ...base,
+      type: 'pieChart',
+      props: {
+        title,
+        categoryField: insertion.dimensionCode,
+        valueField: insertion.metricCode,
+        ring: '58%'
+      }
+    };
+  }
+  if (insertion.kind === 'ranking_card') {
+    return {
+      ...base,
+      type: 'rankingCard',
+      props: {
+        title,
+        nameField: insertion.dimensionCode,
+        valueField: insertion.metricCode
+      }
+    };
+  }
+  return {
+    ...base,
+    type: 'table',
+    props: {
+      title,
+      columns: [
+        { field: insertion.dimensionCode, title: dimensionName },
+        {
+          field: insertion.metricCode,
+          title: metricName,
+          sortable: true,
+          align: 'right'
+        }
+      ],
+      pagination: { mode: 'none' }
+    }
+  };
 }
 
 export function workspaceIsDirty(workspace: PageWorkspace): boolean {
@@ -516,6 +661,14 @@ function metricField(metric: CatalogSnapshot['metrics'][number]) {
         : metric.valueType === 'integer'
           ? ('number-grouped' as const)
           : ('number-2' as const)
+  };
+}
+
+function dimensionField(dimension: CatalogSnapshot['dimensions'][number]) {
+  return {
+    type: 'string' as const,
+    role: 'dimension' as const,
+    label: dimension.name
   };
 }
 
