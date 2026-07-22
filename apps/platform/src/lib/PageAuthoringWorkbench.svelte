@@ -52,6 +52,9 @@
     confirmationUrl: string;
   }
 
+  type InspectorMode = 'component' | 'dataSource' | 'add';
+  type MobilePane = 'copilot' | 'canvas' | 'inspector';
+
   const DEFAULT_INTENT =
     '创建销售经营概览：展示成交总额和订单量、区域对比、成交趋势、渠道占比和区域明细';
 
@@ -65,12 +68,14 @@
   let input = $state(DEFAULT_INTENT);
   let pageIdInput = $state('');
   let selectedDataSourceId = $state('');
-  let addingMetricCard = $state(false);
   let addMetricCode = $state('');
   let addDataSourceChoice = $state('new');
   let addSectionId = $state('');
-  let addSpan = $state(3);
+  let addSpan = $state(6);
   let addAggregation = $state('');
+  let inspectorMode = $state<InspectorMode>('component');
+  let inspectorOpen = $state(true);
+  let mobilePane = $state<MobilePane>('copilot');
   let runId = $state('');
   let bridgeSession = $state('');
   let runtimeOrigin = $state('http://localhost:5173');
@@ -167,6 +172,12 @@
   onMount(() => {
     runId = crypto.randomUUID();
     bridgeSession = crypto.randomUUID();
+    const compactLayout = window.matchMedia('(max-width: 1179px)');
+    if (compactLayout.matches) inspectorOpen = false;
+    const closeInspectorForCompactLayout = (event: MediaQueryListEvent) => {
+      if (event.matches) inspectorOpen = false;
+    };
+    compactLayout.addEventListener('change', closeInspectorForCompactLayout);
     void loadCatalog();
     const receive = (event: MessageEvent) => {
       if (!iframe?.contentWindow || event.source !== iframe.contentWindow) return;
@@ -181,7 +192,10 @@
       }
     };
     window.addEventListener('message', receive);
-    return () => window.removeEventListener('message', receive);
+    return () => {
+      compactLayout.removeEventListener('change', closeInspectorForCompactLayout);
+      window.removeEventListener('message', receive);
+    };
   });
 
   $effect(() => {
@@ -357,6 +371,7 @@
       dispatch({ type: 'select_component', locator: intent.locator });
       const editable = components.find((component) => sameLocator(component.locator, intent.locator));
       if (editable) syncSelectedSource(editable);
+      revealInspector('component', true);
     } else if (intent.type === 'move_component') {
       dispatch({ type: 'move_component', locator: intent.locator, before: intent.before });
     } else {
@@ -378,6 +393,26 @@
   function selectFromInspector(component: EditableComponent) {
     dispatch({ type: 'select_component', locator: component.locator });
     syncSelectedSource(component);
+    revealInspector('component');
+  }
+
+  function revealInspector(mode: InspectorMode, switchOnSmallScreen = false) {
+    inspectorMode = mode;
+    inspectorOpen = true;
+    if (switchOnSmallScreen && window.matchMedia('(max-width: 760px)').matches) {
+      mobilePane = 'inspector';
+    }
+  }
+
+  function closeInspector() {
+    inspectorOpen = false;
+    if (window.matchMedia('(max-width: 760px)').matches) mobilePane = 'canvas';
+  }
+
+  function openDataSourceInspector(dataSourceId: string | null) {
+    if (!dataSourceId) return;
+    selectedDataSourceId = dataSourceId;
+    revealInspector('dataSource', true);
   }
 
   function sendDocumentToRuntime() {
@@ -519,12 +554,12 @@
 
   function openMetricCardComposer() {
     if (!workspace || !catalog) return;
-    addingMetricCard = true;
     addDataSourceChoice = 'new';
     addMetricCode = catalog.metrics[0]?.code ?? '';
     addAggregation = preferredAggregation(catalog.metrics[0]);
     addSectionId = selected?.locator.sectionId ?? workspace.current.sections[0]?.id ?? '';
-    addSpan = 3;
+    addSpan = 6;
+    revealInspector('add', true);
   }
 
   function chooseAddDataSource(value: string) {
@@ -590,7 +625,7 @@
       locator: { sectionId: addSectionId, componentId }
     });
     selectedDataSourceId = dataSourceId;
-    addingMetricCard = false;
+    revealInspector('component');
     notice = `已添加“${addMetric.name}”指标卡，并${addDataSourceChoice === 'new' ? '创建' : '复用'} query 页面数据源 ${dataSourceId}。`;
   }
 
@@ -631,6 +666,25 @@
       .find((section) => section.id === component.locator.sectionId)
       ?.components.find((candidate) => candidate.id === component.locator.componentId)
       ?.data?.main ?? null;
+  }
+
+  function componentDataSource(component: EditableComponent): DataSource | undefined {
+    const dataSourceId = componentDataSourceId(component);
+    return dataSourceId ? workspace?.current.dataSources[dataSourceId] : undefined;
+  }
+
+  function dataSourceSummary(source: DataSource | undefined): string {
+    if (!source) return '未找到页面数据源';
+    if (source.source.type === 'inline') return `固定数据 · ${source.source.rows.length} 行`;
+    const metricNames = source.source.query.metrics.map(
+      (code) => catalog?.metrics.find((metric) => metric.code === code)?.name ?? code
+    );
+    const dimensionNames = (source.source.query.dimensions ?? []).map(
+      (code) => catalog?.dimensions.find((dimension) => dimension.code === code)?.name ?? code
+    );
+    return [metricNames.join('、'), dimensionNames.length ? `按${dimensionNames.join('、')}` : '', source.source.query.aggregation]
+      .filter(Boolean)
+      .join(' · ');
   }
 
   function applyQuery(query: StructuredQuery) {
@@ -760,7 +814,18 @@
 
 <svelte:head><title>单页页面搭建工作台 · MetricCanvas</title></svelte:head>
 
-<div class="authoring-workbench">
+<div
+  class="authoring-workbench"
+  class:inspector-open={inspectorOpen}
+  class:mobile-copilot={mobilePane === 'copilot'}
+  class:mobile-canvas={mobilePane === 'canvas'}
+  class:mobile-inspector={mobilePane === 'inspector'}
+>
+  <nav class="mobile-panes" aria-label="工作台区域">
+    <button class:active={mobilePane === 'copilot'} type="button" onclick={() => (mobilePane = 'copilot')}>AI 协作</button>
+    <button class:active={mobilePane === 'canvas'} type="button" onclick={() => (mobilePane = 'canvas')} disabled={!workspace}>画布</button>
+    <button class:active={mobilePane === 'inspector'} type="button" onclick={() => { mobilePane = 'inspector'; inspectorOpen = true; }} disabled={!workspace}>检查器</button>
+  </nav>
   <aside class="control-column">
     <header class="workbench-header">
       <div>
@@ -829,86 +894,6 @@
         {/if}
       </section>
 
-      <section class="inspector-panel">
-        <div class="inspector-heading">
-          <div><strong>页面内容</strong><span>{components.length} 个组件 · {querySources.length} 个 query 页面数据源</span></div>
-          <button type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>+ 指标卡</button>
-        </div>
-        {#if addingMetricCard && workspace && catalog}
-          <div class="add-card-composer" aria-label="添加指标卡">
-            <div class="composer-title"><div><span>NEW CONTENT</span><strong>添加指标卡</strong></div><button type="button" aria-label="关闭添加面板" onclick={() => (addingMetricCard = false)}>×</button></div>
-            <div class="add-grid">
-              <label>页面数据源
-                <select value={addDataSourceChoice} onchange={(event) => chooseAddDataSource(valueOf(event))}>
-                  <option value="new">新建 query 页面数据源</option>
-                  {#each querySources as candidate}<option value={candidate.id}>复用 {candidate.id}</option>{/each}
-                </select>
-              </label>
-              <label>指标
-                <select value={addMetricCode} onchange={(event) => chooseAddMetric(valueOf(event))}>
-                  {#each addMetricOptions as metric}<option value={metric.code}>{metric.name} · {metric.code}</option>{/each}
-                </select>
-              </label>
-              {#if addDataSourceChoice === 'new'}
-                <label>聚合
-                  <select bind:value={addAggregation}>{#each addAggregationOptions as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select>
-                </label>
-              {/if}
-              <label>放入分区
-                <select bind:value={addSectionId}>
-                  {#each workspace.current.sections as section}<option value={section.id}>{section.title ?? section.id}</option>{/each}
-                </select>
-              </label>
-            </div>
-            <div class="layout-choice">
-              <span>布局宽度</span>
-              {#each [3, 4, 6, 12] as span}<button type="button" class:active={addSpan === span} onclick={() => (addSpan = span)}>{span}/12</button>{/each}
-            </div>
-            <div class="add-summary">
-              <span>{addDataSourceChoice === 'new' ? '将创建' : '将复用'}</span>
-              <code>{addDataSourceChoice === 'new' && addMetric ? `${addMetric.code}-summary` : addDataSourceChoice}</code>
-              <span>· 绑定到 main 数据槽</span>
-            </div>
-            <button class="confirm-add" type="button" onclick={addMetricCard} disabled={!addMetric || !addSectionId || (addDataSourceChoice === 'new' && !addAggregation)}>添加到未保存工作副本</button>
-          </div>
-        {/if}
-        <div class="component-list" aria-label="组件列表">
-          {#each components as component (component.locator.sectionId + component.locator.componentId)}
-            <button class:selected={selected && sameLocator(selected.locator, component.locator)} type="button" onclick={() => selectFromInspector(component)}>
-              <span>{component.typeLabel}</span><strong>{component.title || component.locator.componentId}</strong><small>{componentDataSourceId(component) ?? '无页面数据源'} · {component.span}/12</small>
-            </button>
-          {/each}
-        </div>
-        {#if selected}
-          <div class="property-form">
-            <label>标题<input value={selected.title} onchange={(event) => editSelected({ title: valueOf(event) })} /></label>
-            {#if selected.detailLabel}<label>{selected.detailLabel}<input value={selected.detail} onchange={(event) => editSelected({ detail: valueOf(event) })} /></label>{/if}
-            <label>网格跨度 <span>{selected.span}/12</span><input type="range" min="1" max="12" value={selected.span} oninput={(event) => editSelected({ span: Number(valueOf(event)) })} /></label>
-            <div class="selected-source"><span>绑定页面数据源</span><strong>{componentDataSourceId(selected) ?? '无'}</strong>{#if componentDataSourceId(selected)}<a href="#data-source-editor" onclick={() => (selectedDataSourceId = componentDataSourceId(selected) ?? '')}>编辑结构化查询</a>{/if}</div>
-            <div class="property-actions"><p>画布内也可改标题、调整跨度或拖动排序。删除可撤销。</p><button type="button" class="remove" onclick={removeSelected}>删除组件</button></div>
-          </div>
-        {/if}
-        <details class="source-inspector" id="data-source-editor" open>
-          <summary><span><strong>页面数据源</strong><small>选择并编辑结构化查询</small></span><em>{querySources.length}</em></summary>
-          <div class="source-select">
-            <label>页面数据源<select bind:value={selectedDataSourceId}>{#each querySources as candidate}<option value={candidate.id}>{candidate.id}</option>{/each}</select></label>
-          </div>
-          {#if selectedSource && selectedQuery() && catalog}
-            {@const query = selectedQuery()!}
-            <div class="query-editor">
-              <fieldset><legend>指标</legend>{#each catalog.metrics as metric}<label class:disabled={!metricCompatible(metric.code)}><input type="checkbox" checked={query.metrics.includes(metric.code)} disabled={!query.metrics.includes(metric.code) && !metricCompatible(metric.code)} onchange={(event) => toggleMetric(metric.code, checkedOf(event))} /><span><strong>{metric.name}</strong><code>{metric.code}</code></span></label>{/each}</fieldset>
-              <fieldset><legend>维度</legend>{#each catalog.dimensions as dimension}<label class:disabled={!dimensionCompatible(dimension.code)}><input type="checkbox" checked={(query.dimensions ?? []).includes(dimension.code)} disabled={!(query.dimensions ?? []).includes(dimension.code) && !dimensionCompatible(dimension.code)} onchange={(event) => toggleDimension(dimension.code, checkedOf(event))} /><span><strong>{dimension.name}</strong><code>{dimension.code}</code></span></label>{/each}</fieldset>
-              <div class="query-grid">
-                <label>聚合<select value={query.aggregation ?? ''} onchange={(event) => applyQuery({ ...query, aggregation: valueOf(event) })}>{#each aggregationOptions() as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select></label>
-                <label>排序字段<select value={query.orderBy?.[0]?.field ?? query.metrics[0]} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: valueOf(event), direction: query.orderBy?.[0]?.direction ?? 'desc' }] })}>{#each [...(query.dimensions ?? []), ...query.metrics] as field}<option value={field}>{field}</option>{/each}</select></label>
-                <label>方向<select value={query.orderBy?.[0]?.direction ?? 'desc'} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: query.orderBy?.[0]?.field ?? query.metrics[0]!, direction: valueOf(event) as 'asc' | 'desc' }] })}><option value="desc">desc</option><option value="asc">asc</option></select></label>
-                <label>limit<input type="number" min="1" max="1000" value={query.limit ?? 100} onchange={(event) => applyQuery({ ...query, limit: Number(valueOf(event)) })} /></label>
-              </div>
-              <p class="catalog-proof">元数据版本 <code>{metadataVersion.slice(0, 12)}…</code> · 修改会同步字段契约与组件数据绑定。</p>
-            </div>
-          {:else}<p class="empty">当前没有可编辑的 query 页面数据源。</p>{/if}
-        </details>
-      </section>
     </div>
 
     <footer class="lifecycle-panel">
@@ -919,6 +904,10 @@
     </footer>
 
     <section class="composer-dock" aria-label="Agent 调整输入区">
+      <div class="ai-quick-actions">
+        <span>AI 与手动编辑共用当前工作副本</span>
+        <button type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>＋ 手动添加</button>
+      </div>
       <div class="target-context">
         <span>正在调整</span>
         <strong>{selected ? `${selected.typeLabel} / ${selected.locator.componentId}` : '整张看板页面'}</strong>
@@ -934,7 +923,10 @@
   <main class="canvas-column">
     <header class="canvas-toolbar">
       <div><i class:dirty></i><strong>统一运行时</strong><span>{canvasMode === 'authoring' ? '未保存工作副本' : `精确预览 · R${workspace?.revisionNumber}`}</span></div>
-      <div class="mode-switch"><button class:active={canvasMode === 'authoring'} type="button" onclick={() => (canvasMode = 'authoring')} disabled={!workspace}>编辑画布</button><button class:active={canvasMode === 'preview'} type="button" onclick={showPrecisePreview} disabled={!workspace?.baseRevisionId || dirty}>精确预览</button></div>
+      <div class="canvas-actions">
+        <div class="mode-switch"><button class:active={canvasMode === 'authoring'} type="button" onclick={() => (canvasMode = 'authoring')} disabled={!workspace}>编辑画布</button><button class:active={canvasMode === 'preview'} type="button" onclick={showPrecisePreview} disabled={!workspace?.baseRevisionId || dirty}>精确预览</button></div>
+        <button class="inspector-toggle" type="button" onclick={() => { inspectorOpen = true; inspectorMode = 'component'; }} disabled={!workspace}>检查器</button>
+      </div>
     </header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
     {#if notice}<div class="notice" role="status">{notice}</div>{/if}
@@ -946,6 +938,119 @@
       <iframe bind:this={iframe} title={`R${workspace.revisionNumber} 统一运行时精确预览`} src={precisePreviewUrl}></iframe>
     {/if}
   </main>
+
+  <button class="inspector-backdrop" type="button" aria-label="关闭检查器" onclick={closeInspector}></button>
+
+  <aside class="inspector-column" aria-label="统一检查器">
+    <header class="inspector-toolbar">
+      <div>
+        <span>统一检查器</span>
+        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : '添加指标卡'}</strong>
+      </div>
+      <div class="inspector-toolbar-actions">
+        {#if inspectorMode !== 'component'}<button type="button" onclick={() => revealInspector('component')}>返回</button>{/if}
+        <button type="button" aria-label="关闭检查器" onclick={closeInspector}>×</button>
+      </div>
+    </header>
+
+    <div class="inspector-scroll">
+      <section class="inspector-panel">
+        <nav class="inspector-modes" aria-label="检查器模式">
+          <button class:active={inspectorMode === 'component'} type="button" onclick={() => revealInspector('component')}>组件</button>
+          <button class:active={inspectorMode === 'dataSource'} type="button" onclick={() => revealInspector('dataSource')} disabled={querySources.length === 0}>页面数据源</button>
+          <button class:active={inspectorMode === 'add'} type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>＋ 新增</button>
+        </nav>
+
+        {#if inspectorMode === 'component'}
+          <div class="inspector-heading">
+            <div><strong>页面内容</strong><span>{components.length} 个组件</span></div>
+          </div>
+          {#if components.length > 0}
+            <div class="component-list" aria-label="组件列表">
+              {#each components as component (component.locator.sectionId + component.locator.componentId)}
+                <button class:selected={selected && sameLocator(selected.locator, component.locator)} type="button" onclick={() => selectFromInspector(component)}>
+                  <span>{component.typeLabel}</span><strong>{component.title || component.locator.componentId}</strong><small>{component.span}/12</small>
+                </button>
+              {/each}
+            </div>
+          {/if}
+
+          {#if selected}
+            <div class="selection-summary"><span>{selected.typeLabel}</span><strong>{selected.title || selected.locator.componentId}</strong><small>选中组件与画布同步</small></div>
+            <div class="property-form">
+              <label>标题<input value={selected.title} onchange={(event) => editSelected({ title: valueOf(event) })} /></label>
+              {#if selected.detailLabel}<label>{selected.detailLabel}<input value={selected.detail} onchange={(event) => editSelected({ detail: valueOf(event) })} /></label>{/if}
+              <div class="span-field">
+                <span>组件宽度 <small>当前 {selected.span}/12</small></span>
+                <div class="span-control">
+                  {#each [6, 12] as span}<button type="button" class:active={selected.span === span} onclick={() => editSelected({ span })}>{span}/12</button>{/each}
+                </div>
+              </div>
+              <div class="selected-source">
+                <span>绑定页面数据源</span>
+                <strong>{componentDataSourceId(selected) ?? '无'}</strong>
+                <p>{dataSourceSummary(componentDataSource(selected))}</p>
+                {#if componentDataSourceId(selected)}<button type="button" onclick={() => openDataSourceInspector(componentDataSourceId(selected))}>编辑结构化查询 →</button>{/if}
+              </div>
+              <div class="danger-zone"><p>删除可撤销；独占的页面数据源会同步清理。</p><button type="button" class="remove" onclick={removeSelected}>删除组件</button></div>
+            </div>
+          {:else}
+            <div class="inspector-empty"><span>◎</span><strong>未选中组件</strong><p>点击中央画布中的组件，在这里编辑属性和页面数据源。</p></div>
+          {/if}
+        {:else if inspectorMode === 'dataSource'}
+          <div class="mode-intro"><strong>结构化查询</strong><p>修改会同步字段契约和组件数据绑定。</p></div>
+          <div class="source-select">
+            <label>页面数据源<select bind:value={selectedDataSourceId}>{#each querySources as candidate}<option value={candidate.id}>{candidate.id}</option>{/each}</select></label>
+            {#if selectedSource}<p>{dataSourceSummary(selectedSource.source)}</p>{/if}
+          </div>
+          {#if selectedSource && selectedQuery() && catalog}
+            {@const query = selectedQuery()!}
+            <div class="query-editor">
+              <fieldset><legend>指标</legend>{#each catalog.metrics as metric}<label class:disabled={!metricCompatible(metric.code)}><input type="checkbox" checked={query.metrics.includes(metric.code)} disabled={!query.metrics.includes(metric.code) && !metricCompatible(metric.code)} onchange={(event) => toggleMetric(metric.code, checkedOf(event))} /><span><strong>{metric.name}</strong><code>{metric.code}</code></span></label>{/each}</fieldset>
+              <div class="query-grid primary-query-fields">
+                <label>聚合方式<select value={query.aggregation ?? ''} onchange={(event) => applyQuery({ ...query, aggregation: valueOf(event) })}>{#each aggregationOptions() as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select></label>
+              </div>
+              <details class="advanced-query">
+                <summary>维度、排序与限制</summary>
+                <fieldset><legend>维度</legend>{#each catalog.dimensions as dimension}<label class:disabled={!dimensionCompatible(dimension.code)}><input type="checkbox" checked={(query.dimensions ?? []).includes(dimension.code)} disabled={!(query.dimensions ?? []).includes(dimension.code) && !dimensionCompatible(dimension.code)} onchange={(event) => toggleDimension(dimension.code, checkedOf(event))} /><span><strong>{dimension.name}</strong><code>{dimension.code}</code></span></label>{/each}</fieldset>
+                <div class="query-grid">
+                  <label>排序字段<select value={query.orderBy?.[0]?.field ?? query.metrics[0]} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: valueOf(event), direction: query.orderBy?.[0]?.direction ?? 'desc' }] })}>{#each [...(query.dimensions ?? []), ...query.metrics] as field}<option value={field}>{field}</option>{/each}</select></label>
+                  <label>方向<select value={query.orderBy?.[0]?.direction ?? 'desc'} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: query.orderBy?.[0]?.field ?? query.metrics[0]!, direction: valueOf(event) as 'asc' | 'desc' }] })}><option value="desc">desc</option><option value="asc">asc</option></select></label>
+                  <label>限制行数<input type="number" min="1" max="1000" value={query.limit ?? 100} onchange={(event) => applyQuery({ ...query, limit: Number(valueOf(event)) })} /></label>
+                </div>
+              </details>
+              <p class="catalog-proof">元数据版本 <code>{metadataVersion.slice(0, 12)}…</code></p>
+              {#if selected}<button class="return-to-component" type="button" onclick={() => revealInspector('component')}>← 返回绑定组件</button>{/if}
+            </div>
+          {:else}<div class="inspector-empty"><strong>没有可编辑的页面数据源</strong><p>当前看板页面尚未使用 query 页面数据源。</p></div>{/if}
+        {:else if workspace && catalog}
+          <div class="mode-intro"><strong>添加指标卡</strong><p>组件 ID 和新页面数据源 ID 将自动生成。</p></div>
+          <div class="add-card-composer" aria-label="添加指标卡">
+            <div class="add-grid">
+              <label>指标
+                <select value={addMetricCode} onchange={(event) => chooseAddMetric(valueOf(event))}>
+                  {#each addMetricOptions as metric}<option value={metric.code}>{metric.name}</option>{/each}
+                </select>
+              </label>
+              <label>页面数据源
+                <select value={addDataSourceChoice} onchange={(event) => chooseAddDataSource(valueOf(event))}>
+                  <option value="new">新建 query 页面数据源</option>
+                  {#each querySources as candidate}<option value={candidate.id}>复用 {candidate.id}</option>{/each}
+                </select>
+              </label>
+              {#if addDataSourceChoice === 'new'}
+                <label>聚合方式<select bind:value={addAggregation}>{#each addAggregationOptions as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select></label>
+              {/if}
+              <label>放入分区<select bind:value={addSectionId}>{#each workspace.current.sections as section}<option value={section.id}>{section.title ?? section.id}</option>{/each}</select></label>
+            </div>
+            <div class="layout-choice"><span>组件宽度</span>{#each [6, 12] as span}<button type="button" class:active={addSpan === span} onclick={() => (addSpan = span)}>{span}/12</button>{/each}</div>
+            <div class="add-summary"><span>{addDataSourceChoice === 'new' ? '自动创建 query 页面数据源' : `复用 ${addDataSourceChoice}`}</span><span>· 绑定到 main 数据槽</span></div>
+            <button class="confirm-add" type="button" onclick={addMetricCard} disabled={!addMetric || !addSectionId || (addDataSourceChoice === 'new' && !addAggregation)}>添加到未保存工作副本</button>
+          </div>
+        {/if}
+      </section>
+    </div>
+  </aside>
 </div>
 
 <style>
@@ -975,14 +1080,11 @@
   .composer-dock { position: relative; z-index: 5; padding: 9px 18px 12px; background: #fff; border-top: 1px solid #dfe4ec; box-shadow: 0 -8px 24px rgb(15 23 42 / .05); }
   .target-context { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 7px; padding: 7px 9px; color: #4b43aa; background: #f0efff; border: 1px solid #ddd9ff; border-radius: 7px; }.target-context span, .target-context small { color: #787496; font-size: 8px; }.target-context strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.target-context small { grid-column: 1 / -1; }
   .composer { position: relative; margin-top: 7px; }.composer textarea { display: block; width: 100%; resize: none; padding: 9px 96px 9px 9px; color: #273146; background: #fbfcfe; border: 1px solid #ccd3df; border-radius: 8px; outline: 0; font: inherit; font-size: 10px; line-height: 1.45; }.composer textarea:focus { background: #fff; border-color: #6c63dc; box-shadow: 0 0 0 3px rgb(99 102 241 / .12); }.composer button { position: absolute; right: 7px; bottom: 7px; padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; }
-  .inspector-panel { min-height: 0; padding: 10px 18px 16px; border-top: 1px solid #e3e7ed; }
-  .inspector-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }.inspector-heading > div { display: grid; gap: 2px; }.inspector-heading strong { color: #343d4f; font-size: 10px; }.inspector-heading span { color: #858fa1; font-size: 8px; }.inspector-heading button { padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-size: 9px; font-weight: 800; }
-  .add-card-composer { display: grid; gap: 9px; padding: 10px; margin-bottom: 9px; background: #f8f8ff; border: 1px solid #d9d6ff; border-radius: 9px; box-shadow: 0 8px 20px rgb(79 70 229 / .08); }.composer-title { display: flex; align-items: flex-start; justify-content: space-between; }.composer-title > div { display: grid; gap: 2px; }.composer-title span { color: #635bca; font-size: 7px; font-weight: 900; letter-spacing: .09em; }.composer-title strong { color: #30384a; font-size: 11px; }.composer-title button { color: #747d8f; background: transparent; border: 0; font-size: 16px; }.add-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 7px; }.add-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 8px; font-weight: 800; }.add-grid label:last-child { grid-column: 1 / -1; }.layout-choice { display: flex; align-items: center; gap: 5px; }.layout-choice > span { margin-right: auto; color: #5f687b; font-size: 8px; font-weight: 800; }.layout-choice button { padding: 5px 7px; color: #687286; background: #fff; border: 1px solid #d8dce6; border-radius: 5px; font-size: 8px; }.layout-choice button.active { color: #4338ca; background: #eeecff; border-color: #7770e5; font-weight: 900; }.add-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 7px 8px; color: #747d8f; background: #fff; border-radius: 6px; font-size: 8px; }.add-summary code { color: #4338ca; font-size: 8px; font-weight: 800; }.confirm-add { width: 100%; padding: 8px; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-size: 9px; font-weight: 900; }
+  .add-card-composer, .add-grid { display: grid; }
+  .layout-choice { display: flex; align-items: center; gap: 5px; }.layout-choice > span { margin-right: auto; color: #5f687b; font-size: 8px; font-weight: 800; }.layout-choice button { padding: 5px 7px; color: #687286; background: #fff; border: 1px solid #d8dce6; border-radius: 5px; font-size: 8px; }.layout-choice button.active { color: #4338ca; background: #eeecff; border-color: #7770e5; font-weight: 900; }.add-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; color: #747d8f; background: #fff; border-radius: 6px; font-size: 8px; }.confirm-add { width: 100%; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-weight: 900; }
   .component-list { display: flex; gap: 5px; padding-bottom: 8px; overflow-x: auto; }.component-list button { display: grid; min-width: 132px; gap: 2px; padding: 7px 8px; color: #596377; text-align: left; background: #fff; border: 1px solid #dce1e9; border-radius: 6px; }.component-list button.selected { color: #4338ca; background: #f2f1ff; border-color: #7770e5; }.component-list span, .component-list small { overflow: hidden; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }.component-list strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-  .property-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.property-form label, .source-select label, .query-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 9px; font-weight: 800; }.property-form label:last-of-type { grid-column: 1 / -1; }.property-form label span { float: right; color: #4f46e5; }.property-form input[type='range'] { padding: 0; accent-color: #4f46e5; }.property-form p { color: #8a93a4; font-size: 8px; }.selected-source { display: grid; grid-column: 1 / -1; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding: 7px 8px; color: #7c8698; background: #f6f7fa; border-radius: 6px; font-size: 8px; }.selected-source strong { overflow: hidden; color: #3e4658; text-overflow: ellipsis; white-space: nowrap; }.selected-source a { padding: 4px 6px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 4px; font-size: 7px; font-weight: 800; text-decoration: none; }.property-actions { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; }.property-actions p { flex: 1; }.property-actions .remove { flex: none; padding: 5px 7px; color: #b42318; background: #fff; border: 1px solid #f2c7c3; border-radius: 5px; font-size: 8px; }
-  .source-inspector { padding-top: 10px; margin-top: 10px; border-top: 1px solid #e3e7ed; scroll-margin-top: 10px; }.source-inspector summary { display: flex; align-items: center; gap: 8px; color: #343d4f; cursor: pointer; list-style: none; }.source-inspector summary::-webkit-details-marker { display: none; }.source-inspector summary::before { content: '›'; color: #6860d5; font-size: 16px; transform: rotate(0deg); transition: transform .15s ease; }.source-inspector[open] summary::before { transform: rotate(90deg); }.source-inspector summary span { display: grid; gap: 2px; }.source-inspector summary strong { font-size: 10px; }.source-inspector summary small { color: #858fa1; font-size: 8px; font-weight: 400; }.source-inspector summary em { display: grid; width: 20px; height: 20px; place-items: center; margin-left: auto; color: #4f46e5; background: #eeecff; border-radius: 999px; font-size: 8px; font-style: normal; font-weight: 900; }.source-inspector .source-select { margin-top: 9px; }
   .query-editor { display: grid; gap: 8px; }.query-editor fieldset { display: flex; gap: 5px; padding: 7px; overflow-x: auto; border: 1px solid #e0e4eb; border-radius: 6px; }.query-editor legend { padding: 0 4px; color: #697386; font-size: 8px; font-weight: 900; }.query-editor fieldset label { display: flex; min-width: 102px; align-items: center; gap: 5px; padding: 5px; background: #f8f9fb; border-radius: 5px; font-size: 8px; }.query-editor fieldset label.disabled { opacity: .45; }.query-editor fieldset span { display: grid; }.query-editor fieldset code { color: #8a93a5; font-size: 7px; }.query-editor input[type='checkbox'] { accent-color: #4f46e5; }
-  .query-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }.catalog-proof, .empty { color: #7c8698; font-size: 8px; }.catalog-proof code { color: #4f46e5; }
+  .query-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }.catalog-proof { color: #7c8698; font-size: 8px; }.catalog-proof code { color: #4f46e5; }
   .lifecycle-panel { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px; padding: 8px 18px; background: #fafbfc; border-top: 1px solid #dfe4ec; }.lifecycle-panel div { display: grid; }.lifecycle-panel span { color: #8a93a4; font-size: 7px; }.lifecycle-panel strong { font-size: 10px; }.lifecycle-panel button, .lifecycle-panel a { padding: 7px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; text-decoration: none; }.lifecycle-panel a { grid-column: 1 / -1; color: #fff; text-align: center; background: #4f46e5; }
   .canvas-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; padding: 0; overflow: hidden; }
   .canvas-toolbar { display: flex; min-height: 44px; align-items: center; justify-content: space-between; padding: 0 14px; background: #fafbfc; border-bottom: 1px solid #dce1e8; }.canvas-toolbar > div { display: flex; align-items: center; gap: 7px; color: #727c8d; font-size: 9px; }.canvas-toolbar i { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; }.canvas-toolbar i.dirty { background: #f59e0b; }.canvas-toolbar strong { color: #424b5e; }.mode-switch { padding: 3px; background: #eef0f4; border-radius: 6px; }.mode-switch button { padding: 5px 8px; color: #7a8496; background: transparent; border: 0; border-radius: 4px; font-size: 8px; }.mode-switch button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
@@ -990,4 +1092,109 @@
   .canvas-empty { display: grid; min-height: 0; flex: 1; place-content: center; justify-items: center; gap: 7px; color: #7a8496; text-align: center; }.canvas-empty span { display: grid; width: 46px; height: 46px; place-items: center; color: #fff; background: #4f46e5; border-radius: 14px; font-size: 20px; box-shadow: 0 12px 30px rgb(79 70 229 / .24); }.canvas-empty h2 { color: #3f485a; }.canvas-empty p { max-width: 360px; font-size: 10px; }
   .error, .notice { position: absolute; top: 105px; right: 18px; z-index: 20; max-width: 420px; padding: 9px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 7px; box-shadow: 0 8px 24px rgb(15 23 42 / .12); font-size: 9px; }.notice { top: 105px; color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
   @media (max-width: 680px) { .authoring-workbench { height: auto; grid-template-columns: 1fr; overflow: visible; }.control-column { height: calc(100vh - 54px); height: calc(100dvh - 54px); }.canvas-column { min-height: 680px; }.add-grid, .query-grid { grid-template-columns: 1fr; }.add-grid label:last-child { grid-column: auto; } }
+
+  /* Scheme A: persistent AI collaboration, runtime canvas, unified inspector. */
+  .authoring-workbench { position: relative; grid-template-columns: clamp(300px, 25vw, 360px) minmax(0, 1fr) minmax(320px, 360px); }
+  .authoring-workbench:not(.inspector-open) { grid-template-columns: clamp(300px, 25vw, 360px) minmax(0, 1fr); }
+  .mobile-panes, .inspector-backdrop { display: none; }
+  .authoring-workbench:not(.inspector-open) .inspector-column { display: none; }
+  .control-column { grid-template-rows: auto auto minmax(0, 1fr) auto auto; }
+  .workspace-scroll { display: flex; }
+  .conversation-panel { flex: 1; }
+  .messages { flex: 1; }
+  .ai-quick-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 7px; color: #8a93a4; font-size: 8px; }
+  .ai-quick-actions button { flex: none; padding: 5px 7px; color: #4f46e5; background: #f0efff; border: 0; border-radius: 6px; font-size: 8px; font-weight: 800; }
+
+  .canvas-actions { display: flex; align-items: center; gap: 7px; }
+  .inspector-toggle { display: none; padding: 6px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; }
+  .authoring-workbench:not(.inspector-open) .inspector-toggle { display: block; }
+
+  .inspector-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; overflow: hidden; background: #fff; border-left: 1px solid #dce1e8; }
+  .inspector-toolbar { display: flex; min-height: 54px; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid #e3e7ed; }
+  .inspector-toolbar > div:first-child { display: grid; gap: 2px; }
+  .inspector-toolbar span { color: #7d8798; font-size: 8px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+  .inspector-toolbar strong { color: #30394c; font-size: 12px; }
+  .inspector-toolbar-actions { display: flex; align-items: center; gap: 5px; }
+  .inspector-toolbar-actions button { min-width: 28px; height: 28px; padding: 0 7px; color: #697386; background: #f6f7f9; border: 0; border-radius: 6px; font-size: 9px; }
+  .inspector-toolbar-actions button:last-child { font-size: 15px; }
+  .inspector-scroll { min-height: 0; flex: 1; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+  .inspector-panel { min-height: 100%; padding: 12px 14px 20px; border: 0; }
+  .inspector-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; margin-bottom: 16px; background: #f0f2f5; border-radius: 8px; }
+  .inspector-modes button { min-width: 0; padding: 6px 4px; color: #747e90; background: transparent; border: 0; border-radius: 6px; font-size: 8px; font-weight: 800; }
+  .inspector-modes button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
+  .inspector-heading { margin-bottom: 8px; }
+  .component-list { display: grid; max-height: 146px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 0 2px 10px 0; overflow-x: hidden; overflow-y: auto; }
+  .component-list button { min-width: 0; padding: 7px 8px; }
+  .selection-summary { display: grid; gap: 2px; padding: 10px 0 11px; border-top: 1px solid #edf0f4; }
+  .selection-summary span { color: #6558d9; font-size: 7px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+  .selection-summary strong { overflow: hidden; color: #30394c; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .selection-summary small { color: #8a93a4; font-size: 8px; }
+  .property-form { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .property-form label, .source-select label, .query-grid label, .add-grid label { display: grid; grid-column: auto; gap: 5px; color: #5f687b; font-size: 9px; font-weight: 800; }
+  .property-form label:last-of-type { grid-column: auto; }
+  .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select { width: 100%; min-height: 34px; padding: 7px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
+  .span-field { display: grid; gap: 6px; }
+  .span-field > span { display: flex; align-items: center; justify-content: space-between; color: #5f687b; font-size: 9px; font-weight: 800; }
+  .span-field small { color: #8a93a4; font-size: 8px; font-weight: 500; }
+  .span-control { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .span-control button { padding: 8px; color: #687286; background: #fff; border: 1px solid #d8dce6; border-radius: 6px; font-size: 9px; font-weight: 800; }
+  .span-control button.active { color: #4338ca; background: #eeecff; border-color: #7770e5; }
+  .selected-source { display: grid; grid-template-columns: 1fr; gap: 4px; padding: 10px; color: #7c8698; background: #f6f7fa; border: 1px solid #e6e9ee; border-radius: 8px; font-size: 8px; }
+  .selected-source > span { color: #7c8698; font-size: 8px; }
+  .selected-source strong { color: #343d4f; font-size: 10px; }
+  .selected-source p { color: #737d8e; font-size: 8px; line-height: 1.5; }
+  .selected-source button { justify-self: start; padding: 5px 7px; margin-top: 3px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 5px; font-size: 8px; font-weight: 800; }
+  .danger-zone { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; margin-top: 2px; border-top: 1px solid #eceff3; }
+  .danger-zone p { color: #929baa; font-size: 8px; line-height: 1.45; }
+  .danger-zone .remove { flex: none; padding: 6px 8px; color: #b42318; background: #fff; border: 1px solid #f2c7c3; border-radius: 5px; font-size: 8px; }
+  .inspector-empty { display: grid; justify-items: center; gap: 6px; padding: 42px 16px; color: #7d8797; text-align: center; }
+  .inspector-empty > span { display: grid; width: 34px; height: 34px; place-items: center; color: #6558d9; background: #f0efff; border-radius: 10px; font-size: 17px; }
+  .inspector-empty strong { color: #3f485a; font-size: 11px; }
+  .inspector-empty p { max-width: 250px; font-size: 9px; line-height: 1.55; }
+  .mode-intro { display: grid; gap: 3px; margin-bottom: 12px; }
+  .mode-intro strong { color: #343d4f; font-size: 11px; }
+  .mode-intro p { color: #858fa1; font-size: 8px; line-height: 1.5; }
+  .source-select { display: grid; gap: 5px; padding: 10px; margin-bottom: 10px; background: #f6f7fa; border-radius: 8px; }
+  .source-select p { color: #737d8e; font-size: 8px; line-height: 1.45; }
+  .query-editor { display: grid; gap: 10px; }
+  .query-editor fieldset { display: grid; max-height: 160px; grid-template-columns: 1fr; gap: 5px; padding: 8px; overflow-x: hidden; overflow-y: auto; }
+  .query-editor fieldset label { min-width: 0; }
+  .query-grid { grid-template-columns: 1fr; }
+  .advanced-query { padding: 9px 10px; background: #fafbfc; border: 1px solid #e3e7ed; border-radius: 8px; }
+  .advanced-query summary { color: #4b5568; cursor: pointer; font-size: 9px; font-weight: 800; }
+  .advanced-query fieldset, .advanced-query .query-grid { margin-top: 10px; }
+  .return-to-component { justify-self: start; padding: 6px 8px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 5px; font-size: 8px; font-weight: 800; }
+  .add-card-composer { gap: 12px; padding: 0; margin: 0; background: transparent; border: 0; border-radius: 0; box-shadow: none; }
+  .add-grid { grid-template-columns: 1fr; gap: 10px; }
+  .add-grid label:last-child { grid-column: auto; }
+  .layout-choice { padding-top: 2px; }
+  .layout-choice button { flex: 1; padding: 7px; }
+  .add-summary { padding: 9px 10px; line-height: 1.45; }
+  .confirm-add { padding: 10px; font-size: 10px; }
+
+  @media (max-width: 1179px) and (min-width: 761px) {
+    .authoring-workbench, .authoring-workbench:not(.inspector-open) { grid-template-columns: clamp(300px, 30vw, 360px) minmax(0, 1fr); }
+    .authoring-workbench:not(.inspector-open) .inspector-column { display: flex; }
+    .inspector-column { position: fixed; z-index: 31; top: 54px; right: 0; bottom: 0; width: min(360px, calc(100vw - 300px)); transform: translateX(102%); box-shadow: -16px 0 40px rgb(15 23 42 / .18); transition: transform .18s ease; }
+    .authoring-workbench.inspector-open .inspector-column { transform: translateX(0); }
+    .authoring-workbench.inspector-open .inspector-backdrop { position: fixed; z-index: 30; inset: 54px 0 0; display: block; background: rgb(15 23 42 / .2); border: 0; }
+    .inspector-toggle { display: block; }
+  }
+
+  @media (max-width: 760px) {
+    .authoring-workbench, .authoring-workbench:not(.inspector-open) { display: grid; height: calc(100vh - 54px); height: calc(100dvh - 54px); grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+    .mobile-panes { z-index: 40; display: grid; grid-column: 1; grid-row: 1; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 5px; background: #f3f5f8; border-bottom: 1px solid #dce1e8; }
+    .mobile-panes button { padding: 7px; color: #6f798a; background: transparent; border: 0; border-radius: 6px; font-size: 9px; font-weight: 800; }
+    .mobile-panes button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
+    .control-column, .canvas-column, .inspector-column, .authoring-workbench:not(.inspector-open) .inspector-column { display: none; grid-column: 1; grid-row: 2; width: auto; min-height: 0; }
+    .mobile-copilot .control-column { display: grid; height: auto; border-right: 0; }
+    .mobile-canvas .canvas-column { display: flex; min-height: 0; }
+    .mobile-inspector .inspector-column { position: static; display: flex; transform: none; box-shadow: none; }
+    .inspector-backdrop, .inspector-toggle { display: none !important; }
+    .workbench-header { padding: 10px 14px; }
+    .existing-page, .conversation-panel, .composer-dock { padding-right: 14px; padding-left: 14px; }
+    .canvas-toolbar { padding: 0 10px; }
+    .canvas-toolbar > div:first-child span { display: none; }
+    .error, .notice { top: 48px; right: 10px; left: 10px; max-width: none; }
+  }
 </style>
