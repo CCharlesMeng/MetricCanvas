@@ -8,6 +8,7 @@
   import type {
     CatalogSnapshot,
     DataSource,
+    FilterDeclaration,
     Page,
     StructuredQuery
   } from '@metriccanvas/page';
@@ -54,9 +55,16 @@
     confirmationUrl: string;
   }
 
-  type InspectorMode = 'component' | 'dataSource' | 'add';
+  type InspectorMode = 'component' | 'dataSource' | 'structure' | 'add';
   type MobilePane = 'copilot' | 'canvas' | 'inspector';
   type AddComponentKind = BoundComponentInsertion['kind'];
+  type InteractionMode = 'none' | 'write_filter' | 'navigate';
+
+  interface PageTarget {
+    pageId: string;
+    latestRevision: { revisionId: string } | null;
+    publishedRevision: { revisionId: string } | null;
+  }
 
   const DEFAULT_INTENT =
     '创建销售经营概览：展示成交总额和订单量、区域对比、成交趋势、渠道占比和区域明细';
@@ -86,6 +94,21 @@
   let addSectionId = $state('');
   let addSpan = $state(6);
   let addAggregation = $state('');
+  let newSectionTitle = $state('');
+  let newSectionComponentKey = $state('');
+  let filterDimensionCode = $state('');
+  let filterLabel = $state('');
+  let filterDisplay = $state<'select' | 'tabs' | 'tree' | 'search'>('select');
+  let filterSubscriptions = $state<string[]>([]);
+  let interactionMode = $state<InteractionMode>('none');
+  let interactionField = $state('');
+  let interactionFilterId = $state('');
+  let navigatePageId = $state('');
+  let navigateTargetFilterId = $state('');
+  let navigateCarryFilters = $state<string[]>([]);
+  let pageTargets = $state<PageTarget[]>([]);
+  let targetPageFilters = $state<FilterDeclaration[]>([]);
+  let targetPageLoading = $state(false);
   let inspectorMode = $state<InspectorMode>('component');
   let inspectorOpen = $state(true);
   let mobilePane = $state<MobilePane>('copilot');
@@ -161,6 +184,62 @@
     )
   );
   const addAggregationOptions = $derived(addMetric?.availableAggregations ?? []);
+  const selectedDocumentComponent = $derived.by(() => {
+    if (!workspace?.selected) return null;
+    return workspace.current.sections
+      .find((section) => section.id === workspace?.selected?.sectionId)
+      ?.components.find((component) => component.id === workspace?.selected?.componentId) ?? null;
+  });
+  const selectedDimensionFields = $derived.by(() => {
+    const component = selectedDocumentComponent;
+    const sourceId = component?.data?.main;
+    const source = sourceId ? workspace?.current.dataSources[sourceId] : null;
+    if (!source || source.source.type !== 'query') return [];
+    return (source.source.query.dimensions ?? []).filter(
+      (field) => source.fields[field]?.role === 'dimension'
+    );
+  });
+  const compatibleFilterSources = $derived(
+    filterDimensionCode && catalog
+      ? querySources.filter(({ source }) =>
+          source.source.type === 'query' &&
+          source.source.query.metrics.every((metricCode) =>
+            catalog?.metrics
+              .find((metric) => metric.code === metricCode)
+              ?.availableDimensions.includes(filterDimensionCode)
+          )
+        )
+      : []
+  );
+  const matchingPageFilters = $derived(
+    (workspace?.current.filters ?? []).filter(
+      (filter) => filter.type === 'dimension' && filter.dimension === interactionField
+    )
+  );
+  const movableSectionComponents = $derived(
+    workspace
+      ? workspace.current.sections.flatMap((section) =>
+          section.components.length > 1
+            ? section.components.map((component) => ({
+                key: `${section.id}/${component.id}`,
+                sectionId: section.id,
+                componentId: component.id,
+                label: `${section.title ?? section.id} / ${component.type === 'text' ? component.props.heading ?? component.id : component.props.title ?? component.id}`
+              }))
+            : []
+        )
+      : []
+  );
+  const matchingTargetFilters = $derived(
+    targetPageFilters.filter(
+      (filter) => filter.type === 'dimension' && filter.dimension === interactionField
+    )
+  );
+  const carryFilterOptions = $derived(
+    (workspace?.current.filters ?? []).filter((filter) =>
+      targetPageFilters.some((target) => compatibleCarryFilter(filter, target))
+    )
+  );
   const dirty = $derived(workspace ? workspaceIsDirty(workspace) : false);
   const pageIdConfirmed = $derived(
     Boolean(
@@ -209,6 +288,7 @@
     };
     compactLayout.addEventListener('change', closeInspectorForCompactLayout);
     void loadCatalog();
+    void loadPageTargets();
     const receive = (event: MessageEvent) => {
       if (!iframe?.contentWindow || event.source !== iframe.contentWindow) return;
       if (event.origin !== safeOrigin(runtimeOrigin)) return;
@@ -250,6 +330,41 @@
       catalog = payload.snapshot;
     } catch (cause) {
       error = `元数据目录加载失败：${cause instanceof Error ? cause.message : String(cause)}`;
+    }
+  }
+
+  async function loadPageTargets() {
+    try {
+      const response = await fetch('/api/pages?limit=100', {
+        headers: { accept: 'application/json' }
+      });
+      if (!response.ok) return;
+      const payload = (await response.json()) as { pages?: PageTarget[] };
+      pageTargets = (payload.pages ?? []).filter((page) => page.publishedRevision !== null);
+    } catch {
+      pageTargets = [];
+    }
+  }
+
+  async function chooseNavigatePage(pageId: string) {
+    navigatePageId = pageId;
+    navigateTargetFilterId = '';
+    navigateCarryFilters = [];
+    targetPageFilters = [];
+    if (!pageId) return;
+    targetPageLoading = true;
+    try {
+      const response = await fetch(
+        `/api/pages/${encodeURIComponent(pageId)}?selector=published`
+      );
+      const payload = (await response.json()) as { revision?: Revision };
+      if (!response.ok || !payload.revision) return;
+      targetPageFilters = payload.revision.document.filters ?? [];
+      navigateTargetFilterId = targetPageFilters.find(
+        (filter) => filter.type === 'dimension' && filter.dimension === interactionField
+      )?.id ?? '';
+    } finally {
+      targetPageLoading = false;
     }
   }
 
@@ -319,6 +434,7 @@
           locator: first.locator
         });
         syncSelectedSource(first);
+        prepareInteractionForSelected();
       }
     }
     canvasMode = 'authoring';
@@ -363,6 +479,7 @@
           locator: first.locator
         });
         syncSelectedSource(first);
+        prepareInteractionForSelected();
       }
       runtimeOrigin = payload.runtimeOrigin ?? runtimeOrigin;
       confirmedPageIds = Array.from(new Set([...confirmedPageIds, pageId]));
@@ -401,6 +518,7 @@
       dispatch({ type: 'select_component', locator: intent.locator });
       const editable = components.find((component) => sameLocator(component.locator, intent.locator));
       if (editable) syncSelectedSource(editable);
+      prepareInteractionForSelected();
       revealInspector('component', true);
     } else if (intent.type === 'move_component') {
       dispatch({ type: 'move_component', locator: intent.locator, before: intent.before });
@@ -423,7 +541,52 @@
   function selectFromInspector(component: EditableComponent) {
     dispatch({ type: 'select_component', locator: component.locator });
     syncSelectedSource(component);
+    prepareInteractionForSelected();
     revealInspector('component');
+  }
+
+  function prepareInteractionForSelected() {
+    const component = selectedDocumentComponent;
+    const action =
+      component && component.type !== 'reportHeader' && component.type !== 'text'
+        ? component.props.actions?.[0]
+        : undefined;
+    interactionMode = action ? ('writeFilter' in action ? 'write_filter' : 'navigate') : 'none';
+    interactionField = action && 'field' in action
+      ? (typeof action.field === 'string' ? action.field : action.field.field)
+      : selectedDimensionFields[0] ?? '';
+    interactionFilterId = action && 'writeFilter' in action ? action.writeFilter : '';
+    if (action && 'navigate' in action) {
+      navigatePageId = action.navigate.page;
+      navigateCarryFilters = [...(action.navigate.carryFilters ?? [])];
+      navigateTargetFilterId = Object.keys(action.navigate.setFilters ?? {})[0] ?? '';
+      void loadNavigateTarget(action.navigate.page, navigateTargetFilterId);
+    } else {
+      navigatePageId = '';
+      navigateCarryFilters = [];
+      navigateTargetFilterId = '';
+      targetPageFilters = [];
+    }
+  }
+
+  async function loadNavigateTarget(pageId: string, preferredFilterId = '') {
+    await chooseNavigatePage(pageId);
+    if (preferredFilterId && targetPageFilters.some((filter) => filter.id === preferredFilterId)) {
+      navigateTargetFilterId = preferredFilterId;
+    }
+  }
+
+  function openStructureInspector() {
+    if (!catalog) return;
+    filterDimensionCode ||= catalog.dimensions[0]?.code ?? '';
+    filterLabel ||= catalog.dimensions.find(
+      (dimension) => dimension.code === filterDimensionCode
+    )?.name ?? '';
+    filterSubscriptions = compatibleFilterSources.map((source) => source.id);
+    newSectionComponentKey ||= movableSectionComponents.find(
+      (component) => selected && component.componentId === selected.locator.componentId
+    )?.key ?? movableSectionComponents[0]?.key ?? '';
+    revealInspector('structure', true);
   }
 
   function revealInspector(mode: InspectorMode, switchOnSmallScreen = false) {
@@ -571,15 +734,157 @@
 
   function undo() {
     dispatch({ type: 'undo' });
+    prepareInteractionForSelected();
   }
 
   function redo() {
     dispatch({ type: 'redo' });
+    prepareInteractionForSelected();
   }
 
   function editSelected(edit: { title?: string; detail?: string; span?: number }) {
     if (!selected) return;
     dispatch({ type: 'edit_component', locator: selected.locator, edit });
+  }
+
+  function addSection() {
+    if (!workspace || !newSectionComponentKey) return;
+    const [sourceSectionId, componentId] = newSectionComponentKey.split('/');
+    if (!sourceSectionId || !componentId) return;
+    const title = newSectionTitle.trim() || `分区 ${workspace.current.sections.length + 1}`;
+    const sectionId = nextAvailableId(
+      'section',
+      workspace.current.sections.map((section) => section.id)
+    );
+    dispatch({
+      type: 'add_section',
+      sectionId,
+      title,
+      afterSectionId: workspace.current.sections.at(-1)?.id,
+      component: { sectionId: sourceSectionId, componentId }
+    });
+    dispatch({
+      type: 'select_component',
+      locator: { sectionId, componentId }
+    });
+    prepareInteractionForSelected();
+    newSectionTitle = '';
+    addSectionId = sectionId;
+    newSectionComponentKey = movableSectionComponents[0]?.key ?? '';
+    notice = `已新增分区“${title}”，可撤销。`;
+  }
+
+  function editSectionTitle(sectionId: string, title: string) {
+    dispatch({ type: 'edit_section', sectionId, title });
+  }
+
+  function moveSection(sectionId: string, direction: -1 | 1) {
+    dispatch({ type: 'move_section', sectionId, direction });
+  }
+
+  function removeSection(sectionId: string, title: string) {
+    dispatch({ type: 'remove_section', sectionId });
+    notice = `已删除分区“${title || sectionId}”及其内容；独占页面数据源已清理，可撤销。`;
+  }
+
+  function chooseFilterDimension(code: string) {
+    filterDimensionCode = code;
+    filterLabel = catalog?.dimensions.find((dimension) => dimension.code === code)?.name ?? code;
+    filterSubscriptions = compatibleFilterSources.map((source) => source.id);
+  }
+
+  function toggleFilterSubscription(dataSourceId: string, checked: boolean) {
+    filterSubscriptions = checked
+      ? Array.from(new Set([...filterSubscriptions, dataSourceId]))
+      : filterSubscriptions.filter((candidate) => candidate !== dataSourceId);
+  }
+
+  function addDimensionFilter() {
+    if (!workspace || !catalog || !filterDimensionCode || filterSubscriptions.length === 0) return;
+    const filterId = nextAvailableId(
+      `f-${filterDimensionCode}`,
+      (workspace.current.filters ?? []).map((filter) => filter.id)
+    );
+    dispatch({
+      type: 'upsert_dimension_filter',
+      filterId,
+      dimensionCode: filterDimensionCode,
+      label: filterLabel,
+      display: filterDisplay,
+      subscriptions: filterSubscriptions,
+      catalog
+    });
+    notice = `已创建筛选器“${filterLabel || filterDimensionCode}”，并订阅 ${filterSubscriptions.length} 个 query 页面数据源。`;
+  }
+
+  function removeDimensionFilter(filterId: string, label: string) {
+    dispatch({ type: 'remove_filter', filterId });
+    notice = `已删除筛选器“${label || filterId}”及关联订阅/页内联动，可撤销。`;
+  }
+
+  function chooseInteractionMode(mode: InteractionMode) {
+    interactionMode = mode;
+    interactionField ||= selectedDimensionFields[0] ?? '';
+    if (mode === 'write_filter') {
+      interactionFilterId = matchingPageFilters[0]?.id ?? '';
+    }
+  }
+
+  function chooseInteractionField(field: string) {
+    interactionField = field;
+    interactionFilterId = (workspace?.current.filters ?? []).find(
+      (filter) => filter.type === 'dimension' && filter.dimension === field
+    )?.id ?? '';
+    navigateTargetFilterId = targetPageFilters.find(
+      (filter) => filter.type === 'dimension' && filter.dimension === field
+    )?.id ?? '';
+  }
+
+  function toggleCarryFilter(filterId: string, checked: boolean) {
+    navigateCarryFilters = checked
+      ? Array.from(new Set([...navigateCarryFilters, filterId]))
+      : navigateCarryFilters.filter((candidate) => candidate !== filterId);
+  }
+
+  function applyInteraction() {
+    if (!selected) return;
+    if (interactionMode === 'none') {
+      dispatch({
+        type: 'set_component_interaction',
+        locator: selected.locator,
+        interaction: { mode: 'none' }
+      });
+    } else if (interactionMode === 'write_filter') {
+      if (!interactionField || !interactionFilterId) return;
+      dispatch({
+        type: 'set_component_interaction',
+        locator: selected.locator,
+        interaction: {
+          mode: 'write_filter',
+          filterId: interactionFilterId,
+          field: interactionField
+        }
+      });
+    } else {
+      if (!interactionField || !navigatePageId || !navigateTargetFilterId) return;
+      dispatch({
+        type: 'set_component_interaction',
+        locator: selected.locator,
+        interaction: {
+          mode: 'navigate',
+          pageId: navigatePageId,
+          carryFilters: navigateCarryFilters,
+          targetFilterId: navigateTargetFilterId,
+          field: interactionField,
+          targetFilters: targetPageFilters
+        }
+      });
+    }
+    notice = interactionMode === 'none'
+      ? '已清除组件点击交互。'
+      : interactionMode === 'write_filter'
+        ? '已配置组件点击后回写筛选状态。'
+        : `已配置跨页下钻到 ${navigatePageId}。`;
   }
 
   function openComponentComposer() {
@@ -698,6 +1003,7 @@
       type: 'select_component',
       locator: { sectionId: addSectionId, componentId }
     });
+    prepareInteractionForSelected();
     selectedDataSourceId = dataSourceId;
     revealInspector('component');
     notice = `已添加“${component.title}”${componentKindLabel(addComponentKind)}，并${addDataSourceChoice === 'new' ? '创建' : '复用'} query 页面数据源 ${dataSourceId}。`;
@@ -887,6 +1193,13 @@
     return left.sectionId === right.sectionId && left.componentId === right.componentId;
   }
 
+  function compatibleCarryFilter(left: FilterDeclaration, right: FilterDeclaration): boolean {
+    if (left.id !== right.id || left.type !== right.type) return false;
+    return left.type === 'dimension' && right.type === 'dimension'
+      ? left.dimension === right.dimension
+      : true;
+  }
+
   function safeOrigin(value: string): string {
     try {
       return new URL(value).origin;
@@ -1041,7 +1354,7 @@
     <header class="inspector-toolbar">
       <div>
         <span>统一检查器</span>
-        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : '添加数据组件'}</strong>
+        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : inspectorMode === 'structure' ? '结构与联动' : '添加数据组件'}</strong>
       </div>
       <div class="inspector-toolbar-actions">
         {#if inspectorMode !== 'component'}<button type="button" onclick={() => revealInspector('component')}>返回</button>{/if}
@@ -1054,6 +1367,7 @@
         <nav class="inspector-modes" aria-label="检查器模式">
           <button class:active={inspectorMode === 'component'} type="button" onclick={() => revealInspector('component')}>组件</button>
           <button class:active={inspectorMode === 'dataSource'} type="button" onclick={() => revealInspector('dataSource')} disabled={querySources.length === 0}>页面数据源</button>
+          <button class:active={inspectorMode === 'structure'} type="button" onclick={openStructureInspector} disabled={!workspace || !catalog}>结构</button>
           <button class:active={inspectorMode === 'add'} type="button" onclick={openComponentComposer} disabled={!workspace || !catalog}>＋ 新增</button>
         </nav>
 
@@ -1088,6 +1402,29 @@
                 <p>{dataSourceSummary(componentDataSource(selected))}</p>
                 {#if componentDataSourceId(selected)}<button type="button" onclick={() => openDataSourceInspector(componentDataSourceId(selected))}>编辑结构化查询 →</button>{/if}
               </div>
+              {#if selectedDimensionFields.length > 0}
+                <div class="interaction-editor">
+                  <div class="interaction-heading"><span>点击交互</span><small>经筛选状态或 URL 传递</small></div>
+                  <div class="interaction-modes">
+                    <button type="button" class:active={interactionMode === 'none'} onclick={() => chooseInteractionMode('none')}>无</button>
+                    <button type="button" class:active={interactionMode === 'write_filter'} onclick={() => chooseInteractionMode('write_filter')}>页内联动</button>
+                    <button type="button" class:active={interactionMode === 'navigate'} onclick={() => chooseInteractionMode('navigate')}>跨页下钻</button>
+                  </div>
+                  {#if interactionMode !== 'none'}
+                    <label>点击字段<select value={interactionField} onchange={(event) => chooseInteractionField(valueOf(event))}>{#each selectedDimensionFields as field}<option value={field}>{catalog?.dimensions.find((dimension) => dimension.code === field)?.name ?? field}</option>{/each}</select></label>
+                  {/if}
+                  {#if interactionMode === 'write_filter'}
+                    <label>回写筛选器<select bind:value={interactionFilterId}>{#each matchingPageFilters as filter}<option value={filter.id}>{filter.label ?? filter.id}</option>{/each}</select></label>
+                    {#if matchingPageFilters.length === 0}<p>请先在“结构”中创建同维度筛选器。</p>{/if}
+                  {:else if interactionMode === 'navigate'}
+                    <label>目标看板页面<select value={navigatePageId} onchange={(event) => void chooseNavigatePage(valueOf(event))}><option value="">选择目标页面</option>{#each pageTargets.filter((page) => page.pageId !== workspace?.current.id) as page}<option value={page.pageId}>{page.pageId}</option>{/each}</select></label>
+                    <label>目标筛选器<select bind:value={navigateTargetFilterId} disabled={targetPageLoading || matchingTargetFilters.length === 0}><option value="">选择目标筛选器</option>{#each matchingTargetFilters as filter}<option value={filter.id}>{filter.label ?? filter.id}</option>{/each}</select></label>
+                    {#if carryFilterOptions.length > 0}<fieldset><legend>同时携带当前筛选状态</legend>{#each carryFilterOptions as filter}<label><input type="checkbox" checked={navigateCarryFilters.includes(filter.id)} onchange={(event) => toggleCarryFilter(filter.id, checkedOf(event))} />{filter.label ?? filter.id}</label>{/each}</fieldset>{/if}
+                    {#if pageTargets.filter((page) => page.pageId !== workspace?.current.id).length === 0}<p>请先保存至少一个目标看板页面。</p>{/if}
+                  {/if}
+                  <button class="apply-interaction" type="button" onclick={applyInteraction} disabled={(interactionMode === 'write_filter' && (!interactionField || !interactionFilterId)) || (interactionMode === 'navigate' && (!interactionField || !navigatePageId || !navigateTargetFilterId))}>应用点击交互</button>
+                </div>
+              {/if}
               <div class="danger-zone"><p>删除可撤销；独占的页面数据源会同步清理。</p><button type="button" class="remove" onclick={removeSelected}>删除组件</button></div>
             </div>
           {:else}
@@ -1119,6 +1456,37 @@
               {#if selected}<button class="return-to-component" type="button" onclick={() => revealInspector('component')}>← 返回绑定组件</button>{/if}
             </div>
           {:else}<div class="inspector-empty"><strong>没有可编辑的页面数据源</strong><p>当前看板页面尚未使用 query 页面数据源。</p></div>{/if}
+        {:else if inspectorMode === 'structure' && workspace && catalog}
+          <div class="mode-intro"><strong>分区与筛选状态</strong><p>分区组织页面内容；筛选器通过 query 页面数据源订阅驱动联动。</p></div>
+          <div class="structure-editor">
+            <section>
+              <div class="structure-heading"><strong>内容分区</strong><span>{workspace.current.sections.length} 个</span></div>
+              <div class="section-list">
+                {#each workspace.current.sections as section, index (section.id)}
+                  <div class="section-item">
+                    <label>分区名称<input value={section.title ?? ''} placeholder={section.id} onchange={(event) => editSectionTitle(section.id, valueOf(event))} /></label>
+                    <small>{section.components.length} 个组件 · {section.id}</small>
+                    <div><button type="button" onclick={() => moveSection(section.id, -1)} disabled={index === 0}>↑</button><button type="button" onclick={() => moveSection(section.id, 1)} disabled={index === workspace.current.sections.length - 1}>↓</button><button class="remove" type="button" onclick={() => removeSection(section.id, section.title ?? section.id)} disabled={workspace.current.sections.length === 1}>删除</button></div>
+                  </div>
+                {/each}
+              </div>
+              <div class="section-composer"><input bind:value={newSectionTitle} placeholder="新分区名称" /><label>迁入组件<select bind:value={newSectionComponentKey}>{#each movableSectionComponents as component}<option value={component.key}>{component.label}</option>{/each}</select></label><button type="button" onclick={addSection} disabled={!newSectionComponentKey}>＋ 新增分区</button></div>
+            </section>
+
+            <section>
+              <div class="structure-heading"><strong>筛选状态</strong><span>{workspace.current.filters?.length ?? 0} 个</span></div>
+              {#if workspace.current.filters?.length}
+                <div class="filter-list">{#each workspace.current.filters as filter (filter.id)}<div class="filter-item"><div><strong>{filter.label ?? filter.id}</strong><small>{filter.type === 'dimension' ? `${filter.dimension} · ${filter.display ?? 'select'}` : '时间范围'}</small></div><button class="remove" type="button" onclick={() => removeDimensionFilter(filter.id, filter.label ?? filter.id)}>删除</button></div>{/each}</div>
+              {/if}
+              <div class="filter-composer">
+                <label>维度<select value={filterDimensionCode} onchange={(event) => chooseFilterDimension(valueOf(event))}>{#each catalog.dimensions as dimension}<option value={dimension.code}>{dimension.name}</option>{/each}</select></label>
+                <label>标签<input bind:value={filterLabel} /></label>
+                <label>展示方式<select bind:value={filterDisplay}><option value="select">下拉多选</option><option value="tabs">标签单选</option><option value="tree">树形多选</option><option value="search">搜索多选</option></select></label>
+                <fieldset><legend>订阅 query 页面数据源</legend>{#each compatibleFilterSources as source}<label><input type="checkbox" checked={filterSubscriptions.includes(source.id)} onchange={(event) => toggleFilterSubscription(source.id, checkedOf(event))} />{source.id}</label>{/each}</fieldset>
+                <button class="confirm-add" type="button" onclick={addDimensionFilter} disabled={!filterDimensionCode || filterSubscriptions.length === 0}>创建筛选器并订阅</button>
+              </div>
+            </section>
+          </div>
         {:else if workspace && catalog}
           <div class="mode-intro"><strong>添加数据组件</strong><p>选择展示方式和数据组合，ID 与字段绑定将自动生成。</p></div>
           <div class="add-card-composer" aria-label="添加数据组件">
@@ -1174,7 +1542,7 @@
   .save-row { grid-column: 1 / -1; }
   .save { width: 100%; padding: 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 7px; font-size: 11px; font-weight: 800; }
   .existing-page { display: grid; grid-template-columns: 1fr auto; gap: 6px; padding: 9px 18px; border-bottom: 1px solid #edf0f4; }
-  .existing-page input, .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select { width: 100%; min-height: 32px; padding: 6px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
+  .existing-page input, .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select, .structure-editor input, .structure-editor select, .interaction-editor select { width: 100%; min-height: 32px; padding: 6px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
   .existing-page button { width: auto; padding-inline: 12px; }
   .workspace-scroll { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
   .conversation-panel { display: flex; min-height: 0; flex-direction: column; padding: 14px 18px 12px; }
@@ -1227,7 +1595,7 @@
   .inspector-toolbar-actions button:last-child { font-size: 15px; }
   .inspector-scroll { min-height: 0; flex: 1; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
   .inspector-panel { min-height: 100%; padding: 12px 14px 20px; border: 0; }
-  .inspector-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 3px; margin-bottom: 16px; background: #f0f2f5; border-radius: 8px; }
+  .inspector-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 3px; margin-bottom: 16px; background: #f0f2f5; border-radius: 8px; }
   .inspector-modes button { min-width: 0; padding: 6px 4px; color: #747e90; background: transparent; border: 0; border-radius: 6px; font-size: 8px; font-weight: 800; }
   .inspector-modes button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
   .inspector-heading { margin-bottom: 8px; }
@@ -1238,9 +1606,9 @@
   .selection-summary strong { overflow: hidden; color: #30394c; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
   .selection-summary small { color: #8a93a4; font-size: 8px; }
   .property-form { display: grid; grid-template-columns: 1fr; gap: 10px; }
-  .property-form label, .source-select label, .query-grid label, .add-grid label { display: grid; grid-column: auto; gap: 5px; color: #5f687b; font-size: 9px; font-weight: 800; }
+  .property-form label, .source-select label, .query-grid label, .add-grid label, .structure-editor label, .interaction-editor label { display: grid; grid-column: auto; gap: 5px; color: #5f687b; font-size: 9px; font-weight: 800; }
   .property-form label:last-of-type { grid-column: auto; }
-  .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select { width: 100%; min-height: 34px; padding: 7px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
+  .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select, .structure-editor input, .structure-editor select, .interaction-editor select { width: 100%; min-height: 34px; padding: 7px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
   .span-field { display: grid; gap: 6px; }
   .span-field > span { display: flex; align-items: center; justify-content: space-between; color: #5f687b; font-size: 9px; font-weight: 800; }
   .span-field small { color: #8a93a4; font-size: 8px; font-weight: 500; }
@@ -1252,9 +1620,33 @@
   .selected-source strong { color: #343d4f; font-size: 10px; }
   .selected-source p { color: #737d8e; font-size: 8px; line-height: 1.5; }
   .selected-source button { justify-self: start; padding: 5px 7px; margin-top: 3px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 5px; font-size: 8px; font-weight: 800; }
+  .interaction-editor { display: grid; gap: 8px; padding: 10px; background: #fafbfc; border: 1px solid #e3e7ed; border-radius: 8px; }
+  .interaction-heading, .structure-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .interaction-heading span, .structure-heading strong { color: #394255; font-size: 9px; font-weight: 800; }
+  .interaction-heading small, .structure-heading span { color: #8a94a5; font-size: 8px; }
+  .interaction-modes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .interaction-modes button { padding: 6px 3px; color: #737d8e; background: #f0f2f5; border: 0; border-radius: 5px; font-size: 8px; font-weight: 800; }
+  .interaction-modes button.active { color: #4338ca; background: #eef2ff; }
+  .interaction-editor fieldset, .filter-composer fieldset { display: grid; max-height: 125px; gap: 5px; padding: 8px; overflow-y: auto; border: 1px solid #e1e5eb; border-radius: 6px; }
+  .interaction-editor fieldset label, .filter-composer fieldset label { display: flex; align-items: center; gap: 6px; font-size: 8px; }
+  .interaction-editor fieldset input, .filter-composer fieldset input { width: auto; min-height: auto; }
+  .interaction-editor p { color: #8a94a5; font-size: 8px; line-height: 1.45; }
+  .apply-interaction { padding: 8px; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-size: 9px; font-weight: 800; }
   .danger-zone { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding-top: 10px; margin-top: 2px; border-top: 1px solid #eceff3; }
   .danger-zone p { color: #929baa; font-size: 8px; line-height: 1.45; }
   .danger-zone .remove { flex: none; padding: 6px 8px; color: #b42318; background: #fff; border: 1px solid #f2c7c3; border-radius: 5px; font-size: 8px; }
+  .structure-editor { display: grid; gap: 18px; }
+  .structure-editor > section { display: grid; gap: 9px; padding-bottom: 16px; border-bottom: 1px solid #e7eaf0; }
+  .section-list, .filter-list { display: grid; gap: 7px; }
+  .section-item, .filter-item { display: grid; gap: 6px; padding: 9px; background: #f8f9fb; border: 1px solid #e6e9ee; border-radius: 7px; }
+  .section-item small, .filter-item small { color: #8993a4; font-size: 8px; }
+  .section-item > div, .filter-item { display: flex; align-items: center; justify-content: space-between; gap: 5px; }
+  .section-item button, .filter-item button { padding: 5px 7px; color: #667085; background: #fff; border: 1px solid #dde2ea; border-radius: 5px; font-size: 8px; }
+  .section-item .remove, .filter-item .remove { color: #b42318; border-color: #f2c7c3; }
+  .filter-item > div { display: grid; gap: 2px; }
+  .section-composer { display: grid; gap: 7px; padding: 9px; background: #fafbfc; border: 1px solid #e3e7ed; border-radius: 8px; }
+  .section-composer button { padding: 8px; color: #4338ca; background: #eef2ff; border: 1px solid #c7d2fe; border-radius: 6px; font-size: 8px; font-weight: 800; }
+  .filter-composer { display: grid; gap: 8px; padding: 10px; background: #fafbfc; border: 1px solid #e3e7ed; border-radius: 8px; }
   .inspector-empty { display: grid; justify-items: center; gap: 6px; padding: 42px 16px; color: #7d8797; text-align: center; }
   .inspector-empty > span { display: grid; width: 34px; height: 34px; place-items: center; color: #6558d9; background: #f0efff; border-radius: 10px; font-size: 17px; }
   .inspector-empty strong { color: #3f485a; font-size: 11px; }

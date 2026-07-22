@@ -1,6 +1,8 @@
 import type {
   CatalogSnapshot,
   Component,
+  ComponentAction,
+  FilterDeclaration,
   Page,
   StructuredQuery,
   TableColumnNode
@@ -61,6 +63,18 @@ export type BoundDataSourceSelection =
       dataSourceId: string;
     };
 
+export type ComponentInteraction =
+  | { mode: 'none' }
+  | { mode: 'write_filter'; filterId: string; field: string }
+  | {
+      mode: 'navigate';
+      pageId: string;
+      carryFilters: string[];
+      targetFilterId: string;
+      field: string;
+      targetFilters: FilterDeclaration[];
+    };
+
 const DOCUMENT_ID = /^[a-z0-9][a-z0-9-]*$/u;
 
 export type PageWorkspaceCommand =
@@ -83,6 +97,31 @@ export type PageWorkspaceCommand =
       placement: { sectionId: string; afterComponentId?: string };
       dataSource: BoundDataSourceSelection;
       catalog: CatalogSnapshot;
+    }
+  | {
+      type: 'add_section';
+      sectionId: string;
+      title?: string;
+      afterSectionId?: string;
+      component: ComponentLocator;
+    }
+  | { type: 'edit_section'; sectionId: string; title: string }
+  | { type: 'move_section'; sectionId: string; direction: -1 | 1 }
+  | { type: 'remove_section'; sectionId: string }
+  | {
+      type: 'upsert_dimension_filter';
+      filterId: string;
+      dimensionCode: string;
+      label: string;
+      display: 'select' | 'tabs' | 'tree' | 'search';
+      subscriptions: string[];
+      catalog: CatalogSnapshot;
+    }
+  | { type: 'remove_filter'; filterId: string }
+  | {
+      type: 'set_component_interaction';
+      locator: ComponentLocator;
+      interaction: ComponentInteraction;
     }
   | { type: 'remove_component'; locator: ComponentLocator }
   | { type: 'apply_agent_document'; document: Page }
@@ -189,6 +228,31 @@ export function reducePageWorkspace(
   } else if (command.type === 'insert_bound_component') {
     next = insertBoundComponent(workspace.current, command);
     mutation = 'manual';
+  } else if (command.type === 'add_section') {
+    next = addSection(workspace.current, command);
+    mutation = 'manual';
+  } else if (command.type === 'edit_section') {
+    next = editSection(workspace.current, command.sectionId, command.title);
+    mutation = 'manual';
+  } else if (command.type === 'move_section') {
+    next = moveSection(workspace.current, command.sectionId, command.direction);
+    mutation = 'manual';
+  } else if (command.type === 'remove_section') {
+    next = removeSection(workspace.current, command.sectionId);
+    mutation = 'manual';
+  } else if (command.type === 'upsert_dimension_filter') {
+    next = upsertDimensionFilter(workspace.current, command);
+    mutation = 'manual';
+  } else if (command.type === 'remove_filter') {
+    next = removeFilter(workspace.current, command.filterId);
+    mutation = 'manual';
+  } else if (command.type === 'set_component_interaction') {
+    next = setComponentInteraction(
+      workspace.current,
+      command.locator,
+      command.interaction
+    );
+    mutation = 'manual';
   } else if (command.type === 'remove_component') {
     next = removeComponent(workspace.current, command.locator);
     mutation = 'manual';
@@ -226,18 +290,292 @@ function removeComponent(document: Page, locator: ComponentLocator): Page {
     (candidate) => candidate.id !== locator.componentId
   );
 
-  const removedSourceIds = new Set(Object.values(component.data ?? {}));
+  removeOrphanDataSources(next, new Set(Object.values(component.data ?? {})));
+  return next;
+}
+
+function addSection(
+  document: Page,
+  command: Extract<PageWorkspaceCommand, { type: 'add_section' }>
+): Page {
+  if (
+    !DOCUMENT_ID.test(command.sectionId) ||
+    document.sections.some((section) => section.id === command.sectionId) ||
+    (command.afterSectionId !== undefined &&
+      !document.sections.some((section) => section.id === command.afterSectionId))
+  ) {
+    return document;
+  }
+  const sourceSection = document.sections.find(
+    (section) => section.id === command.component.sectionId
+  );
+  const component = sourceSection?.components.find(
+    (candidate) => candidate.id === command.component.componentId
+  );
+  if (!sourceSection || !component || sourceSection.components.length <= 1) return document;
+  const next = clonePage(document);
+  const nextSource = next.sections.find((section) => section.id === sourceSection.id)!;
+  const componentIndex = nextSource.components.findIndex(
+    (candidate) => candidate.id === component.id
+  );
+  const [movedComponent] = nextSource.components.splice(componentIndex, 1);
+  if (!movedComponent) return document;
+  const afterIndex = command.afterSectionId
+    ? next.sections.findIndex((section) => section.id === command.afterSectionId)
+    : next.sections.length - 1;
+  const title = command.title?.trim();
+  next.sections.splice(afterIndex + 1, 0, {
+    id: command.sectionId,
+    ...(title ? { title } : {}),
+    layout: { type: 'grid', columns: 12 },
+    components: [movedComponent]
+  });
+  return next;
+}
+
+function editSection(document: Page, sectionId: string, title: string): Page {
+  const section = document.sections.find((candidate) => candidate.id === sectionId);
+  if (!section) return document;
+  const next = clonePage(document);
+  const target = next.sections.find((candidate) => candidate.id === sectionId)!;
+  const normalized = title.trim();
+  if (normalized) target.title = normalized;
+  else delete target.title;
+  return next;
+}
+
+function moveSection(document: Page, sectionId: string, direction: -1 | 1): Page {
+  const index = document.sections.findIndex((section) => section.id === sectionId);
+  const target = index + direction;
+  if (index < 0 || target < 0 || target >= document.sections.length) return document;
+  const next = clonePage(document);
+  const [section] = next.sections.splice(index, 1);
+  if (!section) return document;
+  next.sections.splice(target, 0, section);
+  return next;
+}
+
+function removeSection(document: Page, sectionId: string): Page {
+  if (document.sections.length <= 1) return document;
+  const section = document.sections.find((candidate) => candidate.id === sectionId);
+  if (!section) return document;
+  const next = clonePage(document);
+  next.sections = next.sections.filter((candidate) => candidate.id !== sectionId);
+  removeOrphanDataSources(
+    next,
+    new Set(section.components.flatMap((component) => Object.values(component.data ?? {})))
+  );
+  return next;
+}
+
+function removeOrphanDataSources(document: Page, candidates: ReadonlySet<string>) {
   const retainedSourceIds = new Set(
-    next.sections.flatMap((candidate) =>
-      candidate.components.flatMap((item) => Object.values(item.data ?? {}))
+    document.sections.flatMap((section) =>
+      section.components.flatMap((component) => Object.values(component.data ?? {}))
     )
   );
-  for (const dataSourceId of removedSourceIds) {
-    if (!retainedSourceIds.has(dataSourceId)) {
-      delete next.dataSources[dataSourceId];
-    }
+  for (const dataSourceId of candidates) {
+    if (!retainedSourceIds.has(dataSourceId)) delete document.dataSources[dataSourceId];
+  }
+}
+
+function upsertDimensionFilter(
+  document: Page,
+  command: Extract<PageWorkspaceCommand, { type: 'upsert_dimension_filter' }>
+): Page {
+  const dimension = command.catalog.dimensions.find(
+    (candidate) => candidate.code === command.dimensionCode
+  );
+  const existing = (document.filters ?? []).find(
+    (filter) => filter.id === command.filterId
+  );
+  const subscriptions = Array.from(new Set(command.subscriptions));
+  if (
+    !dimension ||
+    !DOCUMENT_ID.test(command.filterId) ||
+    (existing &&
+      (existing.type !== 'dimension' || existing.dimension !== command.dimensionCode)) ||
+    subscriptions.length === 0 ||
+    subscriptions.some((dataSourceId) => {
+      const source = document.dataSources[dataSourceId];
+      if (!source || source.source.type !== 'query') return true;
+      return source.source.query.metrics.some((metricCode) =>
+        !command.catalog.metrics
+          .find((metric) => metric.code === metricCode)
+          ?.availableDimensions.includes(command.dimensionCode)
+      );
+    })
+  ) {
+    return document;
+  }
+
+  const next = clonePage(document);
+  const filter = {
+    id: command.filterId,
+    type: 'dimension' as const,
+    dimension: command.dimensionCode,
+    ...(command.label.trim() ? { label: command.label.trim() } : {}),
+    display: command.display
+  };
+  const filters = next.filters ?? [];
+  const index = filters.findIndex((candidate) => candidate.id === command.filterId);
+  if (index >= 0) filters[index] = filter;
+  else filters.push(filter);
+  next.filters = filters;
+
+  for (const [dataSourceId, source] of Object.entries(next.dataSources)) {
+    if (source.source.type !== 'query') continue;
+    const current = source.source.query.filters?.subscribe ?? [];
+    const subscribe = subscriptions.includes(dataSourceId)
+      ? Array.from(new Set([...current, command.filterId]))
+      : current.filter((filterId) => filterId !== command.filterId);
+    if (subscribe.length > 0) source.source.query.filters = { subscribe };
+    else delete source.source.query.filters;
   }
   return next;
+}
+
+function removeFilter(document: Page, filterId: string): Page {
+  if (!(document.filters ?? []).some((filter) => filter.id === filterId)) return document;
+  const next = clonePage(document);
+  next.filters = (next.filters ?? []).filter((filter) => filter.id !== filterId);
+  if (next.filters.length === 0) delete next.filters;
+  for (const source of Object.values(next.dataSources)) {
+    if (source.source.type !== 'query') continue;
+    const subscribe = (source.source.query.filters?.subscribe ?? []).filter(
+      (candidate) => candidate !== filterId
+    );
+    if (subscribe.length > 0) source.source.query.filters = { subscribe };
+    else delete source.source.query.filters;
+    if (source.source.query.time?.filter === filterId) delete source.source.query.time;
+  }
+  for (const component of next.sections.flatMap((section) => section.components)) {
+    const actions = componentActions(component);
+    if (!actions) continue;
+    const retained: ComponentAction[] = [];
+    for (const action of actions) {
+      if ('writeFilter' in action) {
+        if (action.writeFilter !== filterId) retained.push(action);
+        continue;
+      }
+      action.navigate.carryFilters = (action.navigate.carryFilters ?? []).filter(
+        (candidate) => candidate !== filterId
+      );
+      if (action.navigate.carryFilters.length === 0) delete action.navigate.carryFilters;
+      retained.push(action);
+    }
+    setComponentActions(component, retained);
+  }
+  return next;
+}
+
+function setComponentInteraction(
+  document: Page,
+  locator: ComponentLocator,
+  interaction: ComponentInteraction
+): Page {
+  const component = locateComponent(document, locator);
+  if (!component || component.type === 'reportHeader' || component.type === 'text') {
+    return document;
+  }
+  if (interaction.mode === 'none') {
+    const next = clonePage(document);
+    const target = locateComponent(next, locator)!;
+    setComponentActions(target, []);
+    return next;
+  }
+  const sourceId = component.data.main;
+  const source = document.dataSources[sourceId];
+  const field = source?.fields[interaction.field];
+  if (
+    !source ||
+    source.source.type !== 'query' ||
+    field?.role !== 'dimension' ||
+    !source.source.query.dimensions?.includes(interaction.field)
+  ) {
+    return document;
+  }
+
+  if (interaction.mode === 'write_filter') {
+    const filter = (document.filters ?? []).find(
+      (candidate) => candidate.id === interaction.filterId
+    );
+    if (
+      filter?.type !== 'dimension' ||
+      filter.dimension !== interaction.field
+    ) {
+      return document;
+    }
+  } else {
+    const targetFilter = interaction.targetFilters.find(
+      (filter) => filter.id === interaction.targetFilterId
+    );
+    const currentFilters = new Map(
+      (document.filters ?? []).map((filter) => [filter.id, filter])
+    );
+    const targetFilters = new Map(
+      interaction.targetFilters.map((filter) => [filter.id, filter])
+    );
+    if (
+      !DOCUMENT_ID.test(interaction.pageId) ||
+      interaction.pageId === document.id ||
+      targetFilter?.type !== 'dimension' ||
+      targetFilter.dimension !== interaction.field ||
+      interaction.carryFilters.some((filterId) => {
+        const current = currentFilters.get(filterId);
+        const target = targetFilters.get(filterId);
+        return !current || !target || !compatibleCarryFilter(current, target);
+      })
+    ) {
+      return document;
+    }
+  }
+
+  const next = clonePage(document);
+  const target = locateComponent(next, locator)!;
+  setComponentActions(
+    target,
+    interaction.mode === 'write_filter'
+      ? [{ on: 'click', writeFilter: interaction.filterId, field: interaction.field }]
+      : [
+          {
+            on: 'click',
+            navigate: {
+              page: interaction.pageId,
+              ...(interaction.carryFilters.length
+                ? { carryFilters: Array.from(new Set(interaction.carryFilters)) }
+                : {}),
+              setFilters: { [interaction.targetFilterId]: interaction.field }
+            }
+          }
+        ]
+  );
+  return next;
+}
+
+function compatibleCarryFilter(
+  current: FilterDeclaration,
+  target: FilterDeclaration
+): boolean {
+  if (current.type !== target.type) return false;
+  return current.type === 'dimension' && target.type === 'dimension'
+    ? current.dimension === target.dimension
+    : true;
+}
+
+function componentActions(component: Component) {
+  return component.type === 'reportHeader' || component.type === 'text'
+    ? undefined
+    : component.props.actions;
+}
+
+function setComponentActions(
+  component: Component,
+  actions: NonNullable<ReturnType<typeof componentActions>>
+) {
+  if (component.type === 'reportHeader' || component.type === 'text') return;
+  if (actions.length > 0) component.props.actions = actions;
+  else delete component.props.actions;
 }
 
 function insertBoundComponent(

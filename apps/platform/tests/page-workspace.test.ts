@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { validate, type CatalogSnapshot, type Page } from '@metriccanvas/page';
+import {
+  navigateErrors,
+  validate,
+  type CatalogSnapshot,
+  type Page
+} from '@metriccanvas/page';
 import {
   createPageWorkspace,
   reducePageWorkspace,
@@ -328,6 +333,216 @@ describe('页面搭建工作台的未保存工作副本', () => {
           aggregation: 'sum'
         },
         catalog: catalogWithUnsupportedDimension
+      })
+    ).toBe(initial);
+  });
+
+  it('分区新增、改名、排序和删除均通过同一历史且删除时清理独占页面数据源', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const added = reducePageWorkspace(initial, {
+      type: 'add_section',
+      sectionId: 'details',
+      title: '经营明细',
+      afterSectionId: 'overview',
+      component: { sectionId: 'overview', componentId: 'region' }
+    });
+    const renamed = reducePageWorkspace(added, {
+      type: 'edit_section',
+      sectionId: 'details',
+      title: '区域明细'
+    });
+    const inserted = reducePageWorkspace(renamed, {
+      type: 'insert_bound_component',
+      component: {
+        kind: 'table',
+        componentId: 'orders-table',
+        title: '区域订单明细',
+        metricCode: 'order-count',
+        dimensionCode: 'region',
+        span: 12
+      },
+      placement: { sectionId: 'details' },
+      dataSource: {
+        mode: 'create_query',
+        dataSourceId: 'orders-details',
+        aggregation: 'sum'
+      },
+      catalog
+    });
+    const moved = reducePageWorkspace(inserted, {
+      type: 'move_section',
+      sectionId: 'details',
+      direction: -1
+    });
+
+    expect(moved.current.sections.map((section) => section.id)).toEqual([
+      'details',
+      'overview'
+    ]);
+    expect(moved.current.sections[0]).toMatchObject({ title: '区域明细' });
+    expect(validate(moved.current, catalog)).toEqual([]);
+
+    const removed = reducePageWorkspace(moved, {
+      type: 'remove_section',
+      sectionId: 'details'
+    });
+    expect(removed.current.sections.map((section) => section.id)).toEqual(['overview']);
+    expect(removed.current.dataSources['orders-details']).toBeUndefined();
+    expect(reducePageWorkspace(removed, { type: 'undo' }).current).toEqual(moved.current);
+    expect(
+      reducePageWorkspace(initial, { type: 'remove_section', sectionId: 'overview' })
+    ).toBe(initial);
+  });
+
+  it('维度筛选器原子更新声明和 query 页面数据源订阅，移除时清理订阅与页内联动', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const filtered = reducePageWorkspace(initial, {
+      type: 'upsert_dimension_filter',
+      filterId: 'f-region',
+      dimensionCode: 'region',
+      label: '区域',
+      display: 'tabs',
+      subscriptions: ['summary', 'by-region'],
+      catalog
+    });
+    expect(filtered.current.filters).toEqual([
+      {
+        id: 'f-region',
+        type: 'dimension',
+        dimension: 'region',
+        label: '区域',
+        display: 'tabs'
+      }
+    ]);
+    expect(
+      filtered.current.dataSources.summary?.source.type === 'query'
+        ? filtered.current.dataSources.summary.source.query.filters
+        : null
+    ).toEqual({ subscribe: ['f-region'] });
+    expect(
+      filtered.current.dataSources['by-region']?.source.type === 'query'
+        ? filtered.current.dataSources['by-region'].source.query.filters
+        : null
+    ).toEqual({ subscribe: ['f-region'] });
+
+    const linked = reducePageWorkspace(filtered, {
+      type: 'set_component_interaction',
+      locator: { sectionId: 'overview', componentId: 'region' },
+      interaction: { mode: 'write_filter', filterId: 'f-region', field: 'region' }
+    });
+    expect(linked.current.sections[0]?.components[1]).toMatchObject({
+      props: {
+        actions: [{ on: 'click', writeFilter: 'f-region', field: 'region' }]
+      }
+    });
+    expect(validate(linked.current, catalog)).toEqual([]);
+
+    const removed = reducePageWorkspace(linked, {
+      type: 'remove_filter',
+      filterId: 'f-region'
+    });
+    expect(removed.current.filters).toBeUndefined();
+    expect(
+      removed.current.dataSources['by-region']?.source.type === 'query'
+        ? removed.current.dataSources['by-region'].source.query.filters
+        : null
+    ).toBeUndefined();
+    expect(removed.current.sections[0]?.components[1]).not.toHaveProperty('props.actions');
+    expect(validate(removed.current, catalog)).toEqual([]);
+  });
+
+  it('跨页下钻只接受目标页同维度筛选器，并生成可跨文档校验的 navigate action', () => {
+    const sourcePage: Page = {
+      ...structuredClone(document),
+      filters: [
+        {
+          id: 'f-region',
+          type: 'dimension',
+          dimension: 'region',
+          label: '当前区域',
+          display: 'select'
+        }
+      ]
+    };
+    const targetPage: Page = {
+      ...structuredClone(document),
+      id: 'sales-detail',
+      filters: [
+        {
+          id: 'f-region',
+          type: 'dimension',
+          dimension: 'region',
+          label: '目标区域',
+          display: 'tabs'
+        }
+      ]
+    };
+    const initial = createPageWorkspace({
+      document: sourcePage,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const configured = reducePageWorkspace(initial, {
+      type: 'set_component_interaction',
+      locator: { sectionId: 'overview', componentId: 'region' },
+      interaction: {
+        mode: 'navigate',
+        pageId: targetPage.id,
+        carryFilters: ['f-region'],
+        targetFilterId: 'f-region',
+        field: 'region',
+        targetFilters: targetPage.filters ?? []
+      }
+    });
+
+    expect(configured.current.sections[0]?.components[1]).toMatchObject({
+      props: {
+        actions: [
+          {
+            on: 'click',
+            navigate: {
+              page: 'sales-detail',
+              carryFilters: ['f-region'],
+              setFilters: { 'f-region': 'region' }
+            }
+          }
+        ]
+      }
+    });
+    expect(validate(configured.current, catalog)).toEqual([]);
+    expect(
+      navigateErrors(
+        configured.current,
+        new Set([configured.current.id, targetPage.id]),
+        new Map([
+          [configured.current.id, configured.current],
+          [targetPage.id, targetPage]
+        ])
+      )
+    ).toEqual([]);
+
+    expect(
+      reducePageWorkspace(initial, {
+        type: 'set_component_interaction',
+        locator: { sectionId: 'overview', componentId: 'region' },
+        interaction: {
+          mode: 'navigate',
+          pageId: targetPage.id,
+          carryFilters: [],
+          targetFilterId: 'f-channel',
+          field: 'region',
+          targetFilters: [
+            { id: 'f-channel', type: 'dimension', dimension: 'channel' }
+          ]
+        }
       })
     ).toBe(initial);
   });

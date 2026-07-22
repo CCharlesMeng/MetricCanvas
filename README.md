@@ -2,7 +2,7 @@
 
 MetricCanvas 是数据服务之上的治理化消费层：以业务指标为核心，用声明式的**看板页面**描述数据应用，由**统一运行时**校验、取数并渲染。页面文档适合由开发者编写或由 AI 生成，能够进入 Git 做 diff、评审和审计，而不是让 AI 直接生成不可控的生产页面代码。
 
-领域概念以 [CONTEXT.md](./CONTEXT.md) 为准。完整方案与设计取舍分别见 [docs/solution.md](./docs/solution.md) 和 [docs/adr/](./docs/adr/)。
+领域概念以 [CONTEXT.md](./CONTEXT.md) 为准。当前统一运行时直接消费的协议见 [看板页面元数据描述](./PAGE-METADATA.md)，文档按“静态页面 → 动态页面 → 有交互关联的动态页面”三个维度给出可渲染示例。完整方案与设计取舍分别见 [docs/solution.md](./docs/solution.md) 和 [docs/adr/](./docs/adr/)。
 
 ## 当前能力与边界
 
@@ -287,5 +287,6 @@ pnpm sim
 ## 延伸阅读
 
 - [CONTEXT.md](./CONTEXT.md)：领域词汇表，术语唯一来源。
+- [PAGE-METADATA.md](./PAGE-METADATA.md)：当前看板页面协议及静态、动态、交互关联动态三个递进维度。
 - [docs/solution.md](./docs/solution.md)：整体架构、职责边界和演进路线。
 - [docs/adr/](./docs/adr/)：关键决策；数据源协议重点见 [ADR-0008](./docs/adr/0008-page-data-sources.md)。
