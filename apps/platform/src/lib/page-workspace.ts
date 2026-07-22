@@ -22,6 +22,27 @@ export interface PageWorkspace {
   lastMutation: 'manual' | 'agent' | null;
 }
 
+export interface MetricCardInsertion {
+  kind: 'metric_card';
+  componentId: string;
+  title: string;
+  metricCode: string;
+  span: number;
+}
+
+export type BoundDataSourceSelection =
+  | {
+      mode: 'create_query';
+      dataSourceId: string;
+      aggregation: string;
+    }
+  | {
+      mode: 'reuse';
+      dataSourceId: string;
+    };
+
+const DOCUMENT_ID = /^[a-z0-9][a-z0-9-]*$/u;
+
 export type PageWorkspaceCommand =
   | { type: 'select_component'; locator: ComponentLocator | null }
   | { type: 'edit_component'; locator: ComponentLocator; edit: ComponentEdit }
@@ -36,6 +57,14 @@ export type PageWorkspaceCommand =
       query: StructuredQuery;
       catalog: CatalogSnapshot;
     }
+  | {
+      type: 'insert_bound_component';
+      component: MetricCardInsertion;
+      placement: { sectionId: string; afterComponentId?: string };
+      dataSource: BoundDataSourceSelection;
+      catalog: CatalogSnapshot;
+    }
+  | { type: 'remove_component'; locator: ComponentLocator }
   | { type: 'apply_agent_document'; document: Page }
   | { type: 'undo' }
   | { type: 'redo' }
@@ -137,6 +166,12 @@ export function reducePageWorkspace(
       command.catalog
     );
     mutation = 'manual';
+  } else if (command.type === 'insert_bound_component') {
+    next = insertBoundComponent(workspace.current, command);
+    mutation = 'manual';
+  } else if (command.type === 'remove_component') {
+    next = removeComponent(workspace.current, command.locator);
+    mutation = 'manual';
   } else {
     next = clonePage(command.document);
     mutation = 'agent';
@@ -152,6 +187,130 @@ export function reducePageWorkspace(
     selected: retainSelection(next, workspace.selected),
     lastMutation: mutation
   };
+}
+
+function removeComponent(document: Page, locator: ComponentLocator): Page {
+  const section = document.sections.find(
+    (candidate) => candidate.id === locator.sectionId
+  );
+  const component = section?.components.find(
+    (candidate) => candidate.id === locator.componentId
+  );
+  if (!section || !component) return document;
+
+  const next = clonePage(document);
+  const targetSection = next.sections.find(
+    (candidate) => candidate.id === locator.sectionId
+  )!;
+  targetSection.components = targetSection.components.filter(
+    (candidate) => candidate.id !== locator.componentId
+  );
+
+  const removedSourceIds = new Set(Object.values(component.data ?? {}));
+  const retainedSourceIds = new Set(
+    next.sections.flatMap((candidate) =>
+      candidate.components.flatMap((item) => Object.values(item.data ?? {}))
+    )
+  );
+  for (const dataSourceId of removedSourceIds) {
+    if (!retainedSourceIds.has(dataSourceId)) {
+      delete next.dataSources[dataSourceId];
+    }
+  }
+  return next;
+}
+
+function insertBoundComponent(
+  document: Page,
+  command: Extract<PageWorkspaceCommand, { type: 'insert_bound_component' }>
+): Page {
+  const section = document.sections.find(
+    (candidate) => candidate.id === command.placement.sectionId
+  );
+  const metric = command.catalog.metrics.find(
+    (candidate) => candidate.code === command.component.metricCode
+  );
+  if (
+    !section ||
+    !metric ||
+    !DOCUMENT_ID.test(command.component.componentId) ||
+    !command.component.title.trim() ||
+    !Number.isInteger(command.component.span) ||
+    command.component.span < 1 ||
+    command.component.span > 12 ||
+    document.sections.some((candidate) =>
+      candidate.components.some(
+        (component) => component.id === command.component.componentId
+      )
+    )
+  ) {
+    return document;
+  }
+
+  if (
+    command.placement.afterComponentId !== undefined &&
+    !section.components.some(
+      (component) => component.id === command.placement.afterComponentId
+    )
+  ) {
+    return document;
+  }
+
+  if (command.dataSource.mode === 'create_query') {
+    if (
+      !DOCUMENT_ID.test(command.dataSource.dataSourceId) ||
+      Object.hasOwn(document.dataSources, command.dataSource.dataSourceId) ||
+      !metric.availableAggregations.includes(command.dataSource.aggregation)
+    ) {
+      return document;
+    }
+  } else {
+    const source = document.dataSources[command.dataSource.dataSourceId];
+    if (
+      !source ||
+      source.source.type !== 'query' ||
+      source.fields[metric.code]?.role !== 'metric' ||
+      !source.source.query.metrics.includes(metric.code)
+    ) {
+      return document;
+    }
+  }
+
+  const next = clonePage(document);
+  if (command.dataSource.mode === 'create_query') {
+    next.dataSources[command.dataSource.dataSourceId] = {
+      fields: {
+        [metric.code]: metricField(metric)
+      },
+      source: {
+        type: 'query',
+        query: {
+          metrics: [metric.code],
+          aggregation: command.dataSource.aggregation
+        }
+      }
+    };
+  }
+
+  const targetSection = next.sections.find(
+    (candidate) => candidate.id === command.placement.sectionId
+  )!;
+  const afterIndex = command.placement.afterComponentId
+    ? targetSection.components.findIndex(
+        (component) => component.id === command.placement.afterComponentId
+      )
+    : targetSection.components.length - 1;
+  targetSection.components.splice(afterIndex + 1, 0, {
+    id: command.component.componentId,
+    type: 'metricCard',
+    layout: { span: command.component.span },
+    data: { main: command.dataSource.dataSourceId },
+    props: {
+      title: command.component.title.trim(),
+      rows: [{ label: metric.name, valueField: metric.code }]
+    }
+  });
+  return next;
 }
 
 export function workspaceIsDirty(workspace: PageWorkspace): boolean {
@@ -344,6 +503,20 @@ function adaptActions(component: Component, metric: string, dimension?: string) 
       );
     }
   }
+}
+
+function metricField(metric: CatalogSnapshot['metrics'][number]) {
+  return {
+    type: 'number' as const,
+    role: 'metric' as const,
+    label: metric.name,
+    format:
+      metric.valueType === 'percent'
+        ? ('percent-2' as const)
+        : metric.valueType === 'integer'
+          ? ('number-grouped' as const)
+          : ('number-2' as const)
+  };
 }
 
 function cloneQuery(query: StructuredQuery): StructuredQuery {

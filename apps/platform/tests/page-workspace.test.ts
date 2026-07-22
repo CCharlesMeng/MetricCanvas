@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CatalogSnapshot, Page } from '@metriccanvas/page';
+import { validate, type CatalogSnapshot, type Page } from '@metriccanvas/page';
 import {
   createPageWorkspace,
   reducePageWorkspace,
@@ -14,7 +14,7 @@ const document: Page = {
       fields: { gmv: { type: 'number', role: 'metric', label: '成交总额' } },
       source: { type: 'query', query: { metrics: ['gmv'], aggregation: 'sum' } }
     },
-    byRegion: {
+    'by-region': {
       fields: {
         region: { type: 'string', role: 'dimension', label: '区域' },
         gmv: { type: 'number', role: 'metric', label: '成交总额' }
@@ -47,7 +47,7 @@ const document: Page = {
           id: 'region',
           type: 'barChart',
           layout: { span: 9 },
-          data: { main: 'byRegion' },
+          data: { main: 'by-region' },
           props: {
             title: '区域成交对比',
             categoryField: 'region',
@@ -86,6 +86,179 @@ const catalog: CatalogSnapshot = {
 };
 
 describe('页面搭建工作台的未保存工作副本', () => {
+  it('新增指标卡和 query 页面数据源是一次可撤销的合法修改', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const inserted = reducePageWorkspace(initial, {
+      type: 'insert_bound_component',
+      component: {
+        kind: 'metric_card',
+        componentId: 'orders',
+        title: '订单量',
+        metricCode: 'order-count',
+        span: 4
+      },
+      placement: {
+        sectionId: 'overview',
+        afterComponentId: 'gmv'
+      },
+      dataSource: {
+        mode: 'create_query',
+        dataSourceId: 'orders-summary',
+        aggregation: 'sum'
+      },
+      catalog
+    });
+
+    expect(inserted.past).toHaveLength(1);
+    expect(inserted.current.sections[0]?.components.map((component) => component.id)).toEqual([
+      'gmv',
+      'orders',
+      'region'
+    ]);
+    expect(inserted.current.dataSources['orders-summary']).toEqual({
+      fields: {
+        'order-count': {
+          type: 'number',
+          role: 'metric',
+          label: '订单量',
+          format: 'number-grouped'
+        }
+      },
+      source: {
+        type: 'query',
+        query: { metrics: ['order-count'], aggregation: 'sum' }
+      }
+    });
+    expect(inserted.current.sections[0]?.components[1]).toEqual({
+      id: 'orders',
+      type: 'metricCard',
+      layout: { span: 4 },
+      data: { main: 'orders-summary' },
+      props: {
+        title: '订单量',
+        rows: [{ label: '订单量', valueField: 'order-count' }]
+      }
+    });
+    expect(validate(inserted.current, catalog)).toEqual([]);
+
+    const undone = reducePageWorkspace(inserted, { type: 'undo' });
+    expect(undone.current).toEqual(document);
+    expect(undone.current.dataSources['orders-summary']).toBeUndefined();
+  });
+
+  it('删除指标卡时清理它独占的页面数据源，撤销同时恢复两者', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const inserted = reducePageWorkspace(initial, {
+      type: 'insert_bound_component',
+      component: {
+        kind: 'metric_card',
+        componentId: 'orders',
+        title: '订单量',
+        metricCode: 'order-count',
+        span: 3
+      },
+      placement: { sectionId: 'overview' },
+      dataSource: {
+        mode: 'create_query',
+        dataSourceId: 'orders-summary',
+        aggregation: 'sum'
+      },
+      catalog
+    });
+    const removed = reducePageWorkspace(inserted, {
+      type: 'remove_component',
+      locator: { sectionId: 'overview', componentId: 'orders' }
+    });
+
+    expect(removed.current.sections[0]?.components.some((item) => item.id === 'orders')).toBe(
+      false
+    );
+    expect(removed.current.dataSources['orders-summary']).toBeUndefined();
+    expect(removed.past).toHaveLength(2);
+    expect(validate(removed.current, catalog)).toEqual([]);
+
+    const undone = reducePageWorkspace(removed, { type: 'undo' });
+    expect(undone.current.dataSources['orders-summary']).toBeDefined();
+    expect(undone.current.sections[0]?.components.some((item) => item.id === 'orders')).toBe(
+      true
+    );
+  });
+
+  it('可复用已有 query 页面数据源，删除其中一个组件不误删共享数据源', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const inserted = reducePageWorkspace(initial, {
+      type: 'insert_bound_component',
+      component: {
+        kind: 'metric_card',
+        componentId: 'gmv-secondary',
+        title: '成交总额备用卡',
+        metricCode: 'gmv',
+        span: 3
+      },
+      placement: { sectionId: 'overview', afterComponentId: 'gmv' },
+      dataSource: { mode: 'reuse', dataSourceId: 'summary' },
+      catalog
+    });
+    const removed = reducePageWorkspace(inserted, {
+      type: 'remove_component',
+      locator: { sectionId: 'overview', componentId: 'gmv' }
+    });
+
+    expect(Object.keys(inserted.current.dataSources)).toEqual(['summary', 'by-region']);
+    expect(removed.current.dataSources.summary).toBeDefined();
+    expect(removed.current.sections[0]?.components[0]).toMatchObject({
+      id: 'gmv-secondary',
+      data: { main: 'summary' }
+    });
+    expect(validate(removed.current, catalog)).toEqual([]);
+  });
+
+  it('组件或页面数据源 id 冲突与非法时整条命令无副作用', () => {
+    const initial = createPageWorkspace({
+      document,
+      baseRevisionId: 'revision-3',
+      revisionNumber: 3
+    });
+    const input = {
+      type: 'insert_bound_component' as const,
+      component: {
+        kind: 'metric_card' as const,
+        componentId: 'gmv',
+        title: '订单量',
+        metricCode: 'order-count',
+        span: 3
+      },
+      placement: { sectionId: 'overview' },
+      dataSource: {
+        mode: 'create_query' as const,
+        dataSourceId: 'orders-summary',
+        aggregation: 'sum'
+      },
+      catalog
+    };
+
+    expect(reducePageWorkspace(initial, input)).toBe(initial);
+    expect(
+      reducePageWorkspace(initial, {
+        ...input,
+        component: { ...input.component, componentId: 'orders' },
+        dataSource: { ...input.dataSource, dataSourceId: 'orders_summary' }
+      })
+    ).toBe(initial);
+  });
+
   it('人工编辑和 Agent 修改进入同一撤销历史，组件选择不污染历史', () => {
     const initial = createPageWorkspace({
       document,
@@ -141,7 +314,7 @@ describe('页面搭建工作台的未保存工作副本', () => {
     });
     const edited = reducePageWorkspace(moved, {
       type: 'edit_query_data_source',
-      dataSourceId: 'byRegion',
+      dataSourceId: 'by-region',
       query: {
         metrics: ['order-count'],
         dimensions: ['channel'],
@@ -156,7 +329,7 @@ describe('页面搭建工作台的未保存工作副本', () => {
       'region',
       'gmv'
     ]);
-    expect(edited.current.dataSources.byRegion).toEqual({
+    expect(edited.current.dataSources['by-region']).toEqual({
       fields: {
         channel: { type: 'string', role: 'dimension', label: '渠道' },
         'order-count': {

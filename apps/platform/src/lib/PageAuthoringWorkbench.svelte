@@ -65,7 +65,12 @@
   let input = $state(DEFAULT_INTENT);
   let pageIdInput = $state('');
   let selectedDataSourceId = $state('');
-  let inspectorTab = $state<'component' | 'source'>('component');
+  let addingMetricCard = $state(false);
+  let addMetricCode = $state('');
+  let addDataSourceChoice = $state('new');
+  let addSectionId = $state('');
+  let addSpan = $state(3);
+  let addAggregation = $state('');
   let runId = $state('');
   let bridgeSession = $state('');
   let runtimeOrigin = $state('http://localhost:5173');
@@ -104,6 +109,23 @@
       querySources[0] ??
       null
   );
+  const addMetricOptions = $derived.by(() => {
+    if (!catalog) return [];
+    if (addDataSourceChoice === 'new') return catalog.metrics;
+    const source = workspace?.current.dataSources[addDataSourceChoice];
+    if (!source || source.source.type !== 'query') return [];
+    return source.source.query.metrics.flatMap((code) => {
+      const field = source.fields[code];
+      const metric = catalog?.metrics.find((candidate) => candidate.code === code);
+      return field?.role === 'metric' && metric ? [metric] : [];
+    });
+  });
+  const addMetric = $derived(
+    addMetricOptions.find((metric) => metric.code === addMetricCode) ??
+      addMetricOptions[0] ??
+      null
+  );
+  const addAggregationOptions = $derived(addMetric?.availableAggregations ?? []);
   const dirty = $derived(workspace ? workspaceIsDirty(workspace) : false);
   const pageIdConfirmed = $derived(
     Boolean(
@@ -495,6 +517,122 @@
     dispatch({ type: 'edit_component', locator: selected.locator, edit });
   }
 
+  function openMetricCardComposer() {
+    if (!workspace || !catalog) return;
+    addingMetricCard = true;
+    addDataSourceChoice = 'new';
+    addMetricCode = catalog.metrics[0]?.code ?? '';
+    addAggregation = preferredAggregation(catalog.metrics[0]);
+    addSectionId = selected?.locator.sectionId ?? workspace.current.sections[0]?.id ?? '';
+    addSpan = 3;
+  }
+
+  function chooseAddDataSource(value: string) {
+    addDataSourceChoice = value;
+    const source = value === 'new' ? null : workspace?.current.dataSources[value];
+    const firstMetricCode =
+      source?.source.type === 'query'
+        ? source.source.query.metrics.find(
+            (code) => source.fields[code]?.role === 'metric' && catalog?.metrics.some((metric) => metric.code === code)
+          )
+        : catalog?.metrics[0]?.code;
+    addMetricCode = firstMetricCode ?? '';
+    addAggregation = preferredAggregation(
+      catalog?.metrics.find((metric) => metric.code === addMetricCode)
+    );
+  }
+
+  function chooseAddMetric(code: string) {
+    addMetricCode = code;
+    addAggregation = preferredAggregation(
+      catalog?.metrics.find((metric) => metric.code === code)
+    );
+  }
+
+  function addMetricCard() {
+    if (!workspace || !catalog || !addMetric || !addSectionId) return;
+    const componentId = nextAvailableId(`${addMetric.code}-card`, componentIds());
+    const dataSourceId =
+      addDataSourceChoice === 'new'
+        ? nextAvailableId(`${addMetric.code}-summary`, Object.keys(workspace.current.dataSources))
+        : addDataSourceChoice;
+    const afterComponentId =
+      selected?.locator.sectionId === addSectionId
+        ? selected.locator.componentId
+        : undefined;
+    const previous = workspace;
+    dispatch({
+      type: 'insert_bound_component',
+      component: {
+        kind: 'metric_card',
+        componentId,
+        title: addMetric.name,
+        metricCode: addMetric.code,
+        span: addSpan
+      },
+      placement: { sectionId: addSectionId, ...(afterComponentId ? { afterComponentId } : {}) },
+      dataSource:
+        addDataSourceChoice === 'new'
+          ? {
+              mode: 'create_query',
+              dataSourceId,
+              aggregation: addAggregation
+            }
+          : { mode: 'reuse', dataSourceId },
+      catalog
+    });
+    if (workspace === previous) {
+      error = '无法添加指标卡：请重新选择兼容的页面数据源。';
+      return;
+    }
+    dispatch({
+      type: 'select_component',
+      locator: { sectionId: addSectionId, componentId }
+    });
+    selectedDataSourceId = dataSourceId;
+    addingMetricCard = false;
+    notice = `已添加“${addMetric.name}”指标卡，并${addDataSourceChoice === 'new' ? '创建' : '复用'} query 页面数据源 ${dataSourceId}。`;
+  }
+
+  function removeSelected() {
+    if (!selected) return;
+    const title = selected.title || selected.locator.componentId;
+    dispatch({ type: 'remove_component', locator: selected.locator });
+    notice = `已删除“${title}”；独占的页面数据源已一并清理，可撤销。`;
+  }
+
+  function componentIds(): string[] {
+    return workspace?.current.sections.flatMap((section) =>
+      section.components.map((component) => component.id)
+    ) ?? [];
+  }
+
+  function nextAvailableId(base: string, existing: string[]): string {
+    const normalized = base.toLowerCase().replace(/[^a-z0-9-]+/gu, '-').replace(/^-+|-+$/gu, '') || 'item';
+    if (!existing.includes(normalized)) return normalized;
+    let suffix = 2;
+    while (existing.includes(`${normalized}-${suffix}`)) suffix += 1;
+    return `${normalized}-${suffix}`;
+  }
+
+  function preferredAggregation(metric: CatalogSnapshot['metrics'][number] | undefined): string {
+    if (!metric) return '';
+    if (
+      metric.availableAggregations.includes('avg') &&
+      (metric.valueType === 'percent' || /rate|ratio|percent|率/iu.test(`${metric.code} ${metric.name}`))
+    ) {
+      return 'avg';
+    }
+    return metric.availableAggregations[0] ?? '';
+  }
+
+  function componentDataSourceId(component: EditableComponent): string | null {
+    return workspace?.current.sections
+      .find((section) => section.id === component.locator.sectionId)
+      ?.components.find((candidate) => candidate.id === component.locator.componentId)
+      ?.data?.main ?? null;
+  }
+
   function applyQuery(query: StructuredQuery) {
     if (!workspace || !selectedSource || !catalog) return;
     dispatch({
@@ -527,7 +665,7 @@
 
   function selectedQuery(): StructuredQuery | null {
     return selectedSource?.source.source.type === 'query'
-      ? structuredClone(selectedSource.source.source.query)
+      ? (JSON.parse(JSON.stringify(selectedSource.source.source.query)) as StructuredQuery)
       : null;
   }
 
@@ -692,16 +830,52 @@
       </section>
 
       <section class="inspector-panel">
-      <div class="tabs">
-        <label class:active={inspectorTab === 'component'}><input type="radio" name="inspector-tab" value="component" bind:group={inspectorTab} /><span>组件</span></label>
-        <label class:active={inspectorTab === 'source'}><input type="radio" name="inspector-tab" value="source" bind:group={inspectorTab} /><span>页面数据源</span></label>
-      </div>
-
-      {#if inspectorTab === 'component'}
+        <div class="inspector-heading">
+          <div><strong>页面内容</strong><span>{components.length} 个组件 · {querySources.length} 个 query 页面数据源</span></div>
+          <button type="button" onclick={openMetricCardComposer} disabled={!workspace || !catalog}>+ 指标卡</button>
+        </div>
+        {#if addingMetricCard && workspace && catalog}
+          <div class="add-card-composer" aria-label="添加指标卡">
+            <div class="composer-title"><div><span>NEW CONTENT</span><strong>添加指标卡</strong></div><button type="button" aria-label="关闭添加面板" onclick={() => (addingMetricCard = false)}>×</button></div>
+            <div class="add-grid">
+              <label>页面数据源
+                <select value={addDataSourceChoice} onchange={(event) => chooseAddDataSource(valueOf(event))}>
+                  <option value="new">新建 query 页面数据源</option>
+                  {#each querySources as candidate}<option value={candidate.id}>复用 {candidate.id}</option>{/each}
+                </select>
+              </label>
+              <label>指标
+                <select value={addMetricCode} onchange={(event) => chooseAddMetric(valueOf(event))}>
+                  {#each addMetricOptions as metric}<option value={metric.code}>{metric.name} · {metric.code}</option>{/each}
+                </select>
+              </label>
+              {#if addDataSourceChoice === 'new'}
+                <label>聚合
+                  <select bind:value={addAggregation}>{#each addAggregationOptions as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select>
+                </label>
+              {/if}
+              <label>放入分区
+                <select bind:value={addSectionId}>
+                  {#each workspace.current.sections as section}<option value={section.id}>{section.title ?? section.id}</option>{/each}
+                </select>
+              </label>
+            </div>
+            <div class="layout-choice">
+              <span>布局宽度</span>
+              {#each [3, 4, 6, 12] as span}<button type="button" class:active={addSpan === span} onclick={() => (addSpan = span)}>{span}/12</button>{/each}
+            </div>
+            <div class="add-summary">
+              <span>{addDataSourceChoice === 'new' ? '将创建' : '将复用'}</span>
+              <code>{addDataSourceChoice === 'new' && addMetric ? `${addMetric.code}-summary` : addDataSourceChoice}</code>
+              <span>· 绑定到 main 数据槽</span>
+            </div>
+            <button class="confirm-add" type="button" onclick={addMetricCard} disabled={!addMetric || !addSectionId || (addDataSourceChoice === 'new' && !addAggregation)}>添加到未保存工作副本</button>
+          </div>
+        {/if}
         <div class="component-list" aria-label="组件列表">
           {#each components as component (component.locator.sectionId + component.locator.componentId)}
             <button class:selected={selected && sameLocator(selected.locator, component.locator)} type="button" onclick={() => selectFromInspector(component)}>
-              <span>{component.typeLabel}</span><strong>{component.title || component.locator.componentId}</strong><small>{component.span}/12</small>
+              <span>{component.typeLabel}</span><strong>{component.title || component.locator.componentId}</strong><small>{componentDataSourceId(component) ?? '无页面数据源'} · {component.span}/12</small>
             </button>
           {/each}
         </div>
@@ -710,28 +884,30 @@
             <label>标题<input value={selected.title} onchange={(event) => editSelected({ title: valueOf(event) })} /></label>
             {#if selected.detailLabel}<label>{selected.detailLabel}<input value={selected.detail} onchange={(event) => editSelected({ detail: valueOf(event) })} /></label>{/if}
             <label>网格跨度 <span>{selected.span}/12</span><input type="range" min="1" max="12" value={selected.span} oninput={(event) => editSelected({ span: Number(valueOf(event)) })} /></label>
-            <p>也可以直接点击右侧画布组件，在画布内改标题、调整跨度或拖动排序。</p>
+            <div class="selected-source"><span>绑定页面数据源</span><strong>{componentDataSourceId(selected) ?? '无'}</strong>{#if componentDataSourceId(selected)}<a href="#data-source-editor" onclick={() => (selectedDataSourceId = componentDataSourceId(selected) ?? '')}>编辑结构化查询</a>{/if}</div>
+            <div class="property-actions"><p>画布内也可改标题、调整跨度或拖动排序。删除可撤销。</p><button type="button" class="remove" onclick={removeSelected}>删除组件</button></div>
           </div>
         {/if}
-      {:else}
-        <div class="source-select">
-          <label>页面数据源<select bind:value={selectedDataSourceId}>{#each querySources as candidate}<option value={candidate.id}>{candidate.id}</option>{/each}</select></label>
-        </div>
-        {#if selectedSource && selectedQuery() && catalog}
-          {@const query = selectedQuery()!}
-          <div class="query-editor">
-            <fieldset><legend>指标</legend>{#each catalog.metrics as metric}<label class:disabled={!metricCompatible(metric.code)}><input type="checkbox" checked={query.metrics.includes(metric.code)} disabled={!query.metrics.includes(metric.code) && !metricCompatible(metric.code)} onchange={(event) => toggleMetric(metric.code, checkedOf(event))} /><span><strong>{metric.name}</strong><code>{metric.code}</code></span></label>{/each}</fieldset>
-            <fieldset><legend>维度</legend>{#each catalog.dimensions as dimension}<label class:disabled={!dimensionCompatible(dimension.code)}><input type="checkbox" checked={(query.dimensions ?? []).includes(dimension.code)} disabled={!(query.dimensions ?? []).includes(dimension.code) && !dimensionCompatible(dimension.code)} onchange={(event) => toggleDimension(dimension.code, checkedOf(event))} /><span><strong>{dimension.name}</strong><code>{dimension.code}</code></span></label>{/each}</fieldset>
-            <div class="query-grid">
-              <label>聚合<select value={query.aggregation ?? ''} onchange={(event) => applyQuery({ ...query, aggregation: valueOf(event) })}>{#each aggregationOptions() as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select></label>
-              <label>排序字段<select value={query.orderBy?.[0]?.field ?? query.metrics[0]} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: valueOf(event), direction: query.orderBy?.[0]?.direction ?? 'desc' }] })}>{#each [...(query.dimensions ?? []), ...query.metrics] as field}<option value={field}>{field}</option>{/each}</select></label>
-              <label>方向<select value={query.orderBy?.[0]?.direction ?? 'desc'} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: query.orderBy?.[0]?.field ?? query.metrics[0]!, direction: valueOf(event) as 'asc' | 'desc' }] })}><option value="desc">desc</option><option value="asc">asc</option></select></label>
-              <label>limit<input type="number" min="1" max="1000" value={query.limit ?? 100} onchange={(event) => applyQuery({ ...query, limit: Number(valueOf(event)) })} /></label>
-            </div>
-            <p class="catalog-proof">元数据版本 <code>{metadataVersion.slice(0, 12)}…</code> · 修改会同步字段契约与组件数据绑定。</p>
+        <details class="source-inspector" id="data-source-editor" open>
+          <summary><span><strong>页面数据源</strong><small>选择并编辑结构化查询</small></span><em>{querySources.length}</em></summary>
+          <div class="source-select">
+            <label>页面数据源<select bind:value={selectedDataSourceId}>{#each querySources as candidate}<option value={candidate.id}>{candidate.id}</option>{/each}</select></label>
           </div>
-        {:else}<p class="empty">当前没有可编辑的 query 页面数据源。</p>{/if}
-      {/if}
+          {#if selectedSource && selectedQuery() && catalog}
+            {@const query = selectedQuery()!}
+            <div class="query-editor">
+              <fieldset><legend>指标</legend>{#each catalog.metrics as metric}<label class:disabled={!metricCompatible(metric.code)}><input type="checkbox" checked={query.metrics.includes(metric.code)} disabled={!query.metrics.includes(metric.code) && !metricCompatible(metric.code)} onchange={(event) => toggleMetric(metric.code, checkedOf(event))} /><span><strong>{metric.name}</strong><code>{metric.code}</code></span></label>{/each}</fieldset>
+              <fieldset><legend>维度</legend>{#each catalog.dimensions as dimension}<label class:disabled={!dimensionCompatible(dimension.code)}><input type="checkbox" checked={(query.dimensions ?? []).includes(dimension.code)} disabled={!(query.dimensions ?? []).includes(dimension.code) && !dimensionCompatible(dimension.code)} onchange={(event) => toggleDimension(dimension.code, checkedOf(event))} /><span><strong>{dimension.name}</strong><code>{dimension.code}</code></span></label>{/each}</fieldset>
+              <div class="query-grid">
+                <label>聚合<select value={query.aggregation ?? ''} onchange={(event) => applyQuery({ ...query, aggregation: valueOf(event) })}>{#each aggregationOptions() as aggregation}<option value={aggregation}>{aggregation}</option>{/each}</select></label>
+                <label>排序字段<select value={query.orderBy?.[0]?.field ?? query.metrics[0]} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: valueOf(event), direction: query.orderBy?.[0]?.direction ?? 'desc' }] })}>{#each [...(query.dimensions ?? []), ...query.metrics] as field}<option value={field}>{field}</option>{/each}</select></label>
+                <label>方向<select value={query.orderBy?.[0]?.direction ?? 'desc'} onchange={(event) => applyQuery({ ...query, orderBy: [{ field: query.orderBy?.[0]?.field ?? query.metrics[0]!, direction: valueOf(event) as 'asc' | 'desc' }] })}><option value="desc">desc</option><option value="asc">asc</option></select></label>
+                <label>limit<input type="number" min="1" max="1000" value={query.limit ?? 100} onchange={(event) => applyQuery({ ...query, limit: Number(valueOf(event)) })} /></label>
+              </div>
+              <p class="catalog-proof">元数据版本 <code>{metadataVersion.slice(0, 12)}…</code> · 修改会同步字段契约与组件数据绑定。</p>
+            </div>
+          {:else}<p class="empty">当前没有可编辑的 query 页面数据源。</p>{/if}
+        </details>
       </section>
     </div>
 
@@ -773,7 +949,7 @@
 </div>
 
 <style>
-  .authoring-workbench { display: grid; height: calc(100vh - 54px); height: calc(100dvh - 54px); grid-template-columns: minmax(390px, 38%) minmax(620px, 62%); overflow: hidden; background: #eef1f6; }
+  .authoring-workbench { display: grid; height: calc(100vh - 54px); height: calc(100dvh - 54px); grid-template-columns: clamp(330px, 34vw, 470px) minmax(0, 1fr); overflow: hidden; background: #eef1f6; }
   .control-column { display: grid; min-width: 0; min-height: 0; grid-template-rows: auto auto minmax(0, 1fr) auto auto; overflow: hidden; background: #fff; border-right: 1px solid #dde2ea; }
   .workbench-header { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; padding: 14px 18px 12px; border-bottom: 1px solid #e3e7ed; }
   h1, h2, p { margin: 0; } h1 { font-size: 17px; } h2 { font-size: 15px; }
@@ -785,7 +961,7 @@
   .save-row { grid-column: 1 / -1; }
   .save { width: 100%; padding: 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 7px; font-size: 11px; font-weight: 800; }
   .existing-page { display: grid; grid-template-columns: 1fr auto; gap: 6px; padding: 9px 18px; border-bottom: 1px solid #edf0f4; }
-  .existing-page input, .property-form input, .source-select select, .query-grid input, .query-grid select { width: 100%; min-height: 32px; padding: 6px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
+  .existing-page input, .property-form input, .source-select select, .query-grid input, .query-grid select, .add-card-composer select { width: 100%; min-height: 32px; padding: 6px 8px; color: #273146; background: #fff; border: 1px solid #d5dbe5; border-radius: 6px; font: inherit; font-size: 10px; }
   .existing-page button { width: auto; padding-inline: 12px; }
   .workspace-scroll { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
   .conversation-panel { display: flex; min-height: 0; flex-direction: column; padding: 14px 18px 12px; }
@@ -800,16 +976,18 @@
   .target-context { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 7px; padding: 7px 9px; color: #4b43aa; background: #f0efff; border: 1px solid #ddd9ff; border-radius: 7px; }.target-context span, .target-context small { color: #787496; font-size: 8px; }.target-context strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }.target-context small { grid-column: 1 / -1; }
   .composer { position: relative; margin-top: 7px; }.composer textarea { display: block; width: 100%; resize: none; padding: 9px 96px 9px 9px; color: #273146; background: #fbfcfe; border: 1px solid #ccd3df; border-radius: 8px; outline: 0; font: inherit; font-size: 10px; line-height: 1.45; }.composer textarea:focus { background: #fff; border-color: #6c63dc; box-shadow: 0 0 0 3px rgb(99 102 241 / .12); }.composer button { position: absolute; right: 7px; bottom: 7px; padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 5px; font-size: 9px; font-weight: 800; }
   .inspector-panel { min-height: 0; padding: 10px 18px 16px; border-top: 1px solid #e3e7ed; }
-  .tabs { display: grid; grid-template-columns: 1fr 1.3fr; padding: 3px; margin-bottom: 9px; background: #eff1f5; border-radius: 7px; }.tabs label { position: relative; display: grid; place-items: center; padding: 7px; color: #727c8e; border-radius: 5px; cursor: pointer; font-size: 9px; font-weight: 800; }.tabs label.active { color: #31394a; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }.tabs input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }.tabs label:focus-within { outline: 2px solid #818cf8; outline-offset: 1px; }
-  .component-list { display: flex; gap: 5px; padding-bottom: 8px; overflow-x: auto; }.component-list button { display: grid; min-width: 108px; gap: 2px; padding: 7px 8px; color: #596377; text-align: left; background: #fff; border: 1px solid #dce1e9; border-radius: 6px; }.component-list button.selected { color: #4338ca; background: #f2f1ff; border-color: #7770e5; }.component-list span, .component-list small { font-size: 7px; }.component-list strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-  .property-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.property-form label, .source-select label, .query-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 9px; font-weight: 800; }.property-form label:last-of-type { grid-column: 1 / -1; }.property-form label span { float: right; color: #4f46e5; }.property-form input[type='range'] { padding: 0; accent-color: #4f46e5; }.property-form p { grid-column: 1 / -1; color: #8a93a4; font-size: 8px; }
+  .inspector-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }.inspector-heading > div { display: grid; gap: 2px; }.inspector-heading strong { color: #343d4f; font-size: 10px; }.inspector-heading span { color: #858fa1; font-size: 8px; }.inspector-heading button { padding: 6px 9px; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-size: 9px; font-weight: 800; }
+  .add-card-composer { display: grid; gap: 9px; padding: 10px; margin-bottom: 9px; background: #f8f8ff; border: 1px solid #d9d6ff; border-radius: 9px; box-shadow: 0 8px 20px rgb(79 70 229 / .08); }.composer-title { display: flex; align-items: flex-start; justify-content: space-between; }.composer-title > div { display: grid; gap: 2px; }.composer-title span { color: #635bca; font-size: 7px; font-weight: 900; letter-spacing: .09em; }.composer-title strong { color: #30384a; font-size: 11px; }.composer-title button { color: #747d8f; background: transparent; border: 0; font-size: 16px; }.add-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: 7px; }.add-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 8px; font-weight: 800; }.add-grid label:last-child { grid-column: 1 / -1; }.layout-choice { display: flex; align-items: center; gap: 5px; }.layout-choice > span { margin-right: auto; color: #5f687b; font-size: 8px; font-weight: 800; }.layout-choice button { padding: 5px 7px; color: #687286; background: #fff; border: 1px solid #d8dce6; border-radius: 5px; font-size: 8px; }.layout-choice button.active { color: #4338ca; background: #eeecff; border-color: #7770e5; font-weight: 900; }.add-summary { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; padding: 7px 8px; color: #747d8f; background: #fff; border-radius: 6px; font-size: 8px; }.add-summary code { color: #4338ca; font-size: 8px; font-weight: 800; }.confirm-add { width: 100%; padding: 8px; color: #fff; background: #4f46e5; border: 0; border-radius: 6px; font-size: 9px; font-weight: 900; }
+  .component-list { display: flex; gap: 5px; padding-bottom: 8px; overflow-x: auto; }.component-list button { display: grid; min-width: 132px; gap: 2px; padding: 7px 8px; color: #596377; text-align: left; background: #fff; border: 1px solid #dce1e9; border-radius: 6px; }.component-list button.selected { color: #4338ca; background: #f2f1ff; border-color: #7770e5; }.component-list span, .component-list small { overflow: hidden; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }.component-list strong { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+  .property-form { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }.property-form label, .source-select label, .query-grid label { display: grid; gap: 4px; color: #5f687b; font-size: 9px; font-weight: 800; }.property-form label:last-of-type { grid-column: 1 / -1; }.property-form label span { float: right; color: #4f46e5; }.property-form input[type='range'] { padding: 0; accent-color: #4f46e5; }.property-form p { color: #8a93a4; font-size: 8px; }.selected-source { display: grid; grid-column: 1 / -1; grid-template-columns: auto 1fr auto; align-items: center; gap: 6px; padding: 7px 8px; color: #7c8698; background: #f6f7fa; border-radius: 6px; font-size: 8px; }.selected-source strong { overflow: hidden; color: #3e4658; text-overflow: ellipsis; white-space: nowrap; }.selected-source a { padding: 4px 6px; color: #4f46e5; background: #fff; border: 1px solid #d7d3f3; border-radius: 4px; font-size: 7px; font-weight: 800; text-decoration: none; }.property-actions { display: flex; grid-column: 1 / -1; align-items: center; justify-content: space-between; gap: 8px; }.property-actions p { flex: 1; }.property-actions .remove { flex: none; padding: 5px 7px; color: #b42318; background: #fff; border: 1px solid #f2c7c3; border-radius: 5px; font-size: 8px; }
+  .source-inspector { padding-top: 10px; margin-top: 10px; border-top: 1px solid #e3e7ed; scroll-margin-top: 10px; }.source-inspector summary { display: flex; align-items: center; gap: 8px; color: #343d4f; cursor: pointer; list-style: none; }.source-inspector summary::-webkit-details-marker { display: none; }.source-inspector summary::before { content: '›'; color: #6860d5; font-size: 16px; transform: rotate(0deg); transition: transform .15s ease; }.source-inspector[open] summary::before { transform: rotate(90deg); }.source-inspector summary span { display: grid; gap: 2px; }.source-inspector summary strong { font-size: 10px; }.source-inspector summary small { color: #858fa1; font-size: 8px; font-weight: 400; }.source-inspector summary em { display: grid; width: 20px; height: 20px; place-items: center; margin-left: auto; color: #4f46e5; background: #eeecff; border-radius: 999px; font-size: 8px; font-style: normal; font-weight: 900; }.source-inspector .source-select { margin-top: 9px; }
   .query-editor { display: grid; gap: 8px; }.query-editor fieldset { display: flex; gap: 5px; padding: 7px; overflow-x: auto; border: 1px solid #e0e4eb; border-radius: 6px; }.query-editor legend { padding: 0 4px; color: #697386; font-size: 8px; font-weight: 900; }.query-editor fieldset label { display: flex; min-width: 102px; align-items: center; gap: 5px; padding: 5px; background: #f8f9fb; border-radius: 5px; font-size: 8px; }.query-editor fieldset label.disabled { opacity: .45; }.query-editor fieldset span { display: grid; }.query-editor fieldset code { color: #8a93a5; font-size: 7px; }.query-editor input[type='checkbox'] { accent-color: #4f46e5; }
-  .query-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }.catalog-proof, .empty { color: #7c8698; font-size: 8px; }.catalog-proof code { color: #4f46e5; }
+  .query-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }.catalog-proof, .empty { color: #7c8698; font-size: 8px; }.catalog-proof code { color: #4f46e5; }
   .lifecycle-panel { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 6px; padding: 8px 18px; background: #fafbfc; border-top: 1px solid #dfe4ec; }.lifecycle-panel div { display: grid; }.lifecycle-panel span { color: #8a93a4; font-size: 7px; }.lifecycle-panel strong { font-size: 10px; }.lifecycle-panel button, .lifecycle-panel a { padding: 7px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; text-decoration: none; }.lifecycle-panel a { grid-column: 1 / -1; color: #fff; text-align: center; background: #4f46e5; }
   .canvas-column { display: flex; min-width: 0; min-height: 0; flex-direction: column; padding: 0; overflow: hidden; }
   .canvas-toolbar { display: flex; min-height: 44px; align-items: center; justify-content: space-between; padding: 0 14px; background: #fafbfc; border-bottom: 1px solid #dce1e8; }.canvas-toolbar > div { display: flex; align-items: center; gap: 7px; color: #727c8d; font-size: 9px; }.canvas-toolbar i { width: 7px; height: 7px; background: #22c55e; border-radius: 50%; }.canvas-toolbar i.dirty { background: #f59e0b; }.canvas-toolbar strong { color: #424b5e; }.mode-switch { padding: 3px; background: #eef0f4; border-radius: 6px; }.mode-switch button { padding: 5px 8px; color: #7a8496; background: transparent; border: 0; border-radius: 4px; font-size: 8px; }.mode-switch button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
   iframe { width: 100%; min-height: 0; flex: 1; border: 0; background: #fafafa; }
   .canvas-empty { display: grid; min-height: 0; flex: 1; place-content: center; justify-items: center; gap: 7px; color: #7a8496; text-align: center; }.canvas-empty span { display: grid; width: 46px; height: 46px; place-items: center; color: #fff; background: #4f46e5; border-radius: 14px; font-size: 20px; box-shadow: 0 12px 30px rgb(79 70 229 / .24); }.canvas-empty h2 { color: #3f485a; }.canvas-empty p { max-width: 360px; font-size: 10px; }
   .error, .notice { position: absolute; top: 105px; right: 18px; z-index: 20; max-width: 420px; padding: 9px 12px; color: #991b1b; background: #fef2f2; border: 1px solid #fecaca; border-radius: 7px; box-shadow: 0 8px 24px rgb(15 23 42 / .12); font-size: 9px; }.notice { top: 105px; color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
-  @media (max-width: 980px) { .authoring-workbench { height: auto; grid-template-columns: 1fr; overflow: visible; }.control-column { height: calc(100vh - 54px); height: calc(100dvh - 54px); }.canvas-column { min-height: 760px; }.query-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 680px) { .authoring-workbench { height: auto; grid-template-columns: 1fr; overflow: visible; }.control-column { height: calc(100vh - 54px); height: calc(100dvh - 54px); }.canvas-column { min-height: 680px; }.add-grid, .query-grid { grid-template-columns: 1fr; }.add-grid label:last-child { grid-column: auto; } }
 </style>
