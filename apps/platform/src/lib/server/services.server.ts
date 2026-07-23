@@ -23,8 +23,14 @@ import {
 } from '@metriccanvas/mcp';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
+import { seedPublishedPages } from './offline-services';
 import type { CatalogSnapshot } from '@metriccanvas/page';
 import bundledCatalog from '../../../../../catalog/snapshot.json';
+
+const bundledPageModules = import.meta.glob<{ default: unknown }>(
+  '../../../../../pages/*.json',
+  { eager: true }
+);
 
 export interface PlatformServices {
   lifecycle: PageLifecycle;
@@ -65,7 +71,7 @@ async function createServices(): Promise<PlatformServices> {
     }
   };
   const lifecycle = offline
-    ? createMemoryPageLifecycle(lifecycleOptions)
+    ? await createOfflinePageLifecycle(lifecycleOptions)
     : await createPostgresPageLifecycle({
         ...lifecycleOptions,
         databaseUrl:
@@ -106,6 +112,17 @@ async function createServices(): Promise<PlatformServices> {
     },
     runtimeOrigin
   };
+}
+
+async function createOfflinePageLifecycle(
+  options: Parameters<typeof createMemoryPageLifecycle>[0]
+): Promise<PageLifecycle> {
+  const lifecycle = createMemoryPageLifecycle(options);
+  await seedPublishedPages(
+    lifecycle,
+    Object.values(bundledPageModules).map((module) => module.default)
+  );
+  return lifecycle;
 }
 
 function createBundledCatalogProvider(): CatalogProvider {
