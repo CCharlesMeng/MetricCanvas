@@ -151,6 +151,33 @@ function authoringResponse(messages: AgentMessage[], pageId: string): ModelRespo
     };
   }
 
+  if (templateRequested(intent)) {
+    if (!called.has('search_templates')) {
+      return toolCall('search-template-authoring-1', 'search_templates', {
+        query: templateQuery(intent),
+        limit: 5
+      });
+    }
+    const template = selectedTemplateDocument(messages, pageId);
+    if (!template) {
+      return {
+        content:
+          '没有找到唯一可使用的已发布页面模板。请补充更精确的模板名称或标签。',
+        toolCalls: []
+      };
+    }
+    if (!called.has('validate_page')) {
+      return toolCall('validate-template-authoring-1', 'validate_page', {
+        document: template
+      });
+    }
+    return {
+      content:
+        '已从选定页面模板形成新的看板页面并按当前元数据重新校验，当前仍是未保存工作副本。',
+      toolCalls: []
+    };
+  }
+
   const document = pageDocumentFor(pageId, intent);
   const searched = searchedCatalogQueries(messages);
   const pendingCatalogQuery = requiredCatalogQueries(intent).find(
@@ -169,6 +196,37 @@ function authoringResponse(messages: AgentMessage[], pageId: string): ModelRespo
     content: '看板页面已生成并通过校验，当前仍是未保存工作副本。',
     toolCalls: []
   };
+}
+
+function templateRequested(intent: string): boolean {
+  return /模板/u.test(intent);
+}
+
+function templateQuery(intent: string): string {
+  const match = intent.match(/(?:使用|从|基于)?\s*([^，。]+?)模板/u);
+  const query = match?.[1]?.trim();
+  return query && !/^(?:使用|从|基于)$/u.test(query) ? query : '页面模板';
+}
+
+function selectedTemplateDocument(
+  messages: AgentMessage[],
+  pageId: string
+): Record<string, unknown> | null {
+  const result = toolResult(messages, 'search_templates', false);
+  if (!isRecord(result) || !Array.isArray(result.matches) || result.matches.length !== 1) {
+    return null;
+  }
+  const match = result.matches[0];
+  if (
+    !isRecord(match) ||
+    !isRecord(match.sourcePageRevision) ||
+    !isRecord(match.sourcePageRevision.document)
+  ) {
+    return null;
+  }
+  const document = structuredClone(match.sourcePageRevision.document);
+  document.id = pageId;
+  return document;
 }
 
 function authoringContext(messages: AgentMessage[]): {

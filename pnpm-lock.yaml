@@ -81,6 +81,9 @@ importers:
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
+      '@metriccanvas/template-library':
+        specifier: workspace:*
+        version: link:../../packages/template-library
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.5.7
@@ -136,6 +139,9 @@ importers:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
+      '@metriccanvas/template-library':
+        specifier: workspace:*
+        version: link:../template-library
       '@modelcontextprotocol/sdk':
         specifier: ^1.29.0
         version: 1.29.0(zod@4.4.3)
@@ -170,6 +176,22 @@ importers:
       svelte:
         specifier: ^5.0.0
         version: 5.56.6
+
+  packages/template-library:
+    dependencies:
+      '@metriccanvas/page-lifecycle':
+        specifier: workspace:*
+        version: link:../page-lifecycle
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
+    devDependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
+      '@testcontainers/postgresql':
+        specifier: ^12.0.4
+        version: 12.0.4
 
   packages/widgets:
     dependencies:

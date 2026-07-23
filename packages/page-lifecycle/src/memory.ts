@@ -416,6 +416,25 @@ export function createMemoryPageLifecycle(
       return selectPage({ pageId, selector: { type: 'published' } });
     },
 
+    async getPublishedRevision(reference) {
+      const revision = findRevision(reference.pageId, reference.revisionId);
+      if (!revision) {
+        return failure('REVISION_NOT_FOUND', `页面修订不存在:${reference.revisionId}`);
+      }
+      const published = [...requests.values()].some(
+        (request) =>
+          request.pageId === reference.pageId &&
+          request.revisionId === reference.revisionId &&
+          request.status === 'published'
+      );
+      return published
+        ? { ok: true, revision: clone(revision) }
+        : failure(
+            'REVISION_NOT_PUBLISHED',
+            `页面修订未曾发布:${reference.revisionId}`
+          );
+    },
+
     async close() {}
   };
 

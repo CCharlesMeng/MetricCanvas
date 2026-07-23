@@ -16,10 +16,12 @@ import type {
   PageLifecycle,
   RevisionReference
 } from '@metriccanvas/page-lifecycle';
+import type { TemplateLibrary } from '@metriccanvas/template-library';
 
 export interface MetricCanvasMcpDependencies {
   catalog: CatalogDiscovery;
   lifecycle: PageLifecycle;
+  templates: Pick<TemplateLibrary, 'search'>;
   context(): LifecycleContext;
   previewUrl(reference: RevisionReference): string;
 }
@@ -48,6 +50,8 @@ export const COMPONENT_SELECTION_GUIDE = componentCatalog
 export const PAGE_BUILDING_PROMPT = [
   '你是 MetricCanvas 页面搭建 Agent。',
   '新建看板页面时严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 用户确认 → 申请发布”执行。',
+  '用户要求从页面模板开始时先调用 search_templates;多个匹配必须列出名称、说明和标签差异并提问,不得擅自选择。',
+  '选定页面模板后以返回的精确来源页面修订为受治理起点,形成新的看板页面 id,不得覆盖来源页面;保存前必须按当前元数据重新校验,模板不能绕过 SCHEMA_ERROR 或 METRIC_GAP。',
   '不得猜测指标 code、口径、维度、时间范围或粒度;有歧义必须提问。',
   '首次 save_page 前必须展示可读且唯一的页面 id,并等待用户明确确认。',
   '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
@@ -154,6 +158,31 @@ export function createMetricCanvasMcpServer(
     },
     async ({ query, limit }) => {
       const result = await dependencies.catalog.search({ query, limit });
+      return toolResult({ ok: true, ...result });
+    }
+  );
+
+  server.registerTool(
+    'search_templates',
+    {
+      description:
+        '按名称、说明或标签检索当前用户可使用的已发布页面模板，返回模板修订及其精确来源页面修订。',
+      inputSchema: z.object({
+        query: z.string().min(1),
+        limit: z.number().int().min(1).max(20).default(5)
+      }),
+      annotations: { readOnlyHint: true }
+    },
+    async ({ query, limit }) => {
+      const context = dependencies.context();
+      const result = await dependencies.templates.search(
+        { query, limit },
+        {
+          actorId: context.actorId,
+          clientId: context.clientId,
+          ...(context.roles?.includes('admin') ? { roles: ['admin'] as const } : {})
+        }
+      );
       return toolResult({ ok: true, ...result });
     }
   );

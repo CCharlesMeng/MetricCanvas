@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { CatalogSnapshot, Page } from '@metriccanvas/page';
 import { createCatalogDiscovery } from '@metriccanvas/catalog-discovery';
 import type { PageLifecycle, PageRevision } from '@metriccanvas/page-lifecycle';
+import type { TemplateLibrary } from '@metriccanvas/template-library';
 import { createAgentRunner, createScriptedModelProvider } from '@metriccanvas/agent-runner';
 import {
   connectInProcessMetricCanvasMcp,
@@ -106,8 +107,15 @@ const unusedLifecycle = {
   getPublished: async () => {
     throw new Error('未调用');
   },
+  getPublishedRevision: async () => {
+    throw new Error('未调用');
+  },
   close: async () => {}
 } satisfies PageLifecycle;
+
+const templates: Pick<TemplateLibrary, 'search'> = {
+  search: async () => ({ matches: [] })
+};
 
 describe('内置 Agent Runner 的 MCP transport', () => {
   it('通过进程内 MCP 边界发现并调用只读页面管理工具', async () => {
@@ -118,6 +126,7 @@ describe('内置 Agent Runner 的 MCP transport', () => {
         current: async () => ({ version: 'catalog-v1', snapshot })
       }),
       lifecycle: unusedLifecycle,
+      templates,
       context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
       previewUrl: () => 'https://runtime.example/preview'
     });
@@ -188,6 +197,7 @@ describe('内置 Agent Runner 的 MCP transport', () => {
         current: async () => ({ version: 'catalog-v1', snapshot })
       }),
       lifecycle: unusedLifecycle,
+      templates,
       context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
       previewUrl: () => 'https://runtime.example/preview'
     });

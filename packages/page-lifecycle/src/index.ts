@@ -206,6 +206,7 @@ export type LifecycleErrorCode =
   | 'PAGE_ID_TAKEN'
   | 'PAGE_NOT_FOUND'
   | 'REVISION_NOT_FOUND'
+  | 'REVISION_NOT_PUBLISHED'
   | 'REVISION_CONFLICT'
   | 'REVISION_NOT_LATEST'
   | 'PAGE_LOCKED'
@@ -283,6 +284,7 @@ export interface PageLifecycle {
     context: LifecycleContext
   ): Promise<RevisionResult>;
   getPublished(reference: PublishedReference): Promise<RevisionResult>;
+  getPublishedRevision(reference: RevisionReference): Promise<RevisionResult>;
   close(): Promise<void>;
 }
 
@@ -1194,6 +1196,41 @@ export async function createPostgresPageLifecycle(
         );
       }
       return { ok: true, revision: toRevision(rows[0] as RevisionRow) };
+    },
+
+    async getPublishedRevision(reference) {
+      const rows = (await sql`
+        SELECT
+          revision.revision_id,
+          revision.revision_number,
+          revision.page_id,
+          revision.base_revision_id,
+          revision.document,
+          revision.content_hash,
+          revision.metadata_version,
+          revision.created_by,
+          revision.created_at
+        FROM page_revisions AS revision
+        WHERE revision.page_id = ${reference.pageId}
+          AND revision.revision_id = ${reference.revisionId}
+          AND EXISTS (
+            SELECT 1
+            FROM publish_requests AS request
+            WHERE request.page_id = revision.page_id
+              AND request.revision_id = revision.revision_id
+              AND request.status = 'published'
+          )
+      `) as unknown as RevisionRow[];
+      if (!rows[0]) {
+        const revision = await lifecycle.getRevision(reference);
+        return revision.ok
+          ? lifecycleFailure(
+              'REVISION_NOT_PUBLISHED',
+              `页面修订未曾发布:${reference.revisionId}`
+            )
+          : revision;
+      }
+      return { ok: true, revision: toRevision(rows[0]) };
     },
 
     async close() {

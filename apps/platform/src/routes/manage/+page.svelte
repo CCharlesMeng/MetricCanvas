@@ -50,7 +50,10 @@
       <h1>看板页面</h1>
       <p class="muted">查看页面修订、审计信息、差异与统一运行时预览。</p>
     </div>
-    <button onclick={loadPages} disabled={loading}>刷新目录</button>
+    <div class="heading-actions">
+      <a href="/manage/templates">管理页面模板</a>
+      <button onclick={loadPages} disabled={loading}>刷新目录</button>
+    </div>
   </div>
 
   {#if loading}
@@ -118,7 +121,8 @@
     color: #71717a;
   }
   button,
-  .empty a {
+  .empty a,
+  .heading-actions a {
     border: 1px solid #27272a;
     border-radius: 7px;
     padding: 8px 12px;
@@ -128,6 +132,7 @@
     text-decoration: none;
     cursor: pointer;
   }
+  .heading-actions { display: flex; gap: 8px; }
   button:disabled {
     cursor: wait;
     opacity: 0.6;

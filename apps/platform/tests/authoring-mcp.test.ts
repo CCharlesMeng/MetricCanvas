@@ -9,6 +9,7 @@ describe('页面搭建工作台 authoring MCP adapter', () => {
       async listTools() {
         return [
           { name: 'search_catalog', inputSchema: {} },
+          { name: 'search_templates', inputSchema: {} },
           { name: 'list_pages', inputSchema: {} },
           { name: 'get_page', inputSchema: {} },
           { name: 'validate_page', inputSchema: {} },
@@ -26,6 +27,7 @@ describe('页面搭建工作台 authoring MCP adapter', () => {
 
     expect((await authoring.listTools()).map((tool) => tool.name)).toEqual([
       'search_catalog',
+      'search_templates',
       'list_pages',
       'get_page',
       'validate_page'

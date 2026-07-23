@@ -52,7 +52,7 @@ function page(title = '成交总额'): Page {
 
 describe('进程内页面生命周期', () => {
   it('离线完成页面修订、历史、差异、发布与正式读取', async () => {
-    const generatedIds = ['revision-1', 'revision-2', 'request-1'];
+    const generatedIds = ['revision-1', 'revision-2', 'request-1', 'revision-3'];
     const lifecycle = createMemoryPageLifecycle({
       catalog: { current: async () => ({ version: 'catalog-offline', snapshot: catalog }) },
       clock: { now: () => new Date('2026-07-22T08:00:00.000Z') },
@@ -143,6 +143,35 @@ describe('进程内页面生命周期', () => {
       revision: { revisionId: 'revision-2' }
     });
     expect(await lifecycle.getPublished({ pageId: 'offline-overview' })).toEqual(published);
+
+    const third = await lifecycle.saveRevision(
+      {
+        pageId: 'offline-overview',
+        baseRevisionId: second.revision.revisionId,
+        document: page('成交总额（模板来源发布后更新）'),
+        idempotencyKey: 'save-r3'
+      },
+      editor
+    );
+    expect(third).toMatchObject({
+      ok: true,
+      revision: { revisionId: 'revision-3', revisionNumber: 3 }
+    });
+    expect(
+      await lifecycle.getPublishedRevision({
+        pageId: 'offline-overview',
+        revisionId: 'revision-2'
+      })
+    ).toEqual(published);
+    expect(
+      await lifecycle.getPublishedRevision({
+        pageId: 'offline-overview',
+        revisionId: 'revision-1'
+      })
+    ).toMatchObject({
+      ok: false,
+      error: { code: 'REVISION_NOT_PUBLISHED' }
+    });
     await lifecycle.close();
   });
 

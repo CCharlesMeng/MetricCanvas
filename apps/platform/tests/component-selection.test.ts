@@ -128,6 +128,64 @@ describe('Agent 按诉求选择组件', () => {
     expect(completed.toolCalls).toEqual([]);
     expect(completed.content).toContain('未保存工作副本');
   });
+
+  it('从已发布页面模板生成新的未保存工作副本并重新校验', async () => {
+    const provider = createComponentSelectingScriptedProvider('template');
+    const templateDocument = await generatedDocument('创建销售经营概览');
+    templateDocument.id = 'template-source-page';
+    const messages: AgentMessage[] = [
+      { role: 'system', content: 'METRICCANVAS_AUTHORING_MODE' },
+      { role: 'user', content: '使用经营概览模板创建华东销售页面' }
+    ];
+    const tools = [
+      { name: 'search_templates', description: '', inputSchema: {} },
+      { name: 'validate_page', description: '', inputSchema: {} }
+    ];
+
+    const searched = await provider.complete({ messages, tools });
+    expect(searched.toolCalls).toEqual([
+      expect.objectContaining({
+        name: 'search_templates',
+        input: { query: '经营概览', limit: 5 }
+      })
+    ]);
+    messages.push(assistant(searched));
+    messages.push({
+      role: 'tool',
+      toolCallId: searched.toolCalls[0]!.id,
+      name: 'search_templates',
+      content: JSON.stringify({
+        ok: true,
+        matches: [
+          {
+            templateId: 'sales-overview',
+            revision: {
+              revisionId: 'template-r1',
+              title: '经营概览模板',
+              description: '销售经营起点',
+              tags: ['销售', '经营']
+            },
+            sourcePageRevision: {
+              pageId: 'template-source-page',
+              revisionId: 'page-r1',
+              document: templateDocument
+            }
+          }
+        ]
+      }),
+      isError: false
+    });
+
+    const validation = await provider.complete({ messages, tools });
+    expect(validation.toolCalls).toHaveLength(1);
+    expect(validation.toolCalls[0]?.name).toBe('validate_page');
+    const document = (
+      validation.toolCalls[0]?.input as { document: Record<string, unknown> }
+    ).document;
+    expect(document.id).toBe('ai-dashboard-template');
+    expect(document.id).not.toBe('template-source-page');
+    expect(validate(document, catalog)).toEqual([]);
+  });
 });
 
 async function generatedDocument(intent: string): Promise<Record<string, unknown>> {

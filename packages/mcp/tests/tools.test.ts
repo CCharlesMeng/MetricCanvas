@@ -4,6 +4,7 @@ import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import type { CatalogSnapshot } from '@metriccanvas/page';
 import { createCatalogDiscovery } from '@metriccanvas/catalog-discovery';
 import type { PageLifecycle } from '@metriccanvas/page-lifecycle';
+import type { TemplateLibrary } from '@metriccanvas/template-library';
 import { createMetricCanvasMcpServer } from '@metriccanvas/mcp';
 
 const snapshot: CatalogSnapshot = {
@@ -68,7 +69,14 @@ const unusedLifecycle: PageLifecycle = {
   getPublished: async () => {
     throw new Error('本用例不应读取已发布页面');
   },
+  getPublishedRevision: async () => {
+    throw new Error('本用例不应读取历史已发布页面修订');
+  },
   close: async () => {}
+};
+
+const templates: Pick<TemplateLibrary, 'search'> = {
+  search: async () => ({ matches: [] })
 };
 
 describe('MetricCanvas MCP 工具契约', () => {
@@ -84,6 +92,7 @@ describe('MetricCanvas MCP 工具契约', () => {
         current: async () => ({ version: 'catalog-v1', snapshot })
       }),
       lifecycle: unusedLifecycle,
+      templates,
       context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
       previewUrl: ({ pageId, revisionId }) =>
         `https://runtime.example/previews/${pageId}/${revisionId}`
@@ -99,6 +108,7 @@ describe('MetricCanvas MCP 工具契约', () => {
     const listed = await client.listTools();
     expect(listed.tools.map(({ name }) => name)).toEqual([
       'search_catalog',
+      'search_templates',
       'validate_page',
       'save_page',
       'list_pages',
@@ -122,6 +132,9 @@ describe('MetricCanvas MCP 工具契约', () => {
     expect(promptText).toContain('时间变化用 lineChart');
     expect(promptText).toContain('mock 数据网关');
     expect(promptText).toContain('明确要求发布');
+    expect(promptText).toContain('search_templates');
+    expect(promptText).toContain('新的看板页面 id');
+    expect(promptText).toContain('当前元数据重新校验');
 
     const resources = await client.listResources();
     expect(resources.resources).toEqual(
@@ -157,6 +170,16 @@ describe('MetricCanvas MCP 工具契约', () => {
           availableAggregations: ['sum']
         }
       ]
+    });
+
+    const templateResult = await client.callTool({
+      name: 'search_templates',
+      arguments: { query: '经营', limit: 5 }
+    });
+    expect(templateResult.isError).not.toBe(true);
+    expect(templateResult.structuredContent).toEqual({
+      ok: true,
+      matches: []
     });
   });
 });

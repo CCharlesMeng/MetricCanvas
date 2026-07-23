@@ -21,9 +21,18 @@ import {
   createPageIdConfirmationMcpClient,
   createMetricCanvasMcpServer
 } from '@metriccanvas/mcp';
+import {
+  createMemoryTemplateLibrary,
+  createPostgresTemplateLibrary,
+  type TemplateLibrary
+} from '@metriccanvas/template-library';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
-import { seedPublishedPages } from './offline-services';
+import {
+  seedPublishedPages,
+  seedPublishedTemplates,
+  type OfflineTemplateSeed
+} from './offline-services';
 import type { CatalogSnapshot } from '@metriccanvas/page';
 import bundledCatalog from '../../../../../catalog/snapshot.json';
 
@@ -31,9 +40,14 @@ const bundledPageModules = import.meta.glob<{ default: unknown }>(
   '../../../../../pages/*.json',
   { eager: true }
 );
+const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }>(
+  '../../../../../templates/*.json',
+  { eager: true }
+);
 
 export interface PlatformServices {
   lifecycle: PageLifecycle;
+  templates: TemplateLibrary;
   catalog: CatalogDiscovery;
   createRunner(input: {
     confirmedPageIds: string[];
@@ -57,6 +71,9 @@ async function createServices(): Promise<PlatformServices> {
   const runtimeOrigin = env.RUNTIME_ORIGIN ?? 'http://localhost:5173';
   const platformOrigin = env.PLATFORM_ORIGIN ?? 'http://localhost:5174';
   const offline = env.METRICCANVAS_OFFLINE === '1';
+  const databaseUrl =
+    env.DATABASE_URL ??
+    'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas';
   const catalogProvider = offline
     ? createBundledCatalogProvider()
     : createDataServiceSimCatalogProvider(
@@ -74,13 +91,29 @@ async function createServices(): Promise<PlatformServices> {
     ? await createOfflinePageLifecycle(lifecycleOptions)
     : await createPostgresPageLifecycle({
         ...lifecycleOptions,
-        databaseUrl:
-          env.DATABASE_URL ??
-          'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas'
+        databaseUrl
       });
+  const templateOptions = {
+    pageLifecycle: lifecycle,
+    urls: {
+      confirmation: (requestId: string, token: string) =>
+        `${platformOrigin}/templates/publish/${requestId}?token=${encodeURIComponent(token)}`
+    }
+  };
+  const templates = offline
+    ? createMemoryTemplateLibrary(templateOptions)
+    : await createPostgresTemplateLibrary({ ...templateOptions, databaseUrl });
+  if (offline) {
+    await seedPublishedTemplates(
+      templates,
+      lifecycle,
+      Object.values(bundledTemplateModules).map((module) => module.default)
+    );
+  }
   const mcpServer = createMetricCanvasMcpServer({
     catalog,
     lifecycle,
+    templates,
     context: () => ({ actorId: 'developer-1', clientId: 'workbench', roles: [] }),
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
@@ -98,6 +131,7 @@ async function createServices(): Promise<PlatformServices> {
 
   return {
     lifecycle,
+    templates,
     catalog,
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle' }) {
       const client = mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
