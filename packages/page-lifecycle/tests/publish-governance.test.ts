@@ -42,11 +42,10 @@ const admin: LifecycleContext = {
 
 function pageDocument(pageId: string, title: string) {
   return {
-    schemaVersion: '1.0',
+    schemaVersion: '2.0',
     id: pageId,
     dataSources: {
       sales: {
-        fields: { gmv: { type: 'number' as const, role: 'metric' as const } },
         source: {
           type: 'query' as const,
           query: { metrics: ['gmv'], aggregation: 'sum' as const }

@@ -20,13 +20,10 @@ const catalog: CatalogSnapshot = {
 };
 
 const document = {
-  schemaVersion: '1.0',
+  schemaVersion: '2.0',
   id: 'sales-total',
   dataSources: {
     sales: {
-      fields: {
-        gmv: { type: 'number', role: 'metric' }
-      },
       source: {
         type: 'query',
         query: { metrics: ['gmv'], aggregation: 'sum' }
@@ -252,9 +249,6 @@ describe('页面生命周期:首次保存', () => {
           dataSources: {
             sales: {
               ...document.dataSources.sales,
-              fields: {
-                'missing-metric': { type: 'number', role: 'metric' }
-              },
               source: {
                 type: 'query',
                 query: { metrics: ['missing-metric'], aggregation: 'sum' }
@@ -515,14 +509,11 @@ describe('页面生命周期:首次保存', () => {
           source: {
             query: { aggregation: 'sum', metrics: ['gmv'] },
             type: 'query'
-          },
-          fields: {
-            gmv: { role: 'metric', type: 'number' }
           }
         }
       },
       id: pageId,
-      schemaVersion: '1.0'
+      schemaVersion: '2.0'
     };
     const makeLifecycle = (databaseUrl: string, revisionId: string) =>
       createPostgresPageLifecycle({

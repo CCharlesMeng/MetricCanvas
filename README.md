@@ -8,7 +8,7 @@ MetricCanvas 是数据服务之上的治理化消费层：以业务指标为核�
 
 当前仓库包含统一运行时地基和二期最小页面搭建闭环：
 
-- `schemaVersion: "1.0"` 的领域 DSL，以及结构、引用、能力、元数据语义和跨页导航校验。
+- 当前 `schemaVersion: "2.0"`、兼容 N-1 `1.0` 的领域 DSL，以及结构、引用、能力、元数据语义和跨页导航校验。
 - Git 中的页面文档、静态页面仓储和 Canvas 页面目录。
 - `inline`、`query`、`mixed` 三种页面数据形态。
 - 统一运行时的数据源编排、数据快照、筛选状态、URL 状态恢复、页内联动、跨页下钻、表格远程分页/排序/表头筛选。
@@ -141,8 +141,8 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 
 各层边界：
 
-- **看板页面 / `packages/page`**：核心领域资产。`schemaVersion` 标识协议；`dataSources` 声明命名页面数据源；每个数据源由 `fields` 输出契约和 `source` 组成；内容位于 `sections[].components`。
-- **页面数据源**：`source.type: "inline"` 携带固定 `rows`；`source.type: "query"` 携带结构化查询。查询和数据行只出现在页面数据源，不进入组件。
+- **看板页面 / `packages/page`**：核心领域资产。`schemaVersion` 标识协议；`dataSources` 声明命名页面数据源；内容位于 `sections[].components`。
+- **页面数据源**：`source.type: "inline"` 携带固定 `rows` 和完整 `fields`；`source.type: "query"` 携带结构化查询，其字段契约由查询与元数据快照解析，页面只用可选 `fieldOverrides` 覆盖标签或格式。查询和数据行只出现在页面数据源，不进入组件。
 - **组件数据槽**：组件用 `data` 把 `main`、`compare`、`target` 等命名槽绑定到页面数据源；字段字符串简写引用 `main`，多源字段可显式写 `{ "data": "target", "field": "value" }`。
 - **组件 props**：只描述展示和有限 action。组件不发请求、不访问全局状态，也不管理加载、错误和空态。
 - **统一运行时**：直接消费看板页面，校验后生成数据快照；query 数据源经数据网关取数，inline 数据源同步生成终态快照。
@@ -155,7 +155,7 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 - **query**：页面数据源携带结构化查询。统一运行时把它与订阅的筛选状态、表格局部视图合成生效查询，再经数据网关取数；可具备实时取数、筛选联动、action 和远程分页能力。
 - **mixed**：同一页面同时存在 inline 和 query 数据源。页面整体不是静态页面，但能力按组件实际绑定的数据源推导：只绑定 inline 的组件仍是静态的，不会因为页面上另有 query 数据源而获得筛选、action 或远程分页能力。
 
-字段契约与组件绑定不依赖来源类型，因此同一页面数据源可在 inline 与 query 之间切换而不修改组件。
+统一运行时会把 inline 声明和 query 推导结果归一成相同字段契约，因此来源切换不要求修改组件字段绑定。
 
 ## 最小可渲染页面
 
@@ -163,7 +163,7 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 
 ```json
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "hello-metric",
   "dataSources": {
     "overview": {
@@ -226,7 +226,7 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 ### 页面作者 / AI
 
 - **输入**：业务需求、指标与维度 code、`catalog/snapshot.json`、现有页面和领域 DSL 约束。
-- **工作流**：选择 inline/query/mixed → 声明 `fields` 与 `source` → 在 `sections` 中组合组件和数据槽 → 用 `/preview` 快速修正 → 保存到 `pages/` → `pnpm validate`。
+- **工作流**：选择 inline/query/mixed → inline 声明 `fields`，query 声明结构化查询与必要的 `fieldOverrides` → 在 `sections` 中组合组件和数据槽 → 用 `/preview` 快速修正 → 保存到 `pages/` → `pnpm validate`。
 - **启动**：通常使用默认 mock 的 `pnpm dev`；检查真实协议时改用仿真模式。
 - **验收**：文档可校验、文件名与 id 一致、指标口径来自数据服务、页面可渲染；query 页的筛选、URL 恢复和 action 符合预期，inline 页没有假交互。
 
@@ -305,10 +305,10 @@ pnpm sim
 
 当前协议的重要约束：
 
-- 当前只支持 `schemaVersion: "1.0"`。顶层只允许 `schemaVersion`、`id`、`meta`、`dataSources`、`filters`、`sections`。
+- 当前版本是 `schemaVersion: "2.0"`，并兼容 N-1 `1.0`；1.0 页面可用 `pnpm migrate` 升级。顶层只允许 `schemaVersion`、`id`、`meta`、`dataSources`、`filters`、`sections`。
 - 页面、分区、组件和数据源 id 使用小写字母、数字和连字符；页面文件名必须等于页面 id。
-- 页面数据源必须声明至少一个字段；字段有封闭的 `type`、`role` 和 `format` 预设。inline 每行必须完整匹配字段契约，不能多字段或少字段。
-- query 至少声明一个指标；`fields` 必须与 query 的指标/维度输出一致。指标、维度和聚合能力由 `catalog/snapshot.json` 校验。
+- inline 页面数据源必须声明至少一个字段，每行必须完整匹配字段契约，不能多字段或少字段。
+- query 至少声明一个指标；指标、维度、字段类型、默认标签/格式和聚合能力由 `catalog/snapshot.json` 解析与校验，页面只用 `fieldOverrides` 覆盖查询输出字段的 `label` / `format`。
 - 分区固定为 12 列自动流网格，组件 `layout.span` 为 1–12。
 - 组件类型与 props 是封闭协议；页面禁止表达式、脚本、HTML、自定义样式和绕过数据网关的远程请求。衍生指标和计算逻辑属于数据服务。
 - 纯 inline 页面禁止筛选器、actions 和远程分页；actions 只允许绑定 query 数据源的组件。
@@ -320,4 +320,4 @@ pnpm sim
 - [CONTEXT.md](./CONTEXT.md)：领域词汇表，术语唯一来源。
 - [PAGE-METADATA.md](./PAGE-METADATA.md)：当前看板页面协议及静态、动态、交互关联动态三个递进维度。
 - [docs/solution.md](./docs/solution.md)：整体架构、职责边界和演进路线。
-- [docs/adr/](./docs/adr/)：关键决策；数据源协议重点见 [ADR-0008](./docs/adr/0008-page-data-sources.md)。
+- [docs/adr/](./docs/adr/)：关键决策；数据源协议见 [ADR-0008](./docs/adr/0008-page-data-sources.md)，query 字段契约精简见 [ADR-0011](./docs/adr/0011-derive-query-fields-from-catalog.md)。

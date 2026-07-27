@@ -7,6 +7,73 @@ import {
 } from '@metriccanvas/agent-runner';
 
 describe('Agent Runner 人工交互', () => {
+  it('达到单工具调用预算后不再委托，并把结构化预算错误交还模型', async () => {
+    const delegatedQueries: string[] = [];
+    const mcp: McpClient = {
+      async listTools() {
+        return [
+          {
+            name: 'search_catalog',
+            inputSchema: { type: 'object', properties: {} }
+          }
+        ];
+      },
+      async callTool(request) {
+        delegatedQueries.push(
+          String((request.arguments as { query?: unknown }).query)
+        );
+        return { structuredContent: { ok: true, matches: [] } };
+      }
+    };
+    const model = createScriptedModelProvider([
+      {
+        content: '',
+        toolCalls: ['gmv', 'order-count', 'region', 'channel'].map(
+          (query, index) => ({
+            id: `search-${index + 1}`,
+            name: 'search_catalog',
+            input: { query }
+          })
+        )
+      },
+      {
+        content: '我会使用已有结果继续，而不是继续检索。',
+        toolCalls: []
+      }
+    ]);
+    const runner = createAgentRunner({
+      model,
+      mcp,
+      toolCallLimits: { search_catalog: 3 }
+    });
+
+    const events = await collect(
+      runner.run({
+        messages: [{ role: 'user', content: '创建销售经营概览' }]
+      })
+    );
+
+    expect(delegatedQueries).toEqual(['gmv', 'order-count', 'region']);
+    const fourthResult = events.find(
+      (event) =>
+        event.type === 'tool_finished' && event.call.id === 'search-4'
+    );
+    expect(fourthResult).toMatchObject({
+      type: 'tool_finished',
+      result: {
+        isError: true,
+        structuredContent: {
+          ok: false,
+          error: {
+            code: 'TOOL_CALL_LIMIT_EXCEEDED',
+            tool: 'search_catalog',
+            limit: 3
+          }
+        }
+      }
+    });
+  });
+
   it('工具请求人工确认时暂停并返回可继续的会话', async () => {
     const mcp: McpClient = {
       async listTools() {

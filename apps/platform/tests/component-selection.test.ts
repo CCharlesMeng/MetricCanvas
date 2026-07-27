@@ -4,7 +4,7 @@ import { componentCatalog, validate, type CatalogSnapshot } from '@metriccanvas/
 import { createComponentSelectingScriptedProvider } from '../src/lib/server/scripted-model.server';
 
 const catalog: CatalogSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '2.0',
   syncedAt: '2026-07-21T12:00:00.000Z',
   source: 'component-selection-test',
   metrics: [
@@ -24,9 +24,9 @@ const catalog: CatalogSnapshot = {
     }
   ],
   dimensions: [
-    { code: 'region', name: '区域', cardinality: 3 },
-    { code: 'channel', name: '渠道', cardinality: 2 },
-    { code: 'mtime', name: '统计时间', cardinality: 5 }
+    { code: 'region', name: '区域', valueType: 'string', cardinality: 3 },
+    { code: 'channel', name: '渠道', valueType: 'string', cardinality: 2 },
+    { code: 'mtime', name: '统计时间', valueType: 'date', cardinality: 5 }
   ]
 };
 

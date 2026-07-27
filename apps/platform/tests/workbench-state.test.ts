@@ -56,7 +56,7 @@ describe('页面搭建工作台状态', () => {
       document: Record<string, unknown>;
     };
     const catalog: CatalogSnapshot = {
-      formatVersion: '1.0',
+      formatVersion: '2.0',
       syncedAt: '2026-07-20T12:00:00.000Z',
       source: 'data-service-sim',
       metrics: [
@@ -76,7 +76,7 @@ describe('页面搭建工作台状态', () => {
     ]);
     expect(validate(input.document, catalog)).toEqual([]);
     expect(input.document).toMatchObject({
-      schemaVersion: '1.0',
+      schemaVersion: '2.0',
       dataSources: {
         'summary-gmv': {
           source: { type: 'query' }

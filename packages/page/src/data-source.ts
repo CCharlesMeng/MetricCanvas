@@ -1,4 +1,5 @@
-import type { DataRow, FieldDefinition } from './field';
+import type { CatalogSnapshot } from './catalog';
+import type { DataRow, FieldDefinition, FieldOverride } from './field';
 import type { StructuredQuery } from './query';
 
 export interface InlineSource {
@@ -11,17 +12,30 @@ export interface QuerySource {
   query: StructuredQuery;
 }
 
-export type DataSourceSpec = InlineSource | QuerySource;
-
-/**
- * 命名数据源同时声明输出字段与取数方式。组件只依赖此输出契约，
- * 因而可在 inline/query 之间切换而不改变字段绑定。
- */
-export interface DataSource {
+export interface InlineDataSource {
   fields: Record<string, FieldDefinition>;
-  source: DataSourceSpec;
+  fieldOverrides?: never;
+  source: InlineSource;
 }
 
+/** schemaVersion 1.0 的 query 页面数据源，由迁移器升级为紧凑形态。 */
+export interface LegacyQueryDataSource {
+  fields: Record<string, FieldDefinition>;
+  fieldOverrides?: never;
+  source: QuerySource;
+}
+
+/**
+ * schemaVersion 2.0 的 query 页面数据源。完整输出字段契约由结构化查询与
+ * 元数据快照解析，页面只声明必要的展示覆盖。
+ */
+export interface QueryDataSource {
+  fields?: never;
+  fieldOverrides?: Record<string, FieldOverride>;
+  source: QuerySource;
+}
+
+export type DataSource = InlineDataSource | LegacyQueryDataSource | QueryDataSource;
 export type DataSources = Record<string, DataSource>;
 export type DataSourceMode = 'inline' | 'query' | 'mixed';
 
@@ -29,4 +43,71 @@ export function dataSourceMode(dataSources: DataSources): DataSourceMode {
   const kinds = new Set(Object.values(dataSources).map((dataSource) => dataSource.source.type));
   if (kinds.size > 1) return 'mixed';
   return kinds.has('query') ? 'query' : 'inline';
+}
+
+export function isInlineDataSource(dataSource: DataSource): dataSource is InlineDataSource {
+  return dataSource.source.type === 'inline';
+}
+
+export function isQueryDataSource(
+  dataSource: DataSource
+): dataSource is LegacyQueryDataSource | QueryDataSource {
+  return dataSource.source.type === 'query';
+}
+
+/**
+ * 把两种持久化来源统一解析为运行时字段契约：
+ * - inline 直接使用页面声明；
+ * - 1.0 query 兼容旧 fields；
+ * - 2.0 query 从结构化查询与元数据快照推导，再合并 fieldOverrides。
+ *
+ * catalog 缺席时仍按 query 的 metrics/dimensions 推导最小角色与标量类型，
+ * 供纯结构/引用校验使用；正式渲染必须传入元数据快照。
+ */
+export function resolveDataSourceFields(
+  dataSource: DataSource,
+  catalog?: CatalogSnapshot
+): Record<string, FieldDefinition> {
+  if (isInlineDataSource(dataSource) || 'fields' in dataSource) {
+    return dataSource.fields ?? {};
+  }
+
+  const metrics = new Map(catalog?.metrics.map((metric) => [metric.code, metric]) ?? []);
+  const dimensions = new Map(
+    catalog?.dimensions.map((dimension) => [dimension.code, dimension]) ?? []
+  );
+  const resolved: Record<string, FieldDefinition> = {};
+
+  for (const code of dataSource.source.query.dimensions ?? []) {
+    const definition = dimensions.get(code);
+    resolved[code] = mergeOverride(
+      {
+        type: definition?.valueType ?? 'string',
+        role: 'dimension',
+        ...(definition?.name ? { label: definition.name } : {}),
+        ...(definition?.format ? { format: definition.format } : {})
+      },
+      dataSource.fieldOverrides?.[code]
+    );
+  }
+  for (const code of dataSource.source.query.metrics) {
+    const definition = metrics.get(code);
+    resolved[code] = mergeOverride(
+      {
+        type: 'number',
+        role: 'metric',
+        ...(definition?.name ? { label: definition.name } : {}),
+        ...(definition?.format ? { format: definition.format } : {})
+      },
+      dataSource.fieldOverrides?.[code]
+    );
+  }
+  return resolved;
+}
+
+function mergeOverride(
+  definition: FieldDefinition,
+  override: FieldOverride | undefined
+): FieldDefinition {
+  return override ? { ...definition, ...override } : definition;
 }

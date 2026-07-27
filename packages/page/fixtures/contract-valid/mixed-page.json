@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "mixed-page",
   "dataSources": {
     "fixed-target": {
@@ -20,15 +20,11 @@
       }
     },
     "live-sales": {
-      "fields": {
+      "fieldOverrides": {
         "stat-date": {
-          "type": "date",
-          "role": "dimension",
           "format": "date-month-day"
         },
         "gmv": {
-          "type": "number",
-          "role": "metric",
           "format": "compact-yi-1"
         }
       },

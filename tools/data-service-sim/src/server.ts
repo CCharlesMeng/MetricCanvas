@@ -1,7 +1,7 @@
 import { createServer, type IncomingMessage, type ServerResponse } from 'node:http';
 import { DialectError, parseApiQuery } from './dialect';
 import { executeQuery } from './execute';
-import { tables } from './tables';
+import { metricBaseInfo, tables } from './tables';
 
 /**
  * 数据服务仿真 (Data Service Sim):按《中间层分析.md》所记协议在本地供数。
@@ -29,6 +29,21 @@ async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> 
   }
 
   const url = new URL(req.url ?? '/', 'http://sim');
+
+  if (req.method === 'POST' && url.pathname === '/__admin/metrics') {
+    const body = await readJson(req);
+    const metric = registerTestMetric(body);
+    if (!metric.ok) {
+      envelope(res, 400, { retCode: 'CBC.9001', retDesc: metric.message });
+      return;
+    }
+    envelope(res, 201, {
+      retCode: 'CBC.0000',
+      retDesc: '成功',
+      data: metric.value
+    });
+    return;
+  }
 
   // 鉴权(§1.3):无 Bearer,靠业务头。【假设,#3 核对】仿真要求 x-operator-id 与 tenantId 齐备,
   // 缺失即未登录信号:HTTP 419 + retCode ANALYTICS_NOT_LOGIN(报告对状态码/返回码的表述有歧义,两个都给)
@@ -108,6 +123,62 @@ function readBody(req: IncomingMessage): Promise<string> {
     req.on('end', () => resolve(data));
     req.on('error', reject);
   });
+}
+
+async function readJson(req: IncomingMessage): Promise<unknown> {
+  try {
+    return JSON.parse(await readBody(req)) as unknown;
+  } catch {
+    return null;
+  }
+}
+
+function registerTestMetric(
+  body: unknown
+):
+  | { ok: true; value: { code: string; serviceCode: string } }
+  | { ok: false; message: string } {
+  if (!isRecord(body)) return { ok: false, message: '请求体必须是 JSON 对象' };
+  const code = nonEmpty(body.code);
+  const name = nonEmpty(body.name);
+  const dimensions = stringArray(body.dimensions);
+  if (!code || !name || !dimensions) {
+    return {
+      ok: false,
+      message: 'code、name 必须是非空字符串，dimensions 必须是字符串数组'
+    };
+  }
+  const serviceCode = nonEmpty(body.serviceCode) ?? tables[0]?.serviceCode;
+  const table = tables.find((candidate) => candidate.serviceCode === serviceCode);
+  if (!table) return { ok: false, message: `数据服务不存在:${serviceCode}` };
+  if (!metricBaseInfo.some((metric) => metric.metric_code === code)) {
+    metricBaseInfo.push({ metric_code: code, metric_name_zh: name, scope: 'TEST' });
+  }
+  for (const dimension of dimensions) {
+    if (!table.columns.includes(dimension)) table.columns.push(dimension);
+  }
+  if (!table.rows.some((row) => row.metric_code === code)) {
+    table.rows.push({
+      ...Object.fromEntries(dimensions.map((dimension) => [dimension, '示例'])),
+      metric_code: code,
+      metric_value: 0
+    });
+  }
+  return { ok: true, value: { code, serviceCode: table.serviceCode } };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function nonEmpty(value: unknown): string | undefined {
+  return typeof value === 'string' && value.trim() ? value.trim() : undefined;
+}
+
+function stringArray(value: unknown): string[] | null {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+    ? [...new Set(value.map((item) => item.trim()).filter(Boolean))]
+    : null;
 }
 
 // 直接运行时启动(vitest import 时不启动)

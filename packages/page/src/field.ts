@@ -8,26 +8,42 @@ export type FieldRole = 'dimension' | 'metric';
  * 框架内置的封闭格式预设。页面只能引用预设 id，不能携带格式化表达式或任意参数。
  * 后续新增预设是向后兼容变化；改变已有预设含义是破坏性变化。
  */
-export type ValueFormatPreset =
-  | 'text'
-  | 'number'
-  | 'number-1'
-  | 'number-2'
-  | 'number-grouped'
-  | 'compact-wan-0'
-  | 'compact-wan-1'
-  | 'compact-yi-1'
-  | 'percent-0'
-  | 'percent-1'
-  | 'percent-2'
-  | 'percent-2-signed'
-  | 'date'
-  | 'date-month-day';
+export const valueFormatPresets = [
+  'text',
+  'number',
+  'number-1',
+  'number-2',
+  'number-grouped',
+  'compact-wan-0',
+  'compact-wan-1',
+  'compact-yi-1',
+  'percent-0',
+  'percent-1',
+  'percent-2',
+  'percent-2-signed',
+  'date',
+  'date-month-day'
+] as const;
+
+export type ValueFormatPreset = (typeof valueFormatPresets)[number];
+
+export function isValueFormatPreset(value: unknown): value is ValueFormatPreset {
+  return (
+    typeof value === 'string' &&
+    (valueFormatPresets as readonly string[]).includes(value)
+  );
+}
 
 /** 数据源输出字段契约。 */
 export interface FieldDefinition {
   type: FieldType;
   role: FieldRole;
+  label?: string;
+  format?: ValueFormatPreset;
+}
+
+/** query 页面数据源对元数据快照默认展示语义的局部覆盖。 */
+export interface FieldOverride {
   label?: string;
   format?: ValueFormatPreset;
 }

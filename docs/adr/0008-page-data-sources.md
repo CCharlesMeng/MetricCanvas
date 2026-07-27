@@ -1,5 +1,7 @@
 # 公开页面采用命名数据源,统一 inline 与 query 取数
 
+> query 字段契约的持久化方式已由 [ADR-0011](./0011-derive-query-fields-from-catalog.md) 调整；inline 字段契约及命名数据槽决策保持有效。
+
 看板页面公开声明 `dataSources`。每个页面数据源同时给出 `fields` 输出契约和带判别字段的 `source`:查询数据使用 `source.type: "query"` 与结构化查询,固定时点数据使用 `source.type: "inline"` 与 `rows`。组件不携带查询或数据行,只通过 `data` 命名数据槽引用页面数据源；单源组件通常使用 `main`,多源组件可使用 `compare`、`target` 等语义槽位。
 
 统一运行时直接消费看板页面,不再使用区分 `live` / `snapshot` 的渲染输入信封。inline 与 query 进入同一数据源编排路径:前者同步产生终态数据快照,后者把结构化查询与筛选状态合成为生效查询,经数据网关取数并维护加载、错误与竞态状态。同一字段契约可在 inline/query 之间切换,混合页面按组件实际绑定的数据源精确派生实时能力。

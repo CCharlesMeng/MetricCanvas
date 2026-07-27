@@ -48,6 +48,9 @@ export async function syncCatalog(options: SyncCatalogOptions): Promise<CatalogS
       code,
       // 后端无维度中文名与基数供给(共建中):名称暂用 code,基数用保守默认
       name: code,
+      // 后端尚未提供维度标量类型；先按 string/text，真实目录补齐后替换
+      valueType: 'string' as const,
+      format: 'text' as const,
       cardinality: 3
     }));
 
@@ -59,12 +62,13 @@ export async function syncCatalog(options: SyncCatalogOptions): Promise<CatalogS
       name: m.metric_name_zh,
       // MetricBaseInfo 无值类型供给:按最不惊讶的 decimal 填充,后端扩展后替换
       valueType: 'decimal' as const,
+      format: 'number-2' as const,
       availableDimensions: dimensionCodes,
       availableAggregations: DEFAULT_AGGREGATIONS
     }));
 
   return {
-    formatVersion: '1.0',
+    formatVersion: '2.0',
     syncedAt: now().toISOString(),
     source: baseUrl,
     metrics,

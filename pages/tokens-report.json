@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "tokens-report",
   "meta": {
     "description": "固定时点 Tokens 运营报告页面资产"
@@ -294,7 +294,7 @@
           {
             "representative_office": "京畿代表处",
             "tokens_consumed": 528970000000,
-            "tokens_consumed_share_pct": 84.0,
+            "tokens_consumed_share_pct": 84,
             "tokens_consumed_dod_pct": 3.87,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
@@ -704,7 +704,7 @@
           {
             "customer_name": "星河在线网络技术（京海）有限公司",
             "tokens_consumed": 172780000000,
-            "tokens_consumed_share_pct": 32.0,
+            "tokens_consumed_share_pct": 32,
             "tokens_consumed_dod_pct": -9.71,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,
@@ -795,7 +795,7 @@
           {
             "customer_name": "慧联讯业（京海）网络科技有限公司",
             "tokens_consumed": 16030000000,
-            "tokens_consumed_share_pct": 3.0,
+            "tokens_consumed_share_pct": 3,
             "tokens_consumed_dod_pct": 3.21,
             "tokens_consumed_mtd": null,
             "tokens_consumed_mom_pct": null,

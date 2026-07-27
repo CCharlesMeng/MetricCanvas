@@ -24,6 +24,52 @@ const pageDocument = {
 };
 
 describe('页面 id 确认 MCP Client adapter', () => {
+  it('在委托校验前拒绝占位页面 id 并要求模型拟定真实候选 id', async () => {
+    const delegatedCalls: string[] = [];
+    const client = createPageIdConfirmationMcpClient({
+      client: {
+        async listTools() {
+          return [];
+        },
+        async callTool({ name }) {
+          delegatedCalls.push(name);
+          return {
+            structuredContent: { ok: true, valid: true, errors: [] },
+            isError: false
+          };
+        }
+      },
+      confirmedPageIds: []
+    });
+
+    const result = await client.callTool({
+      name: 'validate_page',
+      arguments: {
+        document: {
+          ...pageDocument,
+          id: '__pending__'
+        }
+      }
+    });
+
+    expect(delegatedCalls).toEqual([]);
+    expect(result).toEqual({
+      structuredContent: {
+        ok: true,
+        valid: false,
+        errors: [
+          {
+            code: 'PAGE_ID_PLACEHOLDER',
+            path: '/id',
+            message:
+              '页面 id 必须是可读且唯一的真实候选值；请替换占位符后再次调用 validate_page，校验通过后客户端会发起结构化确认'
+          }
+        ]
+      },
+      isError: false
+    });
+  });
+
   it('合法页面校验完成后请求结构化页面 id 确认', async () => {
     const client = createPageIdConfirmationMcpClient({
       client: fakeClient({

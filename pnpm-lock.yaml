@@ -69,9 +69,15 @@ importers:
       '@metriccanvas/data-gateway':
         specifier: workspace:*
         version: link:../../packages/data-gateway
+      '@metriccanvas/dp-catalog':
+        specifier: workspace:*
+        version: link:../../packages/dp-catalog
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
+      '@metriccanvas/metric-fulfillment':
+        specifier: workspace:*
+        version: link:../../packages/metric-fulfillment
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../../packages/page
@@ -125,6 +131,12 @@ importers:
         specifier: workspace:*
         version: link:../../tools/data-service-sim
 
+  packages/dp-catalog:
+    devDependencies:
+      '@metriccanvas/dp-sim':
+        specifier: workspace:*
+        version: link:../../tools/dp-sim
+
   packages/mcp:
     dependencies:
       '@metriccanvas/agent-runner':
@@ -133,6 +145,12 @@ importers:
       '@metriccanvas/catalog-discovery':
         specifier: workspace:*
         version: link:../catalog-discovery
+      '@metriccanvas/dp-catalog':
+        specifier: workspace:*
+        version: link:../dp-catalog
+      '@metriccanvas/metric-fulfillment':
+        specifier: workspace:*
+        version: link:../metric-fulfillment
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page
@@ -148,6 +166,34 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+
+  packages/metric-fulfillment:
+    dependencies:
+      '@metriccanvas/catalog-discovery':
+        specifier: workspace:*
+        version: link:../catalog-discovery
+      '@metriccanvas/dp-catalog':
+        specifier: workspace:*
+        version: link:../dp-catalog
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
+      postgres:
+        specifier: ^3.4.9
+        version: 3.4.9
+    devDependencies:
+      '@metriccanvas/data-gateway':
+        specifier: workspace:*
+        version: link:../data-gateway
+      '@metriccanvas/data-service-sim':
+        specifier: workspace:*
+        version: link:../../tools/data-service-sim
+      '@metriccanvas/dp-sim':
+        specifier: workspace:*
+        version: link:../../tools/dp-sim
+      '@testcontainers/postgresql':
+        specifier: ^12.0.4
+        version: 12.0.4
 
   packages/page:
     dependencies:
@@ -206,6 +252,8 @@ importers:
         version: 5.56.6
 
   tools/data-service-sim: {}
+
+  tools/dp-sim: {}
 
 packages:
 

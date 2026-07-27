@@ -37,6 +37,12 @@ function main(argv: string[]): number {
     console.error(`元数据快照不是合法 JSON:${catalogPath}(${String(cause)})`);
     return 2;
   }
+  if (catalog.formatVersion !== '2.0') {
+    console.error(
+      `元数据快照版本不受支持:${catalog.formatVersion}(当前页面字段解析要求 2.0)`
+    );
+    return 2;
+  }
 
   const files = readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
   // 第一遍:逐页两级校验 + 文件名一致性,顺便收集跨文档校验所需的仓库知识

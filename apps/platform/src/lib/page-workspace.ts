@@ -7,6 +7,7 @@ import type {
   StructuredQuery,
   TableColumnNode
 } from '@metriccanvas/page';
+import { migrateDocument } from '@metriccanvas/page';
 import {
   editComponent,
   type ComponentEdit,
@@ -139,7 +140,7 @@ export function createPageWorkspace(input: {
   baseRevisionId: string | null;
   revisionNumber: number | null;
 }): PageWorkspace {
-  const document = clonePage(input.document);
+  const document = currentPage(input.document);
   return {
     baseRevisionId: input.baseRevisionId,
     revisionNumber: input.revisionNumber,
@@ -150,6 +151,14 @@ export function createPageWorkspace(input: {
     selected: null,
     lastMutation: null
   };
+}
+
+function currentPage(document: Page): Page {
+  const cloned = clonePage(document);
+  const result = migrateDocument(cloned as unknown as Record<string, unknown>);
+  return result.outcome === 'migrated'
+    ? (result.document as unknown as Page)
+    : cloned;
 }
 
 export function reducePageWorkspace(
@@ -486,11 +495,9 @@ function setComponentInteraction(
   }
   const sourceId = component.data.main;
   const source = document.dataSources[sourceId];
-  const field = source?.fields[interaction.field];
   if (
     !source ||
     source.source.type !== 'query' ||
-    field?.role !== 'dimension' ||
     !source.source.query.dimensions?.includes(interaction.field)
   ) {
     return document;
@@ -638,11 +645,9 @@ function insertBoundComponent(
     if (
       !source ||
       source.source.type !== 'query' ||
-      source.fields[metric.code]?.role !== 'metric' ||
       !source.source.query.metrics.includes(metric.code) ||
       (dimension !== null &&
-        (source.fields[dimension.code]?.role !== 'dimension' ||
-          !source.source.query.dimensions?.includes(dimension.code)))
+        !source.source.query.dimensions?.includes(dimension.code))
     ) {
       return document;
     }
@@ -651,12 +656,6 @@ function insertBoundComponent(
   const next = clonePage(document);
   if (command.dataSource.mode === 'create_query') {
     next.dataSources[command.dataSource.dataSourceId] = {
-      fields: Object.fromEntries([
-        ...(dimension
-          ? [[dimension.code, dimensionField(dimension)] as const]
-          : []),
-        [metric.code, metricField(metric)]
-      ]),
       source: {
         type: 'query',
         query: insertionQuery(command.component, command.dataSource.aggregation)
@@ -873,31 +872,18 @@ function editQueryDataSource(
   const previousQuery = cloneQuery(current.source.query);
   const next = clonePage(document);
   const source = next.dataSources[dataSourceId]!;
-  const previousFields = source.fields;
-  source.fields = Object.fromEntries([
-    ...resolvedDimensions.map((dimension) => [
-      dimension.code,
-      previousFields[dimension.code] ?? {
-        type: 'string' as const,
-        role: 'dimension' as const,
-        label: dimension.name
-      }
-    ]),
-    ...resolvedMetrics.map((metric) => [
-      metric.code,
-      {
-        type: 'number' as const,
-        role: 'metric' as const,
-        label: metric.name,
-        format:
-          metric.valueType === 'percent'
-            ? ('percent-2' as const)
-            : metric.valueType === 'integer'
-              ? ('number-grouped' as const)
-              : ('number-2' as const)
-      }
-    ])
+  const outputFields = new Set([
+    ...resolvedDimensions.map((dimension) => dimension.code),
+    ...resolvedMetrics.map((metric) => metric.code)
   ]);
+  const fieldOverrides = Object.fromEntries(
+    Object.entries(source.fieldOverrides ?? {}).filter(([field]) =>
+      outputFields.has(field)
+    )
+  );
+  delete source.fields;
+  source.fieldOverrides =
+    Object.keys(fieldOverrides).length > 0 ? fieldOverrides : undefined;
   source.source = {
     type: 'query',
     query: {
@@ -986,28 +972,6 @@ function adaptActions(component: Component, metric: string, dimension?: string) 
       );
     }
   }
-}
-
-function metricField(metric: CatalogSnapshot['metrics'][number]) {
-  return {
-    type: 'number' as const,
-    role: 'metric' as const,
-    label: metric.name,
-    format:
-      metric.valueType === 'percent'
-        ? ('percent-2' as const)
-        : metric.valueType === 'integer'
-          ? ('number-grouped' as const)
-          : ('number-2' as const)
-  };
-}
-
-function dimensionField(dimension: CatalogSnapshot['dimensions'][number]) {
-  return {
-    type: 'string' as const,
-    role: 'dimension' as const,
-    label: dimension.name
-  };
 }
 
 function cloneQuery(query: StructuredQuery): StructuredQuery {

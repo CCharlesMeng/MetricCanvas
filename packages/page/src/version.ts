@@ -11,7 +11,7 @@ export interface VersionPolicy {
   previous: string | null;
 }
 
-export const versionPolicy: VersionPolicy = { current: '1.0', previous: null };
+export const versionPolicy: VersionPolicy = { current: '2.0', previous: '1.0' };
 
 /** 受支持的版本集合(N 与 N-1) */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {

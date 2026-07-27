@@ -12,6 +12,10 @@
     Page,
     StructuredQuery
   } from '@metriccanvas/page';
+  import type {
+    AtomicMetricRequest,
+    MetricRequestGroupReadiness
+  } from '@metriccanvas/metric-fulfillment';
   import {
     authoringRenderMessage,
     parseAuthoringRuntimeMessage,
@@ -30,6 +34,8 @@
     type DimensionedVisualizationKind,
     type PageWorkspace
   } from './page-workspace';
+  import MetricFulfillmentDrawer from './MetricFulfillmentDrawer.svelte';
+  import SafeMarkdown from './SafeMarkdown.svelte';
 
   interface Revision {
     pageId: string;
@@ -44,7 +50,13 @@
     interaction?: AgentInteraction;
     document?: Record<string, unknown>;
     runtimeOrigin?: string;
+    agentModel?: AgentModelDescriptor;
     error?: { code: string; message: string };
+  }
+
+  interface AgentModelDescriptor {
+    provider: 'scripted' | 'deepseek';
+    model: string;
   }
 
   interface PublishRequest {
@@ -55,7 +67,7 @@
     confirmationUrl: string;
   }
 
-  type InspectorMode = 'component' | 'dataSource' | 'structure' | 'add';
+  type InspectorMode = 'component' | 'dataSource' | 'structure' | 'add' | 'fulfillment';
   type MobilePane = 'copilot' | 'canvas' | 'inspector';
   type AddComponentKind = BoundComponentInsertion['kind'];
   type InteractionMode = 'none' | 'write_filter' | 'navigate';
@@ -115,6 +127,7 @@
   let runId = $state('');
   let bridgeSession = $state('');
   let runtimeOrigin = $state('http://localhost:5173');
+  let agentModel = $state<AgentModelDescriptor | null>(null);
   let bridgeReady = $state(false);
   let canvasMode = $state<'authoring' | 'preview'>('authoring');
   let previewedRevisionId = $state<string | null>(null);
@@ -122,6 +135,8 @@
   let pending = $state(false);
   let saving = $state(false);
   let publishing = $state(false);
+  let fulfillmentReadiness = $state<MetricRequestGroupReadiness | null>(null);
+  let unmetMetricRequests = $state<AtomicMetricRequest[]>([]);
   let error = $state('');
   let notice = $state('');
   let iframe = $state<HTMLIFrameElement>();
@@ -173,12 +188,10 @@
     querySources.filter(({ source }) =>
       Boolean(
         addMetric &&
-          source.fields[addMetric.code]?.role === 'metric' &&
           source.source.type === 'query' &&
           source.source.query.metrics.includes(addMetric.code) &&
           (!addNeedsDimension ||
             (addDimension &&
-              source.fields[addDimension.code]?.role === 'dimension' &&
               source.source.query.dimensions?.includes(addDimension.code)))
       )
     )
@@ -195,9 +208,7 @@
     const sourceId = component?.data?.main;
     const source = sourceId ? workspace?.current.dataSources[sourceId] : null;
     if (!source || source.source.type !== 'query') return [];
-    return (source.source.query.dimensions ?? []).filter(
-      (field) => source.fields[field]?.role === 'dimension'
-    );
+    return source.source.query.dimensions ?? [];
   });
   const compatibleFilterSources = $derived(
     filterDimensionCode && catalog
@@ -289,6 +300,7 @@
     compactLayout.addEventListener('change', closeInspectorForCompactLayout);
     void loadCatalog();
     void loadPageTargets();
+    void loadAgentModel();
     const receive = (event: MessageEvent) => {
       if (!iframe?.contentWindow || event.source !== iframe.contentWindow) return;
       if (event.origin !== safeOrigin(runtimeOrigin)) return;
@@ -330,6 +342,20 @@
       catalog = payload.snapshot;
     } catch (cause) {
       error = `元数据目录加载失败：${cause instanceof Error ? cause.message : String(cause)}`;
+    }
+  }
+
+  async function loadAgentModel() {
+    try {
+      const response = await fetch('/api/agent', {
+        headers: { accept: 'application/json' }
+      });
+      const payload = (await response.json()) as {
+        agentModel?: AgentModelDescriptor;
+      };
+      if (response.ok && payload.agentModel) agentModel = payload.agentModel;
+    } catch {
+      agentModel = null;
     }
   }
 
@@ -406,6 +432,7 @@
       latestEvents = payload.events;
       interaction = payload.interaction ?? null;
       if (payload.runtimeOrigin) runtimeOrigin = payload.runtimeOrigin;
+      if (payload.agentModel) agentModel = payload.agentModel;
       if (payload.document) applyAgentDocument(payload.document);
     } catch (cause) {
       error = cause instanceof Error ? cause.message : String(cause);
@@ -700,6 +727,15 @@
     ) {
       return;
     }
+    if (
+      fulfillmentReadiness &&
+      fulfillmentReadiness !== 'ready' &&
+      !window.confirm(
+        `当前指标需求组仍为${fulfillmentReadiness === 'partially_ready' ? '部分就绪' : '受阻'}。未履约依赖：${unmetMetricRequests.map((request) => `${request.name}（${request.status}）`).join('、') || '未知'}。可以降级发布，但页面会保留这些依赖。是否继续申请发布？`
+      )
+    ) {
+      return;
+    }
     publishing = true;
     error = '';
     try {
@@ -729,6 +765,113 @@
       error = cause instanceof Error ? cause.message : String(cause);
     } finally {
       publishing = false;
+    }
+  }
+
+  async function continueWithFulfilledMetric(request: AtomicMetricRequest) {
+    if (!workspace || !request.finalMetricCode) return;
+    pending = true;
+    error = '';
+    const startingRevisionId = workspace.baseRevisionId;
+    try {
+      const catalogResponse = await fetch('/api/catalog');
+      const catalogPayload = await catalogResponse.json();
+      if (!catalogResponse.ok || !catalogPayload.snapshot) {
+        throw new Error(`无法刷新数据服务目录:HTTP ${catalogResponse.status}`);
+      }
+      catalog = catalogPayload.snapshot as CatalogSnapshot;
+      metadataVersion = String(catalogPayload.version ?? metadataVersion);
+      const metric = catalog.metrics.find(
+        (candidate) => candidate.code === request.finalMetricCode
+      );
+      if (!metric) {
+        throw new Error(`数据服务目录尚未提供指标:${request.finalMetricCode}`);
+      }
+
+      if (workspace.baseRevisionId && workspace.current.id) {
+        const response = await fetch(
+          `/api/pages/${encodeURIComponent(workspace.current.id)}`
+        );
+        const payload = (await response.json()) as {
+          revision?: Revision;
+          error?: { code?: string; message?: string };
+        };
+        if (!response.ok || !payload.revision) {
+          throw new Error(payload.error?.message ?? `HTTP ${response.status}`);
+        }
+        if (
+          payload.revision.revisionId !== workspace.baseRevisionId &&
+          workspaceIsDirty(workspace)
+        ) {
+          throw new Error(
+            `页面已从 R${workspace.revisionNumber} 更新到 R${payload.revision.revisionNumber}，当前还有未保存修改。请先保存或撤销本地修改后再继续，系统没有覆盖任何内容。`
+          );
+        }
+        if (payload.revision.revisionId !== workspace.baseRevisionId) {
+          workspace = createPageWorkspace({
+            document: payload.revision.document,
+            baseRevisionId: payload.revision.revisionId,
+            revisionNumber: payload.revision.revisionNumber
+          });
+        }
+      }
+
+      const sectionId = workspace.current.sections[0]?.id;
+      if (!sectionId) throw new Error('当前看板页面没有可放置组件的分区');
+      const componentId = nextAvailableId(
+        `${metric.code}-card`,
+        componentIds()
+      );
+      const dataSourceId = nextAvailableId(
+        `${metric.code}-summary`,
+        Object.keys(workspace.current.dataSources)
+      );
+      const diffNotice =
+        `继续页面差异：基于${startingRevisionId === workspace.baseRevisionId ? `当前 R${workspace.revisionNumber}` : `最新 R${workspace.revisionNumber}`}，` +
+        `新增“${metric.name}”指标卡和 query 页面数据源 ${dataSourceId}；不覆盖任何已有组件。`;
+      if (
+        workspace.baseRevisionId &&
+        !window.confirm(`${diffNotice}\n\n确认创建新的页面修订？`)
+      ) {
+        notice = '已取消继续页面，没有产生页面修订或修改工作副本。';
+        return;
+      }
+      dispatch({
+        type: 'insert_bound_component',
+        component: {
+          kind: 'metric_card',
+          componentId,
+          title: metric.name,
+          metricCode: metric.code,
+          span: 3
+        },
+        placement: { sectionId },
+        dataSource: {
+          mode: 'create_query',
+          dataSourceId,
+          aggregation:
+            metric.availableAggregations.includes('sum')
+              ? 'sum'
+              : metric.availableAggregations[0]!
+        },
+        catalog
+      });
+      dispatch({
+        type: 'select_component',
+        locator: { sectionId, componentId }
+      });
+      revealInspector('component');
+      notice = diffNotice;
+      if (workspace.baseRevisionId && pageIdConfirmed) {
+        await saveRevision();
+        if (!error) {
+          notice = `${diffNotice} 已保存为 R${workspace.revisionNumber}，仍需精确预览和人工确认后才能发布。`;
+        }
+      }
+    } catch (cause) {
+      error = cause instanceof Error ? cause.message : String(cause);
+    } finally {
+      pending = false;
     }
   }
 
@@ -1208,6 +1351,13 @@
     }
   }
 
+  function agentModelLabel(): string {
+    if (!agentModel) return '模型状态不可用';
+    return agentModel.provider === 'deepseek'
+      ? `DeepSeek · ${agentModel.model}`
+      : 'Scripted 测试适配器';
+  }
+
   function valueOf(event: Event): string {
     return (event.currentTarget as HTMLInputElement | HTMLSelectElement).value;
   }
@@ -1268,7 +1418,7 @@
       <section class="conversation-panel">
         <div class="panel-heading">
           <div><span class="eyebrow">AI COPILOT</span><h2>继续描述你的调整</h2></div>
-          <span class="provider"><i></i>{pending ? '执行中' : 'scripted fake / DeepSeek'}</span>
+          <span class="provider"><i></i>{agentModelLabel()}{pending ? ' · 执行中' : ''}</span>
         </div>
         <div class="messages" aria-live="polite">
           {#if visibleMessages.length === 0}
@@ -1279,7 +1429,11 @@
           {#each visibleMessages as message}
             <div class:assistant-message={message.role === 'assistant'} class:user-message={message.role === 'user'}>
               <small>{message.role === 'assistant' ? 'Agent' : '你'}</small>
-              <p>{message.content}</p>
+              {#if message.role === 'assistant'}
+                <SafeMarkdown content={message.content} />
+              {:else}
+                <p>{message.content}</p>
+              {/if}
             </div>
           {/each}
           {#if interaction?.kind === 'confirm_page_id' && workspace}
@@ -1334,6 +1488,7 @@
       <div><i class:dirty></i><strong>统一运行时</strong><span>{canvasMode === 'authoring' ? '未保存工作副本' : `精确预览 · R${workspace?.revisionNumber}`}</span></div>
       <div class="canvas-actions">
         <div class="mode-switch"><button class:active={canvasMode === 'authoring'} type="button" onclick={() => (canvasMode = 'authoring')} disabled={!workspace}>编辑画布</button><button class:active={canvasMode === 'preview'} type="button" onclick={showPrecisePreview} disabled={!workspace?.baseRevisionId || dirty}>精确预览</button></div>
+        <button class="fulfillment-toggle" type="button" onclick={() => revealInspector('fulfillment', true)} disabled={!workspace}>指标履约{fulfillmentReadiness === 'ready' ? ' · 已就绪' : fulfillmentReadiness ? ` · ${unmetMetricRequests.length} 待处理` : ''}</button>
         <button class="inspector-toggle" type="button" onclick={() => { inspectorOpen = true; inspectorMode = 'component'; }} disabled={!workspace}>检查器</button>
       </div>
     </header>
@@ -1354,7 +1509,7 @@
     <header class="inspector-toolbar">
       <div>
         <span>统一检查器</span>
-        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : inspectorMode === 'structure' ? '结构与联动' : '添加数据组件'}</strong>
+        <strong>{inspectorMode === 'component' ? '组件属性' : inspectorMode === 'dataSource' ? '页面数据源' : inspectorMode === 'structure' ? '结构与联动' : inspectorMode === 'fulfillment' ? '指标履约' : '添加数据组件'}</strong>
       </div>
       <div class="inspector-toolbar-actions">
         {#if inspectorMode !== 'component'}<button type="button" onclick={() => revealInspector('component')}>返回</button>{/if}
@@ -1369,7 +1524,21 @@
           <button class:active={inspectorMode === 'dataSource'} type="button" onclick={() => revealInspector('dataSource')} disabled={querySources.length === 0}>页面数据源</button>
           <button class:active={inspectorMode === 'structure'} type="button" onclick={openStructureInspector} disabled={!workspace || !catalog}>结构</button>
           <button class:active={inspectorMode === 'add'} type="button" onclick={openComponentComposer} disabled={!workspace || !catalog}>＋ 新增</button>
+          <button class:active={inspectorMode === 'fulfillment'} type="button" onclick={() => revealInspector('fulfillment', true)} disabled={!workspace}>履约</button>
         </nav>
+
+        {#if workspace}
+          <div class="fulfillment-host" class:hidden={inspectorMode !== 'fulfillment'}>
+            <MetricFulfillmentDrawer
+              pageId={workspace.current.id}
+              baseRevisionId={workspace.baseRevisionId}
+              goal={input}
+              oncontinue={continueWithFulfilledMetric}
+              onreadiness={(readiness) => (fulfillmentReadiness = readiness)}
+              onunmet={(requests) => (unmetMetricRequests = requests)}
+            />
+          </div>
+        {/if}
 
         {#if inspectorMode === 'component'}
           <div class="inspector-heading">
@@ -1456,6 +1625,8 @@
               {#if selected}<button class="return-to-component" type="button" onclick={() => revealInspector('component')}>← 返回绑定组件</button>{/if}
             </div>
           {:else}<div class="inspector-empty"><strong>没有可编辑的页面数据源</strong><p>当前看板页面尚未使用 query 页面数据源。</p></div>{/if}
+        {:else if inspectorMode === 'fulfillment'}
+          <!-- 指标履约面板常驻挂载，以便切换检查器模式后继续轮询。 -->
         {:else if inspectorMode === 'structure' && workspace && catalog}
           <div class="mode-intro"><strong>分区与筛选状态</strong><p>分区组织页面内容；筛选器通过 query 页面数据源订阅驱动联动。</p></div>
           <div class="structure-editor">
@@ -1582,6 +1753,7 @@
   .ai-quick-actions button { flex: none; padding: 5px 7px; color: #4f46e5; background: #f0efff; border: 0; border-radius: 6px; font-size: 8px; font-weight: 800; }
 
   .canvas-actions { display: flex; align-items: center; gap: 7px; }
+  .fulfillment-toggle { padding: 6px 9px; color: #fff; background: #5148d8; border: 1px solid #5148d8; border-radius: 6px; font-size: 8px; font-weight: 800; }
   .inspector-toggle { display: none; padding: 6px 9px; color: #4f46e5; background: #fff; border: 1px solid #cfcbed; border-radius: 6px; font-size: 8px; font-weight: 800; }
   .authoring-workbench:not(.inspector-open) .inspector-toggle { display: block; }
 
@@ -1595,9 +1767,10 @@
   .inspector-toolbar-actions button:last-child { font-size: 15px; }
   .inspector-scroll { min-height: 0; flex: 1; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
   .inspector-panel { min-height: 100%; padding: 12px 14px 20px; border: 0; }
-  .inspector-modes { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3px; padding: 3px; margin-bottom: 16px; background: #f0f2f5; border-radius: 8px; }
+  .inspector-modes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; padding: 3px; margin-bottom: 16px; background: #f0f2f5; border-radius: 8px; }
   .inspector-modes button { min-width: 0; padding: 6px 4px; color: #747e90; background: transparent; border: 0; border-radius: 6px; font-size: 8px; font-weight: 800; }
   .inspector-modes button.active { color: #3730a3; background: #fff; box-shadow: 0 1px 3px rgb(15 23 42 / .1); }
+  .fulfillment-host.hidden { display: none; }
   .inspector-heading { margin-bottom: 8px; }
   .component-list { display: grid; max-height: 146px; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding: 0 2px 10px 0; overflow-x: hidden; overflow-y: auto; }
   .component-list button { min-width: 0; padding: 7px 8px; }

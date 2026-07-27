@@ -1,5 +1,5 @@
 {
-  "formatVersion": "1.0",
+  "formatVersion": "2.0",
   "syncedAt": "2026-07-20T06:00:00.000Z",
   "source": "手工构造初版(数据服务指标/维度目录缺失,走\"残缺→共建\"路线;联调后由 pnpm sync-catalog 重新生成)",
   "metrics": [
@@ -7,6 +7,7 @@
       "code": "gmv",
       "name": "成交总额",
       "valueType": "decimal",
+      "format": "number-grouped",
       "availableDimensions": ["region", "channel", "mtime"],
       "availableAggregations": ["sum", "avg", "count"]
     },
@@ -14,6 +15,7 @@
       "code": "order-count",
       "name": "订单量",
       "valueType": "integer",
+      "format": "number-grouped",
       "availableDimensions": ["region", "channel", "mtime"],
       "availableAggregations": ["sum", "count"]
     },
@@ -21,6 +23,7 @@
       "code": "target-rate",
       "name": "目标完成率",
       "valueType": "percent",
+      "format": "percent-1",
       "availableDimensions": ["region"],
       "availableAggregations": ["avg"]
     }
@@ -29,24 +32,32 @@
     {
       "code": "region",
       "name": "区域",
+      "valueType": "string",
+      "format": "text",
       "cardinality": 3,
       "sampleValues": ["华东", "华北", "华南"]
     },
     {
       "code": "channel",
       "name": "渠道",
+      "valueType": "string",
+      "format": "text",
       "cardinality": 2,
       "sampleValues": ["线上", "线下"]
     },
     {
       "code": "city",
       "name": "城市",
+      "valueType": "string",
+      "format": "text",
       "cardinality": 5,
       "sampleValues": ["华东/上海", "华东/杭州", "华北/北京", "华南/广州", "华南/深圳"]
     },
     {
       "code": "mtime",
       "name": "统计时间",
+      "valueType": "date",
+      "format": "date-month-day",
       "cardinality": 5,
       "sampleValues": ["2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19", "2026-07-20"]
     }

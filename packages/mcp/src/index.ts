@@ -10,19 +10,30 @@ import {
   versionPolicy
 } from '@metriccanvas/page';
 import type { CatalogDiscovery } from '@metriccanvas/catalog-discovery';
+import {
+  DpCatalogError,
+  type DpCatalog
+} from '@metriccanvas/dp-catalog';
 import type { McpClient } from '@metriccanvas/agent-runner';
 import type {
   LifecycleContext,
   PageLifecycle,
   RevisionReference
 } from '@metriccanvas/page-lifecycle';
+import type {
+  MetricFulfillment,
+  MetricFulfillmentContext
+} from '@metriccanvas/metric-fulfillment';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 
 export interface MetricCanvasMcpDependencies {
   catalog: CatalogDiscovery;
+  dpCatalog: DpCatalog;
+  metricFulfillment: MetricFulfillment;
   lifecycle: PageLifecycle;
   templates: Pick<TemplateLibrary, 'search'>;
   context(): LifecycleContext;
+  metricFulfillmentContext(): MetricFulfillmentContext;
   previewUrl(reference: RevisionReference): string;
 }
 
@@ -51,8 +62,10 @@ export const PAGE_BUILDING_PROMPT = [
   '你是 MetricCanvas 页面搭建 Agent。',
   '新建看板页面时严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 用户确认 → 申请发布”执行。',
   '用户要求从页面模板开始时先调用 search_templates;多个匹配必须列出名称、说明和标签差异并提问,不得擅自选择。',
-  '选定页面模板后以返回的精确来源页面修订为受治理起点,形成新的看板页面 id,不得覆盖来源页面;保存前必须按当前元数据重新校验,模板不能绕过 SCHEMA_ERROR 或 METRIC_GAP。',
+  '选定页面模板后以返回的精确来源页面修订为受治理起点,形成新的看板页面 id,不得覆盖来源页面;修改完页面 id 和用户明确要求的内容后先直接调用 validate_page 按当前元数据重新校验,不得逐项调用 search_catalog 复查模板已有指标或维度;只有校验结果指出元数据缺口时才针对缺口调用 search_catalog。模板不能绕过 SCHEMA_ERROR 或 METRIC_GAP。',
   '不得猜测指标 code、口径、维度、时间范围或粒度;有歧义必须提问。',
+  '数据服务目录缺少所需指标时调用 search_metric_candidates 查询 DP,必须向用户展示全部候选的业务定义、状态、维度、聚合、匹配原因与能力缺口;不得自动选择得分最高或排序最前的候选。',
+  '新建页面必须自行拟定可读且唯一的真实候选页面 id 后再调用 validate_page;严禁使用占位页面 id,包括 __pending__、pending、todo、tbd、placeholder、待确认、待定或尖括号占位符。校验通过后客户端会发起结构化页面 id 确认,不得用普通文本询问页面 id。',
   '首次 save_page 前必须展示可读且唯一的页面 id,并等待用户明确确认。',
   '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
   '只保存 validate_page 返回 valid=true 的当前 schemaVersion 页面。',
@@ -63,7 +76,7 @@ export const PAGE_BUILDING_PROMPT = [
   `组件能力目录:\n${COMPONENT_SELECTION_GUIDE}`,
   '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;props.rows 只声明该指标行。',
   '没有筛选器时省略 query 页面数据源中的 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
-  `单指标卡最小合法示例:{"schemaVersion":"${versionPolicy.current}","id":"<confirmed-id>","dataSources":{"main":{"fields":{"<metric-code>":{"type":"number","role":"metric"}},"source":{"type":"query","query":{"metrics":["<metric-code>"],"aggregation":"sum"}}}},"sections":[{"id":"overview","title":"<title>","layout":{"type":"grid","columns":12},"components":[{"id":"w-metric","type":"metricCard","layout":{"span":3},"data":{"main":"main"},"props":{"title":"<title>","rows":[{"label":"<metric-name>","valueField":"<metric-code>"}]}}]}]}`,
+  `单指标卡最小合法示例:{"schemaVersion":"${versionPolicy.current}","id":"<confirmed-id>","dataSources":{"main":{"source":{"type":"query","query":{"metrics":["<metric-code>"],"aggregation":"sum"}}}},"sections":[{"id":"overview","title":"<title>","layout":{"type":"grid","columns":12},"components":[{"id":"w-metric","type":"metricCard","layout":{"span":3},"data":{"main":"main"},"props":{"title":"<title>","rows":[{"label":"<metric-name>","valueField":"<metric-code>"}]}}]}]}`,
   '校验失败时按 JSON Pointer 修正字段,同时保持用户指定的组件语义不变。',
   '保存后先调用 preview_page。只有用户看过精确修订预览并明确要求发布后,才能调用 request_publish;预览完成不等于同意发布,MCP 不负责确认发布。',
   '页面搭建工作台不是 JSON 编辑器,不要要求用户手写页面文档。'
@@ -159,6 +172,83 @@ export function createMetricCanvasMcpServer(
     async ({ query, limit }) => {
       const result = await dependencies.catalog.search({ query, limit });
       return toolResult({ ok: true, ...result });
+    }
+  );
+
+  server.registerTool(
+    'search_metric_candidates',
+    {
+      description:
+        '查询 DP 中可能满足原子指标需求的全部指标候选，并返回逐项匹配原因与能力缺口；调用方必须交给用户确认，不能自动选择。',
+      inputSchema: z.object({
+        query: z.string().min(1),
+        requiredDimensions: z.array(z.string().min(1)).default([]),
+        requiredAggregations: z.array(z.string().min(1)).default([]),
+        statuses: z.array(z.enum(['draft', 'published'])).default([
+          'draft',
+          'published'
+        ])
+      }),
+      annotations: { readOnlyHint: true }
+    },
+    async (input) => {
+      try {
+        const result = await dependencies.dpCatalog.searchCandidates(input);
+        return toolResult({ ok: true, ...result });
+      } catch (cause) {
+        return dpToolFailure(cause);
+      }
+    }
+  );
+
+  server.registerTool(
+    'get_metric_status',
+    {
+      description:
+        '按稳定 DP 指标 ID 查询当前 draft/published 状态、最终 code 与目标数据服务目录。',
+      inputSchema: z.object({ metricId: z.string().min(1) }),
+      annotations: { readOnlyHint: true }
+    },
+    async ({ metricId }) => {
+      try {
+        const metric = await dependencies.dpCatalog.getMetric(metricId);
+        return metric
+          ? toolResult({ ok: true, metric })
+          : toolResult(
+              {
+                ok: false,
+                error: {
+                  code: 'DP_METRIC_NOT_FOUND',
+                  message: `DP 指标不存在:${metricId}`
+                }
+              },
+              true
+            );
+      } catch (cause) {
+        return dpToolFailure(cause);
+      }
+    }
+  );
+
+  server.registerTool(
+    'record_metric_gap',
+    {
+      description:
+        '在用户明确确认后，把页面搭建蓝图中的原子指标需求登记到指标需求组，并指定独立的数据开发确认人。',
+      inputSchema: z.object({
+        blueprintId: z.string().min(1),
+        requestId: z.string().min(1),
+        reviewerId: z.string().min(1),
+        userConfirmed: z.literal(true),
+        idempotencyKey: z.string().min(1)
+      })
+    },
+    async (input) => {
+      const result = await dependencies.metricFulfillment.recordMetricGap(
+        input,
+        dependencies.metricFulfillmentContext()
+      );
+      return toolResult(result, !result.ok);
     }
   );
 
@@ -313,6 +403,14 @@ export function createMetricCanvasMcpServer(
   return server;
 }
 
+function dpToolFailure(cause: unknown) {
+  const error =
+    cause instanceof DpCatalogError
+      ? { code: cause.code, message: cause.message }
+      : { code: 'DP_QUERY_FAILED', message: String(cause) };
+  return toolResult({ ok: false, error }, true);
+}
+
 export async function connectInProcessMetricCanvasMcp(
   server: McpServer
 ): Promise<{ client: McpClient; close(): Promise<void> }> {
@@ -386,6 +484,29 @@ export function createPageIdConfirmationMcpClient(
           }
         };
       }
+      if (
+        request.name === 'validate_page' &&
+        isRecord(request.arguments) &&
+        isRecord(request.arguments.document) &&
+        typeof request.arguments.document.id === 'string' &&
+        isPlaceholderPageId(request.arguments.document.id)
+      ) {
+        return {
+          structuredContent: {
+            ok: true,
+            valid: false,
+            errors: [
+              {
+                code: 'PAGE_ID_PLACEHOLDER',
+                path: '/id',
+                message:
+                  '页面 id 必须是可读且唯一的真实候选值；请替换占位符后再次调用 validate_page，校验通过后客户端会发起结构化确认'
+              }
+            ]
+          },
+          isError: false
+        };
+      }
 
       const result = await options.client.callTool(request);
       if (
@@ -424,6 +545,17 @@ export function createPageIdConfirmationMcpClient(
       };
     }
   };
+}
+
+function isPlaceholderPageId(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return (
+    /^__.*__$/u.test(normalized) ||
+    /^<.*>$/u.test(normalized) ||
+    ['pending', 'todo', 'tbd', 'placeholder', '待确认', '待定'].includes(
+      normalized
+    )
+  );
 }
 
 function toolResult(value: object, isError = false) {

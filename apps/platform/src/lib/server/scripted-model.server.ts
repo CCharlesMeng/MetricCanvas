@@ -359,7 +359,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   ];
 
   if (kinds.includes('metric')) {
-    dataSources['summary-gmv'] = metricSource('gmv', '成交总额', 'number-grouped');
+    dataSources['summary-gmv'] = metricSource('gmv');
     components.push({
       id: 'gmv-card',
       type: 'metricCard',
@@ -371,11 +371,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
       }
     });
     if (needsOrderCount(intent)) {
-      dataSources['summary-orders'] = metricSource(
-        'order-count',
-        '订单量',
-        'number-grouped'
-      );
+      dataSources['summary-orders'] = metricSource('order-count');
       components.push({
         id: 'order-count-card',
         type: 'metricCard',
@@ -392,7 +388,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   if (kinds.includes('bar')) {
     const dimension = /渠道/u.test(intent) && !/区域/u.test(intent) ? 'channel' : 'region';
     const label = dimension === 'channel' ? '渠道' : '区域';
-    dataSources['category-comparison'] = dimensionMetricSource(dimension, label, ['gmv']);
+    dataSources['category-comparison'] = dimensionMetricSource(dimension, ['gmv']);
     components.push({
       id: 'category-comparison-chart',
       type: 'barChart',
@@ -408,7 +404,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   }
 
   if (kinds.includes('line')) {
-    dataSources.trend = dimensionMetricSource('mtime', '统计时间', ['gmv']);
+    dataSources.trend = dimensionMetricSource('mtime', ['gmv']);
     components.push({
       id: 'gmv-trend-chart',
       type: 'lineChart',
@@ -427,7 +423,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   if (kinds.includes('pie')) {
     const dimension = /区域/u.test(intent) && !/渠道/u.test(intent) ? 'region' : 'channel';
     const label = dimension === 'region' ? '区域' : '渠道';
-    dataSources.share = dimensionMetricSource(dimension, label, ['gmv']);
+    dataSources.share = dimensionMetricSource(dimension, ['gmv']);
     components.push({
       id: 'gmv-share-chart',
       type: 'pieChart',
@@ -444,7 +440,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   }
 
   if (kinds.includes('ranking')) {
-    dataSources.ranking = dimensionMetricSource('region', '区域', ['gmv'], {
+    dataSources.ranking = dimensionMetricSource('region', ['gmv'], {
       orderBy: [{ field: 'gmv', direction: 'desc' }],
       limit: 5
     });
@@ -462,7 +458,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   }
 
   if (kinds.includes('table')) {
-    dataSources.details = dimensionMetricSource('region', '区域', ['gmv', 'order-count']);
+    dataSources.details = dimensionMetricSource('region', ['gmv', 'order-count']);
     components.push({
       id: 'region-detail-table',
       type: 'table',
@@ -481,7 +477,7 @@ function pageDocumentFor(pageId: string, intent: string): Record<string, unknown
   }
 
   return {
-    schemaVersion: '1.0',
+    schemaVersion: '2.0',
     id: pageId,
     meta: { description: `根据用户诉求生成:${intent}` },
     dataSources,
@@ -520,9 +516,8 @@ function needsOrderCount(intent: string): boolean {
   return /(订单|经营概览|经营总览|综合看板|经营看板|销售概览)/u.test(intent);
 }
 
-function metricSource(code: string, label: string, format: string): Record<string, unknown> {
+function metricSource(code: string): Record<string, unknown> {
   return {
-    fields: { [code]: { type: 'number', role: 'metric', label, format } },
     source: {
       type: 'query',
       query: { metrics: [code], aggregation: 'sum' }
@@ -532,28 +527,10 @@ function metricSource(code: string, label: string, format: string): Record<strin
 
 function dimensionMetricSource(
   dimension: string,
-  dimensionLabel: string,
   metrics: string[],
   additions: Record<string, unknown> = {}
 ): Record<string, unknown> {
-  const fields: Record<string, unknown> = {
-    [dimension]: {
-      type: dimension === 'mtime' ? 'date' : 'string',
-      role: 'dimension',
-      label: dimensionLabel,
-      ...(dimension === 'mtime' ? { format: 'date' } : {})
-    }
-  };
-  for (const metric of metrics) {
-    fields[metric] = {
-      type: 'number',
-      role: 'metric',
-      label: metric === 'gmv' ? '成交总额' : '订单量',
-      format: 'number-grouped'
-    };
-  }
   return {
-    fields,
     source: {
       type: 'query',
       query: {

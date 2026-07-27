@@ -16,7 +16,7 @@ const catalog: CatalogSnapshot = {
 };
 
 const page: Page = {
-  schemaVersion: '1.0',
+  schemaVersion: '2.0',
   id: 'regional-overview',
   dataSources: {},
   sections: [

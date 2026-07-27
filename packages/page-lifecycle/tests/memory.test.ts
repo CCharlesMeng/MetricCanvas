@@ -20,11 +20,10 @@ const catalog: CatalogSnapshot = {
 
 function page(title = '成交总额'): Page {
   return {
-    schemaVersion: '1.0',
+    schemaVersion: '2.0',
     id: 'offline-overview',
     dataSources: {
       sales: {
-        fields: { gmv: { type: 'number', role: 'metric' } },
         source: {
           type: 'query',
           query: { metrics: ['gmv'], aggregation: 'sum' }

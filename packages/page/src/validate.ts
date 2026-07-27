@@ -1,6 +1,10 @@
 import { Ajv, type ErrorObject } from 'ajv';
 import type { CatalogSnapshot } from './catalog';
-import type { DataSource } from './data-source';
+import {
+  isInlineDataSource,
+  resolveDataSourceFields,
+  type DataSource
+} from './data-source';
 import type { TypedError } from './errors';
 import type { FieldBinding, FieldDefinition, FieldValue } from './field';
 import { validateCalendarTimeRange } from './filter';
@@ -31,10 +35,13 @@ export function validate(document: unknown, catalog?: CatalogSnapshot): TypedErr
   }
 
   const page = document as Page;
-  return [...invariantErrors(page), ...(catalog ? semanticErrors(page, catalog) : [])];
+  return [
+    ...invariantErrors(page, catalog),
+    ...(catalog ? semanticErrors(page, catalog) : [])
+  ];
 }
 
-function invariantErrors(page: Page): TypedError[] {
+function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
   const errors: TypedError[] = [];
   const filters = page.filters ?? [];
   const filterIds = new Set<string>();
@@ -65,10 +72,34 @@ function invariantErrors(page: Page): TypedError[] {
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
-    if (dataSource.source.type === 'inline') {
+    if (isInlineDataSource(dataSource)) {
       errors.push(...inlineRowErrors(dataSource, path));
     } else {
-      errors.push(...queryContractErrors(dataSource, path, filterIds, timeRangeFilterIds));
+      const hasLegacyFields = 'fields' in dataSource && dataSource.fields !== undefined;
+      if (page.schemaVersion === '1.0' && !hasLegacyFields) {
+        errors.push(
+          schemaError(
+            `${path}/fields`,
+            'schemaVersion 1.0 的 query 页面数据源必须声明完整 fields；请执行 pnpm migrate 升级'
+          )
+        );
+      }
+      if (page.schemaVersion === '2.0' && hasLegacyFields) {
+        errors.push(
+          schemaError(
+            `${path}/fields`,
+            'schemaVersion 2.0 的 query 页面数据源不再声明完整 fields；请改用 fieldOverrides'
+          )
+        );
+      }
+      errors.push(
+        ...queryContractErrors(
+          dataSource,
+          path,
+          filterIds,
+          timeRangeFilterIds
+        )
+      );
     }
   }
 
@@ -88,7 +119,7 @@ function invariantErrors(page: Page): TypedError[] {
         errors.push(schemaError(`${path}/id`, `component id 重复:${component.id}`));
       }
       componentIds.add(component.id);
-      errors.push(...componentErrors(page, component, path, filterIds));
+      errors.push(...componentErrors(page, component, path, filterIds, catalog));
     });
   });
 
@@ -105,7 +136,7 @@ function invariantErrors(page: Page): TypedError[] {
 }
 
 function inlineRowErrors(dataSource: DataSource, sourcePath: string): TypedError[] {
-  if (dataSource.source.type !== 'inline') return [];
+  if (!isInlineDataSource(dataSource)) return [];
   const errors: TypedError[] = [];
   const fields = dataSource.fields;
 
@@ -146,24 +177,36 @@ function queryContractErrors(
   const metrics = new Set(query.metrics);
   const outputFields = new Set([...dimensions, ...metrics]);
 
-  for (const [fieldName, field] of Object.entries(dataSource.fields)) {
-    const fieldPath = `${sourcePath}/fields/${escapePointer(fieldName)}`;
-    if (!outputFields.has(fieldName)) {
-      errors.push(
-        schemaError(fieldPath, `字段 ${fieldName} 不在 query 的 dimensions/metrics 输出中`)
-      );
-    } else if (dimensions.has(fieldName) && field.role !== 'dimension') {
-      errors.push(schemaError(`${fieldPath}/role`, `查询维度 ${fieldName} 的 role 必须为 dimension`));
-    } else if (metrics.has(fieldName) && field.role !== 'metric') {
-      errors.push(schemaError(`${fieldPath}/role`, `查询指标 ${fieldName} 的 role 必须为 metric`));
+  if ('fields' in dataSource && dataSource.fields !== undefined) {
+    for (const [fieldName, field] of Object.entries(dataSource.fields)) {
+      const fieldPath = `${sourcePath}/fields/${escapePointer(fieldName)}`;
+      if (!outputFields.has(fieldName)) {
+        errors.push(
+          schemaError(fieldPath, `字段 ${fieldName} 不在 query 的 dimensions/metrics 输出中`)
+        );
+      } else if (dimensions.has(fieldName) && field.role !== 'dimension') {
+        errors.push(schemaError(`${fieldPath}/role`, `查询维度 ${fieldName} 的 role 必须为 dimension`));
+      } else if (metrics.has(fieldName) && field.role !== 'metric') {
+        errors.push(schemaError(`${fieldPath}/role`, `查询指标 ${fieldName} 的 role 必须为 metric`));
+      }
+    }
+    for (const fieldName of outputFields) {
+      if (!Object.hasOwn(dataSource.fields, fieldName)) {
+        errors.push(
+          schemaError(
+            `${sourcePath}/fields/${escapePointer(fieldName)}`,
+            `query 输出字段 ${fieldName} 缺少字段契约`
+          )
+        );
+      }
     }
   }
-  for (const fieldName of outputFields) {
-    if (!Object.hasOwn(dataSource.fields, fieldName)) {
+  for (const fieldName of Object.keys(dataSource.fieldOverrides ?? {})) {
+    if (!outputFields.has(fieldName)) {
       errors.push(
         schemaError(
-          `${sourcePath}/fields/${escapePointer(fieldName)}`,
-          `query 输出字段 ${fieldName} 缺少字段契约`
+          `${sourcePath}/fieldOverrides/${escapePointer(fieldName)}`,
+          `展示覆盖字段 ${fieldName} 不在 query 的 dimensions/metrics 输出中`
         )
       );
     }
@@ -215,7 +258,8 @@ function componentErrors(
   page: Page,
   component: Component,
   componentPath: string,
-  filterIds: ReadonlySet<string>
+  filterIds: ReadonlySet<string>,
+  catalog?: CatalogSnapshot
 ): TypedError[] {
   const errors: TypedError[] = [];
   for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
@@ -234,7 +278,7 @@ function componentErrors(
     path: string,
     expectedRole?: FieldDefinition['role']
   ) => {
-    const resolved = resolveBinding(page, component, binding);
+    const resolved = resolveBinding(page, component, binding, catalog);
     if ('error' in resolved) {
       errors.push(schemaError(path, resolved.error));
       return;
@@ -414,7 +458,8 @@ function actionErrors(
 function resolveBinding(
   page: Page,
   component: Component,
-  binding: FieldBinding
+  binding: FieldBinding,
+  catalog?: CatalogSnapshot
 ):
   | { field: FieldDefinition; fieldName: string }
   | { error: string } {
@@ -428,7 +473,7 @@ function resolveBinding(
   if (source === undefined) {
     return { error: `字段绑定的数据槽 ${slot} 指向未知数据源:${sourceId}` };
   }
-  const field = source.fields[fieldName];
+  const field = resolveDataSourceFields(source, catalog)[fieldName];
   if (field === undefined) {
     return { error: `字段 ${fieldName} 不在数据槽 ${slot} 的数据源 ${sourceId} 中` };
   }

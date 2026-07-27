@@ -5,7 +5,7 @@
  */
 export interface CatalogSnapshot {
   /** 快照格式大版本,独立于页面文档的 schemaVersion 演进 */
-  formatVersion: '1.0';
+  formatVersion: '1.0' | '2.0';
   /** 同步时刻(ISO 8601),由 sync-catalog 写入 */
   syncedAt: string;
   /** 快照来源说明(数据服务地址或"手工构造"),供评审辨识 */
@@ -24,6 +24,8 @@ export interface CatalogMetric {
   name: string;
   /** 指标值类型,mock 适配器按此造数:integer 整数 / decimal 两位小数 / percent 0~100 */
   valueType: 'integer' | 'decimal' | 'percent';
+  /** 跨页面一致的默认展示格式；页面可用 fieldOverrides 局部覆盖。 */
+  format?: ValueFormatPreset;
   /** 可用维度 code 白名单 */
   availableDimensions: string[];
   /** 可用聚合方式白名单(如 sum/avg/count) */
@@ -34,7 +36,12 @@ export interface CatalogMetric {
 export interface CatalogDimension {
   code: string;
   name: string;
+  /** query 输出字段的标量类型，供统一运行时与渲染通道解析字段契约。 */
+  valueType?: FieldType;
+  /** 跨页面一致的默认展示格式；页面可用 fieldOverrides 局部覆盖。 */
+  format?: ValueFormatPreset;
   cardinality: number;
   /** 样例枚举值(可选);mock 优先使用,不足 cardinality 时按 code 补造 */
   sampleValues?: string[];
 }
+import type { FieldType, ValueFormatPreset } from './field';

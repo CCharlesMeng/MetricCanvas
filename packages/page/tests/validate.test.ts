@@ -4,6 +4,23 @@ import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
 describe('data source 与 binding 校验', () => {
+  it('1.0/2.0 query 持久化形态不能混用', () => {
+    const compactAsV1: any = structuredClone(queryDashboard);
+    compactAsV1.schemaVersion = '1.0';
+    expect(validate(compactAsV1)).toContainEqual(
+      expect.objectContaining({ path: '/dataSources/sales/fields' })
+    );
+
+    const legacyAsV2: any = structuredClone(queryDashboard);
+    legacyAsV2.dataSources.sales.fields = {
+      region: { type: 'string', role: 'dimension' },
+      gmv: { type: 'number', role: 'metric' }
+    };
+    expect(validate(legacyAsV2)).toContainEqual(
+      expect.objectContaining({ path: '/dataSources/sales/fields' })
+    );
+  });
+
   it('严格校验 source 判别联合与 inline 行字段/类型', () => {
     const sourceUnion: any = structuredClone(inlineReport);
     sourceUnion.dataSources.overview.source.query = { metrics: ['gmv'] };
@@ -27,17 +44,18 @@ describe('data source 与 binding 校验', () => {
     );
   });
 
-  it('query 输出与字段契约必须完整一致，dimension/metric role 不得互换', () => {
+  it('query 从 metrics/dimensions 推导字段角色，并拒绝未知展示覆盖', () => {
     const document: any = structuredClone(queryDashboard);
-    document.dataSources.sales.fields.region.role = 'metric';
-    delete document.dataSources.sales.fields.gmv;
-    document.dataSources.sales.fields.extra = { type: 'number', role: 'metric' };
+    document.dataSources.sales.fieldOverrides = {
+      gmv: { label: 'GMV', format: 'compact-wan-1' },
+      extra: { label: '不存在' }
+    };
+    document.sections[0].components[0].props.actions[0].field = 'gmv';
 
     expect(validate(document).map((error) => error.path)).toEqual(
       expect.arrayContaining([
-        '/dataSources/sales/fields/region/role',
-        '/dataSources/sales/fields/gmv',
-        '/dataSources/sales/fields/extra'
+        '/dataSources/sales/fieldOverrides/extra',
+        '/sections/0/components/0/props/actions/0/field'
       ])
     );
   });
@@ -74,6 +92,10 @@ describe('data source 与 binding 校验', () => {
 
   it('inline 绑定拒绝 filters、actions 与 paged 远程分页', () => {
     const document: any = structuredClone(queryDashboard);
+    document.dataSources.sales.fields = {
+      region: { type: 'string', role: 'dimension' },
+      gmv: { type: 'number', role: 'metric' }
+    };
     document.dataSources.sales.source = {
       type: 'inline',
       rows: [{ region: '华东', gmv: 100 }]

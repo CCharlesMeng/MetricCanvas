@@ -12,18 +12,13 @@ import {
 } from '../src/lib/page-workspace';
 
 const document: Page = {
-  schemaVersion: '1.0',
+  schemaVersion: '2.0',
   id: 'sales-overview',
   dataSources: {
     summary: {
-      fields: { gmv: { type: 'number', role: 'metric', label: '成交总额' } },
       source: { type: 'query', query: { metrics: ['gmv'], aggregation: 'sum' } }
     },
     'by-region': {
-      fields: {
-        region: { type: 'string', role: 'dimension', label: '区域' },
-        gmv: { type: 'number', role: 'metric', label: '成交总额' }
-      },
       source: {
         type: 'query',
         query: {
@@ -65,7 +60,7 @@ const document: Page = {
 };
 
 const catalog: CatalogSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '2.0',
   syncedAt: '2026-07-21T00:00:00.000Z',
   source: 'page-workspace-test',
   metrics: [
@@ -85,8 +80,8 @@ const catalog: CatalogSnapshot = {
     }
   ],
   dimensions: [
-    { code: 'region', name: '区域', cardinality: 4 },
-    { code: 'channel', name: '渠道', cardinality: 3 }
+    { code: 'region', name: '区域', valueType: 'string', cardinality: 4 },
+    { code: 'channel', name: '渠道', valueType: 'string', cardinality: 3 }
   ]
 };
 
@@ -125,14 +120,6 @@ describe('页面搭建工作台的未保存工作副本', () => {
       'region'
     ]);
     expect(inserted.current.dataSources['orders-summary']).toEqual({
-      fields: {
-        'order-count': {
-          type: 'number',
-          role: 'metric',
-          label: '订单量',
-          format: 'number-grouped'
-        }
-      },
       source: {
         type: 'query',
         query: { metrics: ['order-count'], aggregation: 'sum' }
@@ -245,10 +232,6 @@ describe('页面搭建工作台的未保存工作副本', () => {
       expect(inserted).not.toBe(initial);
       expect(inserted.past).toHaveLength(1);
       expect(inserted.current.dataSources[dataSourceId]).toMatchObject({
-        fields: {
-          region: { role: 'dimension', label: '区域' },
-          'order-count': { role: 'metric', label: '订单量' }
-        },
         source: {
           type: 'query',
           query: {
@@ -317,7 +300,7 @@ describe('页面搭建工作台的未保存工作副本', () => {
       ...catalog,
       dimensions: [
         ...catalog.dimensions,
-        { code: 'product', name: '产品', cardinality: 20 }
+        { code: 'product', name: '产品', valueType: 'string', cardinality: 20 }
       ]
     };
     expect(
@@ -727,15 +710,6 @@ describe('页面搭建工作台的未保存工作副本', () => {
       'gmv'
     ]);
     expect(edited.current.dataSources['by-region']).toEqual({
-      fields: {
-        channel: { type: 'string', role: 'dimension', label: '渠道' },
-        'order-count': {
-          type: 'number',
-          role: 'metric',
-          label: '订单量',
-          format: 'number-grouped'
-        }
-      },
       source: {
         type: 'query',
         query: {

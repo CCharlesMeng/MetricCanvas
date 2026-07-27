@@ -1,25 +1,11 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "region-map",
   "meta": {
     "description": "切片8 演示:地图区域着色/散点叠加、文本带参链接、筛选器树选与搜索形态"
   },
   "dataSources": {
     "map-china": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -36,23 +22,9 @@
             ]
           }
         }
-      }
+    }
     },
     "map-world": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -69,23 +41,9 @@
             ]
           }
         }
-      }
+    }
     },
     "by-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -103,17 +61,9 @@
             ]
           }
         }
-      }
+    }
     },
     "gmv": {
-      "fields": {
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -128,7 +78,7 @@
             ]
           }
         }
-      }
+    }
     }
   },
   "filters": [

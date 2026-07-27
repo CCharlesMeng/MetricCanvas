@@ -4,6 +4,7 @@
   import {
     derivePageCapabilities,
     isChartComponent,
+    resolveDataSourceFields,
     validate,
     type ChartComponent,
     type Component,
@@ -202,7 +203,7 @@
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
-        source?.fields
+        source ? resolveDataSourceFields(source, catalogSnapshot) : undefined
       ).leaves) {
         if (column.filterable?.mode === 'select') {
           filterableFields.add(fieldName(column.field));
@@ -450,12 +451,13 @@
       const snapshot = snapshotsBySlot.get(slot);
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
+      const fields = resolveDataSourceFields(source, catalogSnapshot);
       if (snapshot.status === 'ready') {
-        data[slot] = { snapshot, fields: source.fields };
+        data[slot] = { snapshot, fields };
       } else if (snapshot.status === 'empty') {
         data[slot] = {
           snapshot: { status: 'ready', rows: [], hasMore: false },
-          fields: source.fields
+          fields
         };
       }
     }

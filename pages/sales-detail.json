@@ -1,19 +1,11 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "sales-detail",
   "meta": {
     "description": "承接演示看板的跨页下钻:从 URL 恢复筛选状态,展示区域/渠道明细"
   },
   "dataSources": {
     "gmv": {
-      "fields": {
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -28,17 +20,9 @@
             ]
           }
         }
-      }
+    }
     },
     "order-count": {
-      "fields": {
-        "order-count": {
-          "type": "number",
-          "role": "metric",
-          "label": "订单数（单）",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -53,23 +37,14 @@
             ]
           }
         }
+      },
+    "fieldOverrides": {
+      "order-count": {
+        "label": "订单数（单）"
+      }
       }
     },
     "by-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -86,29 +61,9 @@
             ]
           }
         }
-      }
+    }
     },
     "trend-dual": {
-      "fields": {
-        "mtime": {
-          "type": "date",
-          "role": "dimension",
-          "label": "日期",
-          "format": "date-month-day"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        },
-        "order-count": {
-          "type": "number",
-          "role": "metric",
-          "label": "订单数（单）",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -127,23 +82,17 @@
             ]
           }
         }
+      },
+    "fieldOverrides": {
+      "mtime": {
+        "label": "日期"
+      },
+      "order-count": {
+        "label": "订单数（单）"
+      }
       }
     },
     "by-channel": {
-      "fields": {
-        "channel": {
-          "type": "string",
-          "role": "dimension",
-          "label": "渠道",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -160,35 +109,9 @@
             ]
           }
         }
-      }
+    }
     },
     "detail-table": {
-      "fields": {
-        "mtime": {
-          "type": "date",
-          "role": "dimension",
-          "label": "日期",
-          "format": "date-month-day"
-        },
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "channel": {
-          "type": "string",
-          "role": "dimension",
-          "label": "渠道",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -208,6 +131,11 @@
             ]
           }
         }
+      },
+    "fieldOverrides": {
+      "mtime": {
+        "label": "日期"
+      }
       }
     }
   },

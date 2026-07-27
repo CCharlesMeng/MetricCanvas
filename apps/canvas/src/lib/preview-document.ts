@@ -28,7 +28,7 @@ export function parsePreviewDocument(
 }
 
 export const DEFAULT_PREVIEW_PAGE = {
-  schemaVersion: '1.0',
+  schemaVersion: '2.0',
   id: 'preview-inline-report',
   meta: {
     description: '只使用内联数据的即时预览示例'

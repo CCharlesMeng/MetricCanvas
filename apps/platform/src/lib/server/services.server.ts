@@ -17,6 +17,17 @@ import {
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
 import {
+  createHttpDpCatalog,
+  createMemoryDpCatalog,
+  type DpCatalog,
+  type DpMetric
+} from '@metriccanvas/dp-catalog';
+import {
+  createMemoryMetricFulfillment,
+  createPostgresMetricFulfillment,
+  type MetricFulfillment
+} from '@metriccanvas/metric-fulfillment';
+import {
   connectInProcessMetricCanvasMcp,
   createPageIdConfirmationMcpClient,
   createMetricCanvasMcpServer
@@ -28,6 +39,11 @@ import {
 } from '@metriccanvas/template-library';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
+import {
+  agentModelDescriptor,
+  resolveAgentModelConfig,
+  type AgentModelDescriptor
+} from './agent-model-config.server';
 import {
   seedPublishedPages,
   seedPublishedTemplates,
@@ -49,6 +65,9 @@ export interface PlatformServices {
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
   catalog: CatalogDiscovery;
+  dpCatalog: DpCatalog;
+  metricFulfillment: MetricFulfillment;
+  agentModel: AgentModelDescriptor;
   createRunner(input: {
     confirmedPageIds: string[];
     runId: string;
@@ -57,14 +76,16 @@ export interface PlatformServices {
   runtimeOrigin: string;
 }
 
-let servicesPromise: Promise<PlatformServices> | undefined;
+const serviceCache = globalThis as typeof globalThis & {
+  __metricCanvasPlatformServicesPromise?: Promise<PlatformServices>;
+};
 
 export function getPlatformServices(): Promise<PlatformServices> {
-  servicesPromise ??= createServices().catch((cause) => {
-    servicesPromise = undefined;
+  serviceCache.__metricCanvasPlatformServicesPromise ??= createServices().catch((cause) => {
+    serviceCache.__metricCanvasPlatformServicesPromise = undefined;
     throw cause;
   });
-  return servicesPromise;
+  return serviceCache.__metricCanvasPlatformServicesPromise;
 }
 
 async function createServices(): Promise<PlatformServices> {
@@ -80,6 +101,16 @@ async function createServices(): Promise<PlatformServices> {
         env.DATA_SERVICE_URL ?? 'http://localhost:18226'
       );
   const catalog = createCatalogDiscovery(catalogProvider);
+  const dpCatalog = offline
+    ? createMemoryDpCatalog(offlineDpMetrics())
+    : createHttpDpCatalog({ baseUrl: env.DP_URL ?? 'http://localhost:18227' });
+  const metricFulfillment = offline
+    ? createMemoryMetricFulfillment({ dpCatalog, catalog })
+    : await createPostgresMetricFulfillment({
+        databaseUrl,
+        dpCatalog,
+        catalog
+      });
   const lifecycleOptions = {
     catalog: catalogProvider,
     urls: {
@@ -112,20 +143,27 @@ async function createServices(): Promise<PlatformServices> {
   }
   const mcpServer = createMetricCanvasMcpServer({
     catalog,
+    dpCatalog,
+    metricFulfillment,
     lifecycle,
     templates,
     context: () => ({ actorId: 'developer-1', clientId: 'workbench', roles: [] }),
+    metricFulfillmentContext: () => ({
+      actorId: 'developer-1',
+      clientId: 'workbench'
+    }),
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
   });
   const mcp = await connectInProcessMetricCanvasMcp(mcpServer);
 
+  const agentModelConfig = resolveAgentModelConfig(env);
   const deepSeekModel =
-    env.AGENT_MODEL_PROVIDER === 'deepseek'
+    agentModelConfig.provider === 'deepseek'
       ? createDeepSeekModelProvider({
-          apiKey: requiredSecret('DEEPSEEK_API_KEY', env.DEEPSEEK_API_KEY),
-          model: env.DEEPSEEK_MODEL ?? 'deepseek-v4-pro',
-          baseUrl: env.DEEPSEEK_BASE_URL ?? 'https://api.deepseek.com'
+          apiKey: agentModelConfig.apiKey,
+          model: agentModelConfig.model,
+          baseUrl: agentModelConfig.baseUrl
         })
       : null;
 
@@ -133,6 +171,9 @@ async function createServices(): Promise<PlatformServices> {
     lifecycle,
     templates,
     catalog,
+    dpCatalog,
+    metricFulfillment,
+    agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle' }) {
       const client = mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
       return createAgentRunner({
@@ -141,11 +182,40 @@ async function createServices(): Promise<PlatformServices> {
           client,
           confirmedPageIds
         }),
-        maxModelTurns: 12
+        maxModelTurns: 12,
+        toolCallLimits:
+          mode === 'authoring'
+            ? {
+                search_catalog: 3,
+                search_metric_candidates: 3,
+                get_metric_status: 4,
+                search_templates: 2,
+                list_pages: 2,
+                get_page: 3,
+                validate_page: 4
+              }
+            : undefined
       });
     },
     runtimeOrigin
   };
+}
+
+function offlineDpMetrics(): DpMetric[] {
+  return [
+    {
+      id: 'dp-metric-tokens-consumption',
+      code: null,
+      name: 'Tokens 消耗量',
+      definition: '统计模型推理产生的输入与输出 Tokens 总量。',
+      dimensions: ['office', 'model'],
+      aggregations: ['sum', 'day', 'month'],
+      status: 'draft',
+      catalog: null,
+      createdAt: '2026-07-23T00:00:00.000Z',
+      updatedAt: '2026-07-23T00:00:00.000Z'
+    }
+  ];
 }
 
 async function createOfflinePageLifecycle(
@@ -166,17 +236,62 @@ function createBundledCatalogProvider(): CatalogProvider {
 }
 
 function bundledCatalogSnapshot(): CatalogSnapshot {
-  if (bundledCatalog.formatVersion !== '1.0') {
+  if (bundledCatalog.formatVersion !== '2.0') {
     throw new Error(`不支持的内置元数据快照版本:${bundledCatalog.formatVersion}`);
   }
   return {
     ...bundledCatalog,
-    formatVersion: bundledCatalog.formatVersion,
+    formatVersion: '2.0',
     metrics: bundledCatalog.metrics.map((metric) => ({
       ...metric,
-      valueType: catalogValueType(metric.valueType)
+      valueType: catalogValueType(metric.valueType),
+      format: catalogFormat(metric.format)
+    })),
+    dimensions: bundledCatalog.dimensions.map((dimension) => ({
+      ...dimension,
+      valueType: catalogDimensionValueType(dimension.valueType),
+      format: catalogFormat(dimension.format)
     }))
   };
+}
+
+function catalogDimensionValueType(
+  value: string
+): CatalogSnapshot['dimensions'][number]['valueType'] {
+  if (
+    value === 'string' ||
+    value === 'number' ||
+    value === 'boolean' ||
+    value === 'date' ||
+    value === 'datetime'
+  ) {
+    return value;
+  }
+  throw new Error(`不支持的内置维度值类型:${value}`);
+}
+
+function catalogFormat(
+  value: string
+): NonNullable<CatalogSnapshot['metrics'][number]['format']> {
+  const formats = [
+    'number',
+    'text',
+    'date',
+    'number-1',
+    'number-2',
+    'number-grouped',
+    'compact-wan-0',
+    'compact-wan-1',
+    'compact-yi-1',
+    'percent-0',
+    'percent-1',
+    'percent-2',
+    'percent-2-signed',
+    'date-month-day'
+  ] as const;
+  const format = formats.find((candidate) => candidate === value);
+  if (format) return format;
+  throw new Error(`不支持的内置展示格式:${value}`);
 }
 
 function catalogValueType(value: string): CatalogSnapshot['metrics'][number]['valueType'] {
@@ -206,9 +321,4 @@ function createDataServiceSimCatalogProvider(baseUrl: string): CatalogProvider {
       }
     }
   };
-}
-
-function requiredSecret(name: string, value: string | undefined): string {
-  if (value) return value;
-  throw new Error(`${name} 未在服务端环境配置`);
 }

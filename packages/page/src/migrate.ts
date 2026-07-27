@@ -12,10 +12,25 @@ export interface Migration {
 }
 
 /**
- * 生产注册表:DSL 尚只有 1.0,没有历史版本可迁——出 2.0 时在此登记 '1.0' → '2.0'。
- * 迁移逻辑与版本策略(version.ts)同步维护。
+ * 生产注册表。1.0 → 2.0 将 query 的完整 fields 收敛为展示覆盖；
+ * inline fields 是自描述数据行所必需，保持不变。
  */
-export const migrations: MigrationRegistry = {};
+export const migrations: MigrationRegistry = {
+  '1.0': {
+    to: '2.0',
+    apply(document) {
+      const dataSources = isRecord(document.dataSources)
+        ? Object.fromEntries(
+            Object.entries(document.dataSources).map(([id, value]) => [
+              id,
+              migrateDataSource(value)
+            ])
+          )
+        : document.dataSources;
+      return { ...document, dataSources };
+    }
+  }
+};
 
 export type MigrateResult =
   | { outcome: 'current' }
@@ -48,4 +63,31 @@ export function migrateDocument(
     version = migration.to;
   }
   return { outcome: 'migrated', document: migrated, steps };
+}
+
+function migrateDataSource(value: unknown): unknown {
+  if (!isRecord(value) || !isRecord(value.source) || value.source.type !== 'query') {
+    return value;
+  }
+  if (!isRecord(value.fields)) return value;
+
+  const fieldOverrides = Object.fromEntries(
+    Object.entries(value.fields).flatMap(([field, definition]) => {
+      if (!isRecord(definition)) return [];
+      const override = {
+        ...(typeof definition.label === 'string' ? { label: definition.label } : {}),
+        ...(typeof definition.format === 'string' ? { format: definition.format } : {})
+      };
+      return Object.keys(override).length > 0 ? [[field, override] as const] : [];
+    })
+  );
+  const { fields: _fields, ...rest } = value;
+  return {
+    ...rest,
+    ...(Object.keys(fieldOverrides).length > 0 ? { fieldOverrides } : {})
+  };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }

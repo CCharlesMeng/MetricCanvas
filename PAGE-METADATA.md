@@ -1,6 +1,6 @@
 # 看板页面元数据描述
 
-> 当前可执行基线：领域 DSL `schemaVersion: "1.0"`
+> 当前可执行基线：领域 DSL `schemaVersion: "2.0"`；统一运行时兼容 N-1 `1.0`
 
 本文描述统一运行时直接消费的**看板页面**文档，并用三个递进维度说明从固定内容到动态联动的元数据如何声明。
 
@@ -19,7 +19,7 @@
 
 ```jsonc
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "page-id",
   "meta": {
     "description": "资产说明，不参与渲染"
@@ -32,10 +32,10 @@
 
 | 字段 | 必填 | 职责 |
 | --- | --- | --- |
-| `schemaVersion` | 是 | 页面文档契约版本，当前只支持 `"1.0"` |
+| `schemaVersion` | 是 | 页面文档契约版本，当前为 `"2.0"`，兼容 N-1 `"1.0"` |
 | `id` | 是 | 看板页面的稳定身份；保存到 `pages/` 时文件名必须为 `<id>.json` |
 | `meta` | 否 | 页面资产说明，当前仅支持 `description`，不参与渲染 |
-| `dataSources` | 是 | 命名**页面数据源**；每项包含字段输出契约与 `inline` / `query` 取数声明 |
+| `dataSources` | 是 | 命名**页面数据源**；inline 完整声明字段契约，query 从结构化查询与元数据快照解析字段契约 |
 | `filters` | 否 | 声明页面级**筛选状态**；仅有 `query` 页面数据源时才有数据语义 |
 | `sections` | 是 | 按顺序组织的内容分区；每个分区是固定 12 列自动流网格 |
 
@@ -43,7 +43,7 @@
 
 ## 2. 页面数据源与字段契约
 
-页面数据源是组件之前的数据边界：
+页面数据源是组件之前的数据边界。inline 来源在页面中完整声明字段契约：
 
 ```json
 {
@@ -62,9 +62,9 @@
 }
 ```
 
-### 2.1 `fields`
+### 2.1 inline 的 `fields`
 
-每个页面数据源至少声明一个输出字段。
+每个 inline 页面数据源至少声明一个输出字段。
 
 | 字段 | 必填 | 允许值 |
 | --- | --- | --- |
@@ -73,7 +73,7 @@
 | `label` | 否 | 人类可读标签 |
 | `format` | 否 | `text`、`number`、`number-1`、`number-2`、`number-grouped`、`compact-wan-0`、`compact-wan-1`、`compact-yi-1`、`percent-0`、`percent-1`、`percent-2`、`percent-2-signed`、`date`、`date-month-day` |
 
-字段契约与取数方式解耦：在字段不变的前提下，页面数据源可在 `inline` 和 `query` 之间切换，组件数据槽和字段绑定无需改动。
+query 页面数据源不重复保存这些完整字段定义。统一运行时会把两种来源归一成相同的运行时字段契约，因此组件数据槽和字段绑定不依赖来源形态。
 
 ### 2.2 `source.type: "inline"`
 
@@ -108,7 +108,33 @@
 | `orderBy` | 否 | 基于查询输出字段的静态排序，方向为 `asc` / `desc` |
 | `limit` | 否 | 大于等于 1 的返回行数上限 |
 
-`fields` 必须与 `query.metrics + query.dimensions` 的输出集合精确一致，且指标字段的 `role` 必须是 `metric`，维度字段的 `role` 必须是 `dimension`。指标、维度和聚合能力由元数据快照进一步做语义校验。
+`query.metrics + query.dimensions` 是 query 的完整输出集合。指标、维度和聚合能力由元数据快照做语义校验。
+
+schemaVersion 2.0 中，query 的完整字段契约不再持久化在页面文档中：
+
+- `role` 由 `query.metrics` / `query.dimensions` 推导。
+- 标量类型、默认标签和默认格式来自元数据快照。
+- 页面只有确实需要改变默认展示时才声明 `fieldOverrides`。
+
+```json
+{
+  "fieldOverrides": {
+    "gmv": {
+      "label": "GMV",
+      "format": "compact-wan-1"
+    }
+  },
+  "source": {
+    "type": "query",
+    "query": {
+      "metrics": ["gmv"],
+      "dimensions": ["region"]
+    }
+  }
+}
+```
+
+`fieldOverrides` 只能引用 query 输出字段，并且只允许覆盖 `label` / `format`；字段角色和类型仍由数据服务治理。1.0 query 中的完整 `fields` 仅为 N-1 兼容形态，可用 `pnpm migrate` 升级。
 
 ## 3. 内容分区、组件与数据槽
 
@@ -162,7 +188,7 @@
 
 ```json
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "static-overview",
   "meta": {
     "description": "固定时点的成交总额报告"
@@ -223,27 +249,13 @@
 
 ```json
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "dynamic-region",
   "meta": {
     "description": "打开页面时动态查询区域成交总额"
   },
   "dataSources": {
     "by-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -302,27 +314,13 @@ query 页面数据源
 
 ```json
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "interactive-region",
   "meta": {
     "description": "点击区域柱条后联动查询所选区域成交总额"
   },
   "dataSources": {
     "by-region": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域",
-          "format": "text"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -333,14 +331,6 @@ query 页面数据源
       }
     },
     "selected-gmv": {
-      "fields": {
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {

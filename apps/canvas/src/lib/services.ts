@@ -1,4 +1,9 @@
-import type { CatalogSnapshot } from '@metriccanvas/page';
+import {
+  isValueFormatPreset,
+  type CatalogSnapshot,
+  type FieldType,
+  type ValueFormatPreset
+} from '@metriccanvas/page';
 import { createDataServiceGateway, createMockGateway } from '@metriccanvas/data-gateway';
 import { createStaticPageRepository } from './page-repository';
 import { createPlatformPageRepository } from './platform-page-repository';
@@ -9,7 +14,7 @@ export const pageRepository = import.meta.env.VITE_PLATFORM_URL
   : createStaticPageRepository();
 
 function catalogFormatVersion(value: string): CatalogSnapshot['formatVersion'] {
-  if (value !== '1.0') throw new Error(`不支持的元数据快照版本:${value}`);
+  if (value !== '2.0') throw new Error(`不支持的元数据快照版本:${value}`);
   return value;
 }
 
@@ -20,13 +25,37 @@ function catalogValueType(
   throw new Error(`不支持的指标值类型:${value}`);
 }
 
+function catalogFieldType(value: string): FieldType {
+  if (
+    value === 'string' ||
+    value === 'number' ||
+    value === 'boolean' ||
+    value === 'date' ||
+    value === 'datetime'
+  ) {
+    return value;
+  }
+  throw new Error(`不支持的维度值类型:${value}`);
+}
+
+function catalogFormat(value: string | undefined): ValueFormatPreset | undefined {
+  if (value === undefined || isValueFormatPreset(value)) return value;
+  throw new Error(`不支持的字段格式:${value}`);
+}
+
 /** JSON 导入经判别字段收窄后再导出,避免把整份元数据快照直接断言成领域类型。 */
 export const catalogSnapshot = {
   ...snapshot,
   formatVersion: catalogFormatVersion(snapshot.formatVersion),
   metrics: snapshot.metrics.map((metric) => ({
     ...metric,
-    valueType: catalogValueType(metric.valueType)
+    valueType: catalogValueType(metric.valueType),
+    format: catalogFormat(metric.format)
+  })),
+  dimensions: snapshot.dimensions.map((dimension) => ({
+    ...dimension,
+    valueType: catalogFieldType(dimension.valueType),
+    format: catalogFormat(dimension.format)
   }))
 } satisfies CatalogSnapshot;
 

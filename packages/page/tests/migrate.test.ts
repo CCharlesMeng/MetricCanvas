@@ -20,6 +20,58 @@ const registry: MigrationRegistry = {
 };
 
 describe('migrate:按 schemaVersion 注册表升版', () => {
+  it('生产迁移把 1.0 query fields 收敛为 2.0 fieldOverrides，inline fields 不变', () => {
+    const result = migrateDocument({
+      schemaVersion: '1.0',
+      id: 'sales',
+      dataSources: {
+        live: {
+          fields: {
+            region: { type: 'string', role: 'dimension', label: '区域' },
+            gmv: {
+              type: 'number',
+              role: 'metric',
+              label: '成交总额',
+              format: 'number-grouped'
+            }
+          },
+          source: {
+            type: 'query',
+            query: { metrics: ['gmv'], dimensions: ['region'] }
+          }
+        },
+        fixed: {
+          fields: { target: { type: 'number', role: 'metric' } },
+          source: { type: 'inline', rows: [{ target: 100 }] }
+        }
+      },
+      sections: []
+    });
+
+    expect(result).toMatchObject({
+      outcome: 'migrated',
+      steps: ['1.0 → 2.0'],
+      document: {
+        schemaVersion: '2.0',
+        dataSources: {
+          live: {
+            fieldOverrides: {
+              region: { label: '区域' },
+              gmv: { label: '成交总额', format: 'number-grouped' }
+            },
+            source: { type: 'query' }
+          },
+          fixed: {
+            fields: { target: { type: 'number', role: 'metric' } },
+            source: { type: 'inline' }
+          }
+        }
+      }
+    });
+    if (result.outcome !== 'migrated') throw new Error('unreachable');
+    expect(result.document.dataSources).not.toHaveProperty('live.fields');
+  });
+
   it('按迁移链升至当前版本并写回 schemaVersion', () => {
     const result = migrateDocument(
       { schemaVersion: '0.8', id: 'demo', name: '旧标题' },

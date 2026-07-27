@@ -1,24 +1,8 @@
+import { valueFormatPresets } from './field';
 import { supportedVersions, versionPolicy } from './version';
 
 const idPattern = '^[a-z0-9][a-z0-9-]*$';
 const fieldPattern = '^[A-Za-z_][A-Za-z0-9_-]*$';
-const formatPresets = [
-  'text',
-  'number',
-  'number-1',
-  'number-2',
-  'number-grouped',
-  'compact-wan-0',
-  'compact-wan-1',
-  'compact-yi-1',
-  'percent-0',
-  'percent-1',
-  'percent-2',
-  'percent-2-signed',
-  'date',
-  'date-month-day'
-] as const;
-
 const componentId = { type: 'string', pattern: idPattern } as const;
 const componentLayout = { $ref: '#/definitions/componentLayout' } as const;
 const mainData = { $ref: '#/definitions/mainData' } as const;
@@ -78,26 +62,60 @@ export const pageSchema = {
         type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
         role: { type: 'string', enum: ['dimension', 'metric'] },
         label: { type: 'string', minLength: 1 },
-        format: { type: 'string', enum: formatPresets }
+        format: { type: 'string', enum: valueFormatPresets }
       }
     },
     dataSource: {
+      oneOf: [
+        { $ref: '#/definitions/inlineDataSource' },
+        { $ref: '#/definitions/legacyQueryDataSource' },
+        { $ref: '#/definitions/queryDataSource' }
+      ]
+    },
+    fields: {
+      type: 'object',
+      minProperties: 1,
+      propertyNames: { pattern: fieldPattern },
+      additionalProperties: { $ref: '#/definitions/field' }
+    },
+    fieldOverrides: {
+      type: 'object',
+      propertyNames: { pattern: fieldPattern },
+      additionalProperties: { $ref: '#/definitions/fieldOverride' }
+    },
+    fieldOverride: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        label: { type: 'string', minLength: 1 },
+        format: { type: 'string', enum: valueFormatPresets }
+      }
+    },
+    inlineDataSource: {
       type: 'object',
       required: ['fields', 'source'],
       additionalProperties: false,
       properties: {
-        fields: {
-          type: 'object',
-          minProperties: 1,
-          propertyNames: { pattern: fieldPattern },
-          additionalProperties: { $ref: '#/definitions/field' }
-        },
-        source: {
-          oneOf: [
-            { $ref: '#/definitions/inlineSource' },
-            { $ref: '#/definitions/querySource' }
-          ]
-        }
+        fields: { $ref: '#/definitions/fields' },
+        source: { $ref: '#/definitions/inlineSource' }
+      }
+    },
+    legacyQueryDataSource: {
+      type: 'object',
+      required: ['fields', 'source'],
+      additionalProperties: false,
+      properties: {
+        fields: { $ref: '#/definitions/fields' },
+        source: { $ref: '#/definitions/querySource' }
+      }
+    },
+    queryDataSource: {
+      type: 'object',
+      required: ['source'],
+      additionalProperties: false,
+      properties: {
+        fieldOverrides: { $ref: '#/definitions/fieldOverrides' },
+        source: { $ref: '#/definitions/querySource' }
       }
     },
     inlineSource: {

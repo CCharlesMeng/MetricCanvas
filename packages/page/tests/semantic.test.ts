@@ -11,10 +11,6 @@ describe('query data source 目录语义校验', () => {
 
     const unknownMetric: any = structuredClone(queryDashboard);
     unknownMetric.dataSources.sales.source.query.metrics.push('cash-flow');
-    unknownMetric.dataSources.sales.fields['cash-flow'] = {
-      type: 'number',
-      role: 'metric'
-    };
     expect(validate(unknownMetric, catalog)).toContainEqual(
       expect.objectContaining({
         type: 'METRIC_GAP',
@@ -24,11 +20,6 @@ describe('query data source 目录语义校验', () => {
 
     const unknownDimension: any = structuredClone(queryDashboard);
     unknownDimension.dataSources.sales.source.query.dimensions = ['unknown-dimension'];
-    delete unknownDimension.dataSources.sales.fields.region;
-    unknownDimension.dataSources.sales.fields['unknown-dimension'] = {
-      type: 'string',
-      role: 'dimension'
-    };
     expect(validate(unknownDimension, catalog)).toContainEqual(
       expect.objectContaining({
         type: 'SCHEMA_ERROR',
@@ -49,11 +40,6 @@ describe('query data source 目录语义校验', () => {
   it('不传 catalog 时不猜测供给侧语义', () => {
     const document: any = structuredClone(queryDashboard);
     document.dataSources.sales.source.query.metrics = ['cash-flow'];
-    delete document.dataSources.sales.fields.gmv;
-    document.dataSources.sales.fields['cash-flow'] = {
-      type: 'number',
-      role: 'metric'
-    };
     document.sections[0].components[0].props.columns[1].field = 'cash-flow';
     expect(validate(document)).toEqual([]);
   });

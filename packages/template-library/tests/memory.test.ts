@@ -12,7 +12,7 @@ const catalog: CatalogSnapshot = {
 };
 
 const sourcePage: Page = {
-  schemaVersion: '1.0',
+  schemaVersion: '2.0',
   id: 'sales-overview',
   dataSources: {
     content: {

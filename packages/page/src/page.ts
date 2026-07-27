@@ -3,7 +3,7 @@ import type { FieldBinding } from './field';
 import type { FilterDeclaration } from './filter';
 
 export interface Page {
-  schemaVersion: '1.0';
+  schemaVersion: '1.0' | '2.0';
   id: string;
   meta?: PageMeta;
   dataSources: DataSources;

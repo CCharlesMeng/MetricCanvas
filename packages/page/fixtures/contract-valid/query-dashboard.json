@@ -1,21 +1,8 @@
 {
-  "schemaVersion": "1.0",
+  "schemaVersion": "2.0",
   "id": "query-dashboard",
   "dataSources": {
     "sales": {
-      "fields": {
-        "region": {
-          "type": "string",
-          "role": "dimension",
-          "label": "区域"
-        },
-        "gmv": {
-          "type": "number",
-          "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
-        }
-      },
       "source": {
         "type": "query",
         "query": {

@@ -81,9 +81,13 @@ describe('sync-catalog 拼装器(services/list + __type 内省 + MetricBaseInfo)
     for (const metric of snapshot.metrics) {
       expect(metric.availableDimensions).toEqual(expectedDimensions);
       expect(metric.availableAggregations).toEqual(['sum', 'avg', 'count']);
+      expect(metric.format).toBe('number-2');
+    }
+    for (const dimension of snapshot.dimensions) {
+      expect(dimension).toMatchObject({ valueType: 'string', format: 'text' });
     }
 
-    expect(snapshot.formatVersion).toBe('1.0');
+    expect(snapshot.formatVersion).toBe('2.0');
     expect(snapshot.syncedAt).toBe('2026-07-20T08:00:00.000Z');
     expect(snapshot.source).toBe(BASE_URL);
   });

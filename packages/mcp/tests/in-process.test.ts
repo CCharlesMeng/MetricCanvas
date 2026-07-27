@@ -4,13 +4,15 @@ import { createCatalogDiscovery } from '@metriccanvas/catalog-discovery';
 import type { PageLifecycle, PageRevision } from '@metriccanvas/page-lifecycle';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 import { createAgentRunner, createScriptedModelProvider } from '@metriccanvas/agent-runner';
+import { createMemoryDpCatalog } from '@metriccanvas/dp-catalog';
+import { createMemoryMetricFulfillment } from '@metriccanvas/metric-fulfillment';
 import {
   connectInProcessMetricCanvasMcp,
   createMetricCanvasMcpServer
 } from '@metriccanvas/mcp';
 
 const snapshot: CatalogSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '2.0',
   syncedAt: '2026-07-20T12:00:00.000Z',
   source: 'data-service-sim',
   metrics: [
@@ -117,6 +119,8 @@ const templates: Pick<TemplateLibrary, 'search'> = {
   search: async () => ({ matches: [] })
 };
 
+const dpCatalog = createMemoryDpCatalog([]);
+
 describe('内置 Agent Runner 的 MCP transport', () => {
   it('通过进程内 MCP 边界发现并调用只读页面管理工具', async () => {
     listPagesQuery = undefined;
@@ -125,9 +129,15 @@ describe('内置 Agent Runner 的 MCP transport', () => {
       catalog: createCatalogDiscovery({
         current: async () => ({ version: 'catalog-v1', snapshot })
       }),
+      metricFulfillment: createMemoryMetricFulfillment(),
       lifecycle: unusedLifecycle,
+      dpCatalog,
       templates,
       context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
+      metricFulfillmentContext: () => ({
+        actorId: 'developer-1',
+        clientId: 'workbench'
+      }),
       previewUrl: () => 'https://runtime.example/preview'
     });
     const connection = await connectInProcessMetricCanvasMcp(server);
@@ -196,9 +206,15 @@ describe('内置 Agent Runner 的 MCP transport', () => {
       catalog: createCatalogDiscovery({
         current: async () => ({ version: 'catalog-v1', snapshot })
       }),
+      metricFulfillment: createMemoryMetricFulfillment(),
       lifecycle: unusedLifecycle,
+      dpCatalog,
       templates,
       context: () => ({ actorId: 'developer-1', clientId: 'workbench' }),
+      metricFulfillmentContext: () => ({
+        actorId: 'developer-1',
+        clientId: 'workbench'
+      }),
       previewUrl: () => 'https://runtime.example/preview'
     });
     const connection = await connectInProcessMetricCanvasMcp(server);

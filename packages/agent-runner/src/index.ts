@@ -82,6 +82,7 @@ export interface AgentRunnerOptions {
   model: ModelProvider;
   mcp: McpClient;
   maxModelTurns?: number;
+  toolCallLimits?: Readonly<Record<string, number>>;
 }
 
 export function createAgentRunner(options: AgentRunnerOptions): AgentRunner {
@@ -91,6 +92,7 @@ export function createAgentRunner(options: AgentRunnerOptions): AgentRunner {
     async *run({ messages: initialMessages, signal }) {
       const messages = structuredClone(initialMessages);
       const tools = await options.mcp.listTools();
+      const toolCallCounts = new Map<string, number>();
 
       for (let turn = 0; turn < maxModelTurns; turn++) {
         throwIfAborted(signal);
@@ -115,22 +117,42 @@ export function createAgentRunner(options: AgentRunnerOptions): AgentRunner {
           yield { type: 'tool_started', call };
 
           let result: McpToolResult;
-          try {
-            result = await options.mcp.callTool({
-              name: call.name,
-              arguments: call.input
-            });
-          } catch (cause) {
+          const limit = options.toolCallLimits?.[call.name];
+          const count = toolCallCounts.get(call.name) ?? 0;
+          if (limit !== undefined && count >= limit) {
             result = {
               isError: true,
               structuredContent: {
                 ok: false,
                 error: {
-                  code: 'MCP_CALL_FAILED',
-                  message: cause instanceof Error ? cause.message : String(cause)
+                  code: 'TOOL_CALL_LIMIT_EXCEEDED',
+                  message:
+                    `${call.name} 在本次 Agent Run 中最多调用 ${limit} 次；` +
+                    '请使用已有工具结果继续，或向用户澄清后结束当前运行',
+                  tool: call.name,
+                  limit
                 }
               }
             };
+          } else {
+            toolCallCounts.set(call.name, count + 1);
+            try {
+              result = await options.mcp.callTool({
+                name: call.name,
+                arguments: call.input
+              });
+            } catch (cause) {
+              result = {
+                isError: true,
+                structuredContent: {
+                  ok: false,
+                  error: {
+                    code: 'MCP_CALL_FAILED',
+                    message: cause instanceof Error ? cause.message : String(cause)
+                  }
+                }
+              };
+            }
           }
           yield { type: 'tool_finished', call, result };
           messages.push({
