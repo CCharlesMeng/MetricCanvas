@@ -4,12 +4,15 @@
     DEFAULT_PREVIEW_JSON,
     parsePreviewDocument
   } from '$lib/preview-document';
-  import { catalogSnapshot } from '$lib/services';
+  import {
+    customerRiskCatalog,
+    customerRiskGateway
+  } from '$lib/customer-risk-preview';
   import PageView from '../pages/[pageId]/+page.svelte';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
   let result = $derived(
-    parsePreviewDocument(source, (document) => validate(document, catalogSnapshot))
+    parsePreviewDocument(source, (document) => validate(document, customerRiskCatalog))
   );
 </script>
 
@@ -21,7 +24,7 @@
   <div class="preview-heading">
     <div>
       <h1>Page JSON 即时预览</h1>
-      <p>左侧编辑新版 Page 协议，右侧复用正式页面的校验、数据编排与组件渲染。</p>
+      <p>上方编辑新版 Page 协议，下方复用正式页面的校验、数据编排与组件渲染。</p>
     </div>
     <button type="button" onclick={() => (source = DEFAULT_PREVIEW_JSON)}>恢复示例</button>
   </div>
@@ -70,7 +73,11 @@
       </div>
       <div class="render-surface">
         {#if result.status === 'valid'}
-          <PageView document={result.document} />
+          <PageView
+            document={result.document}
+            catalog={customerRiskCatalog}
+            gateway={customerRiskGateway}
+          />
         {:else}
           <div class="empty-preview">
             <strong>暂时无法渲染</strong>
@@ -125,14 +132,14 @@
     display: grid;
     min-height: 0;
     flex: 1;
-    grid-template-columns: minmax(340px, 0.9fr) minmax(480px, 1.1fr);
+    grid-template-columns: minmax(0, 1fr);
     gap: 16px;
   }
   .editor-panel,
   .render-panel {
     display: flex;
     min-width: 0;
-    min-height: 640px;
+    min-height: 0;
     flex-direction: column;
     overflow: hidden;
     background: #fff;
@@ -168,7 +175,8 @@
   }
   textarea {
     width: 100%;
-    min-height: 470px;
+    min-height: 280px;
+    max-height: 360px;
     box-sizing: border-box;
     flex: 1;
     padding: 16px;
@@ -221,7 +229,7 @@
   .render-surface {
     min-height: 0;
     flex: 1;
-    padding: 18px;
+    padding: 0;
     overflow: auto;
     background: #f8fafc;
   }

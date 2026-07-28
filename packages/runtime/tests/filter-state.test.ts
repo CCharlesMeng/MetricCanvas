@@ -51,6 +51,38 @@ describe('筛选状态 store:订阅与回写', () => {
     expect(pushes).toHaveLength(1);
   });
 
+  it('writeMany 原子更新多个联动筛选器且只通知一次', () => {
+    const state = createFilterState();
+    const { pushes } = collect(state);
+
+    state.writeMany([
+      [
+        'inspection-office',
+        {
+          type: 'dimension',
+          dimension: 'representative-office',
+          values: ['XX代表处02']
+        }
+      ],
+      [
+        'inspection-scope',
+        {
+          type: 'dimension',
+          dimension: 'customer-scope',
+          values: ['TOP100']
+        }
+      ]
+    ]);
+
+    expect(pushes).toHaveLength(2);
+    expect(pushes[1].get('inspection-office')).toMatchObject({
+      values: ['XX代表处02']
+    });
+    expect(pushes[1].get('inspection-scope')).toMatchObject({
+      values: ['TOP100']
+    });
+  });
+
   it('write 丢弃非法公历时间范围,不清除已有合法值且不通知', () => {
     const state = createFilterState(
       new Map<string, FilterValue>([['f-time', june]])

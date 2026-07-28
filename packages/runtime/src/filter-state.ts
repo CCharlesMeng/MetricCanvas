@@ -34,6 +34,8 @@ export type FilterValues = ReadonlyMap<string, FilterValue>;
 export interface FilterState {
   subscribe(run: (values: FilterValues) => void): () => void;
   write(filterId: string, value: FilterValue | null): void;
+  /** 原子写入多个筛选值，只向订阅方推送一次完整状态。 */
+  writeMany(updates: ReadonlyArray<readonly [string, FilterValue | null]>): void;
   /** 序列化为 URL 查询串(不含 '?'),筛选状态可分享 */
   toURL(): string;
   /** 从 URL 查询串整体还原状态;只识别带类型标记的参数,忽略无关参数与畸形值 */
@@ -68,6 +70,19 @@ export function createFilterState(initial?: FilterValues): FilterState {
       if (next === null) map.delete(filterId);
       else map.set(filterId, next);
       replace(map);
+    },
+
+    writeMany(updates) {
+      const map = new Map(current);
+      let changed = false;
+      for (const [filterId, value] of updates) {
+        const next = normalize(value);
+        if (next === undefined || sameValue(map.get(filterId), next)) continue;
+        if (next === null) map.delete(filterId);
+        else map.set(filterId, next);
+        changed = true;
+      }
+      if (changed) replace(map);
     },
 
     toURL() {

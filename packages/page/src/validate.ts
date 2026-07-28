@@ -7,7 +7,7 @@ import {
 } from './data-source';
 import type { TypedError } from './errors';
 import type { FieldBinding, FieldDefinition, FieldValue } from './field';
-import { validateCalendarTimeRange } from './filter';
+import { validateCalendarTimeRange, type FilterDeclaration } from './filter';
 import {
   deriveComponentCapabilities,
   derivePageCapabilities,
@@ -308,6 +308,13 @@ function componentErrors(
           )
         );
       });
+      if (component.props.progress) {
+        check(
+          component.props.progress.valueField,
+          `${componentPath}/props/progress/valueField`,
+          'metric'
+        );
+      }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'barChart':
@@ -330,7 +337,14 @@ function componentErrors(
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'table':
-      errors.push(...tableErrors(component.props.columns, componentPath, check));
+      errors.push(
+        ...tableErrors(
+          component.props.columns,
+          componentPath,
+          check,
+          new Map((page.filters ?? []).map((filter) => [filter.id, filter]))
+        )
+      );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       if (
         component.props.pagination?.mode === 'paged' &&
@@ -345,12 +359,14 @@ function componentErrors(
       }
       if (
         component.props.pagination?.mode === 'none' &&
-        component.props.pagination.pageSize !== undefined
+        (component.props.pagination.pageSize !== undefined ||
+          component.props.pagination.totalCount !== undefined ||
+          component.props.pagination.numbered !== undefined)
       ) {
         errors.push(
           schemaError(
             `${componentPath}/props/pagination/pageSize`,
-            `pagination.mode='none' 时不得声明 pageSize`
+            `pagination.mode='none' 时不得声明 pageSize、totalCount 或 numbered`
           )
         );
       }
@@ -381,7 +397,8 @@ type BindingCheck = (
 function tableErrors(
   columns: TableColumnNode[],
   componentPath: string,
-  check: BindingCheck
+  check: BindingCheck,
+  filters: ReadonlyMap<string, FilterDeclaration>
 ): TypedError[] {
   const errors: TypedError[] = [];
   const seen = new Set<string>();
@@ -391,6 +408,26 @@ function tableErrors(
       return;
     }
     check(column.field, `${path}/field`);
+    if (column.secondaryField) check(column.secondaryField, `${path}/secondaryField`);
+    if (column.badgeField) check(column.badgeField, `${path}/badgeField`);
+    for (const [filterId, write] of Object.entries(column.selection?.writes ?? {})) {
+      const target = filters.get(filterId);
+      if (!target) {
+        errors.push(
+          schemaError(`${path}/selection/writes/${escapePointer(filterId)}`, `写入了未声明的筛选器:${filterId}`)
+        );
+      } else if (target.type !== 'dimension') {
+        errors.push(
+          schemaError(
+            `${path}/selection/writes/${escapePointer(filterId)}`,
+            `单元格选择只能写入 dimension 筛选器:${filterId}`
+          )
+        );
+      }
+      if ('field' in write) {
+        check(write.field, `${path}/selection/writes/${escapePointer(filterId)}/field`);
+      }
+    }
     const key = bindingKey(column.field);
     if (seen.has(key)) {
       errors.push(schemaError(`${path}/field`, `表格列字段绑定重复:${key}`));

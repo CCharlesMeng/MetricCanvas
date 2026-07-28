@@ -19,6 +19,8 @@ export interface DimensionFilterDeclaration {
    * | search=输入过滤 + 多选
    */
   display?: 'select' | 'tabs' | 'tree' | 'search';
+  /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
+  visible?: boolean;
   /** 初始选中的维度值;缺省为不筛选 */
   default?: string[];
 }
@@ -31,6 +33,8 @@ export interface TimeRangeFilterDeclaration {
   label?: string;
   /** 时间精度:date=日期(默认)| datetime=日期时间 */
   precision?: TimeRangePrecision;
+  /** false 时仅作为组件联动使用，不在页面筛选器区呈现控件。 */
+  visible?: boolean;
   /** 初始范围:相对预设(按打开时刻解析)或绝对范围;缺省为不筛选 */
   default?: TimeRangePreset | TimeRangeValue;
 }

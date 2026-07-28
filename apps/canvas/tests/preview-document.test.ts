@@ -4,27 +4,41 @@ import {
   DEFAULT_PREVIEW_JSON,
   parsePreviewDocument
 } from '../src/lib/preview-document';
+import { customerRiskCatalog } from '../src/lib/customer-risk-preview';
 
 describe('Page JSON 即时预览文档', () => {
-  it('内置示例通过当前契约，并且只包含 inline 数据和无交互组件', () => {
-    const result = parsePreviewDocument(DEFAULT_PREVIEW_JSON, validate);
+  it('内置客户活动风险简报通过当前契约，并声明查询驱动的表格联动', () => {
+    const result = parsePreviewDocument(
+      DEFAULT_PREVIEW_JSON,
+      (document) => validate(document, customerRiskCatalog)
+    );
 
     expect(result.status).toBe('valid');
     if (result.status !== 'valid') return;
 
     const page = result.document as Page;
-    expect(
-      page.sections.flatMap((section) => section.components.map((component) => component.type))
-    ).toEqual(['reportHeader', 'metricCard', 'lineChart']);
-    expect(Object.values(page.dataSources).every((source) => source.source.type === 'inline')).toBe(
+    const components = page.sections.flatMap((section) => section.components);
+    expect(page.id).toBe('customer-activity-risk-briefing');
+    expect(components.filter((component) => component.type === 'table')).toHaveLength(16);
+    expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(
       true
     );
-    expect(page.filters).toBeUndefined();
-    expect(
-      page.sections
-        .flatMap((section) => section.components)
-        .every((component) => !('actions' in component.props))
-    ).toBe(true);
+    expect(page.filters).toHaveLength(8);
+    expect(page.filters?.every((filter) => filter.visible === false)).toBe(true);
+    const progressTable = components.find(
+      (component) => component.id === 'inspection-progress-table'
+    );
+    expect(progressTable?.type).toBe('table');
+    if (progressTable?.type === 'table') {
+      expect(
+        progressTable.props.columns
+          .flatMap((column) =>
+            'kind' in column && column.kind === 'group' ? column.children : [column]
+          )
+          .filter((column) => !('kind' in column && column.kind === 'group'))
+          .some((column) => column.selection !== undefined)
+      ).toBe(true);
+    }
   });
 
   it('JSON 解析成功后调用 validator，并返回契约错误', () => {

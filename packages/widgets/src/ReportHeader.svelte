@@ -9,10 +9,20 @@
   let { props }: Props = $props();
 </script>
 
-<header class="report-header">
+<header class:briefing={props.decoration === 'shortBar'} class="report-header">
   <div class="heading">
+    <div class="title-line">
+      <span class="report-icon" aria-hidden="true"></span>
+      <h1>{props.title}</h1>
+    </div>
     {#if props.badge}<span class="badge">{props.badge}</span>{/if}
-    <h1>{props.title}</h1>
+    {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
+    {#if props.decoration === 'shortBar' && props.asOf}
+      <div class="as-of inline">
+        <span>{props.asOf.label}：</span>
+        <strong>{props.asOf.value}</strong>
+      </div>
+    {/if}
     {#if props.subtitle}<p>{props.subtitle}</p>{/if}
     {#if props.tags?.length}
       <div class="tags" aria-label="报告标签">
@@ -23,13 +33,14 @@
     {/if}
   </div>
 
-  {#if props.asOf}
+  {#if props.decoration !== 'shortBar' && props.asOf}
     <div class="as-of">
       <span>{props.asOf.label}</span>
       <strong>{props.asOf.value}</strong>
     </div>
   {/if}
 </header>
+{#if props.decoration === 'shortBar'}<div class="decoration" aria-hidden="true"></div>{/if}
 
 <style>
   .report-header {
@@ -40,13 +51,30 @@
     width: 100%;
     padding: 10px 4px 24px;
   }
+  .report-header.briefing {
+    align-items: flex-start;
+  }
+  .title-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .report-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px 3px 8px 3px;
+    background:
+      linear-gradient(135deg, transparent 42%, #fff 43% 54%, transparent 55%),
+      linear-gradient(135deg, #5b72ea, #8aa7ff);
+    box-shadow: 0 6px 16px rgb(69 89 180 / 0.2);
+  }
   .heading {
     min-width: 0;
   }
   h1 {
-    margin: 8px 0 0;
-    color: #111b3f;
-    font-size: clamp(26px, 3vw, 38px);
+    margin: 0;
+    color: #445593;
+    font-size: 24px;
     line-height: 1.15;
     letter-spacing: -0.025em;
   }
@@ -56,6 +84,20 @@
     color: #667085;
     font-size: 14px;
     line-height: 1.65;
+  }
+  .generated-by {
+    margin-top: 10px;
+    color: #445593;
+    font-weight: 500;
+  }
+  .briefing .generated-by {
+    margin-left: 38px;
+  }
+  .decoration {
+    width: min(475px, 44%);
+    height: 9px;
+    margin: -12px 0 10px 36px;
+    background: rgb(102 196 255 / 0.28);
   }
   .badge,
   .tags span {
@@ -84,6 +126,12 @@
     flex-direction: column;
     gap: 3px;
     min-width: 92px;
+  }
+  .as-of.inline {
+    align-items: baseline;
+    flex-direction: row;
+    gap: 0;
+    margin: 4px 0 0 38px;
   }
   .as-of span {
     color: #8a91a5;

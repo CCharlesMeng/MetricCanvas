@@ -7,12 +7,14 @@
     resolveDataSourceFields,
     validate,
     type ChartComponent,
+    type CatalogSnapshot,
     type Component,
     type ComponentCapabilities,
     type DataSnapshot,
     type FilterDeclaration,
     type Page,
     type Row,
+    type TableColumn,
     type TableComponent,
     type TextLink,
     type TypedError
@@ -27,7 +29,9 @@
     type AuthoringIntent,
     type ComponentSnapshots,
     type FilterState,
+    type FilterValue,
     type FilterValues,
+    type DataGateway,
     type PageSnapshots,
     type PageSnapshotStream
   } from '@metriccanvas/runtime';
@@ -52,9 +56,14 @@
     type MetricDataSlots,
     type NamedDataSlots,
     type TableHeaderFilterValue,
+    type TableSelectedCell,
     type TableViewState
   } from '@metriccanvas/widgets';
-  import { catalogSnapshot, dataGateway, pageRepository } from '$lib/services';
+  import {
+    catalogSnapshot as defaultCatalogSnapshot,
+    dataGateway as defaultDataGateway,
+    pageRepository
+  } from '$lib/services';
 
   type PageCapabilities = ReturnType<typeof derivePageCapabilities>;
   type PageState =
@@ -68,7 +77,17 @@
     onintent(intent: AuthoringIntent): void;
   }
 
-  let { document, authoring }: { document?: unknown; authoring?: AuthoringOptions } = $props();
+  let {
+    document,
+    authoring,
+    catalog = defaultCatalogSnapshot,
+    gateway = defaultDataGateway
+  }: {
+    document?: unknown;
+    authoring?: AuthoringOptions;
+    catalog?: CatalogSnapshot;
+    gateway?: DataGateway;
+  } = $props();
 
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageSnapshots>(new Map());
@@ -132,7 +151,7 @@
       if (session !== mySession) return;
     }
 
-    const errors = validate(raw, catalogSnapshot);
+    const errors = validate(raw, catalog);
     if (errors.length > 0) {
       pageState = { phase: 'invalid', errors };
       return;
@@ -177,7 +196,7 @@
     tableViews = initialViews;
     pageState = { phase: 'ready', page: loaded, capabilities };
 
-    const pageStream = orchestrate(loaded, dataGateway, capabilities.filters ? state : undefined);
+    const pageStream = orchestrate(loaded, gateway, capabilities.filters ? state : undefined);
     stream = pageStream;
     disposers.push(
       pageStream.subscribe((next) => {
@@ -189,7 +208,7 @@
 
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension') continue;
-      void dataGateway.fetchDimensionValues(declaration.dimension).then((values) => {
+      void gateway.fetchDimensionValues(declaration.dimension).then((values) => {
         if (session !== mySession) return;
         filterOptions = { ...filterOptions, [declaration.id]: values };
       });
@@ -203,7 +222,7 @@
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
-        source ? resolveDataSourceFields(source, catalogSnapshot) : undefined
+        source ? resolveDataSourceFields(source, catalog) : undefined
       ).leaves) {
         if (column.filterable?.mode === 'select') {
           filterableFields.add(fieldName(column.field));
@@ -211,7 +230,7 @@
       }
     }
     for (const field of filterableFields) {
-      void dataGateway.fetchDimensionValues(field).then((values) => {
+      void gateway.fetchDimensionValues(field).then((values) => {
         if (session !== mySession) return;
         headerFilterOptions = { ...headerFilterOptions, [field]: values };
       });
@@ -306,6 +325,61 @@
     const next = { ...draft, pageIndex: 0 };
     setTableView(component, next);
     writeTableQuery(component, next, applied);
+  }
+
+  function tableSelectedCell(component: TableComponent): TableSelectedCell | undefined {
+    const snapshot = componentSnapshots(component).get('main');
+    if (snapshot?.status !== 'ready') return undefined;
+    const columns = buildTableColumnLayout(component.props.columns).leaves;
+    for (let rowIndex = 0; rowIndex < snapshot.rows.length; rowIndex++) {
+      const row = snapshot.rows[rowIndex]!;
+      for (const column of columns) {
+        if (!column.selection) continue;
+        const matches = Object.entries(column.selection.writes).every(
+          ([filterId, write]) => {
+            const current = filterValues.get(filterId);
+            const expected =
+              'field' in write ? row[fieldName(write.field)] : write.value;
+            return (
+              current?.type === 'dimension' &&
+              expected != null &&
+              current.values.length === 1 &&
+              current.values[0] === String(expected)
+            );
+          }
+        );
+        if (matches) return { rowIndex, columnField: fieldName(column.field) };
+      }
+    }
+    return undefined;
+  }
+
+  function handleTableCellSelect(
+    component: TableComponent,
+    rowIndex: number,
+    column: TableColumn
+  ) {
+    if (!column.selection || !componentCapability(component)?.live) return;
+    const snapshot = componentSnapshots(component).get('main');
+    if (snapshot?.status !== 'ready') return;
+    const row = snapshot.rows[rowIndex];
+    if (!row) return;
+
+    const updates: Array<readonly [string, FilterValue | null]> = [];
+    for (const [filterId, write] of Object.entries(column.selection.writes)) {
+      const declaration = declarations.find((candidate) => candidate.id === filterId);
+      const raw = 'field' in write ? row[fieldName(write.field)] : write.value;
+      if (declaration?.type !== 'dimension' || raw == null) return;
+      updates.push([
+        filterId,
+        {
+          type: 'dimension',
+          dimension: declaration.dimension,
+          values: [String(raw)]
+        }
+      ]);
+    }
+    filterState?.writeMany(updates);
   }
 
   function resetTablePages(loaded: Page, previous: FilterValues, next: FilterValues) {
@@ -451,7 +525,7 @@
       const snapshot = snapshotsBySlot.get(slot);
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
-      const fields = resolveDataSourceFields(source, catalogSnapshot);
+      const fields = resolveDataSourceFields(source, catalog);
       if (snapshot.status === 'ready') {
         data[slot] = { snapshot, fields };
       } else if (snapshot.status === 'empty') {
@@ -628,11 +702,14 @@
             props={component.props}
             interactive={capability?.live ?? false}
             view={tableViewOf(component)}
+            selectedCell={tableSelectedCell(component)}
             filterOptions={headerFilterOptions}
             onpage={(pageIndex) => handleTablePage(component, pageIndex)}
             onsort={(sort) => handleTableSort(component, sort)}
             onheaderfilter={(field, value) =>
               handleTableHeaderFilter(component, field, value)}
+            oncellselect={({ rowIndex, column }) =>
+              handleTableCellSelect(component, rowIndex, column)}
           />
         {:else if component.type === 'mapChart'}
           <MapChart
@@ -669,24 +746,26 @@
   </div>
 {:else}
   <div class="page-content">
-    {#if pageState.capabilities.filters && declarations.length > 0}
+    {#if pageState.capabilities.filters && declarations.some((declaration) => declaration.visible !== false)}
       <div class="filter-bar">
         {#each declarations as declaration (declaration.id)}
-          {#if declaration.type === 'dimension'}
-            <DimensionFilter
-              label={declaration.label}
-              options={filterOptions[declaration.id] ?? []}
-              value={dimensionValue(declaration.id)}
-              display={declaration.display ?? 'select'}
-              onchange={(values) => writeDimension(declaration, values)}
-            />
-          {:else}
-            <TimeRangeFilter
-              label={declaration.label}
-              precision={declaration.precision ?? 'date'}
-              value={timeRangeValue(declaration.id)}
-              onchange={(range) => writeTimeRange(declaration.id, range)}
-            />
+          {#if declaration.visible !== false}
+            {#if declaration.type === 'dimension'}
+              <DimensionFilter
+                label={declaration.label}
+                options={filterOptions[declaration.id] ?? []}
+                value={dimensionValue(declaration.id)}
+                display={declaration.display ?? 'select'}
+                onchange={(values) => writeDimension(declaration, values)}
+              />
+            {:else}
+              <TimeRangeFilter
+                label={declaration.label}
+                precision={declaration.precision ?? 'date'}
+                value={timeRangeValue(declaration.id)}
+                onchange={(range) => writeTimeRange(declaration.id, range)}
+              />
+            {/if}
           {/if}
         {/each}
       </div>
@@ -694,7 +773,11 @@
 
     <div class="page-sections">
       {#each pageState.page.sections as section (section.id)}
-        <section class="page-section">
+        <section
+          class:header-section={section.components.length === 1 &&
+            section.components[0]?.type === 'reportHeader'}
+          class="page-section"
+        >
           {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
           <div
             class="section-grid"
@@ -704,6 +787,7 @@
               <article
                 class:chart-cell={isChartComponent(component)}
                 class:header-cell={component.type === 'reportHeader'}
+                class:metric-cell={component.type === 'metricCard'}
                 class:table-cell={component.type === 'table'}
                 class:authoring-cell={Boolean(authoring)}
                 class:authoring-selected={selected(section.id, component.id)}
@@ -752,8 +836,11 @@
   }
   .page-content {
     width: 100%;
-    max-width: 1162px;
+    max-width: 75rem;
+    box-sizing: border-box;
     margin: 0 auto;
+    padding: 28px 18px 54px;
+    background: #daeaff;
   }
   .filter-bar {
     display: flex;
@@ -769,20 +856,35 @@
   .page-sections {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: 16px;
   }
   .page-section {
-    padding: 22px;
-    border: 1px solid rgb(112 130 220 / 0.14);
-    border-radius: 22px;
-    background: linear-gradient(135deg, #edf4ff 0%, #f2efff 54%, #f8f4ff 100%);
+    padding: 18px;
+    border: 0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(68 85 147 / 0.06);
+  }
+  .page-section.header-section {
+    padding: 0 8px 10px;
+    background: transparent;
+    box-shadow: none;
   }
   .section-title {
     margin: 0 0 18px;
-    color: #24356f;
-    font-size: 18px;
-    font-weight: 650;
-    text-align: center;
+    color: #08359e;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: left;
+  }
+  .section-title::before {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 9px;
+    border: 3px solid #7d9fff;
+    border-radius: 3px 1px 3px 1px;
+    content: '';
   }
   .section-grid {
     display: grid;
@@ -802,6 +904,9 @@
     border: 1px solid rgb(91 114 234 / 0.12);
     border-radius: 10px;
     box-shadow: 0 8px 22px rgb(53 65 130 / 0.06);
+  }
+  .metric-cell {
+    background: #f1f4ff;
   }
   .authoring-cell {
     cursor: pointer;
@@ -881,7 +986,7 @@
     min-height: 320px;
   }
   .table-cell {
-    min-height: 380px;
+    min-height: 0;
   }
   .header-cell {
     min-height: 0;

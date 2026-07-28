@@ -51,9 +51,11 @@ type ComponentBase<T extends string, P, D extends ComponentData | undefined = un
 export interface ReportHeaderProps {
   title: string;
   subtitle?: string;
+  generatedBy?: string;
   badge?: string;
   asOf?: { label: string; value: string };
   tags?: string[];
+  decoration?: 'shortBar';
 }
 
 export type ReportHeaderComponent = ComponentBase<'reportHeader', ReportHeaderProps>;
@@ -61,17 +63,26 @@ export type ReportHeaderComponent = ComponentBase<'reportHeader', ReportHeaderPr
 export interface MetricCardChange {
   label: string;
   field: FieldBinding;
+  tone?: 'auto' | 'neutral' | 'positive' | 'danger';
 }
 
 export interface MetricCardRow {
   label: string;
   valueField: FieldBinding;
+  unit?: string;
   changes?: MetricCardChange[];
+}
+
+export interface MetricCardProgress {
+  valueField: FieldBinding;
+  label?: string;
 }
 
 export interface MetricCardProps {
   title?: string;
+  variant?: 'summary' | 'activityProgress';
   rows: MetricCardRow[];
+  progress?: MetricCardProgress;
   actions?: ComponentAction[];
 }
 
@@ -128,6 +139,14 @@ export type PieChartComponent = ComponentBase<'pieChart', PieChartProps, MainDat
 export interface TableColumn {
   kind?: 'field';
   field: FieldBinding;
+  /** 在主值下方展示的次级字段。 */
+  secondaryField?: FieldBinding;
+  /** 在主值下方以徽标展示的字段。 */
+  badgeField?: FieldBinding;
+  /** 命中指定展示值时使用危险语义色。 */
+  dangerValues?: string[];
+  /** 点击单元格后原子写入一组筛选状态。 */
+  selection?: TableCellSelection;
   title?: string;
   width?: number;
   fixed?: 'left' | 'right';
@@ -146,11 +165,25 @@ export interface TableColumnGroup {
 
 export type TableColumnNode = TableColumn | TableColumnGroup;
 
+export type TableSelectionWrite =
+  | { field: FieldBinding }
+  | { value: string };
+
+export interface TableCellSelection {
+  writes: Record<string, TableSelectionWrite>;
+}
+
 export interface TableProps {
   title?: string;
   subtitle?: string;
   columns: TableColumnNode[];
-  pagination?: { mode: 'none' | 'paged'; pageSize?: number };
+  pagination?: {
+    mode: 'none' | 'paged';
+    pageSize?: number;
+    /** 数据服务提供总数槽前的受控展示值；主要用于示例与固定报告。 */
+    totalCount?: number;
+    numbered?: boolean;
+  };
   actions?: ComponentAction[];
 }
 
@@ -320,11 +353,20 @@ export function deriveComponentCapabilities(
   const dataMode: ComponentDataMode =
     sourceTypes.size === 0 ? 'none' : hasInline && hasQuery ? 'mixed' : hasQuery ? 'query' : 'inline';
   const props = component.props as { actions?: ComponentAction[]; pagination?: { mode: string } };
+  const tableSelection =
+    component.type === 'table' &&
+    component.props.columns.some((column) => tableColumnHasSelection(column));
   return {
     dataMode,
     live: hasQuery,
     filters: hasQuery,
-    actions: hasQuery && (props.actions?.length ?? 0) > 0,
+    actions: hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection),
     remotePagination: hasQuery && props.pagination?.mode === 'paged'
   };
+}
+
+function tableColumnHasSelection(column: TableColumnNode): boolean {
+  return column.kind === 'group'
+    ? column.children.some((child) => tableColumnHasSelection(child))
+    : column.selection !== undefined;
 }

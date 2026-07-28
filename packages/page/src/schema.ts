@@ -234,6 +234,7 @@ export const pageSchema = {
         dimension: { type: 'string', pattern: fieldPattern },
         label: { type: 'string' },
         display: { type: 'string', enum: ['select', 'tabs', 'tree', 'search'] },
+        visible: { type: 'boolean' },
         default: { type: 'array', items: { type: 'string' } }
       }
     },
@@ -246,6 +247,7 @@ export const pageSchema = {
         type: { const: 'timeRange' },
         label: { type: 'string' },
         precision: { type: 'string', enum: ['date', 'datetime'] },
+        visible: { type: 'boolean' },
         default: {
           oneOf: [
             { type: 'string', enum: ['today', 'last7d', 'last30d', 'last90d'] },
@@ -396,6 +398,7 @@ export const pageSchema = {
           properties: {
             title: { type: 'string', minLength: 1 },
             subtitle: { type: 'string' },
+            generatedBy: { type: 'string' },
             badge: { type: 'string' },
             asOf: {
               type: 'object',
@@ -406,7 +409,8 @@ export const pageSchema = {
                 value: { type: 'string', minLength: 1 }
               }
             },
-            tags: { type: 'array', items: { type: 'string', minLength: 1 } }
+            tags: { type: 'array', items: { type: 'string', minLength: 1 } },
+            decoration: { const: 'shortBar' }
           }
         }
       }
@@ -426,6 +430,7 @@ export const pageSchema = {
           additionalProperties: false,
           properties: {
             title: { type: 'string' },
+            variant: { type: 'string', enum: ['summary', 'activityProgress'] },
             rows: {
               type: 'array',
               minItems: 1,
@@ -436,6 +441,7 @@ export const pageSchema = {
                 properties: {
                   label: { type: 'string', minLength: 1 },
                   valueField: { $ref: '#/definitions/fieldBinding' },
+                  unit: { type: 'string' },
                   changes: {
                     type: 'array',
                     items: {
@@ -444,11 +450,24 @@ export const pageSchema = {
                       additionalProperties: false,
                       properties: {
                         label: { type: 'string', minLength: 1 },
-                        field: { $ref: '#/definitions/fieldBinding' }
+                        field: { $ref: '#/definitions/fieldBinding' },
+                        tone: {
+                          type: 'string',
+                          enum: ['auto', 'neutral', 'positive', 'danger']
+                        }
                       }
                     }
                   }
                 }
+              }
+            },
+            progress: {
+              type: 'object',
+              required: ['valueField'],
+              additionalProperties: false,
+              properties: {
+                valueField: { $ref: '#/definitions/fieldBinding' },
+                label: { type: 'string' }
               }
             },
             actions
@@ -558,6 +577,45 @@ export const pageSchema = {
       properties: {
         kind: { const: 'field' },
         field: { $ref: '#/definitions/fieldBinding' },
+        secondaryField: { $ref: '#/definitions/fieldBinding' },
+        badgeField: { $ref: '#/definitions/fieldBinding' },
+        dangerValues: {
+          type: 'array',
+          uniqueItems: true,
+          items: { type: 'string' }
+        },
+        selection: {
+          type: 'object',
+          required: ['writes'],
+          additionalProperties: false,
+          properties: {
+            writes: {
+              type: 'object',
+              minProperties: 1,
+              propertyNames: { pattern: idPattern },
+              additionalProperties: {
+                oneOf: [
+                  {
+                    type: 'object',
+                    required: ['field'],
+                    additionalProperties: false,
+                    properties: {
+                      field: { $ref: '#/definitions/fieldBinding' }
+                    }
+                  },
+                  {
+                    type: 'object',
+                    required: ['value'],
+                    additionalProperties: false,
+                    properties: {
+                      value: { type: 'string' }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
         title: { type: 'string' },
         width: { type: 'integer', minimum: 1 },
         fixed: { type: 'string', enum: ['left', 'right'] },
@@ -620,7 +678,9 @@ export const pageSchema = {
               additionalProperties: false,
               properties: {
                 mode: { type: 'string', enum: ['none', 'paged'] },
-                pageSize: { type: 'integer', minimum: 1 }
+                pageSize: { type: 'integer', minimum: 1 },
+                totalCount: { type: 'integer', minimum: 0 },
+                numbered: { type: 'boolean' }
               }
             },
             actions

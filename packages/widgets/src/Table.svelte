@@ -1,5 +1,9 @@
 <script lang="ts" module>
   export type { TableHeaderFilterValue, TableViewState } from './table-view';
+  export interface TableSelectedCell {
+    rowIndex: number;
+    columnField: string;
+  }
 </script>
 
 <script lang="ts">
@@ -29,9 +33,11 @@
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
+    selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
     onsort?: (sort: OrderByRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
+    oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
   }
 
   let {
@@ -40,9 +46,11 @@
     interactive = true,
     view,
     filterOptions = {},
+    selectedCell,
     onpage,
     onsort,
-    onheaderfilter
+    onheaderfilter,
+    oncellselect
   }: Props = $props();
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
@@ -129,6 +137,46 @@
   function hasActiveFilter(field: string): boolean {
     return view.headerFilters[field] !== undefined;
   }
+
+  function isSelected(rowIndex: number, column: TableColumn): boolean {
+    return (
+      selectedCell?.rowIndex === rowIndex &&
+      selectedCell.columnField === columnField(column)
+    );
+  }
+
+  function isDanger(column: TableColumn, rawValue: unknown): boolean {
+    return column.dangerValues?.includes(String(rawValue ?? '')) ?? false;
+  }
+
+  function pageWindow(current: number, total: number): Array<number | '…'> {
+    if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
+    const pages = new Set([1, 2, total - 1, total, current - 1, current, current + 1]);
+    const sorted = [...pages]
+      .filter((page) => page >= 1 && page <= total)
+      .sort((a, b) => a - b);
+    const result: Array<number | '…'> = [];
+    for (const page of sorted) {
+      const previous = result[result.length - 1];
+      if (typeof previous === 'number' && page - previous > 1) result.push('…');
+      result.push(page);
+    }
+    return result;
+  }
+
+  const totalPages = $derived(
+    props.pagination?.totalCount !== undefined
+      ? Math.max(
+          1,
+          Math.ceil(
+            props.pagination.totalCount / (props.pagination.pageSize ?? 10)
+          )
+        )
+      : 0
+  );
+  const numberedPages = $derived(
+    totalPages > 0 ? pageWindow(view.pageIndex + 1, totalPages) : []
+  );
 
   const rateBarMaxima = $derived.by(() => {
     const maxima = new Map<string, number>();
@@ -282,11 +330,24 @@
               <td
                 class:align-right={column.align === 'right'}
                 class:fixed={!!column.fixed}
+                class:selected={isSelected(i, column)}
+                class:danger={isDanger(column, rawValue)}
                 class:negative={column.visual === 'signed' && polarity === 'negative'}
                 class:positive={column.visual === 'signed' && polarity === 'positive'}
                 style={cellStyle(column)}
               >
-                {#if column.visual === 'rateBar'}
+                {#if column.selection && interactive}
+                  <button
+                    type="button"
+                    class="selectable-cell"
+                    aria-pressed={isSelected(i, column)}
+                    onclick={() => oncellselect?.({ rowIndex: i, column })}
+                  >
+                    <span class="cell-stack">
+                      <span>{formatValue(rawValue, resolved.definition?.format)}</span>
+                    </span>
+                  </button>
+                {:else if column.visual === 'rateBar'}
                   <span class="rate-cell">
                     <span
                       aria-hidden="true"
@@ -296,7 +357,21 @@
                     <span class="cell-value">{formatValue(rawValue, resolved.definition?.format)}</span>
                   </span>
                 {:else}
-                  {formatValue(rawValue, resolved.definition?.format)}
+                  <span class="cell-stack">
+                    <span>{formatValue(rawValue, resolved.definition?.format)}</span>
+                    {#if column.secondaryField}
+                      {@const secondary = resolveField(column.secondaryField, data)}
+                      <small>
+                        {formatValue(row[secondary.field], secondary.definition?.format)}
+                      </small>
+                    {/if}
+                    {#if column.badgeField}
+                      {@const badge = resolveField(column.badgeField, data)}
+                      <small class="cell-badge">
+                        {formatValue(row[badge.field], badge.definition?.format)}
+                      </small>
+                    {/if}
+                  </span>
                 {/if}
               </td>
             {/each}
@@ -311,15 +386,43 @@
   </div>
 
   {#if props.pagination?.mode === 'paged' && interactive}
-    <!-- 盲翻分页:响应无总条数,只有"是否有下一页"(hasMore 探测),不显示总页数 -->
     <div class="pager">
-      <button type="button" disabled={view.pageIndex === 0} onclick={() => onpage?.(view.pageIndex - 1)}>
-        上一页
-      </button>
-      <span class="page-no">第 {view.pageIndex + 1} 页</span>
-      <button type="button" disabled={!data.main.snapshot.hasMore} onclick={() => onpage?.(view.pageIndex + 1)}>
-        下一页
-      </button>
+      {#if props.pagination.totalCount !== undefined}
+        <span class="total">总条数：{props.pagination.totalCount}</span>
+      {/if}
+      <div class="pager-actions">
+        <span class="page-size">{props.pagination.pageSize ?? 10} 条/页</span>
+        <button
+          type="button"
+          aria-label="上一页"
+          disabled={view.pageIndex === 0}
+          onclick={() => onpage?.(view.pageIndex - 1)}
+        >‹</button>
+        {#if props.pagination.numbered && numberedPages.length > 0}
+          {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
+            {#if item === '…'}
+              <span class="ellipsis">…</span>
+            {:else}
+              <button
+                type="button"
+                class:current={item === view.pageIndex + 1}
+                aria-current={item === view.pageIndex + 1 ? 'page' : undefined}
+                onclick={() => onpage?.(item - 1)}
+              >{item}</button>
+            {/if}
+          {/each}
+        {:else}
+          <span class="page-no">第 {view.pageIndex + 1} 页</span>
+        {/if}
+        <button
+          type="button"
+          aria-label="下一页"
+          disabled={totalPages > 0
+            ? view.pageIndex + 1 >= totalPages
+            : !data.main.snapshot.hasMore}
+          onclick={() => onpage?.(view.pageIndex + 1)}
+        >›</button>
+      </div>
     </div>
   {/if}
 </div>
@@ -397,6 +500,13 @@
     color: #18181b;
     white-space: nowrap;
   }
+  tbody td.danger {
+    color: #f23030;
+  }
+  tbody td.selected {
+    background: rgb(20 118 255 / 0.08);
+    box-shadow: inset 0 0 0 1px #1476ff;
+  }
   tbody tr:last-child td {
     border-bottom: 0;
   }
@@ -405,6 +515,39 @@
   }
   tbody td.negative {
     color: #f5222d;
+  }
+  .selectable-cell {
+    width: 100%;
+    padding: 4px 6px;
+    color: #1476ff;
+    background: transparent;
+    border: 1px dashed rgb(20 118 255 / 0.42);
+    border-radius: 4px;
+    cursor: pointer;
+    font: inherit;
+    text-align: inherit;
+  }
+  .selectable-cell[aria-pressed='true'] {
+    background: rgb(20 118 255 / 0.1);
+    border-style: solid;
+    font-weight: 650;
+  }
+  .cell-stack {
+    display: inline-flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .cell-stack small {
+    color: #71717a;
+    font-size: 11px;
+    line-height: 1.2;
+  }
+  .cell-stack .cell-badge {
+    padding: 2px 6px;
+    color: #1476ff;
+    background: rgb(20 118 255 / 0.08);
+    border-radius: 3px;
   }
   .rate-cell {
     position: relative;
@@ -544,8 +687,22 @@
   .pager {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    gap: 12px;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .pager-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .total,
+  .page-size {
+    color: #595959;
+  }
+  .page-size {
+    padding: 5px 8px;
+    border: 1px solid #d4d4d8;
+    border-radius: 6px;
   }
   .pager button {
     border: 1px solid #e4e4e7;
@@ -559,6 +716,15 @@
   .pager button:disabled {
     color: #d4d4d8;
     cursor: not-allowed;
+  }
+  .pager button.current {
+    color: #1476ff;
+    background: rgb(20 118 255 / 0.08);
+    border-color: #1476ff;
+  }
+  .ellipsis {
+    padding: 0 2px;
+    color: #a1a1aa;
   }
   .page-no {
     color: #71717a;
