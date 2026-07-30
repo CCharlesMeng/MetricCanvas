@@ -121,18 +121,33 @@
     padding-left: 58px;
   }
   .summary {
-    align-items: center;
     text-align: center;
   }
-  .summary .metric-content,
-  .summary .metric-values {
+  .summary .metric-content {
     width: 100%;
   }
+  .summary .metric-values {
+    width: 100%;
+    flex-direction: row;
+    gap: 12px;
+  }
   .summary .metric-row {
+    min-width: 0;
+    flex: 1;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     gap: 8px;
+    padding: 14px 8px 9px;
+    background: #fff;
+    border-radius: 8px;
+  }
+  .summary h3 {
+    margin-bottom: 0.75rem;
+    color: #08359e;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-align: left;
   }
   .summary .row-label {
     color: #0f1a4d;

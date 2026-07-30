@@ -531,65 +531,35 @@
       ]
     },
     {
-      "id": "na-overview",
-      "title": "NA客户概况",
+      "id": "customer-overviews",
       "layout": {
         "type": "grid",
         "columns": 12
       },
       "components": [
         {
-          "id": "na-overview-excellent",
+          "id": "na-overview",
           "type": "metricCard",
           "layout": {
-            "span": 4
+            "span": 6
           },
           "data": {
             "main": "overview-na"
           },
           "props": {
+            "title": "NA客户概况",
             "variant": "summary",
             "rows": [
               {
                 "label": "卓越",
                 "valueField": "overview-na-excellent",
                 "unit": "个"
-              }
-            ]
-          }
-        },
-        {
-          "id": "na-overview-strategic",
-          "type": "metricCard",
-          "layout": {
-            "span": 4
-          },
-          "data": {
-            "main": "overview-na"
-          },
-          "props": {
-            "variant": "summary",
-            "rows": [
+              },
               {
                 "label": "战略",
                 "valueField": "overview-na-strategic",
                 "unit": "个"
-              }
-            ]
-          }
-        },
-        {
-          "id": "na-overview-core",
-          "type": "metricCard",
-          "layout": {
-            "span": 4
-          },
-          "data": {
-            "main": "overview-na"
-          },
-          "props": {
-            "variant": "summary",
-            "rows": [
+              },
               {
                 "label": "核心",
                 "valueField": "overview-na-core",
@@ -597,69 +567,30 @@
               }
             ]
           }
-        }
-      ]
-    },
-    {
-      "id": "top-overview",
-      "title": "TOP100项目客户概况",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
-      "components": [
+        },
         {
-          "id": "top-overview-excellent",
+          "id": "top-overview",
           "type": "metricCard",
           "layout": {
-            "span": 4
+            "span": 6
           },
           "data": {
             "main": "overview-top"
           },
           "props": {
+            "title": "TOP100项目客户概况",
             "variant": "summary",
             "rows": [
               {
                 "label": "卓越",
                 "valueField": "overview-top-excellent",
                 "unit": "个"
-              }
-            ]
-          }
-        },
-        {
-          "id": "top-overview-strategic",
-          "type": "metricCard",
-          "layout": {
-            "span": 4
-          },
-          "data": {
-            "main": "overview-top"
-          },
-          "props": {
-            "variant": "summary",
-            "rows": [
+              },
               {
                 "label": "战略",
                 "valueField": "overview-top-strategic",
                 "unit": "个"
-              }
-            ]
-          }
-        },
-        {
-          "id": "top-overview-core",
-          "type": "metricCard",
-          "layout": {
-            "span": 4
-          },
-          "data": {
-            "main": "overview-top"
-          },
-          "props": {
-            "variant": "summary",
-            "rows": [
+              },
               {
                 "label": "核心",
                 "valueField": "overview-top-core",

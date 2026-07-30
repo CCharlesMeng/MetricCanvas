@@ -281,12 +281,12 @@ function createDataSources(): DataSources {
   return sources;
 }
 
-function overviewSection(
+function overviewMetricGroup(
   id: string,
   title: string,
   source: 'overview-na' | 'overview-top',
   prefix: 'overview-na' | 'overview-top'
-): PageSection {
+): Component {
   const levels = [
     ['excellent', '卓越'],
     ['strategic', '战略'],
@@ -294,18 +294,18 @@ function overviewSection(
   ] as const;
   return {
     id,
-    title,
-    layout: { type: 'grid', columns: 12 },
-    components: levels.map(([field, label], index) => ({
-      id: `${id}-${field}`,
-      type: 'metricCard',
-      layout: { span: 4 },
-      data: { main: source },
-      props: {
-        variant: 'summary',
-        rows: [{ label, valueField: `${prefix}-${field}`, unit: '个' }]
-      }
-    }))
+    type: 'metricCard',
+    layout: { span: 6 },
+    data: { main: source },
+    props: {
+      title,
+      variant: 'summary',
+      rows: levels.map(([field, label]) => ({
+        label,
+        valueField: `${prefix}-${field}`,
+        unit: '个'
+      }))
+    }
   };
 }
 
@@ -613,13 +613,24 @@ export const customerRiskPreviewPage: Page = {
         }
       ]
     },
-    overviewSection('na-overview', 'NA客户概况', 'overview-na', 'overview-na'),
-    overviewSection(
-      'top-overview',
-      'TOP100项目客户概况',
-      'overview-top',
-      'overview-top'
-    ),
+    {
+      id: 'customer-overviews',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        overviewMetricGroup(
+          'na-overview',
+          'NA客户概况',
+          'overview-na',
+          'overview-na'
+        ),
+        overviewMetricGroup(
+          'top-overview',
+          'TOP100项目客户概况',
+          'overview-top',
+          'overview-top'
+        )
+      ]
+    },
     {
       id: 'annual-activities',
       layout: { type: 'grid', columns: 12 },

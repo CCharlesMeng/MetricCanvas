@@ -30,6 +30,17 @@ describe('Page JSON 即时预览文档', () => {
     );
     expect(page.filters).toHaveLength(8);
     expect(page.filters?.every((filter) => filter.visible === false)).toBe(true);
+    const overview = page.sections.find((section) => section.id === 'customer-overviews');
+    expect(overview?.components).toHaveLength(2);
+    expect(
+      overview?.components.map((component) => ({
+        span: component.layout.span,
+        rows: component.type === 'metricCard' ? component.props.rows.length : 0
+      }))
+    ).toEqual([
+      { span: 6, rows: 3 },
+      { span: 6, rows: 3 }
+    ]);
     const progressTable = components.find(
       (component) => component.id === 'inspection-progress-table'
     );
