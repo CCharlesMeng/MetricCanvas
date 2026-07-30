@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0014
+---
+
 # 指标履约只查询 DP 并以数据服务目录验真
 
 MetricCanvas 通过 DP 的稳定指标 ID 查询候选和轮询 `draft` / `published` 状态,不在生产集成中创建、修改或发布 DP 指标。DP 返回 `published`、最终指标 code 和目标数据服务目录后,MetricCanvas 仍须从当前数据服务目录发现该 code,并验证原子指标需求所需维度与聚合全部可用,才能标记为已履约。

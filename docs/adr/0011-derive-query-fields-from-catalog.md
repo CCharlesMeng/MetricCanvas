@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0014
+---
+
 # query 字段契约由结构化查询与元数据快照解析
 
 schemaVersion 2.0 的 query 页面数据源不再重复持久化完整 `fields`。统一运行时以结构化查询中的 metrics/dimensions 确定字段角色，以元数据快照补全名称、标量类型和默认展示建议，再合并页面可选的字段名称覆盖；inline 页面数据源仍须用 `fields` 完整描述随页面固化的数据行。这样减少了 query 页面中与供给侧目录重复且可能漂移的声明，同时为当前统一运行时和未来 A2UI Adapter 保留同一份解析后字段语义。最终展示格式的归属由 ADR-0013 进一步修订。
