@@ -11,6 +11,8 @@ export default defineConfig({
     }
   },
   server: {
+    port: 5173,
+    strictPort: true,
     // 页面文档与 workspace 包在仓库根,允许 dev server 越出应用目录读取
     fs: { allow: ['../..'] }
   }

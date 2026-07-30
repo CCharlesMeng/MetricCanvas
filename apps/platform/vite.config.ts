@@ -3,6 +3,10 @@ import { defineConfig } from 'vite';
 
 export default defineConfig({
   plugins: [sveltekit()],
+  server: {
+    port: 5174,
+    strictPort: true
+  },
   ssr: {
     // Workspace packages expose TypeScript source. Keep them in Vite's SSR
     // transform pipeline instead of handing extensionless imports to Node ESM.

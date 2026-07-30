@@ -27,6 +27,10 @@
     type EditableComponent
   } from './page-editor';
   import {
+    createAuthoringBridgeState,
+    type AuthoringBridgeState
+  } from './authoring-bridge-state';
+  import {
     createPageWorkspace,
     reducePageWorkspace,
     workspaceIsDirty,
@@ -129,6 +133,7 @@
   let runtimeOrigin = $state('http://localhost:5173');
   let agentModel = $state<AgentModelDescriptor | null>(null);
   let bridgeReady = $state(false);
+  let bridgedAuthoringUrl = $state('');
   let canvasMode = $state<'authoring' | 'preview'>('authoring');
   let previewedRevisionId = $state<string | null>(null);
   let publishRequest = $state<PublishRequest | null>(null);
@@ -138,8 +143,10 @@
   let fulfillmentReadiness = $state<MetricRequestGroupReadiness | null>(null);
   let unmetMetricRequests = $state<AtomicMetricRequest[]>([]);
   let error = $state('');
+  let canvasError = $state('');
   let notice = $state('');
   let iframe = $state<HTMLIFrameElement>();
+  let authoringBridge: AuthoringBridgeState | null = null;
 
   const components = $derived(
     workspace ? listEditableComponents(workspace.current) : []
@@ -290,6 +297,17 @@
   });
 
   onMount(() => {
+    authoringBridge = createAuthoringBridgeState({
+      timeoutMs: 5_000,
+      schedule: (callback, timeoutMs) => window.setTimeout(callback, timeoutMs),
+      cancel: (handle) => window.clearTimeout(handle as number),
+      onTimeout: () => {
+        bridgeReady = false;
+        canvasError =
+          `统一运行时连接失败：${runtimeOrigin} 未完成 authoring 就绪握手。` +
+          '请确认 Canvas 已在固定端口 5173 启动。';
+      }
+    });
     runId = crypto.randomUUID();
     bridgeSession = crypto.randomUUID();
     const compactLayout = window.matchMedia('(max-width: 1179px)');
@@ -307,7 +325,9 @@
       const message = parseAuthoringRuntimeMessage(event.data, bridgeSession);
       if (!message) return;
       if (message.type === 'ready') {
+        authoringBridge?.runtimeReady();
         bridgeReady = true;
+        canvasError = '';
         sendDocumentToRuntime();
       } else {
         applyAuthoringIntent(message.intent);
@@ -315,9 +335,19 @@
     };
     window.addEventListener('message', receive);
     return () => {
+      authoringBridge?.dispose();
       compactLayout.removeEventListener('change', closeInspectorForCompactLayout);
       window.removeEventListener('message', receive);
     };
+  });
+
+  $effect(() => {
+    const nextAuthoringUrl = authoringUrl;
+    if (nextAuthoringUrl === bridgedAuthoringUrl) return;
+    bridgedAuthoringUrl = nextAuthoringUrl;
+    bridgeReady = false;
+    canvasError = '';
+    authoringBridge?.reset();
   });
 
   $effect(() => {
@@ -522,7 +552,6 @@
       canvasMode = 'authoring';
       previewedRevisionId = null;
       publishRequest = null;
-      bridgeReady = false;
     } catch (cause) {
       error = cause instanceof Error ? cause.message : String(cause);
     } finally {
@@ -658,8 +687,7 @@
 
   function authoringFrameLoaded() {
     if (!workspace || canvasMode !== 'authoring') return;
-    bridgeReady = true;
-    queueMicrotask(() => sendDocumentToRuntime());
+    authoringBridge?.frameLoaded();
   }
 
   async function saveRevision() {
@@ -1493,6 +1521,7 @@
       </div>
     </header>
     {#if error}<div class="error" role="alert">{error}</div>{/if}
+    {#if canvasError}<div class="error" role="alert">{canvasError}</div>{/if}
     {#if notice}<div class="notice" role="status">{notice}</div>{/if}
     {#if !workspace}
       <div class="canvas-empty"><span>✦</span><h2>从左侧业务诉求开始</h2><p>生成后无需离开页面，即可点击、拖动、直接编辑并继续让 Agent 调整。</p></div>
