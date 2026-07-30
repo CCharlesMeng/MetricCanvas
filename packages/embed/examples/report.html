@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <title>MetricCanvas 最终看板报告</title>
+    <style>
+      :root {
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", sans-serif;
+        color: #172033;
+        background: #edf1f7;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        min-width: 320px;
+        min-height: 100%;
+        margin: 0;
+      }
+
+      body {
+        min-height: 100vh;
+        background:
+          radial-gradient(circle at 12% 0%, rgb(218 227 244 / 78%), transparent 34rem),
+          linear-gradient(180deg, #f6f8fc 0%, #e9eef6 100%);
+      }
+
+      #report-frame {
+        min-height: 100vh;
+        padding: clamp(16px, 2.4vw, 36px);
+      }
+
+      #dashboard {
+        width: min(100%, 1600px);
+        min-height: calc(100vh - clamp(32px, 4.8vw, 72px));
+        margin: 0 auto;
+      }
+
+      #report-status {
+        position: fixed;
+        z-index: 10;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        padding: 24px;
+        color: #475569;
+        background: rgb(242 245 250 / 92%);
+        backdrop-filter: blur(10px);
+        transition:
+          opacity 180ms ease,
+          visibility 180ms ease;
+      }
+
+      #report-status[data-state="ready"] {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #report-status[data-state="error"] {
+        color: #991b1b;
+        background: rgb(254 242 242 / 96%);
+      }
+
+      .status-card {
+        display: flex;
+        max-width: 640px;
+        align-items: center;
+        gap: 14px;
+        padding: 16px 20px;
+        background: rgb(255 255 255 / 90%);
+        border: 1px solid rgb(148 163 184 / 28%);
+        border-radius: 14px;
+        box-shadow: 0 18px 50px rgb(45 55 72 / 10%);
+      }
+
+      .status-dot {
+        width: 18px;
+        height: 18px;
+        flex: 0 0 auto;
+        border: 2px solid #cbd5e1;
+        border-top-color: #4f55aa;
+        border-radius: 50%;
+        animation: spin 700ms linear infinite;
+      }
+
+      #report-status[data-state="error"] .status-dot {
+        border-color: #ef4444;
+        animation: none;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media print {
+        body {
+          background: #fff;
+        }
+
+        #report-frame {
+          padding: 0;
+        }
+
+        #report-status {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body data-report-ready="false">
+    <main id="report-frame">
+      <div id="dashboard" aria-label="最终看板报告"></div>
+    </main>
+
+    <div id="report-status" data-state="loading" role="status" aria-live="polite">
+      <div class="status-card">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="report-status-message">正在加载看板页面并启动统一运行时…</span>
+      </div>
+    </div>
+
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script>
+      (() => {
+        const status = document.querySelector('#report-status');
+        const statusMessage = document.querySelector('#report-status-message');
+        const search = new URLSearchParams(window.location.search);
+        const pageUrl = search.get('page') || '/pages/tokens-report.json';
+        search.delete('page');
+
+        function showReady() {
+          document.body.dataset.reportReady = 'true';
+          status.dataset.state = 'ready';
+          statusMessage.textContent = '看板报告已就绪';
+        }
+
+        function showError(message) {
+          document.body.dataset.reportReady = 'false';
+          status.dataset.state = 'error';
+          status.setAttribute('role', 'alert');
+          statusMessage.textContent = message;
+        }
+
+        function reportTitle(pageDocument) {
+          for (const section of pageDocument.sections || []) {
+            const header = (section.components || []).find(
+              component => component.type === 'reportHeader'
+            );
+            if (header && header.props && typeof header.props.title === 'string') {
+              return header.props.title;
+            }
+          }
+          return pageDocument.id || '看板报告';
+        }
+
+        async function renderReport() {
+          try {
+            const response = await fetch(pageUrl, {
+              credentials: 'same-origin',
+              headers: { accept: 'application/json' }
+            });
+            if (!response.ok) {
+              throw new Error(`页面文档加载失败：HTTP ${response.status}`);
+            }
+
+            const pageDocument = await response.json();
+            document.title = `${reportTitle(pageDocument)} · MetricCanvas`;
+            window.reportPageDocument = pageDocument;
+            window.reportRuntime = MetricCanvas.mount('#dashboard', {
+              document: pageDocument,
+              initialSearch: search.toString(),
+              onEvent(event) {
+                if (event.type === 'ready') {
+                  showReady();
+                } else if (event.type === 'invalid') {
+                  showError(`页面文档校验失败：${event.errors.length} 个错误`);
+                } else if (event.type === 'configuration-error') {
+                  showError(`统一运行时接入配置错误：${event.code}`);
+                }
+              }
+            });
+          } catch (error) {
+            showError(error instanceof Error ? error.message : String(error));
+          }
+        }
+
+        void renderReport();
+      })();
+    </script>
+  </body>
+</html>

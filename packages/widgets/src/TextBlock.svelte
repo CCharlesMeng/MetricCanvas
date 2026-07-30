@@ -3,6 +3,7 @@
   export interface TextBlockLink {
     label: string;
     href: string;
+    onclick?: (event: MouseEvent) => void;
   }
 </script>
 
@@ -28,7 +29,7 @@
   {#if links.length > 0}
     <nav class="links">
       {#each links as link (link.label + link.href)}
-        <a href={link.href}>{link.label} →</a>
+        <a href={link.href} onclick={link.onclick}>{link.label} →</a>
       {/each}
     </nav>
   {/if}

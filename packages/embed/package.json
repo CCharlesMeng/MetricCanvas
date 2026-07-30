@@ -1,0 +1,36 @@
+{
+  "name": "@metriccanvas/embed",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/metriccanvas-runtime.es.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/metriccanvas-runtime.es.js",
+      "default": "./dist/metriccanvas-runtime.es.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.build.json",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "preview:examples": "node tests/serve.mjs",
+    "test:browser": "pnpm build && playwright test"
+  },
+  "dependencies": {
+    "@metriccanvas/data-gateway": "workspace:*",
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/runtime": "workspace:*",
+    "@metriccanvas/runtime-ui": "workspace:*",
+    "svelte": "^5.56.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "svelte-check": "^4.7.3",
+    "typescript": "^5.9.3",
+    "vite": "^8.1.5"
+  }
+}

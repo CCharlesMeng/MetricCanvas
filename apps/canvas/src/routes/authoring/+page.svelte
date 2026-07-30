@@ -7,8 +7,13 @@
     type AuthoringComponentLocator,
     type AuthoringIntent
   } from '@metriccanvas/runtime';
+  import { RuntimeView } from '@metriccanvas/runtime-ui';
   import { onMount } from 'svelte';
-  import PageView from '../pages/[pageId]/+page.svelte';
+  import { catalogSnapshot, dataGateway } from '$lib/services';
+  import {
+    customerRiskCatalog,
+    customerRiskGateway
+  } from '$lib/customer-risk-preview';
 
   const platformOrigin = import.meta.env.VITE_PLATFORM_URL
     ? new URL(import.meta.env.VITE_PLATFORM_URL).origin
@@ -17,6 +22,12 @@
 
   let document = $state<unknown>();
   let selected = $state<AuthoringComponentLocator>();
+  const customerRisk = $derived(
+    typeof document === 'object' &&
+      document !== null &&
+      'id' in document &&
+      document.id === 'customer-activity-risk-briefing'
+  );
 
   onMount(() => {
     if (!sessionId) return;
@@ -44,7 +55,12 @@
 {:else if document === undefined}
   <div class="authoring-empty"><span></span>等待页面搭建工作台发送未保存工作副本…</div>
 {:else}
-  <PageView {document} authoring={{ selected, onintent: sendIntent }} />
+  <RuntimeView
+    {document}
+    catalog={customerRisk ? customerRiskCatalog : catalogSnapshot}
+    dataGateway={customerRisk ? customerRiskGateway : dataGateway}
+    authoring={{ selected, onintent: sendIntent }}
+  />
 {/if}
 
 <style>

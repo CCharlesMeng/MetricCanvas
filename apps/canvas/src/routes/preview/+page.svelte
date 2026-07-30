@@ -8,7 +8,7 @@
     customerRiskCatalog,
     customerRiskGateway
   } from '$lib/customer-risk-preview';
-  import PageView from '../pages/[pageId]/+page.svelte';
+  import { RuntimeView } from '@metriccanvas/runtime-ui';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
   let result = $derived(
@@ -73,10 +73,10 @@
       </div>
       <div class="render-surface">
         {#if result.status === 'valid'}
-          <PageView
+          <RuntimeView
             document={result.document}
             catalog={customerRiskCatalog}
-            gateway={customerRiskGateway}
+            dataGateway={customerRiskGateway}
           />
         {:else}
           <div class="empty-preview">

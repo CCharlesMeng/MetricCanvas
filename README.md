@@ -15,6 +15,7 @@ MetricCanvas 是数据服务之上的治理化消费层：以业务指标为核�
 - 封闭的纯渲染组件集：报告头、指标卡、柱状图、折线图、饼图、表格、地图、排行卡和文本；另有维度与时间范围筛选器。
 - 数据网关的默认 mock 适配器、数据服务适配器，以及本地数据服务仿真。
 - SvelteKit 静态 SPA、正式页面路由和 Page JSON 即时预览。
+- 可嵌入普通 HTML 的统一运行时产物：ESM 与经典全局脚本均为自包含单文件。
 - 页面搭建工作台、模型无关 Agent 循环、MCP 页面工具、不可变页面修订、发布租约与人工发布确认。
 - 页面模板、不可变模板修订、人工模板发布确认与 `search_templates`；模板修订只引用精确的已发布页面修订。
 - 页面修订结构化编辑器：组件选择、标题/说明、网格跨度与顺序、撤销/重做，以及校验后保存新页面修订。
@@ -261,12 +262,13 @@ pnpm sync-catalog --base-url <数据服务地址>
 ### 应用集成者
 
 - **输入**：页面资产、数据网关模式、真实数据服务地址与鉴权头、宿主路由/SSO/部署要求。
-- **工作流**：在 `apps/canvas/src/lib/services.ts` 的依赖注入点接入环境配置；确保 SPA fallback 能承接 `/pages/<id>`；构建静态站点。
+- **工作流**：在 `apps/canvas/src/lib/services.ts` 的依赖注入点接入环境配置；确保 SPA fallback 能承接 `/pages/<id>`；构建静态站点。普通 HTML 宿主可使用 `packages/embed` 的单文件产物，最终报告示例位于 `packages/embed/examples/report.html`。
 - **启动与构建预览**：
 
 ```bash
 pnpm build
 pnpm --filter canvas preview
+pnpm --filter @metriccanvas/embed preview:examples # 独立 HTML 最终报告：http://127.0.0.1:4175/examples/report.html
 ```
 
 - **验收**：首页和深链接可访问，静态产物位于 `apps/canvas/build/`，真实凭据不进入页面文档或仓库，所有业务取数仍通过数据网关。
@@ -286,6 +288,8 @@ pnpm --filter canvas preview
 - `packages/agent-runner/`：模型无关 Agent 循环、scripted fake 与 DeepSeek adapter。
 - `packages/mcp/`：页面工具、Prompt、Resource 与同进程 transport。
 - `packages/runtime/`：`PageRepository` / `DataGateway` 端口、筛选状态、导航和数据源编排；核心入口是 `src/orchestrator.ts`。
+- `packages/runtime-ui/`：正式页面、即时预览、页面搭建画布与独立 HTML 共用的统一运行时界面模块。
+- `packages/embed/`：普通 HTML 挂载接口、Shadow DOM 隔离、双格式单文件构建和可运行示例。
 - `packages/data-gateway/`：mock 与数据服务适配器、查询翻译、元数据同步；真实适配器入口是 `src/data-service.ts`。
 - `packages/widgets/`：纯渲染组件、字段解析、值格式化和表格视图逻辑；公共导出在 `src/index.ts`。
 - `apps/canvas/`：SvelteKit 统一运行时；组装静态/平台 `PageRepository` adapter、数据网关、正式页面和即时预览。
@@ -301,7 +305,8 @@ pnpm --filter canvas preview
 pnpm validate   # 校验 pages/：结构、引用、能力、元数据语义、文件名和跨页导航
 pnpm test       # 运行 apps、packages、tools 下的 Vitest 测试
 pnpm check      # packages/tools TypeScript 检查 + Canvas/Platform svelte-check
-pnpm build      # 构建 Canvas 与 Platform
+pnpm build      # 构建嵌入产物、Canvas 与 Platform
+pnpm test:embed # 构建嵌入产物并在 Chrome 中运行独立 HTML 冒烟测试
 ```
 
 其他仓库脚本：

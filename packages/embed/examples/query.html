@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas query 嵌入示例</title>
+    <style>
+      body { margin: 0; padding: 24px; background: #f4f4f5; }
+      #dashboard { max-width: 1200px; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div id="dashboard"></div>
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script>
+      const rows = [
+        { region: '华东', gmv: 386000 },
+        { region: '华南', gmv: 271000 }
+      ];
+      const dataGateway = {
+        async fetchData(query) {
+          const region = query.conditions.find(
+            condition =>
+              condition.dimension === 'region' &&
+              condition.operator === 'in'
+          );
+          const selected = region ? new Set(region.value.map(String)) : null;
+          const filtered = selected
+            ? rows.filter(row => selected.has(row.region))
+            : rows;
+          const start = query.offset || 0;
+          return filtered.slice(
+            start,
+            query.limit === undefined ? undefined : start + query.limit
+          );
+        },
+        async fetchDimensionValues() {
+          return rows.map(row => row.region);
+        }
+      };
+      const catalog = {
+        formatVersion: '2.0',
+        syncedAt: '2026-07-30T00:00:00.000Z',
+        source: '嵌入示例',
+        metrics: [{
+          code: 'gmv',
+          name: '成交总额',
+          valueType: 'integer',
+          defaultFormat: 'number-grouped',
+          availableDimensions: ['region'],
+          availableAggregations: ['sum']
+        }],
+        dimensions: [{
+          code: 'region',
+          name: '区域',
+          valueType: 'string',
+          cardinality: 2,
+          sampleValues: ['华东', '华南']
+        }]
+      };
+      const pageDocument = {
+        schemaVersion: '2.0',
+        id: 'query-example',
+        dataSources: {
+          sales: {
+            source: {
+              type: 'query',
+              query: {
+                metrics: ['gmv'],
+                dimensions: ['region'],
+                aggregation: 'sum',
+                filters: { subscribe: ['region-filter'] }
+              }
+            }
+          }
+        },
+        filters: [{
+          id: 'region-filter',
+          type: 'dimension',
+          dimension: 'region',
+          label: '区域'
+        }],
+        sections: [{
+          id: 'main',
+          layout: { type: 'grid', columns: 12 },
+          components: [{
+            id: 'sales-table',
+            type: 'table',
+            layout: { span: 12 },
+            data: { main: 'sales' },
+            props: {
+              title: '区域成交额',
+              columns: [
+                { field: 'region' },
+                {
+                  field: {
+                    data: 'main',
+                    field: 'gmv',
+                    format: 'number-grouped'
+                  }
+                }
+              ]
+            }
+          }]
+        }]
+      };
+
+      window.queryPageDocument = pageDocument;
+      window.queryCatalog = catalog;
+      window.queryDataGateway = dataGateway;
+      window.queryEvents = [];
+      window.queryRuntime = MetricCanvas.mount('#dashboard', {
+        document: pageDocument,
+        catalog,
+        dataGateway,
+        onEvent(event) {
+          window.queryEvents.push(event);
+        }
+      });
+    </script>
+  </body>
+</html>

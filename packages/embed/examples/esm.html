@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas ESM 嵌入示例</title>
+  </head>
+  <body>
+    <div id="dashboard"></div>
+    <script type="module">
+      import { mount } from '../dist/metriccanvas-runtime.es.js';
+
+      window.esmRuntime = mount('#dashboard', {
+        document: {
+          schemaVersion: '2.0',
+          id: 'esm-example',
+          dataSources: {},
+          sections: [{
+            id: 'main',
+            layout: { type: 'grid', columns: 12 },
+            components: [{
+              id: 'header',
+              type: 'reportHeader',
+              layout: { span: 12 },
+              props: { title: 'ESM 独立页面' }
+            }]
+          }]
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas inline 嵌入示例</title>
+    <style>
+      body { margin: 0; padding: 24px; background: #f4f4f5; }
+      h1 { color: red !important; font-size: 80px !important; }
+      #dashboard { max-width: 1200px; margin: 0 auto; }
+    </style>
+  </head>
+  <body>
+    <div id="dashboard"></div>
+    <script id="dashboard-page" type="application/json">
+      {
+        "schemaVersion": "2.0",
+        "id": "inline-example",
+        "dataSources": {
+          "overview": {
+            "fields": {
+              "gmv": {
+                "type": "number",
+                "role": "metric",
+                "label": "成交总额"
+              }
+            },
+            "source": {
+              "type": "inline",
+              "rows": [{ "gmv": 128600 }]
+            }
+          }
+        },
+        "sections": [{
+          "id": "main",
+          "layout": { "type": "grid", "columns": 12 },
+          "components": [
+            {
+              "id": "header",
+              "type": "reportHeader",
+              "layout": { "span": 12 },
+              "props": { "title": "独立 HTML 经营概览" }
+            },
+            {
+              "id": "gmv",
+              "type": "metricCard",
+              "layout": { "span": 4 },
+              "data": { "main": "overview" },
+              "props": {
+                "rows": [{
+                  "label": "成交总额",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "number-grouped"
+                  }
+                }]
+              }
+            }
+          ]
+        }]
+      }
+    </script>
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script>
+      window.pageDocument = JSON.parse(
+        document.querySelector('#dashboard-page').textContent
+      );
+      window.runtime = MetricCanvas.mount('#dashboard', {
+        document: window.pageDocument
+      });
+    </script>
+  </body>
+</html>
