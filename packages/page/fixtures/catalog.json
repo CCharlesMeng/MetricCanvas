@@ -7,7 +7,7 @@
       "code": "gmv",
       "name": "成交总额",
       "valueType": "decimal",
-      "format": "number-grouped",
+      "defaultFormat": "number-grouped",
       "availableDimensions": ["region", "stat-date"],
       "availableAggregations": ["sum", "avg"]
     },
@@ -15,7 +15,7 @@
       "code": "order-count",
       "name": "订单量",
       "valueType": "integer",
-      "format": "number-grouped",
+      "defaultFormat": "number-grouped",
       "availableDimensions": ["region"],
       "availableAggregations": ["sum", "count"]
     }
@@ -25,7 +25,7 @@
       "code": "region",
       "name": "区域",
       "valueType": "string",
-      "format": "text",
+      "defaultFormat": "text",
       "cardinality": 3,
       "sampleValues": ["华东", "华北", "华南"]
     },
@@ -33,14 +33,14 @@
       "code": "stat-date",
       "name": "统计日期",
       "valueType": "date",
-      "format": "date",
+      "defaultFormat": "date",
       "cardinality": 7
     },
     {
       "code": "channel",
       "name": "渠道",
       "valueType": "string",
-      "format": "text",
+      "defaultFormat": "text",
       "cardinality": 2
     }
   ]

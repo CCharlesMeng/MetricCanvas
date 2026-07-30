@@ -10,7 +10,7 @@ const data: MetricDataSlots = {
         type: 'number',
         role: 'metric',
         label: '实际值',
-        format: 'number-grouped'
+        defaultFormat: 'number-grouped'
       }
     }
   },
@@ -21,7 +21,7 @@ const data: MetricDataSlots = {
         type: 'number',
         role: 'metric',
         label: '目标值',
-        format: 'number'
+        defaultFormat: 'number'
       }
     }
   }
@@ -42,6 +42,17 @@ describe('component named data slots', () => {
 
     expect(fieldValue(binding, data)).toBe(100);
     expect(fieldLabel(binding, data)).toBe('目标值');
-    expect(resolveField(binding, data).definition?.format).toBe('number');
+    expect(resolveField(binding, data).format).toBe('number');
+  });
+
+  it('组件字段绑定格式优先于字段默认展示建议', () => {
+    const binding = {
+      data: 'main',
+      field: 'actual',
+      format: 'compact-wan-1' as const
+    };
+
+    expect(resolveField(binding, data).format).toBe('compact-wan-1');
+    expect(resolveField('actual', data).format).toBe('number-grouped');
   });
 });

@@ -10,8 +10,7 @@
         "gmv": {
           "type": "number",
           "role": "metric",
-          "label": "成交总额",
-          "format": "compact-yi-1"
+          "label": "成交总额"
         }
       },
       "source": {
@@ -60,7 +59,11 @@
             "rows": [
               {
                 "label": "当日",
-                "valueField": "gmv"
+                "valueField": {
+                  "data": "main",
+                  "field": "gmv",
+                  "format": "compact-yi-1"
+                }
               }
             ]
           }

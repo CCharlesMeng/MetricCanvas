@@ -39,18 +39,38 @@ export interface FieldDefinition {
   type: FieldType;
   role: FieldRole;
   label?: string;
+  /**
+   * @deprecated schemaVersion 2.0 早期页面把展示格式写在页面数据源字段中。
+   * 新页面应写在组件 FieldBinding；统一运行时仅将此字段作为兼容回退。
+   */
   format?: ValueFormatPreset;
 }
 
-/** query 页面数据源对元数据快照默认展示语义的局部覆盖。 */
+/** 统一运行时归一后的字段契约；defaultFormat 是展示建议，不是数据规则。 */
+export interface ResolvedFieldDefinition extends Omit<FieldDefinition, 'format'> {
+  defaultFormat?: ValueFormatPreset;
+}
+
+/** query 页面数据源对元数据快照字段名称的页面局部覆盖。 */
 export interface FieldOverride {
   label?: string;
+  /**
+   * @deprecated schemaVersion 2.0 早期页面使用；新页面在组件 FieldBinding 写 format。
+   */
   format?: ValueFormatPreset;
 }
 
 /**
- * 组件字段绑定。字符串简写始终引用 `main` 数据槽；多源组件使用显式数据槽。
+ * 字段引用。字符串简写始终引用 `main` 数据槽；多源场景使用显式数据槽。
  */
-export type FieldBinding = string | { data: string; field: string };
+export type FieldReference = string | { data: string; field: string };
+
+/**
+ * 纯渲染组件的展示字段绑定。format 只控制当前绑定的呈现，
+ * 不改变页面数据源字段契约或元数据快照。
+ */
+export type FieldBinding =
+  | string
+  | { data: string; field: string; format?: ValueFormatPreset };
 
 export type DataRow = Record<string, FieldValue>;

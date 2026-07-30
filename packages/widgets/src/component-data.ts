@@ -1,7 +1,8 @@
 import type {
   DataSnapshot,
   FieldBinding,
-  FieldDefinition,
+  ResolvedFieldDefinition,
+  ValueFormatPreset,
   FieldValue
 } from '@metriccanvas/page';
 
@@ -10,7 +11,7 @@ export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 /** 统一运行时已解析的数据槽：数据快照与其数据源字段契约保持同槽交付。 */
 export interface ComponentDataSlot {
   snapshot: ReadyDataSnapshot;
-  fields: Record<string, FieldDefinition>;
+  fields: Record<string, ResolvedFieldDefinition>;
 }
 
 export type MainDataSlots = { main: ComponentDataSlot };
@@ -23,20 +24,29 @@ export type NamedDataSlots = Record<string, ComponentDataSlot | undefined>;
 export interface ResolvedField {
   data: string;
   field: string;
-  definition?: FieldDefinition;
+  definition?: ResolvedFieldDefinition;
+  /** 当前组件绑定最终生效的展示格式。 */
+  format?: ValueFormatPreset;
 }
 
-/** 字符串字段绑定固定落到 main；显式绑定按命名槽解析。 */
+/**
+ * 字符串字段绑定固定落到 main；显式绑定按命名槽解析。
+ * 组件绑定 format 优先于元数据快照或旧页面归一出的 defaultFormat。
+ */
 export function resolveField(
   binding: FieldBinding,
   data: NamedDataSlots
 ): ResolvedField {
   const dataName = typeof binding === 'string' ? 'main' : binding.data;
   const field = typeof binding === 'string' ? binding : binding.field;
+  const definition = data[dataName]?.fields[field];
   return {
     data: dataName,
     field,
-    definition: data[dataName]?.fields[field]
+    definition,
+    format:
+      (typeof binding === 'string' ? undefined : binding.format) ??
+      definition?.defaultFormat
   };
 }
 

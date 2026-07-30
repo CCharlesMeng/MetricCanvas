@@ -1,4 +1,4 @@
-import type { DataRow, FieldBinding, NavigateAction } from '@metriccanvas/page';
+import type { DataRow, FieldReference, NavigateAction } from '@metriccanvas/page';
 import { createFilterState, type FilterValues } from './filter-state';
 
 type NavigateTarget = NavigateAction['navigate'];
@@ -33,6 +33,6 @@ export function drillThroughSearch(
   return outgoing.toURL();
 }
 
-function fieldName(binding: FieldBinding): string {
+function fieldName(binding: FieldReference): string {
   return typeof binding === 'string' ? binding : binding.field;
 }

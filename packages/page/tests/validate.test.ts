@@ -4,6 +4,28 @@ import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
 describe('data source 与 binding 校验', () => {
+  it('展示字段绑定允许 format，action 字段引用拒绝 format', () => {
+    const display: any = structuredClone(inlineReport);
+    display.sections[0].components[1].props.rows[0].valueField = {
+      data: 'main',
+      field: 'gmv',
+      format: 'number-grouped'
+    };
+    expect(validate(display)).toEqual([]);
+
+    const action: any = structuredClone(queryDashboard);
+    action.sections[0].components[0].props.actions[0].field = {
+      data: 'main',
+      field: 'region',
+      format: 'text'
+    };
+    expect(validate(action)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/0/props/actions/0/field/format'
+      })
+    );
+  });
+
   it('1.0/2.0 query 持久化形态不能混用', () => {
     const compactAsV1: any = structuredClone(queryDashboard);
     compactAsV1.schemaVersion = '1.0';

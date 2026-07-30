@@ -6,8 +6,7 @@
       "fields": {
         "target": {
           "type": "number",
-          "role": "metric",
-          "format": "number-grouped"
+          "role": "metric"
         }
       },
       "source": {
@@ -20,14 +19,6 @@
       }
     },
     "live-sales": {
-      "fieldOverrides": {
-        "stat-date": {
-          "format": "date-month-day"
-        },
-        "gmv": {
-          "format": "compact-yi-1"
-        }
-      },
       "source": {
         "type": "query",
         "query": {
@@ -58,7 +49,11 @@
             "rows": [
               {
                 "label": "目标",
-                "valueField": "target"
+                "valueField": {
+                  "data": "main",
+                  "field": "target",
+                  "format": "number-grouped"
+                }
               }
             ]
           }
@@ -73,10 +68,18 @@
             "main": "live-sales"
           },
           "props": {
-            "xField": "stat-date",
+            "xField": {
+              "data": "main",
+              "field": "stat-date",
+              "format": "date-month-day"
+            },
             "series": [
               {
-                "field": "gmv"
+                "field": {
+                  "data": "main",
+                  "field": "gmv",
+                  "format": "compact-yi-1"
+                }
               }
             ]
           }

@@ -1,5 +1,10 @@
 import type { CatalogSnapshot } from './catalog';
-import type { DataRow, FieldDefinition, FieldOverride } from './field';
+import type {
+  DataRow,
+  FieldDefinition,
+  FieldOverride,
+  ResolvedFieldDefinition
+} from './field';
 import type { StructuredQuery } from './query';
 
 export interface InlineSource {
@@ -59,7 +64,8 @@ export function isQueryDataSource(
  * 把两种持久化来源统一解析为运行时字段契约：
  * - inline 直接使用页面声明；
  * - 1.0 query 兼容旧 fields；
- * - 2.0 query 从结构化查询与元数据快照推导，再合并 fieldOverrides。
+ * - 2.0 query 从结构化查询与元数据快照推导，再合并字段名称覆盖；
+ * - 元数据快照 defaultFormat 与旧 format 均归一为运行时 defaultFormat。
  *
  * catalog 缺席时仍按 query 的 metrics/dimensions 推导最小角色与标量类型，
  * 供纯结构/引用校验使用；正式渲染必须传入元数据快照。
@@ -67,16 +73,21 @@ export function isQueryDataSource(
 export function resolveDataSourceFields(
   dataSource: DataSource,
   catalog?: CatalogSnapshot
-): Record<string, FieldDefinition> {
+): Record<string, ResolvedFieldDefinition> {
   if (isInlineDataSource(dataSource) || 'fields' in dataSource) {
-    return dataSource.fields ?? {};
+    return Object.fromEntries(
+      Object.entries(dataSource.fields ?? {}).map(([code, definition]) => [
+        code,
+        normalizeFieldDefinition(definition)
+      ])
+    );
   }
 
   const metrics = new Map(catalog?.metrics.map((metric) => [metric.code, metric]) ?? []);
   const dimensions = new Map(
     catalog?.dimensions.map((dimension) => [dimension.code, dimension]) ?? []
   );
-  const resolved: Record<string, FieldDefinition> = {};
+  const resolved: Record<string, ResolvedFieldDefinition> = {};
 
   for (const code of dataSource.source.query.dimensions ?? []) {
     const definition = dimensions.get(code);
@@ -85,7 +96,7 @@ export function resolveDataSourceFields(
         type: definition?.valueType ?? 'string',
         role: 'dimension',
         ...(definition?.name ? { label: definition.name } : {}),
-        ...(definition?.format ? { format: definition.format } : {})
+        ...catalogDefaultFormat(definition)
       },
       dataSource.fieldOverrides?.[code]
     );
@@ -97,7 +108,7 @@ export function resolveDataSourceFields(
         type: 'number',
         role: 'metric',
         ...(definition?.name ? { label: definition.name } : {}),
-        ...(definition?.format ? { format: definition.format } : {})
+        ...catalogDefaultFormat(definition)
       },
       dataSource.fieldOverrides?.[code]
     );
@@ -106,8 +117,33 @@ export function resolveDataSourceFields(
 }
 
 function mergeOverride(
-  definition: FieldDefinition,
+  definition: ResolvedFieldDefinition,
   override: FieldOverride | undefined
-): FieldDefinition {
-  return override ? { ...definition, ...override } : definition;
+): ResolvedFieldDefinition {
+  if (!override) return definition;
+  return {
+    ...definition,
+    ...(override.label ? { label: override.label } : {}),
+    ...(override.format ? { defaultFormat: override.format } : {})
+  };
+}
+
+function normalizeFieldDefinition(
+  definition: FieldDefinition
+): ResolvedFieldDefinition {
+  const { format, ...dataDefinition } = definition;
+  return {
+    ...dataDefinition,
+    ...(format ? { defaultFormat: format } : {})
+  };
+}
+
+function catalogDefaultFormat(
+  definition:
+    | CatalogSnapshot['metrics'][number]
+    | CatalogSnapshot['dimensions'][number]
+    | undefined
+): Pick<ResolvedFieldDefinition, 'defaultFormat'> | Record<string, never> {
+  const defaultFormat = definition?.defaultFormat ?? definition?.format;
+  return defaultFormat ? { defaultFormat } : {};
 }

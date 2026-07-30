@@ -24,7 +24,9 @@ export interface CatalogMetric {
   name: string;
   /** 指标值类型,mock 适配器按此造数:integer 整数 / decimal 两位小数 / percent 0~100 */
   valueType: 'integer' | 'decimal' | 'percent';
-  /** 跨页面一致的默认展示格式；页面可用 fieldOverrides 局部覆盖。 */
+  /** 跨页面一致的默认展示建议；组件字段绑定可按具体视图覆盖。 */
+  defaultFormat?: ValueFormatPreset;
+  /** @deprecated 兼容旧元数据快照；同步后应写入 defaultFormat。 */
   format?: ValueFormatPreset;
   /** 可用维度 code 白名单 */
   availableDimensions: string[];
@@ -38,7 +40,9 @@ export interface CatalogDimension {
   name: string;
   /** query 输出字段的标量类型，供统一运行时与渲染通道解析字段契约。 */
   valueType?: FieldType;
-  /** 跨页面一致的默认展示格式；页面可用 fieldOverrides 局部覆盖。 */
+  /** 跨页面一致的默认展示建议；组件字段绑定可按具体视图覆盖。 */
+  defaultFormat?: ValueFormatPreset;
+  /** @deprecated 兼容旧元数据快照；同步后应写入 defaultFormat。 */
   format?: ValueFormatPreset;
   cardinality: number;
   /** 样例枚举值(可选);mock 优先使用,不足 cardinality 时按 code 补造 */

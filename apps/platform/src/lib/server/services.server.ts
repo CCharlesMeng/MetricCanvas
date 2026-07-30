@@ -245,12 +245,12 @@ function bundledCatalogSnapshot(): CatalogSnapshot {
     metrics: bundledCatalog.metrics.map((metric) => ({
       ...metric,
       valueType: catalogValueType(metric.valueType),
-      format: catalogFormat(metric.format)
+      defaultFormat: catalogFormat(metric.defaultFormat)
     })),
     dimensions: bundledCatalog.dimensions.map((dimension) => ({
       ...dimension,
       valueType: catalogDimensionValueType(dimension.valueType),
-      format: catalogFormat(dimension.format)
+      defaultFormat: catalogFormat(dimension.defaultFormat)
     }))
   };
 }
@@ -272,7 +272,7 @@ function catalogDimensionValueType(
 
 function catalogFormat(
   value: string
-): NonNullable<CatalogSnapshot['metrics'][number]['format']> {
+): NonNullable<CatalogSnapshot['metrics'][number]['defaultFormat']> {
   const formats = [
     'number',
     'text',

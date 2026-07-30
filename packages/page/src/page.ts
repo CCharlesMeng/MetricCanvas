@@ -1,5 +1,5 @@
 import type { DataSourceMode, DataSources } from './data-source';
-import type { FieldBinding } from './field';
+import type { FieldBinding, FieldReference } from './field';
 import type { FilterDeclaration } from './filter';
 
 export interface Page {
@@ -166,7 +166,7 @@ export interface TableColumnGroup {
 export type TableColumnNode = TableColumn | TableColumnGroup;
 
 export type TableSelectionWrite =
-  | { field: FieldBinding }
+  | { field: FieldReference }
   | { value: string };
 
 export interface TableCellSelection {
@@ -253,7 +253,7 @@ export type ComponentAction = WriteFilterAction | NavigateAction;
 export interface WriteFilterAction {
   on: 'click';
   writeFilter: string;
-  field: FieldBinding;
+  field: FieldReference;
 }
 
 export interface NavigateAction {
@@ -261,7 +261,7 @@ export interface NavigateAction {
   navigate: {
     page: string;
     carryFilters?: string[];
-    setFilters?: Record<string, FieldBinding>;
+    setFilters?: Record<string, FieldReference>;
   };
 }
 

@@ -10,32 +10,27 @@
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_wow_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较上周",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗较上周"
         },
         "tokens_consumed_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗月环比"
         }
       },
       "source": {
@@ -56,32 +51,27 @@
         "tokens_flow": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水",
-          "format": "compact-wan-0"
+          "label": "Tokens流水"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens流水较昨日"
         },
         "tokens_flow_wow_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水较上周",
-          "format": "percent-2-signed"
+          "label": "Tokens流水较上周"
         },
         "tokens_flow_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens流水",
-          "format": "compact-wan-0"
+          "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens流水月环比"
         }
       },
       "source": {
@@ -102,14 +92,12 @@
         "stat_date": {
           "type": "date",
           "role": "dimension",
-          "label": "日期",
-          "format": "date-month-day"
+          "label": "日期"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "Tokens消耗量"
         }
       },
       "source": {
@@ -163,14 +151,12 @@
         "stat_date": {
           "type": "date",
           "role": "dimension",
-          "label": "日期",
-          "format": "date-month-day"
+          "label": "日期"
         },
         "tokens_flow": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水",
-          "format": "compact-wan-0"
+          "label": "Tokens流水"
         }
       },
       "source": {
@@ -224,68 +210,57 @@
         "representative_office": {
           "type": "string",
           "role": "dimension",
-          "label": "代表处",
-          "format": "text"
+          "label": "代表处"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗占比",
-          "format": "percent-1"
+          "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水",
-          "format": "compact-wan-0"
+          "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水占比",
-          "format": "percent-1"
+          "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens流水",
-          "format": "compact-wan-0"
+          "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens流水月环比"
         }
       },
       "source": {
@@ -429,68 +404,57 @@
         "model_service": {
           "type": "string",
           "role": "dimension",
-          "label": "模型",
-          "format": "text"
+          "label": "模型"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗占比",
-          "format": "percent-1"
+          "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水",
-          "format": "compact-wan-0"
+          "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水占比",
-          "format": "percent-1"
+          "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens流水",
-          "format": "compact-wan-0"
+          "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens流水月环比"
         }
       },
       "source": {
@@ -634,68 +598,57 @@
         "customer_name": {
           "type": "string",
           "role": "dimension",
-          "label": "客户名称",
-          "format": "text"
+          "label": "客户名称"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗占比",
-          "format": "percent-1"
+          "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens消耗量",
-          "format": "compact-yi-1"
+          "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水",
-          "format": "compact-wan-0"
+          "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水占比",
-          "format": "percent-1"
+          "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水较昨日",
-          "format": "percent-2-signed"
+          "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
           "role": "metric",
-          "label": "本月Tokens流水",
-          "format": "compact-wan-0"
+          "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens流水月环比",
-          "format": "percent-2-signed"
+          "label": "Tokens流水月环比"
         }
       },
       "source": {
@@ -839,20 +792,17 @@
         "customer_name": {
           "type": "string",
           "role": "dimension",
-          "label": "客户名称",
-          "format": "text"
+          "label": "客户名称"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-wan-0"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-0"
+          "label": "Tokens消耗较昨日"
         }
       },
       "source": {
@@ -891,20 +841,17 @@
         "customer_name": {
           "type": "string",
           "role": "dimension",
-          "label": "客户名称",
-          "format": "text"
+          "label": "客户名称"
         },
         "tokens_consumed": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗量",
-          "format": "compact-wan-0"
+          "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
           "role": "metric",
-          "label": "Tokens消耗较昨日",
-          "format": "percent-0"
+          "label": "Tokens消耗较昨日"
         }
       },
       "source": {
@@ -1003,25 +950,45 @@
             "rows": [
               {
                 "label": "当日",
-                "valueField": "tokens_consumed",
+                "valueField": {
+                  "data": "main",
+                  "field": "tokens_consumed",
+                  "format": "compact-yi-1"
+                },
                 "changes": [
                   {
                     "label": "较昨日",
-                    "field": "tokens_consumed_dod_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_dod_pct",
+                      "format": "percent-2-signed"
+                    }
                   },
                   {
                     "label": "较上周",
-                    "field": "tokens_consumed_wow_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_wow_pct",
+                      "format": "percent-2-signed"
+                    }
                   }
                 ]
               },
               {
                 "label": "本月",
-                "valueField": "tokens_consumed_mtd",
+                "valueField": {
+                  "data": "main",
+                  "field": "tokens_consumed_mtd",
+                  "format": "compact-yi-1"
+                },
                 "changes": [
                   {
                     "label": "月环比",
-                    "field": "tokens_consumed_mom_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mom_pct",
+                      "format": "percent-2-signed"
+                    }
                   }
                 ]
               }
@@ -1042,25 +1009,45 @@
             "rows": [
               {
                 "label": "当日",
-                "valueField": "tokens_flow",
+                "valueField": {
+                  "data": "main",
+                  "field": "tokens_flow",
+                  "format": "compact-wan-0"
+                },
                 "changes": [
                   {
                     "label": "较昨日",
-                    "field": "tokens_flow_dod_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_dod_pct",
+                      "format": "percent-2-signed"
+                    }
                   },
                   {
                     "label": "较上周",
-                    "field": "tokens_flow_wow_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_wow_pct",
+                      "format": "percent-2-signed"
+                    }
                   }
                 ]
               },
               {
                 "label": "本月",
-                "valueField": "tokens_flow_mtd",
+                "valueField": {
+                  "data": "main",
+                  "field": "tokens_flow_mtd",
+                  "format": "compact-wan-0"
+                },
                 "changes": [
                   {
                     "label": "月环比",
-                    "field": "tokens_flow_mom_pct"
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mom_pct",
+                      "format": "percent-2-signed"
+                    }
                   }
                 ]
               }
@@ -1078,10 +1065,18 @@
           },
           "props": {
             "title": "近10天Token消耗趋势",
-            "xField": "stat_date",
+            "xField": {
+              "data": "main",
+              "field": "stat_date",
+              "format": "date-month-day"
+            },
             "series": [
               {
-                "field": "tokens_consumed",
+                "field": {
+                  "data": "main",
+                  "field": "tokens_consumed",
+                  "format": "compact-yi-1"
+                },
                 "label": "Tokens消耗总量"
               }
             ],
@@ -1100,10 +1095,18 @@
           },
           "props": {
             "title": "近10天流水趋势",
-            "xField": "stat_date",
+            "xField": {
+              "data": "main",
+              "field": "stat_date",
+              "format": "date-month-day"
+            },
             "series": [
               {
-                "field": "tokens_flow",
+                "field": {
+                  "data": "main",
+                  "field": "tokens_flow",
+                  "format": "compact-wan-0"
+                },
                 "label": "Tokens总流水"
               }
             ],
@@ -1135,7 +1138,11 @@
             "subtitle": "区域消耗分布",
             "columns": [
               {
-                "field": "representative_office",
+                "field": {
+                  "data": "main",
+                  "field": "representative_office",
+                  "format": "text"
+                },
                 "title": "区域",
                 "width": 170,
                 "fixed": "left"
@@ -1146,32 +1153,52 @@
                 "title": "Tokens消耗",
                 "children": [
                   {
-                    "field": "tokens_consumed",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当日",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_consumed_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mtd",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当月",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "月环比",
                     "width": 100,
                     "align": "right",
@@ -1185,32 +1212,52 @@
                 "title": "Tokens流水",
                 "children": [
                   {
-                    "field": "tokens_flow",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当日",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_flow_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mtd",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当月",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "环比",
                     "width": 100,
                     "align": "right",
@@ -1248,7 +1295,11 @@
             "subtitle": "模型消耗分布",
             "columns": [
               {
-                "field": "model_service",
+                "field": {
+                  "data": "main",
+                  "field": "model_service",
+                  "format": "text"
+                },
                 "title": "模型",
                 "width": 180,
                 "fixed": "left"
@@ -1259,32 +1310,52 @@
                 "title": "Tokens消耗",
                 "children": [
                   {
-                    "field": "tokens_consumed",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当日",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_consumed_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mtd",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当月",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "月环比",
                     "width": 100,
                     "align": "right",
@@ -1298,32 +1369,52 @@
                 "title": "Tokens流水",
                 "children": [
                   {
-                    "field": "tokens_flow",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当日",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_flow_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mtd",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当月",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "环比",
                     "width": 100,
                     "align": "right",
@@ -1361,7 +1452,11 @@
             "subtitle": "客户消耗分布",
             "columns": [
               {
-                "field": "customer_name",
+                "field": {
+                  "data": "main",
+                  "field": "customer_name",
+                  "format": "text"
+                },
                 "title": "客户名称",
                 "width": 270,
                 "fixed": "left"
@@ -1372,32 +1467,52 @@
                 "title": "Tokens消耗",
                 "children": [
                   {
-                    "field": "tokens_consumed",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当日",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_consumed_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mtd",
+                      "format": "compact-yi-1"
+                    },
                     "title": "当月",
                     "width": 120,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_consumed_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_consumed_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "月环比",
                     "width": 100,
                     "align": "right",
@@ -1411,32 +1526,52 @@
                 "title": "Tokens流水",
                 "children": [
                   {
-                    "field": "tokens_flow",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当日",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_share_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_share_pct",
+                      "format": "percent-1"
+                    },
                     "title": "占比",
                     "width": 90,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_dod_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_dod_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "较昨日",
                     "width": 100,
                     "align": "right",
                     "visual": "signed"
                   },
                   {
-                    "field": "tokens_flow_mtd",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mtd",
+                      "format": "compact-wan-0"
+                    },
                     "title": "当月",
                     "width": 110,
                     "align": "right"
                   },
                   {
-                    "field": "tokens_flow_mom_pct",
+                    "field": {
+                      "data": "main",
+                      "field": "tokens_flow_mom_pct",
+                      "format": "percent-2-signed"
+                    },
                     "title": "环比",
                     "width": 100,
                     "align": "right",
@@ -1461,9 +1596,21 @@
           },
           "props": {
             "title": "TOP增长客户",
-            "nameField": "customer_name",
-            "valueField": "tokens_consumed",
-            "changeField": "tokens_consumed_dod_pct"
+            "nameField": {
+              "data": "main",
+              "field": "customer_name",
+              "format": "text"
+            },
+            "valueField": {
+              "data": "main",
+              "field": "tokens_consumed",
+              "format": "compact-wan-0"
+            },
+            "changeField": {
+              "data": "main",
+              "field": "tokens_consumed_dod_pct",
+              "format": "percent-0"
+            }
           }
         },
         {
@@ -1477,9 +1624,21 @@
           },
           "props": {
             "title": "TOP下降客户",
-            "nameField": "customer_name",
-            "valueField": "tokens_consumed",
-            "changeField": "tokens_consumed_dod_pct"
+            "nameField": {
+              "data": "main",
+              "field": "customer_name",
+              "format": "text"
+            },
+            "valueField": {
+              "data": "main",
+              "field": "tokens_consumed",
+              "format": "compact-wan-0"
+            },
+            "changeField": {
+              "data": "main",
+              "field": "tokens_consumed_dod_pct",
+              "format": "percent-0"
+            }
           }
         }
       ]

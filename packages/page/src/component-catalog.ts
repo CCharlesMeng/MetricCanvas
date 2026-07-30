@@ -24,9 +24,9 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'metricCard',
-    purpose: '突出一个或少量核心指标的当前值',
-    chooseWhen: ['总额、数量、完成率、KPI、核心指标'],
-    dataShape: '单行或少量行；至少一个 metric 字段',
+    purpose: '突出一个或少量核心指标的当前值、变化值与可选完成率',
+    chooseWhen: ['总额、数量、完成率、KPI、核心指标、年度活动进展'],
+    dataShape: '单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric',
     requiredProps: ['rows[].label', 'rows[].valueField'],
     defaultSpan: 3
   },
@@ -56,8 +56,8 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'table',
-    purpose: '展示需要逐行核对、排序或继续处理的明细',
-    chooseWhen: ['明细、列表、字段较多、需要精确值'],
+    purpose: '展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录',
+    chooseWhen: ['明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细'],
     dataShape: '一个或多个 dimension/metric 字段组成的多行记录',
     requiredProps: ['columns[].field'],
     defaultSpan: 12
@@ -87,4 +87,3 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     defaultSpan: 12
   }
 ] as const;
-

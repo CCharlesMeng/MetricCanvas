@@ -137,7 +137,7 @@ const sharedDimensions = [
     valueType: 'string' as const,
     cardinality: 20
   }
-].map((dimension) => ({ ...dimension, format: 'text' as const }));
+].map((dimension) => ({ ...dimension, defaultFormat: 'text' as const }));
 
 const allDimensionCodes = sharedDimensions.map((dimension) => dimension.code);
 
@@ -150,7 +150,7 @@ function metric(
     code,
     name,
     valueType,
-    format: valueType === 'percent' ? 'percent-1' : 'number-grouped',
+    defaultFormat: valueType === 'percent' ? 'percent-1' : 'number-grouped',
     availableDimensions: allDimensionCodes,
     availableAggregations: ['sum', 'avg', 'count']
   };

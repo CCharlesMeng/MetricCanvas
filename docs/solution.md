@@ -55,6 +55,11 @@
 3. **可完整校验。** JSON Schema 结构校验 + 引用/能力不变式校验 + query source 对数据服务元数据的语义校验,为 AI 生成提供自动纠错回路。
 4. **带版本。** `schemaVersion` 表达领域 DSL 契约版本,破坏性变化才升级。运行时同时支持当前与前一个大版本(N / N-1),CI 对 N-1 文档给出升版警告,迁移脚本按需执行;N-2 才拒绝加载。
 
+当前 `schemaVersion: "2.0"` 的完整字段说明、复杂页面组成占比、表格单元格联动以及
+声明式页面与高代码组件开发的分工见
+[`PAGE-METADATA.md`](../PAGE-METADATA.md)。这里的“页面元数据”是日常简称；领域中的
+长期资产仍称**看板页面**，而**元数据快照**专指数据服务的指标/维度供给侧清单。
+
 ### 页面文档示例
 
 ```json
@@ -75,7 +80,7 @@
     },
     "annual-target": {
       "fields": {
-        "target": { "type": "number", "role": "metric", "label": "年度目标", "format": "number-grouped" }
+        "target": { "type": "number", "role": "metric", "label": "年度目标" }
       },
       "source": {
         "type": "inline",
@@ -103,7 +108,16 @@
           "layout": { "span": 4 },
           "data": { "main": "annual-target" },
           "props": {
-            "rows": [{ "label": "年度目标", "valueField": "target" }]
+            "rows": [
+              {
+                "label": "年度目标",
+                "valueField": {
+                  "data": "main",
+                  "field": "target",
+                  "format": "number-grouped"
+                }
+              }
+            ]
           }
         },
         {
@@ -126,9 +140,9 @@
 
 `dataSources` 是公开页面协议中唯一的数据声明入口:
 
-- `source.type: "query"` 内含结构化查询(指标 + 维度 + 筛选 + 聚合粒度),统一运行时以查询和元数据快照解析完整字段契约并翻译为数据服务请求；页面中不出现查询语句字符串,只在需要改变默认标签/格式时声明 `fieldOverrides`。
+- `source.type: "query"` 内含结构化查询(指标 + 维度 + 筛选 + 聚合粒度),统一运行时以查询和元数据快照解析完整字段契约并翻译为数据服务请求；页面中不出现查询语句字符串,只在需要改变默认标签时声明 `fieldOverrides`。
 - `source.type: "inline"` 同时声明完整 `fields` 和受其约束的 `rows`,用于固定时点报告、离线交付和验收。
-- 组件通过 `data: { "main": "<source-id>" }` 等命名槽位绑定页面数据源。字段字符串简写引用 `main`；多源组件用 `{ "data": "compare", "field": "target" }` 明确来源。
+- 组件通过 `data: { "main": "<source-id>" }` 等命名槽位绑定页面数据源。字段字符串简写引用 `main`；对象形式用 `{ "data": "compare", "field": "target", "format": "number-grouped" }` 明确来源并可声明当前视图的最终展示格式。
 - 查询与数据行都不进入组件。统一运行时把两种来源归一为数据快照 + 字段契约,因此组件可在 inline/query 间无感切换。
 
 ### 内容与布局:嵌套分区 + 自动网格
@@ -209,6 +223,11 @@
 - 筛选器组件同样纯渲染:显示运行时传入的候选项与当前值,变更时只上抛事件,不直接写筛选状态。
 
 收益:组件可脱离运行时独立开发和测试(mock 一组数据行与字段契约即可)、图表库可替换、组件语义清晰,未来接 A2UI 时能直接映射为 catalog 组件定义。
+
+高代码扩展发生在组件源码和页面创作工具层，不发生在页面文档内部：页面开发者可以用
+TypeScript 工厂函数生成合法 `Page`，组件开发者可以在 `packages/widgets` 内实现复杂
+CSS、SVG、图表和布局算法；最终页面资产仍只引用受治理的组件 `type`、数据槽和语义
+`props`。这样把复杂实现隐藏在小接口之后，同时保持页面可校验、可 diff、可由 AI 稳定生成。
 
 ### 一期组件集
 
@@ -316,6 +335,7 @@
 | [0007](./adr/0007-demote-spec-to-document-form.md) | "页面规格"降级为文档形态,领域词汇只保留聚合根"看板页面" |
 | [0008](./adr/0008-page-data-sources.md) | 公开页面采用命名数据源,统一 inline 与 query 取数 |
 | [0011](./adr/0011-derive-query-fields-from-catalog.md) | query 字段契约由结构化查询与元数据快照解析 |
+| [0013](./adr/0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 |
 
 ## 附录:演进方向
 

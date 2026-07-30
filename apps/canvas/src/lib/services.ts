@@ -50,12 +50,12 @@ export const catalogSnapshot = {
   metrics: snapshot.metrics.map((metric) => ({
     ...metric,
     valueType: catalogValueType(metric.valueType),
-    format: catalogFormat(metric.format)
+    defaultFormat: catalogFormat(metric.defaultFormat)
   })),
   dimensions: snapshot.dimensions.map((dimension) => ({
     ...dimension,
     valueType: catalogFieldType(dimension.valueType),
-    format: catalogFormat(dimension.format)
+    defaultFormat: catalogFormat(dimension.defaultFormat)
   }))
 } satisfies CatalogSnapshot;
 

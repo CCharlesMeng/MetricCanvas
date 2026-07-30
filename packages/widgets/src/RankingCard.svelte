@@ -31,9 +31,9 @@
       >
         {index + 1}
       </span>
-      <span class="name">{formatValue(row[name.field], name.definition?.format)}</span>
+      <span class="name">{formatValue(row[name.field], name.format)}</span>
       <span class="ranking-value">
-        {formatValue(row[value.field], value.definition?.format)}
+        {formatValue(row[value.field], value.format)}
       </span>
       {#if change}
         <span
@@ -42,7 +42,7 @@
           class="change"
         >
           <span class="change-label">{fieldLabel(props.changeField!, data)}</span>
-          {formatValue(row[change.field], change.definition?.format)}
+          {formatValue(row[change.field], change.format)}
         </span>
       {/if}
     </li>

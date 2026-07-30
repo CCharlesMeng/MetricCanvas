@@ -15,7 +15,7 @@
 
   function fieldText(field: FieldBinding): string {
     const resolved = resolveField(field, data);
-    return formatValue(fieldValue(field, data), resolved.definition?.format);
+    return formatValue(fieldValue(field, data), resolved.format);
   }
 
   function changeText(

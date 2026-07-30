@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { MainDataSlots } from '../src/component-data';
-import { lineOption } from '../src/chart-options';
+import { lineOption, mapOption } from '../src/chart-options';
 
 interface TestedLineOption {
   tooltip: { confine: boolean; hideDelay: number };
@@ -31,7 +31,12 @@ describe('lineOption', () => {
           ]
         },
         fields: {
-          date: { type: 'date', role: 'dimension', label: '日期', format: 'date-month-day' },
+          date: {
+            type: 'date',
+            role: 'dimension',
+            label: '日期',
+            defaultFormat: 'date-month-day'
+          },
           tokens: { type: 'number', role: 'metric', label: 'Tokens消耗总量' }
         }
       }
@@ -59,20 +64,28 @@ describe('lineOption', () => {
             type: 'date',
             role: 'dimension',
             label: '日期',
-            format: 'date-month-day'
+            defaultFormat: 'date-month-day'
           },
           rate: {
             type: 'number',
             role: 'metric',
             label: '较昨日',
-            format: 'percent-2-signed'
+            defaultFormat: 'percent-1'
           }
         }
       }
     };
     const option = lineOption(data, {
       xField: 'statDate',
-      series: [{ field: 'rate' }],
+      series: [
+        {
+          field: {
+            data: 'main',
+            field: 'rate',
+            format: 'percent-2-signed'
+          }
+        }
+      ],
       showPointLabels: true,
       hideYAxis: true
     }) as unknown as TestedLineOption;
@@ -88,5 +101,44 @@ describe('lineOption', () => {
       axisTick: { show: false },
       axisLine: { show: false }
     });
+  });
+});
+
+describe('mapOption', () => {
+  it('地图 tooltip 使用组件字段绑定的最终格式', () => {
+    const data: MainDataSlots = {
+      main: {
+        snapshot: {
+          status: 'ready',
+          rows: [{ region: '上海', rate: 4.24 }]
+        },
+        fields: {
+          region: { type: 'string', role: 'dimension', label: '区域' },
+          rate: {
+            type: 'number',
+            role: 'metric',
+            label: '增长率',
+            defaultFormat: 'percent-1'
+          }
+        }
+      }
+    };
+    const option = mapOption(
+      data,
+      {
+        map: 'china',
+        nameField: 'region',
+        valueField: {
+          data: 'main',
+          field: 'rate',
+          format: 'percent-2-signed'
+        }
+      },
+      new Map([['上海', [121.47, 31.23]]])
+    ) as unknown as {
+      tooltip: { valueFormatter: (value: unknown) => string };
+    };
+
+    expect(option.tooltip.valueFormatter([121.47, 31.23, 4.24])).toBe('+4.24%');
   });
 });

@@ -62,7 +62,12 @@ export const pageSchema = {
         type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
         role: { type: 'string', enum: ['dimension', 'metric'] },
         label: { type: 'string', minLength: 1 },
-        format: { type: 'string', enum: valueFormatPresets }
+        format: {
+          type: 'string',
+          enum: valueFormatPresets,
+          description:
+            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
+        }
       }
     },
     dataSource: {
@@ -88,7 +93,12 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         label: { type: 'string', minLength: 1 },
-        format: { type: 'string', enum: valueFormatPresets }
+        format: {
+          type: 'string',
+          enum: valueFormatPresets,
+          description:
+            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
+        }
       }
     },
     inlineDataSource: {
@@ -325,7 +335,7 @@ export const pageSchema = {
         target: { type: 'string', pattern: idPattern }
       }
     },
-    fieldBinding: {
+    fieldReference: {
       oneOf: [
         { type: 'string', pattern: fieldPattern },
         {
@@ -339,6 +349,25 @@ export const pageSchema = {
         }
       ]
     },
+    fieldBinding: {
+      oneOf: [
+        { type: 'string', pattern: fieldPattern },
+        {
+          type: 'object',
+          required: ['data', 'field'],
+          additionalProperties: false,
+          properties: {
+            data: { type: 'string', pattern: idPattern },
+            field: { type: 'string', pattern: fieldPattern },
+            format: {
+              type: 'string',
+              enum: valueFormatPresets,
+              description: '只控制当前组件中这一次字段绑定的展示格式'
+            }
+          }
+        }
+      ]
+    },
     componentAction: {
       oneOf: [
         {
@@ -348,7 +377,7 @@ export const pageSchema = {
           properties: {
             on: { const: 'click' },
             writeFilter: { type: 'string', pattern: idPattern },
-            field: { $ref: '#/definitions/fieldBinding' }
+            field: { $ref: '#/definitions/fieldReference' }
           }
         },
         {
@@ -370,7 +399,7 @@ export const pageSchema = {
                 },
                 setFilters: {
                   type: 'object',
-                  additionalProperties: { $ref: '#/definitions/fieldBinding' }
+                  additionalProperties: { $ref: '#/definitions/fieldReference' }
                 }
               }
             }
@@ -600,7 +629,7 @@ export const pageSchema = {
                     required: ['field'],
                     additionalProperties: false,
                     properties: {
-                      field: { $ref: '#/definitions/fieldBinding' }
+                      field: { $ref: '#/definitions/fieldReference' }
                     }
                   },
                   {

@@ -344,7 +344,7 @@
                     onclick={() => oncellselect?.({ rowIndex: i, column })}
                   >
                     <span class="cell-stack">
-                      <span>{formatValue(rawValue, resolved.definition?.format)}</span>
+                      <span>{formatValue(rawValue, resolved.format)}</span>
                     </span>
                   </button>
                 {:else if column.visual === 'rateBar'}
@@ -354,21 +354,21 @@
                       class="rate-bar"
                       style={`width: ${rateBarWidth(column, rawValue)}%;`}
                     ></span>
-                    <span class="cell-value">{formatValue(rawValue, resolved.definition?.format)}</span>
+                    <span class="cell-value">{formatValue(rawValue, resolved.format)}</span>
                   </span>
                 {:else}
                   <span class="cell-stack">
-                    <span>{formatValue(rawValue, resolved.definition?.format)}</span>
+                    <span>{formatValue(rawValue, resolved.format)}</span>
                     {#if column.secondaryField}
                       {@const secondary = resolveField(column.secondaryField, data)}
                       <small>
-                        {formatValue(row[secondary.field], secondary.definition?.format)}
+                        {formatValue(row[secondary.field], secondary.format)}
                       </small>
                     {/if}
                     {#if column.badgeField}
                       {@const badge = resolveField(column.badgeField, data)}
                       <small class="cell-badge">
-                        {formatValue(row[badge.field], badge.definition?.format)}
+                        {formatValue(row[badge.field], badge.format)}
                       </small>
                     {/if}
                   </span>

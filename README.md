@@ -2,7 +2,7 @@
 
 MetricCanvas 是数据服务之上的治理化消费层：以业务指标为核心，用声明式的**看板页面**描述数据应用，由**统一运行时**校验、取数并渲染。页面文档适合由开发者编写或由 AI 生成，能够进入 Git 做 diff、评审和审计，而不是让 AI 直接生成不可控的生产页面代码。
 
-领域概念以 [CONTEXT.md](./CONTEXT.md) 为准。当前统一运行时直接消费的协议见 [看板页面元数据描述](./PAGE-METADATA.md)，文档按“静态页面 → 动态页面 → 有交互关联的动态页面”三个维度给出可渲染示例。完整方案与设计取舍分别见 [docs/solution.md](./docs/solution.md) 和 [docs/adr/](./docs/adr/)。
+领域概念以 [CONTEXT.md](./CONTEXT.md) 为准。当前统一运行时直接消费的协议见 [看板页面文档说明](./PAGE-METADATA.md)，其中包含当前复杂页面的组成占比、schemaVersion 2.0 新增能力，以及声明式页面与高代码组件开发的分工。完整方案与设计取舍分别见 [docs/solution.md](./docs/solution.md) 和 [docs/adr/](./docs/adr/)。
 
 ## 当前能力与边界
 
@@ -143,8 +143,8 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 各层边界：
 
 - **看板页面 / `packages/page`**：核心领域资产。`schemaVersion` 标识协议；`dataSources` 声明命名页面数据源；内容位于 `sections[].components`。
-- **页面数据源**：`source.type: "inline"` 携带固定 `rows` 和完整 `fields`；`source.type: "query"` 携带结构化查询，其字段契约由查询与元数据快照解析，页面只用可选 `fieldOverrides` 覆盖标签或格式。查询和数据行只出现在页面数据源，不进入组件。
-- **组件数据槽**：组件用 `data` 把 `main`、`compare`、`target` 等命名槽绑定到页面数据源；字段字符串简写引用 `main`，多源字段可显式写 `{ "data": "target", "field": "value" }`。
+- **页面数据源**：`source.type: "inline"` 携带固定 `rows` 和完整 `fields`；`source.type: "query"` 携带结构化查询，其字段契约由查询与元数据快照解析，页面只用可选 `fieldOverrides` 覆盖标签。查询和数据行只出现在页面数据源，不进入组件。
+- **组件数据槽与字段绑定**：组件用 `data` 把 `main`、`compare`、`target` 等命名槽绑定到页面数据源；字段字符串简写引用 `main`，对象形式可指定数据槽和当前视图的 `format`，例如 `{ "data": "target", "field": "value", "format": "number-grouped" }`。
 - **组件 props**：只描述展示和有限 action。组件不发请求、不访问全局状态，也不管理加载、错误和空态。
 - **统一运行时**：直接消费看板页面，校验后生成数据快照；query 数据源经数据网关取数，inline 数据源同步生成终态快照。
 - **数据网关**：只接收生效查询并返回标准化数据行，不感知页面和组件。数据服务是一期唯一真实数据入口。
@@ -172,8 +172,7 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
         "value": {
           "type": "number",
           "role": "metric",
-          "label": "成交总额",
-          "format": "number-grouped"
+          "label": "成交总额"
         }
       },
       "source": {
@@ -199,7 +198,16 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
           "layout": { "span": 4 },
           "data": { "main": "overview" },
           "props": {
-            "rows": [{ "label": "成交总额", "valueField": "value" }]
+            "rows": [
+              {
+                "label": "成交总额",
+                "valueField": {
+                  "data": "main",
+                  "field": "value",
+                  "format": "number-grouped"
+                }
+              }
+            ]
           }
         }
       ]
@@ -227,7 +235,7 @@ apps/canvas：路由、依赖注入、页面目录、正式渲染与 /preview
 ### 页面作者 / AI
 
 - **输入**：业务需求、指标与维度 code、`catalog/snapshot.json`、现有页面和领域 DSL 约束。
-- **工作流**：选择 inline/query/mixed → inline 声明 `fields`，query 声明结构化查询与必要的 `fieldOverrides` → 在 `sections` 中组合组件和数据槽 → 用 `/preview` 快速修正 → 保存到 `pages/` → `pnpm validate`。
+- **工作流**：选择 inline/query/mixed → inline 声明 `fields`，query 声明结构化查询与必要的标签覆盖 → 在 `sections` 中组合组件、数据槽和展示字段绑定 → 用 `/preview` 快速修正 → 保存到 `pages/` → `pnpm validate`。
 - **启动**：通常使用默认 mock 的 `pnpm dev`；检查真实协议时改用仿真模式。
 - **验收**：文档可校验、文件名与 id 一致、指标口径来自数据服务、页面可渲染；query 页的筛选、URL 恢复和 action 符合预期，inline 页没有假交互。
 
@@ -309,7 +317,7 @@ pnpm sim
 - 当前版本是 `schemaVersion: "2.0"`，并兼容 N-1 `1.0`；1.0 页面可用 `pnpm migrate` 升级。顶层只允许 `schemaVersion`、`id`、`meta`、`dataSources`、`filters`、`sections`。
 - 页面、分区、组件和数据源 id 使用小写字母、数字和连字符；页面文件名必须等于页面 id。
 - inline 页面数据源必须声明至少一个字段，每行必须完整匹配字段契约，不能多字段或少字段。
-- query 至少声明一个指标；指标、维度、字段类型、默认标签/格式和聚合能力由 `catalog/snapshot.json` 解析与校验，页面只用 `fieldOverrides` 覆盖查询输出字段的 `label` / `format`。
+- query 至少声明一个指标；指标、维度、字段类型、默认标签、`defaultFormat` 展示建议和聚合能力由 `catalog/snapshot.json` 解析与校验。页面只用 `fieldOverrides` 覆盖查询输出字段的 `label`，最终格式在组件字段绑定声明。
 - 分区固定为 12 列自动流网格，组件 `layout.span` 为 1–12。
 - 组件类型与 props 是封闭协议；页面禁止表达式、脚本、HTML、自定义样式和绕过数据网关的远程请求。衍生指标和计算逻辑属于数据服务。
 - 纯 inline 页面禁止筛选器、actions 和远程分页；actions 只允许绑定 query 数据源的组件。

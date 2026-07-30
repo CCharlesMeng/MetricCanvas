@@ -12,7 +12,7 @@ import { formatValue } from './value-format';
 
 /**
  * 已解析命名数据槽 + 组件 props → ECharts option 的纯翻译。
- * 标签和格式统一继承数据源字段契约。
+ * 标签继承字段契约；最终格式由组件字段绑定覆盖 defaultFormat 展示建议。
  */
 
 /** ECharts 默认色板(面积渐变需要按系列色构造 colorStops,故显式持有) */
@@ -34,7 +34,7 @@ export function lineOption(
     xAxis: {
       type: 'category',
       name: fieldLabel(props.xField, data),
-      data: rows.map((row) => formatValue(row[x.field], x.definition?.format))
+      data: rows.map((row) => formatValue(row[x.field], x.format))
     },
     yAxis: dualOrSingleAxis(props.dualAxis, props.series.length, props.hideYAxis),
     series: props.series.map((series, i) => {
@@ -54,15 +54,15 @@ export function lineOption(
                 color: '#191919',
                 fontSize: 12,
                 formatter: (params: unknown) =>
-                  formatValue(formatterValue(params), field.definition?.format)
+                  formatValue(formatterValue(params), field.format)
               }
             }
           : {}),
-        ...(field.definition?.format
+        ...(field.format
           ? {
               tooltip: {
                 valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.definition?.format)
+                  formatValue(formatterValue(value), field.format)
               }
             }
           : {}),
@@ -79,7 +79,7 @@ export function barOption(
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
   const categories = rows.map((row) =>
-    formatValue(row[category.field], category.definition?.format)
+    formatValue(row[category.field], category.format)
   );
   const categoryAxis = { type: 'category' as const, data: categories };
   const valueAxis = dualOrSingleAxis(props.dualAxis, props.series.length);
@@ -98,11 +98,11 @@ export function barOption(
         ...(props.stacked ? { stack: 'total' } : {}),
         ...(props.dualAxis && i > 0 ? { yAxisIndex: 1 } : {}),
         ...(props.rounded ? { itemStyle: { borderRadius: roundedCorners(props) } } : {}),
-        ...(field.definition?.format
+        ...(field.format
           ? {
               tooltip: {
                 valueFormatter: (value: unknown) =>
-                  formatValue(formatterValue(value), field.definition?.format)
+                  formatValue(formatterValue(value), field.format)
               }
             }
           : {}),
@@ -123,10 +123,10 @@ export function pieOption(
   return {
     tooltip: {
       trigger: 'item',
-      ...(value.definition?.format
+      ...(value.format
         ? {
             valueFormatter: (raw: unknown) =>
-              formatValue(formatterValue(raw), value.definition?.format)
+              formatValue(formatterValue(raw), value.format)
           }
         : {})
     },
@@ -137,7 +137,7 @@ export function pieOption(
         label: { show: showLabelLine, formatter: '{b}: {d}%' },
         labelLine: { show: showLabelLine },
         data: rows.map((row) => ({
-          name: formatValue(row[category.field], category.definition?.format),
+          name: formatValue(row[category.field], category.format),
           value: numberOrGap(row[value.field]) ?? 0
         }))
       }
@@ -173,7 +173,15 @@ export function mapOption(
   });
 
   return {
-    tooltip: { trigger: 'item' },
+    tooltip: {
+      trigger: 'item',
+      ...(value.format
+        ? {
+            valueFormatter: (raw: unknown) =>
+              formatValue(mapFormatterValue(raw), value.format)
+          }
+        : {})
+    },
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
     geo: {
       map: props.map,
@@ -275,6 +283,11 @@ function formatterValue(value: unknown): string | number | null | undefined {
   return typeof candidate === 'string' || typeof candidate === 'number' || candidate == null
     ? candidate
     : undefined;
+}
+
+function mapFormatterValue(value: unknown): string | number | null | undefined {
+  if (Array.isArray(value)) return formatterValue(value.at(-1));
+  return formatterValue(value);
 }
 
 function withAlpha(hex: string, alpha: number): string {

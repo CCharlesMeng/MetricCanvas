@@ -1,4 +1,4 @@
-import type { FieldBinding } from './field';
+import type { FieldReference } from './field';
 import type { NavigateAction, Page } from './page';
 import type { TypedError } from './errors';
 
@@ -53,7 +53,7 @@ export function navigateErrors(
 function targetErrors(
   targetId: string,
   carryFilters: string[] | undefined,
-  setFilters: Record<string, FieldBinding> | undefined,
+  setFilters: Record<string, FieldReference> | undefined,
   path: string,
   knownPageIds: ReadonlySet<string>,
   pagesById: ReadonlyMap<string, Page>
