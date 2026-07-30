@@ -1,5 +1,5 @@
-import type { TypedError } from '@metriccanvas/page';
-import { customerRiskPreviewPage } from './customer-risk-preview';
+import type { Page, TypedError } from '@metriccanvas/page';
+import customerActivityRiskBriefing from '../../../../pages/customer-activity-risk-briefing.json';
 
 export type PreviewDocumentResult =
   | { status: 'valid'; document: unknown }
@@ -28,6 +28,6 @@ export function parsePreviewDocument(
     : { status: 'valid', document };
 }
 
-export const DEFAULT_PREVIEW_PAGE = customerRiskPreviewPage;
+export const DEFAULT_PREVIEW_PAGE = customerActivityRiskBriefing as Page;
 
 export const DEFAULT_PREVIEW_JSON = JSON.stringify(DEFAULT_PREVIEW_PAGE, null, 2);

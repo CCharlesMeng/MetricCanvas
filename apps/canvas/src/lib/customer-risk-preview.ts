@@ -137,7 +137,7 @@ const sharedDimensions = [
     valueType: 'string' as const,
     cardinality: 20
   }
-];
+].map((dimension) => ({ ...dimension, format: 'text' as const }));
 
 const allDimensionCodes = sharedDimensions.map((dimension) => dimension.code);
 

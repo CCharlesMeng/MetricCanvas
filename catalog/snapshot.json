@@ -26,6 +26,542 @@
       "format": "percent-1",
       "availableDimensions": ["region"],
       "availableAggregations": ["avg"]
+    },
+    {
+      "code": "overview-na-excellent",
+      "name": "卓越客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "overview-na-strategic",
+      "name": "战略客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "overview-na-core",
+      "name": "核心客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "overview-top-excellent",
+      "name": "TOP100卓越客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "overview-top-strategic",
+      "name": "TOP100战略客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "overview-top-core",
+      "name": "TOP100核心客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-annual-count",
+      "name": "年累计活动次数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-monthly-change",
+      "name": "较上月变化",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-completion-rate",
+      "name": "完成率",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-annual-count",
+      "name": "年累计活动次数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-monthly-change",
+      "name": "较上月变化",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-completion-rate",
+      "name": "完成率",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-annual-count",
+      "name": "年累计活动次数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-monthly-change",
+      "name": "较上月变化",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-completion-rate",
+      "name": "完成率",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-total",
+      "name": "NA客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-missing",
+      "name": "NA未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-missing-rate",
+      "name": "NA未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-year-missing",
+      "name": "NA 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-year-missing-rate",
+      "name": "NA 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-top-total",
+      "name": "TOP100项目客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-top-missing",
+      "name": "TOP100未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-top-missing-rate",
+      "name": "TOP100未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-top-year-missing",
+      "name": "TOP100 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-top-year-missing-rate",
+      "name": "TOP100 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-detail-row",
+      "name": "明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-na-top-row",
+      "name": "NA TOP明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inspection-project-top-row",
+      "name": "TOP100项目明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-total",
+      "name": "NA客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-missing",
+      "name": "NA未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-missing-rate",
+      "name": "NA未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-year-missing",
+      "name": "NA 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-year-missing-rate",
+      "name": "NA 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-top-total",
+      "name": "TOP100项目客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-top-missing",
+      "name": "TOP100未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-top-missing-rate",
+      "name": "TOP100未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-top-year-missing",
+      "name": "TOP100 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-top-year-missing-rate",
+      "name": "TOP100 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-detail-row",
+      "name": "明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-na-top-row",
+      "name": "NA TOP明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "visit-project-top-row",
+      "name": "TOP100项目明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-total",
+      "name": "NA客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-missing",
+      "name": "NA未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-missing-rate",
+      "name": "NA未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-year-missing",
+      "name": "NA 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-year-missing-rate",
+      "name": "NA 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-top-total",
+      "name": "TOP100项目客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-top-missing",
+      "name": "TOP100未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-top-missing-rate",
+      "name": "TOP100未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-top-year-missing",
+      "name": "TOP100 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-top-year-missing-rate",
+      "name": "TOP100 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-detail-row",
+      "name": "明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-na-top-row",
+      "name": "NA TOP明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "summit-project-top-row",
+      "name": "TOP100项目明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-total",
+      "name": "NA客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-missing",
+      "name": "NA未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-missing-rate",
+      "name": "NA未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-year-missing",
+      "name": "NA 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-year-missing-rate",
+      "name": "NA 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-top-total",
+      "name": "TOP100项目客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-top-missing",
+      "name": "TOP100未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-top-missing-rate",
+      "name": "TOP100未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-top-year-missing",
+      "name": "TOP100 26年未开展客户数",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-top-year-missing-rate",
+      "name": "TOP100 26年未开展占比",
+      "valueType": "percent",
+      "format": "percent-1",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-detail-row",
+      "name": "明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-na-top-row",
+      "name": "NA TOP明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
+    },
+    {
+      "code": "inactive-project-top-row",
+      "name": "TOP100项目明细序号",
+      "valueType": "integer",
+      "format": "number-grouped",
+      "availableDimensions": ["representative-office","customer-scope","customer-name","customer-level","owner-name","owner-id","last-inspection","last-visit","last-summit"],
+      "availableAggregations": ["sum","avg","count"]
     }
   ],
   "dimensions": [
@@ -60,6 +596,72 @@
       "format": "date-month-day",
       "cardinality": 5,
       "sampleValues": ["2026-07-16", "2026-07-17", "2026-07-18", "2026-07-19", "2026-07-20"]
+    },
+    {
+      "code": "representative-office",
+      "name": "代表处",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 153,
+      "sampleValues": ["XX代表处01","XX代表处02","XX代表处03","XX代表处04","XX代表处05","XX代表处06","XX代表处07","XX代表处08"]
+    },
+    {
+      "code": "customer-scope",
+      "name": "客户范围",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 2,
+      "sampleValues": ["NA","TOP100"]
+    },
+    {
+      "code": "customer-name",
+      "name": "客户名称",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 153
+    },
+    {
+      "code": "customer-level",
+      "name": "客户等级",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 3,
+      "sampleValues": ["卓越","战略","核心"]
+    },
+    {
+      "code": "owner-name",
+      "name": "华为责任人",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 20
+    },
+    {
+      "code": "owner-id",
+      "name": "责任人工号",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 20
+    },
+    {
+      "code": "last-inspection",
+      "name": "最近一次公司考察时间",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 20
+    },
+    {
+      "code": "last-visit",
+      "name": "最近一次高层拜访时间",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 20
+    },
+    {
+      "code": "last-summit",
+      "name": "最近一次高层峰会时间",
+      "valueType": "string",
+      "format": "text",
+      "cardinality": 20
     }
   ]
 }

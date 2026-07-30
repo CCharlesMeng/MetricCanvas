@@ -1,0 +1,1973 @@
+{
+  "schemaVersion": "2.0",
+  "id": "customer-activity-risk-briefing",
+  "meta": {
+    "description": "云战地助手自动生成的客户活动风险简报"
+  },
+  "filters": [
+    {
+      "id": "inspection-office",
+      "type": "dimension",
+      "dimension": "representative-office",
+      "visible": false,
+      "default": [
+        "XX代表处01"
+      ]
+    },
+    {
+      "id": "inspection-scope",
+      "type": "dimension",
+      "dimension": "customer-scope",
+      "visible": false,
+      "default": [
+        "NA"
+      ]
+    },
+    {
+      "id": "visit-office",
+      "type": "dimension",
+      "dimension": "representative-office",
+      "visible": false,
+      "default": [
+        "XX代表处01"
+      ]
+    },
+    {
+      "id": "visit-scope",
+      "type": "dimension",
+      "dimension": "customer-scope",
+      "visible": false,
+      "default": [
+        "NA"
+      ]
+    },
+    {
+      "id": "summit-office",
+      "type": "dimension",
+      "dimension": "representative-office",
+      "visible": false,
+      "default": [
+        "XX代表处01"
+      ]
+    },
+    {
+      "id": "summit-scope",
+      "type": "dimension",
+      "dimension": "customer-scope",
+      "visible": false,
+      "default": [
+        "NA"
+      ]
+    },
+    {
+      "id": "inactive-office",
+      "type": "dimension",
+      "dimension": "representative-office",
+      "visible": false,
+      "default": [
+        "XX代表处01"
+      ]
+    },
+    {
+      "id": "inactive-scope",
+      "type": "dimension",
+      "dimension": "customer-scope",
+      "visible": false,
+      "default": [
+        "NA"
+      ]
+    }
+  ],
+  "dataSources": {
+    "overview-na": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "overview-na-excellent",
+            "overview-na-strategic",
+            "overview-na-core"
+          ]
+        }
+      }
+    },
+    "overview-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "overview-top-excellent",
+            "overview-top-strategic",
+            "overview-top-core"
+          ]
+        }
+      }
+    },
+    "annual-inspection": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inspection-annual-count",
+            "inspection-monthly-change",
+            "inspection-completion-rate"
+          ]
+        }
+      }
+    },
+    "annual-visit": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "visit-annual-count",
+            "visit-monthly-change",
+            "visit-completion-rate"
+          ]
+        }
+      }
+    },
+    "annual-summit": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "summit-annual-count",
+            "summit-monthly-change",
+            "summit-completion-rate"
+          ]
+        }
+      }
+    },
+    "inspection-progress": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inspection-na-total",
+            "inspection-na-missing",
+            "inspection-na-missing-rate",
+            "inspection-na-year-missing",
+            "inspection-na-year-missing-rate",
+            "inspection-top-total",
+            "inspection-top-missing",
+            "inspection-top-missing-rate",
+            "inspection-top-year-missing",
+            "inspection-top-year-missing-rate"
+          ],
+          "dimensions": [
+            "representative-office"
+          ]
+        }
+      }
+    },
+    "inspection-detail": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inspection-detail-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ],
+          "filters": {
+            "subscribe": [
+              "inspection-office",
+              "inspection-scope"
+            ]
+          }
+        }
+      }
+    },
+    "inspection-na-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inspection-na-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "inspection-project-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inspection-project-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "visit-progress": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "visit-na-total",
+            "visit-na-missing",
+            "visit-na-missing-rate",
+            "visit-na-year-missing",
+            "visit-na-year-missing-rate",
+            "visit-top-total",
+            "visit-top-missing",
+            "visit-top-missing-rate",
+            "visit-top-year-missing",
+            "visit-top-year-missing-rate"
+          ],
+          "dimensions": [
+            "representative-office"
+          ]
+        }
+      }
+    },
+    "visit-detail": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "visit-detail-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ],
+          "filters": {
+            "subscribe": [
+              "visit-office",
+              "visit-scope"
+            ]
+          }
+        }
+      }
+    },
+    "visit-na-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "visit-na-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "visit-project-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "visit-project-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "summit-progress": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "summit-na-total",
+            "summit-na-missing",
+            "summit-na-missing-rate",
+            "summit-na-year-missing",
+            "summit-na-year-missing-rate",
+            "summit-top-total",
+            "summit-top-missing",
+            "summit-top-missing-rate",
+            "summit-top-year-missing",
+            "summit-top-year-missing-rate"
+          ],
+          "dimensions": [
+            "representative-office"
+          ]
+        }
+      }
+    },
+    "summit-detail": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "summit-detail-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ],
+          "filters": {
+            "subscribe": [
+              "summit-office",
+              "summit-scope"
+            ]
+          }
+        }
+      }
+    },
+    "summit-na-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "summit-na-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "summit-project-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "summit-project-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "inactive-progress": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inactive-na-total",
+            "inactive-na-missing",
+            "inactive-na-missing-rate",
+            "inactive-na-year-missing",
+            "inactive-na-year-missing-rate",
+            "inactive-top-total",
+            "inactive-top-missing",
+            "inactive-top-missing-rate",
+            "inactive-top-year-missing",
+            "inactive-top-year-missing-rate"
+          ],
+          "dimensions": [
+            "representative-office"
+          ]
+        }
+      }
+    },
+    "inactive-detail": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inactive-detail-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ],
+          "filters": {
+            "subscribe": [
+              "inactive-office",
+              "inactive-scope"
+            ]
+          }
+        }
+      }
+    },
+    "inactive-na-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inactive-na-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    },
+    "inactive-project-top": {
+      "source": {
+        "type": "query",
+        "query": {
+          "metrics": [
+            "inactive-project-top-row"
+          ],
+          "dimensions": [
+            "representative-office",
+            "customer-scope",
+            "customer-name",
+            "customer-level",
+            "owner-name",
+            "owner-id",
+            "last-inspection",
+            "last-visit",
+            "last-summit"
+          ]
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "report-heading",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "report-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "客户活动风险简报",
+            "generatedBy": "报告由云战地助手生成",
+            "asOf": {
+              "label": "数据统计时间截至",
+              "value": "2026年2月28日"
+            },
+            "decoration": "shortBar"
+          }
+        }
+      ]
+    },
+    {
+      "id": "na-overview",
+      "title": "NA客户概况",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "na-overview-excellent",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-na"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "卓越",
+                "valueField": "overview-na-excellent",
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "na-overview-strategic",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-na"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "战略",
+                "valueField": "overview-na-strategic",
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "na-overview-core",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-na"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "核心",
+                "valueField": "overview-na-core",
+                "unit": "个"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "top-overview",
+      "title": "TOP100项目客户概况",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "top-overview-excellent",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-top"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "卓越",
+                "valueField": "overview-top-excellent",
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "top-overview-strategic",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-top"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "战略",
+                "valueField": "overview-top-strategic",
+                "unit": "个"
+              }
+            ]
+          }
+        },
+        {
+          "id": "top-overview-core",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "overview-top"
+          },
+          "props": {
+            "variant": "summary",
+            "rows": [
+              {
+                "label": "核心",
+                "valueField": "overview-top-core",
+                "unit": "个"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "annual-activities",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "annual-inspection-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "annual-inspection"
+          },
+          "props": {
+            "variant": "activityProgress",
+            "rows": [
+              {
+                "label": "公司考察（年累计）",
+                "valueField": "inspection-annual-count",
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "较上月",
+                    "field": "inspection-monthly-change",
+                    "tone": "danger"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "inspection-completion-rate",
+              "label": "完成率"
+            }
+          }
+        },
+        {
+          "id": "annual-visit-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "annual-visit"
+          },
+          "props": {
+            "variant": "activityProgress",
+            "rows": [
+              {
+                "label": "高层拜访（年累计）",
+                "valueField": "visit-annual-count",
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "较上月",
+                    "field": "visit-monthly-change",
+                    "tone": "danger"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "visit-completion-rate",
+              "label": "完成率"
+            }
+          }
+        },
+        {
+          "id": "annual-summit-card",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "annual-summit"
+          },
+          "props": {
+            "variant": "activityProgress",
+            "rows": [
+              {
+                "label": "高层峰会（年累计）",
+                "valueField": "summit-annual-count",
+                "unit": "次",
+                "changes": [
+                  {
+                    "label": "较上月",
+                    "field": "summit-monthly-change",
+                    "tone": "positive"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "summit-completion-rate",
+              "label": "完成率"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "inspection-section",
+      "title": "公司考察",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "inspection-risk-summary",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "风险总结",
+            "body": "1、无公司考察客户共 X 个，占比 xx%；无考察客户数 TOP 代表处：XX代表处（x个未考察）、XX代表处（x个未考察）、XX代表处（x个未考察）；未考察客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年未考察客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无公司考察 X 个，占比 xx%；其中26年无公司考察 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
+            "variant": "insight"
+          }
+        },
+        {
+          "id": "inspection-progress-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "inspection-progress"
+          },
+          "props": {
+            "title": "重点国代公司考察进展",
+            "subtitle": "：24年至今无公司考察数",
+            "columns": [
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 126,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "inspection-na-group",
+                "title": "NA客户",
+                "children": [
+                  {
+                    "field": "inspection-na-total",
+                    "title": "NA客户数",
+                    "width": 100,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-na-missing",
+                    "title": "无公司考察客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "inspection-office": {
+                          "field": "representative-office"
+                        },
+                        "inspection-scope": {
+                          "value": "NA"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "inspection-na-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-na-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-na-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "inspection-top-group",
+                "title": "TOP100项目客户",
+                "children": [
+                  {
+                    "field": "inspection-top-total",
+                    "title": "客户数",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-top-missing",
+                    "title": "无公司考察客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "inspection-office": {
+                          "field": "representative-office"
+                        },
+                        "inspection-scope": {
+                          "value": "TOP100"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "inspection-top-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-top-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inspection-top-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "inspection-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "inspection-detail"
+          },
+          "props": {
+            "title": "XXXX无公司考察客户",
+            "columns": [
+              {
+                "field": "inspection-detail-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 174,
+                "dangerValues": [
+                  "无考察"
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "inspection-na-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "inspection-na-top"
+          },
+          "props": {
+            "title": "重点国-无公司考察NA（TOP10）",
+            "columns": [
+              {
+                "field": "inspection-na-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 174,
+                "dangerValues": [
+                  "无考察"
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "inspection-project-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "inspection-project-top"
+          },
+          "props": {
+            "title": "TOP100项目-无公司考察NA（TOP10）",
+            "columns": [
+              {
+                "field": "inspection-project-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 174,
+                "dangerValues": [
+                  "无考察"
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "visit-section",
+      "title": "高层拜访",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "visit-risk-summary",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "风险总结",
+            "body": "1、无高层拜访客户共 X 个，占比 xx%；无拜访客户数 TOP 代表处：XX代表处（x个未拜访）、XX代表处（x个未拜访）、XX代表处（x个未拜访）；无拜访客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年无高层拜访客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无高层拜访 X 个，占比 xx%；其中26年无高层拜访 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
+            "variant": "insight"
+          }
+        },
+        {
+          "id": "visit-progress-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "visit-progress"
+          },
+          "props": {
+            "title": "重点国代公司高层拜访进展",
+            "subtitle": "：24年至今无高层拜访数",
+            "columns": [
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 126,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "visit-na-group",
+                "title": "NA客户",
+                "children": [
+                  {
+                    "field": "visit-na-total",
+                    "title": "NA客户数",
+                    "width": 100,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-na-missing",
+                    "title": "无高层拜访客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "visit-office": {
+                          "field": "representative-office"
+                        },
+                        "visit-scope": {
+                          "value": "NA"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "visit-na-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-na-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-na-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "visit-top-group",
+                "title": "TOP100项目客户",
+                "children": [
+                  {
+                    "field": "visit-top-total",
+                    "title": "客户数",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-top-missing",
+                    "title": "无高层拜访客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "visit-office": {
+                          "field": "representative-office"
+                        },
+                        "visit-scope": {
+                          "value": "TOP100"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "visit-top-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-top-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "visit-top-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "visit-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "visit-detail"
+          },
+          "props": {
+            "title": "XXXX无高层拜访客户",
+            "columns": [
+              {
+                "field": "visit-detail-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "visit-na-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "visit-na-top"
+          },
+          "props": {
+            "title": "重点国-无高层拜访NA（TOP10）",
+            "columns": [
+              {
+                "field": "visit-na-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "visit-project-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "visit-project-top"
+          },
+          "props": {
+            "title": "TOP100项目-无高层拜访NA（TOP10）",
+            "columns": [
+              {
+                "field": "visit-project-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "summit-section",
+      "title": "高层峰会",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "summit-risk-summary",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "风险总结",
+            "body": "1、无高层峰会客户共 X 个，占比 xx%；无峰会客户数 TOP 代表处：XX代表处（x个未开展）、XX代表处（x个未开展）、XX代表处（x个未开展）；无峰会客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年无高层峰会客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无高层峰会 X 个，占比 xx%；其中26年无高层峰会 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
+            "variant": "insight"
+          }
+        },
+        {
+          "id": "summit-progress-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "summit-progress"
+          },
+          "props": {
+            "title": "重点国代公司高层峰会进展",
+            "subtitle": "：24年至今无高层峰会数",
+            "columns": [
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 126,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "summit-na-group",
+                "title": "NA客户",
+                "children": [
+                  {
+                    "field": "summit-na-total",
+                    "title": "NA客户数",
+                    "width": 100,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-na-missing",
+                    "title": "无高层峰会客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "summit-office": {
+                          "field": "representative-office"
+                        },
+                        "summit-scope": {
+                          "value": "NA"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "summit-na-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-na-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-na-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "summit-top-group",
+                "title": "TOP100项目客户",
+                "children": [
+                  {
+                    "field": "summit-top-total",
+                    "title": "客户数",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-top-missing",
+                    "title": "无高层峰会客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "summit-office": {
+                          "field": "representative-office"
+                        },
+                        "summit-scope": {
+                          "value": "TOP100"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "summit-top-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-top-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "summit-top-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "summit-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "summit-detail"
+          },
+          "props": {
+            "title": "XXXX无高层峰会客户",
+            "columns": [
+              {
+                "field": "summit-detail-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "summit-na-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "summit-na-top"
+          },
+          "props": {
+            "title": "重点国-无高层峰会NA（TOP10）",
+            "columns": [
+              {
+                "field": "summit-na-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "summit-project-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "summit-project-top"
+          },
+          "props": {
+            "title": "TOP100项目-无高层峰会NA（TOP10）",
+            "columns": [
+              {
+                "field": "summit-project-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 174
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "inactive-section",
+      "title": "三个重载活动均未开展客户",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "inactive-risk-summary",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "风险总结",
+            "body": "26年三个重载活动均未开展客户共 X 个，占比 xx%；未开展客户数 TOP 代表处：XX代表处（x个）、XX代表处（x个）、XX代表处（x个）；未开展占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。",
+            "variant": "insight"
+          }
+        },
+        {
+          "id": "inactive-progress-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "inactive-progress"
+          },
+          "props": {
+            "title": "重点国代26年三个重载活动均未开展客户分布",
+            "columns": [
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 126,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "inactive-na-group",
+                "title": "NA客户",
+                "children": [
+                  {
+                    "field": "inactive-na-total",
+                    "title": "NA客户数",
+                    "width": 100,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-na-missing",
+                    "title": "三个重载活动均未开展客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "inactive-office": {
+                          "field": "representative-office"
+                        },
+                        "inactive-scope": {
+                          "value": "NA"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "inactive-na-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-na-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-na-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "inactive-top-group",
+                "title": "TOP100项目客户",
+                "children": [
+                  {
+                    "field": "inactive-top-total",
+                    "title": "客户数",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-top-missing",
+                    "title": "三个重载活动均未开展客户数",
+                    "width": 136,
+                    "align": "right",
+                    "selection": {
+                      "writes": {
+                        "inactive-office": {
+                          "field": "representative-office"
+                        },
+                        "inactive-scope": {
+                          "value": "TOP100"
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "field": "inactive-top-missing-rate",
+                    "title": "未开展占比",
+                    "width": 112,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-top-year-missing",
+                    "title": "26年未开展客户数",
+                    "width": 136,
+                    "align": "right"
+                  },
+                  {
+                    "field": "inactive-top-year-missing-rate",
+                    "title": "26年未开展占比",
+                    "width": 128,
+                    "align": "right"
+                  }
+                ]
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "inactive-detail-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "inactive-detail"
+          },
+          "props": {
+            "title": "XXXX三个重载活动均未开展客户明细",
+            "columns": [
+              {
+                "field": "inactive-detail-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 154
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 154
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 154
+              }
+            ],
+            "pagination": {
+              "mode": "paged",
+              "pageSize": 10,
+              "totalCount": 153,
+              "numbered": true
+            }
+          }
+        },
+        {
+          "id": "inactive-na-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "inactive-na-top"
+          },
+          "props": {
+            "title": "TOP三个重载活动均未开展NA",
+            "columns": [
+              {
+                "field": "inactive-na-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 154
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 154
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 154
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "inactive-project-top-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "inactive-project-top"
+          },
+          "props": {
+            "title": "TOP项目客户三个重载活动均未开展NA",
+            "columns": [
+              {
+                "field": "inactive-project-top-row",
+                "title": "序号",
+                "width": 64,
+                "align": "right"
+              },
+              {
+                "field": "customer-name",
+                "badgeField": "customer-level",
+                "title": "客户名称",
+                "width": 164
+              },
+              {
+                "field": "representative-office",
+                "title": "代表处",
+                "width": 122
+              },
+              {
+                "field": "owner-name",
+                "secondaryField": "owner-id",
+                "title": "华为责任人",
+                "width": 122
+              },
+              {
+                "field": "last-inspection",
+                "title": "最近一次公司考察时间",
+                "width": 154
+              },
+              {
+                "field": "last-visit",
+                "title": "最近一次高层拜访时间",
+                "width": 154
+              },
+              {
+                "field": "last-summit",
+                "title": "最近一次高层峰会时间",
+                "width": 154
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "report-footer",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "footer-title",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "heading": "客户活动风险简报"
+          }
+        }
+      ]
+    }
+  ]
+}

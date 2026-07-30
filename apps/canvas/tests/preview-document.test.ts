@@ -1,10 +1,15 @@
 import { describe, expect, it, vi } from 'vitest';
-import { validate, type Page } from '@metriccanvas/page';
+import { validate, type CatalogSnapshot, type Page } from '@metriccanvas/page';
 import {
+  DEFAULT_PREVIEW_PAGE,
   DEFAULT_PREVIEW_JSON,
   parsePreviewDocument
 } from '../src/lib/preview-document';
-import { customerRiskCatalog } from '../src/lib/customer-risk-preview';
+import {
+  customerRiskCatalog,
+  customerRiskPreviewPage
+} from '../src/lib/customer-risk-preview';
+import bundledCatalog from '../../../catalog/snapshot.json';
 
 describe('Page JSON 即时预览文档', () => {
   it('内置客户活动风险简报通过当前契约，并声明查询驱动的表格联动', () => {
@@ -39,6 +44,11 @@ describe('Page JSON 即时预览文档', () => {
           .some((column) => column.selection !== undefined)
       ).toBe(true);
     }
+  });
+
+  it('默认预览直接使用 pages 中的正式页面文档，并通过启动目录元数据校验', () => {
+    expect(DEFAULT_PREVIEW_PAGE).toEqual(customerRiskPreviewPage);
+    expect(validate(DEFAULT_PREVIEW_PAGE, bundledCatalog as CatalogSnapshot)).toEqual([]);
   });
 
   it('JSON 解析成功后调用 validator，并返回契约错误', () => {

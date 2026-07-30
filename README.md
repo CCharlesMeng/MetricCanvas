@@ -76,6 +76,7 @@ Canvas 默认使用 mock 数据网关，不依赖本地或远程数据服务。�
 - `/`：看板目录。
 - `/pages/demo`：query 页面与筛选、下钻演示。
 - `/pages/tokens-report`：纯 inline 固定报告。
+- `/pages/customer-activity-risk-briefing`：`/preview` 默认的客户活动风险简报。
 - `/pages/<page-id>`：打开 `pages/<page-id>.json`。
 - `/preview`：Page JSON 即时预览。
 
@@ -83,12 +84,12 @@ Canvas 默认使用 mock 数据网关，不依赖本地或远程数据服务。�
 
 ### 使用 `/preview`
 
-打开 `http://localhost:5173/preview`。左侧粘贴或编辑完整页面文档，右侧会复用正式页面的校验、数据编排和组件渲染路径：
+打开 `http://localhost:5173/preview`。上方粘贴或编辑完整页面文档，下方会复用正式页面的校验、数据编排和组件渲染路径：
 
 1. JSON 语法或契约不合法时，左侧显示带 JSON Pointer 的错误。
 2. 校验通过后，右侧自动渲染。
-3. “恢复示例”可还原内置 inline 示例。
-4. 预览只存在于浏览器内，不会写入 `pages/`；确认后需手动保存为页面文件。
+3. “恢复示例”可还原内置的客户活动风险简报 query 示例。
+4. 默认示例已保存为 `pages/customer-activity-risk-briefing.json`；在编辑器中的临时修改仍只存在于浏览器内。
 
 ### 连接数据服务仿真
 

@@ -64,6 +64,10 @@
     dataGateway as defaultDataGateway,
     pageRepository
   } from '$lib/services';
+  import {
+    customerRiskCatalog,
+    customerRiskGateway
+  } from '$lib/customer-risk-preview';
 
   type PageCapabilities = ReturnType<typeof derivePageCapabilities>;
   type PageState =
@@ -80,8 +84,8 @@
   let {
     document,
     authoring,
-    catalog = defaultCatalogSnapshot,
-    gateway = defaultDataGateway
+    catalog,
+    gateway
   }: {
     document?: unknown;
     authoring?: AuthoringOptions;
@@ -98,6 +102,8 @@
     Record<string, Record<string, TableHeaderFilterValue>>
   >({});
   let headerFilterOptions = $state<Record<string, string[]>>({});
+  let activeCatalog = $state<CatalogSnapshot>(defaultCatalogSnapshot);
+  let activeGateway: DataGateway = defaultDataGateway;
 
   let declarations = $state<FilterDeclaration[]>([]);
   let filterState: FilterState | null = null;
@@ -109,7 +115,7 @@
   $effect(() => {
     const injected = document;
     const pageId = injected === undefined ? page.params.pageId! : undefined;
-    void run(injected, pageId);
+    void run(injected, pageId, catalog, gateway);
     return dispose;
   });
 
@@ -120,7 +126,12 @@
     stream = null;
   }
 
-  async function run(injected: unknown | undefined, pageId: string | undefined) {
+  async function run(
+    injected: unknown | undefined,
+    pageId: string | undefined,
+    catalogOverride: CatalogSnapshot | undefined,
+    gatewayOverride: DataGateway | undefined
+  ) {
     const mySession = ++session;
     pageState = { phase: 'loading' };
     snapshots = new Map();
@@ -151,7 +162,17 @@
       if (session !== mySession) return;
     }
 
-    const errors = validate(raw, catalog);
+    const usesCustomerRiskData =
+      typeof raw === 'object' &&
+      raw !== null &&
+      'id' in raw &&
+      raw.id === 'customer-activity-risk-briefing';
+    activeCatalog =
+      catalogOverride ?? (usesCustomerRiskData ? customerRiskCatalog : defaultCatalogSnapshot);
+    activeGateway =
+      gatewayOverride ?? (usesCustomerRiskData ? customerRiskGateway : defaultDataGateway);
+
+    const errors = validate(raw, activeCatalog);
     if (errors.length > 0) {
       pageState = { phase: 'invalid', errors };
       return;
@@ -196,7 +217,11 @@
     tableViews = initialViews;
     pageState = { phase: 'ready', page: loaded, capabilities };
 
-    const pageStream = orchestrate(loaded, gateway, capabilities.filters ? state : undefined);
+    const pageStream = orchestrate(
+      loaded,
+      activeGateway,
+      capabilities.filters ? state : undefined
+    );
     stream = pageStream;
     disposers.push(
       pageStream.subscribe((next) => {
@@ -208,7 +233,7 @@
 
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension') continue;
-      void gateway.fetchDimensionValues(declaration.dimension).then((values) => {
+      void activeGateway.fetchDimensionValues(declaration.dimension).then((values) => {
         if (session !== mySession) return;
         filterOptions = { ...filterOptions, [declaration.id]: values };
       });
@@ -222,7 +247,7 @@
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
-        source ? resolveDataSourceFields(source, catalog) : undefined
+        source ? resolveDataSourceFields(source, activeCatalog) : undefined
       ).leaves) {
         if (column.filterable?.mode === 'select') {
           filterableFields.add(fieldName(column.field));
@@ -230,7 +255,7 @@
       }
     }
     for (const field of filterableFields) {
-      void gateway.fetchDimensionValues(field).then((values) => {
+      void activeGateway.fetchDimensionValues(field).then((values) => {
         if (session !== mySession) return;
         headerFilterOptions = { ...headerFilterOptions, [field]: values };
       });
@@ -525,7 +550,7 @@
       const snapshot = snapshotsBySlot.get(slot);
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
-      const fields = resolveDataSourceFields(source, catalog);
+      const fields = resolveDataSourceFields(source, activeCatalog);
       if (snapshot.status === 'ready') {
         data[slot] = { snapshot, fields };
       } else if (snapshot.status === 'empty') {
