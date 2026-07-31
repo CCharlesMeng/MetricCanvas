@@ -46,6 +46,11 @@ export interface FieldDefinition {
   format?: ValueFormatPreset;
 }
 
+/** raw-query 页面数据源字段：稳定页面字段 id 显式映射到外部查询结果键。 */
+export interface QueryFieldDefinition extends FieldDefinition {
+  queryField: string;
+}
+
 /** 统一运行时归一后的字段契约；defaultFormat 是展示建议，不是数据规则。 */
 export interface ResolvedFieldDefinition extends Omit<FieldDefinition, 'format'> {
   defaultFormat?: ValueFormatPreset;
@@ -71,6 +76,12 @@ export type FieldReference = string | { data: string; field: string };
  */
 export type FieldBinding =
   | string
-  | { data: string; field: string; format?: ValueFormatPreset };
+  | {
+      data: string;
+      field: string;
+      format?: ValueFormatPreset;
+      /** 标量组件从长表中选择一行；匹配字段仍使用稳定页面字段 id。 */
+      match?: { field: string; equals: FieldValue };
+    };
 
 export type DataRow = Record<string, FieldValue>;

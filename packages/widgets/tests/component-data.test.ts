@@ -55,4 +55,33 @@ describe('component named data slots', () => {
     expect(resolveField(binding, data).format).toBe('compact-wan-1');
     expect(resolveField('actual', data).format).toBe('number-grouped');
   });
+
+  it('标量字段绑定按稳定页面字段显式匹配长表行', () => {
+    const longTable: MetricDataSlots = {
+      main: {
+        snapshot: {
+          status: 'ready',
+          rows: [
+            { 'customer-level': '卓越NA', 'na-customer-count': 15 },
+            { 'customer-level': '战略NA', 'na-customer-count': 12 }
+          ]
+        },
+        fields: {
+          'customer-level': { type: 'string', role: 'dimension' },
+          'na-customer-count': { type: 'number', role: 'metric' }
+        }
+      }
+    };
+
+    expect(
+      fieldValue(
+        {
+          data: 'main',
+          field: 'na-customer-count',
+          match: { field: 'customer-level', equals: '战略NA' }
+        },
+        longTable
+      )
+    ).toBe(12);
+  });
 });

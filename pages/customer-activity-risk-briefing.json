@@ -80,26 +80,137 @@
   ],
   "dataSources": {
     "overview-na": {
+      "fields": {
+        "customer-level": {
+          "queryField": "客户级别",
+          "type": "string",
+          "role": "dimension",
+          "label": "客户级别"
+        },
+        "na-customer-count": {
+          "queryField": "NA客户数",
+          "type": "number",
+          "role": "metric",
+          "label": "NA客户数"
+        }
+      },
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "overview-na-excellent",
-            "overview-na-strategic",
-            "overview-na-core"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  "NA客户数"
+                ],
+                "output_dims": [
+                  "客户级别"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "2026-07",
+                    "end": "2026-07"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    },
+                    {
+                      "dim_name": "客户级别",
+                      "dim_value_list": [
+                        "卓越NA",
+                        "战略NA",
+                        "核心NA"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
         }
       }
     },
     "overview-top": {
+      "fields": {
+        "customer-level": {
+          "queryField": "客户级别",
+          "type": "string",
+          "role": "dimension",
+          "label": "客户级别"
+        },
+        "top100-customer-count": {
+          "queryField": "数量",
+          "type": "number",
+          "role": "metric",
+          "label": "TOP100项目客户数"
+        }
+      },
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "overview-top-excellent",
-            "overview-top-strategic",
-            "overview-top-core"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_metrics": [
+                  {
+                    "formula": "COUNT(*)",
+                    "alias": "数量"
+                  }
+                ],
+                "output_dims": [
+                  "客户级别"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "2026-07",
+                    "end": "2026-07"
+                  },
+                  "dims": [
+                    {
+                      "dim_name": "地区部",
+                      "dim_value_list": [
+                        "中国地区部"
+                      ]
+                    },
+                    {
+                      "dim_name": "客户级别",
+                      "dim_value_list": [
+                        "卓越NA",
+                        "战略NA",
+                        "核心NA"
+                      ]
+                    },
+                    {
+                      "dim_name": "是否TOP100项目客户",
+                      "dim_value_list": [
+                        "是"
+                      ]
+                    },
+                    {
+                      "dim_name": "是否NA",
+                      "dim_value_list": [
+                        "是"
+                      ]
+                    }
+                  ],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
         }
       }
     },
@@ -552,17 +663,38 @@
             "rows": [
               {
                 "label": "卓越",
-                "valueField": "overview-na-excellent",
+                "valueField": {
+                  "data": "main",
+                  "field": "na-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "卓越NA"
+                  }
+                },
                 "unit": "个"
               },
               {
                 "label": "战略",
-                "valueField": "overview-na-strategic",
+                "valueField": {
+                  "data": "main",
+                  "field": "na-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "战略NA"
+                  }
+                },
                 "unit": "个"
               },
               {
                 "label": "核心",
-                "valueField": "overview-na-core",
+                "valueField": {
+                  "data": "main",
+                  "field": "na-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "核心NA"
+                  }
+                },
                 "unit": "个"
               }
             ]
@@ -583,17 +715,38 @@
             "rows": [
               {
                 "label": "卓越",
-                "valueField": "overview-top-excellent",
+                "valueField": {
+                  "data": "main",
+                  "field": "top100-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "卓越NA"
+                  }
+                },
                 "unit": "个"
               },
               {
                 "label": "战略",
-                "valueField": "overview-top-strategic",
+                "valueField": {
+                  "data": "main",
+                  "field": "top100-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "战略NA"
+                  }
+                },
                 "unit": "个"
               },
               {
                 "label": "核心",
-                "valueField": "overview-top-core",
+                "valueField": {
+                  "data": "main",
+                  "field": "top100-customer-count",
+                  "match": {
+                    "field": "customer-level",
+                    "equals": "核心NA"
+                  }
+                },
                 "unit": "个"
               }
             ]

@@ -28,6 +28,6 @@ export function parsePreviewDocument(
     : { status: 'valid', document };
 }
 
-export const DEFAULT_PREVIEW_PAGE = customerActivityRiskBriefing as Page;
+export const DEFAULT_PREVIEW_PAGE = customerActivityRiskBriefing as unknown as Page;
 
 export const DEFAULT_PREVIEW_JSON = JSON.stringify(DEFAULT_PREVIEW_PAGE, null, 2);

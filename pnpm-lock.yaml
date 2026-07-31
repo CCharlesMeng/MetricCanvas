@@ -133,6 +133,9 @@ importers:
       '@metriccanvas/data-service-sim':
         specifier: workspace:*
         version: link:../../tools/data-service-sim
+      '@metriccanvas/dqe-sim':
+        specifier: workspace:*
+        version: link:../../tools/dqe-sim
 
   packages/dp-catalog:
     devDependencies:
@@ -311,6 +314,8 @@ importers:
         version: 5.56.6
 
   tools/data-service-sim: {}
+
+  tools/dqe-sim: {}
 
   tools/dp-sim: {}
 

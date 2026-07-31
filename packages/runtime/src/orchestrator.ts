@@ -1,13 +1,16 @@
 import {
   isDataComponent,
+  isDqeQueryDefinition,
   type DataComponent,
   type DataSnapshot,
   type DataSource,
+  type EffectiveDqeQuery,
   type EffectiveQuery,
   type FilterCondition,
   type OrderByRule,
   type Page,
-  type StructuredQuery,
+  type PageQuery,
+  type QueryFieldDefinition,
   type TimeRangeValue,
   type TimeWindow
 } from '@metriccanvas/page';
@@ -59,7 +62,7 @@ interface DataBinding {
 }
 
 interface QueryBinding extends DataBinding {
-  dataSource: DataSource & { source: { type: 'query'; query: StructuredQuery } };
+  dataSource: DataSource & { source: { type: 'query'; query: PageQuery } };
 }
 
 /**
@@ -249,7 +252,7 @@ function startSession(
 
     for (const binding of targets) {
       const view = viewFor(binding, views);
-      const query = composeEffectiveQuery(binding.dataSource.source.query, values, view);
+      const query = composeEffectiveQuery(binding.dataSource, values, view);
       const blindPagination = view.limit !== undefined;
       const key = JSON.stringify({ query, blindPagination });
       const group = groups.get(key) ?? { query, blindPagination, members: [] };
@@ -294,7 +297,7 @@ function startSession(
     const changed = changedFilterIds(values, next);
     values = next;
     const affected = queryBindings.filter((binding) =>
-      (binding.dataSource.source.query.filters?.subscribe ?? []).some((id) => changed.has(id))
+      subscribedFilterIds(binding.dataSource.source.query).some((id) => changed.has(id))
     );
     refetch(affected, true);
   });
@@ -334,10 +337,62 @@ function defaultView(component: DataComponent): ComponentView {
 }
 
 function composeEffectiveQuery(
-  query: StructuredQuery,
+  dataSource: QueryBinding['dataSource'],
   values: FilterValues,
   view: ComponentView
 ): EffectiveQuery {
+  const query = dataSource.source.query;
+  if (isDqeQueryDefinition(query)) {
+    const fields =
+      'fields' in dataSource && dataSource.fields !== undefined
+        ? (dataSource.fields as Record<string, QueryFieldDefinition>)
+        : {};
+    const dimensions = Object.entries(fields)
+      .filter(([, definition]) => definition.role === 'dimension')
+      .map(([fieldId]) => fieldId);
+    const metrics = Object.entries(fields)
+      .filter(([, definition]) => definition.role === 'metric')
+      .map(([fieldId]) => fieldId);
+    const filterValues: EffectiveDqeQuery['filterValues'] = [];
+    for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
+      const value = values.get(filterId);
+      if (binding.target === 'dimension' && value?.type === 'dimension') {
+        filterValues.push({
+          target: 'dimension',
+          queryField: binding.queryField,
+          values: value.values
+        });
+      } else if (binding.target === 'time' && value?.type === 'timeRange') {
+        filterValues.push({
+          target: 'time',
+          value: { from: value.from, to: value.to }
+        });
+      }
+    }
+    const limit = view.limit;
+    return {
+      metrics,
+      ...(dimensions.length ? { dimensions } : {}),
+      conditions: [...(view.conditions ?? [])],
+      ...(limit !== undefined ? { limit } : {}),
+      ...(view.offset !== undefined ? { offset: view.offset } : {}),
+      ...(view.orderBy?.length ? { orderBy: view.orderBy } : {}),
+      dqe: {
+        body: query.body,
+        fieldMappings: Object.fromEntries(
+          Object.entries(fields).map(([fieldId, definition]) => [
+            fieldId,
+            {
+              queryField: definition.queryField,
+              type: definition.type,
+              role: definition.role
+            }
+          ])
+        ),
+        filterValues
+      }
+    };
+  }
   const {
     metrics,
     dimensions,
@@ -376,6 +431,12 @@ function composeEffectiveQuery(
     ...(view.offset !== undefined ? { offset: view.offset } : {}),
     ...(orderBy?.length ? { orderBy } : {})
   };
+}
+
+function subscribedFilterIds(query: PageQuery): string[] {
+  return isDqeQueryDefinition(query)
+    ? Object.keys(query.filterBindings ?? {})
+    : query.filters?.subscribe ?? [];
 }
 
 function resolveQueryTime(range: TimeRangeValue, window: TimeWindow): TimeRangeValue {

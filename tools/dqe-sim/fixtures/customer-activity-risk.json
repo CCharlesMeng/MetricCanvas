@@ -1,0 +1,36 @@
+{
+  "id": "customer-activity-risk-overview-na",
+  "query": {
+    "output_metrics": [
+      "NA客户数"
+    ],
+    "output_dims": [
+      "客户级别"
+    ],
+    "time": {
+      "period": "month",
+      "is_aggregate": true,
+      "start": "2026-07",
+      "end": "2026-07"
+    },
+    "dimensions": {
+      "地区部": [
+        "中国地区部"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "客户级别": "卓越NA",
+      "NA客户数": 15
+    },
+    {
+      "客户级别": "战略NA",
+      "NA客户数": 12
+    },
+    {
+      "客户级别": "核心NA",
+      "NA客户数": 9
+    }
+  ]
+}

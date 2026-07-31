@@ -1,14 +1,16 @@
 import { describe, expect, it, vi } from 'vitest';
-import { validate, type CatalogSnapshot, type Page } from '@metriccanvas/page';
+import {
+  isDqeQueryDefinition,
+  validate,
+  type CatalogSnapshot,
+  type Page
+} from '@metriccanvas/page';
 import {
   DEFAULT_PREVIEW_PAGE,
   DEFAULT_PREVIEW_JSON,
   parsePreviewDocument
 } from '../src/lib/preview-document';
-import {
-  customerRiskCatalog,
-  customerRiskPreviewPage
-} from '../src/lib/customer-risk-preview';
+import { customerRiskCatalog } from '../src/lib/customer-risk-preview';
 import bundledCatalog from '../../../catalog/snapshot.json';
 
 describe('Page JSON 即时预览文档', () => {
@@ -41,6 +43,18 @@ describe('Page JSON 即时预览文档', () => {
       { span: 6, rows: 3 },
       { span: 6, rows: 3 }
     ]);
+    const overviewQueries = ['overview-na', 'overview-top'].map((id) => {
+      const source = page.dataSources[id]!.source;
+      expect(source.type).toBe('query');
+      if (source.type !== 'query') throw new Error(`${id} 不是 query 数据源`);
+      return source.query;
+    });
+    expect(overviewQueries.every(isDqeQueryDefinition)).toBe(true);
+    const top100Query = overviewQueries[1]!;
+    if (!isDqeQueryDefinition(top100Query)) throw new Error('overview-top 不是 DQE 查询');
+    expect(top100Query.body.dsl_list[0]!.output_metrics).toEqual([
+      { formula: 'COUNT(*)', alias: '数量' }
+    ]);
     const progressTable = components.find(
       (component) => component.id === 'inspection-progress-table'
     );
@@ -58,7 +72,7 @@ describe('Page JSON 即时预览文档', () => {
   });
 
   it('默认预览直接使用 pages 中的正式页面文档，并通过启动目录元数据校验', () => {
-    expect(DEFAULT_PREVIEW_PAGE).toEqual(customerRiskPreviewPage);
+    expect(DEFAULT_PREVIEW_PAGE.id).toBe('customer-activity-risk-briefing');
     expect(validate(DEFAULT_PREVIEW_PAGE, bundledCatalog as CatalogSnapshot)).toEqual([]);
   });
 

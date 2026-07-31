@@ -11,6 +11,7 @@
     "@metriccanvas/runtime": "workspace:*"
   },
   "devDependencies": {
-    "@metriccanvas/data-service-sim": "workspace:*"
+    "@metriccanvas/data-service-sim": "workspace:*",
+    "@metriccanvas/dqe-sim": "workspace:*"
   }
 }

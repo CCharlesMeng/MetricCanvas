@@ -10,6 +10,12 @@ import type {
   TableComponent
 } from '@metriccanvas/page';
 import type { DataGateway } from '@metriccanvas/runtime';
+import {
+  DEFAULT_DQE_ENDPOINT,
+  createDqeGateway,
+  createInMemoryDqeDiagnostics,
+  createRoutingGateway
+} from '@metriccanvas/data-gateway';
 
 type ActivityKey = 'inspection' | 'visit' | 'summit' | 'inactive';
 
@@ -798,4 +804,13 @@ class CustomerRiskPreviewGateway implements DataGateway {
   }
 }
 
-export const customerRiskGateway: DataGateway = new CustomerRiskPreviewGateway();
+const customerRiskLegacyGateway: DataGateway = new CustomerRiskPreviewGateway();
+export const customerRiskDiagnostics = createInMemoryDqeDiagnostics();
+const customerRiskDqeGateway = createDqeGateway({
+  endpoint: import.meta.env.VITE_DQE_ENDPOINT ?? DEFAULT_DQE_ENDPOINT,
+  diagnostics: customerRiskDiagnostics
+});
+export const customerRiskGateway: DataGateway = createRoutingGateway(
+  customerRiskDqeGateway,
+  customerRiskLegacyGateway
+);

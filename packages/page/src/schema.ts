@@ -70,11 +70,29 @@ export const pageSchema = {
         }
       }
     },
+    queryField: {
+      type: 'object',
+      required: ['type', 'role', 'queryField'],
+      additionalProperties: false,
+      properties: {
+        type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
+        role: { type: 'string', enum: ['dimension', 'metric'] },
+        queryField: { type: 'string', minLength: 1 },
+        label: { type: 'string', minLength: 1 },
+        format: {
+          type: 'string',
+          enum: valueFormatPresets,
+          description:
+            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
+        }
+      }
+    },
     dataSource: {
       oneOf: [
         { $ref: '#/definitions/inlineDataSource' },
         { $ref: '#/definitions/legacyQueryDataSource' },
-        { $ref: '#/definitions/queryDataSource' }
+        { $ref: '#/definitions/queryDataSource' },
+        { $ref: '#/definitions/rawQueryDataSource' }
       ]
     },
     fields: {
@@ -82,6 +100,12 @@ export const pageSchema = {
       minProperties: 1,
       propertyNames: { pattern: fieldPattern },
       additionalProperties: { $ref: '#/definitions/field' }
+    },
+    queryFields: {
+      type: 'object',
+      minProperties: 1,
+      propertyNames: { pattern: fieldPattern },
+      additionalProperties: { $ref: '#/definitions/queryField' }
     },
     fieldOverrides: {
       type: 'object',
@@ -116,7 +140,7 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         fields: { $ref: '#/definitions/fields' },
-        source: { $ref: '#/definitions/querySource' }
+        source: { $ref: '#/definitions/structuredQuerySource' }
       }
     },
     queryDataSource: {
@@ -125,7 +149,16 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         fieldOverrides: { $ref: '#/definitions/fieldOverrides' },
-        source: { $ref: '#/definitions/querySource' }
+        source: { $ref: '#/definitions/structuredQuerySource' }
+      }
+    },
+    rawQueryDataSource: {
+      type: 'object',
+      required: ['fields', 'source'],
+      additionalProperties: false,
+      properties: {
+        fields: { $ref: '#/definitions/queryFields' },
+        source: { $ref: '#/definitions/rawQuerySource' }
       }
     },
     inlineSource: {
@@ -143,13 +176,22 @@ export const pageSchema = {
         }
       }
     },
-    querySource: {
+    structuredQuerySource: {
       type: 'object',
       required: ['type', 'query'],
       additionalProperties: false,
       properties: {
         type: { const: 'query' },
         query: { $ref: '#/definitions/structuredQuery' }
+      }
+    },
+    rawQuerySource: {
+      type: 'object',
+      required: ['type', 'query'],
+      additionalProperties: false,
+      properties: {
+        type: { const: 'query' },
+        query: { $ref: '#/definitions/dqeQuery' }
       }
     },
     orderByRule: {
@@ -232,6 +274,55 @@ export const pageSchema = {
           items: { $ref: '#/definitions/orderByRule' }
         },
         limit: { type: 'integer', minimum: 1 }
+      }
+    },
+    dqeQuery: {
+      type: 'object',
+      required: ['language', 'body'],
+      additionalProperties: false,
+      properties: {
+        language: { const: 'dqe' },
+        body: {
+          type: 'object',
+          required: ['dsl_list'],
+          additionalProperties: false,
+          properties: {
+            dsl_list: {
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: {
+                type: 'object',
+                additionalProperties: true
+              }
+            }
+          }
+        },
+        filterBindings: {
+          type: 'object',
+          propertyNames: { pattern: idPattern },
+          additionalProperties: {
+            oneOf: [
+              {
+                type: 'object',
+                required: ['target', 'queryField'],
+                additionalProperties: false,
+                properties: {
+                  target: { const: 'dimension' },
+                  queryField: { type: 'string', minLength: 1 }
+                }
+              },
+              {
+                type: 'object',
+                required: ['target'],
+                additionalProperties: false,
+                properties: {
+                  target: { const: 'time' }
+                }
+              }
+            ]
+          }
+        }
       }
     },
     dimensionFilter: {
@@ -363,6 +454,15 @@ export const pageSchema = {
               type: 'string',
               enum: valueFormatPresets,
               description: '只控制当前组件中这一次字段绑定的展示格式'
+            },
+            match: {
+              type: 'object',
+              required: ['field', 'equals'],
+              additionalProperties: false,
+              properties: {
+                field: { type: 'string', pattern: fieldPattern },
+                equals: { $ref: '#/definitions/scalar' }
+              }
             }
           }
         }

@@ -3,9 +3,10 @@ import type {
   DataRow,
   FieldDefinition,
   FieldOverride,
+  QueryFieldDefinition,
   ResolvedFieldDefinition
 } from './field';
-import type { StructuredQuery } from './query';
+import { isDqeQueryDefinition, type PageQuery } from './query';
 
 export interface InlineSource {
   type: 'inline';
@@ -14,7 +15,7 @@ export interface InlineSource {
 
 export interface QuerySource {
   type: 'query';
-  query: StructuredQuery;
+  query: PageQuery;
 }
 
 export interface InlineDataSource {
@@ -40,7 +41,18 @@ export interface QueryDataSource {
   source: QuerySource;
 }
 
-export type DataSource = InlineDataSource | LegacyQueryDataSource | QueryDataSource;
+/** schemaVersion 2.0 raw-query 数据源显式声明稳定字段契约与外部字段映射。 */
+export interface RawQueryDataSource {
+  fields: Record<string, QueryFieldDefinition>;
+  fieldOverrides?: never;
+  source: QuerySource & { query: import('./query').DqeQueryDefinition };
+}
+
+export type DataSource =
+  | InlineDataSource
+  | LegacyQueryDataSource
+  | QueryDataSource
+  | RawQueryDataSource;
 export type DataSources = Record<string, DataSource>;
 export type DataSourceMode = 'inline' | 'query' | 'mixed';
 
@@ -56,8 +68,17 @@ export function isInlineDataSource(dataSource: DataSource): dataSource is Inline
 
 export function isQueryDataSource(
   dataSource: DataSource
-): dataSource is LegacyQueryDataSource | QueryDataSource {
+): dataSource is LegacyQueryDataSource | QueryDataSource | RawQueryDataSource {
   return dataSource.source.type === 'query';
+}
+
+export function isRawQueryDataSource(dataSource: DataSource): dataSource is RawQueryDataSource {
+  return (
+    dataSource.source.type === 'query' &&
+    isDqeQueryDefinition(dataSource.source.query) &&
+    'fields' in dataSource &&
+    dataSource.fields !== undefined
+  );
 }
 
 /**
@@ -82,6 +103,7 @@ export function resolveDataSourceFields(
       ])
     );
   }
+  if (isDqeQueryDefinition(dataSource.source.query)) return {};
 
   const metrics = new Map(catalog?.metrics.map((metric) => [metric.code, metric]) ?? []);
   const dimensions = new Map(
@@ -129,9 +151,13 @@ function mergeOverride(
 }
 
 function normalizeFieldDefinition(
-  definition: FieldDefinition
+  definition: FieldDefinition | QueryFieldDefinition
 ): ResolvedFieldDefinition {
-  const { format, ...dataDefinition } = definition;
+  const { format, ...withPossibleQueryField } = definition;
+  const { queryField: _queryField, ...dataDefinition } =
+    'queryField' in withPossibleQueryField
+      ? withPossibleQueryField
+      : { ...withPossibleQueryField, queryField: undefined };
   return {
     ...dataDefinition,
     ...(format ? { defaultFormat: format } : {})

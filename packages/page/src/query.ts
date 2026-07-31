@@ -17,6 +17,42 @@ export interface StructuredQuery {
   limit?: number;
 }
 
+/** 外部 DQE 请求项保持开放对象，数据网关只处理最外层 dsl_list 信封。 */
+export type JsonValue =
+  | string
+  | number
+  | boolean
+  | null
+  | JsonValue[]
+  | { [key: string]: JsonValue };
+
+export type JsonObject = { [key: string]: JsonValue };
+
+export interface DqeRequestBody {
+  /**
+   * 页面数据源表示一个命名数据集，因此页面内恰好一项；
+   * 数据网关可把多个逻辑查询透明合并为外部协议的多项 dsl_list。
+   */
+  dsl_list: [JsonObject];
+}
+
+export type DqeFilterBinding =
+  | { target: 'dimension'; queryField: string }
+  | { target: 'time' };
+
+export interface DqeQueryDefinition {
+  language: 'dqe';
+  body: DqeRequestBody;
+  /** 页面筛选器 id 到外部 DQE 语义位置的显式映射。 */
+  filterBindings?: Record<string, DqeFilterBinding>;
+}
+
+export type PageQuery = StructuredQuery | DqeQueryDefinition;
+
+export function isDqeQueryDefinition(query: PageQuery): query is DqeQueryDefinition {
+  return 'language' in query && query.language === 'dqe';
+}
+
 import type { TimeRangeValue } from './filter';
 
 export interface QueryTime {
@@ -58,6 +94,20 @@ export interface EffectiveQuery {
   offset?: number;
   /** 多列排序,数组序即优先级(第 1 项最先比较,映射 @order priority) */
   orderBy?: OrderByRule[];
+  /** raw DQE 执行所需的外部协议与显式映射；旧结构化查询不含此字段。 */
+  dqe?: EffectiveDqeQuery;
+}
+
+export interface EffectiveDqeQuery {
+  body: DqeRequestBody;
+  fieldMappings: Record<
+    string,
+    { queryField: string; type: import('./field').FieldType; role: import('./field').FieldRole }
+  >;
+  filterValues: Array<
+    | { target: 'dimension'; queryField: string; values: Array<string | number> }
+    | { target: 'time'; value: TimeRangeValue }
+  >;
 }
 
 /** 单列排序规则;多列优先级由所在数组的顺序表达 */

@@ -2,6 +2,7 @@ import { Ajv, type ErrorObject } from 'ajv';
 import type { CatalogSnapshot } from './catalog';
 import {
   isInlineDataSource,
+  isRawQueryDataSource,
   resolveDataSourceFields,
   type DataSource
 } from './data-source';
@@ -18,6 +19,7 @@ import {
   type TableColumnNode
 } from './page';
 import { pageSchema } from './schema';
+import { isDqeQueryDefinition } from './query';
 import { versionErrors } from './version';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -46,12 +48,14 @@ function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
   const filters = page.filters ?? [];
   const filterIds = new Set<string>();
   const timeRangeFilterIds = new Set<string>();
+  const filtersById = new Map<string, FilterDeclaration>();
 
   filters.forEach((filter, index) => {
     if (filterIds.has(filter.id)) {
       errors.push(schemaError(`/filters/${index}/id`, `筛选器 id 重复:${filter.id}`));
     }
     filterIds.add(filter.id);
+    filtersById.set(filter.id, filter);
     if (filter.type === 'timeRange') {
       timeRangeFilterIds.add(filter.id);
       if (filter.default !== undefined && typeof filter.default !== 'string') {
@@ -74,6 +78,13 @@ function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
     const path = `/dataSources/${escapePointer(sourceId)}`;
     if (isInlineDataSource(dataSource)) {
       errors.push(...inlineRowErrors(dataSource, path));
+    } else if (isRawQueryDataSource(dataSource)) {
+      if (page.schemaVersion !== '2.0') {
+        errors.push(
+          schemaError(`${path}/source/query`, 'raw DQE 页面数据源只允许 schemaVersion 2.0')
+        );
+      }
+      errors.push(...rawQueryContractErrors(dataSource, path, filtersById));
     } else {
       const hasLegacyFields = 'fields' in dataSource && dataSource.fields !== undefined;
       if (page.schemaVersion === '1.0' && !hasLegacyFields) {
@@ -172,6 +183,7 @@ function queryContractErrors(
   if (dataSource.source.type !== 'query') return [];
   const errors: TypedError[] = [];
   const query = dataSource.source.query;
+  if (isDqeQueryDefinition(query)) return errors;
   const queryPath = `${sourcePath}/source/query`;
   const dimensions = new Set(query.dimensions ?? []);
   const metrics = new Set(query.metrics);
@@ -254,6 +266,98 @@ function queryContractErrors(
   return errors;
 }
 
+function rawQueryContractErrors(
+  dataSource: Extract<DataSource, { fields: Record<string, unknown> }>,
+  sourcePath: string,
+  filtersById: ReadonlyMap<string, FilterDeclaration>
+): TypedError[] {
+  if (dataSource.source.type !== 'query' || !isDqeQueryDefinition(dataSource.source.query)) {
+    return [];
+  }
+  const errors: TypedError[] = [];
+  const query = dataSource.source.query;
+  const item = query.body.dsl_list[0];
+  const dimensions = stringArray(item.output_dims);
+  const metrics = dqeMetricNames(item.output_metrics);
+  const outputs = new Set([...dimensions, ...metrics]);
+  const mapped = new Map<string, string>();
+
+  for (const [fieldId, definition] of Object.entries(dataSource.fields)) {
+    if (!('queryField' in definition) || typeof definition.queryField !== 'string') continue;
+    const path = `${sourcePath}/fields/${escapePointer(fieldId)}/queryField`;
+    const previous = mapped.get(definition.queryField);
+    if (previous !== undefined) {
+      errors.push(
+        schemaError(
+          path,
+          `queryField ${definition.queryField} 已映射到页面字段 ${previous}`
+        )
+      );
+    } else {
+      mapped.set(definition.queryField, fieldId);
+    }
+    if (!outputs.has(definition.queryField)) {
+      errors.push(
+        schemaError(path, `queryField ${definition.queryField} 不在 DQE 输出字段中`)
+      );
+    } else if (
+      dimensions.includes(definition.queryField) &&
+      definition.role !== 'dimension'
+    ) {
+      errors.push(schemaError(path, `DQE 维度 ${definition.queryField} 的 role 必须为 dimension`));
+    } else if (metrics.includes(definition.queryField) && definition.role !== 'metric') {
+      errors.push(schemaError(path, `DQE 度量 ${definition.queryField} 的 role 必须为 metric`));
+    }
+  }
+
+  for (const output of outputs) {
+    if (!mapped.has(output)) {
+      errors.push(
+        schemaError(
+          `${sourcePath}/fields`,
+          `DQE 输出字段 ${output} 缺少显式 queryField 映射`
+        )
+      );
+    }
+  }
+
+  for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
+    const filter = filtersById.get(filterId);
+    const path = `${sourcePath}/source/query/filterBindings/${escapePointer(filterId)}`;
+    if (filter === undefined) {
+      errors.push(schemaError(path, `筛选绑定引用了未知筛选器:${filterId}`));
+    } else if (binding.target === 'time' && filter.type !== 'timeRange') {
+      errors.push(schemaError(path, `time 目标必须绑定 timeRange 筛选器:${filterId}`));
+    } else if (binding.target === 'dimension' && filter.type !== 'dimension') {
+      errors.push(schemaError(path, `dimension 目标必须绑定维度筛选器:${filterId}`));
+    }
+  }
+  return errors;
+}
+
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
+}
+
+function dqeMetricNames(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (typeof item === 'string') return [item];
+    if (
+      typeof item === 'object' &&
+      item !== null &&
+      !Array.isArray(item) &&
+      'alias' in item &&
+      typeof item.alias === 'string'
+    ) {
+      return [item.alias];
+    }
+    return [];
+  });
+}
+
 function componentErrors(
   page: Page,
   component: Component,
@@ -290,6 +394,35 @@ function componentErrors(
           `字段 ${resolved.fieldName} 的 role 为 ${resolved.field.role}，此处要求 ${expectedRole}`
         )
       );
+    }
+    if (typeof binding !== 'string' && binding.match !== undefined) {
+      const matchPath = `${path}/match`;
+      const matched = resolveBinding(
+        page,
+        component,
+        { data: binding.data, field: binding.match.field },
+        catalog
+      );
+      if ('error' in matched) {
+        errors.push(schemaError(`${matchPath}/field`, matched.error));
+      } else {
+        if (matched.field.role !== 'dimension') {
+          errors.push(
+            schemaError(
+              `${matchPath}/field`,
+              `行匹配字段 ${matched.fieldName} 的 role 必须为 dimension`
+            )
+          );
+        }
+        if (!matchesFieldType(binding.match.equals, matched.field)) {
+          errors.push(
+            schemaError(
+              `${matchPath}/equals`,
+              `匹配值不符合字段 ${matched.fieldName} 的类型 ${matched.field.type}`
+            )
+          );
+        }
+      }
     }
   };
 
@@ -525,6 +658,7 @@ function semanticErrors(page: Page, catalog: CatalogSnapshot): TypedError[] {
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     if (dataSource.source.type !== 'query') continue;
     const query = dataSource.source.query;
+    if (isDqeQueryDefinition(query)) continue;
     const path = `/dataSources/${escapePointer(sourceId)}/source/query`;
     const knownMetrics = query.metrics.flatMap((code) => metricsByCode.get(code) ?? []);
 

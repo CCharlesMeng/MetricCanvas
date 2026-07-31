@@ -1,4 +1,6 @@
-export type Row = Record<string, string | number | null>;
+import type { FieldValue } from './field';
+
+export type Row = Record<string, FieldValue>;
 
 /**
  * 数据快照 (Data Snapshot):查询编排后分发给组件的数据包,

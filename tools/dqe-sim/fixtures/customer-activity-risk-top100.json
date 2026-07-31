@@ -1,0 +1,45 @@
+{
+  "id": "customer-activity-risk-overview-top100",
+  "query": {
+    "output_metrics": [
+      {
+        "formula": "COUNT(*)",
+        "alias": "数量"
+      }
+    ],
+    "output_dims": [
+      "客户级别"
+    ],
+    "time": {
+      "period": "month",
+      "is_aggregate": true,
+      "start": "2026-07",
+      "end": "2026-07"
+    },
+    "dimensions": {
+      "地区部": [
+        "中国地区部"
+      ],
+      "是否TOP100项目客户": [
+        "是"
+      ],
+      "是否NA": [
+        "是"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "客户级别": "卓越NA",
+      "数量": 12
+    },
+    {
+      "客户级别": "战略NA",
+      "数量": 36
+    },
+    {
+      "客户级别": "核心NA",
+      "数量": 39
+    }
+  ]
+}

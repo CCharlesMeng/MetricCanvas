@@ -56,7 +56,13 @@ export function fieldValue(
   rowIndex = 0
 ): FieldValue | undefined {
   const resolved = resolveField(binding, data);
-  return data[resolved.data]?.snapshot.rows[rowIndex]?.[resolved.field] as
+  const rows = data[resolved.data]?.snapshot.rows;
+  const selectedIndex =
+    typeof binding !== 'string' && binding.match !== undefined
+      ? (rows?.findIndex((row) => row[binding.match!.field] === binding.match!.equals) ?? -1)
+      : rowIndex;
+  if (selectedIndex < 0) return undefined;
+  return rows?.[selectedIndex]?.[resolved.field] as
     | FieldValue
     | undefined;
 }

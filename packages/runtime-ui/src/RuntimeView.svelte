@@ -3,6 +3,7 @@
     dataSourceMode,
     derivePageCapabilities,
     isChartComponent,
+    isDqeQueryDefinition,
     resolveDataSourceFields,
     validate,
     type ChartComponent,
@@ -216,7 +217,9 @@
       initialViews[component.id] = {
         pageIndex: 0,
         sort: initialTableSort(
-          source?.source.type === 'query' ? source.source.query.orderBy : undefined
+          source?.source.type === 'query' && !isDqeQueryDefinition(source.source.query)
+            ? source.source.query.orderBy
+            : undefined
         ),
         headerFilters: {}
       };
@@ -465,7 +468,9 @@
       const source = loaded.dataSources[component.data.main];
       const subscriptions =
         source?.source.type === 'query'
-          ? (source.source.query.filters?.subscribe ?? [])
+          ? isDqeQueryDefinition(source.source.query)
+            ? Object.keys(source.source.query.filterBindings ?? {})
+            : source.source.query.filters?.subscribe ?? []
           : [];
       if (!subscriptions.some((id) => changed.has(id))) continue;
       pushTableView(component, { ...view, pageIndex: 0 });

@@ -7,6 +7,7 @@
     RuntimeView,
     type RuntimeNavigation
   } from '@metriccanvas/runtime-ui';
+  import QueryInspector from '$lib/QueryInspector.svelte';
   import {
     catalogSnapshot,
     dataGateway,
@@ -14,6 +15,7 @@
   } from '$lib/services';
   import {
     customerRiskCatalog,
+    customerRiskDiagnostics,
     customerRiskGateway
   } from '$lib/customer-risk-preview';
 
@@ -99,6 +101,9 @@
     {initialSearch}
     {navigation}
   />
+  {#if pageState.document && isCustomerRiskPage(pageState.document)}
+    <QueryInspector diagnostics={customerRiskDiagnostics} />
+  {/if}
 {/if}
 
 <style>
