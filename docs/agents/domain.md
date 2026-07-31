@@ -26,9 +26,9 @@
 └── tools/
 ```
 
-`CONTEXT.md` 和 ADR 是领域术语与决策真源；`PAGE-METADATA.md` 和
-`docs/schema-metadata.md` 分别说明当前页面协议与创作期 Schema 元数据，不得用历史
-ADR 中已被取代的结构覆盖当前协议。
+`CONTEXT.md` 是当前领域术语真源；`PAGE-METADATA.md` 和
+`docs/schema-metadata.md` 分别说明页面协议与创作期 Schema 元数据。ADR 记录决策
+背景和取舍，不作为当前协议说明。
 
 ## 使用词汇表术语
 

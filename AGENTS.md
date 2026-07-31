@@ -2,7 +2,7 @@
 
 以业务需求为起点的 AI 原生数据应用平台:受控查询定义提供动态数据,`inline` 保留静态数据场景,声明式看板页面描述应用,统一运行时渲染页面,AI 完成查询生成、页面组合与数据分析。
 
-- 项目背景与调整目标:`origin.md`
+- 产品目标与边界:`origin.md`
 - 整体解决方案:`docs/solution.md`
 - 页面 Schema:`PAGE-METADATA.md`
 - Schema 元数据规则与示例:`docs/schema-metadata.md`

@@ -1,12 +1,22 @@
 # `@metriccanvas/embed`
 
-面向普通 HTML 的 MetricCanvas 统一运行时挂载模块。构建后提供：
+`@metriccanvas/embed` 把 MetricCanvas 统一运行时挂载到普通 HTML 页面或第三方浏览器应用中。
 
-- `dist/metriccanvas-runtime.global.js`：经典 `<script>`，全局名 `MetricCanvas`
-- `dist/metriccanvas-runtime.es.js`：ES module
-- `dist/index.d.ts`：TypeScript 类型声明
+构建产物：
 
-## 最小用法
+| 文件 | 用途 |
+|---|---|
+| `dist/metriccanvas-runtime.global.js` | 经典 `<script>`，全局名为 `MetricCanvas` |
+| `dist/metriccanvas-runtime.es.js` | ES module |
+| `dist/index.d.ts` | TypeScript 类型声明 |
+
+## 构建
+
+```bash
+pnpm --filter @metriccanvas/embed build
+```
+
+## 挂载静态页面
 
 ```html
 <div id="dashboard"></div>
@@ -16,16 +26,20 @@
     schemaVersion: '3.0',
     id: 'hello',
     dataSources: {},
-    sections: [{
-      id: 'main',
-      layout: { type: 'grid', columns: 12 },
-      components: [{
-        id: 'header',
-        type: 'reportHeader',
-        layout: { span: 12 },
-        props: { title: 'Hello MetricCanvas' }
-      }]
-    }]
+    sections: [
+      {
+        id: 'main',
+        layout: { type: 'grid', columns: 12 },
+        components: [
+          {
+            id: 'header',
+            type: 'reportHeader',
+            layout: { span: 12 },
+            props: { title: 'Hello MetricCanvas' }
+          }
+        ]
+      }
+    ]
   };
 
   const runtime = MetricCanvas.mount('#dashboard', {
@@ -34,46 +48,154 @@
 </script>
 ```
 
-`inline` 看板页面不需要其他运行依赖。DQE `query` 或 `mixed` 看板页面额外传入数据网关：
+`inline` 页面不需要数据网关。
+
+## 挂载 DQE 页面
+
+```html
+<script>
+  const dataGateway = MetricCanvas.createDqeGateway({
+    endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
+    credentials: 'include'
+  });
+
+  const runtime = MetricCanvas.mount('#dashboard', {
+    document: pageDocument,
+    dataGateway
+  });
+</script>
+```
+
+`query` 和包含查询数据源的 `mixed` 页面要求 `dataGateway`。
+
+DQE 端点和鉴权由宿主应用配置。端点、令牌和长期凭据不写入页面文档或静态 HTML。
+
+Schema 元数据只用于页面创作，不传入 Embed。
+
+## ESM
 
 ```js
-MetricCanvas.mount('#dashboard', {
+import {
+  createDqeGateway,
+  mount
+} from './metriccanvas-runtime.es.js';
+
+const dataGateway = createDqeGateway({
+  endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
+});
+
+const runtime = mount('#dashboard', {
   document: pageDocument,
   dataGateway
 });
 ```
 
-宿主负责取得页面文档、配置生产 DQE 端点并完成鉴权。长期凭据不得写入页面文档、HTML 或构建产物。
+## 输入
 
-Schema 元数据只服务创作期，不传入嵌入式统一运行时。DQE 页面需要的结果字段契约和查询字段映射已经包含在页面文档中。
+```ts
+interface RuntimeInput {
+  document: unknown;
+  dataGateway?: DataGateway;
+  initialSearch?: string;
+}
+```
 
-筛选和跨页下钻通过 `onEvent` 通知宿主；嵌入模块不修改宿主 URL。
+| 属性 | 说明 |
+|---|---|
+| `document` | 未校验的看板页面文档 |
+| `dataGateway` | 查询页面使用的数据网关 |
+| `initialSearch` | 不含前导 `?` 的筛选状态查询串 |
+
+Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。
+
+## 事件
+
+```ts
+type RuntimeEvent =
+  | { type: 'ready'; pageId: string }
+  | { type: 'invalid'; errors: TypedError[] }
+  | {
+      type: 'configuration-error';
+      code: 'DATA_GATEWAY_REQUIRED' | 'DATA_GATEWAY_INVALID';
+      message: string;
+    }
+  | { type: 'filter-change'; search: string }
+  | { type: 'navigate'; pageId: string; search: string };
+```
+
+```js
+const runtime = MetricCanvas.mount('#dashboard', {
+  document: pageDocument,
+  dataGateway,
+  onEvent(event) {
+    if (event.type === 'navigate') {
+      hostRouter.navigate(event.pageId, event.search);
+    }
+  }
+});
+```
+
+Embed 通过事件通知宿主筛选变化和页面导航，不修改宿主 URL。
 
 ## 生命周期
 
-- `runtime.update(input)`：替换页面文档与依赖，旧会话结果不会写入新页面；
-- `runtime.destroy()`：清理实例，重复调用安全；
-- 同一目标元素同时只能存在一个活动实例。
+更新实例：
+
+```js
+runtime.update({
+  document: nextPageDocument,
+  dataGateway,
+  initialSearch: 'region=d%3Aregion%3Aeast'
+});
+```
+
+销毁实例：
+
+```js
+runtime.destroy();
+```
+
+生命周期规则：
+
+- 同一目标元素同时只能挂载一个活动实例；
+- `update` 替换页面文档和运行依赖；
+- 更新后，既有页面会话的异步结果不写入新页面；
+- `destroy` 清理 Shadow DOM 和运行时会话；
+- 重复调用 `destroy` 是安全操作；
+- 已销毁实例不接受 `update`。
+
+## 配置错误
+
+| 错误 | 条件 |
+|---|---|
+| `DATA_GATEWAY_REQUIRED` | 查询页面未提供数据网关 |
+| `DATA_GATEWAY_INVALID` | 提供的数据网关不符合运行时端口 |
+
+页面结构错误通过 `invalid` 事件返回。
 
 ## 示例
 
-`examples/report.html` 是面向最终展示的独立 HTML 页面，默认加载 `/pages/tokens-report.json`。该页面使用纯 `inline` 页面数据源，因此不需要数据网关。
+启动示例服务器：
 
 ```bash
 pnpm --filter @metriccanvas/embed build
 pnpm --filter @metriccanvas/embed preview:examples
 ```
 
-打开：
+地址：
 
 ```text
 http://127.0.0.1:4175/examples/report.html
+http://127.0.0.1:4175/examples/inline.html
+http://127.0.0.1:4175/examples/query.html
+http://127.0.0.1:4175/examples/esm.html
 ```
 
-其他示例：
+| 示例 | 内容 |
+|---|---|
+| `report.html` | 完整静态报告 |
+| `inline.html` | 最小静态页面 |
+| `query.html` | DQE 查询页面 |
+| `esm.html` | ES module 接入 |
 
-- `examples/inline.html`：v3 静态页面；
-- `examples/query.html`：v3 DQE 动态页面；
-- `examples/esm.html`：ES module 接入。
-
-页面协议见仓库根目录 [PAGE-METADATA.md](../../PAGE-METADATA.md)。
+页面协议见 [PAGE-METADATA.md](../../PAGE-METADATA.md)。

@@ -1,27 +1,24 @@
-# 看板页面文档说明
+# 看板页面协议
 
-> 当前协议：领域 DSL `schemaVersion: "3.0"`
-> 兼容策略：1.0/2.0 已退出，不提供运行时兼容
+看板页面是统一运行时直接消费的声明式文档。页面协议版本为 `3.0`。
 
-本文是统一运行时直接消费的**看板页面**说明。日常交流中的“页面元数据”指整份声明式页面文档，不是创作期的数据上下文或 Schema 元数据。
+实现依据：
 
-实现真源依次是：
-
-1. `packages/page/src/schema.ts`：JSON Schema 结构契约；
-2. `packages/page/src/validate.ts`：引用、字段契约和能力不变式；
+1. `packages/page/src/schema.ts`：JSON 结构；
+2. `packages/page/src/validate.ts`：引用、字段契约和能力约束；
 3. `packages/page/src/page.ts`：组件、数据槽和 action 类型；
-4. 本文：面向页面作者和 Agent 的规则与示例。
+4. `packages/page/src/query.ts`：DQE 查询定义。
 
-若说明与实现不一致，以前三项和 `pnpm validate` 的结果为准。
+页面文件使用 JSON。协议拒绝未定义属性。
 
 ## 顶层结构
 
-```jsonc
+```json
 {
   "schemaVersion": "3.0",
-  "id": "page-id",
+  "id": "sales-overview",
   "meta": {
-    "description": "资产说明，不参与渲染"
+    "description": "销售概览"
   },
   "dataSources": {},
   "filters": [],
@@ -29,37 +26,65 @@
 }
 ```
 
-| 字段 | 必填 | 职责 |
-|---|---|---|
-| `schemaVersion` | 是 | 页面文档契约版本，固定为 `"3.0"` |
-| `id` | 是 | 看板页面的稳定身份；正式文件名必须为 `<id>.json` |
-| `meta` | 否 | 页面资产说明，当前只允许 `description` |
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `schemaVersion` | 是 | 固定为 `"3.0"` |
+| `id` | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
+| `meta` | 否 | 页面资产信息 |
 | `dataSources` | 是 | 命名页面数据源 |
-| `filters` | 否 | 页面级筛选状态 |
-| `sections` | 是 | 按顺序组织的内容分区 |
+| `filters` | 否 | 页面级筛选状态声明 |
+| `sections` | 是 | 页面内容分区，至少一项 |
 
-页面、分区、组件和页面数据源 id 使用小写字母、数字和连字符。字段 id 可使用大小写字母、数字、下划线和连字符，但首字符必须为字母或下划线。
+页面、页面数据源、筛选器、分区和组件的 id 使用：
 
-协议默认拒绝未定义属性。拼写错误不会被静默忽略。
+```text
+^[a-z0-9][a-z0-9-]*$
+```
 
-## 三种数据模式
+页面字段 id 使用：
 
-| 模式 | 页面数据源组成 | 运行行为 |
+```text
+^[A-Za-z_][A-Za-z0-9_-]*$
+```
+
+同一页面内：
+
+- 筛选器 id 唯一；
+- 分区 id 唯一；
+- 组件 id 全局唯一；
+- 页面数据源 id 唯一。
+
+## 页面数据模式
+
+页面数据模式由 `dataSources` 中的数据源类型确定。
+
+| 模式 | 组成 | 数据获取 |
 |---|---|---|
-| `inline` | 全部为静态页面数据源 | 数据随页面固化，不调用数据网关 |
-| `query` | 全部为动态页面数据源 | 当前通过 DQE 动态执行 |
-| `mixed` | 同时包含两类页面数据源 | 各组件按实际绑定来源获得能力 |
+| `inline` | 全部数据源为 `inline` | 页面文档直接提供数据行 |
+| `query` | 全部数据源为 `query` | 统一运行时调用数据网关 |
+| `mixed` | 同时包含 `inline` 和 `query` | 两类数据源分别执行 |
 
-DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inline` 并不表示兼容旧模型，而是保留正式的静态数据场景。
+`inline` 表示静态数据场景。`query` 表示动态查询场景。DQE 是当前支持的查询语言。
 
-## 结果字段契约
+## 页面数据源
 
-所有页面数据源都完整声明结果字段契约。组件、筛选状态和数据快照只引用稳定页面字段 id。
+每个页面数据源包含：
 
-### 通用字段
+- `fields`：稳定结果字段契约；
+- `source`：数据来源。
+
+组件只引用页面字段 id，不直接引用外部响应字段。
+
+### 字段契约
 
 ```json
 {
+  "region": {
+    "type": "string",
+    "role": "dimension",
+    "label": "区域",
+    "nullable": false
+  },
   "revenue": {
     "type": "number",
     "role": "measure",
@@ -71,26 +96,43 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
 }
 ```
 
-| 字段 | 必填 | 含义 | 允许值或约束 |
-|---|---|---|---|
-| `type` | 是 | 原始标量类型 | `string` / `number` / `boolean` / `date` / `datetime` |
-| `role` | 是 | 分析语义角色 | `dimension` / `measure` |
-| `label` | 否 | 默认展示名称 | 非空字符串 |
-| `unit` | 否 | 业务单位 | 非空字符串，不参与计算 |
-| `nullable` | 否 | 是否允许 `null` | 布尔值；省略时按 `true` |
-| `defaultFormat` | 否 | 默认展示建议 | 平台登记的格式预设 |
+| 属性 | 必填 | 说明 |
+|---|---:|---|
+| `type` | 是 | `string`、`number`、`boolean`、`date` 或 `datetime` |
+| `role` | 是 | `dimension` 或 `measure` |
+| `label` | 否 | 默认展示名称 |
+| `unit` | 否 | 业务单位 |
+| `nullable` | 否 | 是否允许 `null`；缺省为允许 |
+| `defaultFormat` | 否 | 默认展示格式 |
 
-`dimension` 用于类别、时间、分组、筛选或排序；`measure` 用于数值、比例、计数和其他可比较结果。v3 不再允许 `role: "metric"`。
+`dimension` 用于类别、时间、分组、筛选和排序。`measure` 用于数值、计数、比例和其他可比较结果。
 
-### 展示格式优先级
+允许的格式：
+
+```text
+text
+number
+number-1
+number-2
+number-grouped
+compact-wan-0
+compact-wan-1
+compact-yi-1
+percent-0
+percent-1
+percent-2
+percent-2-signed
+date
+date-month-day
+```
+
+展示格式优先级：
 
 1. 组件字段绑定的 `format`；
-2. 结果字段契约的 `defaultFormat`；
+2. 字段契约的 `defaultFormat`；
 3. 字段类型的基础格式。
 
-展示格式不改变字段值、查询语义或业务单位。
-
-## `inline` 页面数据源
+### 静态数据源
 
 ```json
 {
@@ -106,7 +148,6 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
       "role": "measure",
       "label": "收入",
       "unit": "元",
-      "defaultFormat": "number-grouped",
       "nullable": false
     }
   },
@@ -122,38 +163,36 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
 }
 ```
 
-规则：
+静态数据源规则：
 
 - `fields` 至少包含一个字段；
-- `source.type` 固定为 `"inline"`；
-- `source.rows` 必须是数组；
-- 每行键集合必须与 `fields` 完全一致；
-- 每个值必须符合字段 `type`；
-- `nullable: false` 的字段不得为 `null`；
-- 复杂对象和数组不是合法字段值；
-- 纯 `inline` 页面不得声明 `filters`、组件 action 或远程分页。
+- `rows` 是数据行数组；
+- 数据行的键集合与 `fields` 一致；
+- 字段值只能是字符串、数字、布尔值或 `null`；
+- `date` 使用 `YYYY-MM-DD`；
+- `datetime` 使用 ISO 8601 日期时间；
+- `nullable: false` 的字段不接受 `null`。
 
-`inline` 适用于固定时点报告、离线交付、说明性数据和确定性视觉验收。更新数据需要形成新的页面修订。
+仅包含静态数据源的页面不声明筛选器和组件 action。
 
-## DQE `query` 页面数据源
+### DQE 查询数据源
 
 ```json
 {
   "fields": {
-    "customer-level": {
-      "queryField": "客户级别",
+    "region": {
+      "queryField": "region",
       "type": "string",
       "role": "dimension",
-      "label": "客户级别",
+      "label": "区域",
       "nullable": false
     },
-    "customer-count": {
-      "queryField": "NA客户数",
+    "gmv": {
+      "queryField": "gmv",
       "type": "number",
       "role": "measure",
-      "label": "NA客户数",
-      "unit": "个",
-      "defaultFormat": "number-grouped",
+      "label": "成交额",
+      "unit": "元",
       "nullable": false
     }
   },
@@ -164,12 +203,8 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
       "body": {
         "dsl_list": [
           {
-            "output_dims": [
-              "客户级别"
-            ],
-            "output_metrics": [
-              "NA客户数"
-            ],
+            "output_dims": ["region"],
+            "output_metrics": ["gmv"],
             "filter": {
               "dims": [],
               "metrics": []
@@ -183,141 +218,103 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
 }
 ```
 
-### 外层字段
+DQE 查询规则：
 
-| 字段 | 必填 | 规则 |
-|---|---|---|
-| `fields` | 是 | 完整结果字段契约；每项额外声明 `queryField` |
-| `source.type` | 是 | 固定为 `"query"` |
-| `source.query.language` | 是 | 当前固定为 `"dqe"` |
-| `source.query.body` | 是 | 外部 DQE 协议原始请求体 |
-| `source.query.filterBindings` | 否 | 页面筛选器到 DQE 语义位置的显式映射 |
+- `language` 固定为 `"dqe"`；
+- `body.dsl_list` 恰好包含一个对象；
+- DQE 请求体保持外部协议原文；
+- 每个 DQE 输出字段具有一个 `queryField` 映射；
+- 每个 `queryField` 只映射到一个页面字段；
+- `output_dims` 对应 `role: "dimension"`；
+- `output_metrics` 中的字段名或别名对应 `role: "measure"`。
 
-### 查询字段映射
+页面数据源表示一个命名结果集。数据网关可以在传输层合并多个页面数据源的查询，不改变页面中的逻辑查询边界。
 
-`queryField` 把页面字段 id 显式映射到 DQE 响应键：
+## 筛选状态
 
-```text
-页面字段 customer-count
-  ← queryField: "NA客户数"
-  ← DQE 响应 { "NA客户数": 15 }
-```
+筛选器在页面顶层声明。组件 action 和查询数据源通过筛选器 id 共享状态。
 
-规则：
-
-- 每个 `query` 字段必须声明非空 `queryField`；
-- 同一页面数据源内 `queryField` 唯一；
-- DQE 的 `output_dims`、`output_metrics` 和公式 `alias` 必须被一一覆盖；
-- 页面字段 id 与 `queryField` 即使文本相同，也必须显式声明；
-- 多余映射、遗漏映射和重复映射都属于 `QUERY_MAPPING_ERROR`；
-- 组件永远只引用页面字段 id，不直接引用 DQE 字段名。
-
-### 查询定义
-
-- 一个页面数据源表示一个命名数据集，因此 `body.dsl_list` 恰好包含一个查询项；
-- `body` 保留外部 DQE 协议形态，页面协议不重命名内部字段；
-- 统一运行时不执行 NL2DQE，也不根据数据行改写查询；
-- 数据网关可以把同一调度窗口内的多个逻辑查询透明合并为一次 DQE 批量请求；
-- 批量响应必须保持 `dsl_list[i]` 与 `results[i]` 的位置对应；
-- 返回项数量不一致时拒绝整批结果，不猜测对应关系。
-
-当前页面 Schema 不声明 SQL 请求体。将来只有在 SQL 端点和请求协议得到确认后，才通过新的 `language` 分支扩展。
-
-## 筛选状态与筛选绑定
-
-页面筛选器写入共享筛选状态。DQE 查询只有声明 `filterBindings` 才响应对应筛选器。
-
-### 维度筛选
+### 维度筛选器
 
 ```json
 {
-  "filters": [
-    {
-      "id": "region-filter",
-      "type": "dimension",
-      "dimension": "region",
-      "label": "区域",
-      "display": "select",
-      "default": [
-        "中国地区部"
-      ]
-    }
-  ],
-  "dataSources": {
-    "overview": {
-      "fields": {
-        "region": {
-          "queryField": "地区部",
-          "type": "string",
-          "role": "dimension"
-        }
-      },
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_dims": [
-                  "地区部"
-                ],
-                "output_metrics": [],
-                "filter": {
-                  "dims": [],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
-          },
-          "filterBindings": {
-            "region-filter": {
-              "target": "dimension",
-              "queryField": "地区部"
-            }
-          }
-        }
-      }
+  "id": "region-filter",
+  "type": "dimension",
+  "dimension": "region",
+  "label": "区域",
+  "display": "select",
+  "visible": true,
+  "default": ["华东"]
+}
+```
+
+`display` 允许：
+
+- `select`
+- `tabs`
+- `tree`
+- `search`
+
+`visible: false` 表示筛选状态不显示控件，可由组件交互写入。
+
+维度候选值由数据网关提供，不写入 Schema 元数据。
+
+### 时间范围筛选器
+
+```json
+{
+  "id": "time-filter",
+  "type": "timeRange",
+  "label": "时间",
+  "precision": "date",
+  "default": {
+    "from": "2026-01-01",
+    "to": "2026-12-31"
+  }
+}
+```
+
+`precision` 允许 `date` 和 `datetime`。相对时间预设允许：
+
+```text
+today
+last7d
+last30d
+last90d
+```
+
+绝对时间范围是闭区间。`from` 不晚于 `to`，两端使用相同精度。
+
+### DQE 筛选绑定
+
+```json
+{
+  "filterBindings": {
+    "region-filter": {
+      "target": "dimension",
+      "queryField": "region"
+    },
+    "time-filter": {
+      "target": "time"
     }
   }
 }
 ```
 
-维度绑定：
+绑定规则：
 
-```json
-{
-  "target": "dimension",
-  "queryField": "地区部"
-}
-```
+- 键引用页面筛选器 id；
+- `target: "dimension"` 绑定维度筛选器并声明外部 `queryField`；
+- `target: "time"` 绑定时间范围筛选器；
+- 未绑定的筛选器变化不触发该数据源重新查询；
+- 页面字段 id、DQE 字段名和筛选目标之间不存在隐式同名映射。
 
-时间绑定：
-
-```json
-{
-  "target": "time"
-}
-```
-
-规则：
-
-- `filterBindings` 的键必须引用页面已声明筛选器；
-- `dimension` 目标必须声明 DQE `queryField`；
-- 页面筛选器类型必须与绑定目标兼容；
-- 没有绑定的页面数据源不会因该筛选状态改变而重新执行；
-- 禁止 JSONPath、字符串模板、表达式和字段同名推断；
-- 筛选绑定不改变结果字段契约。
-
-## 内容分区、组件与数据槽
-
-内容位于 `sections[].components`。分区使用固定 12 列自动流网格：
+## 内容分区
 
 ```json
 {
   "id": "overview",
-  "title": "经营概览",
+  "title": "概览",
   "layout": {
     "type": "grid",
     "columns": 12
@@ -326,186 +323,215 @@ DQE 只是当前 `query` 页面数据源已实现的执行场景。保留 `inlin
 }
 ```
 
-组件通用骨架：
+分区使用 12 列网格。`components` 至少包含一个组件。组件顺序决定自动流布局顺序。
+
+组件布局：
 
 ```json
 {
-  "id": "revenue-chart",
-  "type": "barChart",
   "layout": {
-    "span": 12
-  },
-  "data": {
-    "main": "by-region"
-  },
-  "props": {}
+    "span": 6
+  }
 }
 ```
 
-| 字段 | 必填 | 规则 |
+`span` 是 1 至 12 的整数。
+
+## 组件与数据槽
+
+支持的组件类型：
+
+| 类型 | 用途 | 数据槽 |
 |---|---|---|
-| `id` | 是 | 全页唯一 |
-| `type` | 是 | 受治理组件目录中的类型 |
-| `layout.span` | 是 | 1–12 的整数 |
-| `data` | 数据组件必填 | 命名数据槽到页面数据源的绑定 |
-| `props` | 是 | 由组件类型决定，拒绝未知属性 |
+| `reportHeader` | 报告标题与时间信息 | 无 |
+| `metricCard` | 指标值、变化和进度 | `main`，可选 `compare`、`target` |
+| `barChart` | 柱状图 | `main` |
+| `lineChart` | 折线图 | `main` |
+| `pieChart` | 饼图或环图 | `main` |
+| `table` | 表格 | `main` |
+| `mapChart` | 地图 | `main` |
+| `rankingCard` | 排名列表 | `main` |
+| `text` | 说明文本与页面链接 | 无 |
 
-组件类型包括：
+数据组件通过 `data` 把本地槽名映射到页面数据源：
 
-- `reportHeader`
-- `metricCard`
-- `barChart`
-- `lineChart`
-- `pieChart`
-- `table`
-- `mapChart`
-- `rankingCard`
-- `text`
+```json
+{
+  "id": "region-chart",
+  "type": "barChart",
+  "layout": { "span": 12 },
+  "data": {
+    "main": "sales-by-region"
+  },
+  "props": {
+    "categoryField": "region",
+    "series": [
+      {
+        "field": "gmv",
+        "label": "成交额"
+      }
+    ]
+  }
+}
+```
 
-`metricCard` 是组件技术标识。字段角色仍使用 `measure`，不要据此恢复指标目录。
+每个槽引用一个存在的页面数据源。
 
-## 组件字段绑定
+## 字段绑定
 
 字符串简写引用 `main` 数据槽：
 
 ```json
-{
-  "categoryField": "region"
-}
+"gmv"
 ```
 
-对象形式可指定数据槽、展示格式和标量行匹配：
+完整绑定显式指定数据槽和字段：
 
 ```json
 {
-  "valueField": {
-    "data": "main",
-    "field": "customer-count",
-    "format": "number-grouped",
-    "match": {
-      "field": "customer-level",
-      "equals": "卓越NA"
-    }
+  "data": "compare",
+  "field": "gmv",
+  "format": "compact-wan-1"
+}
+```
+
+按维度值选择行：
+
+```json
+{
+  "data": "main",
+  "field": "gmv",
+  "match": {
+    "field": "region",
+    "equals": "华东"
   }
 }
 ```
 
 规则：
 
-- `data` 必须是组件已绑定的数据槽；
-- `field` 和 `match.field` 必须存在于对应页面数据源；
-- 图表类别轴通常绑定 `dimension`；
-- 图表数值系列和值字段通常绑定 `measure`；
-- `format` 只影响当前视图；
-- 组件不得携带查询定义、数据行、网络请求或任意代码。
+- 数据槽必须由组件 `data` 声明；
+- 字段必须存在于数据槽对应的数据源；
+- `match.field` 的角色为 `dimension`；
+- `match.equals` 的类型与匹配字段一致；
+- 图表类别字段和地图名称字段使用 `dimension`；
+- 图表数值字段、指标卡数值和进度字段使用 `measure`；
+- 表格可绑定两种角色。
 
-## action 与跨页下钻
+## 表格行为
 
-页内联动通过 `writeFilter` 回写筛选状态：
+表格列支持：
+
+- 字段列和嵌套列组；
+- 次级字段和徽标字段；
+- 固定列、宽度和对齐；
+- 本地排序；
+- 维度选择筛选；
+- 日期范围筛选；
+- 单元格选择写入页面筛选状态；
+- 本地分页。
+
+分页示例：
+
+```json
+{
+  "pagination": {
+    "mode": "paged",
+    "pageSize": 10,
+    "numbered": true
+  }
+}
+```
+
+`mode: "none"` 时不声明 `pageSize`、`totalCount` 或 `numbered`。排序、列筛选和分页只作用于数据快照，不修改查询定义。
+
+## 组件 action
+
+action 只用于绑定查询数据源的组件。
+
+### 写入筛选器
 
 ```json
 {
   "on": "click",
   "writeFilter": "region-filter",
-  "field": {
-    "data": "main",
-    "field": "region"
-  }
+  "field": "region"
 }
 ```
 
-跨页下钻通过 `navigate`：
+目标是已声明的维度筛选器，来源字段角色为 `dimension`。
+
+### 页面跳转
 
 ```json
 {
   "on": "click",
   "navigate": {
     "page": "sales-detail",
-    "carryFilters": [
-      "date-filter"
-    ],
+    "carryFilters": ["time-filter"],
     "setFilters": {
-      "region-filter": {
-        "data": "main",
-        "field": "region"
-      }
+      "region-filter": "region"
     }
   }
 }
 ```
 
-action 只允许绑定动态 `query` 页面数据源的组件。纯 `inline` 页面不提供看似可交互但数据不会变化的假联动。
+`carryFilters` 携带当前筛选状态。`setFilters` 使用点击行中的维度字段设置目标页面筛选器。
 
-## `mixed` 页面
+文本组件使用 `links` 提供固定页面链接：
 
-`mixed` 页面同时包含 `inline` 和 `query` 页面数据源：
+```json
+{
+  "links": [
+    {
+      "label": "查看销售明细",
+      "page": "sales-detail",
+      "carryFilters": ["time-filter"]
+    }
+  ]
+}
+```
 
-- `inline` 组件同步得到终态数据快照；
-- `query` 组件经数据网关取得动态数据；
-- 能力按组件实际绑定的数据源推导；
-- 只绑定 `inline` 的组件不会因为同页存在 DQE 查询而获得筛选或 action 能力；
-- 组件复用同一字段绑定模型，不感知来源。
+## 数据快照
 
-## Schema 元数据的边界
+统一运行时把页面数据源转换为组件数据槽中的数据快照。
 
-Schema 元数据属于创作期的数据上下文，描述数据源、对象、字段、关系、权限、执行约束和已验证查询。它帮助 Agent 生成 DQE 查询定义，但：
+| 状态 | 含义 |
+|---|---|
+| `loading` | 查询正在执行 |
+| `ready` | 存在可渲染数据行 |
+| `empty` | 查询成功且结果为空 |
+| `error` | 查询或映射失败 |
 
-- 不进入看板页面；
-- 不提供业务数据行；
-- 不替代结果字段契约；
-- 不参与统一运行时渲染；
-- 不允许组件直接查询。
+静态数据源同步产生 `ready` 或 `empty`。查询数据源从 `loading` 进入终态。
 
-详细规则和完整示例见 [docs/schema-metadata.md](./docs/schema-metadata.md)。
-
-## 校验与错误
-
-保存前运行：
+## 校验
 
 ```bash
 pnpm validate
 ```
 
-主要错误类别：
+对单个文件：
 
-| code | 含义 |
+```bash
+pnpm validate pages/demo.json
+```
+
+错误包含类型、JSON Pointer 路径和消息。
+
+| 类型 | 含义 |
 |---|---|
-| `SCHEMA_ERROR` | JSON Schema、版本或未知属性错误 |
-| `FIELD_CONTRACT_ERROR` | 数据行、字段类型、空值或字段引用错误 |
-| `QUERY_MAPPING_ERROR` | DQE 输出与查询字段映射错误 |
-| `FILTER_BINDING_ERROR` | 筛选引用或目标语义错误 |
-| `DQE_PROTOCOL_ERROR` | DQE 请求/响应位置或形态错误 |
-| `DATA_CONTEXT_ERROR` | 创作期 Schema 元数据不足或不一致 |
+| `SCHEMA_ERROR` | JSON 结构、引用或组件能力不符合页面协议 |
+| `FIELD_CONTRACT_ERROR` | 结果数据不符合字段契约 |
+| `QUERY_MAPPING_ERROR` | DQE 输出与页面字段映射不完整或冲突 |
+| `FILTER_BINDING_ERROR` | 筛选声明与查询绑定不一致 |
+| `DQE_PROTOCOL_ERROR` | DQE 请求或响应不符合接入协议 |
+| `DQE_EXECUTION_ERROR` | DQE 执行失败 |
+| `DATA_CONTEXT_ERROR` | 页面创作所需的数据上下文不足 |
 
-v3 不再产生 `METRIC_GAP`。
+## 完整示例
 
-## 从旧页面迁移
-
-迁移是一次性破坏性升级，不提供长期兼容：
-
-| 旧结构 | v3 |
-|---|---|
-| `schemaVersion: "1.0"` / `"2.0"` | `"3.0"` |
-| `query.metrics` | DQE `body` + 显式结果字段契约 |
-| `query.dimensions` | DQE `body` + `fields[].role: "dimension"` |
-| `aggregation` / `granularity` | DQE 查询定义自身表达 |
-| `fieldOverrides` | 完整 `fields` |
-| `role: "metric"` | `role: "measure"` |
-| 目录推导字段类型与名称 | 页面显式结果字段契约 |
-| 元数据快照运行时依赖 | 创作期数据上下文 |
-| `METRIC_GAP` | `DATA_CONTEXT_ERROR` 或查询校验/执行错误 |
-
-不要用适配器、默认值或隐式同名继续接受旧文档。仓库内页面必须完整迁移后再进入 v3 基线。
-
-## 关键不变式
-
-1. 看板页面只描述页面结构、查询定义、结果字段契约和有限交互；
-2. `inline` 与 DQE `query` 都显式声明结果字段契约；
-3. 统一运行时不执行 NL2DQE；
-4. 组件只通过数据槽消费数据快照；
-5. 页面字段 id 与 DQE 响应字段只通过 `queryField` 显式映射；
-6. 筛选状态只通过 `filterBindings` 影响查询；
-7. 页面不携带脚本、HTML、CSS、表达式或页面层计算；
-8. DQE 批量传输是数据网关优化，不是页面概念；
-9. Schema 元数据只属于创作期；
-10. 页面修订和查询定义发生变化时必须重新校验、预览和发布。
+- 静态页面：[`pages/tokens-report.json`](./pages/tokens-report.json)
+- DQE 页面：[`pages/demo.json`](./pages/demo.json)
+- 混合数据源契约：[`packages/page/fixtures/contract-valid/mixed-page.json`](./packages/page/fixtures/contract-valid/mixed-page.json)
+- 客户活动 DQE 页面：[`pages/customer-activity-risk-briefing.json`](./pages/customer-activity-risk-briefing.json)

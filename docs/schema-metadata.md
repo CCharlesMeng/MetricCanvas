@@ -1,205 +1,267 @@
-# 数据上下文中的 Schema 元数据
+# 数据上下文 Schema 元数据
 
-> 适用范围：NL2DQE 创作期
->
-> 格式版本：`1.0`
->
-> JSON Schema：[schema-metadata.schema.json](./schema-metadata.schema.json)
->
-> 完整示例：[examples/schema-metadata.example.json](./examples/schema-metadata.example.json)
+Schema 元数据是数据上下文快照中的结构化数据说明。页面搭建 Agent 使用它发现可用执行环境、对象、字段、关系和查询约束。
 
-## 1. 定位
+本文描述创作期的数据上下文，不描述看板页面。看板页面协议见 [PAGE-METADATA.md](../PAGE-METADATA.md)。
 
-Schema 元数据是**数据上下文快照**的一部分，用于告诉页面搭建 Agent：
+配套文件：
 
-- 当前身份可以使用哪些执行环境、Schema、对象和字段；
-- 字段具有什么类型、业务含义、别名、单位和角色提示；
-- 对象之间有哪些受支持关系；
-- 查询必须遵守哪些权限、安全和资源限制；
-- 哪些问题—查询组合已经过验证；
-- 查询结果应满足什么字段契约。
+- [JSON Schema](./schema-metadata.schema.json)
+- [完整示例](./examples/schema-metadata.example.json)
 
-Schema 元数据只服务创作期。它不是看板页面，不是运行时目录，也不包含业务数据行。
+格式版本为 `1.0`。
 
-## 2. 与其他概念的边界
+## 作用范围
 
-| 概念 | 职责 | 是否含业务数据行 | 是否进入运行态 |
-|---|---|---:|---:|
-| 数据上下文快照 | 约束 NL2DQE 可使用的数据与规则 | 否 | 否 |
-| Schema 元数据 | 描述数据源、对象、字段、关系和限制 | 否 | 否 |
-| 查询定义 | 可执行的 DQE 请求体 | 否 | 是 |
-| 结果字段契约 | 声明查询稳定输出 | 否 | 是 |
-| 数据快照 | 一次运行时执行得到的数据与状态 | 是 | 是 |
+Schema 元数据提供：
 
-旧模型中的指标目录和元数据快照已经退出。Schema 元数据不得重新包装成指标 code 白名单。
+- 当前身份可访问的执行环境；
+- 可用于查询的 Schema、对象和字段；
+- 字段类型、业务含义、别名、单位和角色提示；
+- 对象之间受支持的关系；
+- 查询安全边界和资源限制；
+- 已验证查询及其结果字段；
+- 数据上下文快照的身份和版本。
 
-## 3. 顶层结构
+Schema 元数据不包含：
 
-```jsonc
+- 业务数据行；
+- 看板页面布局；
+- 组件配置；
+- 页面筛选状态；
+- 执行端点 URL 或凭据；
+- 运行时数据快照。
+
+## 与页面协议的关系
+
+| 内容 | Schema 元数据 | 看板页面 |
+|---|---:|---:|
+| 执行环境与可访问对象 | 是 | 否 |
+| 字段业务说明与关系 | 是 | 否 |
+| 查询安全与资源约束 | 是 | 否 |
+| 页面数据源 | 否 | 是 |
+| DQE 查询定义 | 可作为已验证查询 | 作为可执行查询 |
+| 结果字段契约 | 已验证查询的参考输出 | 运行时强制契约 |
+| 筛选器、分区和组件 | 否 | 是 |
+| 业务数据行 | 否 | 仅 `inline` 页面包含 |
+
+页面搭建 Agent 根据数据上下文形成页面文档。统一运行时只消费页面文档。
+
+## 顶层结构
+
+```json
 {
   "formatVersion": "1.0",
-  "id": "context-id",
-  "version": "immutable-version",
+  "id": "sales-analytics",
+  "version": "2026-07-31.1",
   "generatedAt": "2026-07-31T08:00:00.000Z",
-  "source": "source-description",
+  "source": "analytics-control-plane",
   "executionEnvironments": []
 }
 ```
 
-| 字段 | 必填 | 规则 |
-|---|---|---|
-| `formatVersion` | 是 | Schema 元数据格式版本，独立于页面 `schemaVersion` |
-| `id` | 是 | 数据上下文稳定 id |
-| `version` | 是 | 本次不可变快照版本 |
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `formatVersion` | 是 | 固定为 `"1.0"` |
+| `id` | 是 | 数据上下文的稳定标识 |
+| `version` | 是 | 不可变快照版本 |
 | `generatedAt` | 是 | ISO 8601 生成时间 |
-| `source` | 是 | 元数据来源说明，不包含凭据 |
-| `executionEnvironments` | 是 | 当前身份可访问的执行环境 |
+| `source` | 是 | 元数据来源标识 |
+| `executionEnvironments` | 是 | 当前身份可使用的执行环境 |
 
-同一 `id + version` 的内容不可变。任何字段、权限或约束变化都产生新版本。
+同一 `id` 和 `version` 对应唯一内容。Schema、字段、关系、权限或约束发生变化时使用新的版本。
 
-## 4. 执行环境
+## 执行环境
 
-```jsonc
+```json
 {
-  "id": "dqe-customer-activity",
-  "name": "客户活动 DQE",
+  "id": "dqe-sales",
+  "name": "销售分析 DQE",
   "language": "dqe",
   "endpointRef": "dqe-primary",
-  "description": "受控执行环境",
+  "description": "销售分析执行环境",
   "schemas": [],
-  "constraints": {},
-  "security": {}
+  "constraints": {
+    "readOnly": true,
+    "maxRows": 10000,
+    "maxColumns": 100,
+    "maxQueriesPerBatch": 20,
+    "timeoutMs": 30000
+  },
+  "security": {
+    "scope": "sales-read",
+    "notes": ["敏感字段按当前身份裁剪"]
+  }
 }
 ```
 
-规则：
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `id` | 是 | 快照内唯一的执行环境标识 |
+| `name` | 是 | 展示名称 |
+| `language` | 是 | 查询语言；当前为 `dqe` |
+| `endpointRef` | 是 | 服务端登记的端点引用 |
+| `description` | 否 | 执行环境说明 |
+| `schemas` | 是 | 可访问 Schema |
+| `constraints` | 是 | 查询资源限制 |
+| `security` | 是 | 权限范围与安全说明 |
 
-- `id` 在快照内唯一；
-- `language` 当前只允许 `dqe`；
-- `endpointRef` 是服务端登记的执行环境引用，不是 URL 或凭据；
-- `schemas` 只包含当前身份可发现的内容；
-- `constraints` 声明生成和执行硬限制；
-- `security` 说明权限范围与敏感数据规则。
+`endpointRef` 不是 URL。页面不保存 `endpointRef`。应用壳根据运行环境注入数据网关。
 
-页面不得复制 `endpointRef`。统一运行时按环境配置选择 DQE 端点。
+## 执行约束
 
-## 5. Schema 与对象
-
-Schema 用于组织一个执行环境中的对象：
-
-```jsonc
+```json
 {
-  "id": "customer-activity",
-  "name": "客户活动",
-  "description": "客户活动分析域",
+  "readOnly": true,
+  "maxRows": 10000,
+  "maxColumns": 100,
+  "maxQueriesPerBatch": 20,
+  "timeoutMs": 30000
+}
+```
+
+| 字段 | 说明 |
+|---|---|
+| `readOnly` | 执行环境只允许只读查询，固定为 `true` |
+| `maxRows` | 单个结果集最大行数 |
+| `maxColumns` | 单个结果集最大列数 |
+| `maxQueriesPerBatch` | 单次批量请求最大查询项数 |
+| `timeoutMs` | 查询超时时间 |
+
+页面搭建 Agent生成的查询满足这些约束。执行端对约束进行独立校验。
+
+## 安全范围
+
+```json
+{
+  "scope": "sales-read",
+  "notes": [
+    "客户标识只允许聚合使用"
+  ]
+}
+```
+
+`scope` 标识当前数据访问范围。`notes` 提供需要参与查询生成的安全规则。
+
+数据上下文只暴露当前身份可发现的内容。字段未出现在快照中表示当前创作上下文不可使用该字段。
+
+## Schema
+
+```json
+{
+  "id": "sales",
+  "name": "销售分析",
+  "description": "销售订单与区域分析",
   "objects": [],
   "relationships": [],
   "verifiedQueries": []
 }
 ```
 
-对象：
+Schema 在执行环境内组织对象、关系和已验证查询。
 
-```jsonc
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `id` | 是 | 执行环境内唯一标识 |
+| `name` | 是 | 展示名称 |
+| `description` | 是 | 业务范围 |
+| `objects` | 是 | 可查询对象 |
+| `relationships` | 是 | 受支持的对象关系 |
+| `verifiedQueries` | 是 | 已验证查询 |
+
+## 数据对象
+
+```json
 {
-  "id": "customer-activity-summary",
-  "name": "客户活动汇总",
+  "id": "sales-orders",
+  "name": "销售订单",
   "kind": "dataset",
-  "description": "按客户级别、地区部和时间查询活动汇总",
+  "description": "订单级销售数据",
   "fields": []
 }
 ```
 
-规则：
+对象规则：
 
-- `id` 是元数据内稳定身份；
-- `name` 是外部查询协议使用或展示的名称；
-- `description` 必须说明业务含义和适用范围；
-- `kind` 当前使用 `dataset`，未来扩展需增加明确判别分支；
-- 同一 Schema 内对象 id 唯一；
-- 不得把样例业务记录放进对象。
+- `id` 在 Schema 内唯一；
+- `kind` 固定为 `dataset`；
+- `description` 说明业务含义和适用范围；
+- `fields` 描述可用于查询的字段；
+- 对象不包含业务数据样例。
 
-## 6. 字段
+## 字段
 
-```jsonc
+```json
 {
-  "name": "NA客户数",
+  "name": "gmv",
   "type": "number",
-  "description": "符合当前查询条件的 NA 客户数量",
-  "aliases": ["客户数"],
+  "description": "成交总额",
+  "aliases": ["成交额", "交易额"],
   "roleHints": ["measure"],
-  "unit": "个",
+  "unit": "元",
+  "granularity": "order",
   "nullable": false,
   "sensitive": false
 }
 ```
 
-| 字段 | 必填 | 规则 |
-|---|---|---|
-| `name` | 是 | 外部查询协议使用的字段名 |
-| `type` | 是 | `string` / `number` / `boolean` / `date` / `datetime` |
-| `description` | 是 | 业务含义、口径和适用条件 |
-| `aliases` | 否 | 仅用于发现，不改变字段定义 |
-| `roleHints` | 是 | `dimension` / `measure` / `time` 的建议集合 |
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `name` | 是 | 查询协议使用的字段名 |
+| `type` | 是 | `string`、`number`、`boolean`、`date` 或 `datetime` |
+| `description` | 是 | 业务含义和口径 |
+| `aliases` | 否 | 检索别名 |
+| `roleHints` | 是 | `dimension`、`measure` 或 `time` |
 | `unit` | 否 | 业务单位 |
 | `granularity` | 否 | 时间或统计粒度 |
 | `nullable` | 是 | 查询结果是否允许空值 |
 | `sensitive` | 是 | 是否为敏感字段 |
 
-规则：
+`roleHints` 用于查询生成和字段发现。看板页面仍显式声明自己的结果字段 `role`。
 
-- `roleHints` 是创作提示，不替代页面结果字段契约；
-- `aliases` 只提高检索召回，不允许作为 DQE 输出字段名；
-- `unit` 不隐含展示格式；
-- 敏感字段只在当前身份有权使用且场景必要时暴露；
-- 字段说明不得包含业务数据样例；
-- 类型或单位变化必须产生新的数据上下文版本。
+`aliases` 只参与发现，不作为查询输出字段名。
 
-## 7. 关系
+`unit` 描述业务单位，不指定组件展示格式。
 
-关系只声明执行环境正式支持的连接路径：
+## 对象关系
 
-```jsonc
+```json
 {
-  "id": "customer-to-activity",
+  "id": "customer-orders",
   "from": {
-    "object": "customer",
+    "object": "customers",
     "field": "customer-id"
   },
   "to": {
-    "object": "activity",
+    "object": "sales-orders",
     "field": "customer-id"
   },
   "cardinality": "one-to-many",
-  "description": "客户到活动记录"
+  "description": "客户与订单的关联"
 }
 ```
 
-允许基数：
+支持的基数：
 
 - `one-to-one`
 - `one-to-many`
 - `many-to-one`
 
-不声明 `many-to-many` 隐式连接。需要中间对象时必须显式建模。
+关系的对象和字段引用同一 Schema 中已声明的内容。关系说明可用连接路径，不授予额外数据权限。
 
-关系元数据不授权查询；实际执行仍按当前身份和执行环境规则校验。
+## 已验证查询
 
-## 8. 已验证查询
-
-已验证查询把典型业务问题连接到可执行 DQE 请求和稳定结果字段：
-
-```jsonc
+```json
 {
-  "id": "customer-count-by-level",
-  "question": "按客户级别查看 NA 客户数",
-  "description": "返回客户级别和对应客户数量",
+  "id": "gmv-by-region",
+  "question": "按区域查看成交额",
+  "description": "返回区域和成交总额",
   "language": "dqe",
   "body": {
     "dsl_list": [
       {
-        "output_dims": ["客户级别"],
-        "output_metrics": ["NA客户数"],
+        "output_dims": ["region"],
+        "output_metrics": ["gmv"],
         "filter": {
           "dims": [],
           "metrics": []
@@ -210,130 +272,77 @@ Schema 用于组织一个执行环境中的对象：
   },
   "resultFields": [
     {
-      "name": "客户级别",
+      "name": "region",
       "type": "string",
       "role": "dimension",
       "nullable": false
     },
     {
-      "name": "NA客户数",
+      "name": "gmv",
       "type": "number",
       "role": "measure",
-      "unit": "个",
+      "unit": "元",
       "nullable": false
     }
   ]
 }
 ```
 
-规则：
+已验证查询包含：
 
-- 查询必须在当前执行环境真实执行并验真；
-- `body.dsl_list` 在单个示例中恰好包含一项；
-- `resultFields` 覆盖所有输出维度、输出度量和公式 alias；
-- 不保存执行返回的数据行；
-- 已验证查询是生成参考，不是跳过权限、安全或资源校验的白名单；
-- 外部协议或字段契约变化后必须重新验证并产生新快照版本。
+- 典型业务问题；
+- 可执行 DQE 请求体；
+- 查询用途说明；
+- 稳定结果字段。
 
-## 9. 执行约束
+`resultFields` 描述验证时的输出。页面采用该查询时，在页面数据源中声明完整字段契约和 `queryField` 映射。
 
-```jsonc
-{
-  "readOnly": true,
-  "maxRows": 1000,
-  "maxColumns": 20,
-  "maxQueriesPerBatch": 5,
-  "timeoutMs": 30000
-}
-```
+## 发现与使用
 
-约束是硬规则：
+数据上下文检索可以返回：
 
-- `readOnly` 当前必须为 `true`；
-- `maxRows` 和 `maxColumns` 约束结果规模；
-- `maxQueriesPerBatch` 约束 DQE 批量传输；
-- `timeoutMs` 约束单次执行；
-- Agent 不能通过拆分、重试或多轮调用绕过资源上限。
+- 执行环境；
+- Schema；
+- 对象；
+- 字段；
+- 已验证查询。
 
-## 10. 安全规则
+检索结果携带数据上下文版本。页面修订在使用查询数据源时记录创作所依据的数据上下文版本。
 
-1. 快照按当前身份和权限范围生成；
-2. 不可访问对象和字段不得出现在检索结果；
-3. 凭据、Cookie、Token 和真实端点 URL 不进入快照；
-4. 敏感字段必须带 `sensitive: true`；
-5. Schema 元数据和日志都不得包含业务数据行；
-6. 已验证查询仍需在每次执行时重新检查权限；
-7. 数据上下文不足时返回 `DATA_CONTEXT_ERROR`；
-8. 不得退回旧指标目录或让模型自行补造字段。
+页面搭建步骤：
 
-## 11. 搜索规则
+1. 根据页面需求检索数据上下文；
+2. 选择执行环境、对象、字段或已验证查询；
+3. 形成 DQE 查询定义；
+4. 声明页面结果字段契约；
+5. 通过页面校验和真实查询预览确认结果。
 
-`search_data_context` 可以匹配：
+静态 `inline` 页面不依赖数据上下文。
 
-- 执行环境名称和说明；
-- Schema 名称和说明；
-- 对象名称和说明；
-- 字段名称、说明和别名；
-- 已验证查询的问题和说明。
+## 校验规则
 
-搜索结果必须：
+Schema 元数据文件满足以下约束：
 
-- 返回数据上下文 `id + version`；
-- 标明匹配对象的完整路径；
-- 返回执行约束和安全摘要；
-- 不返回越权对象；
-- 不把别名伪装成正式字段名；
-- 不返回业务数据行。
+- 所有必填字段存在；
+- 未定义属性被拒绝；
+- id 在各自作用域内唯一；
+- 时间使用 ISO 8601；
+- 数值限制为正整数；
+- `readOnly` 固定为 `true`；
+- 对象关系引用存在的对象和字段；
+- 已验证查询的 `dsl_list` 恰好包含一个查询项；
+- 已验证查询结果字段名唯一；
+- 敏感信息不出现在 `source`、`endpointRef`、`description` 或 `notes` 中。
 
-## 12. 页面生成规则
+使用 [`schema-metadata.schema.json`](./schema-metadata.schema.json) 校验结构。引用完整性和敏感信息规则由数据上下文提供方校验。
 
-从 Schema 元数据生成 DQE 页面数据源时：
+## 完整示例
 
-1. 选择满足需求的最小对象和字段集合；
-2. 以正式字段名生成 DQE 查询；
-3. 对公式输出声明 alias；
-4. 真实执行并验真结果字段；
-5. 为页面选择稳定字段 id；
-6. 在页面 `fields` 中声明类型、角色、标签、单位和空值；
-7. 用 `queryField` 显式映射外部字段；
-8. 用 `filterBindings` 显式映射动态筛选；
-9. 保存页面修订时记录 `dataContextVersion`；
-10. 不把 Schema 元数据整体复制进页面文档。
+[`examples/schema-metadata.example.json`](./examples/schema-metadata.example.json) 展示：
 
-## 13. 反例
-
-以下内容不得进入 Schema 元数据：
-
-```jsonc
-{
-  "sampleRows": [
-    {
-      "客户名称": "某真实客户",
-      "收入": 128600
-    }
-  ],
-  "endpoint": "https://internal.example/api",
-  "token": "secret",
-  "metricCode": "legacy-gmv"
-}
-```
-
-原因分别是：
-
-- 业务数据行泄露；
-- 内部端点暴露；
-- 凭据泄露；
-- 恢复已退出的指标目录模型。
-
-## 14. 验收清单
-
-- JSON 可按格式 Schema 校验；
-- `id + version` 唯一且内容不可变；
-- 字段类型、单位、空值和敏感标记完整；
-- 关系只描述正式支持路径；
-- 已验证查询不包含返回数据行；
-- 执行约束完整；
-- 搜索结果按当前身份裁剪；
-- 页面生成只引用所需字段；
-- 页面保存记录正确的 `dataContextVersion`；
-- 运行时不加载数据上下文快照。
+- DQE 执行环境；
+- 查询约束与安全范围；
+- 销售分析 Schema；
+- 数据对象与字段；
+- 对象关系；
+- 已验证 DQE 查询。
