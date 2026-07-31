@@ -9,11 +9,7 @@
   } from '@metriccanvas/runtime';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
   import { onMount } from 'svelte';
-  import { catalogSnapshot, dataGateway } from '$lib/services';
-  import {
-    customerRiskCatalog,
-    customerRiskGateway
-  } from '$lib/customer-risk-preview';
+  import { dataGateway } from '$lib/services';
 
   const platformOrigin = import.meta.env.VITE_PLATFORM_URL
     ? new URL(import.meta.env.VITE_PLATFORM_URL).origin
@@ -22,13 +18,6 @@
 
   let document = $state<unknown>();
   let selected = $state<AuthoringComponentLocator>();
-  const customerRisk = $derived(
-    typeof document === 'object' &&
-      document !== null &&
-      'id' in document &&
-      document.id === 'customer-activity-risk-briefing'
-  );
-
   onMount(() => {
     if (!sessionId) return;
     const receive = (event: MessageEvent) => {
@@ -57,8 +46,7 @@
 {:else}
   <RuntimeView
     {document}
-    catalog={customerRisk ? customerRiskCatalog : catalogSnapshot}
-    dataGateway={customerRisk ? customerRiskGateway : dataGateway}
+    {dataGateway}
     authoring={{ selected, onintent: sendIntent }}
   />
 {/if}

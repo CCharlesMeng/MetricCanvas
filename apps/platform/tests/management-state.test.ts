@@ -12,7 +12,7 @@ const revisions: RevisionAudit[] = [
     revisionNumber: 3,
     baseRevisionId: 'revision-2',
     contentHash: 'hash-3',
-    metadataVersion: 'catalog-2',
+    dataContextVersion: 'context-2',
     createdBy: 'developer-1',
     createdAt: '2026-07-21T01:00:00.000Z'
   },
@@ -21,7 +21,7 @@ const revisions: RevisionAudit[] = [
     revisionNumber: 1,
     baseRevisionId: null,
     contentHash: 'hash-1',
-    metadataVersion: 'catalog-1',
+    dataContextVersion: null,
     createdBy: 'developer-1',
     createdAt: '2026-07-19T01:00:00.000Z'
   },
@@ -30,7 +30,7 @@ const revisions: RevisionAudit[] = [
     revisionNumber: 2,
     baseRevisionId: 'revision-1',
     contentHash: 'hash-2',
-    metadataVersion: 'catalog-1',
+    dataContextVersion: 'context-1',
     createdBy: 'developer-1',
     createdAt: '2026-07-20T01:00:00.000Z'
   }

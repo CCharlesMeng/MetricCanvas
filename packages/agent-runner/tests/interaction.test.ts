@@ -13,7 +13,7 @@ describe('Agent Runner 人工交互', () => {
       async listTools() {
         return [
           {
-            name: 'search_catalog',
+            name: 'search_data_context',
             inputSchema: { type: 'object', properties: {} }
           }
         ];
@@ -31,7 +31,7 @@ describe('Agent Runner 人工交互', () => {
         toolCalls: ['gmv', 'order-count', 'region', 'channel'].map(
           (query, index) => ({
             id: `search-${index + 1}`,
-            name: 'search_catalog',
+            name: 'search_data_context',
             input: { query }
           })
         )
@@ -44,7 +44,7 @@ describe('Agent Runner 人工交互', () => {
     const runner = createAgentRunner({
       model,
       mcp,
-      toolCallLimits: { search_catalog: 3 }
+      toolCallLimits: { search_data_context: 3 }
     });
 
     const events = await collect(
@@ -66,7 +66,7 @@ describe('Agent Runner 人工交互', () => {
           ok: false,
           error: {
             code: 'TOOL_CALL_LIMIT_EXCEEDED',
-            tool: 'search_catalog',
+            tool: 'search_data_context',
             limit: 3
           }
         }

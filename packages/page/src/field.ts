@@ -2,12 +2,8 @@
 export type FieldValue = string | number | boolean | null;
 
 export type FieldType = 'string' | 'number' | 'boolean' | 'date' | 'datetime';
-export type FieldRole = 'dimension' | 'metric';
+export type FieldRole = 'dimension' | 'measure';
 
-/**
- * 框架内置的封闭格式预设。页面只能引用预设 id，不能携带格式化表达式或任意参数。
- * 后续新增预设是向后兼容变化；改变已有预设含义是破坏性变化。
- */
 export const valueFormatPresets = [
   'text',
   'number',
@@ -34,53 +30,34 @@ export function isValueFormatPreset(value: unknown): value is ValueFormatPreset 
   );
 }
 
-/** 数据源输出字段契约。 */
+/** 页面数据源输出的稳定结果字段契约。 */
 export interface FieldDefinition {
   type: FieldType;
   role: FieldRole;
   label?: string;
-  /**
-   * @deprecated schemaVersion 2.0 早期页面把展示格式写在页面数据源字段中。
-   * 新页面应写在组件 FieldBinding；统一运行时仅将此字段作为兼容回退。
-   */
-  format?: ValueFormatPreset;
+  unit?: string;
+  nullable?: boolean;
+  defaultFormat?: ValueFormatPreset;
 }
 
-/** raw-query 页面数据源字段：稳定页面字段 id 显式映射到外部查询结果键。 */
+/** query 页面数据源字段到外部查询响应字段的显式映射。 */
 export interface QueryFieldDefinition extends FieldDefinition {
   queryField: string;
 }
 
-/** 统一运行时归一后的字段契约；defaultFormat 是展示建议，不是数据规则。 */
-export interface ResolvedFieldDefinition extends Omit<FieldDefinition, 'format'> {
-  defaultFormat?: ValueFormatPreset;
-}
+/** 统一运行时向组件提供的字段契约，不包含外部查询字段名。 */
+export type ResolvedFieldDefinition = FieldDefinition;
 
-/** query 页面数据源对元数据快照字段名称的页面局部覆盖。 */
-export interface FieldOverride {
-  label?: string;
-  /**
-   * @deprecated schemaVersion 2.0 早期页面使用；新页面在组件 FieldBinding 写 format。
-   */
-  format?: ValueFormatPreset;
-}
-
-/**
- * 字段引用。字符串简写始终引用 `main` 数据槽；多源场景使用显式数据槽。
- */
+/** 字段引用。字符串简写始终引用 `main` 数据槽。 */
 export type FieldReference = string | { data: string; field: string };
 
-/**
- * 纯渲染组件的展示字段绑定。format 只控制当前绑定的呈现，
- * 不改变页面数据源字段契约或元数据快照。
- */
+/** 组件字段绑定；format 只控制当前视图。 */
 export type FieldBinding =
   | string
   | {
       data: string;
       field: string;
       format?: ValueFormatPreset;
-      /** 标量组件从长表中选择一行；匹配字段仍使用稳定页面字段 id。 */
       match?: { field: string; equals: FieldValue };
     };
 

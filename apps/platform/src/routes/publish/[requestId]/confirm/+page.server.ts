@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ params }) => {
     audit: audit.events,
     revision: {
       revisionNumber: revision.revision.revisionNumber,
-      metadataVersion: revision.revision.metadataVersion,
+      dataContextVersion: revision.revision.dataContextVersion,
       contentHash: revision.revision.contentHash,
       createdBy: revision.revision.createdBy,
       createdAt: revision.revision.createdAt

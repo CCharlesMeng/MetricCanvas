@@ -3,7 +3,7 @@ import type { McpClient } from '@metriccanvas/agent-runner';
 import { createPageIdConfirmationMcpClient } from '@metriccanvas/mcp';
 
 const pageDocument = {
-  schemaVersion: '1.0',
+  schemaVersion: '3.0',
   id: 'sales-total',
   dataSources: {},
   sections: [
@@ -61,8 +61,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
           {
             code: 'PAGE_ID_PLACEHOLDER',
             path: '/id',
-            message:
-              '页面 id 必须是可读且唯一的真实候选值；请替换占位符后再次调用 validate_page，校验通过后客户端会发起结构化确认'
+            message: '页面 id 必须是可读且唯一的真实候选值'
           }
         ]
       },
@@ -75,8 +74,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
       client: fakeClient({
         ok: true,
         valid: true,
-        currentSchemaVersion: '1.0',
-        metadataVersion: 'catalog-v1',
+        currentSchemaVersion: '3.0',
         errors: []
       }),
       confirmedPageIds: []
@@ -95,8 +93,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
         title: '成交总额',
         stablePath: '/pages/sales-total',
         immutableAfterSave: true,
-        schemaVersion: '1.0',
-        metadataVersion: 'catalog-v1'
+        schemaVersion: '3.0'
       }
     });
   });
@@ -191,7 +188,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
               structuredContent: {
                 ok: true,
                 valid: true,
-                metadataVersion: 'catalog-v1',
+                currentSchemaVersion: '3.0',
                 errors: []
               },
               isError: false

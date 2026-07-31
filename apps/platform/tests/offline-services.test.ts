@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CatalogSnapshot, Page } from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 import {
@@ -7,16 +7,8 @@ import {
   seedPublishedTemplates
 } from '../src/lib/server/offline-services';
 
-const catalog: CatalogSnapshot = {
-  formatVersion: '2.0',
-  syncedAt: '2026-07-22T00:00:00.000Z',
-  source: 'offline-test',
-  metrics: [],
-  dimensions: []
-};
-
 const page: Page = {
-  schemaVersion: '1.0',
+  schemaVersion: '3.0',
   id: 'bundled-page',
   dataSources: {
     content: {
@@ -40,12 +32,10 @@ const page: Page = {
   ]
 };
 
-const migratedPage: Page = { ...page, schemaVersion: '2.0' };
-
 describe('离线页面种子', () => {
   it('把仓库页面导入为可由正式通道读取的已发布页面', async () => {
     const lifecycle = createMemoryPageLifecycle({
-      catalog: { current: async () => ({ version: 'offline-v1', snapshot: catalog }) },
+      dataContext: { current: async () => ({ version: 'offline-v1' }) },
       urls: {
         confirmation: (requestId, token) =>
           `http://localhost/publish/${requestId}/confirm?token=${token}`
@@ -56,7 +46,12 @@ describe('离线页面种子', () => {
 
     await expect(lifecycle.getPublished({ pageId: page.id })).resolves.toMatchObject({
       ok: true,
-      revision: { pageId: page.id, revisionNumber: 1, document: migratedPage }
+      revision: {
+        pageId: page.id,
+        revisionNumber: 1,
+        document: page,
+        dataContextVersion: null
+      }
     });
     await expect(lifecycle.listPages()).resolves.toMatchObject({
       pages: [
@@ -76,7 +71,7 @@ describe('离线页面种子', () => {
       'template-request'
     ];
     const lifecycle = createMemoryPageLifecycle({
-      catalog: { current: async () => ({ version: 'offline-v1', snapshot: catalog }) },
+      dataContext: { current: async () => ({ version: 'offline-v1' }) },
       ids: { next: () => generatedIds.shift() ?? 'unexpected-id' },
       tokens: { next: () => 'offline-token' },
       urls: {
@@ -114,7 +109,7 @@ describe('离线页面种子', () => {
           revision: {
             source: { pageId: page.id, revisionId: 'page-revision' }
           },
-          sourcePageRevision: { revisionId: 'page-revision', document: migratedPage }
+          sourcePageRevision: { revisionId: 'page-revision', document: page }
         }
       ]
     });

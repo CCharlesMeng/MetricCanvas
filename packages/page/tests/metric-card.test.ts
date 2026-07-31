@@ -4,16 +4,30 @@ import { validate } from '@metriccanvas/page';
 describe('指标卡页面', () => {
   it('拒绝指标卡行引用数据槽契约外的字段', () => {
     const document = {
-      schemaVersion: '1.0',
+      schemaVersion: '3.0',
       id: 'sales-summary',
       dataSources: {
         sales: {
           fields: {
-            gmv: { type: 'number', role: 'metric' }
+            gmv: {
+              queryField: 'gmv',
+              type: 'number',
+              role: 'measure'
+            }
           },
           source: {
             type: 'query',
-            query: { metrics: ['gmv'] }
+            query: {
+              language: 'dqe',
+              body: {
+                dsl_list: [
+                  {
+                    output_dims: [],
+                    output_metrics: ['gmv']
+                  }
+                ]
+              }
+            }
           }
         }
       },

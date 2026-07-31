@@ -1,76 +1,20 @@
 import {
-  isValueFormatPreset,
-  type CatalogSnapshot,
-  type FieldType,
-  type ValueFormatPreset
-} from '@metriccanvas/page';
-import { createDataServiceGateway, createMockGateway } from '@metriccanvas/data-gateway';
+  createDqeGateway,
+  createInMemoryDqeDiagnostics
+} from '@metriccanvas/data-gateway';
 import { createStaticPageRepository } from './page-repository';
 import { createPlatformPageRepository } from './platform-page-repository';
-import snapshot from '../../../../catalog/snapshot.json';
 
 export const pageRepository = import.meta.env.VITE_PLATFORM_URL
   ? createPlatformPageRepository(import.meta.env.VITE_PLATFORM_URL)
   : createStaticPageRepository();
 
-function catalogFormatVersion(value: string): CatalogSnapshot['formatVersion'] {
-  if (value !== '2.0') throw new Error(`不支持的元数据快照版本:${value}`);
-  return value;
-}
+export const dqeDiagnostics = createInMemoryDqeDiagnostics();
 
-function catalogValueType(
-  value: string
-): CatalogSnapshot['metrics'][number]['valueType'] {
-  if (value === 'integer' || value === 'decimal' || value === 'percent') return value;
-  throw new Error(`不支持的指标值类型:${value}`);
-}
-
-function catalogFieldType(value: string): FieldType {
-  if (
-    value === 'string' ||
-    value === 'number' ||
-    value === 'boolean' ||
-    value === 'date' ||
-    value === 'datetime'
-  ) {
-    return value;
-  }
-  throw new Error(`不支持的维度值类型:${value}`);
-}
-
-function catalogFormat(value: string | undefined): ValueFormatPreset | undefined {
-  if (value === undefined || isValueFormatPreset(value)) return value;
-  throw new Error(`不支持的字段格式:${value}`);
-}
-
-/** JSON 导入经判别字段收窄后再导出,避免把整份元数据快照直接断言成领域类型。 */
-export const catalogSnapshot = {
-  ...snapshot,
-  formatVersion: catalogFormatVersion(snapshot.formatVersion),
-  metrics: snapshot.metrics.map((metric) => ({
-    ...metric,
-    valueType: catalogValueType(metric.valueType),
-    defaultFormat: catalogFormat(metric.defaultFormat)
-  })),
-  dimensions: snapshot.dimensions.map((dimension) => ({
-    ...dimension,
-    valueType: catalogFieldType(dimension.valueType),
-    defaultFormat: catalogFormat(dimension.defaultFormat)
-  }))
-} satisfies CatalogSnapshot;
-
-/**
- * 应用壳的依赖注入点。数据网关按环境切换:
- * - 默认 mock(离线造数);
- * - `VITE_DATA_GATEWAY=sim` 走数据服务仿真(先 `pnpm sim` 起本地服务),
- *   真实适配器全链路;#3 真实联调时同一开关指向真实地址并注入真实鉴权头。
- */
-export const dataGateway =
-  import.meta.env.VITE_DATA_GATEWAY === 'sim'
-    ? createDataServiceGateway({
-        baseUrl: import.meta.env.VITE_DATA_SERVICE_URL ?? 'http://localhost:18226',
-        serviceCode: 'P001_ADS_T_IOC_SPD_METRIC_ACC_D',
-        // 占位鉴权头:仿真接受;真实值 #3/#11 联调注入
-        headers: { 'x-operator-id': 'dev', tenantId: 'dev', appId: 'metriccanvas', cftk: 'dev' }
-      })
-    : createMockGateway({ catalog: catalogSnapshot });
+/** inline 页面不会访问网关；query 页面统一进入当前 DQE 执行环境。 */
+export const dataGateway = createDqeGateway({
+  endpoint:
+    import.meta.env.VITE_DQE_ENDPOINT ??
+    '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
+  diagnostics: dqeDiagnostics
+});

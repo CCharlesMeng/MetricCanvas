@@ -200,7 +200,7 @@
                 <span>时间：{revision.createdAt}</span>
                 <span>基线：{revision.baseRevisionId ?? '无（首个修订）'}</span>
                 <span>内容哈希：{revision.contentHash}</span>
-                <span>元数据版本：{revision.metadataVersion}</span>
+                <span>数据上下文版本：{revision.dataContextVersion ?? '纯静态页面'}</span>
               </button>
             </li>
           {/each}
@@ -215,7 +215,7 @@
             <div><dt>创建时间</dt><dd>{comparison.selected.createdAt}</dd></div>
             <div><dt>基线修订</dt><dd>{comparison.selected.baseRevisionId ?? '无（首个修订）'}</dd></div>
             <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash}</code></dd></div>
-            <div><dt>元数据版本</dt><dd>{comparison.selected.metadataVersion}</dd></div>
+            <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '纯静态页面'}</dd></div>
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}

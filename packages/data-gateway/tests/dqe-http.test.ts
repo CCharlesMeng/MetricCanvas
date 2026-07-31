@@ -122,12 +122,9 @@ function query(): EffectiveQuery {
     order: {}
   };
   return {
-    metrics: ['na-customer-count'],
-    dimensions: ['customer-level'],
-    conditions: [],
-    dqe: {
-      body: { dsl_list: [item] },
-      fieldMappings: {
+    language: 'dqe',
+    body: { dsl_list: [item] },
+    fieldMappings: {
         'customer-level': {
           queryField: '客户级别',
           type: 'string',
@@ -136,11 +133,10 @@ function query(): EffectiveQuery {
         'na-customer-count': {
           queryField: 'NA客户数',
           type: 'number',
-          role: 'metric'
+          role: 'measure'
         }
       },
-      filterValues: []
-    }
+    filterValues: []
   };
 }
 
@@ -169,12 +165,9 @@ function top100Query(): EffectiveQuery {
     order: {}
   };
   return {
-    metrics: ['top100-customer-count'],
-    dimensions: ['customer-level'],
-    conditions: [],
-    dqe: {
-      body: { dsl_list: [item] },
-      fieldMappings: {
+    language: 'dqe',
+    body: { dsl_list: [item] },
+    fieldMappings: {
         'customer-level': {
           queryField: '客户级别',
           type: 'string',
@@ -183,10 +176,9 @@ function top100Query(): EffectiveQuery {
         'top100-customer-count': {
           queryField: '数量',
           type: 'number',
-          role: 'metric'
+          role: 'measure'
         }
       },
-      filterValues: []
-    }
+    filterValues: []
   };
 }

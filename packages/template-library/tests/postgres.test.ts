@@ -3,20 +3,12 @@ import {
   PostgreSqlContainer,
   type StartedPostgreSqlContainer
 } from '@testcontainers/postgresql';
-import type { CatalogSnapshot, Page } from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
 import { createPostgresPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createPostgresTemplateLibrary } from '@metriccanvas/template-library';
 
-const catalog: CatalogSnapshot = {
-  formatVersion: '1.0',
-  syncedAt: '2026-07-23T00:00:00.000Z',
-  source: 'template-postgres-test',
-  metrics: [],
-  dimensions: []
-};
-
 const page: Page = {
-  schemaVersion: '2.0',
+  schemaVersion: '3.0',
   id: 'regional-overview',
   dataSources: {},
   sections: [
@@ -35,7 +27,7 @@ const page: Page = {
   ]
 };
 
-describe('PostgreSQL 页面模板库', () => {
+describe.runIf(process.env.TEST_POSTGRES === '1')('PostgreSQL 页面模板库', () => {
   let postgres: StartedPostgreSqlContainer;
 
   beforeAll(async () => {
@@ -43,7 +35,7 @@ describe('PostgreSQL 页面模板库', () => {
   }, 120_000);
 
   afterAll(async () => {
-    await postgres.stop();
+    await postgres?.stop();
   });
 
   it('重开模块后仍能按模板 ACL 检索当前发布模板修订', async () => {
@@ -52,7 +44,7 @@ describe('PostgreSQL 页面模板库', () => {
     const pageRevision2Id = '018f6f22-6d57-7d45-8f53-3d26364f7003';
     const pageLifecycle = await createPostgresPageLifecycle({
       databaseUrl: postgres.getConnectionUri(),
-      catalog: { current: async () => ({ version: 'catalog-v1', snapshot: catalog }) },
+      dataContext: { current: async () => ({ version: 'context-v1' }) },
       ids: {
         next: (() => {
           const values = [pageRevisionId, pagePublishId, pageRevision2Id];

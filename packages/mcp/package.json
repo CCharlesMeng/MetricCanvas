@@ -8,9 +8,7 @@
   },
   "dependencies": {
     "@metriccanvas/agent-runner": "workspace:*",
-    "@metriccanvas/catalog-discovery": "workspace:*",
-    "@metriccanvas/dp-catalog": "workspace:*",
-    "@metriccanvas/metric-fulfillment": "workspace:*",
+    "@metriccanvas/data-context": "workspace:*",
     "@metriccanvas/page": "workspace:*",
     "@metriccanvas/page-lifecycle": "workspace:*",
     "@metriccanvas/template-library": "workspace:*",

@@ -1,16 +1,44 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "query-dashboard",
   "dataSources": {
     "sales": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
       "source": {
         "type": "query",
         "query": {
-          "metrics": ["gmv"],
-          "dimensions": ["region"],
-          "aggregation": "sum",
-          "filters": {
-            "subscribe": ["region-filter"]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["region"],
+                "output_metrics": ["gmv"],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region-filter": {
+              "target": "dimension",
+              "queryField": "region"
+            }
           }
         }
       }

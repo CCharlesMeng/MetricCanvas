@@ -6,7 +6,7 @@ import type { DataGateway } from '../src/ports';
 
 function page(): Page {
   return {
-    schemaVersion: '2.0',
+    schemaVersion: '3.0',
     id: 'dqe-runtime',
     filters: [
       {
@@ -27,7 +27,7 @@ function page(): Page {
           'na-customer-count': {
             queryField: 'NA客户数',
             type: 'number',
-            role: 'metric'
+            role: 'measure'
           }
         },
         source: {
@@ -122,11 +122,8 @@ describe('统一运行时编排 raw DQE 页面数据源', () => {
 
     expect(received).toHaveLength(1);
     expect(received[0]).toMatchObject({
-      metrics: ['na-customer-count'],
-      dimensions: ['customer-level'],
-      conditions: [],
-      dqe: {
-        fieldMappings: {
+      language: 'dqe',
+      fieldMappings: {
           'customer-level': {
             queryField: '客户级别',
             type: 'string',
@@ -135,17 +132,16 @@ describe('统一运行时编排 raw DQE 页面数据源', () => {
           'na-customer-count': {
             queryField: 'NA客户数',
             type: 'number',
-            role: 'metric'
+            role: 'measure'
           }
         },
-        filterValues: [
+      filterValues: [
           {
             target: 'dimension',
             queryField: '客户级别',
             values: ['战略NA']
           }
         ]
-      }
     });
     expect(snapshots.length).toBeGreaterThanOrEqual(2);
   });

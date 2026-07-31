@@ -1,12 +1,12 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "mixed-page",
   "dataSources": {
     "fixed-target": {
       "fields": {
         "target": {
           "type": "number",
-          "role": "metric"
+          "role": "measure"
         }
       },
       "source": {
@@ -19,11 +19,37 @@
       }
     },
     "live-sales": {
+      "fields": {
+        "stat-date": {
+          "queryField": "stat-date",
+          "type": "date",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
       "source": {
         "type": "query",
         "query": {
-          "metrics": ["gmv"],
-          "dimensions": ["stat-date"]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["stat-date"],
+                "output_metrics": ["gmv"],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
         }
       }
     }

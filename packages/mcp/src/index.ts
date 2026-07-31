@@ -9,31 +9,20 @@ import {
   validate,
   versionPolicy
 } from '@metriccanvas/page';
-import type { CatalogDiscovery } from '@metriccanvas/catalog-discovery';
-import {
-  DpCatalogError,
-  type DpCatalog
-} from '@metriccanvas/dp-catalog';
+import type { DataContextSearch } from '@metriccanvas/data-context';
 import type { McpClient } from '@metriccanvas/agent-runner';
 import type {
   LifecycleContext,
   PageLifecycle,
   RevisionReference
 } from '@metriccanvas/page-lifecycle';
-import type {
-  MetricFulfillment,
-  MetricFulfillmentContext
-} from '@metriccanvas/metric-fulfillment';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 
 export interface MetricCanvasMcpDependencies {
-  catalog: CatalogDiscovery;
-  dpCatalog: DpCatalog;
-  metricFulfillment: MetricFulfillment;
+  dataContext: DataContextSearch;
   lifecycle: PageLifecycle;
   templates: Pick<TemplateLibrary, 'search'>;
   context(): LifecycleContext;
-  metricFulfillmentContext(): MetricFulfillmentContext;
   previewUrl(reference: RevisionReference): string;
 }
 
@@ -58,205 +47,171 @@ export const COMPONENT_SELECTION_GUIDE = componentCatalog
   )
   .join('\n');
 
+const inlineExample = {
+  schemaVersion: '3.0',
+  id: 'revenue-overview',
+  dataSources: {
+    summary: {
+      fields: {
+        revenue: {
+          type: 'number',
+          role: 'measure',
+          label: '收入',
+          unit: '元',
+          nullable: false,
+          defaultFormat: 'number-grouped'
+        }
+      },
+      source: { type: 'inline', rows: [{ revenue: 128600 }] }
+    }
+  },
+  sections: [
+    {
+      id: 'overview',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'revenue-card',
+          type: 'metricCard',
+          layout: { span: 4 },
+          data: { main: 'summary' },
+          props: { rows: [{ label: '收入', valueField: 'revenue' }] }
+        }
+      ]
+    }
+  ]
+};
+
+const dqeExample = {
+  schemaVersion: '3.0',
+  id: 'customer-count-by-level',
+  dataSources: {
+    customers: {
+      fields: {
+        'customer-level': {
+          queryField: '客户级别',
+          type: 'string',
+          role: 'dimension',
+          nullable: false
+        },
+        'customer-count': {
+          queryField: 'NA客户数',
+          type: 'number',
+          role: 'measure',
+          unit: '个',
+          nullable: false
+        }
+      },
+      source: {
+        type: 'query',
+        query: {
+          language: 'dqe',
+          body: {
+            dsl_list: [
+              {
+                output_dims: ['客户级别'],
+                output_metrics: ['NA客户数'],
+                filter: { dims: [], metrics: [] },
+                order: {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  sections: [
+    {
+      id: 'overview',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        {
+          id: 'customers-table',
+          type: 'table',
+          layout: { span: 12 },
+          data: { main: 'customers' },
+          props: {
+            columns: [
+              { field: 'customer-level', title: '客户级别' },
+              { field: 'customer-count', title: '客户数' }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+};
+
 export const PAGE_BUILDING_PROMPT = [
   '你是 MetricCanvas 页面搭建 Agent。',
-  '新建看板页面时严格按“检索元数据 → 澄清 → 生成 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 用户确认 → 申请发布”执行。',
-  '用户要求从页面模板开始时先调用 search_templates;多个匹配必须列出名称、说明和标签差异并提问,不得擅自选择。',
-  '选定页面模板后以返回的精确来源页面修订为受治理起点,形成新的看板页面 id,不得覆盖来源页面;修改完页面 id 和用户明确要求的内容后先直接调用 validate_page 按当前元数据重新校验,不得逐项调用 search_catalog 复查模板已有指标或维度;只有校验结果指出元数据缺口时才针对缺口调用 search_catalog。模板不能绕过 SCHEMA_ERROR 或 METRIC_GAP。',
-  '不得猜测指标 code、口径、维度、时间范围或粒度;有歧义必须提问。',
-  '数据服务目录缺少所需指标时调用 search_metric_candidates 查询 DP,必须向用户展示全部候选的业务定义、状态、维度、聚合、匹配原因与能力缺口;不得自动选择得分最高或排序最前的候选。',
-  '新建页面必须自行拟定可读且唯一的真实候选页面 id 后再调用 validate_page;严禁使用占位页面 id,包括 __pending__、pending、todo、tbd、placeholder、待确认、待定或尖括号占位符。校验通过后客户端会发起结构化页面 id 确认,不得用普通文本询问页面 id。',
-  '首次 save_page 前必须展示可读且唯一的页面 id,并等待用户明确确认。',
-  '编辑既有看板页面时,先调用 get_page(selector=latest)取得当前页面修订和页面文档,保留返回的精确 revisionId 作为 baseRevisionId;修改后调用 validate_page、save_page、preview_page。编辑会追加页面修订,不得再次请求页面 id 确认。',
-  '只保存 validate_page 返回 valid=true 的当前 schemaVersion 页面。',
-  '结构化查询只允许放在 query 页面数据源中;组件必须经 data 数据槽引用页面数据源,不得携带 query 或数据行。',
-  '先把用户诉求拆成分析任务,再按组件能力选择一个或多个组件:当前值用 metricCard,类别比较用 barChart,时间变化用 lineChart,少量类别占比用 pieChart,Top N 用 rankingCard,逐行核对用 table;完整页面通常先放 reportHeader。',
-  '同一诉求包含多个分析任务时组合多个组件,每个组件绑定形状匹配的命名页面数据源;不得为了“看起来丰富”添加与诉求无关的图表。',
-  '开发期可由 mock 数据网关执行 query 页面数据源;mock 只替代数据服务供数,页面仍必须声明合法指标、维度、字段契约和结构化查询,不得把假数据塞进组件 props。',
+  '严格按“确认需求 → 检索数据上下文或选择 inline → 生成查询定义和结果字段契约 → 校验 → 确认页面 id → 保存 → 精确修订预览 → 人工发布”执行。',
+  '静态报告使用 inline 页面数据源；需要运行时取数时调用 search_data_context，并仅使用返回的 DQE 执行环境、字段、约束和已验证查询。',
+  '不得猜测字段、关系、查询协议、筛选位置或结果契约；数据上下文不足时说明 DATA_CONTEXT_ERROR，不创建指标缺口。',
+  'DQE 查询必须保留原始 body；每个 query 页面数据源显式声明 fields，queryField 必须覆盖所有输出字段。',
+  '页面字段角色只允许 dimension 或 measure；组件只引用稳定页面字段 id。',
+  '新建页面必须拟定可读且唯一的真实页面 id。validate_page 通过后，客户端会发起结构化页面 id 确认。',
+  '编辑既有页面时先调用 get_page(selector=latest)，保留 revisionId 作为 baseRevisionId，再校验、保存和预览。',
   `组件能力目录:\n${COMPONENT_SELECTION_GUIDE}`,
-  '用户要求单指标卡时必须使用 type=metricCard,不得降级为 barChart、text 或其他组件;props.rows 只声明该指标行。',
-  '没有筛选器时省略 query 页面数据源中的 query.filters,不要发送空对象;JSON Schema 的 oneOf 错误不代表 metricCard 不存在。',
-  `单指标卡最小合法示例:{"schemaVersion":"${versionPolicy.current}","id":"<confirmed-id>","dataSources":{"main":{"source":{"type":"query","query":{"metrics":["<metric-code>"],"aggregation":"sum"}}}},"sections":[{"id":"overview","title":"<title>","layout":{"type":"grid","columns":12},"components":[{"id":"w-metric","type":"metricCard","layout":{"span":3},"data":{"main":"main"},"props":{"title":"<title>","rows":[{"label":"<metric-name>","valueField":"<metric-code>"}]}}]}]}`,
-  '校验失败时按 JSON Pointer 修正字段,同时保持用户指定的组件语义不变。',
-  '保存后先调用 preview_page。只有用户看过精确修订预览并明确要求发布后,才能调用 request_publish;预览完成不等于同意发布,MCP 不负责确认发布。',
-  '页面搭建工作台不是 JSON 编辑器,不要要求用户手写页面文档。'
+  `inline 最小示例:${JSON.stringify(inlineExample)}`,
+  `DQE 最小示例:${JSON.stringify(dqeExample)}`,
+  '只有用户看过精确修订预览并明确要求发布后，才能调用 request_publish。'
 ].join('\n');
 
 export function createMetricCanvasMcpServer(
   dependencies: MetricCanvasMcpDependencies
 ): McpServer {
-  const server = new McpServer({
-    name: 'metriccanvas',
-    version: '0.1.0'
-  });
+  const server = new McpServer({ name: 'metriccanvas', version: '0.2.0' });
 
   server.registerPrompt(
     'build_dashboard_page',
-    {
-      description: 'MetricCanvas 受治理的看板页面生成流程'
-    },
+    { description: 'MetricCanvas v3 受治理的看板页面生成流程' },
     async () => ({
-      messages: [
-        {
-          role: 'user',
-          content: { type: 'text', text: PAGE_BUILDING_PROMPT }
-        }
-      ]
+      messages: [{ role: 'user', content: { type: 'text', text: PAGE_BUILDING_PROMPT } }]
     })
   );
 
+  registerJsonResource(server, 'page-schema', 'metriccanvas://page/schema', '当前页面 JSON Schema', pageSchema);
+  registerJsonResource(server, 'component-catalog', 'metriccanvas://page/components', '组件能力目录', componentCatalog);
+  registerJsonResource(server, 'inline-example', 'metriccanvas://page/examples/inline', 'v3 inline 最小示例', inlineExample);
+  registerJsonResource(server, 'dqe-example', 'metriccanvas://page/examples/dqe', 'v3 DQE 最小示例', dqeExample);
   server.registerResource(
-    'page-schema',
-    'metriccanvas://page/schema',
-    {
-      title: '当前页面 JSON Schema',
-      mimeType: 'application/schema+json'
-    },
+    'page-rules',
+    'metriccanvas://page/rules',
+    { title: 'v3 页面生成规则', mimeType: 'text/plain' },
     async (uri) => ({
-      contents: [
-        {
-          uri: uri.toString(),
-          mimeType: 'application/schema+json',
-          text: JSON.stringify(pageSchema)
-        }
-      ]
+      contents: [{ uri: uri.toString(), mimeType: 'text/plain', text: PAGE_BUILDING_PROMPT }]
     })
   );
-
   server.registerResource(
-    'component-catalog',
-    'metriccanvas://page/components',
-    {
-      title: '组件能力目录',
-      mimeType: 'application/json'
-    },
+    'data-context',
+    'metriccanvas://data-context/current',
+    { title: '当前数据上下文快照', mimeType: 'application/json' },
     async (uri) => ({
-      contents: [
-        {
-          uri: uri.toString(),
-          mimeType: 'application/json',
-          text: JSON.stringify(componentCatalog)
-        }
-      ]
-    })
-  );
-
-  server.registerResource(
-    'generation-guide',
-    'metriccanvas://page/generation-guide',
-    {
-      title: '页面生成流程',
-      mimeType: 'text/plain'
-    },
-    async (uri) => ({
-      contents: [
-        {
-          uri: uri.toString(),
-          mimeType: 'text/plain',
-          text: `${PAGE_BUILDING_PROMPT}\n当前 schemaVersion:${versionPolicy.current}`
-        }
-      ]
+      contents: [{
+        uri: uri.toString(),
+        mimeType: 'application/json',
+        text: JSON.stringify(await dependencies.dataContext.current())
+      }]
     })
   );
 
   server.registerTool(
-    'search_catalog',
+    'search_data_context',
     {
-      description: '按指标或维度的 code、名称检索数据服务目录。',
+      description: '按名称、说明或别名检索当前身份可用的执行环境、Schema、对象、字段与已验证查询。',
       inputSchema: z.object({
         query: z.string().min(1),
         limit: z.number().int().min(1).max(50).default(10)
       }),
       annotations: { readOnlyHint: true }
     },
-    async ({ query, limit }) => {
-      const result = await dependencies.catalog.search({ query, limit });
-      return toolResult({ ok: true, ...result });
-    }
-  );
-
-  server.registerTool(
-    'search_metric_candidates',
-    {
-      description:
-        '查询 DP 中可能满足原子指标需求的全部指标候选，并返回逐项匹配原因与能力缺口；调用方必须交给用户确认，不能自动选择。',
-      inputSchema: z.object({
-        query: z.string().min(1),
-        requiredDimensions: z.array(z.string().min(1)).default([]),
-        requiredAggregations: z.array(z.string().min(1)).default([]),
-        statuses: z.array(z.enum(['draft', 'published'])).default([
-          'draft',
-          'published'
-        ])
-      }),
-      annotations: { readOnlyHint: true }
-    },
-    async (input) => {
-      try {
-        const result = await dependencies.dpCatalog.searchCandidates(input);
-        return toolResult({ ok: true, ...result });
-      } catch (cause) {
-        return dpToolFailure(cause);
-      }
-    }
-  );
-
-  server.registerTool(
-    'get_metric_status',
-    {
-      description:
-        '按稳定 DP 指标 ID 查询当前 draft/published 状态、最终 code 与目标数据服务目录。',
-      inputSchema: z.object({ metricId: z.string().min(1) }),
-      annotations: { readOnlyHint: true }
-    },
-    async ({ metricId }) => {
-      try {
-        const metric = await dependencies.dpCatalog.getMetric(metricId);
-        return metric
-          ? toolResult({ ok: true, metric })
-          : toolResult(
-              {
-                ok: false,
-                error: {
-                  code: 'DP_METRIC_NOT_FOUND',
-                  message: `DP 指标不存在:${metricId}`
-                }
-              },
-              true
-            );
-      } catch (cause) {
-        return dpToolFailure(cause);
-      }
-    }
-  );
-
-  server.registerTool(
-    'record_metric_gap',
-    {
-      description:
-        '在用户明确确认后，把页面搭建蓝图中的原子指标需求登记到指标需求组，并指定独立的数据开发确认人。',
-      inputSchema: z.object({
-        blueprintId: z.string().min(1),
-        requestId: z.string().min(1),
-        reviewerId: z.string().min(1),
-        userConfirmed: z.literal(true),
-        idempotencyKey: z.string().min(1)
-      })
-    },
-    async (input) => {
-      const result = await dependencies.metricFulfillment.recordMetricGap(
-        input,
-        dependencies.metricFulfillmentContext()
-      );
-      return toolResult(result, !result.ok);
-    }
+    async (input) => toolResult({ ok: true, ...(await dependencies.dataContext.search(input)) })
   );
 
   server.registerTool(
     'search_templates',
     {
-      description:
-        '按名称、说明或标签检索当前用户可使用的已发布页面模板，返回模板修订及其精确来源页面修订。',
+      description: '检索当前用户可使用的已发布页面模板。',
       inputSchema: z.object({
         query: z.string().min(1),
         limit: z.number().int().min(1).max(20).default(5)
@@ -280,18 +235,16 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'validate_page',
     {
-      description: '使用当前页面 Schema 与当前数据服务元数据校验页面文档。',
+      description: '使用当前 v3 页面 Schema 校验页面文档。',
       inputSchema: z.object({ document: pageDocumentSchema }),
       annotations: { readOnlyHint: true }
     },
     async ({ document }) => {
-      const catalog = await dependencies.catalog.current();
-      const errors = validate(document, catalog.snapshot);
+      const errors = validate(document);
       return toolResult({
         ok: true,
         valid: errors.length === 0,
         currentSchemaVersion: versionPolicy.current,
-        metadataVersion: catalog.version,
         errors
       });
     }
@@ -300,8 +253,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'save_page',
     {
-      description:
-        '校验并保存看板页面: baseRevisionId 为 null 时产生不可变 R1;传入当前最新 revisionId 时追加不可变页面修订。',
+      description: '校验并保存看板页面修订。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         baseRevisionId: z.string().nullable(),
@@ -311,10 +263,7 @@ export function createMetricCanvasMcpServer(
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true }
     },
     async (command) => {
-      const result = await dependencies.lifecycle.saveRevision(
-        command,
-        dependencies.context()
-      );
+      const result = await dependencies.lifecycle.saveRevision(command, dependencies.context());
       return toolResult(result, !result.ok);
     }
   );
@@ -322,7 +271,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'list_pages',
     {
-      description: '按 pageId 升序分页列出看板页面摘要;cursor 是上一页最后一个 pageId。',
+      description: '按 pageId 升序分页列出看板页面摘要。',
       inputSchema: z.object({
         cursor: z.string().min(1).optional(),
         limit: z.number().int().min(1).max(100).default(50)
@@ -334,18 +283,14 @@ export function createMetricCanvasMcpServer(
         ...(cursor ? { afterPageId: cursor } : {}),
         limit
       });
-      return toolResult({
-        ok: true,
-        pages: result.pages,
-        nextCursor: result.nextPageId
-      });
+      return toolResult({ ok: true, pages: result.pages, nextCursor: result.nextPageId });
     }
   );
 
   server.registerTool(
     'get_page',
     {
-      description: '读取看板页面的 latest、published 或精确指定的页面修订。',
+      description: '读取 latest、published 或精确指定的页面修订。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         selector: pageRevisionSelectorSchema
@@ -361,7 +306,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'preview_page',
     {
-      description: '为精确的已保存页面修订返回统一运行时预览 URL。',
+      description: '返回精确页面修订的统一运行时预览 URL。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         revisionId: z.string().min(1)
@@ -371,19 +316,14 @@ export function createMetricCanvasMcpServer(
     async (reference) => {
       const result = await dependencies.lifecycle.getRevision(reference);
       if (!result.ok) return toolResult(result, true);
-      return toolResult({
-        ok: true,
-        pageId: reference.pageId,
-        revisionId: reference.revisionId,
-        previewUrl: dependencies.previewUrl(reference)
-      });
+      return toolResult({ ok: true, ...reference, previewUrl: dependencies.previewUrl(reference) });
     }
   );
 
   server.registerTool(
     'request_publish',
     {
-      description: '为当前最新页面修订取得 15 分钟发布租约并返回人工确认 URL。',
+      description: '为当前最新页面修订取得发布租约并返回人工确认 URL。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         revisionId: z.string().min(1),
@@ -392,10 +332,7 @@ export function createMetricCanvasMcpServer(
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true }
     },
     async (command) => {
-      const result = await dependencies.lifecycle.requestPublish(
-        command,
-        dependencies.context()
-      );
+      const result = await dependencies.lifecycle.requestPublish(command, dependencies.context());
       return toolResult(result, !result.ok);
     }
   );
@@ -403,12 +340,25 @@ export function createMetricCanvasMcpServer(
   return server;
 }
 
-function dpToolFailure(cause: unknown) {
-  const error =
-    cause instanceof DpCatalogError
-      ? { code: cause.code, message: cause.message }
-      : { code: 'DP_QUERY_FAILED', message: String(cause) };
-  return toolResult({ ok: false, error }, true);
+function registerJsonResource(
+  server: McpServer,
+  name: string,
+  uri: string,
+  title: string,
+  value: unknown
+): void {
+  server.registerResource(
+    name,
+    uri,
+    { title, mimeType: 'application/json' },
+    async (resourceUri) => ({
+      contents: [{
+        uri: resourceUri.toString(),
+        mimeType: 'application/json',
+        text: JSON.stringify(value)
+      }]
+    })
+  );
 }
 
 export async function connectInProcessMetricCanvasMcp(
@@ -416,14 +366,13 @@ export async function connectInProcessMetricCanvasMcp(
 ): Promise<{ client: McpClient; close(): Promise<void> }> {
   const protocolClient = new Client({
     name: 'metriccanvas-agent-runner',
-    version: '0.1.0'
+    version: '0.2.0'
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([
     server.connect(serverTransport),
     protocolClient.connect(clientTransport)
   ]);
-
   return {
     client: {
       async listTools() {
@@ -462,7 +411,6 @@ export function createPageIdConfirmationMcpClient(
   options: PageIdConfirmationMcpClientOptions
 ): McpClient {
   const confirmedPageIds = new Set(options.confirmedPageIds);
-
   return {
     listTools: () => options.client.listTools(),
     async callTool(request) {
@@ -495,19 +443,15 @@ export function createPageIdConfirmationMcpClient(
           structuredContent: {
             ok: true,
             valid: false,
-            errors: [
-              {
-                code: 'PAGE_ID_PLACEHOLDER',
-                path: '/id',
-                message:
-                  '页面 id 必须是可读且唯一的真实候选值；请替换占位符后再次调用 validate_page，校验通过后客户端会发起结构化确认'
-              }
-            ]
+            errors: [{
+              code: 'PAGE_ID_PLACEHOLDER',
+              path: '/id',
+              message: '页面 id 必须是可读且唯一的真实候选值'
+            }]
           },
           isError: false
         };
       }
-
       const result = await options.client.callTool(request);
       if (
         request.name !== 'validate_page' ||
@@ -519,11 +463,9 @@ export function createPageIdConfirmationMcpClient(
       ) {
         return result;
       }
-
       const document = request.arguments.document;
       const pageId = document.id;
       if (typeof pageId !== 'string' || confirmedPageIds.has(pageId)) return result;
-
       return {
         ...result,
         interaction: {
@@ -536,9 +478,6 @@ export function createPageIdConfirmationMcpClient(
             immutableAfterSave: true,
             ...(typeof document.schemaVersion === 'string'
               ? { schemaVersion: document.schemaVersion }
-              : {}),
-            ...(typeof result.structuredContent.metadataVersion === 'string'
-              ? { metadataVersion: result.structuredContent.metadataVersion }
               : {})
           }
         }
@@ -552,9 +491,7 @@ function isPlaceholderPageId(value: string): boolean {
   return (
     /^__.*__$/u.test(normalized) ||
     /^<.*>$/u.test(normalized) ||
-    ['pending', 'todo', 'tbd', 'placeholder', '待确认', '待定'].includes(
-      normalized
-    )
+    ['pending', 'todo', 'tbd', 'placeholder', '待确认', '待定'].includes(normalized)
   );
 }
 
@@ -571,7 +508,7 @@ function normalizeMcpContent(
 ): Array<{ type: string; text?: string }> {
   if (!Array.isArray(content)) return [];
   return content.flatMap((item) => {
-    if (typeof item !== 'object' || item === null || !('type' in item)) return [];
+    if (!isRecord(item) || !('type' in item)) return [];
     const type = String(item.type);
     return type === 'text' && 'text' in item
       ? [{ type, text: String(item.text) }]

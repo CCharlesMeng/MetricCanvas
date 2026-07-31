@@ -3,7 +3,7 @@ import { validate } from '../src/validate';
 
 function rawPage(): any {
   return {
-    schemaVersion: '2.0',
+    schemaVersion: '3.0',
     id: 'dqe-page',
     filters: [
       {
@@ -24,7 +24,7 @@ function rawPage(): any {
           count: {
             queryField: 'NA客户数',
             type: 'number',
-            role: 'metric'
+            role: 'measure'
           }
         },
         source: {
@@ -99,7 +99,7 @@ describe('raw DQE 页面查询', () => {
     page.dataSources.overview.fields.duplicate = {
       queryField: 'NA客户数',
       type: 'number',
-      role: 'metric'
+      role: 'measure'
     };
     expect(validate(page)).toContainEqual(
       expect.objectContaining({

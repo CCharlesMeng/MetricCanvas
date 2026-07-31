@@ -5,7 +5,7 @@
     pageId: string;
     latestRevision: { revisionId: string } | null;
     publishedRevision: { revisionId: string } | null;
-    catalogVisibility: 'visible' | 'hidden';
+    visibility: 'visible' | 'hidden';
   }
 
   let pages = $state<PageListItem[]>([]);
@@ -84,7 +84,7 @@
                 当前发布修订
                 <code>{page.publishedRevision?.revisionId ?? '未发布'}</code>
               </span>
-              <span>{page.catalogVisibility === 'visible' ? '目录可见' : '目录隐藏'}</span>
+              <span>{page.visibility === 'visible' ? '可见' : '隐藏'}</span>
             </span>
           </a>
         </li>

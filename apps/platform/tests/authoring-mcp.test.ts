@@ -8,10 +8,7 @@ describe('页面搭建工作台 authoring MCP adapter', () => {
     const client: McpClient = {
       async listTools() {
         return [
-          { name: 'search_catalog', inputSchema: {} },
-          { name: 'search_metric_candidates', inputSchema: {} },
-          { name: 'get_metric_status', inputSchema: {} },
-          { name: 'record_metric_gap', inputSchema: {} },
+          { name: 'search_data_context', inputSchema: {} },
           { name: 'search_templates', inputSchema: {} },
           { name: 'list_pages', inputSchema: {} },
           { name: 'get_page', inputSchema: {} },
@@ -29,9 +26,7 @@ describe('页面搭建工作台 authoring MCP adapter', () => {
     const authoring = createAuthoringMcpClient(client);
 
     expect((await authoring.listTools()).map((tool) => tool.name)).toEqual([
-      'search_catalog',
-      'search_metric_candidates',
-      'get_metric_status',
+      'search_data_context',
       'search_templates',
       'list_pages',
       'get_page',
@@ -48,31 +43,13 @@ describe('页面搭建工作台 authoring MCP adapter', () => {
     expect(delegated).toEqual([]);
 
     await authoring.callTool({
-      name: 'search_metric_candidates',
-      arguments: {
-        query: 'Tokens 消耗量',
-        requiredDimensions: ['office'],
-        requiredAggregations: ['sum']
-      }
-    });
-    await authoring.callTool({
-      name: 'get_metric_status',
-      arguments: { metricId: 'dp-metric-tokens-consumption' }
+      name: 'search_data_context',
+      arguments: { query: 'Tokens 消耗量' }
     });
     await authoring.callTool({ name: 'validate_page', arguments: { document: {} } });
     expect(delegated).toEqual([
-      'search_metric_candidates',
-      'get_metric_status',
+      'search_data_context',
       'validate_page'
     ]);
-
-    await expect(
-      authoring.callTool({ name: 'record_metric_gap', arguments: {} })
-    ).resolves.toMatchObject({
-      isError: true,
-      structuredContent: {
-        error: { code: 'AUTHORING_TOOL_NOT_ALLOWED' }
-      }
-    });
   });
 });

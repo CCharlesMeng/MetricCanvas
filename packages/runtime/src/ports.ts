@@ -14,15 +14,15 @@ export interface PageRepository {
 
 /**
  * 数据网关 (Data Gateway):运行时的取数端口——生效查询进、数据行出。
- * 按意图命名,不按实现方命名;适配器在 @metriccanvas/data-gateway(数据服务/mock),应用壳注入。
- * 数据服务是本平台唯一数据入口(CONTEXT.md),新增数据源须走词汇表与 ADR 决策,不得私开旁路。
+ * 按意图命名,不按实现方命名;适配器在 @metriccanvas/data-gateway,应用壳注入。
+ * 当前 query 场景由 DQE 适配器实现；inline 静态场景不访问该端口。
  */
 export interface DataGateway {
   fetchData(query: EffectiveQuery): Promise<Row[]>;
   /**
    * 维度候选值查询:维度筛选器候选项的唯一来源。
-   * 候选项是业务数据(随数据演化),不入页面文档、不入元数据快照(零数据行原则),
-   * 永远实时经网关查询;一期由 mock 适配器供数,二期数据服务适配器翻译为去重取值查询。
+   * 候选项是业务数据(随数据演化),不进入 Schema Metadata。
+   * 适配器尚未声明候选值查询时可返回空数组。
    */
   fetchDimensionValues(dimension: string): Promise<string[]>;
 }

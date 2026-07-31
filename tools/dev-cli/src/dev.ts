@@ -2,11 +2,10 @@ import { spawn, type SpawnOptions } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export type DevProfile = 'offline' | 'sim';
+export type DevProfile = 'offline';
 
 export interface CreateDevLaunchInput {
   profile: DevProfile;
-  dataServiceUrl?: string;
   platform?: NodeJS.Platform;
   execPath?: string;
   processEnv?: NodeJS.ProcessEnv;
@@ -20,27 +19,17 @@ export interface DevLaunch {
 
 export function createDevLaunch({
   profile,
-  dataServiceUrl = 'http://localhost:18226',
   platform = process.platform,
   execPath = process.execPath,
   processEnv = process.env
 }: CreateDevLaunchInput): DevLaunch {
   const env: NodeJS.ProcessEnv = { ...processEnv };
-  if (profile === 'offline') {
-    Object.assign(env, {
-      METRICCANVAS_OFFLINE: '1',
-      PLATFORM_ORIGIN: 'http://localhost:5174',
-      RUNTIME_ORIGIN: 'http://localhost:5173',
-      VITE_DATA_GATEWAY: 'mock',
-      VITE_PLATFORM_URL: 'http://localhost:5174'
-    });
-  } else {
-    delete env.METRICCANVAS_OFFLINE;
-    Object.assign(env, {
-      VITE_DATA_GATEWAY: 'sim',
-      VITE_DATA_SERVICE_URL: dataServiceUrl
-    });
-  }
+  Object.assign(env, {
+    METRICCANVAS_OFFLINE: '1',
+    PLATFORM_ORIGIN: 'http://localhost:5174',
+    RUNTIME_ORIGIN: 'http://localhost:5173',
+    VITE_PLATFORM_URL: 'http://localhost:5174'
+  });
 
   const pnpmEntry = processEnv.npm_execpath;
   const invocation = pnpmEntry
@@ -60,30 +49,15 @@ export function createDevLaunch({
 
 export function parseDevArguments(argv: string[]): {
   profile: DevProfile;
-  dataServiceUrl?: string;
 } {
   const [profile, ...rest] = argv;
-  if (profile !== 'offline' && profile !== 'sim') {
-    throw new Error('用法:dev.ts <offline|sim> [--data-service-url <url>]');
+  if (profile !== 'offline') {
+    throw new Error('用法:dev.ts offline');
   }
-  let dataServiceUrl: string | undefined;
-  for (let index = 0; index < rest.length; index += 1) {
-    const argument = rest[index];
-    if (argument === '--') continue;
-    if (argument === '--data-service-url') {
-      dataServiceUrl = rest[index + 1];
-      index += 1;
-      if (!dataServiceUrl) throw new Error('--data-service-url 缺少 URL');
-      continue;
-    }
-    if (argument?.startsWith('--data-service-url=')) {
-      dataServiceUrl = argument.slice('--data-service-url='.length);
-      if (!dataServiceUrl) throw new Error('--data-service-url 缺少 URL');
-      continue;
-    }
-    throw new Error(`未知参数:${argument}`);
+  if (rest.some((argument) => argument !== '--')) {
+    throw new Error(`未知参数:${rest.find((argument) => argument !== '--')}`);
   }
-  return { profile, ...(dataServiceUrl ? { dataServiceUrl } : {}) };
+  return { profile };
 }
 
 export function run(argv = process.argv.slice(2)): void {

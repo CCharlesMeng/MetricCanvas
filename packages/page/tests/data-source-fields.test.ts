@@ -1,86 +1,74 @@
 import { describe, expect, it } from 'vitest';
 import {
   resolveDataSourceFields,
-  type CatalogSnapshot,
   type DataSource
 } from '../src';
-import catalogFixture from '../fixtures/catalog.json';
 
-const catalog = catalogFixture as CatalogSnapshot;
-
-describe('query 页面数据源字段解析', () => {
-  it('从结构化查询与元数据快照解析完整字段契约', () => {
+describe('v3 页面数据源字段解析', () => {
+  it('inline 直接使用显式结果字段契约', () => {
     const source: DataSource = {
+      fields: {
+        revenue: {
+          type: 'number',
+          role: 'measure',
+          label: '收入',
+          unit: '元',
+          nullable: false,
+          defaultFormat: 'number-grouped'
+        }
+      },
       source: {
-        type: 'query',
-        query: { metrics: ['gmv'], dimensions: ['stat-date'] }
+        type: 'inline',
+        rows: [{ revenue: 128600 }]
       }
     };
 
-    expect(resolveDataSourceFields(source, catalog)).toEqual({
-      'stat-date': {
-        type: 'date',
+    expect(resolveDataSourceFields(source)).toEqual(source.fields);
+  });
+
+  it('query 解析字段契约时移除外部 queryField', () => {
+    const source: DataSource = {
+      fields: {
+        region: {
+          queryField: '地区部',
+          type: 'string',
+          role: 'dimension',
+          nullable: false
+        },
+        count: {
+          queryField: 'NA客户数',
+          type: 'number',
+          role: 'measure',
+          unit: '个'
+        }
+      },
+      source: {
+        type: 'query',
+        query: {
+          language: 'dqe',
+          body: {
+            dsl_list: [
+              {
+                output_dims: ['地区部'],
+                output_metrics: ['NA客户数']
+              }
+            ]
+          }
+        }
+      }
+    };
+
+    expect(resolveDataSourceFields(source)).toEqual({
+      region: {
+        type: 'string',
         role: 'dimension',
-        label: '统计日期',
-        defaultFormat: 'date'
+        nullable: false
       },
-      gmv: {
+      count: {
         type: 'number',
-        role: 'metric',
-        label: '成交总额',
-        defaultFormat: 'number-grouped'
+        role: 'measure',
+        unit: '个'
       }
     });
-  });
-
-  it('兼容旧 fieldOverrides.format 并归一为默认展示建议', () => {
-    const source: DataSource = {
-      fieldOverrides: {
-        gmv: { label: 'GMV', format: 'compact-wan-1' }
-      },
-      source: {
-        type: 'query',
-        query: { metrics: ['gmv'], dimensions: ['region'] }
-      }
-    };
-
-    expect(resolveDataSourceFields(source, catalog).gmv).toEqual({
-      type: 'number',
-      role: 'metric',
-      label: 'GMV',
-      defaultFormat: 'compact-wan-1'
-    });
-  });
-
-  it('inline 和 1.0 query 继续使用页面自带 fields，并归一旧 format', () => {
-    const fields = {
-      value: {
-        type: 'number' as const,
-        role: 'metric' as const,
-        label: '固定值',
-        format: 'number-2' as const
-      }
-    };
-
-    const expected = {
-      value: {
-        type: 'number',
-        role: 'metric',
-        label: '固定值',
-        defaultFormat: 'number-2'
-      }
-    };
-    expect(
-      resolveDataSourceFields({
-        fields,
-        source: { type: 'inline', rows: [{ value: 1 }] }
-      })
-    ).toEqual(expected);
-    expect(
-      resolveDataSourceFields({
-        fields,
-        source: { type: 'query', query: { metrics: ['value'] } }
-      })
-    ).toEqual(expected);
   });
 });

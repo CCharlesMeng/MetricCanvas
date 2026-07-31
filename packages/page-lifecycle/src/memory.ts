@@ -6,7 +6,7 @@ import {
   type Page
 } from '@metriccanvas/page';
 import type {
-  CatalogProvider,
+  DataContextProvider,
   LifecycleContext,
   LifecycleError,
   LifecycleErrorCode,
@@ -24,7 +24,7 @@ import type {
 } from './index';
 
 export interface MemoryPageLifecycleOptions {
-  catalog: CatalogProvider;
+  dataContext: DataContextProvider;
   clock?: { now(): Date };
   ids?: { next(): string };
   tokens?: { next(): string };
@@ -100,15 +100,12 @@ export function createMemoryPageLifecycle(
         page.activePublishRequestId = null;
       }
 
-      const catalog = await options.catalog.current();
-      const validationErrors = validate(command.document, catalog.snapshot);
+      const validationErrors = validate(command.document);
       if (validationErrors.length > 0) {
         return {
           ok: false,
           error: {
-            code: validationErrors.some((error) => error.type === 'METRIC_GAP')
-              ? 'METRIC_GAP'
-              : 'INVALID_PAGE',
+            code: 'INVALID_PAGE',
             message: '页面文档未通过校验',
             validationErrors
           }
@@ -135,7 +132,9 @@ export function createMemoryPageLifecycle(
         baseRevisionId: command.baseRevisionId,
         document,
         contentHash: hash(canonicalizeJson(document)),
-        metadataVersion: catalog.version,
+        dataContextVersion: hasQueryDataSource(document)
+          ? (await options.dataContext.current()).version
+          : null,
         createdBy: context.actorId,
         createdAt: now.toISOString()
       };
@@ -178,7 +177,7 @@ export function createMemoryPageLifecycle(
           publishedRevision: page.publishedRevisionId
             ? { pageId, revisionId: page.publishedRevisionId }
             : null,
-          catalogVisibility: page.publishedRevisionId ? 'visible' : 'hidden'
+          visibility: page.publishedRevisionId ? 'visible' : 'hidden'
         })),
         nextPageId: candidates.length > limit ? selected.at(-1)?.[0] ?? null : null
       } satisfies PageList;
@@ -323,16 +322,13 @@ export function createMemoryPageLifecycle(
       ) {
         return failure('REVISION_NOT_LATEST', '发布请求不再绑定当前最新页面修订');
       }
-      const catalog = await options.catalog.current();
-      const validationErrors = validate(revision.document, catalog.snapshot);
+      const validationErrors = validate(revision.document);
       if (validationErrors.length > 0) {
-        finishRequest(request, 'validation_failed', context, now, '最新元数据复验失败');
+        finishRequest(request, 'validation_failed', context, now, '当前页面 Schema 复验失败');
         return {
           ok: false,
           error: {
-            code: validationErrors.some((error) => error.type === 'METRIC_GAP')
-              ? 'METRIC_GAP'
-              : 'INVALID_PAGE',
+            code: 'INVALID_PAGE',
             message: '页面修订未通过发布复验',
             validationErrors
           }
@@ -591,6 +587,12 @@ function pageListLimit(value: number | undefined): number {
 
 function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function hasQueryDataSource(page: Page): boolean {
+  return Object.values(page.dataSources).some(
+    (dataSource) => dataSource.source.type === 'query'
+  );
 }
 
 function clone<T>(value: T): T {

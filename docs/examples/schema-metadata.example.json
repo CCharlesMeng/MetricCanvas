@@ -1,0 +1,144 @@
+{
+  "formatVersion": "1.0",
+  "id": "customer-activity-context",
+  "version": "2026-07-31.1",
+  "generatedAt": "2026-07-31T08:00:00.000Z",
+  "source": "customer-activity-dqe",
+  "executionEnvironments": [
+    {
+      "id": "dqe-customer-activity",
+      "name": "客户活动 DQE",
+      "language": "dqe",
+      "endpointRef": "dqe-primary",
+      "description": "面向客户活动风险分析的受控 DQE 执行环境",
+      "schemas": [
+        {
+          "id": "customer-activity",
+          "name": "客户活动",
+          "description": "客户分层、活动次数与活动完成情况",
+          "objects": [
+            {
+              "id": "customer-activity-summary",
+              "name": "客户活动汇总",
+              "kind": "dataset",
+              "description": "按客户级别、地区部和统计周期查询客户活动汇总",
+              "fields": [
+                {
+                  "name": "客户级别",
+                  "type": "string",
+                  "description": "客户经营分层",
+                  "aliases": [
+                    "客户层级",
+                    "NA级别"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "地区部",
+                  "type": "string",
+                  "description": "客户归属地区部",
+                  "aliases": [
+                    "区域"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "统计月份",
+                  "type": "date",
+                  "description": "月粒度统计时间",
+                  "aliases": [
+                    "月份"
+                  ],
+                  "roleHints": [
+                    "dimension",
+                    "time"
+                  ],
+                  "granularity": "month",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "NA客户数",
+                  "type": "number",
+                  "description": "符合当前查询条件的 NA 客户数量",
+                  "aliases": [
+                    "客户数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "个",
+                  "nullable": false,
+                  "sensitive": false
+                }
+              ]
+            }
+          ],
+          "relationships": [],
+          "verifiedQueries": [
+            {
+              "id": "customer-count-by-level",
+              "question": "按客户级别查看 NA 客户数",
+              "description": "返回客户级别和对应 NA 客户数量",
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "客户级别"
+                    ],
+                    "output_metrics": [
+                      "NA客户数"
+                    ],
+                    "filter": {
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "resultFields": [
+                {
+                  "name": "客户级别",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                {
+                  "name": "NA客户数",
+                  "type": "number",
+                  "role": "measure",
+                  "unit": "个",
+                  "nullable": false
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "constraints": {
+        "readOnly": true,
+        "maxRows": 1000,
+        "maxColumns": 20,
+        "maxQueriesPerBatch": 5,
+        "timeoutMs": 30000
+      },
+      "security": {
+        "scope": "current-user",
+        "notes": [
+          "只返回当前身份可访问的对象和字段",
+          "敏感字段不得进入查询候选或普通日志"
+        ]
+      }
+    }
+  ]
+}

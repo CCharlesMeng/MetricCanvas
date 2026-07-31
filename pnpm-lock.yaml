@@ -66,21 +66,15 @@ importers:
       '@metriccanvas/agent-runner':
         specifier: workspace:*
         version: link:../../packages/agent-runner
-      '@metriccanvas/catalog-discovery':
+      '@metriccanvas/data-context':
         specifier: workspace:*
-        version: link:../../packages/catalog-discovery
+        version: link:../../packages/data-context
       '@metriccanvas/data-gateway':
         specifier: workspace:*
         version: link:../../packages/data-gateway
-      '@metriccanvas/dp-catalog':
-        specifier: workspace:*
-        version: link:../../packages/dp-catalog
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
-      '@metriccanvas/metric-fulfillment':
-        specifier: workspace:*
-        version: link:../../packages/metric-fulfillment
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../../packages/page
@@ -115,7 +109,7 @@ importers:
 
   packages/agent-runner: {}
 
-  packages/catalog-discovery:
+  packages/data-context:
     dependencies:
       '@metriccanvas/page':
         specifier: workspace:*
@@ -129,19 +123,6 @@ importers:
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../runtime
-    devDependencies:
-      '@metriccanvas/data-service-sim':
-        specifier: workspace:*
-        version: link:../../tools/data-service-sim
-      '@metriccanvas/dqe-sim':
-        specifier: workspace:*
-        version: link:../../tools/dqe-sim
-
-  packages/dp-catalog:
-    devDependencies:
-      '@metriccanvas/dp-sim':
-        specifier: workspace:*
-        version: link:../../tools/dp-sim
 
   packages/embed:
     dependencies:
@@ -182,15 +163,9 @@ importers:
       '@metriccanvas/agent-runner':
         specifier: workspace:*
         version: link:../agent-runner
-      '@metriccanvas/catalog-discovery':
+      '@metriccanvas/data-context':
         specifier: workspace:*
-        version: link:../catalog-discovery
-      '@metriccanvas/dp-catalog':
-        specifier: workspace:*
-        version: link:../dp-catalog
-      '@metriccanvas/metric-fulfillment':
-        specifier: workspace:*
-        version: link:../metric-fulfillment
+        version: link:../data-context
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page
@@ -206,34 +181,6 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
-
-  packages/metric-fulfillment:
-    dependencies:
-      '@metriccanvas/catalog-discovery':
-        specifier: workspace:*
-        version: link:../catalog-discovery
-      '@metriccanvas/dp-catalog':
-        specifier: workspace:*
-        version: link:../dp-catalog
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      postgres:
-        specifier: ^3.4.9
-        version: 3.4.9
-    devDependencies:
-      '@metriccanvas/data-gateway':
-        specifier: workspace:*
-        version: link:../data-gateway
-      '@metriccanvas/data-service-sim':
-        specifier: workspace:*
-        version: link:../../tools/data-service-sim
-      '@metriccanvas/dp-sim':
-        specifier: workspace:*
-        version: link:../../tools/dp-sim
-      '@testcontainers/postgresql':
-        specifier: ^12.0.4
-        version: 12.0.4
 
   packages/page:
     dependencies:
@@ -313,11 +260,7 @@ importers:
         specifier: ^5.0.0
         version: 5.56.6
 
-  tools/data-service-sim: {}
-
   tools/dqe-sim: {}
-
-  tools/dp-sim: {}
 
 packages:
 

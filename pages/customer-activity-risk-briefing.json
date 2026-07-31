@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "customer-activity-risk-briefing",
   "meta": {
     "description": "云战地助手自动生成的客户活动风险简报"
@@ -90,7 +90,7 @@
         "na-customer-count": {
           "queryField": "NA客户数",
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "NA客户数"
         }
       },
@@ -150,7 +150,7 @@
         "top100-customer-count": {
           "queryField": "数量",
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "TOP100项目客户数"
         }
       },
@@ -218,11 +218,47 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inspection-annual-count",
-            "inspection-monthly-change",
-            "inspection-completion-rate"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "inspection-annual-count",
+                  "inspection-monthly-change",
+                  "inspection-completion-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "inspection-annual-count": {
+          "queryField": "inspection-annual-count",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-annual-count",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-monthly-change": {
+          "queryField": "inspection-monthly-change",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-monthly-change",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-completion-rate": {
+          "queryField": "inspection-completion-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-completion-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -230,11 +266,47 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "visit-annual-count",
-            "visit-monthly-change",
-            "visit-completion-rate"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "visit-annual-count",
+                  "visit-monthly-change",
+                  "visit-completion-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "visit-annual-count": {
+          "queryField": "visit-annual-count",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-annual-count",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-monthly-change": {
+          "queryField": "visit-monthly-change",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-monthly-change",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-completion-rate": {
+          "queryField": "visit-completion-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-completion-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -242,11 +314,47 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "summit-annual-count",
-            "summit-monthly-change",
-            "summit-completion-rate"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "summit-annual-count",
+                  "summit-monthly-change",
+                  "summit-completion-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "summit-annual-count": {
+          "queryField": "summit-annual-count",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-annual-count",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-monthly-change": {
+          "queryField": "summit-monthly-change",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-monthly-change",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-completion-rate": {
+          "queryField": "summit-completion-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-completion-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -254,21 +362,111 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inspection-na-total",
-            "inspection-na-missing",
-            "inspection-na-missing-rate",
-            "inspection-na-year-missing",
-            "inspection-na-year-missing-rate",
-            "inspection-top-total",
-            "inspection-top-missing",
-            "inspection-top-missing-rate",
-            "inspection-top-year-missing",
-            "inspection-top-year-missing-rate"
-          ],
-          "dimensions": [
-            "representative-office"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office"
+                ],
+                "output_metrics": [
+                  "inspection-na-total",
+                  "inspection-na-missing",
+                  "inspection-na-missing-rate",
+                  "inspection-na-year-missing",
+                  "inspection-na-year-missing-rate",
+                  "inspection-top-total",
+                  "inspection-top-missing",
+                  "inspection-top-missing-rate",
+                  "inspection-top-year-missing",
+                  "inspection-top-year-missing-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "inspection-na-total": {
+          "queryField": "inspection-na-total",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-total",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-na-missing": {
+          "queryField": "inspection-na-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-na-missing-rate": {
+          "queryField": "inspection-na-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-na-year-missing": {
+          "queryField": "inspection-na-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-na-year-missing-rate": {
+          "queryField": "inspection-na-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-year-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-top-total": {
+          "queryField": "inspection-top-total",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-top-total",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-top-missing": {
+          "queryField": "inspection-top-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-top-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-top-missing-rate": {
+          "queryField": "inspection-top-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-top-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-top-year-missing": {
+          "queryField": "inspection-top-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-top-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inspection-top-year-missing-rate": {
+          "queryField": "inspection-top-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-top-year-missing-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -276,26 +474,105 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inspection-detail-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ],
-          "filters": {
-            "subscribe": [
-              "inspection-office",
-              "inspection-scope"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inspection-detail-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "inspection-office": {
+              "target": "dimension",
+              "queryField": "representative-office"
+            },
+            "inspection-scope": {
+              "target": "dimension",
+              "queryField": "customer-scope"
+            }
           }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inspection-detail-row": {
+          "queryField": "inspection-detail-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-detail-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -303,20 +580,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inspection-na-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inspection-na-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inspection-na-top-row": {
+          "queryField": "inspection-na-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-na-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -324,20 +676,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inspection-project-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inspection-project-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inspection-project-top-row": {
+          "queryField": "inspection-project-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inspection-project-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -345,21 +772,111 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "visit-na-total",
-            "visit-na-missing",
-            "visit-na-missing-rate",
-            "visit-na-year-missing",
-            "visit-na-year-missing-rate",
-            "visit-top-total",
-            "visit-top-missing",
-            "visit-top-missing-rate",
-            "visit-top-year-missing",
-            "visit-top-year-missing-rate"
-          ],
-          "dimensions": [
-            "representative-office"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office"
+                ],
+                "output_metrics": [
+                  "visit-na-total",
+                  "visit-na-missing",
+                  "visit-na-missing-rate",
+                  "visit-na-year-missing",
+                  "visit-na-year-missing-rate",
+                  "visit-top-total",
+                  "visit-top-missing",
+                  "visit-top-missing-rate",
+                  "visit-top-year-missing",
+                  "visit-top-year-missing-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "visit-na-total": {
+          "queryField": "visit-na-total",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-total",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-na-missing": {
+          "queryField": "visit-na-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-na-missing-rate": {
+          "queryField": "visit-na-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-na-year-missing": {
+          "queryField": "visit-na-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-na-year-missing-rate": {
+          "queryField": "visit-na-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-year-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-top-total": {
+          "queryField": "visit-top-total",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-top-total",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-top-missing": {
+          "queryField": "visit-top-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-top-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-top-missing-rate": {
+          "queryField": "visit-top-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-top-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-top-year-missing": {
+          "queryField": "visit-top-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-top-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "visit-top-year-missing-rate": {
+          "queryField": "visit-top-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-top-year-missing-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -367,26 +884,105 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "visit-detail-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ],
-          "filters": {
-            "subscribe": [
-              "visit-office",
-              "visit-scope"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "visit-detail-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "visit-office": {
+              "target": "dimension",
+              "queryField": "representative-office"
+            },
+            "visit-scope": {
+              "target": "dimension",
+              "queryField": "customer-scope"
+            }
           }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "visit-detail-row": {
+          "queryField": "visit-detail-row",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-detail-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -394,20 +990,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "visit-na-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "visit-na-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "visit-na-top-row": {
+          "queryField": "visit-na-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-na-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -415,20 +1086,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "visit-project-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "visit-project-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "visit-project-top-row": {
+          "queryField": "visit-project-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "visit-project-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -436,21 +1182,111 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "summit-na-total",
-            "summit-na-missing",
-            "summit-na-missing-rate",
-            "summit-na-year-missing",
-            "summit-na-year-missing-rate",
-            "summit-top-total",
-            "summit-top-missing",
-            "summit-top-missing-rate",
-            "summit-top-year-missing",
-            "summit-top-year-missing-rate"
-          ],
-          "dimensions": [
-            "representative-office"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office"
+                ],
+                "output_metrics": [
+                  "summit-na-total",
+                  "summit-na-missing",
+                  "summit-na-missing-rate",
+                  "summit-na-year-missing",
+                  "summit-na-year-missing-rate",
+                  "summit-top-total",
+                  "summit-top-missing",
+                  "summit-top-missing-rate",
+                  "summit-top-year-missing",
+                  "summit-top-year-missing-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "summit-na-total": {
+          "queryField": "summit-na-total",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-total",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-na-missing": {
+          "queryField": "summit-na-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-na-missing-rate": {
+          "queryField": "summit-na-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-na-year-missing": {
+          "queryField": "summit-na-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-na-year-missing-rate": {
+          "queryField": "summit-na-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-year-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-top-total": {
+          "queryField": "summit-top-total",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-top-total",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-top-missing": {
+          "queryField": "summit-top-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-top-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-top-missing-rate": {
+          "queryField": "summit-top-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-top-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-top-year-missing": {
+          "queryField": "summit-top-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-top-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "summit-top-year-missing-rate": {
+          "queryField": "summit-top-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-top-year-missing-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -458,26 +1294,105 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "summit-detail-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ],
-          "filters": {
-            "subscribe": [
-              "summit-office",
-              "summit-scope"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "summit-detail-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "summit-office": {
+              "target": "dimension",
+              "queryField": "representative-office"
+            },
+            "summit-scope": {
+              "target": "dimension",
+              "queryField": "customer-scope"
+            }
           }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "summit-detail-row": {
+          "queryField": "summit-detail-row",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-detail-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -485,20 +1400,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "summit-na-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "summit-na-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "summit-na-top-row": {
+          "queryField": "summit-na-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-na-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -506,20 +1496,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "summit-project-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "summit-project-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "summit-project-top-row": {
+          "queryField": "summit-project-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "summit-project-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -527,21 +1592,111 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inactive-na-total",
-            "inactive-na-missing",
-            "inactive-na-missing-rate",
-            "inactive-na-year-missing",
-            "inactive-na-year-missing-rate",
-            "inactive-top-total",
-            "inactive-top-missing",
-            "inactive-top-missing-rate",
-            "inactive-top-year-missing",
-            "inactive-top-year-missing-rate"
-          ],
-          "dimensions": [
-            "representative-office"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office"
+                ],
+                "output_metrics": [
+                  "inactive-na-total",
+                  "inactive-na-missing",
+                  "inactive-na-missing-rate",
+                  "inactive-na-year-missing",
+                  "inactive-na-year-missing-rate",
+                  "inactive-top-total",
+                  "inactive-top-missing",
+                  "inactive-top-missing-rate",
+                  "inactive-top-year-missing",
+                  "inactive-top-year-missing-rate"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "inactive-na-total": {
+          "queryField": "inactive-na-total",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-total",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-na-missing": {
+          "queryField": "inactive-na-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-na-missing-rate": {
+          "queryField": "inactive-na-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-na-year-missing": {
+          "queryField": "inactive-na-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-na-year-missing-rate": {
+          "queryField": "inactive-na-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-year-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-top-total": {
+          "queryField": "inactive-top-total",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-top-total",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-top-missing": {
+          "queryField": "inactive-top-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-top-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-top-missing-rate": {
+          "queryField": "inactive-top-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-top-missing-rate",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-top-year-missing": {
+          "queryField": "inactive-top-year-missing",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-top-year-missing",
+          "defaultFormat": "number-grouped"
+        },
+        "inactive-top-year-missing-rate": {
+          "queryField": "inactive-top-year-missing-rate",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-top-year-missing-rate",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -549,26 +1704,105 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inactive-detail-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ],
-          "filters": {
-            "subscribe": [
-              "inactive-office",
-              "inactive-scope"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inactive-detail-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "inactive-office": {
+              "target": "dimension",
+              "queryField": "representative-office"
+            },
+            "inactive-scope": {
+              "target": "dimension",
+              "queryField": "customer-scope"
+            }
           }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inactive-detail-row": {
+          "queryField": "inactive-detail-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-detail-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -576,20 +1810,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inactive-na-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inactive-na-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inactive-na-top-row": {
+          "queryField": "inactive-na-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-na-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     },
@@ -597,20 +1906,95 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "inactive-project-top-row"
-          ],
-          "dimensions": [
-            "representative-office",
-            "customer-scope",
-            "customer-name",
-            "customer-level",
-            "owner-name",
-            "owner-id",
-            "last-inspection",
-            "last-visit",
-            "last-summit"
-          ]
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "representative-office",
+                  "customer-scope",
+                  "customer-name",
+                  "customer-level",
+                  "owner-name",
+                  "owner-id",
+                  "last-inspection",
+                  "last-visit",
+                  "last-summit"
+                ],
+                "output_metrics": [
+                  "inactive-project-top-row"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      },
+      "fields": {
+        "representative-office": {
+          "queryField": "representative-office",
+          "type": "string",
+          "role": "dimension",
+          "label": "representative-office"
+        },
+        "customer-scope": {
+          "queryField": "customer-scope",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-scope"
+        },
+        "customer-name": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-name"
+        },
+        "customer-level": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "label": "customer-level"
+        },
+        "owner-name": {
+          "queryField": "owner-name",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-name"
+        },
+        "owner-id": {
+          "queryField": "owner-id",
+          "type": "string",
+          "role": "dimension",
+          "label": "owner-id"
+        },
+        "last-inspection": {
+          "queryField": "last-inspection",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-inspection"
+        },
+        "last-visit": {
+          "queryField": "last-visit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-visit"
+        },
+        "last-summit": {
+          "queryField": "last-summit",
+          "type": "string",
+          "role": "dimension",
+          "label": "last-summit"
+        },
+        "inactive-project-top-row": {
+          "queryField": "inactive-project-top-row",
+          "type": "number",
+          "role": "measure",
+          "label": "inactive-project-top-row",
+          "defaultFormat": "number-grouped"
         }
       }
     }

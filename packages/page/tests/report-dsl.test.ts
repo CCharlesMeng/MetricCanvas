@@ -8,7 +8,7 @@ import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import mixedPage from '../fixtures/contract-valid/mixed-page.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
-describe('2.0 页面数据源契约', () => {
+describe('3.0 页面数据源契约', () => {
   it('接受 inline、query 与 mixed 三种页面，并精确推导组件能力', () => {
     expect(validate(inlineReport)).toEqual([]);
     expect(validate(queryDashboard)).toEqual([]);
@@ -24,17 +24,17 @@ describe('2.0 页面数据源契约', () => {
       remotePagination: false
     });
 
-    const query = derivePageCapabilities(queryDashboard as Page);
+    const query = derivePageCapabilities(queryDashboard as unknown as Page);
     expect(query).toMatchObject({
       dataMode: 'query',
       static: false,
       live: true,
       filters: true,
       actions: true,
-      remotePagination: true
+      remotePagination: false
     });
 
-    const mixed = derivePageCapabilities(mixedPage as Page);
+    const mixed = derivePageCapabilities(mixedPage as unknown as Page);
     expect(mixed).toMatchObject({ dataMode: 'mixed', static: false, live: true });
     expect(mixed.components['target-card']).toMatchObject({
       dataMode: 'inline',
@@ -68,7 +68,9 @@ describe('2.0 页面数据源契约', () => {
     );
 
     const componentQuery: any = structuredClone(queryDashboard);
-    componentQuery.sections[0].components[0].query = { metrics: ['gmv'] };
+    componentQuery.sections[0].components[0].query = {
+      language: 'dqe'
+    };
     expect(validate(componentQuery)).toContainEqual(
       expect.objectContaining({
         type: 'SCHEMA_ERROR',

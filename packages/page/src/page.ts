@@ -3,7 +3,7 @@ import type { FieldBinding, FieldReference } from './field';
 import type { FilterDeclaration } from './filter';
 
 export interface Page {
-  schemaVersion: '1.0' | '2.0';
+  schemaVersion: '3.0';
   id: string;
   meta?: PageMeta;
   dataSources: DataSources;
@@ -300,7 +300,8 @@ export interface PageCapabilities {
 
 /**
  * 能力只由组件实际绑定的数据源推导。mixed 页面中，inline 组件不会因页面上另有
- * query 数据源而获得筛选、动作或远程分页能力。
+ * query 数据源而获得筛选或动作能力。表格分页、排序与表头筛选是本地展示能力，
+ * 不会被隐式翻译成 DQE 请求。
  */
 export function derivePageCapabilities(page: Page): PageCapabilities {
   const components: Record<string, ComponentCapabilities> = {};
@@ -361,7 +362,7 @@ export function deriveComponentCapabilities(
     live: hasQuery,
     filters: hasQuery,
     actions: hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection),
-    remotePagination: hasQuery && props.pagination?.mode === 'paged'
+    remotePagination: false
   };
 }
 

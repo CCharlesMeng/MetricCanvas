@@ -57,10 +57,11 @@ curl 'http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute' \
   }'
 ```
 
-客户活动风险简报的严格场景数据位于：
+场景数据位于：
 
 - `fixtures/customer-activity-risk.json`：NA 客户概况 15/12/9。
 - `fixtures/customer-activity-risk-top100.json`：TOP100 项目客户概况 12/36/39。
+- `fixtures/sales-analytics.json`：销售概览、趋势、区域、渠道、地图和明细页面。
 
 两条逻辑查询会被数据网关放进同一个 HTTP 请求的 `dsl_list`，DQE Sim 保持
 查询项与 `results` 对位。不匹配场景的查询项返回

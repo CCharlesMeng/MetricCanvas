@@ -91,9 +91,9 @@ describe('buildTableColumnLayout', () => {
       {
         tokens_consumed: {
           type: 'number',
-          role: 'metric',
+          role: 'measure',
           label: 'Tokens消耗量',
-          format: 'compact-yi-1'
+          defaultFormat: 'compact-yi-1'
         }
       }
     );

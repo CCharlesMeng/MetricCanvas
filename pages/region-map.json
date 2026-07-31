@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "region-map",
   "meta": {
     "description": "切片8 演示:地图区域着色/散点叠加、文本带参链接、筛选器树选与搜索形态"
@@ -9,76 +9,221 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "region"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-city"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-city": {
+              "target": "dimension",
+              "queryField": "city"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "map-world": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "region"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-city"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-city": {
+              "target": "dimension",
+              "queryField": "city"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "by-region": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "region"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-city"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-city": {
+              "target": "dimension",
+              "queryField": "city"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "gmv": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-city"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-city": {
+              "target": "dimension",
+              "queryField": "city"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     }
   },
   "filters": [

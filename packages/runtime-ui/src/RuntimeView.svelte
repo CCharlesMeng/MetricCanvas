@@ -3,11 +3,9 @@
     dataSourceMode,
     derivePageCapabilities,
     isChartComponent,
-    isDqeQueryDefinition,
     resolveDataSourceFields,
     validate,
     type ChartComponent,
-    type CatalogSnapshot,
     type Component,
     type ComponentCapabilities,
     type DataSnapshot,
@@ -20,7 +18,6 @@
     type TypedError
   } from '@metriccanvas/page';
   import {
-    DEFAULT_TABLE_PAGE_SIZE,
     createFilterState,
     drillThroughSearch,
     initialFilterValues,
@@ -50,7 +47,6 @@
     buildTableColumnLayout,
     initialTableSort,
     shouldApplyTableHeaderFilter,
-    tableHeaderFilterConditions,
     type MainDataSlots,
     type MetricDataSlots,
     type NamedDataSlots,
@@ -60,7 +56,6 @@
   } from '@metriccanvas/widgets';
   import {
     configurationError,
-    isCatalogSnapshot,
     isDataGateway,
     type AuthoringOptions,
     type RuntimeConfigurationError,
@@ -87,7 +82,6 @@
   let {
     document,
     authoring,
-    catalog,
     dataGateway,
     initialSearch = '',
     navigation,
@@ -95,7 +89,6 @@
   }: {
     document: unknown;
     authoring?: AuthoringOptions;
-    catalog?: CatalogSnapshot;
     dataGateway?: DataGateway;
     initialSearch?: string;
     navigation?: RuntimeNavigation;
@@ -111,7 +104,6 @@
     Record<string, Record<string, TableHeaderFilterValue>>
   >({});
   let headerFilterOptions = $state<Record<string, string[]>>({});
-  let activeCatalog = $state<CatalogSnapshot>();
   let activeGateway: DataGateway = inlineGateway;
 
   let declarations = $state<FilterDeclaration[]>([]);
@@ -122,7 +114,7 @@
   let disposers: Array<() => void> = [];
 
   $effect(() => {
-    void run(document, catalog, dataGateway, initialSearch, navigation, onevent);
+    void run(document, dataGateway, initialSearch, navigation, onevent);
     return dispose;
   });
 
@@ -136,7 +128,6 @@
 
   async function run(
     raw: unknown,
-    catalogOverride: CatalogSnapshot | undefined,
     gatewayOverride: DataGateway | undefined,
     search: string,
     navigationAdapter: RuntimeNavigation | undefined,
@@ -164,26 +155,14 @@
 
     const loaded = raw as Page;
     const mode = dataSourceMode(loaded.dataSources);
-    const configIssue = configurationIssue(
-      mode,
-      catalogOverride,
-      gatewayOverride
-    );
+    const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {
       pageState = { phase: 'configuration-error', error: configIssue };
       emit?.({ type: 'configuration-error', ...configIssue });
       return;
     }
 
-    activeCatalog = catalogOverride;
     activeGateway = gatewayOverride ?? inlineGateway;
-
-    const errors = validate(raw, activeCatalog);
-    if (errors.length > 0) {
-      pageState = { phase: 'invalid', errors };
-      emit?.({ type: 'invalid', errors });
-      return;
-    }
 
     const capabilities = derivePageCapabilities(loaded);
     declarations = loaded.filters ?? [];
@@ -216,11 +195,7 @@
       const source = loaded.dataSources[component.data.main];
       initialViews[component.id] = {
         pageIndex: 0,
-        sort: initialTableSort(
-          source?.source.type === 'query' && !isDqeQueryDefinition(source.source.query)
-            ? source.source.query.orderBy
-            : undefined
-        ),
+        sort: initialTableSort(undefined),
         headerFilters: {}
       };
     }
@@ -258,7 +233,7 @@
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
-        source ? resolveDataSourceFields(source, activeCatalog) : undefined
+        source ? resolveDataSourceFields(source) : undefined
       ).leaves) {
         if (column.filterable?.mode === 'select') {
           filterableFields.add(fieldName(column.field));
@@ -275,15 +250,8 @@
 
   function configurationIssue(
     mode: ReturnType<typeof dataSourceMode>,
-    catalogValue: unknown,
     gatewayValue: unknown
   ): RuntimeConfigurationError | null {
-    if (catalogValue !== undefined && !isCatalogSnapshot(catalogValue)) {
-      return configurationError(
-        'CATALOG_INVALID',
-        '元数据快照格式无效，无法安全解析 query 页面数据源字段契约。'
-      );
-    }
     if (gatewayValue !== undefined && !isDataGateway(gatewayValue)) {
       return configurationError(
         'DATA_GATEWAY_INVALID',
@@ -291,12 +259,6 @@
       );
     }
     if (mode === 'inline') return null;
-    if (catalogValue === undefined) {
-      return configurationError(
-        'CATALOG_REQUIRED',
-        `${mode} 看板页面必须提供元数据快照。`
-      );
-    }
     if (gatewayValue === undefined) {
       return configurationError(
         'DATA_GATEWAY_REQUIRED',
@@ -316,14 +278,6 @@
       : undefined;
   }
 
-  function pageSizeOf(component: TableComponent): number {
-    return component.props.pagination?.pageSize ?? DEFAULT_TABLE_PAGE_SIZE;
-  }
-
-  function tableIsPaged(component: TableComponent): boolean {
-    return component.props.pagination?.mode === 'paged';
-  }
-
   function setTableView(component: TableComponent, next: TableViewState) {
     tableViews = { ...tableViews, [component.id]: next };
   }
@@ -334,27 +288,8 @@
     return appliedTableHeaderFilters[component.id] ?? {};
   }
 
-  function writeTableQuery(
-    component: TableComponent,
-    next: TableViewState,
-    headerFilters = appliedHeaderFiltersOf(component)
-  ) {
-    stream?.setView(component.id, {
-      ...(tableIsPaged(component)
-        ? {
-            limit: pageSizeOf(component),
-            offset: next.pageIndex * pageSizeOf(component)
-          }
-        : {}),
-      orderBy: next.sort,
-      conditions: tableHeaderFilterConditions(headerFilters)
-    });
-  }
-
   function pushTableView(component: TableComponent, next: TableViewState) {
-    if (!componentCapability(component)?.live) return;
     setTableView(component, next);
-    writeTableQuery(component, next);
   }
 
   function tableViewOf(component: TableComponent): TableViewState {
@@ -362,7 +297,6 @@
   }
 
   function handleTablePage(component: TableComponent, pageIndex: number) {
-    if (!componentCapability(component)?.remotePagination) return;
     pushTableView(component, { ...tableViewOf(component), pageIndex });
   }
 
@@ -375,7 +309,6 @@
     field: string,
     value: TableHeaderFilterValue | null
   ) {
-    if (!componentCapability(component)?.live) return;
     const current = tableViewOf(component);
     const headerFilters = { ...current.headerFilters };
     if (value === null) delete headerFilters[field];
@@ -393,15 +326,13 @@
     };
     const next = { ...draft, pageIndex: 0 };
     setTableView(component, next);
-    writeTableQuery(component, next, applied);
   }
 
   function tableSelectedCell(component: TableComponent): TableSelectedCell | undefined {
-    const snapshot = componentSnapshots(component).get('main');
-    if (snapshot?.status !== 'ready') return undefined;
     const columns = buildTableColumnLayout(component.props.columns).leaves;
-    for (let rowIndex = 0; rowIndex < snapshot.rows.length; rowIndex++) {
-      const row = snapshot.rows[rowIndex]!;
+    const rows = visibleTableRows(component);
+    for (let rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      const row = rows[rowIndex]!;
       for (const column of columns) {
         if (!column.selection) continue;
         const matches = Object.entries(column.selection.writes).every(
@@ -428,10 +359,8 @@
     rowIndex: number,
     column: TableColumn
   ) {
-    if (!column.selection || !componentCapability(component)?.live) return;
-    const snapshot = componentSnapshots(component).get('main');
-    if (snapshot?.status !== 'ready') return;
-    const row = snapshot.rows[rowIndex];
+    if (!column.selection || !componentCapability(component)?.actions) return;
+    const row = visibleTableRows(component)[rowIndex];
     if (!row) return;
 
     const updates: Array<readonly [string, FilterValue | null]> = [];
@@ -459,7 +388,7 @@
     for (const component of pageComponents(loaded)) {
       if (
         component.type !== 'table' ||
-        !componentCapability(component)?.remotePagination
+        component.props.pagination?.mode !== 'paged'
       ) {
         continue;
       }
@@ -468,9 +397,7 @@
       const source = loaded.dataSources[component.data.main];
       const subscriptions =
         source?.source.type === 'query'
-          ? isDqeQueryDefinition(source.source.query)
-            ? Object.keys(source.source.query.filterBindings ?? {})
-            : source.source.query.filters?.subscribe ?? []
+          ? Object.keys(source.source.query.filterBindings ?? {})
           : [];
       if (!subscriptions.some((id) => changed.has(id))) continue;
       pushTableView(component, { ...view, pageIndex: 0 });
@@ -608,9 +535,13 @@
       const snapshot = snapshotsBySlot.get(slot);
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
-      const fields = resolveDataSourceFields(source, activeCatalog);
+      const fields = resolveDataSourceFields(source);
       if (snapshot.status === 'ready') {
-        data[slot] = { snapshot, fields };
+        const visible =
+          component.type === 'table' && slot === 'main'
+            ? tableSnapshot(component, snapshot)
+            : snapshot;
+        data[slot] = { snapshot: visible, fields };
       } else if (snapshot.status === 'empty') {
         data[slot] = {
           snapshot: { status: 'ready', rows: [], hasMore: false },
@@ -619,6 +550,83 @@
       }
     }
     return data;
+  }
+
+  function visibleTableRows(component: TableComponent): Row[] {
+    const snapshot = componentSnapshots(component).get('main');
+    return snapshot?.status === 'ready'
+      ? tableSnapshot(component, snapshot).rows
+      : [];
+  }
+
+  function tableSnapshot(
+    component: TableComponent,
+    snapshot: Extract<DataSnapshot, { status: 'ready' }>
+  ): Extract<DataSnapshot, { status: 'ready' }> {
+    const view = tableViewOf(component);
+    const applied = appliedHeaderFiltersOf(component);
+    let rows = snapshot.rows.filter((row) =>
+      Object.entries(applied).every(([field, filter]) => {
+        const value = row[field];
+        if (filter.mode === 'select') {
+          return filter.values.includes(String(value ?? ''));
+        }
+        const comparable = String(value ?? '');
+        return (
+          (!filter.from || comparable >= filter.from) &&
+          (!filter.to || comparable <= filter.to)
+        );
+      })
+    );
+    if (view.sort.length > 0) {
+      rows = [...rows].sort((left, right) => {
+        for (const rule of view.sort) {
+          const a = left[rule.field];
+          const b = right[rule.field];
+          const comparison =
+            a == null && b == null
+              ? 0
+              : a == null
+                ? -1
+                : b == null
+                  ? 1
+                  : a < b
+                    ? -1
+                    : a > b
+                      ? 1
+                      : 0;
+          if (comparison !== 0) {
+            return rule.direction === 'desc' ? -comparison : comparison;
+          }
+        }
+        return 0;
+      });
+    }
+    if (component.props.pagination?.mode !== 'paged') {
+      return { status: 'ready', rows, hasMore: false };
+    }
+    const pageSize = component.props.pagination.pageSize ?? 10;
+    const offset = view.pageIndex * pageSize;
+    return {
+      status: 'ready',
+      rows: rows.slice(offset, offset + pageSize),
+      hasMore: offset + pageSize < rows.length
+    };
+  }
+
+  function tableFilterOptions(component: TableComponent): Record<string, string[]> {
+    const snapshot = componentSnapshots(component).get('main');
+    if (snapshot?.status !== 'ready') return headerFilterOptions;
+    const fields = buildTableColumnLayout(component.props.columns).leaves
+      .filter((column) => column.filterable?.mode === 'select')
+      .map((column) => fieldName(column.field));
+    const local = Object.fromEntries(
+      fields.map((field) => [
+        field,
+        [...new Set(snapshot.rows.map((row) => row[field]).filter((value) => value != null).map(String))]
+      ])
+    );
+    return { ...local, ...headerFilterOptions };
   }
 
   function mainData(
@@ -780,10 +788,10 @@
           <Table
             data={mainData(loaded, component, slots)}
             props={component.props}
-            interactive={capability?.live ?? false}
+            interactive={true}
             view={tableViewOf(component)}
             selectedCell={tableSelectedCell(component)}
-            filterOptions={headerFilterOptions}
+            filterOptions={tableFilterOptions(component)}
             onpage={(pageIndex) => handleTablePage(component, pageIndex)}
             onsort={(sort) => handleTableSort(component, sort)}
             onheaderfilter={(field, value) =>
@@ -803,7 +811,11 @@
   {/if}
 {/snippet}
 
-<div class="runtime-view">
+<div
+  class:customer-risk-briefing={pageState.phase === 'ready' &&
+    pageState.page.id === 'customer-activity-risk-briefing'}
+  class="runtime-view"
+>
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'configuration-error'}
@@ -979,6 +991,10 @@
     border: 3px solid #7d9fff;
     border-radius: 3px 1px 3px 1px;
     content: '';
+  }
+  .customer-risk-briefing .section-title,
+  .customer-risk-briefing .cell :global(h3) {
+    text-align: center;
   }
   .section-grid {
     display: grid;

@@ -4,7 +4,6 @@ import {
   canonicalizeJson,
   validate,
   versionPolicy,
-  type CatalogSnapshot,
   type Page,
   type TypedError
 } from '@metriccanvas/page';
@@ -12,13 +11,12 @@ import {
 export { createMemoryPageLifecycle } from './memory';
 export type { MemoryPageLifecycleOptions } from './memory';
 
-export interface CatalogVersion {
+export interface DataContextVersion {
   version: string;
-  snapshot: CatalogSnapshot;
 }
 
-export interface CatalogProvider {
-  current(): Promise<CatalogVersion>;
+export interface DataContextProvider {
+  current(): Promise<DataContextVersion>;
 }
 
 export interface LifecycleContext {
@@ -36,7 +34,7 @@ export interface PageRevision {
   baseRevisionId: string | null;
   document: Page;
   contentHash: string;
-  metadataVersion: string;
+  dataContextVersion: string | null;
   createdBy: string;
   createdAt: string;
 }
@@ -53,7 +51,7 @@ export interface RevisionReference {
   revisionId: string;
 }
 
-export type CatalogVisibility = 'visible' | 'hidden';
+export type PageVisibility = 'visible' | 'hidden';
 
 export type PageRevisionSelector =
   | { type: 'latest' }
@@ -74,7 +72,7 @@ export interface PageListItem {
   pageId: string;
   latestRevision: RevisionReference | null;
   publishedRevision: RevisionReference | null;
-  catalogVisibility: CatalogVisibility;
+  visibility: PageVisibility;
 }
 
 export interface PageList {
@@ -201,7 +199,6 @@ export type PublishAuditResult =
 
 export type LifecycleErrorCode =
   | 'INVALID_PAGE'
-  | 'METRIC_GAP'
   | 'PAGE_ID_MISMATCH'
   | 'PAGE_ID_TAKEN'
   | 'PAGE_NOT_FOUND'
@@ -290,7 +287,7 @@ export interface PageLifecycle {
 
 export interface PostgresPageLifecycleOptions {
   databaseUrl: string;
-  catalog: CatalogProvider;
+  dataContext: DataContextProvider;
   clock?: { now(): Date };
   ids?: { next(): string };
   tokens?: { next(): string };
@@ -305,7 +302,7 @@ interface RevisionRow {
   base_revision_id: string | null;
   document: Page;
   content_hash: string;
-  metadata_version: string;
+  data_context_version: string | null;
   created_by: string;
   created_at: Date | string;
 }
@@ -436,15 +433,12 @@ export async function createPostgresPageLifecycle(
           revisionNumber = latest.revisionNumber + 1;
         }
 
-        const catalog = await options.catalog.current();
-        const validationErrors = validate(command.document, catalog.snapshot);
+        const validationErrors = validate(command.document);
         if (validationErrors.length > 0) {
           return {
             ok: false,
             error: {
-              code: validationErrors.some((error) => error.type === 'METRIC_GAP')
-                ? 'METRIC_GAP'
-                : 'INVALID_PAGE',
+              code: 'INVALID_PAGE',
               message: '页面文档未通过校验',
               validationErrors
             }
@@ -516,7 +510,9 @@ export async function createPostgresPageLifecycle(
           baseRevisionId: command.baseRevisionId,
           document,
           contentHash: hash(canonicalizeJson(document)),
-          metadataVersion: catalog.version,
+          dataContextVersion: hasQueryDataSource(document)
+            ? (await options.dataContext.current()).version
+            : null,
           createdBy: context.actorId,
           createdAt: createdAt.toISOString()
         };
@@ -528,7 +524,7 @@ export async function createPostgresPageLifecycle(
             base_revision_id,
             document,
             content_hash,
-            metadata_version,
+            data_context_version,
             created_by,
             created_at
           )
@@ -539,7 +535,7 @@ export async function createPostgresPageLifecycle(
             ${revision.baseRevisionId},
             ${tx.json(revision.document as unknown as JSONValue)},
             ${revision.contentHash},
-            ${revision.metadataVersion},
+            ${revision.dataContextVersion},
             ${revision.createdBy},
             ${createdAt}
           )
@@ -580,7 +576,7 @@ export async function createPostgresPageLifecycle(
           base_revision_id,
           document,
           content_hash,
-          metadata_version,
+          data_context_version,
           created_by,
           created_at
         FROM page_revisions
@@ -611,7 +607,7 @@ export async function createPostgresPageLifecycle(
           page_id,
           latest_revision_id,
           published_revision_id,
-          catalog_visibility
+          visibility
         FROM dashboard_pages
         WHERE page_id > ${query.afterPageId ?? ''}
         ORDER BY page_id ASC
@@ -620,7 +616,7 @@ export async function createPostgresPageLifecycle(
         page_id: string;
         latest_revision_id: string | null;
         published_revision_id: string | null;
-        catalog_visibility: CatalogVisibility;
+        visibility: PageVisibility;
       }>;
       const pages = rows.slice(0, limit);
       return {
@@ -632,7 +628,7 @@ export async function createPostgresPageLifecycle(
           publishedRevision: page.published_revision_id
             ? { pageId: page.page_id, revisionId: page.published_revision_id }
             : null,
-          catalogVisibility: page.catalog_visibility
+          visibility: page.visibility
         })),
         nextPageId: rows.length > limit ? pages.at(-1)?.page_id ?? null : null
       };
@@ -655,7 +651,7 @@ export async function createPostgresPageLifecycle(
           base_revision_id,
           document,
           content_hash,
-          metadata_version,
+          data_context_version,
           created_by,
           created_at
         FROM page_revisions
@@ -917,8 +913,7 @@ export async function createPostgresPageLifecycle(
           `页面修订不存在:${request.revision_id}`
         );
       }
-      const currentCatalog = await options.catalog.current();
-      const validationErrors = validate(revision.document, currentCatalog.snapshot);
+      const validationErrors = validate(revision.document);
 
       return sql.begin(async (tx) => {
         await lockDashboardPage(tx, request.page_id);
@@ -997,14 +992,12 @@ export async function createPostgresPageLifecycle(
             'validation_failed',
             context,
             now,
-            '最新元数据复验失败'
+            '当前页面 Schema 复验失败'
           );
           return {
             ok: false,
             error: {
-              code: validationErrors.some((error) => error.type === 'METRIC_GAP')
-                ? 'METRIC_GAP'
-                : 'INVALID_PAGE',
+              code: 'INVALID_PAGE',
               message: '页面修订未通过发布复验',
               validationErrors
             }
@@ -1177,7 +1170,7 @@ export async function createPostgresPageLifecycle(
           revision.base_revision_id,
           revision.document,
           revision.content_hash,
-          revision.metadata_version,
+          revision.data_context_version,
           revision.created_by,
           revision.created_at
         FROM dashboard_pages AS page
@@ -1207,7 +1200,7 @@ export async function createPostgresPageLifecycle(
           revision.base_revision_id,
           revision.document,
           revision.content_hash,
-          revision.metadata_version,
+          revision.data_context_version,
           revision.created_by,
           revision.created_at
         FROM page_revisions AS revision
@@ -1247,7 +1240,7 @@ async function ensureSchema(sql: Sql): Promise<void> {
       latest_revision_id uuid,
       published_revision_id uuid,
       active_publish_request_id uuid,
-      catalog_visibility text NOT NULL DEFAULT 'visible',
+      visibility text NOT NULL DEFAULT 'visible',
       created_by text NOT NULL,
       created_at timestamptz NOT NULL
     )
@@ -1258,7 +1251,7 @@ async function ensureSchema(sql: Sql): Promise<void> {
   `;
   await sql`
     ALTER TABLE dashboard_pages
-    ADD COLUMN IF NOT EXISTS catalog_visibility text NOT NULL DEFAULT 'visible'
+    ADD COLUMN IF NOT EXISTS visibility text NOT NULL DEFAULT 'visible'
   `;
   await sql`
     CREATE TABLE IF NOT EXISTS page_revisions (
@@ -1268,11 +1261,15 @@ async function ensureSchema(sql: Sql): Promise<void> {
       base_revision_id uuid,
       document jsonb NOT NULL,
       content_hash text NOT NULL,
-      metadata_version text NOT NULL,
+      data_context_version text,
       created_by text NOT NULL,
       created_at timestamptz NOT NULL,
       UNIQUE (page_id, revision_number)
     )
+  `;
+  await sql`
+    ALTER TABLE page_revisions
+    ADD COLUMN IF NOT EXISTS data_context_version text
   `;
   await sql`
     CREATE TABLE IF NOT EXISTS publish_requests (
@@ -1575,7 +1572,7 @@ async function selectRevision(
       base_revision_id,
       document,
       content_hash,
-      metadata_version,
+      data_context_version,
       created_by,
       created_at
     FROM page_revisions
@@ -1694,6 +1691,12 @@ function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
+function hasQueryDataSource(page: Page): boolean {
+  return Object.values(page.dataSources).some(
+    (dataSource) => dataSource.source.type === 'query'
+  );
+}
+
 function toRevision(row: RevisionRow): PageRevision {
   return {
     revisionId: row.revision_id,
@@ -1702,7 +1705,7 @@ function toRevision(row: RevisionRow): PageRevision {
     baseRevisionId: row.base_revision_id,
     document: row.document,
     contentHash: row.content_hash,
-    metadataVersion: row.metadata_version,
+    dataContextVersion: row.data_context_version,
     createdBy: row.created_by,
     createdAt:
       row.created_at instanceof Date ? row.created_at.toISOString() : new Date(row.created_at).toISOString()

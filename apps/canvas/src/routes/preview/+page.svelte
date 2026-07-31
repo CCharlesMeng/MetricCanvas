@@ -4,15 +4,12 @@
     DEFAULT_PREVIEW_JSON,
     parsePreviewDocument
   } from '$lib/preview-document';
-  import {
-    customerRiskCatalog,
-    customerRiskGateway
-  } from '$lib/customer-risk-preview';
+  import { dataGateway } from '$lib/services';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
   let result = $derived(
-    parsePreviewDocument(source, (document) => validate(document, customerRiskCatalog))
+    parsePreviewDocument(source, validate)
   );
 </script>
 
@@ -75,8 +72,7 @@
         {#if result.status === 'valid'}
           <RuntimeView
             document={result.document}
-            catalog={customerRiskCatalog}
-            dataGateway={customerRiskGateway}
+            {dataGateway}
           />
         {:else}
           <div class="empty-preview">

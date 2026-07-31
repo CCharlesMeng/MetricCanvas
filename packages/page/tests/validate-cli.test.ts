@@ -6,14 +6,12 @@ describe('validate CLI', () => {
   it('直接校验裸 Page fixtures', () => {
     const root = resolve(import.meta.dirname, '../../..');
     const result = spawnSync(
-      'pnpm',
+      process.execPath,
       [
-        'exec',
+        '--import',
         'tsx',
         'packages/page/src/validate-cli.ts',
-        'packages/page/fixtures/contract-valid',
-        '--catalog',
-        'packages/page/fixtures/catalog.json'
+        'packages/page/fixtures/contract-valid'
       ],
       { cwd: root, encoding: 'utf8' }
     );

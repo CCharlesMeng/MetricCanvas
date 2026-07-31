@@ -123,14 +123,14 @@ test('query 页面缺少接入依赖时给出配置错误而非页面错误', as
 
   const host = page.locator('[data-metriccanvas-runtime]');
   await expect(host.getByText('统一运行时接入配置不完整')).toBeVisible();
-  await expect(host.getByText('CATALOG_REQUIRED')).toBeVisible();
+  await expect(host.getByText('DATA_GATEWAY_REQUIRED')).toBeVisible();
   await expect
     .poll(() =>
       page.evaluate(() =>
         window.queryEvents.some(
           event =>
             event.type === 'configuration-error' &&
-            event.code === 'CATALOG_REQUIRED'
+            event.code === 'DATA_GATEWAY_REQUIRED'
         )
       )
     )

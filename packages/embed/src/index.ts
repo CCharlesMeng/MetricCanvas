@@ -2,9 +2,7 @@ import {
   mount as mountSvelte,
   unmount
 } from 'svelte';
-import {
-  createDataServiceGateway
-} from '@metriccanvas/data-gateway';
+import { createDqeGateway } from '@metriccanvas/data-gateway';
 import EmbedRoot from './EmbedRoot.svelte';
 import type {
   MountOptions,
@@ -12,15 +10,15 @@ import type {
   RuntimeInput
 } from './types';
 
-export { createDataServiceGateway };
-export type { DataServiceConfig } from '@metriccanvas/data-gateway';
+export { createDqeGateway };
+export type { DqeGatewayConfig } from '@metriccanvas/data-gateway';
 export type {
   MountOptions,
   RuntimeEvent,
   RuntimeHandle,
   RuntimeInput
 } from './types';
-export type { CatalogSnapshot, TypedError } from '@metriccanvas/page';
+export type { TypedError } from '@metriccanvas/page';
 export type { DataGateway } from '@metriccanvas/runtime';
 
 interface EmbedRootExports {
@@ -83,7 +81,6 @@ export function mount(
 function runtimeInput(input: RuntimeInput): RuntimeInput {
   return {
     document: input.document,
-    ...(input.catalog !== undefined ? { catalog: input.catalog } : {}),
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
       : {}),

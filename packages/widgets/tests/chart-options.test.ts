@@ -37,7 +37,7 @@ describe('lineOption', () => {
             label: '日期',
             defaultFormat: 'date-month-day'
           },
-          tokens: { type: 'number', role: 'metric', label: 'Tokens消耗总量' }
+          tokens: { type: 'number', role: 'measure', label: 'Tokens消耗总量' }
         }
       }
     };
@@ -68,7 +68,7 @@ describe('lineOption', () => {
           },
           rate: {
             type: 'number',
-            role: 'metric',
+            role: 'measure',
             label: '较昨日',
             defaultFormat: 'percent-1'
           }
@@ -116,7 +116,7 @@ describe('mapOption', () => {
           region: { type: 'string', role: 'dimension', label: '区域' },
           rate: {
             type: 'number',
-            role: 'metric',
+            role: 'measure',
             label: '增长率',
             defaultFormat: 'percent-1'
           }

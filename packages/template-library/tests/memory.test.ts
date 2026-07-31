@@ -1,18 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { CatalogSnapshot, Page } from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 
-const catalog: CatalogSnapshot = {
-  formatVersion: '1.0',
-  syncedAt: '2026-07-23T00:00:00.000Z',
-  source: 'template-test',
-  metrics: [],
-  dimensions: []
-};
-
 const sourcePage: Page = {
-  schemaVersion: '2.0',
+  schemaVersion: '3.0',
   id: 'sales-overview',
   dataSources: {
     content: {
@@ -40,7 +32,7 @@ describe('进程内页面模板库', () => {
   it('发布模板后只向获授权用户返回冻结的已发布页面修订', async () => {
     const pageIds = ['page-r1', 'page-publish-1', 'page-r2'];
     const pageLifecycle = createMemoryPageLifecycle({
-      catalog: { current: async () => ({ version: 'catalog-v1', snapshot: catalog }) },
+      dataContext: { current: async () => ({ version: 'context-v1' }) },
       ids: { next: () => pageIds.shift() ?? 'unexpected-page-id' },
       tokens: { next: () => 'page-token' }
     });
@@ -195,7 +187,7 @@ describe('进程内页面模板库', () => {
   it('拒绝未发布来源并用幂等键与基线维持线性模板修订', async () => {
     const pageIds = ['page-r1', 'page-publish-1'];
     const pageLifecycle = createMemoryPageLifecycle({
-      catalog: { current: async () => ({ version: 'catalog-v1', snapshot: catalog }) },
+      dataContext: { current: async () => ({ version: 'context-v1' }) },
       ids: { next: () => pageIds.shift() ?? 'unexpected-page-id' },
       tokens: { next: () => 'page-token' }
     });

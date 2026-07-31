@@ -11,12 +11,12 @@ import {
 } from '../src/lib/page-editor';
 
 const document: Page = {
-  schemaVersion: '1.0',
+  schemaVersion: '3.0',
   id: 'sales-overview',
   dataSources: {
     summary: {
-      fields: { gmv: { type: 'number', role: 'metric' } },
-      source: { type: 'query', query: { metrics: ['gmv'], aggregation: 'sum' } }
+      fields: { gmv: { type: 'number', role: 'measure' } },
+      source: { type: 'inline', rows: [{ gmv: 128600 }] }
     }
   },
   sections: [

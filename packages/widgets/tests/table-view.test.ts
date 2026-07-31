@@ -1,14 +1,13 @@
-import type { OrderByRule } from '@metriccanvas/page';
 import { describe, expect, it } from 'vitest';
 import {
   initialTableSort,
   shouldApplyTableHeaderFilter,
-  tableHeaderFilterConditions
+  type TableSortRule
 } from '../src/table-view';
 
 describe('initialTableSort', () => {
-  it('完整保留 query.orderBy,不按可交互列裁剪声明默认排序', () => {
-    const orderBy: OrderByRule[] = [
+  it('复制本地表格排序状态，不污染调用方输入', () => {
+    const orderBy: TableSortRule[] = [
       { field: 'hidden_metric', direction: 'desc' },
       { field: 'visible_dimension', direction: 'asc' }
     ];
@@ -39,22 +38,4 @@ describe('table header date range draft', () => {
     expect(shouldApplyTableHeaderFilter(null)).toBe(true);
   });
 
-  it('防御性忽略单端草稿,不生成 between 条件', () => {
-    expect(
-      tableHeaderFilterConditions({
-        created_at: {
-          mode: 'dateRange',
-          from: '2026-07-01',
-          to: ''
-        },
-        region: { mode: 'select', values: ['华东'] }
-      })
-    ).toEqual([
-      {
-        dimension: 'region',
-        operator: 'in',
-        value: ['华东']
-      }
-    ]);
-  });
 });

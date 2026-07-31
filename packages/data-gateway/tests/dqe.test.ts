@@ -30,7 +30,7 @@ const fullDslItem: JsonObject = {
 
 function dqeQuery(
   item: JsonObject,
-  fields: NonNullable<EffectiveQuery['dqe']>['fieldMappings'] = {
+  fields: EffectiveQuery['fieldMappings'] = {
     'customer-level': {
       queryField: '客户级别',
       type: 'string',
@@ -39,23 +39,15 @@ function dqeQuery(
     'na-customer-count': {
       queryField: 'NA客户数',
       type: 'number',
-      role: 'metric'
+      role: 'measure'
     }
   }
 ): EffectiveQuery {
   return {
-    metrics: Object.entries(fields)
-      .filter(([, field]) => field.role === 'metric')
-      .map(([id]) => id),
-    dimensions: Object.entries(fields)
-      .filter(([, field]) => field.role === 'dimension')
-      .map(([id]) => id),
-    conditions: [],
-    dqe: {
-      body: { dsl_list: [item] },
-      fieldMappings: fields,
-      filterValues: []
-    }
+    language: 'dqe',
+    body: { dsl_list: [item] },
+    fieldMappings: fields,
+    filterValues: []
   };
 }
 
@@ -154,7 +146,7 @@ describe('DQE 数据网关', () => {
 
   it('按显式筛选绑定覆盖副本，不修改页面保存的原始 DQE', () => {
     const query = dqeQuery(fullDslItem);
-    query.dqe!.filterValues = [
+    query.filterValues = [
       {
         target: 'dimension',
         queryField: '客户级别',

@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
-  import type { CatalogSnapshot } from '@metriccanvas/page';
   import type { DataGateway } from '@metriccanvas/runtime';
   import {
     RuntimeView,
@@ -9,15 +8,10 @@
   } from '@metriccanvas/runtime-ui';
   import QueryInspector from '$lib/QueryInspector.svelte';
   import {
-    catalogSnapshot,
     dataGateway,
+    dqeDiagnostics,
     pageRepository
   } from '$lib/services';
-  import {
-    customerRiskCatalog,
-    customerRiskDiagnostics,
-    customerRiskGateway
-  } from '$lib/customer-risk-preview';
 
   type PageLoadState =
     | { phase: 'loading' }
@@ -25,7 +19,6 @@
     | {
         phase: 'ready';
         document: unknown;
-        catalog: CatalogSnapshot;
         dataGateway: DataGateway;
       };
 
@@ -60,12 +53,10 @@
     try {
       const document = await pageRepository.load(pageId);
       if (session !== loadSession) return;
-      const customerRisk = isCustomerRiskPage(document);
       pageState = {
         phase: 'ready',
         document,
-        catalog: customerRisk ? customerRiskCatalog : catalogSnapshot,
-        dataGateway: customerRisk ? customerRiskGateway : dataGateway
+        dataGateway
       };
     } catch (cause) {
       if (session !== loadSession) return;
@@ -96,13 +87,12 @@
 {:else}
   <RuntimeView
     document={pageState.document}
-    catalog={pageState.catalog}
     dataGateway={pageState.dataGateway}
     {initialSearch}
     {navigation}
   />
   {#if pageState.document && isCustomerRiskPage(pageState.document)}
-    <QueryInspector diagnostics={customerRiskDiagnostics} />
+    <QueryInspector diagnostics={dqeDiagnostics} />
   {/if}
 {/if}
 

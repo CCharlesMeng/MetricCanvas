@@ -214,15 +214,14 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
             );
           }
           const rows = normalizeRows(rawResult.data, call.query);
-          const visible = applyLocalView(rows, call.query);
           diagnostic(
             call.executionId,
             'normalized',
-            { rowCount: visible.length, rows: visible.slice(0, 20) },
+            { rowCount: rows.length, rows: rows.slice(0, 20) },
             batchId,
             index
           );
-          call.resolve(visible);
+          call.resolve(rows);
         } catch (cause) {
           diagnostic(call.executionId, 'error', diagnosticError(cause), batchId, index);
           call.reject(cause);
@@ -252,21 +251,21 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
 
   return {
     fetchData(query) {
-      if (query.dqe === undefined) {
+      if (query.language !== 'dqe') {
         return Promise.reject(
           new DqeGatewayError('DQE_CONFIG_ERROR', 'DQE 数据网关收到非 DQE 生效查询')
         );
       }
-      if (query.dqe.body.dsl_list.length !== 1) {
+      if (query.body.dsl_list.length !== 1) {
         return Promise.reject(
           new DqeGatewayError(
             'DQE_CONFIG_ERROR',
-            `一个命名页面数据源必须包含一个 DQE 查询项,收到 ${query.dqe.body.dsl_list.length} 个`
+            `一个命名页面数据源必须包含一个 DQE 查询项,收到 ${query.body.dsl_list.length} 个`
           )
         );
       }
       const executionId = `dqe-exec-${++sequence}`;
-      diagnostic(executionId, 'base', query.dqe.body);
+      diagnostic(executionId, 'base', query.body);
       let item: JsonObject;
       try {
         item = effectiveDqeItem(query);
@@ -291,33 +290,13 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
 
 /** 在不改变页面查询定义的前提下，克隆并覆盖当前生效筛选。 */
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
-  if (query.dqe === undefined) {
-    throw new DqeGatewayError('DQE_CONFIG_ERROR', '缺少 DQE 执行信息');
-  }
-  const item = cloneJson(query.dqe.body.dsl_list[0]);
-  for (const filter of query.dqe.filterValues) {
+  const item = cloneJson(query.body.dsl_list[0]);
+  for (const filter of query.filterValues) {
     if (filter.target === 'dimension') {
       setDimensionFilter(item, filter.queryField, filter.values);
     } else {
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
-  }
-  for (const condition of query.conditions) {
-    const mapping = query.dqe.fieldMappings[condition.dimension];
-    if (mapping === undefined) {
-      throw new DqeGatewayError(
-        'DQE_FILTER_BINDING_ERROR',
-        `局部筛选字段 ${condition.dimension} 缺少 queryField 映射`
-      );
-    }
-    if (condition.operator === 'between') {
-      throw new DqeGatewayError(
-        'DQE_FILTER_BINDING_ERROR',
-        `DQE 维度筛选暂不支持 between:${condition.dimension}`
-      );
-    }
-    const values = Array.isArray(condition.value) ? condition.value : [condition.value];
-    setDimensionFilter(item, mapping.queryField, values);
   }
   return item;
 }
@@ -372,9 +351,6 @@ function ensureRecord(parent: JsonObject, key: string): JsonObject {
 }
 
 function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
-  if (query.dqe === undefined) {
-    throw new DqeGatewayError('DQE_CONFIG_ERROR', '缺少 DQE 字段映射');
-  }
   if (!Array.isArray(value)) {
     throw new DqeGatewayError('DQE_ROW_CONTRACT_ERROR', 'DQE data 必须是数组', value);
   }
@@ -387,7 +363,7 @@ function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
       );
     }
     const row: Row = {};
-    for (const [fieldId, mapping] of Object.entries(query.dqe!.fieldMappings)) {
+    for (const [fieldId, mapping] of Object.entries(query.fieldMappings)) {
       if (!Object.hasOwn(rawRow, mapping.queryField)) {
         throw new DqeGatewayError(
           'DQE_FIELD_MAPPING_ERROR',
@@ -407,23 +383,6 @@ function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
     }
     return row;
   });
-}
-
-function applyLocalView(rows: Row[], query: EffectiveQuery): Row[] {
-  const sorted =
-    query.orderBy?.length
-      ? [...rows].sort((left, right) => {
-          for (const rule of query.orderBy ?? []) {
-            const a = left[rule.field] ?? '';
-            const b = right[rule.field] ?? '';
-            const comparison = a < b ? -1 : a > b ? 1 : 0;
-            if (comparison !== 0) return rule.direction === 'desc' ? -comparison : comparison;
-          }
-          return 0;
-        })
-      : rows;
-  const offset = query.offset ?? 0;
-  return sorted.slice(offset, query.limit === undefined ? undefined : offset + query.limit);
 }
 
 function matchesType(value: string | number | boolean | null, type: FieldType): boolean {
@@ -448,15 +407,4 @@ function diagnosticError(cause: unknown): unknown {
   return cause instanceof DqeGatewayError
     ? { code: cause.code, message: cause.message, detail: cause.detail }
     : { code: 'UNKNOWN', message: String(cause) };
-}
-
-export function createRoutingGateway(dqe: DataGateway, fallback: DataGateway): DataGateway {
-  return {
-    fetchData(query) {
-      return query.dqe ? dqe.fetchData(query) : fallback.fetchData(query);
-    },
-    fetchDimensionValues(dimension) {
-      return fallback.fetchDimensionValues(dimension);
-    }
-  };
 }

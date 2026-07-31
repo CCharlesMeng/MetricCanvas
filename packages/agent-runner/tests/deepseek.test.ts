@@ -21,7 +21,7 @@ describe('DeepSeek 模型 adapter', () => {
                       id: 'call-search',
                       type: 'function',
                       function: {
-                        name: 'search_catalog',
+                        name: 'search_data_context',
                         arguments: '{"query":"成交总额","limit":10}'
                       }
                     }
@@ -39,7 +39,7 @@ describe('DeepSeek 模型 adapter', () => {
       messages: [{ role: 'user', content: '创建成交总额单指标卡' }],
       tools: [
         {
-          name: 'search_catalog',
+          name: 'search_data_context',
           description: '检索目录',
           inputSchema: {
             type: 'object',
@@ -56,7 +56,7 @@ describe('DeepSeek 模型 adapter', () => {
       toolCalls: [
         {
           id: 'call-search',
-          name: 'search_catalog',
+          name: 'search_data_context',
           input: { query: '成交总额', limit: 10 }
         }
       ]
@@ -73,7 +73,7 @@ describe('DeepSeek 模型 adapter', () => {
         {
           type: 'function',
           function: {
-            name: 'search_catalog',
+            name: 'search_data_context',
             description: '检索目录',
             parameters: {
               type: 'object',

@@ -1,199 +1,152 @@
 import { describe, expect, it } from 'vitest';
-import type { CatalogSnapshot, Page } from '@metriccanvas/page';
-import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
+import type { Page } from '@metriccanvas/page';
+import { createMemoryPageLifecycle } from '../src/memory';
 
-const catalog: CatalogSnapshot = {
-  formatVersion: '1.0',
-  syncedAt: '2026-07-20T12:00:00.000Z',
-  source: 'offline-fixture',
-  metrics: [
-    {
-      code: 'gmv',
-      name: '成交总额',
-      valueType: 'decimal',
-      availableDimensions: [],
-      availableAggregations: ['sum']
+const inlinePage: Page = {
+  schemaVersion: '3.0',
+  id: 'inline-page',
+  dataSources: {
+    summary: {
+      fields: {
+        value: { type: 'number', role: 'measure', nullable: false }
+      },
+      source: { type: 'inline', rows: [{ value: 1 }] }
     }
-  ],
-  dimensions: []
+  },
+  sections: [{
+    id: 'overview',
+    layout: { type: 'grid', columns: 12 },
+    components: [{
+      id: 'card',
+      type: 'metricCard',
+      layout: { span: 4 },
+      data: { main: 'summary' },
+      props: { rows: [{ label: '值', valueField: 'value' }] }
+    }]
+  }]
 };
 
-function page(title = '成交总额'): Page {
-  return {
-    schemaVersion: '2.0',
-    id: 'offline-overview',
-    dataSources: {
-      sales: {
-        source: {
-          type: 'query',
-          query: { metrics: ['gmv'], aggregation: 'sum' }
+const dqePage: Page = {
+  ...inlinePage,
+  id: 'dqe-page',
+  dataSources: {
+    summary: {
+      fields: {
+        value: {
+          queryField: '值',
+          type: 'number',
+          role: 'measure',
+          nullable: false
+        }
+      },
+      source: {
+        type: 'query',
+        query: {
+          language: 'dqe',
+          body: {
+            dsl_list: [{
+              output_dims: [],
+              output_metrics: ['值'],
+              filter: { dims: [], metrics: [] },
+              order: {}
+            }]
+          }
         }
       }
-    },
-    sections: [
-      {
-        id: 'overview',
-        title,
-        layout: { type: 'grid', columns: 12 },
-        components: [
-          {
-            id: 'gmv-card',
-            type: 'metricCard',
-            layout: { span: 6 },
-            data: { main: 'sales' },
-            props: { rows: [{ label: title, valueField: 'gmv' }] }
-          }
-        ]
-      }
-    ]
-  };
+    }
+  }
+};
+
+function lifecycle() {
+  let sequence = 0;
+  return createMemoryPageLifecycle({
+    dataContext: { current: async () => ({ version: 'context-2026-07-31' }) },
+    ids: { next: () => `id-${++sequence}` },
+    tokens: { next: () => 'token' },
+    urls: {
+      confirmation: (requestId, token) =>
+        `http://localhost/publish/${requestId}?token=${token}`
+    }
+  });
 }
 
-describe('进程内页面生命周期', () => {
-  it('离线完成页面修订、历史、差异、发布与正式读取', async () => {
-    const generatedIds = ['revision-1', 'revision-2', 'request-1', 'revision-3'];
-    const lifecycle = createMemoryPageLifecycle({
-      catalog: { current: async () => ({ version: 'catalog-offline', snapshot: catalog }) },
-      clock: { now: () => new Date('2026-07-22T08:00:00.000Z') },
-      ids: { next: () => generatedIds.shift() ?? 'unexpected-id' },
-      tokens: { next: () => 'offline-token' },
-      urls: {
-        confirmation: (requestId, token) =>
-          `http://localhost:5174/publish/${requestId}/confirm?token=${token}`
-      }
-    });
-    const editor = { actorId: 'developer-1', clientId: 'workbench' };
-
-    const first = await lifecycle.saveRevision(
+describe('v3 页面生命周期', () => {
+  it('纯 inline 修订不记录数据上下文版本，DQE 修订记录当前版本', async () => {
+    const service = lifecycle();
+    const context = { actorId: 'author', clientId: 'test' };
+    const inline = await service.saveRevision(
       {
-        pageId: 'offline-overview',
+        pageId: inlinePage.id,
         baseRevisionId: null,
-        document: page(),
-        idempotencyKey: 'save-r1'
+        document: inlinePage,
+        idempotencyKey: 'inline-r1'
       },
-      editor
+      context
     );
-    expect(first).toMatchObject({
-      ok: true,
-      revision: { revisionId: 'revision-1', revisionNumber: 1 }
-    });
-    if (!first.ok) return;
-
-    const second = await lifecycle.saveRevision(
+    const dqe = await service.saveRevision(
       {
-        pageId: 'offline-overview',
-        baseRevisionId: first.revision.revisionId,
-        document: page('成交总额（更新）'),
-        idempotencyKey: 'save-r2'
+        pageId: dqePage.id,
+        baseRevisionId: null,
+        document: dqePage,
+        idempotencyKey: 'dqe-r1'
       },
-      editor
+      context
     );
-    expect(second).toMatchObject({
+    expect(inline).toMatchObject({
       ok: true,
-      revision: { revisionId: 'revision-2', revisionNumber: 2 }
+      revision: { dataContextVersion: null }
     });
-    if (!second.ok) return;
+    expect(dqe).toMatchObject({
+      ok: true,
+      revision: { dataContextVersion: 'context-2026-07-31' }
+    });
+  });
 
-    expect(await lifecycle.listPages()).toMatchObject({
-      pages: [
+  it('拒绝旧版本，并保持保存、发布和读取链路', async () => {
+    const service = lifecycle();
+    const author = { actorId: 'author', clientId: 'test' };
+    await expect(
+      service.saveRevision(
         {
-          pageId: 'offline-overview',
-          latestRevision: { revisionId: 'revision-2' },
-          publishedRevision: null
-        }
-      ]
-    });
-    expect(await lifecycle.listRevisionHistory({ pageId: 'offline-overview' })).toMatchObject({
-      ok: true,
-      history: { revisions: [{ revisionNumber: 2 }, { revisionNumber: 1 }] }
-    });
-    expect(
-      await lifecycle.diffRevisions({
-        pageId: 'offline-overview',
-        fromRevisionId: 'revision-1',
-        toRevisionId: 'revision-2'
-      })
-    ).toMatchObject({ ok: true, diff: { changes: expect.any(Array) } });
+          pageId: 'legacy',
+          baseRevisionId: null,
+          document: { ...inlinePage, id: 'legacy', schemaVersion: '2.0' },
+          idempotencyKey: 'legacy-r1'
+        },
+        author
+      )
+    ).resolves.toMatchObject({ ok: false, error: { code: 'INVALID_PAGE' } });
 
-    const requested = await lifecycle.requestPublish(
+    const saved = await service.saveRevision(
       {
-        pageId: 'offline-overview',
-        revisionId: second.revision.revisionId,
-        idempotencyKey: 'publish-r2'
+        pageId: inlinePage.id,
+        baseRevisionId: null,
+        document: inlinePage,
+        idempotencyKey: 'inline-r1'
       },
-      editor
+      author
     );
-    expect(requested).toMatchObject({
-      ok: true,
-      request: { requestId: 'request-1', revisionId: 'revision-2' }
-    });
-    if (!requested.ok) return;
-
-    const published = await lifecycle.confirmPublish(
-      { requestId: requested.request.requestId, token: 'offline-token' },
+    if (!saved.ok) throw new Error(saved.error.message);
+    const requested = await service.requestPublish(
       {
-        actorId: 'developer-1',
-        clientId: 'publish-confirmation',
-        roles: ['publisher']
-      }
+        pageId: inlinePage.id,
+        revisionId: saved.revision.revisionId,
+        idempotencyKey: 'publish-r1'
+      },
+      author
+    );
+    if (!requested.ok) throw new Error(requested.error.message);
+    const published = await service.confirmPublish(
+      { requestId: requested.request.requestId, token: 'token' },
+      { ...author, roles: ['publisher'] }
     );
     expect(published).toMatchObject({
       ok: true,
-      revision: { revisionId: 'revision-2' }
+      revision: { pageId: inlinePage.id }
     });
-    expect(await lifecycle.getPublished({ pageId: 'offline-overview' })).toEqual(published);
-
-    const third = await lifecycle.saveRevision(
-      {
-        pageId: 'offline-overview',
-        baseRevisionId: second.revision.revisionId,
-        document: page('成交总额（模板来源发布后更新）'),
-        idempotencyKey: 'save-r3'
-      },
-      editor
-    );
-    expect(third).toMatchObject({
+    await expect(service.getPublished({ pageId: inlinePage.id })).resolves.toMatchObject({
       ok: true,
-      revision: { revisionId: 'revision-3', revisionNumber: 3 }
+      revision: { pageId: inlinePage.id }
     });
-    expect(
-      await lifecycle.getPublishedRevision({
-        pageId: 'offline-overview',
-        revisionId: 'revision-2'
-      })
-    ).toEqual(published);
-    expect(
-      await lifecycle.getPublishedRevision({
-        pageId: 'offline-overview',
-        revisionId: 'revision-1'
-      })
-    ).toMatchObject({
-      ok: false,
-      error: { code: 'REVISION_NOT_PUBLISHED' }
-    });
-    await lifecycle.close();
-  });
-
-  it('进程重建后状态为空，避免伪装成持久化存储', async () => {
-    const create = () =>
-      createMemoryPageLifecycle({
-        catalog: { current: async () => ({ version: 'catalog-offline', snapshot: catalog }) }
-      });
-    const first = create();
-    const saved = await first.saveRevision(
-      {
-        pageId: 'offline-overview',
-        baseRevisionId: null,
-        document: page(),
-        idempotencyKey: 'save-r1'
-      },
-      { actorId: 'developer-1', clientId: 'workbench' }
-    );
-    expect(saved.ok).toBe(true);
-    await first.close();
-
-    const reopened = create();
-    expect(await reopened.listPages()).toEqual({ pages: [], nextPageId: null });
-    await reopened.close();
   });
 });

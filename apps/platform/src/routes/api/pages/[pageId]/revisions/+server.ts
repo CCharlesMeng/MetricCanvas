@@ -72,7 +72,6 @@ function saveFailureStatus(code: string): number {
   if (code === 'PAGE_NOT_FOUND') return 404;
   if (
     code === 'INVALID_PAGE' ||
-    code === 'METRIC_GAP' ||
     code === 'PAGE_ID_MISMATCH'
   ) {
     return 422;

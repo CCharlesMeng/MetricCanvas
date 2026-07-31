@@ -1,108 +1,70 @@
-import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
-import { validate } from './validate';
+import type { TypedError } from './errors';
 import { fileNameErrors } from './file-name';
 import { navigateErrors } from './navigate';
-import { upgradeWarnings } from './version';
-import type { CatalogSnapshot } from './catalog';
 import type { Page } from './page';
-import type { TypedError } from './errors';
+import { validate } from './validate';
 
-/**
- * validate CLI:对页面目录全量两级校验(结构 + 对元数据快照的语义)+ 文件名一致性
- * + navigate 跨文档校验(目标页存在、目标筛选器 id 有效——需要全量页面清单,故落在此层)。
- * 本地 / pre-commit / CI 同一套逻辑(#10 的 CI 流水线直接调用)。
- * 用法:tsx validate-cli.ts [页面目录=pages] [--catalog 快照路径=catalog/snapshot.json]
- * 退出码:0 全部通过;1 存在校验错误;2 页面目录或元数据快照不可用(快照已入库,缺失即环境坏)。
- */
 function main(argv: string[]): number {
-  const args = argv.filter((a) => !a.startsWith('--'));
-  const pagesDir = resolve(args[0] ?? 'pages');
-  const catalogFlag = argv.indexOf('--catalog');
-  const catalogPath = resolve(catalogFlag >= 0 ? argv[catalogFlag + 1] : 'catalog/snapshot.json');
-
+  const pagesDir = resolve(argv[0] ?? 'pages');
   if (!existsSync(pagesDir)) {
     console.error(`页面目录不存在:${pagesDir}`);
     return 2;
   }
-  // 快照已入库,缺失/损坏视为环境坏掉而非"跳过语义校验"——否则 CI 会静默放行坏页面
-  if (!existsSync(catalogPath)) {
-    console.error(`元数据快照不存在:${catalogPath}(先跑 pnpm sync-catalog 或恢复入库快照)`);
-    return 2;
-  }
-  let catalog: CatalogSnapshot;
-  try {
-    catalog = JSON.parse(readFileSync(catalogPath, 'utf8')) as CatalogSnapshot;
-  } catch (cause) {
-    console.error(`元数据快照不是合法 JSON:${catalogPath}(${String(cause)})`);
-    return 2;
-  }
-  if (catalog.formatVersion !== '2.0') {
-    console.error(
-      `元数据快照版本不受支持:${catalog.formatVersion}(当前页面字段解析要求 2.0)`
-    );
-    return 2;
-  }
 
-  const files = readdirSync(pagesDir).filter((f) => f.endsWith('.json'));
-  // 第一遍:逐页两级校验 + 文件名一致性,顺便收集跨文档校验所需的仓库知识
-  const results: Array<{
-    file: string;
-    errors: TypedError[];
-    page?: Page;
-  }> = [];
+  const files = readdirSync(pagesDir).filter((file) => file.endsWith('.json'));
+  const results: Array<{ file: string; errors: TypedError[]; page?: Page }> = [];
   const knownPageIds = new Set(files.map((file) => file.replace(/\.json$/, '')));
   const pagesById = new Map<string, Page>();
+
   for (const file of files) {
-    const raw = readFileSync(join(pagesDir, file), 'utf8');
     let document: unknown;
     try {
-      document = JSON.parse(raw);
+      document = JSON.parse(readFileSync(join(pagesDir, file), 'utf8'));
     } catch (cause) {
       results.push({
         file,
-        errors: [{ type: 'SCHEMA_ERROR', path: '/', message: `不是合法 JSON:${String(cause)}` }]
+        errors: [
+          {
+            type: 'SCHEMA_ERROR',
+            path: '/',
+            message: `不是合法 JSON:${String(cause)}`
+          }
+        ]
       });
       continue;
     }
-    const errors = validate(document, catalog);
-    if (errors.length === 0) {
-      const page = document as Page;
-      errors.push(...fileNameErrors(file, page));
-      if (errors.length > 0) {
-        results.push({ file, errors });
-        continue;
-      }
-      pagesById.set(page.id, page);
-      results.push({ file, errors, page });
-    } else {
+
+    const errors = validate(document);
+    if (errors.length > 0) {
       results.push({ file, errors });
+      continue;
     }
+
+    const page = document as Page;
+    errors.push(...fileNameErrors(file, page));
+    if (errors.length === 0) pagesById.set(page.id, page);
+    results.push({ file, errors, ...(errors.length === 0 ? { page } : {}) });
   }
 
   let failed = 0;
-  let warned = 0;
-  for (const { file, errors, page } of results) {
-    if (page) errors.push(...navigateErrors(page, knownPageIds, pagesById));
-    // N-1 升版警告:文档仍受支持、正常渲染,CI 提示不阻断(不改退出码)
-    const warnings = page ? upgradeWarnings(page) : [];
-    if (errors.length > 0) {
-      report(file, errors);
-      failed++;
-    } else if (warnings.length > 0) {
-      console.log(`✓ ${file}(有升版警告)`);
-      warned++;
-    } else {
-      console.log(`✓ ${file}`);
+  for (const result of results) {
+    if (result.page) {
+      result.errors.push(
+        ...navigateErrors(result.page, knownPageIds, pagesById)
+      );
     }
-    for (const warning of warnings) {
-      console.warn(`  ⚠ [UPGRADE_WARNING] ${warning.path} ${warning.message}`);
+    if (result.errors.length === 0) {
+      console.log(`✓ ${result.file}`);
+      continue;
     }
+    failed++;
+    report(result.file, result.errors);
   }
 
   console.log(
-    `\n共 ${files.length} 个页面文档,${files.length - failed} 通过,${failed} 失败` +
-      (warned > 0 ? `;${warned} 个有升版警告(不阻断)` : '')
+    `\n共 ${files.length} 个页面文档,${files.length - failed} 通过,${failed} 失败`
   );
   return failed > 0 ? 1 : 0;
 }
@@ -111,9 +73,6 @@ function report(file: string, errors: TypedError[]): void {
   console.error(`✗ ${file}`);
   for (const error of errors) {
     console.error(`  [${error.type}] ${error.path} ${error.message}`);
-    if (error.type === 'METRIC_GAP') {
-      console.error('  ↳ 这是需求信号而非 bug:请按 metric-gap 模板开 issue,同步数据服务团队');
-    }
   }
 }
 

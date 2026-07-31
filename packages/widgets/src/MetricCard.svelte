@@ -116,12 +116,10 @@
     min-width: 0;
   }
   .activity-progress {
-    position: relative;
     justify-content: flex-start;
-    padding-left: 58px;
   }
   .summary {
-    text-align: center;
+    text-align: left;
   }
   .summary .metric-content {
     width: 100%;
@@ -134,8 +132,8 @@
   .summary .metric-row {
     min-width: 0;
     flex: 1;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
     flex-direction: column;
     gap: 8px;
     padding: 14px 8px 9px;
@@ -147,16 +145,16 @@
     color: #08359e;
     font-size: 1.125rem;
     font-weight: 700;
-    text-align: left;
+    text-align: center;
   }
   .summary .row-label {
     color: #0f1a4d;
     font-size: 1.125rem;
   }
   .summary .value-line {
-    align-items: center;
-    flex-direction: column;
-    gap: 2px;
+    align-items: baseline;
+    flex-direction: row;
+    gap: 4px;
   }
   .summary .unit {
     font-size: 13px;
@@ -164,16 +162,6 @@
   .activity-progress .metric-row {
     align-items: flex-start;
     flex-direction: column;
-  }
-  .activity-progress::before {
-    position: absolute;
-    top: 12px;
-    bottom: 12px;
-    left: 4px;
-    width: 40px;
-    border-radius: 20px 8px 20px 8px;
-    background: linear-gradient(160deg, #d7e7ff, #eef2ff 55%, #dcdfff);
-    content: '';
   }
   .value-line {
     display: inline-flex;

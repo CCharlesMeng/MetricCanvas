@@ -60,14 +60,11 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
-        role: { type: 'string', enum: ['dimension', 'metric'] },
+        role: { type: 'string', enum: ['dimension', 'measure'] },
         label: { type: 'string', minLength: 1 },
-        format: {
-          type: 'string',
-          enum: valueFormatPresets,
-          description:
-            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
-        }
+        unit: { type: 'string', minLength: 1 },
+        nullable: { type: 'boolean' },
+        defaultFormat: { type: 'string', enum: valueFormatPresets }
       }
     },
     queryField: {
@@ -76,23 +73,18 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         type: { type: 'string', enum: ['string', 'number', 'boolean', 'date', 'datetime'] },
-        role: { type: 'string', enum: ['dimension', 'metric'] },
+        role: { type: 'string', enum: ['dimension', 'measure'] },
         queryField: { type: 'string', minLength: 1 },
         label: { type: 'string', minLength: 1 },
-        format: {
-          type: 'string',
-          enum: valueFormatPresets,
-          description:
-            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
-        }
+        unit: { type: 'string', minLength: 1 },
+        nullable: { type: 'boolean' },
+        defaultFormat: { type: 'string', enum: valueFormatPresets }
       }
     },
     dataSource: {
       oneOf: [
         { $ref: '#/definitions/inlineDataSource' },
-        { $ref: '#/definitions/legacyQueryDataSource' },
-        { $ref: '#/definitions/queryDataSource' },
-        { $ref: '#/definitions/rawQueryDataSource' }
+        { $ref: '#/definitions/queryDataSource' }
       ]
     },
     fields: {
@@ -107,24 +99,6 @@ export const pageSchema = {
       propertyNames: { pattern: fieldPattern },
       additionalProperties: { $ref: '#/definitions/queryField' }
     },
-    fieldOverrides: {
-      type: 'object',
-      propertyNames: { pattern: fieldPattern },
-      additionalProperties: { $ref: '#/definitions/fieldOverride' }
-    },
-    fieldOverride: {
-      type: 'object',
-      additionalProperties: false,
-      properties: {
-        label: { type: 'string', minLength: 1 },
-        format: {
-          type: 'string',
-          enum: valueFormatPresets,
-          description:
-            '兼容 schemaVersion 2.0 早期页面；新页面应在组件字段绑定声明 format'
-        }
-      }
-    },
     inlineDataSource: {
       type: 'object',
       required: ['fields', 'source'],
@@ -134,31 +108,13 @@ export const pageSchema = {
         source: { $ref: '#/definitions/inlineSource' }
       }
     },
-    legacyQueryDataSource: {
-      type: 'object',
-      required: ['fields', 'source'],
-      additionalProperties: false,
-      properties: {
-        fields: { $ref: '#/definitions/fields' },
-        source: { $ref: '#/definitions/structuredQuerySource' }
-      }
-    },
     queryDataSource: {
-      type: 'object',
-      required: ['source'],
-      additionalProperties: false,
-      properties: {
-        fieldOverrides: { $ref: '#/definitions/fieldOverrides' },
-        source: { $ref: '#/definitions/structuredQuerySource' }
-      }
-    },
-    rawQueryDataSource: {
       type: 'object',
       required: ['fields', 'source'],
       additionalProperties: false,
       properties: {
         fields: { $ref: '#/definitions/queryFields' },
-        source: { $ref: '#/definitions/rawQuerySource' }
+        source: { $ref: '#/definitions/querySource' }
       }
     },
     inlineSource: {
@@ -176,104 +132,13 @@ export const pageSchema = {
         }
       }
     },
-    structuredQuerySource: {
-      type: 'object',
-      required: ['type', 'query'],
-      additionalProperties: false,
-      properties: {
-        type: { const: 'query' },
-        query: { $ref: '#/definitions/structuredQuery' }
-      }
-    },
-    rawQuerySource: {
+    querySource: {
       type: 'object',
       required: ['type', 'query'],
       additionalProperties: false,
       properties: {
         type: { const: 'query' },
         query: { $ref: '#/definitions/dqeQuery' }
-      }
-    },
-    orderByRule: {
-      type: 'object',
-      required: ['field', 'direction'],
-      additionalProperties: false,
-      properties: {
-        field: { type: 'string', pattern: fieldPattern },
-        direction: { type: 'string', enum: ['asc', 'desc'] }
-      }
-    },
-    timeWindow: {
-      oneOf: [
-        {
-          type: 'object',
-          required: ['kind'],
-          additionalProperties: false,
-          properties: { kind: { const: 'selected' } }
-        },
-        {
-          type: 'object',
-          required: ['kind', 'anchor'],
-          additionalProperties: false,
-          properties: { kind: { const: 'point' }, anchor: { const: 'to' } }
-        },
-        {
-          type: 'object',
-          required: ['kind', 'anchor', 'previous', 'unit'],
-          additionalProperties: false,
-          properties: {
-            kind: { const: 'lookback' },
-            anchor: { const: 'to' },
-            previous: { type: 'integer', minimum: 0 },
-            unit: { type: 'string', enum: ['day', 'week', 'month'] }
-          }
-        }
-      ]
-    },
-    structuredQuery: {
-      type: 'object',
-      required: ['metrics'],
-      additionalProperties: false,
-      properties: {
-        metrics: {
-          type: 'array',
-          minItems: 1,
-          uniqueItems: true,
-          items: { type: 'string', pattern: fieldPattern }
-        },
-        dimensions: {
-          type: 'array',
-          uniqueItems: true,
-          items: { type: 'string', pattern: fieldPattern }
-        },
-        aggregation: { type: 'string', minLength: 1 },
-        granularity: { type: 'string', minLength: 1 },
-        filters: {
-          type: 'object',
-          required: ['subscribe'],
-          additionalProperties: false,
-          properties: {
-            subscribe: {
-              type: 'array',
-              uniqueItems: true,
-              items: { type: 'string', pattern: idPattern }
-            }
-          }
-        },
-        time: {
-          type: 'object',
-          required: ['filter', 'window'],
-          additionalProperties: false,
-          properties: {
-            filter: { type: 'string', pattern: idPattern },
-            window: { $ref: '#/definitions/timeWindow' }
-          }
-        },
-        orderBy: {
-          type: 'array',
-          items: { $ref: '#/definitions/orderByRule' }
-        },
-        limit: { type: 'integer', minimum: 1 }
       }
     },
     dqeQuery: {

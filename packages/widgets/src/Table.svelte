@@ -7,15 +7,15 @@
 </script>
 
 <script lang="ts">
-  import type {
-    OrderByRule,
-    TableColumn,
-    TableProps as TableComponentProps
-  } from '@metriccanvas/page';
+  import type { TableColumn, TableProps as TableComponentProps } from '@metriccanvas/page';
   import type { MainDataSlots } from './component-data';
   import { resolveField } from './component-data';
   import { buildTableColumnLayout } from './table-columns';
-  import type { TableHeaderFilterValue, TableViewState } from './table-view';
+  import type {
+    TableHeaderFilterValue,
+    TableSortRule,
+    TableViewState
+  } from './table-view';
   import { formatValue, valuePolarity } from './value-format';
 
   /**
@@ -35,7 +35,7 @@
     filterOptions?: Record<string, string[]>;
     selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
-    onsort?: (sort: OrderByRule[]) => void;
+    onsort?: (sort: TableSortRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
   }
@@ -97,7 +97,7 @@
     if (!column.sortable) return;
     const field = columnField(column);
     const current = view.sort.find((rule) => rule.field === field);
-    const next: OrderByRule | null =
+    const next: TableSortRule | null =
       !current
         ? { field, direction: 'asc' }
         : current.direction === 'asc'

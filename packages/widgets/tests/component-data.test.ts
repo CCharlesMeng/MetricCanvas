@@ -8,7 +8,7 @@ const data: MetricDataSlots = {
     fields: {
       actual: {
         type: 'number',
-        role: 'metric',
+        role: 'measure',
         label: '实际值',
         defaultFormat: 'number-grouped'
       }
@@ -19,7 +19,7 @@ const data: MetricDataSlots = {
     fields: {
       target: {
         type: 'number',
-        role: 'metric',
+        role: 'measure',
         label: '目标值',
         defaultFormat: 'number'
       }
@@ -68,7 +68,7 @@ describe('component named data slots', () => {
         },
         fields: {
           'customer-level': { type: 'string', role: 'dimension' },
-          'na-customer-count': { type: 'number', role: 'metric' }
+          'na-customer-count': { type: 'number', role: 'measure' }
         }
       }
     };

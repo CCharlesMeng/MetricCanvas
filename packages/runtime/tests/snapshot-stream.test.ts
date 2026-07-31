@@ -16,7 +16,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '1.0',
+        schemaVersion: '3.0',
         id: 'text-only',
         dataSources: {},
         sections: [
@@ -60,12 +60,31 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '1.0',
+        schemaVersion: '3.0',
         id: 'shared',
         dataSources: {
           sales: {
-            fields: { gmv: { type: 'number', role: 'metric' } },
-            source: { type: 'query', query: { metrics: ['gmv'] } }
+            fields: {
+              gmv: {
+                queryField: '成交总额',
+                type: 'number',
+                role: 'measure'
+              }
+            },
+            source: {
+              type: 'query',
+              query: {
+                language: 'dqe',
+                body: {
+                  dsl_list: [{
+                    output_dims: [],
+                    output_metrics: ['成交总额'],
+                    filter: { dims: [], metrics: [] },
+                    order: {}
+                  }]
+                }
+              }
+            }
           }
         },
         sections: [

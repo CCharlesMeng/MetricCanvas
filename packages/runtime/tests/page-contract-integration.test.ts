@@ -42,7 +42,7 @@ function subscribe(document: Page, gateway: DataGateway) {
   };
 }
 
-describe('1.0 页面契约与统一运行时集成', () => {
+describe('3.0 页面契约与统一运行时集成', () => {
   it('inline 契约样例直接生成终态数据快照，不访问数据网关', () => {
     const { gateway, received } = gatewayReturning([]);
     const result = subscribe(page(inlineReportDocument), gateway);
@@ -67,18 +67,35 @@ describe('1.0 页面契约与统一运行时集成', () => {
 
     expect(received).toEqual([
       {
-        metrics: ['gmv'],
-        dimensions: ['region'],
-        aggregation: 'sum',
-        conditions: [],
-        limit: 21,
-        offset: 0
+        language: 'dqe',
+        body: {
+          dsl_list: [{
+            output_dims: ['region'],
+            output_metrics: ['gmv'],
+            filter: { dims: [], metrics: [] },
+            order: {}
+          }]
+        },
+        fieldMappings: {
+          region: {
+            queryField: 'region',
+            type: 'string',
+            role: 'dimension',
+            nullable: false
+          },
+          gmv: {
+            queryField: 'gmv',
+            type: 'number',
+            role: 'measure',
+            nullable: false
+          }
+        },
+        filterValues: []
       }
     ]);
     expect(result.latest().get('sales-table')?.get('main')).toEqual({
       status: 'ready',
       rows: [{ region: '华东', gmv: 42 }],
-      hasMore: false
     });
   });
 

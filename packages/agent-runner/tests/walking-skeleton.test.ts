@@ -8,17 +8,14 @@ import {
 } from '@metriccanvas/agent-runner';
 
 const pageDocument = {
-  schemaVersion: '1.0',
+  schemaVersion: '3.0',
   id: 'sales-total',
   dataSources: {
     sales: {
       fields: {
-        gmv: { type: 'number', role: 'metric' }
+        gmv: { type: 'number', role: 'measure' }
       },
-      source: {
-        type: 'query',
-        query: { metrics: ['gmv'], aggregation: 'sum' }
-      }
+      source: { type: 'inline', rows: [{ gmv: 128600 }] }
     }
   },
   sections: [
@@ -47,7 +44,7 @@ describe('Agent Runner 单指标卡 walking skeleton', () => {
     const mcp: McpClient = {
       async listTools() {
         return [
-          'search_catalog',
+          'search_data_context',
           'validate_page',
           'save_page',
           'preview_page',
@@ -61,9 +58,9 @@ describe('Agent Runner 单指标卡 walking skeleton', () => {
       async callTool({ name }) {
         calledTools.push(name);
         const results: Record<string, unknown> = {
-          search_catalog: {
+          search_data_context: {
             ok: true,
-            metadataVersion: 'catalog-v1',
+            dataContextVersion: 'context-v1',
             matches: [{ kind: 'metric', code: 'gmv', name: '成交总额' }]
           },
           validate_page: { ok: true, valid: true, errors: [] },
@@ -93,7 +90,7 @@ describe('Agent Runner 单指标卡 walking skeleton', () => {
       {
         content: '',
         toolCalls: [
-          { id: 'call-search', name: 'search_catalog', input: { query: '成交总额', limit: 10 } }
+          { id: 'call-search', name: 'search_data_context', input: { query: '成交总额', limit: 10 } }
         ]
       },
       { content: '拟定页面 id 为 sales-total。该 id 保存后不可更改，请确认。', toolCalls: [] },
@@ -155,7 +152,7 @@ describe('Agent Runner 单指标卡 walking skeleton', () => {
       })
     );
     const firstCompleted = completedMessages(firstEvents);
-    expect(calledTools).toEqual(['search_catalog']);
+    expect(calledTools).toEqual(['search_data_context']);
     expect(firstCompleted.at(-1)).toEqual({
       role: 'assistant',
       content: '拟定页面 id 为 sales-total。该 id 保存后不可更改，请确认。',
@@ -168,7 +165,7 @@ describe('Agent Runner 单指标卡 walking skeleton', () => {
       })
     );
     expect(calledTools).toEqual([
-      'search_catalog',
+      'search_data_context',
       'validate_page',
       'save_page',
       'preview_page',

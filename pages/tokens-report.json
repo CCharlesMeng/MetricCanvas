@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "tokens-report",
   "meta": {
     "description": "固定时点 Tokens 运营报告页面资产"
@@ -9,27 +9,27 @@
       "fields": {
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_wow_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较上周"
         },
         "tokens_consumed_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗月环比"
         }
       },
@@ -50,27 +50,27 @@
       "fields": {
         "tokens_flow": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水较昨日"
         },
         "tokens_flow_wow_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水较上周"
         },
         "tokens_flow_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水月环比"
         }
       },
@@ -96,7 +96,7 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         }
       },
@@ -155,7 +155,7 @@
         },
         "tokens_flow": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水"
         }
       },
@@ -214,52 +214,52 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水月环比"
         }
       },
@@ -408,52 +408,52 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水月环比"
         }
       },
@@ -602,52 +602,52 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗占比"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         },
         "tokens_consumed_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens消耗量"
         },
         "tokens_consumed_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗月环比"
         },
         "tokens_flow": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水"
         },
         "tokens_flow_share_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水占比"
         },
         "tokens_flow_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水较昨日"
         },
         "tokens_flow_mtd": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "本月Tokens流水"
         },
         "tokens_flow_mom_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens流水月环比"
         }
       },
@@ -796,12 +796,12 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         }
       },
@@ -845,12 +845,12 @@
         },
         "tokens_consumed": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗量"
         },
         "tokens_consumed_dod_pct": {
           "type": "number",
-          "role": "metric",
+          "role": "measure",
           "label": "Tokens消耗较昨日"
         }
       },

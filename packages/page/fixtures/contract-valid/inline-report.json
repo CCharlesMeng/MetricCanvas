@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "inline-report",
   "meta": {
     "description": "内联报告契约样例"
@@ -9,8 +9,9 @@
       "fields": {
         "gmv": {
           "type": "number",
-          "role": "metric",
-          "label": "成交总额"
+          "role": "measure",
+          "label": "成交总额",
+          "nullable": false
         }
       },
       "source": {

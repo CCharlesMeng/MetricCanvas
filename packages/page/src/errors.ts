@@ -1,8 +1,11 @@
-/**
- * 校验错误分型:SCHEMA_ERROR=页面文档写错(改文档);
- * METRIC_GAP=业务想要、数据服务没有——是需求信号,走 metric-gap issue,不是 bug。
- */
-export type ErrorType = 'SCHEMA_ERROR' | 'METRIC_GAP';
+export type ErrorType =
+  | 'SCHEMA_ERROR'
+  | 'FIELD_CONTRACT_ERROR'
+  | 'QUERY_MAPPING_ERROR'
+  | 'FILTER_BINDING_ERROR'
+  | 'DQE_PROTOCOL_ERROR'
+  | 'DQE_EXECUTION_ERROR'
+  | 'DATA_CONTEXT_ERROR';
 
 export interface TypedError {
   type: ErrorType;

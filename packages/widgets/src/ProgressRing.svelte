@@ -8,18 +8,26 @@
   const normalized = $derived(Math.min(100, Math.max(0, Number.isFinite(value) ? value : 0)));
   const radius = 29;
   const circumference = 2 * Math.PI * radius;
+  const arcLength = circumference * 0.75;
 </script>
 
 <div class="progress-ring" aria-label={`${label} ${normalized}%`}>
   <svg viewBox="0 0 72 72" role="img">
-    <circle class="track" cx="36" cy="36" r={radius}></circle>
+    <circle
+      class="track"
+      cx="36"
+      cy="36"
+      r={radius}
+      stroke-dasharray={`${arcLength} ${circumference - arcLength}`}
+      transform="rotate(135 36 36)"
+    ></circle>
     <circle
       class="value"
       cx="36"
       cy="36"
       r={radius}
-      stroke-dasharray={circumference}
-      stroke-dashoffset={circumference * (1 - normalized / 100)}
+      stroke-dasharray={`${arcLength * (normalized / 100)} ${circumference}`}
+      transform="rotate(135 36 36)"
     ></circle>
   </svg>
   <div class="number"><strong>{normalized}</strong><span>%</span></div>
@@ -31,16 +39,15 @@
     position: relative;
     display: grid;
     width: 92px;
-    height: 92px;
+    height: 76px;
     flex: 0 0 92px;
     place-items: center;
   }
   svg {
     position: absolute;
-    inset: 0 10px 18px;
+    inset: 0 10px 4px;
     width: 72px;
     height: 72px;
-    transform: rotate(-90deg);
   }
   circle {
     fill: none;
@@ -52,13 +59,13 @@
   .value {
     stroke: #5b72ea;
     stroke-linecap: round;
-    transition: stroke-dashoffset 220ms ease;
+    transition: stroke-dasharray 220ms ease;
   }
   .number {
     z-index: 1;
     display: flex;
     align-items: baseline;
-    margin-top: -15px;
+    transform: translateY(-4px);
     color: #0f1a4d;
   }
   .number strong {
@@ -71,7 +78,8 @@
   }
   .label {
     position: absolute;
-    bottom: 0;
+    bottom: 3px;
+    z-index: 1;
     color: #777;
     font-size: 12px;
   }

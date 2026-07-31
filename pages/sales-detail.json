@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "2.0",
+  "schemaVersion": "3.0",
   "id": "sales-detail",
   "meta": {
     "description": "承接演示看板的跨页下钻:从 URL 恢复筛选状态,展示区域/渠道明细"
@@ -9,133 +9,352 @@
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-channel"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-channel": {
+              "target": "dimension",
+              "queryField": "channel"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "order-count": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "order-count"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-channel"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "order-count"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-channel": {
+              "target": "dimension",
+              "queryField": "channel"
+            }
           }
         }
       },
-    "fieldOverrides": {
-      "order-count": {
-        "label": "订单数（单）"
-      }
+      "fields": {
+        "order-count": {
+          "queryField": "order-count",
+          "type": "number",
+          "role": "measure",
+          "label": "订单数（单）",
+          "defaultFormat": "number-grouped"
+        }
       }
     },
     "by-region": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "region"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-channel"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-channel": {
+              "target": "dimension",
+              "queryField": "channel"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "trend-dual": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv",
-            "order-count"
-          ],
-          "dimensions": [
-            "mtime"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-channel"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "mtime"
+                ],
+                "output_metrics": [
+                  "gmv",
+                  "order-count"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-channel": {
+              "target": "dimension",
+              "queryField": "channel"
+            }
           }
         }
       },
-    "fieldOverrides": {
-      "mtime": {
-        "label": "日期"
-      },
-      "order-count": {
-        "label": "订单数（单）"
-      }
+      "fields": {
+        "mtime": {
+          "queryField": "mtime",
+          "type": "date",
+          "role": "dimension",
+          "label": "日期"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        },
+        "order-count": {
+          "queryField": "order-count",
+          "type": "number",
+          "role": "measure",
+          "label": "订单数（单）",
+          "defaultFormat": "number-grouped"
+        }
       }
     },
     "by-channel": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "channel"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "channel"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            }
           }
         }
-    }
+      },
+      "fields": {
+        "channel": {
+          "queryField": "channel",
+          "type": "string",
+          "role": "dimension",
+          "label": "渠道"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
+      }
     },
     "detail-table": {
       "source": {
         "type": "query",
         "query": {
-          "metrics": [
-            "gmv"
-          ],
-          "dimensions": [
-            "mtime",
-            "region",
-            "channel"
-          ],
-          "filters": {
-            "subscribe": [
-              "f-time",
-              "f-region",
-              "f-channel"
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "mtime",
+                  "region",
+                  "channel"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "day",
+                    "is_aggregate": false,
+                    "start": "2026-01-01",
+                    "end": "2026-12-31"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
             ]
+          },
+          "filterBindings": {
+            "f-time": {
+              "target": "time"
+            },
+            "f-region": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "f-channel": {
+              "target": "dimension",
+              "queryField": "channel"
+            }
           }
         }
       },
-    "fieldOverrides": {
-      "mtime": {
-        "label": "日期"
-      }
+      "fields": {
+        "mtime": {
+          "queryField": "mtime",
+          "type": "date",
+          "role": "dimension",
+          "label": "日期"
+        },
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "channel": {
+          "queryField": "channel",
+          "type": "string",
+          "role": "dimension",
+          "label": "渠道"
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        }
       }
     }
   },

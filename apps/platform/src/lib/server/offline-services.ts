@@ -1,4 +1,3 @@
-import { migrateDocument } from '@metriccanvas/page';
 import type { PageLifecycle } from '@metriccanvas/page-lifecycle';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 
@@ -137,12 +136,11 @@ async function saveSeedRevision(
   pageId: string,
   document: unknown
 ) {
-  const currentDocument = migrateSeedDocument(document);
   const saved = await lifecycle.saveRevision(
     {
       pageId,
       baseRevisionId: null,
-      document: currentDocument,
+      document,
       idempotencyKey: `offline-seed-save:${pageId}`
     },
     seedContext
@@ -151,17 +149,6 @@ async function saveSeedRevision(
     throw new Error(`离线页面导入失败:${pageId}:${saved.error.message}`);
   }
   return saved.revision;
-}
-
-function migrateSeedDocument(document: unknown): unknown {
-  if (typeof document !== 'object' || document === null || Array.isArray(document)) {
-    return document;
-  }
-  const result = migrateDocument(document as Record<string, unknown>);
-  if (result.outcome === 'no-path') {
-    throw new Error(`离线页面无法迁移:不支持 schemaVersion ${result.from}`);
-  }
-  return result.outcome === 'migrated' ? result.document : document;
 }
 
 function pageIdOf(document: unknown): string {

@@ -1,11 +1,9 @@
 import { env } from '$env/dynamic/private';
-import { syncCatalog } from '@metriccanvas/data-gateway';
 import {
-  catalogVersionFor,
-  createCatalogDiscovery,
-  type CatalogDiscovery,
-  type CatalogProvider
-} from '@metriccanvas/catalog-discovery';
+  createDataContextSearch,
+  type DataContextSnapshot,
+  type DataContextSearch
+} from '@metriccanvas/data-context';
 import {
   createAgentRunner,
   createDeepSeekModelProvider,
@@ -14,23 +12,13 @@ import {
 import {
   createMemoryPageLifecycle,
   createPostgresPageLifecycle,
+  type DataContextProvider,
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
 import {
-  createHttpDpCatalog,
-  createMemoryDpCatalog,
-  type DpCatalog,
-  type DpMetric
-} from '@metriccanvas/dp-catalog';
-import {
-  createMemoryMetricFulfillment,
-  createPostgresMetricFulfillment,
-  type MetricFulfillment
-} from '@metriccanvas/metric-fulfillment';
-import {
   connectInProcessMetricCanvasMcp,
-  createPageIdConfirmationMcpClient,
-  createMetricCanvasMcpServer
+  createMetricCanvasMcpServer,
+  createPageIdConfirmationMcpClient
 } from '@metriccanvas/mcp';
 import {
   createMemoryTemplateLibrary,
@@ -49,8 +37,7 @@ import {
   seedPublishedTemplates,
   type OfflineTemplateSeed
 } from './offline-services';
-import type { CatalogSnapshot } from '@metriccanvas/page';
-import bundledCatalog from '../../../../../catalog/snapshot.json';
+import bundledDataContext from '../../../../../docs/examples/schema-metadata.example.json';
 
 const bundledPageModules = import.meta.glob<{ default: unknown }>(
   '../../../../../pages/*.json',
@@ -64,9 +51,7 @@ const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }
 export interface PlatformServices {
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
-  catalog: CatalogDiscovery;
-  dpCatalog: DpCatalog;
-  metricFulfillment: MetricFulfillment;
+  dataContext: DataContextSearch;
   agentModel: AgentModelDescriptor;
   createRunner(input: {
     confirmedPageIds: string[];
@@ -95,24 +80,15 @@ async function createServices(): Promise<PlatformServices> {
   const databaseUrl =
     env.DATABASE_URL ??
     'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas';
-  const catalogProvider = offline
-    ? createBundledCatalogProvider()
-    : createDataServiceSimCatalogProvider(
-        env.DATA_SERVICE_URL ?? 'http://localhost:18226'
-      );
-  const catalog = createCatalogDiscovery(catalogProvider);
-  const dpCatalog = offline
-    ? createMemoryDpCatalog(offlineDpMetrics())
-    : createHttpDpCatalog({ baseUrl: env.DP_URL ?? 'http://localhost:18227' });
-  const metricFulfillment = offline
-    ? createMemoryMetricFulfillment({ dpCatalog, catalog })
-    : await createPostgresMetricFulfillment({
-        databaseUrl,
-        dpCatalog,
-        catalog
-      });
+  const snapshot = bundledDataContext as unknown as DataContextSnapshot;
+  const dataContext = createDataContextSearch({
+    current: async () => snapshot
+  });
+  const dataContextVersion: DataContextProvider = {
+    current: async () => ({ version: snapshot.version })
+  };
   const lifecycleOptions = {
-    catalog: catalogProvider,
+    dataContext: dataContextVersion,
     urls: {
       confirmation: (requestId: string, token: string) =>
         `${platformOrigin}/publish/${requestId}/confirm?token=${encodeURIComponent(token)}`
@@ -120,10 +96,7 @@ async function createServices(): Promise<PlatformServices> {
   };
   const lifecycle = offline
     ? await createOfflinePageLifecycle(lifecycleOptions)
-    : await createPostgresPageLifecycle({
-        ...lifecycleOptions,
-        databaseUrl
-      });
+    : await createPostgresPageLifecycle({ ...lifecycleOptions, databaseUrl });
   const templateOptions = {
     pageLifecycle: lifecycle,
     urls: {
@@ -141,22 +114,16 @@ async function createServices(): Promise<PlatformServices> {
       Object.values(bundledTemplateModules).map((module) => module.default)
     );
   }
+
   const mcpServer = createMetricCanvasMcpServer({
-    catalog,
-    dpCatalog,
-    metricFulfillment,
+    dataContext,
     lifecycle,
     templates,
     context: () => ({ actorId: 'developer-1', clientId: 'workbench', roles: [] }),
-    metricFulfillmentContext: () => ({
-      actorId: 'developer-1',
-      clientId: 'workbench'
-    }),
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
   });
   const mcp = await connectInProcessMetricCanvasMcp(mcpServer);
-
   const agentModelConfig = resolveAgentModelConfig(env);
   const deepSeekModel =
     agentModelConfig.provider === 'deepseek'
@@ -170,25 +137,19 @@ async function createServices(): Promise<PlatformServices> {
   return {
     lifecycle,
     templates,
-    catalog,
-    dpCatalog,
-    metricFulfillment,
+    dataContext,
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle' }) {
-      const client = mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
+      const client =
+        mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
       return createAgentRunner({
         model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
-        mcp: createPageIdConfirmationMcpClient({
-          client,
-          confirmedPageIds
-        }),
+        mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
         maxModelTurns: 12,
         toolCallLimits:
           mode === 'authoring'
             ? {
-                search_catalog: 3,
-                search_metric_candidates: 3,
-                get_metric_status: 4,
+                search_data_context: 4,
                 search_templates: 2,
                 list_pages: 2,
                 get_page: 3,
@@ -201,23 +162,6 @@ async function createServices(): Promise<PlatformServices> {
   };
 }
 
-function offlineDpMetrics(): DpMetric[] {
-  return [
-    {
-      id: 'dp-metric-tokens-consumption',
-      code: null,
-      name: 'Tokens 消耗量',
-      definition: '统计模型推理产生的输入与输出 Tokens 总量。',
-      dimensions: ['office', 'model'],
-      aggregations: ['sum', 'day', 'month'],
-      status: 'draft',
-      catalog: null,
-      createdAt: '2026-07-23T00:00:00.000Z',
-      updatedAt: '2026-07-23T00:00:00.000Z'
-    }
-  ];
-}
-
 async function createOfflinePageLifecycle(
   options: Parameters<typeof createMemoryPageLifecycle>[0]
 ): Promise<PageLifecycle> {
@@ -227,98 +171,4 @@ async function createOfflinePageLifecycle(
     Object.values(bundledPageModules).map((module) => module.default)
   );
   return lifecycle;
-}
-
-function createBundledCatalogProvider(): CatalogProvider {
-  const snapshot = bundledCatalogSnapshot();
-  const version = catalogVersionFor(snapshot);
-  return { current: async () => ({ version, snapshot }) };
-}
-
-function bundledCatalogSnapshot(): CatalogSnapshot {
-  if (bundledCatalog.formatVersion !== '2.0') {
-    throw new Error(`不支持的内置元数据快照版本:${bundledCatalog.formatVersion}`);
-  }
-  return {
-    ...bundledCatalog,
-    formatVersion: '2.0',
-    metrics: bundledCatalog.metrics.map((metric) => ({
-      ...metric,
-      valueType: catalogValueType(metric.valueType),
-      defaultFormat: catalogFormat(metric.defaultFormat)
-    })),
-    dimensions: bundledCatalog.dimensions.map((dimension) => ({
-      ...dimension,
-      valueType: catalogDimensionValueType(dimension.valueType),
-      defaultFormat: catalogFormat(dimension.defaultFormat)
-    }))
-  };
-}
-
-function catalogDimensionValueType(
-  value: string
-): CatalogSnapshot['dimensions'][number]['valueType'] {
-  if (
-    value === 'string' ||
-    value === 'number' ||
-    value === 'boolean' ||
-    value === 'date' ||
-    value === 'datetime'
-  ) {
-    return value;
-  }
-  throw new Error(`不支持的内置维度值类型:${value}`);
-}
-
-function catalogFormat(
-  value: string
-): NonNullable<CatalogSnapshot['metrics'][number]['defaultFormat']> {
-  const formats = [
-    'number',
-    'text',
-    'date',
-    'number-1',
-    'number-2',
-    'number-grouped',
-    'compact-wan-0',
-    'compact-wan-1',
-    'compact-yi-1',
-    'percent-0',
-    'percent-1',
-    'percent-2',
-    'percent-2-signed',
-    'date-month-day'
-  ] as const;
-  const format = formats.find((candidate) => candidate === value);
-  if (format) return format;
-  throw new Error(`不支持的内置展示格式:${value}`);
-}
-
-function catalogValueType(value: string): CatalogSnapshot['metrics'][number]['valueType'] {
-  if (value === 'integer' || value === 'decimal' || value === 'percent') return value;
-  throw new Error(`不支持的内置指标值类型:${value}`);
-}
-
-function createDataServiceSimCatalogProvider(baseUrl: string): CatalogProvider {
-  let inFlight: ReturnType<CatalogProvider['current']> | undefined;
-  return {
-    async current() {
-      if (inFlight) return inFlight;
-      const pending = syncCatalog({
-        baseUrl,
-        headers: {
-          'x-operator-id': 'developer-1',
-          tenantId: 'dev',
-          appId: 'metriccanvas',
-          cftk: 'dev'
-        }
-      }).then((snapshot) => ({ version: catalogVersionFor(snapshot), snapshot }));
-      inFlight = pending;
-      try {
-        return await pending;
-      } finally {
-        if (inFlight === pending) inFlight = undefined;
-      }
-    }
-  };
 }

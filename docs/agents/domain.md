@@ -16,11 +16,19 @@
 ```
 /
 ├── CONTEXT.md
+├── PAGE-METADATA.md
 ├── docs/adr/
 │   ├── 0001-domain-dsl-over-a2ui.md
 │   └── ...
-└── (src/ 等待一期搭建)
+├── docs/schema-metadata.md
+├── packages/
+├── apps/
+└── tools/
 ```
+
+`CONTEXT.md` 和 ADR 是领域术语与决策真源；`PAGE-METADATA.md` 和
+`docs/schema-metadata.md` 分别说明当前页面协议与创作期 Schema 元数据，不得用历史
+ADR 中已被取代的结构覆盖当前协议。
 
 ## 使用词汇表术语
 

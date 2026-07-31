@@ -1,9 +1,7 @@
 import type { McpClient } from '@metriccanvas/agent-runner';
 
 const AUTHORING_TOOLS = new Set([
-  'search_catalog',
-  'search_metric_candidates',
-  'get_metric_status',
+  'search_data_context',
   'search_templates',
   'list_pages',
   'get_page',

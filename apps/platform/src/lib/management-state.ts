@@ -3,7 +3,7 @@ export interface RevisionAudit {
   revisionNumber: number;
   baseRevisionId: string | null;
   contentHash: string;
-  metadataVersion: string;
+  dataContextVersion: string | null;
   createdBy: string;
   createdAt: string;
 }

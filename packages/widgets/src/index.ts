@@ -8,8 +8,8 @@ export type { TableSelectedCell } from './Table.svelte';
 export {
   initialTableSort,
   shouldApplyTableHeaderFilter,
-  tableHeaderFilterConditions,
   type TableHeaderFilterValue,
+  type TableSortRule,
   type TableViewState
 } from './table-view';
 export {

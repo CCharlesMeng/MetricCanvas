@@ -1,10 +1,10 @@
 import { Ajv, type ErrorObject } from 'ajv';
-import type { CatalogSnapshot } from './catalog';
 import {
   isInlineDataSource,
-  isRawQueryDataSource,
+  isQueryDataSource,
   resolveDataSourceFields,
-  type DataSource
+  type DataSource,
+  type QueryDataSource
 } from './data-source';
 import type { TypedError } from './errors';
 import type { FieldBinding, FieldDefinition, FieldValue } from './field';
@@ -19,14 +19,13 @@ import {
   type TableColumnNode
 } from './page';
 import { pageSchema } from './schema';
-import { isDqeQueryDefinition } from './query';
 import { versionErrors } from './version';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSchema);
 
-/** 不可信文档通过结构、引用、能力及可选 catalog 语义校验后才可视为 Page。 */
-export function validate(document: unknown, catalog?: CatalogSnapshot): TypedError[] {
+/** 不可信文档通过结构、引用、字段契约和能力校验后才可视为 Page。 */
+export function validate(document: unknown): TypedError[] {
   if (!validateStructure(document)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
     const guided = versionErrors(document);
@@ -37,17 +36,13 @@ export function validate(document: unknown, catalog?: CatalogSnapshot): TypedErr
   }
 
   const page = document as Page;
-  return [
-    ...invariantErrors(page, catalog),
-    ...(catalog ? semanticErrors(page, catalog) : [])
-  ];
+  return invariantErrors(page);
 }
 
-function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
+function invariantErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const filters = page.filters ?? [];
   const filterIds = new Set<string>();
-  const timeRangeFilterIds = new Set<string>();
   const filtersById = new Map<string, FilterDeclaration>();
 
   filters.forEach((filter, index) => {
@@ -57,7 +52,6 @@ function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
     filterIds.add(filter.id);
     filtersById.set(filter.id, filter);
     if (filter.type === 'timeRange') {
-      timeRangeFilterIds.add(filter.id);
       if (filter.default !== undefined && typeof filter.default !== 'string') {
         for (const issue of validateCalendarTimeRange(
           filter.default,
@@ -78,39 +72,8 @@ function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
     const path = `/dataSources/${escapePointer(sourceId)}`;
     if (isInlineDataSource(dataSource)) {
       errors.push(...inlineRowErrors(dataSource, path));
-    } else if (isRawQueryDataSource(dataSource)) {
-      if (page.schemaVersion !== '2.0') {
-        errors.push(
-          schemaError(`${path}/source/query`, 'raw DQE 页面数据源只允许 schemaVersion 2.0')
-        );
-      }
-      errors.push(...rawQueryContractErrors(dataSource, path, filtersById));
-    } else {
-      const hasLegacyFields = 'fields' in dataSource && dataSource.fields !== undefined;
-      if (page.schemaVersion === '1.0' && !hasLegacyFields) {
-        errors.push(
-          schemaError(
-            `${path}/fields`,
-            'schemaVersion 1.0 的 query 页面数据源必须声明完整 fields；请执行 pnpm migrate 升级'
-          )
-        );
-      }
-      if (page.schemaVersion === '2.0' && hasLegacyFields) {
-        errors.push(
-          schemaError(
-            `${path}/fields`,
-            'schemaVersion 2.0 的 query 页面数据源不再声明完整 fields；请改用 fieldOverrides'
-          )
-        );
-      }
-      errors.push(
-        ...queryContractErrors(
-          dataSource,
-          path,
-          filterIds,
-          timeRangeFilterIds
-        )
-      );
+    } else if (isQueryDataSource(dataSource)) {
+      errors.push(...queryContractErrors(dataSource, path, filtersById));
     }
   }
 
@@ -130,7 +93,7 @@ function invariantErrors(page: Page, catalog?: CatalogSnapshot): TypedError[] {
         errors.push(schemaError(`${path}/id`, `component id 重复:${component.id}`));
       }
       componentIds.add(component.id);
-      errors.push(...componentErrors(page, component, path, filterIds, catalog));
+      errors.push(...componentErrors(page, component, path, filterIds));
     });
   });
 
@@ -175,105 +138,10 @@ function inlineRowErrors(dataSource: DataSource, sourcePath: string): TypedError
 }
 
 function queryContractErrors(
-  dataSource: DataSource,
-  sourcePath: string,
-  filterIds: ReadonlySet<string>,
-  timeRangeFilterIds: ReadonlySet<string>
-): TypedError[] {
-  if (dataSource.source.type !== 'query') return [];
-  const errors: TypedError[] = [];
-  const query = dataSource.source.query;
-  if (isDqeQueryDefinition(query)) return errors;
-  const queryPath = `${sourcePath}/source/query`;
-  const dimensions = new Set(query.dimensions ?? []);
-  const metrics = new Set(query.metrics);
-  const outputFields = new Set([...dimensions, ...metrics]);
-
-  if ('fields' in dataSource && dataSource.fields !== undefined) {
-    for (const [fieldName, field] of Object.entries(dataSource.fields)) {
-      const fieldPath = `${sourcePath}/fields/${escapePointer(fieldName)}`;
-      if (!outputFields.has(fieldName)) {
-        errors.push(
-          schemaError(fieldPath, `字段 ${fieldName} 不在 query 的 dimensions/metrics 输出中`)
-        );
-      } else if (dimensions.has(fieldName) && field.role !== 'dimension') {
-        errors.push(schemaError(`${fieldPath}/role`, `查询维度 ${fieldName} 的 role 必须为 dimension`));
-      } else if (metrics.has(fieldName) && field.role !== 'metric') {
-        errors.push(schemaError(`${fieldPath}/role`, `查询指标 ${fieldName} 的 role 必须为 metric`));
-      }
-    }
-    for (const fieldName of outputFields) {
-      if (!Object.hasOwn(dataSource.fields, fieldName)) {
-        errors.push(
-          schemaError(
-            `${sourcePath}/fields/${escapePointer(fieldName)}`,
-            `query 输出字段 ${fieldName} 缺少字段契约`
-          )
-        );
-      }
-    }
-  }
-  for (const fieldName of Object.keys(dataSource.fieldOverrides ?? {})) {
-    if (!outputFields.has(fieldName)) {
-      errors.push(
-        schemaError(
-          `${sourcePath}/fieldOverrides/${escapePointer(fieldName)}`,
-          `展示覆盖字段 ${fieldName} 不在 query 的 dimensions/metrics 输出中`
-        )
-      );
-    }
-  }
-
-  (query.filters?.subscribe ?? []).forEach((filterId, index) => {
-    if (!filterIds.has(filterId)) {
-      errors.push(
-        schemaError(
-          `${queryPath}/filters/subscribe/${index}`,
-          `订阅了未声明的筛选器:${filterId}`
-        )
-      );
-    }
-  });
-  if (query.time !== undefined) {
-    if (!timeRangeFilterIds.has(query.time.filter)) {
-      errors.push(
-        schemaError(
-          `${queryPath}/time/filter`,
-          `time.filter 须引用已声明的 timeRange 筛选器:${query.time.filter}`
-        )
-      );
-    } else if (!(query.filters?.subscribe ?? []).includes(query.time.filter)) {
-      errors.push(
-        schemaError(
-          `${queryPath}/time/filter`,
-          `time.filter ${query.time.filter} 必须同时出现在 filters.subscribe 中`
-        )
-      );
-    }
-  }
-
-  const seenOrderFields = new Set<string>();
-  (query.orderBy ?? []).forEach((rule, index) => {
-    const path = `${queryPath}/orderBy/${index}/field`;
-    if (!outputFields.has(rule.field)) {
-      errors.push(schemaError(path, `orderBy 字段 ${rule.field} 不在 query 输出中`));
-    }
-    if (seenOrderFields.has(rule.field)) {
-      errors.push(schemaError(path, `orderBy 字段重复:${rule.field}`));
-    }
-    seenOrderFields.add(rule.field);
-  });
-  return errors;
-}
-
-function rawQueryContractErrors(
-  dataSource: Extract<DataSource, { fields: Record<string, unknown> }>,
+  dataSource: QueryDataSource,
   sourcePath: string,
   filtersById: ReadonlyMap<string, FilterDeclaration>
 ): TypedError[] {
-  if (dataSource.source.type !== 'query' || !isDqeQueryDefinition(dataSource.source.query)) {
-    return [];
-  }
   const errors: TypedError[] = [];
   const query = dataSource.source.query;
   const item = query.body.dsl_list[0];
@@ -288,7 +156,8 @@ function rawQueryContractErrors(
     const previous = mapped.get(definition.queryField);
     if (previous !== undefined) {
       errors.push(
-        schemaError(
+        typedError(
+          'QUERY_MAPPING_ERROR',
           path,
           `queryField ${definition.queryField} 已映射到页面字段 ${previous}`
         )
@@ -298,22 +167,42 @@ function rawQueryContractErrors(
     }
     if (!outputs.has(definition.queryField)) {
       errors.push(
-        schemaError(path, `queryField ${definition.queryField} 不在 DQE 输出字段中`)
+        typedError(
+          'QUERY_MAPPING_ERROR',
+          path,
+          `queryField ${definition.queryField} 不在 DQE 输出字段中`
+        )
       );
     } else if (
       dimensions.includes(definition.queryField) &&
       definition.role !== 'dimension'
     ) {
-      errors.push(schemaError(path, `DQE 维度 ${definition.queryField} 的 role 必须为 dimension`));
-    } else if (metrics.includes(definition.queryField) && definition.role !== 'metric') {
-      errors.push(schemaError(path, `DQE 度量 ${definition.queryField} 的 role 必须为 metric`));
+      errors.push(
+        typedError(
+          'QUERY_MAPPING_ERROR',
+          `${sourcePath}/fields/${escapePointer(fieldId)}/role`,
+          `DQE 维度 ${definition.queryField} 的 role 必须为 dimension`
+        )
+      );
+    } else if (
+      metrics.includes(definition.queryField) &&
+      definition.role !== 'measure'
+    ) {
+      errors.push(
+        typedError(
+          'QUERY_MAPPING_ERROR',
+          `${sourcePath}/fields/${escapePointer(fieldId)}/role`,
+          `DQE 度量 ${definition.queryField} 的 role 必须为 measure`
+        )
+      );
     }
   }
 
   for (const output of outputs) {
     if (!mapped.has(output)) {
       errors.push(
-        schemaError(
+        typedError(
+          'QUERY_MAPPING_ERROR',
           `${sourcePath}/fields`,
           `DQE 输出字段 ${output} 缺少显式 queryField 映射`
         )
@@ -325,11 +214,29 @@ function rawQueryContractErrors(
     const filter = filtersById.get(filterId);
     const path = `${sourcePath}/source/query/filterBindings/${escapePointer(filterId)}`;
     if (filter === undefined) {
-      errors.push(schemaError(path, `筛选绑定引用了未知筛选器:${filterId}`));
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          path,
+          `筛选绑定引用了未知筛选器:${filterId}`
+        )
+      );
     } else if (binding.target === 'time' && filter.type !== 'timeRange') {
-      errors.push(schemaError(path, `time 目标必须绑定 timeRange 筛选器:${filterId}`));
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          path,
+          `time 目标必须绑定 timeRange 筛选器:${filterId}`
+        )
+      );
     } else if (binding.target === 'dimension' && filter.type !== 'dimension') {
-      errors.push(schemaError(path, `dimension 目标必须绑定维度筛选器:${filterId}`));
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          path,
+          `dimension 目标必须绑定维度筛选器:${filterId}`
+        )
+      );
     }
   }
   return errors;
@@ -362,8 +269,7 @@ function componentErrors(
   page: Page,
   component: Component,
   componentPath: string,
-  filterIds: ReadonlySet<string>,
-  catalog?: CatalogSnapshot
+  filterIds: ReadonlySet<string>
 ): TypedError[] {
   const errors: TypedError[] = [];
   for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
@@ -382,7 +288,7 @@ function componentErrors(
     path: string,
     expectedRole?: FieldDefinition['role']
   ) => {
-    const resolved = resolveBinding(page, component, binding, catalog);
+    const resolved = resolveBinding(page, component, binding);
     if ('error' in resolved) {
       errors.push(schemaError(path, resolved.error));
       return;
@@ -400,8 +306,7 @@ function componentErrors(
       const matched = resolveBinding(
         page,
         component,
-        { data: binding.data, field: binding.match.field },
-        catalog
+        { data: binding.data, field: binding.match.field }
       );
       if ('error' in matched) {
         errors.push(schemaError(`${matchPath}/field`, matched.error));
@@ -432,12 +337,12 @@ function componentErrors(
       break;
     case 'metricCard':
       component.props.rows.forEach((row, rowIndex) => {
-        check(row.valueField, `${componentPath}/props/rows/${rowIndex}/valueField`, 'metric');
+        check(row.valueField, `${componentPath}/props/rows/${rowIndex}/valueField`, 'measure');
         (row.changes ?? []).forEach((change, changeIndex) =>
           check(
             change.field,
             `${componentPath}/props/rows/${rowIndex}/changes/${changeIndex}/field`,
-            'metric'
+            'measure'
           )
         );
       });
@@ -445,7 +350,7 @@ function componentErrors(
         check(
           component.props.progress.valueField,
           `${componentPath}/props/progress/valueField`,
-          'metric'
+          'measure'
         );
       }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
@@ -453,20 +358,20 @@ function componentErrors(
     case 'barChart':
       check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
       component.props.series.forEach((series, index) =>
-        check(series.field, `${componentPath}/props/series/${index}/field`, 'metric')
+        check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
       );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'lineChart':
       check(component.props.xField, `${componentPath}/props/xField`, 'dimension');
       component.props.series.forEach((series, index) =>
-        check(series.field, `${componentPath}/props/series/${index}/field`, 'metric')
+        check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
       );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'pieChart':
       check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
-      check(component.props.valueField, `${componentPath}/props/valueField`, 'metric');
+      check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'table':
@@ -479,17 +384,6 @@ function componentErrors(
         )
       );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
-      if (
-        component.props.pagination?.mode === 'paged' &&
-        !deriveComponentCapabilities(page, component).live
-      ) {
-        errors.push(
-          schemaError(
-            `${componentPath}/props/pagination`,
-            'paged 远程分页只允许绑定 query 数据源的组件'
-          )
-        );
-      }
       if (
         component.props.pagination?.mode === 'none' &&
         (component.props.pagination.pageSize !== undefined ||
@@ -506,14 +400,14 @@ function componentErrors(
       break;
     case 'mapChart':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
-      check(component.props.valueField, `${componentPath}/props/valueField`, 'metric');
+      check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'rankingCard':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
-      check(component.props.valueField, `${componentPath}/props/valueField`, 'metric');
+      check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
       if (component.props.changeField) {
-        check(component.props.changeField, `${componentPath}/props/changeField`, 'metric');
+        check(component.props.changeField, `${componentPath}/props/changeField`, 'measure');
       }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
@@ -628,8 +522,7 @@ function actionErrors(
 function resolveBinding(
   page: Page,
   component: Component,
-  binding: FieldBinding,
-  catalog?: CatalogSnapshot
+  binding: FieldBinding
 ):
   | { field: FieldDefinition; fieldName: string }
   | { error: string } {
@@ -643,68 +536,15 @@ function resolveBinding(
   if (source === undefined) {
     return { error: `字段绑定的数据槽 ${slot} 指向未知数据源:${sourceId}` };
   }
-  const field = resolveDataSourceFields(source, catalog)[fieldName];
+  const field = resolveDataSourceFields(source)[fieldName];
   if (field === undefined) {
     return { error: `字段 ${fieldName} 不在数据槽 ${slot} 的数据源 ${sourceId} 中` };
   }
   return { field, fieldName };
 }
 
-function semanticErrors(page: Page, catalog: CatalogSnapshot): TypedError[] {
-  const errors: TypedError[] = [];
-  const metricsByCode = new Map(catalog.metrics.map((metric) => [metric.code, metric]));
-  const dimensions = new Set(catalog.dimensions.map((dimension) => dimension.code));
-
-  for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
-    if (dataSource.source.type !== 'query') continue;
-    const query = dataSource.source.query;
-    if (isDqeQueryDefinition(query)) continue;
-    const path = `/dataSources/${escapePointer(sourceId)}/source/query`;
-    const knownMetrics = query.metrics.flatMap((code) => metricsByCode.get(code) ?? []);
-
-    query.metrics.forEach((code, index) => {
-      if (!metricsByCode.has(code)) {
-        errors.push({
-          type: 'METRIC_GAP',
-          path: `${path}/metrics/${index}`,
-          message: `指标 ${code} 不存在于元数据快照`
-        });
-      }
-    });
-    (query.dimensions ?? []).forEach((code, index) => {
-      if (!dimensions.has(code)) {
-        errors.push(schemaError(`${path}/dimensions/${index}`, `维度 ${code} 不存在于元数据快照`));
-        return;
-      }
-      for (const metric of knownMetrics) {
-        if (!metric.availableDimensions.includes(code)) {
-          errors.push(
-            schemaError(
-              `${path}/dimensions/${index}`,
-              `维度 ${code} 不可用于指标 ${metric.code}`
-            )
-          );
-        }
-      }
-    });
-    if (query.aggregation !== undefined) {
-      for (const metric of knownMetrics) {
-        if (!metric.availableAggregations.includes(query.aggregation)) {
-          errors.push(
-            schemaError(
-              `${path}/aggregation`,
-              `聚合方式 ${query.aggregation} 对指标 ${metric.code} 不合法`
-            )
-          );
-        }
-      }
-    }
-  }
-  return errors;
-}
-
 function matchesFieldType(value: FieldValue, field: FieldDefinition): boolean {
-  if (value === null) return true;
+  if (value === null) return field.nullable !== false;
   if (field.type === 'date') {
     return typeof value === 'string' && isCalendarDate(value);
   }
@@ -728,6 +568,14 @@ function bindingKey(binding: FieldBinding): string {
 
 function schemaError(path: string, message: string): TypedError {
   return { type: 'SCHEMA_ERROR', path, message };
+}
+
+function typedError(
+  type: TypedError['type'],
+  path: string,
+  message: string
+): TypedError {
+  return { type, path, message };
 }
 
 function toTypedError(error: ErrorObject): TypedError {

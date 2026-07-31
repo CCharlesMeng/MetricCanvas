@@ -13,7 +13,7 @@ export const GET: RequestHandler = async () => {
   const listed = await lifecycle.listPages({ limit: 100 });
   const published = await Promise.all(
     listed.pages
-      .filter((page) => page.catalogVisibility === 'visible' && page.publishedRevision)
+      .filter((page) => page.visibility === 'visible' && page.publishedRevision)
       .map(async ({ pageId }) => {
         const result = await lifecycle.getPublished({ pageId });
         return result.ok ? pageMetadata(result.revision.document) : null;

@@ -19,57 +19,56 @@
       ];
       const dataGateway = {
         async fetchData(query) {
-          const region = query.conditions.find(
-            condition =>
-              condition.dimension === 'region' &&
-              condition.operator === 'in'
+          const region = query.filterValues.find(
+            filter =>
+              filter.target === 'dimension' &&
+              filter.queryField === '区域'
           );
-          const selected = region ? new Set(region.value.map(String)) : null;
-          const filtered = selected
-            ? rows.filter(row => selected.has(row.region))
-            : rows;
-          const start = query.offset || 0;
-          return filtered.slice(
-            start,
-            query.limit === undefined ? undefined : start + query.limit
-          );
+          const selected = region ? new Set(region.values.map(String)) : null;
+          return selected ? rows.filter(row => selected.has(row.region)) : rows;
         },
         async fetchDimensionValues() {
           return rows.map(row => row.region);
         }
       };
-      const catalog = {
-        formatVersion: '2.0',
-        syncedAt: '2026-07-30T00:00:00.000Z',
-        source: '嵌入示例',
-        metrics: [{
-          code: 'gmv',
-          name: '成交总额',
-          valueType: 'integer',
-          defaultFormat: 'number-grouped',
-          availableDimensions: ['region'],
-          availableAggregations: ['sum']
-        }],
-        dimensions: [{
-          code: 'region',
-          name: '区域',
-          valueType: 'string',
-          cardinality: 2,
-          sampleValues: ['华东', '华南']
-        }]
-      };
       const pageDocument = {
-        schemaVersion: '2.0',
+        schemaVersion: '3.0',
         id: 'query-example',
         dataSources: {
           sales: {
+            fields: {
+              region: {
+                queryField: '区域',
+                type: 'string',
+                role: 'dimension',
+                nullable: false
+              },
+              gmv: {
+                queryField: '成交总额',
+                type: 'number',
+                role: 'measure',
+                defaultFormat: 'number-grouped',
+                nullable: false
+              }
+            },
             source: {
               type: 'query',
               query: {
-                metrics: ['gmv'],
-                dimensions: ['region'],
-                aggregation: 'sum',
-                filters: { subscribe: ['region-filter'] }
+                language: 'dqe',
+                body: {
+                  dsl_list: [{
+                    output_dims: ['区域'],
+                    output_metrics: ['成交总额'],
+                    filter: { dims: [], metrics: [] },
+                    order: {}
+                  }]
+                },
+                filterBindings: {
+                  'region-filter': {
+                    target: 'dimension',
+                    queryField: '区域'
+                  }
+                }
               }
             }
           }
@@ -106,12 +105,10 @@
       };
 
       window.queryPageDocument = pageDocument;
-      window.queryCatalog = catalog;
       window.queryDataGateway = dataGateway;
       window.queryEvents = [];
       window.queryRuntime = MetricCanvas.mount('#dashboard', {
         document: pageDocument,
-        catalog,
         dataGateway,
         onEvent(event) {
           window.queryEvents.push(event);

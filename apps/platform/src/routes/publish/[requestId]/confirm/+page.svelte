@@ -21,8 +21,8 @@
       <dd><code>R{data.revision.revisionNumber} · {data.request.revisionId}</code></dd>
     </div>
     <div>
-      <dt>元数据版本</dt>
-      <dd><code>{data.revision.metadataVersion}</code></dd>
+      <dt>数据上下文版本</dt>
+      <dd><code>{data.revision.dataContextVersion ?? '纯静态页面'}</code></dd>
     </div>
     <div>
       <dt>内容指纹</dt>

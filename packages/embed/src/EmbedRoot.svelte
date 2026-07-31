@@ -23,7 +23,6 @@
 
 <RuntimeView
   document={input.document}
-  catalog={input.catalog}
   dataGateway={input.dataGateway}
   initialSearch={input.initialSearch}
   onevent={onEvent}
