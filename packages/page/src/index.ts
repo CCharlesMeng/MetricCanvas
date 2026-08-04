@@ -1,4 +1,5 @@
 export * from './page';
+export * from './page-document';
 export * from './data-source';
 export * from './field';
 export * from './filter';
@@ -8,7 +9,7 @@ export * from './canonical-json';
 export * from './component-catalog';
 export * from './errors';
 export { pageSchema } from './schema';
-export { validate } from './validate';
+export { parsePage, validate, type PageParseResult } from './validate';
 export { fileNameErrors } from './file-name';
 export { navigateErrors } from './navigate';
 export * from './version';

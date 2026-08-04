@@ -18,25 +18,51 @@ import {
   type Page,
   type TableColumnNode
 } from './page';
+import { materializePageDocument } from './materialize';
 import { pageSchema } from './schema';
 import { versionErrors } from './version';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSchema);
 
-/** 不可信文档通过结构、引用、字段契约和能力校验后才可视为 Page。 */
-export function validate(document: unknown): TypedError[] {
+export type PageParseResult =
+  | { ok: true; page: Page; errors: [] }
+  | { ok: false; errors: TypedError[] };
+
+/** 不可信文档通过结构、字段分组、引用、字段契约和能力校验后才可视为 Page。 */
+export function parsePage(document: unknown): PageParseResult {
   if (!validateStructure(document)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
     const guided = versionErrors(document);
     if (guided.length > 0) {
-      return [...guided, ...structural.filter((error) => error.path !== '/schemaVersion')];
+      return {
+        ok: false,
+        errors: [...guided, ...structural.filter((error) => error.path !== '/schemaVersion')]
+      };
     }
-    return structural;
+    return { ok: false, errors: structural };
   }
 
-  const page = document as Page;
-  return invariantErrors(page);
+  const materialized = materializePageDocument(document);
+  if (materialized.errors.length > 0) {
+    return { ok: false, errors: materialized.errors };
+  }
+  if (!validateStructure(materialized.document)) {
+    return {
+      ok: false,
+      errors: (validateStructure.errors ?? []).map(toTypedError)
+    };
+  }
+
+  const page = materialized.document as Page;
+  const errors = invariantErrors(page);
+  return errors.length === 0
+    ? { ok: true, page, errors: [] }
+    : { ok: false, errors };
+}
+
+export function validate(document: unknown): TypedError[] {
+  return parsePage(document).errors;
 }
 
 function invariantErrors(page: Page): TypedError[] {
@@ -452,6 +478,7 @@ function componentErrors(
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'table':
+      errors.push(...tableDataErrors(page, component, componentPath));
       errors.push(
         ...tableErrors(
           component.props.columns,
@@ -475,6 +502,49 @@ function componentErrors(
       }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
+  }
+  return errors;
+}
+
+function tableDataErrors(
+  page: Page,
+  component: Extract<Component, { type: 'table' }>,
+  componentPath: string
+): TypedError[] {
+  const slots = Object.entries(component.data);
+  if (slots.length <= 1) return [];
+  const rowKey = component.props.rowKey;
+  if (!rowKey) {
+    return [
+      schemaError(
+        `${componentPath}/props/rowKey`,
+        '多数据槽表格必须声明 rowKey'
+      )
+    ];
+  }
+
+  const errors: TypedError[] = [];
+  let expectedType: FieldDefinition['type'] | undefined;
+  for (const [slot, sourceId] of slots) {
+    const source = page.dataSources[sourceId];
+    if (!source) continue;
+    const field = resolveDataSourceFields(source)[rowKey];
+    const path = `${componentPath}/data/${escapePointer(slot)}`;
+    if (!field) {
+      errors.push(
+        schemaError(path, `数据槽 ${slot} 的数据源 ${sourceId} 缺少 rowKey 字段:${rowKey}`)
+      );
+      continue;
+    }
+    if (field.role !== 'dimension') {
+      errors.push(schemaError(path, `rowKey 字段 ${rowKey} 的 role 必须为 dimension`));
+    }
+    if (expectedType === undefined) expectedType = field.type;
+    else if (field.type !== expectedType) {
+      errors.push(
+        schemaError(path, `rowKey 字段 ${rowKey} 的类型必须一致:${expectedType}/${field.type}`)
+      );
+    }
   }
   return errors;
 }

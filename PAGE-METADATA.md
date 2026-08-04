@@ -6,8 +6,9 @@
 
 1. `packages/page/src/schema.ts`：JSON 结构；
 2. `packages/page/src/validate.ts`：引用、字段契约和能力约束；
-3. `packages/page/src/page.ts`：组件、数据槽和 action 类型；
-4. `packages/page/src/query.ts`：DQE 查询定义。
+3. `packages/page/src/page-document.ts` 与 `materialize.ts`：查询结果字段分组和纯解析接缝；
+4. `packages/page/src/page.ts`：组件、数据槽和 action 类型；
+5. `packages/page/src/query.ts`：DQE 查询定义。
 
 页面文件使用 JSON。协议拒绝未定义属性。
 
@@ -66,11 +67,41 @@
 
 `inline` 表示静态数据场景。`query` 表示动态查询场景。DQE 是当前支持的查询语言。
 
+## 查询结果字段分组
+
+`query` 页面数据源的 `fields` 可以按角色分组。分组只省略与组名重复的 `role`，其他结果字段契约与查询字段映射仍在当前页面数据源中显式声明：
+
+```json
+{
+  "fields": {
+    "dimensions": {
+      "customer-name": {
+        "queryField": "客户名称",
+        "type": "string"
+      }
+    },
+    "measures": {
+      "customer-count": {
+        "queryField": "客户数",
+        "type": "number",
+        "defaultFormat": "number-grouped"
+      }
+    }
+  }
+}
+```
+
+- `dimensions` 补全 `role: "dimension"`；`measures` 补全 `role: "measure"`；
+- 字段 id 是对象键，每个字段都必须显式声明 `queryField` 和 `type`；
+- 不根据同名、DQE 输出位置或默认值推断查询字段映射；
+- `label` 与字段 id 相同时应省略；
+- 页面元数据不提供 `definitions`、`include`、字段默认值继承或表格列集。
+
 ## 页面数据源
 
 每个页面数据源包含：
 
-- `fields`：稳定结果字段契约；
+- `fields`：完整结果字段契约，或只省略 `role` 的按角色分组声明；
 - `source`：数据来源。
 
 组件只引用页面字段 id，不直接引用外部响应字段。
@@ -106,6 +137,10 @@
 | `defaultFormat` | 否 | 默认展示格式 |
 
 `dimension` 用于类别、时间、分组、筛选和排序。`measure` 用于数值、计数、比例和其他可比较结果。
+
+`type` 描述外部结果归一后的真实标量类型，不由 `role` 推断。外部查询若返回
+`"41.67%"`，应声明为 `type: "string"`、`role: "measure"` 并使用 `text`
+格式；此类字段只原样展示，不参与数值排序、图表计算或比例格式化。
 
 允许的格式：
 
@@ -490,6 +525,38 @@ last90d
 - 日期范围筛选；
 - 单元格选择写入页面筛选状态；
 - 本地分页。
+
+`props.fit` 控制列宽策略：`content` 保留配置的像素宽度并允许横向滚动；`container` 把列宽作为比例压缩到容器内，适合简报和窄画布。
+
+同一张表需要并排展示两个独立查询页面数据源时，可以声明多个组件数据槽，并用
+`rowKey` 按稳定页面字段对齐：
+
+```json
+{
+  "data": {
+    "main": "inspection-progress",
+    "top100": "inspection-progress-top100"
+  },
+  "props": {
+    "rowKey": "representative-office",
+    "columns": [
+      { "field": "inspection-na-total" },
+      {
+        "field": {
+          "data": "top100",
+          "field": "inspection-top-total"
+        }
+      }
+    ]
+  }
+}
+```
+
+- `main` 数据槽决定行集合、顺序和分页；
+- 其他数据槽按 `rowKey` 查找对应行，不依赖响应行顺序；
+- 多数据槽表格必须声明 `rowKey`，且每个数据源都必须声明同类型的维度字段；
+- 其他数据槽不存在匹配行时展示空值，不把缺失伪造为 `0`；
+- 每个查询页面数据源仍只保存一个 DQE 查询项，数据网关可以透明批量发送。
 
 本地分页示例：
 

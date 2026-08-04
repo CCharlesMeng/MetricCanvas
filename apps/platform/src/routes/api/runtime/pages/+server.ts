@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { Page } from '@metriccanvas/page';
+import type { PageDocument } from '@metriccanvas/page';
 import { getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async () => {
   );
 };
 
-function pageMetadata(document: Page): {
+function pageMetadata(document: PageDocument): {
   id: string;
   title: string;
   description?: string;

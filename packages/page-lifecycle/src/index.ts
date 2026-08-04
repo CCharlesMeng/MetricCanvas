@@ -4,7 +4,7 @@ import {
   canonicalizeJson,
   validate,
   versionPolicy,
-  type Page,
+  type PageDocument,
   type TypedError
 } from '@metriccanvas/page';
 
@@ -32,7 +32,7 @@ export interface PageRevision {
   revisionNumber: number;
   pageId: string;
   baseRevisionId: string | null;
-  document: Page;
+  document: PageDocument;
   contentHash: string;
   dataContextVersion: string | null;
   createdBy: string;
@@ -300,7 +300,7 @@ interface RevisionRow {
   revision_number: number;
   page_id: string;
   base_revision_id: string | null;
-  document: Page;
+  document: PageDocument;
   content_hash: string;
   data_context_version: string | null;
   created_by: string;
@@ -444,7 +444,7 @@ export async function createPostgresPageLifecycle(
             }
           } satisfies RevisionResult;
         }
-        const document = command.document as Page;
+        const document = command.document as PageDocument;
         if (document.schemaVersion !== versionPolicy.current) {
           return lifecycleFailure(
             'INVALID_PAGE',
@@ -1691,7 +1691,7 @@ function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function hasQueryDataSource(page: Page): boolean {
+function hasQueryDataSource(page: PageDocument): boolean {
   return Object.values(page.dataSources).some(
     (dataSource) => dataSource.source.type === 'query'
   );

@@ -35,6 +35,7 @@ export interface ComponentLayout {
 
 export type ComponentData = Record<string, string>;
 export type MainDataBinding = { main: string };
+export type TableDataBinding = ComponentData & { main: string };
 export type MetricDataBinding = {
   main: string;
   compare?: string;
@@ -179,6 +180,8 @@ export interface TableCellSelection {
 export interface TableProps {
   title?: string;
   subtitle?: string;
+  /** 多数据槽表格按所有数据槽共有的稳定页面字段对齐；主数据槽决定行顺序。 */
+  rowKey?: string;
   /** container 按配置宽度比例压缩列，避免表格产生横向滚动。 */
   fit?: 'content' | 'container';
   columns: TableColumnNode[];
@@ -189,7 +192,7 @@ export interface TableProps {
   actions?: ComponentAction[];
 }
 
-export type TableComponent = ComponentBase<'table', TableProps, MainDataBinding>;
+export type TableComponent = ComponentBase<'table', TableProps, TableDataBinding>;
 
 export interface MapChartProps {
   title?: string;

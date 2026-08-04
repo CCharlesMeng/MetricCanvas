@@ -3,7 +3,7 @@
     AgentInteraction,
     AgentMessage
   } from '@metriccanvas/agent-runner';
-  import type { Page } from '@metriccanvas/page';
+  import type { PageDocument } from '@metriccanvas/page';
 
   interface AgentResponse {
     messages?: AgentMessage[];
@@ -17,7 +17,7 @@
     '创建销售经营概览：展示成交总额、区域对比和成交趋势'
   );
   let messages = $state<AgentMessage[]>([]);
-  let draft = $state<Page | null>(null);
+  let draft = $state<PageDocument | null>(null);
   let interaction = $state<AgentInteraction | null>(null);
   let confirmedPageIds = $state<string[]>([]);
   let baseRevisionId = $state<string | null>(null);
@@ -59,7 +59,7 @@
       }
       messages = payload.messages ?? messages;
       interaction = payload.interaction ?? null;
-      if (payload.document) draft = payload.document as unknown as Page;
+      if (payload.document) draft = payload.document as unknown as PageDocument;
       if (payload.runtimeOrigin) {
         previewUrl = previewUrl || payload.runtimeOrigin;
       }

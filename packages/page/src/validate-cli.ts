@@ -4,7 +4,7 @@ import type { TypedError } from './errors';
 import { fileNameErrors } from './file-name';
 import { navigateErrors } from './navigate';
 import type { Page } from './page';
-import { validate } from './validate';
+import { parsePage } from './validate';
 
 function main(argv: string[]): number {
   const pagesDir = resolve(argv[0] ?? 'pages');
@@ -36,13 +36,14 @@ function main(argv: string[]): number {
       continue;
     }
 
-    const errors = validate(document);
-    if (errors.length > 0) {
-      results.push({ file, errors });
+    const parsed = parsePage(document);
+    if (!parsed.ok) {
+      results.push({ file, errors: parsed.errors });
       continue;
     }
 
-    const page = document as Page;
+    const page = parsed.page;
+    const errors: TypedError[] = [];
     errors.push(...fileNameErrors(file, page));
     if (errors.length === 0) pagesById.set(page.id, page);
     results.push({ file, errors, ...(errors.length === 0 ? { page } : {}) });

@@ -3,7 +3,7 @@ import {
   canonicalizeJson,
   validate,
   versionPolicy,
-  type Page
+  type PageDocument
 } from '@metriccanvas/page';
 import type {
   DataContextProvider,
@@ -111,7 +111,7 @@ export function createMemoryPageLifecycle(
           }
         };
       }
-      const document = clone(command.document) as Page;
+      const document = clone(command.document) as PageDocument;
       if (document.schemaVersion !== versionPolicy.current) {
         return failure(
           'INVALID_PAGE',
@@ -589,7 +589,7 @@ function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
-function hasQueryDataSource(page: Page): boolean {
+function hasQueryDataSource(page: PageDocument): boolean {
   return Object.values(page.dataSources).some(
     (dataSource) => dataSource.source.type === 'query'
   );

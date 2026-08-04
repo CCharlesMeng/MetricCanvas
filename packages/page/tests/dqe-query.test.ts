@@ -117,4 +117,34 @@ describe('raw DQE 页面查询', () => {
 
     expect(validate(page)).toEqual([]);
   });
+
+  it('多数据槽表格要求所有数据槽声明同类型维度 rowKey', () => {
+    const page = rawPage();
+    page.dataSources.compare = structuredClone(page.dataSources.overview);
+    page.sections[0].components = [
+      {
+        id: 'table',
+        type: 'table',
+        layout: { span: 12 },
+        data: { main: 'overview', compare: 'compare' },
+        props: {
+          rowKey: 'level',
+          columns: [
+            { field: 'count' },
+            { field: { data: 'compare', field: 'count' } }
+          ],
+          pagination: { mode: 'none' }
+        }
+      }
+    ];
+
+    expect(validate(page)).toEqual([]);
+
+    delete page.sections[0].components[0].props.rowKey;
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/0/props/rowKey'
+      })
+    );
+  });
 });

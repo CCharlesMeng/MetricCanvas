@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { parsePage } from '../../../packages/page/src';
 import customerActivityRiskPage from '../../../pages/customer-activity-risk-briefing.json';
 import { executeDqeItem } from '../src/execute';
 
@@ -11,7 +12,11 @@ interface QueryDataSource {
   fields: Record<string, { queryField: string }>;
 }
 
-const customerActivityRiskSources = customerActivityRiskPage.dataSources as unknown as
+const parsedPage = parsePage(customerActivityRiskPage);
+if (!parsedPage.ok) {
+  throw new Error(`正式页面解析失败:${JSON.stringify(parsedPage.errors)}`);
+}
+const customerActivityRiskSources = parsedPage.page.dataSources as unknown as
   Record<string, QueryDataSource>;
 
 describe('正式页面 DQE 场景', () => {
@@ -22,9 +27,9 @@ describe('正式页面 DQE 场景', () => {
     );
     const results = items.map(executeDqeItem);
 
-    expect(results).toHaveLength(22);
+    expect(results).toHaveLength(23);
     expect(results.map((result) => result.code)).toEqual(
-      Array.from({ length: 22 }, () => 'SUCCESS')
+      Array.from({ length: 23 }, () => 'SUCCESS')
     );
     expect(results.every((result) => result.data.length > 0)).toBe(true);
 
@@ -41,17 +46,22 @@ describe('正式页面 DQE 场景', () => {
       customerActivityRiskSources['inspection-detail']!.source.query.body.dsl_list[0]
     ) as {
       filter: {
-        dims: Array<{ dim_name: string; dim_value_list: string[] }>;
+        dims: Array<{ dim_name: string; dim_value_list: string[]; operator?: string }>;
       };
     };
     item.filter.dims = [
       {
-        dim_name: 'representative-office',
-        dim_value_list: ['XX代表处09']
+        dim_name: '代表处',
+        dim_value_list: ['北京代表处']
       },
       {
-        dim_name: 'customer-scope',
-        dim_value_list: ['TOP100']
+        dim_name: '是否TOP100项目客户',
+        dim_value_list: ['是']
+      },
+      {
+        dim_name: '最近一次公司考察时间',
+        dim_value_list: ['2026-01-01'],
+        operator: '<'
       }
     ];
     (item as unknown as { order: { offset: number; limit: number } }).order = {
@@ -63,13 +73,14 @@ describe('正式页面 DQE 场景', () => {
 
     expect(result.code).toBe('SUCCESS');
     expect(result.data).toHaveLength(10);
-    expect(result.total_count).toBe(153);
-    expect(result.data[0]?.['inspection-detail-row']).toBe(11);
+    expect(result.total_count).toBe(20);
+    expect(result.data[0]?.['客户名称']).toBe('北京代表处客户011');
     expect(
       result.data.every(
         (row) =>
-          row['representative-office'] === 'XX代表处09' &&
-          row['customer-scope'] === 'TOP100'
+          row['代表处'] === '北京代表处' &&
+          (row['最近一次公司考察时间'] === null ||
+            String(row['最近一次公司考察时间']) < '2026-01-01')
       )
     ).toBe(true);
   });

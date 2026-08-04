@@ -297,6 +297,14 @@ describe('页面数据源快照编排', () => {
     });
     await flush();
     expect(received.at(-1)?.pagination).toEqual({ offset: 0, limit: 10 });
+
+    stream.setQueryPageSize('sales', 20);
+    await flush();
+    expect(received.at(-1)?.pagination).toEqual({ offset: 0, limit: 20 });
+
+    stream.setQueryPage('sales', 1);
+    await flush();
+    expect(received.at(-1)?.pagination).toEqual({ offset: 20, limit: 20 });
     unsubscribe();
   });
 });

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { page } from '$app/state';
-  import type { Page } from '@metriccanvas/page';
+  import type { PageDocument } from '@metriccanvas/page';
   import { runtimePreviewUrl } from '$lib/management-state';
   import {
     commitPageEdit,
@@ -20,7 +20,7 @@
     pageId: string;
     revisionId: string;
     revisionNumber: number;
-    document: Page;
+    document: PageDocument;
   }
 
   let history = $state<PageEditorHistory | null>(null);

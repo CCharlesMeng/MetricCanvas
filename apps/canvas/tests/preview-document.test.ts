@@ -1,8 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
   isDqeQueryDefinition,
+  parsePage,
+  type MetricCardComponent,
+  type TableColumn,
+  type TableComponent,
   validate,
-  type Page
 } from '@metriccanvas/page';
 import {
   DEFAULT_PREVIEW_PAGE,
@@ -20,14 +23,17 @@ describe('Page JSON 即时预览文档', () => {
     expect(result.status).toBe('valid');
     if (result.status !== 'valid') return;
 
-    const page = result.document as Page;
+    const parsed = parsePage(result.document);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    const page = parsed.page;
     const components = page.sections.flatMap((section) => section.components);
     expect(page.id).toBe('customer-activity-risk-briefing');
     expect(components.filter((component) => component.type === 'table')).toHaveLength(16);
     expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(
       true
     );
-    expect(page.filters).toHaveLength(8);
+    expect(page.filters).toHaveLength(9);
     expect(page.filters?.every((filter) => filter.visible === false)).toBe(true);
     const overview = page.sections.find((section) => section.id === 'customer-overviews');
     expect(overview?.components).toHaveLength(2);
@@ -66,9 +72,26 @@ describe('Page JSON 即时预览文档', () => {
           .some((column) => column.selection !== undefined)
       ).toBe(true);
     }
+    const riskSummary = components.find(
+      (component) => component.id === 'inspection-risk-summary'
+    );
+    expect(riskSummary?.type).toBe('aiSummary');
+    if (riskSummary?.type === 'aiSummary') {
+      expect(riskSummary.data).toBeUndefined();
+      expect(riskSummary.props.relatedData['non-top-risk']?.source).toBe(
+        'inspection-progress-summary'
+      );
+      expect(riskSummary.props.relatedData['non-top-risk']?.fields).toHaveLength(6);
+      expect(riskSummary.props.relatedData['top100-risk']?.source).toBe(
+        'inspection-progress-top100'
+      );
+      expect(riskSummary.props.relatedData['top100-risk']?.fields).toHaveLength(6);
+      expect(JSON.stringify(riskSummary.props)).not.toMatch(/\bX\b|xx/iu);
+    }
 
     const activityCards = components.filter(
-      (component) => component.type === 'metricCard' && component.props.variant === 'activityProgress'
+      (component): component is MetricCardComponent =>
+        component.type === 'metricCard' && component.props.variant === 'activityProgress'
     );
     expect(
       activityCards.map((component) => ({
@@ -82,7 +105,9 @@ describe('Page JSON 即时预览文档', () => {
       { ringPercent: 75, changeUnit: '次' }
     ]);
 
-    const tables = components.filter((component) => component.type === 'table');
+    const tables = components.filter(
+      (component): component is TableComponent => component.type === 'table'
+    );
     expect(tables.every((component) =>
       (component.props as typeof component.props & { fit?: string }).fit === 'container'
     )).toBe(true);
@@ -93,12 +118,17 @@ describe('Page JSON 即时预览文档', () => {
     );
     expect(
       detailColumns
-        .filter((column) => column.kind !== 'group' && column.title === '序号')
+        .filter(
+          (column): column is TableColumn => column.kind !== 'group' && column.title === '序号'
+        )
         .every((column) => column.align === 'left')
     ).toBe(true);
     expect(
       detailColumns
-        .filter((column) => column.kind !== 'group' && column.title?.startsWith('最近一次'))
+        .filter(
+          (column): column is TableColumn =>
+            column.kind !== 'group' && column.title?.startsWith('最近一次') === true
+        )
         .every((column) => column.align === 'right')
     ).toBe(true);
   });
@@ -106,6 +136,21 @@ describe('Page JSON 即时预览文档', () => {
   it('默认预览直接使用 pages 中的正式页面文档，并通过 v4 校验', () => {
     expect(DEFAULT_PREVIEW_PAGE.id).toBe('customer-activity-risk-briefing');
     expect(validate(DEFAULT_PREVIEW_PAGE)).toEqual([]);
+  });
+
+  it('正式文档保留按角色分组的局部显式字段', () => {
+    const parsed = parsePage(DEFAULT_PREVIEW_PAGE);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+
+    const sourceLength = JSON.stringify(DEFAULT_PREVIEW_PAGE).length;
+    const materializedLength = JSON.stringify(parsed.page).length;
+    expect(sourceLength).toBeLessThan(materializedLength);
+    expect('definitions' in DEFAULT_PREVIEW_PAGE).toBe(false);
+    expect(DEFAULT_PREVIEW_PAGE.dataSources['inspection-detail']?.fields).toHaveProperty(
+      'dimensions.customer-name',
+      { label: '客户名称', queryField: '客户名称', type: 'string' }
+    );
   });
 
   it('JSON 解析成功后调用 validator，并返回契约错误', () => {

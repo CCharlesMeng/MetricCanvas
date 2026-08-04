@@ -12,8 +12,9 @@
 
 <script lang="ts">
   import type { TableColumn, TableProps as TableComponentProps } from '@metriccanvas/page';
-  import type { MainDataSlots } from './component-data';
+  import type { NamedDataSlots } from './component-data';
   import { resolveField } from './component-data';
+  import { alignTableRows, alignedFieldValue } from './table-data';
   import { buildTableColumnLayout } from './table-columns';
   import type {
     TableHeaderFilterValue,
@@ -29,7 +30,7 @@
    */
   interface Props {
     /** 已解析的 main 数据槽；rows 为空时表格仍呈现表头。 */
-    data: MainDataSlots;
+    data: NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> };
     props: TableComponentProps;
     /** 是否呈现排序、表头筛选和分页交互;缺省 true 保持存量行为 */
     interactive?: boolean;
@@ -40,6 +41,7 @@
     pagination?: TablePaginationState;
     selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
+    onpagesize?: (pageSize: number) => void;
     onsort?: (sort: TableSortRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
@@ -54,6 +56,7 @@
     pagination,
     selectedCell,
     onpage,
+    onpagesize,
     onsort,
     onheaderfilter,
     oncellselect
@@ -61,7 +64,7 @@
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
-  const rows = $derived(data.main.snapshot.rows);
+  const rows = $derived(alignTableRows(data, props.rowKey));
   const columnWidthTotal = $derived(
     leaves.reduce((total, column) => total + (column.width ?? 120), 0)
   );
@@ -168,17 +171,24 @@
 
   function pageWindow(current: number, total: number): Array<number | '…'> {
     if (total <= 7) return Array.from({ length: total }, (_, index) => index + 1);
-    const pages = new Set([1, 2, total - 1, total, current - 1, current, current + 1]);
-    const sorted = [...pages]
-      .filter((page) => page >= 1 && page <= total)
-      .sort((a, b) => a - b);
-    const result: Array<number | '…'> = [];
-    for (const page of sorted) {
-      const previous = result[result.length - 1];
-      if (typeof previous === 'number' && page - previous > 1) result.push('…');
-      result.push(page);
+    if (current <= 4) return [1, 2, 3, 4, 5, 6, '…', total];
+    if (current >= total - 3) {
+      return [1, '…', total - 5, total - 4, total - 3, total - 2, total - 1, total];
     }
-    return result;
+    return [1, '…', current - 2, current - 1, current, current + 1, current + 2, '…', total];
+  }
+
+  function closePageSizeMenu(event: MouseEvent) {
+    (event.currentTarget as HTMLElement | null)
+      ?.closest('details')
+      ?.removeAttribute('open');
+  }
+
+  const pageSizeOptions = [10, 20, 50] as const;
+
+  function selectPageSize(event: MouseEvent, pageSize: number) {
+    closePageSizeMenu(event);
+    if (pageSize !== pagination?.pageSize) onpagesize?.(pageSize);
   }
 
   const totalPages = $derived(
@@ -199,7 +209,7 @@
       if (column.visual !== 'rateBar') continue;
       let maximum = 0;
       for (const row of rows) {
-        const numeric = numericValue(row[columnField(column)]);
+        const numeric = numericValue(alignedFieldValue(column.field, data, row));
         if (numeric !== undefined) maximum = Math.max(maximum, Math.abs(numeric));
       }
       maxima.set(columnField(column), maximum);
@@ -346,7 +356,7 @@
           <tr>
             {#each leaves as column (columnField(column))}
               {@const resolved = resolveField(column.field, data)}
-              {@const rawValue = row[resolved.field]}
+              {@const rawValue = alignedFieldValue(column.field, data, row)}
               {@const polarity = valuePolarity(rawValue)}
               <td
                 class:align-right={column.align === 'right'}
@@ -383,13 +393,13 @@
                     {#if column.secondaryField}
                       {@const secondary = resolveField(column.secondaryField, data)}
                       <small>
-                        {formatValue(row[secondary.field], secondary.format)}
+                        {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format)}
                       </small>
                     {/if}
                     {#if column.badgeField}
                       {@const badge = resolveField(column.badgeField, data)}
                       <small class="cell-badge">
-                        {formatValue(row[badge.field], badge.format)}
+                        {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format)}
                       </small>
                     {/if}
                   </span>
@@ -408,15 +418,36 @@
 
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager">
-      <span class="total">总条数：{pagination.totalCount}</span>
+      <span class="total">总条数： <span>{pagination.totalCount}</span></span>
       <div class="pager-actions">
-        <span class="page-size">{pagination.pageSize} 条/页</span>
+        <details class="page-size-select">
+          <summary aria-label={`每页 ${pagination.pageSize} 条`}>
+            <span>{pagination.pageSize}</span>
+            <span aria-hidden="true" class="page-size-arrow"></span>
+          </summary>
+          <div aria-label="每页显示数量" class="page-size-menu" role="listbox">
+            {#each pageSizeOptions as pageSize}
+              <button
+                aria-selected={pageSize === pagination.pageSize}
+                class:selected={pageSize === pagination.pageSize}
+                onclick={(event) => selectPageSize(event, pageSize)}
+                role="option"
+                type="button"
+              >{pageSize}</button>
+            {/each}
+          </div>
+        </details>
         <button
           type="button"
+          class="pager-nav pager-prev"
           aria-label="上一页"
           disabled={view.pageIndex === 0}
           onclick={() => onpage?.(view.pageIndex - 1)}
-        >‹</button>
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="M10.4 3.4 5.8 8l4.6 4.6" />
+          </svg>
+        </button>
         {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
           {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
             {#if item === '…'}
@@ -424,6 +455,7 @@
             {:else}
               <button
                 type="button"
+                class="page-button"
                 class:current={item === view.pageIndex + 1}
                 aria-current={item === view.pageIndex + 1 ? 'page' : undefined}
                 onclick={() => onpage?.(item - 1)}
@@ -435,10 +467,15 @@
         {/if}
         <button
           type="button"
+          class="pager-nav pager-next"
           aria-label="下一页"
           disabled={view.pageIndex + 1 >= totalPages}
           onclick={() => onpage?.(view.pageIndex + 1)}
-        >›</button>
+        >
+          <svg aria-hidden="true" viewBox="0 0 16 16">
+            <path d="m5.6 3.4 4.6 4.6-4.6 4.6" />
+          </svg>
+        </button>
       </div>
     </div>
   {/if}
@@ -743,6 +780,169 @@
     color: #191919;
     line-height: 32px;
     white-space: nowrap;
+  }
+  .page-size-select {
+    position: relative;
+    flex: none;
+    margin-right: 16px;
+  }
+  .page-size-select summary {
+    box-sizing: border-box;
+    display: flex;
+    min-width: 70px;
+    height: 32px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px 0 12px;
+    border: 1px solid #c2c2c2;
+    border-radius: 6px;
+    background: #fff;
+    color: #191919;
+    cursor: pointer;
+    list-style: none;
+    outline: 0;
+    user-select: none;
+  }
+  .page-size-select summary::-webkit-details-marker {
+    display: none;
+  }
+  .page-size-select summary:hover {
+    border-color: #999;
+  }
+  .page-size-select summary:active {
+    border-color: #1476ff;
+  }
+  .page-size-select summary:focus-visible {
+    outline: 2px solid rgb(20 118 255 / 0.28);
+    outline-offset: 1px;
+  }
+  .page-size-arrow {
+    position: relative;
+    width: 32px;
+    height: 30px;
+  }
+  .page-size-arrow::after {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    content: '';
+    transform: rotate(45deg);
+    transform-origin: 65% 65%;
+    transition: transform 120ms ease;
+  }
+  .page-size-select[open] .page-size-arrow::after {
+    transform: rotate(225deg);
+  }
+  .page-size-menu {
+    position: absolute;
+    top: calc(100% + 4px);
+    right: 0;
+    z-index: 20;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 70px;
+    padding: 8px 0;
+    overflow: hidden;
+    border-radius: 6px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 0.16);
+  }
+  .page-size-menu button {
+    display: block;
+    width: 100%;
+    height: 32px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0 16px;
+    color: #191919;
+    font: inherit;
+    font-size: 12px;
+    line-height: 32px;
+    text-align: left;
+    cursor: pointer;
+  }
+  .page-size-menu button:hover,
+  .page-size-menu button:active {
+    background: #f5f5f5;
+  }
+  .page-size-menu button.selected {
+    color: #1476ff;
+    font-weight: 700;
+  }
+  .page-button,
+  .pager-nav {
+    box-sizing: border-box;
+    height: 32px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #595959;
+    font: inherit;
+    cursor: pointer;
+  }
+  .page-button {
+    display: block;
+    min-width: 32px;
+    margin-right: 4px;
+    padding: 0 8px;
+    border-radius: 999px;
+    line-height: 30px;
+    text-align: center;
+  }
+  .page-button:hover,
+  .page-button:active {
+    background: #f5f5f5;
+    color: #191919;
+  }
+  .page-button:active {
+    background: #e6e6e6;
+  }
+  .page-button:focus-visible,
+  .pager-nav:focus-visible,
+  .page-size-menu button:focus-visible {
+    outline: 2px solid rgb(20 118 255 / 0.28);
+    outline-offset: 1px;
+  }
+  .pager-nav {
+    display: inline-flex;
+    width: 18px;
+    min-width: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: #191919;
+  }
+  .pager-nav svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.2;
+  }
+  .pager-prev {
+    margin-right: 8px;
+  }
+  .pager-next {
+    margin-left: 4px;
+  }
+  .pager-nav:hover:not(:disabled),
+  .pager-nav:active:not(:disabled) {
+    color: #1476ff;
+  }
+  .pager-nav:disabled {
+    color: rgb(16 16 16 / 0.3);
+    cursor: not-allowed;
+  }
+  .page-button.current {
+    background: #f5f5f5;
+    color: #191919;
+    font-weight: 700;
   }
   /* 兼容旧分页契约：视觉升级不要求调用方切换分页状态模型。 */
   .pager-actions :global(.page-size) {

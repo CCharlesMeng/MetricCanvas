@@ -1,5 +1,6 @@
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
+import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
 
 type JsonRecord = Record<string, unknown>;
@@ -19,6 +20,11 @@ interface CustomerActivityRiskFixture {
     dimensions: Record<string, string[]>;
   };
   rows: JsonRecord[];
+}
+
+interface CustomerActivityInspectionFixture {
+  nonTopRows: JsonRecord[];
+  top100Rows: JsonRecord[];
 }
 
 export interface DqeSimItemResult {
@@ -44,6 +50,21 @@ const customerActivityRiskFixtures = [
   customerActivityRiskFixtureJson,
   customerActivityRiskTop100FixtureJson
 ] as CustomerActivityRiskFixture[];
+const customerActivityInspectionFixture =
+  customerActivityInspectionFixtureJson as CustomerActivityInspectionFixture;
+const inspectionProgressMetrics = [
+  'NA客户数',
+  '无公司考察客户数',
+  '未考察占比',
+  '当年未公司考察客户数',
+  '当年未考察占比'
+];
+const inspectionDetailDimensions = [
+  '客户名称',
+  '代表处',
+  '客户责任人',
+  '最近一次公司考察时间'
+];
 const customerActivityKeys: CustomerActivityKey[] = [
   'inspection',
   'visit',
@@ -75,7 +96,11 @@ export function executeDqeItem(item: unknown): DqeSimItemResult {
       equalStrings(item.output_dims, candidate.query.output_dims)
   );
   if (!fixture) {
-    return executeCustomerActivityRisk(item) ?? executeSalesAnalytics(item);
+    return (
+      executeInspectionRisk(item) ??
+      executeCustomerActivityRisk(item) ??
+      executeSalesAnalytics(item)
+    );
   }
   if (!isRecord(item.filter)) return unsupported('缺少 filter 对象');
   if (!matchesTime(item.filter.time, fixture.query.time)) {
@@ -119,6 +144,158 @@ export function executeDqeItem(item: unknown): DqeSimItemResult {
     levels.map((level) => ({ ...rows.get(level)! })),
     metadata(fixture)
   );
+}
+
+function executeInspectionRisk(item: JsonRecord): DqeSimItemResult | undefined {
+  if (
+    equalStrings(item.output_dims, ['代表处']) &&
+    equalStrings(item.output_metrics, inspectionProgressMetrics)
+  ) {
+    return executeInspectionProgress(item);
+  }
+  if (
+    equalStrings(item.output_dims, inspectionDetailDimensions) &&
+    equalStrings(item.output_metrics, [])
+  ) {
+    return executeInspectionDetail(item);
+  }
+  return undefined;
+}
+
+function executeInspectionProgress(item: JsonRecord): DqeSimItemResult {
+  if (!isRecord(item.filter) || !equalJson(item.filter.metrics, [])) {
+    return unsupported('公司考察进展要求 filter.metrics=[]');
+  }
+  if (
+    !matchesTime(item.filter.time, {
+      period: 'month',
+      is_aggregate: true,
+      start: '2026-01-01',
+      end: '2026-06-01'
+    })
+  ) {
+    return unsupported('公司考察进展仅支持 2026-01-01 至 2026-06-01');
+  }
+  if (!Array.isArray(item.filter.dims) || !validOrder(item.order)) {
+    return unsupported('公司考察进展筛选或排序格式无效');
+  }
+  const dimensions = item.filter.dims.filter(isRecord);
+  if (dimensions.length !== 3 || dimensions.length !== item.filter.dims.length) {
+    return unsupported('公司考察进展要求三个维度筛选');
+  }
+  if (!equalStrings(dimensionValues(dimensions, '地区部'), ['中国地区部'])) {
+    return unsupported('公司考察进展仅支持中国地区部');
+  }
+  if (!equalStrings(dimensionValues(dimensions, '活动类型'), ['公司考察'])) {
+    return unsupported('公司考察进展仅支持活动类型=公司考察');
+  }
+  const top100 = dimensionValues(dimensions, '是否TOP100项目客户');
+  if (!top100 || top100.length !== 1 || !['是', '否'].includes(top100[0]!)) {
+    return unsupported('是否TOP100项目客户必须为是或否');
+  }
+  const rows = top100[0] === '是'
+    ? customerActivityInspectionFixture.top100Rows
+    : customerActivityInspectionFixture.nonTopRows;
+  return successResult(item, rows.map((row) => ({ ...row })), inspectionMetadata());
+}
+
+function executeInspectionDetail(item: JsonRecord): DqeSimItemResult {
+  if (!isRecord(item.filter) || !equalJson(item.filter.metrics, [])) {
+    return unsupported('公司考察明细要求 filter.metrics=[]');
+  }
+  if (
+    !matchesTime(item.filter.time, {
+      period: 'month',
+      is_aggregate: true,
+      start: '2026-07',
+      end: '2026-07'
+    })
+  ) {
+    return unsupported('公司考察明细仅支持账期 2026-07');
+  }
+  if (!Array.isArray(item.filter.dims) || !validOrder(item.order)) {
+    return unsupported('公司考察明细筛选或排序格式无效');
+  }
+  const dimensions = item.filter.dims.filter(isRecord);
+  if (dimensions.length !== 3 || dimensions.length !== item.filter.dims.length) {
+    return unsupported('公司考察明细要求代表处、TOP100标记和截止日期');
+  }
+  const office = dimensionValues(dimensions, '代表处')?.[0];
+  const top100 = dimensionValues(dimensions, '是否TOP100项目客户')?.[0];
+  const cutoff = dimensionValues(dimensions, '最近一次公司考察时间')?.[0];
+  const cutoffFilter = dimensions.find(
+    (entry) => entry.dim_name === '最近一次公司考察时间'
+  );
+  if (!office || !['是', '否'].includes(top100 ?? '')) {
+    return unsupported('公司考察明细的代表处和TOP100标记无效');
+  }
+  if (
+    !cutoff ||
+    !['2024-01-01', '2026-01-01'].includes(cutoff) ||
+    cutoffFilter?.operator !== '<'
+  ) {
+    return unsupported('公司考察明细截止日期必须使用 < 运算符');
+  }
+  const progressRows = top100 === '是'
+    ? customerActivityInspectionFixture.top100Rows
+    : customerActivityInspectionFixture.nonTopRows;
+  const progress = progressRows.find((row) => row.代表处 === office);
+  const countField = cutoff === '2024-01-01'
+    ? '无公司考察客户数'
+    : '当年未公司考察客户数';
+  const count = typeof progress?.[countField] === 'number'
+    ? Number(progress[countField])
+    : 0;
+  const rows = Array.from({ length: count }, (_, index) => ({
+    客户名称: `${office}客户${String(index + 1).padStart(3, '0')}`,
+    代表处: office,
+    客户责任人: `客户责任人${(index % 8) + 1} ${String(10900001 + index)}`,
+    最近一次公司考察时间:
+      index % 4 === 3
+        ? null
+        : cutoff === '2024-01-01'
+          ? `2023-${String((index % 12) + 1).padStart(2, '0')}-01`
+          : `2025-${String((index % 12) + 1).padStart(2, '0')}-01`
+  }));
+  return successResult(item, rows, inspectionDetailMetadata());
+}
+
+function inspectionMetadata(): DqeSimItemResult['dqe'] {
+  return {
+    columns: [
+      {
+        id: 'dqe-sim.代表处',
+        caption: '代表处',
+        data_type: 'STRING',
+        type: 'dimension'
+      },
+      ...inspectionProgressMetrics.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: caption.includes('占比') ? 'STRING' as const : 'NUMBER' as const,
+        type: 'metric' as const
+      }))
+    ],
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  };
+}
+
+function inspectionDetailMetadata(): DqeSimItemResult['dqe'] {
+  return {
+    columns: inspectionDetailDimensions.map((caption) => ({
+      id: `dqe-sim.${caption}`,
+      caption,
+      data_type: 'STRING' as const,
+      type: 'dimension' as const
+    })),
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  };
 }
 
 function executeCustomerActivityRisk(

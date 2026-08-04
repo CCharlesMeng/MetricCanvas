@@ -22,6 +22,7 @@ export interface Subscribable<T> {
 
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQueryPage(dataSourceId: string, pageIndex: number): void;
+  setQueryPageSize(dataSourceId: string, pageSize: number): void;
 }
 
 interface DataSourceBinding {
@@ -68,6 +69,9 @@ export function orchestrate(
     },
     setQueryPage(dataSourceId, pageIndex) {
       session?.setQueryPage(dataSourceId, pageIndex);
+    },
+    setQueryPageSize(dataSourceId, pageSize) {
+      session?.setQueryPageSize(dataSourceId, pageSize);
     }
   };
 }
@@ -75,6 +79,7 @@ export function orchestrate(
 interface Session {
   current(): PageDataSnapshots;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
+  setQueryPageSize(dataSourceId: string, pageSize: number): void;
   dispose(): void;
 }
 
@@ -324,6 +329,16 @@ function startSession(
       );
       if (!binding || pageIndexes.get(dataSourceId) === pageIndex) return;
       pageIndexes.set(dataSourceId, pageIndex);
+      refetch([binding], true);
+    },
+    setQueryPageSize(dataSourceId, pageSize) {
+      if (!Number.isInteger(pageSize) || pageSize <= 0) return;
+      const binding = queryBindings.find(
+        (candidate) => candidate.sourceId === dataSourceId && candidate.pagination
+      );
+      if (!binding?.pagination || binding.pagination.limit === pageSize) return;
+      binding.pagination.limit = pageSize;
+      pageIndexes.set(dataSourceId, 0);
       refetch([binding], true);
     },
     dispose() {

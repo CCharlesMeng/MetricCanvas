@@ -1,4 +1,4 @@
-import type { Component, Page } from '@metriccanvas/page';
+import type { Component, PageDocument } from '@metriccanvas/page';
 
 export interface ComponentLocator {
   sectionId: string;
@@ -24,18 +24,18 @@ export interface ComponentEdit {
 }
 
 export interface PageEditorHistory {
-  past: Page[];
-  current: Page;
-  future: Page[];
+  past: PageDocument[];
+  current: PageDocument;
+  future: PageDocument[];
 }
 
-export function createPageEditorHistory(document: Page): PageEditorHistory {
+export function createPageEditorHistory(document: PageDocument): PageEditorHistory {
   return { past: [], current: clonePage(document), future: [] };
 }
 
 export function commitPageEdit(
   history: PageEditorHistory,
-  document: Page
+  document: PageDocument
 ): PageEditorHistory {
   if (JSON.stringify(history.current) === JSON.stringify(document)) return history;
   return {
@@ -65,7 +65,7 @@ export function redoPageEdit(history: PageEditorHistory): PageEditorHistory {
   };
 }
 
-export function listEditableComponents(document: Page): EditableComponent[] {
+export function listEditableComponents(document: PageDocument): EditableComponent[] {
   return document.sections.flatMap((section) =>
     section.components.map((component, index) => ({
       locator: { sectionId: section.id, componentId: component.id },
@@ -82,10 +82,10 @@ export function listEditableComponents(document: Page): EditableComponent[] {
 }
 
 export function editComponent(
-  document: Page,
+  document: PageDocument,
   locator: ComponentLocator,
   edit: ComponentEdit
-): Page {
+): PageDocument {
   const next = clonePage(document);
   const component = locateComponent(next, locator);
   if (!component) return document;
@@ -99,10 +99,10 @@ export function editComponent(
 }
 
 export function moveComponent(
-  document: Page,
+  document: PageDocument,
   locator: ComponentLocator,
   direction: -1 | 1
-): Page {
+): PageDocument {
   const next = clonePage(document);
   const section = next.sections.find((candidate) => candidate.id === locator.sectionId);
   if (!section) return document;
@@ -117,7 +117,10 @@ export function moveComponent(
   return next;
 }
 
-function locateComponent(document: Page, locator: ComponentLocator): Component | null {
+function locateComponent(
+  document: PageDocument,
+  locator: ComponentLocator
+): Component | null {
   const section = document.sections.find((candidate) => candidate.id === locator.sectionId);
   return section?.components.find((component) => component.id === locator.componentId) ?? null;
 }
@@ -179,6 +182,6 @@ function componentTypeLabel(type: Component['type']): string {
 }
 
 /** 页面文档是纯 JSON 领域对象；JSON 复制同时兼容 Svelte 响应式代理。 */
-function clonePage(document: Page): Page {
-  return JSON.parse(JSON.stringify(document)) as Page;
+function clonePage(document: PageDocument): PageDocument {
+  return JSON.parse(JSON.stringify(document)) as PageDocument;
 }

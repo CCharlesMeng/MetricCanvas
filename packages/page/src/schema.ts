@@ -6,6 +6,7 @@ const fieldPattern = '^[A-Za-z_][A-Za-z0-9_-]*$';
 const componentId = { type: 'string', pattern: idPattern } as const;
 const componentLayout = { $ref: '#/definitions/componentLayout' } as const;
 const mainData = { $ref: '#/definitions/mainData' } as const;
+const tableData = { $ref: '#/definitions/tableData' } as const;
 const metricData = { $ref: '#/definitions/metricData' } as const;
 const actions = { $ref: '#/definitions/actions' } as const;
 
@@ -99,6 +100,37 @@ export const pageSchema = {
       propertyNames: { pattern: fieldPattern },
       additionalProperties: { $ref: '#/definitions/queryField' }
     },
+    groupedQueryField: {
+      type: 'object',
+      required: ['queryField', 'type'],
+      additionalProperties: false,
+      properties: {
+        queryField: { type: 'string', minLength: 1 },
+        type: {
+          type: 'string',
+          enum: ['string', 'number', 'boolean', 'date', 'datetime']
+        },
+        label: { type: 'string', minLength: 1 },
+        unit: { type: 'string', minLength: 1 },
+        nullable: { type: 'boolean' },
+        defaultFormat: { type: 'string', enum: valueFormatPresets }
+      }
+    },
+    groupedQueryFieldGroup: {
+      type: 'object',
+      minProperties: 1,
+      propertyNames: { pattern: fieldPattern },
+      additionalProperties: { $ref: '#/definitions/groupedQueryField' }
+    },
+    groupedQueryFields: {
+      type: 'object',
+      additionalProperties: false,
+      properties: {
+        dimensions: { $ref: '#/definitions/groupedQueryFieldGroup' },
+        measures: { $ref: '#/definitions/groupedQueryFieldGroup' }
+      },
+      anyOf: [{ required: ['dimensions'] }, { required: ['measures'] }]
+    },
     inlineDataSource: {
       type: 'object',
       required: ['fields', 'source'],
@@ -113,7 +145,12 @@ export const pageSchema = {
       required: ['fields', 'source'],
       additionalProperties: false,
       properties: {
-        fields: { $ref: '#/definitions/queryFields' },
+        fields: {
+          oneOf: [
+            { $ref: '#/definitions/queryFields' },
+            { $ref: '#/definitions/groupedQueryFields' }
+          ]
+        },
         source: { $ref: '#/definitions/querySource' }
       }
     },
@@ -301,6 +338,13 @@ export const pageSchema = {
       properties: {
         main: { type: 'string', pattern: idPattern }
       }
+    },
+    tableData: {
+      type: 'object',
+      required: ['main'],
+      minProperties: 1,
+      propertyNames: { pattern: idPattern },
+      additionalProperties: { type: 'string', pattern: idPattern }
     },
     metricData: {
       type: 'object',
@@ -676,7 +720,7 @@ export const pageSchema = {
         id: componentId,
         type: { const: 'table' },
         layout: componentLayout,
-        data: mainData,
+        data: tableData,
         props: {
           type: 'object',
           required: ['columns'],
@@ -684,6 +728,7 @@ export const pageSchema = {
           properties: {
             title: { type: 'string' },
             subtitle: { type: 'string' },
+            rowKey: { type: 'string', pattern: fieldPattern },
             fit: { type: 'string', enum: ['content', 'container'] },
             columns: {
               type: 'array',

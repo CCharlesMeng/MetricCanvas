@@ -3,8 +3,8 @@
     dataSourceMode,
     derivePageCapabilities,
     isChartComponent,
+    parsePage,
     resolveDataSourceFields,
-    validate,
     type ChartComponent,
     type Component,
     type ComponentCapabilities,
@@ -105,6 +105,7 @@
   let filterValues = $state<FilterValues>(new Map());
   let filterOptions = $state<Record<string, string[]>>({});
   let tableViews = $state<Record<string, TableViewState>>({});
+  let tablePageSizes = $state<Record<string, number>>({});
   let appliedTableHeaderFilters = $state<
     Record<string, Record<string, TableHeaderFilterValue>>
   >({});
@@ -144,6 +145,7 @@
     filterValues = new Map();
     filterOptions = {};
     tableViews = {};
+    tablePageSizes = {};
     appliedTableHeaderFilters = {};
     headerFilterOptions = {};
 
@@ -151,14 +153,14 @@
     await Promise.resolve();
     if (session !== mySession) return;
 
-    const contractErrors = validate(raw);
-    if (contractErrors.length > 0) {
-      pageState = { phase: 'invalid', errors: contractErrors };
-      emit?.({ type: 'invalid', errors: contractErrors });
+    const parsed = parsePage(raw);
+    if (!parsed.ok) {
+      pageState = { phase: 'invalid', errors: parsed.errors };
+      emit?.({ type: 'invalid', errors: parsed.errors });
       return;
     }
 
-    const loaded = raw as Page;
+    const loaded = parsed.page;
     const mode = dataSourceMode(loaded.dataSources);
     const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {
@@ -310,6 +312,15 @@
     }
   }
 
+  function handleTablePageSize(component: TableComponent, pageSize: number) {
+    if (!Number.isInteger(pageSize) || pageSize <= 0) return;
+    tablePageSizes = { ...tablePageSizes, [component.id]: pageSize };
+    pushTableView(component, { ...tableViewOf(component), pageIndex: 0 });
+    if (component.props.pagination?.mode === 'query') {
+      stream?.setQueryPageSize(component.data.main, pageSize);
+    }
+  }
+
   function handleTableSort(component: TableComponent, sort: TableViewState['sort']) {
     pushTableView(component, { ...tableViewOf(component), sort, pageIndex: 0 });
   }
@@ -427,7 +438,7 @@
       ) {
         continue;
       }
-      const pageSize = queryPageSize(loaded, component);
+      const pageSize = effectiveTablePageSize(loaded, component);
       if (pageSize === undefined) continue;
       const lastPageIndex = Math.max(0, Math.ceil(snapshot.totalCount / pageSize) - 1);
       const view = tableViewOf(component);
@@ -645,7 +656,7 @@
     if (component.props.pagination?.mode !== 'local') {
       return { status: 'ready', rows };
     }
-    const pageSize = component.props.pagination.pageSize;
+    const pageSize = tablePageSizes[component.id] ?? component.props.pagination.pageSize;
     const offset = view.pageIndex * pageSize;
     return {
       status: 'ready',
@@ -683,11 +694,11 @@
     if (pagination.mode === 'local') {
       const totalCount = snapshot.status === 'ready' ? snapshot.rows.length : 0;
       return {
-        pageSize: pagination.pageSize,
+        pageSize: tablePageSizes[component.id] ?? pagination.pageSize,
         totalCount
       };
     }
-    const pageSize = queryPageSize(loaded, component);
+    const pageSize = effectiveTablePageSize(loaded, component);
     if (pageSize === undefined || snapshot.totalCount === undefined) return undefined;
     return { pageSize, totalCount: snapshot.totalCount };
   }
@@ -700,6 +711,13 @@
     return typeof order.limit === 'number' && Number.isInteger(order.limit) && order.limit > 0
       ? order.limit
       : undefined;
+  }
+
+  function effectiveTablePageSize(
+    loaded: Page,
+    component: TableComponent
+  ): number | undefined {
+    return tablePageSizes[component.id] ?? queryPageSize(loaded, component);
   }
 
   function mainData(
@@ -863,7 +881,7 @@
           <RankingCard data={mainData(loaded, component, slots)} props={component.props} />
         {:else if component.type === 'table'}
           <Table
-            data={mainData(loaded, component, slots)}
+            data={componentData(loaded, component, slots) as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }}
             props={component.props}
             interactive={true}
             view={tableViewOf(component)}
@@ -871,6 +889,7 @@
             filterOptions={tableFilterOptions(component)}
             pagination={tablePaginationState(loaded, component, slots)}
             onpage={(pageIndex) => handleTablePage(component, pageIndex)}
+            onpagesize={(pageSize) => handleTablePageSize(component, pageSize)}
             onsort={(sort) => handleTableSort(component, sort)}
             onheaderfilter={(field, value) =>
               handleTableHeaderFilter(component, field, value)}

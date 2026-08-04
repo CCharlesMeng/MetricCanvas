@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Page } from '@metriccanvas/page';
+import type { Page, PageDocument } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '../src/memory';
 
 const inlinePage: Page = {
@@ -57,6 +57,34 @@ const dqePage: Page = {
   }
 };
 
+const groupedDqePage: PageDocument = {
+  ...dqePage,
+  id: 'grouped-dqe-page',
+  dataSources: {
+    summary: {
+      fields: {
+        measures: {
+          value: { queryField: '值', type: 'number' }
+        }
+      },
+      source: {
+        type: 'query',
+        query: {
+          language: 'dqe',
+          body: {
+            dsl_list: [{
+              output_dims: [],
+              output_metrics: ['值'],
+              filter: { dims: [], metrics: [] },
+              order: {}
+            }]
+          }
+        }
+      }
+    }
+  }
+};
+
 function lifecycle() {
   let sequence = 0;
   return createMemoryPageLifecycle({
@@ -70,7 +98,36 @@ function lifecycle() {
   });
 }
 
-describe('v3 页面生命周期', () => {
+describe('v4 页面生命周期', () => {
+  it('保存按角色分组的自包含文档，不回写解析后的展开形式', async () => {
+    const saved = await lifecycle().saveRevision(
+      {
+        pageId: groupedDqePage.id,
+        baseRevisionId: null,
+        document: groupedDqePage,
+        idempotencyKey: 'grouped-r1'
+      },
+      { actorId: 'author', clientId: 'test' }
+    );
+
+    expect(saved).toMatchObject({
+      ok: true,
+      revision: {
+        document: {
+          dataSources: {
+            summary: {
+              fields: {
+                measures: {
+                  value: { queryField: '值', type: 'number' }
+                }
+              }
+            }
+          }
+        }
+      }
+    });
+  });
+
   it('纯 inline 修订不记录数据上下文版本，DQE 修订记录当前版本', async () => {
     const service = lifecycle();
     const context = { actorId: 'author', clientId: 'test' };

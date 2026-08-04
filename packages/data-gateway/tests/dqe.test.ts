@@ -187,4 +187,94 @@ describe('DQE 数据网关', () => {
     ).toEqual(['卓越NA', '战略NA', '核心NA']);
   });
 
+  it('按结果字段契约保留百分比字符串和可空日期', async () => {
+    const item: JsonObject = {
+      output_metrics: ['未考察占比'],
+      output_dims: ['最近一次公司考察时间'],
+      filter: { dims: [], metrics: [] },
+      order: {}
+    };
+    const gateway = createDqeGateway({
+      fetchImpl: (async () =>
+        new Response(
+          JSON.stringify({
+            retCode: 'CBC.0000',
+            results: [
+              {
+                code: 'SUCCESS',
+                data: [{ 未考察占比: '41.67%', 最近一次公司考察时间: null }],
+                total_count: 1
+              }
+            ]
+          })
+        )) as typeof fetch
+    });
+
+    await expect(
+      gateway.fetchData(
+        dqeQuery(item, {
+          'missing-rate': {
+            queryField: '未考察占比',
+            type: 'string',
+            role: 'measure'
+          },
+          'last-inspection': {
+            queryField: '最近一次公司考察时间',
+            type: 'date',
+            role: 'dimension',
+            nullable: true
+          }
+        })
+      )
+    ).resolves.toEqual({
+      rows: [{ 'missing-rate': '41.67%', 'last-inspection': null }],
+      totalCount: 1
+    });
+  });
+
+  it('下钻覆盖截止日期时保留查询定义中的小于运算符', () => {
+    const item: JsonObject = {
+      output_metrics: [],
+      output_dims: ['最近一次公司考察时间'],
+      filter: {
+        dims: [
+          {
+            dim_name: '最近一次公司考察时间',
+            dim_value_list: ['2024-01-01'],
+            operator: '<'
+          }
+        ],
+        metrics: []
+      },
+      order: {}
+    };
+    const query = dqeQuery(item, {
+      'last-inspection': {
+        queryField: '最近一次公司考察时间',
+        type: 'date',
+        role: 'dimension',
+        nullable: true
+      }
+    });
+    query.filterValues = [
+      {
+        target: 'dimension',
+        queryField: '最近一次公司考察时间',
+        values: ['2026-01-01']
+      }
+    ];
+
+    expect(effectiveDqeItem(query)).toMatchObject({
+      filter: {
+        dims: [
+          {
+            dim_name: '最近一次公司考察时间',
+            dim_value_list: ['2026-01-01'],
+            operator: '<'
+          }
+        ]
+      }
+    });
+  });
+
 });
