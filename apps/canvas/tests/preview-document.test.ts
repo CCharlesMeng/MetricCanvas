@@ -66,6 +66,41 @@ describe('Page JSON 即时预览文档', () => {
           .some((column) => column.selection !== undefined)
       ).toBe(true);
     }
+
+    const activityCards = components.filter(
+      (component) => component.type === 'metricCard' && component.props.variant === 'activityProgress'
+    );
+    expect(
+      activityCards.map((component) => ({
+        ringPercent: (component.props.progress as { ringPercent?: number } | undefined)?.ringPercent,
+        changeUnit: component.props.rows[0]?.changes?.[0] &&
+          (component.props.rows[0].changes[0] as { unit?: string }).unit
+      }))
+    ).toEqual([
+      { ringPercent: 75, changeUnit: '次' },
+      { ringPercent: 75, changeUnit: '次' },
+      { ringPercent: 75, changeUnit: '次' }
+    ]);
+
+    const tables = components.filter((component) => component.type === 'table');
+    expect(tables.every((component) =>
+      (component.props as typeof component.props & { fit?: string }).fit === 'container'
+    )).toBe(true);
+    const detailColumns = tables.flatMap((component) =>
+      component.props.columns.flatMap((column) =>
+        column.kind === 'group' ? column.children : [column]
+      )
+    );
+    expect(
+      detailColumns
+        .filter((column) => column.kind !== 'group' && column.title === '序号')
+        .every((column) => column.align === 'left')
+    ).toBe(true);
+    expect(
+      detailColumns
+        .filter((column) => column.kind !== 'group' && column.title?.startsWith('最近一次'))
+        .every((column) => column.align === 'right')
+    ).toBe(true);
   });
 
   it('默认预览直接使用 pages 中的正式页面文档，并通过 v4 校验', () => {

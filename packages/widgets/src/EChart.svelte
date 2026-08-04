@@ -9,6 +9,8 @@
    */
   interface Props {
     option: EChartsOption;
+    /** replace 用于完整图表快照；merge 用于需要保留前后状态的数值过渡。 */
+    updateMode?: 'replace' | 'merge';
     /**
      * 数据项点击,上抛数据行下标与数据项名(组件据此映射回 Row)。
      * 地图点击可能来自 geo 组件(无 dataIndex),此时靠 name 定位区域
@@ -16,7 +18,7 @@
     onitemclick?: (dataIndex: number, name?: string) => void;
   }
 
-  let { option, onitemclick }: Props = $props();
+  let { option, updateMode = 'replace', onitemclick }: Props = $props();
 
   let el: HTMLDivElement;
   let chart = $state<echarts.ECharts>();
@@ -38,7 +40,7 @@
   });
 
   $effect(() => {
-    chart?.setOption(option, { notMerge: true });
+    chart?.setOption(option, { notMerge: updateMode === 'replace' });
   });
 </script>
 

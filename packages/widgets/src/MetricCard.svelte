@@ -65,7 +65,7 @@
                 {@const tone = toneClass(change.tone, raw)}
                 <span class:positive={tone === 'positive'} class:negative={tone === 'negative'} class="change">
                   <span class="change-label">{change.label}</span>
-                  <span>{changeText(change.field, change.tone)}</span>
+                  <span>{changeText(change.field, change.tone)}{#if change.unit}<span class="change-unit">{change.unit}</span>{/if}</span>
                 </span>
               {/each}
             </div>
@@ -74,7 +74,11 @@
       {/each}
     </div>
     {#if props.progress}
-      <ProgressRing value={progressValue} label={props.progress.label ?? '完成率'} />
+      <ProgressRing
+        value={progressValue}
+        visualValue={props.progress.ringPercent}
+        label={props.progress.label ?? '完成率'}
+      />
     {/if}
   </div>
 </div>
@@ -116,18 +120,33 @@
     min-width: 0;
   }
   .activity-progress {
+    position: relative;
     justify-content: flex-start;
+    gap: 0;
+    height: 164px;
+    padding: 17px 0 38px 17px;
+    background: #fff;
+    border-radius: 12px;
   }
   .summary {
+    height: 200px;
+    justify-content: flex-start;
+    gap: 0;
+    padding: 11px 17px 16px;
     text-align: left;
   }
   .summary .metric-content {
     width: 100%;
+    height: 128px;
+    padding: 15px 0 13px 12px;
+    background: #fff;
+    border-radius: 12px;
   }
   .summary .metric-values {
     width: 100%;
     flex-direction: row;
-    gap: 12px;
+    gap: 0;
+    padding-right: 12px;
   }
   .summary .metric-row {
     min-width: 0;
@@ -135,33 +154,110 @@
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
-    gap: 8px;
-    padding: 14px 8px 9px;
-    background: #fff;
+    flex-wrap: nowrap;
+    gap: 0;
+    height: 100px;
+    margin-right: 12px;
+    padding: 14px 0 9px 13px;
+    background: #f1f4ff;
     border-radius: 8px;
   }
+  .summary .metric-row:last-child {
+    margin-right: 0;
+  }
   .summary h3 {
-    margin-bottom: 0.75rem;
+    margin: 0 0 7px;
     color: #08359e;
-    font-size: 1.125rem;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 38px;
     text-align: center;
   }
   .summary .row-label {
     color: #0f1a4d;
-    font-size: 1.125rem;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 25px;
+    margin-bottom: 9px;
   }
   .summary .value-line {
     align-items: baseline;
     flex-direction: row;
-    gap: 4px;
+    gap: 0;
+  }
+  .summary .row-value {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 43px;
   }
   .summary .unit {
-    font-size: 13px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 43px;
+  }
+  .activity-progress h3 {
+    margin: 0 0 1px;
+    color: #0f1a4d;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 25px;
+  }
+  .activity-progress .metric-content {
+    width: min(291px, 100%);
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0;
+    margin-top: 26px;
+  }
+  .activity-progress .metric-values {
+    flex: 0 0 125px;
+    gap: 0;
   }
   .activity-progress .metric-row {
     align-items: flex-start;
     flex-direction: column;
+    flex-wrap: nowrap;
+    gap: 0;
+  }
+  .activity-progress .row-label {
+    position: absolute;
+    top: 17px;
+    left: 17px;
+    color: #0f1a4d;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 25px;
+    white-space: nowrap;
+  }
+  .activity-progress .value-line {
+    margin: 17px 0 5px;
+    gap: 0;
+  }
+  .activity-progress .row-value {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 43px;
+  }
+  .activity-progress .unit {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 43px;
+  }
+  .activity-progress .changes {
+    gap: 0;
+    line-height: 22px;
+  }
+  .activity-progress .change {
+    font-size: 18px;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+  .activity-progress .change-label {
+    margin-right: 4px;
+  }
+  .change-unit {
+    margin-left: 2px;
+    color: inherit;
   }
   .value-line {
     display: inline-flex;

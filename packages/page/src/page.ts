@@ -63,6 +63,7 @@ export type ReportHeaderComponent = ComponentBase<'reportHeader', ReportHeaderPr
 export interface MetricCardChange {
   label: string;
   field: FieldBinding;
+  unit?: string;
   tone?: 'auto' | 'neutral' | 'positive' | 'danger';
 }
 
@@ -76,6 +77,8 @@ export interface MetricCardRow {
 export interface MetricCardProgress {
   valueField: FieldBinding;
   label?: string;
+  /** 仅覆盖圆环弧长，中心文本仍展示 valueField 的实际完成率。 */
+  ringPercent?: number;
 }
 
 export interface MetricCardProps {
@@ -176,6 +179,8 @@ export interface TableCellSelection {
 export interface TableProps {
   title?: string;
   subtitle?: string;
+  /** container 按配置宽度比例压缩列，避免表格产生横向滚动。 */
+  fit?: 'content' | 'container';
   columns: TableColumnNode[];
   pagination?: {
     mode: 'none' | 'paged';

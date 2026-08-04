@@ -446,6 +446,7 @@ export const pageSchema = {
                       properties: {
                         label: { type: 'string', minLength: 1 },
                         field: { $ref: '#/definitions/fieldBinding' },
+                        unit: { type: 'string' },
                         tone: {
                           type: 'string',
                           enum: ['auto', 'neutral', 'positive', 'danger']
@@ -462,7 +463,8 @@ export const pageSchema = {
               additionalProperties: false,
               properties: {
                 valueField: { $ref: '#/definitions/fieldBinding' },
-                label: { type: 'string' }
+                label: { type: 'string' },
+                ringPercent: { type: 'number', minimum: 0, maximum: 100 }
               }
             },
             actions
@@ -662,6 +664,7 @@ export const pageSchema = {
           properties: {
             title: { type: 'string' },
             subtitle: { type: 'string' },
+            fit: { type: 'string', enum: ['content', 'container'] },
             columns: {
               type: 'array',
               minItems: 1,

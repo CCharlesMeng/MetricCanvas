@@ -1,35 +1,23 @@
 <script lang="ts">
+  import EChart from './EChart.svelte';
+  import { normalizeProgressValue, progressRingOption } from './progress-ring-options';
+
   interface Props {
     value: number;
+    visualValue?: number;
     label?: string;
   }
 
-  let { value, label = '完成率' }: Props = $props();
-  const normalized = $derived(Math.min(100, Math.max(0, Number.isFinite(value) ? value : 0)));
-  const radius = 29;
-  const circumference = 2 * Math.PI * radius;
-  const arcLength = circumference * 0.75;
+  let { value, visualValue, label = '完成率' }: Props = $props();
+  const normalized = $derived(normalizeProgressValue(value));
+  const visualProgress = $derived(normalizeProgressValue(visualValue ?? normalized));
+  const option = $derived(progressRingOption(visualProgress));
 </script>
 
 <div class="progress-ring" aria-label={`${label} ${normalized}%`}>
-  <svg viewBox="0 0 72 72" role="img">
-    <circle
-      class="track"
-      cx="36"
-      cy="36"
-      r={radius}
-      stroke-dasharray={`${arcLength} ${circumference - arcLength}`}
-      transform="rotate(135 36 36)"
-    ></circle>
-    <circle
-      class="value"
-      cx="36"
-      cy="36"
-      r={radius}
-      stroke-dasharray={`${arcLength * (normalized / 100)} ${circumference}`}
-      transform="rotate(135 36 36)"
-    ></circle>
-  </svg>
+  <div class="chart" aria-hidden="true">
+    <EChart {option} updateMode="merge" />
+  </div>
   <div class="number"><strong>{normalized}</strong><span>%</span></div>
   <span class="label">{label}</span>
 </div>
@@ -38,39 +26,35 @@
   .progress-ring {
     position: relative;
     display: grid;
-    width: 92px;
-    height: 76px;
-    flex: 0 0 92px;
+    width: 84px;
+    height: 83px;
+    flex: 0 0 84px;
     place-items: center;
   }
-  svg {
+  .chart {
     position: absolute;
-    inset: 0 10px 4px;
+    top: 0;
+    left: 6px;
+    display: flex;
     width: 72px;
     height: 72px;
-  }
-  circle {
-    fill: none;
-    stroke-width: 8;
-  }
-  .track {
-    stroke: #e5eaff;
-  }
-  .value {
-    stroke: #5b72ea;
-    stroke-linecap: round;
-    transition: stroke-dasharray 220ms ease;
+    pointer-events: none;
   }
   .number {
+    position: absolute;
+    top: 28px;
+    left: 0;
     z-index: 1;
     display: flex;
+    width: 84px;
     align-items: baseline;
-    transform: translateY(-4px);
+    justify-content: center;
     color: #0f1a4d;
   }
   .number strong {
-    font-size: 18px;
-    font-weight: 650;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 24px;
   }
   .number span {
     margin-left: 2px;
@@ -78,9 +62,13 @@
   }
   .label {
     position: absolute;
-    bottom: 3px;
+    bottom: 0;
+    left: 0;
     z-index: 1;
+    width: 84px;
     color: #777;
-    font-size: 12px;
+    font-size: 16px;
+    line-height: 20px;
+    text-align: center;
   }
 </style>

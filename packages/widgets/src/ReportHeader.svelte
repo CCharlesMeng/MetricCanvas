@@ -11,12 +11,19 @@
 
 <header class:briefing={props.decoration === 'shortBar'} class="report-header">
   <div class="heading">
+    {#if props.decoration === 'shortBar' && props.generatedBy}
+      <p class="generated-by">{props.generatedBy}</p>
+    {/if}
     <div class="title-line">
-      <span class="report-icon" aria-hidden="true"></span>
+      {#if props.decoration !== 'shortBar'}
+        <span class="report-icon" aria-hidden="true"></span>
+      {/if}
       <h1>{props.title}</h1>
     </div>
     {#if props.badge}<span class="badge">{props.badge}</span>{/if}
-    {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
+    {#if props.decoration !== 'shortBar' && props.generatedBy}
+      <p class="generated-by">{props.generatedBy}</p>
+    {/if}
     {#if props.decoration === 'shortBar' && props.asOf}
       <div class="as-of inline">
         <span>{props.asOf.label}：</span>
@@ -52,7 +59,9 @@
     padding: 10px 4px 24px;
   }
   .report-header.briefing {
-    align-items: flex-start;
+    display: block;
+    min-height: 248px;
+    padding: 0;
   }
   .title-line {
     display: flex;
@@ -91,13 +100,34 @@
     font-weight: 500;
   }
   .briefing .generated-by {
-    margin-left: 38px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 60px;
+    color: #445593;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+  .briefing .generated-by::before {
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
+    background: url('./assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
+    content: '';
+  }
+  .briefing .title-line {
+    margin-left: 34px;
+  }
+  .briefing h1 {
+    color: #000;
+    font-size: 60px;
+    font-weight: 600;
+    line-height: 72px;
+    letter-spacing: 0;
   }
   .decoration {
-    width: min(475px, 44%);
-    height: 9px;
-    margin: -12px 0 10px 36px;
-    background: rgb(102 196 255 / 0.28);
+    display: none;
   }
   .badge,
   .tags span {
@@ -133,6 +163,9 @@
     gap: 0;
     margin: 4px 0 0 38px;
   }
+  .briefing .as-of.inline {
+    margin: 28px 0 0 36px;
+  }
   .as-of span {
     color: #8a91a5;
     font-size: 11px;
@@ -142,11 +175,26 @@
     font-size: 13px;
     font-weight: 600;
   }
+  .briefing .as-of span,
+  .briefing .as-of strong {
+    color: #000;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 24px;
+  }
   @media (max-width: 760px) {
     .report-header {
       align-items: flex-start;
       flex-direction: column;
       gap: 18px;
+    }
+    .report-header.briefing {
+      display: block;
+      min-height: auto;
+    }
+    .briefing h1 {
+      font-size: 42px;
+      line-height: 1.2;
     }
   }
 </style>

@@ -56,6 +56,9 @@
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const rows = $derived(data.main.snapshot.rows);
+  const columnWidthTotal = $derived(
+    leaves.reduce((total, column) => total + (column.width ?? 120), 0)
+  );
 
   function columnField(column: TableColumn): string {
     return resolveField(column.field, data).field;
@@ -85,6 +88,14 @@
     if (!column.fixed) return '';
     const offset = stickyOffsets.get(columnField(column)) ?? 0;
     return `position: sticky; ${column.fixed}: ${offset}px;`;
+  }
+
+  function columnStyle(column: TableColumn): string {
+    if (props.fit === 'container') {
+      const percentage = ((column.width ?? 120) / Math.max(columnWidthTotal, 1)) * 100;
+      return `width: ${percentage}%;`;
+    }
+    return column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : '';
   }
 
   const sortIndexOf = $derived(new Map(view.sort.map((rule, index) => [rule.field, index])));
@@ -212,14 +223,20 @@
   }
 </script>
 
-<div class="table-widget">
-  {#if props.title}<h3>{props.title}</h3>{/if}
-  {#if props.subtitle}<div class="subtitle">{props.subtitle}</div>{/if}
+<div class:fit-container={props.fit === 'container'} class="table-widget">
+  {#if props.title || props.subtitle}
+    <div class="table-heading">
+      {#if props.title}<h3>{props.title}</h3>{/if}
+      {#if props.subtitle}
+        <div class="subtitle"><span aria-hidden="true">*</span>{props.subtitle}</div>
+      {/if}
+    </div>
+  {/if}
   <div class="scroll">
     <table>
       <colgroup>
         {#each leaves as column (columnField(column))}
-          <col style={column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : ''} />
+          <col style={columnStyle(column)} />
         {/each}
       </colgroup>
       <thead>
@@ -433,28 +450,45 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 13px;
+    gap: 0;
+    padding: 19px 19px 11px;
+    background: #fff;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+  .table-heading {
+    display: flex;
+    min-height: 30px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
   }
   h3 {
     margin: 0;
-    color: #18181b;
-    font-size: 13px;
-    font-weight: 500;
+    color: #121e3b;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 30px;
   }
   .subtitle {
-    color: #121e3b;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 1.4;
+    color: #595959;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+  .subtitle span {
+    margin-right: 4px;
+    color: #f21e1e;
   }
   /* 固定表头 + 表体滚动:thead sticky,滚动发生在容器上(纵横双向) */
   .scroll {
     flex: 1;
     min-height: 0;
     overflow: auto;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
+    border: 1px solid #e8ebf3;
+    border-radius: 0;
   }
   table {
     width: 100%;
@@ -467,13 +501,14 @@
     top: 0;
     z-index: 2;
     box-sizing: border-box;
-    height: 40px;
-    background: #fafafa;
+    height: 42px;
+    background: #f1f4ff;
     text-align: left;
-    font-weight: 600;
-    color: #52525b;
-    padding: 8px 12px;
-    border-bottom: 1px solid #e4e4e7;
+    font-weight: 500;
+    color: #595959;
+    padding: 8px 10px;
+    border-right: 1px solid #d8deeb;
+    border-bottom: 1px solid #d8deeb;
     white-space: nowrap;
   }
   thead th.group-header {
@@ -494,18 +529,20 @@
     background: #fff;
   }
   tbody td {
-    padding: 8px 12px;
-    border-bottom: 1px solid #f4f4f5;
+    height: 40px;
+    padding: 8px 10px;
+    border-right: 1px solid #edf0f5;
+    border-bottom: 1px solid #edf0f5;
     background: #fff;
-    color: #18181b;
+    color: #191919;
     white-space: nowrap;
   }
   tbody td.danger {
     color: #f23030;
   }
   tbody td.selected {
-    background: rgb(20 118 255 / 0.08);
-    box-shadow: inset 0 0 0 1px #1476ff;
+    background: #fff;
+    box-shadow: none;
   }
   tbody tr:last-child td {
     border-bottom: 0;
@@ -518,17 +555,18 @@
   }
   .selectable-cell {
     width: 100%;
-    padding: 4px 6px;
+    padding: 2px 6px;
     color: #1476ff;
     background: transparent;
-    border: 1px dashed rgb(20 118 255 / 0.42);
-    border-radius: 4px;
+    border: 1px dashed #8bc7ff;
+    border-radius: 0;
     cursor: pointer;
     font: inherit;
     text-align: inherit;
   }
   .selectable-cell[aria-pressed='true'] {
-    background: rgb(20 118 255 / 0.1);
+    background: #dbeeff;
+    border-color: #1476ff;
     border-style: solid;
     font-weight: 650;
   }
@@ -688,45 +726,108 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 8px;
+    min-height: 32px;
+    margin-top: 8px;
+    color: #191919;
+    font-size: 14px;
+    line-height: 1;
   }
   .pager-actions {
     display: flex;
     align-items: center;
-    gap: 5px;
+    min-height: 32px;
   }
-  .total,
-  .page-size {
-    color: #595959;
+  .total {
+    color: #191919;
+    line-height: 32px;
+    white-space: nowrap;
   }
-  .page-size {
-    padding: 5px 8px;
-    border: 1px solid #d4d4d8;
+  /* 兼容旧分页契约：视觉升级不要求调用方切换分页状态模型。 */
+  .pager-actions :global(.page-size) {
+    box-sizing: border-box;
+    display: inline-flex;
+    min-width: 70px;
+    height: 32px;
+    align-items: center;
+    margin-right: 16px;
+    padding: 0 12px;
+    border: 1px solid #c2c2c2;
     border-radius: 6px;
-  }
-  .pager button {
-    border: 1px solid #e4e4e7;
     background: #fff;
-    border-radius: 6px;
-    padding: 4px 12px;
-    font-size: 13px;
-    color: #18181b;
+    color: #191919;
+    white-space: nowrap;
+  }
+  .pager-actions > button:not(.page-button):not(.pager-nav) {
+    box-sizing: border-box;
+    min-width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    color: #595959;
+    font: inherit;
     cursor: pointer;
   }
-  .pager button:disabled {
-    color: #d4d4d8;
+  .pager-actions > button:not(.page-button):not(.pager-nav):hover:not(:disabled) {
+    background: #f5f5f5;
+    color: #191919;
+  }
+  .pager-actions > button.current:not(.page-button) {
+    background: #f5f5f5;
+    color: #191919;
+    font-weight: 700;
+  }
+  .pager-actions > button[aria-label]:not(.pager-nav) {
+    min-width: 18px;
+    padding: 0;
+    border-radius: 0;
+    color: #191919;
+  }
+  .pager-actions > button[aria-label='上一页']:not(.pager-nav) {
+    margin-right: 8px;
+  }
+  .pager-actions > button[aria-label='下一页']:not(.pager-nav) {
+    margin-left: 4px;
+    margin-right: 0;
+  }
+  .pager-actions > button:not(.page-button):not(.pager-nav):disabled {
+    color: rgb(16 16 16 / 0.3);
     cursor: not-allowed;
   }
-  .pager button.current {
-    color: #1476ff;
-    background: rgb(20 118 255 / 0.08);
-    border-color: #1476ff;
-  }
   .ellipsis {
-    padding: 0 2px;
-    color: #a1a1aa;
+    display: block;
+    min-width: 32px;
+    height: 32px;
+    margin-right: 4px;
+    color: #595959;
+    line-height: 30px;
+    text-align: center;
   }
   .page-no {
     color: #71717a;
+  }
+  .fit-container .scroll {
+    overflow-x: hidden;
+  }
+  .fit-container table {
+    table-layout: fixed;
+  }
+  .fit-container thead th,
+  .fit-container tbody td {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .fit-container .cell-stack,
+  .fit-container .rate-cell {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .fit-container .rate-cell {
+    width: 100%;
   }
 </style>

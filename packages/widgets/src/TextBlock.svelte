@@ -47,9 +47,10 @@
   .text-block.insight {
     box-sizing: border-box;
     justify-content: flex-start;
-    padding: 18px 14px;
-    border-radius: 8px;
-    background: #f1f4ff;
+    gap: 0;
+    padding: 15px 18px 15px 15px;
+    border-radius: 16px;
+    background: #fff;
   }
   .heading {
     margin: 0;
@@ -63,6 +64,23 @@
     color: #52525b;
     line-height: 1.6;
     white-space: pre-line;
+  }
+  .insight .heading {
+    margin: 0 0 15px 5px;
+    color: #121e3b;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 25px;
+    text-align: left;
+  }
+  .insight .body {
+    padding: 9px 27px 12px 12px;
+    color: #191919;
+    background: #f1f4ff;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
   }
   .links {
     display: flex;

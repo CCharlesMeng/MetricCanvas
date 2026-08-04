@@ -876,7 +876,17 @@
         <section
           class:header-section={section.components.length === 1 &&
             section.components[0]?.type === 'reportHeader'}
+          class:titled-section={Boolean(section.title)}
+          class:summary-metric-section={section.components.length > 0 &&
+            section.components.every(
+              (component) => component.type === 'metricCard' && component.props.variant === 'summary'
+            )}
+          class:activity-metric-section={section.components.length > 0 &&
+            section.components.every(
+              (component) => component.type === 'metricCard' && component.props.variant === 'activityProgress'
+            )}
           class="page-section"
+          data-section-id={section.id}
         >
           {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
           <div
@@ -999,7 +1009,7 @@
     content: '';
   }
   .customer-risk-briefing .section-title,
-  .customer-risk-briefing .cell :global(h3) {
+  .customer-risk-briefing .section-title {
     text-align: center;
   }
   .section-grid {
@@ -1111,6 +1121,66 @@
     background: transparent;
     border: 0;
     box-shadow: none;
+  }
+  .customer-risk-briefing .page-content {
+    max-width: 1200px;
+    padding: 35px 19px 48px;
+    background: #daeaff;
+  }
+  .customer-risk-briefing .page-sections {
+    gap: 12px;
+  }
+  .customer-risk-briefing .page-section {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .customer-risk-briefing .page-section.titled-section {
+    padding: 18px 17px 22px 16px;
+  }
+  .customer-risk-briefing .page-section.header-section,
+  .customer-risk-briefing .page-section.activity-metric-section,
+  .customer-risk-briefing .page-section.titled-section,
+  .customer-risk-briefing .summary-metric-section :global(.metric-card.summary) {
+    background-image: url('./assets/customer-risk-section-bg.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: 16px;
+  }
+  .customer-risk-briefing .page-section.activity-metric-section {
+    padding: 16px 17px 20px;
+  }
+  .customer-risk-briefing .section-grid {
+    gap: 12px 14px;
+  }
+  .customer-risk-briefing .activity-metric-section .section-grid {
+    gap: 12px;
+    padding-left: 0;
+  }
+  .customer-risk-briefing .section-title {
+    margin: 0 0 11px;
+    color: #08359e;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+  .customer-risk-briefing .section-title::before {
+    display: none;
+  }
+  .customer-risk-briefing .cell {
+    min-height: 0;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .customer-risk-briefing .metric-cell {
+    background: transparent;
   }
   .error-page h1 {
     font-size: 20px;
