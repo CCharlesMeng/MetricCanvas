@@ -35,3 +35,11 @@ export function shouldApplyTableHeaderFilter(
     (value.from.length > 0 && value.to.length > 0)
   );
 }
+
+/** 单页数据不需要页大小、页码或上下页控件。 */
+export function shouldShowTablePaginationControls(
+  totalCount: number,
+  pageSize: number
+): boolean {
+  return totalCount > pageSize;
+}

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   initialTableSort,
   shouldApplyTableHeaderFilter,
+  shouldShowTablePaginationControls,
   type TableSortRule
 } from '../src/table-view';
 
@@ -38,4 +39,12 @@ describe('table header date range draft', () => {
     expect(shouldApplyTableHeaderFilter(null)).toBe(true);
   });
 
+});
+
+describe('table pagination controls', () => {
+  it('仅在数据超过一页时显示分页控件', () => {
+    expect(shouldShowTablePaginationControls(0, 10)).toBe(false);
+    expect(shouldShowTablePaginationControls(10, 10)).toBe(false);
+    expect(shouldShowTablePaginationControls(11, 10)).toBe(true);
+  });
 });

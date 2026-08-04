@@ -328,7 +328,8 @@ export const pageSchema = {
       required: ['span'],
       additionalProperties: false,
       properties: {
-        span: { type: 'integer', minimum: 1, maximum: 12 }
+        span: { type: 'integer', minimum: 1, maximum: 12 },
+        connectPrevious: { type: 'boolean' }
       }
     },
     mainData: {
@@ -688,6 +689,7 @@ export const pageSchema = {
           properties: { mode: { type: 'string', enum: ['select', 'dateRange'] } }
         },
         align: { type: 'string', enum: ['left', 'right'] },
+        emphasis: { type: 'string', enum: ['strong'] },
         visual: { type: 'string', enum: ['plain', 'rateBar', 'signed'] }
       }
     },

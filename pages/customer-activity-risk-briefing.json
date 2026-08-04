@@ -3723,101 +3723,6 @@
           }
         }
       }
-    },
-    "inspection-progress-summary": {
-      "source": {
-        "type": "query",
-        "query": {
-          "language": "dqe",
-          "body": {
-            "dsl_list": [
-              {
-                "output_metrics": [
-                  "NA客户数",
-                  "无公司考察客户数",
-                  "未考察占比",
-                  "当年未公司考察客户数",
-                  "当年未考察占比"
-                ],
-                "output_dims": [
-                  "代表处"
-                ],
-                "filter": {
-                  "time": {
-                    "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-01-01",
-                    "end": "2026-06-01"
-                  },
-                  "dims": [
-                    {
-                      "dim_name": "地区部",
-                      "dim_value_list": [
-                        "中国地区部"
-                      ]
-                    },
-                    {
-                      "dim_name": "活动类型",
-                      "dim_value_list": [
-                        "公司考察"
-                      ]
-                    },
-                    {
-                      "dim_name": "是否TOP100项目客户",
-                      "dim_value_list": [
-                        "否"
-                      ]
-                    }
-                  ],
-                  "metrics": []
-                },
-                "order": {}
-              }
-            ]
-          }
-        }
-      },
-      "fields": {
-        "dimensions": {
-          "representative-office": {
-            "queryField": "代表处",
-            "type": "string",
-            "label": "代表处"
-          }
-        },
-        "measures": {
-          "inspection-na-total": {
-            "queryField": "NA客户数",
-            "type": "number",
-            "label": "NA客户数",
-            "defaultFormat": "number-grouped"
-          },
-          "inspection-na-missing": {
-            "queryField": "无公司考察客户数",
-            "type": "number",
-            "label": "无公司考察客户数",
-            "defaultFormat": "number-grouped"
-          },
-          "inspection-na-missing-rate": {
-            "queryField": "未考察占比",
-            "type": "string",
-            "label": "未考察占比",
-            "defaultFormat": "text"
-          },
-          "inspection-na-year-missing": {
-            "queryField": "当年未公司考察客户数",
-            "type": "number",
-            "label": "当年未公司考察客户数",
-            "defaultFormat": "number-grouped"
-          },
-          "inspection-na-year-missing-rate": {
-            "queryField": "当年未考察占比",
-            "type": "string",
-            "label": "当年未考察占比",
-            "defaultFormat": "text"
-          }
-        }
-      }
     }
   },
   "sections": [
@@ -4077,75 +3982,14 @@
       "components": [
         {
           "id": "inspection-risk-summary",
-          "type": "aiSummary",
+          "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
             "title": "风险总结",
-            "promptTemplate": "你是客户活动风险总结专员。只能使用输入的前端原始数据，禁止补充、估算或二次计算。按顺序总结非TOP100 NA客户未考察情况、2026年未考察情况、TOP100项目客户未考察情况，输出三个编号段落。",
-            "relatedData": {
-              "non-top-risk": {
-                "source": "inspection-progress-summary",
-                "description": "各代表处非TOP100 NA客户公司考察风险数据",
-                "fields": [
-                  {
-                    "field": "representative-office",
-                    "term": "代表处"
-                  },
-                  {
-                    "field": "inspection-na-total",
-                    "term": "NA客户数"
-                  },
-                  {
-                    "field": "inspection-na-missing",
-                    "term": "无公司考察NA客户数"
-                  },
-                  {
-                    "field": "inspection-na-missing-rate",
-                    "term": "无公司考察NA客户占比"
-                  },
-                  {
-                    "field": "inspection-na-year-missing",
-                    "term": "2026年无公司考察NA客户数"
-                  },
-                  {
-                    "field": "inspection-na-year-missing-rate",
-                    "term": "2026年无公司考察NA客户占比"
-                  }
-                ]
-              },
-              "top100-risk": {
-                "source": "inspection-progress-top100",
-                "description": "各代表处TOP100项目客户公司考察风险数据",
-                "fields": [
-                  {
-                    "field": "representative-office",
-                    "term": "代表处"
-                  },
-                  {
-                    "field": "inspection-top-total",
-                    "term": "TOP100项目客户数"
-                  },
-                  {
-                    "field": "inspection-top-missing",
-                    "term": "TOP100项目无公司考察客户数"
-                  },
-                  {
-                    "field": "inspection-top-missing-rate",
-                    "term": "TOP100项目无公司考察客户占比"
-                  },
-                  {
-                    "field": "inspection-top-year-missing",
-                    "term": "2026年TOP100项目无公司考察客户数"
-                  },
-                  {
-                    "field": "inspection-top-year-missing-rate",
-                    "term": "2026年TOP100项目无公司考察客户占比"
-                  }
-                ]
-              }
-            }
+            "body": "1、整体NA客户未考察情况：各代表处均存在无公司考察NA客户，需结合清单逐项关注。\n2、2026年未考察情况：2026年无公司考察NA客户数据已纳入本次风险检查。\n3、TOP100项目客户未考察情况：TOP100项目客户相关未考察数据已纳入重点跟踪。",
+            "variant": "insight"
           }
         },
         {
@@ -4204,26 +4048,14 @@
                     "field": "inspection-na-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "inspection-na-year-missing",
                     "title": "26年未开展客户数",
                     "width": 136,
-                    "align": "right",
-                    "selection": {
-                      "writes": {
-                        "inspection-office": {
-                          "field": "representative-office"
-                        },
-                        "inspection-top100": {
-                          "value": "否"
-                        },
-                        "inspection-cutoff": {
-                          "value": "2026-01-01"
-                        }
-                      }
-                    }
+                    "align": "right"
                   },
                   {
                     "field": "inspection-na-year-missing-rate",
@@ -4276,7 +4108,8 @@
                     },
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": {
@@ -4285,20 +4118,7 @@
                     },
                     "title": "26年未开展客户数",
                     "width": 136,
-                    "align": "right",
-                    "selection": {
-                      "writes": {
-                        "inspection-office": {
-                          "field": "representative-office"
-                        },
-                        "inspection-top100": {
-                          "value": "是"
-                        },
-                        "inspection-cutoff": {
-                          "value": "2026-01-01"
-                        }
-                      }
-                    }
+                    "align": "right"
                   },
                   {
                     "field": {
@@ -4321,7 +4141,8 @@
           "id": "inspection-detail-table",
           "type": "table",
           "layout": {
-            "span": 12
+            "span": 12,
+            "connectPrevious": true
           },
           "data": {
             "main": "inspection-detail"
@@ -4526,7 +4347,8 @@
                     "field": "visit-na-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "visit-na-year-missing",
@@ -4573,7 +4395,8 @@
                     "field": "visit-top-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "visit-top-year-missing",
@@ -4599,7 +4422,8 @@
           "id": "visit-detail-table",
           "type": "table",
           "layout": {
-            "span": 12
+            "span": 12,
+            "connectPrevious": true
           },
           "data": {
             "main": "visit-detail"
@@ -4806,7 +4630,8 @@
                     "field": "summit-na-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "summit-na-year-missing",
@@ -4853,7 +4678,8 @@
                     "field": "summit-top-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "summit-top-year-missing",
@@ -4879,7 +4705,8 @@
           "id": "summit-detail-table",
           "type": "table",
           "layout": {
-            "span": 12
+            "span": 12,
+            "connectPrevious": true
           },
           "data": {
             "main": "summit-detail"
@@ -5085,7 +4912,8 @@
                     "field": "inactive-na-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "inactive-na-year-missing",
@@ -5132,7 +4960,8 @@
                     "field": "inactive-top-missing-rate",
                     "title": "未开展占比",
                     "width": 112,
-                    "align": "right"
+                    "align": "right",
+                    "emphasis": "strong"
                   },
                   {
                     "field": "inactive-top-year-missing",
@@ -5158,7 +4987,8 @@
           "id": "inactive-detail-table",
           "type": "table",
           "layout": {
-            "span": 12
+            "span": 12,
+            "connectPrevious": true
           },
           "data": {
             "main": "inactive-detail"

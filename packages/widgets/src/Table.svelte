@@ -21,6 +21,7 @@
     TableSortRule,
     TableViewState
   } from './table-view';
+  import { shouldShowTablePaginationControls } from './table-view';
   import { formatValue, valuePolarity } from './value-format';
 
   /**
@@ -202,6 +203,11 @@
   const numberedPages = $derived(
     totalPages > 0 ? pageWindow(view.pageIndex + 1, totalPages) : []
   );
+  const showPaginationControls = $derived(
+    pagination
+      ? shouldShowTablePaginationControls(pagination.totalCount, pagination.pageSize)
+      : false
+  );
 
   const rateBarMaxima = $derived.by(() => {
     const maxima = new Map<string, number>();
@@ -361,6 +367,7 @@
               <td
                 class:align-right={column.align === 'right'}
                 class:fixed={!!column.fixed}
+                class:emphasized={column.emphasis === 'strong'}
                 class:selected={isSelected(i, column)}
                 class:danger={isDanger(column, rawValue)}
                 class:negative={column.visual === 'signed' && polarity === 'negative'}
@@ -419,64 +426,66 @@
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager">
       <span class="total">总条数： <span>{pagination.totalCount}</span></span>
-      <div class="pager-actions">
-        <details class="page-size-select">
-          <summary aria-label={`每页 ${pagination.pageSize} 条`}>
-            <span>{pagination.pageSize}</span>
-            <span aria-hidden="true" class="page-size-arrow"></span>
-          </summary>
-          <div aria-label="每页显示数量" class="page-size-menu" role="listbox">
-            {#each pageSizeOptions as pageSize}
-              <button
-                aria-selected={pageSize === pagination.pageSize}
-                class:selected={pageSize === pagination.pageSize}
-                onclick={(event) => selectPageSize(event, pageSize)}
-                role="option"
-                type="button"
-              >{pageSize}</button>
+      {#if showPaginationControls}
+        <div class="pager-actions">
+          <details class="page-size-select">
+            <summary aria-label={`每页 ${pagination.pageSize} 条`}>
+              <span>{pagination.pageSize}</span>
+              <span aria-hidden="true" class="page-size-arrow"></span>
+            </summary>
+            <div aria-label="每页显示数量" class="page-size-menu" role="listbox">
+              {#each pageSizeOptions as pageSize}
+                <button
+                  aria-selected={pageSize === pagination.pageSize}
+                  class:selected={pageSize === pagination.pageSize}
+                  onclick={(event) => selectPageSize(event, pageSize)}
+                  role="option"
+                  type="button"
+                >{pageSize}</button>
+              {/each}
+            </div>
+          </details>
+          <button
+            type="button"
+            class="pager-nav pager-prev"
+            aria-label="上一页"
+            disabled={view.pageIndex === 0}
+            onclick={() => onpage?.(view.pageIndex - 1)}
+          >
+            <svg aria-hidden="true" viewBox="0 0 16 16">
+              <path d="M10.4 3.4 5.8 8l4.6 4.6" />
+            </svg>
+          </button>
+          {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
+            {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
+              {#if item === '…'}
+                <span class="ellipsis">…</span>
+              {:else}
+                <button
+                  type="button"
+                  class="page-button"
+                  class:current={item === view.pageIndex + 1}
+                  aria-current={item === view.pageIndex + 1 ? 'page' : undefined}
+                  onclick={() => onpage?.(item - 1)}
+                >{item}</button>
+              {/if}
             {/each}
-          </div>
-        </details>
-        <button
-          type="button"
-          class="pager-nav pager-prev"
-          aria-label="上一页"
-          disabled={view.pageIndex === 0}
-          onclick={() => onpage?.(view.pageIndex - 1)}
-        >
-          <svg aria-hidden="true" viewBox="0 0 16 16">
-            <path d="M10.4 3.4 5.8 8l4.6 4.6" />
-          </svg>
-        </button>
-        {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
-          {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
-            {#if item === '…'}
-              <span class="ellipsis">…</span>
-            {:else}
-              <button
-                type="button"
-                class="page-button"
-                class:current={item === view.pageIndex + 1}
-                aria-current={item === view.pageIndex + 1 ? 'page' : undefined}
-                onclick={() => onpage?.(item - 1)}
-              >{item}</button>
-            {/if}
-          {/each}
-        {:else}
-          <span class="page-no">第 {view.pageIndex + 1} 页</span>
-        {/if}
-        <button
-          type="button"
-          class="pager-nav pager-next"
-          aria-label="下一页"
-          disabled={view.pageIndex + 1 >= totalPages}
-          onclick={() => onpage?.(view.pageIndex + 1)}
-        >
-          <svg aria-hidden="true" viewBox="0 0 16 16">
-            <path d="m5.6 3.4 4.6 4.6-4.6 4.6" />
-          </svg>
-        </button>
-      </div>
+          {:else}
+            <span class="page-no">第 {view.pageIndex + 1} 页</span>
+          {/if}
+          <button
+            type="button"
+            class="pager-nav pager-next"
+            aria-label="下一页"
+            disabled={view.pageIndex + 1 >= totalPages}
+            onclick={() => onpage?.(view.pageIndex + 1)}
+          >
+            <svg aria-hidden="true" viewBox="0 0 16 16">
+              <path d="m5.6 3.4 4.6 4.6-4.6 4.6" />
+            </svg>
+          </button>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>
@@ -578,8 +587,12 @@
     color: #f23030;
   }
   tbody td.selected {
-    background: #fff;
-    box-shadow: none;
+    color: #1476ff;
+    background: rgb(33 111 240 / 0.05);
+    box-shadow: inset 0 0 0 1px #1476ff;
+  }
+  tbody td.emphasized {
+    font-weight: 600;
   }
   tbody tr:last-child td {
     border-bottom: 0;
@@ -593,19 +606,24 @@
   .selectable-cell {
     width: 100%;
     padding: 2px 6px;
-    color: #1476ff;
-    background: transparent;
-    border: 1px dashed #8bc7ff;
-    border-radius: 0;
+    color: #191919;
+    background: rgb(33 111 240 / 0.05);
+    border: 1px solid transparent;
+    border-radius: 6px;
     cursor: pointer;
     font: inherit;
     text-align: inherit;
   }
   .selectable-cell[aria-pressed='true'] {
-    background: #dbeeff;
-    border-color: #1476ff;
-    border-style: solid;
+    color: inherit;
+    background: transparent;
+    border-color: transparent;
     font-weight: 650;
+  }
+  .selectable-cell:focus-visible {
+    color: #1476ff;
+    border-color: #1476ff;
+    outline: none;
   }
   .cell-stack {
     display: inline-flex;

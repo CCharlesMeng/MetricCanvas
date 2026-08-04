@@ -4,14 +4,14 @@
 
   interface Props {
     value: number;
-    visualValue?: number;
+    ringPercent?: number;
     label?: string;
   }
 
-  let { value, visualValue, label = '完成率' }: Props = $props();
+  let { value, ringPercent, label = '完成率' }: Props = $props();
   const normalized = $derived(normalizeProgressValue(value));
-  const visualProgress = $derived(normalizeProgressValue(visualValue ?? normalized));
-  const option = $derived(progressRingOption(visualProgress));
+  const visibleTrackPercent = $derived(normalizeProgressValue(ringPercent ?? 100));
+  const option = $derived(progressRingOption(normalized, visibleTrackPercent));
 </script>
 
 <div class="progress-ring" aria-label={`${label} ${normalized}%`}>
@@ -38,6 +38,8 @@
     display: flex;
     width: 72px;
     height: 72px;
+    transform: scale(1.1);
+    transform-origin: center;
     pointer-events: none;
   }
   .number {

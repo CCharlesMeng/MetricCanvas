@@ -58,36 +58,44 @@ describe('Page JSON 即时预览文档', () => {
     expect(top100Query.body.dsl_list[0]!.output_metrics).toEqual([
       { formula: 'COUNT(*)', alias: '数量' }
     ]);
-    const progressTable = components.find(
-      (component) => component.id === 'inspection-progress-table'
+    const progressTables = components.filter(
+      (component): component is TableComponent =>
+        component.type === 'table' && component.id.endsWith('-progress-table')
     );
-    expect(progressTable?.type).toBe('table');
-    if (progressTable?.type === 'table') {
-      expect(
-        progressTable.props.columns
+    expect(progressTables).toHaveLength(4);
+    for (const progressTable of progressTables) {
+      const leafColumns = progressTable.props.columns
           .flatMap((column) =>
             'kind' in column && column.kind === 'group' ? column.children : [column]
           )
-          .filter((column) => !('kind' in column && column.kind === 'group'))
-          .some((column) => column.selection !== undefined)
+          .filter((column): column is TableColumn => column.kind !== 'group');
+      expect(leafColumns.some((column) => column.selection !== undefined)).toBe(true);
+      expect(
+        leafColumns
+          .filter((column) => column.title === '26年未开展客户数')
+          .every((column) => column.selection === undefined)
       ).toBe(true);
     }
-    const riskSummary = components.find(
-      (component) => component.id === 'inspection-risk-summary'
+    const riskSummaries = components.filter((component) =>
+      component.id.endsWith('-risk-summary')
     );
-    expect(riskSummary?.type).toBe('aiSummary');
-    if (riskSummary?.type === 'aiSummary') {
+    expect(riskSummaries.map((component) => component.id)).toEqual([
+      'inspection-risk-summary',
+      'visit-risk-summary',
+      'summit-risk-summary',
+      'inactive-risk-summary'
+    ]);
+    expect(riskSummaries.every((component) => component.type === 'text')).toBe(true);
+    for (const riskSummary of riskSummaries) {
+      if (riskSummary.type !== 'text') throw new Error(`${riskSummary.id} 不是静态文本`);
       expect(riskSummary.data).toBeUndefined();
-      expect(riskSummary.props.relatedData['non-top-risk']?.source).toBe(
-        'inspection-progress-summary'
-      );
-      expect(riskSummary.props.relatedData['non-top-risk']?.fields).toHaveLength(6);
-      expect(riskSummary.props.relatedData['top100-risk']?.source).toBe(
-        'inspection-progress-top100'
-      );
-      expect(riskSummary.props.relatedData['top100-risk']?.fields).toHaveLength(6);
-      expect(JSON.stringify(riskSummary.props)).not.toMatch(/\bX\b|xx/iu);
+      expect(riskSummary.props).toMatchObject({
+        title: '风险总结',
+        variant: 'insight'
+      });
+      expect(riskSummary.props.body?.trim()).not.toBe('');
     }
+    expect(components.some((component) => component.type === 'aiSummary')).toBe(false);
 
     const activityCards = components.filter(
       (component): component is MetricCardComponent =>
@@ -111,6 +119,11 @@ describe('Page JSON 即时预览文档', () => {
     expect(tables.every((component) =>
       (component.props as typeof component.props & { fit?: string }).fit === 'container'
     )).toBe(true);
+    expect(
+      tables
+        .filter((component) => component.id.endsWith('-detail-table'))
+        .every((component) => component.layout.connectPrevious === true)
+    ).toBe(true);
     const detailColumns = tables.flatMap((component) =>
       component.props.columns.flatMap((column) =>
         column.kind === 'group' ? column.children : [column]

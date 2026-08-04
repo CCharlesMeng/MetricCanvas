@@ -381,12 +381,15 @@ last90d
 ```json
 {
   "layout": {
-    "span": 6
+    "span": 6,
+    "connectPrevious": true
   }
 }
 ```
 
 `span` 是 1 至 12 的整数。
+
+`connectPrevious: true` 表示当前组件与 `components` 中紧邻前一组件形成同一视觉组。统一运行时负责在网格间隙中绘制连接符；该声明不建立页面数据源依赖。
 
 ## 组件与数据槽
 
@@ -511,7 +514,7 @@ last90d
 
 - `rows[].unit` 是主值单位；`rows[].changes[].unit` 是变化值单位，二者都只影响展示；
 - `progress.valueField` 决定中心显示的实际完成率；
-- `progress.ringPercent` 可选，范围为 `0` 至 `100`，只覆盖圆环弧长，不改变中心完成率文本。
+- `progress.ringPercent` 可选，范围为 `0` 至 `100`，决定可见轨道占整圆的比例；蓝色部分再按 `valueField` 的实际完成率填充该轨道。
 
 ## 表格行为
 
@@ -520,6 +523,7 @@ last90d
 - 字段列和嵌套列组；
 - 次级字段和徽标字段；
 - 固定列、宽度和对齐；
+- 使用 `emphasis: "strong"` 强调指定列的数据单元格；
 - 本地排序；
 - 维度选择筛选；
 - 日期范围筛选；
@@ -527,6 +531,8 @@ last90d
 - 本地分页。
 
 `props.fit` 控制列宽策略：`content` 保留配置的像素宽度并允许横向滚动；`container` 把列宽作为比例压缩到容器内，适合简报和窄画布。
+
+`columns[].emphasis` 是列级展示 metadata；当前仅支持 `strong`，只加粗该列的数据单元格，不依赖字段名或列标题。
 
 同一张表需要并排展示两个独立查询页面数据源时，可以声明多个组件数据槽，并用
 `rowKey` 按稳定页面字段对齐：
@@ -584,6 +590,7 @@ last90d
 - `mode: "query"` 只允许绑定独占的 `query` 数据源，页大小以 DQE `order.limit` 为唯一真值，初始 `order.offset` 为 `0`；
 - 查询分页改变页码时更新克隆请求的 `order.offset`，页面筛选变化时先把 `offset` 重置为 `0`；
 - DQE 成功结果的 `results[i].total_count` 归一为数据快照的 `totalCount`，用于总条数、数字页码和上下页；错误结果的计数无效；
+- `totalCount` 小于等于当前页大小时仅展示总条数，不展示页大小、页码和上下页控件；
 - 查询分页存在 `initial` 时必须声明 `initial.totalCount`，并满足 `initial.rows.length = min(order.limit, initial.totalCount)`；
 - 查询分页暂不支持排序和表头筛选；数据变化导致当前页越界时，运行时查询最后一个有效页。
 

@@ -214,6 +214,34 @@ describe('v4 data source 与 binding 校验', () => {
     );
   });
 
+  it('允许通过列 metadata 强调表格数据单元格', () => {
+    const document: any = structuredClone(queryDashboard);
+    document.sections[0].components[0].props.columns[1].emphasis = 'strong';
+
+    expect(validate(document)).toEqual([]);
+
+    document.sections[0].components[0].props.columns[1].emphasis = 'bold';
+    expect(validate(document)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/0/props/columns/1/emphasis'
+      })
+    );
+  });
+
+  it('允许组件布局声明与紧邻前一组件视觉连接', () => {
+    const document: any = structuredClone(inlineReport);
+    document.sections[0].components[1].layout.connectPrevious = true;
+
+    expect(validate(document)).toEqual([]);
+
+    document.sections[0].components[1].layout.connectPrevious = 'yes';
+    expect(validate(document)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/1/layout/connectPrevious'
+      })
+    );
+  });
+
   it('additionalProperties:false 覆盖字段、数据源、section、layout、data 与 props', () => {
     const document: any = structuredClone(inlineReport);
     document.dataSources.overview.unknown = true;

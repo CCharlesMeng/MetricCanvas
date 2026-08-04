@@ -27,9 +27,9 @@ describe('正式页面 DQE 场景', () => {
     );
     const results = items.map(executeDqeItem);
 
-    expect(results).toHaveLength(23);
+    expect(results).toHaveLength(22);
     expect(results.map((result) => result.code)).toEqual(
-      Array.from({ length: 23 }, () => 'SUCCESS')
+      Array.from({ length: 22 }, () => 'SUCCESS')
     );
     expect(results.every((result) => result.data.length > 0)).toBe(true);
 

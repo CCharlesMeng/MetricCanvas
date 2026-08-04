@@ -990,6 +990,7 @@
                 class:header-cell={component.type === 'reportHeader'}
                 class:metric-cell={component.type === 'metricCard'}
                 class:table-cell={component.type === 'table'}
+                class:connect-previous={component.layout.connectPrevious === true}
                 class:authoring-cell={Boolean(authoring)}
                 class:authoring-selected={selected(section.id, component.id)}
                 class="cell"
@@ -1269,6 +1270,15 @@
     border: 0;
     border-radius: 0;
     box-shadow: none;
+  }
+  .customer-risk-briefing .cell.connect-previous::before {
+    position: absolute;
+    top: -7px;
+    right: 0;
+    left: 0;
+    border-top: 1px dashed rgb(255 255 255 / 0.92);
+    content: '';
+    pointer-events: none;
   }
   .customer-risk-briefing .metric-cell {
     background: transparent;

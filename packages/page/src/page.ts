@@ -31,6 +31,8 @@ export interface GridLayout {
 
 export interface ComponentLayout {
   span: number;
+  /** 在网格间隙中将当前组件与紧邻前一组件连成同一视觉组。 */
+  connectPrevious?: boolean;
 }
 
 export type ComponentData = Record<string, string>;
@@ -78,7 +80,7 @@ export interface MetricCardRow {
 export interface MetricCardProgress {
   valueField: FieldBinding;
   label?: string;
-  /** 仅覆盖圆环弧长，中心文本仍展示 valueField 的实际完成率。 */
+  /** 可见轨道占整圆的百分比，蓝色进度仍由 valueField 的实际完成率决定。 */
   ringPercent?: number;
 }
 
@@ -157,6 +159,8 @@ export interface TableColumn {
   sortable?: boolean;
   filterable?: { mode: 'select' | 'dateRange' };
   align?: 'left' | 'right';
+  /** 数据单元格强调样式。 */
+  emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
 }
 

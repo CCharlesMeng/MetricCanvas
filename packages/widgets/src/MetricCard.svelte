@@ -74,11 +74,13 @@
       {/each}
     </div>
     {#if props.progress}
-      <ProgressRing
-        value={progressValue}
-        visualValue={props.progress.ringPercent}
-        label={props.progress.label ?? '完成率'}
-      />
+      <div class="progress-slot">
+        <ProgressRing
+          value={progressValue}
+          ringPercent={props.progress.ringPercent}
+          label={props.progress.label ?? '完成率'}
+        />
+      </div>
     {/if}
   </div>
 </div>
@@ -105,6 +107,9 @@
     flex: 1;
     flex-direction: column;
     gap: 8px;
+  }
+  .progress-slot {
+    flex: 0 0 auto;
   }
   h3 {
     margin: 0 0 0.25rem;
@@ -212,6 +217,9 @@
   .activity-progress .metric-values {
     flex: 0 0 125px;
     gap: 0;
+  }
+  .activity-progress .progress-slot {
+    transform: translateX(-20px);
   }
   .activity-progress .metric-row {
     align-items: flex-start;
