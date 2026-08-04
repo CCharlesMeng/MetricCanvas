@@ -31,7 +31,7 @@ describe('4.0 页面数据源契约', () => {
       live: true,
       filters: true,
       actions: true,
-      remotePagination: false
+      remotePagination: true
     });
 
     const mixed = derivePageCapabilities(mixedPage as unknown as Page);

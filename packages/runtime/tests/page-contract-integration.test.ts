@@ -24,7 +24,7 @@ function gatewayReturning(rows: Row[]) {
   const gateway: DataGateway = {
     async fetchData(query) {
       received.push(query);
-      return rows;
+      return { rows, totalCount: rows.length };
     },
     async fetchDimensionValues() {
       return [];
@@ -73,7 +73,7 @@ describe('4.0 页面契约与统一运行时集成', () => {
             output_dims: ['region'],
             output_metrics: ['gmv'],
             filter: { dims: [], metrics: [] },
-            order: {}
+            order: { offset: 0, limit: 20 }
           }]
         },
         fieldMappings: {
@@ -90,12 +90,14 @@ describe('4.0 页面契约与统一运行时集成', () => {
             nullable: false
           }
         },
+        pagination: { offset: 0, limit: 20 },
         filterValues: []
       }
     ]);
     expect(result.latest().get('sales')).toEqual({
       status: 'ready',
       rows: [{ region: '华东', gmv: 42 }],
+      totalCount: 1
     });
   });
 
@@ -118,7 +120,8 @@ describe('4.0 页面契约与统一运行时集成', () => {
     });
     expect(result.latest().get('live-sales')).toEqual({
       status: 'ready',
-      rows: [{ 'stat-date': '2026-07-21', gmv: 12 }]
+      rows: [{ 'stat-date': '2026-07-21', gmv: 12 }],
+      totalCount: 1
     });
   });
 

@@ -1,6 +1,8 @@
 # 公开页面采用命名数据源,统一 inline 与 query 取数
 
 > query 来源与字段契约已由 [ADR-0014](./0014-query-artifacts-replace-metrics.md) 调整为查询执行引用与结果字段契约；inline 字段契约及命名数据槽决策保持有效。
+>
+> query 数据源的可选内嵌初始行和查询分页语义由 [ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 补充；本记录中 query 首次必查和仅本地分页的描述不再适用。
 
 看板页面公开声明 `dataSources`。每个页面数据源同时给出 `fields` 输出契约和带判别字段的 `source`:查询数据使用 `source.type: "query"` 与结构化查询,固定时点数据使用 `source.type: "inline"` 与 `rows`。组件不携带查询或数据行,只通过 `data` 命名数据槽引用页面数据源；单源组件通常使用 `main`,多源组件可使用 `compare`、`target` 等语义槽位。
 

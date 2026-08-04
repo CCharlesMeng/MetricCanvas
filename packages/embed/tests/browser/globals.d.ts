@@ -14,6 +14,7 @@ declare global {
     runtime: RuntimeHandle;
     queryPageDocument: any;
     queryEvents: RuntimeEvent[];
+    queryCalls: Array<{ pagination?: { offset: number; limit: number } }>;
     queryRuntime: RuntimeHandle;
     missingRuntime: RuntimeHandle;
     aiSummaryRuntime: RuntimeHandle;

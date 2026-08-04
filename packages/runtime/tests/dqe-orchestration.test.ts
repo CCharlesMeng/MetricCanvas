@@ -97,9 +97,12 @@ describe('统一运行时编排 raw DQE 页面数据源', () => {
     const gateway: DataGateway = {
       async fetchData(query) {
         received.push(query);
-        return [
-          { 'customer-level': '卓越NA', 'na-customer-count': 15 }
-        ] satisfies Row[];
+        return {
+          rows: [
+            { 'customer-level': '卓越NA', 'na-customer-count': 15 }
+          ] satisfies Row[],
+          totalCount: 1
+        };
       },
       async fetchDimensionValues() {
         return [];

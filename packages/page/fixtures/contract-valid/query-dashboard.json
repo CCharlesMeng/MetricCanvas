@@ -30,7 +30,10 @@
                   "dims": [],
                   "metrics": []
                 },
-                "order": {}
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
               }
             ]
           },
@@ -71,18 +74,14 @@
           "props": {
             "columns": [
               {
-                "field": "region",
-                "filterable": {
-                  "mode": "select"
-                }
+                "field": "region"
               },
               {
                 "field": "gmv"
               }
             ],
             "pagination": {
-              "mode": "paged",
-              "pageSize": 20
+              "mode": "query"
             },
             "actions": [
               {

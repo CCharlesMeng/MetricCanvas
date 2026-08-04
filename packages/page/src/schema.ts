@@ -138,7 +138,27 @@ export const pageSchema = {
       additionalProperties: false,
       properties: {
         type: { const: 'query' },
+        initial: { $ref: '#/definitions/embeddedInitialRows' },
         query: { $ref: '#/definitions/dqeQuery' }
+      }
+    },
+    embeddedInitialRows: {
+      type: 'object',
+      required: ['capturedAt', 'rows'],
+      additionalProperties: false,
+      properties: {
+        capturedAt: {
+          type: 'string',
+          pattern: '^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$'
+        },
+        rows: {
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: { $ref: '#/definitions/scalar' }
+          }
+        },
+        totalCount: { type: 'integer', minimum: 0 }
       }
     },
     dqeQuery: {
@@ -671,15 +691,30 @@ export const pageSchema = {
               items: { $ref: '#/definitions/tableColumnNode' }
             },
             pagination: {
-              type: 'object',
-              required: ['mode'],
-              additionalProperties: false,
-              properties: {
-                mode: { type: 'string', enum: ['none', 'paged'] },
-                pageSize: { type: 'integer', minimum: 1 },
-                totalCount: { type: 'integer', minimum: 0 },
-                numbered: { type: 'boolean' }
-              }
+              oneOf: [
+                {
+                  type: 'object',
+                  required: ['mode'],
+                  additionalProperties: false,
+                  properties: { mode: { const: 'none' } }
+                },
+                {
+                  type: 'object',
+                  required: ['mode', 'pageSize'],
+                  additionalProperties: false,
+                  properties: {
+                    mode: { const: 'local' },
+                    pageSize: { type: 'integer', minimum: 1 },
+                    numbered: { type: 'boolean' }
+                  }
+                },
+                {
+                  type: 'object',
+                  required: ['mode'],
+                  additionalProperties: false,
+                  properties: { mode: { const: 'query' } }
+                }
+              ]
             },
             actions
           }

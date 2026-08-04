@@ -22,9 +22,9 @@ describe('正式页面 DQE 场景', () => {
     );
     const results = items.map(executeDqeItem);
 
-    expect(results).toHaveLength(21);
+    expect(results).toHaveLength(22);
     expect(results.map((result) => result.code)).toEqual(
-      Array.from({ length: 21 }, () => 'SUCCESS')
+      Array.from({ length: 22 }, () => 'SUCCESS')
     );
     expect(results.every((result) => result.data.length > 0)).toBe(true);
 
@@ -54,11 +54,17 @@ describe('正式页面 DQE 场景', () => {
         dim_value_list: ['TOP100']
       }
     ];
+    (item as unknown as { order: { offset: number; limit: number } }).order = {
+      offset: 10,
+      limit: 10
+    };
 
     const result = executeDqeItem(item);
 
     expect(result.code).toBe('SUCCESS');
-    expect(result.data).toHaveLength(153);
+    expect(result.data).toHaveLength(10);
+    expect(result.total_count).toBe(153);
+    expect(result.data[0]?.['inspection-detail-row']).toBe(11);
     expect(
       result.data.every(
         (row) =>

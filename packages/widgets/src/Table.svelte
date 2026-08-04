@@ -1,5 +1,9 @@
 <script lang="ts" module>
   export type { TableHeaderFilterValue, TableViewState } from './table-view';
+  export interface TablePaginationState {
+    pageSize: number;
+    totalCount: number;
+  }
   export interface TableSelectedCell {
     rowIndex: number;
     columnField: string;
@@ -21,7 +25,7 @@
   /**
    * 表格(纯渲染):行与列定义 props 进,翻页/排序/表头筛选事件出,自身零状态。
    * 固定表头 + 表体滚动;固定列(left/right)以 sticky 实现;
-   * 排序状态显示在列头(多列时带优先级序号);盲翻分页:快照 hasMore 为假即禁用下一页。
+   * 排序状态显示在列头(多列时带优先级序号);分页由壳传入页大小与总条数。
    */
   interface Props {
     /** 已解析的 main 数据槽；rows 为空时表格仍呈现表头。 */
@@ -33,6 +37,7 @@
     view: TableViewState;
     /** select 模式表头筛选候选项(壳经数据网关 fetchDimensionValues 供给),key = 列 field */
     filterOptions?: Record<string, string[]>;
+    pagination?: TablePaginationState;
     selectedCell?: TableSelectedCell;
     onpage?: (pageIndex: number) => void;
     onsort?: (sort: TableSortRule[]) => void;
@@ -46,6 +51,7 @@
     interactive = true,
     view,
     filterOptions = {},
+    pagination,
     selectedCell,
     onpage,
     onsort,
@@ -176,12 +182,10 @@
   }
 
   const totalPages = $derived(
-    props.pagination?.totalCount !== undefined
+    pagination
       ? Math.max(
           1,
-          Math.ceil(
-            props.pagination.totalCount / (props.pagination.pageSize ?? 10)
-          )
+          Math.ceil(pagination.totalCount / pagination.pageSize)
         )
       : 0
   );
@@ -262,7 +266,7 @@
                   style={`${cellStyle(column)} top: ${rowIndex * 40}px;`}
                 >
                   <div class="head">
-                    {#if interactive && column.sortable}
+                    {#if interactive && props.pagination?.mode !== 'query' && column.sortable}
                       <button
                         type="button"
                         class="sort-toggle"
@@ -283,7 +287,7 @@
                       <span>{cell.title}</span>
                     {/if}
 
-                    {#if interactive && column.filterable}
+                    {#if interactive && props.pagination?.mode !== 'query' && column.filterable}
                       <details class="filter">
                         <summary class:active={hasActiveFilter(columnField(column))} title="表头筛选">▼</summary>
                         <div class="menu">
@@ -402,20 +406,18 @@
     </table>
   </div>
 
-  {#if props.pagination?.mode === 'paged' && interactive}
+  {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager">
-      {#if props.pagination.totalCount !== undefined}
-        <span class="total">总条数：{props.pagination.totalCount}</span>
-      {/if}
+      <span class="total">总条数：{pagination.totalCount}</span>
       <div class="pager-actions">
-        <span class="page-size">{props.pagination.pageSize ?? 10} 条/页</span>
+        <span class="page-size">{pagination.pageSize} 条/页</span>
         <button
           type="button"
           aria-label="上一页"
           disabled={view.pageIndex === 0}
           onclick={() => onpage?.(view.pageIndex - 1)}
         >‹</button>
-        {#if props.pagination.numbered && numberedPages.length > 0}
+        {#if (props.pagination.mode === 'query' || props.pagination.numbered) && numberedPages.length > 0}
           {#each numberedPages as item, itemIndex (`${item}:${itemIndex}`)}
             {#if item === '…'}
               <span class="ellipsis">…</span>
@@ -434,9 +436,7 @@
         <button
           type="button"
           aria-label="下一页"
-          disabled={totalPages > 0
-            ? view.pageIndex + 1 >= totalPages
-            : !data.main.snapshot.hasMore}
+          disabled={view.pageIndex + 1 >= totalPages}
           onclick={() => onpage?.(view.pageIndex + 1)}
         >›</button>
       </div>

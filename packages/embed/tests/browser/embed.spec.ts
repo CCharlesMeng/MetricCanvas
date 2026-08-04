@@ -87,7 +87,7 @@ test('挂载接口支持更新、重复挂载保护和幂等销毁', async ({ pa
   await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(0);
 });
 
-test('query 页面通过注入的数据网关完成取数', async ({ page }) => {
+test('query 页面以内嵌初始行启动，翻页后通过数据网关查询', async ({ page }) => {
   await page.goto('/examples/query.html');
   const host = page.locator('[data-metriccanvas-runtime]');
   const table = host.getByRole('table');
@@ -95,6 +95,14 @@ test('query 页面通过注入的数据网关完成取数', async ({ page }) => 
   await expect(host.getByText('区域成交额')).toBeVisible();
   await expect(table.getByText('华东', { exact: true })).toBeVisible();
   await expect(table.getByText('386,000', { exact: true })).toBeVisible();
+  await expect(host.getByText('总条数：25')).toBeVisible();
+  expect(await page.evaluate(() => window.queryCalls.length)).toBe(0);
+  await host.getByRole('button', { name: '下一页' }).click();
+  await expect(table.getByText('区域11', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => window.queryCalls[0]?.pagination)).toEqual({
+    offset: 10,
+    limit: 10
+  });
   await expect
     .poll(() =>
       page.evaluate(() =>

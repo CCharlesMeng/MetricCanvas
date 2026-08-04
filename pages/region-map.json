@@ -8,6 +8,24 @@
     "map-china": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "region": "华东",
+              "gmv": 212800
+            },
+            {
+              "region": "华北",
+              "gmv": 190200
+            },
+            {
+              "region": "华南",
+              "gmv": 201200
+            }
+          ],
+          "totalCount": 3
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -63,6 +81,24 @@
     "map-world": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "region": "华东",
+              "gmv": 212800
+            },
+            {
+              "region": "华北",
+              "gmv": 190200
+            },
+            {
+              "region": "华南",
+              "gmv": 201200
+            }
+          ],
+          "totalCount": 3
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -118,6 +154,24 @@
     "by-region": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "region": "华东",
+              "gmv": 212800
+            },
+            {
+              "region": "华北",
+              "gmv": 190200
+            },
+            {
+              "region": "华南",
+              "gmv": 201200
+            }
+          ],
+          "totalCount": 3
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -177,6 +231,15 @@
     "gmv": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "gmv": 604200
+            }
+          ],
+          "totalCount": 1
+        },
         "query": {
           "language": "dqe",
           "body": {

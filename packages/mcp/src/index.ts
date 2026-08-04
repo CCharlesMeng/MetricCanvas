@@ -104,6 +104,11 @@ const dqeExample = {
       },
       source: {
         type: 'query',
+        initial: {
+          capturedAt: '2026-08-04T00:00:00+08:00',
+          rows: [{ 'customer-level': '卓越NA', 'customer-count': 15 }],
+          totalCount: 1
+        },
         query: {
           language: 'dqe',
           body: {

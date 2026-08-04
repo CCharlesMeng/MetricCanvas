@@ -5,7 +5,11 @@ import {
   type Page,
   type QueryDataSource
 } from '@metriccanvas/page';
-import type { FilterState, FilterValues } from './filter-state';
+import {
+  initialFilterValues,
+  type FilterState,
+  type FilterValues
+} from './filter-state';
 import type { DataGateway } from './ports';
 
 /** 页面数据快照的唯一真元：页面数据源 id → 快照。 */
@@ -16,7 +20,9 @@ export interface Subscribable<T> {
   subscribe(run: (value: T) => void): () => void;
 }
 
-export type PageSnapshotStream = Subscribable<PageDataSnapshots>;
+export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
+  setQueryPage(dataSourceId: string, pageIndex: number): void;
+}
 
 interface DataSourceBinding {
   sourceId: string;
@@ -25,6 +31,7 @@ interface DataSourceBinding {
 
 interface QueryBinding extends DataSourceBinding {
   dataSource: QueryDataSource;
+  pagination?: { limit: number };
 }
 
 /**
@@ -40,6 +47,7 @@ export function orchestrate(
 ): PageSnapshotStream {
   const bindings = collectReferencedSources(page);
   const queryBindings = bindings.filter(isQueryBinding);
+  const defaults = initialFilterValues(page.filters ?? []);
   const subscribers = new Set<(value: PageDataSnapshots) => void>();
   let session: Session | null = null;
 
@@ -48,7 +56,7 @@ export function orchestrate(
       subscribers.add(run);
       session ??= startSession(bindings, queryBindings, gateway, filters, (snapshots) => {
         for (const subscriber of subscribers) notify(subscriber, snapshots);
-      });
+      }, defaults);
       notify(run, session.current());
       return () => {
         if (!subscribers.delete(run)) return;
@@ -57,12 +65,16 @@ export function orchestrate(
           session = null;
         }
       };
+    },
+    setQueryPage(dataSourceId, pageIndex) {
+      session?.setQueryPage(dataSourceId, pageIndex);
     }
   };
 }
 
 interface Session {
   current(): PageDataSnapshots;
+  setQueryPage(dataSourceId: string, pageIndex: number): void;
   dispose(): void;
 }
 
@@ -80,9 +92,36 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
       }
     }
   }
+  const paginationLimits = new Map<string, number>();
+  for (const section of page.sections) {
+    for (const component of section.components) {
+      if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
+        continue;
+      }
+      const source = page.dataSources[component.data.main];
+      const order = source?.source.type === 'query'
+        ? source.source.query.body.dsl_list[0].order
+        : undefined;
+      if (
+        typeof order === 'object' &&
+        order !== null &&
+        !Array.isArray(order) &&
+        Number.isInteger(order.limit) &&
+        Number(order.limit) > 0
+      ) {
+        paginationLimits.set(component.data.main, Number(order.limit));
+      }
+    }
+  }
   return [...sourceIds].flatMap((sourceId) => {
     const dataSource = page.dataSources[sourceId];
-    return dataSource ? [{ sourceId, dataSource }] : [];
+    if (!dataSource) return [];
+    const limit = paginationLimits.get(sourceId);
+    return [{
+      sourceId,
+      dataSource,
+      ...(limit === undefined ? {} : { pagination: { limit } })
+    }];
   });
 }
 
@@ -90,25 +129,35 @@ function isQueryBinding(binding: DataSourceBinding): binding is QueryBinding {
   return binding.dataSource.source.type === 'query';
 }
 
-function initialSnapshots(bindings: DataSourceBinding[]): Map<string, DataSnapshot> {
+function initialSnapshots(
+  bindings: DataSourceBinding[],
+  useEmbeddedInitialRows: boolean
+): Map<string, DataSnapshot> {
   return new Map(
     bindings.map((binding) => [
       binding.sourceId,
       binding.dataSource.source.type === 'inline'
         ? rowsSnapshot(binding.dataSource.source.rows)
+        : useEmbeddedInitialRows && binding.dataSource.source.initial
+          ? rowsSnapshot(
+              binding.dataSource.source.initial.rows,
+              binding.dataSource.source.initial.totalCount
+            )
         : { status: 'loading' }
     ])
   );
 }
 
 function rowsSnapshot(
-  rows: ReadonlyArray<Record<string, unknown>>
+  rows: ReadonlyArray<Record<string, unknown>>,
+  totalCount?: number
 ): DataSnapshot {
   return rows.length === 0
-    ? { status: 'empty' }
+    ? { status: 'empty', ...(totalCount === undefined ? {} : { totalCount }) }
     : {
         status: 'ready',
-        rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows']
+        rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows'],
+        ...(totalCount === undefined ? {} : { totalCount })
       };
 }
 
@@ -125,12 +174,26 @@ function startSession(
   queryBindings: QueryBinding[],
   gateway: DataGateway,
   filters: FilterState | undefined,
-  push: (snapshots: PageDataSnapshots) => void
+  push: (snapshots: PageDataSnapshots) => void,
+  defaults: FilterValues
 ): Session {
-  let snapshots = initialSnapshots(bindings);
+  let values: FilterValues = filters ? new Map() : defaults;
+  let primed = false;
+  const unsubscribeFilters = filters?.subscribe((next) => {
+    if (!primed) {
+      primed = true;
+      values = next;
+    }
+  });
+  const useEmbeddedInitialRows = sameFilterValues(values, defaults);
+  let snapshots = initialSnapshots(bindings, useEmbeddedInitialRows);
   const sequences = new Map<string, number>();
   const cache = new Map<string, DataSnapshot>();
-  let values: FilterValues = new Map();
+  const pageIndexes = new Map(
+    queryBindings
+      .filter((binding) => binding.pagination)
+      .map((binding) => [binding.sourceId, 0])
+  );
   let disposed = false;
   let inFlight = 0;
   const waiters: Array<() => void> = [];
@@ -177,7 +240,11 @@ function startSession(
       { query: EffectiveQuery; members: Array<[QueryBinding, number]> }
     >();
     for (const binding of targets) {
-      const query = composeEffectiveQuery(binding.dataSource, values);
+      const query = composeEffectiveQuery(
+        binding,
+        values,
+        pageIndexes.get(binding.sourceId) ?? 0
+      );
       const key = JSON.stringify(query);
       const group = groups.get(key) ?? { query, members: [] };
       group.members.push([binding, sequences.get(binding.sourceId)!]);
@@ -189,7 +256,9 @@ function startSession(
         if (disposed) return;
         publish(
           members
-            .filter(([binding, sequence]) => sequences.get(binding.sourceId) === sequence)
+            .filter(([binding, sequence]) =>
+              sequences.get(binding.sourceId) === sequence
+            )
             .map(([binding]) => [binding, snapshot])
         );
       };
@@ -201,6 +270,15 @@ function startSession(
       withSlot(() => {
         void execute(query, gateway).then((snapshot) => {
           release();
+          const correctedPage = correctedPageIndex(query, snapshot);
+          if (correctedPage !== undefined) {
+            const corrected = members.map(([binding]) => binding);
+            for (const binding of corrected) {
+              pageIndexes.set(binding.sourceId, correctedPage);
+            }
+            refetch(corrected, false);
+            return;
+          }
           if (snapshot.status === 'ready' || snapshot.status === 'empty') {
             cache.set(cacheKey, snapshot);
           }
@@ -210,8 +288,8 @@ function startSession(
     }
   }
 
-  let primed = false;
-  const unsubscribeFilters = filters?.subscribe((next) => {
+  unsubscribeFilters?.();
+  const unsubscribeLiveFilters = filters?.subscribe((next) => {
     if (!primed) {
       primed = true;
       values = next;
@@ -219,32 +297,49 @@ function startSession(
     }
     const changed = changedFilterIds(values, next);
     values = next;
-    refetch(
-      queryBindings.filter((binding) =>
+    const targets = queryBindings.filter((binding) =>
         Object.keys(binding.dataSource.source.query.filterBindings ?? {}).some((id) =>
           changed.has(id)
         )
-      ),
-      true
-    );
+      );
+    for (const binding of targets) {
+      if (binding.pagination) pageIndexes.set(binding.sourceId, 0);
+    }
+    refetch(targets, true);
   });
 
-  refetch(queryBindings, false);
+  refetch(
+    queryBindings.filter(
+      (binding) => !(useEmbeddedInitialRows && binding.dataSource.source.initial)
+    ),
+    false
+  );
 
   return {
     current: () => snapshots,
+    setQueryPage(dataSourceId, pageIndex) {
+      if (!Number.isInteger(pageIndex) || pageIndex < 0) return;
+      const binding = queryBindings.find(
+        (candidate) => candidate.sourceId === dataSourceId && candidate.pagination
+      );
+      if (!binding || pageIndexes.get(dataSourceId) === pageIndex) return;
+      pageIndexes.set(dataSourceId, pageIndex);
+      refetch([binding], true);
+    },
     dispose() {
       disposed = true;
       waiters.length = 0;
-      unsubscribeFilters?.();
+      unsubscribeLiveFilters?.();
     }
   };
 }
 
 function composeEffectiveQuery(
-  dataSource: QueryDataSource,
-  values: FilterValues
+  binding: QueryBinding,
+  values: FilterValues,
+  pageIndex: number
 ): EffectiveQuery {
+  const dataSource = binding.dataSource;
   const query = dataSource.source.query;
   const filterValues: EffectiveQuery['filterValues'] = [];
   for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
@@ -266,6 +361,14 @@ function composeEffectiveQuery(
     language: 'dqe',
     body: query.body,
     fieldMappings: dataSource.fields,
+    ...(binding.pagination
+      ? {
+          pagination: {
+            offset: pageIndex * binding.pagination.limit,
+            limit: binding.pagination.limit
+          }
+        }
+      : {}),
     filterValues
   };
 }
@@ -275,13 +378,31 @@ async function execute(
   gateway: DataGateway
 ): Promise<DataSnapshot> {
   try {
-    return rowsSnapshot(await gateway.fetchData(query));
+    const result = await gateway.fetchData(query);
+    if (query.pagination && result.totalCount === undefined) {
+      throw new Error('查询分页结果缺少 totalCount');
+    }
+    return rowsSnapshot(result.rows, result.totalCount);
   } catch (cause) {
     return {
       status: 'error',
       error: { message: cause instanceof Error ? cause.message : String(cause) }
     };
   }
+}
+
+function correctedPageIndex(
+  query: EffectiveQuery,
+  snapshot: DataSnapshot
+): number | undefined {
+  if (!query.pagination || snapshot.status === 'loading' || snapshot.status === 'error') {
+    return undefined;
+  }
+  const totalCount = snapshot.totalCount;
+  if (totalCount === undefined || totalCount === 0 || query.pagination.offset < totalCount) {
+    return undefined;
+  }
+  return Math.max(0, Math.ceil(totalCount / query.pagination.limit) - 1);
 }
 
 function changedFilterIds(before: FilterValues, after: FilterValues): Set<string> {
@@ -292,4 +413,8 @@ function changedFilterIds(before: FilterValues, after: FilterValues): Set<string
     }
   }
   return changed;
+}
+
+function sameFilterValues(left: FilterValues, right: FilterValues): boolean {
+  return changedFilterIds(left, right).size === 0;
 }

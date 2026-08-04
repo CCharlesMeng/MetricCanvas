@@ -5,7 +5,7 @@ import type {
   JsonValue,
   Row
 } from '@metriccanvas/page';
-import type { DataGateway } from '@metriccanvas/runtime';
+import type { DataGateway, DataGatewayResult } from '@metriccanvas/runtime';
 
 export const DEFAULT_DQE_ENDPOINT =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
@@ -77,7 +77,7 @@ interface PendingQuery {
   executionId: string;
   query: EffectiveQuery;
   item: JsonObject;
-  resolve(rows: Row[]): void;
+  resolve(result: DataGatewayResult): void;
   reject(error: unknown): void;
 }
 
@@ -214,14 +214,26 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
             );
           }
           const rows = normalizeRows(rawResult.data, call.query);
+          if (
+            typeof rawResult.total_count !== 'number' ||
+            !Number.isInteger(rawResult.total_count) ||
+            rawResult.total_count < 0
+          ) {
+            throw new DqeGatewayError(
+              'DQE_ITEM_ERROR',
+              'DQE 成功查询项的 total_count 必须是非负整数',
+              rawResult
+            );
+          }
+          const totalCount = rawResult.total_count;
           diagnostic(
             call.executionId,
             'normalized',
-            { rowCount: rows.length, rows: rows.slice(0, 20) },
+            { rowCount: rows.length, totalCount, rows: rows.slice(0, 20) },
             batchId,
             index
           );
-          call.resolve(rows);
+          call.resolve({ rows, totalCount });
         } catch (cause) {
           diagnostic(call.executionId, 'error', diagnosticError(cause), batchId, index);
           call.reject(cause);
@@ -274,7 +286,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
         diagnostic(executionId, 'error', diagnosticError(cause));
         return Promise.reject(cause);
       }
-      return new Promise<Row[]>((resolve, reject) => {
+      return new Promise<DataGatewayResult>((resolve, reject) => {
         pending.push({ executionId, query, item, resolve, reject });
         if (!scheduled) {
           scheduled = true;
@@ -297,6 +309,12 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
     } else {
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
+  }
+  if (query.pagination) {
+    const order = isRecord(item.order) ? { ...item.order } : {};
+    order.offset = query.pagination.offset;
+    order.limit = query.pagination.limit;
+    item.order = order;
   }
   return item;
 }

@@ -10,7 +10,7 @@ export type TableHeaderFilterValue =
 
 /** 表格视图状态:由运行时/壳持有,组件只显示当前值并上抛变更。 */
 export interface TableViewState {
-  /** 当前页码(0 起);盲翻设计,不存在总页数 */
+  /** 当前页码(0 起)；查询分页的总页数由 totalCount 派生。 */
   pageIndex: number;
   /** 多列排序,数组序即优先级 */
   sort: TableSortRule[];

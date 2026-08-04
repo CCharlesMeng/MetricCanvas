@@ -9,7 +9,7 @@ describe('统一页面快照流', () => {
     const gateway: DataGateway = {
       async fetchData() {
         calls++;
-        return [];
+        return { rows: [], totalCount: 0 };
       },
       async fetchDimensionValues() {
         return [];
@@ -53,7 +53,7 @@ describe('统一页面快照流', () => {
     const gateway: DataGateway = {
       async fetchData() {
         calls++;
-        return [{ gmv: 5 }];
+        return { rows: [{ gmv: 5 }], totalCount: 1 };
       },
       async fetchDimensionValues() {
         return [];
@@ -124,7 +124,7 @@ describe('统一页面快照流', () => {
     const stream = orchestrate(summaryPage(false), {
       async fetchData() {
         calls += 1;
-        return [{ office: '华东', missing: 3 }];
+        return { rows: [{ office: '华东', missing: 3 }], totalCount: 1 };
       },
       async fetchDimensionValues() {
         return [];
@@ -137,7 +137,8 @@ describe('统一页面快照流', () => {
     expect(calls).toBe(1);
     expect(pushes.at(-1)?.get('inspection-progress')).toEqual({
       status: 'ready',
-      rows: [{ office: '华东', missing: 3 }]
+      rows: [{ office: '华东', missing: 3 }],
+      totalCount: 1
     });
   });
 
@@ -146,7 +147,7 @@ describe('统一页面快照流', () => {
     const stream = orchestrate(summaryPage(true), {
       async fetchData() {
         calls += 1;
-        return [{ office: '华东', missing: 3 }];
+        return { rows: [{ office: '华东', missing: 3 }], totalCount: 1 };
       },
       async fetchDimensionValues() {
         return [];

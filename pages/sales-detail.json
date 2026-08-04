@@ -8,6 +8,15 @@
     "gmv": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "gmv": 604200
+            }
+          ],
+          "totalCount": 1
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -59,6 +68,15 @@
     "order-count": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "order-count": 758
+            }
+          ],
+          "totalCount": 1
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -110,6 +128,24 @@
     "by-region": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "region": "华东",
+              "gmv": 212800
+            },
+            {
+              "region": "华北",
+              "gmv": 190200
+            },
+            {
+              "region": "华南",
+              "gmv": 201200
+            }
+          ],
+          "totalCount": 3
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -165,6 +201,27 @@
     "trend-dual": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "mtime": "2026-07-01",
+              "gmv": 212800,
+              "order-count": 278
+            },
+            {
+              "mtime": "2026-07-02",
+              "gmv": 190200,
+              "order-count": 233
+            },
+            {
+              "mtime": "2026-07-03",
+              "gmv": 201200,
+              "order-count": 247
+            }
+          ],
+          "totalCount": 3
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -232,6 +289,20 @@
     "by-channel": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "channel": "线上",
+              "gmv": 354900
+            },
+            {
+              "channel": "线下",
+              "gmv": 249300
+            }
+          ],
+          "totalCount": 2
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -287,6 +358,42 @@
     "detail-table": {
       "source": {
         "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-04T00:00:00+08:00",
+          "rows": [
+            {
+              "mtime": "2026-07-01",
+              "region": "华东",
+              "channel": "线上",
+              "gmv": 128600
+            },
+            {
+              "mtime": "2026-07-01",
+              "region": "华东",
+              "channel": "线下",
+              "gmv": 84200
+            },
+            {
+              "mtime": "2026-07-02",
+              "region": "华北",
+              "channel": "线上",
+              "gmv": 116800
+            },
+            {
+              "mtime": "2026-07-02",
+              "region": "华北",
+              "channel": "线下",
+              "gmv": 73400
+            },
+            {
+              "mtime": "2026-07-03",
+              "region": "华南",
+              "channel": "线上",
+              "gmv": 109500
+            }
+          ],
+          "totalCount": 6
+        },
         "query": {
           "language": "dqe",
           "body": {
@@ -310,7 +417,10 @@
                   "dims": [],
                   "metrics": []
                 },
-                "order": {}
+                "order": {
+                  "offset": 0,
+                  "limit": 5
+                }
               }
             ]
           },
@@ -524,46 +634,33 @@
             "main": "detail-table"
           },
           "props": {
-            "title": "销售明细(盲翻分页,列头可排序/表头筛选)",
+            "title": "销售明细(查询分页)",
             "columns": [
               {
                 "field": "mtime",
                 "title": "日期",
                 "width": 130,
-                "fixed": "left",
-                "sortable": true,
-                "filterable": {
-                  "mode": "dateRange"
-                }
+                "fixed": "left"
               },
               {
                 "field": "region",
                 "title": "区域",
-                "width": 110,
-                "sortable": true,
-                "filterable": {
-                  "mode": "select"
-                }
+                "width": 110
               },
               {
                 "field": "channel",
                 "title": "渠道",
-                "width": 110,
-                "filterable": {
-                  "mode": "select"
-                }
+                "width": 110
               },
               {
                 "field": "gmv",
                 "title": "GMV",
                 "width": 130,
-                "fixed": "right",
-                "sortable": true
+                "fixed": "right"
               }
             ],
             "pagination": {
-              "mode": "paged",
-              "pageSize": 5
+              "mode": "query"
             }
           }
         }

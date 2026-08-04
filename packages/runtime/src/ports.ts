@@ -1,5 +1,10 @@
 import type { EffectiveQuery, Row } from '@metriccanvas/page';
 
+export interface DataGatewayResult {
+  rows: Row[];
+  totalCount?: number;
+}
+
 /**
  * 页面仓储端口(DDD Repository):按 id 取看板页面。
  * 一期实现:静态文件;二期实现:平台 API。运行时只依赖此接口。
@@ -13,12 +18,12 @@ export interface PageRepository {
 }
 
 /**
- * 数据网关 (Data Gateway):运行时的取数端口——生效查询进、数据行出。
+ * 数据网关 (Data Gateway):运行时的取数端口——生效查询进、标准化行与可选总条数出。
  * 按意图命名,不按实现方命名;适配器在 @metriccanvas/data-gateway,应用壳注入。
  * 当前 query 场景由 DQE 适配器实现；inline 静态场景不访问该端口。
  */
 export interface DataGateway {
-  fetchData(query: EffectiveQuery): Promise<Row[]>;
+  fetchData(query: EffectiveQuery): Promise<DataGatewayResult>;
   /**
    * 维度候选值查询:维度筛选器候选项的唯一来源。
    * 候选项是业务数据(随数据演化),不进入 Schema Metadata。

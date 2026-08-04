@@ -61,7 +61,7 @@
 | 模式 | 组成 | 数据获取 |
 |---|---|---|
 | `inline` | 全部数据源为 `inline` | 页面文档直接提供数据行 |
-| `query` | 全部数据源为 `query` | 统一运行时调用数据网关 |
+| `query` | 全部数据源为 `query` | 使用内嵌初始行或由统一运行时调用数据网关 |
 | `mixed` | 同时包含 `inline` 和 `query` | 两类数据源分别执行 |
 
 `inline` 表示静态数据场景。`query` 表示动态查询场景。DQE 是当前支持的查询语言。
@@ -198,6 +198,16 @@ date-month-day
   },
   "source": {
     "type": "query",
+    "initial": {
+      "capturedAt": "2026-08-04T10:00:00+08:00",
+      "rows": [
+        {
+          "region": "华东",
+          "gmv": 128600
+        }
+      ],
+      "totalCount": 1
+    },
     "query": {
       "language": "dqe",
       "body": {
@@ -209,7 +219,10 @@ date-month-day
               "dims": [],
               "metrics": []
             },
-            "order": {}
+            "order": {
+              "offset": 0,
+              "limit": 10
+            }
           }
         ]
       }
@@ -226,7 +239,10 @@ DQE 查询规则：
 - 每个 DQE 输出字段具有一个 `queryField` 映射；
 - 每个 `queryField` 只映射到一个页面字段；
 - `output_dims` 对应 `role: "dimension"`；
-- `output_metrics` 中的字段名或别名对应 `role: "measure"`。
+- `output_metrics` 中的字段名或别名对应 `role: "measure"`；
+- `initial` 可选，存在时表示默认查询状态的已验证结果；`rows: []` 表示已确认的空结果；
+- 默认入口优先使用 `initial` 且不后台刷新；没有 `initial` 或入口筛选状态不同于默认状态时立即查询；
+- 发生动态查询后不再回退到 `initial`，查询失败进入错误态。
 
 页面数据源表示一个命名结果集。数据网关可以在传输层合并多个页面数据源的查询，不改变页面中的逻辑查询边界。
 
@@ -464,7 +480,7 @@ last90d
 
 ## 表格行为
 
-表格列支持：
+本地分页表格支持：
 
 - 字段列和嵌套列组；
 - 次级字段和徽标字段；
@@ -475,19 +491,34 @@ last90d
 - 单元格选择写入页面筛选状态；
 - 本地分页。
 
-分页示例：
+本地分页示例：
 
 ```json
 {
   "pagination": {
-    "mode": "paged",
-    "pageSize": 10,
-    "numbered": true
+    "mode": "local",
+    "pageSize": 10
   }
 }
 ```
 
-`mode: "none"` 时不声明 `pageSize`、`totalCount` 或 `numbered`。排序、列筛选和分页只作用于数据快照，不修改查询定义。
+查询分页示例：
+
+```json
+{
+  "pagination": {
+    "mode": "query"
+  }
+}
+```
+
+- `mode: "none"` 不分页；
+- `mode: "local"` 只允许绑定 `inline` 数据源，`pageSize` 在组件中声明，排序、表头筛选和分页只作用于数据快照；
+- `mode: "query"` 只允许绑定独占的 `query` 数据源，页大小以 DQE `order.limit` 为唯一真值，初始 `order.offset` 为 `0`；
+- 查询分页改变页码时更新克隆请求的 `order.offset`，页面筛选变化时先把 `offset` 重置为 `0`；
+- DQE 成功结果的 `results[i].total_count` 归一为数据快照的 `totalCount`，用于总条数、数字页码和上下页；错误结果的计数无效；
+- 查询分页存在 `initial` 时必须声明 `initial.totalCount`，并满足 `initial.rows.length = min(order.limit, initial.totalCount)`；
+- 查询分页暂不支持排序和表头筛选；数据变化导致当前页越界时，运行时查询最后一个有效页。
 
 ## 组件 action
 
@@ -543,11 +574,11 @@ action 只用于绑定查询数据源的组件。
 | 状态 | 含义 |
 |---|---|
 | `loading` | 查询正在执行 |
-| `ready` | 存在可渲染数据行 |
-| `empty` | 查询成功且结果为空 |
+| `ready` | 存在可渲染数据行；查询分页可携带 `totalCount` |
+| `empty` | 查询成功且结果为空；查询分页携带 `totalCount: 0` |
 | `error` | 查询或映射失败 |
 
-静态数据源同步产生 `ready` 或 `empty`。查询数据源从 `loading` 进入终态。
+静态数据源同步产生 `ready` 或 `empty`。查询数据源存在适用的 `initial` 时同步产生结果态，否则从 `loading` 进入终态。
 
 ## 校验
 

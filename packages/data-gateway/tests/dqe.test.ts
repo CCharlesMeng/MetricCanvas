@@ -75,11 +75,13 @@ describe('DQE 数据网关', () => {
             results: [
               {
                 code: 'SUCCESS',
-                data: [{ 客户级别: '卓越NA', NA客户数: 15 }]
+                data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
+                total_count: 1
               },
               {
                 code: 'SUCCESS',
-                data: [{ 客户级别: '卓越TOP', NA客户数: 8 }]
+                data: [{ 客户级别: '卓越TOP', NA客户数: 8 }],
+                total_count: 1
               }
             ]
           })
@@ -93,12 +95,14 @@ describe('DQE 数据网关', () => {
     ]);
 
     expect(sent).toEqual([{ dsl_list: [fullDslItem, secondItem] }]);
-    expect(naRows).toEqual([
-      { 'customer-level': '卓越NA', 'na-customer-count': 15 }
-    ]);
-    expect(topRows).toEqual([
-      { 'customer-level': '卓越TOP', 'na-customer-count': 8 }
-    ]);
+    expect(naRows).toEqual({
+      rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
+      totalCount: 1
+    });
+    expect(topRows).toEqual({
+      rows: [{ 'customer-level': '卓越TOP', 'na-customer-count': 8 }],
+      totalCount: 1
+    });
   });
 
   it('单项失败只拒绝对应逻辑查询', async () => {
@@ -108,10 +112,11 @@ describe('DQE 数据网关', () => {
           JSON.stringify({
             retCode: 'CBC.0000',
             results: [
-              { code: 'FAILED', data: [] },
+              { code: 'FAILED', data: [], total_count: 'ignored' },
               {
                 code: 'SUCCESS',
-                data: [{ 客户级别: '卓越NA', NA客户数: 15 }]
+                data: [{ 客户级别: '卓越NA', NA客户数: 15 }],
+                total_count: 1
               }
             ]
           })
@@ -129,7 +134,10 @@ describe('DQE 数据网关', () => {
     ).toBe('DQE_ITEM_ERROR');
     expect(succeeded).toEqual({
       status: 'fulfilled',
-      value: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }]
+      value: {
+        rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
+        totalCount: 1
+      }
     });
   });
 
@@ -146,6 +154,7 @@ describe('DQE 数据网关', () => {
 
   it('按显式筛选绑定覆盖副本，不修改页面保存的原始 DQE', () => {
     const query = dqeQuery(fullDslItem);
+    query.pagination = { offset: 20, limit: 10 };
     query.filterValues = [
       {
         target: 'dimension',
@@ -170,6 +179,8 @@ describe('DQE 数据网关', () => {
       start: '2026-08',
       end: '2026-08'
     });
+    expect(effective.order).toEqual({ offset: 20, limit: 10 });
+    expect(fullDslItem.order).toEqual({});
     expect(
       (((fullDslItem.filter as JsonObject).dims as JsonObject[])[1] as JsonObject)
         .dim_value_list

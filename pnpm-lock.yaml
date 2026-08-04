@@ -123,6 +123,10 @@ importers:
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../runtime
+    devDependencies:
+      '@metriccanvas/dqe-sim':
+        specifier: workspace:*
+        version: link:../../tools/dqe-sim
 
   packages/embed:
     dependencies:

@@ -24,6 +24,7 @@ interface CustomerActivityRiskFixture {
 export interface DqeSimItemResult {
   code: 'SUCCESS' | 'DQE_SIM_UNSUPPORTED_QUERY';
   data: JsonRecord[];
+  total_count: number;
   retDesc?: string;
   dqe: {
     columns: Array<{
@@ -83,7 +84,7 @@ export function executeDqeItem(item: unknown): DqeSimItemResult {
   if (!equalJson(item.filter.metrics, [])) {
     return unsupported('仅支持 filter.metrics=[]');
   }
-  if (!equalJson(item.order, {})) return unsupported('仅支持 order={}');
+  if (!validOrder(item.order)) return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   if (!Array.isArray(item.filter.dims)) return unsupported('filter.dims 必须是数组');
   const dimensions = item.filter.dims.filter(isRecord);
   const expectedDimensionCount = Object.keys(fixture.query.dimensions).length + 1;
@@ -113,11 +114,11 @@ export function executeDqeItem(item: unknown): DqeSimItemResult {
   const unknown = levels.find((level) => !rows.has(level));
   if (unknown) return unsupported(`不支持的客户级别:${unknown}`);
 
-  return {
-    code: 'SUCCESS',
-    data: levels.map((level) => ({ ...rows.get(level)! })),
-    dqe: metadata(fixture)
-  };
+  return successResult(
+    item,
+    levels.map((level) => ({ ...rows.get(level)! })),
+    metadata(fixture)
+  );
 }
 
 function executeCustomerActivityRisk(
@@ -275,8 +276,8 @@ function customerActivityFilters(
   if (!isRecord(item.filter) || !equalJson(item.filter.metrics, [])) {
     return { error: unsupported('仅支持 filter.metrics=[]') };
   }
-  if (!equalJson(item.order, {})) {
-    return { error: unsupported('仅支持 order={}') };
+  if (!validOrder(item.order)) {
+    return { error: unsupported('order 必须为 {} 或包含非负 offset/正整数 limit') };
   }
   if (!Array.isArray(item.filter.dims)) {
     return { error: unsupported('filter.dims 必须是数组') };
@@ -320,10 +321,7 @@ function customerActivitySuccess(
 ): DqeSimItemResult {
   const dimensions = stringArray(item.output_dims) ?? [];
   const metrics = stringArray(item.output_metrics) ?? [];
-  return {
-    code: 'SUCCESS',
-    data,
-    dqe: {
+  return successResult(item, data, {
       columns: [
         ...dimensions.map((caption) => ({
           id: `dqe-sim.${caption}`,
@@ -342,8 +340,7 @@ function customerActivitySuccess(
       limit: -1,
       offset: -1,
       sql: null
-    }
-  };
+    });
 }
 
 function executeSalesAnalytics(item: JsonRecord): DqeSimItemResult {
@@ -366,6 +363,9 @@ function executeSalesAnalytics(item: JsonRecord): DqeSimItemResult {
   }
   if (!isRecord(item.filter) || !Array.isArray(item.filter.dims)) {
     return unsupported('filter.dims 必须是数组');
+  }
+  if (!validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
   let rows = salesAnalyticsFixture.rows as JsonRecord[];
   for (const entry of item.filter.dims) {
@@ -398,10 +398,7 @@ function executeSalesAnalytics(item: JsonRecord): DqeSimItemResult {
     grouped.set(key, target);
   }
   const data = [...grouped.values()];
-  return {
-    code: 'SUCCESS',
-    data,
-    dqe: {
+  return successResult(item, data, {
       columns: [
         ...dimensions.map((caption) => ({
           id: `dqe-sim.${caption}`,
@@ -420,8 +417,7 @@ function executeSalesAnalytics(item: JsonRecord): DqeSimItemResult {
       limit: -1,
       offset: -1,
       sql: null
-    }
-  };
+    });
 }
 
 function unsupported(retDesc: string): DqeSimItemResult {
@@ -429,7 +425,51 @@ function unsupported(retDesc: string): DqeSimItemResult {
     code: 'DQE_SIM_UNSUPPORTED_QUERY',
     retDesc,
     data: [],
+    total_count: 0,
     dqe: emptyMetadata()
+  };
+}
+
+function successResult(
+  item: JsonRecord,
+  data: JsonRecord[],
+  dqe: DqeSimItemResult['dqe']
+): DqeSimItemResult {
+  const page = pageOrder(item.order, data.length);
+  return {
+    code: 'SUCCESS',
+    data: data.slice(page.offset, page.offset + page.limit),
+    total_count: data.length,
+    dqe: {
+      ...dqe,
+      limit: page.paginated ? page.limit : -1,
+      offset: page.paginated ? page.offset : -1
+    }
+  };
+}
+
+function validOrder(value: unknown): boolean {
+  if (!isRecord(value)) return false;
+  if (Object.keys(value).length === 0) return true;
+  return (
+    Number.isInteger(value.offset) &&
+    Number(value.offset) >= 0 &&
+    Number.isInteger(value.limit) &&
+    Number(value.limit) > 0
+  );
+}
+
+function pageOrder(
+  value: unknown,
+  rowCount: number
+): { offset: number; limit: number; paginated: boolean } {
+  if (!isRecord(value) || Object.keys(value).length === 0) {
+    return { offset: 0, limit: rowCount, paginated: false };
+  }
+  return {
+    offset: Number(value.offset),
+    limit: Number(value.limit),
+    paginated: true
   };
 }
 

@@ -35,11 +35,14 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       diagnostics
     });
 
-    await expect(gateway.fetchData(query())).resolves.toEqual([
-      { 'customer-level': '卓越NA', 'na-customer-count': 15 },
-      { 'customer-level': '战略NA', 'na-customer-count': 12 },
-      { 'customer-level': '核心NA', 'na-customer-count': 9 }
-    ]);
+    await expect(gateway.fetchData(query())).resolves.toEqual({
+      rows: [
+        { 'customer-level': '卓越NA', 'na-customer-count': 15 },
+        { 'customer-level': '战略NA', 'na-customer-count': 12 },
+        { 'customer-level': '核心NA', 'na-customer-count': 9 }
+      ],
+      totalCount: 3
+    });
     expect(diagnostics.records().map((record) => record.phase)).toEqual([
       'base',
       'effective',
@@ -64,11 +67,14 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
     });
 
-    await expect(gateway.fetchData(top100Query())).resolves.toEqual([
-      { 'customer-level': '卓越NA', 'top100-customer-count': 12 },
-      { 'customer-level': '战略NA', 'top100-customer-count': 36 },
-      { 'customer-level': '核心NA', 'top100-customer-count': 39 }
-    ]);
+    await expect(gateway.fetchData(top100Query())).resolves.toEqual({
+      rows: [
+        { 'customer-level': '卓越NA', 'top100-customer-count': 12 },
+        { 'customer-level': '战略NA', 'top100-customer-count': 36 },
+        { 'customer-level': '核心NA', 'top100-customer-count': 39 }
+      ],
+      totalCount: 3
+    });
   });
 
   it('把同一轮 NA 与 Top100 逻辑查询合并为一个真实 HTTP 请求', async () => {
@@ -90,8 +96,8 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       gateway.fetchData(top100Query())
     ]);
 
-    expect(naRows).toHaveLength(3);
-    expect(top100Rows).toHaveLength(3);
+    expect(naRows.rows).toHaveLength(3);
+    expect(top100Rows.rows).toHaveLength(3);
     expect(requests).toHaveLength(1);
     expect(requests[0]).toContain('"dsl_list": [');
     expect(requests[0]).toContain('"NA客户数"');

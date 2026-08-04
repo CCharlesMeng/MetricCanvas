@@ -11,8 +11,15 @@ export interface InlineSource {
   rows: DataRow[];
 }
 
+export interface EmbeddedInitialRows {
+  capturedAt: string;
+  rows: DataRow[];
+  totalCount?: number;
+}
+
 export interface QuerySource {
   type: 'query';
+  initial?: EmbeddedInitialRows;
   query: DqeQueryDefinition;
 }
 

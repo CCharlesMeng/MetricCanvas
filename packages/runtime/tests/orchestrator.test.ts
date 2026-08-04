@@ -91,7 +91,7 @@ describe('页面数据源快照编排', () => {
     const gateway: DataGateway = {
       async fetchData(query) {
         received.push(query);
-        return [{ region: '华东', revenue: 42 }];
+        return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
       },
       async fetchDimensionValues() {
         return [];
@@ -116,7 +116,8 @@ describe('页面数据源快照编排', () => {
     });
     expect(pushes.at(-1)?.get('sales')).toEqual({
       status: 'ready',
-      rows: [{ region: '华东', revenue: 42 }]
+      rows: [{ region: '华东', revenue: 42 }],
+      totalCount: 1
     });
     unsubscribe();
   });
@@ -127,7 +128,7 @@ describe('页面数据源快照编排', () => {
     const gateway: DataGateway = {
       async fetchData(query) {
         received.push(query);
-        return [];
+        return { rows: [], totalCount: 0 };
       },
       async fetchDimensionValues() {
         return [];
@@ -147,6 +148,155 @@ describe('页面数据源快照编排', () => {
       queryField: '地区',
       values: ['华东']
     }]);
+    unsubscribe();
+  });
+
+  it('默认入口直接使用内嵌初始行，非默认入口立即查询', async () => {
+    const document = page();
+    const source = document.dataSources.sales?.source;
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    source.initial = {
+      capturedAt: '2026-08-04T00:00:00+08:00',
+      rows: [{ region: '首屏', revenue: 10 }],
+      totalCount: 1
+    };
+    let calls = 0;
+    const gateway: DataGateway = {
+      async fetchData() {
+        calls += 1;
+        return { rows: [{ region: '动态', revenue: 20 }], totalCount: 1 };
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    };
+    const initialPushes: PageDataSnapshots[] = [];
+    const initialStream = orchestrate(document, gateway);
+    const unsubscribeInitial = initialStream.subscribe((value) => initialPushes.push(value));
+
+    expect(initialPushes.at(-1)?.get('sales')).toEqual({
+      status: 'ready',
+      rows: [{ region: '首屏', revenue: 10 }],
+      totalCount: 1
+    });
+    await flush();
+    expect(calls).toBe(0);
+    unsubscribeInitial();
+
+    const filters = createFilterState();
+    filters.write('region-filter', {
+      type: 'dimension',
+      dimension: 'region',
+      values: ['华南']
+    });
+    const dynamicPushes: PageDataSnapshots[] = [];
+    const unsubscribeDynamic = orchestrate(document, gateway, filters).subscribe((value) =>
+      dynamicPushes.push(value)
+    );
+    expect(dynamicPushes.at(-1)?.get('sales')).toEqual({ status: 'loading' });
+    await flush();
+    expect(calls).toBe(1);
+    expect(dynamicPushes.at(-1)?.get('sales')).toEqual({
+      status: 'ready',
+      rows: [{ region: '动态', revenue: 20 }],
+      totalCount: 1
+    });
+    filters.write('region-filter', null);
+    await flush();
+    expect(calls).toBe(2);
+    expect(dynamicPushes.at(-1)?.get('sales')).toEqual({
+      status: 'ready',
+      rows: [{ region: '动态', revenue: 20 }],
+      totalCount: 1
+    });
+    unsubscribeDynamic();
+  });
+
+  it('动态查询失败进入错误态，不回退到内嵌初始行', async () => {
+    const document = page();
+    const source = document.dataSources.sales?.source;
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    source.initial = {
+      capturedAt: '2026-08-04T00:00:00+08:00',
+      rows: [{ region: '首屏', revenue: 10 }]
+    };
+    const filters = createFilterState();
+    const pushes: PageDataSnapshots[] = [];
+    const stream = orchestrate(document, {
+      async fetchData() {
+        throw new Error('查询失败');
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    }, filters);
+    const unsubscribe = stream.subscribe((value) => pushes.push(value));
+
+    filters.write('region-filter', {
+      type: 'dimension',
+      dimension: 'region',
+      values: ['华东']
+    });
+    await flush();
+    expect(pushes.at(-1)?.get('sales')).toEqual({
+      status: 'error',
+      error: { message: '查询失败' }
+    });
+    unsubscribe();
+  });
+
+  it('查询分页写入 offset，越界时回查最后有效页，筛选变化回到第一页', async () => {
+    const document = page();
+    const sales = document.dataSources.sales;
+    if (sales.source.type !== 'query') throw new Error('测试数据源必须为 query');
+    sales.source.query.body.dsl_list[0].order = { offset: 0, limit: 10 };
+    sales.source.initial = {
+      capturedAt: '2026-08-04T00:00:00+08:00',
+      rows: Array.from({ length: 10 }, (_, index) => ({
+        region: `首屏${index + 1}`,
+        revenue: index + 1
+      })),
+      totalCount: 25
+    };
+    const table = document.sections[0]!.components[1];
+    if (table?.type !== 'table') throw new Error('测试组件必须为 table');
+    table.props.pagination = { mode: 'query' };
+    const received: EffectiveQuery[] = [];
+    const gateway: DataGateway = {
+      async fetchData(query) {
+        received.push(query);
+        const offset = query.pagination?.offset ?? 0;
+        return offset >= 25
+          ? { rows: [], totalCount: 25 }
+          : { rows: [{ region: `第${offset / 10 + 1}页`, revenue: offset }], totalCount: 25 };
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    };
+    const filters = createFilterState();
+    const pushes: PageDataSnapshots[] = [];
+    const stream = orchestrate(document, gateway, filters);
+    const unsubscribe = stream.subscribe((value) => pushes.push(value));
+
+    expect(received).toHaveLength(0);
+    stream.setQueryPage('sales', 5);
+    await flush();
+    await flush();
+    expect(received.map((query) => query.pagination?.offset)).toEqual([50, 20]);
+    expect(pushes.at(-1)?.get('sales')).toEqual({
+      status: 'ready',
+      rows: [{ region: '第3页', revenue: 20 }],
+      totalCount: 25
+    });
+
+    filters.write('region-filter', {
+      type: 'dimension',
+      dimension: 'region',
+      values: ['华东']
+    });
+    await flush();
+    expect(received.at(-1)?.pagination).toEqual({ offset: 0, limit: 10 });
     unsubscribe();
   });
 });

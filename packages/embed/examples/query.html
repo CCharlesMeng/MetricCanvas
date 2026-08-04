@@ -15,24 +15,36 @@
     <script>
       const rows = [
         { region: '华东', gmv: 386000 },
-        { region: '华南', gmv: 271000 }
+        { region: '华南', gmv: 271000 },
+        ...Array.from({ length: 23 }, (_, index) => ({
+          region: `区域${String(index + 3).padStart(2, '0')}`,
+          gmv: 250000 - index * 1000
+        }))
       ];
+      window.queryCalls = [];
       const dataGateway = {
         async fetchData(query) {
+          window.queryCalls.push(query);
           const region = query.filterValues.find(
             filter =>
               filter.target === 'dimension' &&
               filter.queryField === '区域'
           );
           const selected = region ? new Set(region.values.map(String)) : null;
-          return selected ? rows.filter(row => selected.has(row.region)) : rows;
+          const filtered = selected ? rows.filter(row => selected.has(row.region)) : rows;
+          const offset = query.pagination?.offset ?? 0;
+          const limit = query.pagination?.limit ?? filtered.length;
+          return {
+            rows: filtered.slice(offset, offset + limit),
+            totalCount: filtered.length
+          };
         },
         async fetchDimensionValues() {
           return rows.map(row => row.region);
         }
       };
       const pageDocument = {
-        schemaVersion: '3.0',
+        schemaVersion: '4.0',
         id: 'query-example',
         dataSources: {
           sales: {
@@ -53,6 +65,11 @@
             },
             source: {
               type: 'query',
+              initial: {
+                capturedAt: '2026-08-04T00:00:00+08:00',
+                rows: rows.slice(0, 10),
+                totalCount: rows.length
+              },
               query: {
                 language: 'dqe',
                 body: {
@@ -60,7 +77,7 @@
                     output_dims: ['区域'],
                     output_metrics: ['成交总额'],
                     filter: { dims: [], metrics: [] },
-                    order: {}
+                    order: { offset: 0, limit: 10 }
                   }]
                 },
                 filterBindings: {
@@ -98,7 +115,8 @@
                     format: 'number-grouped'
                   }
                 }
-              ]
+              ],
+              pagination: { mode: 'query' }
             }
           }]
         }]

@@ -96,6 +96,7 @@ function invariantErrors(page: Page): TypedError[] {
       errors.push(...componentErrors(page, component, path, filterIds));
     });
   });
+  errors.push(...queryPaginationErrors(page));
 
   const capabilities = derivePageCapabilities(page);
   if (capabilities.static && filters.length > 0) {
@@ -111,11 +112,21 @@ function invariantErrors(page: Page): TypedError[] {
 
 function inlineRowErrors(dataSource: DataSource, sourcePath: string): TypedError[] {
   if (!isInlineDataSource(dataSource)) return [];
-  const errors: TypedError[] = [];
-  const fields = dataSource.fields;
+  return rowContractErrors(
+    dataSource.source.rows,
+    dataSource.fields,
+    `${sourcePath}/source/rows`
+  );
+}
 
-  dataSource.source.rows.forEach((row, rowIndex) => {
-    const rowPath = `${sourcePath}/source/rows/${rowIndex}`;
+function rowContractErrors(
+  rows: ReadonlyArray<Record<string, FieldValue>>,
+  fields: Record<string, FieldDefinition>,
+  rowsPath: string
+): TypedError[] {
+  const errors: TypedError[] = [];
+  rows.forEach((row, rowIndex) => {
+    const rowPath = `${rowsPath}/${rowIndex}`;
     for (const key of Object.keys(row)) {
       if (!Object.hasOwn(fields, key)) {
         errors.push(
@@ -149,6 +160,24 @@ function queryContractErrors(
   const metrics = dqeMetricNames(item.output_metrics);
   const outputs = new Set([...dimensions, ...metrics]);
   const mapped = new Map<string, string>();
+
+  if (dataSource.source.initial) {
+    if (Number.isNaN(Date.parse(dataSource.source.initial.capturedAt))) {
+      errors.push(
+        schemaError(
+          `${sourcePath}/source/initial/capturedAt`,
+          'capturedAt 必须是有效的 RFC 3339 日期时间'
+        )
+      );
+    }
+    errors.push(
+      ...rowContractErrors(
+        dataSource.source.initial.rows,
+        dataSource.fields,
+        `${sourcePath}/source/initial/rows`
+      )
+    );
+  }
 
   for (const [fieldId, definition] of Object.entries(dataSource.fields)) {
     if (!('queryField' in definition) || typeof definition.queryField !== 'string') continue;
@@ -432,19 +461,6 @@ function componentErrors(
         )
       );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
-      if (
-        component.props.pagination?.mode === 'none' &&
-        (component.props.pagination.pageSize !== undefined ||
-          component.props.pagination.totalCount !== undefined ||
-          component.props.pagination.numbered !== undefined)
-      ) {
-        errors.push(
-          schemaError(
-            `${componentPath}/props/pagination/pageSize`,
-            `pagination.mode='none' 时不得声明 pageSize、totalCount 或 numbered`
-          )
-        );
-      }
       break;
     case 'mapChart':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
@@ -461,6 +477,143 @@ function componentErrors(
       break;
   }
   return errors;
+}
+
+function queryPaginationErrors(page: Page): TypedError[] {
+  const errors: TypedError[] = [];
+  const references = new Map<string, string[]>();
+  const queryTables: Array<{
+    sourceId: string;
+    componentPath: string;
+  }> = [];
+
+  const addReference = (sourceId: string, path: string) => {
+    const paths = references.get(sourceId) ?? [];
+    paths.push(path);
+    references.set(sourceId, paths);
+  };
+
+  page.sections.forEach((section, sectionIndex) => {
+    section.components.forEach((component, componentIndex) => {
+      const componentPath = `/sections/${sectionIndex}/components/${componentIndex}`;
+      for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
+        addReference(sourceId, `${componentPath}/data/${escapePointer(slot)}`);
+      }
+      if (component.type === 'aiSummary') {
+        for (const [name, related] of Object.entries(component.props.relatedData)) {
+          addReference(
+            related.source,
+            `${componentPath}/props/relatedData/${escapePointer(name)}/source`
+          );
+        }
+      }
+      if (component.type !== 'table') return;
+      const pagination = component.props.pagination;
+      const sourceId = component.data.main;
+      const source = page.dataSources[sourceId];
+      if (pagination?.mode === 'local' && source?.source.type !== 'inline') {
+        errors.push(
+          schemaError(
+            `${componentPath}/props/pagination/mode`,
+            `pagination.mode='local' 只允许绑定 inline 数据源:${sourceId}`
+          )
+        );
+      }
+      if (pagination?.mode !== 'query') return;
+      if (source?.source.type !== 'query') {
+        errors.push(
+          schemaError(
+            `${componentPath}/props/pagination/mode`,
+            `pagination.mode='query' 只允许绑定 query 数据源:${sourceId}`
+          )
+        );
+        return;
+      }
+      queryTables.push({ sourceId, componentPath });
+      const item = source.source.query.body.dsl_list[0];
+      const order = jsonRecord(item.order);
+      if (!order || order.offset !== 0) {
+        errors.push(
+          schemaError(
+            `/dataSources/${escapePointer(sourceId)}/source/query/body/dsl_list/0/order/offset`,
+            '查询分页要求 DQE order.offset 为 0'
+          )
+        );
+      }
+      if (!order || !Number.isInteger(order.limit) || Number(order.limit) <= 0) {
+        errors.push(
+          schemaError(
+            `/dataSources/${escapePointer(sourceId)}/source/query/body/dsl_list/0/order/limit`,
+            '查询分页要求 DQE order.limit 为正整数'
+          )
+        );
+      }
+      const initial = source.source.initial;
+      if (initial) {
+        if (initial.totalCount === undefined) {
+          errors.push(
+            schemaError(
+              `/dataSources/${escapePointer(sourceId)}/source/initial/totalCount`,
+              '查询分页的内嵌初始行必须声明 totalCount'
+            )
+          );
+        } else if (
+          order &&
+          Number.isInteger(order.limit) &&
+          initial.rows.length !== Math.min(Number(order.limit), initial.totalCount)
+        ) {
+          errors.push(
+            schemaError(
+              `/dataSources/${escapePointer(sourceId)}/source/initial/rows`,
+              '查询分页的内嵌初始行必须是完整第一页'
+            )
+          );
+        }
+      }
+      rejectQueryTableViewColumns(component.props.columns, componentPath, errors);
+    });
+  });
+
+  for (const { sourceId, componentPath } of queryTables) {
+    const usages = references.get(sourceId) ?? [];
+    if (usages.length !== 1) {
+      errors.push(
+        schemaError(
+          `${componentPath}/data/main`,
+          `查询分页表格必须独占页面数据源 ${sourceId}，当前引用 ${usages.length} 次`
+        )
+      );
+    }
+  }
+  return errors;
+}
+
+function rejectQueryTableViewColumns(
+  columns: TableColumnNode[],
+  componentPath: string,
+  errors: TypedError[]
+): void {
+  const visit = (column: TableColumnNode, path: string) => {
+    if (column.kind === 'group') {
+      column.children.forEach((child, index) => visit(child, `${path}/children/${index}`));
+      return;
+    }
+    if (column.sortable) {
+      errors.push(schemaError(`${path}/sortable`, '查询分页暂不支持排序'));
+    }
+    if (column.filterable) {
+      errors.push(schemaError(`${path}/filterable`, '查询分页暂不支持表头筛选'));
+    }
+  };
+  columns.forEach((column, index) =>
+    visit(column, `${componentPath}/props/columns/${index}`)
+  );
+}
+
+function jsonRecord(value: unknown): Record<string, unknown> | undefined {
+  return typeof value === 'object' && value !== null && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : undefined;
 }
 
 type BindingCheck = (

@@ -46,6 +46,10 @@ export interface EffectiveQuery {
   language: 'dqe';
   body: DqeRequestBody;
   fieldMappings: Record<string, QueryFieldDefinition>;
+  pagination?: {
+    offset: number;
+    limit: number;
+  };
   filterValues: Array<
     | {
         target: 'dimension';

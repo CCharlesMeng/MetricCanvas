@@ -182,13 +182,10 @@ export interface TableProps {
   /** container 按配置宽度比例压缩列，避免表格产生横向滚动。 */
   fit?: 'content' | 'container';
   columns: TableColumnNode[];
-  pagination?: {
-    mode: 'none' | 'paged';
-    pageSize?: number;
-    /** 数据服务提供总数槽前的受控展示值；主要用于示例与固定报告。 */
-    totalCount?: number;
-    numbered?: boolean;
-  };
+  pagination?:
+    | { mode: 'none' }
+    | { mode: 'local'; pageSize: number; numbered?: boolean }
+    | { mode: 'query' };
   actions?: ComponentAction[];
 }
 
@@ -396,7 +393,8 @@ export function deriveComponentCapabilities(
     live: hasQuery,
     filters: hasQuery,
     actions: hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection),
-    remotePagination: false
+    remotePagination:
+      component.type === 'table' && component.props.pagination?.mode === 'query'
   };
 }
 

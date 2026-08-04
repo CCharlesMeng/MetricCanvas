@@ -50,6 +50,7 @@
     type MetricDataSlots,
     type NamedDataSlots,
     type TableHeaderFilterValue,
+    type TablePaginationState,
     type TableSelectedCell,
     type TableViewState
   } from '@metriccanvas/widgets';
@@ -215,6 +216,7 @@
     disposers.push(
       pageStream.subscribe((next) => {
         snapshots = next;
+        syncQueryTablePages(loaded, next);
       })
     );
     emit?.({ type: 'ready', pageId: loaded.id });
@@ -234,6 +236,7 @@
       if (component.type !== 'table' || !capabilities.components[component.id]?.live) {
         continue;
       }
+      if (component.props.pagination?.mode === 'query') continue;
       const source = loaded.dataSources[component.data.main];
       for (const column of buildTableColumnLayout(
         component.props.columns,
@@ -302,6 +305,9 @@
 
   function handleTablePage(component: TableComponent, pageIndex: number) {
     pushTableView(component, { ...tableViewOf(component), pageIndex });
+    if (component.props.pagination?.mode === 'query') {
+      stream?.setQueryPage(component.data.main, pageIndex);
+    }
   }
 
   function handleTableSort(component: TableComponent, sort: TableViewState['sort']) {
@@ -392,7 +398,7 @@
     for (const component of pageComponents(loaded)) {
       if (
         component.type !== 'table' ||
-        component.props.pagination?.mode !== 'paged'
+        component.props.pagination?.mode !== 'query'
       ) {
         continue;
       }
@@ -405,6 +411,29 @@
           : [];
       if (!subscriptions.some((id) => changed.has(id))) continue;
       pushTableView(component, { ...view, pageIndex: 0 });
+    }
+  }
+
+  function syncQueryTablePages(loaded: Page, next: PageDataSnapshots) {
+    for (const component of pageComponents(loaded)) {
+      if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
+        continue;
+      }
+      const snapshot = next.get(component.data.main);
+      if (
+        !snapshot ||
+        (snapshot.status !== 'ready' && snapshot.status !== 'empty') ||
+        snapshot.totalCount === undefined
+      ) {
+        continue;
+      }
+      const pageSize = queryPageSize(loaded, component);
+      if (pageSize === undefined) continue;
+      const lastPageIndex = Math.max(0, Math.ceil(snapshot.totalCount / pageSize) - 1);
+      const view = tableViewOf(component);
+      if (view.pageIndex > lastPageIndex) {
+        pushTableView(component, { ...view, pageIndex: lastPageIndex });
+      }
     }
   }
 
@@ -546,7 +575,13 @@
         data[slot] = { snapshot: visible, fields };
       } else if (snapshot.status === 'empty') {
         data[slot] = {
-          snapshot: { status: 'ready', rows: [], hasMore: false },
+          snapshot: {
+            status: 'ready',
+            rows: [],
+            ...(snapshot.totalCount === undefined
+              ? {}
+              : { totalCount: snapshot.totalCount })
+          },
           fields
         };
       }
@@ -566,6 +601,9 @@
     snapshot: Extract<DataSnapshot, { status: 'ready' }>
   ): Extract<DataSnapshot, { status: 'ready' }> {
     const view = tableViewOf(component);
+    if (component.props.pagination?.mode === 'query') {
+      return snapshot;
+    }
     const applied = appliedHeaderFiltersOf(component);
     let rows = snapshot.rows.filter((row) =>
       Object.entries(applied).every(([field, filter]) => {
@@ -604,19 +642,19 @@
         return 0;
       });
     }
-    if (component.props.pagination?.mode !== 'paged') {
-      return { status: 'ready', rows, hasMore: false };
+    if (component.props.pagination?.mode !== 'local') {
+      return { status: 'ready', rows };
     }
-    const pageSize = component.props.pagination.pageSize ?? 10;
+    const pageSize = component.props.pagination.pageSize;
     const offset = view.pageIndex * pageSize;
     return {
       status: 'ready',
-      rows: rows.slice(offset, offset + pageSize),
-      hasMore: offset + pageSize < rows.length
+      rows: rows.slice(offset, offset + pageSize)
     };
   }
 
   function tableFilterOptions(component: TableComponent): Record<string, string[]> {
+    if (component.props.pagination?.mode === 'query') return {};
     const snapshot = componentSnapshots(component).get('main');
     if (snapshot?.status !== 'ready') return headerFilterOptions;
     const fields = buildTableColumnLayout(component.props.columns).leaves
@@ -629,6 +667,39 @@
       ])
     );
     return { ...local, ...headerFilterOptions };
+  }
+
+  function tablePaginationState(
+    loaded: Page,
+    component: TableComponent,
+    snapshotsBySlot: ComponentSnapshots
+  ): TablePaginationState | undefined {
+    const pagination = component.props.pagination;
+    if (!pagination || pagination.mode === 'none') return undefined;
+    const snapshot = snapshotsBySlot.get('main');
+    if (!snapshot || (snapshot.status !== 'ready' && snapshot.status !== 'empty')) {
+      return undefined;
+    }
+    if (pagination.mode === 'local') {
+      const totalCount = snapshot.status === 'ready' ? snapshot.rows.length : 0;
+      return {
+        pageSize: pagination.pageSize,
+        totalCount
+      };
+    }
+    const pageSize = queryPageSize(loaded, component);
+    if (pageSize === undefined || snapshot.totalCount === undefined) return undefined;
+    return { pageSize, totalCount: snapshot.totalCount };
+  }
+
+  function queryPageSize(loaded: Page, component: TableComponent): number | undefined {
+    const source = loaded.dataSources[component.data.main];
+    if (source?.source.type !== 'query') return undefined;
+    const order = source.source.query.body.dsl_list[0].order;
+    if (typeof order !== 'object' || order === null || Array.isArray(order)) return undefined;
+    return typeof order.limit === 'number' && Number.isInteger(order.limit) && order.limit > 0
+      ? order.limit
+      : undefined;
   }
 
   function mainData(
@@ -798,6 +869,7 @@
             view={tableViewOf(component)}
             selectedCell={tableSelectedCell(component)}
             filterOptions={tableFilterOptions(component)}
+            pagination={tablePaginationState(loaded, component, slots)}
             onpage={(pageIndex) => handleTablePage(component, pageIndex)}
             onsort={(sort) => handleTableSort(component, sort)}
             onheaderfilter={(field, value) =>
