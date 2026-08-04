@@ -368,6 +368,7 @@
                 class:align-right={column.align === 'right'}
                 class:fixed={!!column.fixed}
                 class:emphasized={column.emphasis === 'strong'}
+                class:selectable={Boolean(column.selection && interactive)}
                 class:selected={isSelected(i, column)}
                 class:danger={isDanger(column, rawValue)}
                 class:negative={column.visual === 'signed' && polarity === 'negative'}
@@ -586,6 +587,9 @@
   tbody td.danger {
     color: #f23030;
   }
+  tbody td.selectable {
+    background: rgb(33 111 240 / 0.05);
+  }
   tbody td.selected {
     color: #1476ff;
     background: rgb(33 111 240 / 0.05);
@@ -607,7 +611,7 @@
     width: 100%;
     padding: 2px 6px;
     color: #191919;
-    background: rgb(33 111 240 / 0.05);
+    background: transparent;
     border: 1px solid transparent;
     border-radius: 6px;
     cursor: pointer;
