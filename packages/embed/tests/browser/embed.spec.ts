@@ -145,3 +145,30 @@ test('ESM 单文件产物可直接导入', async ({ page }) => {
     })
   ).toBeVisible();
 });
+
+test('AI 总结通过假 SSE 契约流式渲染且只发送声明字段', async ({ page }) => {
+  await page.goto('/examples/ai-summary.html');
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const markdown = host.locator('.safe-markdown');
+
+  await expect(host.getByRole('heading', { name: '风险总结' })).toBeVisible();
+  await expect(markdown).toBeVisible();
+  const earlyText = (await markdown.textContent()) ?? '';
+  await page.waitForTimeout(180);
+  const laterText = (await markdown.textContent()) ?? '';
+  expect(laterText.length).toBeGreaterThan(earlyText.length);
+  await expect(host.getByText(/华东代表处有 3 个未考察客户/u)).toBeVisible();
+
+  const request = await page.evaluate(() => window.aiSummaryRequests[0]!);
+  expect(request.credentials).toBe('include');
+  expect(request.headers).toMatchObject({ client: 'PC_CloudIoc' });
+  expect(request.url).toMatch(/\/fake-ai\/conversations\/.+\/chat$/u);
+  const input = request.body.context_info['ai-summary'].input_data;
+  expect(input.business_data).toEqual([
+    {
+      question: '各代表处风险数据',
+      data: { office: ['华东'], missing: [3] }
+    }
+  ]);
+  expect(JSON.stringify(request.body)).not.toContain('不得外传');
+});

@@ -16,6 +16,13 @@ declare global {
     queryEvents: RuntimeEvent[];
     queryRuntime: RuntimeHandle;
     missingRuntime: RuntimeHandle;
+    aiSummaryRuntime: RuntimeHandle;
+    aiSummaryRequests: Array<{
+      url: string;
+      credentials: RequestCredentials;
+      headers: Record<string, string>;
+      body: any;
+    }>;
   }
 }
 
