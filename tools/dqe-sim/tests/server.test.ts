@@ -1,7 +1,9 @@
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
 import {
+  AI_SUMMARY_CONVERSATIONS_PATH,
   createDqeSimServer,
+  type DqeSimServerOptions,
   DQE_EXECUTE_PATH
 } from '../src/server';
 
@@ -106,6 +108,41 @@ describe('DQE Sim HTTP 契约', () => {
     });
   });
 
+  it('按字符和真实时间间隔返回开发用 AI Summary SSE', async () => {
+    const baseUrl = await listen({
+      aiSummaryText: '流式总结',
+      aiSummaryCharacterIntervalMs: 25
+    });
+    const response = await fetch(
+      `${baseUrl}${AI_SUMMARY_CONVERSATIONS_PATH}conversation-1/chat`,
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          origin: 'http://127.0.0.1:5173'
+        },
+        body: JSON.stringify({ context_info: {} })
+      }
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('content-type')).toContain('text/event-stream');
+    expect(response.headers.get('access-control-allow-origin')).toBe(
+      'http://127.0.0.1:5173'
+    );
+    expect(response.headers.get('access-control-allow-credentials')).toBe('true');
+
+    const events = await readSseEvents(response);
+    expect(events.map(({ payload }) => payload)).toEqual([
+      { event: 'generate', content: '流' },
+      { event: 'generate', content: '式' },
+      { event: 'generate', content: '总' },
+      { event: 'generate', content: '结' },
+      { event: 'finish', content: {} }
+    ]);
+    expect(events[3]!.receivedAt - events[0]!.receivedAt).toBeGreaterThanOrEqual(50);
+  });
+
   it('在同一个 dsl_list 中保持 NA 与 Top100 查询项和结果项对位', async () => {
     const baseUrl = await listen();
     const response = await fetch(`${baseUrl}${DQE_EXECUTE_PATH}`, {
@@ -161,12 +198,37 @@ describe('DQE Sim HTTP 契约', () => {
   });
 });
 
-async function listen(): Promise<string> {
-  const server = createDqeSimServer({ logger: false });
+async function listen(options: DqeSimServerOptions = {}): Promise<string> {
+  const server = createDqeSimServer({ logger: false, ...options });
   servers.push(server);
   await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address() as AddressInfo;
   return `http://127.0.0.1:${address.port}`;
+}
+
+async function readSseEvents(
+  response: Response
+): Promise<Array<{ payload: unknown; receivedAt: number }>> {
+  if (!response.body) throw new Error('SSE 响应缺少 body');
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  const events: Array<{ payload: unknown; receivedAt: number }> = [];
+  let buffer = '';
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+    const frames = buffer.split('\n\n');
+    buffer = frames.pop() ?? '';
+    for (const frame of frames) {
+      const data = frame
+        .split('\n')
+        .find((line) => line.startsWith('data: '))
+        ?.slice('data: '.length);
+      if (data) events.push({ payload: JSON.parse(data), receivedAt: Date.now() });
+    }
+  }
+  return events;
 }
 
 function execute(baseUrl: string, item: unknown): Promise<Response> {

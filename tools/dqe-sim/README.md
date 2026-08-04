@@ -16,6 +16,15 @@ pnpm dev:dqe
 http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute
 ```
 
+同时把 `VITE_AI_SUMMARY_ENDPOINT` 注入为：
+
+```text
+http://127.0.0.1:18228/api/ai/conversations/
+```
+
+该开发端点按字符、按时间间隔返回 SSE，用于本地验收 AI Summary
+的请求组装、流式状态与页面渲染。
+
 页面地址：
 
 ```text

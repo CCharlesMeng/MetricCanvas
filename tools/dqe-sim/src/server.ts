@@ -3,7 +3,16 @@ import { executeDqeItem } from './execute';
 
 export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
+export const AI_SUMMARY_CONVERSATIONS_PATH = '/api/ai/conversations/';
 export const DEFAULT_DQE_SIM_PORT = 18228;
+
+const DEFAULT_AI_SUMMARY_TEXT = [
+  '1. **整体NA客户未考察情况**：各代表处均存在无公司考察NA客户，需结合清单逐项关注。',
+  '',
+  '2. **2026年未考察情况**：2026年无公司考察NA客户数据已纳入本次风险检查。',
+  '',
+  '3. **TOP100项目客户未考察情况**：TOP100项目客户相关未考察数据已纳入重点跟踪。'
+].join('\n');
 
 type JsonRecord = Record<string, unknown>;
 
@@ -11,6 +20,8 @@ export interface DqeSimServerOptions {
   logger?: ((message: string) => void) | false;
   createRequestId?: () => string;
   now?: () => number;
+  aiSummaryText?: string;
+  aiSummaryCharacterIntervalMs?: number;
 }
 
 interface RouteResult {
@@ -29,9 +40,37 @@ export function createDqeSimServer(options: DqeSimServerOptions = {}) {
   return createServer((request, response) => {
     const startedAt = now();
     const requestId = createRequestId();
+    const url = new URL(request.url ?? '/', 'http://dqe-sim');
+    if (request.method === 'POST' && isAiSummaryChatPath(url.pathname)) {
+      void streamAiSummary(request, response, {
+        requestId,
+        text: options.aiSummaryText ?? DEFAULT_AI_SUMMARY_TEXT,
+        characterIntervalMs: options.aiSummaryCharacterIntervalMs ?? 35
+      }).then(
+        (result) => {
+          logExchange(logger, requestId, request, result, now() - startedAt);
+        },
+        (cause) => {
+          const result: RouteResult = {
+            status: 500,
+            body: {
+              retCode: 'CBC.9999',
+              retDesc: `DQE Sim AI Summary 内部错误:${String(cause)}`
+            }
+          };
+          if (!response.headersSent) {
+            writeResponse(response, result.status, result.body, requestId, request);
+          } else if (!response.writableEnded) {
+            response.destroy(cause instanceof Error ? cause : undefined);
+          }
+          logExchange(logger, requestId, request, result, now() - startedAt);
+        }
+      );
+      return;
+    }
     void route(request).then(
       (result) => {
-        writeResponse(response, result.status, result.body, requestId);
+        writeResponse(response, result.status, result.body, requestId, request);
         logExchange(logger, requestId, request, result, now() - startedAt);
       },
       (cause) => {
@@ -42,7 +81,7 @@ export function createDqeSimServer(options: DqeSimServerOptions = {}) {
             retDesc: `DQE Sim 内部错误:${String(cause)}`
           }
         };
-        writeResponse(response, result.status, result.body, requestId);
+        writeResponse(response, result.status, result.body, requestId, request);
         logExchange(logger, requestId, request, result, now() - startedAt);
       }
     );
@@ -98,9 +137,10 @@ function writeResponse(
   response: ServerResponse,
   status: number,
   body: unknown,
-  requestId: string
+  requestId: string,
+  request: IncomingMessage
 ): void {
-  cors(response);
+  cors(response, request);
   response.setHeader('x-request-id', requestId);
   if (status === 204) {
     response.writeHead(status).end();
@@ -110,11 +150,86 @@ function writeResponse(
   response.end(JSON.stringify(body));
 }
 
-function cors(response: ServerResponse): void {
-  response.setHeader('access-control-allow-origin', '*');
-  response.setHeader('access-control-allow-headers', 'content-type');
+function cors(response: ServerResponse, request: IncomingMessage): void {
+  const origin = request.headers.origin;
+  response.setHeader('access-control-allow-origin', origin ?? '*');
+  if (origin) {
+    response.setHeader('access-control-allow-credentials', 'true');
+    response.setHeader('vary', 'Origin');
+  }
+  response.setHeader('access-control-allow-headers', 'content-type,client,env');
   response.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS');
   response.setHeader('access-control-expose-headers', 'x-request-id');
+}
+
+function isAiSummaryChatPath(pathname: string): boolean {
+  if (!pathname.startsWith(AI_SUMMARY_CONVERSATIONS_PATH)) return false;
+  const conversationRoute = pathname.slice(AI_SUMMARY_CONVERSATIONS_PATH.length);
+  return /^[^/]+\/chat$/u.test(conversationRoute);
+}
+
+async function streamAiSummary(
+  request: IncomingMessage,
+  response: ServerResponse,
+  input: {
+    requestId: string;
+    text: string;
+    characterIntervalMs: number;
+  }
+): Promise<RouteResult> {
+  const parsed = await readJson(request);
+  if (!parsed.ok) {
+    const result: RouteResult = {
+      status: 400,
+      body: { retCode: 'CBC.9001', retDesc: '请求体不是合法 JSON' },
+      requestBody: parsed.raw
+    };
+    writeResponse(response, result.status, result.body, input.requestId, request);
+    return result;
+  }
+  if (!isRecord(parsed.value)) {
+    const result: RouteResult = {
+      status: 400,
+      body: { retCode: 'CBC.9001', retDesc: '请求体必须是 JSON 对象' },
+      requestBody: parsed.value
+    };
+    writeResponse(response, result.status, result.body, input.requestId, request);
+    return result;
+  }
+
+  cors(response, request);
+  response.setHeader('x-request-id', input.requestId);
+  response.writeHead(200, {
+    'content-type': 'text/event-stream;charset=utf-8',
+    'cache-control': 'no-cache,no-transform',
+    connection: 'keep-alive',
+    'x-accel-buffering': 'no'
+  });
+  response.flushHeaders();
+
+  const characters = Array.from(input.text);
+  const characterIntervalMs = Math.max(0, input.characterIntervalMs);
+  for (let index = 0; index < characters.length; index += 1) {
+    if (response.destroyed) break;
+    response.write(
+      `data: ${JSON.stringify({ event: 'generate', content: characters[index] })}\n\n`
+    );
+    if (index < characters.length - 1) {
+      await delay(characterIntervalMs);
+    }
+  }
+  if (!response.destroyed) {
+    response.end(`data: ${JSON.stringify({ event: 'finish', content: {} })}\n\n`);
+  }
+  return {
+    status: response.destroyed ? 499 : 200,
+    body: { streamedCharacters: characters.length },
+    requestBody: parsed.value
+  };
+}
+
+function delay(durationMs: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, durationMs));
 }
 
 function logExchange(
