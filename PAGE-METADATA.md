@@ -1,6 +1,6 @@
 # 看板页面协议
 
-看板页面是统一运行时直接消费的声明式文档。页面协议版本为 `3.0`。
+看板页面是统一运行时直接消费的声明式文档。页面协议版本为 `4.0`。
 
 实现依据：
 
@@ -15,7 +15,7 @@
 
 ```json
 {
-  "schemaVersion": "3.0",
+  "schemaVersion": "4.0",
   "id": "sales-overview",
   "meta": {
     "description": "销售概览"
@@ -28,7 +28,7 @@
 
 | 字段 | 必填 | 说明 |
 |---|---:|---|
-| `schemaVersion` | 是 | 固定为 `"3.0"` |
+| `schemaVersion` | 是 | 固定为 `"4.0"` |
 | `id` | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | 否 | 页面资产信息 |
 | `dataSources` | 是 | 命名页面数据源 |
@@ -352,6 +352,9 @@ last90d
 | `mapChart` | 地图 | `main` |
 | `rankingCard` | 排名列表 | `main` |
 | `text` | 说明文本与页面链接 | 无 |
+| `aiSummary` | 基于关联数据生成流式 AI 总结 | 无；使用 `props.relatedData` |
+
+组件自身的可见标题统一使用 `props.title`。组件能力目录声明标题是必填、可选或不支持；`text.props.heading` 已从 4.0 删除。
 
 数据组件通过 `data` 把本地槽名映射到页面数据源：
 
@@ -376,6 +379,41 @@ last90d
 ```
 
 每个槽引用一个存在的页面数据源。
+
+### AI 总结组件
+
+`aiSummary` 是内化执行的生成组件，不是第三种页面数据源，也不声明 `data`：
+
+```json
+{
+  "id": "inspection-risk-summary",
+  "type": "aiSummary",
+  "layout": { "span": 12 },
+  "props": {
+    "title": "风险总结",
+    "promptTemplate": "只能使用输入的前端原始数据，输出三个编号段落。",
+    "relatedData": {
+      "risk": {
+        "source": "inspection-progress",
+        "description": "各代表处公司考察风险数据",
+        "fields": [
+          { "field": "representative-office", "term": "代表处" },
+          { "field": "inspection-na-missing", "term": "无公司考察NA客户数" }
+        ]
+      }
+    }
+  }
+}
+```
+
+规则：
+
+- `title` 可选；`promptTemplate` 和 `relatedData` 必填且非空；
+- `promptTemplate` 是纯文本，不支持插值或表达式；
+- `source` 必须引用页面数据源，`field` 必须存在于该数据源结果字段契约；
+- 运行时只向 AI 服务发送 `fields` 明示的字段；
+- 仅被 `relatedData` 引用的数据源也会执行；
+- 禁止 `data`、`scene`、`body`、`variant` 和外部协议参数。
 
 ## 字段绑定
 
@@ -494,7 +532,7 @@ action 只用于绑定查询数据源的组件。
 
 ## 数据快照
 
-统一运行时把页面数据源转换为组件数据槽中的数据快照。
+统一运行时按页面数据源 id 形成唯一数据快照。普通组件数据槽与 AI 总结关联数据在渲染时读取同一份快照；AI 总结生成结果另存为按组件 id 隔离的 AI 总结快照。
 
 | 状态 | 含义 |
 |---|---|

@@ -1,9 +1,11 @@
 import type { TypedError } from '@metriccanvas/page';
 import type { DataGateway } from '@metriccanvas/runtime';
+import type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
 
 export interface RuntimeInput {
   document: unknown;
   dataGateway?: DataGateway;
+  aiSummary?: AiSummaryConfig;
   /** URLSearchParams 形式，不带前导问号。 */
   initialSearch?: string;
 }

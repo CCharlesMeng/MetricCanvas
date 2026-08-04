@@ -21,6 +21,12 @@ export { default as MapChart } from './MapChart.svelte';
 export { default as RankingCard } from './RankingCard.svelte';
 export { default as TextBlock } from './TextBlock.svelte';
 export type { TextBlockLink } from './TextBlock.svelte';
+export { default as SafeMarkdown } from './SafeMarkdown.svelte';
+export {
+  parseSafeMarkdown,
+  type MarkdownBlock,
+  type MarkdownInline
+} from './safe-markdown';
 export {
   fieldLabel,
   fieldValue,

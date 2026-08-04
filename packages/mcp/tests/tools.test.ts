@@ -72,7 +72,7 @@ function server() {
   });
 }
 
-describe('v3 页面搭建 MCP', () => {
+describe('v4 页面搭建 MCP', () => {
   it('只暴露数据上下文与页面生命周期工具，不再暴露旧指标工具', async () => {
     const connection = await connectInProcessMetricCanvasMcp(server());
     const names = (await connection.client.listTools()).map((tool) => tool.name);
@@ -97,9 +97,11 @@ describe('v3 页面搭建 MCP', () => {
     await connection.close();
   });
 
-  it('Prompt 只描述 v3、inline 和 DQE 流程', () => {
+  it('Prompt 描述 v4、inline、DQE 和 AI 总结边界', () => {
     expect(PAGE_BUILDING_PROMPT).toContain('inline');
     expect(PAGE_BUILDING_PROMPT).toContain('DQE');
+    expect(PAGE_BUILDING_PROMPT).toContain('aiSummary');
+    expect(PAGE_BUILDING_PROMPT).toContain('props.title');
     expect(PAGE_BUILDING_PROMPT).not.toContain('search_catalog');
     expect(PAGE_BUILDING_PROMPT).not.toContain('METRIC_GAP');
   });

@@ -8,7 +8,7 @@ import {
 } from '@metriccanvas/agent-runner';
 
 const pageDocument = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'sales-total',
   dataSources: {
     sales: {

@@ -68,7 +68,7 @@ describe('Page JSON 即时预览文档', () => {
     }
   });
 
-  it('默认预览直接使用 pages 中的正式页面文档，并通过 v3 校验', () => {
+  it('默认预览直接使用 pages 中的正式页面文档，并通过 v4 校验', () => {
     expect(DEFAULT_PREVIEW_PAGE.id).toBe('customer-activity-risk-briefing');
     expect(validate(DEFAULT_PREVIEW_PAGE)).toEqual([]);
   });

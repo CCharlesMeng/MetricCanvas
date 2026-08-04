@@ -4,7 +4,7 @@ import {
   type DataSource
 } from '../src';
 
-describe('v3 页面数据源字段解析', () => {
+describe('v4 页面数据源字段解析', () => {
   it('inline 直接使用显式结果字段契约', () => {
     const source: DataSource = {
       fields: {

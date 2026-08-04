@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { parseSafeMarkdown } from '../src/lib/safe-markdown';
+import { parseSafeMarkdown } from '../src/safe-markdown';
 
-describe('Agent 安全 Markdown 子集', () => {
+describe('安全 Markdown 子集', () => {
   it('保留原始 HTML 为普通文本，并拒绝 javascript 链接', () => {
     expect(
       parseSafeMarkdown(

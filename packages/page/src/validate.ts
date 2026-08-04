@@ -335,6 +335,54 @@ function componentErrors(
     case 'reportHeader':
     case 'text':
       break;
+    case 'aiSummary': {
+      const terms = new Map<string, string>();
+      for (const [relatedId, related] of Object.entries(component.props.relatedData)) {
+        const relatedPath =
+          `${componentPath}/props/relatedData/${escapePointer(relatedId)}`;
+        const source = page.dataSources[related.source];
+        if (!source) {
+          errors.push(
+            schemaError(
+              `${relatedPath}/source`,
+              `关联数据引用了未知数据源:${related.source}`
+            )
+          );
+          continue;
+        }
+        const fields = resolveDataSourceFields(source);
+        const seen = new Set<string>();
+        related.fields.forEach((binding, fieldIndex) => {
+          const fieldPath = `${relatedPath}/fields/${fieldIndex}`;
+          if (!Object.hasOwn(fields, binding.field)) {
+            errors.push(
+              schemaError(
+                `${fieldPath}/field`,
+                `关联字段 ${binding.field} 不在数据源 ${related.source} 中`
+              )
+            );
+          }
+          if (seen.has(binding.field)) {
+            errors.push(
+              schemaError(`${fieldPath}/field`, `关联字段重复:${binding.field}`)
+            );
+          }
+          seen.add(binding.field);
+          const previous = terms.get(binding.field);
+          if (previous !== undefined && previous !== binding.term) {
+            errors.push(
+              schemaError(
+                `${fieldPath}/term`,
+                `关联字段 ${binding.field} 的术语映射冲突:${previous}/${binding.term}`
+              )
+            );
+          } else {
+            terms.set(binding.field, binding.term);
+          }
+        });
+      }
+      break;
+    }
     case 'metricCard':
       component.props.rows.forEach((row, rowIndex) => {
         check(row.valueField, `${componentPath}/props/rows/${rowIndex}/valueField`, 'measure');

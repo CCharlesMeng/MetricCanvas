@@ -6,6 +6,7 @@ export interface ComponentCatalogEntry {
   chooseWhen: string[];
   dataShape: string;
   requiredProps: string[];
+  title: 'required' | 'optional' | 'unsupported';
   defaultSpan: number;
 }
 
@@ -20,6 +21,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['任何完整看板页面的开头'],
     dataShape: '不绑定页面数据源',
     requiredProps: ['title'],
+    title: 'required',
     defaultSpan: 12
   },
   {
@@ -28,6 +30,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['总额、数量、完成率、KPI、核心指标、年度活动进展'],
     dataShape: '单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric',
     requiredProps: ['rows[].label', 'rows[].valueField'],
+    title: 'optional',
     defaultSpan: 3
   },
   {
@@ -36,6 +39,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
     dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',
     requiredProps: ['categoryField', 'series[].field'],
+    title: 'optional',
     defaultSpan: 6
   },
   {
@@ -44,6 +48,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['趋势、走势、按日/月变化、时间序列'],
     dataShape: '一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段',
     requiredProps: ['xField', 'series[].field'],
+    title: 'optional',
     defaultSpan: 8
   },
   {
@@ -52,6 +57,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['占比、构成、份额，且类别数量较少'],
     dataShape: '一个 dimension 类别字段 + 一个 metric 数值字段',
     requiredProps: ['categoryField', 'valueField'],
+    title: 'optional',
     defaultSpan: 4
   },
   {
@@ -60,6 +66,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细'],
     dataShape: '一个或多个 dimension/metric 字段组成的多行记录',
     requiredProps: ['columns[].field'],
+    title: 'optional',
     defaultSpan: 12
   },
   {
@@ -68,6 +75,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['明确要求中国/世界地图，且地域名称能映射到地图'],
     dataShape: '地域名称 dimension 字段 + 一个 metric 数值字段',
     requiredProps: ['nameField', 'valueField', 'map'],
+    title: 'optional',
     defaultSpan: 8
   },
   {
@@ -76,6 +84,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['排行、排名、Top N、领先/落后对象'],
     dataShape: '名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制',
     requiredProps: ['nameField', 'valueField'],
+    title: 'optional',
     defaultSpan: 4
   },
   {
@@ -84,6 +93,16 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     chooseWhen: ['说明、提示、已确认结论；不能代替数据图表'],
     dataShape: '不绑定页面数据源',
     requiredProps: [],
+    title: 'optional',
+    defaultSpan: 12
+  },
+  {
+    type: 'aiSummary',
+    purpose: '基于声明的关联数据流式生成 AI 总结',
+    chooseWhen: ['需要将当前页面查询结果动态总结为文本'],
+    dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
+    requiredProps: ['promptTemplate', 'relatedData'],
+    title: 'optional',
     defaultSpan: 12
   }
 ] as const;

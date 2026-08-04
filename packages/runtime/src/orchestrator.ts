@@ -1,6 +1,4 @@
 import {
-  isDataComponent,
-  type DataComponent,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
@@ -10,45 +8,39 @@ import {
 import type { FilterState, FilterValues } from './filter-state';
 import type { DataGateway } from './ports';
 
-/** 单个组件按命名数据槽分发的数据快照。 */
-export type ComponentSnapshots = ReadonlyMap<string, DataSnapshot>;
-
-/** 页面数据快照：组件 id → 数据槽 → 快照。 */
-export type PageSnapshots = ReadonlyMap<string, ComponentSnapshots>;
+/** 页面数据快照的唯一真元：页面数据源 id → 快照。 */
+export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
 
 /** 兼容 Svelte store 的最小订阅契约。 */
 export interface Subscribable<T> {
   subscribe(run: (value: T) => void): () => void;
 }
 
-export type PageSnapshotStream = Subscribable<PageSnapshots>;
+export type PageSnapshotStream = Subscribable<PageDataSnapshots>;
 
-interface DataBinding {
-  key: string;
-  component: DataComponent;
-  slot: string;
+interface DataSourceBinding {
+  sourceId: string;
   dataSource: DataSource;
 }
 
-interface QueryBinding extends DataBinding {
+interface QueryBinding extends DataSourceBinding {
   dataSource: QueryDataSource;
 }
 
 /**
- * 页面数据编排器：直接消费 Page，并统一执行 inline 与 query 数据源。
+ * 页面数据编排器：只执行被组件数据槽或 AI 总结关联数据引用的数据源。
  *
  * inline 数据立即成为终态；query 数据按生效查询去重、缓存并限制并发。
- * 页面筛选仅通过 DQE `filterBindings` 写入明确的外部字段，组件展示状态不会
- * 被偷偷翻译为查询协议。
+ * 快照按 dataSourceId 唯一存储，组件数据槽由 Runtime UI 在渲染时投影。
  */
 export function orchestrate(
   page: Page,
   gateway: DataGateway,
   filters?: FilterState
 ): PageSnapshotStream {
-  const bindings = collectBindings(page);
+  const bindings = collectReferencedSources(page);
   const queryBindings = bindings.filter(isQueryBinding);
-  const subscribers = new Set<(value: PageSnapshots) => void>();
+  const subscribers = new Set<(value: PageDataSnapshots) => void>();
   let session: Session | null = null;
 
   return {
@@ -70,47 +62,43 @@ export function orchestrate(
 }
 
 interface Session {
-  current(): PageSnapshots;
+  current(): PageDataSnapshots;
   dispose(): void;
 }
 
-function collectBindings(page: Page): DataBinding[] {
-  const bindings: DataBinding[] = [];
+function collectReferencedSources(page: Page): DataSourceBinding[] {
+  const sourceIds = new Set<string>();
   for (const section of page.sections) {
     for (const component of section.components) {
-      if (!isDataComponent(component)) continue;
-      for (const [slot, sourceId] of Object.entries(component.data)) {
-        const dataSource = page.dataSources[sourceId];
-        if (!dataSource) continue;
-        bindings.push({
-          key: `${component.id}\u0000${slot}`,
-          component,
-          slot,
-          dataSource
-        });
+      for (const sourceId of Object.values(component.data ?? {})) {
+        sourceIds.add(sourceId);
+      }
+      if (component.type === 'aiSummary') {
+        for (const related of Object.values(component.props.relatedData)) {
+          sourceIds.add(related.source);
+        }
       }
     }
   }
-  return bindings;
+  return [...sourceIds].flatMap((sourceId) => {
+    const dataSource = page.dataSources[sourceId];
+    return dataSource ? [{ sourceId, dataSource }] : [];
+  });
 }
 
-function isQueryBinding(binding: DataBinding): binding is QueryBinding {
+function isQueryBinding(binding: DataSourceBinding): binding is QueryBinding {
   return binding.dataSource.source.type === 'query';
 }
 
-function initialSnapshots(bindings: DataBinding[]): Map<string, ComponentSnapshots> {
-  const snapshots = new Map<string, ComponentSnapshots>();
-  for (const binding of bindings) {
-    const slots = new Map(snapshots.get(binding.component.id) ?? []);
-    slots.set(
-      binding.slot,
+function initialSnapshots(bindings: DataSourceBinding[]): Map<string, DataSnapshot> {
+  return new Map(
+    bindings.map((binding) => [
+      binding.sourceId,
       binding.dataSource.source.type === 'inline'
         ? rowsSnapshot(binding.dataSource.source.rows)
         : { status: 'loading' }
-    );
-    snapshots.set(binding.component.id, slots);
-  }
-  return snapshots;
+    ])
+  );
 }
 
 function rowsSnapshot(
@@ -124,7 +112,7 @@ function rowsSnapshot(
       };
 }
 
-function notify(run: (value: PageSnapshots) => void, snapshots: PageSnapshots): void {
+function notify(run: (value: PageDataSnapshots) => void, snapshots: PageDataSnapshots): void {
   try {
     run(snapshots);
   } catch (cause) {
@@ -133,11 +121,11 @@ function notify(run: (value: PageSnapshots) => void, snapshots: PageSnapshots): 
 }
 
 function startSession(
-  bindings: DataBinding[],
+  bindings: DataSourceBinding[],
   queryBindings: QueryBinding[],
   gateway: DataGateway,
   filters: FilterState | undefined,
-  push: (snapshots: PageSnapshots) => void
+  push: (snapshots: PageDataSnapshots) => void
 ): Session {
   let snapshots = initialSnapshots(bindings);
   const sequences = new Map<string, number>();
@@ -168,15 +156,8 @@ function startSession(
   function publish(updates: ReadonlyArray<[QueryBinding, DataSnapshot]>): void {
     if (updates.length === 0) return;
     const next = new Map(snapshots);
-    const changed = new Map<string, Map<string, DataSnapshot>>();
     for (const [binding, snapshot] of updates) {
-      let slots = changed.get(binding.component.id);
-      if (!slots) {
-        slots = new Map(next.get(binding.component.id) ?? []);
-        changed.set(binding.component.id, slots);
-        next.set(binding.component.id, slots);
-      }
-      slots.set(binding.slot, snapshot);
+      next.set(binding.sourceId, snapshot);
     }
     snapshots = next;
     push(snapshots);
@@ -188,7 +169,7 @@ function startSession(
       publish(targets.map((binding) => [binding, { status: 'loading' }]));
     }
     for (const binding of targets) {
-      sequences.set(binding.key, (sequences.get(binding.key) ?? 0) + 1);
+      sequences.set(binding.sourceId, (sequences.get(binding.sourceId) ?? 0) + 1);
     }
 
     const groups = new Map<
@@ -199,7 +180,7 @@ function startSession(
       const query = composeEffectiveQuery(binding.dataSource, values);
       const key = JSON.stringify(query);
       const group = groups.get(key) ?? { query, members: [] };
-      group.members.push([binding, sequences.get(binding.key)!]);
+      group.members.push([binding, sequences.get(binding.sourceId)!]);
       groups.set(key, group);
     }
 
@@ -208,7 +189,7 @@ function startSession(
         if (disposed) return;
         publish(
           members
-            .filter(([binding, sequence]) => sequences.get(binding.key) === sequence)
+            .filter(([binding, sequence]) => sequences.get(binding.sourceId) === sequence)
             .map(([binding]) => [binding, snapshot])
         );
       };

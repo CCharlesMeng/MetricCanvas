@@ -7,10 +7,10 @@ import {
 
 const doc = (schemaVersion: unknown): unknown => ({ schemaVersion });
 
-describe('schemaVersion 3.0 判定', () => {
-  it('只接受 3.0 并拒绝 1.0/2.0', () => {
-    expect(supportedVersions()).toEqual(['3.0']);
-    expect(versionErrors(doc('3.0'))).toEqual([]);
+describe('schemaVersion 4.0 判定', () => {
+  it('只接受 4.0 并拒绝旧版本', () => {
+    expect(supportedVersions()).toEqual(['4.0']);
+    expect(versionErrors(doc('4.0'))).toEqual([]);
     expect(versionErrors(doc('2.0'))).toEqual([
       expect.objectContaining({
         type: 'SCHEMA_ERROR',

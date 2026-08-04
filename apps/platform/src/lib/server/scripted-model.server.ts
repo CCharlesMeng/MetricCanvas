@@ -7,7 +7,7 @@ import type {
 const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 
 /**
- * 无外部模型时的确定性回退。它只生成 v3 inline 页面；用户明确要求动态数据时，
+ * 无外部模型时的确定性回退。它只生成 v4 inline 页面；用户明确要求动态数据时，
  * 先检索数据上下文，再生成最小 DQE 页面。
  */
 export function createComponentSelectingScriptedProvider(runId = 'local'): ModelProvider {
@@ -39,7 +39,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
       }
       if (isAuthoringConversation(messages)) {
         return {
-          content: 'v3 看板页面已生成并校验，当前仍是未保存工作副本。',
+          content: 'v4 看板页面已生成并校验，当前仍是未保存工作副本。',
           toolCalls: []
         };
       }
@@ -69,7 +69,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
 function inlinePage(pageId: string, intent: string): Record<string, unknown> {
   const title = intent.trim() || '业务概览';
   return {
-    schemaVersion: '3.0',
+    schemaVersion: '4.0',
     id: pageId,
     meta: { description: title },
     dataSources: {
@@ -112,7 +112,7 @@ function inlinePage(pageId: string, intent: string): Record<string, unknown> {
 
 function dqePage(pageId: string): Record<string, unknown> {
   return {
-    schemaVersion: '3.0',
+    schemaVersion: '4.0',
     id: pageId,
     dataSources: {
       customers: {

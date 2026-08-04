@@ -3,7 +3,7 @@ import { validate } from '../src/validate';
 
 function rawPage(): any {
   return {
-    schemaVersion: '3.0',
+    schemaVersion: '4.0',
     id: 'dqe-page',
     filters: [
       {

@@ -4,7 +4,7 @@ import { validate } from '@metriccanvas/page';
 import { createComponentSelectingScriptedProvider } from '../src/lib/server/scripted-model.server';
 
 describe('离线页面搭建模型', () => {
-  it('静态诉求生成 v3 inline 页面并进入校验', async () => {
+  it('静态诉求生成 v4 inline 页面并进入校验', async () => {
     const provider = createComponentSelectingScriptedProvider('test');
     const first = await provider.complete({
       messages: [{ role: 'user', content: '创建一张静态经营概览' }],
@@ -13,7 +13,7 @@ describe('离线页面搭建模型', () => {
     expect(first.toolCalls?.[0]?.name).toBe('validate_page');
     const document = (first.toolCalls?.[0]?.input as Record<string, unknown>)?.document;
     expect(validate(document)).toEqual([]);
-    expect(document).toMatchObject({ schemaVersion: '3.0' });
+    expect(document).toMatchObject({ schemaVersion: '4.0' });
   });
 
   it('动态诉求先检索数据上下文', async () => {

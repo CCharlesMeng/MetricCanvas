@@ -6,7 +6,7 @@ import {
 } from '../src/authoring';
 
 const document = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'sales-overview',
   dataSources: {},
   sections: []

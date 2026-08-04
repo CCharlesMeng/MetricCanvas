@@ -11,7 +11,7 @@ import {
 } from '../src/lib/page-editor';
 
 const document: Page = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'sales-overview',
   dataSources: {
     summary: {

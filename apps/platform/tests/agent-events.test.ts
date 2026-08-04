@@ -27,7 +27,7 @@ describe('Agent 事件工作副本提取', () => {
   });
 
   it('返回最近一次校验通过的页面文档', () => {
-    const validDocument = { schemaVersion: '3.0', id: 'gmv-metric-card' };
+    const validDocument = { schemaVersion: '4.0', id: 'gmv-metric-card' };
     const events: AgentEvent[] = [
       {
         type: 'tool_finished',

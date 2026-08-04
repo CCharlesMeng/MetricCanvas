@@ -11,6 +11,10 @@ export type MarkdownBlock =
   | { type: 'code'; value: string }
   | { type: 'list'; ordered: boolean; items: MarkdownInline[][] };
 
+/**
+ * 将受限 Markdown 解析为结构化节点。调用方按节点渲染，不接收原始 HTML，
+ * 因此服务端返回的标签和脚本始终只能作为文本显示。
+ */
 export function parseSafeMarkdown(source: string): MarkdownBlock[] {
   const lines = source.replace(/\r\n?/gu, '\n').split('\n');
   const blocks: MarkdownBlock[] = [];
@@ -72,10 +76,7 @@ export function parseSafeMarkdown(source: string): MarkdownBlock[] {
       paragraph.push(lines[index]!.trim());
       index += 1;
     }
-    blocks.push({
-      type: 'paragraph',
-      content: parseInline(paragraph.join(' '))
-    });
+    blocks.push({ type: 'paragraph', content: parseInline(paragraph.join(' ')) });
   }
   return blocks;
 }
@@ -87,8 +88,9 @@ function parseInline(source: string): MarkdownInline[] {
   for (const match of source.matchAll(pattern)) {
     const start = match.index ?? 0;
     if (start > cursor) output.push({ type: 'text', value: source.slice(cursor, start) });
-    if (match[2] && match[3] && safeHref(match[3])) {
-      output.push({ type: 'link', value: match[2], href: safeHref(match[3])! });
+    const href = match[3] ? safeHref(match[3]) : null;
+    if (match[2] && href) {
+      output.push({ type: 'link', value: match[2], href });
     } else if (match[4]) {
       output.push({ type: 'strong', value: match[4] });
     } else if (match[5]) {
@@ -98,9 +100,7 @@ function parseInline(source: string): MarkdownInline[] {
     }
     cursor = start + match[0].length;
   }
-  if (cursor < source.length) {
-    output.push({ type: 'text', value: source.slice(cursor) });
-  }
+  if (cursor < source.length) output.push({ type: 'text', value: source.slice(cursor) });
   return output;
 }
 

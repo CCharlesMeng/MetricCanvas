@@ -3,7 +3,7 @@ import type { McpClient } from '@metriccanvas/agent-runner';
 import { createPageIdConfirmationMcpClient } from '@metriccanvas/mcp';
 
 const pageDocument = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'sales-total',
   dataSources: {},
   sections: [
@@ -74,7 +74,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
       client: fakeClient({
         ok: true,
         valid: true,
-        currentSchemaVersion: '3.0',
+        currentSchemaVersion: '4.0',
         errors: []
       }),
       confirmedPageIds: []
@@ -93,7 +93,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
         title: '成交总额',
         stablePath: '/pages/sales-total',
         immutableAfterSave: true,
-        schemaVersion: '3.0'
+        schemaVersion: '4.0'
       }
     });
   });
@@ -188,7 +188,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
               structuredContent: {
                 ok: true,
                 valid: true,
-                currentSchemaVersion: '3.0',
+                currentSchemaVersion: '4.0',
                 errors: []
               },
               isError: false

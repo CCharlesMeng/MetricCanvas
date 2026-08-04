@@ -8,7 +8,7 @@ import {
 } from '../src/lib/server/offline-services';
 
 const page: Page = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'bundled-page',
   dataSources: {
     content: {
@@ -25,7 +25,7 @@ const page: Page = {
           id: 'intro',
           type: 'text',
           layout: { span: 12 },
-          props: { heading: '内置页面', body: '离线示例' }
+          props: { title: '内置页面', body: '离线示例' }
         }
       ]
     }

@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas AI 总结嵌入示例</title>
+  </head>
+  <body>
+    <div id="dashboard"></div>
+    <script src="../dist/metriccanvas-runtime.global.js"></script>
+    <script>
+      window.aiSummaryRequests = [];
+      window.fetch = async (url, init) => {
+        window.aiSummaryRequests.push({
+          url: String(url),
+          credentials: init.credentials,
+          headers: init.headers,
+          body: JSON.parse(init.body)
+        });
+        const encoder = new TextEncoder();
+        const characters = Array.from('1. **整体风险**：华东代表处有 3 个未考察客户。');
+        let timer;
+        return new Response(
+          new ReadableStream({
+            start(controller) {
+              let index = 0;
+              const emit = () => {
+                if (index < characters.length) {
+                  controller.enqueue(encoder.encode(
+                    `data: ${JSON.stringify({ event: 'generate', content: characters[index] })}\n\n`
+                  ));
+                  index += 1;
+                  timer = window.setTimeout(emit, 35);
+                  return;
+                }
+                controller.enqueue(encoder.encode(
+                  `data: ${JSON.stringify({ event: 'finish', content: {} })}\n\n`
+                ));
+                controller.close();
+              };
+              emit();
+            },
+            cancel() {
+              window.clearTimeout(timer);
+            }
+          }),
+          { status: 200, headers: { 'content-type': 'text/event-stream' } }
+        );
+      };
+
+      window.aiSummaryRuntime = MetricCanvas.mount('#dashboard', {
+        document: {
+          schemaVersion: '4.0',
+          id: 'ai-summary-example',
+          dataSources: {
+            risks: {
+              fields: {
+                office: { type: 'string', role: 'dimension' },
+                missing: { type: 'number', role: 'measure' },
+                secret: { type: 'string', role: 'dimension' }
+              },
+              source: {
+                type: 'inline',
+                rows: [{ office: '华东', missing: 3, secret: '不得外传' }]
+              }
+            }
+          },
+          sections: [{
+            id: 'risk',
+            layout: { type: 'grid', columns: 12 },
+            components: [{
+              id: 'risk-summary',
+              type: 'aiSummary',
+              layout: { span: 12 },
+              props: {
+                title: '风险总结',
+                promptTemplate: '只使用输入数据总结。',
+                relatedData: {
+                  risk: {
+                    source: 'risks',
+                    description: '各代表处风险数据',
+                    fields: [
+                      { field: 'office', term: '代表处' },
+                      { field: 'missing', term: '未考察数' }
+                    ]
+                  }
+                }
+              }
+            }]
+          }]
+        },
+        aiSummary: { conversationBaseUrl: '/fake-ai/conversations/' }
+      });
+    </script>
+  </body>
+</html>

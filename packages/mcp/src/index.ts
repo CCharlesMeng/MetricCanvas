@@ -43,12 +43,12 @@ export const COMPONENT_SELECTION_GUIDE = componentCatalog
     (component) =>
       `${component.type}: ${component.purpose};适用=${component.chooseWhen.join('、')};` +
       `数据=${component.dataShape};必填=${component.requiredProps.join('、') || '无'};` +
-      `建议跨度=${component.defaultSpan}`
+      `标题=${component.title};建议跨度=${component.defaultSpan}`
   )
   .join('\n');
 
 const inlineExample = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'revenue-overview',
   dataSources: {
     summary: {
@@ -83,7 +83,7 @@ const inlineExample = {
 };
 
 const dqeExample = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'customer-count-by-level',
   dataSources: {
     customers: {
@@ -149,6 +149,7 @@ export const PAGE_BUILDING_PROMPT = [
   '不得猜测字段、关系、查询协议、筛选位置或结果契约；数据上下文不足时说明 DATA_CONTEXT_ERROR，不创建指标缺口。',
   'DQE 查询必须保留原始 body；每个 query 页面数据源显式声明 fields，queryField 必须覆盖所有输出字段。',
   '页面字段角色只允许 dimension 或 measure；组件只引用稳定页面字段 id。',
+  '组件可见标题统一使用 props.title。aiSummary 不声明 data，只通过 promptTemplate 和 relatedData 显式引用页面数据源字段；不得写入端点、Header 或 SSE 参数。',
   '新建页面必须拟定可读且唯一的真实页面 id。validate_page 通过后，客户端会发起结构化页面 id 确认。',
   '编辑既有页面时先调用 get_page(selector=latest)，保留 revisionId 作为 baseRevisionId，再校验、保存和预览。',
   `组件能力目录:\n${COMPONENT_SELECTION_GUIDE}`,
@@ -164,7 +165,7 @@ export function createMetricCanvasMcpServer(
 
   server.registerPrompt(
     'build_dashboard_page',
-    { description: 'MetricCanvas v3 受治理的看板页面生成流程' },
+    { description: 'MetricCanvas v4 受治理的看板页面生成流程' },
     async () => ({
       messages: [{ role: 'user', content: { type: 'text', text: PAGE_BUILDING_PROMPT } }]
     })
@@ -172,12 +173,12 @@ export function createMetricCanvasMcpServer(
 
   registerJsonResource(server, 'page-schema', 'metriccanvas://page/schema', '当前页面 JSON Schema', pageSchema);
   registerJsonResource(server, 'component-catalog', 'metriccanvas://page/components', '组件能力目录', componentCatalog);
-  registerJsonResource(server, 'inline-example', 'metriccanvas://page/examples/inline', 'v3 inline 最小示例', inlineExample);
-  registerJsonResource(server, 'dqe-example', 'metriccanvas://page/examples/dqe', 'v3 DQE 最小示例', dqeExample);
+  registerJsonResource(server, 'inline-example', 'metriccanvas://page/examples/inline', 'v4 inline 最小示例', inlineExample);
+  registerJsonResource(server, 'dqe-example', 'metriccanvas://page/examples/dqe', 'v4 DQE 最小示例', dqeExample);
   server.registerResource(
     'page-rules',
     'metriccanvas://page/rules',
-    { title: 'v3 页面生成规则', mimeType: 'text/plain' },
+    { title: 'v4 页面生成规则', mimeType: 'text/plain' },
     async (uri) => ({
       contents: [{ uri: uri.toString(), mimeType: 'text/plain', text: PAGE_BUILDING_PROMPT }]
     })
@@ -235,7 +236,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'validate_page',
     {
-      description: '使用当前 v3 页面 Schema 校验页面文档。',
+      description: '使用当前 v4 页面 Schema 校验页面文档。',
       inputSchema: z.object({ document: pageDocumentSchema }),
       annotations: { readOnlyHint: true }
     },

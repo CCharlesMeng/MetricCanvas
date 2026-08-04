@@ -259,7 +259,8 @@ export const pageSchema = {
               { $ref: '#/definitions/tableComponent' },
               { $ref: '#/definitions/mapChartComponent' },
               { $ref: '#/definitions/rankingCardComponent' },
-              { $ref: '#/definitions/textComponent' }
+              { $ref: '#/definitions/textComponent' },
+              { $ref: '#/definitions/aiSummaryComponent' }
             ]
           }
         }
@@ -742,7 +743,7 @@ export const pageSchema = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            heading: { type: 'string' },
+            title: { type: 'string' },
             body: { type: 'string' },
             variant: { type: 'string', enum: ['plain', 'insight'] },
             links: {
@@ -760,6 +761,56 @@ export const pageSchema = {
                     items: { type: 'string', pattern: idPattern }
                   }
                 }
+              }
+            }
+          }
+        }
+      }
+    },
+    aiSummaryRelatedField: {
+      type: 'object',
+      required: ['field', 'term'],
+      additionalProperties: false,
+      properties: {
+        field: { type: 'string', pattern: fieldPattern },
+        term: { type: 'string', minLength: 1, pattern: '\\S' }
+      }
+    },
+    aiSummaryRelatedDataDefinition: {
+      type: 'object',
+      required: ['source', 'description', 'fields'],
+      additionalProperties: false,
+      properties: {
+        source: { type: 'string', pattern: idPattern },
+        description: { type: 'string', minLength: 1, pattern: '\\S' },
+        fields: {
+          type: 'array',
+          minItems: 1,
+          items: { $ref: '#/definitions/aiSummaryRelatedField' }
+        }
+      }
+    },
+    aiSummaryComponent: {
+      type: 'object',
+      required: ['id', 'type', 'layout', 'props'],
+      additionalProperties: false,
+      properties: {
+        id: componentId,
+        type: { const: 'aiSummary' },
+        layout: componentLayout,
+        props: {
+          type: 'object',
+          required: ['promptTemplate', 'relatedData'],
+          additionalProperties: false,
+          properties: {
+            title: { type: 'string' },
+            promptTemplate: { type: 'string', minLength: 1, pattern: '\\S' },
+            relatedData: {
+              type: 'object',
+              minProperties: 1,
+              propertyNames: { pattern: idPattern },
+              additionalProperties: {
+                $ref: '#/definitions/aiSummaryRelatedDataDefinition'
               }
             }
           }

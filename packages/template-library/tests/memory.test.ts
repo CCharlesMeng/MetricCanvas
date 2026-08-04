@@ -4,7 +4,7 @@ import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 
 const sourcePage: Page = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'sales-overview',
   dataSources: {
     content: {
@@ -21,7 +21,7 @@ const sourcePage: Page = {
           id: 'intro',
           type: 'text',
           layout: { span: 12 },
-          props: { heading: '经营概览', body: '模板来源' }
+          props: { title: '经营概览', body: '模板来源' }
         }
       ]
     }
@@ -146,7 +146,7 @@ describe('进程内页面模板库', () => {
               components: [
                 {
                   ...sourcePage.sections[0].components[0],
-                  props: { heading: '经营概览（新）', body: '来源已变化' }
+                  props: { title: '经营概览（新）', body: '来源已变化' }
                 }
               ]
             }

@@ -1,8 +1,7 @@
 export type { PageRepository, DataGateway } from './ports';
 export { orchestrate } from './orchestrator';
 export type {
-  ComponentSnapshots,
-  PageSnapshots,
+  PageDataSnapshots,
   PageSnapshotStream,
   Subscribable
 } from './orchestrator';

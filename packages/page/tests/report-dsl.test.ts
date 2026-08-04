@@ -8,7 +8,7 @@ import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import mixedPage from '../fixtures/contract-valid/mixed-page.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
-describe('3.0 页面数据源契约', () => {
+describe('4.0 页面数据源契约', () => {
   it('接受 inline、query 与 mixed 三种页面，并精确推导组件能力', () => {
     expect(validate(inlineReport)).toEqual([]);
     expect(validate(queryDashboard)).toEqual([]);

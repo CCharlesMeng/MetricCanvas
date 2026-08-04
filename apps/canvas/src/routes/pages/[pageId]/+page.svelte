@@ -8,6 +8,7 @@
   } from '@metriccanvas/runtime-ui';
   import QueryInspector from '$lib/QueryInspector.svelte';
   import {
+    aiSummary,
     dataGateway,
     dqeDiagnostics,
     pageRepository
@@ -88,6 +89,7 @@
   <RuntimeView
     document={pageState.document}
     dataGateway={pageState.dataGateway}
+    {aiSummary}
     {initialSearch}
     {navigation}
   />

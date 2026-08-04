@@ -5,6 +5,7 @@ export {
 } from './types';
 export type {
   AuthoringOptions,
+  AiSummaryConfig,
   RuntimeConfigurationError,
   RuntimeConfigurationErrorCode,
   RuntimeNavigation,

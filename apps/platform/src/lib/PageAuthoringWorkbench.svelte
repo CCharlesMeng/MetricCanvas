@@ -63,7 +63,7 @@
       if (payload.runtimeOrigin) {
         previewUrl = previewUrl || payload.runtimeOrigin;
       }
-      notice = draft ? '工作副本已更新并通过 v3 Schema 校验。' : 'Agent 已完成。';
+      notice = draft ? '工作副本已更新并通过 v4 Schema 校验。' : 'Agent 已完成。';
     } catch (cause) {
       error = cause instanceof Error ? cause.message : String(cause);
     } finally {
@@ -122,7 +122,7 @@
 <div class="workbench">
   <aside>
     <p class="eyebrow">AI 页面搭建</p>
-    <h1>从数据上下文或静态数据生成 v3 页面</h1>
+    <h1>从数据上下文或静态数据生成 v4 页面</h1>
     <textarea bind:value={intent} rows="6" placeholder="描述分析目标、数据场景和希望呈现的内容"></textarea>
     <button class="primary" disabled={pending || !intent.trim()} onclick={askAgent}>
       {pending ? '处理中…' : '生成 / 修改页面'}

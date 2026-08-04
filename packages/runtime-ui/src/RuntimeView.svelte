@@ -23,12 +23,11 @@
     initialFilterValues,
     orchestrate,
     type AuthoringComponentLocator,
-    type ComponentSnapshots,
     type FilterState,
     type FilterValue,
     type FilterValues,
     type DataGateway,
-    type PageSnapshots,
+    type PageDataSnapshots,
     type PageSnapshotStream
   } from '@metriccanvas/runtime';
   import {
@@ -54,6 +53,8 @@
     type TableSelectedCell,
     type TableViewState
   } from '@metriccanvas/widgets';
+  import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
+  import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import {
     configurationError,
     isDataGateway,
@@ -64,6 +65,7 @@
   } from './types';
 
   type PageCapabilities = ReturnType<typeof derivePageCapabilities>;
+  type ComponentSnapshots = ReadonlyMap<string, DataSnapshot>;
   type PageState =
     | { phase: 'loading' }
     | { phase: 'invalid'; errors: TypedError[] }
@@ -83,6 +85,7 @@
     document,
     authoring,
     dataGateway,
+    aiSummary,
     initialSearch = '',
     navigation,
     onevent
@@ -90,13 +93,14 @@
     document: unknown;
     authoring?: AuthoringOptions;
     dataGateway?: DataGateway;
+    aiSummary?: AiSummaryConfig;
     initialSearch?: string;
     navigation?: RuntimeNavigation;
     onevent?: (event: RuntimeViewEvent) => void;
   } = $props();
 
   let pageState = $state<PageState>({ phase: 'loading' });
-  let snapshots = $state<PageSnapshots>(new Map());
+  let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
   let filterOptions = $state<Record<string, string[]>>({});
   let tableViews = $state<Record<string, TableViewState>>({});
@@ -497,12 +501,10 @@
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
-    const current = snapshots.get(component.id);
-    if (current) return current;
     return new Map(
-      Object.keys(component.data ?? {}).map((slot) => [
+      Object.entries(component.data ?? {}).map(([slot, sourceId]) => [
         slot,
-        { status: 'loading' } as DataSnapshot
+        snapshots.get(sourceId) ?? ({ status: 'loading' } as DataSnapshot)
       ])
     );
   }
@@ -667,9 +669,7 @@
   }
 
   function componentTitleForEditor(component: Component): string {
-    return component.type === 'text'
-      ? component.props.heading ?? ''
-      : component.props.title ?? '';
+    return component.props.title ?? '';
   }
 
   function authoringSelect(event: MouseEvent, sectionId: string, componentId: string) {
@@ -750,6 +750,12 @@
     <TextBlock
       props={component.props}
       links={(component.props.links ?? []).map(textLink)}
+    />
+  {:else if component.type === 'aiSummary'}
+    <AiSummaryHost
+      props={component.props}
+      sourceSnapshots={snapshots}
+      config={aiSummary}
     />
   {:else}
     {@const slots = componentSnapshots(component)}

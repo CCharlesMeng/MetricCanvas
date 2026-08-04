@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.0",
+  "schemaVersion": "4.0",
   "id": "region-map",
   "meta": {
     "description": "切片8 演示:地图区域着色/散点叠加、文本带参链接、筛选器树选与搜索形态"
@@ -274,7 +274,7 @@
             "span": 12
           },
           "props": {
-            "heading": "区域分布总览",
+            "title": "区域分布总览",
             "body": "地图按区域展示 GMV,mock 的大区值经 nameMap 声明映射到底图区域着色(演示映射);点击地图区域回写区域筛选,城市树选与区域搜索筛选器写入同一筛选状态。",
             "links": [
               {

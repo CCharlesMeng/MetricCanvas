@@ -23,7 +23,7 @@ pnpm --filter @metriccanvas/embed build
 <script src="./metriccanvas-runtime.global.js"></script>
 <script>
   const pageDocument = {
-    schemaVersion: '3.0',
+    schemaVersion: '4.0',
     id: 'hello',
     dataSources: {},
     sections: [
@@ -72,6 +72,21 @@ DQE 端点和鉴权由宿主应用配置。端点、令牌和长期凭据不写�
 
 Schema 元数据只用于页面创作，不传入 Embed。
 
+包含 `aiSummary` 的页面由宿主提供固定的 AI 总结连接配置。页面文档本身不保存端点或协议参数：
+
+```js
+const runtime = MetricCanvas.mount('#dashboard', {
+  document: pageDocument,
+  dataGateway,
+  aiSummary: {
+    conversationBaseUrl: '/ai/conversations/',
+    env: 'beta'
+  }
+});
+```
+
+`env` 可选。缺少 `aiSummary` 配置时，只由当前 AI 总结组件显示配置错误，页面其他内容继续渲染。
+
 ## ESM
 
 ```js
@@ -96,6 +111,7 @@ const runtime = mount('#dashboard', {
 interface RuntimeInput {
   document: unknown;
   dataGateway?: DataGateway;
+  aiSummary?: AiSummaryConfig;
   initialSearch?: string;
 }
 ```
@@ -104,6 +120,7 @@ interface RuntimeInput {
 |---|---|
 | `document` | 未校验的看板页面文档 |
 | `dataGateway` | 查询页面使用的数据网关 |
+| `aiSummary` | AI 总结组件的连接配置，仅包含 `conversationBaseUrl` 与可选 `env` |
 | `initialSearch` | 不含前导 `?` 的筛选状态查询串 |
 
 Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。

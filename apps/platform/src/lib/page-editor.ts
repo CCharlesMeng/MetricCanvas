@@ -123,16 +123,10 @@ function locateComponent(document: Page, locator: ComponentLocator): Component |
 }
 
 function componentTitle(component: Component): string {
-  return component.type === 'text'
-    ? component.props.heading ?? ''
-    : component.props.title ?? '';
+  return component.props.title ?? '';
 }
 
 function setComponentTitle(component: Component, value: string): void {
-  if (component.type === 'text') {
-    setOptionalText(component.props, 'heading', value);
-    return;
-  }
   if (component.type === 'reportHeader') {
     component.props.title = value;
     return;
@@ -179,7 +173,8 @@ function componentTypeLabel(type: Component['type']): string {
     table: '明细表',
     mapChart: '地图',
     rankingCard: '排行卡',
-    text: '文本'
+    text: '文本',
+    aiSummary: 'AI 总结'
   }[type];
 }
 

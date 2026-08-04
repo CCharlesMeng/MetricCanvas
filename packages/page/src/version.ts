@@ -1,12 +1,12 @@
 import type { TypedError } from './errors';
 
 export interface VersionPolicy {
-  current: '3.0';
+  current: '4.0';
   previous: null;
 }
 
 export const versionPolicy: VersionPolicy = {
-  current: '3.0',
+  current: '4.0',
   previous: null
 };
 
@@ -28,7 +28,7 @@ export function versionErrors(
       path: '/schemaVersion',
       message:
         `不支持的文档格式版本 ${String(version)}:` +
-        `运行时只接受 ${policy.current}，1.0/2.0 必须在接入前完整迁移`
+        `运行时只接受 ${policy.current}，旧版本必须在接入前完整迁移`
     }
   ];
 }

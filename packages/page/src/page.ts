@@ -3,7 +3,7 @@ import type { FieldBinding, FieldReference } from './field';
 import type { FilterDeclaration } from './filter';
 
 export interface Page {
-  schemaVersion: '3.0';
+  schemaVersion: '4.0';
   id: string;
   meta?: PageMeta;
   dataSources: DataSources;
@@ -222,13 +222,34 @@ export interface TextLink {
 }
 
 export interface TextProps {
-  heading?: string;
+  title?: string;
   body?: string;
   variant?: 'plain' | 'insight';
   links?: TextLink[];
 }
 
 export type TextComponent = ComponentBase<'text', TextProps>;
+
+export interface AiSummaryRelatedField {
+  field: string;
+  term: string;
+}
+
+export interface AiSummaryRelatedDataDefinition {
+  source: string;
+  description: string;
+  fields: AiSummaryRelatedField[];
+}
+
+export interface AiSummaryProps {
+  title?: string;
+  /** 纯文本背景与输出约束；不支持插值、表达式或请求体模板。 */
+  promptTemplate: string;
+  /** 只声明 AI 总结可使用的页面数据源和字段。 */
+  relatedData: Record<string, AiSummaryRelatedDataDefinition>;
+}
+
+export type AiSummaryComponent = ComponentBase<'aiSummary', AiSummaryProps>;
 
 export type Component =
   | ReportHeaderComponent
@@ -239,9 +260,13 @@ export type Component =
   | TableComponent
   | MapChartComponent
   | RankingCardComponent
-  | TextComponent;
+  | TextComponent
+  | AiSummaryComponent;
 
-export type DataComponent = Exclude<Component, ReportHeaderComponent | TextComponent>;
+export type DataComponent = Exclude<
+  Component,
+  ReportHeaderComponent | TextComponent | AiSummaryComponent
+>;
 export type ChartComponent =
   | BarChartComponent
   | LineChartComponent
@@ -266,7 +291,11 @@ export interface NavigateAction {
 }
 
 export function isDataComponent(component: Component): component is DataComponent {
-  return component.type !== 'reportHeader' && component.type !== 'text';
+  return (
+    component.type !== 'reportHeader' &&
+    component.type !== 'text' &&
+    component.type !== 'aiSummary'
+  );
 }
 
 export function isChartComponent(component: Component): component is ChartComponent {

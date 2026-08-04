@@ -8,7 +8,7 @@ import { createPostgresPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createPostgresTemplateLibrary } from '@metriccanvas/template-library';
 
 const page: Page = {
-  schemaVersion: '3.0',
+  schemaVersion: '4.0',
   id: 'regional-overview',
   dataSources: {},
   sections: [
@@ -20,7 +20,7 @@ const page: Page = {
           id: 'intro',
           type: 'text',
           layout: { span: 12 },
-          props: { heading: '区域经营', body: '模板来源' }
+          props: { title: '区域经营', body: '模板来源' }
         }
       ]
     }
@@ -148,7 +148,7 @@ describe.runIf(process.env.TEST_POSTGRES === '1')('PostgreSQL 页面模板库', 
                   id: 'intro-new',
                   type: 'text',
                   layout: { span: 12 },
-                  props: { heading: '区域经营（新）', body: '来源页面已更新' }
+                  props: { title: '区域经营（新）', body: '来源页面已更新' }
                 }
               ]
             }

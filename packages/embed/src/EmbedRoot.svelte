@@ -24,6 +24,7 @@
 <RuntimeView
   document={input.document}
   dataGateway={input.dataGateway}
+  aiSummary={input.aiSummary}
   initialSearch={input.initialSearch}
   onevent={onEvent}
 />

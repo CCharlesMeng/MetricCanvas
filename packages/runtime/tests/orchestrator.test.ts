@@ -1,14 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery, Page } from '@metriccanvas/page';
 import { createFilterState } from '../src/filter-state';
-import { orchestrate, type PageSnapshots } from '../src/orchestrator';
+import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import type { DataGateway } from '../src/ports';
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function page(): Page {
   return {
-    schemaVersion: '3.0',
+    schemaVersion: '4.0',
     id: 'mixed-runtime',
     filters: [{
       id: 'region-filter',
@@ -85,7 +85,7 @@ function page(): Page {
   };
 }
 
-describe('v3 页面数据编排', () => {
+describe('页面数据源快照编排', () => {
   it('inline 同步就绪，DQE 从 loading 进入 ready', async () => {
     const received: EffectiveQuery[] = [];
     const gateway: DataGateway = {
@@ -97,14 +97,14 @@ describe('v3 页面数据编排', () => {
         return [];
       }
     };
-    const pushes: PageSnapshots[] = [];
+    const pushes: PageDataSnapshots[] = [];
     const unsubscribe = orchestrate(page(), gateway).subscribe((value) => pushes.push(value));
 
-    expect(pushes[0]?.get('target-card')?.get('main')).toEqual({
+    expect(pushes[0]?.get('target')).toEqual({
       status: 'ready',
       rows: [{ target: 100 }]
     });
-    expect(pushes[0]?.get('sales-table')?.get('main')).toEqual({ status: 'loading' });
+    expect(pushes[0]?.get('sales')).toEqual({ status: 'loading' });
     await flush();
     expect(received[0]).toMatchObject({
       language: 'dqe',
@@ -114,7 +114,7 @@ describe('v3 页面数据编排', () => {
       },
       filterValues: []
     });
-    expect(pushes.at(-1)?.get('sales-table')?.get('main')).toEqual({
+    expect(pushes.at(-1)?.get('sales')).toEqual({
       status: 'ready',
       rows: [{ region: '华东', revenue: 42 }]
     });

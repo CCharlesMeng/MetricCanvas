@@ -19,15 +19,15 @@ MetricCanvas 是以看板页面为核心资产的 AI 原生数据分析与可视
   → 统一运行时
   ├─ inline → 数据快照
   └─ query  → 数据网关 → DQE → 数据快照
-  → 组件数据槽
-  → 纯渲染组件
+  ├─ 数据快照 → 组件数据槽 → 纯渲染组件
+  └─ 数据快照 → AI 总结组件 → AI 总结快照 → 纯渲染 View
 ```
 
-页面协议版本为 `3.0`。页面顶层结构为：
+页面协议版本为 `4.0`。页面顶层结构为：
 
 ```json
 {
-  "schemaVersion": "3.0",
+  "schemaVersion": "4.0",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -95,7 +95,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 
 ```json
 {
-  "schemaVersion": "3.0",
+  "schemaVersion": "4.0",
   "id": "hello-revenue",
   "dataSources": {
     "overview": {
@@ -163,6 +163,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/runtime/` | 页面数据编排和筛选状态 |
 | `packages/widgets/` | 纯渲染组件 |
 | `packages/runtime-ui/` | 统一运行时 UI |
+| `packages/runtime-ui/src/ai-summary/` | AI 总结垂直组件 Module 与私有 SSE Adapter |
 | `packages/embed/` | 浏览器嵌入产物 |
 | `packages/page-lifecycle/` | 页面修订与发布 |
 | `packages/template-library/` | 页面模板 |

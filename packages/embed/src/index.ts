@@ -20,6 +20,7 @@ export type {
 } from './types';
 export type { TypedError } from '@metriccanvas/page';
 export type { DataGateway } from '@metriccanvas/runtime';
+export type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;
@@ -83,6 +84,9 @@ function runtimeInput(input: RuntimeInput): RuntimeInput {
     document: input.document,
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
+      : {}),
+    ...(input.aiSummary !== undefined
+      ? { aiSummary: input.aiSummary }
       : {}),
     ...(input.initialSearch !== undefined
       ? { initialSearch: normalizeSearch(input.initialSearch) }

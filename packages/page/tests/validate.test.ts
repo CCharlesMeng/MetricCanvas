@@ -3,7 +3,7 @@ import { validate } from '../src';
 import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
-describe('v3 data source 与 binding 校验', () => {
+describe('v4 data source 与 binding 校验', () => {
   it('展示字段绑定允许 format，action 字段引用拒绝 format', () => {
     const display: any = structuredClone(inlineReport);
     display.sections[0].components[1].props.rows[0].valueField = {
@@ -27,7 +27,7 @@ describe('v3 data source 与 binding 校验', () => {
   });
 
   it('拒绝旧版本、旧结构化查询和旧字段角色', () => {
-    for (const version of ['1.0', '2.0']) {
+    for (const version of ['1.0', '2.0', '3.0']) {
       const oldVersion: any = structuredClone(queryDashboard);
       oldVersion.schemaVersion = version;
       expect(validate(oldVersion)).toContainEqual(

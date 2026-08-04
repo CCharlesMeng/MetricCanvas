@@ -4,6 +4,7 @@ import type {
   AuthoringIntent,
   DataGateway
 } from '@metriccanvas/runtime';
+export type { AiSummaryConfig } from './ai-summary/pangu-sse';
 
 export interface AuthoringOptions {
   selected?: AuthoringComponentLocator;

@@ -9,7 +9,7 @@
   } from '@metriccanvas/runtime';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
   import { onMount } from 'svelte';
-  import { dataGateway } from '$lib/services';
+  import { aiSummary, dataGateway } from '$lib/services';
 
   const platformOrigin = import.meta.env.VITE_PLATFORM_URL
     ? new URL(import.meta.env.VITE_PLATFORM_URL).origin
@@ -47,6 +47,7 @@
   <RuntimeView
     {document}
     {dataGateway}
+    {aiSummary}
     authoring={{ selected, onintent: sendIntent }}
   />
 {/if}

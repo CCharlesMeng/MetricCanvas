@@ -4,7 +4,7 @@
     DEFAULT_PREVIEW_JSON,
     parsePreviewDocument
   } from '$lib/preview-document';
-  import { dataGateway } from '$lib/services';
+  import { aiSummary, dataGateway } from '$lib/services';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
@@ -73,6 +73,7 @@
           <RuntimeView
             document={result.document}
             {dataGateway}
+            {aiSummary}
           />
         {:else}
           <div class="empty-preview">

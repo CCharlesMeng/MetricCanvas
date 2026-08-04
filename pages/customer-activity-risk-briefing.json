@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "3.0",
+  "schemaVersion": "4.0",
   "id": "customer-activity-risk-briefing",
   "meta": {
     "description": "云战地助手自动生成的客户活动风险简报"
@@ -2250,14 +2250,65 @@
       "components": [
         {
           "id": "inspection-risk-summary",
-          "type": "text",
+          "type": "aiSummary",
           "layout": {
             "span": 12
           },
           "props": {
-            "heading": "风险总结",
-            "body": "1、无公司考察客户共 X 个，占比 xx%；无考察客户数 TOP 代表处：XX代表处（x个未考察）、XX代表处（x个未考察）、XX代表处（x个未考察）；未考察客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年未考察客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无公司考察 X 个，占比 xx%；其中26年无公司考察 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
-            "variant": "insight"
+            "title": "风险总结",
+            "promptTemplate": "你是客户活动风险总结专员。只能使用输入的前端原始数据，禁止补充、估算或二次计算。按顺序总结整体NA客户未考察情况、2026年未考察情况、TOP100项目客户未考察情况，输出三个编号段落。",
+            "relatedData": {
+              "risk": {
+                "source": "inspection-progress",
+                "description": "各代表处公司考察风险数据",
+                "fields": [
+                  {
+                    "field": "representative-office",
+                    "term": "代表处"
+                  },
+                  {
+                    "field": "inspection-na-total",
+                    "term": "NA客户数"
+                  },
+                  {
+                    "field": "inspection-na-missing",
+                    "term": "无公司考察NA客户数"
+                  },
+                  {
+                    "field": "inspection-na-missing-rate",
+                    "term": "无公司考察NA客户占比"
+                  },
+                  {
+                    "field": "inspection-na-year-missing",
+                    "term": "2026年无公司考察NA客户数"
+                  },
+                  {
+                    "field": "inspection-na-year-missing-rate",
+                    "term": "2026年无公司考察NA客户占比"
+                  },
+                  {
+                    "field": "inspection-top-total",
+                    "term": "TOP100项目客户数"
+                  },
+                  {
+                    "field": "inspection-top-missing",
+                    "term": "TOP100项目无公司考察客户数"
+                  },
+                  {
+                    "field": "inspection-top-missing-rate",
+                    "term": "TOP100项目无公司考察客户占比"
+                  },
+                  {
+                    "field": "inspection-top-year-missing",
+                    "term": "2026年TOP100项目无公司考察客户数"
+                  },
+                  {
+                    "field": "inspection-top-year-missing-rate",
+                    "term": "2026年TOP100项目无公司考察客户占比"
+                  }
+                ]
+              }
+            }
           }
         },
         {
@@ -2549,7 +2600,7 @@
             "span": 12
           },
           "props": {
-            "heading": "风险总结",
+            "title": "风险总结",
             "body": "1、无高层拜访客户共 X 个，占比 xx%；无拜访客户数 TOP 代表处：XX代表处（x个未拜访）、XX代表处（x个未拜访）、XX代表处（x个未拜访）；无拜访客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年无高层拜访客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无高层拜访 X 个，占比 xx%；其中26年无高层拜访 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
             "variant": "insight"
           }
@@ -2834,7 +2885,7 @@
             "span": 12
           },
           "props": {
-            "heading": "风险总结",
+            "title": "风险总结",
             "body": "1、无高层峰会客户共 X 个，占比 xx%；无峰会客户数 TOP 代表处：XX代表处（x个未开展）、XX代表处（x个未开展）、XX代表处（x个未开展）；无峰会客户占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。\n2、26年无高层峰会客户共 X 个，占比 xx%；TOP 代表处为 XX代表处、XX代表处、XX代表处。\n3、TOP100项目客户中无高层峰会 X 个，占比 xx%；其中26年无高层峰会 X 个，TOP 代表处为 XX代表处、XX代表处、XX代表处。",
             "variant": "insight"
           }
@@ -3119,7 +3170,7 @@
             "span": 12
           },
           "props": {
-            "heading": "风险总结",
+            "title": "风险总结",
             "body": "26年三个重载活动均未开展客户共 X 个，占比 xx%；未开展客户数 TOP 代表处：XX代表处（x个）、XX代表处（x个）、XX代表处（x个）；未开展占比 TOP 代表处：XX代表处（占比xx）、XX代表处（占比xx）、XX代表处（占比xx）。",
             "variant": "insight"
           }
@@ -3432,7 +3483,7 @@
             "span": 12
           },
           "props": {
-            "heading": "客户活动风险简报"
+            "title": "客户活动风险简报"
           }
         }
       ]

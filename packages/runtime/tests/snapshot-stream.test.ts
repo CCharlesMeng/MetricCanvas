@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { Page } from '@metriccanvas/page';
 import type { DataGateway } from '../src/ports';
 import { orchestrate } from '../src/orchestrator';
 
@@ -16,7 +17,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '3.0',
+        schemaVersion: '4.0',
         id: 'text-only',
         dataSources: {},
         sections: [
@@ -60,7 +61,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '3.0',
+        schemaVersion: '4.0',
         id: 'shared',
         dataSources: {
           sales: {
@@ -117,4 +118,101 @@ describe('统一页面快照流', () => {
     expect(second).toHaveLength(1);
     expect(second[0]).toBe(first.at(-1));
   });
+
+  it('仅被关联数据引用的数据源也会执行', async () => {
+    let calls = 0;
+    const stream = orchestrate(summaryPage(false), {
+      async fetchData() {
+        calls += 1;
+        return [{ office: '华东', missing: 3 }];
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    });
+    const pushes: Array<ReadonlyMap<string, unknown>> = [];
+    stream.subscribe((value) => pushes.push(value));
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(calls).toBe(1);
+    expect(pushes.at(-1)?.get('inspection-progress')).toEqual({
+      status: 'ready',
+      rows: [{ office: '华东', missing: 3 }]
+    });
+  });
+
+  it('普通组件和 AI 总结共享同一数据源时只执行一次', async () => {
+    let calls = 0;
+    const stream = orchestrate(summaryPage(true), {
+      async fetchData() {
+        calls += 1;
+        return [{ office: '华东', missing: 3 }];
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    });
+    stream.subscribe(() => {});
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(calls).toBe(1);
+  });
 });
+
+function summaryPage(includeTable: boolean): Page {
+  return {
+    schemaVersion: '4.0',
+    id: 'summary-source',
+    dataSources: {
+      'inspection-progress': {
+        fields: {
+          office: { queryField: '代表处', type: 'string', role: 'dimension' },
+          missing: { queryField: '未考察数', type: 'number', role: 'measure' }
+        },
+        source: {
+          type: 'query',
+          query: {
+            language: 'dqe',
+            body: {
+              dsl_list: [{
+                output_dims: ['代表处'],
+                output_metrics: ['未考察数'],
+                filter: { dims: [], metrics: [] },
+                order: {}
+              }]
+            }
+          }
+        }
+      }
+    },
+    sections: [{
+      id: 'main',
+      layout: { type: 'grid', columns: 12 },
+      components: [
+        ...(includeTable
+          ? [{
+              id: 'table',
+              type: 'table' as const,
+              layout: { span: 6 },
+              data: { main: 'inspection-progress' },
+              props: { columns: [{ field: 'office', title: '代表处' }] }
+            }]
+          : []),
+        {
+          id: 'summary',
+          type: 'aiSummary' as const,
+          layout: { span: 6 },
+          props: {
+            promptTemplate: '只使用输入数据。',
+            relatedData: {
+              risk: {
+                source: 'inspection-progress',
+                description: '风险数据',
+                fields: [{ field: 'missing', term: '未考察数' }]
+              }
+            }
+          }
+        }
+      ]
+    }]
+  };
+}
