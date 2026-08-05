@@ -9,7 +9,7 @@
   let { props }: Props = $props();
 </script>
 
-<header class:briefing={props.decoration === 'shortBar'} class="report-header">
+<header class:short-bar={props.decoration === 'shortBar'} class="report-header">
   <div class="heading">
     {#if props.decoration === 'shortBar' && props.generatedBy}
       <p class="generated-by">{props.generatedBy}</p>
@@ -47,7 +47,6 @@
     </div>
   {/if}
 </header>
-{#if props.decoration === 'shortBar'}<div class="decoration" aria-hidden="true"></div>{/if}
 
 <style>
   .report-header {
@@ -58,7 +57,7 @@
     width: 100%;
     padding: 10px 4px 24px;
   }
-  .report-header.briefing {
+  .report-header.short-bar {
     display: block;
     min-height: 248px;
     padding: 0;
@@ -99,7 +98,7 @@
     color: #445593;
     font-weight: 500;
   }
-  .briefing .generated-by {
+  .short-bar .generated-by {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -109,25 +108,22 @@
     font-weight: 600;
     line-height: 28px;
   }
-  .briefing .generated-by::before {
+  .short-bar .generated-by::before {
     width: 28px;
     height: 28px;
     flex: 0 0 28px;
     background: url('./assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
     content: '';
   }
-  .briefing .title-line {
+  .short-bar .title-line {
     margin-left: 34px;
   }
-  .briefing h1 {
+  .short-bar h1 {
     color: #000;
     font-size: 60px;
     font-weight: 600;
     line-height: 72px;
     letter-spacing: 0;
-  }
-  .decoration {
-    display: none;
   }
   .badge,
   .tags span {
@@ -163,7 +159,7 @@
     gap: 0;
     margin: 4px 0 0 38px;
   }
-  .briefing .as-of.inline {
+  .short-bar .as-of.inline {
     margin: 28px 0 0 36px;
   }
   .as-of span {
@@ -175,8 +171,8 @@
     font-size: 13px;
     font-weight: 600;
   }
-  .briefing .as-of span,
-  .briefing .as-of strong {
+  .short-bar .as-of span,
+  .short-bar .as-of strong {
     color: #000;
     font-size: 24px;
     font-weight: 400;
@@ -188,11 +184,11 @@
       flex-direction: column;
       gap: 18px;
     }
-    .report-header.briefing {
+    .report-header.short-bar {
       display: block;
       min-height: auto;
     }
-    .briefing h1 {
+    .short-bar h1 {
       font-size: 42px;
       line-height: 1.2;
     }

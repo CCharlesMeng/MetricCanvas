@@ -26,50 +26,50 @@
   .progress-ring {
     position: relative;
     display: grid;
-    width: 104px;
-    height: 105px;
-    flex: 0 0 104px;
+    width: var(--progress-ring-size, 104px);
+    height: var(--progress-ring-height, 105px);
+    flex: 0 0 var(--progress-ring-size, 104px);
     place-items: center;
   }
   .chart {
     position: absolute;
     top: 0;
-    left: 6px;
+    left: var(--progress-ring-inset, 6px);
     display: flex;
-    width: 92px;
-    height: 92px;
+    width: var(--progress-ring-chart-size, 92px);
+    height: var(--progress-ring-chart-size, 92px);
     pointer-events: none;
   }
   .number {
     position: absolute;
-    top: 46px;
-    left: 6px;
+    top: var(--progress-ring-number-top, 46px);
+    left: var(--progress-ring-inset, 6px);
     z-index: 1;
     display: flex;
-    width: 92px;
+    width: var(--progress-ring-chart-size, 92px);
     align-items: baseline;
     justify-content: center;
     transform: translateY(-50%);
     color: #0f1a4d;
   }
   .number .value {
-    font-size: 24px;
+    font-size: var(--progress-ring-value-font-size, 24px);
     font-weight: 300;
-    line-height: 24px;
+    line-height: var(--progress-ring-value-line-height, 24px);
   }
   .number .percent {
     margin-left: 2px;
-    font-size: 11px;
+    font-size: var(--progress-ring-percent-font-size, 11px);
   }
   .label {
     position: absolute;
-    bottom: 16px;
+    bottom: var(--progress-ring-label-bottom, 16px);
     left: 0;
     z-index: 1;
-    width: 104px;
+    width: var(--progress-ring-size, 104px);
     color: #777;
-    font-size: 16px;
-    line-height: 20px;
+    font-size: var(--progress-ring-label-font-size, 16px);
+    line-height: var(--progress-ring-label-line-height, 20px);
     text-align: center;
   }
 </style>

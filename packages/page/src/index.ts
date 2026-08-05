@@ -1,5 +1,6 @@
 export * from './page';
 export * from './page-document';
+export * from './page-list-entry';
 export * from './data-source';
 export * from './field';
 export * from './filter';

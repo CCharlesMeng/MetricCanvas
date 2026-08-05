@@ -84,21 +84,20 @@ const inlineExample = {
 
 const dqeExample = {
   schemaVersion: '4.0',
-  id: 'customer-count-by-level',
+  id: 'records-by-category',
   dataSources: {
-    customers: {
+    records: {
       fields: {
-        'customer-level': {
-          queryField: '客户级别',
+        category: {
+          queryField: 'Category',
           type: 'string',
           role: 'dimension',
           nullable: false
         },
-        'customer-count': {
-          queryField: 'NA客户数',
+        count: {
+          queryField: 'RecordCount',
           type: 'number',
           role: 'measure',
-          unit: '个',
           nullable: false
         }
       },
@@ -106,7 +105,7 @@ const dqeExample = {
         type: 'query',
         initial: {
           capturedAt: '2026-08-04T00:00:00+08:00',
-          rows: [{ 'customer-level': '卓越NA', 'customer-count': 15 }],
+          rows: [{ category: 'A', count: 15 }],
           totalCount: 1
         },
         query: {
@@ -114,8 +113,8 @@ const dqeExample = {
           body: {
             dsl_list: [
               {
-                output_dims: ['客户级别'],
-                output_metrics: ['NA客户数'],
+                output_dims: ['Category'],
+                output_metrics: ['RecordCount'],
                 filter: { dims: [], metrics: [] },
                 order: {}
               }
@@ -131,14 +130,14 @@ const dqeExample = {
       layout: { type: 'grid', columns: 12 },
       components: [
         {
-          id: 'customers-table',
+          id: 'records-table',
           type: 'table',
           layout: { span: 12 },
-          data: { main: 'customers' },
+          data: { main: 'records' },
           props: {
             columns: [
-              { field: 'customer-level', title: '客户级别' },
-              { field: 'customer-count', title: '客户数' }
+              { field: 'category', title: '分类' },
+              { field: 'count', title: '数量' }
             ]
           }
         }

@@ -255,6 +255,8 @@ force_released
 | Widgets | 纯渲染组件 |
 | AI Summary 垂直组件 Module | 关联数据解析、请求组装、生成会话、私有 SSE 适配与纯渲染 View |
 
+Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格、页面搭建覆盖层和 `connectPrevious`。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
+
 查询数据源执行行为：
 
 - 默认状态优先使用可选内嵌初始行，不发起后台查询；

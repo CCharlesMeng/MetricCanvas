@@ -18,10 +18,10 @@
   {#if data.status === 'loading'}
     <p class="muted">正在生成总结…</p>
   {:else if data.status === 'streaming'}
-    <SafeMarkdown content={data.text} />
+    <div class="summary-content"><SafeMarkdown content={data.text} /></div>
     <span class="streaming" aria-label="仍在生成">●</span>
   {:else if data.status === 'ready'}
-    <SafeMarkdown content={data.text} />
+    <div class="summary-content"><SafeMarkdown content={data.text} /></div>
   {:else if data.status === 'empty'}
     <p class="muted">暂无可用于生成总结的数据。</p>
   {:else}
@@ -40,7 +40,7 @@
     min-height: 0;
     grid-template-rows: auto auto;
     padding: 15px 18px 15px 15px;
-    background: #fff;
+    background: var(--mc-color-surface, #fff);
     border-radius: 16px;
   }
   h3 {
@@ -53,12 +53,13 @@
   }
   p { margin: 0; }
   .muted { color: #71717a; }
-  .ai-summary :global(.safe-markdown) {
+  .summary-content {
+    display: grid;
     align-content: start;
     gap: 0;
     padding: 9px 27px 12px 12px;
     color: #191919;
-    background: #f1f4ff;
+    background: var(--mc-color-surface-subtle, #f1f4ff);
     border-radius: 8px;
     font-size: 18px;
     font-weight: 400;

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": "4.0",
+  "id": "canvas-preview-example",
+  "meta": {
+    "description": "Canvas JSON 即时预览的内部最小示例"
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "preview",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "MetricCanvas 页面预览",
+            "subtitle": "编辑左侧 JSON，并在此查看统一运行时结果"
+          }
+        },
+        {
+          "id": "guidance",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "声明式页面",
+            "body": "默认示例仅用于演示 Schema 4.0 的编辑与校验，不代表任何正式看板页面。"
+          }
+        }
+      ]
+    }
+  ]
+}

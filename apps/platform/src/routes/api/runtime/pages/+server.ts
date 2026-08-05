@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import type { PageDocument } from '@metriccanvas/page';
+import { pageListEntry } from '@metriccanvas/page';
 import { getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
@@ -16,7 +16,7 @@ export const GET: RequestHandler = async () => {
       .filter((page) => page.visibility === 'visible' && page.publishedRevision)
       .map(async ({ pageId }) => {
         const result = await lifecycle.getPublished({ pageId });
-        return result.ok ? pageMetadata(result.revision.document) : null;
+        return result.ok ? pageListEntry(result.revision.document) : null;
       })
   );
   return json(
@@ -24,23 +24,3 @@ export const GET: RequestHandler = async () => {
     { headers: PUBLIC_HEADERS }
   );
 };
-
-function pageMetadata(document: PageDocument): {
-  id: string;
-  title: string;
-  description?: string;
-} {
-  let title = document.id;
-  for (const section of document.sections) {
-    const header = section.components.find((component) => component.type === 'reportHeader');
-    if (header?.type === 'reportHeader') {
-      title = header.props.title;
-      break;
-    }
-  }
-  return {
-    id: document.id,
-    title,
-    ...(document.meta?.description ? { description: document.meta.description } : {})
-  };
-}

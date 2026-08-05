@@ -2,6 +2,7 @@ import type { Component } from './page';
 
 export interface ComponentCatalogEntry {
   type: Component['type'];
+  label: string;
   purpose: string;
   chooseWhen: string[];
   dataShape: string;
@@ -17,6 +18,7 @@ export interface ComponentCatalogEntry {
 export const componentCatalog: readonly ComponentCatalogEntry[] = [
   {
     type: 'reportHeader',
+    label: '报告页头',
     purpose: '表达页面标题、说明、时间点与标签',
     chooseWhen: ['任何完整看板页面的开头'],
     dataShape: '不绑定页面数据源',
@@ -26,6 +28,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'metricCard',
+    label: '指标卡',
     purpose: '突出一个或少量核心指标的当前值、变化值与可选完成率',
     chooseWhen: ['总额、数量、完成率、KPI、核心指标、年度活动进展'],
     dataShape: '单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric',
@@ -35,6 +38,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'barChart',
+    label: '柱状图',
     purpose: '比较离散类别之间的大小或展示分类分布',
     chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
     dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',
@@ -44,6 +48,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'lineChart',
+    label: '折线图',
     purpose: '展示指标随时间或有序维度的变化趋势',
     chooseWhen: ['趋势、走势、按日/月变化、时间序列'],
     dataShape: '一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段',
@@ -53,6 +58,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'pieChart',
+    label: '饼图',
     purpose: '展示少量类别对整体的占比或构成',
     chooseWhen: ['占比、构成、份额，且类别数量较少'],
     dataShape: '一个 dimension 类别字段 + 一个 metric 数值字段',
@@ -62,6 +68,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'table',
+    label: '明细表',
     purpose: '展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录',
     chooseWhen: ['明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细'],
     dataShape: '一个或多个 dimension/metric 字段组成的多行记录',
@@ -71,6 +78,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'mapChart',
+    label: '地图',
     purpose: '展示国家或省级地域分布',
     chooseWhen: ['明确要求中国/世界地图，且地域名称能映射到地图'],
     dataShape: '地域名称 dimension 字段 + 一个 metric 数值字段',
@@ -80,6 +88,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'rankingCard',
+    label: '排行卡',
     purpose: '突出 Top N 或按指标排序的类别',
     chooseWhen: ['排行、排名、Top N、领先/落后对象'],
     dataShape: '名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制',
@@ -89,6 +98,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'text',
+    label: '文本',
     purpose: '承载说明、口径提示或人工/AI 已确认的分析结论',
     chooseWhen: ['说明、提示、已确认结论；不能代替数据图表'],
     dataShape: '不绑定页面数据源',
@@ -98,6 +108,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
   },
   {
     type: 'aiSummary',
+    label: 'AI 总结',
     purpose: '基于声明的关联数据流式生成 AI 总结',
     chooseWhen: ['需要将当前页面查询结果动态总结为文本'],
     dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
@@ -106,3 +117,11 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = [
     defaultSpan: 12
   }
 ] as const;
+
+export function componentCatalogEntry(
+  type: Component['type']
+): ComponentCatalogEntry {
+  const entry = componentCatalog.find((candidate) => candidate.type === type);
+  if (!entry) throw new Error(`未知组件类型:${type}`);
+  return entry;
+}

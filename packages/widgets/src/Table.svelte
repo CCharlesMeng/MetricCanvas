@@ -499,8 +499,12 @@
     flex-direction: column;
     gap: 0;
     padding: 19px 19px 11px;
-    background: #fff;
-    border-radius: 16px;
+    background: var(--mc-color-surface, #fff);
+    border-radius:
+      var(--table-widget-radius-top-left, 16px)
+      var(--table-widget-radius-top-right, 16px)
+      var(--table-widget-radius-bottom-right, 16px)
+      var(--table-widget-radius-bottom-left, 16px);
     font-size: 14px;
   }
   .table-heading {
@@ -549,7 +553,7 @@
     z-index: 2;
     box-sizing: border-box;
     height: 42px;
-    background: #f1f4ff;
+    background: var(--mc-color-surface-subtle, #f1f4ff);
     text-align: left;
     font-weight: 500;
     color: #595959;
@@ -965,60 +969,6 @@
     background: #f5f5f5;
     color: #191919;
     font-weight: 700;
-  }
-  /* 兼容旧分页契约：视觉升级不要求调用方切换分页状态模型。 */
-  .pager-actions :global(.page-size) {
-    box-sizing: border-box;
-    display: inline-flex;
-    min-width: 70px;
-    height: 32px;
-    align-items: center;
-    margin-right: 16px;
-    padding: 0 12px;
-    border: 1px solid #c2c2c2;
-    border-radius: 6px;
-    background: #fff;
-    color: #191919;
-    white-space: nowrap;
-  }
-  .pager-actions > button:not(.page-button):not(.pager-nav) {
-    box-sizing: border-box;
-    min-width: 32px;
-    height: 32px;
-    margin-right: 4px;
-    padding: 0 8px;
-    border: 1px solid transparent;
-    border-radius: 999px;
-    background: transparent;
-    color: #595959;
-    font: inherit;
-    cursor: pointer;
-  }
-  .pager-actions > button:not(.page-button):not(.pager-nav):hover:not(:disabled) {
-    background: #f5f5f5;
-    color: #191919;
-  }
-  .pager-actions > button.current:not(.page-button) {
-    background: #f5f5f5;
-    color: #191919;
-    font-weight: 700;
-  }
-  .pager-actions > button[aria-label]:not(.pager-nav) {
-    min-width: 18px;
-    padding: 0;
-    border-radius: 0;
-    color: #191919;
-  }
-  .pager-actions > button[aria-label='上一页']:not(.pager-nav) {
-    margin-right: 8px;
-  }
-  .pager-actions > button[aria-label='下一页']:not(.pager-nav) {
-    margin-left: 4px;
-    margin-right: 0;
-  }
-  .pager-actions > button:not(.page-button):not(.pager-nav):disabled {
-    color: rgb(16 16 16 / 0.3);
-    cursor: not-allowed;
   }
   .ellipsis {
     display: block;

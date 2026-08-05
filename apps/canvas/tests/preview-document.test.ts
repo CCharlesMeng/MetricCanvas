@@ -1,12 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import {
-  isDqeQueryDefinition,
-  parsePage,
-  type MetricCardComponent,
-  type TableColumn,
-  type TableComponent,
-  validate,
-} from '@metriccanvas/page';
+import { parsePage, validate } from '@metriccanvas/page';
 import {
   DEFAULT_PREVIEW_PAGE,
   DEFAULT_PREVIEW_JSON,
@@ -14,156 +7,19 @@ import {
 } from '../src/lib/preview-document';
 
 describe('Page JSON 即时预览文档', () => {
-  it('内置客户活动风险简报通过当前契约，并声明查询驱动的表格联动', () => {
-    const result = parsePreviewDocument(
-      DEFAULT_PREVIEW_JSON,
-      validate
-    );
-
-    expect(result.status).toBe('valid');
-    if (result.status !== 'valid') return;
-
-    const parsed = parsePage(result.document);
-    expect(parsed.ok).toBe(true);
-    if (!parsed.ok) return;
-    const page = parsed.page;
-    const components = page.sections.flatMap((section) => section.components);
-    expect(page.id).toBe('customer-activity-risk-briefing');
-    expect(components.filter((component) => component.type === 'table')).toHaveLength(16);
-    expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(
-      true
-    );
-    expect(page.filters).toHaveLength(9);
-    expect(page.filters?.every((filter) => filter.visible === false)).toBe(true);
-    const overview = page.sections.find((section) => section.id === 'customer-overviews');
-    expect(overview?.components).toHaveLength(2);
-    expect(
-      overview?.components.map((component) => ({
-        span: component.layout.span,
-        rows: component.type === 'metricCard' ? component.props.rows.length : 0
-      }))
-    ).toEqual([
-      { span: 6, rows: 3 },
-      { span: 6, rows: 3 }
-    ]);
-    const overviewQueries = ['overview-na', 'overview-top'].map((id) => {
-      const source = page.dataSources[id]!.source;
-      expect(source.type).toBe('query');
-      if (source.type !== 'query') throw new Error(`${id} 不是 query 数据源`);
-      return source.query;
-    });
-    expect(overviewQueries.every(isDqeQueryDefinition)).toBe(true);
-    const top100Query = overviewQueries[1]!;
-    if (!isDqeQueryDefinition(top100Query)) throw new Error('overview-top 不是 DQE 查询');
-    expect(top100Query.body.dsl_list[0]!.output_metrics).toEqual([
-      { formula: 'COUNT(*)', alias: '数量' }
-    ]);
-    const progressTables = components.filter(
-      (component): component is TableComponent =>
-        component.type === 'table' && component.id.endsWith('-progress-table')
-    );
-    expect(progressTables).toHaveLength(4);
-    for (const progressTable of progressTables) {
-      const leafColumns = progressTable.props.columns
-          .flatMap((column) =>
-            'kind' in column && column.kind === 'group' ? column.children : [column]
-          )
-          .filter((column): column is TableColumn => column.kind !== 'group');
-      expect(leafColumns.some((column) => column.selection !== undefined)).toBe(true);
-      expect(
-        leafColumns
-          .filter((column) => column.title === '26年未开展客户数')
-          .every((column) => column.selection === undefined)
-      ).toBe(true);
-    }
-    const riskSummaries = components.filter((component) =>
-      component.id.endsWith('-risk-summary')
-    );
-    expect(riskSummaries.map((component) => component.id)).toEqual([
-      'inspection-risk-summary',
-      'visit-risk-summary',
-      'summit-risk-summary',
-      'inactive-risk-summary'
-    ]);
-    expect(riskSummaries.every((component) => component.type === 'text')).toBe(true);
-    for (const riskSummary of riskSummaries) {
-      if (riskSummary.type !== 'text') throw new Error(`${riskSummary.id} 不是静态文本`);
-      expect(riskSummary.data).toBeUndefined();
-      expect(riskSummary.props).toMatchObject({
-        title: '风险总结',
-        variant: 'insight'
-      });
-      expect(riskSummary.props.body?.trim()).not.toBe('');
-    }
-    expect(components.some((component) => component.type === 'aiSummary')).toBe(false);
-
-    const activityCards = components.filter(
-      (component): component is MetricCardComponent =>
-        component.type === 'metricCard' && component.props.variant === 'activityProgress'
-    );
-    expect(
-      activityCards.map((component) => ({
-        ringPercent: (component.props.progress as { ringPercent?: number } | undefined)?.ringPercent,
-        changeUnit: component.props.rows[0]?.changes?.[0] &&
-          (component.props.rows[0].changes[0] as { unit?: string }).unit
-      }))
-    ).toEqual([
-      { ringPercent: 75, changeUnit: '次' },
-      { ringPercent: 75, changeUnit: '次' },
-      { ringPercent: 75, changeUnit: '次' }
-    ]);
-
-    const tables = components.filter(
-      (component): component is TableComponent => component.type === 'table'
-    );
-    expect(tables.every((component) =>
-      (component.props as typeof component.props & { fit?: string }).fit === 'container'
-    )).toBe(true);
-    expect(
-      tables
-        .filter((component) => component.id.endsWith('-detail-table'))
-        .every((component) => component.layout.connectPrevious === true)
-    ).toBe(true);
-    const detailColumns = tables.flatMap((component) =>
-      component.props.columns.flatMap((column) =>
-        column.kind === 'group' ? column.children : [column]
-      )
-    );
-    expect(
-      detailColumns
-        .filter(
-          (column): column is TableColumn => column.kind !== 'group' && column.title === '序号'
-        )
-        .every((column) => column.align === 'left')
-    ).toBe(true);
-    expect(
-      detailColumns
-        .filter(
-          (column): column is TableColumn =>
-            column.kind !== 'group' && column.title?.startsWith('最近一次') === true
-        )
-        .every((column) => column.align === 'right')
-    ).toBe(true);
-  });
-
-  it('默认预览直接使用 pages 中的正式页面文档，并通过 v4 校验', () => {
-    expect(DEFAULT_PREVIEW_PAGE.id).toBe('customer-activity-risk-briefing');
+  it('默认预览使用 Canvas 内部最小示例并通过 v4 校验', () => {
+    expect(DEFAULT_PREVIEW_PAGE.id).toBe('canvas-preview-example');
     expect(validate(DEFAULT_PREVIEW_PAGE)).toEqual([]);
-  });
 
-  it('正式文档保留按角色分组的局部显式字段', () => {
     const parsed = parsePage(DEFAULT_PREVIEW_PAGE);
     expect(parsed.ok).toBe(true);
     if (!parsed.ok) return;
 
-    const sourceLength = JSON.stringify(DEFAULT_PREVIEW_PAGE).length;
-    const materializedLength = JSON.stringify(parsed.page).length;
-    expect(sourceLength).toBeLessThan(materializedLength);
-    expect('definitions' in DEFAULT_PREVIEW_PAGE).toBe(false);
-    expect(DEFAULT_PREVIEW_PAGE.dataSources['inspection-detail']?.fields).toHaveProperty(
-      'dimensions.customer-name',
-      { label: '客户名称', queryField: '客户名称', type: 'string' }
-    );
+    expect(parsed.page.sections).toHaveLength(1);
+    expect(parsed.page.sections[0]?.components.map((component) => component.type)).toEqual([
+      'reportHeader',
+      'text'
+    ]);
   });
 
   it('JSON 解析成功后调用 validator，并返回契约错误', () => {
@@ -180,5 +36,12 @@ describe('Page JSON 即时预览文档', () => {
 
     expect(validator).not.toHaveBeenCalled();
     expect(result).toMatchObject({ status: 'syntax-error' });
+  });
+
+  it('默认 JSON 可直接通过即时预览入口', () => {
+    expect(parsePreviewDocument(DEFAULT_PREVIEW_JSON, validate)).toMatchObject({
+      status: 'valid',
+      document: { id: 'canvas-preview-example' }
+    });
   });
 });

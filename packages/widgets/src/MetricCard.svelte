@@ -126,11 +126,12 @@
   }
   .activity-progress {
     position: relative;
+    container-type: inline-size;
     justify-content: flex-start;
     gap: 0;
     height: 164px;
     padding: 17px 0 38px 17px;
-    background: #fff;
+    background: var(--mc-color-surface, #fff);
     border-radius: 12px;
   }
   .summary {
@@ -144,7 +145,7 @@
     width: 100%;
     height: 128px;
     padding: 15px 0 13px 12px;
-    background: #fff;
+    background: var(--mc-color-surface, #fff);
     border-radius: 12px;
   }
   .summary .metric-values {
@@ -164,7 +165,7 @@
     height: 100px;
     margin-right: 12px;
     padding: 14px 0 9px 13px;
-    background: #f1f4ff;
+    background: var(--mc-color-surface-subtle, #f1f4ff);
     border-radius: 8px;
   }
   .summary .metric-row:last-child {
@@ -172,7 +173,7 @@
   }
   .summary h3 {
     margin: 0 0 7px;
-    color: #08359e;
+    color: var(--mc-color-primary, #08359e);
     font-size: 24px;
     font-weight: 600;
     line-height: 38px;
@@ -264,6 +265,36 @@
   .activity-progress .change-label {
     margin-right: 4px;
     color: #0f1a4d;
+  }
+  @container (max-width: 260px) {
+    .activity-progress .metric-content {
+      padding-right: 4px;
+    }
+    .activity-progress .metric-values {
+      flex-basis: 88px;
+    }
+    .activity-progress .row-value {
+      font-size: 22px;
+      line-height: 36px;
+    }
+    .activity-progress .unit,
+    .activity-progress .change {
+      font-size: 13px;
+      line-height: 18px;
+    }
+    .activity-progress .progress-slot {
+      --progress-ring-size: 80px;
+      --progress-ring-height: 81px;
+      --progress-ring-chart-size: 70px;
+      --progress-ring-inset: 5px;
+      --progress-ring-number-top: 35px;
+      --progress-ring-value-font-size: 20px;
+      --progress-ring-value-line-height: 20px;
+      --progress-ring-percent-font-size: 9px;
+      --progress-ring-label-bottom: 12px;
+      --progress-ring-label-font-size: 13px;
+      --progress-ring-label-line-height: 17px;
+    }
   }
   .change-unit {
     margin-left: 2px;

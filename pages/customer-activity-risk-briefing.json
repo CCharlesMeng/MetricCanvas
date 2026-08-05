@@ -5159,25 +5159,6 @@
           }
         }
       ]
-    },
-    {
-      "id": "report-footer",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
-      "components": [
-        {
-          "id": "footer-title",
-          "type": "text",
-          "layout": {
-            "span": 12
-          },
-          "props": {
-            "title": "客户活动风险简报"
-          }
-        }
-      ]
     }
   ]
 }

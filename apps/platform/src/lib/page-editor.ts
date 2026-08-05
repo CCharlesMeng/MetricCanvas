@@ -1,4 +1,8 @@
-import type { Component, PageDocument } from '@metriccanvas/page';
+import {
+  componentCatalogEntry,
+  type Component,
+  type PageDocument
+} from '@metriccanvas/page';
 
 export interface ComponentLocator {
   sectionId: string;
@@ -70,7 +74,7 @@ export function listEditableComponents(document: PageDocument): EditableComponen
     section.components.map((component, index) => ({
       locator: { sectionId: section.id, componentId: component.id },
       type: component.type,
-      typeLabel: componentTypeLabel(component.type),
+      typeLabel: componentCatalogEntry(component.type).label,
       title: componentTitle(component),
       detail: componentDetail(component),
       detailLabel: componentDetailLabel(component),
@@ -164,21 +168,6 @@ function setOptionalText<T extends object, K extends keyof T>(
 ): void {
   if (value.length === 0) delete target[key];
   else target[key] = value as T[K];
-}
-
-function componentTypeLabel(type: Component['type']): string {
-  return {
-    reportHeader: '报告页头',
-    metricCard: '指标卡',
-    barChart: '柱状图',
-    lineChart: '折线图',
-    pieChart: '饼图',
-    table: '明细表',
-    mapChart: '地图',
-    rankingCard: '排行卡',
-    text: '文本',
-    aiSummary: 'AI 总结'
-  }[type];
 }
 
 /** 页面文档是纯 JSON 领域对象；JSON 复制同时兼容 Svelte 响应式代理。 */

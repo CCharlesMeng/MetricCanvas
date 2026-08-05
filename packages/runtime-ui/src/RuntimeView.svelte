@@ -22,7 +22,6 @@
     drillThroughSearch,
     initialFilterValues,
     orchestrate,
-    type AuthoringComponentLocator,
     type FilterState,
     type FilterValue,
     type FilterValues,
@@ -55,6 +54,7 @@
     type TableViewState
   } from '@metriccanvas/widgets';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
+  import RuntimeSection from './RuntimeSection.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import {
     configurationError,
@@ -116,7 +116,6 @@
   let filterState: FilterState | null = null;
   let stream: PageSnapshotStream | null = null;
   let session = 0;
-  let dragged = $state<AuthoringComponentLocator | null>(null);
   let disposers: Array<() => void> = [];
 
   $effect(() => {
@@ -742,94 +741,6 @@
     };
   }
 
-  function componentCellStyle(component: Component): string {
-    return `grid-column: span ${component.layout.span};`;
-  }
-
-  function locator(sectionId: string, componentId: string): AuthoringComponentLocator {
-    return { sectionId, componentId };
-  }
-
-  function selected(sectionId: string, componentId: string): boolean {
-    return (
-      authoring?.selected?.sectionId === sectionId &&
-      authoring.selected.componentId === componentId
-    );
-  }
-
-  function componentTitleForEditor(component: Component): string {
-    return component.props.title ?? '';
-  }
-
-  function authoringSelect(event: MouseEvent, sectionId: string, componentId: string) {
-    if (!authoring || (event.target as HTMLElement).closest('.authoring-controls')) return;
-    event.preventDefault();
-    event.stopPropagation();
-    authoring.onintent({
-      type: 'select_component',
-      locator: locator(sectionId, componentId)
-    });
-  }
-
-  function authoringDragStart(
-    event: DragEvent,
-    sectionId: string,
-    componentId: string
-  ) {
-    if (!authoring) return;
-    dragged = locator(sectionId, componentId);
-    event.dataTransfer?.setData(
-      'application/x-metriccanvas-component',
-      JSON.stringify(dragged)
-    );
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
-  }
-
-  function authoringDrop(event: DragEvent, sectionId: string, componentId: string) {
-    if (!authoring) return;
-    event.preventDefault();
-    let source = dragged;
-    try {
-      const encoded = event.dataTransfer?.getData(
-        'application/x-metriccanvas-component'
-      );
-      if (encoded) source = JSON.parse(encoded) as AuthoringComponentLocator;
-    } catch {
-      // 拖动会话仍可使用进程内定位。
-    }
-    const before = locator(sectionId, componentId);
-    if (
-      source &&
-      source.sectionId === before.sectionId &&
-      source.componentId !== before.componentId
-    ) {
-      authoring.onintent({ type: 'move_component', locator: source, before });
-    }
-    dragged = null;
-  }
-
-  function editTitle(
-    event: Event,
-    sectionId: string,
-    component: Component
-  ) {
-    if (!authoring) return;
-    const title = (event.currentTarget as HTMLInputElement).value;
-    if (title === componentTitleForEditor(component)) return;
-    authoring.onintent({
-      type: 'edit_component',
-      locator: locator(sectionId, component.id),
-      edit: { title }
-    });
-  }
-
-  function resize(sectionId: string, component: Component, delta: number) {
-    authoring?.onintent({
-      type: 'edit_component',
-      locator: locator(sectionId, component.id),
-      edit: { span: Math.min(12, Math.max(1, component.layout.span + delta)) }
-    });
-  }
 </script>
 
 {#snippet renderComponent(component: Component, loaded: Page)}
@@ -908,11 +819,7 @@
   {/if}
 {/snippet}
 
-<div
-  class:customer-risk-briefing={pageState.phase === 'ready' &&
-    pageState.page.id === 'customer-activity-risk-briefing'}
-  class="runtime-view"
->
+<div class="runtime-view">
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'configuration-error'}
@@ -936,6 +843,7 @@
       </ul>
     </div>
   {:else}
+    {@const readyPage = pageState.page}
     <div class="page-content">
     {#if pageState.capabilities.filters && declarations.some((declaration) => declaration.visible !== false)}
       <div class="filter-bar">
@@ -963,70 +871,12 @@
     {/if}
 
     <div class="page-sections">
-      {#each pageState.page.sections as section (section.id)}
-        <section
-          class:header-section={section.components.length === 1 &&
-            section.components[0]?.type === 'reportHeader'}
-          class:titled-section={Boolean(section.title)}
-          class:summary-metric-section={section.components.length > 0 &&
-            section.components.every(
-              (component) => component.type === 'metricCard' && component.props.variant === 'summary'
-            )}
-          class:activity-metric-section={section.components.length > 0 &&
-            section.components.every(
-              (component) => component.type === 'metricCard' && component.props.variant === 'activityProgress'
-            )}
-          class="page-section"
-          data-section-id={section.id}
-        >
-          {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
-          <div
-            class="section-grid"
-            style="grid-template-columns: repeat({section.layout.columns}, minmax(0, 1fr));"
-          >
-            {#each section.components as component (component.id)}
-              <article
-                class:chart-cell={isChartComponent(component)}
-                class:header-cell={component.type === 'reportHeader'}
-                class:metric-cell={component.type === 'metricCard'}
-                class:table-cell={component.type === 'table'}
-                class:connect-previous={component.layout.connectPrevious === true}
-                class:authoring-cell={Boolean(authoring)}
-                class:authoring-selected={selected(section.id, component.id)}
-                class="cell"
-                data-authoring-component={`${section.id}/${component.id}`}
-                style={componentCellStyle(component)}
-                draggable={Boolean(authoring)}
-                onclickcapture={(event) => authoringSelect(event, section.id, component.id)}
-                ondragstart={(event) =>
-                  authoringDragStart(event, section.id, component.id)}
-                ondragover={(event) => {
-                  if (authoring) event.preventDefault();
-                }}
-                ondrop={(event) => authoringDrop(event, section.id, component.id)}
-                ondragend={() => (dragged = null)}
-              >
-                {#if authoring && selected(section.id, component.id)}
-                  <div class="authoring-controls">
-                    <span class="authoring-drag" title="拖动组件">⠿</span>
-                    <label>
-                      <span>画布内标题</span>
-                      <input
-                        aria-label={`${component.id} 画布内标题`}
-                        value={componentTitleForEditor(component)}
-                        onchange={(event) => editTitle(event, section.id, component)}
-                      />
-                    </label>
-                    <span class="authoring-span">{component.layout.span}/12</span>
-                    <button type="button" aria-label="缩小组件" onclick={() => resize(section.id, component, -1)}>−</button>
-                    <button type="button" aria-label="加宽组件" onclick={() => resize(section.id, component, 1)}>＋</button>
-                  </div>
-                {/if}
-                {@render renderComponent(component, pageState.page)}
-              </article>
-            {/each}
-          </div>
-        </section>
+      {#each readyPage.sections as section (section.id)}
+        <RuntimeSection {section} {authoring}>
+          {#snippet componentContent(component: Component)}
+            {@render renderComponent(component, readyPage)}
+          {/snippet}
+        </RuntimeSection>
       {/each}
     </div>
     </div>
@@ -1035,9 +885,22 @@
 
 <style>
   .runtime-view {
+    --mc-color-canvas: #daeaff;
+    --mc-color-surface: #fff;
+    --mc-color-surface-subtle: #f1f4ff;
+    --mc-color-text: #18181b;
+    --mc-color-text-strong: #0f1a4d;
+    --mc-color-muted: #71717a;
+    --mc-color-primary: #08359e;
+    --mc-color-accent: #4f46e5;
+    --mc-color-border: #e4e4e7;
+    --mc-color-danger: #b91c1c;
+    --mc-radius-cell: 10px;
+    --mc-radius-section: 16px;
+
     width: 100%;
     min-width: 0;
-    color: #18181b;
+    color: var(--mc-color-text);
     font-family:
       -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
       'Microsoft YaHei', sans-serif;
@@ -1046,7 +909,7 @@
     box-sizing: border-box;
   }
   .muted {
-    color: #71717a;
+    color: var(--mc-color-muted);
   }
   .page-content {
     width: 100%;
@@ -1054,7 +917,7 @@
     box-sizing: border-box;
     margin: 0 auto;
     padding: 28px 18px 54px;
-    background: #daeaff;
+    background: var(--mc-color-canvas);
   }
   .filter-bar {
     display: flex;
@@ -1063,225 +926,14 @@
     gap: 20px;
     padding: 12px 16px;
     margin-bottom: 18px;
-    background: #fff;
-    border: 1px solid #e4e4e7;
-    border-radius: 10px;
+    background: var(--mc-color-surface);
+    border: 1px solid var(--mc-color-border);
+    border-radius: var(--mc-radius-cell);
   }
   .page-sections {
     display: flex;
     flex-direction: column;
     gap: 16px;
-  }
-  .page-section {
-    padding: 18px;
-    border: 0;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 8px 24px rgb(68 85 147 / 0.06);
-  }
-  .page-section.header-section {
-    padding: 0 8px 10px;
-    background: transparent;
-    box-shadow: none;
-  }
-  .section-title {
-    margin: 0 0 18px;
-    color: #08359e;
-    font-size: 20px;
-    font-weight: 700;
-    text-align: left;
-  }
-  .section-title::before {
-    display: inline-block;
-    width: 9px;
-    height: 9px;
-    margin-right: 9px;
-    border: 3px solid #7d9fff;
-    border-radius: 3px 1px 3px 1px;
-    content: '';
-  }
-  .customer-risk-briefing .section-title,
-  .customer-risk-briefing .section-title {
-    text-align: center;
-  }
-  .section-grid {
-    display: grid;
-    align-items: stretch;
-    gap: 16px;
-  }
-  .cell {
-    position: relative;
-    display: flex;
-    min-width: 0;
-    min-height: 112px;
-    flex-direction: column;
-    gap: 6px;
-    padding: 14px 16px;
-    overflow: hidden;
-    background: #fff;
-    border: 1px solid rgb(91 114 234 / 0.12);
-    border-radius: 10px;
-    box-shadow: 0 8px 22px rgb(53 65 130 / 0.06);
-  }
-  .metric-cell {
-    background: #f1f4ff;
-  }
-  .authoring-cell {
-    cursor: pointer;
-    transition: border-color 120ms ease, box-shadow 120ms ease;
-  }
-  .authoring-cell:hover {
-    border-color: rgb(79 70 229 / 0.45);
-  }
-  .authoring-selected {
-    z-index: 2;
-    overflow: visible;
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 3px rgb(79 70 229 / 0.18), 0 12px 30px rgb(53 65 130 / 0.14);
-  }
-  .authoring-controls {
-    position: absolute;
-    top: -38px;
-    right: -1px;
-    left: -1px;
-    z-index: 20;
-    display: flex;
-    height: 34px;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 6px;
-    color: #fff;
-    background: #3730a3;
-    border-radius: 7px;
-    box-shadow: 0 8px 20px rgb(49 46 129 / 0.2);
-    cursor: default;
-  }
-  .authoring-drag {
-    padding: 0 4px;
-    cursor: grab;
-  }
-  .authoring-controls label {
-    display: flex;
-    min-width: 0;
-    flex: 1;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-  .authoring-controls label span {
-    flex: none;
-  }
-  .authoring-controls input {
-    min-width: 80px;
-    height: 24px;
-    flex: 1;
-    padding: 3px 7px;
-    color: #27272a;
-    background: #fff;
-    border: 0;
-    border-radius: 4px;
-    outline: 0;
-    font: inherit;
-  }
-  .authoring-span {
-    flex: none;
-    font-size: 10px;
-  }
-  .authoring-controls button {
-    display: grid;
-    width: 24px;
-    height: 24px;
-    place-items: center;
-    padding: 0;
-    color: #3730a3;
-    background: #fff;
-    border: 0;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  .chart-cell {
-    min-height: 320px;
-  }
-  .table-cell {
-    min-height: 0;
-  }
-  .header-cell {
-    min-height: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-  .customer-risk-briefing .page-content {
-    max-width: 1200px;
-    padding: 35px 19px 48px;
-    background: #daeaff;
-  }
-  .customer-risk-briefing .page-sections {
-    gap: 12px;
-  }
-  .customer-risk-briefing .page-section {
-    padding: 0;
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .customer-risk-briefing .page-section.titled-section {
-    padding: 18px 17px 22px 16px;
-  }
-  .customer-risk-briefing .page-section.header-section,
-  .customer-risk-briefing .page-section.activity-metric-section,
-  .customer-risk-briefing .page-section.titled-section,
-  .customer-risk-briefing .summary-metric-section :global(.metric-card.summary) {
-    background-image: url('./assets/customer-risk-section-bg.svg');
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    border-radius: 16px;
-  }
-  .customer-risk-briefing .page-section.activity-metric-section {
-    padding: 16px 17px 20px;
-  }
-  .customer-risk-briefing .section-grid {
-    gap: 12px 14px;
-  }
-  .customer-risk-briefing .activity-metric-section .section-grid {
-    gap: 12px;
-    padding-left: 0;
-  }
-  .customer-risk-briefing .section-title {
-    margin: 0 0 11px;
-    color: #08359e;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 32px;
-  }
-  .customer-risk-briefing .section-title::before {
-    display: none;
-  }
-  .customer-risk-briefing .cell {
-    min-height: 0;
-    gap: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .customer-risk-briefing .cell.connect-previous::before {
-    position: absolute;
-    top: -7px;
-    right: 0;
-    left: 0;
-    border-top: 1px dashed rgb(255 255 255 / 0.92);
-    content: '';
-    pointer-events: none;
-  }
-  .customer-risk-briefing .metric-cell {
-    background: transparent;
   }
   .error-page h1 {
     font-size: 20px;
@@ -1304,20 +956,12 @@
     font-size: 14px;
   }
   .badge {
-    color: #b91c1c;
+    color: var(--mc-color-danger);
     font-size: 12px;
     font-weight: 700;
   }
   .path {
-    color: #52525b;
+    color: var(--mc-color-muted);
     font-size: 13px;
-  }
-  @media (max-width: 760px) {
-    .page-section {
-      padding: 16px;
-    }
-    .cell {
-      grid-column: 1 / -1 !important;
-    }
   }
 </style>

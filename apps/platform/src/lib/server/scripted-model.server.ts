@@ -3,6 +3,7 @@ import type {
   ModelProvider,
   ModelResponse
 } from '@metriccanvas/agent-runner';
+import type { VerifiedQuery } from '@metriccanvas/data-context';
 
 const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 
@@ -24,16 +25,22 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
       const intent = latestUserText(messages);
       const dynamic = /(实时|动态|DQE|查询)/iu.test(intent);
 
-      if (dynamic && !called.has('search_data_context')) {
+      if (!context && dynamic && !called.has('search_data_context')) {
         return toolCall('search-data-context-1', 'search_data_context', {
-          query: intent || '客户活动',
+          query: intent || '看板数据',
           limit: 10
         });
       }
 
-      const document = context?.document ?? (
-        dynamic ? dqePage(pageId) : inlinePage(pageId, intent)
-      );
+      const document = context?.document ?? (dynamic
+        ? dqePage(pageId, verifiedQueryFrom(messages))
+        : inlinePage(pageId, intent));
+      if (!document) {
+        return {
+          content: '数据上下文没有返回可执行的已验证查询，无法在不猜测字段和 DQE 协议的前提下生成动态看板页面。',
+          toolCalls: []
+        };
+      }
       if (!called.has('validate_page')) {
         return toolCall('validate-page-1', 'validate_page', { document });
       }
@@ -110,38 +117,37 @@ function inlinePage(pageId: string, intent: string): Record<string, unknown> {
   };
 }
 
-function dqePage(pageId: string): Record<string, unknown> {
+function dqePage(
+  pageId: string,
+  query: VerifiedQuery | null
+): Record<string, unknown> | null {
+  if (!query || query.resultFields.length === 0) return null;
+  const fieldEntries = query.resultFields.map((field, index) => {
+    const id = `field-${index + 1}`;
+    return [
+      id,
+      {
+        queryField: field.name,
+        type: field.type,
+        role: field.role,
+        label: field.name,
+        ...(field.unit ? { unit: field.unit } : {}),
+        nullable: field.nullable
+      }
+    ] as const;
+  });
   return {
     schemaVersion: '4.0',
     id: pageId,
+    meta: { description: query.description },
     dataSources: {
-      customers: {
-        fields: {
-          'customer-level': {
-            queryField: '客户级别',
-            type: 'string',
-            role: 'dimension',
-            nullable: false
-          },
-          'customer-count': {
-            queryField: 'NA客户数',
-            type: 'number',
-            role: 'measure',
-            nullable: false
-          }
-        },
+      result: {
+        fields: Object.fromEntries(fieldEntries),
         source: {
           type: 'query',
           query: {
-            language: 'dqe',
-            body: {
-              dsl_list: [{
-                output_dims: ['客户级别'],
-                output_metrics: ['NA客户数'],
-                filter: { dims: [], metrics: [] },
-                order: {}
-              }]
-            }
+            language: query.language,
+            body: query.body
           }
         }
       }
@@ -150,20 +156,40 @@ function dqePage(pageId: string): Record<string, unknown> {
       id: 'overview',
       layout: { type: 'grid', columns: 12 },
       components: [{
-        id: 'customers-table',
+        id: 'results-table',
         type: 'table',
         layout: { span: 12 },
-        data: { main: 'customers' },
+        data: { main: 'result' },
         props: {
-          title: '客户分层',
-          columns: [
-            { field: 'customer-level', title: '客户级别' },
-            { field: 'customer-count', title: '客户数' }
-          ]
+          title: query.question,
+          columns: fieldEntries.map(([fieldId, field]) => ({
+            field: fieldId,
+            title: field.label
+          }))
         }
       }]
     }]
   };
+}
+
+function verifiedQueryFrom(messages: AgentMessage[]): VerifiedQuery | null {
+  const result = toolResult(messages, 'search_data_context');
+  if (result.ok !== true || !Array.isArray(result.matches)) return null;
+  for (const match of result.matches) {
+    if (!isRecord(match) || match.kind !== 'verifiedQuery') continue;
+    const query = match.query;
+    if (
+      !isRecord(query) ||
+      query.language !== 'dqe' ||
+      !isRecord(query.body) ||
+      !Array.isArray(query.body.dsl_list) ||
+      !Array.isArray(query.resultFields)
+    ) {
+      continue;
+    }
+    return query as unknown as VerifiedQuery;
+  }
+  return null;
 }
 
 function authoringContext(

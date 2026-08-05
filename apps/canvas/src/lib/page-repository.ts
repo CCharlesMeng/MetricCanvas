@@ -1,4 +1,5 @@
 import type { PageRepository } from '@metriccanvas/runtime';
+import { pageListEntry, parsePage } from '@metriccanvas/page';
 
 /**
  * PageRepository 静态文件实现(一期,ADR-0004):页面文档来自仓库根 pages/ 目录($pages 别名)。
@@ -11,24 +12,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 function pageMetadata(raw: unknown, fallbackId: string) {
+  const parsed = parsePage(raw);
+  if (parsed.ok) return pageListEntry(parsed.page);
+
   const document = isRecord(raw) ? raw : {};
   const id = typeof document.id === 'string' ? document.id : fallbackId;
   const meta = isRecord(document.meta) ? document.meta : {};
-  let title = id;
-  if (Array.isArray(document.sections)) {
-    for (const section of document.sections) {
-      if (!isRecord(section) || !Array.isArray(section.components)) continue;
-      const header = section.components.find(
-        (component) => isRecord(component) && component.type === 'reportHeader'
-      );
-      if (!isRecord(header) || !isRecord(header.props)) continue;
-      if (typeof header.props.title === 'string') title = header.props.title;
-      break;
-    }
-  }
   return {
     id,
-    title,
+    title: id,
     ...(typeof meta.description === 'string'
       ? { description: meta.description }
       : {})

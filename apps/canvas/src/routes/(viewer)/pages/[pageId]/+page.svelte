@@ -6,11 +6,9 @@
     RuntimeView,
     type RuntimeNavigation
   } from '@metriccanvas/runtime-ui';
-  import QueryInspector from '$lib/QueryInspector.svelte';
   import {
     aiSummary,
     dataGateway,
-    dqeDiagnostics,
     pageRepository
   } from '$lib/services';
 
@@ -67,15 +65,6 @@
       };
     }
   }
-
-  function isCustomerRiskPage(document: unknown): boolean {
-    return (
-      typeof document === 'object' &&
-      document !== null &&
-      'id' in document &&
-      document.id === 'customer-activity-risk-briefing'
-    );
-  }
 </script>
 
 {#if pageState.phase === 'loading'}
@@ -93,9 +82,6 @@
     {initialSearch}
     {navigation}
   />
-  {#if pageState.document && isCustomerRiskPage(pageState.document)}
-    <QueryInspector diagnostics={dqeDiagnostics} />
-  {/if}
 {/if}
 
 <style>

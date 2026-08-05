@@ -50,7 +50,7 @@
     gap: 0;
     padding: 15px 18px 15px 15px;
     border-radius: 16px;
-    background: #fff;
+    background: var(--mc-color-surface, #fff);
   }
   .heading {
     margin: 0;
@@ -76,7 +76,7 @@
   .insight .body {
     padding: 9px 27px 12px 12px;
     color: #191919;
-    background: #f1f4ff;
+    background: var(--mc-color-surface-subtle, #f1f4ff);
     border-radius: 8px;
     font-size: 18px;
     font-weight: 400;
