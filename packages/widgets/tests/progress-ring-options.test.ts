@@ -29,14 +29,14 @@ describe('progressRingOption', () => {
       type: 'pie',
       startAngle: 225,
       endAngle: 315,
-      radius: ['62%', '80%'],
+      radius: ['82%', '100%'],
       data: [{ value: 1, itemStyle: { color: '#e5eaff', borderRadius: 999 } }]
     });
     expect(progress).toMatchObject({
       id: 'progress-ring-value',
       type: 'pie',
       startAngle: 225,
-      radius: ['62%', '80%'],
+      radius: ['82%', '100%'],
       data: [{ value: 1, itemStyle: { color: '#5b72ea', borderRadius: 999 } }]
     });
     expect(progress.endAngle).toBeCloseTo(319.86, 2);

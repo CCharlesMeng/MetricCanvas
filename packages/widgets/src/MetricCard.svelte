@@ -208,18 +208,19 @@
     line-height: 25px;
   }
   .activity-progress .metric-content {
-    width: min(291px, 100%);
+    width: 100%;
     align-items: flex-start;
     justify-content: space-between;
     gap: 0;
     margin-top: 26px;
+    padding-right: calc(clamp(44px, 16.715%, 59px) - 6px);
   }
   .activity-progress .metric-values {
     flex: 0 0 125px;
     gap: 0;
   }
   .activity-progress .progress-slot {
-    transform: translateX(-20px);
+    transform: none;
   }
   .activity-progress .metric-row {
     align-items: flex-start;
@@ -262,6 +263,7 @@
   }
   .activity-progress .change-label {
     margin-right: 4px;
+    color: #0f1a4d;
   }
   .change-unit {
     margin-left: 2px;

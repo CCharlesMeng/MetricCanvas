@@ -1,9 +1,10 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { DataSnapshot } from '@metriccanvas/page';
+  import { isWidgetHostEmptyState } from './widget-host-state';
 
   /**
-   * 快照态统一呈现(切片1 评审遗留的下沉):加载骨架屏/结构化错误/空态由此承担,
+   * 快照态统一呈现(切片1 评审遗留的下沉):加载骨架屏/错误降级空态/空态由此承担,
    * 壳与组件都不再手写状态分支;组件只经 ready 快照渲染(纯渲染原则)。
    * 遗留原话是"下沉到运行时统一呈现"——runtime 包框架无关(零 svelte 依赖)容不下
    * Svelte 组件,故落表现层 widgets 包;"统一由平台呈现、壳不重复"这一目的等同达成。
@@ -19,9 +20,7 @@
 
 {#if snapshot.status === 'loading'}
   <div class="skeleton"></div>
-{:else if snapshot.status === 'error'}
-  <div class="state error">查询失败:{snapshot.error.message}</div>
-{:else if snapshot.status === 'empty'}
+{:else if isWidgetHostEmptyState(snapshot)}
   <div class="state">暂无数据</div>
 {:else}
   {@render ready(snapshot)}
@@ -49,8 +48,5 @@
     align-items: center;
     color: #71717a;
     font-size: 14px;
-  }
-  .state.error {
-    color: #b91c1c;
   }
 </style>

@@ -18,7 +18,7 @@
   <div class="chart" aria-hidden="true">
     <EChart {option} updateMode="merge" />
   </div>
-  <div class="number"><strong>{normalized}</strong><span>%</span></div>
+  <div class="number"><span class="value">{normalized}</span><span class="percent">%</span></div>
   <span class="label">{label}</span>
 </div>
 
@@ -26,9 +26,9 @@
   .progress-ring {
     position: relative;
     display: grid;
-    width: 84px;
-    height: 83px;
-    flex: 0 0 84px;
+    width: 104px;
+    height: 105px;
+    flex: 0 0 104px;
     place-items: center;
   }
   .chart {
@@ -36,38 +36,37 @@
     top: 0;
     left: 6px;
     display: flex;
-    width: 72px;
-    height: 72px;
-    transform: scale(1.1);
-    transform-origin: center;
+    width: 92px;
+    height: 92px;
     pointer-events: none;
   }
   .number {
     position: absolute;
-    top: 28px;
-    left: 0;
+    top: 46px;
+    left: 6px;
     z-index: 1;
     display: flex;
-    width: 84px;
+    width: 92px;
     align-items: baseline;
     justify-content: center;
+    transform: translateY(-50%);
     color: #0f1a4d;
   }
-  .number strong {
+  .number .value {
     font-size: 24px;
-    font-weight: 500;
+    font-weight: 300;
     line-height: 24px;
   }
-  .number span {
+  .number .percent {
     margin-left: 2px;
     font-size: 11px;
   }
   .label {
     position: absolute;
-    bottom: 0;
+    bottom: 16px;
     left: 0;
     z-index: 1;
-    width: 84px;
+    width: 104px;
     color: #777;
     font-size: 16px;
     line-height: 20px;

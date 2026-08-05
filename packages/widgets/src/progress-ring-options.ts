@@ -5,6 +5,7 @@ export function normalizeProgressValue(value: number): number {
 }
 
 const PROGRESS_START_ANGLE = 225;
+const PROGRESS_RING_RADIUS: [string, string] = ['82%', '100%'];
 
 function progressEndAngle(value: number): number | 'auto' {
   if (value <= 0) return PROGRESS_START_ANGLE;
@@ -35,7 +36,7 @@ export function progressRingOption(value: number, ringPercent = 100): EChartsOpt
         clockwise: true,
         startAngle: PROGRESS_START_ANGLE,
         endAngle: progressEndAngle(normalizedRingPercent),
-        radius: ['62%', '80%'],
+        radius: PROGRESS_RING_RADIUS,
         label: { show: false },
         emphasis: { disabled: true },
         animation: false,
@@ -53,7 +54,7 @@ export function progressRingOption(value: number, ringPercent = 100): EChartsOpt
         clockwise: true,
         startAngle: PROGRESS_START_ANGLE,
         endAngle: progressEndAngle(filledPercent),
-        radius: ['62%', '80%'],
+        radius: PROGRESS_RING_RADIUS,
         label: { show: false },
         emphasis: { disabled: true },
         data: [
