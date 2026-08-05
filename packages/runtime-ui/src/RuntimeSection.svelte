@@ -16,6 +16,19 @@
 
   let { section, authoring, componentContent }: Props = $props();
   let dragged = $state<AuthoringComponentLocator | null>(null);
+  const summaryMetricSection = $derived(
+    section.components.length > 0 &&
+      section.components.every(
+        (component) => component.type === 'metricCard' && component.props.variant === 'summary'
+      )
+  );
+  const activityMetricSection = $derived(
+    section.components.length > 0 &&
+      section.components.every(
+        (component) =>
+          component.type === 'metricCard' && component.props.variant === 'activityProgress'
+      )
+  );
 
   function locator(componentId: string): AuthoringComponentLocator {
     return { sectionId: section.id, componentId };
@@ -94,6 +107,9 @@
 <section
   class:header-section={section.components.length === 1 &&
     section.components[0]?.type === 'reportHeader'}
+  class:titled-section={Boolean(section.title)}
+  class:summary-metric-section={summaryMetricSection}
+  class:activity-metric-section={activityMetricSection}
   class="page-section"
   data-section-id={section.id}
 >
@@ -321,6 +337,71 @@
     background: transparent;
     border: 0;
     box-shadow: none;
+  }
+  .page-section.summary-metric-section {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .page-section.activity-metric-section,
+  .page-section.titled-section {
+    background-color: transparent;
+    background-image: var(--mc-section-gradient);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: var(--mc-radius-section);
+    box-shadow: none;
+  }
+  .page-section.activity-metric-section {
+    padding: 16px 17px 20px;
+  }
+  .page-section.titled-section {
+    padding: 18px 17px 22px 16px;
+  }
+  .summary-metric-section .section-grid,
+  .titled-section .section-grid {
+    gap: 12px 14px;
+  }
+  .activity-metric-section .section-grid {
+    gap: 12px;
+  }
+  .titled-section .section-title {
+    margin: 0 0 11px;
+    color: var(--mc-color-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    text-align: center;
+  }
+  .titled-section .section-title::before {
+    display: none;
+  }
+  .summary-metric-section .cell,
+  .activity-metric-section .cell,
+  .titled-section .cell {
+    min-height: 0;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .summary-metric-section .cell.connect-previous,
+  .activity-metric-section .cell.connect-previous,
+  .titled-section .cell.connect-previous {
+    background: transparent;
+  }
+  .summary-metric-section .cell.connect-previous::before,
+  .activity-metric-section .cell.connect-previous::before,
+  .titled-section .cell.connect-previous::before {
+    top: -7px;
+    right: 0;
+    left: 0;
+    border-top-color: rgb(255 255 255 / 0.92);
   }
   @media (max-width: 760px) {
     .page-section {

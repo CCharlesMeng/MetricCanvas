@@ -242,6 +242,100 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   });
 });
 
+test('指标卡变体与标题分区保持通用的扁平外缘', async ({ page }) => {
+  await page.goto('/examples/inline.html');
+  await page.evaluate(() => {
+    window.runtime.update({
+      document: {
+        schemaVersion: '4.0',
+        id: 'decorated-sections-example',
+        dataSources: {
+          metrics: {
+            fields: {
+              category: { type: 'string', role: 'dimension', label: '类别' },
+              value: { type: 'number', role: 'measure', label: '数值' },
+              change: { type: 'number', role: 'measure', label: '变化' },
+              completion: { type: 'number', role: 'measure', label: '完成率' }
+            },
+            source: {
+              type: 'inline',
+              rows: [{ category: '卓越', value: 2000, change: -888, completion: 98.2 }]
+            }
+          }
+        },
+        sections: [
+          {
+            id: 'overview',
+            layout: { type: 'grid', columns: 12 },
+            components: [{
+              id: 'summary',
+              type: 'metricCard',
+              layout: { span: 12 },
+              data: { main: 'metrics' },
+              props: {
+                title: '客户概况',
+                variant: 'summary',
+                rows: [{ label: '卓越', valueField: 'value', unit: '个' }]
+              }
+            }]
+          },
+          {
+            id: 'activities',
+            layout: { type: 'grid', columns: 12 },
+            components: [{
+              id: 'activity',
+              type: 'metricCard',
+              layout: { span: 12 },
+              data: { main: 'metrics' },
+              props: {
+                variant: 'activityProgress',
+                rows: [{
+                  label: '客户活动（年累计）',
+                  valueField: 'value',
+                  unit: '次',
+                  changes: [{ label: '较上月', field: 'change', unit: '次' }]
+                }],
+                progress: { valueField: 'completion', label: '完成率' }
+              }
+            }]
+          },
+          {
+            id: 'details',
+            title: '客户明细',
+            layout: { type: 'grid', columns: 12 },
+            components: [{
+              id: 'note',
+              type: 'text',
+              layout: { span: 12 },
+              props: { body: '示例内容' }
+            }]
+          }
+        ]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const overview = host.locator('[data-section-id="overview"]');
+  const overviewCell = overview.locator(':scope > .section-grid > .cell');
+  const activities = host.locator('[data-section-id="activities"]');
+  const activityCell = activities.locator(':scope > .section-grid > .cell');
+  const details = host.locator('[data-section-id="details"]');
+
+  await expect(overview).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(overview).toHaveCSS('padding', '0px');
+  await expect(overviewCell).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(overviewCell).toHaveCSS('padding', '0px');
+  await expect(overviewCell.locator('.metric-card.summary')).not.toHaveCSS('background-image', 'none');
+
+  await expect(activities).not.toHaveCSS('background-image', 'none');
+  await expect(activityCell).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+  await expect(activityCell).toHaveCSS('padding', '0px');
+  await expect(activities.locator(':scope > .section-grid')).toHaveCSS('column-gap', '12px');
+
+  await expect(details.locator(':scope > .section-title')).toHaveCSS('text-align', 'center');
+});
+
 test('活动指标卡在窄容器与手机视口不溢出', async ({ page }) => {
   await page.setViewportSize({ width: 830, height: 738 });
   await page.goto('/examples/inline.html');

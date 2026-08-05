@@ -139,6 +139,12 @@
     justify-content: flex-start;
     gap: 0;
     padding: 11px 17px 16px;
+    background-color: transparent;
+    background-image: var(--mc-section-gradient, none);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: 16px;
     text-align: left;
   }
   .summary .metric-content {

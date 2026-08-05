@@ -897,6 +897,7 @@
     --mc-color-danger: #b91c1c;
     --mc-radius-cell: 10px;
     --mc-radius-section: 16px;
+    --mc-section-gradient: url('./assets/section-gradient-panel.svg');
 
     width: 100%;
     min-width: 0;
