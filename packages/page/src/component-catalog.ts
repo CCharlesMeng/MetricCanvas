@@ -1,4 +1,7 @@
+import { z } from 'zod';
 import type { Component } from './page';
+import { componentSchemas } from './schema/component';
+import { componentCatalogRegistry } from './schema/registry';
 
 export interface ComponentCatalogEntry {
   type: Component['type'];
@@ -14,109 +17,74 @@ export interface ComponentCatalogEntry {
 /**
  * 领域 DSL 的组件能力目录。它描述“何时选、需要什么数据”，供 Agent 组合页面；
  * 不是运行时组件注册表，也不允许 Agent 越过 Page Schema 发明新组件。
+ *
+ * 机械字段（type/requiredProps/defaultSpan 中的前两者由此处从 Zod 定义派生；
+ * defaultSpan 与 label/purpose/chooseWhen/dataShape/title 是产品/领域决策，
+ * 人写在 `./schema/registry.ts` 的 catalog registry 里，与对应组件的 Zod
+ * 定义放在同一文件（`./schema/components/*.ts`）维护。
  */
-export const componentCatalog: readonly ComponentCatalogEntry[] = [
-  {
-    type: 'reportHeader',
-    label: '报告页头',
-    purpose: '表达页面标题、说明、时间点与标签',
-    chooseWhen: ['任何完整看板页面的开头'],
-    dataShape: '不绑定页面数据源',
-    requiredProps: ['title'],
-    title: 'required',
-    defaultSpan: 12
-  },
-  {
-    type: 'metricCard',
-    label: '指标卡',
-    purpose: '突出一个或少量核心指标的当前值、变化值与可选完成率',
-    chooseWhen: ['总额、数量、完成率、KPI、核心指标、年度活动进展'],
-    dataShape: '单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric',
-    requiredProps: ['rows[].label', 'rows[].valueField'],
-    title: 'optional',
-    defaultSpan: 3
-  },
-  {
-    type: 'barChart',
-    label: '柱状图',
-    purpose: '比较离散类别之间的大小或展示分类分布',
-    chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
-    dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',
-    requiredProps: ['categoryField', 'series[].field'],
-    title: 'optional',
-    defaultSpan: 6
-  },
-  {
-    type: 'lineChart',
-    label: '折线图',
-    purpose: '展示指标随时间或有序维度的变化趋势',
-    chooseWhen: ['趋势、走势、按日/月变化、时间序列'],
-    dataShape: '一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段',
-    requiredProps: ['xField', 'series[].field'],
-    title: 'optional',
-    defaultSpan: 8
-  },
-  {
-    type: 'pieChart',
-    label: '饼图',
-    purpose: '展示少量类别对整体的占比或构成',
-    chooseWhen: ['占比、构成、份额，且类别数量较少'],
-    dataShape: '一个 dimension 类别字段 + 一个 metric 数值字段',
-    requiredProps: ['categoryField', 'valueField'],
-    title: 'optional',
-    defaultSpan: 4
-  },
-  {
-    type: 'table',
-    label: '明细表',
-    purpose: '展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录',
-    chooseWhen: ['明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细'],
-    dataShape: '一个或多个 dimension/metric 字段组成的多行记录',
-    requiredProps: ['columns[].field'],
-    title: 'optional',
-    defaultSpan: 12
-  },
-  {
-    type: 'mapChart',
-    label: '地图',
-    purpose: '展示国家或省级地域分布',
-    chooseWhen: ['明确要求中国/世界地图，且地域名称能映射到地图'],
-    dataShape: '地域名称 dimension 字段 + 一个 metric 数值字段',
-    requiredProps: ['nameField', 'valueField', 'map'],
-    title: 'optional',
-    defaultSpan: 8
-  },
-  {
-    type: 'rankingCard',
-    label: '排行卡',
-    purpose: '突出 Top N 或按指标排序的类别',
-    chooseWhen: ['排行、排名、Top N、领先/落后对象'],
-    dataShape: '名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制',
-    requiredProps: ['nameField', 'valueField'],
-    title: 'optional',
-    defaultSpan: 4
-  },
-  {
-    type: 'text',
-    label: '文本',
-    purpose: '承载说明、口径提示或人工/AI 已确认的分析结论',
-    chooseWhen: ['说明、提示、已确认结论；不能代替数据图表'],
-    dataShape: '不绑定页面数据源',
-    requiredProps: [],
-    title: 'optional',
-    defaultSpan: 12
-  },
-  {
-    type: 'aiSummary',
-    label: 'AI 总结',
-    purpose: '基于声明的关联数据流式生成 AI 总结',
-    chooseWhen: ['需要将当前页面查询结果动态总结为文本'],
-    dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
-    requiredProps: ['promptTemplate', 'relatedData'],
-    title: 'optional',
-    defaultSpan: 12
+export const componentCatalog: readonly ComponentCatalogEntry[] = componentSchemas.map(
+  (componentSchema) => {
+    const meta = componentCatalogRegistry.get(componentSchema);
+    if (!meta) {
+      throw new Error('组件缺少目录元数据：请在对应 schema/components/*.ts 里补 registry.add(...)');
+    }
+    const shape = componentSchema.shape as { type: z.ZodLiteral<string>; props: z.ZodObject };
+    return {
+      type: shape.type.value as Component['type'],
+      label: meta.label,
+      purpose: meta.purpose,
+      chooseWhen: meta.chooseWhen,
+      dataShape: meta.dataShape,
+      requiredProps: requiredPropsOf(shape.props),
+      title: meta.title,
+      defaultSpan: meta.defaultSpan
+    };
   }
-] as const;
+);
+
+/**
+ * 机械推导必填 props 路径：顶层必填字段原样列出；若某个必填字段本身是
+ * “数组套对象”（如 metricCard 的 rows、table 的 columns），则展开为
+ * `field[].nestedField` 提示 Agent 数组元素内部的必填项。
+ */
+function requiredPropsOf(propsSchema: z.ZodObject): string[] {
+  const required: string[] = [];
+  for (const [key, fieldSchema] of Object.entries(propsSchema.shape)) {
+    const schema = fieldSchema as z.ZodTypeAny;
+    if (schema.isOptional()) continue;
+    if (schema instanceof z.ZodArray) {
+      const elementShape = objectShapeOf(schema.element as z.ZodTypeAny);
+      if (elementShape) {
+        const nestedRequired = Object.entries(elementShape)
+          .filter(([, nestedSchema]) => !(nestedSchema as z.ZodTypeAny).isOptional())
+          .map(([nestedKey]) => `${key}[].${nestedKey}`);
+        if (nestedRequired.length > 0) {
+          required.push(...nestedRequired);
+          continue;
+        }
+      }
+    }
+    required.push(key);
+  }
+  return required;
+}
+
+/**
+ * 数组元素可能直接是对象（如 metricCard 的 rows），也可能是判别联合
+ * （如 table 的 columns，元素是 tableColumnNode = tableColumn | tableColumnGroup）。
+ * 后者取第一个对象分支代表"最常见形态"的必填字段——与迁移前手写目录
+ * 里 `columns[].field` 的意图一致（表格列默认按字段列理解）。
+ */
+function objectShapeOf(schema: z.ZodTypeAny): Record<string, z.ZodTypeAny> | undefined {
+  if (schema instanceof z.ZodObject) return schema.shape;
+  if (schema instanceof z.ZodUnion) {
+    const options = schema.options as z.ZodTypeAny[];
+    const firstObject = options.find((option) => option instanceof z.ZodObject);
+    return firstObject instanceof z.ZodObject ? firstObject.shape : undefined;
+  }
+  return undefined;
+}
 
 export function componentCatalogEntry(
   type: Component['type']

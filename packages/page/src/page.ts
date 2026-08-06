@@ -1,264 +1,94 @@
+import type { z } from 'zod';
 import type { DataSourceMode, DataSources } from './data-source';
-import type { FieldBinding, FieldReference } from './field';
 import type { FilterDeclaration } from './filter';
+import {
+  reportHeaderComponentZ,
+  metricCardComponentZ,
+  barChartComponentZ,
+  lineChartComponentZ,
+  pieChartComponentZ,
+  tableComponentZ,
+  mapChartComponentZ,
+  rankingCardComponentZ,
+  textComponentZ,
+  aiSummaryComponentZ,
+  chartSeriesZ,
+  type TableColumn,
+  type TableColumnGroup,
+  type TableColumnNode,
+  type TableCellSelection,
+  type TableSelectionWrite
+} from './schema/component';
+import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
+import { writeFilterActionZ, navigateActionZ } from './schema/actions';
+import { gridLayoutZ, pageMetaZ, sectionZ } from './schema/page';
 
-export interface Page {
-  schemaVersion: '4.0';
-  id: string;
-  meta?: PageMeta;
-  dataSources: DataSources;
-  filters?: FilterDeclaration[];
-  sections: PageSection[];
-}
+/*
+ * 组件形状的单一真源在 `./schema/`（Zod 4 定义）：本文件的每个组件类型都
+ * 从对应的 Zod 定义 `z.infer` 推导，不再手写第二份。三个例外需要在 z.infer
+ * 之上做类型层的小修正（不影响 `../schema.ts` 的结构校验行为，只是把
+ * 推导结果调整为原有的领域类型形状）：
+ *  - reportHeader/text/aiSummary 组件的 Zod 定义里没有 `data` 键（额外键会被
+ *    `additionalProperties:false` 拒绝），但 `Component` 联合类型需要所有分支
+ *    都能访问 `.data`（哪怕值为 `never`），所以补一个 `data?: never`。
+ *  - table 组件的 `data` 在 Zod 侧是 `Record<string,string>`（`main` 必填只在
+ *    JSON Schema 的 `required` 里，`.meta()` 不影响 z.infer），这里补回
+ *    `{ main: string }` 使类型层保留原有的强约束。
+ * `dataSources`/`filters` 继续使用 `data-source.ts`/`filter.ts` 的手写领域
+ * 类型——那两个文件不在本次收敛范围内，且 query 数据源的文档态分组字段形状
+ * 只存在于 `page-document.ts`，不应该混入这里的领域类型。
+ */
 
-export interface PageMeta {
-  /** 页面资产说明，不参与渲染。 */
-  description?: string;
-}
-
-export interface PageSection {
-  id: string;
-  title?: string;
-  layout: GridLayout;
-  components: Component[];
-}
-
-/** 一期固定 12 列自动流布局。组件顺序决定排布，只声明跨度。 */
-export interface GridLayout {
-  type: 'grid';
-  columns: 12;
-}
-
-export interface ComponentLayout {
-  span: number;
-  /** 在网格间隙中将当前组件与紧邻前一组件连成同一视觉组。 */
-  connectPrevious?: boolean;
-}
-
+export type ComponentLayout = z.infer<typeof componentLayoutZ>;
 export type ComponentData = Record<string, string>;
-export type MainDataBinding = { main: string };
-export type TableDataBinding = ComponentData & { main: string };
-export type MetricDataBinding = {
-  main: string;
-  compare?: string;
-  target?: string;
+export type MainDataBinding = z.infer<typeof mainDataZ>;
+export type TableDataBinding = z.infer<typeof tableDataZ> & { main: string };
+export type MetricDataBinding = z.infer<typeof metricDataZ>;
+
+export type ReportHeaderProps = z.infer<typeof reportHeaderComponentZ>['props'];
+export type ReportHeaderComponent = z.infer<typeof reportHeaderComponentZ> & { data?: never };
+
+export type MetricCardProps = z.infer<typeof metricCardComponentZ>['props'];
+export type MetricCardRow = MetricCardProps['rows'][number];
+export type MetricCardChange = NonNullable<MetricCardRow['changes']>[number];
+export type MetricCardProgress = NonNullable<MetricCardProps['progress']>;
+export type MetricCardComponent = z.infer<typeof metricCardComponentZ>;
+
+export type ChartSeries = z.infer<typeof chartSeriesZ>;
+
+export type BarChartProps = z.infer<typeof barChartComponentZ>['props'];
+export type BarChartComponent = z.infer<typeof barChartComponentZ>;
+
+export type LineChartProps = z.infer<typeof lineChartComponentZ>['props'];
+export type LineChartComponent = z.infer<typeof lineChartComponentZ>;
+
+export type PieChartProps = z.infer<typeof pieChartComponentZ>['props'];
+export type PieChartComponent = z.infer<typeof pieChartComponentZ>;
+
+export type {
+  TableColumn,
+  TableColumnGroup,
+  TableColumnNode,
+  TableCellSelection,
+  TableSelectionWrite
 };
+export type TableProps = z.infer<typeof tableComponentZ>['props'];
+export type TableComponent = z.infer<typeof tableComponentZ> & { data: TableDataBinding };
 
-type ComponentBase<T extends string, P, D extends ComponentData | undefined = undefined> = {
-  id: string;
-  type: T;
-  layout: ComponentLayout;
-  props: P;
-} & (D extends ComponentData ? { data: D } : { data?: never });
+export type MapChartProps = z.infer<typeof mapChartComponentZ>['props'];
+export type MapChartComponent = z.infer<typeof mapChartComponentZ>;
 
-export interface ReportHeaderProps {
-  title: string;
-  subtitle?: string;
-  generatedBy?: string;
-  badge?: string;
-  asOf?: { label: string; value: string };
-  tags?: string[];
-  decoration?: 'shortBar';
-}
+export type RankingCardProps = z.infer<typeof rankingCardComponentZ>['props'];
+export type RankingCardComponent = z.infer<typeof rankingCardComponentZ>;
 
-export type ReportHeaderComponent = ComponentBase<'reportHeader', ReportHeaderProps>;
+export type TextProps = z.infer<typeof textComponentZ>['props'];
+export type TextLink = NonNullable<TextProps['links']>[number];
+export type TextComponent = z.infer<typeof textComponentZ> & { data?: never };
 
-export interface MetricCardChange {
-  label: string;
-  field: FieldBinding;
-  unit?: string;
-  tone?: 'auto' | 'neutral' | 'positive' | 'danger';
-}
-
-export interface MetricCardRow {
-  label: string;
-  valueField: FieldBinding;
-  unit?: string;
-  changes?: MetricCardChange[];
-}
-
-export interface MetricCardProgress {
-  valueField: FieldBinding;
-  label?: string;
-  /** 可见轨道占整圆的百分比，蓝色进度仍由 valueField 的实际完成率决定。 */
-  ringPercent?: number;
-}
-
-export interface MetricCardProps {
-  title?: string;
-  variant?: 'summary' | 'activityProgress';
-  rows: MetricCardRow[];
-  progress?: MetricCardProgress;
-  actions?: ComponentAction[];
-}
-
-export type MetricCardComponent = ComponentBase<
-  'metricCard',
-  MetricCardProps,
-  MetricDataBinding
->;
-
-export interface ChartSeries {
-  field: FieldBinding;
-  label?: string;
-}
-
-export interface BarChartProps {
-  title?: string;
-  categoryField: FieldBinding;
-  series: ChartSeries[];
-  stacked?: boolean;
-  rounded?: boolean;
-  horizontal?: boolean;
-  dualAxis?: boolean;
-  actions?: ComponentAction[];
-}
-
-export type BarChartComponent = ComponentBase<'barChart', BarChartProps, MainDataBinding>;
-
-export interface LineChartProps {
-  title?: string;
-  xField: FieldBinding;
-  series: ChartSeries[];
-  smooth?: boolean;
-  areaGradient?: boolean;
-  stacked?: boolean;
-  dualAxis?: boolean;
-  showPointLabels?: boolean;
-  hideYAxis?: boolean;
-  actions?: ComponentAction[];
-}
-
-export type LineChartComponent = ComponentBase<'lineChart', LineChartProps, MainDataBinding>;
-
-export interface PieChartProps {
-  title?: string;
-  categoryField: FieldBinding;
-  valueField: FieldBinding;
-  ring?: string;
-  labelLine?: boolean;
-  actions?: ComponentAction[];
-}
-
-export type PieChartComponent = ComponentBase<'pieChart', PieChartProps, MainDataBinding>;
-
-export interface TableColumn {
-  kind?: 'field';
-  field: FieldBinding;
-  /** 在主值下方展示的次级字段。 */
-  secondaryField?: FieldBinding;
-  /** 在主值下方以徽标展示的字段。 */
-  badgeField?: FieldBinding;
-  /** 命中指定展示值时使用危险语义色。 */
-  dangerValues?: string[];
-  /** 点击单元格后原子写入一组筛选状态。 */
-  selection?: TableCellSelection;
-  title?: string;
-  width?: number;
-  fixed?: 'left' | 'right';
-  sortable?: boolean;
-  filterable?: { mode: 'select' | 'dateRange' };
-  align?: 'left' | 'right';
-  /** 数据单元格强调样式。 */
-  emphasis?: 'strong';
-  visual?: 'plain' | 'rateBar' | 'signed';
-}
-
-export interface TableColumnGroup {
-  kind: 'group';
-  id: string;
-  title: string;
-  children: TableColumnNode[];
-}
-
-export type TableColumnNode = TableColumn | TableColumnGroup;
-
-export type TableSelectionWrite =
-  | { field: FieldReference }
-  | { value: string };
-
-export interface TableCellSelection {
-  writes: Record<string, TableSelectionWrite>;
-}
-
-export interface TableProps {
-  title?: string;
-  subtitle?: string;
-  /** 多数据槽表格按所有数据槽共有的稳定页面字段对齐；主数据槽决定行顺序。 */
-  rowKey?: string;
-  /** container 按配置宽度比例压缩列，避免表格产生横向滚动。 */
-  fit?: 'content' | 'container';
-  columns: TableColumnNode[];
-  pagination?:
-    | { mode: 'none' }
-    | { mode: 'local'; pageSize: number; numbered?: boolean }
-    | { mode: 'query' };
-  actions?: ComponentAction[];
-}
-
-export type TableComponent = ComponentBase<'table', TableProps, TableDataBinding>;
-
-export interface MapChartProps {
-  title?: string;
-  nameField: FieldBinding;
-  valueField: FieldBinding;
-  map: 'china' | 'world';
-  scatter?: 'point' | 'effect';
-  nameMap?: Record<string, string>;
-  actions?: ComponentAction[];
-}
-
-export type MapChartComponent = ComponentBase<'mapChart', MapChartProps, MainDataBinding>;
-
-export interface RankingCardProps {
-  title?: string;
-  nameField: FieldBinding;
-  valueField: FieldBinding;
-  changeField?: FieldBinding;
-  actions?: ComponentAction[];
-}
-
-export type RankingCardComponent = ComponentBase<
-  'rankingCard',
-  RankingCardProps,
-  MainDataBinding
->;
-
-export interface TextLink {
-  label: string;
-  page: string;
-  carryFilters?: string[];
-}
-
-export interface TextProps {
-  title?: string;
-  body?: string;
-  variant?: 'plain' | 'insight';
-  links?: TextLink[];
-}
-
-export type TextComponent = ComponentBase<'text', TextProps>;
-
-export interface AiSummaryRelatedField {
-  field: string;
-  term: string;
-}
-
-export interface AiSummaryRelatedDataDefinition {
-  source: string;
-  description: string;
-  fields: AiSummaryRelatedField[];
-}
-
-export interface AiSummaryProps {
-  title?: string;
-  /** 纯文本背景与输出约束；不支持插值、表达式或请求体模板。 */
-  promptTemplate: string;
-  /** 只声明 AI 总结可使用的页面数据源和字段。 */
-  relatedData: Record<string, AiSummaryRelatedDataDefinition>;
-}
-
-export type AiSummaryComponent = ComponentBase<'aiSummary', AiSummaryProps>;
+export type AiSummaryProps = z.infer<typeof aiSummaryComponentZ>['props'];
+export type AiSummaryRelatedDataDefinition = AiSummaryProps['relatedData'][string];
+export type AiSummaryRelatedField = AiSummaryRelatedDataDefinition['fields'][number];
+export type AiSummaryComponent = z.infer<typeof aiSummaryComponentZ> & { data?: never };
 
 export type Component =
   | ReportHeaderComponent
@@ -282,21 +112,23 @@ export type ChartComponent =
   | PieChartComponent
   | MapChartComponent;
 
+export type WriteFilterAction = z.infer<typeof writeFilterActionZ>;
+export type NavigateAction = z.infer<typeof navigateActionZ>;
 export type ComponentAction = WriteFilterAction | NavigateAction;
 
-export interface WriteFilterAction {
-  on: 'click';
-  writeFilter: string;
-  field: FieldReference;
-}
+export type PageMeta = z.infer<typeof pageMetaZ>;
+export type GridLayout = z.infer<typeof gridLayoutZ>;
+export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
+  components: Component[];
+};
 
-export interface NavigateAction {
-  on: 'click';
-  navigate: {
-    page: string;
-    carryFilters?: string[];
-    setFilters?: Record<string, FieldReference>;
-  };
+export interface Page {
+  schemaVersion: '4.0';
+  id: string;
+  meta?: PageMeta;
+  dataSources: DataSources;
+  filters?: FilterDeclaration[];
+  sections: PageSection[];
 }
 
 export function isDataComponent(component: Component): component is DataComponent {
