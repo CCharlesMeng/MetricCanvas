@@ -105,7 +105,8 @@ describe('v4 页面生命周期', () => {
         pageId: groupedDqePage.id,
         baseRevisionId: null,
         document: groupedDqePage,
-        idempotencyKey: 'grouped-r1'
+        idempotencyKey: 'grouped-r1',
+        pageIdConfirmed: true
       },
       { actorId: 'author', clientId: 'test' }
     );
@@ -136,7 +137,8 @@ describe('v4 页面生命周期', () => {
         pageId: inlinePage.id,
         baseRevisionId: null,
         document: inlinePage,
-        idempotencyKey: 'inline-r1'
+        idempotencyKey: 'inline-r1',
+        pageIdConfirmed: true
       },
       context
     );
@@ -145,7 +147,8 @@ describe('v4 页面生命周期', () => {
         pageId: dqePage.id,
         baseRevisionId: null,
         document: dqePage,
-        idempotencyKey: 'dqe-r1'
+        idempotencyKey: 'dqe-r1',
+        pageIdConfirmed: true
       },
       context
     );
@@ -168,7 +171,8 @@ describe('v4 页面生命周期', () => {
           pageId: 'legacy',
           baseRevisionId: null,
           document: { ...inlinePage, id: 'legacy', schemaVersion: '2.0' },
-          idempotencyKey: 'legacy-r1'
+          idempotencyKey: 'legacy-r1',
+          pageIdConfirmed: true
         },
         author
       )
@@ -179,7 +183,8 @@ describe('v4 页面生命周期', () => {
         pageId: inlinePage.id,
         baseRevisionId: null,
         document: inlinePage,
-        idempotencyKey: 'inline-r1'
+        idempotencyKey: 'inline-r1',
+        pageIdConfirmed: true
       },
       author
     );
@@ -205,5 +210,51 @@ describe('v4 页面生命周期', () => {
       ok: true,
       revision: { pageId: inlinePage.id }
     });
+  });
+
+  it('首次保存必须显式确认页面 id，追加修订不受影响', async () => {
+    const service = lifecycle();
+    const author = { actorId: 'author', clientId: 'test' };
+
+    await expect(
+      service.saveRevision(
+        {
+          pageId: inlinePage.id,
+          baseRevisionId: null,
+          document: inlinePage,
+          idempotencyKey: 'unconfirmed-r1'
+        },
+        author
+      )
+    ).resolves.toEqual({
+      ok: false,
+      error: {
+        code: 'PAGE_ID_CONFIRMATION_REQUIRED',
+        message: `首次保存前必须确认页面 id ${inlinePage.id}`
+      }
+    });
+
+    const saved = await service.saveRevision(
+      {
+        pageId: inlinePage.id,
+        baseRevisionId: null,
+        document: inlinePage,
+        idempotencyKey: 'confirmed-r1',
+        pageIdConfirmed: true
+      },
+      author
+    );
+    if (!saved.ok) throw new Error(saved.error.message);
+
+    const appended = await service.saveRevision(
+      {
+        pageId: inlinePage.id,
+        baseRevisionId: saved.revision.revisionId,
+        document: inlinePage,
+        idempotencyKey: 'confirmed-r2'
+      },
+      author
+    );
+    expect(appended.ok).toBe(true);
   });
 });

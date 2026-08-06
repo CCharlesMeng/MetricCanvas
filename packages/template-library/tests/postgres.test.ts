@@ -59,7 +59,8 @@ describe.runIf(process.env.TEST_POSTGRES === '1')('PostgreSQL 页面模板库', 
         pageId: page.id,
         baseRevisionId: null,
         document: page,
-        idempotencyKey: 'save-page'
+        idempotencyKey: 'save-page',
+        pageIdConfirmed: true
       },
       editor
     );

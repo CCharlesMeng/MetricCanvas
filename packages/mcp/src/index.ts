@@ -264,7 +264,8 @@ export function createMetricCanvasMcpServer(
         pageId: z.string().min(1),
         baseRevisionId: z.string().nullable(),
         document: pageDocumentSchema,
-        idempotencyKey: z.string().min(1)
+        idempotencyKey: z.string().min(1),
+        pageIdConfirmed: z.boolean().optional()
       }),
       annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true }
     },
@@ -423,20 +424,18 @@ export function createPageIdConfirmationMcpClient(
       if (
         request.name === 'save_page' &&
         isRecord(request.arguments) &&
-        typeof request.arguments.pageId === 'string' &&
-        request.arguments.baseRevisionId === null &&
-        !confirmedPageIds.has(request.arguments.pageId)
+        typeof request.arguments.pageId === 'string'
       ) {
-        return {
-          isError: true,
-          structuredContent: {
-            ok: false,
-            error: {
-              code: 'PAGE_ID_CONFIRMATION_REQUIRED',
-              message: `首次保存前必须确认页面 id ${request.arguments.pageId}`
-            }
+        // 首次保存必须确认 pageId 的规则由 page-lifecycle 的
+        // SaveRevisionCommand 统一强制;这里只把 Agent 侧已收集的确认
+        // 状态翻译成命令字段,不再自行拦截或判断"是否首次保存"。
+        return options.client.callTool({
+          ...request,
+          arguments: {
+            ...request.arguments,
+            pageIdConfirmed: confirmedPageIds.has(request.arguments.pageId)
           }
-        };
+        });
       }
       if (
         request.name === 'validate_page' &&

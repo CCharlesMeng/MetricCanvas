@@ -1,15 +1,24 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import {
   canonicalizeJson,
   validate,
   versionPolicy,
   type PageDocument
 } from '@metriccanvas/page';
+import {
+  diffJson,
+  hash,
+  hasQueryDataSource,
+  hasRole,
+  lifecycleFailure as failure,
+  pageListLimit,
+  revisionConflict
+} from './invariants';
 import type {
   DataContextProvider,
+  JSONValue,
   LifecycleContext,
   LifecycleError,
-  LifecycleErrorCode,
   PageLifecycle,
   PageList,
   PageReference,
@@ -21,7 +30,7 @@ import type {
   PublishRequestResult,
   PublishRequestStatus,
   RevisionResult
-} from './index';
+} from './types';
 
 export interface MemoryPageLifecycleOptions {
   dataContext: DataContextProvider;
@@ -43,14 +52,6 @@ interface MemoryPublishRequest extends PublishRequestDetails {
   confirmationUrl: string;
 }
 
-type JSONValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JSONValue[]
-  | { [key: string]: JSONValue };
-
 /**
  * 进程内页面生命周期仅用于无外部依赖的本地体验。它实现与 PostgreSQL
  * 适配器相同的端口，但状态会在开发服务器退出或重启后清空。
@@ -62,6 +63,7 @@ export function createMemoryPageLifecycle(
   const requests = new Map<string, MemoryPublishRequest>();
   const audits = new Map<string, PublishAuditEvent[]>();
   const idempotency = new Map<string, RevisionResult | PublishRequestResult>();
+  const pageLocks = new Map<string, Promise<unknown>>();
   const clock = options.clock ?? { now: () => new Date() };
   const ids = options.ids ?? { next: () => randomUUID() };
   const tokens = options.tokens ?? { next: () => randomUUID() };
@@ -77,78 +79,106 @@ export function createMemoryPageLifecycle(
       const replay = idempotency.get(key);
       if (replay) return clone(replay) as RevisionResult;
 
-      const now = clock.now();
-      const page = pages.get(command.pageId);
-      const latest = page?.revisions.at(-1) ?? null;
-      if (!page && command.baseRevisionId !== null) {
-        return revisionConflict('首次保存的 baseRevisionId 必须为 null', null);
-      }
-      if (page && command.baseRevisionId !== latest?.revisionId) {
-        return revisionConflict(
-          `保存基线不是当前最新页面修订:${latest?.revisionId ?? '无'}`,
-          latest
-        );
-      }
-      if (page?.activePublishRequestId) {
-        const active = requests.get(page.activePublishRequestId);
-        if (active?.status === 'pending' && Date.parse(active.expiresAt) > now.getTime()) {
-          return failure('PAGE_LOCKED', `看板页面有活动发布租约:${active.requestId}`);
-        }
-        if (active?.status === 'pending') {
-          finishRequest(active, 'expired', null, now, '15 分钟发布租约已到期');
-        }
-        page.activePublishRequestId = null;
-      }
+      // 读（page/latest）与写（推入 revision）之间隔着对
+      // options.dataContext.current() 的 await；单靠事件循环的运行时特性
+      // 隐式保证这段临界区的原子性并不可靠（两个并发的同基线 saveRevision
+      // 可能都读到同一个 latest 并双双通过冲突检查）。这里用按 pageId 排队
+      // 的显式锁，模拟 postgres 侧 `pg_advisory_xact_lock` 的效果。
+      return withPageLock(command.pageId, async () => {
+        const replayed = idempotency.get(key);
+        if (replayed) return clone(replayed) as RevisionResult;
 
-      const validationErrors = validate(command.document);
-      if (validationErrors.length > 0) {
-        return {
-          ok: false,
-          error: {
-            code: 'INVALID_PAGE',
-            message: '页面文档未通过校验',
-            validationErrors
+        const now = clock.now();
+        const page = pages.get(command.pageId);
+        const latest = page?.revisions.at(-1) ?? null;
+        if (!page && command.baseRevisionId !== null) {
+          return revisionConflict('首次保存的 baseRevisionId 必须为 null', null);
+        }
+        if (!page && command.pageIdConfirmed !== true) {
+          return failure(
+            'PAGE_ID_CONFIRMATION_REQUIRED',
+            `首次保存前必须确认页面 id ${command.pageId}`
+          );
+        }
+        if (page && command.baseRevisionId !== latest?.revisionId) {
+          return revisionConflict(
+            `保存基线不是当前最新页面修订:${latest?.revisionId ?? '无'}`,
+            latest ? clone(latest) : null
+          );
+        }
+
+        // 只探测、不提交：是否存在阻塞发布租约立即返回 PAGE_LOCKED；
+        // 是否有已过期的待释放租约先记下来，真正的释放（含审计）推迟到
+        // 文档校验通过之后再做（见下方），这样保存一份非法文档不会有
+        // 任何可观察的副作用——与 postgres 侧行为一致。
+        let expiredActiveRequest: MemoryPublishRequest | null = null;
+        if (page?.activePublishRequestId) {
+          const active = requests.get(page.activePublishRequestId);
+          if (active?.status === 'pending' && Date.parse(active.expiresAt) > now.getTime()) {
+            return failure('PAGE_LOCKED', `看板页面有活动发布租约:${active.requestId}`);
           }
-        };
-      }
-      const document = clone(command.document) as PageDocument;
-      if (document.schemaVersion !== versionPolicy.current) {
-        return failure(
-          'INVALID_PAGE',
-          `保存只接受当前 schemaVersion ${versionPolicy.current}`
-        );
-      }
-      if (document.id !== command.pageId) {
-        return failure(
-          'PAGE_ID_MISMATCH',
-          `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
-        );
-      }
+          if (active?.status === 'pending') {
+            expiredActiveRequest = active;
+          }
+        }
 
-      const revision: PageRevision = {
-        revisionId: ids.next(),
-        revisionNumber: (latest?.revisionNumber ?? 0) + 1,
-        pageId: command.pageId,
-        baseRevisionId: command.baseRevisionId,
-        document,
-        contentHash: hash(canonicalizeJson(document)),
-        dataContextVersion: hasQueryDataSource(document)
-          ? (await options.dataContext.current()).version
-          : null,
-        createdBy: context.actorId,
-        createdAt: now.toISOString()
-      };
-      if (page) page.revisions.push(revision);
-      else {
-        pages.set(command.pageId, {
-          revisions: [revision],
-          publishedRevisionId: null,
-          activePublishRequestId: null
-        });
-      }
-      const result: RevisionResult = { ok: true, revision: clone(revision) };
-      idempotency.set(key, result);
-      return clone(result);
+        const validationErrors = validate(command.document);
+        if (validationErrors.length > 0) {
+          return {
+            ok: false,
+            error: {
+              code: 'INVALID_PAGE',
+              message: '页面文档未通过校验',
+              validationErrors
+            }
+          };
+        }
+        const document = clone(command.document) as PageDocument;
+        if (document.schemaVersion !== versionPolicy.current) {
+          return failure(
+            'INVALID_PAGE',
+            `保存只接受当前 schemaVersion ${versionPolicy.current}`
+          );
+        }
+        if (document.id !== command.pageId) {
+          return failure(
+            'PAGE_ID_MISMATCH',
+            `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
+          );
+        }
+
+        if (page?.activePublishRequestId) {
+          if (expiredActiveRequest) {
+            finishRequest(expiredActiveRequest, 'expired', null, now, '15 分钟发布租约已到期');
+          }
+          page.activePublishRequestId = null;
+        }
+
+        const revision: PageRevision = {
+          revisionId: ids.next(),
+          revisionNumber: (latest?.revisionNumber ?? 0) + 1,
+          pageId: command.pageId,
+          baseRevisionId: command.baseRevisionId,
+          document,
+          contentHash: hash(canonicalizeJson(document)),
+          dataContextVersion: hasQueryDataSource(document)
+            ? (await options.dataContext.current()).version
+            : null,
+          createdBy: context.actorId,
+          createdAt: now.toISOString()
+        };
+        if (page) page.revisions.push(revision);
+        else {
+          pages.set(command.pageId, {
+            revisions: [revision],
+            publishedRevisionId: null,
+            activePublishRequestId: null
+          });
+        }
+        const result: RevisionResult = { ok: true, revision: clone(revision) };
+        idempotency.set(key, result);
+        return clone(result);
+      });
     },
 
     async getRevision(reference) {
@@ -436,6 +466,23 @@ export function createMemoryPageLifecycle(
 
   return lifecycle;
 
+  /**
+   * 按 pageId 排队执行：同一 pageId 的操作严格顺序化，即便回调内部
+   * 跨越了 await 点。不同 pageId 互不阻塞。
+   */
+  function withPageLock<T>(pageId: string, run: () => Promise<T>): Promise<T> {
+    const previous = pageLocks.get(pageId) ?? Promise.resolve();
+    const settled = previous.then(run, run);
+    pageLocks.set(
+      pageId,
+      settled.then(
+        () => undefined,
+        () => undefined
+      )
+    );
+    return settled;
+  }
+
   function findRevision(pageId: string, revisionId: string): PageRevision | undefined {
     return pages.get(pageId)?.revisions.find((revision) => revision.revisionId === revisionId);
   }
@@ -538,26 +585,8 @@ function auditActionFor(status: PublishRequestStatus): PublishAuditAction {
   return status;
 }
 
-function failure(code: LifecycleErrorCode, message: string): { ok: false; error: LifecycleError } {
-  return { ok: false, error: { code, message } };
-}
-
-function revisionConflict(
-  message: string,
-  currentLatestRevision: PageRevision | null
-): RevisionResult {
-  return {
-    ok: false,
-    error: { code: 'REVISION_CONFLICT', message, currentLatestRevision: clone(currentLatestRevision) }
-  };
-}
-
 function operationKey(operation: string, context: LifecycleContext, key: string): string {
   return `${operation}:${context.clientId}:${key}`;
-}
-
-function hasRole(context: LifecycleContext, role: 'publisher' | 'admin'): boolean {
-  return context.roles?.includes(role) ?? false;
 }
 
 function canView(request: MemoryPublishRequest, context: LifecycleContext): boolean {
@@ -579,51 +608,6 @@ function publicRequest(request: MemoryPublishRequest): PublishRequestDetails {
   };
 }
 
-function pageListLimit(value: number | undefined): number {
-  return Number.isInteger(value) && value !== undefined && value > 0
-    ? Math.min(value, 100)
-    : 50;
-}
-
-function hash(value: string): string {
-  return createHash('sha256').update(value).digest('hex');
-}
-
-function hasQueryDataSource(page: PageDocument): boolean {
-  return Object.values(page.dataSources).some(
-    (dataSource) => dataSource.source.type === 'query'
-  );
-}
-
 function clone<T>(value: T): T {
   return structuredClone(value);
-}
-
-function diffJson(before: JSONValue, after: JSONValue, path = ''): Array<{
-  op: 'add' | 'remove' | 'replace';
-  path: string;
-  before?: JSONValue;
-  after?: JSONValue;
-}> {
-  if (canonicalizeJson(before) === canonicalizeJson(after)) return [];
-  if (Array.isArray(before) || Array.isArray(after) || !isJsonObject(before) || !isJsonObject(after)) {
-    return [{ op: 'replace', path, before, after }];
-  }
-  const changes: ReturnType<typeof diffJson> = [];
-  const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])].sort();
-  for (const key of keys) {
-    const childPath = `${path}/${escapeJsonPointer(key)}`;
-    if (!(key in before)) changes.push({ op: 'add', path: childPath, after: after[key] });
-    else if (!(key in after)) changes.push({ op: 'remove', path: childPath, before: before[key] });
-    else changes.push(...diffJson(before[key]!, after[key]!, childPath));
-  }
-  return changes;
-}
-
-function isJsonObject(value: JSONValue): value is Record<string, JSONValue> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function escapeJsonPointer(value: string): string {
-  return value.replace(/~/gu, '~0').replace(/\//gu, '~1');
 }

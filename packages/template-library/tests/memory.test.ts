@@ -42,7 +42,8 @@ describe('进程内页面模板库', () => {
         pageId: sourcePage.id,
         baseRevisionId: null,
         document: sourcePage,
-        idempotencyKey: 'save-source-r1'
+        idempotencyKey: 'save-source-r1',
+        pageIdConfirmed: true
       },
       editor
     );
@@ -197,7 +198,8 @@ describe('进程内页面模板库', () => {
         pageId: sourcePage.id,
         baseRevisionId: null,
         document: sourcePage,
-        idempotencyKey: 'save-source-r1'
+        idempotencyKey: 'save-source-r1',
+        pageIdConfirmed: true
       },
       editor
     );

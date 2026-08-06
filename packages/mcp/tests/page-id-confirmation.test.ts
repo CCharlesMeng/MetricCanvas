@@ -98,15 +98,26 @@ describe('页面 id 确认 MCP Client adapter', () => {
     });
   });
 
-  it('拒绝保存尚未结构化确认的页面 id', async () => {
-    const delegatedCalls: string[] = [];
+  it('保存未确认的页面 id 时,把确认状态翻译为命令字段并委托给 lifecycle 强制', async () => {
+    const delegatedCalls: Array<{ name: string; arguments: unknown }> = [];
     const baseClient: McpClient = {
       async listTools() {
         return [];
       },
-      async callTool({ name }) {
-        delegatedCalls.push(name);
-        return { structuredContent: { ok: true }, isError: false };
+      async callTool(request) {
+        delegatedCalls.push({ name: request.name, arguments: request.arguments });
+        // 模拟 page-lifecycle 的 SaveRevisionCommand.pageIdConfirmed 强制:
+        // 装饰器自身不再判断"是否首次保存",只负责翻译确认状态。
+        return {
+          isError: true,
+          structuredContent: {
+            ok: false,
+            error: {
+              code: 'PAGE_ID_CONFIRMATION_REQUIRED',
+              message: '首次保存前必须确认页面 id sales-total'
+            }
+          }
+        };
       }
     };
     const client = createPageIdConfirmationMcpClient({
@@ -124,7 +135,18 @@ describe('页面 id 确认 MCP Client adapter', () => {
       }
     });
 
-    expect(delegatedCalls).toEqual([]);
+    expect(delegatedCalls).toEqual([
+      {
+        name: 'save_page',
+        arguments: {
+          pageId: 'sales-total',
+          baseRevisionId: null,
+          document: pageDocument,
+          idempotencyKey: 'save-1',
+          pageIdConfirmed: false
+        }
+      }
+    ]);
     expect(result).toEqual({
       isError: true,
       structuredContent: {
@@ -137,15 +159,15 @@ describe('页面 id 确认 MCP Client adapter', () => {
     });
   });
 
-  it('追加页面修订时不要求再次确认页面 id', async () => {
-    const delegatedCalls: string[] = [];
+  it('追加页面修订时仍会附带确认状态,但结果由 lifecycle 忽略该字段决定', async () => {
+    const delegatedCalls: Array<{ name: string; arguments: unknown }> = [];
     const client = createPageIdConfirmationMcpClient({
       client: {
         async listTools() {
           return [];
         },
-        async callTool({ name }) {
-          delegatedCalls.push(name);
+        async callTool(request) {
+          delegatedCalls.push({ name: request.name, arguments: request.arguments });
           return {
             structuredContent: {
               ok: true,
@@ -168,22 +190,33 @@ describe('页面 id 确认 MCP Client adapter', () => {
       }
     });
 
-    expect(delegatedCalls).toEqual(['save_page']);
+    expect(delegatedCalls).toEqual([
+      {
+        name: 'save_page',
+        arguments: {
+          pageId: 'sales-total',
+          baseRevisionId: 'revision-1',
+          document: pageDocument,
+          idempotencyKey: 'save-2',
+          pageIdConfirmed: false
+        }
+      }
+    ]);
     expect(result.structuredContent).toEqual({
       ok: true,
       revision: { pageId: 'sales-total', revisionId: 'revision-2' }
     });
   });
 
-  it('页面 id 已确认时允许校验结果继续并委托保存', async () => {
-    const delegatedCalls: string[] = [];
+  it('页面 id 已确认时允许校验结果继续,并把 pageIdConfirmed:true 传给保存命令', async () => {
+    const delegatedCalls: Array<{ name: string; arguments: unknown }> = [];
     const baseClient: McpClient = {
       async listTools() {
         return [];
       },
-      async callTool({ name }) {
-        delegatedCalls.push(name);
-        return name === 'validate_page'
+      async callTool(request) {
+        delegatedCalls.push({ name: request.name, arguments: request.arguments });
+        return request.name === 'validate_page'
           ? {
               structuredContent: {
                 ok: true,
@@ -226,7 +259,19 @@ describe('页面 id 确认 MCP Client adapter', () => {
       ok: true,
       revision: { pageId: 'sales-total', revisionId: 'revision-1' }
     });
-    expect(delegatedCalls).toEqual(['validate_page', 'save_page']);
+    expect(delegatedCalls).toEqual([
+      { name: 'validate_page', arguments: { document: pageDocument } },
+      {
+        name: 'save_page',
+        arguments: {
+          pageId: 'sales-total',
+          baseRevisionId: null,
+          document: pageDocument,
+          idempotencyKey: 'save-1',
+          pageIdConfirmed: true
+        }
+      }
+    ]);
   });
 });
 

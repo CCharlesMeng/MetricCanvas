@@ -1,289 +1,38 @@
-import { createHash, randomUUID } from 'node:crypto';
-import postgres, { type JSONValue, type Sql, type TransactionSql } from 'postgres';
+import { randomUUID } from 'node:crypto';
+import postgres, { type JSONValue as PostgresJSONValue, type Sql, type TransactionSql } from 'postgres';
+import { canonicalizeJson, validate, versionPolicy, type PageDocument } from '@metriccanvas/page';
 import {
-  canonicalizeJson,
-  validate,
-  versionPolicy,
-  type PageDocument,
-  type TypedError
-} from '@metriccanvas/page';
+  diffJson,
+  hash,
+  hasQueryDataSource,
+  hasRole,
+  lifecycleFailure,
+  pageListLimit,
+  revisionConflict
+} from './invariants';
+import type {
+  DataContextProvider,
+  JSONValue,
+  LifecycleContext,
+  LifecycleError,
+  PageLifecycle,
+  PageList,
+  PageReference,
+  PageRevision,
+  PageVisibility,
+  PublishAuditAction,
+  PublishAuditEvent,
+  PublishRequest,
+  PublishRequestDetails,
+  PublishRequestDetailsResult,
+  PublishRequestResult,
+  PublishRequestStatus,
+  RevisionResult
+} from './types';
 
 export { createMemoryPageLifecycle } from './memory';
 export type { MemoryPageLifecycleOptions } from './memory';
-
-export interface DataContextVersion {
-  version: string;
-}
-
-export interface DataContextProvider {
-  current(): Promise<DataContextVersion>;
-}
-
-export interface LifecycleContext {
-  actorId: string;
-  clientId: string;
-  roles?: readonly LifecycleRole[];
-}
-
-export type LifecycleRole = 'publisher' | 'admin';
-
-export interface PageRevision {
-  revisionId: string;
-  revisionNumber: number;
-  pageId: string;
-  baseRevisionId: string | null;
-  document: PageDocument;
-  contentHash: string;
-  dataContextVersion: string | null;
-  createdBy: string;
-  createdAt: string;
-}
-
-export interface SaveRevisionCommand {
-  pageId: string;
-  baseRevisionId: string | null;
-  document: unknown;
-  idempotencyKey: string;
-}
-
-export interface RevisionReference {
-  pageId: string;
-  revisionId: string;
-}
-
-export type PageVisibility = 'visible' | 'hidden';
-
-export type PageRevisionSelector =
-  | { type: 'latest' }
-  | { type: 'published' }
-  | { type: 'exact'; revisionId: string };
-
-export interface PageReference {
-  pageId: string;
-  selector: PageRevisionSelector;
-}
-
-export interface PageListQuery {
-  afterPageId?: string;
-  limit?: number;
-}
-
-export interface PageListItem {
-  pageId: string;
-  latestRevision: RevisionReference | null;
-  publishedRevision: RevisionReference | null;
-  visibility: PageVisibility;
-}
-
-export interface PageList {
-  pages: PageListItem[];
-  nextPageId: string | null;
-}
-
-export interface RevisionHistory {
-  pageId: string;
-  revisions: PageRevision[];
-}
-
-export interface RevisionDiffReference {
-  pageId: string;
-  fromRevisionId: string;
-  toRevisionId: string;
-}
-
-export interface JsonDiffEntry {
-  op: 'add' | 'remove' | 'replace';
-  path: string;
-  before?: JSONValue;
-  after?: JSONValue;
-}
-
-export interface RevisionDiff {
-  pageId: string;
-  fromRevisionId: string;
-  toRevisionId: string;
-  changes: JsonDiffEntry[];
-}
-
-export interface PublishedReference {
-  pageId: string;
-}
-
-export interface RequestPublishCommand {
-  pageId: string;
-  revisionId: string;
-  idempotencyKey: string;
-}
-
-export interface ConfirmPublishCommand {
-  requestId: string;
-  token: string;
-}
-
-export interface RejectPublishCommand {
-  requestId: string;
-  token: string;
-  reason?: string;
-}
-
-export interface CancelPublishCommand {
-  requestId: string;
-  reason?: string;
-}
-
-export interface ForceReleasePublishCommand {
-  requestId: string;
-  reason: string;
-}
-
-export interface RollbackRevisionCommand {
-  pageId: string;
-  targetRevisionId: string;
-  idempotencyKey: string;
-}
-
-export interface PublishRequest {
-  requestId: string;
-  pageId: string;
-  revisionId: string;
-  expiresAt: string;
-  confirmationUrl: string;
-}
-
-export type PublishRequestStatus =
-  | 'pending'
-  | 'published'
-  | 'expired'
-  | 'validation_failed'
-  | 'rejected'
-  | 'cancelled'
-  | 'force_released';
-
-export interface PublishRequestDetails {
-  requestId: string;
-  pageId: string;
-  revisionId: string;
-  requestedBy: string;
-  requestedClientId: string;
-  status: PublishRequestStatus;
-  expiresAt: string;
-  decidedBy: string | null;
-  decidedClientId: string | null;
-  decidedAt: string | null;
-}
-
-export type PublishAuditAction =
-  | 'requested'
-  | 'approved'
-  | 'rejected'
-  | 'cancelled'
-  | 'expired'
-  | 'force_released'
-  | 'validation_failed';
-
-export interface PublishAuditEvent {
-  auditId: string;
-  requestId: string;
-  pageId: string;
-  revisionId: string;
-  action: PublishAuditAction;
-  actorId: string | null;
-  clientId: string | null;
-  occurredAt: string;
-  reason: string | null;
-}
-
-export type PublishAuditResult =
-  | { ok: true; events: PublishAuditEvent[] }
-  | { ok: false; error: LifecycleError };
-
-export type LifecycleErrorCode =
-  | 'INVALID_PAGE'
-  | 'PAGE_ID_MISMATCH'
-  | 'PAGE_ID_TAKEN'
-  | 'PAGE_NOT_FOUND'
-  | 'REVISION_NOT_FOUND'
-  | 'REVISION_NOT_PUBLISHED'
-  | 'REVISION_CONFLICT'
-  | 'REVISION_NOT_LATEST'
-  | 'PAGE_LOCKED'
-  | 'PAGE_NOT_PUBLISHED'
-  | 'PUBLISH_REQUEST_NOT_FOUND'
-  | 'PUBLISH_REQUEST_EXPIRED'
-  | 'PUBLISH_REQUEST_CLOSED'
-  | 'INVALID_CONFIRMATION_TOKEN'
-  | 'PUBLISH_FORBIDDEN';
-
-export interface LifecycleError {
-  code: LifecycleErrorCode;
-  message: string;
-  validationErrors?: TypedError[];
-  currentLatestRevision?: PageRevision | null;
-}
-
-export type RevisionResult =
-  | { ok: true; revision: PageRevision }
-  | { ok: false; error: LifecycleError };
-
-export type RevisionHistoryResult =
-  | { ok: true; history: RevisionHistory }
-  | { ok: false; error: LifecycleError };
-
-export type RevisionDiffResult =
-  | { ok: true; diff: RevisionDiff }
-  | { ok: false; error: LifecycleError };
-
-export type PublishRequestResult =
-  | { ok: true; request: PublishRequest }
-  | { ok: false; error: LifecycleError };
-
-export type PublishRequestDetailsResult =
-  | { ok: true; request: PublishRequestDetails }
-  | { ok: false; error: LifecycleError };
-
-export interface PageLifecycle {
-  saveRevision(command: SaveRevisionCommand, context: LifecycleContext): Promise<RevisionResult>;
-  getRevision(reference: RevisionReference): Promise<RevisionResult>;
-  getPage(reference: PageReference): Promise<RevisionResult>;
-  listPages(query?: PageListQuery): Promise<PageList>;
-  listRevisionHistory(reference: { pageId: string }): Promise<RevisionHistoryResult>;
-  diffRevisions(reference: RevisionDiffReference): Promise<RevisionDiffResult>;
-  requestPublish(
-    command: RequestPublishCommand,
-    context: LifecycleContext
-  ): Promise<PublishRequestResult>;
-  getPublishRequest(
-    reference: { requestId: string },
-    context: LifecycleContext
-  ): Promise<PublishRequestDetailsResult>;
-  confirmPublish(
-    command: ConfirmPublishCommand,
-    context: LifecycleContext
-  ): Promise<RevisionResult>;
-  rejectPublish(
-    command: RejectPublishCommand,
-    context: LifecycleContext
-  ): Promise<PublishRequestDetailsResult>;
-  cancelPublish(
-    command: CancelPublishCommand,
-    context: LifecycleContext
-  ): Promise<PublishRequestDetailsResult>;
-  forceReleasePublish(
-    command: ForceReleasePublishCommand,
-    context: LifecycleContext
-  ): Promise<PublishRequestDetailsResult>;
-  listPublishAudit(
-    reference: { requestId: string },
-    context: LifecycleContext
-  ): Promise<PublishAuditResult>;
-  rollbackRevision(
-    command: RollbackRevisionCommand,
-    context: LifecycleContext
-  ): Promise<RevisionResult>;
-  getPublished(reference: PublishedReference): Promise<RevisionResult>;
-  getPublishedRevision(reference: RevisionReference): Promise<RevisionResult>;
-  close(): Promise<void>;
-}
+export * from './types';
 
 export interface PostgresPageLifecycleOptions {
   databaseUrl: string;
@@ -390,6 +139,12 @@ export async function createPostgresPageLifecycle(
             return revisionConflict(
               '首次保存的 baseRevisionId 必须为 null',
               null
+            );
+          }
+          if (command.pageIdConfirmed !== true) {
+            return lifecycleFailure(
+              'PAGE_ID_CONFIRMATION_REQUIRED',
+              `首次保存前必须确认页面 id ${command.pageId}`
             );
           }
           revisionNumber = 1;
@@ -533,7 +288,7 @@ export async function createPostgresPageLifecycle(
             ${revision.revisionNumber},
             ${revision.pageId},
             ${revision.baseRevisionId},
-            ${tx.json(revision.document as unknown as JSONValue)},
+            ${tx.json(revision.document as unknown as PostgresJSONValue)},
             ${revision.contentHash},
             ${revision.dataContextVersion},
             ${revision.createdBy},
@@ -559,7 +314,7 @@ export async function createPostgresPageLifecycle(
             'save_revision',
             ${context.clientId},
             ${command.idempotencyKey},
-            ${tx.json(result as unknown as JSONValue)},
+            ${tx.json(result as unknown as PostgresJSONValue)},
             ${createdAt}
           )
         `;
@@ -568,21 +323,23 @@ export async function createPostgresPageLifecycle(
     },
 
     async getRevision(reference) {
-      const rows = (await sql`
-        SELECT
-          revision_id,
-          revision_number,
-          page_id,
-          base_revision_id,
-          document,
-          content_hash,
-          data_context_version,
-          created_by,
-          created_at
-        FROM page_revisions
-        WHERE page_id = ${reference.pageId}
-          AND revision_id = ${reference.revisionId}
-      `) as unknown as RevisionRow[];
+      const rows = isValidUuid(reference.revisionId)
+        ? ((await sql`
+            SELECT
+              revision_id,
+              revision_number,
+              page_id,
+              base_revision_id,
+              document,
+              content_hash,
+              data_context_version,
+              created_by,
+              created_at
+            FROM page_revisions
+            WHERE page_id = ${reference.pageId}
+              AND revision_id = ${reference.revisionId}
+          `) as unknown as RevisionRow[])
+        : [];
 
       if (rows.length === 0) {
         return {
@@ -602,12 +359,14 @@ export async function createPostgresPageLifecycle(
 
     async listPages(query = {}) {
       const limit = pageListLimit(query.limit);
+      // visibility 从 published_revision_id 派生，而不是读取存储列：仓库里
+      // 没有任何代码路径会 SET visibility，存储列会恒为建表时的默认值。
       const rows = (await sql`
         SELECT
           page_id,
           latest_revision_id,
           published_revision_id,
-          visibility
+          CASE WHEN published_revision_id IS NULL THEN 'hidden' ELSE 'visible' END AS visibility
         FROM dashboard_pages
         WHERE page_id > ${query.afterPageId ?? ''}
         ORDER BY page_id ASC
@@ -851,7 +610,7 @@ export async function createPostgresPageLifecycle(
             'request_publish',
             ${context.clientId},
             ${command.idempotencyKey},
-            ${tx.json(result as unknown as JSONValue)},
+            ${tx.json(result as unknown as PostgresJSONValue)},
             ${now}
           )
         `;
@@ -1192,28 +951,30 @@ export async function createPostgresPageLifecycle(
     },
 
     async getPublishedRevision(reference) {
-      const rows = (await sql`
-        SELECT
-          revision.revision_id,
-          revision.revision_number,
-          revision.page_id,
-          revision.base_revision_id,
-          revision.document,
-          revision.content_hash,
-          revision.data_context_version,
-          revision.created_by,
-          revision.created_at
-        FROM page_revisions AS revision
-        WHERE revision.page_id = ${reference.pageId}
-          AND revision.revision_id = ${reference.revisionId}
-          AND EXISTS (
-            SELECT 1
-            FROM publish_requests AS request
-            WHERE request.page_id = revision.page_id
-              AND request.revision_id = revision.revision_id
-              AND request.status = 'published'
-          )
-      `) as unknown as RevisionRow[];
+      const rows = isValidUuid(reference.revisionId)
+        ? ((await sql`
+            SELECT
+              revision.revision_id,
+              revision.revision_number,
+              revision.page_id,
+              revision.base_revision_id,
+              revision.document,
+              revision.content_hash,
+              revision.data_context_version,
+              revision.created_by,
+              revision.created_at
+            FROM page_revisions AS revision
+            WHERE revision.page_id = ${reference.pageId}
+              AND revision.revision_id = ${reference.revisionId}
+              AND EXISTS (
+                SELECT 1
+                FROM publish_requests AS request
+                WHERE request.page_id = revision.page_id
+                  AND request.revision_id = revision.revision_id
+                  AND request.status = 'published'
+              )
+          `) as unknown as RevisionRow[])
+        : [];
       if (!rows[0]) {
         const revision = await lifecycle.getRevision(reference);
         return revision.ok
@@ -1240,7 +1001,6 @@ async function ensureSchema(sql: Sql): Promise<void> {
       latest_revision_id uuid,
       published_revision_id uuid,
       active_publish_request_id uuid,
-      visibility text NOT NULL DEFAULT 'visible',
       created_by text NOT NULL,
       created_at timestamptz NOT NULL
     )
@@ -1249,10 +1009,9 @@ async function ensureSchema(sql: Sql): Promise<void> {
     ALTER TABLE dashboard_pages
     ADD COLUMN IF NOT EXISTS active_publish_request_id uuid
   `;
-  await sql`
-    ALTER TABLE dashboard_pages
-    ADD COLUMN IF NOT EXISTS visibility text NOT NULL DEFAULT 'visible'
-  `;
+  // visibility 曾作为存储列声明，但全仓库没有任何写路径会 SET 它，
+  // 恒等于建表默认值。listPages() 改为从 published_revision_id 派生，
+  // 因此这里不再需要该列（也不做迁移期 DROP COLUMN，避免影响既有部署）。
   await sql`
     CREATE TABLE IF NOT EXISTS page_revisions (
       revision_id uuid PRIMARY KEY,
@@ -1535,10 +1294,6 @@ function toPublishRequestDetails(request: PublishRequestRow): PublishRequestDeta
   };
 }
 
-function hasRole(context: LifecycleContext, role: LifecycleRole): boolean {
-  return context.roles?.includes(role) === true;
-}
-
 function toIso(value: Date | string): string {
   return value instanceof Date ? value.toISOString() : new Date(value).toISOString();
 }
@@ -1559,11 +1314,25 @@ async function idempotentResult<T>(
   return rows[0]?.result ?? null;
 }
 
+/**
+ * `revision_id` 是 postgres 侧的 uuid 列。语法上不是合法 UUID 的字符串
+ * （例如 HTTP 路由把 URL 参数原样传入）会让驱动在查询层直接抛出
+ * PostgresError，而不是像 memory 实现那样优雅地返回业务错误。这里在
+ * 进入 SQL 之前拦截格式非法的输入，与 memory 侧的行为对齐——memory
+ * 只是做一次 Map/数组查找，天然不会因为格式而抛异常。
+ */
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function isValidUuid(value: string): boolean {
+  return UUID_PATTERN.test(value);
+}
+
 async function selectRevision(
   sql: Sql | TransactionSql,
   pageId: string,
   revisionId: string
 ): Promise<RevisionRow[]> {
+  if (!isValidUuid(revisionId)) return [];
   return (await sql`
     SELECT
       revision_id,
@@ -1586,6 +1355,12 @@ async function selectPageRevision(
   reference: PageReference
 ): Promise<RevisionResult> {
   if (reference.selector.type === 'exact') {
+    const existingPages = (await sql`
+      SELECT page_id FROM dashboard_pages WHERE page_id = ${reference.pageId}
+    `) as unknown as Array<{ page_id: string }>;
+    if (existingPages.length === 0) {
+      return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+    }
     const rows = await selectRevision(sql, reference.pageId, reference.selector.revisionId);
     if (!rows[0]) {
       return lifecycleFailure(
@@ -1623,78 +1398,6 @@ async function selectPageRevision(
     return lifecycleFailure('REVISION_NOT_FOUND', `页面修订不存在:${page.revision_id}`);
   }
   return { ok: true, revision: toRevision(rows[0]) };
-}
-
-function lifecycleFailure(
-  code: LifecycleErrorCode,
-  message: string
-): { ok: false; error: LifecycleError } {
-  return { ok: false, error: { code, message } };
-}
-
-function revisionConflict(
-  message: string,
-  currentLatestRevision: PageRevision | null
-): RevisionResult {
-  return {
-    ok: false,
-    error: {
-      code: 'REVISION_CONFLICT',
-      message,
-      ...(currentLatestRevision ? { currentLatestRevision } : {})
-    }
-  };
-}
-
-function pageListLimit(value: number | undefined): number {
-  if (!Number.isInteger(value) || value === undefined || value < 1) return 50;
-  return Math.min(value, 100);
-}
-
-function diffJson(before: JSONValue, after: JSONValue, path = ''): JsonDiffEntry[] {
-  if (canonicalizeJson(before) === canonicalizeJson(after)) return [];
-  if (isJsonObject(before) && isJsonObject(after)) {
-    const keys = [...new Set([...Object.keys(before), ...Object.keys(after)])].sort();
-    return keys.flatMap((key) => {
-      const childPath = `${path}/${escapeJsonPointer(key)}`;
-      if (!(key in before)) return [{ op: 'add', path: childPath, after: after[key] }];
-      if (!(key in after)) return [{ op: 'remove', path: childPath, before: before[key] }];
-      return diffJson(before[key], after[key], childPath);
-    });
-  }
-  if (Array.isArray(before) && Array.isArray(after)) {
-    const changes: JsonDiffEntry[] = [];
-    const sharedLength = Math.min(before.length, after.length);
-    for (let index = 0; index < sharedLength; index += 1) {
-      changes.push(...diffJson(before[index], after[index], `${path}/${index}`));
-    }
-    for (let index = sharedLength; index < before.length; index += 1) {
-      changes.push({ op: 'remove', path: `${path}/${index}`, before: before[index] });
-    }
-    for (let index = sharedLength; index < after.length; index += 1) {
-      changes.push({ op: 'add', path: `${path}/${index}`, after: after[index] });
-    }
-    return changes;
-  }
-  return [{ op: 'replace', path, before, after }];
-}
-
-function isJsonObject(value: JSONValue): value is Record<string, JSONValue> {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function escapeJsonPointer(value: string): string {
-  return value.replaceAll('~', '~0').replaceAll('/', '~1');
-}
-
-function hash(value: string): string {
-  return createHash('sha256').update(value).digest('hex');
-}
-
-function hasQueryDataSource(page: PageDocument): boolean {
-  return Object.values(page.dataSources).some(
-    (dataSource) => dataSource.source.type === 'query'
-  );
 }
 
 function toRevision(row: RevisionRow): PageRevision {
