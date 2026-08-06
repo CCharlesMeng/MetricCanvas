@@ -3,11 +3,9 @@ import {
   type Component,
   type PageDocument
 } from '@metriccanvas/page';
+import type { AuthoringComponentLocator } from '@metriccanvas/runtime-ui/types';
 
-export interface ComponentLocator {
-  sectionId: string;
-  componentId: string;
-}
+export type ComponentLocator = AuthoringComponentLocator;
 
 export interface EditableComponent {
   locator: ComponentLocator;

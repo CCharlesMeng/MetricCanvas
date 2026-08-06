@@ -185,8 +185,8 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   });
 
   const host = page.locator('[data-metriccanvas-runtime]');
-  const upperCell = host.locator('[data-authoring-component="tables/summary-table"]');
-  const lowerCell = host.locator('[data-authoring-component="tables/detail-table"]');
+  const upperCell = host.locator('[data-component="tables/summary-table"]');
+  const lowerCell = host.locator('[data-component="tables/detail-table"]');
   await expect(host.getByRole('table')).toHaveCount(2);
 
   const upperBox = await upperCell.boundingBox();

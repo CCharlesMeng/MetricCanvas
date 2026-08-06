@@ -1,21 +1,17 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { toTemplateContext, withClient } from '$lib/server/identity.server';
 import type { RequestHandler } from './$types';
 
-const managementContext = {
-  actorId: 'developer-1',
-  clientId: 'management-console',
-  roles: ['admin'] as const
-};
-
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ locals }) => {
   const { templates } = await getPlatformServices();
+  const managementContext = toTemplateContext(withClient(locals.identity, 'management-console'));
   return json(await templates.list(managementContext), {
     headers: { 'cache-control': 'no-store' }
   });
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
   const body: unknown = await request.json().catch(() => null);
   if (!isTemplateCommand(body)) {
     return json(
@@ -30,6 +26,7 @@ export const POST: RequestHandler = async ({ request }) => {
     );
   }
   const { templates } = await getPlatformServices();
+  const managementContext = toTemplateContext(withClient(locals.identity, 'management-console'));
   const result = await templates.saveRevision(body, managementContext);
   return json(result, {
     status: result.ok

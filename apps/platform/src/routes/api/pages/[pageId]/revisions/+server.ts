@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { withClient } from '$lib/server/identity.server';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -15,7 +16,7 @@ export const GET: RequestHandler = async ({ params }) => {
   return json(result.history, { headers: { 'cache-control': 'no-store' } });
 };
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, locals }) => {
   let body: unknown;
   try {
     body = await request.json();
@@ -32,9 +33,10 @@ export const POST: RequestHandler = async ({ params, request }) => {
       pageId: params.pageId,
       baseRevisionId: body.baseRevisionId,
       document: body.document,
-      idempotencyKey: body.idempotencyKey
+      idempotencyKey: body.idempotencyKey,
+      pageIdConfirmed: body.pageIdConfirmed === true
     },
-    { actorId: 'developer-1', clientId: 'page-editor' }
+    withClient(locals.identity, 'page-editor')
   );
   return json({ ...result, runtimeOrigin }, {
     status: result.ok ? 201 : saveFailureStatus(result.error.code),
@@ -46,6 +48,7 @@ function isSaveCommand(value: unknown): value is {
   baseRevisionId: string | null;
   document: Record<string, unknown>;
   idempotencyKey: string;
+  pageIdConfirmed?: boolean;
 } {
   if (typeof value !== 'object' || value === null) return false;
   const body = value as Record<string, unknown>;
@@ -57,7 +60,8 @@ function isSaveCommand(value: unknown): value is {
     !Array.isArray(body.document) &&
     typeof body.idempotencyKey === 'string' &&
     body.idempotencyKey.length > 0 &&
-    body.idempotencyKey.length <= 200
+    body.idempotencyKey.length <= 200 &&
+    (body.pageIdConfirmed === undefined || typeof body.pageIdConfirmed === 'boolean')
   );
 }
 

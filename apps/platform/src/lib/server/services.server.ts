@@ -13,6 +13,7 @@ import {
   createMemoryPageLifecycle,
   createPostgresPageLifecycle,
   type DataContextProvider,
+  type LifecycleContext,
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
 import {
@@ -37,14 +38,14 @@ import {
   seedPublishedTemplates,
   type OfflineTemplateSeed
 } from './offline-services';
-import bundledDataContext from '../../../../../docs/examples/schema-metadata.example.json';
+import { createIdentity } from './identity.server';
+import bundledDataContext from '$fixtures/schema-metadata.example.json';
 
-const bundledPageModules = import.meta.glob<{ default: unknown }>(
-  '../../../../../pages/*.json',
-  { eager: true }
-);
+const bundledPageModules = import.meta.glob<{ default: unknown }>('$pages/*.json', {
+  eager: true
+});
 const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }>(
-  '../../../../../templates/*.json',
+  '$templates/*.json',
   { eager: true }
 );
 
@@ -57,6 +58,7 @@ export interface PlatformServices {
     confirmedPageIds: string[];
     runId: string;
     mode?: 'authoring' | 'lifecycle';
+    identity: LifecycleContext;
   }): AgentRunner;
   runtimeOrigin: string;
 }
@@ -115,11 +117,18 @@ async function createServices(): Promise<PlatformServices> {
     );
   }
 
+  // MCP 的 context() thunk 在服务器创建时就固化了,不在请求上下文里
+  // (mcpServer 是跨请求单例)。真正的架构修复需要让 MCP server 工厂接收
+  // per-request context,但那要改 @metriccanvas/mcp 内部实现,不在本次范围内。
+  // 这里退而求其次:用一个可变引用把 createRunner 收到的 identity 参数
+  // 桥接给 thunk——同一进程内并发的多个 Agent 运行仍会互相覆盖这个引用,
+  // 这是已知且刻意接受的过渡态限制,而不是本次改造试图掩盖的问题。
+  let currentMcpIdentity: LifecycleContext = createIdentity('workbench');
   const mcpServer = createMetricCanvasMcpServer({
     dataContext,
     lifecycle,
     templates,
-    context: () => ({ actorId: 'developer-1', clientId: 'workbench', roles: [] }),
+    context: () => currentMcpIdentity,
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
   });
@@ -139,7 +148,8 @@ async function createServices(): Promise<PlatformServices> {
     templates,
     dataContext,
     agentModel: agentModelDescriptor(agentModelConfig),
-    createRunner({ confirmedPageIds, runId, mode = 'lifecycle' }) {
+    createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
+      currentMcpIdentity = identity;
       const client =
         mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
       return createAgentRunner({

@@ -14,18 +14,3 @@ export type {
   DimensionFilterValue,
   TimeRangeFilterValue
 } from './filter-state';
-export {
-  AUTHORING_PROTOCOL,
-  AUTHORING_PROTOCOL_VERSION,
-  authoringIntentMessage,
-  authoringReadyMessage,
-  authoringRenderMessage,
-  parseAuthoringHostMessage,
-  parseAuthoringRuntimeMessage
-} from './authoring';
-export type {
-  AuthoringComponentLocator,
-  AuthoringIntent,
-  AuthoringRenderMessage,
-  AuthoringRuntimeMessage
-} from './authoring';

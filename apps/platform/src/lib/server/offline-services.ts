@@ -1,14 +1,17 @@
 import type { PageLifecycle } from '@metriccanvas/page-lifecycle';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
+import { OFFLINE_SEED_ACTOR_ID } from './identity.server';
 
+// 启动期种子导入不经过 hooks.server.ts(还没有请求可言),身份独立于
+// 请求期的 developer-1,但 actorId 字面量仍从 identity.server.ts 统一取值。
 const seedContext = {
-  actorId: 'offline-seed',
+  actorId: OFFLINE_SEED_ACTOR_ID,
   clientId: 'offline-seed',
   roles: ['publisher'] as const
 };
 
 const templateSeedContext = {
-  actorId: 'offline-seed',
+  actorId: OFFLINE_SEED_ACTOR_ID,
   clientId: 'offline-seed',
   roles: ['admin'] as const
 };
@@ -141,7 +144,10 @@ async function saveSeedRevision(
       pageId,
       baseRevisionId: null,
       document,
-      idempotencyKey: `offline-seed-save:${pageId}`
+      idempotencyKey: `offline-seed-save:${pageId}`,
+      // 启动期种子导入的 pageId 来自仓库内固定 fixture,不存在交互式
+      // Agent 确认流程,视为已确认。
+      pageIdConfirmed: true
     },
     seedContext
   );

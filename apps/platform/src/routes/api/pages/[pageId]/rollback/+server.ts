@@ -1,8 +1,9 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { withClient } from '$lib/server/identity.server';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, locals }) => {
   const body = (await request.json()) as {
     targetRevisionId?: unknown;
     idempotencyKey?: unknown;
@@ -30,7 +31,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
       targetRevisionId: body.targetRevisionId,
       idempotencyKey: body.idempotencyKey
     },
-    { actorId: 'developer-1', clientId: 'management-console', roles: [] }
+    withClient(locals.identity, 'management-console')
   );
   return json(result, {
     status: result.ok ? 200 : result.error.code === 'REVISION_CONFLICT' ? 409 : 400,

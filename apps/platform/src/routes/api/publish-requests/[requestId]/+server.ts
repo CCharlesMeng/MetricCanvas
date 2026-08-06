@@ -1,14 +1,11 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { withClient } from '$lib/server/identity.server';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ params, locals }) => {
   const { lifecycle } = await getPlatformServices();
-  const context = {
-    actorId: 'developer-1',
-    clientId: 'workbench',
-    roles: ['publisher'] as const
-  };
+  const context = withClient(locals.identity, 'workbench');
   const result = await lifecycle.getPublishRequest(
     { requestId: params.requestId },
     context
@@ -34,7 +31,7 @@ export const GET: RequestHandler = async ({ params }) => {
   );
 };
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, locals }) => {
   const body = (await request.json()) as { action?: unknown; reason?: unknown };
   const reason = typeof body.reason === 'string' ? body.reason.trim() : '';
   const { lifecycle } = await getPlatformServices();
@@ -42,12 +39,12 @@ export const POST: RequestHandler = async ({ params, request }) => {
     body.action === 'cancel'
       ? await lifecycle.cancelPublish(
           { requestId: params.requestId, ...(reason ? { reason } : {}) },
-          { actorId: 'developer-1', clientId: 'workbench', roles: ['publisher'] }
+          withClient(locals.identity, 'workbench')
         )
       : body.action === 'force_release'
         ? await lifecycle.forceReleasePublish(
             { requestId: params.requestId, reason: reason || '管理员强制释放' },
-            { actorId: 'developer-1', clientId: 'management-console', roles: ['admin'] }
+            withClient(locals.identity, 'management-console')
           )
         : null;
   if (!result) {

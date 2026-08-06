@@ -1,5 +1,11 @@
+import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+
 declare global {
-  namespace App {}
+  namespace App {
+    interface Locals {
+      identity: LifecycleContext;
+    }
+  }
 }
 
 export {};

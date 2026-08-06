@@ -1,10 +1,24 @@
 import type { TypedError } from '@metriccanvas/page';
-import type {
-  AuthoringComponentLocator,
-  AuthoringIntent,
-  DataGateway
-} from '@metriccanvas/runtime';
+import type { DataGateway } from '@metriccanvas/runtime';
 export type { AiSummaryConfig } from './ai-summary/pangu-sse';
+
+export interface AuthoringComponentLocator {
+  sectionId: string;
+  componentId: string;
+}
+
+export type AuthoringIntent =
+  | { type: 'select_component'; locator: AuthoringComponentLocator }
+  | {
+      type: 'move_component';
+      locator: AuthoringComponentLocator;
+      before: AuthoringComponentLocator;
+    }
+  | {
+      type: 'edit_component';
+      locator: AuthoringComponentLocator;
+      edit: { title?: string; detail?: string; span?: number };
+    };
 
 export interface AuthoringOptions {
   selected?: AuthoringComponentLocator;

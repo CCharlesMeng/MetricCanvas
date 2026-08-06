@@ -4,9 +4,8 @@
     type Component,
     type PageSection
   } from '@metriccanvas/page';
-  import type { AuthoringComponentLocator } from '@metriccanvas/runtime';
   import type { Snippet } from 'svelte';
-  import type { AuthoringOptions } from './types';
+  import type { AuthoringComponentLocator, AuthoringOptions } from './types';
 
   interface Props {
     section: PageSection;
@@ -131,7 +130,7 @@
         class:authoring-cell={Boolean(authoring)}
         class:authoring-selected={selected(component.id)}
         class="cell"
-        data-authoring-component={`${section.id}/${component.id}`}
+        data-component={`${section.id}/${component.id}`}
         style={`grid-column: span ${component.layout.span};`}
         draggable={Boolean(authoring)}
         onclickcapture={(event) => select(event, component.id)}

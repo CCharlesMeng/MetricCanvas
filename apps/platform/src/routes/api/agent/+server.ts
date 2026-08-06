@@ -21,7 +21,7 @@ export const GET: RequestHandler = async () => {
   );
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, locals }) => {
   let body: unknown;
   try {
     body = await request.json();
@@ -54,7 +54,8 @@ export const POST: RequestHandler = async ({ request }) => {
   const runner = createRunner({
     confirmedPageIds: (body.confirmations ?? []).map((confirmation) => confirmation.pageId),
     runId: body.runId,
-    mode: 'authoring'
+    mode: 'authoring',
+    identity: locals.identity
   });
   const events: AgentEvent[] = [];
 

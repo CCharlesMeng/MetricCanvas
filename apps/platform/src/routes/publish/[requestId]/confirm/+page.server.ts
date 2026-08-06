@@ -1,14 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { withClient } from '$lib/server/identity.server';
 import type { Actions, PageServerLoad } from './$types';
 
-const confirmationContext = {
-  actorId: 'developer-1',
-  clientId: 'publish-confirmation',
-  roles: ['publisher'] as const
-};
-
-export const load: PageServerLoad = async ({ params }) => {
+export const load: PageServerLoad = async ({ params, locals }) => {
+  const confirmationContext = withClient(locals.identity, 'publish-confirmation');
   const { lifecycle, runtimeOrigin } = await getPlatformServices();
   const result = await lifecycle.getPublishRequest(
     { requestId: params.requestId },
@@ -50,7 +46,8 @@ export const load: PageServerLoad = async ({ params }) => {
 };
 
 export const actions: Actions = {
-  default: async ({ params, url, request }) => {
+  default: async ({ params, url, request, locals }) => {
+    const confirmationContext = withClient(locals.identity, 'publish-confirmation');
     const token = url.searchParams.get('token');
     if (!token) {
       return fail(400, {

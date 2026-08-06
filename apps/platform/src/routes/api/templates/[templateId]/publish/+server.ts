@@ -1,8 +1,9 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { toTemplateContext, withClient } from '$lib/server/identity.server';
 import type { RequestHandler } from './$types';
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, locals }) => {
   const body = (await request.json().catch(() => null)) as {
     revisionId?: unknown;
     idempotencyKey?: unknown;
@@ -30,11 +31,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
       revisionId: body.revisionId,
       idempotencyKey: body.idempotencyKey
     },
-    {
-      actorId: 'developer-1',
-      clientId: 'management-console',
-      roles: ['admin']
-    }
+    toTemplateContext(withClient(locals.identity, 'management-console'))
   );
   return json(result, {
     status: result.ok
