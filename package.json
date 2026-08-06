@@ -15,8 +15,7 @@
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
-    "typecheck": "tsc --noEmit -p packages/page && tsc --noEmit -p packages/runtime && tsc --noEmit -p packages/data-context && tsc --noEmit -p packages/data-gateway && tsc --noEmit -p packages/page-lifecycle && tsc --noEmit -p packages/template-library && tsc --noEmit -p packages/agent-runner && tsc --noEmit -p packages/mcp && tsc --noEmit -p packages/page/tsconfig.test.json && tsc --noEmit -p packages/runtime/tsconfig.test.json && tsc --noEmit -p packages/data-context/tsconfig.test.json && tsc --noEmit -p packages/data-gateway/tsconfig.test.json && tsc --noEmit -p packages/page-lifecycle/tsconfig.test.json && tsc --noEmit -p packages/template-library/tsconfig.test.json && tsc --noEmit -p packages/agent-runner/tsconfig.test.json && tsc --noEmit -p packages/mcp/tsconfig.test.json && tsc --noEmit -p packages/widgets/tsconfig.test.json && tsc --noEmit -p apps/platform/tsconfig.test.json && tsc --noEmit -p tools/dqe-sim && tsc --noEmit -p tools/dev-cli",
-    "check": "pnpm typecheck && pnpm --filter @metriccanvas/runtime-ui check && pnpm --filter @metriccanvas/embed check && pnpm --filter canvas check && pnpm --filter platform check"
+    "check": "pnpm -r check"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

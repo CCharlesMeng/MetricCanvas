@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json"
   },
   "exports": {
     ".": "./src/server.ts",

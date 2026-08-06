@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "resolveJsonModule": true
+  },
+  "include": [
+    "src/lib/platform-page-repository.ts",
+    "src/lib/preview-document.ts",
+    "tests"
+  ]
+}

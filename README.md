@@ -85,8 +85,7 @@ pnpm dev:dqe
 ```bash
 pnpm validate     # 校验 pages/*.json
 pnpm test         # 自动化测试
-pnpm typecheck    # TypeScript 检查
-pnpm check        # TypeScript 与 Svelte 检查
+pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)
 pnpm build        # 构建 Embed、Canvas 和 Platform
 pnpm test:embed   # 嵌入运行时浏览器测试
 ```

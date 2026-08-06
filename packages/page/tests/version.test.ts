@@ -1,9 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  supportedVersions,
-  upgradeWarnings,
-  versionErrors
-} from '../src/version';
+import { supportedVersions, versionErrors } from '../src/version';
 
 const doc = (schemaVersion: unknown): unknown => ({ schemaVersion });
 
@@ -25,8 +21,7 @@ describe('schemaVersion 4.0 判定', () => {
     ]);
   });
 
-  it('不产生 N-1 升版警告，缺失与非字符串交给 JSON Schema', () => {
-    expect(upgradeWarnings()).toEqual([]);
+  it('缺失与非字符串 schemaVersion 交给 JSON Schema', () => {
     expect(versionErrors(doc(undefined))).toEqual([]);
     expect(versionErrors(doc(1))).toEqual([]);
     expect(versionErrors(null)).toEqual([]);

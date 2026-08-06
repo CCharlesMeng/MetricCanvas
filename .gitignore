@@ -12,3 +12,8 @@ playwright-report/
 **/.env
 **/.env.*
 !**/.env.example
+
+# 临时工作产物,不属于仓库交付内容
+.scratch/
+deliverables/
+参考/

@@ -1,5 +1,7 @@
 # 公开页面采用命名数据源,统一 inline 与 query 取数
 
+> 原编号 ADR-0008(与 `0008-immutable-page-revisions-and-publish-leases.md` 编号冲突,于 2026-08-05 重编号为 ADR-0022;标题与正文未改动)。
+>
 > query 来源与字段契约已由 [ADR-0014](./0014-query-artifacts-replace-metrics.md) 调整为查询执行引用与结果字段契约；inline 字段契约及命名数据槽决策保持有效。
 >
 > query 数据源的可选内嵌初始行和查询分页语义由 [ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 补充；本记录中 query 首次必查和仅本地分页的描述不再适用。

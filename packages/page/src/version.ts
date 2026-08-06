@@ -2,12 +2,10 @@ import type { TypedError } from './errors';
 
 export interface VersionPolicy {
   current: '4.0';
-  previous: null;
 }
 
 export const versionPolicy: VersionPolicy = {
-  current: '4.0',
-  previous: null
+  current: '4.0'
 };
 
 export function supportedVersions(
@@ -31,15 +29,6 @@ export function versionErrors(
         `运行时只接受 ${policy.current}，旧版本必须在接入前完整迁移`
     }
   ];
-}
-
-export interface UpgradeWarning {
-  path: string;
-  message: string;
-}
-
-export function upgradeWarnings(): UpgradeWarning[] {
-  return [];
 }
 
 function schemaVersionOf(document: unknown): string | undefined {

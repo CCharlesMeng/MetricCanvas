@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "scripts": {
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+  },
   "svelte": "./src/index.ts",
   "exports": {
     ".": {
@@ -16,5 +19,10 @@
   },
   "peerDependencies": {
     "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "typescript": "^5.9.3"
   }
 }
