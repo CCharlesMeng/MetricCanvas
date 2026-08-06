@@ -67,7 +67,10 @@
               type: 'query',
               initial: {
                 capturedAt: '2026-08-04T00:00:00+08:00',
-                rows: rows.slice(0, 10),
+                rows: rows.slice(0, 10).map(row => ({
+                  区域: row.region,
+                  成交总额: row.gmv
+                })),
                 totalCount: rows.length
               },
               query: {

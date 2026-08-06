@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validate } from '../src/validate';
+import { parsePage, validate } from '../src/validate';
 
 function rawPage(): any {
   return {
@@ -78,6 +78,23 @@ function rawPage(): any {
 }
 
 describe('raw DQE 页面查询', () => {
+  it('使用现有查询字段映射归一化内嵌初始行', () => {
+    const document = rawPage();
+    document.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{ 客户级别: '卓越NA', NA客户数: 15 }],
+      totalCount: 1
+    };
+
+    const parsed = parsePage(document);
+
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors, null, 2));
+    const source = parsed.page.dataSources.overview?.source;
+    expect(source?.type).toBe('query');
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    expect(source.initial?.rows).toEqual([{ level: '卓越NA', count: 15 }]);
+  });
+
   it('显式结果字段映射、筛选绑定与标量行匹配通过校验', () => {
     expect(validate(rawPage())).toEqual([]);
   });

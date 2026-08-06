@@ -5,6 +5,7 @@ export * from './data-source';
 export * from './field';
 export * from './filter';
 export * from './query';
+export * from './query-rows';
 export * from './snapshot';
 export * from './canonical-json';
 export * from './component-catalog';

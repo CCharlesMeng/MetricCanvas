@@ -54,6 +54,29 @@ function groupedPage() {
 }
 
 describe('query 页面数据源的局部显式字段分组', () => {
+  it('把 DQE 原始内嵌初始行归一化为稳定页面字段，不修改原文档', () => {
+    const document: any = groupedPage();
+    document.dataSources.current.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{ 区域: '华东', 销售额: 128600 }],
+      totalCount: 1
+    };
+    const before = structuredClone(document);
+
+    const parsed = parsePage(document);
+
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors, null, 2));
+    expect(document).toEqual(before);
+    const source = parsed.page.dataSources.current?.source;
+    expect(source?.type).toBe('query');
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    expect(source.initial).toEqual({
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{ region: '华东', revenue: 128600 }],
+      totalCount: 1
+    });
+  });
+
   it('在页面模块的解析接缝补全字段角色，不修改原文档', () => {
     const document = groupedPage();
     const before = structuredClone(document);

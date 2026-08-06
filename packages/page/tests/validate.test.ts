@@ -176,20 +176,21 @@ describe('v4 data source 与 binding 校验', () => {
     };
     expect(validate(valid)).toEqual([]);
 
-    const invalid: any = structuredClone(valid);
-    invalid.dataSources.sales.source.initial.rows = [{ region: '华东', gmv: '错误' }];
-    invalid.dataSources.sales.source.initial.totalCount = 30;
-    const errors = validate(invalid);
-    expect(errors).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          path: '/dataSources/sales/source/initial/rows/0/gmv'
-        }),
-        expect.objectContaining({
-          path: '/dataSources/sales/source/initial/rows',
-          message: '查询分页的内嵌初始行必须是完整第一页'
-        })
-      ])
+    const invalidRow: any = structuredClone(valid);
+    invalidRow.dataSources.sales.source.initial.rows = [{ region: '华东', gmv: '错误' }];
+    expect(validate(invalidRow)).toContainEqual(
+      expect.objectContaining({
+        path: '/dataSources/sales/source/initial/rows/0/gmv'
+      })
+    );
+
+    const incompletePage: any = structuredClone(valid);
+    incompletePage.dataSources.sales.source.initial.totalCount = 30;
+    expect(validate(incompletePage)).toContainEqual(
+      expect.objectContaining({
+        path: '/dataSources/sales/source/initial/rows',
+        message: '查询分页的内嵌初始行必须是完整第一页'
+      })
     );
   });
 

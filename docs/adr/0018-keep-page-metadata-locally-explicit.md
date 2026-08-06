@@ -8,6 +8,8 @@ status: accepted
 
 `query` 页面数据源可以把 `fields` 按 `dimensions` 和 `measures` 分组。分组名只补全与其重复的字段角色；每个页面字段仍必须显式声明 `queryField` 和 `type`，并在需要时就地声明 `label`、`unit`、`nullable` 和 `defaultFormat`。页面模块在不修改原文档的前提下把分组形式解析为统一运行时使用的完整 `Page`。
 
+与查询定义一起保存的 `source.initial.rows` 保持 DQE 原始输出字段名。页面模块在同一解析边界使用当前数据源已经声明的 `queryField` 将其归一化为稳定页面字段；这不是第二套映射声明。
+
 页面字段 id 与 DQE 字段名仍永不隐式同名匹配。分组形式不引入字符串简写、默认类型、默认格式、引用、参数、插值、合并或表达式。
 
 ## Consequences

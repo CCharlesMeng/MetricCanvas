@@ -105,7 +105,7 @@ const dqeExample = {
         type: 'query',
         initial: {
           capturedAt: '2026-08-04T00:00:00+08:00',
-          rows: [{ category: 'A', count: 15 }],
+          rows: [{ Category: 'A', RecordCount: 15 }],
           totalCount: 1
         },
         query: {
@@ -152,6 +152,7 @@ export const PAGE_BUILDING_PROMPT = [
   '静态报告使用 inline 页面数据源；需要运行时取数时调用 search_data_context，并仅使用返回的 DQE 执行环境、字段、约束和已验证查询。',
   '不得猜测字段、关系、查询协议、筛选位置或结果契约；数据上下文不足时说明 DATA_CONTEXT_ERROR，不创建指标缺口。',
   'DQE 查询必须保留原始 body；每个 query 页面数据源显式声明 fields，queryField 必须覆盖所有输出字段。',
+  'query 页面数据源的 initial.rows 保留 DQE 原始输出字段名；页面模块会按 queryField 归一化，组件仍只引用稳定页面字段 id。',
   '页面字段角色只允许 dimension 或 measure；组件只引用稳定页面字段 id。',
   '组件可见标题统一使用 props.title。aiSummary 不声明 data，只通过 promptTemplate 和 relatedData 显式引用页面数据源字段；不得写入端点、Header 或 SSE 参数。',
   '新建页面必须拟定可读且唯一的真实页面 id。validate_page 通过后，客户端会发起结构化页面 id 确认。',

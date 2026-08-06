@@ -19,6 +19,7 @@ import {
   type TableColumnNode
 } from './page';
 import { materializePageDocument } from './materialize';
+import { matchesFieldValue } from './query-rows';
 import { pageSchema } from './schema';
 import { versionErrors } from './version';
 
@@ -164,7 +165,7 @@ function rowContractErrors(
       const fieldPath = `${rowPath}/${escapePointer(fieldName)}`;
       if (!Object.hasOwn(row, fieldName)) {
         errors.push(schemaError(fieldPath, `行缺少字段:${fieldName}`));
-      } else if (!matchesFieldType(row[fieldName], field)) {
+      } else if (!matchesFieldValue(row[fieldName], field)) {
         errors.push(
           schemaError(fieldPath, `字段 ${fieldName} 的值不符合类型 ${field.type}`)
         );
@@ -374,7 +375,7 @@ function componentErrors(
             )
           );
         }
-        if (!matchesFieldType(binding.match.equals, matched.field)) {
+        if (!matchesFieldValue(binding.match.equals, matched.field)) {
           errors.push(
             schemaError(
               `${matchPath}/equals`,
@@ -812,25 +813,6 @@ function resolveBinding(
     return { error: `字段 ${fieldName} 不在数据槽 ${slot} 的数据源 ${sourceId} 中` };
   }
   return { field, fieldName };
-}
-
-function matchesFieldType(value: FieldValue, field: FieldDefinition): boolean {
-  if (value === null) return field.nullable !== false;
-  if (field.type === 'date') {
-    return typeof value === 'string' && isCalendarDate(value);
-  }
-  if (field.type === 'datetime') {
-    return (
-      typeof value === 'string' &&
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(value)
-    );
-  }
-  return typeof value === field.type;
-}
-
-function isCalendarDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  return validateCalendarTimeRange({ from: value, to: value }, 'date').length === 0;
 }
 
 function bindingKey(binding: FieldBinding): string {

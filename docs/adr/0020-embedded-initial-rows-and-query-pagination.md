@@ -4,7 +4,7 @@ status: accepted
 
 # 查询数据源以内嵌初始行启动并支持查询分页
 
-`query` 页面数据源可以在 `source.initial` 中保存默认查询状态的 `capturedAt`、`rows` 和分页所需的 `totalCount`。当前状态与默认状态一致且 `initial` 存在时，统一运行时直接形成数据快照且不在后台刷新；`initial` 不存在、入口筛选状态不同或用户发生查询交互时，统一运行时执行既有 DQE 查询。空的 `initial.rows` 表示已确认的空结果，不表示缺少初始数据；`inline` 仍表示永不查询的静态页面数据源。
+`query` 页面数据源可以在 `source.initial` 中保存默认查询状态的 `capturedAt`、`rows` 和分页所需的 `totalCount`。`initial.rows` 是与查询定义一起保存的 DQE 原始结果，字段键使用 DQE 输出字段名；页面模块解析 `PageDocument` 时使用当前数据源已有的 `queryField` 归一化为稳定页面字段，动态响应由数据网关复用同一归一化能力。当前状态与默认状态一致且 `initial` 存在时，统一运行时以归一化结果直接形成数据快照且不在后台刷新；`initial` 不存在、入口筛选状态不同或用户发生查询交互时，统一运行时执行既有 DQE 查询。空的 `initial.rows` 表示已确认的空结果，不表示缺少初始数据；`inline` 仍表示永不查询的静态页面数据源。
 
 查询分页由统一运行时管理，页面中的 DQE `order.limit` 是唯一页大小，页码变化在克隆的查询项上更新 `order.offset`，页面筛选变化把 `offset` 重置为 `0`。DQE 每个成功的 `results[i].total_count` 是应用筛选后、分页前的总行数，数据网关将其归一为数据快照的 `totalCount`；错误项中的计数无效。查询分页表格独占其页面数据源，首屏 `initial.rows` 必须是完整第一页且数量等于 `min(order.limit, initial.totalCount)`，分页 UI 由总条数和页大小派生页码；越界页自动回到最后一个有效页。
 

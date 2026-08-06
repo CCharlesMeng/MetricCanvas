@@ -218,14 +218,14 @@ date-month-day
 {
   "fields": {
     "region": {
-      "queryField": "region",
+      "queryField": "区域",
       "type": "string",
       "role": "dimension",
       "label": "区域",
       "nullable": false
     },
     "gmv": {
-      "queryField": "gmv",
+      "queryField": "成交总额",
       "type": "number",
       "role": "measure",
       "label": "成交额",
@@ -239,8 +239,8 @@ date-month-day
       "capturedAt": "2026-08-04T10:00:00+08:00",
       "rows": [
         {
-          "region": "华东",
-          "gmv": 128600
+          "区域": "华东",
+          "成交总额": 128600
         }
       ],
       "totalCount": 1
@@ -250,8 +250,8 @@ date-month-day
       "body": {
         "dsl_list": [
           {
-            "output_dims": ["region"],
-            "output_metrics": ["gmv"],
+            "output_dims": ["区域"],
+            "output_metrics": ["成交总额"],
             "filter": {
               "dims": [],
               "metrics": []
@@ -278,6 +278,8 @@ DQE 查询规则：
 - `output_dims` 对应 `role: "dimension"`；
 - `output_metrics` 中的字段名或别名对应 `role: "measure"`；
 - `initial` 可选，存在时表示默认查询状态的已验证结果；`rows: []` 表示已确认的空结果；
+- `initial.rows` 与查询定义一起保存，字段键使用 DQE 原始输出字段名，不使用页面字段 id；
+- 页面文档解析时使用已有 `queryField` 把 `initial.rows` 归一化为稳定页面字段，组件仍只引用页面字段 id；
 - 默认入口优先使用 `initial` 且不后台刷新；没有 `initial` 或入口筛选状态不同于默认状态时立即查询；
 - 发生动态查询后不再回退到 `initial`，查询失败进入错误态。
 

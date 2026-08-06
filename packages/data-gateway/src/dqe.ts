@@ -1,9 +1,10 @@
-import type {
-  EffectiveQuery,
-  FieldType,
-  JsonObject,
-  JsonValue,
-  Row
+import {
+  normalizeQueryRows,
+  type QueryRowNormalizationIssue,
+  type EffectiveQuery,
+  type JsonObject,
+  type JsonValue,
+  type Row
 } from '@metriccanvas/page';
 import type { DataGateway, DataGatewayResult } from '@metriccanvas/runtime';
 
@@ -369,52 +370,48 @@ function ensureRecord(parent: JsonObject, key: string): JsonObject {
 }
 
 function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
-  if (!Array.isArray(value)) {
-    throw new DqeGatewayError('DQE_ROW_CONTRACT_ERROR', 'DQE data 必须是数组', value);
-  }
-  return value.map((rawRow, rowIndex) => {
-    if (!isRecord(rawRow)) {
-      throw new DqeGatewayError(
-        'DQE_ROW_CONTRACT_ERROR',
-        `DQE data[${rowIndex}] 必须是对象`,
-        rawRow
-      );
-    }
-    const row: Row = {};
-    for (const [fieldId, mapping] of Object.entries(query.fieldMappings)) {
-      if (!Object.hasOwn(rawRow, mapping.queryField)) {
-        throw new DqeGatewayError(
-          'DQE_FIELD_MAPPING_ERROR',
-          `响应缺少映射字段:${mapping.queryField}`,
-          { fieldId, queryField: mapping.queryField, actual: Object.keys(rawRow) }
-        );
-      }
-      const fieldValue = rawRow[mapping.queryField];
-      if (!isScalar(fieldValue) || !matchesType(fieldValue, mapping.type)) {
-        throw new DqeGatewayError(
-          'DQE_ROW_CONTRACT_ERROR',
-          `字段 ${mapping.queryField} 不符合类型 ${mapping.type}`,
-          { fieldId, value: fieldValue }
-        );
-      }
-      row[fieldId] = fieldValue;
-    }
-    return row;
-  });
+  const normalized = normalizeQueryRows(value, query.fieldMappings);
+  if (normalized.ok) return normalized.rows;
+  throw gatewayNormalizationError(normalized.issues[0]!);
 }
 
-function matchesType(value: string | number | boolean | null, type: FieldType): boolean {
-  if (value === null) return true;
-  if (type === 'date' || type === 'datetime') return typeof value === 'string';
-  return typeof value === type;
+function gatewayNormalizationError(
+  issue: QueryRowNormalizationIssue
+): DqeGatewayError {
+  switch (issue.code) {
+    case 'ROWS_NOT_ARRAY':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        'DQE data 必须是数组',
+        issue.actual
+      );
+    case 'ROW_NOT_OBJECT':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `DQE data[${issue.rowIndex}] 必须是对象`,
+        issue.actual
+      );
+    case 'MISSING_QUERY_FIELD':
+      return new DqeGatewayError(
+        'DQE_FIELD_MAPPING_ERROR',
+        `响应缺少映射字段:${issue.queryField}`,
+        {
+          fieldId: issue.fieldId,
+          queryField: issue.queryField,
+          actual: issue.actualFields
+        }
+      );
+    case 'FIELD_TYPE_MISMATCH':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `字段 ${issue.queryField} 不符合类型 ${issue.expectedType}`,
+        { fieldId: issue.fieldId, value: issue.value }
+      );
+  }
 }
 
 function cloneJson<T extends JsonValue>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
-}
-
-function isScalar(value: unknown): value is string | number | boolean | null {
-  return value === null || ['string', 'number', 'boolean'].includes(typeof value);
 }
 
 function isRecord(value: unknown): value is JsonObject {

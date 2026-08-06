@@ -12,6 +12,7 @@ export interface InlineSource {
 }
 
 export interface EmbeddedInitialRows {
+  /** PageDocument 解析后已经按 queryField 归一化为稳定页面字段。 */
   capturedAt: string;
   rows: DataRow[];
   totalCount?: number;

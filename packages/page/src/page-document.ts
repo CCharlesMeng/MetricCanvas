@@ -1,6 +1,25 @@
-import type { InlineDataSource, QueryDataSource } from './data-source';
-import type { QueryFieldDefinition } from './field';
+import type {
+  InlineDataSource,
+  QueryDataSource,
+  QuerySource
+} from './data-source';
+import type { DataRow, QueryFieldDefinition } from './field';
 import type { Page } from './page';
+
+/** 与查询定义一起保存的 DQE 原始执行结果，字段键使用 DQE 输出字段名。 */
+export interface EmbeddedInitialRowsDocument {
+  capturedAt: string;
+  rows: DataRow[];
+  totalCount?: number;
+}
+
+export interface QuerySourceDocument extends Omit<QuerySource, 'initial'> {
+  initial?: EmbeddedInitialRowsDocument;
+}
+
+export interface QueryDataSourceDocument extends Omit<QueryDataSource, 'source'> {
+  source: QuerySourceDocument;
+}
 
 /**
  * query 页面数据源的局部显式字段声明。字段角色由所在分组决定，
@@ -13,13 +32,13 @@ export interface GroupedQueryFields {
   measures?: Record<string, GroupedQueryFieldDefinition>;
 }
 
-export interface GroupedQueryDataSource extends Omit<QueryDataSource, 'fields'> {
+export interface GroupedQueryDataSource extends Omit<QueryDataSourceDocument, 'fields'> {
   fields: GroupedQueryFields;
 }
 
 export type PageDataSourceDocument =
   | InlineDataSource
-  | QueryDataSource
+  | QueryDataSourceDocument
   | GroupedQueryDataSource;
 
 export type PageDataSourcesDocument = Record<string, PageDataSourceDocument>;
