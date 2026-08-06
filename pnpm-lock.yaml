@@ -69,9 +69,6 @@ importers:
       '@metriccanvas/data-context':
         specifier: workspace:*
         version: link:../../packages/data-context
-      '@metriccanvas/data-gateway':
-        specifier: workspace:*
-        version: link:../../packages/data-gateway
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
@@ -81,9 +78,9 @@ importers:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../../packages/page-lifecycle
-      '@metriccanvas/runtime':
+      '@metriccanvas/runtime-ui':
         specifier: workspace:*
-        version: link:../../packages/runtime
+        version: link:../../packages/runtime-ui
       '@metriccanvas/template-library':
         specifier: workspace:*
         version: link:../../packages/template-library
@@ -191,6 +188,9 @@ importers:
       ajv:
         specifier: ^8.17.1
         version: 8.20.0
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
 
   packages/page-lifecycle:
     dependencies:
@@ -260,9 +260,18 @@ importers:
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
+    devDependencies:
       svelte:
-        specifier: ^5.0.0
+        specifier: ^5.56.6
         version: 5.56.6
+      svelte-check:
+        specifier: ^4.7.3
+        version: 4.7.3(picomatch@4.0.5)(svelte@5.56.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  tools/dev-cli: {}
 
   tools/dqe-sim: {}
 
