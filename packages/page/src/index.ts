@@ -8,6 +8,7 @@ export * from './query';
 export * from './query-rows';
 export * from './snapshot';
 export * from './canonical-json';
+export * from './bar-forecast-boundary';
 export * from './component-catalog';
 export * from './errors';
 export { pageSchema } from './schema';

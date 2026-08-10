@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     dataSourceMode,
+    barForecastBoundaryIssues,
     derivePageCapabilities,
     isChartComponent,
     parsePage,
@@ -550,7 +551,11 @@
     );
   }
 
-  function hostSnapshot(component: Component, slots: ComponentSnapshots): DataSnapshot {
+  function hostSnapshot(
+    loaded: Page,
+    component: Component,
+    slots: ComponentSnapshots
+  ): DataSnapshot {
     const values = Object.keys(component.data ?? {}).map(
       (slot) => slots.get(slot) ?? ({ status: 'loading' } as const)
     );
@@ -561,6 +566,22 @@
     if (error) return error;
     if (values.some((snapshot) => snapshot.status === 'loading')) {
       return { status: 'loading' };
+    }
+    if (component.type === 'barChart') {
+      const snapshot = slots.get('main');
+      const source = loaded.dataSources[component.data.main];
+      if (
+        snapshot?.status === 'ready' &&
+        source?.source.type === 'query' &&
+        source.source.initial
+      ) {
+        const issue = barForecastBoundaryIssues(
+          component.props,
+          snapshot.rows,
+          source.source.initial.capturedAt
+        )[0];
+        if (issue) return { status: 'error', error: { message: issue.message } };
+      }
     }
     if (component.type !== 'table' && slots.get('main')?.status === 'empty') {
       return { status: 'empty' };
@@ -750,7 +771,7 @@
     />
   {:else}
     {@const slots = componentSnapshots(component)}
-    {@const snapshot = hostSnapshot(component, slots)}
+    {@const snapshot = hostSnapshot(loaded, component, slots)}
     <WidgetHost {snapshot}>
       {#snippet ready(_readySnapshot)}
         {@const capability = componentCapability(component)}
@@ -890,6 +911,13 @@
     --mc-color-danger: #b91c1c;
     --mc-color-positive: #52c41a;
     --mc-color-negative: #f5222d;
+    --mc-color-report-heading: #121e3b;
+    --mc-color-report-text: #191919;
+    --mc-color-report-rank-muted: #697386;
+    --mc-color-report-description: #595959;
+    --mc-color-report-badge: #1476ff;
+    --mc-color-report-badge-surface: #e8f1ff;
+    --mc-color-report-header-accent: #2098ff;
     --mc-radius-cell: 10px;
     --mc-radius-section: 16px;
     --mc-section-gradient: url('./assets/section-gradient-panel.svg');

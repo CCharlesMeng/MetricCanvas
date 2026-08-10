@@ -2,13 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { renderableDataSnapshot } from '../src/widget-host-state';
 
 describe('renderableDataSnapshot', () => {
-  it('把查询错误投影为空行就绪快照，供组件保留完整样式', () => {
+  it('不把查询错误投影为就绪快照', () => {
     expect(
       renderableDataSnapshot({
         status: 'error',
         error: new Error('DQE HTTP 请求失败:404')
       })
-    ).toEqual({ status: 'ready', rows: [] });
+    ).toBeUndefined();
   });
 
   it('把空快照投影为空行就绪快照并保留总数', () => {

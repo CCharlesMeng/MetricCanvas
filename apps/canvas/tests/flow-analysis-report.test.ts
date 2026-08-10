@@ -9,10 +9,10 @@ type JsonRow = Record<string, string | number | boolean | null>;
 interface RawQuerySource {
   fields: Record<string, { queryField: string }>;
   source: {
-    type: 'query';
+    type: string;
     initial: { capturedAt: string; rows: JsonRow[]; totalCount?: number };
     query: {
-      language: 'dqe';
+      language: string;
       body: { dsl_list: Array<Record<string, unknown>> };
     };
   };
@@ -68,7 +68,7 @@ describe('流水分析报告页面文档', () => {
   });
 
   it('九个独立 query 均有显式 queryField、确定性 initial 和严格 DQE 签名', () => {
-    const sources = flowReportPageJson.dataSources as unknown as Record<string, RawQuerySource>;
+    const sources: Record<string, RawQuerySource> = flowReportPageJson.dataSources;
     expect(Object.keys(sources)).toEqual(expectedSourceIds);
 
     for (const id of expectedSourceIds) {
@@ -96,7 +96,7 @@ describe('流水分析报告页面文档', () => {
   });
 
   it('两张预测趋势保持实际/预测互斥，组件只声明 Tooltip 和图例能力', () => {
-    const sources = flowReportPageJson.dataSources as unknown as Record<string, RawQuerySource>;
+    const sources: Record<string, RawQuerySource> = flowReportPageJson.dataSources;
     for (const [id, actualFields, forecastFields] of [
       ['overall-monthly-trend', ['core-actual', 'communication-actual'], ['core-forecast', 'communication-forecast']],
       ['region-monthly-trend', ['stable-actual', 'one-off-actual'], ['stable-forecast', 'one-off-forecast']]

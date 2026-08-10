@@ -973,6 +973,157 @@ class RestoreContractVerificationTests(unittest.TestCase):
             with self.assertRaisesRegex(VERIFIER.ContractError, "混入外部判定字段"):
                 VERIFIER.validate_adapter(adapter, contract)
 
+    def test_text_contract_checks_required_literals_and_patterns(self) -> None:
+        rule = restore_rule(
+            "R2-1",
+            "R2",
+            {
+                "required_texts": ["流水总览", "同比"],
+                "required_patterns": [
+                    {"name": "month", "pattern": r"2026年\d{1,2}月"},
+                ],
+            },
+            check_mode="text",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, contract, adapter = self.compile(root, [rule])
+            green = VERIFIER.build_report(
+                contract,
+                adapter,
+                "green",
+                None,
+                self.render_payload(
+                    contract,
+                    {
+                        "R2-1": {
+                            "status": "ok",
+                            "actual": "流水总览 2026年8月 同比 12.3%",
+                        }
+                    },
+                ),
+                None,
+            )
+            red = VERIFIER.build_report(
+                contract,
+                adapter,
+                "red",
+                None,
+                self.render_payload(
+                    contract,
+                    {"R2-1": {"status": "ok", "actual": "流水总览"}},
+                ),
+                None,
+            )
+
+        self.assertEqual(green["overall"], "green")
+        self.assertEqual(red["overall"], "red")
+        comparison = red["entries"][0]["actual"]["render"]["comparison"]
+        self.assertEqual(comparison["missing_texts"], ["同比"])
+        self.assertEqual(comparison["missing_patterns"], ["month"])
+
+    def test_constraints_contract_checks_thresholds_and_tolerance(self) -> None:
+        rule = restore_rule(
+            "R6-1",
+            "R6",
+            {
+                "horizontal_overflow_css_px": {"max": 1},
+                "content_width_css_px": {"equals": 1200},
+                "center_offset_css_px": {"max": 1},
+            },
+            check_mode="constraints",
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, contract, adapter = self.compile(root, [rule])
+            green = VERIFIER.build_report(
+                contract,
+                adapter,
+                "green",
+                None,
+                self.render_payload(
+                    contract,
+                    {
+                        "R6-1": {
+                            "status": "ok",
+                            "actual": {
+                                "horizontal_overflow_css_px": 0,
+                                "content_width_css_px": 1199.4,
+                                "center_offset_css_px": 0.25,
+                            },
+                        }
+                    },
+                ),
+                None,
+            )
+            red = VERIFIER.build_report(
+                contract,
+                adapter,
+                "red",
+                None,
+                self.render_payload(
+                    contract,
+                    {
+                        "R6-1": {
+                            "status": "ok",
+                            "actual": {
+                                "horizontal_overflow_css_px": 12,
+                                "content_width_css_px": 1170,
+                                "center_offset_css_px": 15,
+                            },
+                        }
+                    },
+                ),
+                None,
+            )
+
+        self.assertEqual(green["overall"], "green")
+        self.assertEqual(red["overall"], "red")
+        failures = red["entries"][0]["actual"]["render"]["comparison"]["failures"]
+        self.assertEqual(
+            {failure["field"] for failure in failures},
+            {
+                "horizontal_overflow_css_px",
+                "content_width_css_px",
+                "center_offset_css_px",
+            },
+        )
+
+    def test_adapter_rejects_decision_fields_inside_object_collector(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, contract, _ = self.compile(
+                root,
+                [restore_rule("R1-1", "R1", {"button_count": 1})],
+            )
+            adapter = {
+                "schema_version": 1,
+                "rules": {
+                    "R1-1": {
+                        "locators": [
+                            {
+                                "strategy": "role",
+                                "role": "button",
+                                "name": "保存",
+                            }
+                        ],
+                        "source_files": ["src/view.tsx"],
+                        "collect": {
+                            "kind": "object",
+                            "fields": {
+                                "button_count": {
+                                    "kind": "count",
+                                    "selector": "button",
+                                    "expected": 1,
+                                }
+                            },
+                        },
+                    }
+                },
+            }
+            with self.assertRaisesRegex(VERIFIER.ContractError, "混入外部判定字段"):
+                VERIFIER.validate_adapter(adapter, contract)
+
     def test_green_phase_uses_nonzero_exit_for_a_non_green_report(self) -> None:
         self.assertEqual(VERIFIER.report_exit_code("green", "red"), 3)
         self.assertEqual(VERIFIER.report_exit_code("green", "yellow"), 3)

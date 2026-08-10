@@ -232,6 +232,33 @@
     .summary .change {
       font-size: 13px;
     }
+    .summary .changes {
+      min-width: 0;
+      max-width: 100%;
+      gap: 0;
+    }
+    .summary .change {
+      max-width: 100%;
+      overflow-wrap: anywhere;
+      white-space: normal;
+    }
+  }
+  @container (max-width: 235px) {
+    .summary .metric-content {
+      padding-right: 4px;
+      padding-left: 4px;
+    }
+    .summary .metric-row {
+      margin-right: 4px;
+      padding-left: 4px;
+    }
+    .summary .row-value {
+      font-size: 18px;
+    }
+    .summary .unit,
+    .summary .change {
+      font-size: 12px;
+    }
   }
   .activity-progress h3 {
     margin: 0 0 1px;

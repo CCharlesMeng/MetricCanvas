@@ -51,6 +51,8 @@
 | `check_mode` | 判定 |
 | --- | --- |
 | `exact` / `structure` / `state` | JSON 精确相等 |
+| `text` | `required_texts` 全部为实际文本子串，`required_patterns` 全部命中实际文本；正则只存在冻结契约中 |
+| `constraints` | 对采集对象逐字段执行 `equals` / `min` / `max` 数值约束；`equals` 默认继承规则 CSS px 容差 |
 | `numeric` | 数字或 CSS px，默认 ±1 CSS px |
 | `color` | 颜色规范化后精确匹配 |
 | `overflow` / `overlap` / `clip` | 最大值不超过 1 CSS px |
@@ -104,7 +106,23 @@
 
 `locators` 按 `role/name` → 精确文案 → 稳定 test id → CSS 排序；数组可以提前结束。CSS 禁止构建生成随机 class。期望值、容差和设计事实出处不得写入 adapter。
 
-浏览器采集 `kind` 支持：`count`、`text`、`order`、`structure`、`style`、`rect`、`state`、`overflow`、`overlap`、`clip`。状态必须先由浏览器驱动实际触发；采集脚本只读，不代替 hover、focus、loading 或 fixture。
+浏览器采集 `kind` 支持：`count`、`text`、`order`、`structure`、`style`、`rect`、`state`、`overflow`、`overlap`、`clip`，以及只返回原始事实的 `attribute`、`tag`、`text_node_count`、`descendant_counts`、`selector_order`、`document_overflow`、`center_offset`、`content_clip`、`sibling_overlap`。
+
+多个原始事实组成一条语义规则时使用 `object.fields`；每个 field 仍是上述只读采集模式，例如：
+
+```json
+{
+  "collect": {
+    "kind": "object",
+    "fields": {
+      "content_width_css_px": {"kind": "rect", "property": "width", "single": true},
+      "horizontal_overflow_css_px": {"kind": "document_overflow"}
+    }
+  }
+}
+```
+
+adapter 的任意深度都禁止出现 `expected`、`tolerance`、`design_fact_source`、`baseline_id`；验证器会递归拒绝，避免采集实现参与判定。状态必须先由浏览器驱动实际触发；采集脚本只读，不代替 hover、focus、loading 或 fixture。
 
 ## 四、执行
 
@@ -158,6 +176,8 @@ window.__SDD_RESTORE_INPUT__ = {
   "rules": {}
 }
 ```
+
+同一契约包含多个 `viewport-*` state scenario 时，浏览器驱动必须逐个设置对应视口后采集，只把该视口结果写回对应规则；`default` 规则使用冻结基线指定的默认视口。不得用一次默认视口采集替代全部响应式规则。
 
 ### 4. 报告
 

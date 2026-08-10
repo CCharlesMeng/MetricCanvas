@@ -60,7 +60,7 @@
   }
   h3 {
     margin: 0 0 14px;
-    color: #121e3b;
+    color: var(--mc-color-report-heading, #121e3b);
     font-size: 18px;
     font-weight: 600;
     line-height: 28px;
@@ -87,7 +87,7 @@
     align-items: center;
     justify-content: center;
     margin-top: 1px;
-    color: #697386;
+    color: var(--mc-color-report-rank-muted, #697386);
     background: #e7eaf2;
     border-radius: 6px;
     font-size: 12px;
@@ -117,15 +117,15 @@
   }
   .name {
     min-width: 0;
-    color: #191919;
+    color: var(--mc-color-report-text, #191919);
     font-size: 14px;
     font-weight: 600;
     line-height: 22px;
   }
   .badge {
     padding: 1px 6px;
-    color: #1476ff;
-    background: #e8f1ff;
+    color: var(--mc-color-report-badge, #1476ff);
+    background: var(--mc-color-report-badge-surface, #e8f1ff);
     border-radius: 3px;
     font-size: 11px;
     line-height: 18px;
@@ -136,12 +136,12 @@
     line-height: 22px;
   }
   .value {
-    color: #191919;
+    color: var(--mc-color-report-text, #191919);
     font-weight: 500;
     font-variant-numeric: tabular-nums;
   }
   .change {
-    color: #71717a;
+    color: var(--mc-color-muted, #71717a);
     font-variant-numeric: tabular-nums;
   }
   .positive {
@@ -153,7 +153,7 @@
   p {
     margin: 6px 0 0;
     padding: 7px 9px;
-    color: #595959;
+    color: var(--mc-color-report-description, #595959);
     background: rgb(255 255 255 / 0.72);
     border-radius: 5px;
     font-size: 12px;

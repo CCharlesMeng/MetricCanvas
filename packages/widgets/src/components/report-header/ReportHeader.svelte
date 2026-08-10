@@ -14,7 +14,7 @@
     {#if props.decoration === 'shortBar' && props.generatedBy}
       <p class="generated-by">{props.generatedBy}</p>
     {/if}
-    {#if props.decoration === 'shortBar' && props.badge}<span class="badge lead-badge">{props.badge}</span>{/if}
+    {#if props.decoration === 'shortBar'}<div class="summary-spacer before-title"></div>{/if}
     <div class="title-line">
       {#if props.decoration !== 'shortBar'}
         <span class="report-icon" aria-hidden="true"></span>
@@ -27,16 +27,17 @@
     {/if}
     {#if props.decoration === 'shortBar' && props.asOf}
       <div class="as-of inline">
-        <span>{props.asOf.label}：</span>
-        <strong>{props.asOf.value}</strong>
+        {props.asOf.label}：{props.asOf.value}
       </div>
     {/if}
+    {#if props.decoration === 'shortBar' && props.badge}<span class="badge lead-badge">{props.badge}</span>{/if}
     {#if props.decoration === 'shortBar' && props.generatedBy && props.subtitle}
       <section class="report-summary">
         <div class="report-summary-title"><span>报告摘要</span></div>
         <p>{props.subtitle}</p>
       </section>
     {:else if props.subtitle}<p>{props.subtitle}</p>{/if}
+    {#if props.decoration === 'shortBar'}<div class="summary-spacer after-summary"></div>{/if}
     {#if props.tags?.length}
       <div class="tags" aria-label="报告标签">
         {#each props.tags as tag, index (`${tag}:${index}`)}
@@ -114,6 +115,29 @@
     font-weight: 600;
     line-height: 28px;
   }
+  .short-bar .heading {
+    display: flex;
+    flex-direction: column;
+  }
+  .short-bar .generated-by {
+    order: 0;
+  }
+  .short-bar .lead-badge {
+    align-self: flex-start;
+    order: 1;
+  }
+  .short-bar .title-line {
+    order: 2;
+  }
+  .short-bar .as-of.inline {
+    order: 3;
+  }
+  .short-bar .report-summary {
+    order: 4;
+  }
+  .summary-spacer {
+    display: none;
+  }
   .short-bar .generated-by::before {
     width: 28px;
     height: 28px;
@@ -145,7 +169,7 @@
     margin: 0 0 14px 36px;
     padding: 5px 13px;
     color: #fff;
-    background: #2098ff;
+    background: var(--mc-color-report-header-accent, #2098ff);
     border-radius: 0;
     font-size: 24px;
     font-weight: 500;
@@ -187,8 +211,7 @@
     font-size: 13px;
     font-weight: 600;
   }
-  .short-bar .as-of span,
-  .short-bar .as-of strong {
+  .short-bar .as-of.inline {
     color: #000;
     font-size: 24px;
     font-weight: 400;
@@ -211,7 +234,7 @@
     max-width: none;
     margin: 0;
     padding: 20px 24px;
-    color: #191919;
+    color: var(--mc-color-report-text, #191919);
     background: var(--mc-color-surface-subtle, #f1f4ff);
     border: 10px solid var(--mc-color-surface, #fff);
     border-radius: 18px;

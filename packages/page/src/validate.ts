@@ -20,6 +20,7 @@ import {
 } from './page';
 import { materializePageDocument } from './materialize';
 import { matchesFieldValue } from './query-rows';
+import { barForecastBoundaryIssues } from './bar-forecast-boundary';
 import { pageSchema } from './schema';
 import { versionErrors } from './version';
 
@@ -464,6 +465,24 @@ function componentErrors(
       component.props.series.forEach((series, index) =>
         check(series.field, `${componentPath}/props/series/${index}/field`, 'measure')
       );
+      {
+        const sourceId = component.data.main;
+        const source = page.dataSources[sourceId];
+        if (source && isQueryDataSource(source) && source.source.initial) {
+          for (const issue of barForecastBoundaryIssues(
+            component.props,
+            source.source.initial.rows,
+            source.source.initial.capturedAt
+          )) {
+            errors.push(
+              schemaError(
+                `/dataSources/${escapePointer(sourceId)}/source/initial/rows/${issue.rowIndex}/${escapePointer(issue.field)}`,
+                issue.message
+              )
+            );
+          }
+        }
+      }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
     case 'lineChart':

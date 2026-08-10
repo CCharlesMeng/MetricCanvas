@@ -1,4 +1,26 @@
 import { expect, test, type Page } from '@playwright/test';
+import type { DataGatewayResult } from '@metriccanvas/runtime';
+import type { RuntimeHandle } from '../../src/types';
+
+interface FlowReportDocument {
+  [key: string]: unknown;
+  dataSources: Record<
+    string,
+    {
+      [key: string]: unknown;
+      source: { type: string; initial?: unknown };
+    }
+  >;
+  sections: Array<{
+    [key: string]: unknown;
+    components: Array<{
+      [key: string]: unknown;
+      id: string;
+      type: string;
+      data?: { main: string; [key: string]: string };
+    }>;
+  }>;
+}
 
 async function runtimeShellSnapshot(page: Page) {
   const host = page.locator('[data-metriccanvas-runtime]');
@@ -527,16 +549,55 @@ test('AI 总结通过假 SSE 契约流式渲染且只发送声明字段', async 
 
 test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态', async ({ page }) => {
   await page.goto('/examples/inline.html');
-  const flowReportDocument = await page.evaluate(() =>
-    fetch('/pages/flow-analysis-report.json').then((response) => response.json())
-  );
-  await page.evaluate((document) => {
-    if (!Object.values(document.dataSources).every((dataSource: any) => dataSource.source.type === 'query')) {
+  const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
+    const response = await fetch('/pages/flow-analysis-report.json');
+    const value: unknown = await response.json();
+    const isRecord = (candidate: unknown): candidate is Record<string, unknown> =>
+      typeof candidate === 'object' && candidate !== null && !Array.isArray(candidate);
+    const isFlowReportDocument = (candidate: unknown): candidate is FlowReportDocument => {
+      if (!isRecord(candidate) || !isRecord(candidate.dataSources)) return false;
+      if (!Array.isArray(candidate.sections)) return false;
+      const validSources = Object.values(candidate.dataSources).every(
+        (source) =>
+          isRecord(source) &&
+          isRecord(source.source) &&
+          typeof source.source.type === 'string'
+      );
+      if (!validSources) return false;
+      return candidate.sections.every(
+        (section) =>
+          isRecord(section) &&
+          Array.isArray(section.components) &&
+          section.components.every(
+            (component) =>
+              isRecord(component) &&
+              typeof component.id === 'string' &&
+              typeof component.type === 'string' &&
+              (component.data === undefined ||
+                (isRecord(component.data) && typeof component.data.main === 'string'))
+          )
+      );
+    };
+    if (!isFlowReportDocument(value)) {
+      throw new Error('流水分析报告 JSON 结构无效');
+    }
+    return value;
+  });
+  await page.evaluate((document: FlowReportDocument) => {
+    if (
+      !Object.values(document.dataSources).every(
+        (dataSource) => dataSource.source.type === 'query'
+      )
+    ) {
       throw new Error('流水分析报告必须通过 query + initial 启动');
     }
     window.runtime.destroy();
-    const pendingData = new Promise<any>(() => {});
-    (window as typeof window & { pendingFlowData: Promise<any> }).pendingFlowData = pendingData;
+    const pendingData = new Promise<DataGatewayResult>(() => {});
+    (
+      window as typeof window & {
+        pendingFlowData: Promise<DataGatewayResult>;
+      }
+    ).pendingFlowData = pendingData;
     const runtime = MetricCanvas.mount('#dashboard', {
       document,
       dataGateway: {
@@ -552,14 +613,18 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   }, flowReportDocument);
 
   const host = page.locator('[data-metriccanvas-runtime]');
-  await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
+  await expect(
+    host.getByRole('heading', { name: '2026年2月流水分析报告' })
+  ).toBeVisible();
   await expect(host.locator('.page-section')).toHaveCount(7);
   await expect(host.locator('[data-component-type="barChart"]')).toHaveCount(2);
   await expect(host.locator('[data-component-type="metricCard"]')).toHaveCount(7);
   await expect(host.locator('[data-component-type="rankingDetailCard"]')).toHaveCount(2);
   await expect(host.getByRole('table')).toHaveCount(4);
   await expect(host.locator('.ai-summary')).toHaveCount(3);
-  await expect(host.locator('.bar-chart[data-tooltip="axis"][data-legend="visible"]')).toHaveCount(2);
+  await expect(
+    host.locator('.bar-chart[data-tooltip="axis"][data-legend="visible"]')
+  ).toHaveCount(2);
 
   const trendChart = host.locator('[data-component="flow-overview/overall-trend"] .echart');
   await expect(trendChart.locator('canvas')).toBeVisible();
@@ -581,9 +646,15 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
 
   for (const width of [1000, 1200, 1680, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    await expect.poll(() => page.evaluate(() =>
-      document.documentElement.scrollWidth <= window.innerWidth + 1
-    ), { message: `${width}px horizontal scroll after resize` }).toBe(true);
+    await expect
+      .poll(
+        () =>
+          page.evaluate(
+            () => document.documentElement.scrollWidth <= window.innerWidth + 1
+          ),
+        { message: `${width}px horizontal scroll after resize` }
+      )
+      .toBe(true);
     const layout = await host.locator('.page-content').evaluate((element) => {
       const rect = element.getBoundingClientRect();
       return {
@@ -593,84 +664,105 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
         centerOffset: Math.abs((rect.left + rect.right) / 2 - window.innerWidth / 2)
       };
     });
-    expect(layout.documentWidth, `${width}px horizontal scroll`).toBeLessThanOrEqual(layout.viewportWidth + 1);
+    expect(layout.documentWidth, `${width}px horizontal scroll`).toBeLessThanOrEqual(
+      layout.viewportWidth + 1
+    );
     if (width >= 1680) {
       expect(layout.contentWidth).toBeCloseTo(1200, 0);
       expect(layout.centerOffset).toBeLessThanOrEqual(1);
     }
   }
 
-  await page.evaluate((sourceDocument) => {
+  await page.evaluate((sourceDocument: FlowReportDocument) => {
     const document = structuredClone(sourceDocument);
     const pendingSource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    if (pendingSource.source.type !== 'query') {
+      throw new Error('客户同比下降数据源必须为 query');
+    }
     delete pendingSource.source.initial;
     document.dataSources['customer-yoy-drop-pending'] = pendingSource;
     const table = document.sections
-      .flatMap((section: any) => section.components)
-      .find((component: any) => component.id === 'yoy-drop-table');
+      .flatMap((section) => section.components)
+      .find((component) => component.id === 'yoy-drop-table');
+    if (table?.type !== 'table' || !table.data) throw new Error('未找到同比下降客户表');
     table.data.main = 'customer-yoy-drop-pending';
-    (window as typeof window & { flowReportRuntime: { update(options: { document: any }): void } })
-      .flowReportRuntime.update({
-        document,
-        dataGateway: {
-          async fetchData() {
-            return (window as typeof window & { pendingFlowData: Promise<any> }).pendingFlowData;
-          },
-          async fetchDimensionValues() {
-            return [];
-          }
+    (
+      window as typeof window & { flowReportRuntime: RuntimeHandle }
+    ).flowReportRuntime.update({
+      document,
+      dataGateway: {
+        async fetchData() {
+          return (
+            window as typeof window & {
+              pendingFlowData: Promise<DataGatewayResult>;
+            }
+          ).pendingFlowData;
+        },
+        async fetchDimensionValues() {
+          return [];
         }
-      } as any);
+      }
+    });
   }, flowReportDocument);
   const yoyDropTable = host.locator('[data-component="customer-analysis/yoy-drop-table"]');
   await expect(yoyDropTable.locator('.skeleton')).toBeVisible();
 
-  await page.evaluate((sourceDocument) => {
+  await page.evaluate((sourceDocument: FlowReportDocument) => {
     const document = structuredClone(sourceDocument);
     const emptySource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    if (emptySource.source.type !== 'query') {
+      throw new Error('客户同比下降数据源必须为 query');
+    }
     delete emptySource.source.initial;
     document.dataSources['customer-yoy-drop-empty'] = emptySource;
     const table = document.sections
-      .flatMap((section: any) => section.components)
-      .find((component: any) => component.id === 'yoy-drop-table');
+      .flatMap((section) => section.components)
+      .find((component) => component.id === 'yoy-drop-table');
+    if (table?.type !== 'table' || !table.data) throw new Error('未找到同比下降客户表');
     table.data.main = 'customer-yoy-drop-empty';
-    (window as typeof window & { flowReportRuntime: { update(options: any): void } })
-      .flowReportRuntime.update({
-        document,
-        dataGateway: {
-          async fetchData() {
-            return { rows: [], totalCount: 0 };
-          },
-          async fetchDimensionValues() {
-            return [];
-          }
+    (
+      window as typeof window & { flowReportRuntime: RuntimeHandle }
+    ).flowReportRuntime.update({
+      document,
+      dataGateway: {
+        async fetchData() {
+          return { rows: [], totalCount: 0 };
+        },
+        async fetchDimensionValues() {
+          return [];
         }
-      });
+      }
+    });
   }, flowReportDocument);
   await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
 
-  await page.evaluate((sourceDocument) => {
+  await page.evaluate((sourceDocument: FlowReportDocument) => {
     const document = structuredClone(sourceDocument);
     const errorSource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    if (errorSource.source.type !== 'query') {
+      throw new Error('客户同比下降数据源必须为 query');
+    }
     delete errorSource.source.initial;
     document.dataSources['customer-yoy-drop-error'] = errorSource;
     const table = document.sections
-      .flatMap((section: any) => section.components)
-      .find((component: any) => component.id === 'yoy-drop-table');
+      .flatMap((section) => section.components)
+      .find((component) => component.id === 'yoy-drop-table');
+    if (table?.type !== 'table' || !table.data) throw new Error('未找到同比下降客户表');
     table.data.main = 'customer-yoy-drop-error';
-    (window as typeof window & { flowReportRuntime: { update(options: any): void } })
-      .flowReportRuntime.update({
-        document,
-        dataGateway: {
-          async fetchData() {
-            throw new Error('流水数据网关测试错误');
-          },
-          async fetchDimensionValues() {
-            return [];
-          }
+    (
+      window as typeof window & { flowReportRuntime: RuntimeHandle }
+    ).flowReportRuntime.update({
+      document,
+      dataGateway: {
+        async fetchData() {
+          throw new Error('流水数据网关测试错误');
+        },
+        async fetchDimensionValues() {
+          return [];
         }
-      });
+      }
+    });
   }, flowReportDocument);
-  await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(yoyDropTable.getByRole('alert')).toHaveText('流水数据网关测试错误');
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
 });

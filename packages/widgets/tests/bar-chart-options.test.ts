@@ -80,7 +80,7 @@ const props = {
     { field: 'coreForecast', label: 'Core流水(预测)', role: 'forecast' },
     { field: 'communicationForecast', label: '云通信流水(预测)', role: 'forecast' }
   ]
-} as unknown as BarChartProps;
+} satisfies BarChartProps;
 
 describe('barOption 实际/预测系列', () => {
   it('保持月份 X 轴、金额 Y 轴、四图例和统一堆叠键', () => {

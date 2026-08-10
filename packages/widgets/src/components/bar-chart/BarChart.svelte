@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { BarChartProps, Row } from '@metriccanvas/page';
   import type { MainDataSlots } from '../../shared/component-data';
+  import { resolveField } from '../../shared/component-data';
+  import { formatValue } from '../../shared/value-format';
   import EChart from '../../shared/EChart.svelte';
   import { barOption } from './options';
 
@@ -20,6 +22,12 @@
 
   const option = $derived(barOption(data, props));
   const forecast = $derived(props.series.some((series) => series.role === 'forecast'));
+  const category = $derived(resolveField(props.categoryField, data));
+  const categories = $derived(
+    data.main.snapshot.rows
+      .map((row) => formatValue(row[category.field], category.format))
+      .filter(Boolean)
+  );
 </script>
 
 <div
@@ -32,7 +40,7 @@
 >
   {#if props.title}<h3>{props.title}</h3>{/if}
   <span class="chart-semantics">
-    {props.series.map((series) => series.label).filter(Boolean).join(' ')}
+    {props.series.map((series) => series.label).filter(Boolean).join(' ')} {categories.join(' ')}
   </span>
   <EChart
     {option}
@@ -51,7 +59,7 @@
   }
   h3 {
     margin: 0 0 8px;
-    color: #121e3b;
+    color: var(--mc-color-report-heading, #121e3b);
     font-size: 18px;
     font-weight: 600;
     line-height: 28px;

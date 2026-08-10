@@ -429,7 +429,7 @@
   .analysis-section .ai-summary-cell {
     padding: 15px 18px;
     background: var(--mc-color-surface);
-    border-radius: 16px;
+    border-radius: var(--mc-radius-section);
   }
   .analysis-section .ai-summary-cell {
     padding: 0;

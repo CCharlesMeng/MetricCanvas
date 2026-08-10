@@ -24,7 +24,9 @@
 </script>
 
 <div class:insight={props.variant === 'insight'} class="text-block">
-  {#if props.title}<h3 class="heading">{props.title}</h3>{/if}
+  {#if props.title && !props.body && links.length === 0}
+    <span class="heading">{props.title}</span>
+  {:else if props.title}<h3 class="heading">{props.title}</h3>{/if}
   {#if props.body}<p class="body">{props.body}</p>{/if}
   {#if links.length > 0}
     <nav class="links">

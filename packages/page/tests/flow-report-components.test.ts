@@ -7,7 +7,29 @@ import { componentCatalog, validate } from '../src';
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pagesDir = path.resolve(here, '../../../pages');
 
-function flowComponentsPage(): any {
+interface MutableFlowComponentFixture {
+  [key: string]: unknown;
+  id: string;
+  type: string;
+  props: {
+    [key: string]: unknown;
+    series?: Array<{ field: string; label?: string; role?: string }>;
+    categoryField?: string;
+    badgeFields?: string[];
+    descriptionField?: string;
+    pageSize?: number;
+  };
+}
+
+interface FlowComponentsFixture {
+  [key: string]: unknown;
+  sections: Array<{
+    [key: string]: unknown;
+    components: MutableFlowComponentFixture[];
+  }>;
+}
+
+function flowComponentsPage(): FlowComponentsFixture {
   return {
     schemaVersion: '4.0',
     id: 'flow-components-contract',
@@ -122,11 +144,11 @@ describe('流水报告公共组件契约', () => {
 
   it('拒绝非法柱系列 role，且 lineChart 不获得该扩展字段', () => {
     const invalidRole = flowComponentsPage();
-    invalidRole.sections[0].components[0].props.series[0].role = 'projection';
+    invalidRole.sections[0]!.components[0]!.props.series![0]!.role = 'projection';
     expect(validate(invalidRole)).not.toEqual([]);
 
     const lineWithRole = flowComponentsPage();
-    const line = lineWithRole.sections[0].components[0];
+    const line = lineWithRole.sections[0]!.components[0]!;
     line.type = 'lineChart';
     line.props = {
       xField: line.props.categoryField,
@@ -137,11 +159,11 @@ describe('流水报告公共组件契约', () => {
 
   it('严格拒绝详细排行未知字段、三个徽标和缺失字段绑定', () => {
     const unknownProp = flowComponentsPage();
-    unknownProp.sections[0].components[1].props.pageSize = 5;
+    unknownProp.sections[0]!.components[1]!.props.pageSize = 5;
     expect(validate(unknownProp)).not.toEqual([]);
 
     const tooManyBadges = flowComponentsPage();
-    tooManyBadges.sections[0].components[1].props.badgeFields = [
+    tooManyBadges.sections[0]!.components[1]!.props.badgeFields = [
       'customerType',
       'customerLevel',
       'description'
@@ -149,10 +171,39 @@ describe('流水报告公共组件契约', () => {
     expect(validate(tooManyBadges)).not.toEqual([]);
 
     const missingBinding = flowComponentsPage();
-    missingBinding.sections[0].components[1].props.descriptionField = 'missingDescription';
+    missingBinding.sections[0]!.components[1]!.props.descriptionField = 'missingDescription';
     expect(validate(missingBinding)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: expect.stringContaining('/descriptionField') })
+      ])
+    );
+  });
+
+  it('拒绝越过报告统计月的实际/预测柱数据', () => {
+    const source = JSON.parse(
+      readFileSync(path.join(pagesDir, 'flow-analysis-report.json'), 'utf8')
+    );
+    const pastForecast = structuredClone(source);
+    pastForecast.dataSources['overall-monthly-trend'].source.initial.rows[0][
+      'core-forecast'
+    ] = 1;
+    expect(validate(pastForecast)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining('统计月及之前不得提供预测系列')
+        })
+      ])
+    );
+
+    const futureActual = structuredClone(source);
+    futureActual.dataSources['overall-monthly-trend'].source.initial.rows[2][
+      'core-actual'
+    ] = 1;
+    expect(validate(futureActual)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining('统计月之后不得提供实际系列')
+        })
       ])
     );
   });

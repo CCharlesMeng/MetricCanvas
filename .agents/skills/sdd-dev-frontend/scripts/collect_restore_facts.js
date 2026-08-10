@@ -187,25 +187,102 @@
     return Math.max(0, maximum);
   };
 
+  const selectNodes = (roots, spec) => {
+    if (!spec || !spec.selector) return roots;
+    if (spec.scope === "document") {
+      return Array.from(document.querySelectorAll(spec.selector));
+    }
+    const selected = [];
+    for (const root of roots) {
+      if (spec.include_root && root.matches(spec.selector)) selected.push(root);
+      selected.push(...root.querySelectorAll(spec.selector));
+    }
+    return Array.from(new Set(selected));
+  };
+
+  const numericAttribute = (value) => {
+    const number = Number(value);
+    return Number.isFinite(number) ? number : value;
+  };
+
+  const horizontalContentClip = (element) => {
+    const descendants = [element, ...element.querySelectorAll("*")].filter((node) => {
+      const computed = window.getComputedStyle(node);
+      const explicitlyClipped = computed.clip !== "auto" || computed.clipPath !== "none";
+      return !(
+        explicitlyClipped &&
+        computed.overflow === "hidden" &&
+        node.clientWidth <= 1 &&
+        node.clientHeight <= 1
+      );
+    });
+    return Math.max(0, ...descendants.map(horizontalOverflow));
+  };
+
   const collect = (nodes, spec) => {
     const kind = (spec && spec.kind) || "count";
+    if (kind === "object") {
+      return Object.fromEntries(
+        Object.entries(spec.fields || {}).map(([name, fieldSpec]) => [
+          name,
+          collect(nodes, fieldSpec)
+        ])
+      );
+    }
+    nodes = selectNodes(nodes, spec || {});
     if (kind === "count") return nodes.length;
     if (kind === "text") {
       const values = nodes.map((node) => normalizeText(node.textContent));
       return spec && spec.single ? (values[0] || "") : values;
     }
     if (kind === "order") return nodes.map((node) => accessibleName(node));
+    if (kind === "tag") {
+      const values = nodes.map((node) => node.tagName.toLowerCase());
+      return spec && spec.single ? (values[0] ?? null) : values;
+    }
+    if (kind === "text_node_count") {
+      return nodes.reduce((total, node) => total + directTexts(node).length, 0);
+    }
+    if (kind === "descendant_counts") {
+      return nodes.map((node) => node.querySelectorAll(spec.child_selector).length);
+    }
+    if (kind === "selector_order") {
+      const matches = [];
+      for (const root of nodes) {
+        for (const item of spec.items || []) {
+          const node = root.matches(item.selector) ? root : root.querySelector(item.selector);
+          if (node) matches.push({ name: item.name, node });
+        }
+      }
+      matches.sort((left, right) => {
+        if (left.node === right.node) return 0;
+        return left.node.compareDocumentPosition(right.node) & Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1;
+      });
+      return matches.map((item) => item.name);
+    }
     if (kind === "structure") {
       const values = nodes.map(structure);
-      return spec && spec.single ? (values[0] || null) : values;
+      return spec && spec.single ? (values[0] ?? null) : values;
     }
     if (kind === "style") {
       const values = nodes.map((node) => styleFacts(node, spec.properties));
       return spec && spec.single ? (values[0] || null) : values;
     }
     if (kind === "rect") {
-      const values = nodes.map(rect);
-      return spec && spec.single ? (values[0] || null) : values;
+      const values = nodes.map((node) => {
+        const value = rect(node);
+        return spec && spec.property ? value[spec.property] : value;
+      });
+      return spec && spec.single ? (values[0] ?? null) : values;
+    }
+    if (kind === "attribute") {
+      const values = nodes.map((node) => {
+        const value = node.getAttribute(spec.name);
+        return spec && spec.numeric ? numericAttribute(value) : value;
+      });
+      return spec && spec.single ? (values[0] ?? null) : values;
     }
     if (kind === "state") {
       const values = nodes.map((node) => ({
@@ -231,6 +308,34 @@
         for (let second = 0; second < others.length; second += 1) {
           if (nodes[first] === others[second]) continue;
           maximum = Math.max(maximum, overlapAmount(nodes[first], others[second]));
+        }
+      }
+      return maximum;
+    }
+    if (kind === "document_overflow") {
+      return Math.max(
+        0,
+        document.documentElement.scrollWidth - window.innerWidth,
+        document.body.scrollWidth - window.innerWidth
+      );
+    }
+    if (kind === "center_offset") {
+      return Math.max(0, ...nodes.map((node) => {
+        const value = rect(node);
+        return Math.abs(((value.left + value.right) / 2) - (window.innerWidth / 2));
+      }));
+    }
+    if (kind === "content_clip") {
+      return Math.max(0, ...nodes.map(horizontalContentClip));
+    }
+    if (kind === "sibling_overlap") {
+      let maximum = 0;
+      for (let first = 0; first < nodes.length; first += 1) {
+        for (let second = first + 1; second < nodes.length; second += 1) {
+          if (spec.group_by_parent && nodes[first].parentElement !== nodes[second].parentElement) {
+            continue;
+          }
+          maximum = Math.max(maximum, overlapAmount(nodes[first], nodes[second]));
         }
       }
       return maximum;

@@ -29,6 +29,8 @@ DIMENSIONS = {f"R{index}" for index in range(1, 7)}
 CHECK_MODES = {
     "exact",
     "structure",
+    "text",
+    "constraints",
     "numeric",
     "color",
     "state",
@@ -36,6 +38,34 @@ CHECK_MODES = {
     "overlap",
     "clip",
     "visual",
+}
+COLLECT_KINDS = {
+    "count",
+    "text",
+    "order",
+    "structure",
+    "style",
+    "rect",
+    "state",
+    "overflow",
+    "overlap",
+    "clip",
+    "attribute",
+    "tag",
+    "text_node_count",
+    "descendant_counts",
+    "selector_order",
+    "document_overflow",
+    "center_offset",
+    "content_clip",
+    "sibling_overlap",
+    "object",
+}
+ADAPTER_DECISION_FIELDS = {
+    "expected",
+    "tolerance",
+    "design_fact_source",
+    "baseline_id",
 }
 LAYERS = {"static", "render", "visual"}
 LOCATOR_PRIORITY = {"role": 0, "text": 1, "testid": 2, "css": 3}
@@ -125,6 +155,70 @@ def validate_rule(raw: Any, index: int) -> dict[str, Any]:
     check_mode = str(rule["check_mode"])
     if check_mode not in CHECK_MODES:
         raise ContractError(f"规则 {rule_id} 的 check_mode 不支持：{check_mode}")
+    if check_mode == "text":
+        expected = rule["expected"]
+        if not isinstance(expected, dict):
+            raise ContractError(f"规则 {rule_id} 的 text expected 必须是对象")
+        required_texts = expected.get("required_texts", [])
+        required_patterns = expected.get("required_patterns", [])
+        if not isinstance(required_texts, list) or any(
+            not isinstance(item, str) or not item for item in required_texts
+        ):
+            raise ContractError(f"规则 {rule_id} 的 required_texts 必须是非空字符串数组")
+        if not isinstance(required_patterns, list):
+            raise ContractError(f"规则 {rule_id} 的 required_patterns 必须是数组")
+        for pattern in required_patterns:
+            if (
+                not isinstance(pattern, dict)
+                or not isinstance(pattern.get("name"), str)
+                or not pattern["name"]
+                or not isinstance(pattern.get("pattern"), str)
+                or not pattern["pattern"]
+            ):
+                raise ContractError(
+                    f"规则 {rule_id} 的 required_patterns 必须包含 name/pattern"
+                )
+            try:
+                re.compile(pattern["pattern"])
+            except re.error as error:
+                raise ContractError(
+                    f"规则 {rule_id} 的文本正则无效：{pattern['name']}: {error}"
+                ) from error
+        if not required_texts and not required_patterns:
+            raise ContractError(f"规则 {rule_id} 的 text expected 至少包含一个判据")
+    if check_mode == "constraints":
+        expected = rule["expected"]
+        if not isinstance(expected, dict) or not expected:
+            raise ContractError(f"规则 {rule_id} 的 constraints expected 必须是非空对象")
+        for field, constraint in expected.items():
+            if not isinstance(field, str) or not field or not isinstance(constraint, dict):
+                raise ContractError(f"规则 {rule_id} 的 constraints 字段必须映射到对象")
+            operators = set(constraint).intersection({"equals", "min", "max"})
+            if not operators:
+                raise ContractError(
+                    f"规则 {rule_id} 的约束 {field} 至少包含 equals/min/max"
+                )
+            unknown = set(constraint).difference({"equals", "min", "max", "tolerance"})
+            if unknown:
+                raise ContractError(f"规则 {rule_id} 的约束 {field} 含未知字段：{sorted(unknown)}")
+            for operator in operators:
+                try:
+                    parse_css_number(constraint[operator])
+                except ValueError as error:
+                    raise ContractError(
+                        f"规则 {rule_id} 的约束 {field}.{operator} 必须是数字"
+                    ) from error
+            if "tolerance" in constraint:
+                try:
+                    constraint_tolerance = parse_css_number(constraint["tolerance"])
+                except ValueError as error:
+                    raise ContractError(
+                        f"规则 {rule_id} 的约束 {field}.tolerance 必须是数字"
+                    ) from error
+                if constraint_tolerance < 0:
+                    raise ContractError(
+                        f"规则 {rule_id} 的约束 {field}.tolerance 必须非负"
+                    )
 
     layers = rule.get("required_layers", DEFAULT_LAYERS[dimension])
     if not isinstance(layers, list) or not layers:
@@ -244,6 +338,101 @@ def validate_locator(locator: Any, rule_id: str) -> dict[str, Any]:
     return dict(locator)
 
 
+def find_adapter_decision_field(value: Any, path: str = "collect") -> str | None:
+    if isinstance(value, dict):
+        for key, child in value.items():
+            child_path = f"{path}.{key}"
+            if key in ADAPTER_DECISION_FIELDS:
+                return child_path
+            found = find_adapter_decision_field(child, child_path)
+            if found:
+                return found
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found = find_adapter_decision_field(child, f"{path}[{index}]")
+            if found:
+                return found
+    return None
+
+
+def validate_collect_spec(spec: Any, rule_id: str, path: str = "collect") -> dict[str, Any]:
+    if spec is None:
+        return {"kind": "count"}
+    if not isinstance(spec, dict):
+        raise ContractError(f"规则 {rule_id} 的 {path} 必须是对象")
+    decision_field = find_adapter_decision_field(spec, path)
+    if decision_field:
+        raise ContractError(
+            f"规则 {rule_id} 的 adapter 混入外部判定字段：{decision_field}"
+        )
+    kind = spec.get("kind", "count")
+    if kind not in COLLECT_KINDS:
+        raise ContractError(f"规则 {rule_id} 的 {path}.kind 不支持：{kind}")
+    selector = spec.get("selector")
+    if selector is not None and (not isinstance(selector, str) or not selector):
+        raise ContractError(f"规则 {rule_id} 的 {path}.selector 必须是非空字符串")
+    if spec.get("scope", "root") not in {"root", "document"}:
+        raise ContractError(f"规则 {rule_id} 的 {path}.scope 仅支持 root/document")
+    if kind == "object":
+        fields = spec.get("fields")
+        if not isinstance(fields, dict) or not fields:
+            raise ContractError(f"规则 {rule_id} 的 {path}.fields 必须是非空对象")
+        normalized_fields = {
+            field: validate_collect_spec(child, rule_id, f"{path}.fields.{field}")
+            for field, child in fields.items()
+            if isinstance(field, str) and field
+        }
+        if len(normalized_fields) != len(fields):
+            raise ContractError(f"规则 {rule_id} 的 {path}.fields 名称必须是非空字符串")
+        return {**spec, "kind": kind, "fields": normalized_fields}
+    if kind == "style":
+        properties = spec.get("properties")
+        if not isinstance(properties, list) or not properties or any(
+            not isinstance(item, str) or not item for item in properties
+        ):
+            raise ContractError(f"规则 {rule_id} 的 {path}.properties 必须是非空字符串数组")
+    if kind == "state":
+        properties = spec.get("properties", [])
+        attributes = spec.get("attributes", [])
+        if any(
+            not isinstance(values, list)
+            or any(not isinstance(item, str) or not item for item in values)
+            for values in (properties, attributes)
+        ):
+            raise ContractError(f"规则 {rule_id} 的 {path} state 字段必须是字符串数组")
+    if kind == "attribute" and (
+        not isinstance(spec.get("name"), str) or not spec["name"]
+    ):
+        raise ContractError(f"规则 {rule_id} 的 {path}.name 必须是非空字符串")
+    if kind == "descendant_counts" and (
+        not isinstance(spec.get("child_selector"), str) or not spec["child_selector"]
+    ):
+        raise ContractError(f"规则 {rule_id} 的 {path}.child_selector 必须是非空字符串")
+    if kind == "selector_order":
+        items = spec.get("items")
+        if not isinstance(items, list) or not items:
+            raise ContractError(f"规则 {rule_id} 的 {path}.items 必须是非空数组")
+        for item in items:
+            if (
+                not isinstance(item, dict)
+                or not isinstance(item.get("name"), str)
+                or not item["name"]
+                or not isinstance(item.get("selector"), str)
+                or not item["selector"]
+            ):
+                raise ContractError(
+                    f"规则 {rule_id} 的 {path}.items 必须包含 name/selector"
+                )
+    if kind == "rect" and "property" in spec and spec["property"] not in {
+        "x", "y", "top", "right", "bottom", "left", "width", "height"
+    }:
+        raise ContractError(f"规则 {rule_id} 的 {path}.property 不支持")
+    for boolean_field in ("single", "numeric", "include_root", "group_by_parent"):
+        if boolean_field in spec and not isinstance(spec[boolean_field], bool):
+            raise ContractError(f"规则 {rule_id} 的 {path}.{boolean_field} 必须是布尔值")
+    return {**spec, "kind": kind}
+
+
 def validate_adapter(adapter: Any, contract: dict) -> dict:
     if not isinstance(adapter, dict):
         raise ContractError("restore-adapter.json 顶层必须是对象")
@@ -263,7 +452,7 @@ def validate_adapter(adapter: Any, contract: dict) -> dict:
             raise ContractError(f"adapter 缺规则 {rule_id} 的实现定位")
         forbidden_fields = [
             field
-            for field in ("expected", "tolerance", "design_fact_source", "baseline_id")
+            for field in ADAPTER_DECISION_FIELDS
             if field in entry
         ]
         if forbidden_fields:
@@ -288,6 +477,7 @@ def validate_adapter(adapter: Any, contract: dict) -> dict:
             **entry,
             "locators": checked,
             "source_files": source_files,
+            "collect": validate_collect_spec(entry.get("collect"), rule_id),
         }
 
     return {
@@ -508,11 +698,115 @@ def max_metric(value: Any) -> float:
     return parse_css_number(value)
 
 
+def compare_text(expected: dict[str, Any], actual: Any) -> tuple[bool, dict[str, Any]]:
+    if isinstance(actual, list):
+        text = " ".join(str(item) for item in actual)
+    elif isinstance(actual, str):
+        text = actual
+    else:
+        return False, {
+            "actual": actual,
+            "missing_texts": list(expected.get("required_texts", [])),
+            "missing_patterns": [
+                item["name"] for item in expected.get("required_patterns", [])
+            ],
+            "reason": "actual is not text",
+        }
+    missing_texts = [
+        required
+        for required in expected.get("required_texts", [])
+        if required not in text
+    ]
+    missing_patterns = [
+        item["name"]
+        for item in expected.get("required_patterns", [])
+        if re.search(item["pattern"], text) is None
+    ]
+    return not missing_texts and not missing_patterns, {
+        "actual": text,
+        "missing_texts": missing_texts,
+        "missing_patterns": missing_patterns,
+    }
+
+
+def compare_constraints(
+    expected: dict[str, dict[str, Any]],
+    actual: Any,
+    default_tolerance: float,
+) -> tuple[bool, dict[str, Any]]:
+    if not isinstance(actual, dict):
+        return False, {
+            "actual": actual,
+            "failures": [{"field": "$", "reason": "actual is not an object"}],
+        }
+    failures: list[dict[str, Any]] = []
+    measurements: dict[str, Any] = {}
+    for field, constraint in expected.items():
+        if field not in actual:
+            failures.append({"field": field, "reason": "missing"})
+            continue
+        try:
+            measured = parse_css_number(actual[field])
+        except ValueError:
+            failures.append(
+                {"field": field, "reason": "not-numeric", "actual": actual[field]}
+            )
+            continue
+        measurements[field] = measured
+        constraint_tolerance = parse_css_number(
+            constraint.get(
+                "tolerance",
+                default_tolerance if "equals" in constraint else 0.0,
+            )
+        )
+        if "equals" in constraint:
+            target = parse_css_number(constraint["equals"])
+            if abs(measured - target) > constraint_tolerance:
+                failures.append(
+                    {
+                        "field": field,
+                        "operator": "equals",
+                        "expected": target,
+                        "actual": measured,
+                        "tolerance": constraint_tolerance,
+                    }
+                )
+        if "min" in constraint:
+            minimum = parse_css_number(constraint["min"])
+            if measured < minimum - constraint_tolerance:
+                failures.append(
+                    {
+                        "field": field,
+                        "operator": "min",
+                        "expected": minimum,
+                        "actual": measured,
+                        "tolerance": constraint_tolerance,
+                    }
+                )
+        if "max" in constraint:
+            maximum = parse_css_number(constraint["max"])
+            if measured > maximum + constraint_tolerance:
+                failures.append(
+                    {
+                        "field": field,
+                        "operator": "max",
+                        "expected": maximum,
+                        "actual": measured,
+                        "tolerance": constraint_tolerance,
+                    }
+                )
+    return not failures, {"measurements": measurements, "failures": failures}
+
+
 def compare_actual(rule: dict, expected: Any, actual: Any) -> tuple[bool, dict[str, Any]]:
     mode = rule["check_mode"]
     tolerance = float(rule["tolerance"]["css_px"])
     if mode in {"exact", "structure", "state"}:
         return expected == actual, {"expected": expected, "actual": actual}
+    if mode == "text":
+        return compare_text(expected, actual)
+    if mode == "constraints":
+        return compare_constraints(expected, actual, tolerance)
     if mode == "numeric":
         differences = numeric_differences(expected, actual)
         passed = all(

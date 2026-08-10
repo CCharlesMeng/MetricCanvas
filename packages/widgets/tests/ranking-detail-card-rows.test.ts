@@ -68,7 +68,7 @@ const props = {
   changeField: 'change',
   badgeFields: ['customerType', 'customerLevel'],
   descriptionField: 'description'
-} as RankingDetailCardProps;
+} satisfies RankingDetailCardProps;
 
 describe('buildRankingDetailRows', () => {
   it('保持查询顺序和全部五行，不排序也不截断', () => {
