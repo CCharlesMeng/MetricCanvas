@@ -11,6 +11,8 @@ export const rankingDetailCardComponentZ = z
     props: z
       .object({
         title: z.string().optional(),
+        variant: z.literal('report').optional(),
+        metricLabel: z.string().min(1).optional(),
         tone: z.enum(['positive', 'negative', 'neutral']).optional(),
         nameField: fieldBindingZ,
         valueField: fieldBindingZ,

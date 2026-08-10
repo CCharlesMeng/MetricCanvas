@@ -15,6 +15,18 @@
 
   let { section, authoring, componentContent }: Props = $props();
   let dragged = $state<AuthoringComponentLocator | null>(null);
+  const reportOverviewSection = $derived(section.variant === 'reportOverview');
+  const dualOverviewSection = $derived(
+    reportOverviewSection &&
+      section.components.some(
+        (component) =>
+          component.type === 'metricCard' && component.props.variant === 'dualSummary'
+      )
+  );
+  const reportHeadingSection = $derived(section.variant === 'reportHeading');
+  const reportCustomerAnalysisSection = $derived(section.variant === 'reportCustomerAnalysis');
+  const reportDimensionAnalysisSection = $derived(section.variant === 'reportDimensionAnalysis');
+  const explicitVariant = $derived(section.variant !== undefined);
   const summaryMetricSection = $derived(
     section.components.length > 0 &&
       section.components.every(
@@ -29,17 +41,20 @@
       )
   );
   const analysisSection = $derived(
-    section.components.some((component) => component.type === 'aiSummary') &&
+    !explicitVariant &&
+      section.components.some((component) => component.type === 'aiSummary') &&
       section.components.some(
         (component) => component.type === 'table' || component.type === 'rankingDetailCard'
       )
   );
   const overviewSection = $derived(
-    section.components.some((component) => component.type === 'barChart') &&
+    !explicitVariant &&
+      section.components.some((component) => component.type === 'barChart') &&
       section.components.some((component) => component.type === 'metricCard')
   );
   const headingSection = $derived(
-    section.components.length === 1 &&
+    !explicitVariant &&
+      section.components.length === 1 &&
       section.components[0]?.type === 'text' &&
       Boolean(section.components[0].props.title) &&
       !section.components[0].props.body
@@ -128,8 +143,14 @@
   class:analysis-section={analysisSection}
   class:overview-section={overviewSection}
   class:heading-section={headingSection}
+  class:report-overview-section={reportOverviewSection}
+  class:dual-overview-section={dualOverviewSection}
+  class:report-heading-section={reportHeadingSection}
+  class:report-customer-analysis-section={reportCustomerAnalysisSection}
+  class:report-dimension-analysis-section={reportDimensionAnalysisSection}
   class="page-section"
   data-section-id={section.id}
+  data-section-variant={section.variant}
 >
   {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
   <div
@@ -508,6 +529,129 @@
     }
     .cell {
       grid-column: 1 / -1 !important;
+    }
+  }
+
+  .page-section.report-overview-section {
+    --mc-color-positive: var(--mc-color-report-positive);
+    --mc-color-negative: var(--mc-color-report-negative);
+
+    padding: 15px 28px 29px;
+    background-color: transparent;
+    background-image: var(--mc-section-gradient);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: var(--mc-radius-section);
+    box-shadow: none;
+  }
+  .page-section.report-overview-section.dual-overview-section {
+    padding-bottom: 40px;
+  }
+  .report-overview-section > .section-title {
+    margin: 0 0 15px;
+    color: var(--mc-color-primary);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 50px;
+    text-align: center;
+  }
+  .report-overview-section > .section-title::before {
+    display: none;
+  }
+  .report-overview-section > .section-grid {
+    gap: 2px 12px;
+    padding: 25px 16px 18px;
+    background: var(--mc-color-surface);
+    border-radius: var(--mc-radius-section);
+  }
+  .report-overview-section .cell {
+    min-height: 0;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .report-overview-section .cell[data-component-type='text'] {
+    margin-top: 13px;
+  }
+  .report-overview-section .chart-cell {
+    min-height: 270px;
+  }
+
+  .page-section.report-heading-section {
+    padding: 18px 0 4px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .report-heading-section .cell {
+    --mc-text-heading-color: var(--mc-color-primary);
+    --mc-text-heading-font-size: 32px;
+    --mc-text-heading-font-weight: 400;
+    --mc-text-heading-line-height: 50px;
+    --mc-text-heading-text-align: center;
+
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .page-section.report-customer-analysis-section,
+  .page-section.report-dimension-analysis-section {
+    padding: 20px;
+    background: var(--mc-color-surface);
+    border-radius: var(--mc-radius-section);
+    box-shadow: none;
+  }
+  .report-customer-analysis-section > .section-title,
+  .report-dimension-analysis-section > .section-title {
+    margin: 0 0 10px 9px;
+    color: var(--mc-color-report-heading);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
+    text-align: left;
+  }
+  .report-customer-analysis-section > .section-title::before,
+  .report-dimension-analysis-section > .section-title::before {
+    display: none;
+  }
+  .report-customer-analysis-section > .section-grid {
+    gap: 10px 25px;
+  }
+  .report-dimension-analysis-section > .section-grid {
+    gap: 10px;
+  }
+  .report-customer-analysis-section .cell,
+  .report-dimension-analysis-section .cell {
+    min-height: 0;
+    gap: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  @media (max-width: 1050px) {
+    .page-section.report-overview-section {
+      padding-right: 20px;
+      padding-left: 20px;
+    }
+    .report-overview-section > .section-grid {
+      gap: 2px 8px;
+      padding-right: 12px;
+      padding-left: 12px;
+    }
+    .report-customer-analysis-section > .section-grid {
+      column-gap: 16px;
     }
   }
 </style>

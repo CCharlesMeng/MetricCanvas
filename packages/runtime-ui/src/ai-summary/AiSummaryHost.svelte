@@ -47,4 +47,8 @@
   };
 </script>
 
-<AiSummaryView props={{ title: props.title }} {data} onretry={() => componentSession?.retry()} />
+<AiSummaryView
+  props={{ title: props.title, variant: props.variant }}
+  {data}
+  onretry={() => componentSession?.retry()}
+/>

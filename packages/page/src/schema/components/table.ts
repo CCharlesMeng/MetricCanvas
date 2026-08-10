@@ -119,6 +119,8 @@ export const tableComponentZ = z
       .object({
         title: z.string().optional(),
         subtitle: z.string().optional(),
+        variant: z.literal('reportCompact').optional(),
+        compoundCellLayout: z.literal('inline').optional(),
         rowKey: fieldNameZ.optional(),
         fit: z.enum(['content', 'container']).optional(),
         columns: z.array(tableColumnNodeZ).min(1),

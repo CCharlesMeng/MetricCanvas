@@ -19,7 +19,8 @@ export const textComponentZ = z
       .object({
         title: z.string().optional(),
         body: z.string().optional(),
-        variant: z.enum(['plain', 'insight']).optional(),
+        variant: z.enum(['plain', 'insight', 'riskNotice']).optional(),
+        maxWidth: z.int().min(1).optional(),
         links: z.array(textLinkZ).optional()
       })
       .strict()

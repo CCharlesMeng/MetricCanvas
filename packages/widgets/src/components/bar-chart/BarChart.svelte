@@ -32,11 +32,16 @@
 
 <div
   class:forecast
+  class:report-forecast={props.variant === 'reportForecast'}
   class="bar-chart"
   data-series-count={props.series.length}
   data-month-count={data.main.snapshot.rows.length}
   data-tooltip="axis"
   data-legend={props.series.length > 1 ? 'visible' : 'hidden'}
+  data-stack-order={props.series.map((series, index) => series.stackOrder ?? index).join(',')}
+  data-stack-join={props.rounded && props.stacked ? 'flush' : 'default'}
+  data-segment-labels={props.showSegmentLabels === true ? 'true' : 'false'}
+  data-total-labels={props.showStackTotalLabels === true ? 'true' : 'false'}
 >
   {#if props.title}<h3>{props.title}</h3>{/if}
   <span class="chart-semantics">
@@ -66,6 +71,11 @@
   }
   .forecast {
     min-height: 292px;
+  }
+  .report-forecast {
+    height: 270px;
+    min-height: 270px;
+    flex: none;
   }
   .chart-semantics {
     position: absolute;

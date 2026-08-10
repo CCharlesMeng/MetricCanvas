@@ -59,12 +59,60 @@ describe('流水分析报告页面文档', () => {
       'track-analysis',
       'industry-analysis'
     ]);
+    expect(parsed.page.sections.map((section) => section.variant ?? null)).toEqual([
+      null,
+      'reportOverview',
+      'reportOverview',
+      'reportHeading',
+      'reportCustomerAnalysis',
+      'reportDimensionAnalysis',
+      'reportDimensionAnalysis'
+    ]);
     const components = parsed.page.sections.flatMap((section) => section.components);
     expect(components.filter((component) => component.type === 'barChart')).toHaveLength(2);
     expect(components.filter((component) => component.type === 'metricCard')).toHaveLength(7);
     expect(components.filter((component) => component.type === 'rankingDetailCard')).toHaveLength(2);
     expect(components.filter((component) => component.type === 'table')).toHaveLength(4);
     expect(components.filter((component) => component.type === 'aiSummary')).toHaveLength(3);
+
+    const overviewCards = components.filter(
+      (component) => component.type === 'metricCard' && component.props.variant === 'compactSummary'
+    );
+    const regionCards = components.filter(
+      (component) => component.type === 'metricCard' && component.props.variant === 'dualSummary'
+    );
+    expect(overviewCards).toHaveLength(3);
+    expect(regionCards).toHaveLength(4);
+    expect(
+      regionCards.map((component) =>
+        component.type === 'metricCard' ? component.props.secondaryTitle : null
+      )
+    ).toEqual(['卓越', '战略', '核心', '商业市场']);
+    expect(
+      components.filter(
+        (component) => component.type === 'text' && component.props.variant === 'riskNotice'
+      )
+    ).toHaveLength(2);
+    expect(
+      components.filter(
+        (component) => component.type === 'barChart' && component.props.variant === 'reportForecast'
+      )
+    ).toHaveLength(2);
+    expect(
+      components.filter(
+        (component) => component.type === 'aiSummary' && component.props.variant === 'reportInline'
+      )
+    ).toHaveLength(3);
+    expect(
+      components.filter(
+        (component) => component.type === 'rankingDetailCard' && component.props.variant === 'report'
+      )
+    ).toHaveLength(2);
+    expect(
+      components.filter(
+        (component) => component.type === 'table' && component.props.variant === 'reportCompact'
+      )
+    ).toHaveLength(4);
   });
 
   it('九个独立 query 均有显式 queryField、确定性 initial 和严格 DQE 签名', () => {
@@ -120,6 +168,35 @@ describe('流水分析报告页面文档', () => {
     expect(charts.every((chart) => chart.props.stacked === true)).toBe(true);
     expect(charts.every((chart) => chart.props.series.length === 4)).toBe(true);
     expect(charts.every((chart) => chart.props.actions === undefined)).toBe(true);
+  });
+
+  it('报告页声明涨跌箭头、可配置堆叠顺序与金额标签，并保持客户表文字中性', () => {
+    const parsed = parsePage(flowReportPageJson);
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+    const components = parsed.page.sections.flatMap((section) => section.components);
+    const metrics = components.filter((component) => component.type === 'metricCard');
+    const charts = components.filter((component) => component.type === 'barChart');
+    const customerTableColumns = components.flatMap((component) =>
+      component.type === 'table' &&
+      (component.id === 'yoy-drop-table' || component.id === 'risk-table')
+        ? component.props.columns
+        : []
+    );
+
+    expect(metrics.every((metric) => metric.props.showTrendArrows === true)).toBe(true);
+    expect(charts.every((chart) => chart.props.showSegmentLabels === true)).toBe(true);
+    expect(charts.every((chart) => chart.props.showStackTotalLabels === true)).toBe(true);
+    expect(
+      charts.map((chart) => chart.props.series.map((series) => series.stackOrder))
+    ).toEqual([
+      [2, 1, 2, 1],
+      [2, 1, 2, 1]
+    ]);
+    expect(
+      customerTableColumns.every(
+        (column) => !('dangerValues' in column) || column.dangerValues === undefined
+      )
+    ).toBe(true);
   });
 
   it('三个 AI 总结只装配各自声明的数据源和字段白名单', () => {

@@ -15,7 +15,11 @@ export const barSeriesRoleZ = z.enum(['actual', 'forecast']);
 
 /** 柱状图独有的业务系列语义；折线图继续使用未扩展的 chartSeriesZ。 */
 export const barChartSeriesZ = chartSeriesZ
-  .extend({ role: barSeriesRoleZ.optional() })
+  .extend({
+    role: barSeriesRoleZ.optional(),
+    /** 同一 stack 内的绘制顺序；数值越小越靠近数值轴。 */
+    stackOrder: z.number().int().optional()
+  })
   .strict()
   .meta({ id: 'barChartSeries' });
 
@@ -28,10 +32,13 @@ export const barChartComponentZ = z
     props: z
       .object({
         title: z.string().optional(),
+        variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
         series: z.array(barChartSeriesZ).min(1),
         stacked: z.boolean().optional(),
         rounded: z.boolean().optional(),
+        showSegmentLabels: z.boolean().optional(),
+        showStackTotalLabels: z.boolean().optional(),
         horizontal: z.boolean().optional(),
         dualAxis: z.boolean().optional(),
         actions: actionsZ.optional()

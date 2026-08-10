@@ -911,6 +911,8 @@
     --mc-color-danger: #b91c1c;
     --mc-color-positive: #52c41a;
     --mc-color-negative: #f5222d;
+    --mc-color-report-positive: #5cb300;
+    --mc-color-report-negative: #f21e1e;
     --mc-color-report-heading: #121e3b;
     --mc-color-report-text: #191919;
     --mc-color-report-rank-muted: #697386;

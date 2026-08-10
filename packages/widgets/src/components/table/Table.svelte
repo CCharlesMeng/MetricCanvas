@@ -108,6 +108,10 @@
     return column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : '';
   }
 
+  function headerTop(rowIndex: number): number {
+    return rowIndex * (props.variant === 'reportCompact' ? 33 : 40);
+  }
+
   const sortIndexOf = $derived(new Map(view.sort.map((rule, index) => [rule.field, index])));
 
   /**
@@ -234,7 +238,12 @@
   }
 </script>
 
-<div class:fit-container={props.fit === 'container'} class="table-widget">
+<div
+  class:fit-container={props.fit === 'container'}
+  class:report-compact={props.variant === 'reportCompact'}
+  class:compound-inline={props.compoundCellLayout === 'inline'}
+  class="table-widget"
+>
   {#if props.title || props.subtitle}
     <div class="table-heading">
       {#if props.title}<h3>{props.title}</h3>{/if}
@@ -259,7 +268,7 @@
                   class="group-header"
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
-                  style={`top: ${rowIndex * 40}px;`}
+                  style={`top: ${headerTop(rowIndex)}px;`}
                 >
                   {cell.title}
                 </th>
@@ -270,7 +279,7 @@
                   class:fixed={!!column.fixed}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
-                  style={`${cellStyle(column)} top: ${rowIndex * 40}px;`}
+                  style={`${cellStyle(column)} top: ${headerTop(rowIndex)}px;`}
                 >
                   <div class="head">
                     {#if interactive && props.pagination?.mode !== 'query' && column.sortable}
@@ -641,6 +650,16 @@
     background: rgb(20 118 255 / 0.08);
     border-radius: 3px;
   }
+  .compound-inline .cell-stack {
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .compound-inline .cell-stack small {
+    font-size: 12px;
+    line-height: 20px;
+  }
   .rate-cell {
     position: relative;
     display: inline-flex;
@@ -890,6 +909,40 @@
   .page-size-menu button.selected {
     color: #1476ff;
     font-weight: 700;
+  }
+  .table-widget.report-compact {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    font-size: 14px;
+  }
+  .report-compact .table-heading {
+    min-height: 30px;
+    margin-bottom: 8px;
+  }
+  .report-compact h3 {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
+  }
+  .report-compact .scroll {
+    overflow-x: auto;
+    overflow-y: visible;
+    border: 0;
+  }
+  .report-compact thead th {
+    height: 33px;
+    padding: 5px 8px;
+    border-right: 0;
+    border-bottom: 1px solid #d8deeb;
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .report-compact tbody td {
+    height: 42px;
+    padding: 7px 8px;
+    border-right: 0;
+    border-bottom: 1px solid #edf0f5;
   }
   .page-button,
   .pager-nav {

@@ -1,7 +1,13 @@
 <script lang="ts">
   import { parseSafeMarkdown, type MarkdownInline } from './markdown';
 
-  let { content }: { content: string } = $props();
+  let {
+    content,
+    variant
+  }: {
+    content: string;
+    variant?: 'compactInline';
+  } = $props();
   const blocks = $derived(parseSafeMarkdown(content));
 </script>
 
@@ -14,7 +20,7 @@
   {/each}
 {/snippet}
 
-<div class="safe-markdown">
+<div class:compact-inline={variant === 'compactInline'} class="safe-markdown">
   {#each blocks as block}
     {#if block.type === 'heading'}
       <div class={`heading h${block.level}`}>{@render inline(block.content)}</div>
@@ -40,6 +46,11 @@
   .h2 { font-size: 1.08em; }
   .h3 { font-size: 1.02em; }
   ol, ul { display: grid; gap: 3px; padding-left: 16px; }
+  .safe-markdown.compact-inline { display: inline; }
+  .compact-inline ol { display: inline; padding: 0; }
+  .compact-inline li { display: inline; }
+  .compact-inline ol:not(:last-child)::after,
+  .compact-inline li:not(:last-child)::after { content: ' '; }
   blockquote { padding-left: 8px; border-left: 2px solid #aaa5e7; }
   pre { overflow-x: auto; padding: 7px; background: rgb(255 255 255 / 0.62); border-radius: 5px; }
   code { padding: 1px 3px; background: rgb(255 255 255 / 0.68); border-radius: 3px; font: 0.92em/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }

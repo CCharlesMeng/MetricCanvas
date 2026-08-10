@@ -23,7 +23,12 @@
   let { props, links = [] }: Props = $props();
 </script>
 
-<div class:insight={props.variant === 'insight'} class="text-block">
+<div
+  class:insight={props.variant === 'insight'}
+  class:risk-notice={props.variant === 'riskNotice'}
+  class="text-block"
+  style:--risk-notice-max-width={`${props.maxWidth ?? 532}px`}
+>
   {#if props.title && !props.body && links.length === 0}
     <span class="heading">{props.title}</span>
   {:else if props.title}<h3 class="heading">{props.title}</h3>{/if}
@@ -53,6 +58,24 @@
     padding: 15px 18px 15px 15px;
     border-radius: 16px;
     background: var(--mc-color-surface, #fff);
+  }
+  .text-block.risk-notice {
+    box-sizing: border-box;
+    width: min(100%, var(--risk-notice-max-width));
+    height: 32px;
+    flex: none;
+    justify-content: center;
+    padding: 6px 10px;
+    overflow: hidden;
+    color: #363b51;
+    background: rgb(242 30 30 / 0.1);
+    border-radius: 6px;
+  }
+  .risk-notice .body {
+    color: inherit;
+    font-size: 10px;
+    line-height: 20px;
+    white-space: nowrap;
   }
   .heading {
     margin: 0;

@@ -38,8 +38,13 @@ export const metricCardComponentZ = z
     props: z
       .object({
         title: z.string().optional(),
-        variant: z.enum(['summary', 'activityProgress']).optional(),
+        variant: z
+          .enum(['summary', 'activityProgress', 'compactSummary', 'dualSummary'])
+          .optional(),
+        secondaryTitle: z.string().min(1).optional(),
         rows: z.array(metricCardRowZ).min(1),
+        secondaryRows: z.array(metricCardRowZ).min(1).optional(),
+        showTrendArrows: z.boolean().optional(),
         progress: metricCardProgressZ.optional(),
         actions: actionsZ.optional()
       })

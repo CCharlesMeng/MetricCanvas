@@ -32,7 +32,7 @@
     {/if}
     {#if props.decoration === 'shortBar' && props.badge}<span class="badge lead-badge">{props.badge}</span>{/if}
     {#if props.decoration === 'shortBar' && props.generatedBy && props.subtitle}
-      <section class="report-summary">
+      <section class="report-summary layered">
         <div class="report-summary-title"><span>报告摘要</span></div>
         <p>{props.subtitle}</p>
       </section>
@@ -112,8 +112,8 @@
     margin: 0 0 60px;
     color: #445593;
     font-size: 16px;
-    font-weight: 600;
-    line-height: 28px;
+    font-weight: 500;
+    line-height: 22px;
   }
   .short-bar .heading {
     display: flex;
@@ -151,7 +151,7 @@
   .short-bar h1 {
     color: #000;
     font-size: 60px;
-    font-weight: 600;
+    font-weight: 400;
     line-height: 72px;
     letter-spacing: 0;
   }
@@ -167,13 +167,16 @@
   }
   .lead-badge {
     margin: 0 0 14px 36px;
-    padding: 5px 13px;
+    min-width: 208px;
+    min-height: 50px;
+    justify-content: center;
+    padding: 4px 16px;
     color: #fff;
     background: var(--mc-color-report-header-accent, #2098ff);
     border-radius: 0;
-    font-size: 24px;
+    font-size: 32px;
     font-weight: 500;
-    line-height: 32px;
+    line-height: 42px;
   }
   .tags {
     display: flex;
@@ -213,12 +216,21 @@
   }
   .short-bar .as-of.inline {
     color: #000;
-    font-size: 24px;
+    font-size: 16px;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 22px;
   }
   .report-summary {
     margin: 52px 0 0;
+  }
+  .report-summary.layered {
+    padding: 8px 16px 16px;
+    background-color: transparent;
+    background-image: var(--mc-section-gradient, none);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    border-radius: var(--mc-radius-section, 16px);
   }
   .report-summary-title {
     margin: 0 0 16px;
@@ -226,20 +238,21 @@
   }
   .report-summary-title span {
     color: var(--mc-color-primary, #08359e);
-    font-size: 28px;
-    font-weight: 600;
-    line-height: 40px;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 50px;
   }
   .report-summary p {
     max-width: none;
+    min-height: 152px;
     margin: 0;
-    padding: 20px 24px;
+    padding: 28px 38px;
     color: var(--mc-color-report-text, #191919);
-    background: var(--mc-color-surface-subtle, #f1f4ff);
-    border: 10px solid var(--mc-color-surface, #fff);
-    border-radius: 18px;
-    font-size: 16px;
-    line-height: 28px;
+    background: var(--mc-color-surface, #fff);
+    border: 0;
+    border-radius: var(--mc-radius-section, 16px);
+    font-size: 18px;
+    line-height: 32px;
   }
   @media (max-width: 760px) {
     .report-header {

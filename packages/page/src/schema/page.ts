@@ -22,6 +22,14 @@ export const sectionZ = z
   .object({
     id: idZ,
     title: z.string().min(1).optional(),
+    variant: z
+      .enum([
+        'reportOverview',
+        'reportHeading',
+        'reportCustomerAnalysis',
+        'reportDimensionAnalysis'
+      ])
+      .optional(),
     layout: gridLayoutZ,
     components: z.array(componentZ).min(1)
   })

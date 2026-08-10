@@ -113,26 +113,26 @@
     },
     "track-analysis": {
       "output_dims": ["track-name", "captured-at"],
-      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
+      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "public-region-month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
       "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
       "rows": [
-        {"track-name": "泛互联网", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 60000000, "flow-amount": 12000000, "public-region-amount": 8800000, "current-month-amount": 6200000, "month-over-month": 12.4, "six-month-cagr": 9.8, "annual-projection": 65000000, "projection-growth": 5000000},
-        {"track-name": "泛政企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 55000000, "flow-amount": 10800000, "public-region-amount": 7600000, "current-month-amount": 5600000, "month-over-month": 10.8, "six-month-cagr": 8.6, "annual-projection": 58000000, "projection-growth": 3000000},
-        {"track-name": "车企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9600000, "public-region-amount": 6800000, "current-month-amount": 5000000, "month-over-month": 9.6, "six-month-cagr": 7.4, "annual-projection": 52000000, "projection-growth": 2000000},
-        {"track-name": "商业市场", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 45000000, "flow-amount": 8400000, "public-region-amount": 6000000, "current-month-amount": 4400000, "month-over-month": 8.2, "six-month-cagr": 6.2, "annual-projection": 46000000, "projection-growth": 1000000},
-        {"track-name": "海外", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 40000000, "flow-amount": 7200000, "public-region-amount": 5200000, "current-month-amount": 3800000, "month-over-month": 6.8, "six-month-cagr": 5.0, "annual-projection": 39500000, "projection-growth": -500000}
+        {"track-name": "泛互联网", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 60000000, "flow-amount": 12000000, "public-region-amount": 8800000, "current-month-amount": 6200000, "month-over-month": 12.4, "public-region-month-over-month": null, "six-month-cagr": 9.8, "annual-projection": 65000000, "projection-growth": 5000000},
+        {"track-name": "泛政企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 55000000, "flow-amount": 10800000, "public-region-amount": 7600000, "current-month-amount": 5600000, "month-over-month": 10.8, "public-region-month-over-month": null, "six-month-cagr": 8.6, "annual-projection": 58000000, "projection-growth": 3000000},
+        {"track-name": "车企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9600000, "public-region-amount": 6800000, "current-month-amount": 5000000, "month-over-month": 9.6, "public-region-month-over-month": null, "six-month-cagr": 7.4, "annual-projection": 52000000, "projection-growth": 2000000},
+        {"track-name": "商业市场", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 45000000, "flow-amount": 8400000, "public-region-amount": 6000000, "current-month-amount": 4400000, "month-over-month": 8.2, "public-region-month-over-month": null, "six-month-cagr": 6.2, "annual-projection": 46000000, "projection-growth": 1000000},
+        {"track-name": "海外", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 40000000, "flow-amount": 7200000, "public-region-amount": 5200000, "current-month-amount": 3800000, "month-over-month": 6.8, "public-region-month-over-month": null, "six-month-cagr": 5.0, "annual-projection": 39500000, "projection-growth": -500000}
       ]
     },
     "industry-analysis": {
       "output_dims": ["industry-name", "captured-at"],
-      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
+      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "public-region-month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
       "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
       "rows": [
-        {"industry-name": "Data&AI云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 62000000, "flow-amount": 12400000, "public-region-amount": 9000000, "current-month-amount": 6400000, "month-over-month": 13.2, "six-month-cagr": 10.4, "annual-projection": 67000000, "projection-growth": 5000000},
-        {"industry-name": "基础设施云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 56000000, "flow-amount": 11000000, "public-region-amount": 7800000, "current-month-amount": 5700000, "month-over-month": 11.4, "six-month-cagr": 8.9, "annual-projection": 59000000, "projection-growth": 3000000},
-        {"industry-name": "安全云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9800000, "public-region-amount": 7000000, "current-month-amount": 5100000, "month-over-month": 9.8, "six-month-cagr": 7.6, "annual-projection": 52000000, "projection-growth": 2000000},
-        {"industry-name": "数据库云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 44000000, "flow-amount": 8600000, "public-region-amount": 6200000, "current-month-amount": 4500000, "month-over-month": 8.4, "six-month-cagr": 6.3, "annual-projection": 45000000, "projection-growth": 1000000},
-        {"industry-name": "生态", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 38000000, "flow-amount": 7400000, "public-region-amount": 5400000, "current-month-amount": 3900000, "month-over-month": 7.0, "six-month-cagr": 5.1, "annual-projection": 37500000, "projection-growth": -500000}
+        {"industry-name": "Data&AI云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 62000000, "flow-amount": 12400000, "public-region-amount": 9000000, "current-month-amount": 6400000, "month-over-month": 13.2, "public-region-month-over-month": null, "six-month-cagr": 10.4, "annual-projection": 67000000, "projection-growth": 5000000},
+        {"industry-name": "基础设施云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 56000000, "flow-amount": 11000000, "public-region-amount": 7800000, "current-month-amount": 5700000, "month-over-month": 11.4, "public-region-month-over-month": null, "six-month-cagr": 8.9, "annual-projection": 59000000, "projection-growth": 3000000},
+        {"industry-name": "安全云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9800000, "public-region-amount": 7000000, "current-month-amount": 5100000, "month-over-month": 9.8, "public-region-month-over-month": null, "six-month-cagr": 7.6, "annual-projection": 52000000, "projection-growth": 2000000},
+        {"industry-name": "数据库云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 44000000, "flow-amount": 8600000, "public-region-amount": 6200000, "current-month-amount": 4500000, "month-over-month": 8.4, "public-region-month-over-month": null, "six-month-cagr": 6.3, "annual-projection": 45000000, "projection-growth": 1000000},
+        {"industry-name": "生态", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 38000000, "flow-amount": 7400000, "public-region-amount": 5400000, "current-month-amount": 3900000, "month-over-month": 7.0, "public-region-month-over-month": null, "six-month-cagr": 5.1, "annual-projection": 37500000, "projection-growth": -500000}
       ]
     }
   }

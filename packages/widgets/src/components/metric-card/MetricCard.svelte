@@ -43,46 +43,89 @@
   }
 </script>
 
+{#snippet metricRows(rows: MetricCardProps['rows'])}
+  <div class="metric-values">
+    {#each rows as row, index (`${row.label}:${index}`)}
+      <div class="metric-row">
+        <span class="row-label">{row.label}</span>
+        <span class="value-line">
+          <span class="row-value">{fieldText(row.valueField)}</span>
+          {#if row.unit}<span class="unit">{row.unit}</span>{/if}
+        </span>
+        {#if row.changes?.length}
+          <div class="changes">
+            {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
+              {@const raw = fieldValue(change.field, data)}
+              {@const tone = toneClass(change.tone, raw)}
+              <span class:positive={tone === 'positive'} class:negative={tone === 'negative'} class="change">
+                <span class="change-label">{change.label}</span>
+                <span class="change-value">
+                  {#if props.showTrendArrows && tone}
+                    <span
+                      class:up={tone === 'positive'}
+                      class:down={tone === 'negative'}
+                      class="trend-arrow"
+                      aria-hidden="true"
+                    >{tone === 'positive' ? '↑' : '↓'}</span>
+                  {/if}
+                  <span>{changeText(change.field, change.tone)}{#if change.unit}<span class="change-unit">{change.unit}</span>{/if}</span>
+                </span>
+              </span>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    {/each}
+  </div>
+{/snippet}
+
+{#snippet metricPanel(title: string | undefined, rows: MetricCardProps['rows'] | undefined)}
+  <section class="metric-panel">
+    {#if title}<h3>{title}</h3>{/if}
+    {#if rows}
+      {@render metricRows(rows)}
+    {:else}
+      <div class="metric-values placeholder-values" aria-label={`${title ?? '指标'}数据待补充`}>
+        <div class="metric-row">
+          <span class="row-label">年累计</span><span class="row-value">—</span>
+          <span class="change"><span class="change-label">同比</span>—</span>
+        </div>
+        <div class="metric-row">
+          <span class="row-label">本月</span><span class="row-value">—</span>
+          <span class="change"><span class="change-label">环比</span>—</span>
+        </div>
+      </div>
+    {/if}
+  </section>
+{/snippet}
+
 <div
   class:activity-progress={props.variant === 'activityProgress'}
   class:summary={props.variant === 'summary'}
+  class:compact-summary={props.variant === 'compactSummary'}
+  class:dual-summary={props.variant === 'dualSummary'}
   class="metric-card"
 >
-  {#if props.title}<h3>{props.title}</h3>{/if}
-  <div class="metric-content">
-    <div class="metric-values">
-      {#each props.rows as row, index (`${row.label}:${index}`)}
-        <div class="metric-row">
-          <span class="row-label">{row.label}</span>
-          <span class="value-line">
-            <span class="row-value">{fieldText(row.valueField)}</span>
-            {#if row.unit}<span class="unit">{row.unit}</span>{/if}
-          </span>
-          {#if row.changes?.length}
-            <div class="changes">
-              {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
-                {@const raw = fieldValue(change.field, data)}
-                {@const tone = toneClass(change.tone, raw)}
-                <span class:positive={tone === 'positive'} class:negative={tone === 'negative'} class="change">
-                  <span class="change-label">{change.label}</span>
-                  <span>{changeText(change.field, change.tone)}{#if change.unit}<span class="change-unit">{change.unit}</span>{/if}</span>
-                </span>
-              {/each}
-            </div>
-          {/if}
-        </div>
-      {/each}
-    </div>
-    {#if props.progress}
-      <div class="progress-slot">
-        <ProgressRing
-          value={progressValue}
-          ringPercent={props.progress.ringPercent}
-          label={props.progress.label ?? '完成率'}
-        />
-      </div>
+  {#if props.variant === 'compactSummary' || props.variant === 'dualSummary'}
+    {@render metricPanel(props.title, props.rows)}
+    {#if props.variant === 'dualSummary'}
+      {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
     {/if}
-  </div>
+  {:else}
+    {#if props.title}<h3>{props.title}</h3>{/if}
+    <div class="metric-content">
+      {@render metricRows(props.rows)}
+      {#if props.progress}
+        <div class="progress-slot">
+          <ProgressRing
+            value={progressValue}
+            ringPercent={props.progress.ringPercent}
+            label={props.progress.label ?? '完成率'}
+          />
+        </div>
+      {/if}
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -116,6 +159,110 @@
     color: #18181b;
     font-size: 0.875rem;
     font-weight: 500;
+  }
+  .compact-summary,
+  .dual-summary {
+    justify-content: flex-start;
+    height: auto;
+    gap: 8px;
+    container-type: inline-size;
+  }
+  .metric-panel {
+    box-sizing: border-box;
+    width: 100%;
+    height: 136px;
+    padding: 10px 12px;
+    overflow: hidden;
+    background: var(--mc-color-surface-subtle, #f1f4ff);
+    border-radius: 12px;
+  }
+  .metric-panel h3 {
+    margin: 0 0 1px;
+    color: var(--mc-color-text-strong, #0f1a4d);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 25px;
+    text-align: left;
+  }
+  .metric-panel .metric-values {
+    display: grid;
+    gap: 0;
+  }
+  .metric-panel .metric-row {
+    display: grid;
+    height: 45px;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .metric-panel .row-label {
+    color: #505a84;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+  .metric-panel .value-line {
+    min-width: 0;
+    gap: 0;
+    white-space: nowrap;
+  }
+  .metric-panel .row-value {
+    color: var(--mc-color-text-strong, #0f1a4d);
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 40px;
+  }
+  .metric-panel .unit {
+    font-size: 16px;
+    line-height: 40px;
+  }
+  .metric-panel .changes {
+    display: block;
+    min-width: 0;
+  }
+  .metric-panel .change {
+    display: inline-flex;
+    gap: 4px;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+  .metric-panel .change-label {
+    color: #505a84;
+    font-size: 16px;
+    font-weight: 400;
+  }
+  .metric-panel .placeholder-values .row-value,
+  .metric-panel .placeholder-values .change {
+    color: var(--mc-color-muted, #71717a);
+  }
+  @container (max-width: 230px) {
+    .metric-panel {
+      padding-right: 7px;
+      padding-left: 7px;
+    }
+    .metric-panel .metric-row {
+      gap: 2px;
+    }
+    .metric-panel .row-label {
+      font-size: 13px;
+    }
+    .metric-panel .row-value {
+      font-size: 17px;
+    }
+    .metric-panel .unit,
+    .metric-panel .change-label {
+      font-size: 13px;
+    }
+    .metric-panel .change {
+      gap: 2px;
+      font-size: 12px;
+    }
+    .metric-panel .change-label {
+      margin-right: 0;
+    }
   }
   .metric-row {
     display: flex;
@@ -399,10 +546,20 @@
   .change-label {
     margin-right: 0.2rem;
   }
+  .change-value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .trend-arrow {
+    font-size: 0.9em;
+    font-weight: 700;
+    line-height: 1;
+  }
   .positive {
-    color: var(--mc-color-positive, #52c41a);
+    color: var(--mc-color-positive, #5cb300);
   }
   .negative {
-    color: var(--mc-color-negative, #f5222d);
+    color: var(--mc-color-negative, #f21e1e);
   }
 </style>

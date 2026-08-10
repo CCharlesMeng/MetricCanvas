@@ -15,12 +15,14 @@
 <section
   class:negative={props.tone === 'negative'}
   class:neutral={props.tone === 'neutral'}
+  class:report={props.variant === 'report'}
   class="ranking-detail-card"
 >
   {#if props.title}<h3>{props.title}</h3>{/if}
-  <ol>
-    {#each rows as row (row.rank)}
-      <li class="ranking-detail-row">
+  <div class="ranking-content">
+    <ol>
+      {#each rows as row (row.rank)}
+        <li class="ranking-detail-row">
         <span class:top-three={row.rank <= 3} class="rank" aria-label={`第 ${row.rank} 名`}>
           {row.rank}
         </span>
@@ -32,6 +34,7 @@
             {/each}
           </div>
           <div class="metric-line">
+            {#if props.metricLabel}<span class="metric-label">{props.metricLabel}：</span>{/if}
             <span class="value">{row.value}</span>
             {#if row.change}
               <span
@@ -43,11 +46,12 @@
           </div>
           {#if row.description}<p>{row.description}</p>{/if}
         </div>
-      </li>
-    {:else}
-      <li class="empty">暂无数据</li>
-    {/each}
-  </ol>
+        </li>
+      {:else}
+        <li class="empty">暂无数据</li>
+      {/each}
+    </ol>
+  </div>
 </section>
 
 <style>
@@ -164,5 +168,61 @@
     padding: 28px 0;
     color: var(--mc-color-muted, #71717a);
     text-align: center;
+  }
+  .ranking-detail-card.report h3 {
+    margin-bottom: 14px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 30px;
+  }
+  .ranking-detail-card.report ol {
+    gap: 10px;
+  }
+  .ranking-detail-card.report .ranking-content {
+    padding: 20px 12px;
+    background: rgb(252 252 255);
+    border: 1px solid rgb(212 213 255);
+    border-radius: 12px;
+  }
+  .ranking-detail-card.report .ranking-detail-row {
+    min-height: 138px;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 10px;
+    padding: 10px 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .ranking-detail-card.report .rank,
+  .ranking-detail-card.report .rank.top-three,
+  .ranking-detail-card.report.negative .rank.top-three,
+  .ranking-detail-card.report.neutral .rank.top-three {
+    color: var(--mc-color-report-rank-muted, #697386);
+    background: #e7eaf2;
+  }
+  .ranking-detail-card.report .name {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 30px;
+  }
+  .ranking-detail-card.report .badge {
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .ranking-detail-card.report .metric-line {
+    margin-top: 4px;
+    font-size: 18px;
+    line-height: 28px;
+  }
+  .ranking-detail-card.report .metric-label {
+    color: #505a84;
+  }
+  .ranking-detail-card.report p {
+    margin-top: 8px;
+    padding: 8px 10px;
+    color: var(--mc-color-report-description, #595959);
+    background: var(--mc-color-surface-subtle, #f1f4ff);
+    border-radius: 6px;
+    font-size: 16px;
+    line-height: 20px;
   }
 </style>

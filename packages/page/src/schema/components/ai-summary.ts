@@ -29,6 +29,7 @@ export const aiSummaryComponentZ = z
     props: z
       .object({
         title: z.string().optional(),
+        variant: z.literal('reportInline').optional(),
         promptTemplate: nonBlankZ(1),
         relatedData: z
           .record(idZ, aiSummaryRelatedDataDefinitionZ)

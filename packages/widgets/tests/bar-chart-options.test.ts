@@ -5,23 +5,32 @@ import { barOption } from '../src/components/bar-chart/options';
 
 interface TestedBarOption {
   tooltip: { trigger: string; confine: boolean };
-  legend?: { top: number; left: number };
+  legend?: { top: number; left?: number; right?: number };
   xAxis: { type: string; data: string[] };
-  yAxis: { type: string };
+  yAxis: { type: string; name?: string; axisLabel?: { formatter?: (value: number) => string } };
   dataZoom?: unknown;
   toolbox?: unknown;
   series: Array<{
     name: string;
     stack?: string;
     data: Array<number | undefined>;
-    label?: unknown;
+    label?: {
+      show?: boolean;
+      formatter?: (params: { value: number }) => string;
+    };
+    markPoint?: {
+      data?: Array<{ value: number }>;
+      label?: { formatter?: (params: { value: number }) => string };
+    };
     itemStyle?: {
       color?: string;
       opacity?: number;
       borderColor?: string;
       borderType?: string;
       borderWidth?: number;
+      borderRadius?: number[];
     };
+    barWidth?: number;
   }>;
 }
 
@@ -72,6 +81,7 @@ const data: MainDataSlots = {
 };
 
 const props = {
+  variant: 'reportForecast',
   categoryField: 'month',
   stacked: true,
   series: [
@@ -88,7 +98,9 @@ describe('barOption 实际/预测系列', () => {
 
     expect(option.xAxis).toEqual({ type: 'category', data: ['1月', '2月', '3月'] });
     expect(option.yAxis).toMatchObject({ type: 'value' });
-    expect(option.legend).toEqual({ top: 0, left: 0 });
+    expect(option.legend).toEqual({ top: 0, right: 0 });
+    expect(option.yAxis.name).toBe('万');
+    expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1200');
     expect(option.series.map((series) => series.name)).toEqual([
       'Core流水',
       '云通信流水',
@@ -107,22 +119,21 @@ describe('barOption 实际/预测系列', () => {
     expect(coreForecast.data).toEqual([undefined, undefined, 8_600_000]);
     expect(communicationForecast.data).toEqual([undefined, undefined, 3_300_000]);
 
-    expect(coreActual.itemStyle?.color).toBeTruthy();
-    expect(communicationActual.itemStyle?.color).toBeTruthy();
+    expect(coreActual.itemStyle?.color).toBe('#1476ff');
+    expect(communicationActual.itemStyle?.color).toBe('#0cb8b2');
     expect(coreForecast.itemStyle).toMatchObject({
-      color: coreActual.itemStyle?.color,
+      color: 'rgba(20, 118, 255, 0.2)',
       borderColor: coreActual.itemStyle?.color,
-      opacity: 0.35,
       borderType: 'dashed',
       borderWidth: 1
     });
     expect(communicationForecast.itemStyle).toMatchObject({
-      color: communicationActual.itemStyle?.color,
+      color: 'rgba(12, 184, 178, 0.2)',
       borderColor: communicationActual.itemStyle?.color,
-      opacity: 0.35,
       borderType: 'dashed',
       borderWidth: 1
     });
+    expect(option.series.every((series) => series.barWidth === 40)).toBe(true);
   });
 
   it('只提供轴向 Tooltip 与图例，不生成标签、缩放或工具箱', () => {
@@ -133,5 +144,70 @@ describe('barOption 实际/预测系列', () => {
     expect(option.dataZoom).toBeUndefined();
     expect(option.toolbox).toBeUndefined();
     expect(option.series.every((series) => series.label === undefined)).toBe(true);
+  });
+
+  it('按声明的堆叠顺序把绿色系列置底，并配置分段与总额万单位标签', () => {
+    const labeledProps = {
+      ...props,
+      rounded: true,
+      showSegmentLabels: true,
+      showStackTotalLabels: true,
+      series: [
+        { ...props.series[0], stackOrder: 2 },
+        { ...props.series[1], stackOrder: 1 },
+        { ...props.series[2], stackOrder: 2 },
+        { ...props.series[3], stackOrder: 1 }
+      ]
+    } as unknown as BarChartProps;
+    const option = barOption(data, labeledProps) as unknown as TestedBarOption;
+
+    expect(option.series.map((series) => series.name)).toEqual([
+      '云通信流水',
+      '云通信流水(预测)',
+      'Core流水',
+      'Core流水(预测)'
+    ]);
+    expect(option.series[0]?.itemStyle?.color).toBe('#0cb8b2');
+    expect(option.series[2]?.itemStyle?.color).toBe('#1476ff');
+    expect(option.series[0]?.itemStyle?.borderRadius).toEqual([0, 0, 0, 0]);
+    expect(option.series[1]?.itemStyle?.borderRadius).toEqual([0, 0, 0, 0]);
+    expect(option.series[2]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
+    expect(option.series[3]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
+    expect(option.series.every((series) => series.label?.show === true)).toBe(true);
+    expect(option.series[0]?.label?.formatter?.({ value: 3_100_000 })).toBe('310万');
+    expect(option.series[2]?.markPoint?.data?.map((point) => point.value)).toEqual([
+      11_300_000,
+      11_600_000
+    ]);
+    expect(option.series[2]?.markPoint?.label?.formatter?.({ value: 11_300_000 })).toBe(
+      '1,130万'
+    );
+    expect(option.series[3]?.markPoint?.data?.map((point) => point.value)).toEqual([11_900_000]);
+  });
+
+  it('非堆叠系列各自保留生长端圆角', () => {
+    const option = barOption(data, {
+      ...props,
+      stacked: false,
+      rounded: true
+    }) as unknown as TestedBarOption;
+
+    expect(option.series.every((series) =>
+      JSON.stringify(series.itemStyle?.borderRadius) === JSON.stringify([4, 4, 0, 0])
+    )).toBe(true);
+  });
+
+  it('无 role 的堆叠系列只在整体顶部保留圆角', () => {
+    const option = barOption(data, {
+      ...props,
+      rounded: true,
+      series: [
+        { field: 'coreActual', label: 'Core流水' },
+        { field: 'communicationActual', label: '云通信流水' }
+      ]
+    }) as unknown as TestedBarOption;
+
+    expect(option.series[0]?.itemStyle?.borderRadius).toEqual([0, 0, 0, 0]);
+    expect(option.series[1]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
   });
 });
