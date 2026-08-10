@@ -1,4 +1,4 @@
-import type { AgentEvent } from '@metriccanvas/agent-runner';
+import type { AgentEvent } from './agent/types';
 
 export function validatedAgentDocument(
   events: AgentEvent[]

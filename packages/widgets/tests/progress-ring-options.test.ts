@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   normalizeProgressValue,
   progressRingOption
-} from '../src/progress-ring-options';
+} from '../src/components/metric-card/ring-options';
 
 interface TestedProgressRingOption {
   animationDuration: number;

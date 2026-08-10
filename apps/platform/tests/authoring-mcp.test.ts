@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { McpClient } from '@metriccanvas/agent-runner';
+import type { McpClient } from '@metriccanvas/mcp';
 import { createAuthoringMcpClient } from '../src/lib/server/authoring-mcp.server';
 
 describe('页面搭建工作台 authoring MCP adapter', () => {

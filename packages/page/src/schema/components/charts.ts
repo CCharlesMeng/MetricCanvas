@@ -11,6 +11,14 @@ export const chartSeriesZ = z
   .strict()
   .meta({ id: 'chartSeries' });
 
+export const barSeriesRoleZ = z.enum(['actual', 'forecast']);
+
+/** 柱状图独有的业务系列语义；折线图继续使用未扩展的 chartSeriesZ。 */
+export const barChartSeriesZ = chartSeriesZ
+  .extend({ role: barSeriesRoleZ.optional() })
+  .strict()
+  .meta({ id: 'barChartSeries' });
+
 export const barChartComponentZ = z
   .object({
     id: componentIdZ,
@@ -21,7 +29,7 @@ export const barChartComponentZ = z
       .object({
         title: z.string().optional(),
         categoryField: fieldBindingZ,
-        series: z.array(chartSeriesZ).min(1),
+        series: z.array(barChartSeriesZ).min(1),
         stacked: z.boolean().optional(),
         rounded: z.boolean().optional(),
         horizontal: z.boolean().optional(),

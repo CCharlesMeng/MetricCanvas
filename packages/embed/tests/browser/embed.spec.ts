@@ -524,3 +524,153 @@ test('AI 总结通过假 SSE 契约流式渲染且只发送声明字段', async 
   ]);
   expect(JSON.stringify(request.body)).not.toContain('不得外传');
 });
+
+test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态', async ({ page }) => {
+  await page.goto('/examples/inline.html');
+  const flowReportDocument = await page.evaluate(() =>
+    fetch('/pages/flow-analysis-report.json').then((response) => response.json())
+  );
+  await page.evaluate((document) => {
+    if (!Object.values(document.dataSources).every((dataSource: any) => dataSource.source.type === 'query')) {
+      throw new Error('流水分析报告必须通过 query + initial 启动');
+    }
+    window.runtime.destroy();
+    const pendingData = new Promise<any>(() => {});
+    (window as typeof window & { pendingFlowData: Promise<any> }).pendingFlowData = pendingData;
+    const runtime = MetricCanvas.mount('#dashboard', {
+      document,
+      dataGateway: {
+        async fetchData() {
+          return pendingData;
+        },
+        async fetchDimensionValues() {
+          return [];
+        }
+      }
+    });
+    (window as typeof window & { flowReportRuntime: typeof runtime }).flowReportRuntime = runtime;
+  }, flowReportDocument);
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
+  await expect(host.locator('.page-section')).toHaveCount(7);
+  await expect(host.locator('[data-component-type="barChart"]')).toHaveCount(2);
+  await expect(host.locator('[data-component-type="metricCard"]')).toHaveCount(7);
+  await expect(host.locator('[data-component-type="rankingDetailCard"]')).toHaveCount(2);
+  await expect(host.getByRole('table')).toHaveCount(4);
+  await expect(host.locator('.ai-summary')).toHaveCount(3);
+  await expect(host.locator('.bar-chart[data-tooltip="axis"][data-legend="visible"]')).toHaveCount(2);
+
+  const trendChart = host.locator('[data-component="flow-overview/overall-trend"] .echart');
+  await expect(trendChart.locator('canvas')).toBeVisible();
+  const trendBox = await trendChart.boundingBox();
+  expect(trendBox).not.toBeNull();
+  const januaryTooltip = host
+    .locator('[data-component="flow-overview/overall-trend"]')
+    .getByText('1月', { exact: true });
+  for (const xRatio of [0.05, 0.07, 0.09, 0.11, 0.13, 0.15]) {
+    await trendChart.hover({
+      position: {
+        x: trendBox!.width * xRatio,
+        y: trendBox!.height * 0.55
+      }
+    });
+    if (await januaryTooltip.isVisible().catch(() => false)) break;
+  }
+  await expect(januaryTooltip).toBeVisible();
+
+  for (const width of [1000, 1200, 1680, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    await expect.poll(() => page.evaluate(() =>
+      document.documentElement.scrollWidth <= window.innerWidth + 1
+    ), { message: `${width}px horizontal scroll after resize` }).toBe(true);
+    const layout = await host.locator('.page-content').evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return {
+        documentWidth: document.documentElement.scrollWidth,
+        viewportWidth: window.innerWidth,
+        contentWidth: rect.width,
+        centerOffset: Math.abs((rect.left + rect.right) / 2 - window.innerWidth / 2)
+      };
+    });
+    expect(layout.documentWidth, `${width}px horizontal scroll`).toBeLessThanOrEqual(layout.viewportWidth + 1);
+    if (width >= 1680) {
+      expect(layout.contentWidth).toBeCloseTo(1200, 0);
+      expect(layout.centerOffset).toBeLessThanOrEqual(1);
+    }
+  }
+
+  await page.evaluate((sourceDocument) => {
+    const document = structuredClone(sourceDocument);
+    const pendingSource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    delete pendingSource.source.initial;
+    document.dataSources['customer-yoy-drop-pending'] = pendingSource;
+    const table = document.sections
+      .flatMap((section: any) => section.components)
+      .find((component: any) => component.id === 'yoy-drop-table');
+    table.data.main = 'customer-yoy-drop-pending';
+    (window as typeof window & { flowReportRuntime: { update(options: { document: any }): void } })
+      .flowReportRuntime.update({
+        document,
+        dataGateway: {
+          async fetchData() {
+            return (window as typeof window & { pendingFlowData: Promise<any> }).pendingFlowData;
+          },
+          async fetchDimensionValues() {
+            return [];
+          }
+        }
+      } as any);
+  }, flowReportDocument);
+  const yoyDropTable = host.locator('[data-component="customer-analysis/yoy-drop-table"]');
+  await expect(yoyDropTable.locator('.skeleton')).toBeVisible();
+
+  await page.evaluate((sourceDocument) => {
+    const document = structuredClone(sourceDocument);
+    const emptySource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    delete emptySource.source.initial;
+    document.dataSources['customer-yoy-drop-empty'] = emptySource;
+    const table = document.sections
+      .flatMap((section: any) => section.components)
+      .find((component: any) => component.id === 'yoy-drop-table');
+    table.data.main = 'customer-yoy-drop-empty';
+    (window as typeof window & { flowReportRuntime: { update(options: any): void } })
+      .flowReportRuntime.update({
+        document,
+        dataGateway: {
+          async fetchData() {
+            return { rows: [], totalCount: 0 };
+          },
+          async fetchDimensionValues() {
+            return [];
+          }
+        }
+      });
+  }, flowReportDocument);
+  await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
+
+  await page.evaluate((sourceDocument) => {
+    const document = structuredClone(sourceDocument);
+    const errorSource = structuredClone(document.dataSources['customer-yoy-drop-top']);
+    delete errorSource.source.initial;
+    document.dataSources['customer-yoy-drop-error'] = errorSource;
+    const table = document.sections
+      .flatMap((section: any) => section.components)
+      .find((component: any) => component.id === 'yoy-drop-table');
+    table.data.main = 'customer-yoy-drop-error';
+    (window as typeof window & { flowReportRuntime: { update(options: any): void } })
+      .flowReportRuntime.update({
+        document,
+        dataGateway: {
+          async fetchData() {
+            throw new Error('流水数据网关测试错误');
+          },
+          async fetchDimensionValues() {
+            return [];
+          }
+        }
+      });
+  }, flowReportDocument);
+  await expect(yoyDropTable.getByText('暂无数据', { exact: true })).toBeVisible();
+  await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
+});

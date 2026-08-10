@@ -63,12 +63,6 @@ importers:
 
   apps/platform:
     dependencies:
-      '@metriccanvas/agent-runner':
-        specifier: workspace:*
-        version: link:../../packages/agent-runner
-      '@metriccanvas/data-context':
-        specifier: workspace:*
-        version: link:../../packages/data-context
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
@@ -103,14 +97,6 @@ importers:
       vite:
         specifier: ^8.1.5
         version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(tsx@4.23.1)(yaml@2.9.0)
-
-  packages/agent-runner: {}
-
-  packages/data-context:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
 
   packages/data-gateway:
     dependencies:
@@ -161,12 +147,6 @@ importers:
 
   packages/mcp:
     dependencies:
-      '@metriccanvas/agent-runner':
-        specifier: workspace:*
-        version: link:../agent-runner
-      '@metriccanvas/data-context':
-        specifier: workspace:*
-        version: link:../data-context
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page

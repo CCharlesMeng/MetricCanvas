@@ -2,7 +2,7 @@
   import type {
     AgentInteraction,
     AgentMessage
-  } from '@metriccanvas/agent-runner';
+  } from './server/agent/types';
   import type { PageDocument } from '@metriccanvas/page';
 
   interface AgentResponse {

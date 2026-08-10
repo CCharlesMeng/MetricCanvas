@@ -1,14 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import {
-  createDataContextSearch,
-  type DataContextSnapshot
-} from '@metriccanvas/data-context';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 import {
   connectInProcessMetricCanvasMcp,
+  createDataContextSearch,
   createMetricCanvasMcpServer,
-  PAGE_BUILDING_PROMPT
+  PAGE_BUILDING_PROMPT,
+  type DataContextSnapshot
 } from '../src';
 
 const snapshot: DataContextSnapshot = {

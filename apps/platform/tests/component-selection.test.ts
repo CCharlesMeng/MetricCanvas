@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AgentMessage } from '@metriccanvas/agent-runner';
+import type { AgentMessage } from '../src/lib/server/agent/types';
 import { validate } from '@metriccanvas/page';
 import { createComponentSelectingScriptedProvider } from '../src/lib/server/scripted-model.server';
 

@@ -5,7 +5,7 @@
 ## 探索前先读
 
 - 根目录 **`CONTEXT.md`**(领域词汇表)
-- **`docs/adr/`** —— 阅读与当前工作区域相关的 ADR
+- **`docs/adr/README.md`**(ADR 基线)—— 24 份 ADR 按主题聚合的当前生效结论与速查表,先在此定位相关主题引用到的 ADR 编号,再按需打开原文读背景和取舍
 
 若文件不存在,静默继续,不要主动建议创建——`/domain-modeling` skill(经由 `/grill-with-docs` 等触发)会在术语或决策真正落定时惰性创建它们。
 
@@ -18,6 +18,7 @@
 ├── CONTEXT.md
 ├── PAGE-METADATA.md
 ├── docs/adr/
+│   ├── README.md          # 基线:按主题聚合的当前生效结论
 │   ├── 0001-domain-dsl-over-a2ui.md
 │   └── ...
 ├── docs/schema-metadata.md
@@ -28,7 +29,8 @@
 
 `CONTEXT.md` 是当前领域术语真源；`PAGE-METADATA.md` 和
 `docs/schema-metadata.md` 分别说明页面协议与创作期 Schema 元数据。ADR 记录决策
-背景和取舍，不作为当前协议说明。
+背景和取舍，不作为当前协议说明；`docs/adr/README.md` 是这些决策记录的聚合基线，
+不是新的协议说明来源，只用于快速定位"当前哪份 ADR 说了算"。
 
 ## 使用词汇表术语
 

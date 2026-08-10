@@ -9,14 +9,17 @@ import {
   validate,
   versionPolicy
 } from '@metriccanvas/page';
-import type { DataContextSearch } from '@metriccanvas/data-context';
-import type { McpClient } from '@metriccanvas/agent-runner';
+import type { DataContextSearch } from './data-context';
+import type { McpClient } from './agent-protocol';
 import type {
   LifecycleContext,
   PageLifecycle,
   RevisionReference
 } from '@metriccanvas/page-lifecycle';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
+
+export * from './agent-protocol';
+export * from './data-context';
 
 export interface MetricCanvasMcpDependencies {
   dataContext: DataContextSearch;
@@ -372,7 +375,7 @@ export async function connectInProcessMetricCanvasMcp(
   server: McpServer
 ): Promise<{ client: McpClient; close(): Promise<void> }> {
   const protocolClient = new Client({
-    name: 'metriccanvas-agent-runner',
+    name: 'metriccanvas-agent',
     version: '0.2.0'
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();

@@ -15,7 +15,7 @@ import {
   revisionConflict
 } from './invariants';
 import type {
-  DataContextProvider,
+  DataContextVersionProvider,
   JSONValue,
   LifecycleContext,
   LifecycleError,
@@ -33,7 +33,7 @@ import type {
 } from './types';
 
 export interface MemoryPageLifecycleOptions {
-  dataContext: DataContextProvider;
+  dataContext: DataContextVersionProvider;
   clock?: { now(): Date };
   ids?: { next(): string };
   tokens?: { next(): string };

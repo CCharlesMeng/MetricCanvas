@@ -1,0 +1,139 @@
+{
+  "capturedAt": "2026-02-28T23:59:59+08:00",
+  "queries": {
+    "flow-kpis": {
+      "output_dims": ["scope", "captured-at"],
+      "output_metrics": ["annual-total", "year-over-year", "current-month", "month-over-month", "annual-projection", "target-support-rate"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"scope": "total", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 22900000, "year-over-year": 12.8, "current-month": 11600000, "month-over-month": 3.4, "annual-projection": 155400000, "target-support-rate": 80},
+        {"scope": "core", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 16600000, "year-over-year": 10.4, "current-month": 8400000, "month-over-month": 2.4, "annual-projection": 111600000, "target-support-rate": 80},
+        {"scope": "communication", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 6300000, "year-over-year": 18.6, "current-month": 3200000, "month-over-month": 3.2, "annual-projection": 43800000, "target-support-rate": 80},
+        {"scope": "public-region", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 16010000, "year-over-year": 8.8, "current-month": 8140000, "month-over-month": 3.5, "annual-projection": 112260000, "target-support-rate": 80},
+        {"scope": "stable", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 12050000, "year-over-year": 7.6, "current-month": 6100000, "month-over-month": 2.5, "annual-projection": 81300000, "target-support-rate": 80},
+        {"scope": "one-off", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": 3960000, "year-over-year": 13.5, "current-month": 2040000, "month-over-month": 6.25, "annual-projection": 30960000, "target-support-rate": 80},
+        {"scope": "projection", "captured-at": "2026-02-28T23:59:59+08:00", "annual-total": null, "year-over-year": null, "current-month": null, "month-over-month": null, "annual-projection": 112260000, "target-support-rate": 80}
+      ]
+    },
+    "overall-monthly-trend": {
+      "output_dims": ["month", "captured-at"],
+      "output_metrics": ["core-actual", "communication-actual", "core-forecast", "communication-forecast"],
+      "time": {"period": "month", "is_aggregate": false, "start": "2026-01", "end": "2026-12"},
+      "rows": [
+        {"month": "1月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": 8200000, "communication-actual": 3100000, "core-forecast": null, "communication-forecast": null},
+        {"month": "2月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": 8400000, "communication-actual": 3200000, "core-forecast": null, "communication-forecast": null},
+        {"month": "3月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 8600000, "communication-forecast": 3300000},
+        {"month": "4月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 8800000, "communication-forecast": 3400000},
+        {"month": "5月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 9000000, "communication-forecast": 3500000},
+        {"month": "6月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 9200000, "communication-forecast": 3600000},
+        {"month": "7月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 9400000, "communication-forecast": 3700000},
+        {"month": "8月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 9600000, "communication-forecast": 3800000},
+        {"month": "9月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 9800000, "communication-forecast": 3900000},
+        {"month": "10月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 10000000, "communication-forecast": 4000000},
+        {"month": "11月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 10200000, "communication-forecast": 4100000},
+        {"month": "12月", "captured-at": "2026-02-28T23:59:59+08:00", "core-actual": null, "communication-actual": null, "core-forecast": 10400000, "communication-forecast": 4200000}
+      ]
+    },
+    "region-monthly-trend": {
+      "output_dims": ["month", "captured-at"],
+      "output_metrics": ["stable-actual", "one-off-actual", "stable-forecast", "one-off-forecast"],
+      "time": {"period": "month", "is_aggregate": false, "start": "2026-01", "end": "2026-12"},
+      "rows": [
+        {"month": "1月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": 5950000, "one-off-actual": 1920000, "stable-forecast": null, "one-off-forecast": null},
+        {"month": "2月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": 6100000, "one-off-actual": 2040000, "stable-forecast": null, "one-off-forecast": null},
+        {"month": "3月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 6250000, "one-off-forecast": 2160000},
+        {"month": "4月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 6400000, "one-off-forecast": 2280000},
+        {"month": "5月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 6550000, "one-off-forecast": 2400000},
+        {"month": "6月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 6700000, "one-off-forecast": 2520000},
+        {"month": "7月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 6850000, "one-off-forecast": 2640000},
+        {"month": "8月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 7000000, "one-off-forecast": 2760000},
+        {"month": "9月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 7150000, "one-off-forecast": 2880000},
+        {"month": "10月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 7300000, "one-off-forecast": 3000000},
+        {"month": "11月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 7450000, "one-off-forecast": 3120000},
+        {"month": "12月", "captured-at": "2026-02-28T23:59:59+08:00", "stable-actual": null, "one-off-actual": null, "stable-forecast": 7600000, "one-off-forecast": 3240000}
+      ]
+    },
+    "customer-growth-top": {
+      "output_dims": ["customer-name", "customer-type", "customer-level", "growth-description", "captured-at"],
+      "output_metrics": ["amount", "change"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "云通信流水增长50万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 5000000, "change": 18.5},
+        {"customer-name": "客户B", "customer-type": "SMB", "customer-level": "战略", "growth-description": "Core流水增长46万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4600000, "change": 15.2},
+        {"customer-name": "客户C", "customer-type": "KA", "customer-level": "核心", "growth-description": "资源用量增长42万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4200000, "change": 12.8},
+        {"customer-name": "客户D", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "按需流水增长38万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3800000, "change": 10.6},
+        {"customer-name": "客户E", "customer-type": "KA", "customer-level": "战略", "growth-description": "短信业务增长34万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3400000, "change": 8.4}
+      ]
+    },
+    "customer-decline-top": {
+      "output_dims": ["customer-name", "customer-type", "customer-level", "decline-reason", "captured-at"],
+      "output_metrics": ["amount", "change"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"customer-name": "客户F", "customer-type": "SMB", "customer-level": "卓越", "decline-reason": "一次性流水下降48万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4800000, "change": -16.5},
+        {"customer-name": "客户G", "customer-type": "KA", "customer-level": "战略", "decline-reason": "资源使用量下降44万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4400000, "change": -14.2},
+        {"customer-name": "客户H", "customer-type": "SMB", "customer-level": "核心", "decline-reason": "云通信流水下降40万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4000000, "change": -12.1},
+        {"customer-name": "客户I", "customer-type": "KA", "customer-level": "卓越", "decline-reason": "Core流水下降36万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3600000, "change": -9.8},
+        {"customer-name": "客户J", "customer-type": "SMB", "customer-level": "战略", "decline-reason": "短信业务下降32万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3200000, "change": -7.6}
+      ]
+    },
+    "customer-yoy-drop-top": {
+      "output_dims": ["customer-name", "customer-type", "customer-level", "reason", "captured-at"],
+      "output_metrics": ["drop-difference", "monthly-average"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 10000000, "monthly-average": 6000000},
+        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "reason": "一次性收入", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 9000000, "monthly-average": 5600000},
+        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 8000000, "monthly-average": 5200000},
+        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 7000000, "monthly-average": 4800000},
+        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "reason": "项目收尾", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 6000000, "monthly-average": 4400000},
+        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "reason": "一次性收入", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 5000000, "monthly-average": 4000000},
+        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 4000000, "monthly-average": 3600000},
+        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 3000000, "monthly-average": 3200000},
+        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "reason": "项目收尾", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 2000000, "monthly-average": 2800000},
+        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 1000000, "monthly-average": 2400000}
+      ]
+    },
+    "customer-risk-top": {
+      "output_dims": ["customer-name", "customer-type", "customer-level", "risk-type", "captured-at"],
+      "output_metrics": ["january-amount", "previous-month-amount", "current-month-amount"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 6000000, "previous-month-amount": 5500000, "current-month-amount": 5000000},
+        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5500000, "previous-month-amount": 5000000, "current-month-amount": 4500000},
+        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5000000, "previous-month-amount": 4500000, "current-month-amount": 4000000},
+        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4500000, "previous-month-amount": 4000000, "current-month-amount": 3500000},
+        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4000000, "previous-month-amount": 3500000, "current-month-amount": 3000000},
+        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3500000, "previous-month-amount": 3000000, "current-month-amount": 2500000},
+        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3000000, "previous-month-amount": 2500000, "current-month-amount": 2000000},
+        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2500000, "previous-month-amount": 2000000, "current-month-amount": 1500000},
+        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2000000, "previous-month-amount": 1500000, "current-month-amount": 1000000},
+        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 1500000, "previous-month-amount": 1000000, "current-month-amount": 500000}
+      ]
+    },
+    "track-analysis": {
+      "output_dims": ["track-name", "captured-at"],
+      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"track-name": "泛互联网", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 60000000, "flow-amount": 12000000, "public-region-amount": 8800000, "current-month-amount": 6200000, "month-over-month": 12.4, "six-month-cagr": 9.8, "annual-projection": 65000000, "projection-growth": 5000000},
+        {"track-name": "泛政企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 55000000, "flow-amount": 10800000, "public-region-amount": 7600000, "current-month-amount": 5600000, "month-over-month": 10.8, "six-month-cagr": 8.6, "annual-projection": 58000000, "projection-growth": 3000000},
+        {"track-name": "车企", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9600000, "public-region-amount": 6800000, "current-month-amount": 5000000, "month-over-month": 9.6, "six-month-cagr": 7.4, "annual-projection": 52000000, "projection-growth": 2000000},
+        {"track-name": "商业市场", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 45000000, "flow-amount": 8400000, "public-region-amount": 6000000, "current-month-amount": 4400000, "month-over-month": 8.2, "six-month-cagr": 6.2, "annual-projection": 46000000, "projection-growth": 1000000},
+        {"track-name": "海外", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 40000000, "flow-amount": 7200000, "public-region-amount": 5200000, "current-month-amount": 3800000, "month-over-month": 6.8, "six-month-cagr": 5.0, "annual-projection": 39500000, "projection-growth": -500000}
+      ]
+    },
+    "industry-analysis": {
+      "output_dims": ["industry-name", "captured-at"],
+      "output_metrics": ["annual-target", "flow-amount", "public-region-amount", "current-month-amount", "month-over-month", "six-month-cagr", "annual-projection", "projection-growth"],
+      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "rows": [
+        {"industry-name": "Data&AI云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 62000000, "flow-amount": 12400000, "public-region-amount": 9000000, "current-month-amount": 6400000, "month-over-month": 13.2, "six-month-cagr": 10.4, "annual-projection": 67000000, "projection-growth": 5000000},
+        {"industry-name": "基础设施云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 56000000, "flow-amount": 11000000, "public-region-amount": 7800000, "current-month-amount": 5700000, "month-over-month": 11.4, "six-month-cagr": 8.9, "annual-projection": 59000000, "projection-growth": 3000000},
+        {"industry-name": "安全云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 50000000, "flow-amount": 9800000, "public-region-amount": 7000000, "current-month-amount": 5100000, "month-over-month": 9.8, "six-month-cagr": 7.6, "annual-projection": 52000000, "projection-growth": 2000000},
+        {"industry-name": "数据库云服务", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 44000000, "flow-amount": 8600000, "public-region-amount": 6200000, "current-month-amount": 4500000, "month-over-month": 8.4, "six-month-cagr": 6.3, "annual-projection": 45000000, "projection-growth": 1000000},
+        {"industry-name": "生态", "captured-at": "2026-02-28T23:59:59+08:00", "annual-target": 38000000, "flow-amount": 7400000, "public-region-amount": 5400000, "current-month-amount": 3900000, "month-over-month": 7.0, "six-month-cagr": 5.1, "annual-projection": 37500000, "projection-growth": -500000}
+      ]
+    }
+  }
+}

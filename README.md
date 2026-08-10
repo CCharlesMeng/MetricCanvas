@@ -54,7 +54,7 @@ MetricCanvas 是以看板页面为核心资产的 AI 原生数据分析与可视
 pnpm install
 ```
 
-启动 Canvas 与 Platform：
+启动 Canvas、Platform 与 DQE Sim：
 
 ```bash
 pnpm dev
@@ -66,7 +66,7 @@ pnpm dev
 pnpm dev:offline
 ```
 
-启动 DQE Sim 与 Canvas：
+仅启动 DQE Sim 与 Canvas（静态页面联调）：
 
 ```bash
 pnpm dev:dqe
@@ -157,7 +157,6 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | 路径 | 职责 |
 |---|---|
 | `packages/page/` | 页面类型、JSON Schema、校验器和能力推导 |
-| `packages/data-context/` | 数据上下文类型和检索 |
 | `packages/data-gateway/` | DQE 数据网关 |
 | `packages/runtime/` | 页面数据编排和筛选状态 |
 | `packages/widgets/` | 纯渲染组件 |
@@ -166,7 +165,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/embed/` | 浏览器嵌入产物 |
 | `packages/page-lifecycle/` | 页面修订与发布 |
 | `packages/template-library/` | 页面模板 |
-| `packages/mcp/` | 页面搭建 MCP |
+| `packages/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
 | `apps/canvas/` | 页面目录、渲染和预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
@@ -184,4 +183,4 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | [页面构建流程](./docs/dashboard-page-building-process.md) | 从需求到发布的业务工作流 |
 | [运行态架构](./docs/dashboard-runtime-architecture.md) | 页面加载、查询和渲染 |
 | [嵌入运行时](./packages/embed/README.md) | 浏览器接入契约 |
-| [架构决策记录](./docs/adr/) | 架构决策与历史背景 |
+| [架构决策记录](./docs/adr/README.md) | 24 份 ADR 按主题聚合的当前生效结论(基线);原始决策记录见 `docs/adr/000N-*.md` |

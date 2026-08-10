@@ -28,6 +28,22 @@
           component.type === 'metricCard' && component.props.variant === 'activityProgress'
       )
   );
+  const analysisSection = $derived(
+    section.components.some((component) => component.type === 'aiSummary') &&
+      section.components.some(
+        (component) => component.type === 'table' || component.type === 'rankingDetailCard'
+      )
+  );
+  const overviewSection = $derived(
+    section.components.some((component) => component.type === 'barChart') &&
+      section.components.some((component) => component.type === 'metricCard')
+  );
+  const headingSection = $derived(
+    section.components.length === 1 &&
+      section.components[0]?.type === 'text' &&
+      Boolean(section.components[0].props.title) &&
+      !section.components[0].props.body
+  );
 
   function locator(componentId: string): AuthoringComponentLocator {
     return { sectionId: section.id, componentId };
@@ -109,6 +125,9 @@
   class:titled-section={Boolean(section.title)}
   class:summary-metric-section={summaryMetricSection}
   class:activity-metric-section={activityMetricSection}
+  class:analysis-section={analysisSection}
+  class:overview-section={overviewSection}
+  class:heading-section={headingSection}
   class="page-section"
   data-section-id={section.id}
 >
@@ -123,6 +142,8 @@
         class:header-cell={component.type === 'reportHeader'}
         class:metric-cell={component.type === 'metricCard'}
         class:table-cell={component.type === 'table'}
+        class:ranking-detail-cell={component.type === 'rankingDetailCard'}
+        class:ai-summary-cell={component.type === 'aiSummary'}
         class:connect-next={section.components[componentIndex + 1]?.layout
           .connectPrevious === true}
         class:connect-previous={componentIndex > 0 &&
@@ -131,6 +152,7 @@
         class:authoring-selected={selected(component.id)}
         class="cell"
         data-component={`${section.id}/${component.id}`}
+        data-component-type={component.type}
         style={`grid-column: span ${component.layout.span};`}
         draggable={Boolean(authoring)}
         onclickcapture={(event) => select(event, component.id)}
@@ -293,6 +315,9 @@
   .chart-cell {
     min-height: 320px;
   }
+  .ranking-detail-cell {
+    min-height: 0;
+  }
   .table-cell {
     --table-widget-radius-top-left: 16px;
     --table-widget-radius-top-right: 16px;
@@ -344,7 +369,9 @@
     box-shadow: none;
   }
   .page-section.activity-metric-section,
-  .page-section.titled-section {
+  .page-section.titled-section,
+  .page-section.overview-section,
+  .page-section.analysis-section {
     background-color: transparent;
     background-image: var(--mc-section-gradient);
     background-repeat: no-repeat;
@@ -358,6 +385,79 @@
   }
   .page-section.titled-section {
     padding: 18px 17px 22px 16px;
+  }
+  .page-section.overview-section,
+  .page-section.analysis-section {
+    padding: 18px 17px 22px 16px;
+  }
+  .overview-section .section-title,
+  .analysis-section .section-title {
+    margin: 0 0 14px;
+    color: var(--mc-color-primary);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    text-align: center;
+  }
+  .overview-section .section-title::before,
+  .analysis-section .section-title::before {
+    display: none;
+  }
+  .overview-section .section-grid,
+  .analysis-section .section-grid {
+    gap: 12px 14px;
+  }
+  .overview-section .cell,
+  .analysis-section .cell,
+  .heading-section .cell {
+    min-height: 0;
+    gap: 0;
+    overflow: visible;
+    border: 0;
+    box-shadow: none;
+  }
+  .overview-section .metric-cell {
+    padding: 0;
+    background: transparent;
+  }
+  .overview-section .chart-cell,
+  .overview-section .cell:not(.metric-cell) {
+    background: var(--mc-color-surface);
+  }
+  .analysis-section .ranking-detail-cell,
+  .analysis-section .table-cell,
+  .analysis-section .ai-summary-cell {
+    padding: 15px 18px;
+    background: var(--mc-color-surface);
+    border-radius: 16px;
+  }
+  .analysis-section .ai-summary-cell {
+    padding: 0;
+  }
+  .heading-section {
+    padding: 18px 0 4px;
+    background: transparent;
+    box-shadow: none;
+  }
+  .heading-section .cell {
+    --mc-text-heading-color: var(--mc-color-primary);
+    --mc-text-heading-font-size: 28px;
+    --mc-text-heading-font-weight: 600;
+    --mc-text-heading-line-height: 40px;
+    --mc-text-heading-text-align: center;
+
+    padding: 0;
+    background: transparent;
+  }
+  @media (max-width: 1050px) {
+    .summary-metric-section .section-grid,
+    .overview-section .section-grid,
+    .analysis-section .section-grid {
+      gap: 10px;
+    }
+    .analysis-section .ranking-detail-cell {
+      padding: 12px;
+    }
   }
   .summary-metric-section .section-grid,
   .titled-section .section-grid {

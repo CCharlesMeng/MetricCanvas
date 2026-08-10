@@ -21,7 +21,8 @@ import { legacyPageSchema } from './legacy-schema-snapshot';
  *      改写会改变 ajv 错误对象的 keyword,但不改变"哪些指针出了问题")。
  *
  * 覆盖范围:
- *   - `pages/*.json` 全部真实页面(以实际目录内容为准,当前 5 个);
+ *   - `pages/*.json` 全部真实页面：只用存量组件的页面继续与 legacy 等价；
+ *     使用新增组件/字段的页面只要求当前 Schema 接受；
  *   - `packages/page/fixtures/contract-valid/*.json` 全部构造合法文档;
  *   - 对上述每份文档做结构变异(逐节点删除 / 替换成错误类型 / 清空数组 /
  *     插入多余字段),覆盖 additionalProperties、required、enum、pattern、
@@ -56,6 +57,36 @@ const fixturePages: Array<{ name: string; document: unknown }> = [
   { name: 'fixtures/mixed-page.json', document: mixedPage },
   { name: 'fixtures/query-dashboard.json', document: queryDashboard }
 ];
+
+function usesCurrentOnlyComponent(document: unknown): boolean {
+  if (typeof document !== 'object' || document === null) return false;
+  const sections = (document as { sections?: unknown }).sections;
+  if (!Array.isArray(sections)) return false;
+  return sections.some((section) => {
+    if (typeof section !== 'object' || section === null) return false;
+    const components = (section as { components?: unknown }).components;
+    if (!Array.isArray(components)) return false;
+    return components.some((component) => {
+      if (typeof component !== 'object' || component === null) return false;
+      const candidate = component as { type?: unknown; props?: { series?: unknown } };
+      if (candidate.type === 'rankingDetailCard') return true;
+      if (candidate.type !== 'barChart' || !Array.isArray(candidate.props?.series)) return false;
+      return candidate.props.series.some(
+        (series) =>
+          typeof series === 'object' &&
+          series !== null &&
+          Object.hasOwn(series, 'role')
+      );
+    });
+  });
+}
+
+const legacyCompatibleDocuments = [...realPages, ...fixturePages].filter(
+  ({ document }) => !usesCurrentOnlyComponent(document)
+);
+const currentOnlyDocuments = realPages.filter(({ document }) =>
+  usesCurrentOnlyComponent(document)
+);
 
 function compile(schema: unknown) {
   const ajv = new Ajv({ allErrors: true, strict: false });
@@ -117,17 +148,22 @@ function assertAllEquivalent(cases: Array<{ description: string; document: unkno
 }
 
 describe('新旧 page schema 等价性(阶段三A 安全网)', () => {
-  it('全部真实页面与构造合法文档在两份 schema 下同为有效', () => {
-    const allValidDocuments = [...realPages, ...fixturePages];
-    for (const { name, document } of allValidDocuments) {
+  it('只使用存量组件的页面与构造文档在两份 schema 下同为有效', () => {
+    for (const { name, document } of legacyCompatibleDocuments) {
       expect(legacyValidate(document), `legacy schema 应接受 ${name}`).toBe(true);
       expect(nextValidate(document), `next schema 应接受 ${name}`).toBe(true);
     }
   });
 
+  it('使用新增组件或柱系列 role 的正式页面只由当前 Schema 验证', () => {
+    for (const { name, document } of currentOnlyDocuments) {
+      expect(nextValidate(document), `当前 schema 应接受 ${name}`).toBe(true);
+      expect(legacyValidate(document), `legacy schema 不应认识 ${name}`).toBe(false);
+    }
+  });
+
   it('结构变异合集：逐节点删除/改型/清空数组/插入多余字段后两份 schema 结果一致', () => {
-    const seedDocuments = [...realPages, ...fixturePages];
-    const cases = seedDocuments.flatMap(({ name, document }) =>
+    const cases = legacyCompatibleDocuments.flatMap(({ name, document }) =>
       mutationsFor(document as JsonValue).map((mutation) => ({
         description: `${name} :: ${mutation.description}`,
         document: mutation.document

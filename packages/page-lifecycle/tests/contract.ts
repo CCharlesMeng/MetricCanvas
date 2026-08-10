@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Page, PageDocument } from '@metriccanvas/page';
-import type { DataContextProvider, LifecycleContext, PageLifecycle } from '../src/types';
+import type { DataContextVersionProvider, LifecycleContext, PageLifecycle } from '../src/types';
 
 /**
  * memory 与 postgres 两份实现共用的行为契约。同一批用例分别喂给两份
@@ -14,7 +14,7 @@ import type { DataContextProvider, LifecycleContext, PageLifecycle } from '../sr
  */
 
 export interface ContractOptions {
-  dataContext?: DataContextProvider;
+  dataContext?: DataContextVersionProvider;
   clock?: { now(): Date };
   ids?: { next(): string };
   tokens?: { next(): string };
@@ -23,7 +23,7 @@ export interface ContractOptions {
 }
 
 export interface ResolvedContractOptions {
-  dataContext: DataContextProvider;
+  dataContext: DataContextVersionProvider;
   clock?: { now(): Date };
   ids: { next(): string };
   tokens: { next(): string };

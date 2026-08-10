@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
-import type { AgentEvent, AgentMessage } from '@metriccanvas/agent-runner';
 import { PAGE_BUILDING_PROMPT } from '@metriccanvas/mcp';
+import type { AgentEvent, AgentMessage } from '$lib/server/agent/types';
 import { validatedAgentDocument } from '$lib/server/agent-events.server';
 import { getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';

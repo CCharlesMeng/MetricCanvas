@@ -11,7 +11,7 @@ import {
   revisionConflict
 } from './invariants';
 import type {
-  DataContextProvider,
+  DataContextVersionProvider,
   JSONValue,
   LifecycleContext,
   LifecycleError,
@@ -36,7 +36,7 @@ export * from './types';
 
 export interface PostgresPageLifecycleOptions {
   databaseUrl: string;
-  dataContext: DataContextProvider;
+  dataContext: DataContextVersionProvider;
   clock?: { now(): Date };
   ids?: { next(): string };
   tokens?: { next(): string };

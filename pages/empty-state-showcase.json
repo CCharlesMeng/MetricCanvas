@@ -1,0 +1,293 @@
+{
+  "schemaVersion": "4.0",
+  "id": "empty-state-showcase",
+  "meta": {
+    "description": "空数据与请求失败降级时的组件视觉稳定性演示"
+  },
+  "dataSources": {
+    "empty-component-data": {
+      "source": {
+        "type": "inline",
+        "rows": []
+      },
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称"
+        },
+        "category": {
+          "type": "string",
+          "role": "dimension",
+          "label": "业务类别"
+        },
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "label": "区域"
+        },
+        "stat_date": {
+          "type": "date",
+          "role": "dimension",
+          "label": "日期"
+        },
+        "value": {
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "defaultFormat": "number-grouped"
+        },
+        "change": {
+          "type": "number",
+          "role": "measure",
+          "label": "较上期",
+          "defaultFormat": "percent-1"
+        },
+        "progress": {
+          "type": "number",
+          "role": "measure",
+          "label": "完成率",
+          "defaultFormat": "percent-1"
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "introduction",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "空态视觉稳定性演示",
+            "subtitle": "数据内容为空，组件标题、容器、坐标轴、表头与底图仍完整呈现",
+            "badge": "Empty State",
+            "asOf": {
+              "label": "演示状态",
+              "value": "空数据快照"
+            },
+            "decoration": "shortBar"
+          }
+        },
+        {
+          "id": "usage-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "观察要点",
+            "variant": "insight",
+            "body": "本页所有普通数据组件都绑定同一份空数据快照。空态与请求失败会共用这套表现降级：只清空数据行，不替换组件整体。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "summary-and-comparison",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "empty-metric",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "关键指标（空数据）",
+            "rows": [
+              {
+                "label": "成交总额",
+                "valueField": "value",
+                "unit": "元",
+                "changes": [
+                  {
+                    "label": "较上期",
+                    "field": "change",
+                    "tone": "auto"
+                  }
+                ]
+              }
+            ],
+            "progress": {
+              "valueField": "progress",
+              "label": "完成率",
+              "ringPercent": 75
+            }
+          }
+        },
+        {
+          "id": "empty-bar-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "分类对比（空数据）",
+            "categoryField": "category",
+            "series": [
+              {
+                "field": "value",
+                "label": "成交总额"
+              }
+            ],
+            "rounded": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "trend-and-share",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "empty-line-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "趋势走势（空数据）",
+            "xField": "stat_date",
+            "series": [
+              {
+                "field": "value",
+                "label": "成交总额"
+              }
+            ],
+            "smooth": true,
+            "areaGradient": true
+          }
+        },
+        {
+          "id": "empty-pie-chart",
+          "type": "pieChart",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "类别占比（空数据）",
+            "categoryField": "category",
+            "valueField": "value",
+            "ring": "55%"
+          }
+        }
+      ]
+    },
+    {
+      "id": "details-and-region",
+      "layout": {
+        "type": "grid",
+        "columns": 12
+      },
+      "components": [
+        {
+          "id": "empty-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "业务明细（空数据）",
+            "subtitle": "表头、列宽与容器高度保持稳定",
+            "fit": "container",
+            "columns": [
+              {
+                "field": "name",
+                "title": "客户名称",
+                "width": 220,
+                "fixed": "left"
+              },
+              {
+                "field": "category",
+                "title": "业务类别",
+                "width": 160
+              },
+              {
+                "field": "region",
+                "title": "区域",
+                "width": 140
+              },
+              {
+                "field": "value",
+                "title": "成交总额",
+                "width": 160,
+                "align": "right",
+                "emphasis": "strong"
+              },
+              {
+                "field": "change",
+                "title": "较上期",
+                "width": 140,
+                "align": "right",
+                "visual": "signed"
+              }
+            ]
+          }
+        },
+        {
+          "id": "empty-ranking",
+          "type": "rankingCard",
+          "layout": {
+            "span": 5
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "客户排行（空数据）",
+            "nameField": "name",
+            "valueField": "value",
+            "changeField": "change"
+          }
+        },
+        {
+          "id": "empty-map",
+          "type": "mapChart",
+          "layout": {
+            "span": 7
+          },
+          "data": {
+            "main": "empty-component-data"
+          },
+          "props": {
+            "title": "区域分布（空数据）",
+            "nameField": "region",
+            "valueField": "value",
+            "map": "china",
+            "scatter": "effect"
+          }
+        }
+      ]
+    }
+  ]
+}

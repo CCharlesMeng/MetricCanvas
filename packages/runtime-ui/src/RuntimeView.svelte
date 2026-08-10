@@ -31,17 +31,15 @@
   } from '@metriccanvas/runtime';
   import {
     BarChart,
-    DimensionFilter,
     LineChart,
     MapChart,
     MetricCard,
     PieChart,
     RankingCard,
+    RankingDetailCard,
     ReportHeader,
     Table,
     TextBlock,
-    TimeRangeFilter,
-    WidgetHost,
     buildTableColumnLayout,
     initialTableSort,
     shouldApplyTableHeaderFilter,
@@ -54,6 +52,10 @@
     type TableViewState
   } from '@metriccanvas/widgets';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
+  import DimensionFilter from './filters/DimensionFilter.svelte';
+  import TimeRangeFilter from './filters/TimeRangeFilter.svelte';
+  import WidgetHost from './WidgetHost.svelte';
+  import { renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import {
@@ -577,24 +579,13 @@
       const source = loaded.dataSources[sourceId];
       if (!source || !snapshot) continue;
       const fields = resolveDataSourceFields(source);
-      if (snapshot.status === 'ready') {
-        const visible =
-          component.type === 'table' && slot === 'main'
-            ? tableSnapshot(component, snapshot)
-            : snapshot;
-        data[slot] = { snapshot: visible, fields };
-      } else if (snapshot.status === 'empty') {
-        data[slot] = {
-          snapshot: {
-            status: 'ready',
-            rows: [],
-            ...(snapshot.totalCount === undefined
-              ? {}
-              : { totalCount: snapshot.totalCount })
-          },
-          fields
-        };
-      }
+      const renderable = renderableDataSnapshot(snapshot);
+      if (!renderable) continue;
+      const visible =
+        component.type === 'table' && slot === 'main'
+          ? tableSnapshot(component, renderable)
+          : renderable;
+      data[slot] = { snapshot: visible, fields };
     }
     return data;
   }
@@ -790,6 +781,8 @@
           />
         {:else if component.type === 'rankingCard'}
           <RankingCard data={mainData(loaded, component, slots)} props={component.props} />
+        {:else if component.type === 'rankingDetailCard'}
+          <RankingDetailCard data={mainData(loaded, component, slots)} props={component.props} />
         {:else if component.type === 'table'}
           <Table
             data={componentData(loaded, component, slots) as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }}
@@ -895,6 +888,8 @@
     --mc-color-accent: #4f46e5;
     --mc-color-border: #e4e4e7;
     --mc-color-danger: #b91c1c;
+    --mc-color-positive: #52c41a;
+    --mc-color-negative: #f5222d;
     --mc-radius-cell: 10px;
     --mc-radius-section: 16px;
     --mc-section-gradient: url('./assets/section-gradient-panel.svg');
@@ -917,6 +912,7 @@
     max-width: 75rem;
     box-sizing: border-box;
     margin: 0 auto;
+    min-height: 100vh;
     padding: 28px 18px 54px;
     background: var(--mc-color-canvas);
   }
@@ -935,6 +931,12 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+  }
+  @media (max-width: 1050px) {
+    .page-content {
+      padding-right: 12px;
+      padding-left: 12px;
+    }
   }
   .error-page h1 {
     font-size: 20px;

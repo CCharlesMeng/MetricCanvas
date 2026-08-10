@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --parallel --filter canvas --filter platform dev",
+    "dev": "tsx tools/dev-cli/src/dev.ts local",
     "dev:offline": "tsx tools/dev-cli/src/dev.ts offline",
     "dev:dqe": "tsx tools/dqe-sim/src/dev.ts",
     "dev:runtime": "pnpm --filter canvas dev",

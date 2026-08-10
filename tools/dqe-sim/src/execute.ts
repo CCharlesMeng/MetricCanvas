@@ -1,22 +1,25 @@
 import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.json';
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
+import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
 
 type JsonRecord = Record<string, unknown>;
 type CustomerActivityKey = 'inspection' | 'visit' | 'summit' | 'inactive';
+
+interface DqeTimeRange {
+  period: string;
+  is_aggregate: boolean;
+  start: string;
+  end: string;
+}
 
 interface CustomerActivityRiskFixture {
   id: string;
   query: {
     output_metrics: unknown[];
     output_dims: string[];
-    time: {
-      period: string;
-      is_aggregate: boolean;
-      start: string;
-      end: string;
-    };
+    time: DqeTimeRange;
     dimensions: Record<string, string[]>;
   };
   rows: JsonRecord[];
@@ -25,6 +28,18 @@ interface CustomerActivityRiskFixture {
 interface CustomerActivityInspectionFixture {
   nonTopRows: JsonRecord[];
   top100Rows: JsonRecord[];
+}
+
+interface FlowAnalysisQueryFixture {
+  output_dims: string[];
+  output_metrics: string[];
+  time: DqeTimeRange;
+  rows: JsonRecord[];
+}
+
+interface FlowAnalysisReportFixture {
+  capturedAt: string;
+  queries: Record<string, FlowAnalysisQueryFixture>;
 }
 
 export interface DqeSimItemResult {
@@ -52,6 +67,8 @@ const customerActivityRiskFixtures = [
 ] as CustomerActivityRiskFixture[];
 const customerActivityInspectionFixture =
   customerActivityInspectionFixtureJson as CustomerActivityInspectionFixture;
+const flowAnalysisReportFixture =
+  flowAnalysisReportFixtureJson as FlowAnalysisReportFixture;
 const inspectionProgressMetrics = [
   'NA客户数',
   '无公司考察客户数',
@@ -90,6 +107,8 @@ const customerActivityDetailDimensions = [
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
+  const flowAnalysisResult = executeFlowAnalysisReport(item);
+  if (flowAnalysisResult) return flowAnalysisResult;
   const fixture = customerActivityRiskFixtures.find(
     (candidate) =>
       equalJson(item.output_metrics, candidate.query.output_metrics) &&
@@ -144,6 +163,64 @@ export function executeDqeItem(item: unknown): DqeSimItemResult {
     levels.map((level) => ({ ...rows.get(level)! })),
     metadata(fixture)
   );
+}
+
+function executeFlowAnalysisReport(
+  item: JsonRecord
+): DqeSimItemResult | undefined {
+  const query = Object.values(flowAnalysisReportFixture.queries).find(
+    (candidate) =>
+      equalStrings(item.output_dims, candidate.output_dims) &&
+      equalStrings(item.output_metrics, candidate.output_metrics)
+  );
+  if (!query) return undefined;
+  if (!isRecord(item.filter)) {
+    return unsupported('流水分析报告查询缺少 filter 对象');
+  }
+  if (!equalJson(item.filter.metrics, [])) {
+    return unsupported('流水分析报告仅支持 filter.metrics=[]');
+  }
+  if (!equalJson(item.filter.dims, [])) {
+    return unsupported('流水分析报告仅支持 filter.dims=[]');
+  }
+  if (!matchesTime(item.filter.time, query.time)) {
+    return unsupported(
+      `流水分析报告仅支持账期 ${query.time.start} 至 ${query.time.end}`
+    );
+  }
+  if (!validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
+  }
+  return successResult(
+    item,
+    query.rows.map((row) => ({ ...row })),
+    flowAnalysisMetadata(query)
+  );
+}
+
+function flowAnalysisMetadata(
+  query: FlowAnalysisQueryFixture
+): DqeSimItemResult['dqe'] {
+  return {
+    columns: [
+      ...query.output_dims.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'STRING' as const,
+        type: 'dimension' as const
+      })),
+      ...query.output_metrics.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'NUMBER' as const,
+        type: 'metric' as const
+      }))
+    ],
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  };
 }
 
 function executeInspectionRisk(item: JsonRecord): DqeSimItemResult | undefined {
@@ -689,7 +766,7 @@ function outputMetricName(metric: unknown): string | undefined {
   return isRecord(metric) && typeof metric.alias === 'string' ? metric.alias : undefined;
 }
 
-function matchesTime(value: unknown, expected: CustomerActivityRiskFixture['query']['time']) {
+function matchesTime(value: unknown, expected: DqeTimeRange) {
   return (
     isRecord(value) &&
     value.period === expected.period &&

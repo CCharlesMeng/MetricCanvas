@@ -143,7 +143,7 @@ Schema 元数据规则见 [schema-metadata.md](./schema-metadata.md)。
 
 ## 6. 页面搭建
 
-页面搭建能力由 `packages/mcp`、`packages/agent-runner` 和 Platform 组成。
+页面搭建能力由 `packages/mcp` 和 Platform 组成(ADR-0024):`mcp` 提供页面搭建 Prompt、工具与数据上下文检索;Agent 循环、模型 adapter 与测试替身收敛为 Platform 的 `agent/` 模块,不再独立成包。
 
 MCP 提供：
 

@@ -503,6 +503,23 @@ function componentErrors(
       }
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
+    case 'rankingDetailCard':
+      check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
+      check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+      if (component.props.changeField) {
+        check(component.props.changeField, `${componentPath}/props/changeField`, 'measure');
+      }
+      (component.props.badgeFields ?? []).forEach((field, index) =>
+        check(field, `${componentPath}/props/badgeFields/${index}`, 'dimension')
+      );
+      if (component.props.descriptionField) {
+        check(
+          component.props.descriptionField,
+          `${componentPath}/props/descriptionField`,
+          'dimension'
+        );
+      }
+      break;
   }
   return errors;
 }

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatValue, valuePolarity } from '../src/value-format';
+import { formatValue, valuePolarity } from '../src/shared/value-format';
 
 describe('formatValue', () => {
   it('无格式时保持存量直观输出,空值显示占位符', () => {

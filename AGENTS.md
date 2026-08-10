@@ -7,7 +7,7 @@
 - 页面 Schema:`PAGE-METADATA.md`
 - Schema 元数据规则与示例:`docs/schema-metadata.md`
 - 领域词汇表:`CONTEXT.md`(输出中涉及领域概念时,必须使用词汇表定义的术语)
-- 关键决策记录:`docs/adr/`
+- 关键决策记录:`docs/adr/`(先读 [`docs/adr/README.md`](docs/adr/README.md) 基线,再按需展开具体 ADR)
 
 ## Agent skills
 

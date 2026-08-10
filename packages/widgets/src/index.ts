@@ -1,44 +1,33 @@
-export { default as ReportHeader } from './ReportHeader.svelte';
-export { default as MetricCard } from './MetricCard.svelte';
-export { default as BarChart } from './BarChart.svelte';
-export { default as LineChart } from './LineChart.svelte';
-export { default as PieChart } from './PieChart.svelte';
-export { default as Table } from './Table.svelte';
-export type { TablePaginationState, TableSelectedCell } from './Table.svelte';
+/**
+ * 纯渲染组件包的唯一出口。
+ * 导出面按真实消费面收敛:页面组件本身,加上统一运行时编排表格视图所需的纯函数与契约类型;
+ * 只服务包内的共享内核(字段解析、格式化、ECharts 宿主)不对外暴露。
+ */
+export { default as ReportHeader } from './components/report-header/ReportHeader.svelte';
+export { default as MetricCard } from './components/metric-card/MetricCard.svelte';
+export { default as BarChart } from './components/bar-chart/BarChart.svelte';
+export { default as LineChart } from './components/line-chart/LineChart.svelte';
+export { default as PieChart } from './components/pie-chart/PieChart.svelte';
+export { default as MapChart } from './components/map-chart/MapChart.svelte';
+export { default as RankingCard } from './components/ranking-card/RankingCard.svelte';
+export { default as RankingDetailCard } from './components/ranking-detail-card/RankingDetailCard.svelte';
+export { default as TextBlock } from './components/text/TextBlock.svelte';
+export type { TextBlockLink } from './components/text/TextBlock.svelte';
+export { default as Table } from './components/table/Table.svelte';
+export type {
+  TablePaginationState,
+  TableSelectedCell
+} from './components/table/Table.svelte';
 export {
   initialTableSort,
   shouldApplyTableHeaderFilter,
   type TableHeaderFilterValue,
   type TableSortRule,
   type TableViewState
-} from './table-view';
-export {
-  buildTableColumnLayout,
-  type TableColumnLayout,
-  type TableHeaderCell
-} from './table-columns';
-export { default as MapChart } from './MapChart.svelte';
-export { default as RankingCard } from './RankingCard.svelte';
-export { default as TextBlock } from './TextBlock.svelte';
-export type { TextBlockLink } from './TextBlock.svelte';
-export { default as SafeMarkdown } from './SafeMarkdown.svelte';
-export {
-  parseSafeMarkdown,
-  type MarkdownBlock,
-  type MarkdownInline
-} from './safe-markdown';
-export {
-  fieldLabel,
-  fieldValue,
-  resolveField,
-  type ComponentDataSlot,
-  type MainDataSlots,
-  type MetricDataSlots,
-  type NamedDataSlots,
-  type ReadyDataSnapshot,
-  type ResolvedField
-} from './component-data';
-export { default as WidgetHost } from './WidgetHost.svelte';
-export { default as DimensionFilter } from './DimensionFilter.svelte';
-export { default as TimeRangeFilter } from './TimeRangeFilter.svelte';
-export { formatValue, valuePolarity, type ValuePolarity } from './value-format';
+} from './components/table/view-state';
+export { buildTableColumnLayout } from './components/table/columns';
+export type {
+  MainDataSlots,
+  MetricDataSlots,
+  NamedDataSlots
+} from './shared/component-data';

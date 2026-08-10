@@ -2,7 +2,19 @@ import { spawn, type SpawnOptions } from 'node:child_process';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-export type DevProfile = 'offline';
+export type DevProfile = 'local' | 'offline';
+
+const DQE_SIM_ORIGIN = 'http://127.0.0.1:18228';
+const DEV_SERVICES_ARGS = [
+  '--parallel',
+  '--filter',
+  'canvas',
+  '--filter',
+  'platform',
+  '--filter',
+  '@metriccanvas/dqe-sim',
+  'dev'
+];
 
 export interface CreateDevLaunchInput {
   profile: DevProfile;
@@ -25,21 +37,24 @@ export function createDevLaunch({
 }: CreateDevLaunchInput): DevLaunch {
   const env: NodeJS.ProcessEnv = { ...processEnv };
   Object.assign(env, {
-    METRICCANVAS_OFFLINE: '1',
     PLATFORM_ORIGIN: 'http://localhost:5174',
     RUNTIME_ORIGIN: 'http://localhost:5173',
-    VITE_PLATFORM_URL: 'http://localhost:5174'
+    VITE_PLATFORM_URL: profile === 'offline' ? 'http://localhost:5174' : '',
+    VITE_DQE_ENDPOINT: `${DQE_SIM_ORIGIN}/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`,
+    VITE_AI_SUMMARY_ENDPOINT: `${DQE_SIM_ORIGIN}/api/ai/conversations/`
   });
+  if (profile === 'offline') env.METRICCANVAS_OFFLINE = '1';
+  else delete env.METRICCANVAS_OFFLINE;
 
   const pnpmEntry = processEnv.npm_execpath;
   const invocation = pnpmEntry
-    ? { command: execPath, args: [pnpmEntry, 'dev'] }
+    ? { command: execPath, args: [pnpmEntry, ...DEV_SERVICES_ARGS] }
     : platform === 'win32'
       ? {
           command: processEnv.ComSpec ?? 'cmd.exe',
-          args: ['/d', '/s', '/c', 'pnpm dev']
+          args: ['/d', '/s', '/c', `pnpm ${DEV_SERVICES_ARGS.join(' ')}`]
         }
-      : { command: 'pnpm', args: ['dev'] };
+      : { command: 'pnpm', args: DEV_SERVICES_ARGS };
 
   return {
     ...invocation,
@@ -51,8 +66,8 @@ export function parseDevArguments(argv: string[]): {
   profile: DevProfile;
 } {
   const [profile, ...rest] = argv;
-  if (profile !== 'offline') {
-    throw new Error('用法:dev.ts offline');
+  if (profile !== 'local' && profile !== 'offline') {
+    throw new Error('用法:dev.ts <local|offline>');
   }
   if (rest.some((argument) => argument !== '--')) {
     throw new Error(`未知参数:${rest.find((argument) => argument !== '--')}`);

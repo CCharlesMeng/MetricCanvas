@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { SafeMarkdown } from '@metriccanvas/widgets';
+  import SafeMarkdown from './SafeMarkdown.svelte';
   import type { AiSummarySnapshot } from './session';
 
   let {

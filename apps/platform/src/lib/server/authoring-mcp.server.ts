@@ -1,4 +1,4 @@
-import type { McpClient } from '@metriccanvas/agent-runner';
+import type { McpClient } from '@metriccanvas/mcp';
 
 const AUTHORING_TOOLS = new Set([
   'search_data_context',

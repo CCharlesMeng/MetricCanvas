@@ -1,9 +1,9 @@
+import type { VerifiedQuery } from '@metriccanvas/mcp';
 import type {
   AgentMessage,
   ModelProvider,
   ModelResponse
-} from '@metriccanvas/agent-runner';
-import type { VerifiedQuery } from '@metriccanvas/data-context';
+} from './agent/types';
 
 const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 

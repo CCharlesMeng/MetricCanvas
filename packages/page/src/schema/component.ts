@@ -5,6 +5,7 @@ import { barChartComponentZ, lineChartComponentZ, pieChartComponentZ } from './c
 import { tableComponentZ } from './components/table';
 import { mapChartComponentZ } from './components/map-chart';
 import { rankingCardComponentZ } from './components/ranking-card';
+import { rankingDetailCardComponentZ } from './components/ranking-detail-card';
 import { textComponentZ } from './components/text';
 import { aiSummaryComponentZ } from './components/ai-summary';
 
@@ -22,6 +23,7 @@ export const componentSchemas = [
   tableComponentZ,
   mapChartComponentZ,
   rankingCardComponentZ,
+  rankingDetailCardComponentZ,
   textComponentZ,
   aiSummaryComponentZ
 ] as const;
@@ -37,10 +39,15 @@ export {
   tableComponentZ,
   mapChartComponentZ,
   rankingCardComponentZ,
+  rankingDetailCardComponentZ,
   textComponentZ,
   aiSummaryComponentZ
 };
-export { chartSeriesZ } from './components/charts';
+export {
+  chartSeriesZ,
+  barChartSeriesZ,
+  barSeriesRoleZ
+} from './components/charts';
 export {
   tableColumnNodeZ,
   type TableColumn,

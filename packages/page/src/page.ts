@@ -10,9 +10,11 @@ import {
   tableComponentZ,
   mapChartComponentZ,
   rankingCardComponentZ,
+  rankingDetailCardComponentZ,
   textComponentZ,
   aiSummaryComponentZ,
   chartSeriesZ,
+  barChartSeriesZ,
   type TableColumn,
   type TableColumnGroup,
   type TableColumnNode,
@@ -55,6 +57,8 @@ export type MetricCardProgress = NonNullable<MetricCardProps['progress']>;
 export type MetricCardComponent = z.infer<typeof metricCardComponentZ>;
 
 export type ChartSeries = z.infer<typeof chartSeriesZ>;
+export type BarChartSeries = z.infer<typeof barChartSeriesZ>;
+export type BarSeriesRole = NonNullable<BarChartSeries['role']>;
 
 export type BarChartProps = z.infer<typeof barChartComponentZ>['props'];
 export type BarChartComponent = z.infer<typeof barChartComponentZ>;
@@ -81,6 +85,9 @@ export type MapChartComponent = z.infer<typeof mapChartComponentZ>;
 export type RankingCardProps = z.infer<typeof rankingCardComponentZ>['props'];
 export type RankingCardComponent = z.infer<typeof rankingCardComponentZ>;
 
+export type RankingDetailCardProps = z.infer<typeof rankingDetailCardComponentZ>['props'];
+export type RankingDetailCardComponent = z.infer<typeof rankingDetailCardComponentZ>;
+
 export type TextProps = z.infer<typeof textComponentZ>['props'];
 export type TextLink = NonNullable<TextProps['links']>[number];
 export type TextComponent = z.infer<typeof textComponentZ> & { data?: never };
@@ -99,6 +106,7 @@ export type Component =
   | TableComponent
   | MapChartComponent
   | RankingCardComponent
+  | RankingDetailCardComponent
   | TextComponent
   | AiSummaryComponent;
 

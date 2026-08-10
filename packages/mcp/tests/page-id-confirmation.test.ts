@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { McpClient } from '@metriccanvas/agent-runner';
-import { createPageIdConfirmationMcpClient } from '@metriccanvas/mcp';
+import { createPageIdConfirmationMcpClient, type McpClient } from '../src';
 
 const pageDocument = {
   schemaVersion: '4.0',

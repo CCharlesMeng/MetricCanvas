@@ -4,7 +4,12 @@ export interface DataContextVersion {
   version: string;
 }
 
-export interface DataContextProvider {
+/**
+ * page-lifecycle 只需要给页面修订盖创作依据版本印章,不需要完整数据
+ * 上下文快照(那是 `@metriccanvas/mcp` 的 `DataContextProvider`)。
+ * 命名带 `Version` 前缀以避免与之同名但契约不同(ADR-0024)。
+ */
+export interface DataContextVersionProvider {
   current(): Promise<DataContextVersion>;
 }
 

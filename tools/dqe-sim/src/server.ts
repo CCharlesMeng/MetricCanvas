@@ -14,6 +14,30 @@ const DEFAULT_AI_SUMMARY_TEXT = [
   '3. **TOP100项目客户未考察情况**：TOP100项目客户相关未考察数据已纳入重点跟踪。'
 ].join('\n');
 
+const CUSTOMER_FLOW_AI_SUMMARY_TEXT = [
+  '1. **增长客户**：头部增长客户贡献集中，建议持续跟踪增量来源与可延续性。',
+  '',
+  '2. **下降客户**：下降客户需要结合同比下滑原因逐项制定恢复动作。',
+  '',
+  '3. **风险客户**：风险客户存在月度流水波动，应优先核验一次性收入与续签节奏。'
+].join('\n');
+
+const TRACK_FLOW_AI_SUMMARY_TEXT = [
+  '1. **主要贡献赛道**：头部赛道仍是流水的主要支撑，应巩固稳定贡献。',
+  '',
+  '2. **环比变化**：赛道间环比分化明显，需要关注回落赛道的交付与回款节奏。',
+  '',
+  '3. **年度推演压力**：部分赛道年度推演压力偏高，需补充新增机会与确定性项目。'
+].join('\n');
+
+const INDUSTRY_FLOW_AI_SUMMARY_TEXT = [
+  '1. **主要贡献产业**：核心产业保持主要流水贡献，结构集中度需要持续观察。',
+  '',
+  '2. **增长来源**：当前增长来源由重点产业与新增项目共同驱动。',
+  '',
+  '3. **目标支撑风险**：部分产业的年度推演不足以支撑目标，需提前识别目标支撑风险。'
+].join('\n');
+
 type JsonRecord = Record<string, unknown>;
 
 export interface DqeSimServerOptions {
@@ -44,7 +68,7 @@ export function createDqeSimServer(options: DqeSimServerOptions = {}) {
     if (request.method === 'POST' && isAiSummaryChatPath(url.pathname)) {
       void streamAiSummary(request, response, {
         requestId,
-        text: options.aiSummaryText ?? DEFAULT_AI_SUMMARY_TEXT,
+        text: options.aiSummaryText,
         characterIntervalMs: options.aiSummaryCharacterIntervalMs ?? 35
       }).then(
         (result) => {
@@ -173,7 +197,7 @@ async function streamAiSummary(
   response: ServerResponse,
   input: {
     requestId: string;
-    text: string;
+    text?: string;
     characterIntervalMs: number;
   }
 ): Promise<RouteResult> {
@@ -207,7 +231,8 @@ async function streamAiSummary(
   });
   response.flushHeaders();
 
-  const characters = Array.from(input.text);
+  const text = input.text ?? aiSummaryTextForRequest(parsed.value);
+  const characters = Array.from(text);
   const characterIntervalMs = Math.max(0, input.characterIntervalMs);
   for (let index = 0; index < characters.length; index += 1) {
     if (response.destroyed) break;
@@ -226,6 +251,29 @@ async function streamAiSummary(
     body: { streamedCharacters: characters.length },
     requestBody: parsed.value
   };
+}
+
+function aiSummaryTextForRequest(body: JsonRecord): string {
+  const prompt = aiSummaryPrompt(body);
+  if (prompt.includes('赛道')) return TRACK_FLOW_AI_SUMMARY_TEXT;
+  if (prompt.includes('产业')) return INDUSTRY_FLOW_AI_SUMMARY_TEXT;
+  if (prompt.includes('客户')) return CUSTOMER_FLOW_AI_SUMMARY_TEXT;
+  return DEFAULT_AI_SUMMARY_TEXT;
+}
+
+function aiSummaryPrompt(body: JsonRecord): string {
+  const context = body.context_info;
+  if (!isRecord(context)) return '';
+  const summary = context['ai-summary'];
+  if (!isRecord(summary) || !isRecord(summary.input_data)) return '';
+  const config = summary.input_data.custom_config;
+  if (!isRecord(config) || !Array.isArray(config.output_paragraphs)) return '';
+  return config.output_paragraphs
+    .filter(isRecord)
+    .flatMap((paragraph) =>
+      typeof paragraph.description === 'string' ? [paragraph.description] : []
+    )
+    .join('\n');
 }
 
 function delay(durationMs: number): Promise<void> {

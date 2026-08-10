@@ -1,31 +1,27 @@
 import { env } from '$env/dynamic/private';
 import {
+  connectInProcessMetricCanvasMcp,
   createDataContextSearch,
+  createMetricCanvasMcpServer,
+  createPageIdConfirmationMcpClient,
   type DataContextSnapshot,
   type DataContextSearch
-} from '@metriccanvas/data-context';
-import {
-  createAgentRunner,
-  createDeepSeekModelProvider,
-  type AgentRunner
-} from '@metriccanvas/agent-runner';
+} from '@metriccanvas/mcp';
 import {
   createMemoryPageLifecycle,
   createPostgresPageLifecycle,
-  type DataContextProvider,
+  type DataContextVersionProvider,
   type LifecycleContext,
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
-import {
-  connectInProcessMetricCanvasMcp,
-  createMetricCanvasMcpServer,
-  createPageIdConfirmationMcpClient
-} from '@metriccanvas/mcp';
 import {
   createMemoryTemplateLibrary,
   createPostgresTemplateLibrary,
   type TemplateLibrary
 } from '@metriccanvas/template-library';
+import { createAgentRunner } from './agent/runner';
+import { createDeepSeekModelProvider } from './agent/deepseek.server';
+import type { AgentRunner } from './agent/types';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
 import {
@@ -86,7 +82,7 @@ async function createServices(): Promise<PlatformServices> {
   const dataContext = createDataContextSearch({
     current: async () => snapshot
   });
-  const dataContextVersion: DataContextProvider = {
+  const dataContextVersion: DataContextVersionProvider = {
     current: async () => ({ version: snapshot.version })
   };
   const lifecycleOptions = {

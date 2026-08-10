@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { AgentEvent } from '@metriccanvas/agent-runner';
+import type { AgentEvent } from '../src/lib/server/agent/types';
 import { validatedAgentDocument } from '../src/lib/server/agent-events.server';
 
 describe('Agent 事件工作副本提取', () => {

@@ -6,6 +6,7 @@ import {
   type DqeSimServerOptions,
   DQE_EXECUTE_PATH
 } from '../src/server';
+import flowFixtureJson from '../fixtures/flow-analysis-report.json';
 
 const servers: ReturnType<typeof createDqeSimServer>[] = [];
 
@@ -143,6 +144,58 @@ describe('DQE Sim HTTP 契约', () => {
     expect(events[3]!.receivedAt - events[0]!.receivedAt).toBeGreaterThanOrEqual(50);
   });
 
+  it('九类流水查询通过 HTTP 批量返回 CBC.0000 与声明字段', async () => {
+    const baseUrl = await listen();
+    const queries = Object.values(flowFixtureJson.queries);
+    const response = await fetch(`${baseUrl}${DQE_EXECUTE_PATH}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dsl_list: queries.map((query) => ({
+          output_dims: query.output_dims,
+          output_metrics: query.output_metrics,
+          filter: { time: query.time, dims: [], metrics: [] },
+          order: {}
+        }))
+      })
+    });
+    const body = await response.json() as {
+      retCode: string;
+      results: Array<{ code: string; data: Array<Record<string, unknown>> }>;
+    };
+
+    expect(body.retCode).toBe('CBC.0000');
+    expect(body.results).toHaveLength(9);
+    body.results.forEach((result, index) => {
+      const query = queries[index]!;
+      expect(result.code).toBe('SUCCESS');
+      expect(Object.keys(result.data[0] ?? {}).sort()).toEqual(
+        [...query.output_dims, ...query.output_metrics].sort()
+      );
+    });
+  });
+
+  it('按客户、赛道、产业提示词分流 SSE，未知提示词保持默认总结', async () => {
+    const baseUrl = await listen({ aiSummaryCharacterIntervalMs: 0 });
+    const [customer, track, industry, fallback] = await Promise.all([
+      aiSummary(baseUrl, '总结客户增长、下降与风险客户'),
+      aiSummary(baseUrl, '总结主要赛道、环比与年度推演压力'),
+      aiSummary(baseUrl, '总结主要产业、增长来源与目标支撑风险'),
+      aiSummary(baseUrl, '沿用默认总结')
+    ]);
+
+    expect(customer).toContain('增长客户');
+    expect(customer).toContain('下降客户');
+    expect(customer).toContain('风险客户');
+    expect(track).toContain('主要贡献赛道');
+    expect(track).toContain('环比');
+    expect(track).toContain('年度推演压力');
+    expect(industry).toContain('主要贡献产业');
+    expect(industry).toContain('增长来源');
+    expect(industry).toContain('目标支撑风险');
+    expect(fallback).toContain('整体NA客户未考察情况');
+  });
+
   it('在同一个 dsl_list 中保持 NA 与 Top100 查询项和结果项对位', async () => {
     const baseUrl = await listen();
     const response = await fetch(`${baseUrl}${DQE_EXECUTE_PATH}`, {
@@ -237,6 +290,39 @@ function execute(baseUrl: string, item: unknown): Promise<Response> {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ dsl_list: [item] })
   });
+}
+
+async function aiSummary(baseUrl: string, promptTemplate: string): Promise<string> {
+  const response = await fetch(
+    `${baseUrl}${AI_SUMMARY_CONVERSATIONS_PATH}flow-report/chat`,
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        context_info: {
+          'ai-summary': {
+            input_data: {
+              custom_config: {
+                output_paragraphs: [{ description: promptTemplate }]
+              }
+            }
+          }
+        }
+      })
+    }
+  );
+  const events = await readSseEvents(response);
+  return events.flatMap(({ payload }) => {
+    if (
+      typeof payload === 'object' &&
+      payload !== null &&
+      (payload as { event?: unknown }).event === 'generate' &&
+      typeof (payload as { content?: unknown }).content === 'string'
+    ) {
+      return [(payload as { content: string }).content];
+    }
+    return [];
+  }).join('');
 }
 
 function dqeItem(levels = ['卓越NA', '战略NA', '核心NA']) {

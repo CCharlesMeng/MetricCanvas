@@ -1,6 +1,6 @@
 import type { TableColumnNode } from '@metriccanvas/page';
 import { describe, expect, it } from 'vitest';
-import { buildTableColumnLayout } from '../src/table-columns';
+import { buildTableColumnLayout } from '../src/components/table/columns';
 
 describe('buildTableColumnLayout', () => {
   it('兼容存量 flat columns,生成单行表头与同序叶子', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { MetricDataSlots } from '../src/component-data';
-import { fieldLabel, fieldValue, resolveField } from '../src/component-data';
+import type { MetricDataSlots } from '../src/shared/component-data';
+import { fieldLabel, fieldValue, resolveField } from '../src/shared/component-data';
 
 const data: MetricDataSlots = {
   main: {
