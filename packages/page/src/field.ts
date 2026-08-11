@@ -1,8 +1,20 @@
-/** 页面数据行允许的原始值。复杂对象不是数据源字段值。 */
-export type FieldValue = string | number | boolean | null;
+/** 页面数据行允许的标量值。 */
+export type ScalarFieldValue = string | number | boolean | null;
+
+/**
+ * 嵌套明细字段的单条记录。首期只允许一层对象数组，
+ * 对象属性仍是标量，不允许继续嵌套。
+ */
+export type DetailRecord = Record<string, ScalarFieldValue>;
+export type DetailRecordList = DetailRecord[];
+export const MAX_DETAIL_RECORDS = 100;
+export const MAX_SEMANTIC_HTML_LENGTH = 64_000;
+
+/** 页面数据行允许的字段值。 */
+export type FieldValue = ScalarFieldValue | DetailRecordList;
 
 export type FieldType = 'string' | 'number' | 'boolean' | 'date' | 'datetime';
-export type FieldRole = 'dimension' | 'measure';
+export type FieldRole = 'dimension' | 'measure' | 'detail';
 
 export const valueFormatPresets = [
   'text',
@@ -30,20 +42,65 @@ export function isValueFormatPreset(value: unknown): value is ValueFormatPreset 
   );
 }
 
-/** 页面数据源输出的稳定结果字段契约。 */
-export interface FieldDefinition {
-  type: FieldType;
-  role: FieldRole;
+interface FieldMetadata {
   label?: string;
   unit?: string;
   nullable?: boolean;
   defaultFormat?: ValueFormatPreset;
 }
 
-/** query 页面数据源字段到外部查询响应字段的显式映射。 */
-export interface QueryFieldDefinition extends FieldDefinition {
+export interface ScalarFieldDefinition extends FieldMetadata {
+  type: FieldType;
+  role: 'dimension' | 'measure';
+}
+
+export interface RecordListFieldDefinition
+  extends Pick<FieldMetadata, 'label' | 'nullable'> {
+  type: 'recordList';
+  role: 'detail';
+  items: {
+    fields: Record<string, ScalarFieldDefinition>;
+  };
+}
+
+/**
+ * DQE 返回的受控语义 HTML。值只承载结构、文本和约定语义类，
+ * 具体样式与安全渲染由显式支持该类型的前端 Module 负责。
+ */
+export interface SemanticHtmlFieldDefinition
+  extends Pick<FieldMetadata, 'label' | 'nullable'> {
+  type: 'semanticHtml';
+  role: 'detail';
+}
+
+/** 页面数据源输出的稳定结果字段契约。 */
+export type FieldDefinition =
+  | ScalarFieldDefinition
+  | RecordListFieldDefinition
+  | SemanticHtmlFieldDefinition;
+
+export interface QueryScalarFieldDefinition extends ScalarFieldDefinition {
   queryField: string;
 }
+
+export interface QueryRecordListFieldDefinition
+  extends Omit<RecordListFieldDefinition, 'items'> {
+  queryField: string;
+  items: {
+    fields: Record<string, QueryScalarFieldDefinition>;
+  };
+}
+
+export interface QuerySemanticHtmlFieldDefinition
+  extends SemanticHtmlFieldDefinition {
+  queryField: string;
+}
+
+/** query 页面数据源字段到外部查询响应字段的显式映射。 */
+export type QueryFieldDefinition =
+  | QueryScalarFieldDefinition
+  | QueryRecordListFieldDefinition
+  | QuerySemanticHtmlFieldDefinition;
 
 /** 统一运行时向组件提供的字段契约，不包含外部查询字段名。 */
 export type ResolvedFieldDefinition = FieldDefinition;
@@ -58,7 +115,7 @@ export type FieldBinding =
       data: string;
       field: string;
       format?: ValueFormatPreset;
-      match?: { field: string; equals: FieldValue };
+      match?: { field: string; equals: ScalarFieldValue };
     };
 
 export type DataRow = Record<string, FieldValue>;

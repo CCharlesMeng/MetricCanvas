@@ -157,7 +157,7 @@ export const PAGE_BUILDING_PROMPT = [
   'DQE 查询必须保留原始 body；每个 query 页面数据源显式声明 fields，queryField 必须覆盖所有输出字段。',
   'query 页面数据源的 initial.rows 保留 DQE 原始输出字段名；页面模块会按 queryField 归一化，组件仍只引用稳定页面字段 id。',
   '页面字段角色只允许 dimension 或 measure；组件只引用稳定页面字段 id。',
-  '组件可见标题统一使用 props.title。aiSummary 不声明 data，只通过 promptTemplate 和 relatedData 显式引用页面数据源字段；不得写入端点、Header 或 SSE 参数。',
+  '组件可见标题统一使用 props.title。摘要默认使用 text，由后端在页面文档的 props.body 直接返回；只有需求明确声明运行时 SSE 动态生成时才使用 aiSummary。aiSummary 不声明 data，只通过 promptTemplate 和 relatedData 显式引用页面数据源字段；不得写入端点、Header 或 SSE 参数。',
   '新建页面必须拟定可读且唯一的真实页面 id。validate_page 通过后，客户端会发起结构化页面 id 确认。',
   '编辑既有页面时先调用 get_page(selector=latest)，保留 revisionId 作为 baseRevisionId，再校验、保存和预览。',
   `组件能力目录:\n${COMPONENT_SELECTION_GUIDE}`,

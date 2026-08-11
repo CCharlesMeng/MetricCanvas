@@ -9,7 +9,7 @@ type CustomerActivityKey = 'inspection' | 'visit' | 'summit' | 'inactive';
 
 interface DqeTimeRange {
   period: string;
-  is_aggregate: boolean;
+  is_aggregate?: boolean;
   start: string;
   end: string;
 }
@@ -34,6 +34,11 @@ interface FlowAnalysisQueryFixture {
   output_dims: string[];
   output_metrics: string[];
   time: DqeTimeRange;
+  filter?: {
+    dims?: unknown[];
+    metrics?: unknown[];
+  };
+  order?: JsonRecord;
   rows: JsonRecord[];
 }
 
@@ -177,18 +182,26 @@ function executeFlowAnalysisReport(
   if (!isRecord(item.filter)) {
     return unsupported('流水分析报告查询缺少 filter 对象');
   }
-  if (!equalJson(item.filter.metrics, [])) {
-    return unsupported('流水分析报告仅支持 filter.metrics=[]');
+  const expectedMetrics =
+    query.filter && !Object.hasOwn(query.filter, 'metrics')
+      ? undefined
+      : query.filter?.metrics ?? [];
+  const expectedDims =
+    query.filter && !Object.hasOwn(query.filter, 'dims')
+      ? undefined
+      : query.filter?.dims ?? [];
+  if (!equalJson(item.filter.metrics, expectedMetrics)) {
+    return unsupported('流水分析报告 filter.metrics 与已验证查询不一致');
   }
-  if (!equalJson(item.filter.dims, [])) {
-    return unsupported('流水分析报告仅支持 filter.dims=[]');
+  if (!equalJson(item.filter.dims, expectedDims)) {
+    return unsupported('流水分析报告 filter.dims 与已验证查询不一致');
   }
   if (!matchesTime(item.filter.time, query.time)) {
     return unsupported(
       `流水分析报告仅支持账期 ${query.time.start} 至 ${query.time.end}`
     );
   }
-  if (!validOrder(item.order)) {
+  if (query.order ? !equalJson(item.order, query.order) : !validOrder(item.order)) {
     return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
   return successResult(
@@ -212,7 +225,9 @@ function flowAnalysisMetadata(
       ...query.output_metrics.map((caption) => ({
         id: `dqe-sim.${caption}`,
         caption,
-        data_type: 'NUMBER' as const,
+        data_type: query.rows.some((row) => typeof row[caption] === 'string')
+          ? 'STRING' as const
+          : 'NUMBER' as const,
         type: 'metric' as const
       }))
     ],
@@ -770,7 +785,9 @@ function matchesTime(value: unknown, expected: DqeTimeRange) {
   return (
     isRecord(value) &&
     value.period === expected.period &&
-    value.is_aggregate === expected.is_aggregate &&
+    (expected.is_aggregate === undefined
+      ? !Object.hasOwn(value, 'is_aggregate')
+      : value.is_aggregate === expected.is_aggregate) &&
     value.start === expected.start &&
     value.end === expected.end
   );

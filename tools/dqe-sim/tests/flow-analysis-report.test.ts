@@ -7,10 +7,15 @@ interface FlowQueryFixture {
   output_metrics: string[];
   time: {
     period: string;
-    is_aggregate: boolean;
+    is_aggregate?: boolean;
     start: string;
     end: string;
   };
+  filter?: {
+    dims?: unknown[];
+    metrics?: unknown[];
+  };
+  order?: Record<string, unknown>;
   rows: Array<Record<string, unknown>>;
 }
 
@@ -74,7 +79,7 @@ describe('流水分析报告 DQE fixture', () => {
     });
   });
 
-  it('所有非空金额均为元的有限数字，客户金额按查询行序严格递减', () => {
+  it('所有非空金额均为元的有限数字，客户排行符合各自查询顺序', () => {
     const amountFields = new Set([
       'annual-total',
       'current-month',
@@ -118,14 +123,67 @@ describe('流水分析报告 DQE fixture', () => {
       'customer-risk-top'
     ]) {
       const rows = fixture.queries[id]!.rows;
-      const field = id === 'customer-yoy-drop-top'
+      const field = id === 'customer-decline-top'
+        ? '公有云流水月变化'
+        : id === 'customer-yoy-drop-top'
         ? 'drop-difference'
         : id === 'customer-risk-top'
           ? 'current-month-amount'
           : 'amount';
       const values = rows.map((row) => Number(row[field]));
-      expect(values.every((value, index) => index === 0 || values[index - 1]! > value), id)
+      expect(
+        values.every((value, index) =>
+          index === 0 || (
+            id === 'customer-decline-top'
+              ? values[index - 1]! < value
+              : values[index - 1]! > value
+          )
+        ),
+        id
+      )
         .toBe(true);
+    }
+  });
+
+  it('下降客户保留真实 Top10，并以语义 HTML 承载完整归因明细', () => {
+    const query = fixture.queries['customer-decline-top']!;
+    const result = executeDqeItem(dqeItem(query));
+    const detailLengths = result.data.map((row) => {
+      const details = row['云服务流水归因明细'];
+      expect(typeof details).toBe('string');
+      if (typeof details !== 'string') return 0;
+      expect(details).not.toMatch(/\b(?:style|onclick)=/u);
+      return details.match(/<span class="detail-title">/gu)?.length ?? 0;
+    });
+
+    expect(result.code).toBe('SUCCESS');
+    expect(result.data).toHaveLength(10);
+    expect(result.total_count).toBe(10);
+    expect(detailLengths).toEqual([7, 1, 2, 1, 6, 1, 2, 1, 1, 1]);
+    expect(detailLengths.reduce((total, count) => total + count, 0)).toBe(23);
+    expect(detailLengths.every((count) => count > 0)).toBe(true);
+    expect(result.data[0]?.['云服务流水归因明细']).toContain('tone-negative');
+    expect(result.data[0]?.['云服务流水归因明细']).toContain('tone-positive');
+  });
+
+  it('增长客户补齐 Top10，保持金额降序且每行以语义 HTML 承载增长明细', () => {
+    const query = fixture.queries['customer-growth-top']!;
+    const result = executeDqeItem(dqeItem(query));
+
+    expect(result.code).toBe('SUCCESS');
+    expect(result.data).toHaveLength(10);
+    expect(result.total_count).toBe(10);
+    expect(result.data.map((row) => row['customer-name'])).toEqual(
+      Array.from({ length: 10 }, (_, index) => `客户${String.fromCharCode(65 + index)}`)
+    );
+    for (const row of result.data) {
+      const details = row['growth-description'];
+      expect(typeof details).toBe('string');
+      if (typeof details !== 'string') continue;
+      expect(details).toContain('<span class="detail-title">');
+      expect(details).toContain('<span class="detail-description">');
+      expect(details).toContain('detail-value tone-positive');
+      expect(details).not.toMatch(/\b(?:style|onclick)=/u);
     }
   });
 
@@ -147,9 +205,15 @@ function dqeItem(query: FlowQueryFixture) {
     output_metrics: query.output_metrics,
     filter: {
       time: { ...query.time },
-      dims: [],
-      metrics: []
+      ...(query.filter
+        ? {
+            ...(Object.hasOwn(query.filter, 'dims') ? { dims: query.filter.dims } : {}),
+            ...(Object.hasOwn(query.filter, 'metrics')
+              ? { metrics: query.filter.metrics }
+              : {})
+          }
+        : { dims: [], metrics: [] })
     },
-    order: {}
+    order: query.order ?? {}
   };
 }

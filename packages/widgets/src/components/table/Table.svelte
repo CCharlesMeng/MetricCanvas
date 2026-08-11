@@ -11,7 +11,11 @@
 </script>
 
 <script lang="ts">
-  import type { TableColumn, TableProps as TableComponentProps } from '@metriccanvas/page';
+  import type {
+    FieldValue,
+    TableColumn,
+    TableProps as TableComponentProps
+  } from '@metriccanvas/page';
   import type { NamedDataSlots } from '../../shared/component-data';
   import { resolveField } from '../../shared/component-data';
   import { alignTableRows, alignedFieldValue } from './rows';
@@ -229,7 +233,7 @@
 
   function rateBarWidth(
     column: TableColumn,
-    value: string | number | boolean | null | undefined
+    value: FieldValue | undefined
   ): number {
     const numeric = finiteNumber(value);
     const maximum = rateBarMaxima.get(columnField(column)) ?? 0;

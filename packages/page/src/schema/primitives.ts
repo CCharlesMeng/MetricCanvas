@@ -1,5 +1,9 @@
 import { z } from 'zod';
-import { valueFormatPresets } from '../field';
+import {
+  MAX_DETAIL_RECORDS,
+  MAX_SEMANTIC_HTML_LENGTH,
+  valueFormatPresets
+} from '../field';
 
 /**
  * 页面协议的基础形状：字段契约、字段引用/绑定、布局与数据槽绑定。
@@ -18,32 +22,129 @@ export const scalarZ = z
   .union([z.string(), z.number(), z.boolean(), z.null()])
   .meta({ id: 'scalar' });
 
+export const detailRecordZ = z
+  .record(z.string(), scalarZ)
+  .meta({ id: 'detailRecord' });
+
+export const detailRecordListZ = z
+  .array(detailRecordZ)
+  .max(MAX_DETAIL_RECORDS)
+  .meta({ id: 'detailRecordList' });
+
+export const fieldValueZ = z
+  .union([scalarZ, detailRecordListZ])
+  .meta({ id: 'fieldValue' });
+
 export const valueFormatPresetZ = z.enum(valueFormatPresets);
 
 export const fieldTypeZ = z.enum(['string', 'number', 'boolean', 'date', 'datetime']);
-export const fieldRoleZ = z.enum(['dimension', 'measure']);
+export const fieldRoleZ = z.enum(['dimension', 'measure', 'detail']);
 
-export const fieldZ = z
+export const scalarFieldZ = z
   .object({
     type: fieldTypeZ,
-    role: fieldRoleZ,
+    role: z.enum(['dimension', 'measure']),
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     defaultFormat: valueFormatPresetZ.optional()
   })
-  .meta({ id: 'field' });
+  .strict()
+  .meta({ id: 'scalarField' });
 
-export const queryFieldZ = z
+export const queryScalarFieldZ = z
   .object({
     type: fieldTypeZ,
-    role: fieldRoleZ,
+    role: z.enum(['dimension', 'measure']),
     queryField: z.string().min(1),
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     defaultFormat: valueFormatPresetZ.optional()
   })
+  .strict()
+  .meta({ id: 'queryScalarField' });
+
+const detailItemsZ = z
+  .object({
+    fields: z
+      .record(fieldNameZ, scalarFieldZ)
+      .meta({ minProperties: 1 })
+  })
+  .strict();
+
+const queryDetailItemsZ = z
+  .object({
+    fields: z
+      .record(fieldNameZ, queryScalarFieldZ)
+      .meta({ minProperties: 1 })
+  })
+  .strict();
+
+export const recordListFieldZ = z
+  .object({
+    type: z.literal('recordList'),
+    role: z.literal('detail'),
+    label: z.string().min(1).optional(),
+    nullable: z.boolean().optional(),
+    items: detailItemsZ
+  })
+  .strict()
+  .meta({ id: 'recordListField' });
+
+export const queryRecordListFieldZ = z
+  .object({
+    type: z.literal('recordList'),
+    role: z.literal('detail'),
+    queryField: z.string().min(1),
+    label: z.string().min(1).optional(),
+    nullable: z.boolean().optional(),
+    items: queryDetailItemsZ
+  })
+  .strict()
+  .meta({ id: 'queryRecordListField' });
+
+export const semanticHtmlFieldZ = z
+  .object({
+    type: z.literal('semanticHtml'),
+    role: z.literal('detail'),
+    label: z.string().min(1).optional(),
+    nullable: z.boolean().optional()
+  })
+  .strict()
+  .meta({
+    id: 'semanticHtmlField',
+    description: `受控语义 HTML 字符串，最长 ${MAX_SEMANTIC_HTML_LENGTH} 字符`
+  });
+
+export const querySemanticHtmlFieldZ = z
+  .object({
+    type: z.literal('semanticHtml'),
+    role: z.literal('detail'),
+    queryField: z.string().min(1),
+    label: z.string().min(1).optional(),
+    nullable: z.boolean().optional()
+  })
+  .strict()
+  .meta({
+    id: 'querySemanticHtmlField',
+    description: `DQE 返回的受控语义 HTML 字符串，最长 ${MAX_SEMANTIC_HTML_LENGTH} 字符`
+  });
+
+export const fieldZ = z
+  .discriminatedUnion('type', [
+    scalarFieldZ,
+    recordListFieldZ,
+    semanticHtmlFieldZ
+  ])
+  .meta({ id: 'field' });
+
+export const queryFieldZ = z
+  .discriminatedUnion('type', [
+    queryScalarFieldZ,
+    queryRecordListFieldZ,
+    querySemanticHtmlFieldZ
+  ])
   .meta({ id: 'queryField' });
 
 export const fieldsZ = z

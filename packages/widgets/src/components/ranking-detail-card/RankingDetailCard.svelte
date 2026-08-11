@@ -2,6 +2,7 @@
   import type { RankingDetailCardProps } from '@metriccanvas/page';
   import type { MainDataSlots } from '../../shared/component-data';
   import { buildRankingDetailRows } from './rows';
+  import SemanticHtml from './SemanticHtml.svelte';
 
   interface Props {
     data: MainDataSlots;
@@ -45,6 +46,31 @@
             {/if}
           </div>
           {#if row.description}<p>{row.description}</p>{/if}
+          {#if row.semanticDescription}
+            <div class="semantic-description">
+              {#if row.semanticDescription.nodes}
+                <SemanticHtml nodes={row.semanticDescription.nodes} />
+              {:else}
+                <span class="semantic-html-error">说明内容格式不受支持</span>
+              {/if}
+            </div>
+          {/if}
+          {#if row.details}
+            <details class="nested-details" open={row.details.defaultExpanded}>
+              <summary>归因明细（{row.details.items.length}）</summary>
+              <ul>
+                {#each row.details.items as item, itemIndex (`${item.title}:${itemIndex}`)}
+                  <li>
+                    <div class="nested-headline">
+                      <strong>{item.title}</strong>
+                      {#if item.value}<span>{item.value}</span>{/if}
+                    </div>
+                    {#if item.description}<p>{item.description}</p>{/if}
+                  </li>
+                {/each}
+              </ul>
+            </details>
+          {/if}
         </div>
         </li>
       {:else}
@@ -154,7 +180,8 @@
   .negative-value {
     color: var(--mc-color-negative, #f5222d);
   }
-  p {
+  p,
+  .semantic-description {
     margin: 6px 0 0;
     padding: 7px 9px;
     color: var(--mc-color-report-description, #595959);
@@ -163,6 +190,52 @@
     font-size: 12px;
     line-height: 18px;
     overflow-wrap: anywhere;
+  }
+  .semantic-html-error {
+    color: var(--mc-color-negative, #f5222d);
+  }
+  .nested-details {
+    margin-top: 8px;
+    color: var(--mc-color-report-description, #595959);
+    font-size: 12px;
+  }
+  .nested-details summary {
+    width: fit-content;
+    cursor: pointer;
+    color: var(--mc-color-report-badge, #1476ff);
+    font-weight: 600;
+    line-height: 20px;
+  }
+  .nested-details ul {
+    display: grid;
+    gap: 6px;
+    margin: 7px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .nested-details li {
+    padding: 7px 9px;
+    background: rgb(255 255 255 / 0.78);
+    border: 1px solid rgb(212 213 255 / 0.75);
+    border-radius: 6px;
+  }
+  .nested-headline {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .nested-headline strong {
+    color: var(--mc-color-report-text, #191919);
+    font-weight: 600;
+  }
+  .nested-details p {
+    margin-top: 4px;
+    padding: 0;
+    background: transparent;
+    font-size: inherit;
+    line-height: 18px;
   }
   .empty {
     padding: 28px 0;
@@ -216,7 +289,8 @@
   .ranking-detail-card.report .metric-label {
     color: #505a84;
   }
-  .ranking-detail-card.report p {
+  .ranking-detail-card.report p,
+  .ranking-detail-card.report .semantic-description {
     margin-top: 8px;
     padding: 8px 10px;
     color: var(--mc-color-report-description, #595959);
@@ -224,5 +298,15 @@
     border-radius: 6px;
     font-size: 16px;
     line-height: 20px;
+  }
+  .ranking-detail-card.report .nested-details {
+    font-size: 14px;
+  }
+  .ranking-detail-card.report .nested-details p {
+    margin-top: 4px;
+    padding: 0;
+    background: transparent;
+    font-size: 13px;
+    line-height: 18px;
   }
 </style>

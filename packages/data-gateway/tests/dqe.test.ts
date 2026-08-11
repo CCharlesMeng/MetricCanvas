@@ -232,6 +232,138 @@ describe('DQE 数据网关', () => {
     });
   });
 
+  it('按项级查询字段映射归一化嵌套明细', async () => {
+    const item: JsonObject = {
+      output_metrics: ['流水', '云服务流水归因明细'],
+      output_dims: ['客户名称'],
+      filter: { dims: [], metrics: [] },
+      order: {}
+    };
+    const gateway = createDqeGateway({
+      fetchImpl: (async () =>
+        new Response(
+          JSON.stringify({
+            retCode: 'CBC.0000',
+            results: [{
+              code: 'SUCCESS',
+              data: [{
+                '客户名称': '客户A',
+                '流水': 100,
+                '云服务流水归因明细': [{
+                  '云服务': 'ModelArts',
+                  '归因波动金额': -20,
+                  '原因': '到期未续订',
+                  '未映射的追加字段': '不泄漏到快照'
+                }]
+              }],
+              total_count: 1
+            }]
+          })
+        )) as typeof fetch
+    });
+
+    await expect(
+      gateway.fetchData(
+        dqeQuery(item, {
+          customer: {
+            queryField: '客户名称',
+            type: 'string',
+            role: 'dimension'
+          },
+          revenue: {
+            queryField: '流水',
+            type: 'number',
+            role: 'measure'
+          },
+          attributions: {
+            queryField: '云服务流水归因明细',
+            type: 'recordList',
+            role: 'detail',
+            items: {
+              fields: {
+                service: {
+                  queryField: '云服务',
+                  type: 'string',
+                  role: 'dimension'
+                },
+                delta: {
+                  queryField: '归因波动金额',
+                  type: 'number',
+                  role: 'measure'
+                },
+                reason: {
+                  queryField: '原因',
+                  type: 'string',
+                  role: 'dimension'
+                }
+              }
+            }
+          }
+        })
+      )
+    ).resolves.toEqual({
+      rows: [{
+        customer: '客户A',
+        revenue: 100,
+        attributions: [{ service: 'ModelArts', delta: -20, reason: '到期未续订' }]
+      }],
+      totalCount: 1
+    });
+  });
+
+  it('把 DQE 语义 HTML 作为不透明 detail 字符串映射，不在数据网关解释样式', async () => {
+    const item: JsonObject = {
+      output_metrics: ['流水', '云服务流水归因明细'],
+      output_dims: ['客户名称'],
+      filter: { dims: [], metrics: [] },
+      order: {}
+    };
+    const semanticHtml =
+      '<span class="detail-value tone-negative">-12.0万</span>';
+    const gateway = createDqeGateway({
+      fetchImpl: (async () =>
+        new Response(
+          JSON.stringify({
+            retCode: 'CBC.0000',
+            results: [{
+              code: 'SUCCESS',
+              data: [{
+                '客户名称': '客户A',
+                '流水': 100,
+                '云服务流水归因明细': semanticHtml
+              }],
+              total_count: 1
+            }]
+          })
+        )) as typeof fetch
+    });
+
+    await expect(
+      gateway.fetchData(
+        dqeQuery(item, {
+          customer: {
+            queryField: '客户名称',
+            type: 'string',
+            role: 'dimension'
+          },
+          revenue: {
+            queryField: '流水',
+            type: 'number',
+            role: 'measure'
+          },
+          attributions: {
+            queryField: '云服务流水归因明细',
+            type: 'semanticHtml',
+            role: 'detail'
+          }
+        })
+      )
+    ).resolves.toEqual({
+      rows: [{ customer: '客户A', revenue: 100, attributions: semanticHtml }],
+      totalCount: 1
+    });
+  });
+
   it('下钻覆盖截止日期时保留查询定义中的小于运算符', () => {
     const item: JsonObject = {
       output_metrics: [],

@@ -11,7 +11,18 @@ const data: MainDataSlots = {
       customerLevel: { type: 'string', role: 'dimension' },
       revenue: { type: 'number', role: 'measure', defaultFormat: 'compact-wan-0' },
       change: { type: 'number', role: 'measure', defaultFormat: 'percent-1' },
-      description: { type: 'string', role: 'dimension' }
+      description: { type: 'string', role: 'dimension' },
+      attributions: {
+        type: 'recordList',
+        role: 'detail',
+        items: {
+          fields: {
+            service: { type: 'string', role: 'dimension' },
+            delta: { type: 'number', role: 'measure', defaultFormat: 'compact-wan-1' },
+            reason: { type: 'string', role: 'dimension' }
+          }
+        }
+      }
     },
     snapshot: {
       status: 'ready',
@@ -22,7 +33,11 @@ const data: MainDataSlots = {
           customerLevel: '卓越',
           revenue: 2_000_000,
           change: 12.5,
-          description: '云通信流水增长20万'
+          description: '云通信流水增长20万',
+          attributions: [
+            { service: 'ModelArts', delta: -120_000, reason: '到期未续订' },
+            { service: '对象存储服务', delta: 30_000, reason: '用量增加' }
+          ]
         },
         {
           customer: '客户A',
@@ -67,7 +82,13 @@ const props = {
   valueField: 'revenue',
   changeField: 'change',
   badgeFields: ['customerType', 'customerLevel'],
-  descriptionField: 'description'
+  descriptionField: 'description',
+  details: {
+    field: 'attributions',
+    titleField: 'service',
+    valueField: { field: 'delta' },
+    descriptionField: 'reason'
+  }
 } satisfies RankingDetailCardProps;
 
 describe('buildRankingDetailRows', () => {
@@ -118,5 +139,37 @@ describe('buildRankingDetailRows', () => {
       value: '200万',
       badges: []
     });
+  });
+
+  it('按项字段契约格式化嵌套归因明细', () => {
+    const rows = buildRankingDetailRows(data, props);
+
+    expect(rows[0]?.details).toEqual({
+      defaultExpanded: false,
+      items: [
+        { title: 'ModelArts', value: '-12.0万', description: '到期未续订' },
+        { title: '对象存储服务', value: '3.0万', description: '用量增加' }
+      ]
+    });
+    expect(rows[1]?.details).toBeUndefined();
+  });
+
+  it('把 semanticHtml 作为行内说明解析，不生成可展开明细', () => {
+    const semanticData = structuredClone(data);
+    semanticData.main.fields.attributions = {
+      type: 'semanticHtml',
+      role: 'detail'
+    };
+    semanticData.main.snapshot.rows[0]!.attributions =
+      '<span class="detail-title">ModelArts</span>：<span class="detail-description">到期未续订</span><span class="detail-value tone-negative">（-12.0万）</span>';
+
+    const rows = buildRankingDetailRows(semanticData, {
+      nameField: 'customer',
+      valueField: 'revenue',
+      semanticDescriptionField: 'attributions'
+    });
+
+    expect(rows[0]?.details).toBeUndefined();
+    expect(rows[0]?.semanticDescription?.nodes).toBeDefined();
   });
 });

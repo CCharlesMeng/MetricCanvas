@@ -1,7 +1,17 @@
-import type { FieldValue, RankingDetailCardProps } from '@metriccanvas/page';
+import type {
+  DetailRecord,
+  FieldValue,
+  RankingDetailCardProps,
+  RecordListFieldDefinition,
+  Row
+} from '@metriccanvas/page';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { formatValue, valuePolarity, type ValuePolarity } from '../../shared/value-format';
+import {
+  parseSemanticHtml,
+  type SemanticHtmlNode
+} from './semantic-html';
 
 export interface RankingDetailChange {
   text: string;
@@ -15,7 +25,23 @@ export interface RankingDetailRow {
   badges: string[];
   change?: RankingDetailChange;
   description?: string;
+  semanticDescription?: {
+    nodes?: SemanticHtmlNode[];
+    error?: string;
+  };
+  details?: {
+    defaultExpanded: boolean;
+    items: RankingDetailNestedItem[];
+  };
 }
+
+export interface RankingDetailNestedItem {
+  title: string;
+  value?: string;
+  description?: string;
+}
+
+type RecordListDetailsProps = NonNullable<RankingDetailCardProps['details']>;
 
 /** 主数据槽顺序即排行顺序；本函数只映射展示字段，不排序也不截断。 */
 export function buildRankingDetailRows(
@@ -31,6 +57,10 @@ export function buildRankingDetailRows(
   const description = props.descriptionField
     ? resolveField(props.descriptionField, data)
     : undefined;
+  const semanticDescription = props.semanticDescriptionField
+    ? resolveField(props.semanticDescriptionField, data)
+    : undefined;
+  const details = props.details ? resolveField(props.details.field, data) : undefined;
 
   return data.main.snapshot.rows.map((row, index) => ({
     rank: index + 1,
@@ -47,8 +77,80 @@ export function buildRankingDetailRows(
       : {}),
     ...(description && hasDisplayValue(row[description.field])
       ? { description: formatValue(row[description.field], description.format) }
+      : {}),
+    ...(semanticDescription
+      ? buildSemanticDescription(row, semanticDescription)
+      : {}),
+    ...(props.details && details
+      ? buildNestedDetails(row, details, props.details)
       : {})
   }));
+}
+
+function buildSemanticDescription(
+  row: Row,
+  resolved: ResolvedField
+): Pick<RankingDetailRow, 'semanticDescription'> {
+  const value = row[resolved.field];
+  if (typeof value !== 'string' || value.trim().length === 0) return {};
+  const parsed = parseSemanticHtml(value);
+  if (!parsed.ok) {
+    return {
+      semanticDescription: { error: parsed.error }
+    };
+  }
+  return {
+    semanticDescription: { nodes: parsed.document.nodes }
+  };
+}
+
+function buildNestedDetails(
+  row: Row,
+  resolved: ResolvedField,
+  props: RecordListDetailsProps
+): Pick<RankingDetailRow, 'details'> {
+  const value = row[resolved.field];
+  if (!Array.isArray(value) || value.length === 0) return {};
+  const definition = resolved.definition?.type === 'recordList'
+    ? resolved.definition
+    : undefined;
+  const items = value.map((item) => nestedItem(item, definition, props));
+  return {
+    details: {
+      defaultExpanded: props.defaultExpanded ?? false,
+      items
+    }
+  };
+}
+
+function nestedItem(
+  item: DetailRecord,
+  definition: RecordListFieldDefinition | undefined,
+  props: RecordListDetailsProps
+): RankingDetailNestedItem {
+  const titleDefinition = definition?.items.fields[props.titleField];
+  const title = formatValue(item[props.titleField], titleDefinition?.defaultFormat);
+  const valueField = props.valueField;
+  const descriptionField = props.descriptionField;
+  return {
+    title,
+    ...(valueField
+      ? {
+          value: formatValue(
+            item[valueField.field],
+            valueField.format ?? definition?.items.fields[valueField.field]?.defaultFormat
+          )
+        }
+      : {}),
+    ...(descriptionField && hasDisplayValue(item[descriptionField])
+      ? {
+          description: formatValue(
+            item[descriptionField],
+            definition?.items.fields[descriptionField]?.defaultFormat
+          )
+        }
+      : {})
+  };
 }
 
 function badgeText(value: FieldValue | undefined, field: ResolvedField): string[] {

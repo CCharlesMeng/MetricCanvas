@@ -61,11 +61,35 @@ export function isQueryDataSource(
 export function resolveDataSourceFields(
   dataSource: DataSource
 ): Record<string, ResolvedFieldDefinition> {
+  if (isInlineDataSource(dataSource)) {
+    return Object.fromEntries(
+      Object.entries(dataSource.fields).map(([fieldId, definition]) => [
+        fieldId,
+        { ...definition }
+      ])
+    );
+  }
   return Object.fromEntries(
     Object.entries(dataSource.fields).map(([fieldId, definition]) => {
-      if (!('queryField' in definition)) return [fieldId, { ...definition }];
+      if (definition.type !== 'recordList') {
+        const { queryField: _queryField, ...field } = definition;
+        return [fieldId, field];
+      }
       const { queryField: _queryField, ...field } = definition;
-      return [fieldId, field];
+      return [
+        fieldId,
+        {
+          ...field,
+          items: {
+            fields: Object.fromEntries(
+              Object.entries(definition.items.fields).map(([itemFieldId, itemDefinition]) => {
+                const { queryField: _itemQueryField, ...itemField } = itemDefinition;
+                return [itemFieldId, itemField];
+              })
+            )
+          }
+        }
+      ];
     })
   );
 }

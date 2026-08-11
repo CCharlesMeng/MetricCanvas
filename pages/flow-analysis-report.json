@@ -566,9 +566,9 @@
           "queryField": "customer-level"
         },
         "growth-description": {
-          "type": "string",
-          "role": "dimension",
-          "label": "增长说明",
+          "type": "semanticHtml",
+          "role": "detail",
+          "label": "增长明细",
           "queryField": "growth-description"
         },
         "captured-at": {
@@ -601,7 +601,7 @@
               "customer-name": "客户A",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "growth-description": "云通信流水增长50万",
+              "growth-description": "<span class=\"detail-title\">云通信</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（50万）</span>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "amount": 5000000,
               "change": 18.5
@@ -610,7 +610,7 @@
               "customer-name": "客户B",
               "customer-type": "SMB",
               "customer-level": "战略",
-              "growth-description": "Core流水增长46万",
+              "growth-description": "<span class=\"detail-title\">Core</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（46万）</span>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "amount": 4600000,
               "change": 15.2
@@ -619,7 +619,7 @@
               "customer-name": "客户C",
               "customer-type": "KA",
               "customer-level": "核心",
-              "growth-description": "资源用量增长42万",
+              "growth-description": "<span class=\"detail-title\">公有云服务</span>：<span class=\"detail-description\">资源用量增长</span><span class=\"detail-value tone-positive\">（42万）</span>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "amount": 4200000,
               "change": 12.8
@@ -628,7 +628,7 @@
               "customer-name": "客户D",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "growth-description": "按需流水增长38万",
+              "growth-description": "<span class=\"detail-title\">按需资源</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（38万）</span>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "amount": 3800000,
               "change": 10.6
@@ -637,13 +637,58 @@
               "customer-name": "客户E",
               "customer-type": "KA",
               "customer-level": "战略",
-              "growth-description": "短信业务增长34万",
+              "growth-description": "<span class=\"detail-title\">短信业务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（34万）</span>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "amount": 3400000,
               "change": 8.4
+            },
+            {
+              "customer-name": "客户F",
+              "customer-type": "SMB",
+              "customer-level": "核心",
+              "growth-description": "<span class=\"detail-title\">存储服务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（30万）</span>",
+              "captured-at": "2026-02-28T23:59:59+08:00",
+              "amount": 3000000,
+              "change": 7.2
+            },
+            {
+              "customer-name": "客户G",
+              "customer-type": "KA",
+              "customer-level": "卓越",
+              "growth-description": "<span class=\"detail-title\">AI算力</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（27万）</span>",
+              "captured-at": "2026-02-28T23:59:59+08:00",
+              "amount": 2700000,
+              "change": 6.5
+            },
+            {
+              "customer-name": "客户H",
+              "customer-type": "SMB",
+              "customer-level": "战略",
+              "growth-description": "<span class=\"detail-title\">数据库服务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（24万）</span>",
+              "captured-at": "2026-02-28T23:59:59+08:00",
+              "amount": 2400000,
+              "change": 5.8
+            },
+            {
+              "customer-name": "客户I",
+              "customer-type": "KA",
+              "customer-level": "核心",
+              "growth-description": "<span class=\"detail-title\">云安全</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（21万）</span>",
+              "captured-at": "2026-02-28T23:59:59+08:00",
+              "amount": 2100000,
+              "change": 4.9
+            },
+            {
+              "customer-name": "客户J",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "growth-description": "<span class=\"detail-title\">CDN</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（18万）</span>",
+              "captured-at": "2026-02-28T23:59:59+08:00",
+              "amount": 1800000,
+              "change": 4.2
             }
           ],
-          "totalCount": 5
+          "totalCount": 10
         },
         "query": {
           "language": "dqe",
@@ -684,127 +729,97 @@
           "type": "string",
           "role": "dimension",
           "label": "客户名称",
-          "queryField": "customer-name"
+          "queryField": "客户名称"
         },
         "customer-type": {
           "type": "string",
           "role": "dimension",
-          "label": "客户类型",
-          "queryField": "customer-type"
+          "label": "业务标签",
+          "nullable": true,
+          "queryField": "业务标签"
         },
         "customer-level": {
           "type": "string",
           "role": "dimension",
-          "label": "客户级别",
-          "queryField": "customer-level"
+          "label": "客户类型标签",
+          "nullable": true,
+          "queryField": "客户类型标签"
         },
-        "decline-reason": {
+        "customer-id": {
           "type": "string",
           "role": "dimension",
-          "label": "下降原因",
-          "queryField": "decline-reason"
-        },
-        "captured-at": {
-          "type": "datetime",
-          "role": "dimension",
-          "label": "采集时间",
-          "queryField": "captured-at"
+          "label": "客户编号",
+          "queryField": "客户编号"
         },
         "amount": {
           "type": "number",
           "role": "measure",
-          "label": "本月流水",
+          "label": "公有云流水",
           "defaultFormat": "compact-wan-0",
-          "queryField": "amount"
+          "queryField": "公有云流水"
         },
         "change": {
           "type": "number",
           "role": "measure",
-          "label": "环比",
+          "label": "公有云流水月环比",
           "defaultFormat": "percent-2-signed",
-          "queryField": "change"
+          "queryField": "公有云流水月环比"
+        },
+        "monthly-delta": {
+          "type": "number",
+          "role": "measure",
+          "label": "公有云流水月变化",
+          "defaultFormat": "compact-wan-1",
+          "queryField": "公有云流水月变化"
+        },
+        "attribution-details": {
+          "type": "semanticHtml",
+          "role": "detail",
+          "label": "云服务流水归因明细",
+          "queryField": "云服务流水归因明细"
         }
       },
       "source": {
         "type": "query",
-        "initial": {
-          "capturedAt": "2026-02-28T23:59:59+08:00",
-          "rows": [
-            {
-              "customer-name": "客户F",
-              "customer-type": "SMB",
-              "customer-level": "卓越",
-              "decline-reason": "一次性流水下降48万",
-              "captured-at": "2026-02-28T23:59:59+08:00",
-              "amount": 4800000,
-              "change": -16.5
-            },
-            {
-              "customer-name": "客户G",
-              "customer-type": "KA",
-              "customer-level": "战略",
-              "decline-reason": "资源使用量下降44万",
-              "captured-at": "2026-02-28T23:59:59+08:00",
-              "amount": 4400000,
-              "change": -14.2
-            },
-            {
-              "customer-name": "客户H",
-              "customer-type": "SMB",
-              "customer-level": "核心",
-              "decline-reason": "云通信流水下降40万",
-              "captured-at": "2026-02-28T23:59:59+08:00",
-              "amount": 4000000,
-              "change": -12.1
-            },
-            {
-              "customer-name": "客户I",
-              "customer-type": "KA",
-              "customer-level": "卓越",
-              "decline-reason": "Core流水下降36万",
-              "captured-at": "2026-02-28T23:59:59+08:00",
-              "amount": 3600000,
-              "change": -9.8
-            },
-            {
-              "customer-name": "客户J",
-              "customer-type": "SMB",
-              "customer-level": "战略",
-              "decline-reason": "短信业务下降32万",
-              "captured-at": "2026-02-28T23:59:59+08:00",
-              "amount": 3200000,
-              "change": -7.6
-            }
-          ],
-          "totalCount": 5
-        },
         "query": {
           "language": "dqe",
           "body": {
             "dsl_list": [
               {
                 "output_dims": [
-                  "customer-name",
-                  "customer-type",
-                  "customer-level",
-                  "decline-reason",
-                  "captured-at"
+                  "客户名称",
+                  "业务标签",
+                  "客户类型标签",
+                  "客户编号"
                 ],
                 "output_metrics": [
-                  "amount",
-                  "change"
+                  "公有云流水",
+                  "公有云流水月环比",
+                  "公有云流水月变化",
+                  "云服务流水归因明细"
                 ],
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "start": "202606",
+                    "end": "202606"
                   },
-                  "dims": [],
-                  "metrics": []
+                  "metrics": [
+                    {
+                      "metric_name": "公有云流水月变化",
+                      "metric_value_list": [
+                        0
+                      ],
+                      "operator": "<"
+                    }
+                  ]
                 },
-                "order": {}
+                "order": {
+                  "orderByField": "公有云流水月变化",
+                  "type": "ASC",
+                  "limit": 10,
+                  "offset": 0
+                }
               }
             ]
           }
@@ -2190,70 +2205,14 @@
       "components": [
         {
           "id": "customer-summary",
-          "type": "aiSummary",
+          "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
             "title": "AI 总结",
-            "variant": "reportInline",
-            "promptTemplate": "总结客户增长、下降与风险客户",
-            "relatedData": {
-              "growth": {
-                "source": "customer-growth-top",
-                "description": "增长客户",
-                "fields": [
-                  {
-                    "field": "customer-name",
-                    "term": "客户名称"
-                  },
-                  {
-                    "field": "amount",
-                    "term": "金额"
-                  },
-                  {
-                    "field": "change",
-                    "term": "变化"
-                  }
-                ]
-              },
-              "decline": {
-                "source": "customer-decline-top",
-                "description": "下降客户",
-                "fields": [
-                  {
-                    "field": "customer-name",
-                    "term": "客户名称"
-                  },
-                  {
-                    "field": "amount",
-                    "term": "金额"
-                  },
-                  {
-                    "field": "change",
-                    "term": "变化"
-                  }
-                ]
-              },
-              "risk": {
-                "source": "customer-risk-top",
-                "description": "风险客户",
-                "fields": [
-                  {
-                    "field": "customer-name",
-                    "term": "客户名称"
-                  },
-                  {
-                    "field": "risk-type",
-                    "term": "风险分类"
-                  },
-                  {
-                    "field": "current-month-amount",
-                    "term": "本月流水"
-                  }
-                ]
-              }
-            }
+            "body": "1、增长客户：头部增长客户贡献集中，建议持续跟踪增量来源与可延续性。\n2、下降客户：下降客户需要结合同比下滑原因逐项制定恢复动作。\n3、风险客户：风险客户存在月度流水波动，应优先核验一次性收入与续签节奏。",
+            "variant": "insight"
           }
         },
         {
@@ -2277,7 +2236,7 @@
               "customer-type",
               "customer-level"
             ],
-            "descriptionField": "growth-description"
+            "semanticDescriptionField": "growth-description"
           }
         },
         {
@@ -2292,16 +2251,16 @@
           "props": {
             "title": "TOP下降流水客户",
             "variant": "report",
-            "metricLabel": "2月流水",
+            "metricLabel": "6月流水变化",
             "tone": "negative",
             "nameField": "customer-name",
-            "valueField": "amount",
+            "valueField": "monthly-delta",
             "changeField": "change",
             "badgeFields": [
               "customer-type",
               "customer-level"
             ],
-            "descriptionField": "decline-reason"
+            "semanticDescriptionField": "attribution-details"
           }
         },
         {
@@ -2413,38 +2372,14 @@
       "components": [
         {
           "id": "track-summary",
-          "type": "aiSummary",
+          "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
             "title": "AI 总结",
-            "variant": "reportInline",
-            "promptTemplate": "总结主要赛道、环比与年度推演压力",
-            "relatedData": {
-              "tracks": {
-                "source": "track-analysis",
-                "description": "赛道分析",
-                "fields": [
-                  {
-                    "field": "track-name",
-                    "term": "赛道名称"
-                  },
-                  {
-                    "field": "flow-amount",
-                    "term": "流水"
-                  },
-                  {
-                    "field": "month-over-month",
-                    "term": "环比"
-                  },
-                  {
-                    "field": "annual-projection",
-                    "term": "年推演流水"
-                  }
-                ]
-              }
-            }
+            "body": "1、主要贡献赛道：头部赛道仍是流水的主要支撑，应巩固稳定贡献。\n2、环比变化：赛道间环比分化明显，需要关注回落赛道的交付与回款节奏。\n3、年度推演压力：部分赛道年度推演压力偏高，需补充新增机会与确定性项目。",
+            "variant": "insight"
           }
         },
         {
@@ -2549,38 +2484,14 @@
       "components": [
         {
           "id": "industry-summary",
-          "type": "aiSummary",
+          "type": "text",
           "layout": {
             "span": 12
           },
           "props": {
             "title": "AI 总结",
-            "variant": "reportInline",
-            "promptTemplate": "总结主要产业、增长来源与目标支撑风险",
-            "relatedData": {
-              "industries": {
-                "source": "industry-analysis",
-                "description": "产业分析",
-                "fields": [
-                  {
-                    "field": "industry-name",
-                    "term": "产业名称"
-                  },
-                  {
-                    "field": "flow-amount",
-                    "term": "流水"
-                  },
-                  {
-                    "field": "month-over-month",
-                    "term": "环比"
-                  },
-                  {
-                    "field": "annual-projection",
-                    "term": "年推演流水"
-                  }
-                ]
-              }
-            }
+            "body": "1、主要贡献产业：核心产业保持主要流水贡献，结构集中度需要持续观察。\n2、增长来源：当前增长来源由重点产业与新增项目共同驱动。\n3、目标支撑风险：部分产业的年度推演不足以支撑目标，需提前识别目标支撑风险。",
+            "variant": "insight"
           }
         },
         {

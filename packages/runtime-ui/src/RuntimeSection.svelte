@@ -5,6 +5,7 @@
     type PageSection
   } from '@metriccanvas/page';
   import type { Snippet } from 'svelte';
+  import { installRankingDetailRowHeightSync } from './sync-ranking-detail-row-heights';
   import type { AuthoringComponentLocator, AuthoringOptions } from './types';
 
   interface Props {
@@ -15,6 +16,7 @@
 
   let { section, authoring, componentContent }: Props = $props();
   let dragged = $state<AuthoringComponentLocator | null>(null);
+  let sectionGrid = $state<HTMLElement | null>(null);
   const reportOverviewSection = $derived(section.variant === 'reportOverview');
   const dualOverviewSection = $derived(
     reportOverviewSection &&
@@ -59,6 +61,11 @@
       Boolean(section.components[0].props.title) &&
       !section.components[0].props.body
   );
+
+  $effect(() => {
+    if (!reportCustomerAnalysisSection || !sectionGrid) return;
+    return installRankingDetailRowHeightSync(sectionGrid);
+  });
 
   function locator(componentId: string): AuthoringComponentLocator {
     return { sectionId: section.id, componentId };
@@ -154,6 +161,7 @@
 >
   {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
   <div
+    bind:this={sectionGrid}
     class="section-grid"
     style="grid-template-columns: repeat({section.layout.columns}, minmax(0, 1fr));"
   >

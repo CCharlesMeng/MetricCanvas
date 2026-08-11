@@ -30,8 +30,10 @@ export const textComponentZ = z
 
 componentCatalogRegistry.add(textComponentZ, {
   label: '文本',
-  purpose: '承载说明、口径提示或人工/AI 已确认的分析结论',
-  chooseWhen: ['说明、提示、已确认结论；不能代替数据图表'],
+  purpose: '承载说明、口径提示或由后端返回的人工/AI 已确认分析结论',
+  chooseWhen: [
+    '摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件'
+  ],
   dataShape: '不绑定页面数据源',
   title: 'optional',
   defaultSpan: 12

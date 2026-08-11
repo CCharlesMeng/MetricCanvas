@@ -42,8 +42,10 @@ export const aiSummaryComponentZ = z
 
 componentCatalogRegistry.add(aiSummaryComponentZ, {
   label: 'AI 总结',
-  purpose: '基于声明的关联数据流式生成 AI 总结',
-  chooseWhen: ['需要将当前页面查询结果动态总结为文本'],
+  purpose: '仅在需求明确声明时，基于关联数据通过 SSE 流式生成 AI 总结',
+  chooseWhen: [
+    '需求明确声明运行时 SSE 动态生成；仅有摘要标题、数据或 AI 文案不得推断为 aiSummary'
+  ],
   dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
   title: 'optional',
   defaultSpan: 12

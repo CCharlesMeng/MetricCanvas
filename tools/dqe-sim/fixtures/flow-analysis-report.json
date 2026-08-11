@@ -58,23 +58,127 @@
       "output_metrics": ["amount", "change"],
       "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
       "rows": [
-        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "云通信流水增长50万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 5000000, "change": 18.5},
-        {"customer-name": "客户B", "customer-type": "SMB", "customer-level": "战略", "growth-description": "Core流水增长46万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4600000, "change": 15.2},
-        {"customer-name": "客户C", "customer-type": "KA", "customer-level": "核心", "growth-description": "资源用量增长42万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4200000, "change": 12.8},
-        {"customer-name": "客户D", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "按需流水增长38万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3800000, "change": 10.6},
-        {"customer-name": "客户E", "customer-type": "KA", "customer-level": "战略", "growth-description": "短信业务增长34万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3400000, "change": 8.4}
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "<span class=\"detail-title\">云通信</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（50万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 5000000, "change": 18.5},
+        {"customer-name": "客户B", "customer-type": "SMB", "customer-level": "战略", "growth-description": "<span class=\"detail-title\">Core</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（46万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4600000, "change": 15.2},
+        {"customer-name": "客户C", "customer-type": "KA", "customer-level": "核心", "growth-description": "<span class=\"detail-title\">公有云服务</span>：<span class=\"detail-description\">资源用量增长</span><span class=\"detail-value tone-positive\">（42万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4200000, "change": 12.8},
+        {"customer-name": "客户D", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "<span class=\"detail-title\">按需资源</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（38万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3800000, "change": 10.6},
+        {"customer-name": "客户E", "customer-type": "KA", "customer-level": "战略", "growth-description": "<span class=\"detail-title\">短信业务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（34万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3400000, "change": 8.4},
+        {"customer-name": "客户F", "customer-type": "SMB", "customer-level": "核心", "growth-description": "<span class=\"detail-title\">存储服务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（30万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3000000, "change": 7.2},
+        {"customer-name": "客户G", "customer-type": "KA", "customer-level": "卓越", "growth-description": "<span class=\"detail-title\">AI算力</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（27万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 2700000, "change": 6.5},
+        {"customer-name": "客户H", "customer-type": "SMB", "customer-level": "战略", "growth-description": "<span class=\"detail-title\">数据库服务</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（24万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 2400000, "change": 5.8},
+        {"customer-name": "客户I", "customer-type": "KA", "customer-level": "核心", "growth-description": "<span class=\"detail-title\">云安全</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（21万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 2100000, "change": 4.9},
+        {"customer-name": "客户J", "customer-type": "SMB", "customer-level": "卓越", "growth-description": "<span class=\"detail-title\">CDN</span>：<span class=\"detail-description\">流水增长</span><span class=\"detail-value tone-positive\">（18万）</span>", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 1800000, "change": 4.2}
       ]
     },
     "customer-decline-top": {
-      "output_dims": ["customer-name", "customer-type", "customer-level", "decline-reason", "captured-at"],
-      "output_metrics": ["amount", "change"],
-      "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
+      "output_dims": ["客户名称", "业务标签", "客户类型标签", "客户编号"],
+      "output_metrics": ["公有云流水", "公有云流水月环比", "公有云流水月变化", "云服务流水归因明细"],
+      "time": {"period": "month", "start": "202606", "end": "202606"},
+      "filter": {
+        "metrics": [{"metric_name": "公有云流水月变化", "metric_value_list": [0], "operator": "<"}]
+      },
+      "order": {"orderByField": "公有云流水月变化", "type": "ASC", "limit": 10, "offset": 0},
       "rows": [
-        {"customer-name": "客户F", "customer-type": "SMB", "customer-level": "卓越", "decline-reason": "一次性流水下降48万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4800000, "change": -16.5},
-        {"customer-name": "客户G", "customer-type": "KA", "customer-level": "战略", "decline-reason": "资源使用量下降44万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4400000, "change": -14.2},
-        {"customer-name": "客户H", "customer-type": "SMB", "customer-level": "核心", "decline-reason": "云通信流水下降40万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 4000000, "change": -12.1},
-        {"customer-name": "客户I", "customer-type": "KA", "customer-level": "卓越", "decline-reason": "Core流水下降36万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3600000, "change": -9.8},
-        {"customer-name": "客户J", "customer-type": "SMB", "customer-level": "战略", "decline-reason": "短信业务下降32万", "captured-at": "2026-02-28T23:59:59+08:00", "amount": 3200000, "change": -7.6}
+        {
+          "公有云流水": 368051717.59,
+          "公有云流水月环比": -3.56,
+          "公有云流水月变化": -12902133.27,
+          "云服务流水归因明细": "<span class=\"detail-title\">对象存储服务</span>：<span class=\"detail-description\">其它类型流水下降</span><span class=\"detail-value tone-negative\">（-1375.9万）</span>；<span class=\"detail-title\">对象存储服务</span>：<span class=\"detail-description\">本周期代金券使用量较上期减少</span><span class=\"detail-value tone-positive\">（192.1万）</span>；<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">退订导致流水下降</span><span class=\"detail-value tone-negative\">（-663.3万）</span>；<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">到期未续订导致流水下降</span><span class=\"detail-value tone-negative\">（-238.7万）</span>；<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">新增包周期订单</span><span class=\"detail-value tone-positive\">（592.9万）</span>；<span class=\"detail-title\">高性能弹性文件服务</span>：<span class=\"detail-description\">按需资源-用量增加</span><span class=\"detail-value tone-positive\">（16.6万）</span>；<span class=\"detail-title\">高性能弹性文件服务</span>：<span class=\"detail-description\">其它类型流水增加</span><span class=\"detail-value tone-positive\">（142.1万）</span>",
+          "客户名称": "蔚恒智能科技有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "103862419"
+        },
+        {
+          "公有云流水": 690.68,
+          "公有云流水月环比": -104.98,
+          "公有云流水月变化": -3061713.39,
+          "云服务流水归因明细": "<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">到期未续订导致流水下降</span><span class=\"detail-value tone-negative\">（-305.3万）</span>",
+          "客户名称": "芯拓（杭州）科技有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "103158742"
+        },
+        {
+          "公有云流水": 4430130.61,
+          "公有云流水月环比": -33.8,
+          "公有云流水月变化": -2103192.57,
+          "云服务流水归因明细": "<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">NPU卡数从496卡降低到105卡</span><span class=\"detail-value tone-negative\">（-90.2万）</span>；<span class=\"detail-title\">ModelArts</span>：<span class=\"detail-description\">其它类型流水下降</span><span class=\"detail-value tone-negative\">（-49.9万）</span>",
+          "客户名称": "云声科技股份有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "CIS127693"
+        },
+        {
+          "公有云流水": -0.03,
+          "公有云流水月环比": -105,
+          "公有云流水月变化": -1646888.43,
+          "云服务流水归因明细": "<span class=\"detail-title\">智能边缘云</span>：<span class=\"detail-description\">按需资源-用量减少</span><span class=\"detail-value tone-negative\">（-164.7万）</span>",
+          "客户名称": "深圳瑞恒网络通信技术有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "103984521"
+        },
+        {
+          "公有云流水": 26201506.87,
+          "公有云流水月环比": -6.16,
+          "公有云流水月变化": -1632062.58,
+          "云服务流水归因明细": "<span class=\"detail-title\">云连接</span>：<span class=\"detail-description\">本周期代金券使用量较上期增加</span><span class=\"detail-value tone-negative\">（-25.4万）</span>；<span class=\"detail-title\">云连接</span>：<span class=\"detail-description\">按需资源-用量减少</span><span class=\"detail-value tone-negative\">（-7.3万）</span>；<span class=\"detail-title\">云商店</span>：<span class=\"detail-description\">新增包周期订单</span><span class=\"detail-value tone-positive\">（55.2万）</span>；<span class=\"detail-title\">对象存储服务</span>：<span class=\"detail-description\">新增包周期订单</span><span class=\"detail-value tone-positive\">（18.0万）</span>；<span class=\"detail-title\">对象存储服务</span>：<span class=\"detail-description\">本周期代金券使用量较上期减少</span><span class=\"detail-value tone-positive\">（24.4万）</span>；<span class=\"detail-title\">对象存储服务</span>：<span class=\"detail-description\">其它类型流水增加</span><span class=\"detail-value tone-positive\">（36.7万）</span>",
+          "客户名称": "东风新能源汽车股份有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "CIS129457"
+        },
+        {
+          "公有云流水": 23421072.34,
+          "公有云流水月环比": -6.52,
+          "公有云流水月变化": -1551494.39,
+          "云服务流水归因明细": "<span class=\"detail-title\">媒体处理</span>：<span class=\"detail-description\">按需资源-用量减少</span><span class=\"detail-value tone-negative\">（-165.8万）</span>",
+          "客户名称": "FLAREBIT PTE. LTD.",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "101673892"
+        },
+        {
+          "公有云流水": 88273.29,
+          "公有云流水月环比": -99.26,
+          "公有云流水月变化": -1525538.13,
+          "云服务流水归因明细": "<span class=\"detail-title\">安全使能规划与设计服务</span>：<span class=\"detail-description\">一次性流水较上期减少</span><span class=\"detail-value tone-negative\">（-76.4万）</span>；<span class=\"detail-title\">安全集成开发与实施服务</span>：<span class=\"detail-description\">一次性流水较上期减少</span><span class=\"detail-value tone-negative\">（-76.1万）</span>",
+          "客户名称": "Digital Affairs Bureau",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "CIS146923"
+        },
+        {
+          "公有云流水": 31259.89,
+          "公有云流水月环比": -102.45,
+          "公有云流水月变化": -1257749.63,
+          "云服务流水归因明细": "<span class=\"detail-title\">公有云服务</span>：<span class=\"detail-description\">其它类型流水下降</span><span class=\"detail-value tone-negative\">（-125.8万）</span>",
+          "客户名称": "星云数据科技有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "CIS141768"
+        },
+        {
+          "公有云流水": 14119.55,
+          "公有云流水月环比": -103.64,
+          "公有云流水月变化": -1077329.44,
+          "云服务流水归因明细": "<span class=\"detail-title\">公有云服务</span>：<span class=\"detail-description\">到期未续订导致流水下降</span><span class=\"detail-value tone-negative\">（-107.7万）</span>",
+          "客户名称": "中国铁建集团有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "CIS114526"
+        },
+        {
+          "公有云流水": 21881.39,
+          "公有云流水月环比": -102.86,
+          "公有云流水月变化": -1050122.49,
+          "云服务流水归因明细": "<span class=\"detail-title\">企业云化咨询服务</span>：<span class=\"detail-description\">到期未续订导致流水下降</span><span class=\"detail-value tone-negative\">（-105.0万）</span>",
+          "客户名称": "力劲科技集团有限公司",
+          "业务标签": null,
+          "客户类型标签": null,
+          "客户编号": "101462873"
+        }
       ]
     },
     "customer-yoy-drop-top": {

@@ -131,16 +131,16 @@
 
 | 属性 | 必填 | 说明 |
 |---|---:|---|
-| `type` | 是 | `string`、`number`、`boolean`、`date` 或 `datetime` |
-| `role` | 是 | `dimension` 或 `measure` |
+| `type` | 是 | 标量为 `string`、`number`、`boolean`、`date` 或 `datetime`；结构化明细为 `recordList`；语义 HTML 明细为 `semanticHtml` |
+| `role` | 是 | 标量为 `dimension` 或 `measure`；两种明细字段均为 `detail` |
 | `label` | 否 | 默认展示名称 |
 | `unit` | 否 | 业务单位 |
 | `nullable` | 否 | 是否允许 `null`；缺省为允许 |
 | `defaultFormat` | 否 | 默认展示格式 |
 
-`dimension` 用于类别、时间、分组、筛选和排序。`measure` 用于数值、计数、比例和其他可比较结果。
+`dimension` 用于类别、时间、分组、筛选和排序。`measure` 用于数值、计数、比例和其他可比较结果。`detail` 只用于受控的一层对象数组或语义 HTML，见下文专节。
 
-`type` 描述外部结果归一后的真实标量类型，不由 `role` 推断。外部查询若返回
+`标量 type` 描述外部结果归一后的真实标量类型，不由 `role` 推断。外部查询若返回
 `"41.67%"`，应声明为 `type: "string"`、`role: "measure"` 并使用 `text`
 格式；此类字段只原样展示，不参与数值排序、图表计算或比例格式化。
 
@@ -276,12 +276,83 @@ DQE 查询规则：
 - 每个 DQE 输出字段具有一个 `queryField` 映射；
 - 每个 `queryField` 只映射到一个页面字段；
 - `output_dims` 对应 `role: "dimension"`；
-- `output_metrics` 中的字段名或别名对应 `role: "measure"`；
+- `output_metrics` 中的普通字段名或别名对应 `role: "measure"`；DQE 复合或 HTML 输出可以显式声明为 `role: "detail"`；
 - `initial` 可选，存在时表示默认查询状态的已验证结果；`rows: []` 表示已确认的空结果；
 - `initial.rows` 与查询定义一起保存，字段键使用 DQE 原始输出字段名，不使用页面字段 id；
 - 页面文档解析时使用已有 `queryField` 把 `initial.rows` 归一化为稳定页面字段，组件仍只引用页面字段 id；
 - 默认入口优先使用 `initial` 且不后台刷新；没有 `initial` 或入口筛选状态不同于默认状态时立即查询；
 - 发生动态查询后不再回退到 `initial`，查询失败进入错误态。
+
+### 嵌套明细字段
+
+DQE 输出的一层对象数组用 `type: "recordList"` 和
+`role: "detail"` 声明。外层与数组项字段都必须有显式查询字段映射：
+
+```json
+{
+  "attribution-details": {
+    "type": "recordList",
+    "role": "detail",
+    "label": "云服务流水归因明细",
+    "queryField": "云服务流水归因明细",
+    "items": {
+      "fields": {
+        "cloud-service": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "云服务"
+        },
+        "attribution-delta": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "云服务归因波动金额"
+        },
+        "reason": {
+          "type": "string",
+          "role": "dimension",
+          "queryField": "云服务波动原因"
+        }
+      }
+    }
+  }
+}
+```
+
+- 数组项属性只允许标量，不允许继续嵌套；
+- 每个结果行的单个嵌套明细字段最多 100 项；
+- `[]` 表示已确认没有明细；`null` 是否合法由 `nullable` 决定；
+- 内嵌初始行与动态响应都递归归一化为稳定页面字段 id；
+- 普通字段绑定不能消费 `detail`，组件必须通过它明示支持的嵌套明细属性绑定。
+
+### 语义 HTML 明细字段
+
+DQE 已经完成文案组合、但需要由前端控制红绿等视觉表现的明细，可用
+`type: "semanticHtml"` 和 `role: "detail"` 声明：
+
+```json
+{
+  "attribution-details": {
+    "type": "semanticHtml",
+    "role": "detail",
+    "label": "云服务流水归因明细",
+    "queryField": "云服务流水归因明细"
+  }
+}
+```
+
+DQE 字段值示例：
+
+```html
+<span class="detail-title">ModelArts</span>：<span class="detail-description">到期未续订</span><span class="detail-value tone-negative">（-12.0万）</span>
+```
+
+- 允许标签：`div`、`span`、`strong`、`p`、`br`；该能力用于一段说明，不接受列表标签；
+- 允许结构类：`detail-title`、`detail-value`、`detail-description`、`detail-meta`；
+- 允许状态类：`tone-positive`、`tone-negative`、`tone-neutral`；类名表达业务方向，不表达具体颜色；
+- 只允许 `class` 属性，禁止 `style`、事件属性、链接、脚本和未知标签或类；
+- 单个字段值最多 64000 字符，空字符串表示没有可展示明细；
+- 数据网关只校验字符串类型和长度，不解释 HTML；显式消费者解析为受控节点后渲染，不使用原始 HTML 注入；
+- `rankingDetailCard.props.semanticDescriptionField` 明示把该字段直接渲染在普通说明位置，不生成列表、折叠入口或明细计数；具体 CSS 由前端组件拥有。
 
 页面数据源表示一个命名结果集。数据网关可以在传输层合并多个页面数据源的查询，不改变页面中的逻辑查询边界。
 
@@ -409,8 +480,8 @@ last90d
 | `table` | 表格 | `main` |
 | `mapChart` | 地图 | `main` |
 | `rankingCard` | 排名列表 | `main` |
-| `text` | 说明文本与页面链接 | 无 |
-| `aiSummary` | 基于关联数据生成流式 AI 总结 | 无；使用 `props.relatedData` |
+| `text` | 说明文本、后端返回的摘要与页面链接 | 无 |
+| `aiSummary` | 仅在需求明确声明时，基于关联数据通过 SSE 生成流式 AI 总结 | 无；使用 `props.relatedData` |
 
 组件自身的可见标题统一使用 `props.title`。组件能力目录声明标题是必填、可选或不支持；`text.props.heading` 已从 4.0 删除。
 
@@ -440,6 +511,11 @@ last90d
 
 ### AI 总结组件
 
+摘要默认使用 `text`，由后端在页面文档的 `props.body`
+中直接返回正文。只有需求明确声明“运行时通过 SSE
+动态生成”时才选择 `aiSummary`；标题中出现“AI”、页面已有相关数据，
+或文案曾由 AI 生成，都不构成运行时 SSE 声明。
+
 `aiSummary` 是内化执行的生成组件，不是第三种页面数据源，也不声明 `data`：
 
 ```json
@@ -466,6 +542,7 @@ last90d
 
 规则：
 
+- 组件选择必须有明确的运行时 SSE 需求，未声明时使用 `text`；
 - `title` 可选；`promptTemplate` 和 `relatedData` 必填且非空；
 - `promptTemplate` 是纯文本，不支持插值或表达式；
 - `source` 必须引用页面数据源，`field` 必须存在于该数据源结果字段契约；

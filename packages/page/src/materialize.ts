@@ -1,4 +1,4 @@
-import type { QueryFieldDefinition } from './field';
+import type { QueryFieldDefinition, QueryScalarFieldDefinition } from './field';
 import type { GroupedQueryFields } from './page-document';
 import type { TypedError } from './errors';
 import {
@@ -40,7 +40,7 @@ export function materializePageDocument(input: unknown): MaterializedPageDocumen
 
       function expandGroup(
         groupName: 'dimensions' | 'measures',
-        role: QueryFieldDefinition['role']
+        role: QueryScalarFieldDefinition['role']
       ): void {
         const group = grouped[groupName];
         if (!group) return;
@@ -95,6 +95,31 @@ function queryRowIssueError(
       return schemaError(
         `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
         `DQE 字段 ${issue.queryField} 不符合页面字段 ${issue.fieldId} 的类型 ${issue.expectedType}`
+      );
+    case 'DETAIL_LIST_TOO_LARGE':
+      return schemaError(
+        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
+        `DQE 嵌套明细字段 ${issue.queryField} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`
+      );
+    case 'SEMANTIC_HTML_TOO_LARGE':
+      return schemaError(
+        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
+        `DQE 语义 HTML 字段 ${issue.queryField} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`
+      );
+    case 'DETAIL_ITEM_NOT_OBJECT':
+      return schemaError(
+        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}`,
+        `DQE 嵌套明细字段 ${issue.queryField} 的第 ${issue.itemIndex + 1} 项必须是对象`
+      );
+    case 'MISSING_DETAIL_QUERY_FIELD':
+      return schemaError(
+        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
+        `DQE 嵌套明细项缺少映射字段:${issue.itemQueryField}`
+      );
+    case 'DETAIL_FIELD_TYPE_MISMATCH':
+      return schemaError(
+        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
+        `DQE 嵌套明细字段 ${issue.itemQueryField} 不符合页面字段 ${issue.itemFieldId} 的类型 ${issue.expectedType}`
       );
   }
 }
