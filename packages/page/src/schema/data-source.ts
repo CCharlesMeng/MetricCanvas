@@ -3,6 +3,7 @@ import {
   fieldNameZ,
   fieldsZ,
   fieldTypeZ,
+  fieldValueZ,
   idZ,
   queryFieldsZ,
   valueFormatPresetZ
@@ -18,7 +19,7 @@ import {
  * 不从这里推导——两者形状本就不同，保持文档态/领域态的分层。
  */
 
-const dataRowZ = z.record(z.string(), z.union([z.string(), z.number(), z.boolean(), z.null()]));
+const dataRowZ = z.record(z.string(), fieldValueZ);
 
 export const inlineSourceZ = z
   .object({

@@ -100,6 +100,8 @@ describe('v4 页面搭建 MCP', () => {
     expect(PAGE_BUILDING_PROMPT).toContain('DQE');
     expect(PAGE_BUILDING_PROMPT).toContain('aiSummary');
     expect(PAGE_BUILDING_PROMPT).toContain('props.title');
+    expect(PAGE_BUILDING_PROMPT).toContain('摘要默认使用 text');
+    expect(PAGE_BUILDING_PROMPT).toContain('明确声明运行时 SSE');
     expect(PAGE_BUILDING_PROMPT).not.toContain('search_catalog');
     expect(PAGE_BUILDING_PROMPT).not.toContain('METRIC_GAP');
     expect(PAGE_BUILDING_PROMPT).not.toContain('NA客户数');

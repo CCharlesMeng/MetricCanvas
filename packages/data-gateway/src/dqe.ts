@@ -407,6 +407,45 @@ function gatewayNormalizationError(
         `字段 ${issue.queryField} 不符合类型 ${issue.expectedType}`,
         { fieldId: issue.fieldId, value: issue.value }
       );
+    case 'DETAIL_LIST_TOO_LARGE':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.queryField} 超过 ${issue.maximum} 项上限`,
+        { fieldId: issue.fieldId, actualLength: issue.actualLength }
+      );
+    case 'SEMANTIC_HTML_TOO_LARGE':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `语义 HTML 字段 ${issue.queryField} 超过 ${issue.maximum} 字符上限`,
+        { fieldId: issue.fieldId, actualLength: issue.actualLength }
+      );
+    case 'DETAIL_ITEM_NOT_OBJECT':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.queryField}[${issue.itemIndex}] 必须是对象`,
+        { fieldId: issue.fieldId, value: issue.value }
+      );
+    case 'MISSING_DETAIL_QUERY_FIELD':
+      return new DqeGatewayError(
+        'DQE_FIELD_MAPPING_ERROR',
+        `嵌套明细 ${issue.queryField}[${issue.itemIndex}] 缺少映射字段:${issue.itemQueryField}`,
+        {
+          fieldId: issue.fieldId,
+          itemFieldId: issue.itemFieldId,
+          actual: issue.actualFields
+        }
+      );
+    case 'DETAIL_FIELD_TYPE_MISMATCH':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.itemQueryField} 不符合类型 ${issue.expectedType}`,
+        {
+          fieldId: issue.fieldId,
+          itemFieldId: issue.itemFieldId,
+          itemIndex: issue.itemIndex,
+          value: issue.value
+        }
+      );
   }
 }
 

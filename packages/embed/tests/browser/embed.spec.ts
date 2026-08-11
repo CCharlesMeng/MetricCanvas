@@ -621,7 +621,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-component-type="metricCard"]')).toHaveCount(7);
   await expect(host.locator('[data-component-type="rankingDetailCard"]')).toHaveCount(2);
   await expect(host.getByRole('table')).toHaveCount(4);
-  await expect(host.locator('.ai-summary')).toHaveCount(3);
+  await expect(host.locator('.ai-summary')).toHaveCount(0);
+  await expect(host.locator('.text-block.insight')).toHaveCount(3);
+  await expect(host.getByRole('heading', { name: 'AI 总结' })).toHaveCount(3);
   await expect(
     host.locator('.bar-chart[data-tooltip="axis"][data-legend="visible"]')
   ).toHaveCount(2);
@@ -765,4 +767,257 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   }, flowReportDocument);
   await expect(yoyDropTable.getByRole('alert')).toHaveText('流水数据网关测试错误');
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
+});
+
+test('详细排行卡可展开受控的嵌套明细字段', async ({ page }) => {
+  await page.goto('/examples/inline.html');
+  await page.evaluate(() => {
+    window.runtime.destroy();
+    window.runtime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '4.0',
+        id: 'nested-detail-browser',
+        dataSources: {
+          decline: {
+            fields: {
+              customer: { type: 'string', role: 'dimension', label: '客户名称' },
+              delta: {
+                type: 'number',
+                role: 'measure',
+                label: '月变化',
+                defaultFormat: 'compact-wan-1'
+              },
+              attributions: {
+                type: 'recordList',
+                role: 'detail',
+                label: '归因明细',
+                items: {
+                  fields: {
+                    service: { type: 'string', role: 'dimension' },
+                    amount: {
+                      type: 'number',
+                      role: 'measure',
+                      defaultFormat: 'compact-wan-1'
+                    },
+                    reason: { type: 'string', role: 'dimension' }
+                  }
+                }
+              }
+            },
+            source: {
+              type: 'inline',
+              rows: [{
+                customer: '客户A',
+                delta: -1_200_000,
+                attributions: [{
+                  service: 'ModelArts',
+                  amount: -1_200_000,
+                  reason: '到期未续订导致流水下降'
+                }]
+              }]
+            }
+          }
+        },
+        sections: [{
+          id: 'main',
+          layout: { type: 'grid', columns: 12 },
+          components: [{
+            id: 'ranking',
+            type: 'rankingDetailCard',
+            layout: { span: 12 },
+            data: { main: 'decline' },
+            props: {
+              title: '下降客户',
+              nameField: 'customer',
+              valueField: 'delta',
+              details: {
+                field: 'attributions',
+                titleField: 'service',
+                valueField: { field: 'amount' },
+                descriptionField: 'reason'
+              }
+            }
+          }]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  await expect(host.getByText('客户A')).toBeVisible();
+  await expect(host.getByText('-120.0万').first()).toBeVisible();
+  const details = host.locator('details.nested-details');
+  await expect(details.locator('summary')).toHaveText('归因明细（1）');
+  await expect(details.getByText('到期未续订导致流水下降')).toBeHidden();
+  await details.locator('summary').click();
+  await expect(details.getByText('ModelArts')).toBeVisible();
+  await expect(details.getByText('到期未续订导致流水下降')).toBeVisible();
+});
+
+test('详细排行卡把 DQE 语义 HTML 直接渲染为说明，并由前端映射正负颜色', async ({ page }) => {
+  await page.goto('/examples/inline.html');
+  await page.evaluate(() => {
+    window.runtime.destroy();
+    window.runtime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '4.0',
+        id: 'semantic-html-detail-browser',
+        dataSources: {
+          decline: {
+            fields: {
+              customer: { type: 'string', role: 'dimension' },
+              delta: {
+                type: 'number',
+                role: 'measure',
+                defaultFormat: 'compact-wan-1'
+              },
+              attributions: {
+                type: 'semanticHtml',
+                role: 'detail'
+              }
+            },
+            source: {
+              type: 'inline',
+              rows: [{
+                customer: '客户A',
+                delta: -1_200_000,
+                attributions:
+                  '<span class="detail-title">ModelArts</span>：' +
+                  '<span class="detail-description">到期未续订</span>' +
+                  '<span class="detail-value tone-negative">（-12.0万）</span>；' +
+                  '<span class="detail-title">OBS</span>：' +
+                  '<span class="detail-description">用量增加</span>' +
+                  '<span class="detail-value tone-positive">（3.0万）</span>'
+              }]
+            }
+          }
+        },
+        sections: [{
+          id: 'main',
+          layout: { type: 'grid', columns: 12 },
+          components: [{
+            id: 'ranking',
+            type: 'rankingDetailCard',
+            layout: { span: 12 },
+            data: { main: 'decline' },
+            props: {
+              title: '下降客户',
+              nameField: 'customer',
+              valueField: 'delta',
+              semanticDescriptionField: 'attributions'
+            }
+          }]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  await expect(host.locator('details.nested-details')).toHaveCount(0);
+  await expect(host.getByText('ModelArts')).toBeVisible();
+  await expect(host.getByText('到期未续订')).toBeVisible();
+  await expect(host.getByText('（-12.0万）')).toHaveCSS('color', 'rgb(245, 34, 45)');
+  await expect(host.getByText('（3.0万）')).toHaveCSS('color', 'rgb(82, 196, 26)');
+});
+
+test('并排的详细排行卡按同一排名的较高内容同步行高', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/examples/inline.html');
+  await page.evaluate(() => {
+    const detailField = { type: 'semanticHtml' as const, role: 'detail' as const };
+    const customerField = { type: 'string' as const, role: 'dimension' as const };
+    const amountField = { type: 'number' as const, role: 'measure' as const };
+    const shortDetail =
+      '<span class="detail-title">云通信</span>：' +
+      '<span class="detail-description">流水增长</span>' +
+      '<span class="detail-value tone-positive">（50万）</span>';
+    const longDetail = Array.from({ length: 7 }, (_, index) =>
+      '<span class="detail-title">ModelArts</span>：' +
+      `<span class="detail-description">第${index + 1}项归因明细内容较长</span>` +
+      '<span class="detail-value tone-negative">（-50万）</span>'
+    ).join('；');
+    const source = (prefix: string, details: string[]) => ({
+      fields: {
+        customer: customerField,
+        amount: amountField,
+        details: detailField
+      },
+      source: {
+        type: 'inline' as const,
+        rows: details.map((value, index) => ({
+          customer: `${prefix}${index + 1}`,
+          amount: 5_000_000 - index * 100_000,
+          details: value
+        }))
+      }
+    });
+
+    window.runtime.destroy();
+    window.runtime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '4.0',
+        id: 'ranking-detail-row-height-sync-browser',
+        dataSources: {
+          growth: source('增长客户', [shortDetail, shortDetail, shortDetail]),
+          decline: source('下降客户', [longDetail, shortDetail, shortDetail])
+        },
+        sections: [{
+          id: 'customer-analysis',
+          variant: 'reportCustomerAnalysis',
+          layout: { type: 'grid', columns: 12 },
+          components: [
+            {
+              id: 'growth-ranking',
+              type: 'rankingDetailCard',
+              layout: { span: 6 },
+              data: { main: 'growth' },
+              props: {
+                title: 'TOP增长流水客户',
+                variant: 'report',
+                nameField: 'customer',
+                valueField: 'amount',
+                semanticDescriptionField: 'details'
+              }
+            },
+            {
+              id: 'decline-ranking',
+              type: 'rankingDetailCard',
+              layout: { span: 6 },
+              data: { main: 'decline' },
+              props: {
+                title: 'TOP下降流水客户',
+                variant: 'report',
+                nameField: 'customer',
+                valueField: 'amount',
+                semanticDescriptionField: 'details'
+              }
+            }
+          ]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const growthRows = host.locator(
+    '[data-component="customer-analysis/growth-ranking"] .ranking-detail-row'
+  );
+  const declineRows = host.locator(
+    '[data-component="customer-analysis/decline-ranking"] .ranking-detail-row'
+  );
+  await expect(growthRows).toHaveCount(3);
+  await expect(declineRows).toHaveCount(3);
+  await expect.poll(async () => {
+    const [growthBoxes, declineBoxes] = await Promise.all([
+      growthRows.evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect())),
+      declineRows.evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect()))
+    ]);
+    return growthBoxes.every((growthBox, index) => {
+      const declineBox = declineBoxes[index]!;
+      return (
+        Math.abs(growthBox.height - declineBox.height) <= 1 &&
+        Math.abs(growthBox.top - declineBox.top) <= 1
+      );
+    });
+  }).toBe(true);
 });

@@ -120,10 +120,20 @@ interface Mismatch {
 function compareOne(description: string, document: unknown): Mismatch | undefined {
   const legacy = verdict(legacyValidate, document);
   const next = verdict(nextValidate, document);
+  // recordList/detail 使字段 Schema 成为判别联合。当外层 dataSource
+  // 的其他字段已经无效时，AJV 会额外报出另一字段分支的
+  // type/role 诊断；这不改变旧文档的有效性或原有错误定位。
+  const nextComparablePointers = next.pointers.filter(
+    (pointer) =>
+      legacy.pointers.includes(pointer) ||
+      !/^\/dataSources\/[^/]+\/fields\/[^/]+\/(?:type|role)$/.test(pointer)
+  );
   const equivalent =
     legacy.valid === next.valid &&
-    legacy.pointers.length === next.pointers.length &&
-    legacy.pointers.every((pointer, index) => pointer === next.pointers[index]);
+    legacy.pointers.length === nextComparablePointers.length &&
+    legacy.pointers.every(
+      (pointer, index) => pointer === nextComparablePointers[index]
+    );
   return equivalent ? undefined : { description, legacy, next };
 }
 

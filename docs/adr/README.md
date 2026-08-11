@@ -1,8 +1,8 @@
-# ADR 基线:25 份决策记录的当前生效结论
+# ADR 基线:28 份决策记录的当前生效结论
 
-`docs/adr/` 现有 25 份 ADR(0001–0025)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这 25 份 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 28 份 ADR(0001–0028)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这 28 份 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0026-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0029-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 当前状态说明(current/superseded/proposed)以 ADR 正文和 frontmatter 为准;本文件的补充判断(例如"实际已被后续 ADR 取代但原文未标注")会明确说明理由和依据。
 
@@ -35,6 +35,9 @@
 | [0023](./0023-remove-metric-fulfillment-and-catalog-packages.md) | 删除指标履约与目录发现的空壳包 | 历史记录,清理已完成 |
 | [0024](./0024-converge-authoring-time-packages.md) | 创作期包边界收敛,agent-runner/data-context 不再是一级包 | 现行(模板发布治理强度留有待决事项,见下文) |
 | [0025](./0025-converge-runtime-presentation-packages.md) | 表现层包边界按纯渲染职责收敛,widgets 只留页面组件 | 现行(包名与 `WidgetHost` 术语、`Table.svelte` 拆分留有待决与遗留,见下文) |
+| [0026](./0026-controlled-nested-detail-fields.md) | 结果字段契约支持受控的一层嵌套明细 | 现行 |
+| [0027](./0027-default-summary-to-text-unless-sse-explicit.md) | 摘要默认由页面文档返回，SSE 必须明确声明 | 现行 |
+| [0028](./0028-controlled-semantic-html-detail-fields.md) | DQE 明细支持受控语义 HTML，样式仍由前端拥有 | 现行 |
 
 ## 技术栈与建设策略
 
@@ -58,17 +61,17 @@
 
 ## 页面文档结构与书写原则
 
-**现行结论:** 页面文档局部、顺序地自描述:每个页面数据源在当前位置声明完整的结果字段契约,每个表格在当前组件中声明完整列;不提供 `fieldDefaults`、`fieldSets`、`columnSets` 或顶层 `definitions` 这类需要跳转才能理解含义的机制。`query` 数据源的字段可按 `dimensions`/`measures` 分组作为角色简写,但每个字段仍须就地声明 `queryField`、`type` 等完整信息,不引入默认值、引用或表达式。
+**现行结论:** 页面文档局部、顺序地自描述:每个页面数据源在当前位置声明完整的结果字段契约,每个表格在当前组件中声明完整列;不提供 `fieldDefaults`、`fieldSets`、`columnSets` 或顶层 `definitions` 这类需要跳转才能理解含义的机制。`query` 数据源的标量字段可按 `dimensions`/`measures` 分组作为角色简写,结构化明细字段使用 `recordList/detail` 并就地声明项字段契约,DQE 已完成内容组合的受控富内容使用 `semanticHtml/detail`;每个字段仍须就地声明 `queryField`、`type` 等完整信息,不引入默认值、引用或表达式。
 
 展示格式(`format`)始终归属组件字段绑定,不归属数据源;数据源和元数据快照只提供可被组件覆盖的 `defaultFormat` 展示建议。这样同一字段在指标卡、表格、图表中可以有不同格式,格式化实现仍集中在统一运行时。
 
 页面 `id` 只用于文件命名、页面仓储加载、路由和修订归属,统一运行时不得按某个正式页面 `id` 选择样式、组件或交互;两份除 `id` 外相同的页面元数据必须产生相同的 DOM 结构和计算样式。正式页面 `id` 不得以字面量出现在产品源码中,由自动化门禁校验。
 
-来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)。
+来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)。
 
 ## 数据获取与查询模型
 
-这是 24 份 ADR 里演进链条最长、也最容易读错现状的一组决策,按时间顺序梳理如下,**只有最后给出的"当前实际生效模型"可直接采信**:
+这是 27 份 ADR 里演进链条最长、也最容易读错现状的一组决策,按时间顺序梳理如下,**只有最后给出的"当前实际生效模型"可直接采信**:
 
 1. `schemaVersion 2.0`([ADR-0011](./0011-derive-query-fields-from-catalog.md)、[ADR-0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md)):页面引用预定义指标/维度,`query` 字段由结构化查询 + 元数据目录解析,指标履约需要查 DP 并向数据服务验真。**已被 0014 完全取代。**
 2. [ADR-0014](./0014-query-artifacts-replace-metrics.md):治理对象从"预定义指标"改为"可执行且可复现的查询"。此时的模型是页面只持有精确**查询执行引用**,不提交 SQL/DQE 原文,原文由服务端解析已验真的"查询产物"修订。
@@ -76,8 +79,10 @@
 4. [ADR-0016](./0016-send-embedded-query-definitions.md):**推翻 0014 和 0015 "只提交查询执行引用,不得提交查询原文"的边界**,改为页面直接内嵌 DQE 查询定义(`{ language: "dqe", body }`),浏览器直接提交原文,服务端每次执行时校验权限与安全边界。"查询产物"作为独立修订资产的模型至此不再是当前实现。
 5. [ADR-0017](./0017-page-schema-v3-hard-cutover.md):把 0016 的内嵌查询定义落地为 `schemaVersion: "3.0"`,一次性删除旧结构化查询、指标目录和指标履约的全部代码路径,字段角色改为 `dimension`/`measure`,新增 `queryField` 显式映射和 `filterBindings` 显式筛选绑定。
 6. [ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md):在 0017 的 `query` 数据源上补充可选的内嵌初始行(`source.initial`,字段键用 DQE 原始输出名)用于首屏免查询呈现,以及基于 DQE `order.offset/limit` 和 `total_count` 的查询分页。
+7. [ADR-0026](./0026-controlled-nested-detail-fields.md):在不放开任意 JSON 的前提下,以 `recordList/detail` 支持项字段契约与查询字段映射均就地显式的一层嵌套明细。
+8. [ADR-0028](./0028-controlled-semantic-html-detail-fields.md):对 DQE 已完成内容组合的明细,以 `semanticHtml/detail` 传递受控标签、文本和语义类;数据网关保持字符串不透明,显式前端消费者负责白名单解析、节点渲染和样式映射。
 
-**当前实际生效模型:** `query` 页面数据源直接内嵌 DQE 查询定义并可选内嵌首屏初始行,字段角色为 `dimension`/`measure`,通过 `queryField` 和 `filterBindings` 显式声明与外部协议的对应关系,不存在需要提前注册的预定义指标或独立版本化的"查询产物"资产;数据网关按查询定义分发执行并归一化返回。[ADR-0022](./0022-page-data-sources.md)(原编号 0008)记录的是这条演进链之前的"命名数据源 + `inline`/`query` 判别式取数"结构性基线,这部分结构仍然有效,但其正文对 `query` 字段模型和首查语义的具体描述已经过时,读它时必须结合本节时间线,不要单独采信。
+**当前实际生效模型:** `query` 页面数据源直接内嵌 DQE 查询定义并可选内嵌首屏初始行,标量字段角色为 `dimension`/`measure`,受控的一层对象数组使用 `recordList/detail`,受控语义 HTML 使用 `semanticHtml/detail`,通过外层、必要时项级 `queryField` 以及 `filterBindings` 显式声明与外部协议的对应关系,不存在需要提前注册的预定义指标或独立版本化的"查询产物"资产;数据网关按查询定义分发执行并归一化返回。[ADR-0022](./0022-page-data-sources.md)(原编号 0008)记录的是这条演进链之前的"命名数据源 + `inline`/`query` 判别式取数"结构性基线,这部分结构仍然有效,但其正文对 `query` 字段模型和首查语义的具体描述已经过时,读它时必须结合本节时间线,不要单独采信。
 
 级联数据源输入语义(上游查询结果作为下游查询受控输入)仍是[ADR-0015](./0015-defer-cascading-data-source-input-semantics.md)记录的未决问题,当前页面 schema、校验器和数据网关不支持这类依赖。
 
@@ -91,9 +96,9 @@
 
 ## AI 总结组件
 
-**现行结论:** AI 总结是内化执行的生成型垂直组件 Module,不是第三种页面数据源。`aiSummary` 组件只声明可选标题、纯文本 `promptTemplate` 和必填的 `relatedData`(对既有页面数据源字段的显式只读引用),不声明 `data`,不暴露端点、Header 或 SSE 协议参数。Host、请求组装、私有 SSE Adapter、会话管理与纯渲染 View 在组件目录内高内聚地分工;数据网关不为此新增 AI/Prompt/SSE 方法。只有出现真实的多组件共享生成能力时,才从当前的单一垂直组件中提取公共 Module。正文的受限 Markdown 渲染此前隔在 `widgets` 包,已由 0025 迁入同一组件目录,该垂直模块至此完整;同一份决策也说明了为什么 `aiSummary` 不该有 `widgets` 侧实现。
+**现行结论:** 看板页面摘要默认使用 `text`,由后端随页面文档在 `props.body` 中返回正文;只有需求明确声明运行时 SSE 动态生成时才选择 `aiSummary`,不得根据标题、已有数据或 AI 文案自动推断。显式声明的 AI 总结是内化执行的生成型垂直组件 Module,不是第三种页面数据源。`aiSummary` 组件只声明可选标题、纯文本 `promptTemplate` 和必填的 `relatedData`(对既有页面数据源字段的显式只读引用),不声明 `data`,不暴露端点、Header 或 SSE 协议参数。Host、请求组装、私有 SSE Adapter、会话管理与纯渲染 View 在组件目录内高内聚地分工;数据网关不为此新增 AI/Prompt/SSE 方法。只有出现真实的多组件共享生成能力时,才从当前的单一垂直组件中提取公共 Module。正文的受限 Markdown 渲染此前隔在 `widgets` 包,已由 0025 迁入同一组件目录,该垂直模块至此完整;同一份决策也说明了为什么 `aiSummary` 不该有 `widgets` 侧实现。
 
-来源:[ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)。
+来源:[ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0027](./0027-default-summary-to-text-unless-sse-explicit.md)。
 
 ## 未决事项
 

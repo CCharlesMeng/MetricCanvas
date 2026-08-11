@@ -135,6 +135,172 @@ describe('raw DQE 页面查询', () => {
     expect(validate(page)).toEqual([]);
   });
 
+  it('递归映射一层对象数组并以 detail 角色交给明细排行卡', () => {
+    const page = rawPage();
+    page.dataSources.overview.fields.attributions = {
+      queryField: '云服务流水归因明细',
+      type: 'recordList',
+      role: 'detail',
+      items: {
+        fields: {
+          service: {
+            queryField: '云服务',
+            type: 'string',
+            role: 'dimension'
+          },
+          delta: {
+            queryField: '云服务归因波动金额',
+            type: 'number',
+            role: 'measure'
+          },
+          reason: {
+            queryField: '云服务波动原因',
+            type: 'string',
+            role: 'dimension'
+          }
+        }
+      }
+    };
+    page.dataSources.overview.source.query.body.dsl_list[0].output_metrics.push(
+      '云服务流水归因明细'
+    );
+    page.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{
+        '客户级别': '卓越NA',
+        'NA客户数': 15,
+        '云服务流水归因明细': [{
+          '云服务': 'ModelArts',
+          '云服务归因波动金额': -1200,
+          '云服务波动原因': '到期未续订'
+        }]
+      }],
+      totalCount: 1
+    };
+    page.sections[0].components = [{
+      id: 'ranking',
+      type: 'rankingDetailCard',
+      layout: { span: 12 },
+      data: { main: 'overview' },
+      props: {
+        nameField: 'level',
+        valueField: 'count',
+        details: {
+          field: 'attributions',
+          titleField: 'service',
+          valueField: { field: 'delta', format: 'number-grouped' },
+          descriptionField: 'reason'
+        }
+      }
+    }];
+
+    const parsed = parsePage(page);
+
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors, null, 2));
+    const source = parsed.page.dataSources.overview?.source;
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    expect(source.initial?.rows).toEqual([{
+      level: '卓越NA',
+      count: 15,
+      attributions: [{ service: 'ModelArts', delta: -1200, reason: '到期未续订' }]
+    }]);
+  });
+
+  it('把嵌套明细类型错误定位到明细项与原始字段', () => {
+    const page = rawPage();
+    page.dataSources.overview.fields.attributions = {
+      queryField: '归因明细',
+      type: 'recordList',
+      role: 'detail',
+      items: {
+        fields: {
+          delta: {
+            queryField: '波动金额',
+            type: 'number',
+            role: 'measure'
+          }
+        }
+      }
+    };
+    page.dataSources.overview.source.query.body.dsl_list[0].output_metrics.push('归因明细');
+    page.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{ '客户级别': '卓越NA', 'NA客户数': 15, '归因明细': [{ '波动金额': '非数字' }] }]
+    };
+
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({
+        path: '/dataSources/overview/source/initial/rows/0/归因明细/0/波动金额'
+      })
+    );
+  });
+
+  it('把 DQE 语义 HTML 映射为受控 detail 字段', () => {
+    const page = rawPage();
+    page.dataSources.overview.fields.attributions = {
+      queryField: '归因明细HTML',
+      type: 'semanticHtml',
+      role: 'detail'
+    };
+    page.dataSources.overview.source.query.body.dsl_list[0].output_metrics.push(
+      '归因明细HTML'
+    );
+    page.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{
+        '客户级别': '卓越NA',
+        'NA客户数': 15,
+        '归因明细HTML': '<span class="tone-negative">-12.0万</span>'
+      }]
+    };
+    page.sections[0].components = [{
+      id: 'ranking',
+      type: 'rankingDetailCard',
+      layout: { span: 12 },
+      data: { main: 'overview' },
+      props: {
+        nameField: 'level',
+        valueField: 'count',
+        semanticDescriptionField: 'attributions'
+      }
+    }];
+
+    const parsed = parsePage(page);
+
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors, null, 2));
+    const source = parsed.page.dataSources.overview?.source;
+    if (source?.type !== 'query') throw new Error('测试数据源必须为 query');
+    expect(source.initial?.rows[0]?.attributions).toBe(
+      '<span class="tone-negative">-12.0万</span>'
+    );
+  });
+
+  it('拒绝超过上限的 DQE 语义 HTML', () => {
+    const page = rawPage();
+    page.dataSources.overview.fields.attributions = {
+      queryField: '归因明细HTML',
+      type: 'semanticHtml',
+      role: 'detail'
+    };
+    page.dataSources.overview.source.query.body.dsl_list[0].output_metrics.push(
+      '归因明细HTML'
+    );
+    page.dataSources.overview.source.initial = {
+      capturedAt: '2026-08-05T15:32:01+08:00',
+      rows: [{
+        '客户级别': '卓越NA',
+        'NA客户数': 15,
+        '归因明细HTML': 'x'.repeat(64_001)
+      }]
+    };
+
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({
+        path: '/dataSources/overview/source/initial/rows/0/归因明细HTML'
+      })
+    );
+  });
+
   it('多数据槽表格要求所有数据槽声明同类型维度 rowKey', () => {
     const page = rawPage();
     page.dataSources.compare = structuredClone(page.dataSources.overview);

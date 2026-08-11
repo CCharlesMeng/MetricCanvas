@@ -230,6 +230,27 @@ function queryContractErrors(
           `queryField ${definition.queryField} 不在 DQE 输出字段中`
         )
       );
+    } else if (definition.role === 'detail') {
+      if (definition.type === 'recordList') {
+        const itemMappings = new Map<string, string>();
+        for (const [itemFieldId, itemDefinition] of Object.entries(definition.items.fields)) {
+          const itemPath =
+            `${sourcePath}/fields/${escapePointer(fieldId)}/items/fields/` +
+            `${escapePointer(itemFieldId)}/queryField`;
+          const previousItem = itemMappings.get(itemDefinition.queryField);
+          if (previousItem !== undefined) {
+            errors.push(
+              typedError(
+                'QUERY_MAPPING_ERROR',
+                itemPath,
+                `嵌套明细 queryField ${itemDefinition.queryField} 已映射到页面字段 ${previousItem}`
+              )
+            );
+          } else {
+            itemMappings.set(itemDefinition.queryField, itemFieldId);
+          }
+        }
+      }
     } else if (
       dimensions.includes(definition.queryField) &&
       definition.role !== 'dimension'
@@ -357,6 +378,13 @@ function componentErrors(
           `字段 ${resolved.fieldName} 的 role 为 ${resolved.field.role}，此处要求 ${expectedRole}`
         )
       );
+    } else if (expectedRole === undefined && resolved.field.role === 'detail') {
+      errors.push(
+        schemaError(
+          path,
+          `嵌套明细字段 ${resolved.fieldName} 只能由显式支持 detail 的组件属性消费`
+        )
+      );
     }
     if (typeof binding !== 'string' && binding.match !== undefined) {
       const matchPath = `${path}/match`;
@@ -416,6 +444,13 @@ function componentErrors(
               schemaError(
                 `${fieldPath}/field`,
                 `关联字段 ${binding.field} 不在数据源 ${related.source} 中`
+              )
+            );
+          } else if (fields[binding.field]?.role === 'detail') {
+            errors.push(
+              schemaError(
+                `${fieldPath}/field`,
+                `AI 总结暂不支持嵌套明细字段:${binding.field}`
               )
             );
           }
@@ -537,6 +572,84 @@ function componentErrors(
           `${componentPath}/props/descriptionField`,
           'dimension'
         );
+      }
+      if (component.props.semanticDescriptionField) {
+        const path = `${componentPath}/props/semanticDescriptionField`;
+        check(component.props.semanticDescriptionField, path, 'detail');
+        const resolved = resolveBinding(
+          page,
+          component,
+          component.props.semanticDescriptionField
+        );
+        if (!('error' in resolved) && resolved.field.type !== 'semanticHtml') {
+          errors.push(
+            schemaError(
+              path,
+              `语义 HTML 说明必须绑定 semanticHtml 字段:${resolved.fieldName}`
+            )
+          );
+        }
+      }
+      if (component.props.details) {
+        const detailsPath = `${componentPath}/props/details`;
+        const details = component.props.details;
+        check(details.field, `${detailsPath}/field`, 'detail');
+        const resolved = resolveBinding(page, component, details.field);
+        if (!('error' in resolved)) {
+          if (resolved.field.type !== 'recordList') {
+            errors.push(
+              schemaError(
+                `${detailsPath}/field`,
+                `结构化明细必须绑定 recordList 字段:${resolved.fieldName}`
+              )
+            );
+            break;
+          }
+          const itemFields = resolved.field.items.fields;
+          const detailFieldName = resolved.fieldName;
+          checkDetailItemField(
+            details.titleField,
+            `${detailsPath}/titleField`,
+            'dimension'
+          );
+          if (details.valueField) {
+            checkDetailItemField(
+              details.valueField.field,
+              `${detailsPath}/valueField/field`,
+              'measure'
+            );
+          }
+          if (details.descriptionField) {
+            checkDetailItemField(
+              details.descriptionField,
+              `${detailsPath}/descriptionField`,
+              'dimension'
+            );
+          }
+
+          function checkDetailItemField(
+            fieldName: string,
+            path: string,
+            expectedRole: 'dimension' | 'measure'
+          ): void {
+            const field = itemFields[fieldName];
+            if (!field) {
+              errors.push(
+                schemaError(
+                  path,
+                  `嵌套明细字段 ${detailFieldName} 不包含项字段:${fieldName}`
+                )
+              );
+            } else if (field.role !== expectedRole) {
+              errors.push(
+                schemaError(
+                  path,
+                  `嵌套明细项字段 ${fieldName} 的 role 为 ${field.role}，此处要求 ${expectedRole}`
+                )
+              );
+            }
+          }
+        }
       }
       break;
   }

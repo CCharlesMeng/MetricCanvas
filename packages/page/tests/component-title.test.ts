@@ -40,4 +40,12 @@ describe('组件标题 Props 规范', () => {
       'optional'
     );
   });
+
+  it('摘要默认选择 text，只在需求明确声明运行时 SSE 时选择 aiSummary', () => {
+    const text = componentCatalog.find((entry) => entry.type === 'text');
+    const aiSummary = componentCatalog.find((entry) => entry.type === 'aiSummary');
+
+    expect(text?.chooseWhen.join('\n')).toContain('摘要默认');
+    expect(aiSummary?.chooseWhen.join('\n')).toContain('明确声明运行时 SSE');
+  });
 });

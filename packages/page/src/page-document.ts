@@ -3,7 +3,11 @@ import type {
   QueryDataSource,
   QuerySource
 } from './data-source';
-import type { DataRow, QueryFieldDefinition } from './field';
+import type {
+  DataRow,
+  QueryFieldDefinition,
+  QueryScalarFieldDefinition
+} from './field';
 import type { Page } from './page';
 
 /** 与查询定义一起保存的 DQE 原始执行结果，字段键使用 DQE 输出字段名。 */
@@ -25,7 +29,7 @@ export interface QueryDataSourceDocument extends Omit<QueryDataSource, 'source'>
  * query 页面数据源的局部显式字段声明。字段角色由所在分组决定，
  * 其余结果字段契约与查询字段映射必须在当前页面数据源中写全。
  */
-export type GroupedQueryFieldDefinition = Omit<QueryFieldDefinition, 'role'>;
+export type GroupedQueryFieldDefinition = Omit<QueryScalarFieldDefinition, 'role'>;
 
 export interface GroupedQueryFields {
   dimensions?: Record<string, GroupedQueryFieldDefinition>;

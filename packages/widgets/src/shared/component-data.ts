@@ -46,7 +46,7 @@ export function resolveField(
     definition,
     format:
       (typeof binding === 'string' ? undefined : binding.format) ??
-      definition?.defaultFormat
+      (definition?.role === 'detail' ? undefined : definition?.defaultFormat)
   };
 }
 
