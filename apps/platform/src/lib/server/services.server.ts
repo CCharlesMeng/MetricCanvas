@@ -129,11 +129,16 @@ async function createServices(): Promise<PlatformServices> {
   // 这里退而求其次:用一个可变引用把 createRunner 收到的 identity 参数
   // 桥接给 thunk——同一进程内并发的多个 Agent 运行仍会互相覆盖这个引用,
   // 这是已知且刻意接受的过渡态限制,而不是本次改造试图掩盖的问题。
+  const dataGateway = getServerDataGateway(env);
+
   let currentMcpIdentity: LifecycleContext = createIdentity('workbench');
   const mcpServer = createMetricCanvasMcpServer({
     dataContext,
     lifecycle,
     templates,
+    // 创作期查询执行端口(#64):复用服务端数据网关,创作期验真与
+    // 统一运行时共用同一份结果归一化能力(ADR-0032)。
+    executeDataRequestUnitQuery: (query) => dataGateway.fetchData(query),
     context: () => currentMcpIdentity,
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
@@ -153,7 +158,7 @@ async function createServices(): Promise<PlatformServices> {
     lifecycle,
     templates,
     dataContext,
-    dataGateway: getServerDataGateway(env),
+    dataGateway,
     sessions,
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
