@@ -19,7 +19,9 @@ import {
   createPostgresTemplateLibrary,
   type TemplateLibrary
 } from '@metriccanvas/template-library';
+import type { DataGateway } from '@metriccanvas/runtime';
 import { createAgentRunner } from './agent/runner';
+import { getServerDataGateway } from './data-gateway.server';
 import { createDeepSeekModelProvider } from './agent/deepseek.server';
 import type { AgentRunner } from './agent/types';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
@@ -49,6 +51,7 @@ export interface PlatformServices {
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
   dataContext: DataContextSearch;
+  dataGateway: DataGateway;
   agentModel: AgentModelDescriptor;
   createRunner(input: {
     confirmedPageIds: string[];
@@ -143,6 +146,7 @@ async function createServices(): Promise<PlatformServices> {
     lifecycle,
     templates,
     dataContext,
+    dataGateway: getServerDataGateway(env),
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
       currentMcpIdentity = identity;
