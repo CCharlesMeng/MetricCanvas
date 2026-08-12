@@ -1,7 +1,8 @@
 <script lang="ts">
-  import type { SemanticHtmlNode } from './semantic-html';
+  import { parseSemanticHtml, type SemanticHtmlNode } from './semantic-html';
 
-  let { nodes }: { nodes: SemanticHtmlNode[] } = $props();
+  let { source }: { source: string } = $props();
+  const parsed = $derived(parseSemanticHtml(source));
 </script>
 
 {#snippet renderNodes(items: SemanticHtmlNode[])}
@@ -22,27 +23,37 @@
   {/each}
 {/snippet}
 
-<div class="semantic-html">{@render renderNodes(nodes)}</div>
+{#if parsed.ok}
+  <div class="semantic-html">{@render renderNodes(parsed.document.nodes)}</div>
+{:else}
+  <span class="semantic-html-error">内容格式不受支持</span>
+{/if}
 
 <style>
+  .semantic-html :global(p) {
+    margin: 0;
+  }
+  .semantic-html :global(p + p) {
+    margin-top: var(--mc-semantic-paragraph-gap, 0);
+  }
   .semantic-html :global(.detail-title) {
     min-width: 0;
-    color: var(--mc-color-report-text, #191919);
-    font-size: 12px;
+    color: var(--mc-semantic-title-color, var(--mc-color-report-text, #191919));
+    font-size: var(--mc-semantic-font-size, 12px);
     font-weight: 600;
-    line-height: 18px;
+    line-height: var(--mc-semantic-line-height, 18px);
   }
   .semantic-html :global(.detail-value) {
-    font-size: 12px;
+    font-size: var(--mc-semantic-font-size, 12px);
     font-variant-numeric: tabular-nums;
     font-weight: 600;
-    line-height: 18px;
+    line-height: var(--mc-semantic-line-height, 18px);
   }
   .semantic-html :global(.detail-description),
   .semantic-html :global(.detail-meta) {
-    color: var(--mc-color-report-description, #595959);
-    font-size: 12px;
-    line-height: 18px;
+    color: var(--mc-semantic-description-color, var(--mc-color-report-description, #595959));
+    font-size: var(--mc-semantic-font-size, 12px);
+    line-height: var(--mc-semantic-line-height, 18px);
   }
   .semantic-html :global(.tone-positive) {
     color: var(--mc-color-positive, #52c41a);
@@ -52,5 +63,8 @@
   }
   .semantic-html :global(.tone-neutral) {
     color: var(--mc-color-muted, #71717a);
+  }
+  .semantic-html-error {
+    color: var(--mc-color-negative, #f5222d);
   }
 </style>

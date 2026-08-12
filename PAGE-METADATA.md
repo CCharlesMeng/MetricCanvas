@@ -352,7 +352,7 @@ DQE 字段值示例：
 - 只允许 `class` 属性，禁止 `style`、事件属性、链接、脚本和未知标签或类；
 - 单个字段值最多 64000 字符，空字符串表示没有可展示明细；
 - 数据网关只校验字符串类型和长度，不解释 HTML；显式消费者解析为受控节点后渲染，不使用原始 HTML 注入；
-- `rankingDetailCard.props.semanticDescriptionField` 明示把该字段直接渲染在普通说明位置，不生成列表、折叠入口或明细计数；具体 CSS 由前端组件拥有。
+- `rankingDetailCard.props.semanticDescriptionField` 明示把该字段直接渲染在普通说明位置，不生成列表、折叠入口或明细计数；它与 `text.props.bodyFormat: "semanticHtml"` 共用安全解析和语义颜色映射，具体 CSS 由前端组件拥有。
 
 页面数据源表示一个命名结果集。数据网关可以在传输层合并多个页面数据源的查询，不改变页面中的逻辑查询边界。
 
@@ -485,6 +485,35 @@ last90d
 
 组件自身的可见标题统一使用 `props.title`。组件能力目录声明标题是必填、可选或不支持；`text.props.heading` 已从 4.0 删除。
 
+`metricCard` 使用 `variant: "dualSummary"` 时，可通过 `panelLayout` 声明两块摘要面板的排列方式：
+`"stacked"`（默认）为上下排列，`"twoColumn"` 为两列排列；窄屏下两列布局会自动回落为单列。
+
+`text.props.body` 默认按纯文本渲染。摘要需要表达正向、负向或中性分色时，
+显式声明 `bodyFormat: "semanticHtml"`，正文使用与语义 HTML 明细相同的受控标签和语义类：
+
+```json
+{
+  "id": "customer-summary",
+  "type": "text",
+  "layout": { "span": 12 },
+  "props": {
+    "body": "<span>1、<span class=\"detail-title tone-positive\">增长客户：</span><span class=\"detail-description\">头部增长客户贡献集中。</span> 2、<span class=\"detail-title tone-negative\">下降客户：</span><span class=\"detail-description\">需要逐项制定恢复动作。</span></span>",
+    "bodyFormat": "semanticHtml",
+    "variant": "reportInline"
+  }
+}
+```
+
+`variant: "reportInline"` 用于分析报告摘要：组件默认在正文前显示小图标与“AI 总结：”，
+metadata 不需要声明 `title`。`body` 是单个受控 HTML 字符串；需要连续摘要时用一个根 `span`
+包住全部语义片段，与排行明细的 `semanticHtml` 字符串使用同一渲染入口。前缀和正文共用同一个浅蓝色行内容器，长文本自然增高。
+前缀与正文是连续的行内文本流，正文换行时从容器左侧自然开始，不保留一列统一缩进。
+如果 metadata 显式声明 `title`，它只会覆盖默认的“AI 总结”文案；图标和冒号仍由组件统一渲染。
+`bodyFormat: "semanticHtml"` 仍由共用的安全语义 HTML 渲染模块处理分色内容。
+
+省略 `bodyFormat` 时，即使 `body` 含有标签形状的文本也不会解释为 HTML。两种消费者共用
+同一个安全解析与节点渲染 Module；未知标签、属性、类名或错误闭合都失败关闭，原始正文不进入 HTML 注入。
+
 数据组件通过 `data` 把本地槽名映射到页面数据源：
 
 ```json
@@ -515,6 +544,9 @@ last90d
 中直接返回正文。只有需求明确声明“运行时通过 SSE
 动态生成”时才选择 `aiSummary`；标题中出现“AI”、页面已有相关数据，
 或文案曾由 AI 生成，都不构成运行时 SSE 声明。
+
+需要分色的后端摘要仍然使用 `text`，并显式声明
+`props.bodyFormat: "semanticHtml"`；这只改变受控正文的渲染方式，不会触发请求或 SSE。
 
 `aiSummary` 是内化执行的生成组件，不是第三种页面数据源，也不声明 `data`：
 

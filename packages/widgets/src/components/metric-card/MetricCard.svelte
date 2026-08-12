@@ -104,6 +104,7 @@
   class:summary={props.variant === 'summary'}
   class:compact-summary={props.variant === 'compactSummary'}
   class:dual-summary={props.variant === 'dualSummary'}
+  class:two-column-panels={props.variant === 'dualSummary' && props.panelLayout === 'twoColumn'}
   class="metric-card"
 >
   {#if props.variant === 'compactSummary' || props.variant === 'dualSummary'}
@@ -167,6 +168,12 @@
     gap: 8px;
     container-type: inline-size;
   }
+  .dual-summary.two-column-panels {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 6px;
+  }
   .metric-panel {
     box-sizing: border-box;
     width: 100%;
@@ -174,7 +181,8 @@
     padding: 10px 12px;
     overflow: hidden;
     background: var(--mc-color-surface-subtle, #f1f4ff);
-    border-radius: 12px;
+    border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
+    border-radius: var(--mc-radius-report-content, 12px);
   }
   .metric-panel h3 {
     margin: 0 0 1px;
@@ -262,6 +270,11 @@
     }
     .metric-panel .change-label {
       margin-right: 0;
+    }
+  }
+  @media (max-width: 760px) {
+    .dual-summary.two-column-panels {
+      grid-template-columns: minmax(0, 1fr);
     }
   }
   .metric-row {

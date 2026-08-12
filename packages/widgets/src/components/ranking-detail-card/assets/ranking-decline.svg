@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 25 25" fill="none">
+  <defs>
+    <linearGradient id="ranking-decline-surface" x1="3" y1="3" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E7EEFF"/>
+      <stop offset="1" stop-color="#EEE6FF"/>
+    </linearGradient>
+    <linearGradient id="ranking-decline-line" x1="5" y1="7" x2="20" y2="18" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1476FF"/>
+      <stop offset="1" stop-color="#8B63DF"/>
+    </linearGradient>
+  </defs>
+  <rect x="1.5" y="1.5" width="22" height="22" rx="7" fill="url(#ranking-decline-surface)" stroke="#8B63DF" stroke-opacity="0.22"/>
+  <path d="M5.5 18.5H19.5" stroke="#08359E" stroke-width="1.6" stroke-linecap="round" opacity="0.42"/>
+  <path d="M6 8L10 12L13 10L19 17" stroke="url(#ranking-decline-line)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M15.5 17H19V13.5" stroke="#8B63DF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="10" cy="12" r="1.35" fill="#FFFFFF" stroke="#5B72EA" stroke-width="1.3"/>
+</svg>

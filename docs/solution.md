@@ -310,6 +310,8 @@ AI 总结组件是一个垂直组件 Module。Host 读取关联数据快照；�
 
 摘要的创作期默认是 `text`：后端已生成或已确认的结论随页面文档返回。只有需求明确声明运行时 SSE 动态生成时，才在页面文档中声明 `aiSummary`。
 
+`text` 正文默认按纯文本渲染；需要分色时显式声明 `bodyFormat: "semanticHtml"`。它与 `rankingDetailCard` 的语义 HTML 明细共用 `widgets` 内的受控语义 HTML Module：Interface 只接收原始字符串，Implementation 统一负责标签/语义类白名单、安全解析、失败关闭、节点渲染与颜色映射，调用方不接触解析树，也不使用原始 HTML 注入。
+
 只有当生成能力出现多个组件消费者，或出现下载、通知等非组件消费者时，才从垂直组件中提取公共 Module。
 
 ## 13. 错误模型

@@ -4,6 +4,7 @@
     type Component,
     type PageSection
   } from '@metriccanvas/page';
+  import { sectionTitleLeftUrl, sectionTitleRightUrl } from '@metriccanvas/widgets';
   import type { Snippet } from 'svelte';
   import { installRankingDetailRowHeightSync } from './sync-ranking-detail-row-heights';
   import type { AuthoringComponentLocator, AuthoringOptions } from './types';
@@ -159,12 +160,38 @@
   data-section-id={section.id}
   data-section-variant={section.variant}
 >
-  {#if section.title}<h2 class="section-title">{section.title}</h2>{/if}
+  {#if section.title}
+    <h2 class="section-title">
+      {#if reportOverviewSection}
+        <img src={sectionTitleLeftUrl} alt="" data-decorative-icon="section-title-left" />
+      {/if}
+      <span>{section.title}</span>
+      {#if reportOverviewSection}
+        <img src={sectionTitleRightUrl} alt="" data-decorative-icon="section-title-right" />
+      {/if}
+    </h2>
+  {/if}
   <div
     bind:this={sectionGrid}
     class="section-grid"
     style="grid-template-columns: repeat({section.layout.columns}, minmax(0, 1fr));"
   >
+    {#if reportHeadingSection}
+      <img
+        class="report-heading-icon left"
+        src={sectionTitleLeftUrl}
+        alt=""
+        aria-hidden="true"
+        data-decorative-icon="section-title-left"
+      />
+      <img
+        class="report-heading-icon right"
+        src={sectionTitleRightUrl}
+        alt=""
+        aria-hidden="true"
+        data-decorative-icon="section-title-right"
+      />
+    {/if}
     {#each section.components as component, componentIndex (component.id)}
       <article
         class:chart-cell={isChartComponent(component)}
@@ -223,7 +250,7 @@
     box-shadow: 0 8px 24px rgb(68 85 147 / 0.06);
   }
   .page-section.header-section {
-    padding: 0 8px 10px;
+    padding: 0 0 10px;
     background: transparent;
     box-shadow: none;
   }
@@ -557,6 +584,10 @@
     padding-bottom: 40px;
   }
   .report-overview-section > .section-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     margin: 0 0 15px;
     color: var(--mc-color-primary);
     font-size: 32px;
@@ -566,6 +597,11 @@
   }
   .report-overview-section > .section-title::before {
     display: none;
+  }
+  .report-overview-section > .section-title img {
+    width: 20px;
+    height: 20px;
+    flex: none;
   }
   .report-overview-section > .section-grid {
     gap: 2px 12px;
@@ -609,6 +645,23 @@
     border: 0;
     box-shadow: none;
   }
+  .report-heading-section > .section-grid {
+    position: relative;
+  }
+  .report-heading-icon {
+    position: absolute;
+    top: 15px;
+    z-index: 1;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+  .report-heading-icon.left {
+    left: calc(50% - 103px);
+  }
+  .report-heading-icon.right {
+    right: calc(50% - 103px);
+  }
 
   .page-section.report-customer-analysis-section,
   .page-section.report-dimension-analysis-section {
@@ -621,7 +674,7 @@
   .report-dimension-analysis-section > .section-title {
     margin: 0 0 10px 9px;
     color: var(--mc-color-report-heading);
-    font-size: 18px;
+    font-size: var(--mc-font-size-report-level-3, 20px);
     font-weight: 400;
     line-height: 30px;
     text-align: left;

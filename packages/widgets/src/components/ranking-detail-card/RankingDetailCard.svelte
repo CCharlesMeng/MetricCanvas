@@ -1,8 +1,10 @@
 <script lang="ts">
   import type { RankingDetailCardProps } from '@metriccanvas/page';
   import type { MainDataSlots } from '../../shared/component-data';
+  import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import { buildRankingDetailRows } from './rows';
-  import SemanticHtml from './SemanticHtml.svelte';
+  import rankingDeclineIconUrl from './assets/ranking-decline.svg';
+  import rankingGrowthIconUrl from './assets/ranking-growth.svg';
 
   interface Props {
     data: MainDataSlots;
@@ -19,7 +21,24 @@
   class:report={props.variant === 'report'}
   class="ranking-detail-card"
 >
-  {#if props.title}<h3>{props.title}</h3>{/if}
+  {#if props.title}
+    <h3>
+      {#if props.variant === 'report' && props.tone === 'positive'}
+        <img
+          src={rankingGrowthIconUrl}
+          alt=""
+          data-decorative-icon="ranking-growth"
+        />
+      {:else if props.variant === 'report' && props.tone === 'negative'}
+        <img
+          src={rankingDeclineIconUrl}
+          alt=""
+          data-decorative-icon="ranking-decline"
+        />
+      {/if}
+      <span>{props.title}</span>
+    </h3>
+  {/if}
   <div class="ranking-content">
     <ol>
       {#each rows as row (row.rank)}
@@ -48,11 +67,7 @@
           {#if row.description}<p>{row.description}</p>{/if}
           {#if row.semanticDescription}
             <div class="semantic-description">
-              {#if row.semanticDescription.nodes}
-                <SemanticHtml nodes={row.semanticDescription.nodes} />
-              {:else}
-                <span class="semantic-html-error">说明内容格式不受支持</span>
-              {/if}
+              <SemanticHtml source={row.semanticDescription} />
             </div>
           {/if}
           {#if row.details}
@@ -191,9 +206,6 @@
     line-height: 18px;
     overflow-wrap: anywhere;
   }
-  .semantic-html-error {
-    color: var(--mc-color-negative, #f5222d);
-  }
   .nested-details {
     margin-top: 8px;
     color: var(--mc-color-report-description, #595959);
@@ -243,27 +255,40 @@
     text-align: center;
   }
   .ranking-detail-card.report h3 {
-    margin-bottom: 14px;
-    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: var(--mc-font-size-report-level-4, 18px);
     font-weight: 400;
     line-height: 30px;
+  }
+  .ranking-detail-card.report h3 img {
+    width: 25px;
+    height: 25px;
+    flex: none;
   }
   .ranking-detail-card.report ol {
     gap: 10px;
   }
   .ranking-detail-card.report .ranking-content {
     padding: 20px 12px;
-    background: rgb(252 252 255);
-    border: 1px solid rgb(212 213 255);
-    border-radius: 12px;
+    background: var(--mc-color-report-content-surface, #fcfcff);
+    border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
+    border-radius: var(--mc-radius-report-content, 12px);
   }
   .ranking-detail-card.report .ranking-detail-row {
     min-height: 138px;
     grid-template-columns: 26px minmax(0, 1fr);
     gap: 10px;
-    padding: 10px 0;
+    padding: 0;
     background: transparent;
     border-radius: 0;
+  }
+  .ranking-detail-card.report .detail {
+    display: grid;
+    align-content: start;
+    gap: 20px;
   }
   .ranking-detail-card.report .rank,
   .ranking-detail-card.report .rank.top-three,
@@ -282,7 +307,7 @@
     line-height: 22px;
   }
   .ranking-detail-card.report .metric-line {
-    margin-top: 4px;
+    margin-top: 0;
     font-size: 18px;
     line-height: 28px;
   }
@@ -291,7 +316,7 @@
   }
   .ranking-detail-card.report p,
   .ranking-detail-card.report .semantic-description {
-    margin-top: 8px;
+    margin-top: 0;
     padding: 8px 10px;
     color: var(--mc-color-report-description, #595959);
     background: var(--mc-color-surface-subtle, #f1f4ff);
@@ -300,6 +325,7 @@
     line-height: 20px;
   }
   .ranking-detail-card.report .nested-details {
+    margin-top: 0;
     font-size: 14px;
   }
   .ranking-detail-card.report .nested-details p {

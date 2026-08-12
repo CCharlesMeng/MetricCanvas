@@ -42,7 +42,7 @@ const MAX_NODES = 1_000;
 const MAX_DEPTH = 12;
 
 /**
- * 把 DQE 语义 HTML 解析成受控节点。调用方只渲染这些节点，绝不把原文
+ * 把受控语义 HTML 解析成安全节点。调用方只渲染这些节点，绝不把原文
  * 交给 {@html}；未知标签、属性、类名和不闭合结构全部失败关闭。
  */
 export function parseSemanticHtml(source: string): SemanticHtmlParseResult {

@@ -4,6 +4,8 @@ status: accepted
 
 # DQE 明细支持受控语义 HTML，样式仍由前端拥有
 
+> [ADR-0029](./0029-share-controlled-semantic-html-rendering.md) 后续把安全解析、节点渲染和颜色映射从 `rankingDetailCard` 私有实现提升为与 `text` 共用的 Module；本决策关于 `semanticHtml/detail` 数据字段和 DQE 内容边界的结论仍然生效。
+
 部分 DQE 归因结果已经完成多段文案组合，并需要按业务方向呈现正负或中性视觉状态。如果继续返回对象数组，前端必须重新组合后端已经确定的文案；如果直接把任意 HTML 交给浏览器，又会引入脚本注入、内联样式和页面协议失控。数据层只应表达内容结构和业务方向，不应决定红色、绿色、字号或间距。
 
 ## 决策

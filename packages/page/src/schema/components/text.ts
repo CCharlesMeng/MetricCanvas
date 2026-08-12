@@ -19,7 +19,8 @@ export const textComponentZ = z
       .object({
         title: z.string().optional(),
         body: z.string().optional(),
-        variant: z.enum(['plain', 'insight', 'riskNotice']).optional(),
+        bodyFormat: z.literal('semanticHtml').optional(),
+        variant: z.enum(['plain', 'insight', 'reportInline', 'riskNotice']).optional(),
         maxWidth: z.int().min(1).optional(),
         links: z.array(textLinkZ).optional()
       })
@@ -30,9 +31,11 @@ export const textComponentZ = z
 
 componentCatalogRegistry.add(textComponentZ, {
   label: '文本',
-  purpose: '承载说明、口径提示或由后端返回的人工/AI 已确认分析结论',
+  purpose: '承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文',
   chooseWhen: [
-    '摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件'
+    '摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件',
+    '摘要需要分色富文本时声明 bodyFormat: semanticHtml，并在 body 中只使用受控标签和语义类',
+    '分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文'
   ],
   dataShape: '不绑定页面数据源',
   title: 'optional',

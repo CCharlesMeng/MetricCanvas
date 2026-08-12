@@ -4,6 +4,7 @@ import type { MainDataSlots } from '../src/shared/component-data';
 import { barOption } from '../src/components/bar-chart/options';
 
 interface TestedBarOption {
+  grid?: { top: number };
   tooltip: { trigger: string; confine: boolean };
   legend?: { top: number; left?: number; right?: number };
   xAxis: { type: string; data: string[] };
@@ -99,6 +100,7 @@ describe('barOption 实际/预测系列', () => {
     expect(option.xAxis).toEqual({ type: 'category', data: ['1月', '2月', '3月'] });
     expect(option.yAxis).toMatchObject({ type: 'value' });
     expect(option.legend).toEqual({ top: 0, right: 0 });
+    expect(option.grid?.top).toBe(44);
     expect(option.yAxis.name).toBe('万');
     expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1200');
     expect(option.series.map((series) => series.name)).toEqual([

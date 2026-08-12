@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseSemanticHtml } from '../src/components/ranking-detail-card/semantic-html';
+import { parseSemanticHtml } from '../src/shared/semantic-html';
 
 describe('parseSemanticHtml', () => {
   it('只解析允许的行内结构、文本和语义类', () => {

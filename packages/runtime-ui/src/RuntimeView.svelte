@@ -920,7 +920,12 @@
     --mc-color-report-badge: #1476ff;
     --mc-color-report-badge-surface: #e8f1ff;
     --mc-color-report-header-accent: #2098ff;
+    --mc-color-report-content-frame: #d4d5ff;
+    --mc-color-report-content-surface: #fcfcff;
+    --mc-font-size-report-level-3: 20px;
+    --mc-font-size-report-level-4: 18px;
     --mc-radius-cell: 10px;
+    --mc-radius-report-content: 12px;
     --mc-radius-section: 16px;
     --mc-section-gradient: url('./assets/section-gradient-panel.svg');
 
@@ -938,12 +943,16 @@
     color: var(--mc-color-muted);
   }
   .page-content {
+    --mc-page-content-padding-block-start: 28px;
+    --mc-page-content-padding-inline: 18px;
+
     width: 100%;
     max-width: 75rem;
     box-sizing: border-box;
     margin: 0 auto;
     min-height: 100vh;
-    padding: 28px 18px 54px;
+    padding: var(--mc-page-content-padding-block-start)
+      var(--mc-page-content-padding-inline) 54px;
     background: var(--mc-color-canvas);
   }
   .filter-bar {
@@ -964,8 +973,7 @@
   }
   @media (max-width: 1050px) {
     .page-content {
-      padding-right: 12px;
-      padding-left: 12px;
+      --mc-page-content-padding-inline: 12px;
     }
   }
   .error-page h1 {
