@@ -890,7 +890,7 @@
     {
       "id": "summary",
       "title": "数据摘要",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "report-header",
@@ -928,7 +928,7 @@
     {
       "id": "tokens-overview",
       "title": "Tokens消耗概况",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "tokens-consumption-card",
@@ -1113,7 +1113,7 @@
     {
       "id": "region-distribution",
       "title": "区域分布",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "region-table",
@@ -1267,7 +1267,7 @@
     {
       "id": "model-distribution",
       "title": "模型分布",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "model-table",
@@ -1421,7 +1421,7 @@
     {
       "id": "customer-distribution",
       "title": "客户分布",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "customer-table",

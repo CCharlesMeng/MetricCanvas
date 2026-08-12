@@ -1,4 +1,4 @@
-# 分区外壳与通用行对齐设计
+# 分区容器与通用行对齐设计
 
 ## 背景
 
@@ -8,21 +8,21 @@
 
 ## 方案
 
-### 分区外壳（Section Shell）
+### 分区容器（Section Container）
 
 页面协议升级到 Schema 5.0：
 
 - 删除 `section.variant` 与 `section.layout`。12 列 Grid 是统一运行时不变量，不再进入页面文档；组件宽度仍由 `layout.span` 表达。
-- 新增可选 `section.shell`，封闭三档、命名表现中性：
-  - `plain`：无外壳，组件完全自带外观（报告头、摘要指标卡行、分隔标题）；
+- 新增可选 `section.container`，封闭三档、命名表现中性：
+  - `plain`：无容器，组件完全自带外观（报告头、摘要指标卡行、分隔标题）；
   - `panel`：渐变章节面板 + 居中图标标题 + 内层白底承载网格（报告章节）；
   - `card`：白色小节卡片 + 左对齐小标题（章节内的分析小节）。
-- 缺省（不声明 `shell`）保持通用看板外观：白色分区 + 角标标题 + 带边框的组件单元格。
-- `RuntimeSection` 删除全部组合推断与子组件 `props.variant` 穿透读取；外观只由 `shell` 决定，三档下单元格一律无镶边（chromeless），组件自带表面。
+- 缺省（不声明 `container`）保持通用看板外观：白色分区 + 角标标题 + 带边框的组件单元格。
+- `RuntimeSection` 删除全部组合推断与子组件 `props.variant` 穿透读取；外观只由 `container` 决定，三档下单元格一律无镶边（chromeless），组件自带表面。
 - 两个正式页面的章节外观统一为 `panel` 一档（原 `reportOverview` 与 titled 推断两种章节样式合并，间距取 12px 网格间距，保留内层白底与图标标题），`reportCustomerAnalysis`/`reportDimensionAnalysis` 合并为 `card` 一档。视觉基线随之重建。
 - 原 `reportHeading` 分区的大标题样式内化为 `text` 组件新 variant `heading`（32px 居中 + 两侧装饰图标由组件自绘），分区本身用 `plain`。
 - `connectPrevious` 保留现状（ADR-0021 已认可的通用语义）；出现真实的内部协作需求前不封装组合式深 Module。
-- 迁移是一次性硬切换：旧推断逻辑只在迁移时执行最后一次，把每个分区的现状归类写成显式 `shell`，随后推断代码删除。
+- 迁移是一次性硬切换：旧推断逻辑只在迁移时执行最后一次，把每个分区的现状归类写成显式 `container`，随后推断代码删除。
 
 ### 通用行对齐（Row Alignment）
 
@@ -37,13 +37,13 @@
 ## 边界
 
 - 不新增业务布局类型、`family` 字符串、`group` 层级或递归布局；页面树保持 分区 → 组件 两层。
-- 不在 JSON 暴露 padding、gap、surface、titleAlign 等样式轴；`shell` 新档位必须证明"结构上不可区分且视觉上必须不同"才能增加。
+- 不在 JSON 暴露 padding、gap、surface、titleAlign 等样式轴；`container` 新档位必须证明"结构上不可区分且视觉上必须不同"才能增加。
 - 行对齐不跨分区、不跨视觉行、不跨组件类型；单参与者不做任何事。
 - 数据流不变：布局树不加工或转发业务数据。
 
 ## 验收标准
 
-- Schema 5.0 拒绝 `section.variant`、`section.layout` 与未知 `shell` 值；全部在库页面、fixture 与示例迁移到 5.0 并通过 `pnpm validate`；
+- Schema 5.0 拒绝 `section.variant`、`section.layout` 与未知 `container` 值；全部在库页面、fixture 与示例迁移到 5.0 并通过 `pnpm validate`；
 - 除 `id` 外相同的页面元数据仍产生相同 DOM 与计算样式（ADR-0021 门禁不回归）；
 - `runtime-ui` 源码不含纯渲染组件内部 class 选择器；行对齐仅通过发布的契约协作；
 - 流水分析报告：客户视角两张排行卡同视觉行时逐行等高，窄屏堆叠后复原；

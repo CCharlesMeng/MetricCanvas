@@ -263,7 +263,7 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   });
 });
 
-test('三档分区外壳提供扁平外缘，组件自带表面', async ({ page }) => {
+test('三档分区容器提供扁平外缘，组件自带表面', async ({ page }) => {
   await page.goto('/examples/inline.html');
   await page.evaluate(() => {
     window.runtime.update({
@@ -287,7 +287,7 @@ test('三档分区外壳提供扁平外缘，组件自带表面', async ({ page 
         sections: [
           {
             id: 'overview',
-            shell: 'plain',
+            container: 'plain',
             components: [{
               id: 'summary',
               type: 'metricCard',
@@ -302,7 +302,7 @@ test('三档分区外壳提供扁平外缘，组件自带表面', async ({ page 
           },
           {
             id: 'activities',
-            shell: 'panel',
+            container: 'panel',
             components: [{
               id: 'activity',
               type: 'metricCard',
@@ -323,7 +323,7 @@ test('三档分区外壳提供扁平外缘，组件自带表面', async ({ page 
           {
             id: 'details',
             title: '客户明细',
-            shell: 'panel',
+            container: 'panel',
             components: [{
               id: 'note',
               type: 'text',
@@ -1392,7 +1392,7 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
         },
         sections: [{
           id: 'customer-analysis',
-          shell: 'card',
+          container: 'card',
           components: [
             {
               id: 'growth-ranking',

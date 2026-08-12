@@ -113,19 +113,59 @@
       .draftstate.saved i { background: var(--ok); }
       .draftstate.dirty i { background: #f59e0b; }
 
-      .rail { display: flex; align-items: stretch; gap: 0; padding: 0 18px; background: var(--surface); border-bottom: 1px solid var(--line); overflow-x: auto; }
-      .rail button { display: flex; align-items: center; gap: 9px; padding: 11px 16px 11px 0; background: none; border: 0; border-bottom: 2px solid transparent; white-space: nowrap; }
-      .rail button + button { padding-left: 16px; }
-      .rail .n { display: grid; width: 20px; height: 20px; flex: none; place-items: center; color: var(--muted); background: var(--line-soft); border-radius: 999px; font-size: 10.5px; font-weight: 700; }
-      .rail .tx { display: grid; gap: 1px; text-align: left; }
-      .rail .tx b { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+      .rail { display: flex; align-items: center; gap: 8px; padding: 9px 18px; background: var(--surface); border-bottom: 1px solid var(--line); overflow-x: auto; }
+      .rail button { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: #fff; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+      .rail button:hover { border-color: var(--faint); }
+      .rail .n { width: 7px; height: 7px; flex: none; background: #d4d4d8; border-radius: 999px; }
+      .rail .tx { display: flex; align-items: baseline; gap: 7px; text-align: left; }
+      .rail .tx b { font-size: 12.5px; font-weight: 600; color: #52525b; }
       .rail .tx small { color: var(--faint); font-size: 10.5px; }
-      .rail button.on { border-bottom-color: var(--accent); }
-      .rail button.on .n { color: #fff; background: var(--accent); }
+      .rail button.on { background: #fafaff; border-color: var(--accent); }
       .rail button.on .tx b { color: var(--text); font-weight: 700; }
-      .rail button.done .n { color: #fff; background: var(--ok); }
-      .rail button.blocked .n { color: #fff; background: #f59e0b; }
-      .rail .arrow { display: grid; place-items: center; color: #d4d4d8; font-size: 11px; }
+      .rail button.done .n { background: var(--ok); }
+      .rail button.attn .n { background: #f59e0b; }
+      .rail button.skipped { border-style: dashed; opacity: .65; }
+      .rail button.skipped .tx b { text-decoration: line-through; }
+      .railnote { margin-left: auto; padding-left: 14px; color: var(--faint); font-size: 10.5px; white-space: nowrap; }
+
+      .seg { display: inline-flex; padding: 2px; background: var(--line-soft); border-radius: 9px; }
+      .seg button { padding: 5px 10px; background: none; border: 0; border-radius: 7px; color: var(--muted); font-size: 11.5px; font-weight: 600; }
+      .seg button.on { color: var(--text); background: #fff; box-shadow: 0 1px 2px rgb(24 24 27 / .1); }
+
+      /* 数据视图 */
+      .datawork { display: grid; gap: 14px; }
+      .dw-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+      .dw-head b { font-size: 13px; }
+      .dsrc { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .dsrc.on { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(79 70 229 / .12); }
+      .dsrc > header { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); cursor: pointer; }
+      .dsrc > header .t { display: flex; align-items: center; gap: 8px; min-width: 0; }
+      .dsrc > header .t b { font-size: 12.5px; }
+      .dsrc > header .a { display: flex; align-items: center; gap: 8px; flex: none; font-size: 11px; }
+      .chip.ok { color: #166534; background: #f0fdf4; }
+      .dsrc-body { display: grid; grid-template-columns: minmax(0,1.1fr) minmax(0,1fr); gap: 14px; padding: 14px; }
+      .dsrc-body .blk.wide { grid-column: 1 / -1; }
+      .dsrc-body h6 { margin-bottom: 7px; color: #52525b; font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+      .dsrc-body pre { margin: 0; padding: 10px 11px; background: #fafafa; border: 1px solid var(--line-soft); border-radius: 9px; color: #3f3f46; font-size: 11px; line-height: 1.7; white-space: pre-wrap; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .dsrc-body .contract th, .dsrc-body .contract td { text-align: left; }
+      .dsrc > footer { padding: 9px 14px; background: #fafafa; border-top: 1px solid var(--line-soft); color: var(--muted); font-size: 11px; }
+
+      /* 取数意图：这一步的主体 */
+      .intent { display: grid; gap: 8px; padding: 13px 14px; }
+      .irow { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: baseline; }
+      .irow .k { color: var(--faint); font-size: 11px; }
+      .irow .v { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+      .mchip { padding: 3px 9px; background: var(--accent-soft); border-radius: 7px; color: #3730a3; font-size: 11.5px; font-weight: 600; }
+      .mchip.dim { color: #52525b; background: var(--line-soft); }
+      .mchip.temp { color: var(--warn-text); background: #fef3c7; }
+      .mchip.warnchip { color: var(--warn-text); background: #fef3c7; font-weight: 500; }
+      .irow .none { color: var(--faint); font-size: 11.5px; }
+      .addchip { width: 20px; height: 20px; padding: 0; color: var(--faint); background: #fff; border: 1px dashed #d4d4d8; border-radius: 6px; font-size: 11px; line-height: 1; }
+      .addchip:hover { color: var(--accent); border-color: var(--accent); }
+      .untried-hint { margin: 0 14px 13px; padding: 11px 12px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); font-size: 11.5px; line-height: 1.65; }
+      .derived summary { color: var(--muted); font-size: 11px; cursor: pointer; }
+      .derived summary::marker { color: var(--faint); }
+      .derived pre { margin-top: 8px; }
 
       .scroll { flex: 1; padding: 20px; overflow-y: auto; }
       .canvas { display: grid; gap: 16px; }
@@ -213,6 +253,8 @@
       .checks { display: grid; gap: 6px; }
       .checks li { display: grid; grid-template-columns: 16px minmax(0,1fr); gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; line-height: 1.5; }
       .checks li:last-child { border-bottom: 0; }
+      .checks li.jump { cursor: pointer; }
+      .checks li.jump:hover { background: #fafaff; }
       .checks .m { color: var(--ok); }
       .checks .w { color: #d97706; }
       .checks .x { color: var(--down); }
@@ -261,12 +303,23 @@
         { name: "在用客户数", alias: ["活跃客户"], def: "期间内有过调用的客户数", unit: "家", add: "不可加", domain: "客户经营" }
       ];
 
+      // 取数单元：设计期的呈现主体，用业务语言描述「要什么数」。
+      // metrics/dims/time/filters 是人看的意图；dims/measures/rows 是它试算后才有的结果面。
       const SOURCES = {
-        "consumption-overview": { kind: "inline", dims: [], measures: ["消耗Tokens", "环比"], time: null, tried: true,
+        "consumption-overview": { kind: "query", label: "本月消耗总量",
+          metrics: [{ n: "Tokens消耗量" }, { n: "环比", temp: true }], dimSpec: [], filters: [],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: [], measures: ["消耗Tokens", "环比"], time: null, tried: false,
           rows: [{ 消耗Tokens: 128400000, 环比: 8.4 }] },
-        "billing-overview": { kind: "inline", dims: [], measures: ["计费Tokens", "环比"], time: null, tried: true,
+        "billing-overview": { kind: "query", label: "本月计费总量",
+          metrics: [{ n: "计费Tokens量" }, { n: "环比", temp: true }], dimSpec: [], filters: [],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: [], measures: ["计费Tokens", "环比"], time: null, tried: false,
           rows: [{ 计费Tokens: 96400000, 环比: -2.1 }] },
-        "consumption-trend": { kind: "query", dims: ["月份"], measures: ["消耗Tokens", "计费Tokens"], time: "月份", tried: false,
+        "consumption-trend": { kind: "query", label: "消耗与计费 · 月度趋势",
+          metrics: [{ n: "Tokens消耗量" }, { n: "计费Tokens量" }], dimSpec: ["月份"], filters: [],
+          timeSpec: { range: "2026-01 ~ 2026-11", grain: "月", kind: "绝对区间" },
+          dims: ["月份"], measures: ["消耗Tokens", "计费Tokens"], time: "月份", tried: false,
           rows: [
             { 月份: "01", 消耗Tokens: 74, 计费Tokens: 55 }, { 月份: "02", 消耗Tokens: 68, 计费Tokens: 52 },
             { 月份: "03", 消耗Tokens: 83, 计费Tokens: 61 }, { 月份: "04", 消耗Tokens: 91, 计费Tokens: 66 },
@@ -275,7 +328,10 @@
             { 月份: "09", 消耗Tokens: 124, 计费Tokens: 91 }, { 月份: "10", 消耗Tokens: 117, 计费Tokens: 95 },
             { 月份: "11", 消耗Tokens: 128, 计费Tokens: 96 }
           ] },
-        "region-distribution": { kind: "query", dims: ["区域"], measures: ["消耗Tokens", "占比", "环比"], time: null, tried: false,
+        "region-distribution": { kind: "query", label: "区域 × 消耗、占比与环比",
+          metrics: [{ n: "Tokens消耗量" }, { n: "占比", temp: true }, { n: "环比", temp: true }], dimSpec: ["区域"], filters: [],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: ["区域"], measures: ["消耗Tokens", "占比", "环比"], time: null, tried: false,
           rows: [
             { 区域: "华东", 消耗Tokens: 44700000, 占比: 34.8, 环比: 2.1 },
             { 区域: "华南", 消耗Tokens: 27600000, 占比: 21.5, 环比: -6.3 },
@@ -285,14 +341,21 @@
             { 区域: "东北", 消耗Tokens: 6200000, 占比: 4.8, 环比: 0.4 },
             { 区域: "西北", 消耗Tokens: 3700000, 占比: 2.9, 环比: 3.6 }
           ] },
-        "model-distribution": { kind: "query", dims: ["模型"], measures: ["调用次数", "消耗Tokens", "占比"], time: null, tried: false,
+        "model-distribution": { kind: "query", label: "模型 × 调用与消耗",
+          metrics: [{ n: "Tokens请求量" }, { n: "Tokens消耗量" }, { n: "占比", temp: true }], dimSpec: ["模型"], filters: [],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: ["模型"], measures: ["调用次数", "消耗Tokens", "占比"], time: null, tried: false,
           rows: [
             { 模型: "DeepSeek-V4-Pro", 调用次数: 1284000, 消耗Tokens: 61200000, 占比: 47.7 },
             { 模型: "DeepSeek-V4", 调用次数: 2140000, 消耗Tokens: 38400000, 占比: 29.9 },
             { 模型: "Embedding-L", 调用次数: 4820000, 消耗Tokens: 19600000, 占比: 15.3 },
             { 模型: "Rerank-M", 调用次数: 1960000, 消耗Tokens: 9200000, 占比: 7.1 }
           ] },
-        "customer-growth": { kind: "query", dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
+        "customer-growth": { kind: "query", label: "客户 × 环比增长 Top 5",
+          metrics: [{ n: "Tokens消耗量" }, { n: "环比", temp: true }], dimSpec: ["客户名称"],
+          filters: ["环比 > 0", "按环比降序取前 5"],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
           rows: [
             { 客户名称: "XX客户名称012", 消耗Tokens: 8600000, 环比: 62.4 },
             { 客户名称: "XX客户名称047", 消耗Tokens: 7200000, 环比: 48.1 },
@@ -300,7 +363,11 @@
             { 客户名称: "XX客户名称128", 消耗Tokens: 4100000, 环比: 27.3 },
             { 客户名称: "XX客户名称066", 消耗Tokens: 3300000, 环比: 18.9 }
           ] },
-        "customer-decline": { kind: "query", dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
+        "customer-decline": { kind: "query", label: "客户 × 环比下降 Top 5",
+          metrics: [{ n: "Tokens消耗量" }, { n: "环比", temp: true }], dimSpec: ["客户名称"],
+          filters: ["环比 < 0", "按环比升序取前 5"],
+          timeSpec: { range: "2026-11", grain: "月", kind: "绝对区间" },
+          dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
           rows: [
             { 客户名称: "XX客户名称021", 消耗Tokens: 6900000, 环比: -41.2 },
             { 客户名称: "XX客户名称090", 消耗Tokens: 5100000, 环比: -33.7 },
@@ -392,23 +459,27 @@
 
       /* ================= 2. UI 状态 ================= */
 
+      // 工作面，不是向导：可以任意跳转、来回改、临时跳过。默认视图只是建议，不强制。
       const STAGES = [
-        { id: "discover", name: "数据发现", hint: "检索指标与维度、消歧、登记缺口" },
-        { id: "verify", name: "查询与试算", hint: "生成查询定义并真实执行验真" },
-        { id: "layout", name: "页面布局", hint: "按数据形状选组件并排布" },
-        { id: "bind", name: "数据绑定", hint: "字段绑定与展示格式" },
-        { id: "draft", name: "校验与草稿", hint: "页面校验，保存草稿" }
+        { id: "discover", name: "数据发现", hint: "检索指标与维度、消歧、登记缺口", view: "data" },
+        { id: "verify", name: "查询与试算", hint: "生成查询定义并真实执行验真", view: "data" },
+        { id: "layout", name: "页面布局", hint: "按数据形状选组件并排布", view: "page" },
+        { id: "bind", name: "数据绑定", hint: "字段绑定与展示格式", view: "page" },
+        { id: "draft", name: "校验与草稿", hint: "页面校验，保存草稿", view: "page" }
       ];
 
       const ui = {
         stage: "discover",
+        canvasMode: "auto", // auto | page | data
         selected: null,
+        selectedSource: null,
+        skipped: {},
         chatDraft: "",
         openSteps: null,
         gapStatus: "open", // open | submitted
         gapTicket: "",
         template: null,
-        drafts: [], // [{rev, at, note}]
+        drafts: [], // [{rev, at, untried}]
         dirty: true,
         publishOpen: false,
         toast: "",
@@ -416,16 +487,35 @@
       };
 
       const triedCount = () => Object.values(SOURCES).filter((s) => s.tried).length;
-      const allTried = () => Object.values(SOURCES).every((s) => s.tried);
+      const untriedCount = () => Object.values(SOURCES).length - triedCount();
+      const allTried = () => untriedCount() === 0;
       const savedRev = () => (ui.drafts.length ? ui.drafts[ui.drafts.length - 1].rev : 0);
+      const dataComponents = () => doc.sections.flatMap((s) => s.components).filter((c) => c.source);
+      const componentsUsing = (n) => dataComponents().filter((c) => c.source === n).map((c) => c.title || c.id);
 
-      function stageStatus(id) {
-        if (id === "discover") return ui.gapStatus === "open" ? "blocked" : "done";
-        if (id === "verify") return allTried() ? "done" : triedCount() > 2 ? "" : "";
-        if (id === "layout") return ui.template ? "done" : "";
-        if (id === "bind") return allTried() ? "done" : "";
-        if (id === "draft") return savedRev() ? "done" : "";
-        return "";
+      function effectiveView() {
+        if (ui.canvasMode !== "auto") return ui.canvasMode;
+        return (STAGES.find((s) => s.id === ui.stage) || {}).view || "page";
+      }
+
+      // 状态只描述“现在是什么样”，不表达“必须先做完谁”。
+      function railStatus(id) {
+        if (ui.skipped[id]) return { cls: "skipped", label: "已跳过" };
+        if (id === "discover") return ui.gapStatus === "open" ? { cls: "attn", label: "1 个缺口待提" } : { cls: "done", label: "缺口已登记" };
+        if (id === "verify") return allTried() ? { cls: "done", label: "全部已试算" } : { cls: "attn", label: `${untriedCount()} 个未试算` };
+        if (id === "layout") return ui.template ? { cls: "done", label: "已套用模板" } : { cls: "", label: "默认布局" };
+        if (id === "bind") return { cls: dataComponents().length ? "done" : "", label: `${dataComponents().length} 个组件已绑定` };
+        if (id === "draft") return savedRev() ? { cls: "done", label: `草稿 R${savedRev()}` } : { cls: "", label: "未保存" };
+        return { cls: "", label: "" };
+      }
+
+      // 字段契约：类型 / 角色 / 单位由数据上下文给，不从样例值猜。
+      function fieldMeta(sourceName, field) {
+        const s = SOURCES[sourceName];
+        const role = s.dims.includes(field) ? "维度" : "度量";
+        const unit = /占比|环比/.test(field) ? "%" : /Tokens/.test(field) ? "Token" : /次数/.test(field) ? "次" : /客户数/.test(field) ? "家" : "—";
+        const type = role === "维度" ? (field === s.time ? "time" : "string") : "number";
+        return { role, unit, type };
       }
 
       /* ================= 3. 画布渲染 ================= */
@@ -576,6 +666,7 @@
       function centerColumn() {
         const rev = savedRev();
         const state = rev === 0 ? ["", "未保存草稿"] : ui.dirty ? ["dirty", `草稿 R${rev} · 有未保存改动`] : ["saved", `草稿 R${rev} 已保存`];
+        const view = effectiveView();
         return `<main>
           <div class="docbar">
             <div class="l">
@@ -584,7 +675,12 @@
               <span class="draftstate ${state[0]}"><i></i>${state[1]}</span>
             </div>
             <div class="r">
-              <button class="btn" data-action="save-draft" ${allTried() ? "" : "disabled"}>保存草稿</button>
+              <span class="seg" title="视图跟随当前工作面，也可以钉死">
+                <button class="${ui.canvasMode === "auto" ? "on" : ""}" data-action="view" data-view="auto">跟随</button>
+                <button class="${ui.canvasMode === "page" ? "on" : ""}" data-action="view" data-view="page">页面视图</button>
+                <button class="${ui.canvasMode === "data" ? "on" : ""}" data-action="view" data-view="data">数据视图</button>
+              </span>
+              <button class="btn" data-action="save-draft">保存草稿</button>
               <span class="pop-wrap">
                 <button class="btn primary" data-action="toggle-publish" ${rev ? "" : "disabled"}>发布…</button>
                 ${ui.publishOpen ? publishPop() : ""}
@@ -593,32 +689,120 @@
           </div>
 
           <div class="rail">
-            ${STAGES.map((s, i) => {
-              const st = stageStatus(s.id);
-              return `${i ? '<span class="arrow">›</span>' : ""}
-              <button class="${ui.stage === s.id ? "on" : ""} ${st}" data-action="stage" data-stage="${s.id}">
-                <span class="n">${st === "done" ? "✓" : st === "blocked" ? "!" : i + 1}</span>
-                <span class="tx"><b>${s.name}</b><small>${s.hint}</small></span>
+            ${STAGES.map((s) => {
+              const st = railStatus(s.id);
+              return `<button class="${ui.stage === s.id ? "on" : ""} ${st.cls}" data-action="stage" data-stage="${s.id}">
+                <span class="n"></span>
+                <span class="tx"><b>${s.name}</b><small>${st.label}</small></span>
               </button>`;
             }).join("")}
+            <span class="railnote">工作面可任意跳转、来回改，也可以跳过；状态只反映现状，不锁顺序。</span>
           </div>
 
-          <div class="scroll">${renderCanvas()}</div>
+          <div class="scroll">${view === "data" ? renderDataCanvas() : renderCanvas()}</div>
         </main>`;
+      }
+
+      // 数据视图：设计期的呈现主体是「取数单元」——指标 × 维度 × 时间 × 筛选。
+      // 查询定义是它的派生物，试算之后才存在，收在折叠里供排查，不占主位。
+      function renderDataCanvas() {
+        const entries = Object.entries(SOURCES);
+        return `<div class="datawork">
+          <div class="dw-head">
+            <div>
+              <b>数据设计 · ${entries.length} 个取数单元</b>
+              <p class="note">这一步的单元是「要什么数」：指标 × 维度 × 时间 × 筛选，全部用业务语言表达。
+                查询原文与字段契约是它试算之后的<b>派生物</b>，不在这一步手写。</p>
+            </div>
+            <button class="btn sm" data-action="run-trial" ${allTried() ? "disabled" : ""}>
+              ${allTried() ? "已全部试算" : `执行试算（${untriedCount()} 个待试）`}</button>
+          </div>
+
+          ${entries.map(([n, s]) => {
+            const on = ui.selectedSource === n;
+            const cols = fieldsOf(n);
+            const used = componentsUsing(n);
+            const preview = s.rows.slice(0, 4);
+            const hasTemp = s.metrics.some((m) => m.temp);
+            return `<section class="dsrc ${on ? "on" : ""}" data-source-card="${n}">
+              <header>
+                <div class="t">
+                  <b>${esc(s.label)}</b>
+                  ${s.tried ? '<span class="chip ok">已试算</span>' : '<span class="chip">草拟</span>'}
+                  ${hasTemp ? '<span class="warn-pill">含临时口径</span>' : ""}
+                </div>
+                <div class="a">
+                  <button class="btn sm" data-action="trial-one" data-source="${n}" ${s.tried ? "disabled" : ""}>
+                    ${s.tried ? "已试算" : "试算"}</button>
+                  <button class="btn sm" data-action="add-from-source" data-source="${n}" ${s.tried ? "" : "disabled"}
+                    title="${s.tried ? "" : "先试算，确认取得到数再上画布"}">加入画布</button>
+                </div>
+              </header>
+
+              <div class="intent">
+                <div class="irow"><span class="k">指标</span><span class="v">
+                  ${s.metrics.map((m) => `<span class="mchip ${m.temp ? "temp" : ""}">${esc(m.n)}${m.temp ? " · 临时口径" : ""}</span>`).join("")}
+                  <button class="addchip" title="原型未接编辑">＋</button></span></div>
+                <div class="irow"><span class="k">维度</span><span class="v">
+                  ${s.dimSpec.length ? s.dimSpec.map((d) => `<span class="mchip dim">${esc(d)}</span>`).join("") : '<span class="none">不切分 · 汇总为单值</span>'}
+                  <button class="addchip">＋</button></span></div>
+                <div class="irow"><span class="k">时间</span><span class="v">
+                  <span class="mchip">${esc(s.timeSpec.range)}</span>
+                  <span class="mchip">${esc(s.timeSpec.grain)}粒度</span>
+                  <span class="mchip warnchip">${esc(s.timeSpec.kind)}</span></span></div>
+                <div class="irow"><span class="k">筛选</span><span class="v">
+                  ${s.filters.length ? s.filters.map((f) => `<span class="mchip">${esc(f)}</span>`).join("") : '<span class="none">无</span>'}
+                  <button class="addchip">＋</button></span></div>
+                <div class="irow"><span class="k">预期</span><span class="v">
+                  <span class="none">${s.dimSpec.length} 维 × ${s.metrics.length} 指标${s.tried ? ` · 实得 ${s.rows.length} 行` : " · 行数待试算确认"}</span></span></div>
+              </div>
+
+              ${s.tried
+                ? `<div class="dsrc-body">
+                    <div class="blk">
+                      <h6>结果字段契约 <span class="faint">· 试算物化</span></h6>
+                      <table class="contract"><thead><tr><th>字段</th><th>类型</th><th>角色</th><th>单位</th></tr></thead>
+                        <tbody>${cols.map((f) => { const m = fieldMeta(n, f);
+                          return `<tr><td>${esc(f)}</td><td>${m.type}</td><td>${m.role}</td><td>${m.unit}</td></tr>`; }).join("")}</tbody></table>
+                    </div>
+                    <div class="blk">
+                      <h6>样例行 <span class="faint">· 真实返回前 ${preview.length} 行</span></h6>
+                      <table><thead><tr>${cols.map((f) => `<th>${esc(f)}</th>`).join("")}</tr></thead>
+                        <tbody>${preview.map((r) => `<tr>${cols.map((f) => {
+                          const v = r[f];
+                          return `<td>${typeof v === "number" ? (v >= 1e6 ? money(v) : v.toLocaleString()) : esc(v)}</td>`;
+                        }).join("")}</tr>`).join("")}</tbody></table>
+                    </div>
+                    <details class="blk wide derived">
+                      <summary>生成的查询定义（派生物，供排查）</summary>
+                      <pre>output_metrics: [${s.metrics.map((m) => `"${m.n}"${m.temp ? " /*表达式*/" : ""}`).join(", ")}]
+output_dims:     [${s.dimSpec.map((d) => `"${d}"`).join(", ")}]
+filter.time:     ${s.timeSpec.range} (${s.timeSpec.grain})
+filter.dims:     [${s.filters.map((f) => `"${f}"`).join(", ")}]</pre>
+                    </details>
+                  </div>`
+                : `<div class="untried-hint">还没有查询、没有字段契约、没有结果——它们都在试算之后才存在。
+                    现在只有「要什么数」这一层意图。</div>`}
+
+              <footer>${used.length ? `被 ${used.length} 个组件消费：${used.map((u) => esc(u)).join("、")}` : "尚未被任何组件消费"}</footer>
+            </section>`;
+          }).join("")}
+        </div>`;
       }
 
       function publishPop() {
         const hasTemp = turns.some((t) => t.scope.temporary);
         const gapOpen = ui.gapStatus === "open";
+        const untried = untriedCount();
         return `<span class="pop">
           <h6>把这份草稿发布成什么</h6>
-          <button ${gapOpen ? "disabled" : ""} data-action="publish" data-kind="report">
+          <button ${untried || gapOpen ? "disabled" : ""} data-action="publish" data-kind="report">
             <b>报告 · 冻结当前结果</b>
-            <small>${gapOpen ? "指标缺口未提交，先处理缺口" : "保留查询定义与本次结果，内容不再变化，适合发出去"}</small>
+            <small>${untried ? `${untried} 个数据源未试算，去「查询与试算」补` : gapOpen ? "指标缺口未提交，先处理缺口" : "保留查询定义与本次结果，内容不再变化，适合发出去"}</small>
           </button>
-          <button ${hasTemp || gapOpen ? "disabled" : ""} data-action="publish" data-kind="app">
+          <button ${hasTemp || gapOpen || untried ? "disabled" : ""} data-action="publish" data-kind="app">
             <b>Data App · 长期运行</b>
-            <small>${hasTemp ? "含临时口径，需先把口径提为指标或显式接受无人负责" : "时间需改为滚动区间，否则下个月看到的还是本月"}</small>
+            <small>${untried ? "同上，需先完成试算" : hasTemp ? "含临时口径，需先把口径提为指标或显式接受无人负责" : "时间需改为滚动区间，否则下个月看到的还是本月"}</small>
           </button>
           <button data-action="publish" data-kind="template">
             <b>另存为模板</b>
@@ -743,32 +927,48 @@
 
       function draftPanel() {
         const hasTemp = turns.some((t) => t.scope.temporary);
+        // 每条问题都能跳回它归属的工作面，而不是让人自己找回去
         const checks = [
-          { s: "m", t: "页面结构校验通过", d: "10 个组件、4 个分区，栅格合法" },
-          { s: allTried() ? "m" : "x", t: allTried() ? "全部数据源已试算" : `${Object.values(SOURCES).length - triedCount()} 个数据源未试算`, d: allTried() ? "结果字段契约已物化" : "未试算的查询不能进入草稿" },
+          { s: "m", t: "页面结构校验通过", d: `${dataComponents().length + 2} 个组件、${doc.sections.length} 个分区，栅格合法` },
+          { s: allTried() ? "m" : "w", to: "verify",
+            t: allTried() ? "全部数据源已试算" : `${untriedCount()} 个数据源未试算`,
+            d: allTried() ? "结果字段契约已物化" : "草稿可以先存，但发布前必须试算——查询取不到数只能在这里发现" },
           { s: "m", t: "结果字段契约与组件绑定一致", d: "无悬空字段引用" },
-          { s: hasTemp ? "w" : "m", t: hasTemp ? "含 1 个临时口径" : "全部使用已定义指标", d: hasTemp ? "占比为现场生成的表达式，沉淀为 Data App 时需显式接受" : "" },
-          { s: "w", t: "时间为绝对区间", d: "适合报告；作为 Data App 需要改为滚动时间，否则不会随周期前进" },
-          { s: ui.gapStatus === "open" ? "w" : "m", t: ui.gapStatus === "open" ? "有 1 个未提交的指标缺口" : "指标缺口已登记", d: ui.gapStatus === "open" ? "建议提交后再发布" : esc(ui.gapTicket) }
+          { s: hasTemp ? "w" : "m", to: "discover", t: hasTemp ? "含 1 个临时口径" : "全部使用已定义指标",
+            d: hasTemp ? "占比为现场生成的表达式，发布为 Data App 时需显式接受" : "" },
+          { s: "w", to: "verify", t: "时间为绝对区间", d: "适合报告；作为 Data App 需要改为滚动时间，否则不会随周期前进" },
+          { s: ui.gapStatus === "open" ? "w" : "m", to: "discover",
+            t: ui.gapStatus === "open" ? "有 1 个未提交的指标缺口" : "指标缺口已登记",
+            d: ui.gapStatus === "open" ? "点这条跳回数据发现处理" : ui.gapTicket }
         ];
         return `
           <h5>页面校验</h5>
-          <ul class="checks">${checks.map((c) => `<li><span class="${c.s}">${c.s === "m" ? "✓" : c.s === "w" ? "!" : "✕"}</span>
-            <span>${esc(c.t)}${c.d ? `<small>${esc(c.d)}</small>` : ""}</span></li>`).join("")}</ul>
-          <button class="btn primary block" data-action="save-draft" ${allTried() ? "" : "disabled"}>保存草稿</button>
-          <p class="note">草稿只对自己可见，可以反复保存。<b>发布成什么形态是之后的决定</b>——同一份草稿可以发成报告，也可以补上滚动时间后发成 Data App。</p>
+          <ul class="checks">${checks.map((c) => `<li ${c.to ? `data-action="stage" data-stage="${c.to}" class="jump"` : ""}>
+            <span class="${c.s}">${c.s === "m" ? "✓" : c.s === "w" ? "!" : "✕"}</span>
+            <span>${esc(c.t)}${c.d ? `<small>${esc(c.d)}${c.to ? " ↗" : ""}</small>` : ""}</span></li>`).join("")}</ul>
+          <button class="btn primary block" data-action="save-draft">保存草稿</button>
+          <p class="note">草稿只对自己可见，可以反复保存，也可以带着未解决的提醒先存。<b>发布成什么形态是之后的决定</b>——同一份草稿可以发成报告，也可以补上滚动时间后发成 Data App。</p>
           <h5>草稿历史</h5>
           ${ui.drafts.length
-            ? `<ul class="revlist">${ui.drafts.slice().reverse().map((d) => `<li><b>R${d.rev}</b><span class="faint">${d.at}</span></li>`).join("")}</ul>`
+            ? `<ul class="revlist">${ui.drafts.slice().reverse().map((d) => `<li><b>R${d.rev}</b>
+                <span class="faint">${d.at}${d.untried ? ` · 含 ${d.untried} 个未试算` : ""}</span></li>`).join("")}</ul>`
             : `<p class="note">还没有草稿。</p>`}`;
       }
 
       function inspectorColumn() {
         const stage = STAGES.find((s) => s.id === ui.stage);
         const hit = findComponent(ui.selected);
+        const skipped = ui.skipped[ui.stage];
         const panel = { discover: discoverPanel, verify: verifyPanel, layout: layoutPanel, bind: bindPanel, draft: draftPanel }[ui.stage]();
         return `<aside class="inspector">
-          <header><b>${stage.name}</b><p>${stage.hint}</p></header>
+          <header>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+              <span><b>${stage.name}</b><p>${stage.hint}</p></span>
+              <button class="btn sm" data-action="skip" data-stage="${stage.id}">${skipped ? "取消跳过" : "暂时跳过"}</button>
+            </div>
+          </header>
+          ${skipped ? `<div class="selbar" style="background:#fffbeb;border-color:var(--warn-line)">
+            <span class="who"><b>这一步已标记为跳过</b><small>内容仍然可用，随时回来继续；校验清单会保留提醒</small></span></div>` : ""}
           ${hit ? `<div class="selbar"><span class="who"><b>${esc(hit.component.title || hit.component.id)}</b>
               <small>${CAPS[hit.component.type] ? CAPS[hit.component.type].label : hit.component.type} · ${esc(hit.section.title)} · ${hit.component.span}/12</small></span>
             ${ui.stage === "bind" ? "" : `<button class="btn sm" data-action="stage" data-stage="bind">去绑定</button>`}</div>` : ""}
@@ -815,6 +1015,27 @@
         if (act) {
           const a = act.dataset.action;
           if (a === "stage") { ui.stage = act.dataset.stage; return render(); }
+          if (a === "view") { ui.canvasMode = act.dataset.view; return render(); }
+          if (a === "skip") {
+            const id = act.dataset.stage;
+            ui.skipped[id] = !ui.skipped[id];
+            return toast(ui.skipped[id] ? `已跳过「${STAGES.find((s) => s.id === id).name}」· 随时可以回来` : "已取消跳过");
+          }
+          if (a === "trial-one") {
+            const n = act.dataset.source;
+            SOURCES[n].tried = true; ui.dirty = true;
+            return toast(`${n} 试算通过 · ${SOURCES[n].rows.length} 行，字段契约已物化`);
+          }
+          if (a === "add-from-source") {
+            const n = act.dataset.source;
+            const best = typeOptions(n)[0];
+            const sec = doc.sections[doc.sections.length - 1];
+            const id = `${n}-${best.type}-${sec.components.length + 1}`;
+            sec.components.push({ id, type: best.type, title: n, span: 4, source: n });
+            ui.selected = { sectionId: sec.id, componentId: id };
+            ui.dirty = true;
+            return toast(`已按数据形状加入${best.label} · 切到页面视图可以调`);
+          }
           if (a === "toggle-steps") { const i = +act.dataset.idx; ui.openSteps = ui.openSteps === i ? null : i; return render(); }
           if (a === "submit-gap") { ui.gapStatus = "submitted"; ui.gapTicket = "需求 #1042"; return toast("指标需求已提交 · #1042"); }
           if (a === "run-trial") {
@@ -826,10 +1047,10 @@
           if (a === "save-template") return toast("已另存为模板「Tokens 运营概览」· 不含数据绑定");
           if (a === "save-draft") {
             const rev = savedRev() + 1;
-            ui.drafts.push({ rev, at: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }) });
+            const untried = untriedCount();
+            ui.drafts.push({ rev, at: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }), untried });
             ui.dirty = false;
-            ui.stage = "draft";
-            return toast(`草稿 R${rev} 已保存 · 发布形态稍后再定`);
+            return toast(untried ? `草稿 R${rev} 已保存 · 含 ${untried} 个未试算数据源，发布前需补` : `草稿 R${rev} 已保存 · 发布形态稍后再定`);
           }
           if (a === "toggle-publish") { ui.publishOpen = !ui.publishOpen; return render(); }
           if (a === "publish") {
@@ -857,6 +1078,13 @@
         if (cell) {
           ui.selected = { sectionId: cell.dataset.section, componentId: cell.dataset.component };
           if (ui.stage !== "bind" && ui.stage !== "layout") ui.stage = "bind";
+          return render();
+        }
+
+        const card = e.target.closest("[data-source-card]");
+        if (card) {
+          const n = card.dataset.sourceCard;
+          ui.selectedSource = ui.selectedSource === n ? null : n;
           render();
         }
       });

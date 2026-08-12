@@ -47,7 +47,7 @@
 | [0035](./0035-structured-relative-time-expressions.md) | 页面时间范围支持结构化相对时间表达 | 现行 |
 | [0036](./0036-metric-gap-non-blocking-exit.md) | 指标缺口不阻塞问数,临时口径可见、计数并在沉淀处设闸 | 现行 |
 | [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排顺序与人机分工:域回显、候选消歧、条件确认、分步流式 | 现行 |
-| [0038](./0038-section-shell-and-row-alignment-invariant.md) | 分区外壳 `shell` 单一真源,行对齐为运行时不变量,Schema 5.0 硬切换 | 现行 |
+| [0038](./0038-section-container-and-row-alignment-invariant.md) | 分区容器 `container` 单一真源,行对齐为运行时不变量,Schema 5.0 硬切换 | 现行 |
 
 ## 技术栈与建设策略
 
@@ -77,11 +77,11 @@
 
 页面 `id` 只用于文件命名、页面仓储加载、路由和修订归属,统一运行时不得按某个正式页面 `id` 选择样式、组件或交互;两份除 `id` 外相同的页面元数据必须产生相同的 DOM 结构和计算样式。正式页面 `id` 不得以字面量出现在产品源码中,由自动化门禁校验。
 
-内容分区的外观自 Schema 5.0 起由可选的 `section.shell` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除,12 列 Grid 是统一运行时不变量。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `shell` 档位必须证明"结构上不可区分且视觉上必须不同"。
+内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除,12 列 Grid 是统一运行时不变量。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
 
 `timeRange` 筛选器的 `default` 除既有天级预设与绝对区间外,新增**结构化相对时间**分支(粒度单位 + 区间描述 + 锚点,并显式承载是否包含当前未完成周期);它是声明式数据而不是表达式字符串,求值发生在服务端取数编排期且一次页面加载内共享同一求值时刻,0003 的"禁表达式与脚本"原样成立。页面另需一处可表达"本页面含 N 个临时口径"及其已被显式接受的声明(ADR-0036),使这一风险在后续查看与审计中始终可见。
 
-来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-shell-and-row-alignment-invariant.md)。
+来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)。
 
 ## 数据获取与查询模型
 
@@ -95,7 +95,7 @@
 6. [ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md):在 0017 的 `query` 数据源上补充可选的内嵌初始行(`source.initial`,字段键用 DQE 原始输出名)用于首屏免查询呈现,以及基于 DQE `order.offset/limit` 和 `total_count` 的查询分页。
 7. [ADR-0026](./0026-controlled-nested-detail-fields.md):在不放开任意 JSON 的前提下,以 `recordList/detail` 支持项字段契约与查询字段映射均就地显式的一层嵌套明细。
 8. [ADR-0028](./0028-controlled-semantic-html-detail-fields.md):对 DQE 已完成内容组合的明细,以 `semanticHtml/detail` 传递受控标签、文本和语义类;数据网关保持字符串不透明,显式前端消费者负责白名单解析、节点渲染和样式映射。
-9. [ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) 与 [ADR-0032](./0032-authoring-time-query-verification.md):补齐查询**怎么被形成**这一段。指标以发现条目与口径锚点身份进入数据上下文快照(Schema 元数据升到 `1.1`,条目含业务名、别名、口径说明、单位、是否比率、**可加性与时间聚合方式**、可用维度与所属业务域),但不回到页面协议、不作为建页或问数的强制前置,0014 拒绝预定义指标的结论未被推翻;业务域只是路由标签,各域共用同一个数仓与同一个 DQE 执行环境,不产生第二套端点或凭据;发现层描述的是 DQE 语义面(中文指标名、维度名、维度取值域、时间粒度能力、指标维度可组合性)而非 ADS 物理表与字段,检索按名称/别名精确匹配加口径说明向量匹配的混合方式进行。任何进入页面文档的 `query` 数据源,其查询定义必须先经清单校验 → 真实执行 → 结果字段契约物化;闭集是**分层**的:指标名、维度名、维度取值与时间粒度必须取自数据上下文闭集,而 `output_metrics` 内嵌 `formula` 是**有意保留的开放面**,允许模型自由生成,代价由留痕、可加性校验与沉淀设闸承担而非事前禁止。契约的字段名来自真实执行输出,类型与语义来自数据上下文,不以样例值推断,`origin.md` 的"不从查询返回样例推断字段契约"继续成立。
+9. [ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) 与 [ADR-0032](./0032-authoring-time-query-verification.md):补齐查询**怎么被形成**这一段。指标以发现条目与口径锚点身份进入数据上下文快照(Schema 元数据升到 `1.1`,条目含业务名、别名、口径说明、单位、是否比率、**可加性与时间聚合方式**、可用维度与所属业务域),但不回到页面协议、不作为建页或问数的强制前置,0014 拒绝预定义指标的结论未被推翻;业务域只是路由标签,各域共用同一个数仓与同一个 DQE 执行环境,不产生第二套端点或凭据;发现层描述的是 DQE 语义面(中文指标名、维度名、维度取值域、时间粒度能力、指标维度可组合性)而非 ADS 物理表与字段,检索按名称/别名精确匹配加口径说明向量匹配的混合方式进行。创作期的操作对象是**取数单元**(业务语言描述的指标 × 维度 × 时间 × 筛选,暂命名),查询定义与结果字段契约是它经真实执行后的派生物;取数单元是随分析会话存在的创作期状态,不产生独立 id、修订与发布治理,因此不构成 ADR-0033 拒绝的第二个聚合根。任何进入页面文档的 `query` 数据源,其查询定义必须先经清单校验 → 真实执行 → 结果字段契约物化;闭集是**分层**的:指标名、维度名、维度取值与时间粒度必须取自数据上下文闭集,而 `output_metrics` 内嵌 `formula` 是**有意保留的开放面**,允许模型自由生成,代价由留痕、可加性校验与沉淀设闸承担而非事前禁止。契约的字段名来自真实执行输出,类型与语义来自数据上下文,不以样例值推断,`origin.md` 的"不从查询返回样例推断字段契约"继续成立。
 10. [ADR-0033](./0033-suspend-dataset-runtime.md)(status: proposed):曾设计服务端**计算数据集**(Transform 层 join/lookup/group/timeAlign/rank + Compute 层 `ratio`/`pctChange`/`cagr` 等具名算子)来补齐 DQE 表达不了的 30%–40% 派生计算,**挂起**。挂起理由是它要求领域层出现第二个聚合根(实质修订 0006/0007)、它的 Transform 边界语义正是 0015 挂起的那一批、且其正确性依赖尚未在真实数据侧补齐的可加性与时间聚合方式。派生计算改由 DQE formula 承担;结论"不提供通用 `arithmetic`,只提供具名算子"被保留以备恢复。
 11. [ADR-0034](./0034-graphql-rest-as-data-gateway-adapters.md):DQE 表达不了的取数场景经 GraphQL/REST **数据网关适配器**接入,组件与浏览器不得直连,0014 的"新增执行环境必须接入数据网关"原样适用。`query.language` 从字面量 `'dqe'` 升级为判别联合,`dqe` 分支形状不变、存量页面无需迁移;端点与凭据不进页面文档;响应到行集的摊平路径必须显式声明,不按样例推断。这些路径的发现面是操作名、参数与响应字段,需另备一份发现描述,缺失时只能人工建页。
 
@@ -103,7 +103,7 @@
 
 级联数据源输入语义(上游查询结果作为下游查询受控输入)仍是[ADR-0015](./0015-defer-cascading-data-source-input-semantics.md)记录的未决问题,当前页面 schema、校验器和数据网关不支持这类依赖。
 
-当前 `versionPolicy.current` 已经是 `5.0`(见 `packages/page/src/version.ts`),由 [ADR-0038](./0038-section-shell-and-row-alignment-invariant.md) 记录(分区外壳 `shell` 取代 `section.variant`/`section.layout` 的硬切换)。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。
+当前 `versionPolicy.current` 已经是 `5.0`(见 `packages/page/src/version.ts`),由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换)。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。
 
 ## 产品形态谱系与两速生命周期
 

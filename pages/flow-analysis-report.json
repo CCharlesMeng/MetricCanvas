@@ -1582,7 +1582,7 @@
   "sections": [
     {
       "id": "report-header",
-      "shell": "plain",
+      "container": "plain",
       "components": [
         {
           "id": "report-header",
@@ -1607,7 +1607,7 @@
     {
       "id": "flow-overview",
       "title": "流水总览",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "total-card",
@@ -1865,7 +1865,7 @@
     {
       "id": "public-region-flow",
       "title": "公网Region流水",
-      "shell": "panel",
+      "container": "panel",
       "components": [
         {
           "id": "region-card",
@@ -2166,7 +2166,7 @@
     },
     {
       "id": "analysis-heading",
-      "shell": "plain",
+      "container": "plain",
       "components": [
         {
           "id": "heading",
@@ -2184,7 +2184,7 @@
     {
       "id": "customer-analysis",
       "title": "客户视角",
-      "shell": "card",
+      "container": "card",
       "components": [
         {
           "id": "customer-summary",
@@ -2347,7 +2347,7 @@
     {
       "id": "track-analysis",
       "title": "赛道视角",
-      "shell": "card",
+      "container": "card",
       "components": [
         {
           "id": "track-summary",
@@ -2455,7 +2455,7 @@
     {
       "id": "industry-analysis",
       "title": "产业视角",
-      "shell": "card",
+      "container": "card",
       "components": [
         {
           "id": "industry-summary",

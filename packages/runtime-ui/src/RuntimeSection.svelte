@@ -11,7 +11,7 @@
 
   /**
    * 内容分区 Module:拥有 12 列 Grid(统一运行时不变量)、组件单元格、
-   * `connectPrevious` 与行对齐安装点。外观唯一由 `section.shell` 决定,
+   * `connectPrevious` 与行对齐安装点。外观唯一由 `section.container` 决定,
    * 不读取子组件的类型组合或 `props.variant` 推断父级布局(ADR-0021)。
    */
   interface Props {
@@ -23,7 +23,7 @@
   let { section, authoring, componentContent }: Props = $props();
   let dragged = $state<AuthoringComponentLocator | null>(null);
   let sectionGrid = $state<HTMLElement | null>(null);
-  const shell = $derived(section.shell);
+  const container = $derived(section.container);
 
   $effect(() => {
     if (!sectionGrid) return;
@@ -110,20 +110,20 @@
 </script>
 
 <section
-  class:shell-plain={shell === 'plain'}
-  class:shell-panel={shell === 'panel'}
-  class:shell-card={shell === 'card'}
+  class:container-plain={container === 'plain'}
+  class:container-panel={container === 'panel'}
+  class:container-card={container === 'card'}
   class="page-section"
   data-section-id={section.id}
-  data-section-shell={shell}
+  data-section-container={container}
 >
   {#if section.title}
     <h2 class="section-title">
-      {#if shell === 'panel'}
+      {#if container === 'panel'}
         <img src={sectionTitleLeftUrl} alt="" data-decorative-icon="section-title-left" />
       {/if}
       <span>{section.title}</span>
-      {#if shell === 'panel'}
+      {#if container === 'panel'}
         <img src={sectionTitleRightUrl} alt="" data-decorative-icon="section-title-right" />
       {/if}
     </h2>
@@ -180,7 +180,7 @@
 </section>
 
 <style>
-  /* ==== 缺省外壳:通用看板外观(白色分区 + 带边框组件单元格) ==== */
+  /* ==== 缺省容器:通用看板外观(白色分区 + 带边框组件单元格) ==== */
   .page-section {
     padding: 18px;
     border: 0;
@@ -356,10 +356,10 @@
     cursor: pointer;
   }
 
-  /* ==== 三档分区外壳:单元格一律无镶边,组件自带表面 ==== */
-  .shell-plain .cell,
-  .shell-panel .cell,
-  .shell-card .cell {
+  /* ==== 三档分区容器:单元格一律无镶边,组件自带表面 ==== */
+  .container-plain .cell,
+  .container-panel .cell,
+  .container-card .cell {
     min-height: 0;
     gap: 0;
     padding: 0;
@@ -369,34 +369,34 @@
     border-radius: 0;
     box-shadow: none;
   }
-  .shell-plain .cell.connect-previous,
-  .shell-panel .cell.connect-previous,
-  .shell-card .cell.connect-previous {
+  .container-plain .cell.connect-previous,
+  .container-panel .cell.connect-previous,
+  .container-card .cell.connect-previous {
     padding-top: var(--section-grid-gap);
     background: transparent;
   }
-  .shell-plain .cell.connect-previous::before,
-  .shell-panel .cell.connect-previous::before,
-  .shell-card .cell.connect-previous::before {
+  .container-plain .cell.connect-previous::before,
+  .container-panel .cell.connect-previous::before,
+  .container-card .cell.connect-previous::before {
     right: 0;
     left: 0;
   }
 
-  /* plain:无外壳,组件完全自带外观 */
-  .page-section.shell-plain {
+  /* plain:无容器,组件完全自带外观 */
+  .page-section.container-plain {
     padding: 0;
     background: transparent;
     border-radius: 0;
     box-shadow: none;
   }
-  .shell-plain .section-grid {
+  .container-plain .section-grid {
     --section-grid-gap: 12px;
 
     gap: 12px 14px;
   }
 
   /* panel:渐变章节面板 + 居中图标标题 + 内层白底 */
-  .page-section.shell-panel {
+  .page-section.container-panel {
     --mc-color-positive: var(--mc-color-report-positive);
     --mc-color-negative: var(--mc-color-report-negative);
 
@@ -409,7 +409,7 @@
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .shell-panel > .section-title {
+  .container-panel > .section-title {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -421,15 +421,15 @@
     line-height: 50px;
     text-align: center;
   }
-  .shell-panel > .section-title::before {
+  .container-panel > .section-title::before {
     display: none;
   }
-  .shell-panel > .section-title img {
+  .container-panel > .section-title img {
     width: 20px;
     height: 20px;
     flex: none;
   }
-  .shell-panel > .section-grid {
+  .container-panel > .section-grid {
     --section-grid-gap: 12px;
 
     gap: 12px;
@@ -437,18 +437,18 @@
     background: var(--mc-color-surface);
     border-radius: var(--mc-radius-section);
   }
-  .shell-panel .chart-cell {
+  .container-panel .chart-cell {
     min-height: 270px;
   }
 
   /* card:白色小节卡片 + 左对齐小标题 */
-  .page-section.shell-card {
+  .page-section.container-card {
     padding: 20px;
     background: var(--mc-color-surface);
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .shell-card > .section-title {
+  .container-card > .section-title {
     margin: 0 0 10px 9px;
     color: var(--mc-color-report-heading);
     font-size: var(--mc-font-size-report-level-3, 20px);
@@ -456,10 +456,10 @@
     line-height: 30px;
     text-align: left;
   }
-  .shell-card > .section-title::before {
+  .container-card > .section-title::before {
     display: none;
   }
-  .shell-card > .section-grid {
+  .container-card > .section-grid {
     --section-grid-gap: 10px;
 
     gap: 10px 25px;
@@ -467,16 +467,16 @@
 
   /* ==== 响应式 ==== */
   @media (max-width: 1050px) {
-    .page-section.shell-panel {
+    .page-section.container-panel {
       padding-right: 20px;
       padding-left: 20px;
     }
-    .shell-panel > .section-grid {
+    .container-panel > .section-grid {
       gap: 10px 8px;
       padding-right: 12px;
       padding-left: 12px;
     }
-    .shell-card > .section-grid {
+    .container-card > .section-grid {
       column-gap: 16px;
     }
   }
@@ -484,7 +484,7 @@
     .page-section {
       padding: 16px;
     }
-    .page-section.shell-plain {
+    .page-section.container-plain {
       padding: 0;
     }
     .cell {

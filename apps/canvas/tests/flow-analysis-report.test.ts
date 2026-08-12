@@ -68,7 +68,7 @@ describe('流水分析报告页面文档', () => {
       'track-analysis',
       'industry-analysis'
     ]);
-    expect(parsed.page.sections.map((section) => section.shell ?? null)).toEqual([
+    expect(parsed.page.sections.map((section) => section.container ?? null)).toEqual([
       'plain',
       'panel',
       'panel',

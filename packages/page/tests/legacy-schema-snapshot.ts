@@ -297,7 +297,7 @@ export const legacyPageSchema = {
         }
       }
     },
-    // Schema 5.0 例外修订：内容分区删除 `layout`/`variant`、新增 `shell` 是
+    // Schema 5.0 例外修订：内容分区删除 `layout`/`variant`、新增 `container` 是
     // 全局协议变化，不同步这一处则安全网对所有真实文档失去比较意义。
     // 分区以外的定义仍保持迁移前原文。
     section: {
@@ -307,7 +307,7 @@ export const legacyPageSchema = {
       properties: {
         id: { type: 'string', pattern: idPattern },
         title: { type: 'string', minLength: 1 },
-        shell: { type: 'string', enum: ['plain', 'panel', 'card'] },
+        container: { type: 'string', enum: ['plain', 'panel', 'card'] },
         components: {
           type: 'array',
           minItems: 1,
