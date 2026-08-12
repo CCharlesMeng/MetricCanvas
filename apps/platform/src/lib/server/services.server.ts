@@ -35,6 +35,8 @@ import {
   type OfflineTemplateSeed
 } from './offline-services';
 import { createIdentity } from './identity.server';
+import { createMemoryAnalysisSessionStore } from './session/memory';
+import type { AnalysisSessionStore } from './session/store';
 import bundledDataContext from '$fixtures/schema-metadata.example.json';
 
 const bundledPageModules = import.meta.glob<{ default: unknown }>('$pages/*.json', {
@@ -49,6 +51,7 @@ export interface PlatformServices {
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
   dataContext: DataContextSearch;
+  sessions: AnalysisSessionStore;
   agentModel: AgentModelDescriptor;
   createRunner(input: {
     confirmedPageIds: string[];
@@ -105,6 +108,10 @@ async function createServices(): Promise<PlatformServices> {
   const templates = offline
     ? createMemoryTemplateLibrary(templateOptions)
     : await createPostgresTemplateLibrary({ ...templateOptions, databaseUrl });
+  // 分析会话轻量落库(ADR-0030)。本轮只有内存实现,offline 与 postgres 两种
+  // 模式都用它;PostgreSQL 实现等 #52 的版本化迁移接入(不引入启动期建表),
+  // 届时按 databaseUrl 分支并复用同一份契约测试。
+  const sessions = createMemoryAnalysisSessionStore();
   if (offline) {
     await seedPublishedTemplates(
       templates,
@@ -143,6 +150,7 @@ async function createServices(): Promise<PlatformServices> {
     lifecycle,
     templates,
     dataContext,
+    sessions,
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
       currentMcpIdentity = identity;
