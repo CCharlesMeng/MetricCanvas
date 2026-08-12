@@ -63,6 +63,9 @@ importers:
 
   apps/platform:
     dependencies:
+      '@metriccanvas/data-gateway':
+        specifier: workspace:*
+        version: link:../../packages/data-gateway
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
@@ -72,6 +75,9 @@ importers:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../../packages/page-lifecycle
+      '@metriccanvas/runtime':
+        specifier: workspace:*
+        version: link:../../packages/runtime
       '@metriccanvas/runtime-ui':
         specifier: workspace:*
         version: link:../../packages/runtime-ui
