@@ -2,14 +2,46 @@ import type { LifecycleContext, LifecycleRole } from '@metriccanvas/page-lifecyc
 import type { TemplateContext } from '@metriccanvas/template-library';
 
 /**
- * 唯一的身份构造点。平台目前没有真实的用户认证/会话体系,所有请求都被当作
- * 同一个开发者身份处理——这是本仓库尚未解决的架构缺口,还没有对应 ADR。
- * 引入真实身份提供方时,只需要改这一处:让 DEVELOPER_ACTOR_ID 的取值来自
- * 请求携带的会话/凭证,其余调用方(hooks、路由)不需要变化。
+ * 唯一的身份构造点与唯一的 mock 用户清单。平台尚无真实用户认证,开发环境以
+ * 可切换的 mock 多用户模拟身份(ADR-0030:mock 必须提供多个可切换用户,且按
+ * actorId 的可见性过滤必须真实执行;接入真实身份是上生产的前置条件)。
  *
- * TODO: 补一篇 ADR 记录认证方案选型后,在此处引用。
+ * 请求经 hooks.server.ts 解析请求头 {@link MOCK_ACTOR_HEADER} 或查询参数
+ * {@link MOCK_ACTOR_QUERY_PARAM} 选择用户;未指定时保持 developer-1,
+ * 不打断既有流程。引入真实身份提供方时仍只需要改这一个模块。
  */
-const DEVELOPER_ACTOR_ID = 'developer-1';
+
+export interface MockUser {
+  actorId: string;
+  /** 用户级角色。admin 表示平台管理员,可读取全部分析会话(ADR-0030)。 */
+  roles: readonly LifecycleRole[];
+}
+
+const DEVELOPER_ONE: MockUser = { actorId: 'developer-1', roles: [] };
+
+/** mock 用户唯一清单:identity、hooks 与测试共用,不得另写一份。 */
+export const MOCK_USERS: readonly MockUser[] = [
+  DEVELOPER_ONE,
+  { actorId: 'developer-2', roles: [] },
+  { actorId: 'admin-1', roles: ['admin'] }
+];
+
+export const DEFAULT_MOCK_ACTOR_ID = DEVELOPER_ONE.actorId;
+
+/** 开发环境切换 mock 用户的请求头。 */
+export const MOCK_ACTOR_HEADER = 'x-mock-actor';
+/** 开发环境切换 mock 用户的查询参数(便于浏览器地址栏直接切换)。 */
+export const MOCK_ACTOR_QUERY_PARAM = 'mock-actor';
+
+/**
+ * 解析请求要求的 mock 用户。未要求(null / 空串)时返回默认用户;要求了
+ * 清单外的用户时返回 null,由调用方(hooks)拒绝请求——静默回落到默认身份
+ * 会让"以为在看 A 的数据、实际在看 developer-1 的数据"这类错误无从发现。
+ */
+export function resolveMockUser(requestedActorId: string | null): MockUser | null {
+  if (!requestedActorId) return DEVELOPER_ONE;
+  return MOCK_USERS.find((user) => user.actorId === requestedActorId) ?? null;
+}
 
 /** 各路由/客户端在发布生命周期里承担的角色,由这里统一决定,不再由路由各自编。 */
 export type PlatformClientId =
@@ -34,12 +66,17 @@ const CLIENT_ROLES: Record<PlatformClientId, readonly LifecycleRole[]> = {
 /**
  * 请求级身份工厂。`hooks.server.ts` 用它填充 `event.locals.identity`;
  * 需要为下游调用切换 clientId 的路由用 {@link withClient} 派生。
+ * 角色是客户端角色与用户级角色的并集:默认用户没有用户级角色,
+ * 与引入 mock 多用户前的行为完全一致。
  */
-export function createIdentity(clientId: PlatformClientId): LifecycleContext {
+export function createIdentity(
+  clientId: PlatformClientId,
+  user: MockUser = DEVELOPER_ONE
+): LifecycleContext {
   return {
-    actorId: DEVELOPER_ACTOR_ID,
+    actorId: user.actorId,
     clientId,
-    roles: CLIENT_ROLES[clientId]
+    roles: mergedRoles(clientId, user.roles)
   };
 }
 
@@ -48,13 +85,26 @@ export function createIdentity(clientId: PlatformClientId): LifecycleContext {
  * page-editor / publish-confirmation / template-publish-confirmation)反映的是
  * "哪个客户端发起了这次调用"——用于发布生命周期的幂等命名空间与审计字段,
  * 与"这个请求背后是谁"(actorId)是两回事,因此保留为参数而不是塞进角色里。
+ * 用户级角色(如 admin-1 的 admin)按 actorId 重查 mock 清单保留,不随 clientId
+ * 切换丢失;actorId 不在清单里(如离线种子)时只保留客户端角色。
  */
-export function withClient(identity: LifecycleContext, clientId: PlatformClientId): LifecycleContext {
+export function withClient(
+  identity: LifecycleContext,
+  clientId: PlatformClientId
+): LifecycleContext {
+  const user = MOCK_USERS.find((candidate) => candidate.actorId === identity.actorId);
   return {
     ...identity,
     clientId,
-    roles: CLIENT_ROLES[clientId]
+    roles: mergedRoles(clientId, user?.roles ?? [])
   };
+}
+
+function mergedRoles(
+  clientId: PlatformClientId,
+  userRoles: readonly LifecycleRole[]
+): readonly LifecycleRole[] {
+  return [...new Set([...CLIENT_ROLES[clientId], ...userRoles])];
 }
 
 /**
