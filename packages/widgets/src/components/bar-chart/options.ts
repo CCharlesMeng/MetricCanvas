@@ -66,7 +66,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
   });
   return {
     grid: reportForecast
-      ? { top: 30, right: 0, bottom: 20, left: 0, containLabel: true }
+      ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true }
       : GRID,
     tooltip: { trigger: 'axis', confine: true },
     ...(props.series.length > 1

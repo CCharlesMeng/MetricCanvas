@@ -8,10 +8,6 @@ import type {
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { formatValue, valuePolarity, type ValuePolarity } from '../../shared/value-format';
-import {
-  parseSemanticHtml,
-  type SemanticHtmlNode
-} from './semantic-html';
 
 export interface RankingDetailChange {
   text: string;
@@ -25,10 +21,7 @@ export interface RankingDetailRow {
   badges: string[];
   change?: RankingDetailChange;
   description?: string;
-  semanticDescription?: {
-    nodes?: SemanticHtmlNode[];
-    error?: string;
-  };
+  semanticDescription?: string;
   details?: {
     defaultExpanded: boolean;
     items: RankingDetailNestedItem[];
@@ -93,15 +86,7 @@ function buildSemanticDescription(
 ): Pick<RankingDetailRow, 'semanticDescription'> {
   const value = row[resolved.field];
   if (typeof value !== 'string' || value.trim().length === 0) return {};
-  const parsed = parseSemanticHtml(value);
-  if (!parsed.ok) {
-    return {
-      semanticDescription: { error: parsed.error }
-    };
-  }
-  return {
-    semanticDescription: { nodes: parsed.document.nodes }
-  };
+  return { semanticDescription: value };
 }
 
 function buildNestedDetails(

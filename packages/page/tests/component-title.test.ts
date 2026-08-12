@@ -31,6 +31,25 @@ describe('组件标题 Props 规范', () => {
     );
   });
 
+  it('text 只在显式声明时把 body 解释为受控语义 HTML', () => {
+    const semantic = textDocument();
+    semantic.sections[0].components[0].props = {
+      title: '摘要',
+      body: '<span class="detail-value tone-positive">增长</span>',
+      bodyFormat: 'semanticHtml',
+      variant: 'reportInline'
+    };
+    expect(validate(semantic)).toEqual([]);
+
+    const unsupported = textDocument();
+    unsupported.sections[0].components[0].props.bodyFormat = 'html';
+    expect(validate(unsupported)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: '/sections/0/components/0/props/bodyFormat' })
+      ])
+    );
+  });
+
   it('组件能力目录为每种组件声明标题能力', () => {
     expect(componentCatalog.every((entry) => entry.title !== undefined)).toBe(true);
     expect(componentCatalog.find((entry) => entry.type === 'reportHeader')?.title).toBe(

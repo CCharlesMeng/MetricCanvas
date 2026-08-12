@@ -30,7 +30,8 @@
 
   /**
    * 表格(纯渲染):行与列定义 props 进,翻页/排序/表头筛选事件出,自身零状态。
-   * 固定表头 + 表体滚动;固定列(left/right)以 sticky 实现;
+   * 常规表格使用固定表头 + 表体滚动;reportCompact 使用独立内容外框且不设滚动层;
+   * 固定列(left/right)以 sticky 实现;
    * 排序状态显示在列头(多列时带优先级序号);分页由壳传入页大小与总条数。
    */
   interface Props {
@@ -256,7 +257,10 @@
       {/if}
     </div>
   {/if}
-  <div class="scroll">
+  <div
+    class:content-frame={props.variant === 'reportCompact'}
+    class:scroll={props.variant !== 'reportCompact'}
+  >
     <table>
       <colgroup>
         {#each leaves as column (columnField(column))}
@@ -925,14 +929,20 @@
     margin-bottom: 8px;
   }
   .report-compact h3 {
-    font-size: 18px;
+    font-size: var(--mc-font-size-report-level-4, 18px);
     font-weight: 400;
     line-height: 30px;
   }
-  .report-compact .scroll {
-    overflow-x: auto;
-    overflow-y: visible;
-    border: 0;
+  .report-compact .content-frame {
+    box-sizing: border-box;
+    padding: 6px;
+    overflow: visible;
+    background: var(--mc-color-report-content-surface, #fcfcff);
+    border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
+    border-radius: var(--mc-radius-report-content, 12px);
+  }
+  .report-compact .content-frame table {
+    border-radius: 0;
   }
   .report-compact thead th {
     height: 33px;

@@ -170,6 +170,6 @@ describe('buildRankingDetailRows', () => {
     });
 
     expect(rows[0]?.details).toBeUndefined();
-    expect(rows[0]?.semanticDescription?.nodes).toBeDefined();
+    expect(rows[0]?.semanticDescription).toContain('tone-negative');
   });
 });

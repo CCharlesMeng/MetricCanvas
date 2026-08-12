@@ -44,6 +44,7 @@ export const metricCardComponentZ = z
         secondaryTitle: z.string().min(1).optional(),
         rows: z.array(metricCardRowZ).min(1),
         secondaryRows: z.array(metricCardRowZ).min(1).optional(),
+        panelLayout: z.enum(['stacked', 'twoColumn']).optional(),
         showTrendArrows: z.boolean().optional(),
         progress: metricCardProgressZ.optional(),
         actions: actionsZ.optional()

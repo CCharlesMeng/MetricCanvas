@@ -13,6 +13,8 @@ export { default as RankingCard } from './components/ranking-card/RankingCard.sv
 export { default as RankingDetailCard } from './components/ranking-detail-card/RankingDetailCard.svelte';
 export { default as TextBlock } from './components/text/TextBlock.svelte';
 export type { TextBlockLink } from './components/text/TextBlock.svelte';
+export { default as sectionTitleLeftUrl } from './assets/section-title-left.svg';
+export { default as sectionTitleRightUrl } from './assets/section-title-right.svg';
 export { default as Table } from './components/table/Table.svelte';
 export type {
   TablePaginationState,

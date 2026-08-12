@@ -1882,7 +1882,7 @@
           "id": "region-card",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "flow-kpis"
@@ -1948,7 +1948,7 @@
           "id": "stable-card",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "flow-kpis"
@@ -2014,7 +2014,7 @@
           "id": "one-off-card",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 4
           },
           "data": {
             "main": "flow-kpis"
@@ -2080,7 +2080,7 @@
           "id": "projection-card",
           "type": "metricCard",
           "layout": {
-            "span": 3
+            "span": 12
           },
           "data": {
             "main": "flow-kpis"
@@ -2089,6 +2089,7 @@
             "title": "公网Region流水推演",
             "secondaryTitle": "商业市场",
             "variant": "dualSummary",
+            "panelLayout": "twoColumn",
             "showTrendArrows": true,
             "rows": [
               {
@@ -2210,9 +2211,9 @@
             "span": 12
           },
           "props": {
-            "title": "AI 总结",
-            "body": "1、增长客户：头部增长客户贡献集中，建议持续跟踪增量来源与可延续性。\n2、下降客户：下降客户需要结合同比下滑原因逐项制定恢复动作。\n3、风险客户：风险客户存在月度流水波动，应优先核验一次性收入与续签节奏。",
-            "variant": "insight"
+            "body": "<span>1、<span class=\"detail-title tone-positive\">增长客户：</span><span class=\"detail-description\">头部增长客户贡献集中，建议持续跟踪增量来源与可延续性。</span> 2、<span class=\"detail-title tone-negative\">下降客户：</span><span class=\"detail-description\">下降客户需要结合同比下滑原因逐项制定恢复动作。</span> 3、<span class=\"detail-title tone-negative\">风险客户：</span><span class=\"detail-description\">风险客户存在月度流水波动，应优先核验一次性收入与续签节奏。</span></span>",
+            "bodyFormat": "semanticHtml",
+            "variant": "reportInline"
           }
         },
         {
@@ -2377,9 +2378,9 @@
             "span": 12
           },
           "props": {
-            "title": "AI 总结",
-            "body": "1、主要贡献赛道：头部赛道仍是流水的主要支撑，应巩固稳定贡献。\n2、环比变化：赛道间环比分化明显，需要关注回落赛道的交付与回款节奏。\n3、年度推演压力：部分赛道年度推演压力偏高，需补充新增机会与确定性项目。",
-            "variant": "insight"
+            "body": "<span>1、<span class=\"detail-title tone-positive\">主要贡献赛道：</span><span class=\"detail-description\">头部赛道仍是流水的主要支撑，应巩固稳定贡献。</span> 2、<span class=\"detail-title tone-neutral\">环比变化：</span><span class=\"detail-description\">赛道间环比分化明显，需要关注</span><span class=\"detail-value tone-negative\">回落赛道</span><span class=\"detail-description\">的交付与回款节奏。</span> 3、<span class=\"detail-title tone-negative\">年度推演压力：</span><span class=\"detail-description\">部分赛道年度推演压力偏高，需补充新增机会与确定性项目。</span></span>",
+            "bodyFormat": "semanticHtml",
+            "variant": "reportInline"
           }
         },
         {
@@ -2489,9 +2490,9 @@
             "span": 12
           },
           "props": {
-            "title": "AI 总结",
-            "body": "1、主要贡献产业：核心产业保持主要流水贡献，结构集中度需要持续观察。\n2、增长来源：当前增长来源由重点产业与新增项目共同驱动。\n3、目标支撑风险：部分产业的年度推演不足以支撑目标，需提前识别目标支撑风险。",
-            "variant": "insight"
+            "body": "<span>1、<span class=\"detail-title tone-positive\">主要贡献产业：</span><span class=\"detail-description\">核心产业保持主要流水贡献，结构集中度需要持续观察。</span> 2、<span class=\"detail-title tone-positive\">增长来源：</span><span class=\"detail-description\">当前增长来源由重点产业与新增项目共同驱动。</span> 3、<span class=\"detail-title tone-negative\">目标支撑风险：</span><span class=\"detail-description\">部分产业的年度推演不足以支撑目标，需提前识别目标支撑风险。</span></span>",
+            "bodyFormat": "semanticHtml",
+            "variant": "reportInline"
           }
         },
         {

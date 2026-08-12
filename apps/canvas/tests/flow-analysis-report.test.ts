@@ -98,6 +98,12 @@ describe('流水分析报告页面文档', () => {
     );
     expect(overviewCards).toHaveLength(3);
     expect(regionCards).toHaveLength(4);
+    expect(regionCards.map((component) => component.layout.span)).toEqual([4, 4, 4, 12]);
+    expect(
+      regionCards.map((component) =>
+        component.type === 'metricCard' ? (component.props.panelLayout ?? 'stacked') : null
+      )
+    ).toEqual(['stacked', 'stacked', 'stacked', 'twoColumn']);
     expect(
       regionCards.map((component) =>
         component.type === 'metricCard' ? component.props.secondaryTitle : null
@@ -118,7 +124,7 @@ describe('流水分析报告页面文档', () => {
         (component) =>
           component.type === 'text' &&
           ['customer-summary', 'track-summary', 'industry-summary'].includes(component.id) &&
-          component.props.variant === 'insight'
+          component.props.variant === 'reportInline'
       )
     ).toHaveLength(3);
     expect(
@@ -228,7 +234,7 @@ describe('流水分析报告页面文档', () => {
     ).toBe(true);
   });
 
-  it('三个摘要由页面文档直接返回 text 正文，不声明 SSE AI 总结', () => {
+  it('三个摘要由页面文档直接返回受控语义 HTML text 正文，不声明 SSE AI 总结', () => {
     const parsed = parsePage(flowReportPageJson);
     if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
     const components = parsed.page.sections.flatMap((section) => section.components);
@@ -242,10 +248,14 @@ describe('流水分析报告页面文档', () => {
       });
 
     expect(components.some((component) => component.type === 'aiSummary')).toBe(false);
-    expect(summaries.map((summary) => summary.props.body)).toEqual([
-      '1、增长客户：头部增长客户贡献集中，建议持续跟踪增量来源与可延续性。\n2、下降客户：下降客户需要结合同比下滑原因逐项制定恢复动作。\n3、风险客户：风险客户存在月度流水波动，应优先核验一次性收入与续签节奏。',
-      '1、主要贡献赛道：头部赛道仍是流水的主要支撑，应巩固稳定贡献。\n2、环比变化：赛道间环比分化明显，需要关注回落赛道的交付与回款节奏。\n3、年度推演压力：部分赛道年度推演压力偏高，需补充新增机会与确定性项目。',
-      '1、主要贡献产业：核心产业保持主要流水贡献，结构集中度需要持续观察。\n2、增长来源：当前增长来源由重点产业与新增项目共同驱动。\n3、目标支撑风险：部分产业的年度推演不足以支撑目标，需提前识别目标支撑风险。'
-    ]);
+    expect(summaries.every((summary) => summary.props.variant === 'reportInline')).toBe(true);
+    expect(summaries.every((summary) => summary.props.title === undefined)).toBe(true);
+    expect(summaries.every((summary) => summary.props.bodyFormat === 'semanticHtml')).toBe(true);
+    expect(summaries.every((summary) => typeof summary.props.body === 'string')).toBe(true);
+    expect(summaries.every((summary) => summary.props.body?.includes('tone-positive'))).toBe(true);
+    expect(summaries.every((summary) => summary.props.body?.includes('tone-negative'))).toBe(true);
+    expect(summaries.every((summary) => summary.props.body?.startsWith('<span>'))).toBe(true);
+    expect(summaries.every((summary) => summary.props.body?.endsWith('</span>'))).toBe(true);
+    expect(summaries.every((summary) => !summary.props.body?.includes('<p>'))).toBe(true);
   });
 });
