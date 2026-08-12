@@ -11,6 +11,8 @@ import {
 } from '@metriccanvas/page';
 import type { DataContextSearch } from './data-context';
 import type { McpClient } from './agent-protocol';
+import type { ExecuteDataRequestUnitQuery } from './authoring/unit-verification';
+import { registerExecuteDataRequestUnitTool } from './authoring/unit-verification-tool';
 import type {
   LifecycleContext,
   PageLifecycle,
@@ -22,11 +24,15 @@ export * from './agent-protocol';
 export * from './data-context';
 export * from './authoring/auto-visualize';
 export * from './authoring/assemble-page';
+export * from './authoring/unit-verification';
+export * from './authoring/unit-verification-tool';
 
 export interface MetricCanvasMcpDependencies {
   dataContext: DataContextSearch;
   lifecycle: PageLifecycle;
   templates: Pick<TemplateLibrary, 'search'>;
+  /** 创作期查询执行端口(ADR-0032):执行取数单元派生的生效查询,由平台注入。 */
+  executeDataRequestUnitQuery: ExecuteDataRequestUnitQuery;
   context(): LifecycleContext;
   previewUrl(reference: RevisionReference): string;
 }
@@ -346,6 +352,11 @@ export function createMetricCanvasMcpServer(
       return toolResult(result, !result.ok);
     }
   );
+
+  registerExecuteDataRequestUnitTool(server, {
+    dataContext: dependencies.dataContext,
+    executeDataRequestUnitQuery: dependencies.executeDataRequestUnitQuery
+  });
 
   return server;
 }

@@ -65,6 +65,7 @@ function server() {
     dataContext,
     lifecycle,
     templates,
+    executeDataRequestUnitQuery: async () => ({ rows: [], totalCount: 0 }),
     context: () => ({ actorId: 'tester', clientId: 'test' }),
     previewUrl: ({ pageId, revisionId }) => `/pages/${pageId}?revision=${revisionId}`
   });
