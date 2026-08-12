@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 export type DevProfile = 'local' | 'offline';
 
 const DQE_SIM_ORIGIN = 'http://127.0.0.1:18228';
+const DQE_SIM_EXECUTE_ENDPOINT = `${DQE_SIM_ORIGIN}/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`;
 const DEV_SERVICES_ARGS = [
   '--parallel',
   '--filter',
@@ -40,7 +41,9 @@ export function createDevLaunch({
     PLATFORM_ORIGIN: 'http://localhost:5174',
     RUNTIME_ORIGIN: 'http://localhost:5173',
     VITE_PLATFORM_URL: profile === 'offline' ? 'http://localhost:5174' : '',
-    VITE_DQE_ENDPOINT: `${DQE_SIM_ORIGIN}/rest/cdi/cdinl2databuilderservice/v1/dsl/execute`,
+    VITE_DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,
+    // platform 服务端取数入口用的 DQE 端点;无 VITE_ 前缀,不进浏览器产物。
+    DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,
     VITE_AI_SUMMARY_ENDPOINT: `${DQE_SIM_ORIGIN}/api/ai/conversations/`
   });
   if (profile === 'offline') env.METRICCANVAS_OFFLINE = '1';
