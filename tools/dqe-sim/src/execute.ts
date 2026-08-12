@@ -3,6 +3,7 @@ import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
+import { runSemanticSurface } from './semantic-surface-execute';
 
 type JsonRecord = Record<string, unknown>;
 type CustomerActivityKey = 'inspection' | 'visit' | 'summit' | 'inactive';
@@ -111,6 +112,25 @@ const customerActivityDetailDimensions = [
 ];
 
 export function executeDqeItem(item: unknown): DqeSimItemResult {
+  const exactResult = executeExactScenarios(item);
+  if (exactResult.code === 'SUCCESS' || !isRecord(item)) return exactResult;
+  // 组合式语义面兜底分支:全部精确匹配分支之后才尝试,面外组合保留既有拒答。
+  const surface = runSemanticSurface(item);
+  if (surface.kind === 'out-of-surface') return exactResult;
+  if (surface.kind === 'rejected') return unsupported(surface.reason);
+  if (!validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
+  }
+  return successResult(item, surface.rows, {
+    columns: surface.columns,
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  });
+}
+
+function executeExactScenarios(item: unknown): DqeSimItemResult {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
   const flowAnalysisResult = executeFlowAnalysisReport(item);
   if (flowAnalysisResult) return flowAnalysisResult;

@@ -123,6 +123,325 @@
               ]
             }
           ]
+        },
+        {
+          "id": "operations-analytics",
+          "name": "运营分析",
+          "description": "Tokens 服务的用量、计费与调用运营分析",
+          "objects": [
+            {
+              "id": "operations-analytics-surface",
+              "name": "运营分析语义面",
+              "kind": "dataset",
+              "description": "业务域「运营分析」组合式语义面的可组合指标与维度",
+              "fields": [
+                {
+                  "name": "区域",
+                  "type": "string",
+                  "description": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+                  "aliases": [
+                    "大区"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "模型",
+                  "type": "string",
+                  "description": "提供服务的模型系列。取值域:通用大模型、代码大模型、多模态大模型。",
+                  "aliases": [
+                    "模型系列"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "统计周期",
+                  "type": "date",
+                  "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month、day。",
+                  "aliases": [
+                    "统计时间"
+                  ],
+                  "roleHints": [
+                    "dimension",
+                    "time"
+                  ],
+                  "granularity": "month,day",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "Tokens消耗量",
+                  "type": "number",
+                  "description": "统计期内推理与训练消耗的 Token 总量。可加性:可加;时间聚合方式:求和。",
+                  "aliases": [
+                    "消耗量",
+                    "用量"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "Token",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "计费Tokens量",
+                  "type": "number",
+                  "description": "统计期内计费的 Token 量,排除内部试用额度。可加性:可加;时间聚合方式:求和。",
+                  "aliases": [
+                    "计费量"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "Token",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "Tokens请求量",
+                  "type": "number",
+                  "description": "统计期内的模型调用请求次数,按请求计数而非 Token 计数。可加性:可加;时间聚合方式:求和。",
+                  "aliases": [
+                    "调用次数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "次",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "客户数",
+                  "type": "number",
+                  "description": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同。可加性:不可加;时间聚合方式:均值。",
+                  "aliases": [
+                    "在用客户数",
+                    "活跃客户数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "家",
+                  "nullable": false,
+                  "sensitive": false
+                }
+              ]
+            }
+          ],
+          "relationships": [],
+          "verifiedQueries": [
+            {
+              "id": "tokens-consumption-by-region",
+              "question": "各区域一季度的 Tokens 消耗量是多少",
+              "description": "按区域返回 2026 年一季度的 Tokens 消耗量合计",
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "区域"
+                    ],
+                    "output_metrics": [
+                      "Tokens消耗量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-01",
+                        "end": "2026-03"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "resultFields": [
+                {
+                  "name": "区域",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                {
+                  "name": "Tokens消耗量",
+                  "type": "number",
+                  "role": "measure",
+                  "unit": "Token",
+                  "nullable": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "customer-management",
+          "name": "客户经营",
+          "description": "客户规模、增长与流失的经营分析",
+          "objects": [
+            {
+              "id": "customer-management-surface",
+              "name": "客户经营语义面",
+              "kind": "dataset",
+              "description": "业务域「客户经营」组合式语义面的可组合指标与维度",
+              "fields": [
+                {
+                  "name": "客户级别",
+                  "type": "string",
+                  "description": "客户经营分层。取值域:卓越、战略、核心、成长。",
+                  "aliases": [
+                    "客户层级"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "行业",
+                  "type": "string",
+                  "description": "客户所属行业。取值域:金融、制造、互联网、能源、政务。",
+                  "aliases": [
+                    "所属行业"
+                  ],
+                  "roleHints": [
+                    "dimension"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "统计周期",
+                  "type": "date",
+                  "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                  "aliases": [
+                    "统计时间"
+                  ],
+                  "roleHints": [
+                    "dimension",
+                    "time"
+                  ],
+                  "granularity": "month",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "客户数",
+                  "type": "number",
+                  "description": "期末在册客户总数,与运营分析域的在用调用口径不同。可加性:半可加;时间聚合方式:期末值。",
+                  "aliases": [
+                    "在册客户数",
+                    "存量客户数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "家",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "新增客户数",
+                  "type": "number",
+                  "description": "统计期内新增签约的客户数。可加性:可加;时间聚合方式:求和。",
+                  "aliases": [
+                    "新签客户数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "家",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "流失客户数",
+                  "type": "number",
+                  "description": "统计期内终止合作的客户数。可加性:可加;时间聚合方式:求和。",
+                  "aliases": [
+                    "流失数"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "家",
+                  "nullable": false,
+                  "sensitive": false
+                },
+                {
+                  "name": "客户留存率",
+                  "type": "number",
+                  "description": "统计期末仍然在册的客户占期初在册客户的比例。可加性:不可加;时间聚合方式:均值。",
+                  "aliases": [
+                    "留存率"
+                  ],
+                  "roleHints": [
+                    "measure"
+                  ],
+                  "unit": "%",
+                  "nullable": false,
+                  "sensitive": false
+                }
+              ]
+            }
+          ],
+          "relationships": [],
+          "verifiedQueries": [
+            {
+              "id": "customer-count-by-level-period-end",
+              "question": "按客户级别查看期末在册客户数",
+              "description": "返回 2026 年 6 月期末各客户级别的在册客户数",
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "客户级别"
+                    ],
+                    "output_metrics": [
+                      "客户数"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-06",
+                        "end": "2026-06"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "resultFields": [
+                {
+                  "name": "客户级别",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                {
+                  "name": "客户数",
+                  "type": "number",
+                  "role": "measure",
+                  "unit": "家",
+                  "nullable": false
+                }
+              ]
+            }
+          ]
         }
       ],
       "constraints": {
