@@ -1,0 +1,8 @@
+{
+  "$comment": "探针脚本的独立 tsconfig:scripts/ 不在 svelte-check 与 tsconfig.test.json 的覆盖范围内,按需用 `pnpm exec tsc --noEmit -p apps/platform/scripts` 单独检查,不进 pnpm -r check / CI。",
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node"]
+  },
+  "include": ["./**/*.ts"]
+}

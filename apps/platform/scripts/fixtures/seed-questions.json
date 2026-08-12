@@ -1,0 +1,119 @@
+{
+  "$comment": "轨道 E 真实模型探针的种子样本。expected 中的指标/维度一律使用语义面规范名(tools/dqe-sim/src/semantic-surface.ts)。种子样本与提示词内的 few-shot 示例物理分开,不得混用。categories: direct=直答 / clarify=需澄清(近义指标) / no_metric=无指标缺口(应拒答) / cross_domain=跨域易混。",
+  "samples": [
+    {
+      "id": "direct-1",
+      "category": "direct",
+      "question": "最近6个月各区域每个月的Tokens消耗量是多少?",
+      "note": "直答:运营分析域,按区域与时间双分组",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["Tokens消耗量"],
+        "groupBy": ["区域", "统计周期"],
+        "filters": [],
+        "granularity": "month"
+      }
+    },
+    {
+      "id": "direct-2",
+      "category": "direct",
+      "question": "上个月各行业的新增客户数是多少?",
+      "note": "直答:客户经营域,单维度分组",
+      "expected": {
+        "status": "answer",
+        "domain": "客户经营",
+        "metrics": ["新增客户数"],
+        "groupBy": ["行业"],
+        "filters": [],
+        "granularity": "month"
+      }
+    },
+    {
+      "id": "direct-3",
+      "category": "direct",
+      "question": "今年以来代码大模型每个月的计费Tokens量走势如何?",
+      "note": "直答:带维度取值筛选(模型=代码大模型)与时间分组",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["计费Tokens量"],
+        "groupBy": ["统计周期"],
+        "filters": [{ "dimension": "模型", "values": ["代码大模型"] }],
+        "granularity": "month"
+      }
+    },
+    {
+      "id": "clarify-1",
+      "category": "clarify",
+      "question": "上个月客户数是多少?",
+      "note": "需澄清:「客户数」在运营分析(在用调用口径)与客户经营(期末在册口径)两域近义不同义,问题无域内线索",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": ["运营分析", "客户经营"]
+      }
+    },
+    {
+      "id": "clarify-2",
+      "category": "clarify",
+      "question": "最近半年客户数的变化趋势怎么样?",
+      "note": "需澄清:同为两域「客户数」歧义,叠加趋势表述仍无法判定业务域",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": ["运营分析", "客户经营"]
+      }
+    },
+    {
+      "id": "gap-1",
+      "category": "no_metric",
+      "question": "上个月的营业收入是多少?",
+      "note": "缺口:语义面无任何收入类指标,应拒答不得编造",
+      "expected": {
+        "status": "reject"
+      }
+    },
+    {
+      "id": "gap-2",
+      "category": "no_metric",
+      "question": "各区域的客户满意度评分怎么样?",
+      "note": "缺口:维度「区域」存在但满意度指标不存在,应拒答不得用相近指标凑数",
+      "expected": {
+        "status": "reject"
+      }
+    },
+    {
+      "id": "cross-1",
+      "category": "cross_domain",
+      "question": "各行业的Tokens消耗量是多少?",
+      "note": "跨域易混:「行业」属客户经营,「Tokens消耗量」属运营分析,同一取数单元不能跨域组合,应拒答(澄清亦可接受)",
+      "expected": {
+        "status": "reject",
+        "altStatuses": ["clarify"]
+      }
+    },
+    {
+      "id": "cross-2",
+      "category": "cross_domain",
+      "question": "按天看各客户级别的流失客户数",
+      "note": "跨域易混(粒度越界):客户经营域只支持 month 粒度,不得擅自替换为月,应拒答(澄清亦可接受)",
+      "expected": {
+        "status": "reject",
+        "altStatuses": ["clarify"]
+      }
+    },
+    {
+      "id": "cross-3",
+      "category": "cross_domain",
+      "question": "上个月各区域的在用客户数是多少?",
+      "note": "跨域易混但可判:「在用客户数」是运营分析「客户数」的别名,且「区域」维度仅运营分析有,应直答而非过度澄清",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["客户数"],
+        "groupBy": ["区域"],
+        "filters": [],
+        "granularity": "month"
+      }
+    }
+  ]
+}
