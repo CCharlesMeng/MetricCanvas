@@ -1,0 +1,1417 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas 问数工作台 · 交互原型</title>
+    <!--
+      原型，用后即弃。三个变体的问数与搭建工作台，用 ?variant=A|B|C 切换，底部浮条也可切。
+      自包含：无构建、无依赖、无网络、无持久化，所有状态在内存里。
+      画布是真的可操作：点选、拖拽换位、改标题、调跨度、换数据源、移除。
+    -->
+    <style>
+      :root {
+        --bg: #f4f4f5;
+        --surface: #fff;
+        --line: #e4e4e7;
+        --line-soft: #f4f4f5;
+        --text: #18181b;
+        --muted: #71717a;
+        --faint: #a1a1aa;
+        --accent: #4f46e5;
+        --accent-soft: #eef2ff;
+        --warn-bg: #fffbeb;
+        --warn-line: #fde68a;
+        --warn-text: #92400e;
+        --up: #16a34a;
+        --down: #dc2626;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0;
+        color: var(--text);
+        background: var(--bg);
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC",
+          "Microsoft YaHei", sans-serif;
+        font-size: 13px;
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input, select, textarea { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      h1, h2, h3, h4, p, dl, dd, ol, ul { margin: 0; }
+      ol, ul { padding: 0; list-style: none; }
+
+      /* ---------- 应用外壳（三个变体共用的顶栏，模拟真实平台） ---------- */
+      .topbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        height: 54px;
+        padding: 0 22px;
+        color: #f4f4f5;
+        background: #18181b;
+      }
+      .topbar b { color: #fff; font-size: 14px; }
+      .topbar span { color: #a1a1aa; font-size: 13px; }
+      .topbar .who {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .topbar .avatar {
+        display: grid;
+        width: 24px;
+        height: 24px;
+        place-items: center;
+        color: #fff;
+        background: #4f46e5;
+        border-radius: 999px;
+        font-size: 11px;
+      }
+      #app { height: calc(100% - 54px); }
+
+      /* ---------- 通用零件 ---------- */
+      .eyebrow {
+        color: var(--accent);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .chip {
+        padding: 2px 8px;
+        color: #52525b;
+        background: var(--line-soft);
+        border-radius: 999px;
+        font-size: 11px;
+      }
+      .badge {
+        padding: 3px 9px;
+        color: #3730a3;
+        background: var(--accent-soft);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .warn-pill {
+        padding: 2px 8px;
+        color: var(--warn-text);
+        background: #fef3c7;
+        border-radius: 999px;
+        font-size: 10.5px;
+      }
+      .btn {
+        padding: 7px 13px;
+        background: #fff;
+        border: 1px solid #d4d4d8;
+        border-radius: 9px;
+        font-size: 12.5px;
+        font-weight: 600;
+      }
+      .btn:hover { border-color: var(--faint); }
+      .btn.primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+      .btn.dark { color: #fff; background: #18181b; border-color: #18181b; }
+      .btn.dashed { width: 100%; color: #52525b; border-style: dashed; font-weight: 500; }
+      .btn.danger { width: 100%; color: #b91c1c; border-color: #fecaca; font-weight: 500; }
+      .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+      .field { display: grid; gap: 6px; }
+      .field > span { color: #52525b; font-size: 11.5px; }
+      .field input, .field select {
+        width: 100%;
+        height: 32px;
+        padding: 0 9px;
+        background: #fff;
+        border: 1px solid #d4d4d8;
+        border-radius: 8px;
+        font-size: 12.5px;
+      }
+      .field input[type="range"] { padding: 0; border: 0; accent-color: var(--accent); }
+      input:focus-visible, select:focus-visible, textarea:focus-visible {
+        border-color: var(--accent);
+        outline: 2px solid rgb(79 70 229 / 0.16);
+      }
+
+      /* ---------- 口径卡 ---------- */
+      .scope {
+        padding: 11px 12px;
+        background: #fafafa;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+      }
+      .scope.temporary { background: var(--warn-bg); border-color: var(--warn-line); }
+      .scope-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: #52525b;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      .scope dl { display: grid; gap: 5px; }
+      .scope dl > div { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; }
+      .scope dt { color: var(--faint); font-size: 11px; }
+      .scope dd { font-size: 12px; line-height: 1.45; }
+
+      /* ---------- 对话 ---------- */
+      .ask-bubble {
+        align-self: flex-end;
+        max-width: 88%;
+        padding: 8px 12px;
+        color: #fff;
+        background: var(--accent);
+        border-radius: 12px 12px 3px 12px;
+        line-height: 1.6;
+      }
+      .reply p { line-height: 1.7; }
+      .candidates {
+        padding: 11px 12px;
+        background: #fafafa;
+        border: 1px solid var(--line);
+        border-radius: 11px;
+      }
+      .candidates > p { margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+      .candidates label {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 5px 0;
+        cursor: pointer;
+      }
+      .candidates label span { display: grid; gap: 2px; }
+      .candidates b { font-size: 12.5px; }
+      .candidates small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+      .candidates input:checked + span b { color: var(--accent); }
+      .steps { display: grid; gap: 2px; }
+      .steps li {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: baseline;
+        padding: 3px 0;
+      }
+      .steps .ico { color: var(--faint); font-size: 11px; }
+      .steps b { font-size: 12px; }
+      .steps small, .steps .ms { color: var(--faint); font-size: 11px; }
+      .steps .t { display: grid; gap: 1px; }
+      .linkish {
+        padding: 0;
+        color: #6366f1;
+        background: none;
+        border: 0;
+        font-size: 11.5px;
+      }
+
+      /* ---------- 画布 ---------- */
+      .canvas { display: grid; gap: 16px; }
+      .sec-title {
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .sec-title small { color: var(--faint); font-size: 11px; font-weight: 400; }
+      .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; }
+      .cell {
+        position: relative;
+        grid-column: span var(--span, 12);
+        min-width: 0;
+        padding: 14px 16px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        transition: border-color 120ms ease, box-shadow 120ms ease;
+      }
+      .cell:hover { border-color: rgb(79 70 229 / 0.45); }
+      .cell.selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgb(79 70 229 / 0.16);
+      }
+      .cell.dragging { opacity: 0.4; }
+      .cell.dropbefore { box-shadow: -3px 0 0 0 var(--accent); }
+      .cell-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+      .cell-head h4 { font-size: 12.5px; font-weight: 650; }
+      .cell-head .grab { color: #d4d4d8; cursor: grab; font-size: 12px; }
+      .cell.selected .cell-head .grab { color: var(--accent); }
+
+      .kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -0.02em; }
+      .kpi-sub { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+      .delta { font-size: 12px; font-weight: 650; }
+      .delta.up { color: var(--up); }
+      .delta.down { color: var(--down); }
+      .kpi-note { color: var(--faint); font-size: 11px; }
+
+      table { width: 100%; border-collapse: collapse; }
+      th, td {
+        padding: 7px 8px;
+        border-bottom: 1px solid var(--line-soft);
+        text-align: right;
+        font-size: 12px;
+        white-space: nowrap;
+      }
+      th { color: var(--muted); font-weight: 600; font-size: 11px; }
+      th:first-child, td:first-child { text-align: left; }
+      tbody tr:last-child td { border-bottom: 0; }
+      td .delta { font-size: 11.5px; }
+
+      .rank li {
+        display: grid;
+        grid-template-columns: 16px minmax(0, 1fr) auto;
+        gap: 8px;
+        align-items: center;
+        padding: 5px 0;
+      }
+      .rank .no { color: var(--faint); font-size: 11px; }
+      .rank .bar { position: relative; height: 6px; background: var(--line-soft); border-radius: 999px; }
+      .rank .bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 999px; }
+      .rank .bar.neg i { background: #f87171; }
+      .rank .nm { font-size: 12px; }
+      .rank .row2 { display: grid; gap: 4px; min-width: 0; }
+      .rank .vl { font-size: 11.5px; color: var(--muted); }
+
+      .prose { color: #3f3f46; font-size: 12.5px; line-height: 1.75; }
+      .report-header h3 { font-size: 17px; letter-spacing: -0.01em; }
+      .report-header p { margin-top: 4px; color: var(--muted); font-size: 12px; }
+      .report-header .chips { display: flex; gap: 6px; margin-top: 10px; }
+
+      /* ---------- 变体 A：三栏 ---------- */
+      .va { display: grid; grid-template-columns: 320px minmax(0, 1fr) 300px; height: 100%; }
+      .va > aside { display: flex; flex-direction: column; min-width: 0; background: var(--surface); }
+      .va .chat { border-right: 1px solid var(--line); }
+      .va .inspector { border-left: 1px solid var(--line); }
+      .va .chat header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 18px 18px 14px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .va .chat header h2 { margin-top: 4px; font-size: 16px; }
+      .va .thread {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: 14px;
+        padding: 16px 18px;
+        overflow-y: auto;
+      }
+      .va .composer {
+        display: grid;
+        gap: 8px;
+        padding: 14px 18px 16px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .va .composer textarea {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #d4d4d8;
+        border-radius: 10px;
+        resize: none;
+      }
+      .va .composer .btn { justify-self: end; }
+      .va main { display: flex; flex-direction: column; min-width: 0; }
+      .va .canvasbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 10px 18px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+      }
+      .va .canvasbar div { display: flex; align-items: center; gap: 10px; }
+      .va .scroll { flex: 1; padding: 20px; overflow-y: auto; }
+      .va .tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); }
+      .va .tabs button {
+        padding: 13px 0;
+        color: var(--muted);
+        background: none;
+        border: 0;
+        border-bottom: 2px solid transparent;
+        font-size: 13px;
+      }
+      .va .tabs button.on { color: var(--text); border-bottom-color: var(--accent); font-weight: 650; }
+      .va .panel { display: flex; flex: 1; flex-direction: column; gap: 14px; padding: 16px; overflow-y: auto; }
+      .va .picklist { display: grid; gap: 6px; }
+      .va .picklist button {
+        display: grid;
+        width: 100%;
+        gap: 2px;
+        padding: 8px 10px;
+        background: #fafafa;
+        border: 1px solid var(--line);
+        border-radius: 9px;
+        text-align: left;
+      }
+      .va .picklist button:hover { border-color: #a5b4fc; }
+      .va .picklist .ty { color: #6366f1; font-size: 10.5px; }
+      .va .picklist b { font-size: 12.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .srclist { display: grid; gap: 6px; }
+      .srclist li { padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; }
+      .srclist .r { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .srclist b { font-size: 12.5px; }
+      .srclist small { color: var(--faint); font-size: 11px; }
+
+      /* ---------- 变体 B：画布优先 ---------- */
+      .vb { display: flex; flex-direction: column; height: 100%; transition: padding-right 200ms ease; }
+      .vb.shifted { padding-right: 340px; }
+      .vb .strip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        height: 44px;
+        padding: 0 20px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--line);
+      }
+      .vb .strip .l { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 12px; }
+      .vb .strip .r { display: flex; gap: 8px; flex: none; }
+      .vb .strip .btn { padding: 6px 12px; border-color: var(--line); font-size: 12px; }
+      .vb .dot { width: 7px; height: 7px; background: var(--accent); border-radius: 999px; }
+      .vb .sep { color: #d4d4d8; }
+      .vb .scopeline { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .vb .scroll { flex: 1; padding: 26px 20px 120px; overflow-y: auto; }
+      .vb .scroll > .canvas { max-width: 1180px; margin: 0 auto; }
+      .scrim { position: fixed; inset: 54px 0 0; z-index: 40; background: rgb(24 24 27 / 0.16); }
+      .command {
+        position: fixed;
+        z-index: 50;
+        bottom: 68px;
+        left: 50%;
+        width: min(720px, calc(100vw - 48px));
+        transform: translateX(-50%);
+      }
+      .command .thread {
+        display: flex;
+        max-height: min(50vh, 400px);
+        flex-direction: column;
+        gap: 12px;
+        padding: 16px;
+        background: rgb(255 255 255 / 0.97);
+        border: 1px solid #d4d4d8;
+        border-bottom: 0;
+        border-radius: 14px 14px 4px 4px;
+        box-shadow: 0 -6px 30px rgb(24 24 27 / 0.1);
+        overflow-y: auto;
+        backdrop-filter: blur(10px);
+      }
+      .command .bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px 8px 14px;
+        background: rgb(255 255 255 / 0.94);
+        border: 1px solid #d4d4d8;
+        border-radius: 14px;
+        box-shadow: 0 12px 36px rgb(24 24 27 / 0.14);
+        backdrop-filter: blur(10px);
+      }
+      .command.open .bar { border-top-left-radius: 4px; border-top-right-radius: 4px; }
+      .command .bar input { flex: 1; min-width: 0; height: 30px; border: 0; background: none; outline: none; }
+      .command .send { width: 30px; height: 30px; color: #fff; background: var(--accent); border: 0; border-radius: 9px; }
+      .command .cnt { padding: 4px 9px; color: #52525b; background: var(--line-soft); border: 0; border-radius: 999px; font-size: 11px; }
+      .steppills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+      .steppills span { padding: 3px 9px; color: #52525b; background: var(--line-soft); border-radius: 999px; font-size: 11px; }
+      .drawer {
+        position: fixed;
+        top: 54px;
+        right: 0;
+        bottom: 0;
+        z-index: 45;
+        display: flex;
+        width: 340px;
+        flex-direction: column;
+        background: var(--surface);
+        border-left: 1px solid var(--line);
+        transform: translateX(100%);
+        transition: transform 200ms ease;
+      }
+      .drawer.open { transform: translateX(0); }
+      .drawer header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .drawer header .x { width: 26px; height: 26px; color: var(--muted); background: var(--line-soft); border: 0; border-radius: 8px; }
+      .drawer .body { display: flex; flex: 1; flex-direction: column; gap: 13px; padding: 16px; overflow-y: auto; }
+
+      /* ---------- 变体 C：会话流 ---------- */
+      .vc { display: grid; grid-template-columns: 264px minmax(0, 1fr); height: 100%; }
+      .vc > aside {
+        display: flex;
+        flex-direction: column;
+        padding: 20px 16px;
+        background: var(--surface);
+        border-right: 1px solid var(--line);
+      }
+      .vc .tl { flex: 1; overflow-y: auto; }
+      .vc .tl a {
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr);
+        gap: 10px;
+        padding: 9px 6px;
+        border-radius: 9px;
+        color: inherit;
+        text-decoration: none;
+      }
+      .vc .tl a:hover { background: #fafafa; }
+      .vc .node {
+        display: grid;
+        width: 22px;
+        height: 22px;
+        place-items: center;
+        color: var(--accent);
+        background: var(--accent-soft);
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+      }
+      .vc .node.temp { color: var(--warn-text); background: #fef3c7; }
+      .vc .tl b { display: block; font-size: 12.5px; line-height: 1.45; }
+      .vc .tl small { color: var(--faint); font-size: 11px; }
+      .vc aside form { display: flex; gap: 6px; padding-top: 14px; border-top: 1px solid var(--line-soft); }
+      .vc aside input { flex: 1; min-width: 0; height: 32px; padding: 0 10px; border: 1px solid #d4d4d8; border-radius: 9px; }
+      .vc aside .go { width: 34px; color: #fff; background: var(--accent); border: 0; border-radius: 9px; }
+      .vc main { display: grid; gap: 18px; align-content: start; padding: 24px 24px 96px; overflow-y: auto; }
+      .vc article {
+        max-width: 1040px;
+        padding: 18px 18px 12px;
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+      }
+      .vc article.picked { border-color: #a5b4fc; box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1); }
+      .vc article > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+      .vc .who { flex: none; padding: 2px 8px; color: var(--accent); background: var(--accent-soft); border-radius: 999px; font-size: 10.5px; font-weight: 700; }
+      .vc .q { display: flex; align-items: baseline; gap: 9px; min-width: 0; }
+      .vc .q b { font-size: 14.5px; line-height: 1.5; }
+      .vc .pick { display: flex; align-items: center; gap: 6px; flex: none; color: #52525b; font-size: 12px; }
+      .vc .pick input { accent-color: var(--accent); }
+      .vc .answer { margin: 10px 0 12px; color: #3f3f46; line-height: 1.7; }
+      .vc .scoperow {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 6px 14px;
+        padding: 9px 12px;
+        background: #fafafa;
+        border: 1px solid var(--line-soft);
+        border-radius: 10px;
+        font-size: 11.5px;
+      }
+      .vc .scoperow.temporary { background: var(--warn-bg); border-color: var(--warn-line); }
+      .vc .scoperow i { margin-right: 6px; color: var(--faint); font-style: normal; }
+      .vc .cardcanvas { margin-top: 14px; }
+      .vc .inline-edit {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px 14px;
+        margin-top: 12px;
+        padding: 10px 12px;
+        background: #f8f8ff;
+        border: 1px solid #e0e7ff;
+        border-radius: 10px;
+      }
+      .vc .inline-edit label { display: flex; align-items: center; gap: 7px; font-size: 11.5px; }
+      .vc .inline-edit i { color: var(--muted); font-style: normal; }
+      .vc .inline-edit input:not([type="range"]), .vc .inline-edit select {
+        height: 28px;
+        padding: 0 8px;
+        background: #fff;
+        border: 1px solid #d4d4d8;
+        border-radius: 7px;
+        font-size: 12px;
+      }
+      .vc .inline-edit input[type="range"] { width: 110px; accent-color: var(--accent); }
+      .vc .inline-edit .rm { margin-left: auto; padding: 5px 10px; color: #b91c1c; background: #fff; border: 1px solid #fecaca; border-radius: 7px; font-size: 11.5px; }
+      .vc article > footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--line-soft);
+      }
+      .vc .srcs { display: flex; flex-wrap: wrap; gap: 5px; }
+      .vc .srcs span { padding: 2px 8px; color: #52525b; background: var(--line-soft); border-radius: 6px; font-size: 10.5px; }
+      .vc .fold { padding: 5px 11px; color: #52525b; background: #fff; border: 1px solid var(--line); border-radius: 8px; font-size: 11.5px; }
+      .vc .tail { max-width: 1040px; color: var(--faint); font-size: 12px; text-align: center; }
+      .sediment {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 40;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 24px 14px;
+        background: rgb(255 255 255 / 0.95);
+        border-top: 1px solid var(--line);
+        font-size: 12.5px;
+        backdrop-filter: blur(8px);
+      }
+      .sediment .acts { display: flex; gap: 8px; padding-right: 230px; }
+
+      /* ---------- 变体切换条（明显不属于被评估的设计） ---------- */
+      .switcher {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        z-index: 999;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 8px;
+        color: #fafafa;
+        background: #09090b;
+        border: 1px solid #3f3f46;
+        border-radius: 999px;
+        box-shadow: 0 10px 30px rgb(9 9 11 / 0.35);
+        transform: translateX(-50%);
+      }
+      .switcher button { width: 28px; height: 28px; color: inherit; background: #27272a; border: 0; border-radius: 999px; }
+      .switcher button:hover { background: #3f3f46; }
+      .switcher .lb { display: flex; align-items: baseline; gap: 8px; padding: 0 6px; white-space: nowrap; }
+      .switcher .lb b { font-size: 12px; letter-spacing: 0.08em; }
+      .switcher .lb span { color: #a1a1aa; }
+      .switcher .hint { margin-left: 4px; padding-left: 10px; color: #71717a; border-left: 1px solid #3f3f46; font-size: 11px; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>MetricCanvas</b>
+      <span>问数工作台 · 交互原型</span>
+      <div class="who">
+        <span class="avatar">孟</span>
+        <span>孟宪超</span>
+      </div>
+    </div>
+    <div id="app"></div>
+
+    <script>
+      /* ============ 1. 内存模型：数据源、页面文档、会话 ============ */
+
+      const money = (n) =>
+        n >= 1e8 ? (n / 1e8).toFixed(2) + " 亿" : n >= 1e4 ? (n / 1e4).toFixed(0) + " 万" : String(n);
+
+      const SOURCES = {
+        "consumption-overview": {
+          kind: "inline",
+          fields: ["消耗Tokens", "环比"],
+          rows: [{ 消耗Tokens: 128400000, 环比: 8.4 }]
+        },
+        "billing-overview": {
+          kind: "inline",
+          fields: ["计费Tokens", "环比"],
+          rows: [{ 计费Tokens: 96400000, 环比: -2.1 }]
+        },
+        "consumption-trend": {
+          kind: "query",
+          fields: ["月份", "消耗Tokens", "计费Tokens"],
+          rows: [
+            { 月份: "01", 消耗Tokens: 74, 计费Tokens: 55 },
+            { 月份: "02", 消耗Tokens: 68, 计费Tokens: 52 },
+            { 月份: "03", 消耗Tokens: 83, 计费Tokens: 61 },
+            { 月份: "04", 消耗Tokens: 91, 计费Tokens: 66 },
+            { 月份: "05", 消耗Tokens: 88, 计费Tokens: 70 },
+            { 月份: "06", 消耗Tokens: 102, 计费Tokens: 76 },
+            { 月份: "07", 消耗Tokens: 118, 计费Tokens: 84 },
+            { 月份: "08", 消耗Tokens: 109, 计费Tokens: 88 },
+            { 月份: "09", 消耗Tokens: 124, 计费Tokens: 91 },
+            { 月份: "10", 消耗Tokens: 117, 计费Tokens: 95 },
+            { 月份: "11", 消耗Tokens: 128, 计费Tokens: 96 }
+          ]
+        },
+        "region-distribution": {
+          kind: "query",
+          fields: ["区域", "消耗Tokens", "占比", "环比"],
+          rows: [
+            { 区域: "华东", 消耗Tokens: 44700000, 占比: 34.8, 环比: 2.1 },
+            { 区域: "华南", 消耗Tokens: 27600000, 占比: 21.5, 环比: -6.3 },
+            { 区域: "华北", 消耗Tokens: 21300000, 占比: 16.6, 环比: 4.8 },
+            { 区域: "西南", 消耗Tokens: 14100000, 占比: 11.0, 环比: 1.2 },
+            { 区域: "华中", 消耗Tokens: 10800000, 占比: 8.4, 环比: -1.7 },
+            { 区域: "东北", 消耗Tokens: 6200000, 占比: 4.8, 环比: 0.4 },
+            { 区域: "西北", 消耗Tokens: 3700000, 占比: 2.9, 环比: 3.6 }
+          ]
+        },
+        "model-distribution": {
+          kind: "query",
+          fields: ["模型", "调用次数", "消耗Tokens", "占比"],
+          rows: [
+            { 模型: "DeepSeek-V4-Pro", 调用次数: 1284000, 消耗Tokens: 61200000, 占比: 47.7 },
+            { 模型: "DeepSeek-V4", 调用次数: 2140000, 消耗Tokens: 38400000, 占比: 29.9 },
+            { 模型: "Embedding-L", 调用次数: 4820000, 消耗Tokens: 19600000, 占比: 15.3 },
+            { 模型: "Rerank-M", 调用次数: 1960000, 消耗Tokens: 9200000, 占比: 7.1 }
+          ]
+        },
+        "customer-growth": {
+          kind: "query",
+          fields: ["客户名称", "消耗Tokens", "环比"],
+          rows: [
+            { 客户名称: "XX客户名称012", 消耗Tokens: 8600000, 环比: 62.4 },
+            { 客户名称: "XX客户名称047", 消耗Tokens: 7200000, 环比: 48.1 },
+            { 客户名称: "XX客户名称003", 消耗Tokens: 5400000, 环比: 39.6 },
+            { 客户名称: "XX客户名称128", 消耗Tokens: 4100000, 环比: 27.3 },
+            { 客户名称: "XX客户名称066", 消耗Tokens: 3300000, 环比: 18.9 }
+          ]
+        },
+        "customer-decline": {
+          kind: "query",
+          fields: ["客户名称", "消耗Tokens", "环比"],
+          rows: [
+            { 客户名称: "XX客户名称021", 消耗Tokens: 6900000, 环比: -41.2 },
+            { 客户名称: "XX客户名称090", 消耗Tokens: 5100000, 环比: -33.7 },
+            { 客户名称: "XX客户名称014", 消耗Tokens: 4600000, 环比: -25.4 },
+            { 客户名称: "XX客户名称152", 消耗Tokens: 2800000, 环比: -19.8 },
+            { 客户名称: "XX客户名称073", 消耗Tokens: 1900000, 环比: -11.5 }
+          ]
+        }
+      };
+
+      const doc = {
+        id: "tmp-session-8f2c",
+        sections: [
+          {
+            id: "summary",
+            title: "数据摘要",
+            components: [
+              { id: "hdr", type: "reportHeader", title: "Tokens 运营概览", span: 12, source: null },
+              { id: "note", type: "text", title: "分析结论", span: 12, source: null }
+            ]
+          },
+          {
+            id: "consumption",
+            title: "消耗概况",
+            components: [
+              { id: "kpi-consume", type: "metricCard", title: "本月消耗 Tokens", span: 3, source: "consumption-overview" },
+              { id: "kpi-billing", type: "metricCard", title: "本月计费 Tokens", span: 3, source: "billing-overview" },
+              { id: "trend", type: "lineChart", title: "消耗与计费趋势", span: 6, source: "consumption-trend" }
+            ]
+          },
+          {
+            id: "region",
+            title: "区域分布",
+            components: [
+              { id: "region-bar", type: "barChart", title: "各区域消耗占比", span: 5, source: "region-distribution" },
+              { id: "region-table", type: "table", title: "区域明细", span: 7, source: "region-distribution" }
+            ]
+          },
+          {
+            id: "customer",
+            title: "客户与模型",
+            components: [
+              { id: "model-table", type: "table", title: "模型分布", span: 4, source: "model-distribution" },
+              { id: "growth", type: "rankingCard", title: "增长 Top 5", span: 4, source: "customer-growth" },
+              { id: "decline", type: "rankingCard", title: "下降 Top 5", span: 4, source: "customer-decline" }
+            ]
+          }
+        ]
+      };
+
+      const STEP_ICON = { routed: "◎", candidates: "⋔", scope: "⌘", executing: "↻", rows: "▤", document: "◱" };
+
+      const turns = [
+        {
+          q: "各区域的 Tokens 消耗和环比变化怎么样？",
+          a: "华东区消耗占 34.8%、环比 +2.1pt，是唯一同时保持规模与增长的区域；华南区绝对量第二，但环比 −6.3pt，是本月唯一双位数下滑。",
+          candidates: [
+            { name: "Tokens消耗量", note: "含推理与训练，公司口径", chosen: true },
+            { name: "计费Tokens量", note: "仅计费部分，排除内部试用", chosen: false },
+            { name: "Tokens请求量", note: "按请求计数，不是 Token 计数", chosen: false }
+          ],
+          scope: {
+            domain: "运营分析",
+            metric: "Tokens消耗量 ÷ 期间总消耗量",
+            temporary: true,
+            time: "2026-11（月）",
+            filters: "区域 = 全部",
+            grain: "月"
+          },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "运营分析（置信度中，可改）", ms: 210 },
+            { k: "candidates", label: "指标候选", detail: "命中 3 个近义指标，已选「Tokens消耗量」", ms: 640 },
+            { k: "scope", label: "口径确认", detail: "含自由生成表达式，已等待确认", ms: 0 },
+            { k: "executing", label: "真实执行", detail: "DQE 仿真 · 2 个查询", ms: 1180 },
+            { k: "rows", label: "结果就绪", detail: "7 行 · 4 个字段", ms: 90 },
+            { k: "document", label: "页面文档就绪", detail: "意图=构成 · 柱状 + 表格", ms: 150 }
+          ],
+          section: "region"
+        },
+        {
+          q: "再看看哪些客户增长最快、哪些在掉",
+          a: "增长端集中在中小客户，Top 5 全部环比 +18% 以上；下降端 XX客户名称021 环比 −41.2%，单客户就吃掉本月华南区一半的降幅。",
+          candidates: [],
+          scope: {
+            domain: "运营分析",
+            metric: "Tokens消耗量",
+            temporary: false,
+            time: "2026-11（月）",
+            filters: "沿用上一轮",
+            grain: "月"
+          },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "沿用上一轮：运营分析", ms: 40 },
+            { k: "executing", label: "真实执行", detail: "DQE 仿真 · 2 个查询", ms: 870 },
+            { k: "rows", label: "结果就绪", detail: "10 行 · 3 个字段", ms: 60 },
+            { k: "document", label: "定向增量修改", detail: "只新增排行，其余保持不变", ms: 120 }
+          ],
+          section: "customer"
+        }
+      ];
+
+      const ui = {
+        variant: new URLSearchParams(location.search).get("variant") || "A",
+        selected: null, // { sectionId, componentId }
+        tab: "component",
+        chatOpen: false,
+        drawer: "none",
+        picked: {},
+        folded: {},
+        draft: ""
+      };
+
+      /* ============ 2. 组件渲染：纯函数，画布三个变体共用 ============ */
+
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const delta = (v) =>
+        `<span class="delta ${v >= 0 ? "up" : "down"}">${v >= 0 ? "▲" : "▼"} ${Math.abs(v).toFixed(1)}%</span>`;
+
+      function renderBody(c) {
+        const src = c.source ? SOURCES[c.source] : null;
+        const rows = src ? src.rows : [];
+        switch (c.type) {
+          case "reportHeader":
+            return `<div class="report-header">
+              <h3>${esc(c.title)}</h3>
+              <p>覆盖 7 个区域、4 个模型、153 家在用客户，数据截至 2026-11-30</p>
+              <div class="chips"><span class="chip">2026-11</span><span class="chip">月粒度</span><span class="chip">运营分析</span></div>
+            </div>`;
+          case "text":
+            return `<p class="prose">本月 Tokens 总消耗 1.28 亿，环比 +8.4%；计费 Tokens 9,640 万，环比 −2.1%——两者背离来自内部试用额度的一次性释放。区域侧华东继续扩大领先，华南需要单独看客户级下滑原因。</p>`;
+          case "metricCard": {
+            const r = rows[0] || {};
+            const key = Object.keys(r).find((k) => k !== "环比");
+            return `<div>
+              <div class="kpi-value">${money(r[key] || 0)}</div>
+              <div class="kpi-sub">${delta(r["环比"] || 0)}<span class="kpi-note">对比 2026-10</span></div>
+            </div>`;
+          }
+          case "lineChart": {
+            const w = 560, h = 180, pad = 8;
+            const keys = ["消耗Tokens", "计费Tokens"];
+            const max = Math.max(...rows.flatMap((r) => keys.map((k) => r[k]))) * 1.15;
+            const x = (i) => pad + (i * (w - pad * 2)) / (rows.length - 1);
+            const y = (v) => h - pad - (v / max) * (h - pad * 2);
+            const line = (k, color, fill) => {
+              const pts = rows.map((r, i) => `${x(i)},${y(r[k])}`).join(" ");
+              const area = `${pad},${h - pad} ${pts} ${x(rows.length - 1)},${h - pad}`;
+              return `${fill ? `<polygon points="${area}" fill="${color}" opacity="0.08" />` : ""}
+                <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" />`;
+            };
+            return `<div>
+              <svg viewBox="0 0 ${w} ${h}" style="width:100%;height:180px;display:block">
+                ${[0.25, 0.5, 0.75].map((p) => `<line x1="${pad}" x2="${w - pad}" y1="${h * p}" y2="${h * p}" stroke="#f1f1f4" />`).join("")}
+                ${line("消耗Tokens", "#4f46e5", true)}
+                ${line("计费Tokens", "#a1a1aa", false)}
+              </svg>
+              <div style="display:flex;gap:14px;margin-top:6px;color:var(--muted);font-size:11px">
+                <span style="display:flex;align-items:center;gap:5px"><i style="width:8px;height:8px;background:#4f46e5;border-radius:2px;display:inline-block"></i>消耗</span>
+                <span style="display:flex;align-items:center;gap:5px"><i style="width:8px;height:8px;background:#a1a1aa;border-radius:2px;display:inline-block"></i>计费</span>
+                <span style="margin-left:auto">单位：百万 Tokens</span>
+              </div>
+            </div>`;
+          }
+          case "barChart": {
+            const max = Math.max(...rows.map((r) => r["占比"]));
+            return `<ul class="rank">${rows
+              .map(
+                (r) => `<li>
+                  <span class="no"></span>
+                  <span class="row2">
+                    <span class="nm">${esc(r["区域"])}</span>
+                    <span class="bar"><i style="width:${(r["占比"] / max) * 100}%"></i></span>
+                  </span>
+                  <span class="vl">${r["占比"].toFixed(1)}%</span>
+                </li>`
+              )
+              .join("")}</ul>`;
+          }
+          case "table": {
+            const cols = src ? src.fields : [];
+            return `<div style="overflow-x:auto"><table>
+              <thead><tr>${cols.map((k) => `<th>${esc(k)}</th>`).join("")}</tr></thead>
+              <tbody>${rows
+                .map(
+                  (r) =>
+                    `<tr>${cols
+                      .map((k) => {
+                        const v = r[k];
+                        if (k === "环比") return `<td>${delta(v)}</td>`;
+                        if (k === "占比") return `<td>${v.toFixed(1)}%</td>`;
+                        if (typeof v === "number") return `<td>${v >= 1e6 ? money(v) : v.toLocaleString()}</td>`;
+                        return `<td>${esc(v)}</td>`;
+                      })
+                      .join("")}</tr>`
+                )
+                .join("")}</tbody>
+            </table></div>`;
+          }
+          case "rankingCard": {
+            const max = Math.max(...rows.map((r) => Math.abs(r["环比"])));
+            const neg = rows.some((r) => r["环比"] < 0);
+            return `<ul class="rank">${rows
+              .map(
+                (r, i) => `<li>
+                  <span class="no">${i + 1}</span>
+                  <span class="row2">
+                    <span class="nm">${esc(r["客户名称"])}</span>
+                    <span class="bar ${neg ? "neg" : ""}"><i style="width:${(Math.abs(r["环比"]) / max) * 100}%"></i></span>
+                  </span>
+                  <span class="vl">${delta(r["环比"])}</span>
+                </li>`
+              )
+              .join("")}</ul>`;
+          }
+          default:
+            return `<p class="prose">未知组件类型 ${esc(c.type)}</p>`;
+        }
+      }
+
+      function renderCell(sectionId, c) {
+        const on = ui.selected && ui.selected.sectionId === sectionId && ui.selected.componentId === c.id;
+        const head =
+          c.type === "reportHeader"
+            ? ""
+            : `<div class="cell-head"><h4>${esc(c.title)}</h4><span class="grab" draggable="true">⠿</span></div>`;
+        return `<div class="cell ${on ? "selected" : ""}" style="--span:${c.span}"
+          data-cell data-section="${sectionId}" data-component="${c.id}" draggable="true">
+          ${head}${renderBody(c)}
+        </div>`;
+      }
+
+      function renderCanvas(sectionIds) {
+        const list = doc.sections.filter((s) => !sectionIds || sectionIds.includes(s.id));
+        return `<div class="canvas">${list
+          .map(
+            (s) => `<section>
+              <div class="sec-title">${esc(s.title)}<small>${s.components.length} 个组件</small></div>
+              <div class="grid">${s.components.map((c) => renderCell(s.id, c)).join("")}</div>
+            </section>`
+          )
+          .join("")}</div>`;
+      }
+
+      /* ============ 3. 共用片段：口径卡、步骤、检查器 ============ */
+
+      function scopeCard(t) {
+        return `<div class="scope ${t.scope.temporary ? "temporary" : ""}">
+          <div class="scope-head"><span>生效口径</span>${t.scope.temporary ? '<span class="warn-pill">临时口径</span>' : ""}</div>
+          <dl>
+            <div><dt>业务域</dt><dd>${esc(t.scope.domain)}</dd></div>
+            <div><dt>指标</dt><dd>${esc(t.scope.metric)}</dd></div>
+            <div><dt>时间</dt><dd>${esc(t.scope.time)} · ${esc(t.scope.grain)}</dd></div>
+            <div><dt>筛选</dt><dd>${esc(t.scope.filters)}</dd></div>
+          </dl>
+        </div>`;
+      }
+
+      function stepList(t) {
+        return `<ol class="steps">${t.steps
+          .map(
+            (s) => `<li><span class="ico">${STEP_ICON[s.k]}</span>
+              <span class="t"><b>${esc(s.label)}</b><small>${esc(s.detail)}</small></span>
+              <span class="ms">${s.ms ? s.ms + "ms" : "待确认"}</span></li>`
+          )
+          .join("")}</ol>`;
+      }
+
+      function candidateBlock(t, idx) {
+        if (!t.candidates.length) return "";
+        return `<div class="candidates">
+          <p>命中 ${t.candidates.length} 个近义指标，口径不同：</p>
+          ${t.candidates
+            .map(
+              (c) => `<label><input type="radio" name="cand-${idx}" ${c.chosen ? "checked" : ""} />
+              <span><b>${esc(c.name)}</b><small>${esc(c.note)}</small></span></label>`
+            )
+            .join("")}
+        </div>`;
+      }
+
+      function findComponent(sel) {
+        if (!sel) return null;
+        const s = doc.sections.find((x) => x.id === sel.sectionId);
+        const c = s && s.components.find((x) => x.id === sel.componentId);
+        return c ? { section: s, component: c } : null;
+      }
+
+      function sourceOptions(current) {
+        return Object.keys(SOURCES)
+          .map((n) => `<option value="${n}" ${n === current ? "selected" : ""}>${n}</option>`)
+          .join("");
+      }
+
+      function inspectorFields() {
+        const hit = findComponent(ui.selected);
+        if (!hit) return "";
+        const c = hit.component;
+        return `
+          <label class="field"><span>标题</span>
+            <input data-field="title" value="${esc(c.title)}" /></label>
+          <label class="field"><span>跨度 <b>${c.span}/12</b></span>
+            <input data-field="span" type="range" min="1" max="12" value="${c.span}" /></label>
+          <label class="field"><span>数据源</span>
+            <select data-field="source" ${c.source ? "" : "disabled"}>${
+              c.source ? sourceOptions(c.source) : '<option>该组件不消费数据源</option>'
+            }</select></label>
+          <p style="color:var(--faint);font-size:11.5px;line-height:1.55">
+            类型 ${esc(c.type)} · 分区「${esc(hit.section.title)}」。画布上可直接拖拽换位。</p>
+          <button class="btn danger" data-action="remove">从画布移除</button>`;
+      }
+
+      function sourcePanel() {
+        const used = {};
+        doc.sections.forEach((s) =>
+          s.components.forEach((c) => {
+            if (c.source) (used[c.source] = used[c.source] || []).push(c.id);
+          })
+        );
+        return `<ul class="srclist">${Object.entries(SOURCES)
+          .map(
+            ([n, s]) => `<li>
+              <div class="r"><b>${n}</b><span class="chip">${s.kind}</span></div>
+              <small>${s.rows.length} 行 · ${s.fields.length} 字段 · 被 ${(used[n] || []).length} 个组件消费</small>
+            </li>`
+          )
+          .join("")}</ul>
+        <button class="btn dashed">＋ 新增查询数据源</button>`;
+      }
+
+      /* ============ 4. 三个变体 ============ */
+
+      function variantA() {
+        const hit = findComponent(ui.selected);
+        return `<div class="va">
+          <aside class="chat">
+            <header>
+              <div><p class="eyebrow">分析会话</p><h2>Tokens 运营问数</h2></div>
+              <span class="chip">${turns.length} 轮</span>
+            </header>
+            <div class="thread">
+              ${turns
+                .map(
+                  (t, i) => `
+                <div class="ask-bubble">${esc(t.q)}</div>
+                ${candidateBlock(t, i)}
+                <div class="reply">
+                  <p>${esc(t.a)}</p>
+                  <div style="margin-top:10px">${scopeCard(t)}</div>
+                  <button class="linkish" data-action="toggle-steps" data-idx="${i}" style="margin-top:8px">
+                    ${ui.openSteps === i ? "收起" : "展开"}执行过程（${t.steps.length} 步）</button>
+                  ${ui.openSteps === i ? `<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)">${stepList(t)}</div>` : ""}
+                </div>`
+                )
+                .join("")}
+            </div>
+            <form class="composer" data-action="ask">
+              <textarea rows="2" data-field="draft" placeholder="继续追问：换维度、改筛选、调整展示">${esc(ui.draft)}</textarea>
+              <button class="btn" type="submit">发送</button>
+            </form>
+          </aside>
+
+          <main>
+            <div class="canvasbar">
+              <div>
+                <span class="badge">临时页面态</span>
+                <code style="color:#52525b;font-size:12px">${doc.id}</code>
+                <span style="color:var(--faint);font-size:11.5px">
+                  ${doc.sections.reduce((a, s) => a + s.components.length, 0)} 个组件 · ${Object.keys(SOURCES).length} 个数据源</span>
+              </div>
+              <div>
+                <span class="warn-pill">含临时口径</span>
+                <button class="btn">沉淀为报告</button>
+                <button class="btn primary">沉淀为 Data App</button>
+              </div>
+            </div>
+            <div class="scroll">${renderCanvas()}</div>
+          </main>
+
+          <aside class="inspector">
+            <div class="tabs">
+              <button class="${ui.tab === "component" ? "on" : ""}" data-action="tab" data-tab="component">组件</button>
+              <button class="${ui.tab === "source" ? "on" : ""}" data-action="tab" data-tab="source">数据源</button>
+            </div>
+            <div class="panel">
+              ${
+                ui.tab === "source"
+                  ? sourcePanel()
+                  : hit
+                  ? `<div><p class="eyebrow">${esc(hit.component.type)}</p>
+                     <h3 style="margin-top:4px;font-size:15px">${esc(hit.component.id)}</h3></div>${inspectorFields()}`
+                  : `<p style="color:var(--muted);font-size:11.5px;line-height:1.6">在画布上点选一个组件，或从下面的清单里选。</p>
+                     <div class="picklist">${doc.sections
+                       .flatMap((s) =>
+                         s.components.map(
+                           (c) => `<button data-action="select" data-section="${s.id}" data-component="${c.id}">
+                             <span class="ty">${esc(c.type)}</span>
+                             <b>${esc(c.title)}</b>
+                             <small style="color:var(--faint);font-size:11px">${esc(s.title)} · ${c.span}/12</small>
+                           </button>`
+                         )
+                       )
+                       .join("")}</div>`
+              }
+            </div>
+          </aside>
+        </div>`;
+      }
+
+      function variantB() {
+        const t = turns[turns.length - 1];
+        const hit = findComponent(ui.selected);
+        return `<div class="vb ${ui.drawer !== "none" ? "shifted" : ""}">
+          <div class="strip">
+            <div class="l">
+              <span class="dot"></span><b>临时页面态</b><span class="sep">·</span>
+              <span class="scopeline">${esc(t.scope.domain)} / ${esc(t.scope.metric)} / ${esc(t.scope.time)}</span>
+              ${t.scope.temporary ? '<span class="warn-pill">临时口径</span>' : ""}
+            </div>
+            <div class="r">
+              <button class="btn" data-action="drawer" data-mode="source">数据源 ${Object.keys(SOURCES).length}</button>
+              <button class="btn">沉淀为报告</button>
+              <button class="btn dark">沉淀为 Data App</button>
+            </div>
+          </div>
+          <div class="scroll">${renderCanvas()}</div>
+        </div>
+
+        ${ui.chatOpen ? '<div class="scrim" data-action="close-chat"></div>' : ""}
+
+        <div class="command ${ui.chatOpen ? "open" : ""}">
+          ${
+            ui.chatOpen
+              ? `<div class="thread">${turns
+                  .map(
+                    (x) => `<div class="ask-bubble">${esc(x.q)}</div>
+                    <div class="reply"><p>${esc(x.a)}</p>
+                      <div class="steppills">${x.steps.map((s) => `<span title="${esc(s.detail)}">${STEP_ICON[s.k]} ${esc(s.label)}</span>`).join("")}</div>
+                    </div>`
+                  )
+                  .join("")}</div>`
+              : ""
+          }
+          <form class="bar" data-action="ask">
+            <span style="color:var(--faint);font-size:12px">问</span>
+            <input data-field="draft" value="${esc(ui.draft)}" placeholder="用一句话问：各区域的 Tokens 消耗和环比变化怎么样？" />
+            ${ui.chatOpen ? "" : `<button type="button" class="cnt" data-action="open-chat">${turns.length} 轮</button>`}
+            <button class="send" type="submit">↵</button>
+          </form>
+        </div>
+
+        <div class="drawer ${ui.drawer !== "none" ? "open" : ""}">
+          <header><b>${ui.drawer === "source" ? "数据源" : "组件配置"}</b>
+            <button class="x" data-action="close-drawer">✕</button></header>
+          <div class="body">
+            ${
+              ui.drawer === "source"
+                ? sourcePanel()
+                : hit
+                ? `<div><p class="eyebrow">${esc(hit.component.type)}</p>
+                   <h3 style="margin-top:4px;font-size:15px">${esc(hit.component.id)}</h3></div>${inspectorFields()}`
+                : `<p style="color:var(--muted);font-size:11.5px">在画布上点选一个组件。</p>`
+            }
+          </div>
+        </div>`;
+      }
+
+      function variantC() {
+        const cards = doc.sections.map((s, i) => ({ s, t: turns[Math.min(i, turns.length - 1)] }));
+        const hit = findComponent(ui.selected);
+        const pickedCount = Object.values(ui.picked).filter(Boolean).length;
+        return `<div class="vc">
+          <aside>
+            <p class="eyebrow">分析会话</p>
+            <h2 style="margin:5px 0 3px;font-size:16px">Tokens 运营问数</h2>
+            <p style="margin-bottom:16px;color:var(--faint);font-size:11px">会话 · 90 天保留 · 仅本人可见</p>
+            <ol class="tl">
+              ${cards
+                .map(
+                  ({ s, t }, i) => `<li><a href="#card-${s.id}">
+                    <span class="node ${t.scope.temporary ? "temp" : ""}">${i + 1}</span>
+                    <span>
+                      <b>${esc(t.q)}</b>
+                      <small>${esc(t.scope.domain)} · ${esc(t.scope.grain)} · ${t.steps.reduce((a, x) => a + x.ms, 0)}ms</small>
+                    </span></a></li>`
+                )
+                .join("")}
+            </ol>
+            <form data-action="ask">
+              <input data-field="draft" value="${esc(ui.draft)}" placeholder="继续追问…" />
+              <button class="go" type="submit">问</button>
+            </form>
+          </aside>
+
+          <main>
+            ${cards
+              .map(
+                ({ s, t }) => `
+              <article id="card-${s.id}" class="${ui.picked[s.id] ? "picked" : ""}">
+                <header>
+                  <div class="q"><span class="who">问</span><b>${esc(t.q)}</b></div>
+                  <label class="pick">
+                    <input type="checkbox" data-action="pick" data-section="${s.id}" ${ui.picked[s.id] ? "checked" : ""} />
+                    <span>加入看板</span></label>
+                </header>
+                <p class="answer">${esc(t.a)}</p>
+                <div class="scoperow ${t.scope.temporary ? "temporary" : ""}">
+                  <span><i>域</i>${esc(t.scope.domain)}</span>
+                  <span><i>指标</i>${esc(t.scope.metric)}</span>
+                  <span><i>时间</i>${esc(t.scope.time)}</span>
+                  <span><i>筛选</i>${esc(t.scope.filters)}</span>
+                  ${t.scope.temporary ? '<span class="warn-pill">临时口径</span>' : ""}
+                </div>
+                ${
+                  ui.folded[s.id]
+                    ? ""
+                    : `<div class="cardcanvas">${renderCanvas([s.id])}</div>
+                       ${
+                         hit && hit.section.id === s.id
+                           ? `<div class="inline-edit">
+                             <span class="chip" style="color:#4338ca;background:#e0e7ff;font-weight:700">${esc(hit.component.type)}</span>
+                             <label><i>标题</i><input data-field="title" value="${esc(hit.component.title)}" /></label>
+                             <label><i>跨度</i><input data-field="span" type="range" min="1" max="12" value="${hit.component.span}" /><b>${hit.component.span}/12</b></label>
+                             <label><i>数据源</i><select data-field="source" ${hit.component.source ? "" : "disabled"}>${
+                               hit.component.source ? sourceOptions(hit.component.source) : "<option>无</option>"
+                             }</select></label>
+                             <button class="rm" data-action="remove">移除</button>
+                           </div>`
+                           : ""
+                       }`
+                }
+                <footer>
+                  <div class="srcs">${[...new Set(s.components.map((c) => c.source).filter(Boolean))]
+                    .map((n) => `<span>${n}</span>`)
+                    .join("")}</div>
+                  <button class="fold" data-action="fold" data-section="${s.id}">${ui.folded[s.id] ? "展开结果" : "折叠结果"}</button>
+                </footer>
+              </article>`
+              )
+              .join("")}
+            <p class="tail">继续追问会在这里长出新的答案卡片。勾选要留下的，其余随会话消失。</p>
+          </main>
+        </div>
+
+        <div class="sediment">
+          <span>已选 <b>${pickedCount}</b> / ${cards.length} 张卡片</span>
+          <div class="acts">
+            <button class="btn" ${pickedCount ? "" : "disabled"}>沉淀为报告</button>
+            <button class="btn primary" ${pickedCount ? "" : "disabled"}>沉淀为 Data App</button>
+          </div>
+        </div>`;
+      }
+
+      /* ============ 5. 渲染与交互 ============ */
+
+      const VARIANTS = [
+        { key: "A", name: "三栏对称：对话｜画布｜检查器" },
+        { key: "B", name: "画布优先：命令条 + 配置抽屉" },
+        { key: "C", name: "会话流：答案卡片拼装" }
+      ];
+
+      function switcher() {
+        const i = Math.max(0, VARIANTS.findIndex((v) => v.key === ui.variant));
+        const v = VARIANTS[i];
+        return `<div class="switcher">
+          <button data-action="prev" aria-label="上一个变体">←</button>
+          <span class="lb"><b>${v.key}</b><span>${v.name}</span></span>
+          <button data-action="next" aria-label="下一个变体">→</button>
+          <span class="hint">← → 切换</span>
+        </div>`;
+      }
+
+      function render() {
+        const app = document.getElementById("app");
+        const scroll = app.querySelector(".scroll, main");
+        const top = scroll ? scroll.scrollTop : 0;
+        app.innerHTML =
+          (ui.variant === "B" ? variantB() : ui.variant === "C" ? variantC() : variantA()) + switcher();
+        const next = app.querySelector(".scroll, main");
+        if (next) next.scrollTop = top;
+      }
+
+      function setVariant(delta) {
+        const i = VARIANTS.findIndex((v) => v.key === ui.variant);
+        ui.variant = VARIANTS[(i + delta + VARIANTS.length) % VARIANTS.length].key;
+        ui.selected = null;
+        ui.drawer = "none";
+        ui.chatOpen = false;
+        try {
+          const url = new URL(location.href);
+          url.searchParams.set("variant", ui.variant);
+          history.replaceState(null, "", url);
+        } catch (_) {
+          /* file:// 下忽略 */
+        }
+        render();
+      }
+
+      const app = document.getElementById("app");
+
+      app.addEventListener("click", (e) => {
+        const act = e.target.closest("[data-action]");
+        const cell = e.target.closest("[data-cell]");
+
+        if (act) {
+          const a = act.dataset.action;
+          if (a === "prev") return setVariant(-1);
+          if (a === "next") return setVariant(1);
+          if (a === "tab") { ui.tab = act.dataset.tab; return render(); }
+          if (a === "toggle-steps") { const i = +act.dataset.idx; ui.openSteps = ui.openSteps === i ? null : i; return render(); }
+          if (a === "select") { ui.selected = { sectionId: act.dataset.section, componentId: act.dataset.component }; ui.tab = "component"; return render(); }
+          if (a === "remove") {
+            const hit = findComponent(ui.selected);
+            if (hit) hit.section.components.splice(hit.section.components.indexOf(hit.component), 1);
+            ui.selected = null;
+            ui.drawer = ui.drawer === "component" ? "none" : ui.drawer;
+            return render();
+          }
+          if (a === "drawer") { ui.drawer = ui.drawer === act.dataset.mode ? "none" : act.dataset.mode; ui.selected = null; return render(); }
+          if (a === "close-drawer") { ui.drawer = "none"; ui.selected = null; return render(); }
+          if (a === "open-chat") { ui.chatOpen = true; return render(); }
+          if (a === "close-chat") { ui.chatOpen = false; return render(); }
+          if (a === "fold") { const id = act.dataset.section; ui.folded[id] = !ui.folded[id]; return render(); }
+          if (a === "pick") { const id = act.dataset.section; ui.picked[id] = !ui.picked[id]; return render(); }
+        }
+
+        if (cell) {
+          ui.selected = { sectionId: cell.dataset.section, componentId: cell.dataset.component };
+          if (ui.variant === "B") ui.drawer = "component";
+          if (ui.variant === "A") ui.tab = "component";
+          render();
+        }
+      });
+
+      app.addEventListener("submit", (e) => {
+        if (!e.target.closest('[data-action="ask"]')) return;
+        e.preventDefault();
+        const text = ui.draft.trim();
+        if (!text) return;
+        turns.push({
+          q: text,
+          a: "（原型不接模型）这一轮只演示分步呈现与定向增量修改的交互形态：未提及的设置保持不变。",
+          candidates: [],
+          scope: { domain: "运营分析", metric: "Tokens消耗量", temporary: false, time: "2026-11（月）", filters: "沿用上一轮", grain: "月" },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "沿用上一轮：运营分析", ms: 40 },
+            { k: "executing", label: "真实执行", detail: "DQE 仿真", ms: 760 },
+            { k: "document", label: "定向增量修改", detail: "未提及的设置保持不变", ms: 110 }
+          ],
+          section: "region"
+        });
+        ui.draft = "";
+        ui.chatOpen = true;
+        render();
+      });
+
+      // 输入类改动不整页重渲染，避免打断输入焦点：只改模型 + 局部更新画布。
+      app.addEventListener("input", (e) => {
+        const f = e.target.dataset.field;
+        if (!f) return;
+        if (f === "draft") { ui.draft = e.target.value; return; }
+        const hit = findComponent(ui.selected);
+        if (!hit) return;
+        if (f === "title") {
+          hit.component.title = e.target.value;
+          const head = app.querySelector(`[data-component="${hit.component.id}"] .cell-head h4`);
+          if (head) head.textContent = e.target.value;
+        }
+        if (f === "span") {
+          hit.component.span = +e.target.value;
+          const cell = app.querySelector(`[data-component="${hit.component.id}"]`);
+          if (cell) cell.style.setProperty("--span", hit.component.span);
+          const lb = e.target.closest("label").querySelector("b");
+          if (lb) lb.textContent = `${hit.component.span}/12`;
+        }
+      });
+
+      app.addEventListener("change", (e) => {
+        if (e.target.dataset.field !== "source") return;
+        const hit = findComponent(ui.selected);
+        if (!hit) return;
+        hit.component.source = e.target.value;
+        render();
+      });
+
+      // 拖拽换位
+      let dragging = null;
+      app.addEventListener("dragstart", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell) return;
+        dragging = { sectionId: cell.dataset.section, componentId: cell.dataset.component };
+        cell.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", cell.dataset.component);
+      });
+      app.addEventListener("dragover", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell || !dragging) return;
+        e.preventDefault();
+        app.querySelectorAll(".dropbefore").forEach((n) => n.classList.remove("dropbefore"));
+        cell.classList.add("dropbefore");
+      });
+      app.addEventListener("drop", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell || !dragging) return;
+        e.preventDefault();
+        const from = findComponent(dragging);
+        const toSection = doc.sections.find((s) => s.id === cell.dataset.section);
+        if (from && toSection) {
+          from.section.components.splice(from.section.components.indexOf(from.component), 1);
+          const at = toSection.components.findIndex((c) => c.id === cell.dataset.component);
+          toSection.components.splice(at < 0 ? toSection.components.length : at, 0, from.component);
+          ui.selected = { sectionId: toSection.id, componentId: from.component.id };
+        }
+        dragging = null;
+        render();
+      });
+      app.addEventListener("dragend", () => {
+        dragging = null;
+        app.querySelectorAll(".dragging,.dropbefore").forEach((n) => n.classList.remove("dragging", "dropbefore"));
+      });
+
+      window.addEventListener("keydown", (e) => {
+        if (e.key !== "ArrowLeft" && e.key !== "ArrowRight" && e.key !== "Escape") return;
+        const t = document.activeElement;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+        if (e.key === "Escape") {
+          ui.chatOpen = false;
+          ui.drawer = "none";
+          ui.selected = null;
+          return render();
+        }
+        e.preventDefault();
+        setVariant(e.key === "ArrowLeft" ? -1 : 1);
+      });
+
+      render();
+    </script>
+  </body>
+</html>

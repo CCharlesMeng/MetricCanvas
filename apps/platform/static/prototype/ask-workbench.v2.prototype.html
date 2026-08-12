@@ -1,0 +1,974 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas 问数工作台 · 原型 v2</title>
+    <!--
+      原型 v2，用后即弃。在 v1 变体 A（三栏）之上补四件事：
+      1) 显式工作流：数据发现 → 查询与试算 → 页面布局 → 数据绑定 → 校验与草稿
+      2) 只能保存草稿；发布形态（报告 / Data App / 模板）是草稿之后的独立决策
+      3) 模板：套用只改布局，不动数据绑定
+      4) 组件按数据形状推荐，换组件不换数据；不满足硬闸的形态置灰并给出原因
+      自包含：无构建、无依赖、无网络、无持久化。
+    -->
+    <style>
+      :root {
+        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7; --line-soft: #f4f4f5;
+        --text: #18181b; --muted: #71717a; --faint: #a1a1aa;
+        --accent: #4f46e5; --accent-soft: #eef2ff;
+        --warn-bg: #fffbeb; --warn-line: #fde68a; --warn-text: #92400e;
+        --ok: #16a34a; --down: #dc2626;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        margin: 0; color: var(--text); background: var(--bg); font-size: 13px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      button, input, select, textarea { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      h1,h2,h3,h4,p,dl,dd,ol,ul { margin: 0; }
+      ol, ul { padding: 0; list-style: none; }
+      code { font-size: 12px; color: #52525b; }
+
+      .topbar { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
+      .topbar b { color: #fff; font-size: 14px; }
+      .topbar > span { color: #a1a1aa; }
+      .topbar .who { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+      .topbar .avatar { display: grid; width: 24px; height: 24px; place-items: center; color: #fff; background: var(--accent); border-radius: 999px; font-size: 11px; }
+      #app { height: calc(100% - 54px); }
+
+      .eyebrow { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .chip { padding: 2px 8px; color: #52525b; background: var(--line-soft); border-radius: 999px; font-size: 11px; }
+      .badge { padding: 3px 9px; color: #3730a3; background: var(--accent-soft); border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .warn-pill { padding: 2px 8px; color: var(--warn-text); background: #fef3c7; border-radius: 999px; font-size: 10.5px; }
+      .btn { padding: 7px 13px; background: #fff; border: 1px solid #d4d4d8; border-radius: 9px; font-size: 12.5px; font-weight: 600; }
+      .btn:hover:not(:disabled) { border-color: var(--faint); }
+      .btn.primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+      .btn.sm { padding: 5px 10px; font-size: 11.5px; font-weight: 500; }
+      .btn.block { width: 100%; }
+      .btn.dashed { border-style: dashed; color: #52525b; font-weight: 500; }
+      .btn.danger { color: #b91c1c; border-color: #fecaca; font-weight: 500; }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+      .field { display: grid; gap: 6px; }
+      .field > span { color: #52525b; font-size: 11.5px; }
+      .field input, .field select { width: 100%; height: 32px; padding: 0 9px; background: #fff; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 12.5px; }
+      .field input[type=range] { padding: 0; border: 0; accent-color: var(--accent); }
+      input:focus-visible, select:focus-visible, textarea:focus-visible { border-color: var(--accent); outline: 2px solid rgb(79 70 229 / .16); }
+      .muted { color: var(--muted); }
+      .faint { color: var(--faint); }
+      .note { color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+
+      /* ---------- 三栏 ---------- */
+      .shell { display: grid; grid-template-columns: 330px minmax(0,1fr) 330px; height: 100%; }
+      .shell > aside { display: flex; flex-direction: column; min-width: 0; background: var(--surface); }
+      .chat { border-right: 1px solid var(--line); }
+      .inspector { border-left: 1px solid var(--line); }
+      main { display: flex; flex-direction: column; min-width: 0; }
+
+      /* ---------- 左：对话 ---------- */
+      .chat > header { display: flex; align-items: flex-start; justify-content: space-between; padding: 18px 18px 14px; border-bottom: 1px solid var(--line-soft); }
+      .chat h2 { margin-top: 4px; font-size: 16px; }
+      .thread { display: flex; flex: 1; flex-direction: column; gap: 14px; padding: 16px 18px; overflow-y: auto; }
+      .ask-bubble { align-self: flex-end; max-width: 88%; padding: 8px 12px; color: #fff; background: var(--accent); border-radius: 12px 12px 3px 12px; line-height: 1.6; }
+      .reply p { line-height: 1.7; }
+      .candidates { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .candidates > p { margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+      .candidates label { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; cursor: pointer; }
+      .candidates label span { display: grid; gap: 2px; }
+      .candidates b { font-size: 12.5px; }
+      .candidates small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+      .candidates input:checked + span b { color: var(--accent); }
+      .scope { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .scope.temporary { background: var(--warn-bg); border-color: var(--warn-line); }
+      .scope-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+      .scope dl { display: grid; gap: 5px; }
+      .scope dl > div { display: grid; grid-template-columns: 40px minmax(0,1fr); gap: 8px; }
+      .scope dt { color: var(--faint); font-size: 11px; }
+      .scope dd { font-size: 12px; line-height: 1.45; }
+      .steps { display: grid; gap: 2px; }
+      .steps li { display: grid; grid-template-columns: 16px minmax(0,1fr) auto; gap: 8px; align-items: baseline; padding: 3px 0; }
+      .steps .ico { color: var(--faint); font-size: 11px; }
+      .steps b { font-size: 12px; }
+      .steps small, .steps .ms { color: var(--faint); font-size: 11px; }
+      .steps .t { display: grid; gap: 1px; }
+      .linkish { padding: 0; color: #6366f1; background: none; border: 0; font-size: 11.5px; }
+      .gapcard { padding: 12px; background: var(--warn-bg); border: 1px solid var(--warn-line); border-radius: 11px; }
+      .gapcard h4 { display: flex; align-items: center; gap: 8px; color: var(--warn-text); font-size: 12.5px; }
+      .gapcard dl { display: grid; gap: 4px; margin: 8px 0 10px; }
+      .gapcard dl > div { display: grid; grid-template-columns: 62px minmax(0,1fr); gap: 8px; }
+      .gapcard dt { color: #b45309; font-size: 11px; }
+      .gapcard dd { font-size: 12px; line-height: 1.5; }
+      .composer { display: grid; gap: 8px; padding: 14px 18px 16px; border-top: 1px solid var(--line-soft); }
+      .composer textarea { width: 100%; padding: 10px 11px; border: 1px solid #d4d4d8; border-radius: 10px; resize: none; }
+      .composer .btn { justify-self: end; }
+
+      /* ---------- 中：顶栏 + 工作流 + 画布 ---------- */
+      .docbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+      .docbar .l, .docbar .r { display: flex; align-items: center; gap: 10px; }
+      .draftstate { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
+      .draftstate i { width: 6px; height: 6px; border-radius: 999px; background: var(--faint); }
+      .draftstate.saved i { background: var(--ok); }
+      .draftstate.dirty i { background: #f59e0b; }
+
+      .rail { display: flex; align-items: stretch; gap: 0; padding: 0 18px; background: var(--surface); border-bottom: 1px solid var(--line); overflow-x: auto; }
+      .rail button { display: flex; align-items: center; gap: 9px; padding: 11px 16px 11px 0; background: none; border: 0; border-bottom: 2px solid transparent; white-space: nowrap; }
+      .rail button + button { padding-left: 16px; }
+      .rail .n { display: grid; width: 20px; height: 20px; flex: none; place-items: center; color: var(--muted); background: var(--line-soft); border-radius: 999px; font-size: 10.5px; font-weight: 700; }
+      .rail .tx { display: grid; gap: 1px; text-align: left; }
+      .rail .tx b { font-size: 12.5px; font-weight: 600; color: var(--muted); }
+      .rail .tx small { color: var(--faint); font-size: 10.5px; }
+      .rail button.on { border-bottom-color: var(--accent); }
+      .rail button.on .n { color: #fff; background: var(--accent); }
+      .rail button.on .tx b { color: var(--text); font-weight: 700; }
+      .rail button.done .n { color: #fff; background: var(--ok); }
+      .rail button.blocked .n { color: #fff; background: #f59e0b; }
+      .rail .arrow { display: grid; place-items: center; color: #d4d4d8; font-size: 11px; }
+
+      .scroll { flex: 1; padding: 20px; overflow-y: auto; }
+      .canvas { display: grid; gap: 16px; }
+      .sec-title { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+      .sec-title small { color: var(--faint); font-size: 11px; font-weight: 400; }
+      .grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 12px; }
+      .cell { position: relative; grid-column: span var(--span,12); min-width: 0; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; transition: border-color .12s, box-shadow .12s; }
+      .cell:hover { border-color: rgb(79 70 229 / .45); }
+      .cell.selected { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(79 70 229 / .16); }
+      .cell.dragging { opacity: .4; }
+      .cell.dropbefore { box-shadow: -3px 0 0 0 var(--accent); }
+      .cell-head { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+      .cell-head h4 { font-size: 12.5px; font-weight: 650; }
+      .cell-head .grab { color: #d4d4d8; cursor: grab; font-size: 12px; }
+      .cell.selected .cell-head .grab { color: var(--accent); }
+      .cell.untried::after { content: "未试算"; position: absolute; top: 10px; right: 12px; padding: 1px 7px; color: var(--warn-text); background: #fef3c7; border-radius: 999px; font-size: 10px; }
+
+      .kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+      .kpi-sub { display: flex; align-items: baseline; gap: 8px; margin-top: 6px; }
+      .delta { font-size: 12px; font-weight: 650; }
+      .delta.up { color: var(--ok); }
+      .delta.down { color: var(--down); }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 7px 8px; border-bottom: 1px solid var(--line-soft); text-align: right; font-size: 12px; white-space: nowrap; }
+      th { color: var(--muted); font-weight: 600; font-size: 11px; }
+      th:first-child, td:first-child { text-align: left; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .rank li { display: grid; grid-template-columns: 16px minmax(0,1fr) auto; gap: 8px; align-items: center; padding: 5px 0; }
+      .rank .no { color: var(--faint); font-size: 11px; }
+      .rank .row2 { display: grid; gap: 4px; min-width: 0; }
+      .rank .nm { font-size: 12px; }
+      .rank .bar { position: relative; height: 6px; background: var(--line-soft); border-radius: 999px; }
+      .rank .bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 999px; }
+      .rank .bar.neg i { background: #f87171; }
+      .rank .vl { font-size: 11.5px; color: var(--muted); }
+      .prose { color: #3f3f46; font-size: 12.5px; line-height: 1.75; }
+      .report-header h3 { font-size: 17px; letter-spacing: -.01em; }
+      .report-header p { margin-top: 4px; color: var(--muted); font-size: 12px; }
+      .report-header .chips { display: flex; gap: 6px; margin-top: 10px; }
+
+      /* ---------- 右：阶段面板 ---------- */
+      .inspector > header { padding: 14px 16px; border-bottom: 1px solid var(--line); }
+      .inspector > header b { font-size: 13px; }
+      .inspector > header p { margin-top: 3px; color: var(--faint); font-size: 11px; }
+      .selbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 9px 16px; background: #fafaff; border-bottom: 1px solid var(--line); }
+      .selbar .who { display: grid; gap: 1px; min-width: 0; }
+      .selbar b { font-size: 12px; }
+      .selbar small { color: var(--faint); font-size: 10.5px; }
+      .panel { display: flex; flex: 1; flex-direction: column; gap: 14px; padding: 16px; overflow-y: auto; }
+      .panel h5 { color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+      .search { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border: 1px solid #d4d4d8; border-radius: 9px; }
+      .search input { flex: 1; min-width: 0; border: 0; outline: none; background: none; font-size: 12.5px; }
+      .mlist { display: grid; gap: 6px; }
+      .mlist li { padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
+      .mlist li.on { border-color: var(--accent); background: #fafaff; }
+      .mlist .r1 { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .mlist b { font-size: 12.5px; }
+      .mlist .def { margin-top: 4px; color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+      .mlist .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
+      .mlist .tags span { padding: 1px 7px; background: var(--line-soft); border-radius: 5px; color: #52525b; font-size: 10.5px; }
+      .kv { display: grid; gap: 6px; }
+      .kv > div { display: grid; grid-template-columns: 58px minmax(0,1fr); gap: 8px; }
+      .kv dt { color: var(--faint); font-size: 11px; }
+      .kv dd { font-size: 12px; line-height: 1.5; }
+      .trial { padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; }
+      .trial.ok { border-color: #bbf7d0; background: #f0fdf4; }
+      .trial.none { border-style: dashed; }
+      .trial .r1 { display: flex; align-items: center; justify-content: space-between; }
+      .contract th, .contract td { padding: 5px 6px; font-size: 11px; }
+      .tpl { display: grid; gap: 8px; }
+      .tpl li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px; border: 1px solid var(--line); border-radius: 10px; }
+      .tpl li.on { border-color: var(--accent); background: #fafaff; }
+      .tpl .m { display: grid; gap: 2px; min-width: 0; }
+      .tpl b { font-size: 12.5px; }
+      .tpl small { color: var(--muted); font-size: 11px; }
+      .types { display: flex; flex-wrap: wrap; gap: 6px; }
+      .types button { display: flex; align-items: center; gap: 6px; padding: 6px 10px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: 12px; }
+      .types button.on { color: #fff; background: var(--accent); border-color: var(--accent); }
+      .types button.rec:not(.on) { border-color: #a5b4fc; color: #4338ca; }
+      .types button:disabled { color: var(--faint); background: #fafafa; border-style: dashed; cursor: not-allowed; }
+      .types .star { font-size: 9px; }
+      .binding { display: grid; gap: 6px; }
+      .binding li { display: grid; grid-template-columns: 54px minmax(0,1fr); gap: 8px; align-items: center; padding: 7px 9px; border: 1px solid var(--line); border-radius: 9px; font-size: 12px; }
+      .binding .slot { color: var(--faint); font-size: 11px; }
+      .checks { display: grid; gap: 6px; }
+      .checks li { display: grid; grid-template-columns: 16px minmax(0,1fr); gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; line-height: 1.5; }
+      .checks li:last-child { border-bottom: 0; }
+      .checks .m { color: var(--ok); }
+      .checks .w { color: #d97706; }
+      .checks .x { color: var(--down); }
+      .checks small { display: block; color: var(--faint); font-size: 11px; }
+      .revlist li { display: flex; align-items: center; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--line-soft); font-size: 12px; }
+      .revlist li:last-child { border-bottom: 0; }
+      .srclist { display: grid; gap: 6px; }
+      .srclist li { padding: 9px 10px; border: 1px solid var(--line); border-radius: 9px; }
+      .srclist .r { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+      .srclist b { font-size: 12.5px; }
+      .srclist small { color: var(--faint); font-size: 11px; }
+
+      /* ---------- 发布弹层 / toast ---------- */
+      .pop-wrap { position: relative; }
+      .pop { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; width: 320px; padding: 8px; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 16px 40px rgb(24 24 27 / .16); }
+      .pop h6 { padding: 8px 10px 6px; color: var(--faint); font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+      .pop button { display: grid; width: 100%; gap: 2px; padding: 9px 10px; background: none; border: 0; border-radius: 9px; text-align: left; }
+      .pop button:hover:not(:disabled) { background: #fafafa; }
+      .pop button:disabled { cursor: not-allowed; }
+      .pop b { font-size: 12.5px; }
+      .pop small { color: var(--muted); font-size: 11px; line-height: 1.5; }
+      .pop button:disabled small { color: #d97706; }
+      .toast { position: fixed; bottom: 22px; left: 50%; z-index: 90; padding: 9px 16px; color: #fafafa; background: #18181b; border-radius: 999px; box-shadow: 0 10px 30px rgb(9 9 11 / .3); font-size: 12.5px; transform: translateX(-50%); }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>MetricCanvas</b>
+      <span>问数工作台 · 原型 v2</span>
+      <div class="who"><span class="avatar">孟</span><span>孟宪超</span></div>
+    </div>
+    <div id="app"></div>
+
+    <script>
+      /* ================= 1. 内存模型 ================= */
+
+      const money = (n) => (n >= 1e8 ? (n / 1e8).toFixed(2) + " 亿" : n >= 1e4 ? (n / 1e4).toFixed(0) + " 万" : String(n));
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const delta = (v) => `<span class="delta ${v >= 0 ? "up" : "down"}">${v >= 0 ? "▲" : "▼"} ${Math.abs(v).toFixed(1)}%</span>`;
+
+      // 指标条目：发现层的锚点（业务名 / 别名 / 口径 / 单位 / 可加性 / 域）
+      const METRICS = [
+        { name: "Tokens消耗量", alias: ["消耗量", "用量"], def: "含推理与训练的 Token 总量", unit: "Token", add: "可加", domain: "运营分析", picked: true },
+        { name: "计费Tokens量", alias: ["计费量"], def: "仅计费部分，排除内部试用额度", unit: "Token", add: "可加", domain: "运营分析" },
+        { name: "Tokens请求量", alias: ["调用次数"], def: "按请求计数，不是 Token 计数", unit: "次", add: "可加", domain: "运营分析" },
+        { name: "在用客户数", alias: ["活跃客户"], def: "期间内有过调用的客户数", unit: "家", add: "不可加", domain: "客户经营" }
+      ];
+
+      const SOURCES = {
+        "consumption-overview": { kind: "inline", dims: [], measures: ["消耗Tokens", "环比"], time: null, tried: true,
+          rows: [{ 消耗Tokens: 128400000, 环比: 8.4 }] },
+        "billing-overview": { kind: "inline", dims: [], measures: ["计费Tokens", "环比"], time: null, tried: true,
+          rows: [{ 计费Tokens: 96400000, 环比: -2.1 }] },
+        "consumption-trend": { kind: "query", dims: ["月份"], measures: ["消耗Tokens", "计费Tokens"], time: "月份", tried: false,
+          rows: [
+            { 月份: "01", 消耗Tokens: 74, 计费Tokens: 55 }, { 月份: "02", 消耗Tokens: 68, 计费Tokens: 52 },
+            { 月份: "03", 消耗Tokens: 83, 计费Tokens: 61 }, { 月份: "04", 消耗Tokens: 91, 计费Tokens: 66 },
+            { 月份: "05", 消耗Tokens: 88, 计费Tokens: 70 }, { 月份: "06", 消耗Tokens: 102, 计费Tokens: 76 },
+            { 月份: "07", 消耗Tokens: 118, 计费Tokens: 84 }, { 月份: "08", 消耗Tokens: 109, 计费Tokens: 88 },
+            { 月份: "09", 消耗Tokens: 124, 计费Tokens: 91 }, { 月份: "10", 消耗Tokens: 117, 计费Tokens: 95 },
+            { 月份: "11", 消耗Tokens: 128, 计费Tokens: 96 }
+          ] },
+        "region-distribution": { kind: "query", dims: ["区域"], measures: ["消耗Tokens", "占比", "环比"], time: null, tried: false,
+          rows: [
+            { 区域: "华东", 消耗Tokens: 44700000, 占比: 34.8, 环比: 2.1 },
+            { 区域: "华南", 消耗Tokens: 27600000, 占比: 21.5, 环比: -6.3 },
+            { 区域: "华北", 消耗Tokens: 21300000, 占比: 16.6, 环比: 4.8 },
+            { 区域: "西南", 消耗Tokens: 14100000, 占比: 11.0, 环比: 1.2 },
+            { 区域: "华中", 消耗Tokens: 10800000, 占比: 8.4, 环比: -1.7 },
+            { 区域: "东北", 消耗Tokens: 6200000, 占比: 4.8, 环比: 0.4 },
+            { 区域: "西北", 消耗Tokens: 3700000, 占比: 2.9, 环比: 3.6 }
+          ] },
+        "model-distribution": { kind: "query", dims: ["模型"], measures: ["调用次数", "消耗Tokens", "占比"], time: null, tried: false,
+          rows: [
+            { 模型: "DeepSeek-V4-Pro", 调用次数: 1284000, 消耗Tokens: 61200000, 占比: 47.7 },
+            { 模型: "DeepSeek-V4", 调用次数: 2140000, 消耗Tokens: 38400000, 占比: 29.9 },
+            { 模型: "Embedding-L", 调用次数: 4820000, 消耗Tokens: 19600000, 占比: 15.3 },
+            { 模型: "Rerank-M", 调用次数: 1960000, 消耗Tokens: 9200000, 占比: 7.1 }
+          ] },
+        "customer-growth": { kind: "query", dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
+          rows: [
+            { 客户名称: "XX客户名称012", 消耗Tokens: 8600000, 环比: 62.4 },
+            { 客户名称: "XX客户名称047", 消耗Tokens: 7200000, 环比: 48.1 },
+            { 客户名称: "XX客户名称003", 消耗Tokens: 5400000, 环比: 39.6 },
+            { 客户名称: "XX客户名称128", 消耗Tokens: 4100000, 环比: 27.3 },
+            { 客户名称: "XX客户名称066", 消耗Tokens: 3300000, 环比: 18.9 }
+          ] },
+        "customer-decline": { kind: "query", dims: ["客户名称"], measures: ["消耗Tokens", "环比"], time: null, tried: false,
+          rows: [
+            { 客户名称: "XX客户名称021", 消耗Tokens: 6900000, 环比: -41.2 },
+            { 客户名称: "XX客户名称090", 消耗Tokens: 5100000, 环比: -33.7 },
+            { 客户名称: "XX客户名称014", 消耗Tokens: 4600000, 环比: -25.4 },
+            { 客户名称: "XX客户名称152", 消耗Tokens: 2800000, 环比: -19.8 },
+            { 客户名称: "XX客户名称073", 消耗Tokens: 1900000, 环比: -11.5 }
+          ] }
+      };
+      const fieldsOf = (n) => (SOURCES[n] ? SOURCES[n].dims.concat(SOURCES[n].measures) : []);
+
+      const doc = {
+        id: "tmp-session-8f2c",
+        sections: [
+          { id: "summary", title: "数据摘要", components: [
+            { id: "hdr", type: "reportHeader", title: "Tokens 运营概览", span: 12, source: null },
+            { id: "note", type: "text", title: "分析结论", span: 12, source: null } ] },
+          { id: "consumption", title: "消耗概况", components: [
+            { id: "kpi-consume", type: "metricCard", title: "本月消耗 Tokens", span: 3, source: "consumption-overview" },
+            { id: "kpi-billing", type: "metricCard", title: "本月计费 Tokens", span: 3, source: "billing-overview" },
+            { id: "trend", type: "lineChart", title: "消耗与计费趋势", span: 6, source: "consumption-trend" } ] },
+          { id: "region", title: "区域分布", components: [
+            { id: "region-bar", type: "barChart", title: "各区域消耗占比", span: 5, source: "region-distribution" },
+            { id: "region-table", type: "table", title: "区域明细", span: 7, source: "region-distribution" } ] },
+          { id: "customer", title: "客户与模型", components: [
+            { id: "model-table", type: "table", title: "模型分布", span: 4, source: "model-distribution" },
+            { id: "growth", type: "rankingCard", title: "增长 Top 5", span: 4, source: "customer-growth" },
+            { id: "decline", type: "rankingCard", title: "下降 Top 5", span: 4, source: "customer-decline" } ] }
+        ]
+      };
+
+      // 布局模板：只描述分区与栅格，不携带数据绑定
+      const TEMPLATES = [
+        { id: "ops-overview", name: "经营概览", desc: "指标卡并排 + 趋势 + 构成与明细", plan: [3, 3, 6, 5, 7, 4, 4, 4] },
+        { id: "wide-first", name: "宽图优先", desc: "趋势通栏，指标卡收窄，明细在下", plan: [12, 12, 4, 4, 4, 12, 6, 6] },
+        { id: "brief", name: "简报", desc: "两栏对照，适合发出去的报告", plan: [6, 6, 6, 6, 6, 6, 6, 6] },
+        { id: "dense", name: "密排", desc: "四栏密排，适合大屏值班看板", plan: [3, 3, 3, 3, 3, 3, 3, 3] }
+      ];
+
+      // 组件能力目录：硬闸 + 推荐意图
+      const CAPS = {
+        metricCard: { label: "指标卡", ok: (s) => s.rows === 1 && s.measures >= 1, why: "需要单行结果", intent: "单值" },
+        lineChart: { label: "折线图", ok: (s) => !!s.time && s.rows >= 3, why: "需要时间维度且至少 3 期", intent: "趋势" },
+        barChart: { label: "柱状图", ok: (s) => s.dims >= 1 && s.measures >= 1 && s.rows > 1 && s.rows <= 20, why: "需要 1 个维度、行数 2–20", intent: "构成" },
+        rankingCard: { label: "排行卡", ok: (s) => s.dims >= 1 && s.measures >= 1 && s.rows > 1 && s.rows <= 20, why: "需要 1 个维度、行数 2–20", intent: "排名" },
+        table: { label: "表格", ok: () => true, why: "", intent: "明细" }
+      };
+      const NO_DATA_TYPES = ["reportHeader", "text"];
+
+      function shapeOf(name) {
+        const s = SOURCES[name];
+        if (!s) return null;
+        return { dims: s.dims.length, measures: s.measures.length, rows: s.rows.length, time: s.time };
+      }
+      function typeOptions(name) {
+        const shape = shapeOf(name);
+        if (!shape) return [];
+        const list = Object.entries(CAPS).map(([type, cap]) => ({ type, label: cap.label, intent: cap.intent, ok: cap.ok(shape), why: cap.why }));
+        const rank = (o) => (!o.ok ? 9 : shape.time && o.type === "lineChart" ? 0 : shape.rows === 1 && o.type === "metricCard" ? 0 : o.type === "barChart" ? 1 : o.type === "rankingCard" ? 2 : 3);
+        return list.sort((a, b) => rank(a) - rank(b)).map((o, i) => ({ ...o, rec: i === 0 && o.ok }));
+      }
+
+      const STEP_ICON = { routed: "◎", candidates: "⋔", scope: "⌘", executing: "↻", rows: "▤", document: "◱", gap: "⚑" };
+
+      const turns = [
+        { q: "各区域的 Tokens 消耗和环比变化怎么样？",
+          a: "华东区消耗占 34.8%、环比 +2.1pt，是唯一同时保持规模与增长的区域；华南区绝对量第二，但环比 −6.3pt，是本月唯一双位数下滑。",
+          candidates: [
+            { name: "Tokens消耗量", note: "含推理与训练，公司口径", chosen: true },
+            { name: "计费Tokens量", note: "仅计费部分，排除内部试用", chosen: false },
+            { name: "Tokens请求量", note: "按请求计数，不是 Token 计数", chosen: false } ],
+          scope: { domain: "运营分析", metric: "Tokens消耗量 ÷ 期间总消耗量", temporary: true, time: "2026-11（月）", filters: "区域 = 全部", grain: "月" },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "运营分析（置信度中，可改）", ms: 210 },
+            { k: "candidates", label: "指标候选", detail: "命中 3 个近义指标，已选「Tokens消耗量」", ms: 640 },
+            { k: "scope", label: "口径确认", detail: "含自由生成表达式，已等待确认", ms: 0 },
+            { k: "executing", label: "真实执行", detail: "DQE 仿真 · 2 个查询", ms: 1180 },
+            { k: "rows", label: "结果就绪", detail: "7 行 · 4 个字段", ms: 90 },
+            { k: "document", label: "页面文档就绪", detail: "意图=构成 · 柱状 + 表格", ms: 150 } ] },
+        { q: "各区域的活跃客户数呢？",
+          a: "这个口径当前没有对应指标。最接近的是「在用客户数」，但它按有过调用统计，不含活跃度阈值——我先用它给了一个参考值，并把缺口记下来了。",
+          candidates: [],
+          scope: { domain: "客户经营", metric: "在用客户数（近似替代）", temporary: true, time: "2026-11（月）", filters: "区域 = 全部", grain: "月" },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "客户经营", ms: 180 },
+            { k: "candidates", label: "指标检索", detail: "「活跃客户数」无命中，最接近「在用客户数」", ms: 520 },
+            { k: "gap", label: "指标缺口", detail: "已登记为需求条目，出现 3 次", ms: 0 } ],
+          gap: { wanted: "活跃客户数", closest: "在用客户数", diff: "在用 = 期间有过调用；活跃需要调用频次阈值，数据侧尚未建设", count: 3 } }
+      ];
+
+      /* ================= 2. UI 状态 ================= */
+
+      const STAGES = [
+        { id: "discover", name: "数据发现", hint: "检索指标与维度、消歧、登记缺口" },
+        { id: "verify", name: "查询与试算", hint: "生成查询定义并真实执行验真" },
+        { id: "layout", name: "页面布局", hint: "按数据形状选组件并排布" },
+        { id: "bind", name: "数据绑定", hint: "字段绑定与展示格式" },
+        { id: "draft", name: "校验与草稿", hint: "页面校验，保存草稿" }
+      ];
+
+      const ui = {
+        stage: "discover",
+        selected: null,
+        chatDraft: "",
+        openSteps: null,
+        gapStatus: "open", // open | submitted
+        gapTicket: "",
+        template: null,
+        drafts: [], // [{rev, at, note}]
+        dirty: true,
+        publishOpen: false,
+        toast: "",
+        query: ""
+      };
+
+      const triedCount = () => Object.values(SOURCES).filter((s) => s.tried).length;
+      const allTried = () => Object.values(SOURCES).every((s) => s.tried);
+      const savedRev = () => (ui.drafts.length ? ui.drafts[ui.drafts.length - 1].rev : 0);
+
+      function stageStatus(id) {
+        if (id === "discover") return ui.gapStatus === "open" ? "blocked" : "done";
+        if (id === "verify") return allTried() ? "done" : triedCount() > 2 ? "" : "";
+        if (id === "layout") return ui.template ? "done" : "";
+        if (id === "bind") return allTried() ? "done" : "";
+        if (id === "draft") return savedRev() ? "done" : "";
+        return "";
+      }
+
+      /* ================= 3. 画布渲染 ================= */
+
+      function renderBody(c) {
+        const src = c.source ? SOURCES[c.source] : null;
+        const rows = src ? src.rows : [];
+        switch (c.type) {
+          case "reportHeader":
+            return `<div class="report-header"><h3>${esc(c.title)}</h3>
+              <p>覆盖 7 个区域、4 个模型、153 家在用客户，数据截至 2026-11-30</p>
+              <div class="chips"><span class="chip">2026-11</span><span class="chip">月粒度</span><span class="chip">运营分析</span></div></div>`;
+          case "text":
+            return `<p class="prose">本月 Tokens 总消耗 1.28 亿，环比 +8.4%；计费 9,640 万，环比 −2.1%——背离来自内部试用额度的一次性释放。华东继续扩大领先，华南需要单独看客户级下滑原因。</p>`;
+          case "metricCard": {
+            const r = rows[0] || {};
+            const key = Object.keys(r).find((k) => k !== "环比");
+            return `<div><div class="kpi-value">${money(r[key] || 0)}</div>
+              <div class="kpi-sub">${delta(r["环比"] || 0)}<span class="faint" style="font-size:11px">对比 2026-10</span></div></div>`;
+          }
+          case "lineChart": {
+            const w = 560, h = 170, pad = 8;
+            const keys = src.measures.slice(0, 2);
+            const max = Math.max(...rows.flatMap((r) => keys.map((k) => Number(r[k]) || 0))) * 1.15 || 1;
+            const x = (i) => pad + (i * (w - pad * 2)) / Math.max(1, rows.length - 1);
+            const y = (v) => h - pad - ((Number(v) || 0) / max) * (h - pad * 2);
+            const line = (k, color, fill) => {
+              const pts = rows.map((r, i) => `${x(i)},${y(r[k])}`).join(" ");
+              return `${fill ? `<polygon points="${pad},${h - pad} ${pts} ${x(rows.length - 1)},${h - pad}" fill="${color}" opacity=".08" />` : ""}
+                <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" />`;
+            };
+            return `<div><svg viewBox="0 0 ${w} ${h}" style="width:100%;height:170px;display:block">
+              ${[0.25, 0.5, 0.75].map((p) => `<line x1="${pad}" x2="${w - pad}" y1="${h * p}" y2="${h * p}" stroke="#f1f1f4" />`).join("")}
+              ${line(keys[0], "#4f46e5", true)}${keys[1] ? line(keys[1], "#a1a1aa", false) : ""}</svg>
+              <div style="display:flex;gap:14px;margin-top:6px;color:var(--muted);font-size:11px">
+                ${keys.map((k, i) => `<span style="display:flex;align-items:center;gap:5px"><i style="width:8px;height:8px;background:${i ? "#a1a1aa" : "#4f46e5"};border-radius:2px;display:inline-block"></i>${esc(k)}</span>`).join("")}
+              </div></div>`;
+          }
+          case "barChart": {
+            const dim = src.dims[0], m = src.measures.find((x) => x === "占比") || src.measures[0];
+            const max = Math.max(...rows.map((r) => Number(r[m]) || 0)) || 1;
+            return `<ul class="rank">${rows.map((r) => `<li><span class="no"></span>
+              <span class="row2"><span class="nm">${esc(r[dim])}</span>
+              <span class="bar"><i style="width:${((Number(r[m]) || 0) / max) * 100}%"></i></span></span>
+              <span class="vl">${m === "占比" ? Number(r[m]).toFixed(1) + "%" : money(r[m])}</span></li>`).join("")}</ul>`;
+          }
+          case "table": {
+            const cols = fieldsOf(c.source);
+            return `<div style="overflow-x:auto"><table>
+              <thead><tr>${cols.map((k) => `<th>${esc(k)}</th>`).join("")}</tr></thead>
+              <tbody>${rows.map((r) => `<tr>${cols.map((k) => {
+                const v = r[k];
+                if (k === "环比") return `<td>${delta(v)}</td>`;
+                if (k === "占比") return `<td>${Number(v).toFixed(1)}%</td>`;
+                if (typeof v === "number") return `<td>${v >= 1e6 ? money(v) : v.toLocaleString()}</td>`;
+                return `<td>${esc(v)}</td>`;
+              }).join("")}</tr>`).join("")}</tbody></table></div>`;
+          }
+          case "rankingCard": {
+            const dim = src.dims[0], m = src.measures.includes("环比") ? "环比" : src.measures[0];
+            const max = Math.max(...rows.map((r) => Math.abs(Number(r[m]) || 0))) || 1;
+            const neg = rows.some((r) => Number(r[m]) < 0);
+            return `<ul class="rank">${rows.map((r, i) => `<li><span class="no">${i + 1}</span>
+              <span class="row2"><span class="nm">${esc(r[dim])}</span>
+              <span class="bar ${neg ? "neg" : ""}"><i style="width:${(Math.abs(Number(r[m])) / max) * 100}%"></i></span></span>
+              <span class="vl">${m === "环比" ? delta(r[m]) : money(r[m])}</span></li>`).join("")}</ul>`;
+          }
+          default:
+            return `<p class="prose">未知组件 ${esc(c.type)}</p>`;
+        }
+      }
+
+      function renderCanvas() {
+        return `<div class="canvas">${doc.sections.map((s) => `<section>
+          <div class="sec-title">${esc(s.title)}<small>${s.components.length} 个组件</small></div>
+          <div class="grid">${s.components.map((c) => {
+            const on = ui.selected && ui.selected.sectionId === s.id && ui.selected.componentId === c.id;
+            const untried = c.source && !SOURCES[c.source].tried;
+            const head = c.type === "reportHeader" ? "" :
+              `<div class="cell-head"><h4>${esc(c.title)}</h4><span class="grab" draggable="true">⠿</span></div>`;
+            return `<div class="cell ${on ? "selected" : ""} ${untried ? "untried" : ""}" style="--span:${c.span}"
+              data-cell data-section="${s.id}" data-component="${c.id}" draggable="true">${head}${renderBody(c)}</div>`;
+          }).join("")}</div></section>`).join("")}</div>`;
+      }
+
+      /* ================= 4. 左栏 ================= */
+
+      function scopeCard(t) {
+        return `<div class="scope ${t.scope.temporary ? "temporary" : ""}">
+          <div class="scope-head"><span>生效口径</span>${t.scope.temporary ? '<span class="warn-pill">临时口径</span>' : ""}</div>
+          <dl>
+            <div><dt>业务域</dt><dd>${esc(t.scope.domain)}</dd></div>
+            <div><dt>指标</dt><dd>${esc(t.scope.metric)}</dd></div>
+            <div><dt>时间</dt><dd>${esc(t.scope.time)} · ${esc(t.scope.grain)}</dd></div>
+            <div><dt>筛选</dt><dd>${esc(t.scope.filters)}</dd></div>
+          </dl></div>`;
+      }
+
+      function gapCard(g) {
+        const done = ui.gapStatus === "submitted";
+        return `<div class="gapcard">
+          <h4>⚑ 指标缺口${done ? `　<span class="chip">已提交 ${esc(ui.gapTicket)}</span>` : `　<span class="warn-pill">出现 ${g.count} 次</span>`}</h4>
+          <dl>
+            <div><dt>想要</dt><dd>${esc(g.wanted)}</dd></div>
+            <div><dt>最接近</dt><dd>${esc(g.closest)}</dd></div>
+            <div><dt>口径差异</dt><dd>${esc(g.diff)}</dd></div>
+          </dl>
+          ${done
+            ? `<p class="note">需求已进入数据侧队列。在它被建设完成前，本页面里这个数字始终标为临时口径。</p>`
+            : `<button class="btn sm" data-action="submit-gap">提交指标需求</button>
+               <p class="note" style="margin-top:8px">提交前先确认口径描述——需求只按你确认的内容登记，不由模型代填。</p>`}
+        </div>`;
+      }
+
+      function chatColumn() {
+        return `<aside class="chat">
+          <header>
+            <div><p class="eyebrow">分析会话</p><h2>Tokens 运营问数</h2></div>
+            <span class="chip">${turns.length} 轮</span>
+          </header>
+          <div class="thread">
+            ${turns.map((t, i) => `
+              <div class="ask-bubble">${esc(t.q)}</div>
+              ${t.candidates.length ? `<div class="candidates"><p>命中 ${t.candidates.length} 个近义指标，口径不同：</p>
+                ${t.candidates.map((c) => `<label><input type="radio" name="cand-${i}" ${c.chosen ? "checked" : ""} />
+                  <span><b>${esc(c.name)}</b><small>${esc(c.note)}</small></span></label>`).join("")}</div>` : ""}
+              <div class="reply">
+                <p>${esc(t.a)}</p>
+                <div style="margin-top:10px">${scopeCard(t)}</div>
+                ${t.gap ? `<div style="margin-top:10px">${gapCard(t.gap)}</div>` : ""}
+                <button class="linkish" data-action="toggle-steps" data-idx="${i}" style="margin-top:8px">
+                  ${ui.openSteps === i ? "收起" : "展开"}执行过程（${t.steps.length} 步）</button>
+                ${ui.openSteps === i ? `<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)">
+                  <ol class="steps">${t.steps.map((s) => `<li><span class="ico">${STEP_ICON[s.k]}</span>
+                    <span class="t"><b>${esc(s.label)}</b><small>${esc(s.detail)}</small></span>
+                    <span class="ms">${s.ms ? s.ms + "ms" : "—"}</span></li>`).join("")}</ol></div>` : ""}
+              </div>`).join("")}
+          </div>
+          <form class="composer" data-action="ask">
+            <textarea rows="2" data-field="chatDraft" placeholder="继续追问：换维度、改筛选、调整展示">${esc(ui.chatDraft)}</textarea>
+            <button class="btn" type="submit">发送</button>
+          </form>
+        </aside>`;
+      }
+
+      /* ================= 5. 中栏：工作流 + 画布 ================= */
+
+      function centerColumn() {
+        const rev = savedRev();
+        const state = rev === 0 ? ["", "未保存草稿"] : ui.dirty ? ["dirty", `草稿 R${rev} · 有未保存改动`] : ["saved", `草稿 R${rev} 已保存`];
+        return `<main>
+          <div class="docbar">
+            <div class="l">
+              <span class="badge">临时页面态</span>
+              <code>${doc.id}</code>
+              <span class="draftstate ${state[0]}"><i></i>${state[1]}</span>
+            </div>
+            <div class="r">
+              <button class="btn" data-action="save-draft" ${allTried() ? "" : "disabled"}>保存草稿</button>
+              <span class="pop-wrap">
+                <button class="btn primary" data-action="toggle-publish" ${rev ? "" : "disabled"}>发布…</button>
+                ${ui.publishOpen ? publishPop() : ""}
+              </span>
+            </div>
+          </div>
+
+          <div class="rail">
+            ${STAGES.map((s, i) => {
+              const st = stageStatus(s.id);
+              return `${i ? '<span class="arrow">›</span>' : ""}
+              <button class="${ui.stage === s.id ? "on" : ""} ${st}" data-action="stage" data-stage="${s.id}">
+                <span class="n">${st === "done" ? "✓" : st === "blocked" ? "!" : i + 1}</span>
+                <span class="tx"><b>${s.name}</b><small>${s.hint}</small></span>
+              </button>`;
+            }).join("")}
+          </div>
+
+          <div class="scroll">${renderCanvas()}</div>
+        </main>`;
+      }
+
+      function publishPop() {
+        const hasTemp = turns.some((t) => t.scope.temporary);
+        const gapOpen = ui.gapStatus === "open";
+        return `<span class="pop">
+          <h6>把这份草稿发布成什么</h6>
+          <button ${gapOpen ? "disabled" : ""} data-action="publish" data-kind="report">
+            <b>报告 · 冻结当前结果</b>
+            <small>${gapOpen ? "指标缺口未提交，先处理缺口" : "保留查询定义与本次结果，内容不再变化，适合发出去"}</small>
+          </button>
+          <button ${hasTemp || gapOpen ? "disabled" : ""} data-action="publish" data-kind="app">
+            <b>Data App · 长期运行</b>
+            <small>${hasTemp ? "含临时口径，需先把口径提为指标或显式接受无人负责" : "时间需改为滚动区间，否则下个月看到的还是本月"}</small>
+          </button>
+          <button data-action="publish" data-kind="template">
+            <b>另存为模板</b>
+            <small>只保留布局与组件形态，不带数据绑定，供他人作为起点</small>
+          </button>
+          <p class="note" style="padding:6px 10px 4px">发布形态是草稿之后的独立决策，随时可改；草稿本身不对外可见。</p>
+        </span>`;
+      }
+
+      /* ================= 6. 右栏：阶段面板 ================= */
+
+      function findComponent(sel) {
+        if (!sel) return null;
+        const s = doc.sections.find((x) => x.id === sel.sectionId);
+        const c = s && s.components.find((x) => x.id === sel.componentId);
+        return c ? { section: s, component: c } : null;
+      }
+
+      function discoverPanel() {
+        const q = ui.query.trim();
+        const hit = METRICS.filter((m) => !q || m.name.includes(q) || m.alias.some((a) => a.includes(q)) || m.def.includes(q));
+        return `
+          <div class="search">🔍<input data-field="query" value="${esc(ui.query)}" placeholder="按业务说法检索：用量 / 活跃客户" /></div>
+          <h5>指标条目 ${hit.length}/${METRICS.length}</h5>
+          <ul class="mlist">
+            ${hit.map((m) => `<li class="${m.picked ? "on" : ""}">
+              <div class="r1"><b>${esc(m.name)}</b>${m.picked ? '<span class="chip" style="color:#3730a3;background:var(--accent-soft)">本轮已选</span>' : ""}</div>
+              <p class="def">${esc(m.def)}</p>
+              <div class="tags"><span>域 ${esc(m.domain)}</span><span>单位 ${esc(m.unit)}</span>
+                <span>${esc(m.add)}</span>${m.alias.map((a) => `<span>别名 ${esc(a)}</span>`).join("")}</div>
+            </li>`).join("")}
+          </ul>
+          <h5>指标缺口</h5>
+          ${ui.gapStatus === "open"
+            ? `<div class="trial" style="border-color:var(--warn-line);background:var(--warn-bg)">
+                <div class="r1"><b style="font-size:12.5px">活跃客户数</b><span class="warn-pill">出现 3 次</span></div>
+                <p class="note" style="margin-top:6px">数据侧没有这个指标。可以先用近似口径出数，但要登记需求。</p>
+                <button class="btn sm" style="margin-top:8px" data-action="submit-gap">提交指标需求</button></div>`
+            : `<div class="trial ok"><div class="r1"><b style="font-size:12.5px">活跃客户数</b><span class="chip">${esc(ui.gapTicket)}</span></div>
+                <p class="note" style="margin-top:6px">已进入数据侧需求队列，状态 open。建成前相关数字保持临时口径标注。</p></div>`}`;
+      }
+
+      function verifyPanel() {
+        const list = Object.entries(SOURCES);
+        return `
+          <h5>查询定义</h5>
+          <dl class="kv">
+            <div><dt>业务域</dt><dd>运营分析</dd></div>
+            <div><dt>指标</dt><dd>Tokens消耗量、计费Tokens量、占比（表达式）</dd></div>
+            <div><dt>维度</dt><dd>区域、模型、客户名称、月份</dd></div>
+            <div><dt>时间</dt><dd>2026-11 · 月粒度 · 绝对区间</dd></div>
+          </dl>
+          <div class="trial ${allTried() ? "ok" : "none"}">
+            <div class="r1"><b style="font-size:12.5px">试算验真</b>
+              <span class="chip">${triedCount()}/${list.length} 已通过</span></div>
+            <p class="note" style="margin-top:6px">${allTried()
+              ? "全部数据源已真实执行，结果字段契约已物化。"
+              : "未试算的数据源不会进入草稿——查询能不能取到数，必须在这里知道，而不是等页面打开。"}</p>
+            <button class="btn sm block" style="margin-top:9px" data-action="run-trial" ${allTried() ? "disabled" : ""}>
+              ${allTried() ? "已全部试算" : "执行试算（全部数据源）"}</button>
+          </div>
+          <h5>数据源与结果</h5>
+          <ul class="srclist">
+            ${list.map(([n, s]) => `<li>
+              <div class="r"><b>${esc(n)}</b>${s.tried ? '<span class="chip" style="color:#166534;background:#f0fdf4">已试算</span>' : '<span class="warn-pill">未试算</span>'}</div>
+              <small>${s.kind} · ${s.rows.length} 行 · ${s.dims.length} 维度 / ${s.measures.length} 度量${s.time ? " · 时间维度 " + s.time : ""}</small>
+            </li>`).join("")}
+          </ul>`;
+      }
+
+      function layoutPanel() {
+        return `
+          <h5>布局模板</h5>
+          <p class="note">套用模板只改分区与栅格，<b>不会改动任何数据绑定</b>。</p>
+          <ul class="tpl">
+            ${TEMPLATES.map((t) => `<li class="${ui.template === t.id ? "on" : ""}">
+              <span class="m"><b>${esc(t.name)}</b><small>${esc(t.desc)}</small></span>
+              <button class="btn sm" data-action="apply-template" data-tpl="${t.id}">${ui.template === t.id ? "重新套用" : "套用"}</button>
+            </li>`).join("")}
+          </ul>
+          <button class="btn sm dashed block" data-action="save-template">把当前布局另存为模板</button>
+          <h5>分区与组件</h5>
+          <ul class="srclist">
+            ${doc.sections.map((s) => `<li>
+              <div class="r"><b>${esc(s.title)}</b><span class="chip">${s.components.length}</span></div>
+              <small>${s.components.map((c) => `${CAPS[c.type] ? CAPS[c.type].label : c.type} ${c.span}/12`).join(" · ")}</small>
+            </li>`).join("")}
+          </ul>
+          <p class="note">画布上可直接拖拽换位；跨分区也可以。</p>`;
+      }
+
+      function bindPanel() {
+        const hit = findComponent(ui.selected);
+        if (!hit) return `<p class="note">在画布上点选一个组件，这里显示它的形态与字段绑定。</p>`;
+        const c = hit.component;
+        if (!c.source) return `<div class="field"><span>标题</span><input data-field="title" value="${esc(c.title)}" /></div>
+          <p class="note">该组件不消费数据源（${esc(c.type)}），没有字段绑定。</p>`;
+        const s = SOURCES[c.source], shape = shapeOf(c.source), opts = typeOptions(c.source);
+        return `
+          <h5>组件形态 · 按数据推荐</h5>
+          <p class="note">当前数据：${shape.dims} 个维度 / ${shape.measures} 个度量 / ${shape.rows} 行${shape.time ? " · 含时间维度" : ""}。
+            切换形态<b>不会改动数据绑定</b>。</p>
+          <div class="types">
+            ${opts.map((o) => `<button class="${c.type === o.type ? "on" : ""} ${o.rec ? "rec" : ""}"
+              data-action="set-type" data-type="${o.type}" ${o.ok ? "" : "disabled"}
+              title="${o.ok ? o.intent : "不可用：" + o.why}">
+              ${o.rec ? '<span class="star">★</span>' : ""}${o.label}</button>`).join("")}
+          </div>
+          <p class="note">★ 为按数据形状推荐；置灰的形态不满足组件能力约束，鼠标悬停可看原因。</p>
+          <h5>字段绑定</h5>
+          <ul class="binding">
+            ${s.dims.map((d) => `<li><span class="slot">维度</span><span>${esc(d)}</span></li>`).join("")}
+            ${s.measures.map((m) => `<li><span class="slot">度量</span><span>${esc(m)}</span></li>`).join("")}
+          </ul>
+          <div class="field"><span>数据源</span>
+            <select data-field="source">${Object.keys(SOURCES).map((n) => `<option value="${n}" ${n === c.source ? "selected" : ""}>${n}</option>`).join("")}</select></div>
+          <div class="field"><span>标题</span><input data-field="title" value="${esc(c.title)}" /></div>
+          <div class="field"><span>跨度 <b>${c.span}/12</b></span>
+            <input data-field="span" type="range" min="1" max="12" value="${c.span}" /></div>
+          <button class="btn block danger" data-action="remove">从画布移除</button>`;
+      }
+
+      function draftPanel() {
+        const hasTemp = turns.some((t) => t.scope.temporary);
+        const checks = [
+          { s: "m", t: "页面结构校验通过", d: "10 个组件、4 个分区，栅格合法" },
+          { s: allTried() ? "m" : "x", t: allTried() ? "全部数据源已试算" : `${Object.values(SOURCES).length - triedCount()} 个数据源未试算`, d: allTried() ? "结果字段契约已物化" : "未试算的查询不能进入草稿" },
+          { s: "m", t: "结果字段契约与组件绑定一致", d: "无悬空字段引用" },
+          { s: hasTemp ? "w" : "m", t: hasTemp ? "含 1 个临时口径" : "全部使用已定义指标", d: hasTemp ? "占比为现场生成的表达式，沉淀为 Data App 时需显式接受" : "" },
+          { s: "w", t: "时间为绝对区间", d: "适合报告；作为 Data App 需要改为滚动时间，否则不会随周期前进" },
+          { s: ui.gapStatus === "open" ? "w" : "m", t: ui.gapStatus === "open" ? "有 1 个未提交的指标缺口" : "指标缺口已登记", d: ui.gapStatus === "open" ? "建议提交后再发布" : esc(ui.gapTicket) }
+        ];
+        return `
+          <h5>页面校验</h5>
+          <ul class="checks">${checks.map((c) => `<li><span class="${c.s}">${c.s === "m" ? "✓" : c.s === "w" ? "!" : "✕"}</span>
+            <span>${esc(c.t)}${c.d ? `<small>${esc(c.d)}</small>` : ""}</span></li>`).join("")}</ul>
+          <button class="btn primary block" data-action="save-draft" ${allTried() ? "" : "disabled"}>保存草稿</button>
+          <p class="note">草稿只对自己可见，可以反复保存。<b>发布成什么形态是之后的决定</b>——同一份草稿可以发成报告，也可以补上滚动时间后发成 Data App。</p>
+          <h5>草稿历史</h5>
+          ${ui.drafts.length
+            ? `<ul class="revlist">${ui.drafts.slice().reverse().map((d) => `<li><b>R${d.rev}</b><span class="faint">${d.at}</span></li>`).join("")}</ul>`
+            : `<p class="note">还没有草稿。</p>`}`;
+      }
+
+      function inspectorColumn() {
+        const stage = STAGES.find((s) => s.id === ui.stage);
+        const hit = findComponent(ui.selected);
+        const panel = { discover: discoverPanel, verify: verifyPanel, layout: layoutPanel, bind: bindPanel, draft: draftPanel }[ui.stage]();
+        return `<aside class="inspector">
+          <header><b>${stage.name}</b><p>${stage.hint}</p></header>
+          ${hit ? `<div class="selbar"><span class="who"><b>${esc(hit.component.title || hit.component.id)}</b>
+              <small>${CAPS[hit.component.type] ? CAPS[hit.component.type].label : hit.component.type} · ${esc(hit.section.title)} · ${hit.component.span}/12</small></span>
+            ${ui.stage === "bind" ? "" : `<button class="btn sm" data-action="stage" data-stage="bind">去绑定</button>`}</div>` : ""}
+          <div class="panel">${panel}</div>
+        </aside>`;
+      }
+
+      /* ================= 7. 渲染与交互 ================= */
+
+      const app = document.getElementById("app");
+      function render() {
+        const prev = app.querySelector(".scroll");
+        const top = prev ? prev.scrollTop : 0;
+        app.innerHTML = `<div class="shell">${chatColumn()}${centerColumn()}${inspectorColumn()}</div>` +
+          (ui.toast ? `<div class="toast">${esc(ui.toast)}</div>` : "");
+        const next = app.querySelector(".scroll");
+        if (next) next.scrollTop = top;
+      }
+      function toast(msg) {
+        ui.toast = msg;
+        render();
+        clearTimeout(toast.t);
+        toast.t = setTimeout(() => { ui.toast = ""; render(); }, 2600);
+      }
+
+      function applyTemplate(id) {
+        const tpl = TEMPLATES.find((t) => t.id === id);
+        // 不消费数据的组件（页头、结论文本）始终通栏，模板只排布数据组件
+        let i = 0;
+        doc.sections.flatMap((s) => s.components).forEach((c) => {
+          if (NO_DATA_TYPES.includes(c.type)) { c.span = 12; return; }
+          c.span = tpl.plan[i++ % tpl.plan.length];
+        });
+        ui.template = id;
+        ui.dirty = true;
+        toast(`已套用「${tpl.name}」· 只改了布局，数据绑定未变`);
+      }
+
+      app.addEventListener("click", (e) => {
+        const act = e.target.closest("[data-action]");
+        const cell = e.target.closest("[data-cell]");
+        if (!act && ui.publishOpen) { ui.publishOpen = false; render(); }
+
+        if (act) {
+          const a = act.dataset.action;
+          if (a === "stage") { ui.stage = act.dataset.stage; return render(); }
+          if (a === "toggle-steps") { const i = +act.dataset.idx; ui.openSteps = ui.openSteps === i ? null : i; return render(); }
+          if (a === "submit-gap") { ui.gapStatus = "submitted"; ui.gapTicket = "需求 #1042"; return toast("指标需求已提交 · #1042"); }
+          if (a === "run-trial") {
+            Object.values(SOURCES).forEach((s) => (s.tried = true));
+            ui.dirty = true;
+            return toast("试算完成 · 7 个数据源全部取到数，字段契约已物化");
+          }
+          if (a === "apply-template") return applyTemplate(act.dataset.tpl);
+          if (a === "save-template") return toast("已另存为模板「Tokens 运营概览」· 不含数据绑定");
+          if (a === "save-draft") {
+            const rev = savedRev() + 1;
+            ui.drafts.push({ rev, at: new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" }) });
+            ui.dirty = false;
+            ui.stage = "draft";
+            return toast(`草稿 R${rev} 已保存 · 发布形态稍后再定`);
+          }
+          if (a === "toggle-publish") { ui.publishOpen = !ui.publishOpen; return render(); }
+          if (a === "publish") {
+            ui.publishOpen = false;
+            const kind = act.dataset.kind;
+            return toast(kind === "report" ? "已发布为报告 · 内容冻结在本次结果"
+              : kind === "app" ? "已发布为 Data App" : "已另存为模板");
+          }
+          if (a === "set-type") {
+            const hit = findComponent(ui.selected);
+            if (hit) {
+              hit.component.type = act.dataset.type;
+              ui.dirty = true;
+              return toast(`已切换为${CAPS[act.dataset.type].label} · 数据绑定未变`);
+            }
+          }
+          if (a === "remove") {
+            const hit = findComponent(ui.selected);
+            if (hit) hit.section.components.splice(hit.section.components.indexOf(hit.component), 1);
+            ui.selected = null; ui.dirty = true;
+            return render();
+          }
+        }
+
+        if (cell) {
+          ui.selected = { sectionId: cell.dataset.section, componentId: cell.dataset.component };
+          if (ui.stage !== "bind" && ui.stage !== "layout") ui.stage = "bind";
+          render();
+        }
+      });
+
+      app.addEventListener("submit", (e) => {
+        if (!e.target.closest('[data-action="ask"]')) return;
+        e.preventDefault();
+        const text = ui.chatDraft.trim();
+        if (!text) return;
+        turns.push({
+          q: text,
+          a: "（原型不接模型）这一轮只演示分步呈现与定向增量修改：未提及的设置保持不变。",
+          candidates: [],
+          scope: { domain: "运营分析", metric: "Tokens消耗量", temporary: false, time: "2026-11（月）", filters: "沿用上一轮", grain: "月" },
+          steps: [
+            { k: "routed", label: "业务域路由", detail: "沿用上一轮：运营分析", ms: 40 },
+            { k: "executing", label: "真实执行", detail: "DQE 仿真", ms: 760 },
+            { k: "document", label: "定向增量修改", detail: "未提及的设置保持不变", ms: 110 }
+          ]
+        });
+        ui.chatDraft = ""; ui.dirty = true;
+        render();
+      });
+
+      app.addEventListener("input", (e) => {
+        const f = e.target.dataset.field;
+        if (!f) return;
+        if (f === "chatDraft") { ui.chatDraft = e.target.value; return; }
+        if (f === "query") { ui.query = e.target.value; const at = e.target.selectionStart; render();
+          const box = app.querySelector('[data-field="query"]'); if (box) { box.focus(); box.setSelectionRange(at, at); } return; }
+        const hit = findComponent(ui.selected);
+        if (!hit) return;
+        ui.dirty = true;
+        if (f === "title") {
+          hit.component.title = e.target.value;
+          const h = app.querySelector(`[data-component="${hit.component.id}"] .cell-head h4`);
+          if (h) h.textContent = e.target.value;
+        }
+        if (f === "span") {
+          hit.component.span = +e.target.value;
+          const cell = app.querySelector(`[data-component="${hit.component.id}"]`);
+          if (cell) cell.style.setProperty("--span", hit.component.span);
+          const lb = e.target.closest(".field").querySelector("b");
+          if (lb) lb.textContent = `${hit.component.span}/12`;
+        }
+      });
+
+      app.addEventListener("change", (e) => {
+        if (e.target.dataset.field !== "source") return;
+        const hit = findComponent(ui.selected);
+        if (!hit) return;
+        const next = e.target.value;
+        hit.component.source = next;
+        // 换数据源后若当前形态不再满足硬闸，落到推荐形态
+        const opts = typeOptions(next);
+        const cur = opts.find((o) => o.type === hit.component.type);
+        if (!cur || !cur.ok) {
+          hit.component.type = opts[0].type;
+          ui.dirty = true;
+          return toast(`数据源已换 · 原形态不适用，已改为${CAPS[hit.component.type].label}`);
+        }
+        ui.dirty = true;
+        render();
+      });
+
+      let dragging = null;
+      app.addEventListener("dragstart", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell) return;
+        dragging = { sectionId: cell.dataset.section, componentId: cell.dataset.component };
+        cell.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", cell.dataset.component);
+      });
+      app.addEventListener("dragover", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell || !dragging) return;
+        e.preventDefault();
+        app.querySelectorAll(".dropbefore").forEach((n) => n.classList.remove("dropbefore"));
+        cell.classList.add("dropbefore");
+      });
+      app.addEventListener("drop", (e) => {
+        const cell = e.target.closest("[data-cell]");
+        if (!cell || !dragging) return;
+        e.preventDefault();
+        const from = findComponent(dragging);
+        const to = doc.sections.find((s) => s.id === cell.dataset.section);
+        if (from && to) {
+          from.section.components.splice(from.section.components.indexOf(from.component), 1);
+          const at = to.components.findIndex((c) => c.id === cell.dataset.component);
+          to.components.splice(at < 0 ? to.components.length : at, 0, from.component);
+          ui.selected = { sectionId: to.id, componentId: from.component.id };
+          ui.dirty = true;
+        }
+        dragging = null;
+        render();
+      });
+      app.addEventListener("dragend", () => {
+        dragging = null;
+        app.querySelectorAll(".dragging,.dropbefore").forEach((n) => n.classList.remove("dragging", "dropbefore"));
+      });
+
+      window.addEventListener("keydown", (e) => {
+        const t = document.activeElement;
+        if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+        if (e.key === "Escape") { ui.selected = null; ui.publishOpen = false; render(); }
+        const i = STAGES.findIndex((s) => s.id === ui.stage);
+        if (e.key === "ArrowLeft" && i > 0) { ui.stage = STAGES[i - 1].id; render(); }
+        if (e.key === "ArrowRight" && i < STAGES.length - 1) { ui.stage = STAGES[i + 1].id; render(); }
+      });
+
+      render();
+    </script>
+  </body>
+</html>
