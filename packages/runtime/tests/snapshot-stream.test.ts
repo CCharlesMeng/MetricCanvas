@@ -17,13 +17,12 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'text-only',
         dataSources: {},
         sections: [
           {
             id: 'content',
-            layout: { type: 'grid', columns: 12 },
             components: [
               {
                 id: 'intro',
@@ -61,7 +60,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'shared',
         dataSources: {
           sales: {
@@ -91,7 +90,6 @@ describe('统一页面快照流', () => {
         sections: [
           {
             id: 'main',
-            layout: { type: 'grid', columns: 12 },
             components: [
               {
                 id: 'card',
@@ -161,7 +159,7 @@ describe('统一页面快照流', () => {
 
 function summaryPage(includeTable: boolean): Page {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'summary-source',
     dataSources: {
       'inspection-progress': {
@@ -187,7 +185,6 @@ function summaryPage(includeTable: boolean): Page {
     },
     sections: [{
       id: 'main',
-      layout: { type: 'grid', columns: 12 },
       components: [
         ...(includeTable
           ? [{

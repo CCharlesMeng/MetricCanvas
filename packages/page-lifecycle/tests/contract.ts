@@ -41,7 +41,7 @@ const admin: LifecycleContext = { actorId: 'admin', clientId: 'test', roles: ['a
 
 function textPage(id: string, sections: Page['sections']): PageDocument {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id,
     dataSources: {},
     sections
@@ -79,7 +79,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -127,7 +126,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -174,7 +172,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const before = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             componentAt('text-a', 'A'),
             componentAt('text-b', 'B'),
@@ -185,7 +182,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const after = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             componentAt('text-a', 'A'),
             componentAt('text-b', 'B2'),
@@ -236,7 +232,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -292,7 +287,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -338,7 +332,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -401,7 +394,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]
@@ -454,7 +446,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const documentV1 = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'V1', body: '' } }
           ]
@@ -463,7 +454,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const documentV2 = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'V2', body: '' } }
           ]
@@ -529,7 +519,6 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       const document = textPage(pageId, [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
           ]

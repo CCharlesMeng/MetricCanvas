@@ -2,14 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { createPageIdConfirmationMcpClient, type McpClient } from '../src';
 
 const pageDocument = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'sales-total',
   dataSources: {},
   sections: [
     {
       id: 'overview',
       title: '成交总额',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'intro',
@@ -92,7 +91,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
         title: '成交总额',
         stablePath: '/pages/sales-total',
         immutableAfterSave: true,
-        schemaVersion: '4.0'
+        schemaVersion: '5.0'
       }
     });
   });

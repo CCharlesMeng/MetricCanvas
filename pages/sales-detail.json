@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "sales-detail",
   "meta": {
     "description": "承接演示看板的跨页下钻:从 URL 恢复筛选状态,展示区域/渠道明细"
@@ -493,10 +493,7 @@
   "sections": [
     {
       "id": "overview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "page-header",

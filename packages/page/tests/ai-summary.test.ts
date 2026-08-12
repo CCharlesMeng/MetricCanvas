@@ -3,7 +3,7 @@ import { validate, type Page } from '../src';
 
 function document(): Page {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'risk-summary',
     dataSources: {
       risks: {
@@ -19,7 +19,6 @@ function document(): Page {
     },
     sections: [{
       id: 'risk',
-      layout: { type: 'grid', columns: 12 },
       components: [{
         id: 'summary',
         type: 'aiSummary',

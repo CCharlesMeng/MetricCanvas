@@ -15,7 +15,7 @@ function groupedPage() {
   } as const;
 
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'grouped-page',
     dataSources: {
       current: {
@@ -36,7 +36,6 @@ function groupedPage() {
     },
     sections: [{
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [{
         id: 'current-table',
         type: 'table',

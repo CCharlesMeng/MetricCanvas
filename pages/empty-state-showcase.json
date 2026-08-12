@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "empty-state-showcase",
   "meta": {
     "description": "空数据与请求失败降级时的组件视觉稳定性演示"
@@ -55,10 +55,6 @@
   "sections": [
     {
       "id": "introduction",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "page-header",
@@ -93,10 +89,7 @@
     },
     {
       "id": "summary-and-comparison",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "empty-metric",
@@ -155,10 +148,6 @@
     },
     {
       "id": "trend-and-share",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "empty-line-chart",
@@ -202,10 +191,6 @@
     },
     {
       "id": "details-and-region",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "empty-table",

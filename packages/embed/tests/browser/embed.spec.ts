@@ -168,7 +168,7 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'connected-tables-example',
         dataSources: {
           rows: {
@@ -184,7 +184,6 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
         },
         sections: [{
           id: 'tables',
-          layout: { type: 'grid', columns: 12 },
           components: [
             {
               id: 'summary-table',
@@ -264,12 +263,12 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   });
 });
 
-test('指标卡变体与标题分区保持通用的扁平外缘', async ({ page }) => {
+test('三档分区外壳提供扁平外缘，组件自带表面', async ({ page }) => {
   await page.goto('/examples/inline.html');
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'decorated-sections-example',
         dataSources: {
           metrics: {
@@ -288,7 +287,7 @@ test('指标卡变体与标题分区保持通用的扁平外缘', async ({ page 
         sections: [
           {
             id: 'overview',
-            layout: { type: 'grid', columns: 12 },
+            shell: 'plain',
             components: [{
               id: 'summary',
               type: 'metricCard',
@@ -303,7 +302,7 @@ test('指标卡变体与标题分区保持通用的扁平外缘', async ({ page 
           },
           {
             id: 'activities',
-            layout: { type: 'grid', columns: 12 },
+            shell: 'panel',
             components: [{
               id: 'activity',
               type: 'metricCard',
@@ -324,7 +323,7 @@ test('指标卡变体与标题分区保持通用的扁平外缘', async ({ page 
           {
             id: 'details',
             title: '客户明细',
-            layout: { type: 'grid', columns: 12 },
+            shell: 'panel',
             components: [{
               id: 'note',
               type: 'text',
@@ -364,7 +363,7 @@ test('活动指标卡在窄容器与手机视口不溢出', async ({ page }) => 
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'responsive-activity-example',
         dataSources: {
           activity: {
@@ -381,7 +380,6 @@ test('活动指标卡在窄容器与手机视口不溢出', async ({ page }) => 
         },
         sections: [{
           id: 'activities',
-          layout: { type: 'grid', columns: 12 },
           components: ['inspection', 'visit', 'summit'].map((id) => ({
             id,
             type: 'metricCard',
@@ -553,7 +551,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'report-summary-surface-browser',
         dataSources: {
           metrics: {
@@ -569,7 +567,6 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
         },
         sections: [{
           id: 'report-surfaces',
-          layout: { type: 'grid', columns: 12 },
           components: [
             {
               id: 'summary',
@@ -1206,7 +1203,7 @@ test('详细排行卡可展开受控的嵌套明细字段', async ({ page }) => 
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'nested-detail-browser',
         dataSources: {
           decline: {
@@ -1251,7 +1248,6 @@ test('详细排行卡可展开受控的嵌套明细字段', async ({ page }) => 
         },
         sections: [{
           id: 'main',
-          layout: { type: 'grid', columns: 12 },
           components: [{
             id: 'ranking',
             type: 'rankingDetailCard',
@@ -1294,7 +1290,7 @@ test('详细排行卡把 DQE 语义 HTML 直接渲染为说明，并由前端映
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'semantic-html-detail-browser',
         dataSources: {
           decline: {
@@ -1328,7 +1324,6 @@ test('详细排行卡把 DQE 语义 HTML 直接渲染为说明，并由前端映
         },
         sections: [{
           id: 'main',
-          layout: { type: 'grid', columns: 12 },
           components: [{
             id: 'ranking',
             type: 'rankingDetailCard',
@@ -1389,7 +1384,7 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'ranking-detail-row-height-sync-browser',
         dataSources: {
           growth: source('增长客户', [shortDetail, shortDetail, shortDetail]),
@@ -1397,8 +1392,7 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
         },
         sections: [{
           id: 'customer-analysis',
-          variant: 'reportCustomerAnalysis',
-          layout: { type: 'grid', columns: 12 },
+          shell: 'card',
           components: [
             {
               id: 'growth-ranking',
@@ -1454,4 +1448,14 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
       );
     });
   }).toBe(true);
+
+  // 响应式堆叠成单列后自动复原:首行回到各自的自然高度。
+  await page.setViewportSize({ width: 700, height: 900 });
+  await expect.poll(async () => {
+    const [growthFirst, declineFirst] = await Promise.all([
+      growthRows.first().evaluate((row) => row.getBoundingClientRect().height),
+      declineRows.first().evaluate((row) => row.getBoundingClientRect().height)
+    ]);
+    return declineFirst - growthFirst;
+  }).toBeGreaterThan(1);
 });

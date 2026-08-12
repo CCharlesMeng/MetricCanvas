@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "tokens-report",
   "meta": {
     "description": "固定时点 Tokens 运营报告页面资产"
@@ -890,10 +890,7 @@
     {
       "id": "summary",
       "title": "数据摘要",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "report-header",
@@ -931,10 +928,7 @@
     {
       "id": "tokens-overview",
       "title": "Tokens消耗概况",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "tokens-consumption-card",
@@ -1119,10 +1113,7 @@
     {
       "id": "region-distribution",
       "title": "区域分布",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "region-table",
@@ -1276,10 +1267,7 @@
     {
       "id": "model-distribution",
       "title": "模型分布",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "model-table",
@@ -1433,10 +1421,7 @@
     {
       "id": "customer-distribution",
       "title": "客户分布",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "customer-table",

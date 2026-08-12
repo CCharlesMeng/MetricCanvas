@@ -1,11 +1,11 @@
 import type { TypedError } from './errors';
 
 export interface VersionPolicy {
-  current: '4.0';
+  current: '5.0';
 }
 
 export const versionPolicy: VersionPolicy = {
-  current: '4.0'
+  current: '5.0'
 };
 
 export function supportedVersions(

@@ -13,7 +13,7 @@ describe('离线页面搭建模型', () => {
     expect(first.toolCalls?.[0]?.name).toBe('validate_page');
     const document = (first.toolCalls?.[0]?.input as Record<string, unknown>)?.document;
     expect(validate(document)).toEqual([]);
-    expect(document).toMatchObject({ schemaVersion: '4.0' });
+    expect(document).toMatchObject({ schemaVersion: '5.0' });
   });
 
   it('动态诉求先检索数据上下文', async () => {

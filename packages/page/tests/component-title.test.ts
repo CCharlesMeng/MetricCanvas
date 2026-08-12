@@ -3,12 +3,11 @@ import { componentCatalog, validate } from '../src';
 
 function textDocument(): Record<string, any> {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'text-title',
     dataSources: {},
     sections: [{
       id: 'content',
-      layout: { type: 'grid', columns: 12 },
       components: [{
         id: 'text',
         type: 'text',

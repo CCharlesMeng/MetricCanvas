@@ -51,7 +51,7 @@ export const COMPONENT_SELECTION_GUIDE = componentCatalog
   .join('\n');
 
 const inlineExample = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'revenue-overview',
   dataSources: {
     summary: {
@@ -71,7 +71,6 @@ const inlineExample = {
   sections: [
     {
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'revenue-card',
@@ -86,7 +85,7 @@ const inlineExample = {
 };
 
 const dqeExample = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'records-by-category',
   dataSources: {
     records: {
@@ -130,7 +129,6 @@ const dqeExample = {
   sections: [
     {
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'records-table',

@@ -11,26 +11,24 @@ export const pageMetaZ = z
   })
   .strict();
 
-export const gridLayoutZ = z
-  .object({
-    type: z.literal('grid'),
-    columns: z.literal(12)
-  })
-  .strict();
+/**
+ * 分区外壳：内容分区外观的唯一真源，封闭三档、命名表现中性。
+ * 缺省为通用看板外观（白色分区 + 带边框组件单元格）。几何布局
+ * 恒为 12 列 Grid，是统一运行时不变量，不进入页面文档。
+ */
+export const sectionShellZ = z
+  .enum(['plain', 'panel', 'card'])
+  .meta({
+    id: 'sectionShell',
+    description:
+      'plain 无外壳组件自带外观；panel 渐变章节面板+居中图标标题+内层白底；card 白色小节卡片+左对齐小标题'
+  });
 
 export const sectionZ = z
   .object({
     id: idZ,
     title: z.string().min(1).optional(),
-    variant: z
-      .enum([
-        'reportOverview',
-        'reportHeading',
-        'reportCustomerAnalysis',
-        'reportDimensionAnalysis'
-      ])
-      .optional(),
-    layout: gridLayoutZ,
+    shell: sectionShellZ.optional(),
     components: z.array(componentZ).min(1)
   })
   .strict()

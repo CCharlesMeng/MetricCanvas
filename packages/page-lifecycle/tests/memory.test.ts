@@ -3,7 +3,7 @@ import type { Page, PageDocument } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '../src/memory';
 
 const inlinePage: Page = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'inline-page',
   dataSources: {
     summary: {
@@ -15,7 +15,6 @@ const inlinePage: Page = {
   },
   sections: [{
     id: 'overview',
-    layout: { type: 'grid', columns: 12 },
     components: [{
       id: 'card',
       type: 'metricCard',

@@ -5,7 +5,7 @@ import type { AgentEvent, AgentMessage } from '../../src/lib/server/agent/types'
 import { createScriptedModelProvider } from '../support/scripted-model-provider';
 
 const pageDocument = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'sales-total',
   dataSources: {
     sales: {
@@ -19,7 +19,6 @@ const pageDocument = {
     {
       id: 'overview',
       title: '成交总额',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'w-gmv',

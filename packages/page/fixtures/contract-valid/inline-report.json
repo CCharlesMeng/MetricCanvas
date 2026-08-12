@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "inline-report",
   "meta": {
     "description": "内联报告契约样例"
@@ -27,10 +27,6 @@
   "sections": [
     {
       "id": "overview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "report-header",

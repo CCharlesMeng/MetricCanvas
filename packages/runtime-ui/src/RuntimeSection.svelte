@@ -6,9 +6,14 @@
   } from '@metriccanvas/page';
   import { sectionTitleLeftUrl, sectionTitleRightUrl } from '@metriccanvas/widgets';
   import type { Snippet } from 'svelte';
-  import { installRankingDetailRowHeightSync } from './sync-ranking-detail-row-heights';
+  import { installRowAlignment } from './row-alignment';
   import type { AuthoringComponentLocator, AuthoringOptions } from './types';
 
+  /**
+   * 内容分区 Module:拥有 12 列 Grid(统一运行时不变量)、组件单元格、
+   * `connectPrevious` 与行对齐安装点。外观唯一由 `section.shell` 决定,
+   * 不读取子组件的类型组合或 `props.variant` 推断父级布局(ADR-0021)。
+   */
   interface Props {
     section: PageSection;
     authoring?: AuthoringOptions;
@@ -18,55 +23,17 @@
   let { section, authoring, componentContent }: Props = $props();
   let dragged = $state<AuthoringComponentLocator | null>(null);
   let sectionGrid = $state<HTMLElement | null>(null);
-  const reportOverviewSection = $derived(section.variant === 'reportOverview');
-  const dualOverviewSection = $derived(
-    reportOverviewSection &&
-      section.components.some(
-        (component) =>
-          component.type === 'metricCard' && component.props.variant === 'dualSummary'
-      )
-  );
-  const reportHeadingSection = $derived(section.variant === 'reportHeading');
-  const reportCustomerAnalysisSection = $derived(section.variant === 'reportCustomerAnalysis');
-  const reportDimensionAnalysisSection = $derived(section.variant === 'reportDimensionAnalysis');
-  const explicitVariant = $derived(section.variant !== undefined);
-  const summaryMetricSection = $derived(
-    section.components.length > 0 &&
-      section.components.every(
-        (component) => component.type === 'metricCard' && component.props.variant === 'summary'
-      )
-  );
-  const activityMetricSection = $derived(
-    section.components.length > 0 &&
-      section.components.every(
-        (component) =>
-          component.type === 'metricCard' && component.props.variant === 'activityProgress'
-      )
-  );
-  const analysisSection = $derived(
-    !explicitVariant &&
-      section.components.some((component) => component.type === 'aiSummary') &&
-      section.components.some(
-        (component) => component.type === 'table' || component.type === 'rankingDetailCard'
-      )
-  );
-  const overviewSection = $derived(
-    !explicitVariant &&
-      section.components.some((component) => component.type === 'barChart') &&
-      section.components.some((component) => component.type === 'metricCard')
-  );
-  const headingSection = $derived(
-    !explicitVariant &&
-      section.components.length === 1 &&
-      section.components[0]?.type === 'text' &&
-      Boolean(section.components[0].props.title) &&
-      !section.components[0].props.body
-  );
+  const shell = $derived(section.shell);
 
   $effect(() => {
-    if (!reportCustomerAnalysisSection || !sectionGrid) return;
-    return installRankingDetailRowHeightSync(sectionGrid);
+    if (!sectionGrid) return;
+    return installRowAlignment(sectionGrid);
   });
+
+  function componentVariant(component: Component): string | undefined {
+    const { variant } = component.props as { variant?: string };
+    return variant;
+  }
 
   function locator(componentId: string): AuthoringComponentLocator {
     return { sectionId: section.id, componentId };
@@ -143,55 +110,25 @@
 </script>
 
 <section
-  class:header-section={section.components.length === 1 &&
-    section.components[0]?.type === 'reportHeader'}
-  class:titled-section={Boolean(section.title)}
-  class:summary-metric-section={summaryMetricSection}
-  class:activity-metric-section={activityMetricSection}
-  class:analysis-section={analysisSection}
-  class:overview-section={overviewSection}
-  class:heading-section={headingSection}
-  class:report-overview-section={reportOverviewSection}
-  class:dual-overview-section={dualOverviewSection}
-  class:report-heading-section={reportHeadingSection}
-  class:report-customer-analysis-section={reportCustomerAnalysisSection}
-  class:report-dimension-analysis-section={reportDimensionAnalysisSection}
+  class:shell-plain={shell === 'plain'}
+  class:shell-panel={shell === 'panel'}
+  class:shell-card={shell === 'card'}
   class="page-section"
   data-section-id={section.id}
-  data-section-variant={section.variant}
+  data-section-shell={shell}
 >
   {#if section.title}
     <h2 class="section-title">
-      {#if reportOverviewSection}
+      {#if shell === 'panel'}
         <img src={sectionTitleLeftUrl} alt="" data-decorative-icon="section-title-left" />
       {/if}
       <span>{section.title}</span>
-      {#if reportOverviewSection}
+      {#if shell === 'panel'}
         <img src={sectionTitleRightUrl} alt="" data-decorative-icon="section-title-right" />
       {/if}
     </h2>
   {/if}
-  <div
-    bind:this={sectionGrid}
-    class="section-grid"
-    style="grid-template-columns: repeat({section.layout.columns}, minmax(0, 1fr));"
-  >
-    {#if reportHeadingSection}
-      <img
-        class="report-heading-icon left"
-        src={sectionTitleLeftUrl}
-        alt=""
-        aria-hidden="true"
-        data-decorative-icon="section-title-left"
-      />
-      <img
-        class="report-heading-icon right"
-        src={sectionTitleRightUrl}
-        alt=""
-        aria-hidden="true"
-        data-decorative-icon="section-title-right"
-      />
-    {/if}
+  <div bind:this={sectionGrid} class="section-grid">
     {#each section.components as component, componentIndex (component.id)}
       <article
         class:chart-cell={isChartComponent(component)}
@@ -209,6 +146,7 @@
         class="cell"
         data-component={`${section.id}/${component.id}`}
         data-component-type={component.type}
+        data-component-variant={componentVariant(component)}
         style={`grid-column: span ${component.layout.span};`}
         draggable={Boolean(authoring)}
         onclickcapture={(event) => select(event, component.id)}
@@ -242,17 +180,13 @@
 </section>
 
 <style>
+  /* ==== 缺省外壳:通用看板外观(白色分区 + 带边框组件单元格) ==== */
   .page-section {
     padding: 18px;
     border: 0;
     border-radius: var(--mc-radius-section);
     background: var(--mc-color-surface);
     box-shadow: 0 8px 24px rgb(68 85 147 / 0.06);
-  }
-  .page-section.header-section {
-    padding: 0 0 10px;
-    background: transparent;
-    box-shadow: none;
   }
   .section-title {
     margin: 0 0 18px;
@@ -275,6 +209,7 @@
 
     display: grid;
     align-items: stretch;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     gap: var(--section-grid-gap);
   }
   .cell {
@@ -294,6 +229,58 @@
   .metric-cell {
     background: var(--mc-color-surface-subtle);
   }
+  .chart-cell {
+    min-height: 320px;
+  }
+  .ranking-detail-cell {
+    min-height: 0;
+  }
+  .table-cell {
+    --table-widget-radius-top-left: 16px;
+    --table-widget-radius-top-right: 16px;
+    --table-widget-radius-bottom-right: 16px;
+    --table-widget-radius-bottom-left: 16px;
+
+    min-height: 0;
+  }
+  .header-cell {
+    min-height: 0;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+  .cell.connect-next {
+    --table-widget-radius-bottom-right: 0;
+    --table-widget-radius-bottom-left: 0;
+
+    border-bottom-color: transparent;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+  .cell.connect-previous {
+    --table-widget-radius-top-left: 0;
+    --table-widget-radius-top-right: 0;
+
+    margin-top: calc(-1 * var(--section-grid-gap));
+    padding-top: calc(14px + var(--section-grid-gap));
+    background: var(--mc-color-surface);
+    border-top-color: transparent;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
+  .cell.connect-previous::before {
+    position: absolute;
+    top: calc(var(--section-grid-gap) / 2);
+    right: 16px;
+    left: 16px;
+    border-top: 1px dashed #000;
+    content: '';
+    pointer-events: none;
+  }
+
+  /* ==== 创作态控件 ==== */
   .authoring-cell {
     cursor: pointer;
     transition: border-color 120ms ease, box-shadow 120ms ease;
@@ -368,174 +355,11 @@
     border-radius: 4px;
     cursor: pointer;
   }
-  .chart-cell {
-    min-height: 320px;
-  }
-  .ranking-detail-cell {
-    min-height: 0;
-  }
-  .table-cell {
-    --table-widget-radius-top-left: 16px;
-    --table-widget-radius-top-right: 16px;
-    --table-widget-radius-bottom-right: 16px;
-    --table-widget-radius-bottom-left: 16px;
 
-    min-height: 0;
-  }
-  .cell.connect-next {
-    --table-widget-radius-bottom-right: 0;
-    --table-widget-radius-bottom-left: 0;
-
-    border-bottom-color: transparent;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-  }
-  .cell.connect-previous {
-    --table-widget-radius-top-left: 0;
-    --table-widget-radius-top-right: 0;
-
-    margin-top: calc(-1 * var(--section-grid-gap));
-    padding-top: calc(14px + var(--section-grid-gap));
-    background: var(--mc-color-surface);
-    border-top-color: transparent;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-  }
-  .cell.connect-previous::before {
-    position: absolute;
-    top: calc(var(--section-grid-gap) / 2);
-    right: 16px;
-    left: 16px;
-    border-top: 1px dashed #000;
-    content: '';
-    pointer-events: none;
-  }
-  .header-cell {
-    min-height: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-  .page-section.summary-metric-section {
-    padding: 0;
-    background: transparent;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .page-section.activity-metric-section,
-  .page-section.titled-section,
-  .page-section.overview-section,
-  .page-section.analysis-section {
-    background-color: transparent;
-    background-image: var(--mc-section-gradient);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
-    border-radius: var(--mc-radius-section);
-    box-shadow: none;
-  }
-  .page-section.activity-metric-section {
-    padding: 16px 17px 20px;
-  }
-  .page-section.titled-section {
-    padding: 18px 17px 22px 16px;
-  }
-  .page-section.overview-section,
-  .page-section.analysis-section {
-    padding: 18px 17px 22px 16px;
-  }
-  .overview-section .section-title,
-  .analysis-section .section-title {
-    margin: 0 0 14px;
-    color: var(--mc-color-primary);
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 32px;
-    text-align: center;
-  }
-  .overview-section .section-title::before,
-  .analysis-section .section-title::before {
-    display: none;
-  }
-  .overview-section .section-grid,
-  .analysis-section .section-grid {
-    gap: 12px 14px;
-  }
-  .overview-section .cell,
-  .analysis-section .cell,
-  .heading-section .cell {
-    min-height: 0;
-    gap: 0;
-    overflow: visible;
-    border: 0;
-    box-shadow: none;
-  }
-  .overview-section .metric-cell {
-    padding: 0;
-    background: transparent;
-  }
-  .overview-section .chart-cell,
-  .overview-section .cell:not(.metric-cell) {
-    background: var(--mc-color-surface);
-  }
-  .analysis-section .ranking-detail-cell,
-  .analysis-section .table-cell,
-  .analysis-section .ai-summary-cell {
-    padding: 15px 18px;
-    background: var(--mc-color-surface);
-    border-radius: var(--mc-radius-section);
-  }
-  .analysis-section .ai-summary-cell {
-    padding: 0;
-  }
-  .heading-section {
-    padding: 18px 0 4px;
-    background: transparent;
-    box-shadow: none;
-  }
-  .heading-section .cell {
-    --mc-text-heading-color: var(--mc-color-primary);
-    --mc-text-heading-font-size: 28px;
-    --mc-text-heading-font-weight: 600;
-    --mc-text-heading-line-height: 40px;
-    --mc-text-heading-text-align: center;
-
-    padding: 0;
-    background: transparent;
-  }
-  @media (max-width: 1050px) {
-    .summary-metric-section .section-grid,
-    .overview-section .section-grid,
-    .analysis-section .section-grid {
-      gap: 10px;
-    }
-    .analysis-section .ranking-detail-cell {
-      padding: 12px;
-    }
-  }
-  .summary-metric-section .section-grid,
-  .titled-section .section-grid {
-    gap: 12px 14px;
-  }
-  .activity-metric-section .section-grid {
-    gap: 12px;
-  }
-  .titled-section .section-title {
-    margin: 0 0 11px;
-    color: var(--mc-color-primary);
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 32px;
-    text-align: center;
-  }
-  .titled-section .section-title::before {
-    display: none;
-  }
-  .summary-metric-section .cell,
-  .activity-metric-section .cell,
-  .titled-section .cell {
+  /* ==== 三档分区外壳:单元格一律无镶边,组件自带表面 ==== */
+  .shell-plain .cell,
+  .shell-panel .cell,
+  .shell-card .cell {
     min-height: 0;
     gap: 0;
     padding: 0;
@@ -545,29 +369,34 @@
     border-radius: 0;
     box-shadow: none;
   }
-  .summary-metric-section .cell.connect-previous,
-  .activity-metric-section .cell.connect-previous,
-  .titled-section .cell.connect-previous {
+  .shell-plain .cell.connect-previous,
+  .shell-panel .cell.connect-previous,
+  .shell-card .cell.connect-previous {
+    padding-top: var(--section-grid-gap);
     background: transparent;
   }
-  .summary-metric-section .cell.connect-previous::before,
-  .activity-metric-section .cell.connect-previous::before,
-  .titled-section .cell.connect-previous::before {
-    top: -7px;
+  .shell-plain .cell.connect-previous::before,
+  .shell-panel .cell.connect-previous::before,
+  .shell-card .cell.connect-previous::before {
     right: 0;
     left: 0;
-    border-top-color: rgb(255 255 255 / 0.92);
-  }
-  @media (max-width: 760px) {
-    .page-section {
-      padding: 16px;
-    }
-    .cell {
-      grid-column: 1 / -1 !important;
-    }
   }
 
-  .page-section.report-overview-section {
+  /* plain:无外壳,组件完全自带外观 */
+  .page-section.shell-plain {
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .shell-plain .section-grid {
+    --section-grid-gap: 12px;
+
+    gap: 12px 14px;
+  }
+
+  /* panel:渐变章节面板 + 居中图标标题 + 内层白底 */
+  .page-section.shell-panel {
     --mc-color-positive: var(--mc-color-report-positive);
     --mc-color-negative: var(--mc-color-report-negative);
 
@@ -580,10 +409,7 @@
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .page-section.report-overview-section.dual-overview-section {
-    padding-bottom: 40px;
-  }
-  .report-overview-section > .section-title {
+  .shell-panel > .section-title {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -595,83 +421,34 @@
     line-height: 50px;
     text-align: center;
   }
-  .report-overview-section > .section-title::before {
+  .shell-panel > .section-title::before {
     display: none;
   }
-  .report-overview-section > .section-title img {
+  .shell-panel > .section-title img {
     width: 20px;
     height: 20px;
     flex: none;
   }
-  .report-overview-section > .section-grid {
-    gap: 2px 12px;
+  .shell-panel > .section-grid {
+    --section-grid-gap: 12px;
+
+    gap: 12px;
     padding: 25px 16px 18px;
     background: var(--mc-color-surface);
     border-radius: var(--mc-radius-section);
   }
-  .report-overview-section .cell {
-    min-height: 0;
-    gap: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
-  .report-overview-section .cell[data-component-type='text'] {
-    margin-top: 13px;
-  }
-  .report-overview-section .chart-cell {
+  .shell-panel .chart-cell {
     min-height: 270px;
   }
 
-  .page-section.report-heading-section {
-    padding: 18px 0 4px;
-    background: transparent;
-    box-shadow: none;
-  }
-  .report-heading-section .cell {
-    --mc-text-heading-color: var(--mc-color-primary);
-    --mc-text-heading-font-size: 32px;
-    --mc-text-heading-font-weight: 400;
-    --mc-text-heading-line-height: 50px;
-    --mc-text-heading-text-align: center;
-
-    min-height: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-  .report-heading-section > .section-grid {
-    position: relative;
-  }
-  .report-heading-icon {
-    position: absolute;
-    top: 15px;
-    z-index: 1;
-    width: 20px;
-    height: 20px;
-    pointer-events: none;
-  }
-  .report-heading-icon.left {
-    left: calc(50% - 103px);
-  }
-  .report-heading-icon.right {
-    right: calc(50% - 103px);
-  }
-
-  .page-section.report-customer-analysis-section,
-  .page-section.report-dimension-analysis-section {
+  /* card:白色小节卡片 + 左对齐小标题 */
+  .page-section.shell-card {
     padding: 20px;
     background: var(--mc-color-surface);
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
-  .report-customer-analysis-section > .section-title,
-  .report-dimension-analysis-section > .section-title {
+  .shell-card > .section-title {
     margin: 0 0 10px 9px;
     color: var(--mc-color-report-heading);
     font-size: var(--mc-font-size-report-level-3, 20px);
@@ -679,40 +456,39 @@
     line-height: 30px;
     text-align: left;
   }
-  .report-customer-analysis-section > .section-title::before,
-  .report-dimension-analysis-section > .section-title::before {
+  .shell-card > .section-title::before {
     display: none;
   }
-  .report-customer-analysis-section > .section-grid {
+  .shell-card > .section-grid {
+    --section-grid-gap: 10px;
+
     gap: 10px 25px;
   }
-  .report-dimension-analysis-section > .section-grid {
-    gap: 10px;
-  }
-  .report-customer-analysis-section .cell,
-  .report-dimension-analysis-section .cell {
-    min-height: 0;
-    gap: 0;
-    padding: 0;
-    overflow: visible;
-    background: transparent;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
-  }
 
+  /* ==== 响应式 ==== */
   @media (max-width: 1050px) {
-    .page-section.report-overview-section {
+    .page-section.shell-panel {
       padding-right: 20px;
       padding-left: 20px;
     }
-    .report-overview-section > .section-grid {
-      gap: 2px 8px;
+    .shell-panel > .section-grid {
+      gap: 10px 8px;
       padding-right: 12px;
       padding-left: 12px;
     }
-    .report-customer-analysis-section > .section-grid {
+    .shell-card > .section-grid {
       column-gap: 16px;
+    }
+  }
+  @media (max-width: 760px) {
+    .page-section {
+      padding: 16px;
+    }
+    .page-section.shell-plain {
+      padding: 0;
+    }
+    .cell {
+      grid-column: 1 / -1 !important;
     }
   }
 </style>

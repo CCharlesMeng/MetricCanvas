@@ -12,6 +12,8 @@
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import aiSummaryIconUrl from './assets/ai-summary-icon.png';
   import riskWarningIconUrl from './assets/risk-warning.svg';
+  import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
+  import sectionTitleRightUrl from '../../assets/section-title-right.svg';
 
   /**
    * 文本组件(纯渲染):标题/说明静态文案 + 带参跳转链接。
@@ -33,7 +35,13 @@
   class="text-block"
   style:--risk-notice-max-width={`${props.maxWidth ?? 532}px`}
 >
-  {#if props.variant === 'reportInline'}
+  {#if props.variant === 'heading'}
+    <span class="page-heading">
+      <img src={sectionTitleLeftUrl} alt="" aria-hidden="true" data-decorative-icon="section-title-left" />
+      <span class="page-heading-title">{props.title}</span>
+      <img src={sectionTitleRightUrl} alt="" aria-hidden="true" data-decorative-icon="section-title-right" />
+    </span>
+  {:else if props.variant === 'reportInline'}
     <span class="inline-prefix">
       <img class="inline-icon" src={aiSummaryIconUrl} alt="" aria-hidden="true" />
       <strong class="inline-label">{props.title ?? 'AI 总结'}：</strong>
@@ -149,6 +157,24 @@
     font-weight: var(--mc-text-heading-font-weight, 600);
     line-height: var(--mc-text-heading-line-height, normal);
     text-align: var(--mc-text-heading-text-align, start);
+  }
+  .page-heading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .page-heading img {
+    width: 20px;
+    height: 20px;
+    flex: none;
+  }
+  .page-heading-title {
+    color: var(--mc-color-primary, #0f1a4d);
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 50px;
+    text-align: center;
   }
   .body {
     margin: 0;

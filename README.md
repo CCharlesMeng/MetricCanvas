@@ -27,7 +27,7 @@ MetricCanvas 是以看板页面为核心资产的 AI 原生数据分析与可视
 
 ```json
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -94,7 +94,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 
 ```json
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "hello-revenue",
   "dataSources": {
     "overview": {
@@ -121,10 +121,6 @@ pnpm test:embed   # 嵌入运行时浏览器测试
   "sections": [
     {
       "id": "overview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "revenue-card",

@@ -23,13 +23,12 @@ pnpm --filter @metriccanvas/embed build
 <script src="./metriccanvas-runtime.global.js"></script>
 <script>
   const pageDocument = {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'hello',
     dataSources: {},
     sections: [
       {
         id: 'main',
-        layout: { type: 'grid', columns: 12 },
         components: [
           {
             id: 'header',

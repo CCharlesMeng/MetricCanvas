@@ -8,13 +8,12 @@ import { createPostgresPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createPostgresTemplateLibrary } from '@metriccanvas/template-library';
 
 const page: Page = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'regional-overview',
   dataSources: {},
   sections: [
     {
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'intro',

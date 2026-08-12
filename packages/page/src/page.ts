@@ -23,7 +23,7 @@ import {
 } from './schema/component';
 import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
 import { writeFilterActionZ, navigateActionZ } from './schema/actions';
-import { gridLayoutZ, pageMetaZ, sectionZ } from './schema/page';
+import { pageMetaZ, sectionShellZ, sectionZ } from './schema/page';
 
 /*
  * 组件形状的单一真源在 `./schema/`（Zod 4 定义）：本文件的每个组件类型都
@@ -125,13 +125,13 @@ export type NavigateAction = z.infer<typeof navigateActionZ>;
 export type ComponentAction = WriteFilterAction | NavigateAction;
 
 export type PageMeta = z.infer<typeof pageMetaZ>;
-export type GridLayout = z.infer<typeof gridLayoutZ>;
+export type SectionShell = z.infer<typeof sectionShellZ>;
 export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
   components: Component[];
 };
 
 export interface Page {
-  schemaVersion: '4.0';
+  schemaVersion: '5.0';
   id: string;
   meta?: PageMeta;
   dataSources: DataSources;

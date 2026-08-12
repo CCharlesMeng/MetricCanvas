@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "canvas-preview-example",
   "meta": {
     "description": "Canvas JSON 即时预览的内部最小示例"
@@ -8,10 +8,6 @@
   "sections": [
     {
       "id": "preview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "header",

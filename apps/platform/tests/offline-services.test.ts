@@ -8,7 +8,7 @@ import {
 } from '../src/lib/server/offline-services';
 
 const page: Page = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'bundled-page',
   dataSources: {
     content: {
@@ -19,7 +19,6 @@ const page: Page = {
   sections: [
     {
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'intro',

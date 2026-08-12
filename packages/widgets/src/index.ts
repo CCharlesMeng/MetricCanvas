@@ -33,3 +33,10 @@ export type {
   MetricDataSlots,
   NamedDataSlots
 } from './shared/component-data';
+export {
+  publishRowAlignment,
+  rowAlignmentParticipants,
+  subscribeRowAlignment,
+  type RowAlignmentHandle,
+  type RowAlignmentTracks
+} from './shared/row-alignment';

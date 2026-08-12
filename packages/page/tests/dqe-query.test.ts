@@ -3,7 +3,7 @@ import { parsePage, validate } from '../src/validate';
 
 function rawPage(): any {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'dqe-page',
     filters: [
       {
@@ -51,7 +51,6 @@ function rawPage(): any {
     sections: [
       {
         id: 'main',
-        layout: { type: 'grid', columns: 12 },
         components: [
           {
             id: 'card',

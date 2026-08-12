@@ -11,7 +11,7 @@ import {
 } from '../src/lib/page-editor';
 
 const document: Page = {
-  schemaVersion: '4.0',
+  schemaVersion: '5.0',
   id: 'sales-overview',
   dataSources: {
     summary: {
@@ -23,7 +23,6 @@ const document: Page = {
     {
       id: 'overview',
       title: '经营概览',
-      layout: { type: 'grid', columns: 12 },
       components: [
         {
           id: 'header',

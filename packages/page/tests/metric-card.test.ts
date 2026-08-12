@@ -4,7 +4,7 @@ import { validate } from '@metriccanvas/page';
 describe('指标卡页面', () => {
   it('拒绝指标卡行引用数据槽契约外的字段', () => {
     const document = {
-      schemaVersion: '4.0',
+      schemaVersion: '5.0',
       id: 'sales-summary',
       dataSources: {
         sales: {
@@ -34,7 +34,6 @@ describe('指标卡页面', () => {
       sections: [
         {
           id: 'overview',
-          layout: { type: 'grid', columns: 12 },
           components: [
             {
               id: 'w-sales',

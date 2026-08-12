@@ -4,14 +4,13 @@ import { pageListEntry } from '../src';
 
 function page(): Page {
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: 'inventory-overview',
     meta: { description: '库存经营看板' },
     dataSources: {},
     sections: [
       {
         id: 'overview',
-        layout: { type: 'grid', columns: 12 },
         components: [
           {
             id: 'header',

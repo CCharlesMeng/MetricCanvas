@@ -62,7 +62,7 @@ data-gateway
 
 ```json
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "page-id",
   "meta": {},
   "dataSources": {},

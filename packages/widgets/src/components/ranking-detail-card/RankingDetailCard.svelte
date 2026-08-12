@@ -2,6 +2,10 @@
   import type { RankingDetailCardProps } from '@metriccanvas/page';
   import type { MainDataSlots } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
+  import {
+    publishRowAlignment,
+    type RowAlignmentHandle
+  } from '../../shared/row-alignment';
   import { buildRankingDetailRows } from './rows';
   import rankingDeclineIconUrl from './assets/ranking-decline.svg';
   import rankingGrowthIconUrl from './assets/ranking-growth.svg';
@@ -13,9 +17,43 @@
 
   let { data, props }: Props = $props();
   const rows = $derived(buildRankingDetailRows(data, props));
+
+  let root = $state<HTMLElement | null>(null);
+  let rowElements = $state<HTMLElement[]>([]);
+  let alignment: RowAlignmentHandle | undefined;
+
+  function alignedRows(): HTMLElement[] {
+    return rowElements.filter((element) => element?.isConnected);
+  }
+
+  $effect(() => {
+    if (!root) return;
+    alignment = publishRowAlignment({
+      anchor: root,
+      measure: () =>
+        alignedRows().map((element) => element.getBoundingClientRect().height),
+      apply: (minHeights) => {
+        alignedRows().forEach((element, index) => {
+          const height = minHeights[index];
+          if (height == null) element.style.removeProperty('min-height');
+          else element.style.minHeight = `${height}px`;
+        });
+      }
+    });
+    return () => {
+      alignment?.release();
+      alignment = undefined;
+    };
+  });
+
+  $effect(() => {
+    void rows;
+    alignment?.changed();
+  });
 </script>
 
 <section
+  bind:this={root}
   class:negative={props.tone === 'negative'}
   class:neutral={props.tone === 'neutral'}
   class:report={props.variant === 'report'}
@@ -41,8 +79,8 @@
   {/if}
   <div class="ranking-content">
     <ol>
-      {#each rows as row (row.rank)}
-        <li class="ranking-detail-row">
+      {#each rows as row, rowIndex (row.rank)}
+        <li bind:this={rowElements[rowIndex]} class="ranking-detail-row">
         <span class:top-three={row.rank <= 3} class="rank" aria-label={`第 ${row.rank} 名`}>
           {row.rank}
         </span>
@@ -71,7 +109,11 @@
             </div>
           {/if}
           {#if row.details}
-            <details class="nested-details" open={row.details.defaultExpanded}>
+            <details
+              class="nested-details"
+              open={row.details.defaultExpanded}
+              ontoggle={() => alignment?.changed()}
+            >
               <summary>归因明细（{row.details.items.length}）</summary>
               <ul>
                 {#each row.details.items as item, itemIndex (`${item.title}:${itemIndex}`)}

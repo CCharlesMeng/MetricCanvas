@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "customer-activity-risk-briefing",
   "meta": {
     "description": "云战地助手自动生成的客户活动风险简报"
@@ -3728,10 +3728,7 @@
   "sections": [
     {
       "id": "report-heading",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "plain",
       "components": [
         {
           "id": "report-header",
@@ -3753,10 +3750,7 @@
     },
     {
       "id": "customer-overviews",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "plain",
       "components": [
         {
           "id": "na-overview",
@@ -3866,10 +3860,7 @@
     },
     {
       "id": "annual-activities",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "annual-inspection-card",
@@ -3975,10 +3966,7 @@
     {
       "id": "inspection-section",
       "title": "公司考察",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "inspection-risk-summary",
@@ -4279,10 +4267,7 @@
     {
       "id": "visit-section",
       "title": "高层拜访",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "visit-risk-summary",
@@ -4562,10 +4547,7 @@
     {
       "id": "summit-section",
       "title": "高层峰会",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "summit-risk-summary",
@@ -4845,10 +4827,7 @@
     {
       "id": "inactive-section",
       "title": "三个重载活动均未开展客户",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "inactive-risk-summary",

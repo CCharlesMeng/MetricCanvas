@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "query-dashboard",
   "dataSources": {
     "sales": {
@@ -24,8 +24,12 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["region"],
-                "output_metrics": ["gmv"],
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
                 "filter": {
                   "dims": [],
                   "metrics": []
@@ -57,10 +61,6 @@
   "sections": [
     {
       "id": "details",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
       "components": [
         {
           "id": "sales-table",

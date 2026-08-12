@@ -68,14 +68,14 @@ describe('流水分析报告页面文档', () => {
       'track-analysis',
       'industry-analysis'
     ]);
-    expect(parsed.page.sections.map((section) => section.variant ?? null)).toEqual([
-      null,
-      'reportOverview',
-      'reportOverview',
-      'reportHeading',
-      'reportCustomerAnalysis',
-      'reportDimensionAnalysis',
-      'reportDimensionAnalysis'
+    expect(parsed.page.sections.map((section) => section.shell ?? null)).toEqual([
+      'plain',
+      'panel',
+      'panel',
+      'plain',
+      'card',
+      'card',
+      'card'
     ]);
     const components = parsed.page.sections.flatMap((section) => section.components);
     const growthRanking = components.find((component) => component.id === 'growth-ranking');
@@ -114,6 +114,11 @@ describe('流水分析报告页面文档', () => {
         (component) => component.type === 'text' && component.props.variant === 'riskNotice'
       )
     ).toHaveLength(2);
+    expect(
+      components.filter(
+        (component) => component.type === 'text' && component.props.variant === 'heading'
+      )
+    ).toHaveLength(1);
     expect(
       components.filter(
         (component) => component.type === 'barChart' && component.props.variant === 'reportForecast'

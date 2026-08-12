@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "4.0",
+  "schemaVersion": "5.0",
   "id": "flow-analysis-report",
   "meta": {
     "description": "北京代表处流水分析报告"
@@ -1582,10 +1582,7 @@
   "sections": [
     {
       "id": "report-header",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "plain",
       "components": [
         {
           "id": "report-header",
@@ -1610,11 +1607,7 @@
     {
       "id": "flow-overview",
       "title": "流水总览",
-      "variant": "reportOverview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "total-card",
@@ -1872,11 +1865,7 @@
     {
       "id": "public-region-flow",
       "title": "公网Region流水",
-      "variant": "reportOverview",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "panel",
       "components": [
         {
           "id": "region-card",
@@ -2177,11 +2166,7 @@
     },
     {
       "id": "analysis-heading",
-      "variant": "reportHeading",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "plain",
       "components": [
         {
           "id": "heading",
@@ -2190,7 +2175,8 @@
             "span": 12
           },
           "props": {
-            "title": "流水分析"
+            "title": "流水分析",
+            "variant": "heading"
           }
         }
       ]
@@ -2198,11 +2184,7 @@
     {
       "id": "customer-analysis",
       "title": "客户视角",
-      "variant": "reportCustomerAnalysis",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "card",
       "components": [
         {
           "id": "customer-summary",
@@ -2365,11 +2347,7 @@
     {
       "id": "track-analysis",
       "title": "赛道视角",
-      "variant": "reportDimensionAnalysis",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "card",
       "components": [
         {
           "id": "track-summary",
@@ -2477,11 +2455,7 @@
     {
       "id": "industry-analysis",
       "title": "产业视角",
-      "variant": "reportDimensionAnalysis",
-      "layout": {
-        "type": "grid",
-        "columns": 12
-      },
+      "shell": "card",
       "components": [
         {
           "id": "industry-summary",

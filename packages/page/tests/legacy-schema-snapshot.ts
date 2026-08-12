@@ -297,22 +297,17 @@ export const legacyPageSchema = {
         }
       }
     },
+    // Schema 5.0 例外修订：内容分区删除 `layout`/`variant`、新增 `shell` 是
+    // 全局协议变化，不同步这一处则安全网对所有真实文档失去比较意义。
+    // 分区以外的定义仍保持迁移前原文。
     section: {
       type: 'object',
-      required: ['id', 'layout', 'components'],
+      required: ['id', 'components'],
       additionalProperties: false,
       properties: {
         id: { type: 'string', pattern: idPattern },
         title: { type: 'string', minLength: 1 },
-        layout: {
-          type: 'object',
-          required: ['type', 'columns'],
-          additionalProperties: false,
-          properties: {
-            type: { const: 'grid' },
-            columns: { const: 12 }
-          }
-        },
+        shell: { type: 'string', enum: ['plain', 'panel', 'card'] },
         components: {
           type: 'array',
           minItems: 1,

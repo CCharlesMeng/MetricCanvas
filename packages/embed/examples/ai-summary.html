@@ -50,7 +50,7 @@
 
       window.aiSummaryRuntime = MetricCanvas.mount('#dashboard', {
         document: {
-          schemaVersion: '4.0',
+          schemaVersion: '5.0',
           id: 'ai-summary-example',
           dataSources: {
             risks: {
@@ -67,7 +67,6 @@
           },
           sections: [{
             id: 'risk',
-            layout: { type: 'grid', columns: 12 },
             components: [{
               id: 'risk-summary',
               type: 'aiSummary',

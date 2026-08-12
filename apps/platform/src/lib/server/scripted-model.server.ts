@@ -76,7 +76,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
 function inlinePage(pageId: string, intent: string): Record<string, unknown> {
   const title = intent.trim() || '业务概览';
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: pageId,
     meta: { description: title },
     dataSources: {
@@ -96,7 +96,6 @@ function inlinePage(pageId: string, intent: string): Record<string, unknown> {
     sections: [
       {
         id: 'overview',
-        layout: { type: 'grid', columns: 12 },
         components: [
           {
             id: 'header',
@@ -137,7 +136,7 @@ function dqePage(
     ] as const;
   });
   return {
-    schemaVersion: '4.0',
+    schemaVersion: '5.0',
     id: pageId,
     meta: { description: query.description },
     dataSources: {
@@ -154,7 +153,6 @@ function dqePage(
     },
     sections: [{
       id: 'overview',
-      layout: { type: 'grid', columns: 12 },
       components: [{
         id: 'results-table',
         type: 'table',

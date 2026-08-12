@@ -187,7 +187,7 @@ describe('新旧 page schema 等价性(阶段三A 安全网)', () => {
   describe('已知差异的边界文档（anyOf/oneOf 改写、非判别式联合）', () => {
     function groupedPage() {
       return structuredClone({
-        schemaVersion: '4.0',
+        schemaVersion: '5.0',
         id: 'grouped',
         dataSources: {
           current: {
@@ -207,7 +207,6 @@ describe('新旧 page schema 等价性(阶段三A 安全网)', () => {
         sections: [
           {
             id: 'main',
-            layout: { type: 'grid', columns: 12 },
             components: [
               {
                 id: 'table',
