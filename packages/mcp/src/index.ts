@@ -20,6 +20,8 @@ import type { TemplateLibrary } from '@metriccanvas/template-library';
 
 export * from './agent-protocol';
 export * from './data-context';
+export * from './authoring/auto-visualize';
+export * from './authoring/assemble-page';
 
 export interface MetricCanvasMcpDependencies {
   dataContext: DataContextSearch;
