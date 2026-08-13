@@ -50,7 +50,7 @@
   });
 </script>
 
-<div class="interaction">
+<div class="interaction" class:gap={interaction.kind === 'confirm_gap_entry'}>
   {#if interaction.kind === 'confirm_page_id'}
     <strong>确认页面 id</strong>
     <code class="page-id">{String(interaction.payload.pageId ?? '')}</code>
@@ -65,11 +65,7 @@
       {confirming ? '继续运行中…' : '确认页面 id 并继续'}
     </button>
   {:else if interaction.kind === 'confirm_gap_entry'}
-    <strong>登记指标需求条目</strong>
-    <p class="meta">
-      以下口径当前数据能力无法覆盖;确认后登记为指标需求条目(同一缺口
-      重复出现会累加次数),不确认则直接继续追问即可。
-    </p>
+    <strong class="gap-title">⚑ 指标缺口</strong>
     <ul class="gap-list">
       {#each gapEntries as entry, entryIndex (entryIndex)}
         <li>
@@ -82,9 +78,13 @@
         </li>
       {/each}
     </ul>
-    <button type="button" disabled={confirming} onclick={onconfirm}>
-      {confirming ? '登记中…' : '登记为指标需求'}
+    <button type="button" class="gap-btn" disabled={confirming} onclick={onconfirm}>
+      {confirming ? '登记中…' : '提交指标需求'}
     </button>
+    <p class="meta">
+      提交前先确认口径描述——需求只按你确认的内容登记,不由模型代填;
+      同一缺口重复出现会累加次数。不登记则直接继续追问即可。
+    </p>
   {:else}
     <strong>等待人工确认 · {interaction.kind}</strong>
     {#if payloadEntries.length > 0}
@@ -109,8 +109,16 @@
     border: 1px solid #c7d2fe;
     border-radius: 11px;
   }
+  /* 缺口登记卡对齐原型 gapcard:琥珀警示系。 */
+  .interaction.gap {
+    background: #fffbeb;
+    border-color: #fde68a;
+  }
   strong {
     font-size: 12.5px;
+  }
+  .gap-title {
+    color: #92400e;
   }
   .page-id {
     font-size: 13px;
@@ -135,11 +143,11 @@
   .gap-list {
     display: grid;
     gap: 4px;
-    margin: 0;
-    padding: 6px 8px;
+    margin: 2px 0;
+    padding: 8px 10px;
     background: #fff;
-    border: 1px solid #e0e7ff;
-    border-radius: 8px;
+    border: 1px solid #fde68a;
+    border-radius: 9px;
     list-style: none;
   }
   .gap-list li {
@@ -147,11 +155,12 @@
     gap: 1px;
   }
   .gap-list b {
-    font-size: 11.5px;
+    font-size: 12px;
   }
   .gap-list small {
-    color: #71717a;
-    font-size: 10.5px;
+    color: #b45309;
+    font-size: 11px;
+    line-height: 1.5;
   }
   dt {
     color: #6366f1;
@@ -171,6 +180,20 @@
     font-size: 12px;
     font-weight: 650;
     cursor: pointer;
+  }
+  /* 缺口登记按钮对齐原型 .btn.sm:白底小按钮。 */
+  .gap-btn {
+    padding: 5px 10px;
+    color: #18181b;
+    background: #fff;
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+    font-size: 11.5px;
+    font-weight: 500;
+    transition: border-color 0.15s ease;
+  }
+  .gap-btn:hover:not(:disabled) {
+    border-color: #a1a1aa;
   }
   button:disabled {
     opacity: 0.55;

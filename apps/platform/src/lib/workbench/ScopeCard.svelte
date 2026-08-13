@@ -9,11 +9,14 @@
    */
   let {
     card,
-    onconfirm
+    onconfirm,
+    confirmDisabled = false
   }: {
     card: ScopeCardView;
     /** 等待确认且本卡可操作时由父组件传入;缺省只回显不提供动作。 */
     onconfirm?: (() => void) | undefined;
+    /** 候选歧义尚未选择口径:确认按钮禁用并提示先选候选。 */
+    confirmDisabled?: boolean;
   } = $props();
 </script>
 
@@ -63,7 +66,12 @@
   </dl>
   {#if card.awaitingConfirmation && onconfirm}
     <div class="confirm-row">
-      <button type="button" onclick={() => onconfirm?.()}>确认口径并执行</button>
+      <button type="button" disabled={confirmDisabled} onclick={() => onconfirm?.()}>
+        确认口径并执行
+      </button>
+      {#if confirmDisabled}
+        <p class="note">请先在上方候选卡中选择一个口径,再确认执行。</p>
+      {/if}
       <p class="note">命中阻塞条件(候选歧义或自由生成表达式),已暂停执行;要修改口径,直接在下方追问。</p>
       {#if card.adHocDefinition}
         <p class="note">确认临时口径即登记一条指标需求条目(重复出现累加次数),供数据侧评估是否建设正式指标。</p>

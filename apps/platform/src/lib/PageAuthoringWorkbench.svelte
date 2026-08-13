@@ -5,11 +5,13 @@
   import { RuntimeView } from '@metriccanvas/runtime-ui';
   import type { AgentMessage } from './server/agent/types';
   import { createPlatformDataGateway } from './platform-data-gateway';
+  import type { MetricCandidate } from './server/session/step-event';
   import {
     buildAgentStreamRequestBody,
     pinComponent,
     unpinComponent,
-    type PinnedComponentChoice
+    type PinnedComponentChoice,
+    type ScopeCardConfirmationChoice
   } from './workbench/agent-request';
   import {
     applyOutcome,
@@ -27,6 +29,7 @@
   } from './workbench/session-replay';
   import { askFormulaTraces, type PromotedOutcome } from './workbench/promote-flow';
   import { workbenchPageViewModel } from './workbench/transient-page';
+  import CandidatesCard from './workbench/CandidatesCard.svelte';
   import ComponentPinStrip from './workbench/ComponentPinStrip.svelte';
   import InteractionCard from './workbench/InteractionCard.svelte';
   import PromotePanel from './workbench/PromotePanel.svelte';
@@ -74,6 +77,10 @@
   let cancelRequested = $state(false);
   let promoteOpen = $state(false);
   let threadEl: HTMLElement | null = $state(null);
+  /** 消歧候选选择(runId → 用户选中的候选),随口径卡确认传回编排。 */
+  let candidateChoices = $state<Record<string, MetricCandidate>>({});
+  /** 执行过程展开状态(runId → 是否展开);缺省运行中展开、结束后收起。 */
+  let stepsOpen = $state<Record<string, boolean>>({});
 
   const dataGateway = createPlatformDataGateway();
 
@@ -90,6 +97,30 @@
     failed: '已失败',
     cancelled: '已取消'
   };
+
+  function candidateSteps(run: WorkbenchRunView) {
+    return run.steps.filter((step) => step.kind === 'candidates_retrieved');
+  }
+
+  /** 消歧待选:运行停在口径确认且编排未选中指标(候选歧义)。 */
+  function disambiguationPending(run: WorkbenchRunView): boolean {
+    if (run.pendingInteraction?.kind !== 'confirm_scope_card') return false;
+    const last = candidateSteps(run).at(-1);
+    return (
+      last !== undefined &&
+      last.kind === 'candidates_retrieved' &&
+      last.selectedMetric === null &&
+      last.candidates.length > 1
+    );
+  }
+
+  function stepsExpanded(run: WorkbenchRunView): boolean {
+    return stepsOpen[run.runId] ?? run.status === 'running';
+  }
+
+  function toggleSteps(run: WorkbenchRunView) {
+    stepsOpen = { ...stepsOpen, [run.runId]: !stepsExpanded(run) };
+  }
 
   $effect(() => {
     void runs;
@@ -137,7 +168,10 @@
    * 发起一次流式运行。question 为 null 表示续跑(交互确认 / 重试失败
    * 步骤):以上一轮 outcome.messages 为基线携带新的 runId 再次 POST。
    */
-  async function startRun(question: string | null) {
+  async function startRun(
+    question: string | null,
+    scopeConfirmations?: readonly ScopeCardConfirmationChoice[]
+  ) {
     if (running) return;
     saveNotice = '';
     saveError = '';
@@ -169,6 +203,9 @@
           ...(sessionId === null ? {} : { sessionId }),
           messages: conversationBaseline,
           confirmedPageIds,
+          ...(scopeConfirmations !== undefined && scopeConfirmations.length > 0
+            ? { scopeConfirmations }
+            : {}),
           draft: currentDocument,
           pinnedComponents: pins
         })
@@ -214,6 +251,26 @@
     if (interaction.kind === 'confirm_page_id') {
       const pageId = String(interaction.payload.pageId ?? '');
       if (pageId) confirmedPageIds = [...new Set([...confirmedPageIds, pageId])];
+    }
+    if (interaction.kind === 'confirm_scope_card') {
+      // 口径卡确认(#66 契约):歧义候选须携带用户在候选卡上的结构化选择,
+      // 空白确认会被编排安全地重新阻塞。
+      const choice = candidateChoices[run.runId];
+      if (disambiguationPending(run) && !choice) return;
+      await startRun(null, [
+        {
+          interactionId: interaction.id,
+          ...(choice
+            ? {
+                selectedMetric: {
+                  businessDomain: choice.businessDomain,
+                  metricName: choice.metricName
+                }
+              }
+            : {})
+        }
+      ]);
+      return;
     }
     await startRun(null);
   }
@@ -295,6 +352,26 @@
         {/if}
 
         <div class="reply">
+          {#each candidateSteps(run) as candidateStep, candidateIndex (candidateIndex)}
+            {#if candidateStep.kind === 'candidates_retrieved' && candidateStep.candidates.length > 0}
+              {@const selectable =
+                isLast &&
+                run.status === 'interaction_required' &&
+                disambiguationPending(run) &&
+                candidateIndex === candidateSteps(run).length - 1}
+              <div in:fly={{ y: 8, duration: 240 }}>
+                <CandidatesCard
+                  candidates={candidateStep.candidates}
+                  selectedMetric={candidateStep.selectedMetric}
+                  {selectable}
+                  chosen={candidateChoices[run.runId] ?? null}
+                  onselect={(candidate) =>
+                    (candidateChoices = { ...candidateChoices, [run.runId]: candidate })}
+                />
+              </div>
+            {/if}
+          {/each}
+
           {#each run.replies as reply, replyIndex (replyIndex)}
             <p class="reply-text" in:fly={{ y: 8, duration: 260 }}>{reply}</p>
           {/each}
@@ -302,6 +379,7 @@
           {#each scopeCards(run) as card, cardIndex (cardIndex)}
             <ScopeCard
               {card}
+              confirmDisabled={disambiguationPending(run) && !candidateChoices[run.runId]}
               onconfirm={card.awaitingConfirmation &&
               isLast &&
               run.status === 'interaction_required'
@@ -311,10 +389,16 @@
           {/each}
 
           {#if run.steps.length > 0}
-            <details class="timeline" open={run.status === 'running'}>
-              <summary>执行过程({run.steps.length} 步)</summary>
-              <StepTimeline steps={run.steps} />
-            </details>
+            <div class="timeline">
+              <button type="button" class="linkish" onclick={() => toggleSteps(run)}>
+                {stepsExpanded(run) ? '收起' : '展开'}执行过程({run.steps.length} 步)
+              </button>
+              {#if stepsExpanded(run)}
+                <div class="steps-wrap" in:fade={{ duration: 160 }}>
+                  <StepTimeline steps={run.steps} />
+                </div>
+              {/if}
+            </div>
           {/if}
 
           {#if run.status === 'running'}
@@ -354,12 +438,12 @@
 
     <form class="composer" onsubmit={ask}>
       <textarea
-        rows="3"
+        rows="2"
         bind:value={composerText}
         onkeydown={composerKeydown}
         placeholder="描述业务问题,或追问:换维度、改筛选、调整展示(Enter 发送,Shift+Enter 换行)"
       ></textarea>
-      <button type="submit" class="primary" disabled={running || !composerText.trim()}>
+      <button type="submit" class="btn" disabled={running || !composerText.trim()}>
         {running ? '运行中…' : '发送'}
       </button>
     </form>
@@ -458,7 +542,7 @@
 <style>
   .workbench {
     display: grid;
-    grid-template-columns: 380px minmax(0, 1fr);
+    grid-template-columns: 330px minmax(0, 1fr);
     height: calc(100vh - 54px);
     background: #f4f4f5;
   }
@@ -500,7 +584,7 @@
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 12px;
+    gap: 14px;
     min-height: 0;
     padding: 16px 18px;
     overflow-y: auto;
@@ -538,18 +622,16 @@
     line-height: 1.7;
     white-space: pre-wrap;
   }
-  .timeline summary {
-    color: #6366f1;
-    font-size: 11.5px;
-    cursor: pointer;
-    user-select: none;
-    transition: color 0.15s ease;
+  /* 执行过程:linkish 切换 + 展开区虚线分隔(原型 v2)。 */
+  .timeline {
+    display: grid;
+    justify-items: start;
   }
-  .timeline summary:hover {
-    color: #4338ca;
-  }
-  .timeline[open] summary {
-    margin-bottom: 6px;
+  .steps-wrap {
+    width: 100%;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed #e4e4e7;
   }
   .run-state {
     margin: 0;
@@ -735,8 +817,7 @@
     color: #92400e;
     font-weight: 650;
   }
-  .btn,
-  .primary {
+  .btn {
     padding: 7px 13px;
     background: #fff;
     border: 1px solid #d4d4d8;
@@ -754,18 +835,7 @@
     border-color: #a1a1aa;
     box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   }
-  .primary {
-    color: #fff;
-    background: #4f46e5;
-    border-color: #4f46e5;
-  }
-  .primary:hover:not(:disabled) {
-    background: #4338ca;
-    border-color: #4338ca;
-    box-shadow: 0 2px 8px rgb(79 70 229 / 30%);
-  }
-  .btn:active:not(:disabled),
-  .primary:active:not(:disabled) {
+  .btn:active:not(:disabled) {
     transform: translateY(1px);
   }
   .btn.danger {
@@ -776,9 +846,8 @@
     background: #fef2f2;
     border-color: #fca5a5;
   }
-  .btn:disabled,
-  .primary:disabled {
-    opacity: 0.5;
+  .btn:disabled {
+    opacity: 0.45;
     cursor: not-allowed;
   }
   .notice {

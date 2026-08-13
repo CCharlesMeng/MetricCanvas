@@ -91,20 +91,6 @@
               · 临时口径 <code>{step.adHocDefinition.formula}</code>
             {/if}
           </small>
-          {#if step.candidates.length > 0}
-            <ul class="candidates">
-              {#each step.candidates as candidate (candidate.metricName)}
-                <li class:chosen={candidate.metricName === step.selectedMetric}>
-                  <b>{candidate.metricName}</b>
-                  <small>
-                    {candidate.businessDomain}{candidate.definitionDifference
-                      ? ` · ${candidate.definitionDifference}`
-                      : ''}
-                  </small>
-                </li>
-              {/each}
-            </ul>
-          {/if}
         </span>
       {:else if step.kind === 'scope_card'}
         <span class="t">
@@ -259,30 +245,5 @@
   .t code {
     font-size: 10.5px;
     color: #52525b;
-  }
-  .candidates {
-    display: grid;
-    gap: 3px;
-    padding: 6px 8px;
-    margin: 5px 0 2px;
-    background: #fafafa;
-    border: 1px solid #f4f4f5;
-    border-radius: 8px;
-    list-style: none;
-  }
-  .candidates li {
-    display: grid;
-    gap: 1px;
-    padding: 2px 0;
-  }
-  .candidates li.chosen b {
-    color: #4f46e5;
-  }
-  .candidates b {
-    font-size: 11.5px;
-  }
-  .candidates small {
-    color: #71717a;
-    font-size: 10.5px;
   }
 </style>
