@@ -57,9 +57,9 @@
     error?: { code?: string; message?: string };
   }
 
-  let composerText = $state(
-    '创建销售经营概览：展示成交总额、区域对比和成交趋势'
-  );
+  // 默认演示问题:命中语义面「运营分析」域,带具体年月(结构化相对时间
+  // 不在 V0 范围,「上个月」这类表述会在执行段被仿真如实拒答)。
+  let composerText = $state('2026年7月各区域的Tokens消耗量是多少？');
   /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
   let sessionId = $state<string | null>(null);
   let runs = $state<WorkbenchRunView[]>([]);
