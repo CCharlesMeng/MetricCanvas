@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
   import type { AgentMessage } from './server/agent/types';
@@ -19,6 +21,10 @@
     type WorkbenchRunView
   } from './workbench/run-state';
   import { openAgentRunStream } from './workbench/stream-consumer';
+  import {
+    sessionReplayView,
+    type RecordedSessionPayload
+  } from './workbench/session-replay';
   import { askFormulaTraces, type PromotedOutcome } from './workbench/promote-flow';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import ComponentPinStrip from './workbench/ComponentPinStrip.svelte';
@@ -54,6 +60,8 @@
   let composerText = $state(
     '创建销售经营概览：展示成交总额、区域对比和成交趋势'
   );
+  /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
+  let sessionId = $state<string | null>(null);
   let runs = $state<WorkbenchRunView[]>([]);
   let conversationBaseline = $state<AgentMessage[]>([]);
   let confirmedPageIds = $state<string[]>([]);
@@ -88,6 +96,28 @@
     if (threadEl) threadEl.scrollTo({ top: threadEl.scrollHeight, behavior: 'smooth' });
   });
 
+  // 刷新后按会话 id 回放全部步骤(#69):URL 携带 session 参数时读取
+  // 落库事件流并物化为只读时间线;他人会话按存储可见性过滤返回 404,
+  // 静默跳过(不可见与不存在同响应,不提示存在性)。
+  onMount(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('session');
+    if (!fromUrl) return;
+    sessionId = fromUrl;
+    void replayRecordedSession(fromUrl);
+  });
+
+  async function replayRecordedSession(id: string) {
+    try {
+      const response = await fetch(`/api/sessions/${encodeURIComponent(id)}`);
+      if (!response.ok) return;
+      const payload = (await response.json()) as { session?: RecordedSessionPayload };
+      if (!payload.session || payload.session.events.length === 0) return;
+      runs = [...runs, sessionReplayView(payload.session)];
+    } catch {
+      // 回放不可用(如会话过保留期)不阻塞新提问。
+    }
+  }
+
   async function ask(event: SubmitEvent) {
     event.preventDefault();
     const question = composerText.trim();
@@ -118,6 +148,12 @@
         { role: 'user', content: question }
       ];
     }
+    if (sessionId === null) {
+      // 首次运行开启分析会话:步骤事件按 ADR-0030 落库,URL 反映会话 id
+      // 使刷新后可回放;不产生新的历史条目。
+      sessionId = crypto.randomUUID();
+      replaceState(`?session=${sessionId}`, {});
+    }
     const runId = crypto.randomUUID();
     let view = createRunView({ runId, question });
     runs = [...runs, view];
@@ -130,6 +166,7 @@
       const frames = openAgentRunStream({
         body: buildAgentStreamRequestBody({
           runId,
+          ...(sessionId === null ? {} : { sessionId }),
           messages: conversationBaseline,
           confirmedPageIds,
           draft: currentDocument,

@@ -61,6 +61,20 @@ describe('工作台 Agent 流式请求构造', () => {
     });
     expect('pinnedComponents' in body).toBe(false);
     expect('draft' in body).toBe(false);
+    expect('sessionId' in body).toBe(false);
+    expect(isWorkbenchAgentRequest(body)).toBe(true);
+  });
+
+  it('分析会话 id 随请求传回,步骤事件按 ADR-0030 落库可回放(#69)', () => {
+    const body = buildAgentStreamRequestBody({
+      runId: 'run-3',
+      sessionId: 'session-42',
+      messages: [{ role: 'user', content: '上个月各行业的新增客户数是多少?' }],
+      confirmedPageIds: [],
+      draft: null,
+      pinnedComponents: []
+    });
+    expect(body.sessionId).toBe('session-42');
     expect(isWorkbenchAgentRequest(body)).toBe(true);
   });
 });

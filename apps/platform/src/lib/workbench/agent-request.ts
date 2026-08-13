@@ -26,6 +26,8 @@ export interface ScopeCardConfirmationChoice {
 
 export interface WorkbenchStreamRequestInput {
   runId: string;
+  /** 关联的分析会话 id:提供时步骤事件按 ADR-0030 落库,可按会话 id 回放。 */
+  sessionId?: string;
   /** 会话基线:上一轮 outcome.messages(如有)+ 本轮新增用户消息。 */
   messages: readonly AgentMessage[];
   /** 已确认的页面 id(confirm_page_id 交互的产物)。 */
@@ -45,6 +47,7 @@ export function buildAgentStreamRequestBody(
 ): Record<string, unknown> {
   return {
     runId: input.runId,
+    ...(input.sessionId === undefined ? {} : { sessionId: input.sessionId }),
     messages: [...input.messages],
     confirmations: [
       ...input.confirmedPageIds.map((pageId) => ({
