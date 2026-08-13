@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery, Page } from '@metriccanvas/page';
 import { createFilterState } from '../src/filter-state';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
-import type { DataGateway } from '../src/ports';
+import type { DataGateway, QueryDiagnosticContext } from '../src/ports';
 
 const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -304,6 +304,50 @@ describe('页面数据源快照编排', () => {
     stream.setQueryPage('sales', 1);
     await flush();
     expect(received.at(-1)?.pagination).toEqual({ offset: 20, limit: 20 });
+    unsubscribe();
+  });
+
+  it('生效查询携带查询诊断上下文:页面、页面修订与去重后的全部数据源 id', async () => {
+    const contexts: Array<QueryDiagnosticContext | undefined> = [];
+    const gateway: DataGateway = {
+      async fetchData(_query, diagnosticContext) {
+        contexts.push(diagnosticContext);
+        return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
+      },
+      async fetchDimensionValues() {
+        return [];
+      }
+    };
+    const document = page();
+    // 复制一份完全相同的查询数据源:生效查询去重后仍应指认两个数据源。
+    document.dataSources['sales-copy'] = JSON.parse(
+      JSON.stringify(document.dataSources.sales)
+    ) as Page['dataSources'][string];
+    document.sections[0]!.components.push({
+      id: 'sales-table-copy',
+      type: 'table',
+      layout: { span: 8 },
+      data: { main: 'sales-copy' },
+      props: {
+        columns: [
+          { field: 'region', title: '区域' },
+          { field: 'revenue', title: '收入' }
+        ]
+      }
+    });
+
+    const unsubscribe = orchestrate(document, gateway, undefined, {
+      pageRevisionId: 'rev-9'
+    }).subscribe(() => {});
+    await flush();
+
+    expect(contexts).toEqual([
+      {
+        pageId: 'mixed-runtime',
+        pageRevisionId: 'rev-9',
+        dataSourceIds: ['sales', 'sales-copy']
+      }
+    ]);
     unsubscribe();
   });
 });

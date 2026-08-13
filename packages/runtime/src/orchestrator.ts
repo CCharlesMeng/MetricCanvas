@@ -10,7 +10,7 @@ import {
   type FilterState,
   type FilterValues
 } from './filter-state';
-import type { DataGateway } from './ports';
+import type { DataGateway, QueryDiagnosticContext } from './ports';
 
 /** 页面数据快照的唯一真元：页面数据源 id → 快照。 */
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
@@ -44,12 +44,19 @@ interface QueryBinding extends DataSourceBinding {
 export function orchestrate(
   page: Page,
   gateway: DataGateway,
-  filters?: FilterState
+  filters?: FilterState,
+  diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>
 ): PageSnapshotStream {
   const bindings = collectReferencedSources(page);
   const queryBindings = bindings.filter(isQueryBinding);
   const defaults = initialFilterValues(page.filters ?? []);
   const subscribers = new Set<(value: PageDataSnapshots) => void>();
+  const diagnosticBase: QueryDiagnosticContext = {
+    pageId: page.id,
+    ...(diagnostics?.pageRevisionId !== undefined
+      ? { pageRevisionId: diagnostics.pageRevisionId }
+      : {})
+  };
   let session: Session | null = null;
 
   return {
@@ -57,7 +64,7 @@ export function orchestrate(
       subscribers.add(run);
       session ??= startSession(bindings, queryBindings, gateway, filters, (snapshots) => {
         for (const subscriber of subscribers) notify(subscriber, snapshots);
-      }, defaults);
+      }, defaults, diagnosticBase);
       notify(run, session.current());
       return () => {
         if (!subscribers.delete(run)) return;
@@ -180,7 +187,8 @@ function startSession(
   gateway: DataGateway,
   filters: FilterState | undefined,
   push: (snapshots: PageDataSnapshots) => void,
-  defaults: FilterValues
+  defaults: FilterValues,
+  diagnosticBase: QueryDiagnosticContext
 ): Session {
   let values: FilterValues = filters ? new Map() : defaults;
   let primed = false;
@@ -272,8 +280,12 @@ function startSession(
         land(cached);
         continue;
       }
+      const diagnosticContext: QueryDiagnosticContext = {
+        ...diagnosticBase,
+        dataSourceIds: members.map(([binding]) => binding.sourceId)
+      };
       withSlot(() => {
-        void execute(query, gateway).then((snapshot) => {
+        void execute(query, gateway, diagnosticContext).then((snapshot) => {
           release();
           const correctedPage = correctedPageIndex(query, snapshot);
           if (correctedPage !== undefined) {
@@ -390,10 +402,11 @@ function composeEffectiveQuery(
 
 async function execute(
   query: EffectiveQuery,
-  gateway: DataGateway
+  gateway: DataGateway,
+  diagnosticContext: QueryDiagnosticContext
 ): Promise<DataSnapshot> {
   try {
-    const result = await gateway.fetchData(query);
+    const result = await gateway.fetchData(query, diagnosticContext);
     if (query.pagination && result.totalCount === undefined) {
       throw new Error('查询分页结果缺少 totalCount');
     }

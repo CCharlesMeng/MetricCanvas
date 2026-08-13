@@ -6,26 +6,43 @@ import {
   type JsonValue,
   type Row
 } from '@metriccanvas/page';
-import type { DataGateway, DataGatewayResult } from '@metriccanvas/runtime';
+import type {
+  DataGateway,
+  DataGatewayResult,
+  QueryDiagnosticContext
+} from '@metriccanvas/runtime';
+import type { DqeDevDetail } from './dev-detail';
 
 export const DEFAULT_DQE_ENDPOINT =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 
-export type DqeDiagnosticPhase =
-  | 'base'
-  | 'effective'
-  | 'batch'
-  | 'response'
-  | 'normalized'
-  | 'error';
+export type DqeDiagnosticStatus = 'success' | 'error';
 
+/**
+ * 查询诊断记录:生产态查询诊断的唯一形状(issue #47)。
+ *
+ * 只保留定位标识(看板页面、页面修订、页面数据源、执行与上游请求)、
+ * 开始时间、耗时、结果行数、状态与结构化错误分类。形状封闭且字段全部为
+ * 标量或标识列表——原始响应、数据行、字段值、筛选值与上游错误正文
+ * 没有任何字段可以进入。开发期明细走独立的 DqeDevDetail 通道。
+ */
 export interface DqeDiagnosticRecord {
+  /** 数据网关生成的执行标识;一次生效查询执行恰好一条记录。 */
   executionId: string;
-  phase: DqeDiagnosticPhase;
-  recordedAt: string;
+  /** 批量请求标识;进入批次前已失败的执行没有。 */
   batchId?: string;
-  resultIndex?: number;
-  detail: unknown;
+  /** 上游响应头 x-request-id。 */
+  requestId?: string;
+  pageId?: string;
+  pageRevisionId?: string;
+  /** 本次执行服务的页面数据源 id;生效查询去重后可能对应多个。 */
+  dataSourceIds?: readonly string[];
+  startedAt: string;
+  durationMs: number;
+  status: DqeDiagnosticStatus;
+  rowCount?: number;
+  totalCount?: number;
+  errorCode?: DqeGatewayError['code'] | 'UNKNOWN';
 }
 
 export interface DqeDiagnostics {
@@ -72,10 +89,15 @@ export interface DqeGatewayConfig {
   maxConcurrentBatches?: number;
   credentials?: RequestCredentials;
   diagnostics?: DqeDiagnostics;
+  /** 开发期明细通道:显式注入才存在,生产渲染通道不得注入。 */
+  devDetail?: DqeDevDetail;
 }
 
 interface PendingQuery {
   executionId: string;
+  startedAt: string;
+  startedMs: number;
+  context?: QueryDiagnosticContext;
   query: EffectiveQuery;
   item: JsonObject;
   resolve(result: DataGatewayResult): void;
@@ -83,6 +105,11 @@ interface PendingQuery {
 }
 
 export class DqeGatewayError extends Error {
+  /**
+   * detail 只允许结构化事实(类型名、数量、字段名、上游返回码):
+   * 原始响应、数据行、字段值、筛选值与上游错误正文不得进入,
+   * 否则会经错误日志泄漏业务数据(issue #47)。
+   */
   constructor(
     readonly code:
       | 'DQE_CONFIG_ERROR'
@@ -114,7 +141,8 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
     timeoutMs = 30_000,
     maxConcurrentBatches = 5,
     credentials = 'same-origin',
-    diagnostics
+    diagnostics,
+    devDetail
   } = config;
 
   let sequence = 0;
@@ -124,21 +152,66 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
   let activeBatches = 0;
   const batchWaiters: Array<() => void> = [];
 
-  function diagnostic(
-    executionId: string,
-    phase: DqeDiagnosticPhase,
-    detail: unknown,
-    batchId?: string,
-    resultIndex?: number
+  interface ExecutionOutcome {
+    status: DqeDiagnosticStatus;
+    batchId?: string;
+    requestId?: string;
+    rowCount?: number;
+    totalCount?: number;
+    errorCode?: DqeDiagnosticRecord['errorCode'];
+  }
+
+  function recordDiagnostic(
+    call: Pick<PendingQuery, 'executionId' | 'startedAt' | 'startedMs' | 'context'>,
+    outcome: ExecutionOutcome
   ): void {
-    diagnostics?.record({
-      executionId,
-      phase,
-      recordedAt: new Date().toISOString(),
-      ...(batchId ? { batchId } : {}),
-      ...(resultIndex !== undefined ? { resultIndex } : {}),
-      detail
+    if (!diagnostics) return;
+    const { pageId, pageRevisionId, dataSourceIds } = call.context ?? {};
+    diagnostics.record({
+      executionId: call.executionId,
+      ...(outcome.batchId !== undefined ? { batchId: outcome.batchId } : {}),
+      ...(outcome.requestId !== undefined ? { requestId: outcome.requestId } : {}),
+      ...(pageId !== undefined ? { pageId } : {}),
+      ...(pageRevisionId !== undefined ? { pageRevisionId } : {}),
+      ...(dataSourceIds !== undefined ? { dataSourceIds } : {}),
+      startedAt: call.startedAt,
+      durationMs: Math.max(0, Date.now() - call.startedMs),
+      status: outcome.status,
+      ...(outcome.rowCount !== undefined ? { rowCount: outcome.rowCount } : {}),
+      ...(outcome.totalCount !== undefined ? { totalCount: outcome.totalCount } : {}),
+      ...(outcome.errorCode !== undefined ? { errorCode: outcome.errorCode } : {})
     });
+  }
+
+  function settleSuccess(
+    call: PendingQuery,
+    result: DataGatewayResult,
+    batchId: string,
+    requestId?: string
+  ): void {
+    recordDiagnostic(call, {
+      status: 'success',
+      batchId,
+      ...(requestId !== undefined ? { requestId } : {}),
+      rowCount: result.rows.length,
+      ...(result.totalCount !== undefined ? { totalCount: result.totalCount } : {})
+    });
+    call.resolve(result);
+  }
+
+  function settleFailure(
+    call: PendingQuery,
+    cause: unknown,
+    batchId?: string,
+    requestId?: string
+  ): void {
+    recordDiagnostic(call, {
+      status: 'error',
+      ...(batchId !== undefined ? { batchId } : {}),
+      ...(requestId !== undefined ? { requestId } : {}),
+      errorCode: cause instanceof DqeGatewayError ? cause.code : 'UNKNOWN'
+    });
+    call.reject(cause);
   }
 
   function acquireBatch(): Promise<void> {
@@ -158,9 +231,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
   async function executeBatch(calls: PendingQuery[]): Promise<void> {
     await acquireBatch();
     const batchId = `dqe-batch-${++batchSequence}`;
-    calls.forEach((call, index) =>
-      diagnostic(call.executionId, 'batch', { endpoint }, batchId, index)
-    );
+    let requestId: string | undefined;
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), timeoutMs);
     try {
@@ -171,6 +242,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
         body: JSON.stringify({ dsl_list: calls.map((call) => call.item) }),
         signal: controller.signal
       });
+      requestId = response.headers.get('x-request-id') ?? undefined;
       if (!response.ok) {
         throw new DqeGatewayError(
           'DQE_TRANSPORT_ERROR',
@@ -178,13 +250,12 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
           { status: response.status }
         );
       }
-      const requestId = response.headers.get('x-request-id') ?? undefined;
       const envelope = await response.json();
       if (!isRecord(envelope) || envelope.retCode !== 'CBC.0000') {
         throw new DqeGatewayError(
           'DQE_ENVELOPE_ERROR',
           `DQE 返回失败:${String(isRecord(envelope) ? envelope.retCode : 'INVALID')}`,
-          envelope
+          { retCode: isRecord(envelope) ? String(envelope.retCode) : 'INVALID' }
         );
       }
       if (!Array.isArray(envelope.results) || envelope.results.length !== calls.length) {
@@ -193,25 +264,21 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
           `DQE results 数量与 dsl_list 不一致:期望 ${calls.length},实际 ${
             Array.isArray(envelope.results) ? envelope.results.length : '非数组'
           }`,
-          envelope
+          {
+            expected: calls.length,
+            actual: Array.isArray(envelope.results) ? envelope.results.length : describeType(envelope.results)
+          }
         );
       }
 
       envelope.results.forEach((rawResult, index) => {
         const call = calls[index]!;
-        diagnostic(
-          call.executionId,
-          'response',
-          { ...(requestId ? { requestId } : {}), result: rawResult },
-          batchId,
-          index
-        );
         try {
           if (!isRecord(rawResult) || rawResult.code !== 'SUCCESS') {
             throw new DqeGatewayError(
               'DQE_ITEM_ERROR',
               `DQE 查询项执行失败:${String(isRecord(rawResult) ? rawResult.code : 'INVALID')}`,
-              rawResult
+              { resultCode: isRecord(rawResult) ? String(rawResult.code) : 'INVALID' }
             );
           }
           const rows = normalizeRows(rawResult.data, call.query);
@@ -223,31 +290,21 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
             throw new DqeGatewayError(
               'DQE_ITEM_ERROR',
               'DQE 成功查询项的 total_count 必须是非负整数',
-              rawResult
+              { totalCountType: describeType(rawResult.total_count) }
             );
           }
-          const totalCount = rawResult.total_count;
-          diagnostic(
-            call.executionId,
-            'normalized',
-            { rowCount: rows.length, totalCount, rows: rows.slice(0, 20) },
-            batchId,
-            index
-          );
-          call.resolve({ rows, totalCount });
+          settleSuccess(call, { rows, totalCount: rawResult.total_count }, batchId, requestId);
         } catch (cause) {
-          diagnostic(call.executionId, 'error', diagnosticError(cause), batchId, index);
-          call.reject(cause);
+          settleFailure(call, cause, batchId, requestId);
         }
       });
     } catch (cause) {
       const error =
         cause instanceof DqeGatewayError
           ? cause
-          : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`, cause);
+          : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
       for (const call of calls) {
-        diagnostic(call.executionId, 'error', diagnosticError(error), batchId);
-        call.reject(error);
+        settleFailure(call, error, batchId, requestId);
       }
     } finally {
       clearTimeout(timer);
@@ -263,32 +320,42 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
   }
 
   return {
-    fetchData(query) {
+    fetchData(query, diagnosticContext) {
+      const execution = {
+        executionId: `dqe-exec-${++sequence}`,
+        startedAt: new Date().toISOString(),
+        startedMs: Date.now(),
+        ...(diagnosticContext ? { context: diagnosticContext } : {})
+      };
+      const failEarly = (cause: unknown) => {
+        recordDiagnostic(execution, {
+          status: 'error',
+          errorCode: cause instanceof DqeGatewayError ? cause.code : 'UNKNOWN'
+        });
+        return Promise.reject(cause);
+      };
       if (query.language !== 'dqe') {
-        return Promise.reject(
+        return failEarly(
           new DqeGatewayError('DQE_CONFIG_ERROR', 'DQE 数据网关收到非 DQE 生效查询')
         );
       }
       if (query.body.dsl_list.length !== 1) {
-        return Promise.reject(
+        return failEarly(
           new DqeGatewayError(
             'DQE_CONFIG_ERROR',
             `一个命名页面数据源必须包含一个 DQE 查询项,收到 ${query.body.dsl_list.length} 个`
           )
         );
       }
-      const executionId = `dqe-exec-${++sequence}`;
-      diagnostic(executionId, 'base', query.body);
       let item: JsonObject;
       try {
         item = effectiveDqeItem(query);
-        diagnostic(executionId, 'effective', item);
       } catch (cause) {
-        diagnostic(executionId, 'error', diagnosticError(cause));
-        return Promise.reject(cause);
+        return failEarly(cause);
       }
+      devDetail?.record(execution.executionId, item);
       return new Promise<DataGatewayResult>((resolve, reject) => {
-        pending.push({ executionId, query, item, resolve, reject });
+        pending.push({ ...execution, query, item, resolve, reject });
         if (!scheduled) {
           scheduled = true;
           queueMicrotask(flush);
@@ -377,7 +444,8 @@ function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
 
 /**
  * 归一化问题 → 数据网关错误。与结果字段契约校验一致,错误只携带
- * 行号、字段名、错误分类与预期类型,不回显业务字段值。
+ * 行号、字段名、错误分类与预期类型,不回显业务字段值(issue #47/#50:
+ * 原始行与原始值在 issue 形状上即被结构性排除)。
  */
 function gatewayNormalizationError(
   issue: QueryRowNormalizationIssue
@@ -515,8 +583,8 @@ function isRecord(value: unknown): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
-function diagnosticError(cause: unknown): unknown {
-  return cause instanceof DqeGatewayError
-    ? { code: cause.code, message: cause.message, detail: cause.detail }
-    : { code: 'UNKNOWN', message: String(cause) };
+/** 错误 detail 只描述值的类型,不回显值本身。 */
+function describeType(value: unknown): string {
+  if (value === null) return 'null';
+  return Array.isArray(value) ? 'array' : typeof value;
 }

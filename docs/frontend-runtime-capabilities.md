@@ -223,6 +223,7 @@ flowchart TD
 | DQE 批量 | 同一微任务窗口的查询合并为 `dsl_list`，按位置拆分 `results` |
 | 查询分页 | 修改克隆查询项的 `order.offset/limit`，使用 `total_count` 派生页码 |
 | 错误隔离 | 数据源失败只影响引用它的组件 |
+| 查询诊断 | 每次执行落一条封闭形状的诊断记录（标识、耗时、行数、状态、错误分类），默认不保留业务数据行；字段与安全约束见 `docs/dashboard-runtime-architecture.md` 第 16 节 |
 
 ### 4.3 页内下钻时序
 

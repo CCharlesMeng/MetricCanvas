@@ -1,4 +1,9 @@
-export type { PageRepository, DataGateway, DataGatewayResult } from './ports';
+export type {
+  PageRepository,
+  DataGateway,
+  DataGatewayResult,
+  QueryDiagnosticContext
+} from './ports';
 export { orchestrate } from './orchestrator';
 export type {
   PageDataSnapshots,

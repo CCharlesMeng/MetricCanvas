@@ -23,6 +23,8 @@
 
   let pageState = $state<PageLoadState>({ phase: 'loading' });
   let initialSearch = $state('');
+  /** 精确修订预览的修订标识,仅用于查询诊断定位。 */
+  let pageRevisionId = $state<string | undefined>(undefined);
   let activePageId = '';
   let loadSession = 0;
 
@@ -43,6 +45,7 @@
     if (pageId === activePageId) return;
     activePageId = pageId;
     initialSearch = page.url.searchParams.toString();
+    pageRevisionId = page.url.searchParams.get('revision') ?? undefined;
     void loadPage(pageId);
   });
 
@@ -81,6 +84,7 @@
     {aiSummary}
     {initialSearch}
     {navigation}
+    {pageRevisionId}
   />
 {/if}
 
