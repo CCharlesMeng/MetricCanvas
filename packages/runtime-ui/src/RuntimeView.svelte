@@ -19,16 +19,19 @@
     type TypedError
   } from '@metriccanvas/page';
   import {
+    createDimensionValuesLoader,
     createFilterState,
+    dimensionValuesSnapshot,
     drillThroughSearch,
     initialFilterValues,
     orchestrate,
+    type DimensionValuesSnapshots,
     type FilterState,
     type FilterValue,
     type FilterValues,
-    type DataGateway,
     type PageDataSnapshots,
-    type PageSnapshotStream
+    type PageSnapshotStream,
+    type RuntimeDataGateway
   } from '@metriccanvas/runtime';
   import {
     BarChart,
@@ -77,12 +80,10 @@
     | { phase: 'configuration-error'; error: RuntimeConfigurationError }
     | { phase: 'ready'; page: Page; capabilities: PageCapabilities };
 
-  const inlineGateway: DataGateway = {
+  // inline 页面不访问数据网关;候选值能力缺席即不可用,不需要抛错桩。
+  const inlineGateway: RuntimeDataGateway = {
     async fetchData() {
       throw new Error('inline 看板页面不应访问数据网关');
-    },
-    async fetchDimensionValues() {
-      throw new Error('inline 看板页面不应查询维度候选值');
     }
   };
 
@@ -98,7 +99,7 @@
   }: {
     document: unknown;
     authoring?: AuthoringOptions;
-    dataGateway?: DataGateway;
+    dataGateway?: RuntimeDataGateway;
     aiSummary?: AiSummaryConfig;
     initialSearch?: string;
     navigation?: RuntimeNavigation;
@@ -110,14 +111,14 @@
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
-  let filterOptions = $state<Record<string, string[]>>({});
+  /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
+  let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
   let tablePageSizes = $state<Record<string, number>>({});
   let appliedTableHeaderFilters = $state<
     Record<string, Record<string, TableHeaderFilterValue>>
   >({});
-  let headerFilterOptions = $state<Record<string, string[]>>({});
-  let activeGateway: DataGateway = inlineGateway;
+  let activeGateway: RuntimeDataGateway = inlineGateway;
 
   let declarations = $state<FilterDeclaration[]>([]);
   let filterState: FilterState | null = null;
@@ -140,7 +141,7 @@
 
   async function run(
     raw: unknown,
-    gatewayOverride: DataGateway | undefined,
+    gatewayOverride: RuntimeDataGateway | undefined,
     search: string,
     navigationAdapter: RuntimeNavigation | undefined,
     emit: ((event: RuntimeViewEvent) => void) | undefined,
@@ -150,11 +151,10 @@
     pageState = { phase: 'loading' };
     snapshots = new Map();
     filterValues = new Map();
-    filterOptions = {};
+    dimensionCandidates = new Map();
     tableViews = {};
     tablePageSizes = {};
     appliedTableHeaderFilters = {};
-    headerFilterOptions = {};
 
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
@@ -238,12 +238,20 @@
 
     if (!capabilities.filters) return;
 
+    // 筛选候选值:显式状态经加载器发布,dispose 时取消在途请求,
+    // 过期结果不会覆盖新会话的筛选状态(issue #54)。
+    const candidatesLoader = createDimensionValuesLoader(activeGateway);
+    disposers.push(() => candidatesLoader.dispose());
+    disposers.push(
+      candidatesLoader.subscribe((next) => {
+        if (session !== mySession) return;
+        dimensionCandidates = next;
+      })
+    );
+
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension') continue;
-      void activeGateway.fetchDimensionValues(declaration.dimension).then((values) => {
-        if (session !== mySession) return;
-        filterOptions = { ...filterOptions, [declaration.id]: values };
-      });
+      candidatesLoader.load(declaration.dimension);
     }
 
     const filterableFields = new Set<string>();
@@ -263,10 +271,7 @@
       }
     }
     for (const field of filterableFields) {
-      void activeGateway.fetchDimensionValues(field).then((values) => {
-        if (session !== mySession) return;
-        headerFilterOptions = { ...headerFilterOptions, [field]: values };
-      });
+      candidatesLoader.load(field);
     }
   }
 
@@ -277,7 +282,7 @@
     if (gatewayValue !== undefined && !isDataGateway(gatewayValue)) {
       return configurationError(
         'DATA_GATEWAY_INVALID',
-        '数据网关必须实现 fetchData 与 fetchDimensionValues。'
+        '数据网关必须实现 fetchData;候选值端口 fetchDimensionValues 可选,声明了必须是函数。'
       );
     }
     if (mode === 'inline') return null;
@@ -668,10 +673,19 @@
     };
   }
 
+  /** 表头筛选候选项:只投影 ready 快照的真实候选值;其余状态不给表头假候选。 */
+  function remoteHeaderOptions(): Record<string, string[]> {
+    const options: Record<string, string[]> = {};
+    for (const [dimension, snapshot] of dimensionCandidates) {
+      if (snapshot.status === 'ready') options[dimension] = snapshot.values;
+    }
+    return options;
+  }
+
   function tableFilterOptions(component: TableComponent): Record<string, string[]> {
     if (component.props.pagination?.mode === 'query') return {};
     const snapshot = componentSnapshots(component).get('main');
-    if (snapshot?.status !== 'ready') return headerFilterOptions;
+    if (snapshot?.status !== 'ready') return remoteHeaderOptions();
     const fields = buildTableColumnLayout(component.props.columns).leaves
       .filter((column) => column.filterable?.mode === 'select')
       .map((column) => fieldName(column.field));
@@ -681,7 +695,7 @@
         [...new Set(snapshot.rows.map((row) => row[field]).filter((value) => value != null).map(String))]
       ])
     );
-    return { ...local, ...headerFilterOptions };
+    return { ...local, ...remoteHeaderOptions() };
   }
 
   function tablePaginationState(
@@ -859,7 +873,10 @@
             {#if declaration.type === 'dimension'}
               <DimensionFilter
                 label={declaration.label}
-                options={filterOptions[declaration.id] ?? []}
+                candidates={dimensionValuesSnapshot(
+                  dimensionCandidates,
+                  declaration.dimension
+                )}
                 value={dimensionValue(declaration.id)}
                 display={declaration.display ?? 'select'}
                 onchange={(values) => writeDimension(declaration, values)}

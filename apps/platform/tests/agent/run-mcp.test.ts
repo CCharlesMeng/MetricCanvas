@@ -235,8 +235,7 @@ describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () 
     const execute = createRunAwareUnitQueryExecutor({
       environment: { DQE_ENDPOINT: 'http://dqe.test/query' },
       fallbackGateway: {
-        fetchData: async () => ({ rows: [] }),
-        fetchDimensionValues: async () => []
+        fetchData: async () => ({ rows: [] })
       },
       fetchImpl: hangingFetch
     });
@@ -266,8 +265,7 @@ describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () 
         fetchData: async () => {
           fallbackCalls += 1;
           return { rows: [{ region: '华东' }], totalCount: 1 };
-        },
-        fetchDimensionValues: async () => []
+        }
       },
       fetchImpl: () => {
         throw new Error('无信号路径不应发起新 fetch');

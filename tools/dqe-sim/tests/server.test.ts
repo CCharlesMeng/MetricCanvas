@@ -211,6 +211,44 @@ describe('DQE Sim HTTP 契约', () => {
     });
   });
 
+  it('维度候选值查询确定性返回语义面取值域,面外维度保留拒答(issue #54)', async () => {
+    const baseUrl = await listen();
+    const item = {
+      output_dims: ['行业'],
+      output_metrics: [],
+      filter: { dims: [], metrics: [] },
+      order: {}
+    };
+
+    const first = await (await execute(baseUrl, item)).json();
+    const second = await (await execute(baseUrl, item)).json();
+    expect(first).toMatchObject({
+      retCode: 'CBC.0000',
+      results: [
+        {
+          code: 'SUCCESS',
+          data: [
+            { 行业: '金融' },
+            { 行业: '制造' },
+            { 行业: '互联网' },
+            { 行业: '能源' },
+            { 行业: '政务' }
+          ],
+          total_count: 5
+        }
+      ]
+    });
+    // 确定性:同一候选值查询多次执行逐字节一致。
+    expect(second).toEqual(first);
+
+    const outside = await (
+      await execute(baseUrl, { ...item, output_dims: ['面外维度'] })
+    ).json();
+    expect(outside).toMatchObject({
+      results: [{ code: 'DQE_SIM_UNSUPPORTED_QUERY', data: [], total_count: 0 }]
+    });
+  });
+
   it('拒绝非法 JSON、缺少 dsl_list 和未知路径', async () => {
     const baseUrl = await listen();
     const invalidJson = await fetch(`${baseUrl}${DQE_EXECUTE_PATH}`, {

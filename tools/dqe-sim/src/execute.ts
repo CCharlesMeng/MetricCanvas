@@ -3,6 +3,7 @@ import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
+import { findDimension, semanticSurface } from './semantic-surface';
 import { runSemanticSurface } from './semantic-surface-execute';
 
 type JsonRecord = Record<string, unknown>;
@@ -114,6 +115,9 @@ const customerActivityDetailDimensions = [
 export function executeDqeItem(item: unknown): DqeSimItemResult {
   const exactResult = executeExactScenarios(item);
   if (exactResult.code === 'SUCCESS' || !isRecord(item)) return exactResult;
+  // 维度候选值查询:只输出一个语义面维度、不取指标(issue #54)。
+  const dimensionValuesResult = executeDimensionValuesQuery(item);
+  if (dimensionValuesResult) return dimensionValuesResult;
   // 组合式语义面兜底分支:全部精确匹配分支之后才尝试,面外组合保留既有拒答。
   const surface = runSemanticSurface(item);
   if (surface.kind === 'out-of-surface') return exactResult;
@@ -187,6 +191,57 @@ function executeExactScenarios(item: unknown): DqeSimItemResult {
     item,
     levels.map((level) => ({ ...rows.get(level)! })),
     metadata(fixture)
+  );
+}
+
+/**
+ * 维度候选值查询(issue #54):`output_dims` 恰好一个语义面维度且
+ * `output_metrics` 为空。候选值从语义面声明的维度取值域(闭集)确定性
+ * 合成:同名维度跨业务域时取并集去重,声明顺序即输出顺序。候选值是
+ * 维度取值域而非某时间窗内的出现值,因此不要求 filter.time。
+ * 面外维度返回 undefined,保留既有拒答(适配器据此判定能力不可用)。
+ */
+function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undefined {
+  const dimensions = stringArray(item.output_dims);
+  const metrics = stringArray(item.output_metrics);
+  if (!dimensions || dimensions.length !== 1 || !metrics || metrics.length !== 0) {
+    return undefined;
+  }
+  const name = dimensions[0]!;
+  const domains = semanticSurface.filter((domain) => findDimension(domain, name));
+  if (domains.length === 0) return undefined;
+  if (item.filter !== undefined) {
+    if (!isRecord(item.filter)) {
+      return unsupported('候选值查询的 filter 必须是对象');
+    }
+    if (
+      Object.hasOwn(item.filter, 'metrics') &&
+      !equalJson(item.filter.metrics, [])
+    ) {
+      return unsupported('候选值查询仅支持 filter.metrics=[]');
+    }
+    if (Object.hasOwn(item.filter, 'dims') && !equalJson(item.filter.dims, [])) {
+      return unsupported('候选值查询仅支持 filter.dims=[]');
+    }
+  }
+  if (item.order !== undefined && !validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
+  }
+  const values = [
+    ...new Set(domains.flatMap((domain) => findDimension(domain, name)!.values))
+  ];
+  return successResult(
+    item,
+    values.map((value) => ({ [name]: value })),
+    {
+      columns: [
+        { id: `dqe-sim.${name}`, caption: name, data_type: 'STRING', type: 'dimension' }
+      ],
+      orders: [],
+      limit: -1,
+      offset: -1,
+      sql: null
+    }
   );
 }
 

@@ -139,6 +139,30 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     expect(serialized).not.toContain('不支持的 output_metrics/output_dims 组合');
   });
 
+  it('维度候选值经 DQE Sim 端到端返回确定性去重候选值,面外维度不可用(issue #54)', async () => {
+    const server = createDqeSimServer({ logger: false });
+    servers.push(server);
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address() as AddressInfo;
+    const gateway = createDqeGateway({
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`
+    });
+
+    // 语义面声明的维度取值域(闭集)确定性返回,声明顺序即输出顺序。
+    await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual({
+      kind: 'values',
+      values: ['卓越', '战略', '核心', '成长']
+    });
+    await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual({
+      kind: 'values',
+      values: ['华东', '华南', '华北', '西南', '华中', '东北', '西北']
+    });
+    // 语义面外维度得到拒答信封 → 该维度候选值能力不可用,而不是空结果。
+    await expect(gateway.fetchDimensionValues('仿真面外维度')).resolves.toEqual({
+      kind: 'unavailable'
+    });
+  });
+
   it('把同一轮 NA 与 Top100 逻辑查询合并为一个真实 HTTP 请求', async () => {
     const requests: string[] = [];
     const server = createDqeSimServer({

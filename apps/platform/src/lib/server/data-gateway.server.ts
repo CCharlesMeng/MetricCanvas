@@ -9,8 +9,15 @@ import {
   type DqeDiagnosticRecord
 } from '@metriccanvas/data-gateway';
 import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page';
-import type { DataGateway, QueryDiagnosticContext } from '@metriccanvas/runtime';
-import type { PlatformDataQueryResponse } from '../platform-data-gateway';
+import type {
+  DataGateway,
+  DimensionValuesGateway,
+  QueryDiagnosticContext
+} from '@metriccanvas/runtime';
+import type {
+  PlatformDataQueryResponse,
+  PlatformDimensionValuesResponse
+} from '../platform-data-gateway';
 
 /** 未配置 DQE_ENDPOINT 时指向本机 DQE 仿真(pnpm sim:dqe)。 */
 const DQE_SIM_ORIGIN = 'http://127.0.0.1:18228';
@@ -41,7 +48,7 @@ export interface ServerDataGatewayConfig {
  */
 export function createServerDataGateway(
   config: ServerDataGatewayConfig
-): DataGateway {
+): DataGateway & DimensionValuesGateway {
   const { environment, headers, fetchImpl } = config;
   const diagnosticsSink =
     config.diagnosticsSink ??
@@ -80,10 +87,12 @@ function resolveDevDetail(
   });
 }
 
-let serverDataGateway: DataGateway | undefined;
+let serverDataGateway: (DataGateway & DimensionValuesGateway) | undefined;
 
 /** 平台进程内的数据网关单例;首次调用按当时环境构造。 */
-export function getServerDataGateway(environment: ServerEnvironment): DataGateway {
+export function getServerDataGateway(
+  environment: ServerEnvironment
+): DataGateway & DimensionValuesGateway {
   serverDataGateway ??= createServerDataGateway({ environment });
   return serverDataGateway;
 }
@@ -117,11 +126,53 @@ export async function executeDataQuery(
   }
 }
 
+/**
+ * 执行一次来自浏览器的候选值查询(issue #54)。请求体是系统边界上的
+ * 不可信输入:dimension 必须是有界长度的非空字符串,失败关闭为查询声明
+ * 错误。请求中止信号透传给候选值端口,浏览器取消即取消上游请求。
+ * 请求形状:{ dimension: 维度名 }。
+ */
+export async function executeDimensionValues(
+  gateway: DimensionValuesGateway,
+  payload: unknown,
+  signal?: AbortSignal
+): Promise<PlatformDimensionValuesResponse> {
+  try {
+    if (
+      !isRecord(payload) ||
+      typeof payload.dimension !== 'string' ||
+      payload.dimension.length === 0 ||
+      payload.dimension.length > MAX_DIMENSION_NAME_LENGTH
+    ) {
+      throw invalidQuery('候选值请求必须声明有界长度的非空 dimension');
+    }
+    const result = await gateway.fetchDimensionValues(
+      payload.dimension,
+      signal ? { signal } : undefined
+    );
+    return { ok: true, ...result };
+  } catch (cause) {
+    if (cause instanceof DqeGatewayError) {
+      return { ok: false, code: cause.code, message: cause.message };
+    }
+    throw cause;
+  }
+}
+
 /** 请求方可修正的错误回 400,上游执行失败回 502。 */
 export function dataQueryHttpStatus(response: PlatformDataQueryResponse): number {
-  if (response.ok) return 200;
-  return response.code === 'DQE_CONFIG_ERROR' ||
-    response.code === 'DQE_FILTER_BINDING_ERROR'
+  return response.ok ? 200 : queryErrorHttpStatus(response.code);
+}
+
+/** 候选值入口与取数入口共用同一套状态码裁决。 */
+export function dimensionValuesHttpStatus(
+  response: PlatformDimensionValuesResponse
+): number {
+  return response.ok ? 200 : queryErrorHttpStatus(response.code);
+}
+
+function queryErrorHttpStatus(code: DqeGatewayError['code']): number {
+  return code === 'DQE_CONFIG_ERROR' || code === 'DQE_FILTER_BINDING_ERROR'
     ? 400
     : 502;
 }
@@ -167,6 +218,8 @@ function parseEffectiveQueryPayload(payload: unknown): EffectiveQuery {
 
 const MAX_DIAGNOSTIC_ID_LENGTH = 256;
 const MAX_DIAGNOSTIC_DATA_SOURCE_IDS = 50;
+/** 维度名是查询字段名级别的标识,与诊断标识同一量级设界。 */
+const MAX_DIMENSION_NAME_LENGTH = 256;
 
 /**
  * 查询诊断上下文的边界收编:只接受格式正确的字符串标识,其余内容

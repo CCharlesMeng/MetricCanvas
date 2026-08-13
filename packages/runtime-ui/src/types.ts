@@ -1,5 +1,5 @@
 import type { TypedError } from '@metriccanvas/page';
-import type { DataGateway } from '@metriccanvas/runtime';
+import type { RuntimeDataGateway } from '@metriccanvas/runtime';
 import type { DataErrorEvent } from './data-error-events';
 export type { AiSummaryConfig } from './ai-summary/pangu-sse';
 export type { DataErrorEvent } from './data-error-events';
@@ -69,11 +69,16 @@ export function configurationError(
   return { code, message };
 }
 
-export function isDataGateway(value: unknown): value is DataGateway {
+/**
+ * 数据网关注入值的结构校验:主查询执行必备;候选值能力是独立端口,
+ * 允许缺席(不支持候选值),但声明了就必须是函数(失败关闭)。
+ */
+export function isDataGateway(value: unknown): value is RuntimeDataGateway {
   return (
     isRecord(value) &&
     typeof value.fetchData === 'function' &&
-    typeof value.fetchDimensionValues === 'function'
+    (value.fetchDimensionValues === undefined ||
+      typeof value.fetchDimensionValues === 'function')
   );
 }
 

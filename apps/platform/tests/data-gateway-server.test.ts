@@ -9,7 +9,9 @@ import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
 import {
   createServerDataGateway,
   dataQueryHttpStatus,
+  dimensionValuesHttpStatus,
   executeDataQuery,
+  executeDimensionValues,
   resolveDqeEndpoint
 } from '../src/lib/server/data-gateway.server';
 
@@ -190,6 +192,153 @@ describe('平台服务端取数入口', () => {
     expect(result).toMatchObject({ ok: false, code: 'DQE_CANCELLED' });
     // 中止真正到达底层网络请求,而不是只丢弃结果。
     expect(upstreamSignals[0]?.aborted).toBe(true);
+  });
+});
+
+describe('平台服务端候选值入口(issue #54)', () => {
+  it('成功路径:候选值查询按服务端端点执行并返回真实去重候选值', async () => {
+    const requests: Array<{ input: string; body: unknown }> = [];
+    const gateway = createServerDataGateway({
+      environment: {},
+      diagnosticsSink: () => {},
+      fetchImpl: (async (input, init) => {
+        requests.push({ input: String(input), body: JSON.parse(String(init?.body)) });
+        return jsonResponse({
+          retCode: 'CBC.0000',
+          results: [
+            {
+              code: 'SUCCESS',
+              data: [{ 客户级别: '卓越' }, { 客户级别: '战略' }, { 客户级别: '卓越' }],
+              total_count: 3
+            }
+          ]
+        });
+      }) as typeof fetch
+    });
+
+    const result = await executeDimensionValues(gateway, { dimension: '客户级别' });
+
+    expect(requests).toHaveLength(1);
+    expect(requests[0]!.input).toBe(`http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`);
+    expect(requests[0]!.body).toEqual({
+      dsl_list: [
+        {
+          output_dims: ['客户级别'],
+          output_metrics: [],
+          filter: { dims: [], metrics: [] },
+          order: {}
+        }
+      ]
+    });
+    expect(result).toEqual({ ok: true, kind: 'values', values: ['卓越', '战略'] });
+    expect(dimensionValuesHttpStatus(result)).toBe(200);
+  });
+
+  it('上游拒答候选值查询 → 能力不可用,拒答说明(上游正文)不进入响应', async () => {
+    const gateway = createServerDataGateway({
+      environment: {},
+      diagnosticsSink: () => {},
+      fetchImpl: (async () =>
+        jsonResponse({
+          retCode: 'CBC.0000',
+          results: [
+            {
+              code: 'DQE_SIM_UNSUPPORTED_QUERY',
+              retDesc: `不支持:${SENTINEL}`,
+              data: [],
+              total_count: 0
+            }
+          ]
+        })) as typeof fetch
+    });
+
+    const result = await executeDimensionValues(gateway, { dimension: '面外维度' });
+
+    expect(result).toEqual({ ok: true, kind: 'unavailable' });
+    expect(dimensionValuesHttpStatus(result)).toBe(200);
+    expect(JSON.stringify(result)).not.toContain(SENTINEL);
+  });
+
+  it('需要登录与上游失败透传结构化错误分类并回 502(超时分类由适配器测试覆盖)', async () => {
+    const authFailure = await executeDimensionValues(
+      createServerDataGateway({
+        environment: {},
+        diagnosticsSink: () => {},
+        fetchImpl: (async () => new Response('login required', { status: 401 })) as typeof fetch
+      }),
+      { dimension: '客户级别' }
+    );
+    expect(authFailure).toMatchObject({ ok: false, code: 'DQE_AUTH_REQUIRED' });
+    expect(dimensionValuesHttpStatus(authFailure)).toBe(502);
+
+    const transportFailure = await executeDimensionValues(
+      createServerDataGateway({
+        environment: {},
+        diagnosticsSink: () => {},
+        fetchImpl: (async () => {
+          throw new TypeError('fetch failed');
+        }) as typeof fetch
+      }),
+      { dimension: '客户级别' }
+    );
+    expect(transportFailure).toMatchObject({ ok: false, code: 'DQE_TRANSPORT_ERROR' });
+    expect(dimensionValuesHttpStatus(transportFailure)).toBe(502);
+  });
+
+  it('边界校验:不合法的候选值请求收敛为 DQE_CONFIG_ERROR 并回 400', async () => {
+    const gateway = createServerDataGateway({
+      environment: {},
+      diagnosticsSink: () => {},
+      fetchImpl: (async () => {
+        throw new Error('不应发起上游请求');
+      }) as typeof fetch
+    });
+
+    for (const payload of [
+      undefined,
+      'not-an-object',
+      {},
+      { dimension: 42 },
+      { dimension: '' },
+      { dimension: 'x'.repeat(300) }
+    ]) {
+      const result = await executeDimensionValues(gateway, payload);
+      expect(result).toMatchObject({ ok: false, code: 'DQE_CONFIG_ERROR' });
+      expect(dimensionValuesHttpStatus(result)).toBe(400);
+    }
+  });
+
+  it('请求中止信号透传给候选值端口,取消分类为 DQE_CANCELLED', async () => {
+    const signals: Array<AbortSignal | undefined> = [];
+    const controller = new AbortController();
+    const gateway = createServerDataGateway({
+      environment: {},
+      diagnosticsSink: () => {},
+      fetchImpl: ((_input: unknown, init?: RequestInit) => {
+        signals.push(init?.signal ?? undefined);
+        return new Promise((_resolve, reject) => {
+          const rejectAborted = () =>
+            reject(
+              Object.assign(new Error('The operation was aborted.'), {
+                name: 'AbortError'
+              })
+            );
+          if (init?.signal?.aborted) return rejectAborted();
+          init?.signal?.addEventListener('abort', rejectAborted);
+        });
+      }) as typeof fetch
+    });
+
+    const pending = executeDimensionValues(
+      gateway,
+      { dimension: '客户级别' },
+      controller.signal
+    );
+    controller.abort();
+
+    const result = await pending;
+    expect(result).toMatchObject({ ok: false, code: 'DQE_CANCELLED' });
+    expect(signals[0]?.aborted).toBe(true);
   });
 });
 

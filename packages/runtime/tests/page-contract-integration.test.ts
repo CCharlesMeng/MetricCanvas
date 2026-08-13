@@ -25,9 +25,6 @@ function gatewayReturning(rows: Row[]) {
     async fetchData(query) {
       received.push(query);
       return { rows, totalCount: rows.length };
-    },
-    async fetchDimensionValues() {
-      return [];
     }
   };
   return { gateway, received };

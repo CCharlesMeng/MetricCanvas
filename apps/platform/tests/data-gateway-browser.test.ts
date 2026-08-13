@@ -3,6 +3,7 @@ import { DqeGatewayError } from '@metriccanvas/data-gateway';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
 import {
   PLATFORM_DATA_QUERY_PATH,
+  PLATFORM_DIMENSION_VALUES_PATH,
   createPlatformDataGateway
 } from '../src/lib/platform-data-gateway';
 
@@ -163,12 +164,91 @@ describe('数据网关端口的浏览器适配器', () => {
     expect(failure).toMatchObject({ code: 'DQE_CANCELLED' });
   });
 
-  it('维度候选值查询尚未由平台入口声明,返回空数组', async () => {
+  it('候选值查询提交给独立的候选值入口并还原真实候选值', async () => {
+    const requests: Array<{ input: string; init: RequestInit | undefined }> = [];
     const gateway = createPlatformDataGateway({
-      fetchImpl: (async () => {
-        throw new Error('不应发起请求');
+      fetchImpl: (async (input, init) => {
+        requests.push({ input: String(input), init });
+        return new Response(
+          JSON.stringify({ ok: true, kind: 'values', values: ['卓越', '战略'] })
+        );
       }) as typeof fetch
     });
-    await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual([]);
+
+    await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual({
+      kind: 'values',
+      values: ['卓越', '战略']
+    });
+    expect(requests).toHaveLength(1);
+    expect(requests[0]!.input).toBe(PLATFORM_DIMENSION_VALUES_PATH);
+    expect(requests[0]!.init).toMatchObject({ method: 'POST', credentials: 'same-origin' });
+    expect(JSON.parse(String(requests[0]!.init?.body))).toEqual({
+      dimension: '客户级别'
+    });
+  });
+
+  it('候选值能力不可用与失败分类原样还原,非契约响应失败关闭', async () => {
+    const unavailable = createPlatformDataGateway({
+      fetchImpl: (async () =>
+        new Response(JSON.stringify({ ok: true, kind: 'unavailable' }))) as typeof fetch
+    });
+    await expect(unavailable.fetchDimensionValues('未知维度')).resolves.toEqual({
+      kind: 'unavailable'
+    });
+
+    const failed = await createPlatformDataGateway({
+      fetchImpl: (async () =>
+        new Response(
+          JSON.stringify({
+            ok: false,
+            code: 'DQE_AUTH_REQUIRED',
+            message: '需要登录后才能执行查询(401)'
+          }),
+          { status: 502 }
+        )) as typeof fetch
+    })
+      .fetchDimensionValues('客户级别')
+      .catch((cause: unknown) => cause);
+    expect(failed).toBeInstanceOf(DqeGatewayError);
+    expect(failed).toMatchObject({ code: 'DQE_AUTH_REQUIRED' });
+
+    // values 含非字符串的响应不满足契约,失败关闭为传输错误且不回显正文。
+    const nonContract = await createPlatformDataGateway({
+      fetchImpl: (async () =>
+        new Response(
+          JSON.stringify({ ok: true, kind: 'values', values: ['华东', 42] }),
+          { status: 200 }
+        )) as typeof fetch
+    })
+      .fetchDimensionValues('区域')
+      .catch((cause: unknown) => cause);
+    expect(nonContract).toBeInstanceOf(DqeGatewayError);
+    expect(nonContract).toMatchObject({
+      code: 'DQE_TRANSPORT_ERROR',
+      detail: { status: 200 }
+    });
+  });
+
+  it('候选值请求可经 AbortSignal 取消,取消分类为 DQE_CANCELLED', async () => {
+    const controller = new AbortController();
+    const gateway = createPlatformDataGateway({
+      fetchImpl: ((_input: RequestInfo | URL, init?: RequestInit) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener(
+            'abort',
+            () => reject(new DOMException('已取消', 'AbortError')),
+            { once: true }
+          );
+        })) as typeof fetch
+    });
+
+    const pending = gateway.fetchDimensionValues('客户级别', {
+      signal: controller.signal
+    });
+    controller.abort();
+
+    const failure = await pending.catch((cause: unknown) => cause);
+    expect(failure).toBeInstanceOf(DqeGatewayError);
+    expect(failure).toMatchObject({ code: 'DQE_CANCELLED' });
   });
 });

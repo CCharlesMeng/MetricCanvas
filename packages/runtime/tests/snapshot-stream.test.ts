@@ -10,9 +10,6 @@ describe('统一页面快照流', () => {
       async fetchData() {
         calls++;
         return { rows: [], totalCount: 0 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const stream = orchestrate(
@@ -53,9 +50,6 @@ describe('统一页面快照流', () => {
       async fetchData() {
         calls++;
         return { rows: [{ gmv: 5 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const stream = orchestrate(
@@ -123,9 +117,6 @@ describe('统一页面快照流', () => {
       async fetchData() {
         calls += 1;
         return { rows: [{ office: '华东', missing: 3 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     });
     const pushes: Array<ReadonlyMap<string, unknown>> = [];
@@ -146,9 +137,6 @@ describe('统一页面快照流', () => {
       async fetchData() {
         calls += 1;
         return { rows: [{ office: '华东', missing: 3 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     });
     stream.subscribe(() => {});
