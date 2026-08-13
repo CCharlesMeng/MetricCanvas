@@ -513,6 +513,144 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
       await lifecycle.close();
     });
 
+    // 漂移回归:memory 曾用 localeCompare 排序 + 码点游标过滤(两者不一致),
+    // postgres 用数据库 collation。契约裁决为码点序(invariants.comparePageIds):
+    // 连字符(45)排在数字(48-57)之前,`p-9` 必须先于 `p0a`;localeCompare
+    // 把连字符当可忽略字符,会给出相反顺序。
+    it('listPages 按码点序排列,游标严格大于且与排序使用同一比较', async () => {
+      const lifecycle = await create();
+      const prefix = 'contract-order';
+      const ids = [`${prefix}-p-9`, `${prefix}-p0a`];
+      for (const pageId of ids) {
+        const saved = await lifecycle.saveRevision(
+          {
+            pageId,
+            baseRevisionId: null,
+            document: textPage(pageId, [
+              {
+                id: 'overview',
+                components: [
+                  { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
+                ]
+              }
+            ]),
+            idempotencyKey: `${pageId}:save-1`,
+            pageIdConfirmed: true
+          },
+          author
+        );
+        if (!saved.ok) throw new Error(saved.error.message);
+      }
+
+      async function collectAll(afterPageId?: string): Promise<string[]> {
+        const collected: string[] = [];
+        let cursor = afterPageId;
+        for (;;) {
+          const page = await lifecycle.listPages(
+            cursor === undefined ? {} : { afterPageId: cursor }
+          );
+          collected.push(...page.pages.map((item) => item.pageId));
+          if (!page.nextPageId) return collected;
+          cursor = page.nextPageId;
+        }
+      }
+
+      const all = await collectAll();
+      const mine = all.filter((pageId) => pageId.startsWith(prefix));
+      expect(mine).toEqual([`${prefix}-p-9`, `${prefix}-p0a`]);
+
+      const afterFirst = await collectAll(`${prefix}-p-9`);
+      const mineAfter = afterFirst.filter((pageId) => pageId.startsWith(prefix));
+      expect(mineAfter).toEqual([`${prefix}-p0a`]);
+
+      await lifecycle.close();
+    });
+
+    // 漂移回归:memory 曾只对 saveRevision 加页面锁,requestPublish 无临界区,
+    // 两个并发申请都能通过活动租约检查、双双持有租约。
+    it('并发写路径串行化:同基线并发保存恰一成功,并发发布申请恰一持有租约', async () => {
+      const lifecycle = await create();
+      const pageId = 'contract-concurrency';
+      const document = textPage(pageId, [
+        {
+          id: 'overview',
+          components: [
+            { id: 'a', type: 'text', layout: { span: 12 }, props: { title: 'A', body: '' } }
+          ]
+        }
+      ]);
+      const base = await lifecycle.saveRevision(
+        {
+          pageId,
+          baseRevisionId: null,
+          document,
+          idempotencyKey: `${pageId}:save-1`,
+          pageIdConfirmed: true
+        },
+        author
+      );
+      if (!base.ok) throw new Error(base.error.message);
+
+      const [saveLeft, saveRight] = await Promise.all([
+        lifecycle.saveRevision(
+          {
+            pageId,
+            baseRevisionId: base.revision.revisionId,
+            document,
+            idempotencyKey: `${pageId}:save-2-left`
+          },
+          author
+        ),
+        lifecycle.saveRevision(
+          {
+            pageId,
+            baseRevisionId: base.revision.revisionId,
+            document,
+            idempotencyKey: `${pageId}:save-2-right`
+          },
+          author
+        )
+      ]);
+      const saveOutcomes = [saveLeft, saveRight];
+      expect(saveOutcomes.filter((result) => result.ok)).toHaveLength(1);
+      expect(
+        saveOutcomes.filter(
+          (result) => !result.ok && result.error.code === 'REVISION_CONFLICT'
+        )
+      ).toHaveLength(1);
+      const winner = saveOutcomes.find((result) => result.ok);
+      if (!winner || !winner.ok) throw new Error('并发保存应恰有一个成功');
+      expect(winner.revision.revisionNumber).toBe(2);
+
+      const [publishLeft, publishRight] = await Promise.all([
+        lifecycle.requestPublish(
+          {
+            pageId,
+            revisionId: winner.revision.revisionId,
+            idempotencyKey: `${pageId}:publish-left`
+          },
+          author
+        ),
+        lifecycle.requestPublish(
+          {
+            pageId,
+            revisionId: winner.revision.revisionId,
+            idempotencyKey: `${pageId}:publish-right`
+          },
+          author
+        )
+      ]);
+      const publishOutcomes = [publishLeft, publishRight];
+      expect(publishOutcomes.filter((result) => result.ok)).toHaveLength(1);
+      expect(
+        publishOutcomes.filter(
+          (result) => !result.ok && result.error.code === 'PAGE_LOCKED'
+        )
+      ).toHaveLength(1);
+
+      await lifecycle.close();
+    });
+
     it('cancelPublish 只允许发起人本人或 admin，其他身份返回 PUBLISH_FORBIDDEN', async () => {
       const lifecycle = await create();
       const pageId = 'contract-cancel-authz';

@@ -1,14 +1,20 @@
 import { randomUUID } from 'node:crypto';
 import postgres, { type JSONValue as PostgresJSONValue, type Sql, type TransactionSql } from 'postgres';
-import { canonicalizeJson, validate, versionPolicy, type PageDocument } from '@metriccanvas/page';
+import { validate, type PageDocument } from '@metriccanvas/page';
 import {
+  DEFAULT_PUBLISH_LEASE_MS,
+  PUBLISH_LEASE_EXPIRED_REASON,
+  buildPageRevision,
+  canViewPublishRequest,
+  checkSaveDocument,
   diffJson,
   hash,
-  hasQueryDataSource,
-  hasRole,
   lifecycleFailure,
   pageListLimit,
-  revisionConflict
+  publishAuditActionFor,
+  publishDecisionForbidden,
+  publishLeaseState,
+  saveRevisionPrecondition
 } from './invariants';
 import type {
   DataContextVersionProvider,
@@ -85,7 +91,7 @@ export async function createPostgresPageLifecycle(
       confirmation: (requestId: string, token: string) =>
         `/publish/${requestId}/confirm?token=${encodeURIComponent(token)}`
     } satisfies NonNullable<PostgresPageLifecycleOptions['urls']>);
-  const publishLeaseMs = options.publishLeaseMs ?? 15 * 60 * 1000;
+  const publishLeaseMs = options.publishLeaseMs ?? DEFAULT_PUBLISH_LEASE_MS;
 
   const lifecycle: PageLifecycle = {
     async saveRevision(command, context) {
@@ -132,86 +138,43 @@ export async function createPostgresPageLifecycle(
         const page = pages[0];
         const createdAt = clock.now();
 
-        let revisionNumber: number;
+        const latestRows = page?.latest_revision_id
+          ? await selectRevision(tx, command.pageId, page.latest_revision_id)
+          : [];
+        const latest = latestRows[0] ? toRevision(latestRows[0]) : null;
+        const precondition = saveRevisionPrecondition(page !== undefined, latest, command);
+        if (precondition) return precondition;
+
         let expiredPublishRequestId: string | null = null;
-        if (!page) {
-          if (command.baseRevisionId !== null) {
-            return revisionConflict(
-              '首次保存的 baseRevisionId 必须为 null',
-              null
-            );
-          }
-          if (command.pageIdConfirmed !== true) {
+        if (page?.active_publish_request_id) {
+          const requests = (await tx`
+            SELECT request_id, status, expires_at
+            FROM publish_requests
+            WHERE request_id = ${page.active_publish_request_id}
+            FOR UPDATE
+          `) as unknown as Array<{
+            request_id: string;
+            status: PublishRequestStatus;
+            expires_at: Date | string;
+          }>;
+          const active = requests[0];
+          const state = active
+            ? publishLeaseState(active.status, active.expires_at, createdAt)
+            : 'closed';
+          if (state === 'active') {
             return lifecycleFailure(
-              'PAGE_ID_CONFIRMATION_REQUIRED',
-              `首次保存前必须确认页面 id ${command.pageId}`
+              'PAGE_LOCKED',
+              `看板页面有活动发布租约:${active!.request_id}`
             );
           }
-          revisionNumber = 1;
-        } else {
-          const latestRows = page.latest_revision_id
-            ? await selectRevision(tx, command.pageId, page.latest_revision_id)
-            : [];
-          const latest = latestRows[0] ? toRevision(latestRows[0]) : null;
-          if (command.baseRevisionId !== page.latest_revision_id || !latest) {
-            return revisionConflict(
-              `保存基线不是当前最新页面修订:${page.latest_revision_id ?? '无'}`,
-              latest
-            );
+          if (state === 'expired') {
+            expiredPublishRequestId = active!.request_id;
           }
-
-          if (page.active_publish_request_id) {
-            const requests = (await tx`
-              SELECT request_id, status, expires_at
-              FROM publish_requests
-              WHERE request_id = ${page.active_publish_request_id}
-              FOR UPDATE
-            `) as unknown as Array<{
-              request_id: string;
-              status: PublishRequestStatus;
-              expires_at: Date | string;
-            }>;
-            const active = requests[0];
-            if (
-              active?.status === 'pending' &&
-              new Date(active.expires_at).getTime() > createdAt.getTime()
-            ) {
-              return lifecycleFailure(
-                'PAGE_LOCKED',
-                `看板页面有活动发布租约:${active.request_id}`
-              );
-            }
-            if (active?.status === 'pending') {
-              expiredPublishRequestId = active.request_id;
-            }
-          }
-          revisionNumber = latest.revisionNumber + 1;
         }
 
-        const validationErrors = validate(command.document);
-        if (validationErrors.length > 0) {
-          return {
-            ok: false,
-            error: {
-              code: 'INVALID_PAGE',
-              message: '页面文档未通过校验',
-              validationErrors
-            }
-          } satisfies RevisionResult;
-        }
-        const document = command.document as PageDocument;
-        if (document.schemaVersion !== versionPolicy.current) {
-          return lifecycleFailure(
-            'INVALID_PAGE',
-            `保存只接受当前 schemaVersion ${versionPolicy.current}`
-          );
-        }
-        if (document.id !== command.pageId) {
-          return lifecycleFailure(
-            'PAGE_ID_MISMATCH',
-            `命令页面 id ${command.pageId} 与页面文档 id ${document.id} 不一致`
-          );
-        }
+        const checked = checkSaveDocument(command.document, command.pageId);
+        if (!checked.ok) return checked;
+        const document = checked.document;
 
         if (!page) {
           await tx`
@@ -247,7 +210,7 @@ export async function createPostgresPageLifecycle(
               actorId: null,
               clientId: null,
               occurredAt: createdAt,
-              reason: '15 分钟发布租约已到期'
+              reason: PUBLISH_LEASE_EXPIRED_REASON
             });
           }
           await tx`
@@ -258,19 +221,15 @@ export async function createPostgresPageLifecycle(
           `;
         }
 
-        const revision: PageRevision = {
-          revisionId: ids.next(),
-          revisionNumber,
-          pageId: command.pageId,
-          baseRevisionId: command.baseRevisionId,
+        const revision = await buildPageRevision({
+          command,
           document,
-          contentHash: hash(canonicalizeJson(document)),
-          dataContextVersion: hasQueryDataSource(document)
-            ? (await options.dataContext.current()).version
-            : null,
-          createdBy: context.actorId,
-          createdAt: createdAt.toISOString()
-        };
+          latest,
+          revisionId: ids.next(),
+          actorId: context.actorId,
+          now: createdAt,
+          dataContext: options.dataContext
+        });
         await tx`
           INSERT INTO page_revisions (
             revision_id,
@@ -361,6 +320,8 @@ export async function createPostgresPageLifecycle(
       const limit = pageListLimit(query.limit);
       // visibility 从 published_revision_id 派生，而不是读取存储列：仓库里
       // 没有任何代码路径会 SET visibility，存储列会恒为建表时的默认值。
+      // 游标与排序按码点序(契约真源见 invariants.comparePageIds):
+      // COLLATE "C" 使比较不受数据库 locale 影响,与 memory 侧对齐。
       const rows = (await sql`
         SELECT
           page_id,
@@ -368,8 +329,8 @@ export async function createPostgresPageLifecycle(
           published_revision_id,
           CASE WHEN published_revision_id IS NULL THEN 'hidden' ELSE 'visible' END AS visibility
         FROM dashboard_pages
-        WHERE page_id > ${query.afterPageId ?? ''}
-        ORDER BY page_id ASC
+        WHERE page_id COLLATE "C" > ${query.afterPageId ?? ''}
+        ORDER BY page_id COLLATE "C" ASC
         LIMIT ${limit + 1}
       `) as unknown as Array<{
         page_id: string;
@@ -527,32 +488,32 @@ export async function createPostgresPageLifecycle(
             expires_at: Date | string;
           }>;
           const active = activeRows[0];
-          if (
-            active?.status === 'pending' &&
-            new Date(active.expires_at).getTime() > now.getTime()
-          ) {
+          const state = active
+            ? publishLeaseState(active.status as PublishRequestStatus, active.expires_at, now)
+            : 'closed';
+          if (state === 'active') {
             return lifecycleFailure(
               'PAGE_LOCKED',
-              `看板页面已有活动发布租约:${active.request_id}`
+              `看板页面已有活动发布租约:${active!.request_id}`
             );
           }
-          if (active?.status === 'pending') {
+          if (state === 'expired') {
             await tx`
               UPDATE publish_requests
               SET
                 status = 'expired',
                 decided_at = ${now}
-              WHERE request_id = ${active.request_id}
+              WHERE request_id = ${active!.request_id}
             `;
             await insertPublishAudit(tx, {
-              requestId: active.request_id,
+              requestId: active!.request_id,
               pageId: command.pageId,
               revisionId: command.revisionId,
               action: 'expired',
               actorId: null,
               clientId: null,
               occurredAt: now,
-              reason: '15 分钟发布租约已到期'
+              reason: PUBLISH_LEASE_EXPIRED_REASON
             });
           }
         }
@@ -626,11 +587,7 @@ export async function createPostgresPageLifecycle(
           `发布请求不存在:${reference.requestId}`
         );
       }
-      if (
-        context.actorId !== request.requested_by &&
-        !hasRole(context, 'publisher') &&
-        !hasRole(context, 'admin')
-      ) {
+      if (!canViewPublishRequest({ requestedBy: request.requested_by }, context)) {
         return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能查看该发布请求');
       }
       return {
@@ -708,9 +665,9 @@ export async function createPostgresPageLifecycle(
         }
 
         const now = clock.now();
-        if (new Date(locked.expires_at).getTime() <= now.getTime()) {
+        if (publishLeaseState(locked.status, locked.expires_at, now) === 'expired') {
           await finishPublishRequest(tx, locked, 'expired', null, now,
-            '15 分钟发布租约已到期');
+            PUBLISH_LEASE_EXPIRED_REASON);
           return lifecycleFailure(
             'PUBLISH_REQUEST_EXPIRED',
             `发布租约已于 ${new Date(locked.expires_at).toISOString()} 到期`
@@ -719,9 +676,12 @@ export async function createPostgresPageLifecycle(
         if (hash(command.token) !== locked.token_hash) {
           return lifecycleFailure('INVALID_CONFIRMATION_TOKEN', '发布确认 token 无效');
         }
-        if (!hasRole(context, 'publisher') && !hasRole(context, 'admin')) {
-          return lifecycleFailure('PUBLISH_FORBIDDEN', '确认发布需要 publisher 权限');
-        }
+        const forbidden = publishDecisionForbidden(
+          'confirm',
+          { requestedBy: locked.requested_by },
+          context
+        );
+        if (forbidden) return forbidden;
 
         const pageRows = (await tx`
           SELECT latest_revision_id, active_publish_request_id
@@ -770,12 +730,12 @@ export async function createPostgresPageLifecycle(
             active_publish_request_id = NULL
           WHERE page_id = ${locked.page_id}
         `;
+        // decided_* 是决策事实的唯一记录;历史上的 confirmed_by/confirmed_at
+        // 是同一事实的第二份只写副本,已随不变式归一移除(存量库中的列保留不动)。
         await tx`
           UPDATE publish_requests
           SET
             status = 'published',
-            confirmed_by = ${context.actorId},
-            confirmed_at = ${now},
             decided_by = ${context.actorId},
             decided_client_id = ${context.clientId},
             decided_at = ${now}
@@ -785,7 +745,7 @@ export async function createPostgresPageLifecycle(
           requestId: locked.request_id,
           pageId: locked.page_id,
           revisionId: locked.revision_id,
-          action: 'approved',
+          action: publishAuditActionFor('published'),
           actorId: context.actorId,
           clientId: context.clientId,
           occurredAt: now,
@@ -800,9 +760,12 @@ export async function createPostgresPageLifecycle(
         if (hash(command.token) !== locked.token_hash) {
           return lifecycleFailure('INVALID_CONFIRMATION_TOKEN', '发布确认 token 无效');
         }
-        if (!hasRole(context, 'publisher') && !hasRole(context, 'admin')) {
-          return lifecycleFailure('PUBLISH_FORBIDDEN', '拒绝发布需要 publisher 权限');
-        }
+        const forbidden = publishDecisionForbidden(
+          'reject',
+          { requestedBy: locked.requested_by },
+          context
+        );
+        if (forbidden) return forbidden;
         await finishPublishRequest(tx, locked, 'rejected', context, now, command.reason ?? null);
         return { ok: true, request: toPublishRequestDetails({
           ...locked,
@@ -816,9 +779,12 @@ export async function createPostgresPageLifecycle(
 
     async cancelPublish(command, context) {
       return decidePublishRequest(sql, command.requestId, clock.now(), async (tx, locked, now) => {
-        if (context.actorId !== locked.requested_by && !hasRole(context, 'admin')) {
-          return lifecycleFailure('PUBLISH_FORBIDDEN', '只有发起人或管理员可取消发布请求');
-        }
+        const forbidden = publishDecisionForbidden(
+          'cancel',
+          { requestedBy: locked.requested_by },
+          context
+        );
+        if (forbidden) return forbidden;
         await finishPublishRequest(tx, locked, 'cancelled', context, now, command.reason ?? null);
         return { ok: true, request: toPublishRequestDetails({
           ...locked,
@@ -832,9 +798,12 @@ export async function createPostgresPageLifecycle(
 
     async forceReleasePublish(command, context) {
       return decidePublishRequest(sql, command.requestId, clock.now(), async (tx, locked, now) => {
-        if (!hasRole(context, 'admin')) {
-          return lifecycleFailure('PUBLISH_FORBIDDEN', '强制释放发布租约需要 admin 权限');
-        }
+        const forbidden = publishDecisionForbidden(
+          'force_release',
+          { requestedBy: locked.requested_by },
+          context
+        );
+        if (forbidden) return forbidden;
         await finishPublishRequest(tx, locked, 'force_released', context, now, command.reason);
         return { ok: true, request: toPublishRequestDetails({
           ...locked,
@@ -851,11 +820,7 @@ export async function createPostgresPageLifecycle(
       if (!request) {
         return lifecycleFailure('PUBLISH_REQUEST_NOT_FOUND', `发布请求不存在:${reference.requestId}`);
       }
-      if (
-        context.actorId !== request.requested_by &&
-        !hasRole(context, 'publisher') &&
-        !hasRole(context, 'admin')
-      ) {
+      if (!canViewPublishRequest({ requestedBy: request.requested_by }, context)) {
         return lifecycleFailure('PUBLISH_FORBIDDEN', '当前身份不能查看该发布审计');
       }
       const rows = (await sql`
@@ -1041,13 +1006,13 @@ async function ensureSchema(sql: Sql): Promise<void> {
       token_hash text NOT NULL,
       created_at timestamptz NOT NULL,
       expires_at timestamptz NOT NULL,
-      confirmed_by text,
-      confirmed_at timestamptz,
       decided_by text,
       decided_client_id text,
       decided_at timestamptz
     )
   `;
+  // confirmed_by/confirmed_at 曾与 decided_* 记录同一决策事实(只写不读),
+  // 已停止写入并从建表语句移除;存量库中的两列保留不动,不做迁移期 DROP。
   await sql`
     ALTER TABLE publish_requests
     ADD COLUMN IF NOT EXISTS requested_client_id text NOT NULL DEFAULT 'unknown'
@@ -1137,28 +1102,21 @@ async function refreshPublishRequest(
   now: Date
 ): Promise<PublishRequestRow | null> {
   const request = await selectPublishRequest(sql, requestId);
-  if (
-    !request ||
-    request.status !== 'pending' ||
-    new Date(request.expires_at).getTime() > now.getTime()
-  ) {
+  if (!request || publishLeaseState(request.status, request.expires_at, now) !== 'expired') {
     return request;
   }
   return sql.begin(async (tx) => {
     await lockDashboardPage(tx, request.page_id);
     const locked = await selectPublishRequest(tx, requestId, true);
     if (!locked) return null;
-    if (
-      locked.status === 'pending' &&
-      new Date(locked.expires_at).getTime() <= now.getTime()
-    ) {
+    if (publishLeaseState(locked.status, locked.expires_at, now) === 'expired') {
       await finishPublishRequest(
         tx,
         locked,
         'expired',
         null,
         now,
-        '15 分钟发布租约已到期'
+        PUBLISH_LEASE_EXPIRED_REASON
       );
       return { ...locked, status: 'expired', decided_at: now };
     }
@@ -1189,14 +1147,14 @@ async function decidePublishRequest(
     if (locked.status !== 'pending') {
       return lifecycleFailure('PUBLISH_REQUEST_CLOSED', `发布请求已结束:${locked.status}`);
     }
-    if (new Date(locked.expires_at).getTime() <= now.getTime()) {
+    if (publishLeaseState(locked.status, locked.expires_at, now) === 'expired') {
       await finishPublishRequest(
         tx,
         locked,
         'expired',
         null,
         now,
-        '15 分钟发布租约已到期'
+        PUBLISH_LEASE_EXPIRED_REASON
       );
       return lifecycleFailure(
         'PUBLISH_REQUEST_EXPIRED',
@@ -1235,7 +1193,7 @@ async function finishPublishRequest(
     requestId: request.request_id,
     pageId: request.page_id,
     revisionId: request.revision_id,
-    action: status,
+    action: publishAuditActionFor(status),
     actorId: context?.actorId ?? null,
     clientId: context?.clientId ?? null,
     occurredAt: now,
