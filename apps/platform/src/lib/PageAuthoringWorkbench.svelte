@@ -19,9 +19,11 @@
     type WorkbenchRunView
   } from './workbench/run-state';
   import { openAgentRunStream } from './workbench/stream-consumer';
+  import { askFormulaTraces, type PromotedOutcome } from './workbench/promote-flow';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import ComponentPinStrip from './workbench/ComponentPinStrip.svelte';
   import InteractionCard from './workbench/InteractionCard.svelte';
+  import PromotePanel from './workbench/PromotePanel.svelte';
   import ScopeCard from './workbench/ScopeCard.svelte';
   import StepTimeline from './workbench/StepTimeline.svelte';
 
@@ -35,6 +37,8 @@
    *   入口——不再有 iframe,也不依赖已保存修订(ADR-0030:临时页面态)。
    * - 渲染入口只接受文档对象,不写入页面生命周期;保存修订仍是用户显式
    *   动作,且只对非临时页面 id 开放(临时 id 不承载修订归属)。
+   * - 临时页面态经沉淀面板(#68)显式转为长期资产:纯函数改写换上经确认
+   *   的正式页面 id 后走同一保存修订通道,问数与探索不自动触发。
    */
 
   interface SaveRevisionResponse {
@@ -60,6 +64,7 @@
   let saveNotice = $state('');
   let saveError = $state('');
   let cancelRequested = $state(false);
+  let promoteOpen = $state(false);
   let threadEl: HTMLElement | null = $state(null);
 
   const dataGateway = createPlatformDataGateway();
@@ -207,6 +212,18 @@
       savePending = false;
     }
   }
+
+  /** 沉淀完成:文档换上正式页面 id,后续保存以首个修订为基线走既有通道。 */
+  function handlePromoted(outcome: PromotedOutcome) {
+    promoteOpen = false;
+    currentDocument = outcome.document;
+    baseRevisionId = outcome.revisionId;
+    confirmedPageIds = [...new Set([...confirmedPageIds, outcome.pageId])];
+    saveNotice =
+      `已沉淀为${outcome.direction === 'dataApp' ? ' Data App' : '报告'}:` +
+      `页面 ${outcome.pageId} 修订 R${outcome.revisionNumber},数据上下文版本:` +
+      `${outcome.dataContextVersion ?? '纯静态页面'}`;
+  }
 </script>
 
 <svelte:head>
@@ -336,6 +353,16 @@
             {cancelRequested ? '取消中…' : '取消运行'}
           </button>
         {/if}
+        {#if pageModel && pageModel.transient}
+          <button
+            type="button"
+            class="btn"
+            disabled={running}
+            onclick={() => (promoteOpen = true)}
+          >
+            沉淀为长期资产…
+          </button>
+        {/if}
         {#if pageModel && !pageModel.transient}
           <button type="button" class="btn" disabled={savePending || running} onclick={saveRevision}>
             {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
@@ -370,6 +397,15 @@
       {/if}
     </div>
   </main>
+
+  {#if promoteOpen && currentDocument && pageModel?.transient}
+    <PromotePanel
+      document={currentDocument}
+      formulaTraces={askFormulaTraces(conversationBaseline)}
+      onclose={() => (promoteOpen = false)}
+      onpromoted={handlePromoted}
+    />
+  {/if}
 </div>
 
 <style>
