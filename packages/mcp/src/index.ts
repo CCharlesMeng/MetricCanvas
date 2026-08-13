@@ -5,14 +5,13 @@ import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import {
   componentCatalog,
-  pageListEntry,
   pageSchema,
-  parsePage,
   validate,
   versionPolicy
 } from '@metriccanvas/page';
 import type { DataContextSearch } from './data-context';
 import type { McpClient } from './agent-protocol';
+import { isPlaceholderPageId, pageIdConfirmationPayload } from './authoring/promote';
 import type { ExecuteDataRequestUnitQuery } from './authoring/unit-verification';
 import { registerExecuteDataRequestUnitTool } from './authoring/unit-verification-tool';
 import type {
@@ -26,6 +25,7 @@ export * from './agent-protocol';
 export * from './data-context';
 export * from './authoring/auto-visualize';
 export * from './authoring/assemble-page';
+export * from './authoring/promote';
 export * from './authoring/unit-verification';
 export * from './authoring/unit-verification-tool';
 
@@ -493,37 +493,18 @@ export function createPageIdConfirmationMcpClient(
       const document = request.arguments.document;
       const pageId = document.id;
       if (typeof pageId !== 'string' || confirmedPageIds.has(pageId)) return result;
-      // 确认弹窗标题与页面列表同源(#78):经 parsePage 进入类型世界后统一由
-      // pageListEntry 派生。本分支处于 validate_page 成功路径,parse 必然通过;
-      // 防御性兜底:解析失败时不带标题,不再保留第二份标题推导实现。
-      const parsed = parsePage(document);
+      // 确认载荷与沉淀入口的等价显式确认同源(#68):标题推导(#78 的
+      // parsePage → pageListEntry 单点)由 pageIdConfirmationPayload 承载。
       return {
         ...result,
         interaction: {
           id: `confirm-page-id:${pageId}`,
           kind: 'confirm_page_id',
-          payload: {
-            pageId,
-            ...(parsed.ok ? { title: pageListEntry(parsed.page).title } : {}),
-            stablePath: `/pages/${pageId}`,
-            immutableAfterSave: true,
-            ...(typeof document.schemaVersion === 'string'
-              ? { schemaVersion: document.schemaVersion }
-              : {})
-          }
+          payload: { ...pageIdConfirmationPayload(document, pageId) }
         }
       };
     }
   };
-}
-
-function isPlaceholderPageId(value: string): boolean {
-  const normalized = value.trim().toLowerCase();
-  return (
-    /^__.*__$/u.test(normalized) ||
-    /^<.*>$/u.test(normalized) ||
-    ['pending', 'todo', 'tbd', 'placeholder', '待确认', '待定'].includes(normalized)
-  );
 }
 
 function toolResult(value: object, isError = false) {
