@@ -1,116 +1,202 @@
 <script lang="ts">
-  import type {
-    AgentInteraction,
-    AgentMessage
-  } from './server/agent/types';
-  import type { PageDocument } from '@metriccanvas/page';
+  import { RuntimeView } from '@metriccanvas/runtime-ui';
+  import type { AgentMessage } from './server/agent/types';
+  import { createPlatformDataGateway } from './platform-data-gateway';
+  import {
+    buildAgentStreamRequestBody,
+    pinComponent,
+    unpinComponent,
+    type PinnedComponentChoice
+  } from './workbench/agent-request';
+  import {
+    applyOutcome,
+    applyStreamEvent,
+    applyTransportFailure,
+    awaitingScopeConfirmation,
+    createRunView,
+    scopeCards,
+    type WorkbenchRunView
+  } from './workbench/run-state';
+  import { openAgentRunStream } from './workbench/stream-consumer';
+  import { workbenchPageViewModel } from './workbench/transient-page';
+  import ComponentPinStrip from './workbench/ComponentPinStrip.svelte';
+  import InteractionCard from './workbench/InteractionCard.svelte';
+  import ScopeCard from './workbench/ScopeCard.svelte';
+  import StepTimeline from './workbench/StepTimeline.svelte';
 
-  interface AgentResponse {
-    messages?: AgentMessage[];
-    interaction?: AgentInteraction;
-    document?: Record<string, unknown>;
-    runtimeOrigin?: string;
-    error?: { code: string; message: string };
+  /**
+   * 页面搭建工作台(#65):对话轨 + 步骤时间线 + 页面视图。
+   *
+   * - 对话消费 POST /api/agent/stream 的 AgentRunStreamEvent 序列,按步骤
+   *   展开时间线;运行可取消(POST /api/agent/runs/{runId}/cancel)。
+   * - 页面视图把 outcome 帧带回的已校验页面文档直接交给统一运行时的
+   *   RuntimeView 渲染,数据经 createPlatformDataGateway() 走服务端取数
+   *   入口——不再有 iframe,也不依赖已保存修订(ADR-0030:临时页面态)。
+   * - 渲染入口只接受文档对象,不写入页面生命周期;保存修订仍是用户显式
+   *   动作,且只对非临时页面 id 开放(临时 id 不承载修订归属)。
+   */
+
+  interface SaveRevisionResponse {
+    ok?: boolean;
+    revision?: {
+      revisionId: string;
+      revisionNumber: number;
+      dataContextVersion: string | null;
+    };
+    error?: { code?: string; message?: string };
   }
 
-  let intent = $state(
+  let composerText = $state(
     '创建销售经营概览：展示成交总额、区域对比和成交趋势'
   );
-  let messages = $state<AgentMessage[]>([]);
-  let draft = $state<PageDocument | null>(null);
-  let interaction = $state<AgentInteraction | null>(null);
+  let runs = $state<WorkbenchRunView[]>([]);
+  let conversationBaseline = $state<AgentMessage[]>([]);
   let confirmedPageIds = $state<string[]>([]);
+  let pins = $state<PinnedComponentChoice[]>([]);
+  let currentDocument = $state<Record<string, unknown> | null>(null);
   let baseRevisionId = $state<string | null>(null);
-  let previewUrl = $state('');
-  let pending = $state(false);
-  let notice = $state('');
-  let error = $state('');
-  const runId = crypto.randomUUID();
+  let savePending = $state(false);
+  let saveNotice = $state('');
+  let saveError = $state('');
+  let cancelRequested = $state(false);
+  let threadEl: HTMLElement | null = $state(null);
 
-  async function askAgent() {
-    const text = intent.trim();
-    if (!text || pending) return;
-    messages = [...messages, { role: 'user', content: text }];
-    intent = '';
-    await runAgent();
+  const dataGateway = createPlatformDataGateway();
+
+  const activeRun = $derived(runs.at(-1) ?? null);
+  const running = $derived(activeRun?.status === 'running');
+  const pageModel = $derived(
+    currentDocument ? workbenchPageViewModel(currentDocument) : null
+  );
+
+  const STATUS_LABELS: Record<WorkbenchRunView['status'], string> = {
+    running: '运行中',
+    completed: '已完成',
+    interaction_required: '等待确认',
+    failed: '已失败',
+    cancelled: '已取消'
+  };
+
+  $effect(() => {
+    void runs;
+    if (threadEl) threadEl.scrollTop = threadEl.scrollHeight;
+  });
+
+  async function ask(event: SubmitEvent) {
+    event.preventDefault();
+    const question = composerText.trim();
+    if (!question || running) return;
+    composerText = '';
+    await startRun(question);
   }
 
-  async function runAgent() {
-    pending = true;
-    error = '';
-    notice = '';
+  /**
+   * 发起一次流式运行。question 为 null 表示续跑(交互确认 / 重试失败
+   * 步骤):以上一轮 outcome.messages 为基线携带新的 runId 再次 POST。
+   */
+  async function startRun(question: string | null) {
+    if (running) return;
+    saveNotice = '';
+    saveError = '';
+    cancelRequested = false;
+    if (question !== null) {
+      conversationBaseline = [
+        ...conversationBaseline,
+        { role: 'user', content: question }
+      ];
+    }
+    const runId = crypto.randomUUID();
+    let view = createRunView({ runId, question });
+    runs = [...runs, view];
+    const commit = (next: WorkbenchRunView) => {
+      view = next;
+      runs = runs.map((run) => (run.runId === runId ? next : run));
+    };
+
     try {
-      const response = await fetch('/api/agent', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
+      const frames = openAgentRunStream({
+        body: buildAgentStreamRequestBody({
           runId,
-          messages,
-          confirmations: confirmedPageIds.map((pageId) => ({
-            kind: 'page_id',
-            pageId
-          })),
-          ...(draft ? { draft } : {})
+          messages: conversationBaseline,
+          confirmedPageIds,
+          draft: currentDocument,
+          pinnedComponents: pins
         })
       });
-      const payload = (await response.json()) as AgentResponse;
-      if (!response.ok || payload.error) {
-        throw new Error(payload.error?.message ?? `Agent 请求失败:${response.status}`);
+      for await (const frame of frames) {
+        if (frame.kind === 'event') {
+          commit(applyStreamEvent(view, frame.event));
+        } else {
+          commit(applyOutcome(view, frame.outcome));
+          conversationBaseline = frame.outcome.messages;
+          if (frame.outcome.document) currentDocument = frame.outcome.document;
+        }
       }
-      messages = payload.messages ?? messages;
-      interaction = payload.interaction ?? null;
-      if (payload.document) draft = payload.document as unknown as PageDocument;
-      if (payload.runtimeOrigin) {
-        previewUrl = previewUrl || payload.runtimeOrigin;
+      if (view.status === 'running') {
+        commit(applyTransportFailure(view, '推送流在运行结束前关闭'));
       }
-      notice = draft ? '工作副本已更新并通过 v4 Schema 校验。' : 'Agent 已完成。';
     } catch (cause) {
-      error = cause instanceof Error ? cause.message : String(cause);
-    } finally {
-      pending = false;
+      commit(
+        applyTransportFailure(
+          view,
+          cause instanceof Error ? cause.message : String(cause)
+        )
+      );
     }
   }
 
-  async function confirmPageId() {
-    if (!interaction || interaction.kind !== 'confirm_page_id') return;
-    const pageId = String(interaction.payload.pageId ?? '');
-    if (!pageId) return;
-    confirmedPageIds = [...new Set([...confirmedPageIds, pageId])];
-    interaction = null;
-    await runAgent();
+  async function cancelActiveRun() {
+    if (!activeRun || activeRun.status !== 'running' || cancelRequested) return;
+    cancelRequested = true;
+    try {
+      await fetch(`/api/agent/runs/${encodeURIComponent(activeRun.runId)}/cancel`, {
+        method: 'POST'
+      });
+    } catch {
+      // 取消端点不可达时推送流仍会按断开语义收尾。
+      cancelRequested = false;
+    }
   }
 
-  async function save() {
-    if (!draft || pending) return;
-    pending = true;
-    error = '';
+  async function confirmInteraction(run: WorkbenchRunView) {
+    const interaction = run.pendingInteraction;
+    if (!interaction || running) return;
+    if (interaction.kind === 'confirm_page_id') {
+      const pageId = String(interaction.payload.pageId ?? '');
+      if (pageId) confirmedPageIds = [...new Set([...confirmedPageIds, pageId])];
+    }
+    await startRun(null);
+  }
+
+  async function saveRevision() {
+    if (!currentDocument || !pageModel || pageModel.transient || savePending) return;
+    savePending = true;
+    saveError = '';
     try {
       const response = await fetch(
-        `/api/pages/${encodeURIComponent(draft.id)}/revisions`,
+        `/api/pages/${encodeURIComponent(pageModel.pageId)}/revisions`,
         {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({
             baseRevisionId,
-            document: draft,
+            document: currentDocument,
             idempotencyKey: crypto.randomUUID()
           })
         }
       );
-      const payload = await response.json();
-      if (!response.ok || !payload.ok) {
+      const payload = (await response.json()) as SaveRevisionResponse;
+      if (!response.ok || !payload.ok || !payload.revision) {
         throw new Error(payload.error?.message ?? `保存失败:${response.status}`);
       }
       baseRevisionId = payload.revision.revisionId;
-      previewUrl =
-        `${payload.runtimeOrigin}/pages/${encodeURIComponent(draft.id)}` +
-        `?revision=${encodeURIComponent(baseRevisionId!)}`;
-      notice = `已保存 R${payload.revision.revisionNumber}，数据上下文版本：` +
+      saveNotice =
+        `已保存修订 R${payload.revision.revisionNumber}，数据上下文版本：` +
         `${payload.revision.dataContextVersion ?? '纯静态页面'}`;
     } catch (cause) {
-      error = cause instanceof Error ? cause.message : String(cause);
+      saveError = cause instanceof Error ? cause.message : String(cause);
     } finally {
-      pending = false;
+      savePending = false;
     }
   }
 </script>
@@ -120,91 +206,439 @@
 </svelte:head>
 
 <div class="workbench">
-  <aside>
-    <p class="eyebrow">AI 页面搭建</p>
-    <h1>从数据上下文或静态数据生成 v4 页面</h1>
-    <textarea bind:value={intent} rows="6" placeholder="描述分析目标、数据场景和希望呈现的内容"></textarea>
-    <button class="primary" disabled={pending || !intent.trim()} onclick={askAgent}>
-      {pending ? '处理中…' : '生成 / 修改页面'}
-    </button>
-    {#if interaction?.kind === 'confirm_page_id'}
-      <div class="confirm">
-        <strong>确认页面 id</strong>
-        <code>{String(interaction.payload.pageId ?? '')}</code>
-        <button onclick={confirmPageId}>确认并继续</button>
+  <aside class="chat">
+    <header>
+      <div>
+        <p class="eyebrow">分析会话</p>
+        <h1>页面搭建工作台</h1>
       </div>
-    {/if}
-    {#if draft}
-      <button disabled={pending} onclick={save}>
-        {baseRevisionId ? '保存新修订' : '保存首个修订'}
+      {#if runs.length > 0}
+        <span class="chip">{runs.filter((run) => run.question !== null).length} 轮</span>
+      {/if}
+    </header>
+
+    <div class="thread" bind:this={threadEl}>
+      {#if runs.length === 0}
+        <div class="thread-empty">
+          <p>用一句业务问题开始。系统按步骤展开:业务域路由、指标候选、口径卡、真实执行、结果就绪、页面文档就绪。</p>
+          <p>动态取数会先检索数据上下文并生成查询定义;静态报告使用 inline 页面数据源。</p>
+        </div>
+      {/if}
+      {#each runs as run (run.runId)}
+        {@const isLast = run === activeRun}
+        {#if run.question !== null}
+          <div class="ask-bubble">{run.question}</div>
+        {:else}
+          <div class="continuation">确认后继续运行</div>
+        {/if}
+
+        <div class="reply">
+          {#each run.replies as reply, replyIndex (replyIndex)}
+            <p class="reply-text">{reply}</p>
+          {/each}
+
+          {#each scopeCards(run) as card, cardIndex (cardIndex)}
+            <ScopeCard
+              {card}
+              onconfirm={card.awaitingConfirmation &&
+              isLast &&
+              run.status === 'interaction_required'
+                ? () => confirmInteraction(run)
+                : undefined}
+            />
+          {/each}
+
+          {#if run.steps.length > 0}
+            <details class="timeline" open={run.status === 'running'}>
+              <summary>执行过程({run.steps.length} 步)</summary>
+              <StepTimeline steps={run.steps} />
+            </details>
+          {/if}
+
+          {#if run.status === 'running'}
+            <p class="run-state running-state">
+              运行中…
+              <button type="button" class="linkish" onclick={cancelActiveRun}>
+                {cancelRequested ? '取消请求已发出' : '取消运行'}
+              </button>
+            </p>
+          {:else if run.status === 'interaction_required' && run.pendingInteraction && isLast && !awaitingScopeConfirmation(run)}
+            <InteractionCard
+              interaction={run.pendingInteraction}
+              confirming={running}
+              onconfirm={() => confirmInteraction(run)}
+            />
+          {:else if run.status === 'failed' && run.failure}
+            <div class="failure" role="alert">
+              <p>
+                <code>{run.failure.code}</code>
+                {run.failure.message}
+                {#if run.failure.stage}
+                  <span class="stage">阶段:{run.failure.stage}</span>
+                {/if}
+              </p>
+              {#if run.failure.retryable && isLast}
+                <button type="button" class="linkish" onclick={() => startRun(null)}>
+                  重试失败步骤
+                </button>
+              {/if}
+            </div>
+          {:else if run.status === 'cancelled'}
+            <p class="run-state">运行已取消;会话状态保留,可继续追问或重试。</p>
+          {/if}
+        </div>
+      {/each}
+    </div>
+
+    <form class="composer" onsubmit={ask}>
+      <textarea
+        rows="3"
+        bind:value={composerText}
+        placeholder="描述业务问题,或追问:换维度、改筛选、调整展示"
+      ></textarea>
+      <button type="submit" class="primary" disabled={running || !composerText.trim()}>
+        {running ? '运行中…' : '发送'}
       </button>
-    {/if}
-    {#if notice}<p class="notice">{notice}</p>{/if}
-    {#if error}<p class="error">{error}</p>{/if}
+    </form>
   </aside>
 
   <main>
-    {#if previewUrl && baseRevisionId}
-      <iframe title="统一运行时精确修订预览" src={previewUrl}></iframe>
-    {:else if draft}
-      <header>
-        <div>
-          <span class="badge">schemaVersion {draft.schemaVersion}</span>
-          <h2>{draft.id}</h2>
-          <p>{draft.meta?.description ?? '未保存工作副本'}</p>
-        </div>
-        <span>{Object.keys(draft.dataSources).length} 个页面数据源</span>
-      </header>
-      {#each draft.sections as section}
-        <section>
-          <h3>{section.title ?? section.id}</h3>
-          <div class="components">
-            {#each section.components as component}
-              <article>
-                <code>{component.type}</code>
-                <strong>{component.id}</strong>
-                <small>跨度 {component.layout.span}/12</small>
-              </article>
-            {/each}
-          </div>
-        </section>
-      {/each}
-    {:else}
-      <div class="empty">
-        <h2>描述你要解决的业务问题</h2>
-        <p>静态报告会使用 inline；动态取数会先检索数据上下文并生成 DQE 查询定义。</p>
+    <div class="docbar">
+      <div class="l">
+        {#if pageModel}
+          <span class="badge" class:transient={pageModel.transient}>
+            {pageModel.transient ? '临时页面态' : '未保存工作副本'}
+          </span>
+          <code class="page-id">{pageModel.pageId}</code>
+          <span class="stat">组件 {pageModel.components.length}</span>
+          <span class="stat">页面数据源 {pageModel.dataSourceCount}</span>
+        {:else}
+          <span class="badge idle">尚无页面文档</span>
+        {/if}
       </div>
+      <div class="r">
+        {#if activeRun}
+          <span class="stat status-{activeRun.status}">
+            {STATUS_LABELS[activeRun.status]}
+          </span>
+        {/if}
+        {#if running}
+          <button type="button" class="btn danger" onclick={cancelActiveRun}>
+            {cancelRequested ? '取消中…' : '取消运行'}
+          </button>
+        {/if}
+        {#if pageModel && !pageModel.transient}
+          <button type="button" class="btn" disabled={savePending || running} onclick={saveRevision}>
+            {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
+          </button>
+        {/if}
+      </div>
+    </div>
+    {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
+    {#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
+
+    {#if pageModel}
+      <ComponentPinStrip
+        components={pageModel.components}
+        {pins}
+        disabled={running}
+        onpin={(choice) => (pins = pinComponent(pins, choice))}
+        onunpin={(dataSourceId) => (pins = unpinComponent(pins, dataSourceId))}
+      />
     {/if}
+
+    <div class="page-scroll">
+      {#if currentDocument}
+        <RuntimeView document={currentDocument} {dataGateway} />
+      {:else}
+        <div class="empty">
+          <h2>描述你要解决的业务问题</h2>
+          <p>
+            页面文档通过校验后在这里直接渲染——无需保存任何修订,
+            数据经服务端取数入口返回。
+          </p>
+        </div>
+      {/if}
+    </div>
   </main>
 </div>
 
 <style>
-  .workbench { display: grid; grid-template-columns: 340px minmax(0, 1fr); min-height: calc(100vh - 54px); }
-  aside { padding: 28px; background: white; border-right: 1px solid #e4e4e7; }
-  .eyebrow, .badge { color: #4f46e5; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
-  h1 { font-size: 24px; line-height: 1.2; margin: 8px 0 22px; }
-  textarea { width: 100%; resize: vertical; border: 1px solid #d4d4d8; border-radius: 10px; padding: 12px; font: inherit; }
-  button { width: 100%; margin-top: 10px; border: 1px solid #d4d4d8; border-radius: 9px; padding: 10px 14px; background: white; font-weight: 650; cursor: pointer; }
-  button.primary { color: white; background: #4f46e5; border-color: #4f46e5; }
-  button:disabled { opacity: .55; cursor: not-allowed; }
-  .confirm { margin-top: 14px; padding: 12px; border-radius: 10px; background: #eef2ff; }
-  .confirm code { display: block; margin-top: 6px; }
-  .notice { color: #166534; }
-  .error { color: #b91c1c; }
-  main { min-width: 0; padding: 28px; }
-  iframe { width: 100%; height: calc(100vh - 110px); border: 0; border-radius: 14px; background: white; }
-  header { display: flex; justify-content: space-between; gap: 20px; align-items: start; margin-bottom: 24px; }
-  h2, h3 { margin: 6px 0; }
-  header p { color: #71717a; margin: 0; }
-  section { margin: 18px 0; padding: 18px; border-radius: 14px; background: white; }
-  .components { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
-  article { display: grid; gap: 8px; padding: 14px; border: 1px solid #e4e4e7; border-radius: 10px; }
-  article code { color: #4f46e5; }
-  article small { color: #71717a; }
-  .empty { display: grid; place-content: center; min-height: 60vh; text-align: center; color: #71717a; }
-  @media (max-width: 800px) {
-    .workbench { grid-template-columns: 1fr; }
-    aside { border-right: 0; border-bottom: 1px solid #e4e4e7; }
-    .components { grid-template-columns: 1fr; }
+  .workbench {
+    display: grid;
+    grid-template-columns: 380px minmax(0, 1fr);
+    height: calc(100vh - 54px);
+    background: #f4f4f5;
+  }
+  .chat {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: #fff;
+    border-right: 1px solid #e4e4e7;
+  }
+  .chat > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 16px 18px 12px;
+    border-bottom: 1px solid #f4f4f5;
+  }
+  .eyebrow {
+    margin: 0;
+    color: #4f46e5;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  h1 {
+    margin: 4px 0 0;
+    font-size: 16px;
+  }
+  .chip {
+    padding: 2px 8px;
+    color: #52525b;
+    background: #f4f4f5;
+    border-radius: 999px;
+    font-size: 11px;
+  }
+  .thread {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding: 16px 18px;
+    overflow-y: auto;
+  }
+  .thread-empty {
+    color: #71717a;
+    font-size: 12.5px;
+    line-height: 1.7;
+  }
+  .thread-empty p {
+    margin: 0 0 8px;
+  }
+  .ask-bubble {
+    align-self: flex-end;
+    max-width: 88%;
+    padding: 8px 12px;
+    color: #fff;
+    background: #4f46e5;
+    border-radius: 12px 12px 3px 12px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .continuation {
+    align-self: flex-end;
+    color: #a1a1aa;
+    font-size: 11px;
+  }
+  .reply {
+    display: grid;
+    gap: 10px;
+  }
+  .reply-text {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+  }
+  .timeline summary {
+    color: #6366f1;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .timeline[open] summary {
+    margin-bottom: 6px;
+  }
+  .run-state {
+    margin: 0;
+    color: #71717a;
+    font-size: 12px;
+  }
+  .running-state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .linkish {
+    padding: 0;
+    color: #6366f1;
+    background: none;
+    border: 0;
+    font-size: 11.5px;
+    cursor: pointer;
+  }
+  .failure {
+    padding: 10px 12px;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    font-size: 12.5px;
+  }
+  .failure p {
+    margin: 0;
+  }
+  .failure code {
+    color: #b91c1c;
+    font-weight: 700;
+    font-size: 11.5px;
+  }
+  .failure .stage {
+    margin-left: 8px;
+    color: #71717a;
+    font-size: 11px;
+  }
+  .composer {
+    display: grid;
+    gap: 8px;
+    padding: 12px 18px 16px;
+    border-top: 1px solid #f4f4f5;
+  }
+  .composer textarea {
+    width: 100%;
+    padding: 10px 11px;
+    border: 1px solid #d4d4d8;
+    border-radius: 10px;
+    resize: none;
+    font: inherit;
+    font-size: 13px;
+  }
+  .composer button {
+    justify-self: end;
+  }
+
+  main {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+  }
+  .docbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 18px;
+    background: #fff;
+    border-bottom: 1px solid #e4e4e7;
+  }
+  .docbar .l,
+  .docbar .r {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .badge {
+    padding: 3px 9px;
+    color: #3730a3;
+    background: #eef2ff;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .badge.transient {
+    color: #92400e;
+    background: #fef3c7;
+  }
+  .badge.idle {
+    color: #71717a;
+    background: #f4f4f5;
+  }
+  .page-id {
+    color: #3f3f46;
+    font-size: 12.5px;
+  }
+  .stat {
+    color: #71717a;
+    font-size: 12px;
+  }
+  .status-running {
+    color: #4f46e5;
+    font-weight: 650;
+  }
+  .status-failed {
+    color: #b91c1c;
+    font-weight: 650;
+  }
+  .status-interaction_required {
+    color: #92400e;
+    font-weight: 650;
+  }
+  .btn,
+  .primary {
+    padding: 7px 13px;
+    background: #fff;
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .primary {
+    color: #fff;
+    background: #4f46e5;
+    border-color: #4f46e5;
+  }
+  .btn.danger {
+    color: #b91c1c;
+    border-color: #fecaca;
+  }
+  .btn:disabled,
+  .primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .notice {
+    margin: 0;
+    padding: 8px 18px;
+    color: #166534;
+    background: #f0fdf4;
+    border-bottom: 1px solid #dcfce7;
+    font-size: 12px;
+  }
+  .error {
+    margin: 0;
+    padding: 8px 18px;
+    color: #b91c1c;
+    background: #fef2f2;
+    border-bottom: 1px solid #fecaca;
+    font-size: 12px;
+  }
+  .page-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
+  .empty {
+    display: grid;
+    place-content: center;
+    min-height: 60vh;
+    text-align: center;
+    color: #71717a;
+  }
+  .empty h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #3f3f46;
+  }
+  .empty p {
+    margin: 0;
+    max-width: 42rem;
+    font-size: 13px;
+    line-height: 1.7;
+  }
+  @media (max-width: 900px) {
+    .workbench {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+    .chat {
+      border-right: 0;
+      border-bottom: 1px solid #e4e4e7;
+    }
   }
 </style>
