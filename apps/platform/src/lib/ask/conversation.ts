@@ -59,6 +59,12 @@ export interface AskConversationState {
   /** 最近一次成功执行的取数单元;追问的增量修改基线。 */
   unit: AskDataRequestUnitState | null;
   intent: AnalysisIntent | null;
+  /**
+   * 用户话语显式点名的组件形态(如「改成柱状图」),确定性识别后跨追问
+   * 轮保持,新点名覆盖;优先于 UI 钉住。历史状态消息可能缺该字段,
+   * 读取处一律 `?? null`。
+   */
+  requestedComponent?: string | null;
   transientPageId: string | null;
   /** 自由生成 formula 的留痕(ADR-0032);沉淀门槛(#68)的输入。 */
   formulaTraces: FormulaTrace[];

@@ -328,6 +328,65 @@ describe('问数编排:追问是定向增量修改', () => {
     const { document } = completedOf(events);
     expect(validate(document!)).toEqual([]);
   });
+
+  it('话语点名组件形态走确定性通道:「改成柱状图」立即生效、优先于钉住、跨轮保持', async () => {
+    const first = buildAskPorts({
+      script: {
+        route: [{ businessDomains: ['运营分析'] }],
+        unit: [{ outcome: 'unit', unit: TREND_UNIT }],
+        intent: [{ intent: 'trend' }]
+      }
+    });
+    const firstRunner = createAskOrchestrationRunner(first.ports, { runId: 'req-1' });
+    const firstEvents = await collect(
+      firstRunner.run({ messages: userTurn('最近6个月Tokens消耗量的月度趋势如何?') })
+    );
+    const baseline = completedOf(firstEvents).messages;
+
+    // 第二轮:话语点名「柱状图」——组件词汇的唯一来源是 componentCatalog
+    // 的中文名,确定性识别,不依赖模型意图判定;且优先于 UI 钉住(table)。
+    const second = buildAskPorts({
+      script: {
+        unit: [{ outcome: 'patch', patch: {} }],
+        intent: [{ intent: 'trend' }]
+      }
+    });
+    const secondRunner = createAskOrchestrationRunner(second.ports, {
+      runId: 'req-2',
+      pinnedComponents: [{ dataSourceId: ASK_DATA_SOURCE_ID, componentType: 'table' }]
+    });
+    const secondEvents = await collect(
+      secondRunner.run({ messages: userTurn('改成柱状图', baseline) })
+    );
+    expect(
+      stepEvents(secondEvents).find((event) => event.type === 'document_ready')
+    ).toMatchObject({
+      components: [{ componentType: 'barChart', pinnedByUser: true }]
+    });
+    const secondBaseline = completedOf(secondEvents).messages;
+
+    // 第三轮:未提及展示——点名跨轮保持(未提及的显式设置不变)。
+    const third = buildAskPorts({
+      script: {
+        unit: [
+          {
+            outcome: 'patch',
+            patch: { filters: [{ dimension: '区域', values: ['华东'] }] }
+          }
+        ],
+        intent: [{ intent: 'trend' }]
+      }
+    });
+    const thirdRunner = createAskOrchestrationRunner(third.ports, { runId: 'req-3' });
+    const thirdEvents = await collect(
+      thirdRunner.run({ messages: userTurn('只看华东', secondBaseline) })
+    );
+    expect(
+      stepEvents(thirdEvents).find((event) => event.type === 'document_ready')
+    ).toMatchObject({
+      components: [{ componentType: 'barChart', pinnedByUser: true }]
+    });
+  });
 });
 
 describe('问数编排:降级路径(四段分类,不编造数据)', () => {

@@ -628,7 +628,14 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     intent = await decideIntentWithFallback(context, unit);
   }
 
-  const pinnedType = pinnedComponentFor(options.pinnedComponents, ASK_DATA_SOURCE_ID);
+  // 用户话语显式点名组件形态(「改成柱状图」)是最强展示信号:确定性
+  // 识别(词汇唯一来源是 componentCatalog 的中文名),不依赖模型意图
+  // 判定;跨追问轮保持,新点名覆盖,优先于 UI 钉住。
+  const requestedNow = explicitComponentRequest(question);
+  const requestedComponent =
+    requestedNow ?? catalogComponentType(state.requestedComponent) ?? null;
+  const pinnedType =
+    requestedComponent ?? pinnedComponentFor(options.pinnedComponents, ASK_DATA_SOURCE_ID);
   // 临时口径在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档本身
   // 走到任何渲染宿主,不依赖工作台外壳。
   const adHoc = adHocDefinitionOf(unit);
@@ -671,7 +678,9 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     });
     yield assistant(
       pinnedIssue !== undefined
-        ? `钉住的组件未通过组件能力硬闸,系统不会自动改写钉住选择:${pinnedIssue.message}。可取消钉住或改问。`
+        ? requestedComponent !== null
+          ? `「${componentLabel(requestedComponent)}」不适配当前结果形状,系统不会替你改选:${pinnedIssue.message}。可换一种展示说法或改问。`
+          : `钉住的组件未通过组件能力硬闸,系统不会自动改写钉住选择:${pinnedIssue.message}。可取消钉住或改问。`
         : `结果无法装配为页面文档:${firstIssue.message}`
     );
     yield completed({ ...state, unit, formulaTraces: verification.formulaTraces }, null);
@@ -690,6 +699,7 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     ...state,
     unit,
     intent,
+    requestedComponent,
     transientPageId,
     formulaTraces: verification.formulaTraces,
     pending: null
@@ -891,6 +901,39 @@ function firstMetricName(unit: AskDataRequestUnitState): string | null {
   return metric?.name ?? null;
 }
 
+/**
+ * 用户话语中的显式组件请求:确定性词面匹配组件目录的中文名(目录是
+ * 组件词汇唯一来源,不自造别名);多个命中取问题中最后出现者(「不要
+ * 折线图,改成柱状图」→ 柱状图)。
+ */
+function explicitComponentRequest(
+  question: string
+): ExecutedDataRequestUnit['pinnedComponent'] | null {
+  let best: { type: ExecutedDataRequestUnit['pinnedComponent']; index: number } | null = null;
+  for (const entry of componentCatalog) {
+    const index = question.lastIndexOf(entry.label);
+    if (index >= 0 && (best === null || index > best.index)) {
+      best = { type: entry.type, index };
+    }
+  }
+  return best?.type ?? null;
+}
+
+/** 把状态里的宽字符串收窄回组件目录类型;目录外(历史脏值)按未点名处理。 */
+function catalogComponentType(
+  value: string | null | undefined
+): ExecutedDataRequestUnit['pinnedComponent'] | null {
+  if (value === null || value === undefined) return null;
+  return componentCatalog.some((entry) => entry.type === value)
+    ? (value as ExecutedDataRequestUnit['pinnedComponent'])
+    : null;
+}
+
+/** 组件类型的中文名(componentCatalog 真源);目录外原样返回。 */
+function componentLabel(type: string): string {
+  return componentCatalog.find((entry) => entry.type === type)?.label ?? type;
+}
+
 function pinnedComponentFor(
   pins: AskRunnerOptions['pinnedComponents'],
   dataSourceId: string
@@ -918,7 +961,7 @@ function summaryText(
       : `${unit.time.start} ~ ${unit.time.end}(${unit.time.granularity})`;
   return (
     `已完成:业务域「${unit.businessDomain}」,指标 ${metricText || '(待定)'},` +
-    `${timeText},返回 ${rowCount} 行,呈现为 ${componentTypes.join(' + ')}。`
+    `${timeText},返回 ${rowCount} 行,呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`
   );
 }
 
