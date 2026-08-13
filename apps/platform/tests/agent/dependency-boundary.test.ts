@@ -44,9 +44,10 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './runner',
     './types'
   ],
-  // 推送端点:HTTP/SSE 传输层。
+  // 推送端点:HTTP/SSE 传输层;口径卡确认类型来自问数编排(#66)。
   'stream-endpoint.ts': [
     '@metriccanvas/page-lifecycle',
+    '../ask/orchestrator',
     '../session/store',
     './abort',
     './run-registry',
@@ -54,7 +55,13 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './types',
     './workbench-request'
   ],
-  'workbench-request.ts': ['@metriccanvas/mcp', './types']
+  // 请求契约:确认种类含口径卡与业务域改写,问数会话状态消息原样保留(#66)。
+  'workbench-request.ts': [
+    '@metriccanvas/mcp',
+    '../ask/conversation',
+    '../ask/orchestrator',
+    './types'
+  ]
 };
 
 function importsOf(source: string): string[] {

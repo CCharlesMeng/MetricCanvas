@@ -3,6 +3,7 @@ import type { AgentEvent, AgentMessage } from '$lib/server/agent/types';
 import { normalizeAgentRunError } from '$lib/server/agent/errors';
 import {
   clientMessages,
+  confirmedPageIdsOf,
   isWorkbenchAgentRequest,
   workbenchMessages
 } from '$lib/server/agent/workbench-request';
@@ -41,7 +42,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   const messages: AgentMessage[] = workbenchMessages(body);
   const { createRunner, runtimeOrigin, agentModel } = await getPlatformServices();
   const runner = createRunner({
-    confirmedPageIds: (body.confirmations ?? []).map((confirmation) => confirmation.pageId),
+    confirmedPageIds: confirmedPageIdsOf(body),
     runId: body.runId,
     mode: 'authoring',
     identity: locals.identity
