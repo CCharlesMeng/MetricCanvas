@@ -16,6 +16,8 @@
 
 对 MetricCanvas 最有含金量的三条结论(详见 §5.5):派生度量声明进语义层已是行业共识(Databricks window measures 与 dbt derived/ratio metrics 是 PRD #85 S2 的直接先例);「反馈不自动改变系统行为」被 Databricks 明文写进文档,与 MetricCanvas 的人工背书红线互证;评测集的判分规则(结果集比对而非 SQL 文本比对、同数据不同排序算对、多列算错)有可直接借用的成熟先例。
 
+§1–§5 回答「概念与状态机」;**§7 用另一个视角回答「用户看到什么、点什么、等什么、错了怎么办」**——各产品的实际体验旅程走查、体验模式对照表,以及对 MetricCanvas 问数工作台的体验启示(编号接续 §5.5 至 #26)。
+
 ---
 
 ## 1. Databricks(2026-06 DAIS 之后)
@@ -353,7 +355,7 @@ Spotter 的立场与三家相反:「**LLM 擅长翻译,不擅长 SQL 生成**」
 
 | 事项 | 状态 |
 |---|---|
-| Genie Ontology 的发布状态(preview)与 DAIS 具体日期(2026-06-16) | 来自二手来源(Atlan、ITdaily);官方博客未标注日期与发布阶段。**未证实** |
+| Genie Ontology 的发布状态 | 官方文档([Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat))标注 **Public Preview**,需联系账户团队加入;DAIS 具体日期(2026-06-16)仍仅有二手来源 |
 | OntoRank 的算法细节(信号权重、图结构) | 官方博客仅列信号类别;Ken Wong 的补充说明出自 ITdaily 采访,二手。**仅线索** |
 | Genie「84.5% vs 52.4%」基准 | 官方内部基准(28 题),口径不可外部复核,引用时应标注为厂商自测 |
 | Databricks Genie 是否有执行前澄清/反问机制 | 文档未见;不能断言「没有」,只能说未文档化 |
@@ -364,6 +366,134 @@ Spotter 的立场与三家相反:「**LLM 擅长翻译,不擅长 SQL 生成**」
 | Snowflake Intelligence 的发布阶段 | 文档完整、含 iOS 应用,未见 preview 标记;具体 GA 时点未证实 |
 | ThoughtSpot BARQ 推理层内部机制 | 仅培训课程简介提及组件名(RAG/BARQ/PromptIQ/AI Trust Layer),无技术细节。**资料不足** |
 
+---
+
+## 7. 用户体验与工作流程
+
+> 本章回答「用户看到什么、点什么、等什么、错了怎么办」。每个产品走查两条旅程:A. 业务用户的提问旅程(冷启动→输入→等待→结果版面→澄清纠错→延续沉淀);B. 建模者/管理员的治理旅程(从零搭建→日常调优→评测)。证据以官方文档的 UI 走查页为主;SuperSonic 的体验描述基于前端源码(`webapp/packages/chat-sdk`)静态走查,未实际运行,组件级断言均附文件证据。
+
+### 7.1 Databricks Genie
+
+#### 7.1.1 业务用户的提问旅程
+
+**进入与冷启动**。两个入口:① 打开某个 **Genie Agent**——默认落在 New chat 聊天窗,右侧 Context 面板三个页签摊开这个 Agent 的底细:About(负责人、描述、常见问题)、Data(所选表,可展开看列名列描述、跳转 Catalog Explorer)、Instructions(文本指令、join、SQL expressions、示例查询)——**用户在提问前就能查看这个问答环境「懂什么」**([Use a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie));空状态展示作者配置的 common questions,作者配置不足时由 Genie 自动生成补齐,点击即问([创建文档](https://docs.databricks.com/aws/en/genie/trusted-assets))。② **Genie One 全屏聊天**——不选 Agent 直接问,系统先自动路由到相关 Agent,找不到再检索 dashboard/查询/metric view 作答;也可以在工作区顶部搜索栏切到 Ask 模式就地提问([Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat))。
+
+**输入体验**。纯自由文本为主,无 token 级辅助;Genie One 里可 `/` 调用个人 skill、`@` 引用定时任务、上传 CSV/Excel/PDF(拖拽/粘贴均可)、让系统记住个人事实(memory,显式「Remember that...」才存)([Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat))。
+
+**等待与过程反馈**。标准 Chat 模式的文档未描述执行中的过程指示;过程解释以**事后折叠段**呈现(见下)。Agent mode(多步推理)明确「响应耗时更长」,推理进行中**用户可点 Answer now 打断**,拿基于已收集上下文的即时答案([Agent mode](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))。
+
+**结果版面**。一条完整回答自上而下是:**Analysis 折叠段**(展开看四件事:Understanding the question 系统如何理解问题与关键词、Found relevant data 用了哪些表、Referenced SQL example 参照了哪条示例查询、Thinking steps 用白话解释 SQL 逻辑)→ **Summary 自然语言总结** → **结果表格**(Show code 展开看生成的 SQL;列头可设格式)→ **条件性图表**(判定有增益才出,可折叠,可打开右侧编辑面板换图型改配置)→ **Applied filters**(生效筛选,**值可直接编辑改结果集**)([Use a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))。命中 trusted asset 时给 verified 标注,点 Show more 看函数注释或模板参数值,**参数可改值重跑**(同上)。Genie One 的回答带**引用图标**,点开看答案用了哪些知识来源(Ontology snippet 溯源)([Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat))。
+
+**澄清与纠错动线**。执行前澄清不是内置状态,而是**由作者的指令驱动**:官方最佳实践教作者写「问销售没给时间范围与渠道时必须先追问」这类触发条件+追问话术([best practices](https://docs.databricks.com/aws/en/genie/best-practices));Genie 答不了时可能自行反问或说明局限,用户在会话内定义术语补上下文(仅本线程生效)([Use a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))。答错的纠错路径按成本排:① 悬停问题点铅笔**编辑原问题**,原地重答(2 步);② **Fix it**——点开选常见问题类型或自述,Submit and try again 带反馈重生成(约 3 步);③ **Request review** 转人工,评审结果回到提问者的 Monitor 页形成回执闭环;④ 有编辑权限者 Show code 改 SQL→跑通→Add as instruction 存为资产(同上)。
+
+**延续与沉淀**。每条回答后自动生成**建议追问**(基于指令与会话上下文,点击即问);满意的图表可**保存进新建或既有 dashboard**、下载 PNG,结果下载 CSV(≤1GB);会话三档共享(Private / Reviewable by agent managers[默认] / All account users);结果数据仅保留 7 天,旧会话可 Regenerate 或直接 Run 重跑已生成的 SQL;Agent mode 报告可导出 PDF([Use a Genie Agent](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))。Genie One 更进一步:**把会话上下文一句话保存为新 Agent**(「Save this sales KPI analysis as an agent」)、把回答起草为可编辑分享的 Document、用自然语言创建**定时任务**(系统会追问缺的时间/范围参数,结果以线程+邮件回投)([Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat))。
+
+#### 7.1.2 编辑者的治理旅程
+
+**从零搭建**(≈5 步):① 侧边栏 Genie Agents→New→勾选数据源(≤30 表)即建成;② 建成时 **Genie Code 自动启动**,读数据后主动建议表描述与示例查询,逐条 Accept/Reject——也可以纯提示词建 Agent(「为销售团队建一个回答周营收的 agent,用 retail catalog 的 sales 和 store 表」);③ 弹出 **Review Suggested Queries**——系统从工作区历史查询里挖出相关高频查询,逐条接受为示例;④ 补 instructions/SQL expressions/知识库配置;⑤ Share 按四档权限分享([创建文档](https://docs.databricks.com/aws/en/genie/trusted-assets))。官方方法论:「把 Genie 当新入职的分析师」,从小做起(五表以内)、领域专家执笔、先测后推([best practices](https://docs.databricks.com/aws/en/genie/best-practices))。
+
+**日常调优动线**:自己先当第一个用户提问→看生成 SQL→错了就改 SQL 存为 instruction 或让 **Genie Code 诊断**(描述问题,它提出上下文修改建议,逐条接受);上线后看 **Monitor 页**(全部问答按时间/评分/用户/状态过滤;Weekly digest 消息量与好评差评;一键 Analyze Space Usage 让 Genie Code 分析近 7 天反馈,输出常见主题与改进建议,带回链引用);好交互 Add as instruction,常见问题 Add as benchmark([Test and monitor](https://docs.databricks.com/aws/en/genie/benchmarks))。
+
+**评测动线**:Benchmarks 页 Add benchmark(写问题→可选写或 Generate SQL 金标准→可选评审备注)→Run benchmarks(可选子集,离开页面继续跑)→Evaluations 页看按时间戳排列的历次准确率→点进单题对照 Model output 与 Ground truth,人工改判、Update ground truth→让 Genie Code 全量分析该轮失败题(同上)。
+
+### 7.2 SuperSonic
+
+> 以下 UI 断言均出自 `webapp/packages/chat-sdk` 前端源码静态走查([源码目录](https://github.com/tencentmusic/supersonic/tree/master/webapp/packages/chat-sdk/src))。
+
+#### 7.2.1 业务用户的提问旅程
+
+**进入与冷启动**:进入聊天页先选 **Agent**(AgentList 侧栏,每个 Agent 带名称与描述);空状态与会话中展示 Agent 配置的示例问题与**推荐问题**(`RecommendQuestions` 组件从服务端拉取,点击即问);另有 ShowCase 页展示精选问答案例供模仿(`ShowCase/`)。
+
+**输入体验**:这是 SuperSonic 体验上最独特的一段——**输入联想**。开启 enableSearch 的 Agent 下,输入框(AutoComplete)按防抖调用 `searchRecommend` 接口,下拉给出补全候选,**候选按语义类型分组标注**(指标/维度/维度值等,`SemanticTypeEnum`/`SEMANTIC_TYPE_MAP`),并专门处理了中文拼音输入的 composition 事件避免误触发([ChatFooter/index.tsx](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/Chat/ChatFooter/index.tsx))。联想数据来自词典(§2.2),所以补全出来的词一定能被解析命中——**输入辅助同时是能力发现**。
+
+**等待与过程反馈**:严格两阶段。发问后先出「**意图解析中**」加载条;解析完成渲染**解析卡**;确定执行后 ExecuteItem 再出执行加载;文本总结用「伪流式」轮询(每 500ms 拉一次 `getExecuteSummary` 直到完成)逐步补到答案里;开发者模式额外显示每段耗时毫秒数([ChatItem/index.tsx](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/index.tsx)、[ParseTip.tsx](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/ParseTip.tsx))。
+
+**结果版面**:「意图解析」卡是版面的核心——结构化列出命中的数据集、指标、维度,以及**可直接编辑的筛选区**:数据时间是一个 RangePicker,底部内置「近7日/近14日/近30日/本周/本月/上月/本季度/本年」预设按钮;每个维度筛选值是可改的 FilterItem;改完点「重新查询」按钮原地重跑([ParseTip.tsx](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/ParseTip.tsx))。图表按查询形态自动选型:单值 MetricCard(带同环比 PeriodCompareItem)、趋势 MetricTrend、表格 Table、饼图 Pie、插件场景直接内嵌 WebPage([ChatMsg 目录](https://github.com/tencentmusic/supersonic/tree/master/webapp/packages/chat-sdk/src/components/ChatMsg));生成的 SQL 在 SqlItem 中折叠展示(面向开发者);无权限时渲染 NoPermissionChart 并提供 ApplyAuth 权限申请入口。
+
+**澄清与纠错动线**:多候选时解析卡呈现候选让用户**点选切换**(`onSelectParseInfo`,切换后重执行,结果按候选缓存避免重复查询);错得轻(时间/筛选不对)直接在解析卡内改值重查,**1–2 步、不重新过模型**;解析失败显示「意图解析失败」与具体原因文案;答案下有点赞/点踩与反馈弹窗(`Tools/FeedbackModal.tsx`)。
+
+**延续与沉淀**:答案后推荐**相似问题**(SimilarQuestionItem)与**下钻维度**(DrillDownDimensions,点维度即按该维度重切数据);多轮靠改写(§2.3)。**没有 dashboard/artifact 沉淀出口**——结果可导出 CSV(`exportCsvFile`),但没有「保存这个答案为长期资产」的动线,这是它与另两家的显著差距。
+
+#### 7.2.2 建模者的治理旅程
+
+从零搭建走 Headless BI 界面,层级即步骤:建主题域→接数据库建**数据模型**(声明维度/指标/模型关联)→组**数据集**→(可选)配术语、标签、词典→到 Chat BI 侧建 **Agent**:圈数据集工具、写示例问题、开关输入联想/多候选反馈/记忆评审,并可逐环节改各 LLM 应用的 prompt 模板(§2.2 的 Agent 配置;[headless REST 面](https://github.com/tencentmusic/supersonic/tree/master/headless/server/src/main/java/com/tencent/supersonic/headless/server/rest))。日常调优的主阵地是**记忆管理**:MemoryController 提供记忆列表,管理员人工评审 LLM 预审过的问答对,启用者进 few-shot(§2.4);评测有独立 benchmark/evaluation 模块但无界面化文档(§6)。
+
+### 7.3 Snowflake Intelligence
+
+#### 7.3.1 业务用户的提问旅程
+
+**进入与冷启动**:独立域名 `ai.snowflake.com`(或私链/Snowsight 直达链接),可配置 IdP 直跳登录,甚至能把用户限制为**只能访问 Intelligence**、触不到 Snowflake 其他界面——面向「纯业务用户」的隔离入口;界面本身可品牌化:管理员自定义显示名、**欢迎语**、主题色与 Logo;用户看到的 Agent 列表由管理员通过 Snowflake Intelligence 对象**策展**(不加入对象的 Agent 只能靠直链访问)([deploy-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents))。
+
+**输入体验**:自由文本;消息栏 `+` 可选 **Deep Research** 模式;可上传最多 5 个文件(CSV/DOCX/JSON/PDF/PPTX/TXT/XLSX,各 ≤50MB)入会话上下文;可开 **extended thinking**(更彻底但更慢,设置保持);移动端支持语音输入([Intelligence 概述](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-intelligence))。
+
+**等待与过程反馈**:标准模式由 orchestrator 选工具执行再 reflection 出答案;extended thinking 明示「更久更贵」;Deep Research 是显式的长任务形态——**最长约 10 分钟**,拆子调查并行执行,产出**每个论断都带溯源引用**的结构化报告,报告留在线程上下文里供后续追问(同上)。回答附 citations 链接到源数据与查询。
+
+**结果版面**:摘要+**交互式表格与图表**——排序、筛选、搜索、缩放都在本地完成**不需要重新提问**,explorer 模式下图表与表格联动;图型覆盖大部分 Vega-Lite(含热力图/箱线/双轴/分面小倍图,不支持地图),每张图带「如何生成」的解释;柱/线/饼/散点四种基本图型有**手动图表编辑器**,其余图型靠对话让 Agent 改([Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts)、[deploy-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents))。值得注意的默认约定:**查询默认滚动时间窗**(「last 30 days」永远指最近 30 天),要固定区间必须显式给日期([Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts))——与 MetricCanvas「Data App 相对时间/报告绝对区间」的区分同题。
+
+**澄清与纠错动线**:执行前澄清由语义模型的 question_categorization 驱动(§3.3);答后纠错主要靠自然语言追问(1 步);用户反馈(满意度)进入 Agent 监控面板供管理员查看([deploy-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents))。
+
+**延续与沉淀**:体验最完整的一家。图表/表格点 **Save 存为 Artifact**——保存的是查询+可视化规格的**活引用**,再次查看超过 12 小时自动按**查看者本人凭据**重跑刷新(两个角色不同的人看同一 Artifact 结果可以不同);Artifact 中心有 Saved/Shared with me 两页签,可搜索、可从任意 Artifact 发起**追问新线程**(携带可视化规格+数据快照+原会话摘要,原会话保持私有);分享是链接制,随时可撤销;整段会话可作**静态快照**分享(不刷新,随源会话删除)([Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts))。**Automations** 把一次性问题变成定时重跑+邮件投递;同一线程内可**切换 Agent 并保留上下文**([Intelligence 概述](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-intelligence)、[deploy-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents))。
+
+#### 7.3.2 管理员的治理旅程
+
+在 Snowsight「AI & ML → Agents」创建 Agent:挂语义视图/语义模型、Cortex Search 服务、Data to Chart 与自定义工具,写 orchestration instructions(可含图表偏好),选模型或让系统自动选;Preview in Snowflake Intelligence 试用;加入 Intelligence 对象后对用户可见([cortex-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)、[deploy-agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents))。日常运营看 Agent 日志(用户 prompt、响应、错误)与用户反馈;语义模型质量的评测在 Cortex Analyst 层用 VQR 回归(§3.4);语义视图本身有 Snowsight 向导(Semantic View Autopilot)与开源 semantic-model-generator 辅助建模(§3.4)。
+
+### 7.4 ThoughtSpot Spotter(token 交互细节)
+
+Spotter 把「系统对问题的理解」全部外化成**答案顶部的 query token 序列**:每个 token 唯一确定数据如何计算,悬停看公式与口径,**点击弹出澄清窗**——度量可改聚合方式(sum→average)、属性可换列、日期筛选可从 rolling 改 fixed、可换时间粒度(年→月);**追问后系统高亮本轮改动了哪些 token**,让用户只核对增量;输入侧 `@` 进入 lookup 模式,直接从真实列名、筛选值、搜索关键字中选取,混合自然语言与确定性输入([Spotter getting started](https://docs.thoughtspot.com/cloud/26.6.0.cl/spotter-getting-started))。每次「自然语言→token」的翻译映射存档,分析师/管理员可回溯审核;纠错动线是四家中最短的——错一个要素点一个 token,1–2 步收敛,不重问不重生成([官方博客](https://www.thoughtspot.com/blog/introducing-spotter-ai-analyst))。代价是表达力受 token 词表约束:词表外的口径无法表达,这与 MetricCanvas 允许临时口径(留痕+标注)的取舍不同。
+
+### 7.5 体验模式对照表
+
+| | Databricks Genie | SuperSonic | Snowflake Intelligence | ThoughtSpot Spotter |
+|---|---|---|---|---|
+| 冷启动引导 | Agent 描述+common questions(作者优先、自动补齐)+Context 面板摊开数据与指令 | Agent 列表+示例问题+推荐问题+ShowCase 案例页 | 品牌化欢迎语+管理员策展 Agent 列表+独立域名 | 模型选择+示例 |
+| 输入辅助 | 自由文本;Genie One 有 `/`skill、`@`任务、文件上传 | **联想下拉按指标/维度/值分组标注**(词典驱动,补全即可命中) | 自由文本+文件上传+Deep Research/extended thinking 档位 | **`@` 引用真实列名与列值**,混合确定性输入 |
+| 过程反馈 | 事后 Analysis 折叠段(理解/用表/参照示例/思考步骤);Agent mode 可 Answer now 打断 | 两阶段 loading(意图解析中→执行中)+伪流式总结+开发者耗时 | citations;Deep Research 长任务形态(≤10min);extended thinking 明示更慢 | token 序列即时呈现理解 |
+| 结果版面 | Analysis+摘要+表格(Show code)+条件图表+可编辑筛选 | **结构化解析卡(可内联编辑)**+自动选型图表+折叠 SQL | 摘要+本地可交互图表/表格(explorer 联动)+图表解释 | token 栏+图表 |
+| 纠错动线(最短路径) | 编辑原问题 2 步;Fix it 重生成约 3 步;转人工有回执 | 候选点选 1 步;卡内改筛选/日期 1–2 步(**不过模型**) | 自然语言追问 1 步;基本图型有编辑器 | **点 token 改要素 1–2 步**(最短) |
+| 信任可视化 | verified answer 标记+Show more 看模板参数+引用图标溯源 | 结构化口径回显;无 verified 标记 | citations+Verified Answers+图表生成解释 | token 全透明,「token 对则 SQL 必对」 |
+| 沉淀出口 | 图表存 dashboard;会话三档分享;Genie One 一句话把会话存为 Agent/文档/定时任务 | 仅 CSV 导出(**无资产化出口**) | **Artifact 活引用**(按查看者凭据刷新)+会话快照分享+Automations 定时 | 存为 Answer/Liveboard(经典 TS 资产) |
+
+核心结论:四家在「过程可解释」上走了两条路——**事后折叠解释**(Databricks Analysis 段、Snowflake citations)与**事前结构化回显**(SuperSonic 解析卡、Spotter token)。后者纠错动线显著更短(1–2 步、常不需重过模型),前者首答更流畅。MetricCanvas 的口径卡+候选卡属于后一阵营,方向与两家中纠错体验更好的一致;差距主要不在布局而在**动线的完整性**(见 7.6)。
+
+### 7.6 与 MetricCanvas 问数工作台现状对照
+
+MetricCanvas 工作台已有:对话轨 + 步骤时间线(域路由/候选/口径/执行分步流式,ADR-0037)+ 口径卡(条件阻塞消歧)+ 候选卡(top-k 并列)+ 沉淀面板(报告/Data App)。对照竞品:
+
+**已领先的部分**(竞品对照下应坚持):阻塞式口径卡与意图回显钉住(四家中只有 SuperSonic 有可比物,且不如 MetricCanvas 的触发条件精细);结构化失败出口(缺口条目);临时口径视觉标注(四家皆无);分步流式本身(SuperSonic 是两段 loading,Databricks/Snowflake 过程基本黑盒)。
+
+**布局问题**(信息在,位置/形态不佳):
+- 过程解释与确认点混在同一条时间线上。Databricks 把「系统如何理解、用了哪些表、参照了哪条示例」收进**答案内的折叠段**,时间线只留必须打断用户的点。步骤时间线适合承载「等待期进度」,而「事后可查的解释」更适合折叠进答案。
+- 生效查询/DQE 的展示对应竞品的 Show code/SqlItem:默认折叠、面向排查,不占首屏。
+
+**动线缺口**(竞品有、我们没有的完整路径):
+- 冷启动空状态:无「点击即问」的示例问题(四家皆有,Snowflake 连 verified query 都能标记为 onboarding question)。
+- 输入联想:检索面是闭集却没有输入期暴露(SuperSonic 证明词典驱动的联想=能力发现,能在提问前就消除一部分缺口)。
+- 结果后建议追问:探索形态有 patch 能力,但没有「下一步问什么」的引导(Databricks/SuperSonic 皆有)。
+- 修改问题原文:目前纠错靠追问或重问,没有「编辑原问题原地重答」的轻量入口。
+- 口径卡要素内联编辑:候选卡支持「选」,口径卡不支持「改」——SuperSonic 解析卡的日期控件+预设 chips、筛选值直接改,证明这条动线可行且不与阻塞确认冲突。
+- 转人工通道:反馈只有缺口登记,没有「请求人工评审+回执」的异步通道(Databricks Request review 的回执闭环值得对照)。
+
+### 7.7 体验设计启示(编号接续 §5.5)
+
+17. **空状态示例问题,作者配置优先、系统补齐**(Databricks common questions 机制;Snowflake `use_as_onboarding_question` 复用已验证查询做引导)。MetricCanvas 可从黄金问题集与已验证查询中抽空状态示例——同一资产第三种用途,零新增维护面。体验价值:冷启动首问成功率,成本极低。([docs](https://docs.databricks.com/aws/en/genie/trusted-assets)、[VQR](https://docs.snowflake.com/en/user-guide/views-semantic/verified-query-repository))
+18. **词典驱动的输入联想,候选按指标/维度/值分组标注**(SuperSonic `searchRecommend`+语义类型标签,含拼音 composition 处理;ThoughtSpot `@` 引用)。MetricCanvas 的指标条目与别名本就是闭集,联想即能力发现,还能在输入期就规避一部分缺口登记。体验价值:高——直接提升首答命中率与「系统懂什么」的心智。([ChatFooter 源码](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/Chat/ChatFooter/index.tsx))
+19. **答案内折叠的「解释段」与时间线分工**(Databricks Analysis 段:理解/用表/参照示例/思考步骤)。时间线承载等待与确认,解释收进答案折叠段供事后核查,并在其中回显「参照的已验证查询」(承接 #8)。体验价值:降低时间线噪音,不牺牲可解释性。([docs](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))
+20. **口径卡要素内联可编辑**(SuperSonic 解析卡:日期 RangePicker+「近7日/本月」预设 chips、筛选值直改+重新查询;ThoughtSpot token 点改)。承接 #12 的 token 化方向,给出已验证可行的具体形态;与 S1 相对时间词表天然契合(预设 chips=词表的 UI 形态)。体验价值:高——纠错从「整轮重问」降为 1–2 步,且不过模型、确定性生效。([ParseTip 源码](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/ParseTip.tsx))
+21. **编辑原问题入口**(Databricks 悬停铅笔,改原文原地重答)。比追问轻、比重问省上下文,是探索 patch 之外的第三条修正路径。体验价值:中。([docs](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))
+22. **结果后建议追问**(Databricks suggested follow-ups 基于指令与上下文生成;SuperSonic 相似问题+下钻维度)。MetricCanvas 可用确定性来源生成:同域高频指标、可用维度下钻、派生模板(「看环比」)——不需要模型自由发挥。体验价值:中高,把探索能力显性化。([docs](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))
+23. **长任务可打断**(Databricks Agent mode「Answer now」)。问数慢查询或未来深度分析形态下,给用户「基于已有结果先答」的出口。体验价值:中,防「系统卡住了」感知的兜底。([docs](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie))
+24. **转人工评审+回执闭环**(Databricks Request review:用户附言→管理员评审确认或纠正→结果回到提问者 Monitor 页)。MetricCanvas 的缺口登记面向数据侧建设,缺「这个答案对不对请人看看」的用户侧通道;回执是关键——没有回执的反馈按钮会沦为黑洞。体验价值:高,信任冷启动期尤其重要。([docs](https://docs.databricks.com/aws/en/genie/benchmarks))
+25. **结果表格图表的本地交互**(Snowflake:排序/筛选/搜索/缩放不重新提问,explorer 模式图表表格联动)。MetricCanvas 表格已有查询分页,可评估纯本地排序/搜索(数据快照内操作,不改生效查询、不产生口径歧义)。体验价值:中。([Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts))
+26. **沉淀形态的「活引用 vs 快照」二分得到印证**(Snowflake Artifact=保存查询+可视化规格、按查看者凭据刷新 ↔ 共享会话=静态快照,与 MetricCanvas Data App/报告二分完全同构)。可借鉴其一个细节:**从沉淀物发起追问开新线程并携带原上下文摘要**——报告/Data App 的查看者「就这个数再问一句」是自然诉求,现有临时页面态机制可承载。体验价值:中高,打通消费端回到问数的回路。([Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts))
+
+### 7.8 本章资料不足
+
+- Databricks 标准 Chat 模式**等待期**的具体过程指示(spinner 文案、是否流式)官方文档未描述,Analysis 段是结果的组成部分而非等待期反馈;Slack/Teams 内嵌体验仅有博客的 @mention 描述,未见 UI 走查文档。
+- SuperSonic 的体验描述基于前端源码静态走查与组件命名推断,**未实际运行验证**;官方文档站(截图/演示)404 不可达。
+- Snowflake Intelligence 等待期是否逐步展示工具调用/推理过程,官方文档未细写;二手来源(Flexera)称「可见 agent 的 reasoning」,未证实。
+- ThoughtSpot Spotter 的反馈(HITL)在产品内的具体动线未从一手文档核实,仅有博客级描述。
+
 ## 附:主要来源清单
 
 **Databricks**:[Genie 总览](https://docs.databricks.com/aws/en/genie/) · [创建与管理 Genie Agent(原 Spaces)](https://docs.databricks.com/aws/en/genie/trusted-assets) · [调优质量(instructions/trusted assets/knowledge store)](https://docs.databricks.com/aws/en/genie/knowledge-store) · [测试监控与 Benchmarks](https://docs.databricks.com/aws/en/genie/benchmarks) · [UC Semantics](https://docs.databricks.com/aws/en/uc-semantics/) · [Metric Views 概述](https://docs.databricks.com/aws/en/uc-semantics/metric-views/) · [建模](https://docs.databricks.com/aws/en/uc-semantics/metric-views/basic-modeling) · [YAML 参考](https://docs.databricks.com/aws/en/uc-semantics/metric-views/yaml-reference) · [Agent metadata](https://docs.databricks.com/aws/en/metric-views/data-modeling/semantic-metadata) · [Genie One/Ontology/Agents 发布博客](https://www.databricks.com/blog/introducing-genie-one-genie-ontology-and-genie-agents) · [Unified context 博客](https://www.databricks.com/blog/unified-context-missing-layer-enterprise-ai-coworkers)
@@ -373,5 +503,7 @@ Spotter 的立场与三家相反:「**LLM 擅长翻译,不擅长 SQL 生成**」
 **Snowflake**:[Cortex Analyst](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst) · [Semantic Views 概述](https://docs.snowflake.com/en/user-guide/views-semantic/overview) · [YAML 规范](https://docs.snowflake.com/en/user-guide/views-semantic/semantic-view-yaml-spec) · [VQR](https://docs.snowflake.com/en/user-guide/views-semantic/verified-query-repository) · [Custom instructions](https://docs.snowflake.com/en/user-guide/views-semantic/custom-instructions) · [Snowflake Intelligence](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-intelligence)
 
 **横向**:[dbt About MetricFlow](https://docs.getdbt.com/docs/build/about-metricflow) · [dbt Metrics overview](https://docs.getdbt.com/docs/build/metrics-overview) · [ThoughtSpot Spotter 发布博客](https://www.thoughtspot.com/blog/introducing-spotter-ai-analyst) · [Spotter Getting started](https://docs.thoughtspot.com/cloud/26.6.0.cl/spotter-getting-started)
+
+**第 7 章补充(体验走查)**:Databricks:[Use a Genie Agent(业务用户 UI 走查)](https://docs.databricks.com/aws/en/genie-agents/talk-to-genie) · [Chat in Genie One](https://docs.databricks.com/aws/en/genie-one/chat) · [Curate an effective Genie Agent](https://docs.databricks.com/aws/en/genie/best-practices);SuperSonic chat-sdk 源码:[ChatItem](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/index.tsx) / [ParseTip](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/components/ChatItem/ParseTip.tsx) / [ChatFooter(输入联想)](https://github.com/tencentmusic/supersonic/blob/master/webapp/packages/chat-sdk/src/Chat/ChatFooter/index.tsx) / [ChatMsg 图表组件包](https://github.com/tencentmusic/supersonic/tree/master/webapp/packages/chat-sdk/src/components/ChatMsg);Snowflake:[Artifacts](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/artifacts) · [User access and settings for agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/snowflake-cowork/deploy-agents) · [Cortex Agents](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
 
 **MetricCanvas 内部对照**:`CONTEXT.md`(词汇表)· `docs/adr/0037-ask-orchestration-and-interaction-contract.md`(问数编排)· [PRD #85](https://github.com/CCharlesMeng/MetricCanvas/issues/85)(问数增强批次)
