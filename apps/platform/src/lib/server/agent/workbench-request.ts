@@ -1,5 +1,5 @@
 import { PAGE_BUILDING_PROMPT } from '@metriccanvas/mcp';
-import { isAskStateMessage } from '../ask/conversation';
+import { isAskStateMessage } from '../../ask/conversation';
 import type { AskScopeConfirmation } from '../ask/orchestrator';
 import type { AgentMessage } from './types';
 

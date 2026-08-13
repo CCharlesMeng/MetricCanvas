@@ -7,7 +7,7 @@ import {
   workbenchMessages,
   type WorkbenchAgentRequest
 } from '../../src/lib/server/agent/workbench-request';
-import { askStateMessage, initialAskState } from '../../src/lib/server/ask/conversation';
+import { askStateMessage, initialAskState } from '../../src/lib/ask/conversation';
 import {
   buildAgentStreamRequestBody,
   pinComponent,

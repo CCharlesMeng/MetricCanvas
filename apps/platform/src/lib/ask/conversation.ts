@@ -1,7 +1,7 @@
 import type { FormulaTrace } from '@metriccanvas/mcp';
-import type { AgentMessage } from '../agent/types';
-import type { AnalysisIntent } from '../session/step-event';
-import type { AskDataRequestUnitState, RankedMetricCandidate } from './ports';
+import type { AgentMessage } from '../server/agent/types';
+import type { AnalysisIntent } from '../server/session/step-event';
+import type { AskDataRequestUnitState, RankedMetricCandidate } from '../server/ask/ports';
 
 /**
  * 问数会话状态的往返契约(#66)。
@@ -11,6 +11,11 @@ import type { AskDataRequestUnitState, RankedMetricCandidate } from './ports';
  * 服务端请求契约 workbench-request.ts 予以保留)。状态只承载结构化结果——
  * 路由域、生效取数单元、意图、临时页面 id、formula 留痕与待确认口径卡;
  * 不含对话文本与模型 prompt(ADR-0030 红线)。
+ *
+ * 放在 $lib/ask 而非 $lib/server:状态消息经推送通道往返于浏览器,本就是
+ * 双端共享的线上契约。服务端编排(orchestrator)与工作台沉淀入口(#68 读
+ * formulaTraces 作沉淀警告输入)共用这一份解析,不各写一份。模块保持纯
+ * 函数,仅类型引用服务端契约声明。
  */
 
 export const ASK_STATE_PREFIX = 'METRICCANVAS_ASK_STATE:';

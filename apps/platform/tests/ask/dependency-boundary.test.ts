@@ -20,18 +20,17 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   'retrieval.ts': ['@metriccanvas/mcp', './ports'],
   // 取数单元 → 可执行派生物:页面协议类型 + 口径卡形状。
   'unit-derivation.ts': ['@metriccanvas/page', '@metriccanvas/mcp', '../session/step-event', './ports'],
-  // 会话状态往返契约。
-  'conversation.ts': ['@metriccanvas/mcp', '../agent/types', '../session/step-event', './ports'],
-  // 编排状态机:组件目录守卫 + Agent 运行设施 + 事件契约 + 本模块各件。
+  // 编排状态机:组件目录守卫 + Agent 运行设施 + 事件契约 + 本模块各件;
+  // 会话状态往返契约是双端共享模块($lib/ask/conversation,#68)。
   'orchestrator.ts': [
     '@metriccanvas/page',
     '@metriccanvas/mcp',
     '@metriccanvas/page-lifecycle',
+    '../../ask/conversation',
     '../agent/abort',
     '../agent/runner',
     '../agent/types',
     '../session/step-event',
-    './conversation',
     './retrieval',
     './unit-derivation',
     './ports'

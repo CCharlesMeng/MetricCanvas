@@ -20,7 +20,7 @@ import {
   type AskConversationState,
   type AskPendingScopeCard,
   type ScopeBlockReason
-} from './conversation';
+} from '../../ask/conversation';
 import { disambiguateCandidates } from './retrieval';
 import { canonicalizeUnit, deriveExecutableUnit } from './unit-derivation';
 import type {

@@ -55,10 +55,11 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './types',
     './workbench-request'
   ],
-  // 请求契约:确认种类含口径卡与业务域改写,问数会话状态消息原样保留(#66)。
+  // 请求契约:确认种类含口径卡与业务域改写,问数会话状态消息原样保留(#66);
+  // 会话状态契约是双端共享模块($lib/ask,#68),不在 server/ 内。
   'workbench-request.ts': [
     '@metriccanvas/mcp',
-    '../ask/conversation',
+    '../../ask/conversation',
     '../ask/orchestrator',
     './types'
   ]
