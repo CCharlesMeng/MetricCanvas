@@ -10,11 +10,11 @@
     ".": "./src/index.ts"
   },
   "dependencies": {
+    "@metriccanvas/page": "workspace:*",
     "@metriccanvas/page-lifecycle": "workspace:*",
     "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@metriccanvas/page": "workspace:*",
     "@testcontainers/postgresql": "^12.0.4"
   }
 }

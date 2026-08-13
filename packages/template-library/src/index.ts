@@ -1,13 +1,14 @@
-import { createHash, randomUUID } from 'node:crypto';
+import { randomUUID } from 'node:crypto';
 import postgres, {
   type JSONValue,
   type Sql,
   type TransactionSql
 } from 'postgres';
-import type {
-  PageLifecycle,
-  PageRevision,
-  RevisionReference
+import {
+  hash,
+  type PageLifecycle,
+  type PageRevision,
+  type RevisionReference
 } from '@metriccanvas/page-lifecycle';
 
 export interface TemplateContext {
@@ -437,13 +438,6 @@ export async function createPostgresTemplateLibrary(
       if (replay) return replay;
       const invalid = validateCommand(command);
       if (invalid) return invalid;
-      const source = await options.pageLifecycle.getPublishedRevision(command.source);
-      if (!source.ok) {
-        return failure(
-          'SOURCE_REVISION_NOT_PUBLISHED',
-          `模板来源必须是已发布页面修订:${command.source.revisionId}`
-        );
-      }
 
       return sql.begin(async (tx) => {
         await lockTemplate(tx, command.templateId);
@@ -471,6 +465,16 @@ export async function createPostgresTemplateLibrary(
           return conflict(
             `保存基线不是当前最新模板修订:${latest?.revisionId ?? '无'}`,
             latest
+          );
+        }
+
+        // 错误优先级与 memory 侧一致:先裁决基线冲突(调用方状态问题),
+        // 再验来源发布态。两实现曾在此漂移(同一输入返回不同错误码)。
+        const source = await options.pageLifecycle.getPublishedRevision(command.source);
+        if (!source.ok) {
+          return failure(
+            'SOURCE_REVISION_NOT_PUBLISHED',
+            `模板来源必须是已发布页面修订:${command.source.revisionId}`
           );
         }
 
@@ -1043,10 +1047,6 @@ function failure(
   message: string
 ): { ok: false; error: TemplateError } {
   return { ok: false, error: { code, message } };
-}
-
-function hash(value: string): string {
-  return createHash('sha256').update(value).digest('hex');
 }
 
 function clone<T>(value: T): T {

@@ -224,6 +224,9 @@ importers:
 
   packages/template-library:
     dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
@@ -231,9 +234,6 @@ importers:
         specifier: ^3.4.9
         version: 3.4.9
     devDependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
       '@testcontainers/postgresql':
         specifier: ^12.0.4
         version: 12.0.4
