@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { DataSourceMode, DataSources } from './data-source';
 import type { FilterDeclaration } from './filter';
+import type { VersionPolicy } from './version';
 import {
   reportHeaderComponentZ,
   metricCardComponentZ,
@@ -131,7 +132,7 @@ export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
 };
 
 export interface Page {
-  schemaVersion: '5.0';
+  schemaVersion: VersionPolicy['current'];
   id: string;
   meta?: PageMeta;
   dataSources: DataSources;
