@@ -41,10 +41,16 @@ export interface DataGateway {
    * 编排器按结构判别该属性并原样保留进数据快照错误态;未携带分类
    * 的异常兜底为 UNKNOWN。错误消息不得包含查询结果、筛选值、Secret
    * 或上游响应正文(issue #47)。
+   *
+   * signal 是标准取消信号(issue #53):筛选状态产生新的生效查询或
+   * 运行时会话结束时,编排器中止过期执行。适配器必须把信号传递到
+   * 底层网络请求,并把中止后的拒绝归类为 DQE_CANCELLED(复用查询
+   * 错误分类封闭集,不新造取消分类)。
    */
   fetchData(
     query: EffectiveQuery,
-    diagnosticContext?: QueryDiagnosticContext
+    diagnosticContext?: QueryDiagnosticContext,
+    signal?: AbortSignal
   ): Promise<DataGatewayResult>;
   /**
    * 维度候选值查询:维度筛选器候选项的唯一来源。

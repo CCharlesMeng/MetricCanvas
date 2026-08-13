@@ -93,6 +93,16 @@ interface Session {
   dispose(): void;
 }
 
+/**
+ * 一次在途的生效查询执行:members 记录发起时各数据源的请求代次,
+ * controller 承载真取消信号(issue #53)。生效查询去重后一次执行可
+ * 服务多个数据源成员。
+ */
+interface InFlightRequest {
+  members: ReadonlyArray<[QueryBinding, number]>;
+  controller: AbortController;
+}
+
 function collectReferencedSources(page: Page): DataSourceBinding[] {
   const sourceIds = new Set<string>();
   for (const section of page.sections) {
@@ -199,6 +209,7 @@ function startSession(
   const useEmbeddedInitialRows = sameFilterValues(values, defaults);
   let snapshots = initialSnapshots(bindings, useEmbeddedInitialRows);
   const sequences = new Map<string, number>();
+  const inFlightRequests = new Set<InFlightRequest>();
   const cache = new Map<string, DataSnapshot>();
   const pageIndexes = new Map(
     queryBindings
@@ -227,6 +238,25 @@ function startSession(
     else inFlight -= 1;
   }
 
+  function isStale(binding: QueryBinding, sequence: number): boolean {
+    return sequences.get(binding.sourceId) !== sequence;
+  }
+
+  /**
+   * 真取消(issue #53):请求代次推进后,在途请求若已不服务任何当前代次
+   * 成员,则中止其底层执行,而不是只丢弃迟到结果。去重共享的执行只要
+   * 仍有一个成员在当前代次就继续;未被本轮筛选或分页触及的查询定义
+   * 代次不变,不会发生误取消。
+   */
+  function abortStaleRequests(): void {
+    for (const request of inFlightRequests) {
+      if (request.members.every(([binding, sequence]) => isStale(binding, sequence))) {
+        inFlightRequests.delete(request);
+        request.controller.abort();
+      }
+    }
+  }
+
   function publish(updates: ReadonlyArray<[QueryBinding, DataSnapshot]>): void {
     if (updates.length === 0) return;
     const next = new Map(snapshots);
@@ -245,6 +275,7 @@ function startSession(
     for (const binding of targets) {
       sequences.set(binding.sourceId, (sequences.get(binding.sourceId) ?? 0) + 1);
     }
+    abortStaleRequests();
 
     const groups = new Map<
       string,
@@ -267,9 +298,7 @@ function startSession(
         if (disposed) return;
         publish(
           members
-            .filter(([binding, sequence]) =>
-              sequences.get(binding.sourceId) === sequence
-            )
+            .filter(([binding, sequence]) => !isStale(binding, sequence))
             .map(([binding]) => [binding, snapshot])
         );
       };
@@ -282,23 +311,32 @@ function startSession(
         ...diagnosticBase,
         dataSourceIds: members.map(([binding]) => binding.sourceId)
       };
+      const request: InFlightRequest = { members, controller: new AbortController() };
+      inFlightRequests.add(request);
       withSlot(() => {
-        void execute(query, gateway, diagnosticContext).then((snapshot) => {
-          release();
-          const correctedPage = correctedPageIndex(query, snapshot);
-          if (correctedPage !== undefined) {
-            const corrected = members.map(([binding]) => binding);
-            for (const binding of corrected) {
-              pageIndexes.set(binding.sourceId, correctedPage);
+        void execute(query, gateway, diagnosticContext, request.controller.signal).then(
+          (snapshot) => {
+            inFlightRequests.delete(request);
+            release();
+            const correctedPage = correctedPageIndex(query, snapshot);
+            if (correctedPage !== undefined) {
+              // 越界页纠偏只对仍在当前代次的成员生效:过期成员已有新请求
+              // 在途,不得回写其页码或推进其代次(取消失败的迟到结果同理)。
+              const corrected = members
+                .filter(([binding, sequence]) => !isStale(binding, sequence))
+                .map(([binding]) => binding);
+              for (const binding of corrected) {
+                pageIndexes.set(binding.sourceId, correctedPage);
+              }
+              refetch(corrected, false);
+              return;
             }
-            refetch(corrected, false);
-            return;
+            if (snapshot.status === 'ready' || snapshot.status === 'empty') {
+              cache.set(cacheKey, snapshot);
+            }
+            land(snapshot);
           }
-          if (snapshot.status === 'ready' || snapshot.status === 'empty') {
-            cache.set(cacheKey, snapshot);
-          }
-          land(snapshot);
-        });
+        );
       });
     }
   }
@@ -354,6 +392,11 @@ function startSession(
     dispose() {
       disposed = true;
       waiters.length = 0;
+      // 运行时会话结束(页面卸载或页面修订切换):中止仍在运行的查询。
+      for (const request of inFlightRequests) {
+        request.controller.abort();
+      }
+      inFlightRequests.clear();
       unsubscribeLiveFilters?.();
     }
   };
@@ -402,10 +445,11 @@ function composeEffectiveQuery(
 async function execute(
   query: EffectiveQuery,
   gateway: DataGateway,
-  diagnosticContext: QueryDiagnosticContext
+  diagnosticContext: QueryDiagnosticContext,
+  signal: AbortSignal
 ): Promise<DataSnapshot> {
   try {
-    const result = await gateway.fetchData(query, diagnosticContext);
+    const result = await gateway.fetchData(query, diagnosticContext, signal);
     if (query.pagination && result.totalCount === undefined) {
       throw new Error('查询分页结果缺少 totalCount');
     }

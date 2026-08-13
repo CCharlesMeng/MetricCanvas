@@ -20,6 +20,7 @@ interface AdapterSpy {
   fetchDataCalls: Array<{
     query: EffectiveQuery;
     diagnosticContext?: QueryDiagnosticContext;
+    signal?: AbortSignal;
   }>;
   dimensionCalls: string[];
 }
@@ -29,10 +30,11 @@ function adapterSpy(dimensionValues: string[] = []): AdapterSpy {
     fetchDataCalls: [],
     dimensionCalls: [],
     gateway: {
-      async fetchData(query, diagnosticContext) {
+      async fetchData(query, diagnosticContext, signal) {
         spy.fetchDataCalls.push({
           query,
-          ...(diagnosticContext ? { diagnosticContext } : {})
+          ...(diagnosticContext ? { diagnosticContext } : {}),
+          ...(signal ? { signal } : {})
         });
         return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
       },
@@ -46,7 +48,7 @@ function adapterSpy(dimensionValues: string[] = []): AdapterSpy {
 }
 
 describe('数据网关按 language 分发注册点', () => {
-  it('dqe 生效查询路由到 dqe 适配器,查询与诊断上下文原样透传', async () => {
+  it('dqe 生效查询路由到 dqe 适配器,查询、诊断上下文与取消信号原样透传', async () => {
     const dqe = adapterSpy();
     const gateway = createDataGateway({ dqe: dqe.gateway });
     const query = dqeEffectiveQuery();
@@ -54,8 +56,9 @@ describe('数据网关按 language 分发注册点', () => {
       pageId: 'page-1',
       dataSourceIds: ['sales']
     };
+    const controller = new AbortController();
 
-    const result = await gateway.fetchData(query, diagnostics);
+    const result = await gateway.fetchData(query, diagnostics, controller.signal);
 
     expect(result).toEqual({
       rows: [{ region: '华东', revenue: 42 }],
@@ -64,6 +67,7 @@ describe('数据网关按 language 分发注册点', () => {
     expect(dqe.fetchDataCalls).toHaveLength(1);
     expect(dqe.fetchDataCalls[0]!.query).toBe(query);
     expect(dqe.fetchDataCalls[0]!.diagnosticContext).toBe(diagnostics);
+    expect(dqe.fetchDataCalls[0]!.signal).toBe(controller.signal);
   });
 
   it('闭集之外的 language 失败关闭为查询声明错误,不触达任何适配器', async () => {

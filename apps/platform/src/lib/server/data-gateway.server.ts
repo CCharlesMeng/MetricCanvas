@@ -93,10 +93,13 @@ export function getServerDataGateway(environment: ServerEnvironment): DataGatewa
  * 先做结构校验再交给数据网关;失败统一收敛为响应契约,
  * code 直接透传 DqeGatewayError.code。
  * 请求形状:{ query: 生效查询, diagnostics?: 查询诊断上下文 }。
+ * signal 承接浏览器侧中止(连接断开即中止),贯穿到上游 DQE 请求,
+ * 使取消信号真正到达底层网络请求(issue #53)。
  */
 export async function executeDataQuery(
   gateway: DataGateway,
-  payload: unknown
+  payload: unknown,
+  signal?: AbortSignal
 ): Promise<PlatformDataQueryResponse> {
   try {
     if (!isRecord(payload)) {
@@ -104,7 +107,7 @@ export async function executeDataQuery(
     }
     const query = parseEffectiveQueryPayload(payload.query);
     const diagnostics = parseDiagnosticContext(payload.diagnostics);
-    const { rows, totalCount } = await gateway.fetchData(query, diagnostics);
+    const { rows, totalCount } = await gateway.fetchData(query, diagnostics, signal);
     return { ok: true, rows, ...(totalCount !== undefined ? { totalCount } : {}) };
   } catch (cause) {
     if (cause instanceof DqeGatewayError) {

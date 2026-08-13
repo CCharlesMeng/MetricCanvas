@@ -101,6 +101,12 @@ interface PendingQuery {
   context?: QueryDiagnosticContext;
   query: EffectiveQuery;
   item: JsonObject;
+  /** 已结算(成功、失败或取消):结算恰好一次,诊断也恰好一条。 */
+  settled: boolean;
+  /** 结算后移除取消信号监听,不泄漏监听器。 */
+  releaseSignal?: () => void;
+  /** 进入批次后由批次回填:取消时据此落 batchId 并检查批次是否可中止。 */
+  batch?: { batchId: string; abortIfAllSettled(): void };
   resolve(result: DataGatewayResult): void;
   reject(error: unknown): void;
 }
@@ -180,12 +186,21 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
     });
   }
 
+  /** 结算幂等闸:已取消的查询不再接收迟到的成功结果或错误,诊断恰好一条。 */
+  function settle(call: PendingQuery): boolean {
+    if (call.settled) return false;
+    call.settled = true;
+    call.releaseSignal?.();
+    return true;
+  }
+
   function settleSuccess(
     call: PendingQuery,
     result: DataGatewayResult,
     batchId: string,
     requestId?: string
   ): void {
+    if (!settle(call)) return;
     recordDiagnostic(call, {
       status: 'success',
       batchId,
@@ -202,6 +217,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
     batchId?: string,
     requestId?: string
   ): void {
+    if (!settle(call)) return;
     recordDiagnostic(call, {
       status: 'error',
       ...(batchId !== undefined ? { batchId } : {}),
@@ -225,12 +241,26 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
     else activeBatches -= 1;
   }
 
-  async function executeBatch(calls: PendingQuery[]): Promise<void> {
+  async function executeBatch(queued: PendingQuery[]): Promise<void> {
     await acquireBatch();
+    // 等待批次并发额度期间可能已有查询被取消:只把未结算的查询发往上游。
+    const calls = queued.filter((call) => !call.settled);
+    if (calls.length === 0) {
+      releaseBatch();
+      return;
+    }
     const batchId = `dqe-batch-${++batchSequence}`;
     let requestId: string | undefined;
     let timedOut = false;
     const controller = new AbortController();
+    // 批量信封由多个逻辑查询共享:单个查询取消只结算它自己,
+    // 全员结算后才中止共享的 HTTP 请求,不误伤同批次其他查询。
+    const abortIfAllSettled = () => {
+      if (calls.every((call) => call.settled)) controller.abort();
+    };
+    for (const call of calls) {
+      call.batch = { batchId, abortIfAllSettled };
+    }
     const timer = setTimeout(() => {
       timedOut = true;
       controller.abort();
@@ -314,7 +344,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
                 { timeoutMs }
               )
             : isAbortError(cause)
-              ? new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消')
+              ? cancelledError()
               : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
       for (const call of calls) {
         settleFailure(call, error, batchId, requestId);
@@ -327,13 +357,14 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
 
   function flush(): void {
     scheduled = false;
-    const calls = pending;
+    // 进入批次前已被取消的查询不再发往上游(它们已按 DQE_CANCELLED 结算)。
+    const calls = pending.filter((call) => !call.settled);
     pending = [];
     if (calls.length > 0) void executeBatch(calls);
   }
 
   return {
-    fetchData(query, diagnosticContext) {
+    fetchData(query, diagnosticContext, signal) {
       const execution = {
         executionId: `dqe-exec-${++sequence}`,
         startedAt: new Date().toISOString(),
@@ -347,6 +378,9 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
         });
         return Promise.reject(cause);
       };
+      if (signal?.aborted) {
+        return failEarly(cancelledError());
+      }
       if (query.language !== 'dqe') {
         return failEarly(
           new DqeGatewayError('DQE_CONFIG_ERROR', 'DQE 数据网关收到非 DQE 生效查询')
@@ -368,7 +402,24 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
       }
       devDetail?.record(execution.executionId, item);
       return new Promise<DataGatewayResult>((resolve, reject) => {
-        pending.push({ ...execution, query, item, resolve, reject });
+        const call: PendingQuery = {
+          ...execution,
+          query,
+          item,
+          settled: false,
+          resolve,
+          reject
+        };
+        if (signal) {
+          const onAbort = () => {
+            const batch = call.batch;
+            settleFailure(call, cancelledError(), batch?.batchId);
+            batch?.abortIfAllSettled();
+          };
+          signal.addEventListener('abort', onAbort, { once: true });
+          call.releaseSignal = () => signal.removeEventListener('abort', onAbort);
+        }
+        pending.push(call);
         if (!scheduled) {
           scheduled = true;
           queueMicrotask(flush);
@@ -611,9 +662,23 @@ function httpStatusError(status: number): DqeGatewayError {
   );
 }
 
-/** 外部取消(fetch AbortError)与网关自身超时分开分类;超时由 timedOut 旗标判定。 */
-function isAbortError(cause: unknown): boolean {
-  return cause instanceof Error && cause.name === 'AbortError';
+/** 取消语义复用查询错误分类封闭集的 DQE_CANCELLED,不新造分类(issue #51/#53)。 */
+function cancelledError(): DqeGatewayError {
+  return new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消');
+}
+
+/**
+ * fetch 中止拒绝的判别:手动 abort 以 AbortError 命名中止原因,
+ * AbortSignal.timeout 以 TimeoutError 命名,同属外部中止。网关自身
+ * 超时与外部取消分开分类,由 timedOut 旗标先行判定。
+ */
+const ABORT_ERROR_NAMES = new Set(['AbortError', 'TimeoutError']);
+
+export function isAbortError(cause: unknown): boolean {
+  return (
+    (cause instanceof DOMException || cause instanceof Error) &&
+    ABORT_ERROR_NAMES.has(cause.name)
+  );
 }
 
 function cloneJson<T extends JsonValue>(value: T): T {

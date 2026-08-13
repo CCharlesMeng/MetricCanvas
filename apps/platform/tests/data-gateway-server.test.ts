@@ -160,6 +160,37 @@ describe('平台服务端取数入口', () => {
       expect(dataQueryHttpStatus(result)).toBe(400);
     }
   });
+
+  it('取消信号贯穿到上游 DQE 请求:中止收敛为 DQE_CANCELLED 响应契约(issue #53)', async () => {
+    const upstreamSignals: Array<AbortSignal | null | undefined> = [];
+    const gateway = createServerDataGateway({
+      environment: {},
+      diagnosticsSink: () => {},
+      fetchImpl: ((_input: unknown, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          upstreamSignals.push(init?.signal);
+          init?.signal?.addEventListener('abort', () =>
+            reject(new DOMException('请求已中止', 'AbortError'))
+          );
+        })) as typeof fetch
+    });
+    const controller = new AbortController();
+
+    const pending = executeDataQuery(
+      gateway,
+      { query: effectiveQuery() },
+      controller.signal
+    );
+    // 等待批次窗口把查询发往上游,再模拟浏览器断开连接。
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(upstreamSignals).toHaveLength(1);
+    controller.abort();
+
+    const result = await pending;
+    expect(result).toMatchObject({ ok: false, code: 'DQE_CANCELLED' });
+    // 中止真正到达底层网络请求,而不是只丢弃结果。
+    expect(upstreamSignals[0]?.aborted).toBe(true);
+  });
 });
 
 /** 敏感哨兵值:诊断、日志或响应里检索到它即视为泄漏(issue #47)。 */

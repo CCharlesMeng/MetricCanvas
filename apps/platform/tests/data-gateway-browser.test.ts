@@ -133,6 +133,36 @@ describe('数据网关端口的浏览器适配器', () => {
     expect(unreachable).toMatchObject({ code: 'DQE_TRANSPORT_ERROR' });
   });
 
+  it('取消信号传递到底层网络请求,中止后的拒绝归类为 DQE_CANCELLED(issue #53)', async () => {
+    const signals: Array<AbortSignal | null | undefined> = [];
+    const gateway = createPlatformDataGateway({
+      fetchImpl: ((_input: unknown, init?: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          signals.push(init?.signal);
+          init?.signal?.addEventListener('abort', () =>
+            reject(new DOMException('请求已中止', 'AbortError'))
+          );
+        })) as typeof fetch
+    });
+    const controller = new AbortController();
+
+    const pending = gateway
+      .fetchData(query, undefined, controller.signal)
+      .then(
+        () => {
+          throw new Error('该查询必须被取消');
+        },
+        (cause: unknown) => cause
+      );
+    controller.abort();
+    const failure = await pending;
+
+    // 信号原样进入 fetch:中止即断开与平台取数入口的连接。
+    expect(signals).toEqual([controller.signal]);
+    expect(failure).toBeInstanceOf(DqeGatewayError);
+    expect(failure).toMatchObject({ code: 'DQE_CANCELLED' });
+  });
+
   it('维度候选值查询尚未由平台入口声明,返回空数组', async () => {
     const gateway = createPlatformDataGateway({
       fetchImpl: (async () => {

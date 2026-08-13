@@ -5,7 +5,8 @@ export {
   DqeGatewayError,
   createDqeGateway,
   createInMemoryDqeDiagnostics,
-  effectiveDqeItem
+  effectiveDqeItem,
+  isAbortError
 } from './dqe';
 export type {
   DqeGatewayConfig,

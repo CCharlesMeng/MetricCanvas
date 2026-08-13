@@ -1,4 +1,4 @@
-import { DqeGatewayError } from '@metriccanvas/data-gateway';
+import { DqeGatewayError, isAbortError } from '@metriccanvas/data-gateway';
 import { isQueryErrorCode } from '@metriccanvas/page';
 import type {
   DataGateway,
@@ -39,9 +39,10 @@ export function createPlatformDataGateway(
 ): DataGateway {
   const { fetchImpl = fetch } = config;
   return {
-    async fetchData(query, diagnosticContext) {
+    async fetchData(query, diagnosticContext, signal) {
       let response: Response;
       try {
+        // 取消信号传递到底层网络请求:中止即断开与平台取数入口的连接。
         response = await fetchImpl(PLATFORM_DATA_QUERY_PATH, {
           method: 'POST',
           headers: { 'content-type': 'application/json;charset=utf-8' },
@@ -49,9 +50,13 @@ export function createPlatformDataGateway(
           body: JSON.stringify({
             query,
             ...(diagnosticContext ? { diagnostics: diagnosticContext } : {})
-          } satisfies PlatformDataQueryRequest)
+          } satisfies PlatformDataQueryRequest),
+          ...(signal ? { signal } : {})
         });
       } catch (cause) {
+        if (isAbortError(cause)) {
+          throw new DqeGatewayError('DQE_CANCELLED', '取数请求已被取消');
+        }
         throw new DqeGatewayError(
           'DQE_TRANSPORT_ERROR',
           `平台取数入口不可达:${String(cause)}`,
@@ -81,7 +86,11 @@ async function readDataQueryResponse(
   let payload: unknown;
   try {
     payload = await response.json();
-  } catch {
+  } catch (cause) {
+    // 读取响应正文期间被中止同属取消,不误归类为传输失败。
+    if (isAbortError(cause)) {
+      throw new DqeGatewayError('DQE_CANCELLED', '取数请求已被取消');
+    }
     throw new DqeGatewayError(
       'DQE_TRANSPORT_ERROR',
       `平台取数入口返回非 JSON 响应:${response.status}`,

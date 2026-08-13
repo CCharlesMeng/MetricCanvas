@@ -23,7 +23,7 @@ export type DataGatewayAdapters = Readonly<Record<QueryLanguage, DataGateway>>;
  */
 export function createDataGateway(adapters: DataGatewayAdapters): DataGateway {
   return {
-    fetchData(query, diagnosticContext) {
+    fetchData(query, diagnosticContext, signal) {
       if (!isQueryLanguage(query.language)) {
         // 不回显集外 language 原文:它是任意不可信内容,错误对象只携带闭集事实。
         return Promise.reject(
@@ -34,7 +34,7 @@ export function createDataGateway(adapters: DataGatewayAdapters): DataGateway {
           )
         );
       }
-      return adapters[query.language].fetchData(query, diagnosticContext);
+      return adapters[query.language].fetchData(query, diagnosticContext, signal);
     },
     async fetchDimensionValues(dimension) {
       // 维度候选值端口不携带 language:按协议闭集声明顺序逐一询问并合并去重。
