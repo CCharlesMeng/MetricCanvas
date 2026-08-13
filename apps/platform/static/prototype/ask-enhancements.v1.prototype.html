@@ -1,0 +1,466 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas 问数增强 · 原型 v1</title>
+    <!--
+      原型 v1(问数增强批次,PRD #85),用后即弃。
+      回答的问题:「四个增强(相对时间/派生度量/消歧预选/缺口别名台账)在
+      工作台里长什么样、交互感觉对不对?」
+      派生度量的口径呈现有三个结构性变体,经 ?variant=A|B|C 与底部浮动条切换:
+        A 口径卡内嵌派生定义行  B 结果徽标+悬浮定义  C 独立派生定义卡
+      自包含:无构建、无依赖、无网络、无持久化;数据为内存假数据,与仿真
+      语义面同面(运营分析/客户经营)。
+    -->
+    <style>
+      :root {
+        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7; --line-soft: #f4f4f5;
+        --text: #18181b; --muted: #71717a; --faint: #a1a1aa;
+        --accent: #4f46e5; --accent-soft: #eef2ff;
+        --warn-bg: #fffbeb; --warn-line: #fde68a; --warn-text: #92400e;
+        --ok: #16a34a; --new: #0e7490; --new-bg: #ecfeff;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0; color: var(--text); background: var(--bg); font-size: 13px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      button { font: inherit; color: inherit; cursor: pointer; }
+      h1,h2,h3,h4,p,dl,dd,ol,ul { margin: 0; }
+      ol, ul { padding: 0; list-style: none; }
+      code { font-size: 12px; color: #52525b; }
+
+      .topbar { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
+      .topbar b { color: #fff; font-size: 14px; }
+      .topbar span { color: #a1a1aa; }
+      .topbar .throwaway { margin-left: auto; padding: 3px 10px; background: #7f1d1d; color: #fecaca; border-radius: 999px; font-size: 11px; }
+
+      .tabs { display: flex; gap: 8px; padding: 12px 22px; background: var(--surface); border-bottom: 1px solid var(--line); }
+      .tabs button { display: flex; align-items: center; gap: 7px; padding: 8px 14px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: 12.5px; }
+      .tabs button.on { background: var(--accent-soft); border-color: var(--accent); font-weight: 700; }
+      .tabs .n { display: grid; place-items: center; width: 18px; height: 18px; background: var(--line-soft); border-radius: 999px; font-size: 10.5px; color: #52525b; }
+      .tabs button.on .n { background: var(--accent); color: #fff; }
+
+      .stage { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 0; max-width: 1200px; margin: 0 auto; min-height: calc(100vh - 180px); }
+      .chatcol { background: var(--surface); border-right: 1px solid var(--line); border-left: 1px solid var(--line); display: flex; flex-direction: column; }
+      .chatcol > header { padding: 14px 18px 10px; border-bottom: 1px solid var(--line-soft); }
+      .chatcol .eyebrow { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .chatcol h2 { margin-top: 3px; font-size: 15px; }
+      .thread { flex: 1; display: flex; flex-direction: column; gap: 14px; padding: 16px 18px; overflow-y: auto; }
+      .ask-bubble { align-self: flex-end; max-width: 88%; padding: 8px 12px; color: #fff; background: var(--accent); border-radius: 12px 12px 3px 12px; line-height: 1.6; }
+      .reply { display: grid; gap: 10px; }
+      .reply p { line-height: 1.7; }
+      .composer { display: grid; gap: 8px; padding: 12px 18px 16px; border-top: 1px solid var(--line-soft); }
+      .composer .q { padding: 10px 11px; border: 1px solid #d4d4d8; border-radius: 10px; color: #3f3f46; background: #fafafa; font-size: 12.5px; line-height: 1.6; }
+      .composer button { justify-self: end; padding: 7px 14px; background: #fff; border: 1px solid #d4d4d8; border-radius: 9px; font-size: 12.5px; font-weight: 600; }
+      .composer button:hover { border-color: var(--faint); }
+      .composer button:disabled { opacity: .45; cursor: not-allowed; }
+
+      .notecol { padding: 20px 24px; }
+      .notecol h3 { font-size: 14px; margin-bottom: 8px; }
+      .notecol .q { margin-bottom: 14px; padding: 12px 14px; background: var(--new-bg); border: 1px solid #a5f3fc; border-radius: 11px; color: #155e75; font-size: 12.5px; line-height: 1.7; }
+      .notecol dl { display: grid; gap: 8px; }
+      .notecol dt { font-weight: 700; font-size: 12.5px; }
+      .notecol dd { margin: 0 0 4px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+      /* 卡片 */
+      .scope { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .scope.temporary { background: var(--warn-bg); border-color: var(--warn-line); }
+      .scope-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+      .scope dl { display: grid; gap: 5px; }
+      .scope dl > div { display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 8px; }
+      .scope dt { color: var(--faint); font-size: 11px; }
+      .scope dd { font-size: 12px; line-height: 1.5; }
+      .warn-pill { padding: 2px 8px; color: var(--warn-text); background: #fef3c7; border-radius: 999px; font-size: 10.5px; }
+      .new-pill { padding: 2px 8px; color: var(--new); background: var(--new-bg); border: 1px solid #a5f3fc; border-radius: 999px; font-size: 10px; font-weight: 700; }
+      .formula { padding: 8px 10px; margin-top: 6px; background: #fff; border: 1px dashed var(--line); border-radius: 8px; font-size: 11.5px; color: #52525b; line-height: 1.6; }
+      .candidates { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .candidates > p { margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+      .candidates label { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; cursor: pointer; }
+      .candidates label span { display: grid; gap: 2px; }
+      .candidates b { font-size: 12.5px; }
+      .candidates small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
+      .candidates input:checked + span b { color: var(--accent); }
+      .last-pick { margin-left: 6px; padding: 1px 7px; background: var(--accent-soft); color: #3730a3; border-radius: 999px; font-size: 10px; }
+      .confirm-btn { justify-self: start; margin-top: 4px; padding: 6px 12px; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 8px; font-size: 12px; font-weight: 650; }
+      .failure { padding: 10px 12px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; font-size: 12.5px; line-height: 1.6; }
+      .failure code { color: #b91c1c; font-weight: 700; font-size: 11.5px; }
+
+      /* 结果卡 */
+      .result { padding: 13px 15px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+      .result-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+      .result-head h4 { font-size: 12.5px; font-weight: 650; }
+      .derived-badge { position: relative; padding: 2px 8px; background: var(--accent-soft); color: #3730a3; border-radius: 999px; font-size: 10.5px; cursor: help; }
+      .derived-badge:hover::after {
+        content: attr(data-def); position: absolute; top: calc(100% + 6px); left: 0; z-index: 40;
+        width: 260px; padding: 9px 11px; background: #18181b; color: #e4e4e7; border-radius: 9px;
+        font-size: 11px; line-height: 1.6; white-space: normal;
+      }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); text-align: right; font-size: 12px; white-space: nowrap; }
+      th { color: var(--muted); font-weight: 600; font-size: 11px; }
+      th:first-child, td:first-child { text-align: left; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .up { color: var(--ok); } .down { color: #dc2626; }
+      .bars { display: grid; gap: 6px; }
+      .bars li { display: grid; grid-template-columns: 44px minmax(0,1fr) 84px; gap: 8px; align-items: center; font-size: 11.5px; }
+      .bars .bar { position: relative; height: 14px; background: var(--line-soft); border-radius: 4px; overflow: hidden; }
+      .bars .bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 4px; }
+      .bars .vl { color: var(--muted); text-align: right; }
+
+      /* S4 台账页 */
+      .ledger { display: grid; gap: 16px; padding: 20px 24px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .panel > header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); }
+      .panel > header b { font-size: 13px; }
+      .panel > header small { color: var(--faint); font-size: 11px; }
+      .rows { display: grid; }
+      .rows > div { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(0,1fr) auto; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); }
+      .rows > div:last-child { border-bottom: 0; }
+      .rows b { font-size: 12.5px; }
+      .rows small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+      .count-pill { padding: 2px 9px; background: #fef3c7; color: var(--warn-text); border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .adopt-btn { padding: 5px 11px; background: #fff; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 11.5px; }
+      .adopt-btn:hover { border-color: var(--accent); color: var(--accent); }
+      .adopted { color: var(--ok); font-size: 11.5px; font-weight: 650; }
+      .status-chip { padding: 2px 8px; border-radius: 999px; font-size: 10.5px; background: var(--line-soft); color: #52525b; }
+
+      /* 浮动变体切换条(仅评审用,非设计的一部分) */
+      .switcher { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 90;
+        display: flex; align-items: center; gap: 12px; padding: 8px 14px; background: #18181b; color: #fafafa;
+        border-radius: 999px; box-shadow: 0 10px 30px rgb(9 9 11 / .35); font-size: 12.5px; }
+      .switcher button { display: grid; place-items: center; width: 26px; height: 26px; padding: 0; color: #fafafa; background: #3f3f46; border: 0; border-radius: 999px; }
+      .switcher button:hover { background: #52525b; }
+      .switcher .lbl { min-width: 200px; text-align: center; }
+      .hint { max-width: 1200px; margin: 10px auto 90px; padding: 0 22px; color: var(--faint); font-size: 11.5px; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>MetricCanvas</b>
+      <span>问数增强 · 原型 v1(PRD #85)</span>
+      <span class="throwaway">用后即弃 · 假数据</span>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div id="app"></div>
+    <div class="hint">灰色输入框内是预置问题,点「发送」逐步播放;标「新」的元素是本批次新增能力。场景 2 的口径呈现有 A/B/C 三个变体,底部浮动条或 ←/→ 键切换。</div>
+    <div class="switcher" id="switcher" style="display:none">
+      <button data-act="prev">←</button>
+      <span class="lbl" id="variant-label"></span>
+      <button data-act="next">→</button>
+    </div>
+
+    <script>
+      /* ============ 状态 ============ */
+      const params = new URLSearchParams(location.search);
+      const state = {
+        scene: params.get('scene') || 's1',
+        variant: (params.get('variant') || 'A').toUpperCase(),
+        played: {},           // sceneId -> 已播放步数
+        s3confirmed: false,
+        s3choice: '客户经营',
+        adopted: {}           // 别名建议 id -> true
+      };
+      const VARIANTS = {
+        A: 'A — 口径卡内嵌派生定义',
+        B: 'B — 结果徽标 + 悬浮定义',
+        C: 'C — 独立派生定义卡'
+      };
+      const SCENES = [
+        { id: 's1', n: '1', title: '相对时间' },
+        { id: 's2', n: '2', title: '派生度量(环比/占比)' },
+        { id: 's3', n: '3', title: '消歧预选' },
+        { id: 's4', n: '4', title: '缺口台账与别名' }
+      ];
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+      function syncUrl() {
+        const p = new URLSearchParams();
+        p.set('scene', state.scene);
+        if (state.scene === 's2') p.set('variant', state.variant);
+        history.replaceState(null, '', '?' + p.toString());
+      }
+
+      /* ============ 通用卡片 ============ */
+      function scopeCard({ metric, derived, time, timeNote, filters, grain }) {
+        const derivedRowA = derived && state.variant === 'A'
+          ? `<div><dt>派生</dt><dd>${esc(derived.name)} <span class="new-pill">公司口径</span>
+               <div class="formula">${esc(derived.formula)}<br/>基期:${esc(derived.base)}(模板声明于数据上下文,模型不可改写)</div></dd></div>`
+          : '';
+        return `<div class="scope">
+          <div class="scope-head"><span>口径卡 · 生效范围</span><span style="display:flex;gap:6px">${derived && state.variant === 'A' ? '' : ''}<span class="new-pill">相对时间换算</span></span></div>
+          <dl>
+            <div><dt>业务域</dt><dd>运营分析</dd></div>
+            <div><dt>指标</dt><dd>${esc(metric)}</dd></div>
+            ${derivedRowA}
+            <div><dt>时间</dt><dd>${esc(time)}${timeNote ? ` <span class="new-pill">${esc(timeNote)}</span>` : ''} · ${esc(grain)}</dd></div>
+            <div><dt>筛选</dt><dd>${esc(filters || '无')}</dd></div>
+          </dl>
+        </div>`;
+      }
+
+      function derivedDefCard(derived) {
+        return `<div class="scope" style="background:var(--accent-soft);border-color:#c7d2fe">
+          <div class="scope-head"><span>派生定义 · ${esc(derived.name)}</span><span class="new-pill">公司口径</span></div>
+          <dl>
+            <div><dt>模板</dt><dd>${esc(derived.template)}</dd></div>
+            <div><dt>公式</dt><dd><code>${esc(derived.formula)}</code></dd></div>
+            <div><dt>底数</dt><dd>${esc(derived.metric)}(可加,求和)</dd></div>
+            <div><dt>基期</dt><dd>${esc(derived.base)}</dd></div>
+          </dl>
+        </div>`;
+      }
+
+      /* ============ 场景数据 ============ */
+      const REGION_ROWS = [
+        { 区域: '华东', 本期: 4470, 基期: 4180 }, { 区域: '华南', 本期: 2760, 基期: 2940 },
+        { 区域: '华北', 本期: 2130, 基期: 2030 }, { 区域: '西南', 本期: 1410, 基期: 1390 },
+        { 区域: '华中', 本期: 1080, 基期: 1100 }, { 区域: '东北', 本期: 620, 基期: 615 },
+        { 区域: '西北', 本期: 370, 基期: 356 }
+      ];
+      const total = REGION_ROWS.reduce((s, r) => s + r.本期, 0);
+      const mom = (r) => ((r.本期 - r.基期) / r.基期 * 100);
+      const share = (r) => (r.本期 / total * 100);
+
+      /* ============ 场景 1:相对时间 ============ */
+      const S1_STEPS = [
+        () => `<div class="ask-bubble">上个月各区域的Tokens消耗量是多少?</div>`,
+        () => `<div class="reply">${scopeCard({
+          metric: 'Tokens消耗量', time: '2026-07-01 ~ 2026-07-31', timeNote: '「上个月」词表换算',
+          grain: 'month'
+        })}</div>`,
+        () => `<div class="reply"><div class="result">
+            <div class="result-head"><h4>各区域 Tokens消耗量(万)</h4></div>
+            <ul class="bars">${REGION_ROWS.map((r) => `<li><span>${r.区域}</span>
+              <span class="bar"><i style="width:${(r.本期 / 4470 * 100).toFixed(0)}%"></i></span>
+              <span class="vl">${r.本期.toLocaleString()}</span></li>`).join('')}</ul>
+          </div>
+          <p style="color:var(--muted)">已完成:「上个月」按完整自然周期换算为 2026-07-01 ~ 2026-07-31(锚点:注入时钟 2026-08-13)。业务确认「本月是否到昨天」等约定后,只改词表声明。</p></div>`,
+        () => `<div class="ask-bubble">前天的消耗量呢?</div>`,
+        () => `<div class="reply"><div class="failure">
+            <code>RELATIVE_TIME_OUT_OF_VOCABULARY</code> 「前天」不在相对时间词表内(当前域最细粒度为 day,但词表 V1 未收录该表述)。支持的表述:上个月 / 本月 / 今年以来 / 最近N个月 / 上季度 / 去年同期…。可改用具体日期,或等词表扩充。
+          </div>
+          <p style="color:var(--muted)">词表外表述如实拒答——与组件点名同一思路:封闭词表、确定性换算、零幻觉。</p></div>`
+      ];
+
+      /* ============ 场景 2:派生度量 ============ */
+      const DERIVED_MOM = {
+        name: 'Tokens消耗量环比', template: '环比(mom)', metric: 'Tokens消耗量',
+        formula: '(本期值 − 基期值) ÷ 基期值', base: '上一自然周期(2026-06,由 S1 相对时间推导)'
+      };
+      function s2ResultTable() {
+        const badge = state.variant === 'B'
+          ? `<span class="derived-badge" data-def="环比(公司口径):公式 (本期−基期)÷基期;底数 Tokens消耗量;基期 2026-06(上一自然周期)。模板声明于数据上下文,模型不可改写。">环比 · 公司口径 ⓘ</span>`
+          : '';
+        return `<div class="result">
+          <div class="result-head"><h4>各区域 Tokens消耗量与环比</h4>${badge}</div>
+          <table><thead><tr><th>区域</th><th>本期(万)</th><th>基期(万)</th><th>环比</th><th>占比</th></tr></thead>
+          <tbody>${REGION_ROWS.map((r) => `<tr><td>${r.区域}</td><td>${r.本期.toLocaleString()}</td>
+            <td style="color:var(--faint)">${r.基期.toLocaleString()}</td>
+            <td class="${mom(r) >= 0 ? 'up' : 'down'}">${mom(r) >= 0 ? '▲' : '▼'} ${Math.abs(mom(r)).toFixed(1)}%</td>
+            <td>${share(r).toFixed(1)}%</td></tr>`).join('')}</tbody></table>
+        </div>`;
+      }
+      const S2_STEPS = [
+        () => `<div class="ask-bubble">上个月各区域Tokens消耗量的环比和占比是多少?</div>`,
+        () => `<div class="reply">
+          ${scopeCard({ metric: 'Tokens消耗量', derived: DERIVED_MOM, time: '2026-07-01 ~ 2026-07-31', timeNote: '「上个月」词表换算', grain: 'month' })}
+          ${state.variant === 'C' ? derivedDefCard(DERIVED_MOM) : ''}
+          <p style="color:var(--muted)">注意:<b>没有阻塞确认、没有琥珀标注、不登记缺口</b>——环比/占比是模板派生的公司口径,不是模型编的临时口径。系统自动扩展查询多取了基期(2026-06)与总计数据。</p>
+        </div>`,
+        () => `<div class="reply">${s2ResultTable()}
+          <p style="color:var(--muted)">本地确定性计算:基期数据由系统扩展查询取回,比值在装配层纯函数算出;将来真实 DQE 确认原生能力后可下推,声明不变。</p></div>`,
+        () => `<div class="ask-bubble">那人均消耗量呢?</div>`,
+        () => `<div class="reply"><div class="scope temporary">
+            <div class="scope-head"><span>口径卡 · 生效范围</span><span class="warn-pill">临时口径</span></div>
+            <dl>
+              <div><dt>业务域</dt><dd>运营分析</dd></div>
+              <div><dt>临时口径</dt><dd><code>Tokens消耗量 ÷ 客户数</code> <span style="color:var(--warn-text);font-size:11px">模型生成,未经公司认证</span></dd></div>
+              <div><dt>时间</dt><dd>2026-07-01 ~ 2026-07-31 · month</dd></div>
+            </dl>
+            <div style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--warn-line)">
+              <button class="confirm-btn">确认口径并执行</button>
+              <p style="color:var(--muted);font-size:11px;margin-top:6px">「人均消耗」不在模板闭集内,仍走临时口径路径:阻塞确认 + 琥珀标注 + 登记缺口。两层边界清晰:模板=公司定的,formula=模型编的。</p>
+            </div>
+          </div></div>`
+      ];
+
+      /* ============ 场景 3:消歧预选 ============ */
+      function s3Candidates(preselect) {
+        return `<div class="candidates">
+          <p>命中 2 个近义指标,口径不同,请选择:</p>
+          <label><input type="radio" name="s3c" value="客户经营" ${preselect && state.s3choice === '客户经营' ? 'checked' : ''} onchange="window.__s3pick('客户经营')"/>
+            <span><b>客户数(客户经营)${preselect && state.s3choice === '客户经营' ? '<span class="last-pick">上次你选了这个</span>' : ''}</b>
+            <small>期末在册口径 · 半可加,期末值</small></span></label>
+          <label><input type="radio" name="s3c" value="运营分析" ${preselect && state.s3choice === '运营分析' ? 'checked' : ''} onchange="window.__s3pick('运营分析')"/>
+            <span><b>客户数(运营分析)${preselect && state.s3choice === '运营分析' ? '<span class="last-pick">上次你选了这个</span>' : ''}</b>
+            <small>在用调用口径 · 不可加,均值</small></span></label>
+          ${preselect ? `<button class="confirm-btn" onclick="window.__s3confirm()">确认口径并执行</button>
+          <p style="color:var(--muted);font-size:11px;margin-top:6px"><span class="new-pill">消歧预选</span> 已默认勾选你上次的选择(仅基于你自己的历史)。仍然弹卡等确认——系统与模型都不替你选(ADR-0037),但确认成本降为一次点击。</p>` : ''}
+        </div>`;
+      }
+      const S3_STEPS = [
+        () => `<div class="ask-bubble" style="opacity:.55">6月的客户数是多少?(上周)</div>`,
+        () => `<div class="reply" style="opacity:.55">${s3Candidates(false)}<p style="color:var(--faint);font-size:11px">…上周你在这里选了「客户经营」并确认。该选择已随会话事件落库。</p></div>`,
+        () => `<div class="ask-bubble">7月的客户数是多少?(今天)</div>`,
+        () => `<div class="reply" id="s3-live">${s3Candidates(true)}</div>`
+      ];
+      window.__s3pick = (v) => { state.s3choice = v; };
+      window.__s3confirm = () => {
+        state.s3confirmed = true;
+        const el = document.getElementById('s3-live');
+        if (el) el.insertAdjacentHTML('beforeend', `<div class="result" style="margin-top:10px">
+          <div class="result-head"><h4>7月 客户数(${esc(state.s3choice)}口径)</h4></div>
+          <p style="font-size:24px;font-weight:700">1,284 <small style="font-size:12px;color:var(--muted)">家(期末在册)</small></p>
+          <p style="color:var(--muted);font-size:11.5px;margin-top:6px">一次点击完成确认;你的本次选择继续累积为你自己的偏好信号。</p></div>`);
+      };
+
+      /* ============ 场景 4:缺口台账与别名 ============ */
+      const GAPS = [
+        { id: 'g1', sought: '人均消耗量', closest: 'Tokens消耗量', diff: '需除以客户数,语义面无该派生', count: 9, status: 'open' },
+        { id: 'g2', sought: '客户满意度评分', closest: '(无)', diff: '语义面无满意度类指标', count: 5, status: 'accepted' },
+        { id: 'g3', sought: '毛利率', closest: '(无)', diff: '语义面无价格/金额类指标', count: 3, status: 'open' }
+      ];
+      const ALIAS_SUGGESTIONS = [
+        { id: 'a1', said: '调用量', metric: 'Tokens请求量', evidence: '7 次检索落空后经消歧确认', domain: '运营分析' },
+        { id: 'a2', said: '活跃客户', metric: '客户数(运营分析)', evidence: '5 次检索经候选确认', domain: '运营分析' },
+        { id: 'a3', said: '新客', metric: '新增客户数', evidence: '3 次检索经候选确认', domain: '客户经营' }
+      ];
+      function s4Page() {
+        return `<div class="ledger">
+          <div class="panel">
+            <header><b>指标缺口台账</b><small>按出现次数排序 · 数据来自会话事件流(#67),同一缺口按幂等键累加</small></header>
+            <div class="rows">${GAPS.map((g) => `<div>
+              <span><b>${esc(g.sought)}</b><small>最接近:${esc(g.closest)} · ${esc(g.diff)}</small></span>
+              <span class="status-chip">${g.status === 'open' ? 'open' : 'accepted · 待建设'}</span>
+              <span class="count-pill">出现 ${g.count} 次</span>
+            </div>`).join('')}</div>
+          </div>
+          <div class="panel">
+            <header><b>待采纳别名 <span class="new-pill">新</span></b><small>从缺口条目聚合的「用户说法 → 最接近指标」;采纳后人工修改数据上下文声明,不自动写回</small></header>
+            <div class="rows">${ALIAS_SUGGESTIONS.map((a) => `<div>
+              <span><b>「${esc(a.said)}」→ ${esc(a.metric)}</b><small>${esc(a.domain)} · ${esc(a.evidence)}</small></span>
+              <span></span>
+              ${state.adopted[a.id]
+                ? `<span class="adopted">✓ 已标记采纳 · 待人工更新数据上下文</span>`
+                : `<button class="adopt-btn" onclick="window.__adopt('${a.id}')">标记采纳</button>`}
+            </div>`).join('')}</div>
+          </div>
+          <p style="color:var(--muted);font-size:12px;line-height:1.7">这一页同时补上 #67 留下的「台账无界面」缺口。采纳只改建议状态——数据上下文的修改仍是显式人工声明变更(版本化),变更管理归属待 #3 生产接入后再议自动化。</p>
+        </div>`;
+      }
+      window.__adopt = (id) => { state.adopted[id] = true; render(); };
+
+      /* ============ 场景描述 ============ */
+      const SCENE_NOTES = {
+        s1: {
+          q: '验证什么:「上个月」这类问法不再拒答,换算过程在口径卡可见、可核对;词表外表述的拒答文案是否够清楚。',
+          items: [
+            ['封闭词表 + 确定性换算', '与组件点名同一思路:词面命中即换算,零幻觉;「今天」锚点用注入时钟,可测。'],
+            ['完整自然周期默认', '「本月是否到昨天」等业务约定确认后只改词表声明,不改实现。'],
+            ['词表外如实拒答', '不让模型自由换算——换算错误比拒答更危险。']
+          ]
+        },
+        s2: {
+          q: '验证什么:环比/占比不再走「临时口径」的阻塞与琥珀标注,派生定义在哪里呈现最舒服?切换底部 A/B/C 三个变体感受差异。',
+          items: [
+            ['变体 A · 口径卡内嵌', '派生定义作为口径卡的一行,展开公式与基期——信息最全,卡片略重。'],
+            ['变体 B · 结果徽标', '口径卡保持极简,结果组件标题带「环比·公司口径ⓘ」徽标,悬浮看定义——最轻,但定义藏了一层。'],
+            ['变体 C · 独立派生卡', '口径卡旁边独立一张紫色派生定义卡——层次最清楚,对话流略长。'],
+            ['临时口径路径保留', '第 4 步「人均消耗」演示模板外计算仍走琥珀色阻塞确认,两层边界清晰。']
+          ]
+        },
+        s3: {
+          q: '验证什么:预选的呈现(默认勾选+「上次你选了这个」徽标)是否传达了「系统记得你、但不替你决定」;一次点击的确认成本是否可接受。',
+          items: [
+            ['per-user 信号', '只记你自己的选择;信号来自已落库的会话步骤事件,零新增采集。'],
+            ['永远阻塞', 'ADR-0037 红线:即便预选,也弹卡等你确认;改选自由。']
+          ]
+        },
+        s4: {
+          q: '验证什么:缺口台账+别名建议同屏是否成立;「标记采纳→人工改声明」的半自动流程是否可接受。点「标记采纳」感受流转。',
+          items: [
+            ['台账排行', '同一缺口按幂等键累加次数,open→accepted 状态可见(#67 已有数据,缺的只是界面)。'],
+            ['别名建议', '「用户说法→最接近指标」从缺口条目聚合;采纳后检索命中率随真实使用增长——轻量版 Genie Ontology 自改进闭环。'],
+            ['不自动写回', '数据上下文仍是版本化人工声明;自动化等变更管理归属明确。']
+          ]
+        }
+      };
+
+      /* ============ 渲染 ============ */
+      function render() {
+        document.getElementById('tabs').innerHTML = SCENES.map((s) =>
+          `<button class="${state.scene === s.id ? 'on' : ''}" onclick="window.__scene('${s.id}')">
+            <span class="n">${s.n}</span>${s.title}</button>`).join('');
+
+        const app = document.getElementById('app');
+        const note = SCENE_NOTES[state.scene];
+        if (state.scene === 's4') {
+          app.innerHTML = `<div class="stage" style="grid-template-columns: minmax(0,1.5fr) 340px">
+            <div style="background:var(--bg)">${s4Page()}</div>
+            <div class="notecol" style="background:var(--surface);border-left:1px solid var(--line)">
+              <h3>场景 4 · 缺口台账与别名出口</h3>
+              <div class="q">${esc(note.q)}</div>
+              <dl>${note.items.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>
+            </div></div>`;
+        } else {
+          const steps = state.scene === 's1' ? S1_STEPS : state.scene === 's2' ? S2_STEPS : S3_STEPS;
+          const played = state.played[state.scene] ?? 0;
+          const done = played >= steps.length;
+          const nextQuestion = !done && steps[played]().includes('ask-bubble');
+          app.innerHTML = `<div class="stage">
+            <div class="chatcol">
+              <header><p class="eyebrow">分析会话 · 模拟</p><h2>${SCENES.find((s) => s.id === state.scene).title}</h2></header>
+              <div class="thread" id="thread">${steps.slice(0, played).map((f) => f()).join('')}</div>
+              <div class="composer">
+                <div class="q">${done ? '(场景播放完毕,可切换其他场景)' : '点「发送/继续」逐步播放 →'}</div>
+                <button ${done ? 'disabled' : ''} onclick="window.__step()">${done ? '已完成' : played === 0 || nextQuestion ? '发送' : '继续'}</button>
+              </div>
+            </div>
+            <div class="notecol">
+              <h3>场景 ${SCENES.find((s) => s.id === state.scene).n} · ${SCENES.find((s) => s.id === state.scene).title}</h3>
+              <div class="q">${esc(note.q)}</div>
+              <dl>${note.items.map(([t, d]) => `<div><dt>${esc(t)}</dt><dd>${esc(d)}</dd></div>`).join('')}</dl>
+            </div></div>`;
+          const thread = document.getElementById('thread');
+          if (thread) thread.scrollTop = thread.scrollHeight;
+        }
+
+        const sw = document.getElementById('switcher');
+        sw.style.display = state.scene === 's2' ? 'flex' : 'none';
+        document.getElementById('variant-label').textContent = VARIANTS[state.variant];
+        syncUrl();
+      }
+      window.__scene = (id) => { state.scene = id; render(); };
+      window.__step = () => {
+        const steps = state.scene === 's1' ? S1_STEPS : state.scene === 's2' ? S2_STEPS : S3_STEPS;
+        const played = state.played[state.scene] ?? 0;
+        if (played < steps.length) state.played[state.scene] = played + 1;
+        render();
+      };
+
+      /* 变体切换(仅 S2) */
+      const ORDER = ['A', 'B', 'C'];
+      function cycle(delta) {
+        const index = (ORDER.indexOf(state.variant) + delta + ORDER.length) % ORDER.length;
+        state.variant = ORDER[index];
+        render();
+      }
+      document.getElementById('switcher').addEventListener('click', (event) => {
+        const act = event.target.closest('button')?.dataset.act;
+        if (act === 'prev') cycle(-1);
+        if (act === 'next') cycle(1);
+      });
+      document.addEventListener('keydown', (event) => {
+        if (state.scene !== 's2') return;
+        if (['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName) || document.activeElement?.isContentEditable) return;
+        if (event.key === 'ArrowLeft') cycle(-1);
+        if (event.key === 'ArrowRight') cycle(1);
+      });
+
+      render();
+    </script>
+  </body>
+</html>
