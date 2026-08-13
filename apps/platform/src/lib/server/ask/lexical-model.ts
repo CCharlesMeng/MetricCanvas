@@ -182,6 +182,16 @@ function timePatch(
       time: { granularity: 'month', start: month(-1), end: month(-1), providedBy: 'user' }
     };
   }
+  const halfYear = /(?:(\d{4})\s*年)?(上|下)半年/u.exec(question);
+  if (halfYear) {
+    const year = halfYear[1] === undefined ? now.getUTCFullYear() : Number(halfYear[1]);
+    return {
+      time:
+        halfYear[2] === '上'
+          ? { granularity: 'month', start: `${year}-01`, end: `${year}-06`, providedBy: 'user' }
+          : { granularity: 'month', start: `${year}-07`, end: `${year}-12`, providedBy: 'user' }
+    };
+  }
   const recent = /最近\s*(\d+)\s*个月|近\s*(\d+)\s*个月/u.exec(question);
   if (recent) {
     const count = Number(recent[1] ?? recent[2]);
