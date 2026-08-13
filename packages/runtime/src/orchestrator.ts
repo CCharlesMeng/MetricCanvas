@@ -1,12 +1,10 @@
 import {
   declaredPaginationLimit,
-  isQueryErrorCode,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
   type Page,
-  type QueryDataSource,
-  type QueryError
+  type QueryDataSource
 } from '@metriccanvas/page';
 import {
   initialFilterValues,
@@ -14,6 +12,7 @@ import {
   type FilterValues
 } from './filter-state';
 import type { DataGateway, QueryDiagnosticContext } from './ports';
+import { preservedQueryError } from './query-error';
 
 /** 页面数据快照的唯一真元：页面数据源 id → 快照。 */
 export type PageDataSnapshots = ReadonlyMap<string, DataSnapshot>;
@@ -413,19 +412,6 @@ async function execute(
   } catch (cause) {
     return { status: 'error', error: preservedQueryError(cause) };
   }
-}
-
-/**
- * 把数据网关的拒绝保留为数据快照的结构化查询错误(issue #51)。
- * 按结构判别 code(自定义数据网关不必依赖 DqeGatewayError 类,
- * 跨 realm 时 instanceof 也不可靠);封闭集之外的异常兜底为 UNKNOWN。
- */
-function preservedQueryError(cause: unknown): QueryError {
-  const code = cause instanceof Error ? (cause as { code?: unknown }).code : undefined;
-  return {
-    code: isQueryErrorCode(code) ? code : 'UNKNOWN',
-    message: cause instanceof Error ? cause.message : String(cause)
-  };
 }
 
 function correctedPageIndex(

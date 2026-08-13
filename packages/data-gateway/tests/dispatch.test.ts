@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { EffectiveQuery } from '@metriccanvas/page';
-import type { DataGateway, QueryDiagnosticContext } from '@metriccanvas/runtime';
+import type {
+  DimensionValuesResult,
+  QueryDiagnosticContext,
+  RuntimeDataGateway
+} from '@metriccanvas/runtime';
 import { DqeGatewayError, createDataGateway } from '../src';
 
 function dqeEffectiveQuery(): EffectiveQuery {
@@ -16,15 +20,15 @@ function dqeEffectiveQuery(): EffectiveQuery {
 }
 
 interface AdapterSpy {
-  gateway: DataGateway;
+  gateway: RuntimeDataGateway;
   fetchDataCalls: Array<{
     query: EffectiveQuery;
     diagnosticContext?: QueryDiagnosticContext;
   }>;
-  dimensionCalls: string[];
+  dimensionCalls: Array<{ dimension: string; signal?: AbortSignal }>;
 }
 
-function adapterSpy(dimensionValues: string[] = []): AdapterSpy {
+function adapterSpy(dimensionValues?: DimensionValuesResult): AdapterSpy {
   const spy: AdapterSpy = {
     fetchDataCalls: [],
     dimensionCalls: [],
@@ -36,10 +40,21 @@ function adapterSpy(dimensionValues: string[] = []): AdapterSpy {
         });
         return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
       },
-      async fetchDimensionValues(dimension) {
-        spy.dimensionCalls.push(dimension);
-        return dimensionValues;
-      }
+      // 候选值能力可选:未提供结果的适配器不声明该端口。
+      ...(dimensionValues
+        ? {
+            async fetchDimensionValues(
+              dimension: string,
+              options?: { signal?: AbortSignal }
+            ) {
+              spy.dimensionCalls.push({
+                dimension,
+                ...(options?.signal ? { signal: options.signal } : {})
+              });
+              return dimensionValues;
+            }
+          }
+        : {})
     }
   };
   return spy;
@@ -89,14 +104,56 @@ describe('数据网关按 language 分发注册点', () => {
     expect(dqe.fetchDataCalls).toHaveLength(0);
   });
 
-  it('维度候选值按注册适配器合并去重', async () => {
-    const dqe = adapterSpy(['华东', '华南', '华东']);
+  it('维度候选值按声明能力的适配器合并去重,取消信号原样透传', async () => {
+    const dqe = adapterSpy({ kind: 'values', values: ['华东', '华南', '华东'] });
+    const gateway = createDataGateway({ dqe: dqe.gateway });
+    const controller = new AbortController();
+
+    await expect(
+      gateway.fetchDimensionValues('区域', { signal: controller.signal })
+    ).resolves.toEqual({ kind: 'values', values: ['华东', '华南'] });
+    expect(dqe.dimensionCalls).toEqual([
+      { dimension: '区域', signal: controller.signal }
+    ]);
+  });
+
+  it('没有适配器声明候选值能力时返回不可用,不触达任何适配器', async () => {
+    const dqe = adapterSpy();
     const gateway = createDataGateway({ dqe: dqe.gateway });
 
-    await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual([
-      '华东',
-      '华南'
-    ]);
-    expect(dqe.dimensionCalls).toEqual(['区域']);
+    await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual({
+      kind: 'unavailable'
+    });
+    expect(dqe.dimensionCalls).toEqual([]);
+  });
+
+  it('声明能力的适配器回答不可用时如实返回不可用,不伪装成空结果', async () => {
+    const dqe = adapterSpy({ kind: 'unavailable' });
+    const gateway = createDataGateway({ dqe: dqe.gateway });
+
+    await expect(gateway.fetchDimensionValues('未知维度')).resolves.toEqual({
+      kind: 'unavailable'
+    });
+    expect(dqe.dimensionCalls).toEqual([{ dimension: '未知维度' }]);
+  });
+
+  it('候选值查询失败按结构化查询错误分类原样拒绝', async () => {
+    const gateway = createDataGateway({
+      dqe: {
+        async fetchData() {
+          return { rows: [] };
+        },
+        async fetchDimensionValues() {
+          throw new DqeGatewayError('DQE_TIMEOUT', 'DQE 请求超过 30000ms 未返回');
+        }
+      }
+    });
+
+    const rejection = await gateway.fetchDimensionValues('区域').then(
+      () => undefined,
+      (cause: unknown) => cause
+    );
+    expect(rejection).toBeInstanceOf(DqeGatewayError);
+    expect((rejection as DqeGatewayError).code).toBe('DQE_TIMEOUT');
   });
 });

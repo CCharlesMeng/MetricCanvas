@@ -1,9 +1,10 @@
-import type { DataGateway } from '@metriccanvas/runtime';
+import type { RuntimeDataGateway } from '@metriccanvas/runtime';
 import type { AiSummaryConfig, RuntimeViewEvent } from '@metriccanvas/runtime-ui';
 
 export interface RuntimeInput {
   document: unknown;
-  dataGateway?: DataGateway;
+  /** 主查询执行必备;维度候选值端口可选,缺席即筛选候选值不可用。 */
+  dataGateway?: RuntimeDataGateway;
   aiSummary?: AiSummaryConfig;
   /** URLSearchParams 形式，不带前导问号。 */
   initialSearch?: string;

@@ -5,6 +5,7 @@ export {
   DqeGatewayError,
   createDqeGateway,
   createInMemoryDqeDiagnostics,
+  dimensionValuesDqeItem,
   effectiveDqeItem
 } from './dqe';
 export type {

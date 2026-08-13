@@ -19,7 +19,11 @@ export type {
   RuntimeInput
 } from './types';
 export type { TypedError } from '@metriccanvas/page';
-export type { DataGateway } from '@metriccanvas/runtime';
+export type {
+  DataGateway,
+  DimensionValuesGateway,
+  RuntimeDataGateway
+} from '@metriccanvas/runtime';
 export type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
 
 interface EmbedRootExports {

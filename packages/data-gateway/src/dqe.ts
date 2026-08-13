@@ -10,6 +10,8 @@ import {
 import type {
   DataGateway,
   DataGatewayResult,
+  DimensionValuesGateway,
+  DimensionValuesResult,
   QueryDiagnosticContext
 } from '@metriccanvas/runtime';
 import type { DqeDevDetail } from './dev-detail';
@@ -129,8 +131,13 @@ export class DqeGatewayError extends Error {
  *
  * 外部 interface 仍是一条生效查询进、标准化数据行出；批量信封、并发、错误信封、
  * 字段映射和筛选覆盖全部隐藏在实现中。
+ *
+ * 同时实现独立的维度候选值端口(issue #54):候选值查询是单项 DQE 执行,
+ * 返回真实去重候选值;上游明确拒答该查询时按能力不可用返回,不伪装成空结果。
  */
-export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
+export function createDqeGateway(
+  config: DqeGatewayConfig = {}
+): DataGateway & DimensionValuesGateway {
   const {
     endpoint = DEFAULT_DQE_ENDPOINT,
     headers = {},
@@ -247,28 +254,9 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
       if (!response.ok) {
         throw httpStatusError(response.status);
       }
-      const envelope = await response.json();
-      if (!isRecord(envelope) || envelope.retCode !== 'CBC.0000') {
-        throw new DqeGatewayError(
-          'DQE_ENVELOPE_ERROR',
-          `DQE 返回失败:${String(isRecord(envelope) ? envelope.retCode : 'INVALID')}`,
-          { retCode: isRecord(envelope) ? String(envelope.retCode) : 'INVALID' }
-        );
-      }
-      if (!Array.isArray(envelope.results) || envelope.results.length !== calls.length) {
-        throw new DqeGatewayError(
-          'DQE_ENVELOPE_ERROR',
-          `DQE results 数量与 dsl_list 不一致:期望 ${calls.length},实际 ${
-            Array.isArray(envelope.results) ? envelope.results.length : '非数组'
-          }`,
-          {
-            expected: calls.length,
-            actual: Array.isArray(envelope.results) ? envelope.results.length : describeType(envelope.results)
-          }
-        );
-      }
+      const results = envelopeResults(await response.json(), calls.length);
 
-      envelope.results.forEach((rawResult, index) => {
+      results.forEach((rawResult, index) => {
         const call = calls[index]!;
         try {
           if (!isRecord(rawResult)) {
@@ -304,23 +292,67 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
         }
       });
     } catch (cause) {
-      const error =
-        cause instanceof DqeGatewayError
-          ? cause
-          : timedOut
-            ? new DqeGatewayError(
-                'DQE_TIMEOUT',
-                `DQE 请求超过 ${timeoutMs}ms 未返回`,
-                { timeoutMs }
-              )
-            : isAbortError(cause)
-              ? new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消')
-              : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
+      const error = classifiedFetchError(cause, timedOut, timeoutMs);
       for (const call of calls) {
         settleFailure(call, error, batchId, requestId);
       }
     } finally {
       clearTimeout(timer);
+      releaseBatch();
+    }
+  }
+
+  /**
+   * 维度候选值查询:单项 DQE 执行,独立于生效查询批次——它有自己的
+   * 取消信号,不能与批内其他查询共享一个 AbortController;并发额度仍
+   * 与批量执行共享。候选值查询不是生效查询,不落查询诊断记录(issue #47
+   * 的诊断形状按生效查询声明)。
+   */
+  async function fetchDimensionValuesOnce(
+    dimension: string,
+    signal?: AbortSignal
+  ): Promise<DimensionValuesResult> {
+    if (signal?.aborted) {
+      throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
+    }
+    await acquireBatch();
+    const controller = new AbortController();
+    let timedOut = false;
+    const timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
+    const abortByCaller = () => controller.abort();
+    if (signal?.aborted) controller.abort();
+    else signal?.addEventListener('abort', abortByCaller, { once: true });
+    try {
+      const response = await fetchImpl(endpoint, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json;charset=utf-8', ...headers },
+        credentials,
+        body: JSON.stringify({ dsl_list: [dimensionValuesDqeItem(dimension)] }),
+        signal: controller.signal
+      });
+      if (!response.ok) {
+        throw httpStatusError(response.status);
+      }
+      const [result] = envelopeResults(await response.json(), 1);
+      if (!isRecord(result)) {
+        throw new DqeGatewayError(
+          'DQE_ITEM_ERROR',
+          `DQE 候选值结果必须是对象,实际是 ${describeType(result)}`,
+          { resultType: describeType(result) }
+        );
+      }
+      // 上游对候选值查询的明确拒答 = 该维度的候选值能力不可用,
+      // 不伪装成空结果;retDesc 属上游错误正文,不进入任何对象。
+      if (result.code !== 'SUCCESS') return { kind: 'unavailable' };
+      return { kind: 'values', values: dedupedDimensionValues(result.data, dimension) };
+    } catch (cause) {
+      throw classifiedFetchError(cause, timedOut, timeoutMs);
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener('abort', abortByCaller);
       releaseBatch();
     }
   }
@@ -375,10 +407,102 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
         }
       });
     },
-    async fetchDimensionValues() {
-      return [];
+    fetchDimensionValues(dimension, options) {
+      return fetchDimensionValuesOnce(dimension, options?.signal);
     }
   };
+}
+
+/**
+ * 维度候选值的 DQE 查询项:只输出目标维度、不取指标,由上游完成维度
+ * 枚举,适配器再去重。候选项不做时间收窄——候选值是维度取值域,不是
+ * 某时间窗内的出现值;真实环境协议复验归 issue #3。
+ */
+export function dimensionValuesDqeItem(dimension: string): JsonObject {
+  return {
+    output_dims: [dimension],
+    output_metrics: [],
+    filter: { dims: [], metrics: [] },
+    order: {}
+  };
+}
+
+/** 候选值提取与去重:错误只携带行号与类型事实,不回显业务值(issue #47)。 */
+function dedupedDimensionValues(data: unknown, dimension: string): string[] {
+  if (!Array.isArray(data)) {
+    throw new DqeGatewayError('DQE_ITEM_ERROR', 'DQE 候选值 data 必须是数组', {
+      dataType: describeType(data)
+    });
+  }
+  const values = new Set<string>();
+  data.forEach((row, rowIndex) => {
+    if (!isRecord(row)) {
+      throw new DqeGatewayError(
+        'DQE_ITEM_ERROR',
+        `DQE 候选值 data[${rowIndex}] 必须是对象`,
+        { rowIndex }
+      );
+    }
+    const value = row[dimension];
+    // null/缺失不是候选项;维度值以字符串呈现给筛选状态。
+    if (value === null || value === undefined) return;
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      throw new DqeGatewayError(
+        'DQE_ITEM_ERROR',
+        `DQE 候选值 data[${rowIndex}] 的维度值必须是字符串或数字`,
+        { rowIndex, valueType: describeType(value) }
+      );
+    }
+    values.add(String(value));
+  });
+  return [...values];
+}
+
+/** 校验 DQE 响应信封并返回结果项数组;信封失败按 DQE_ENVELOPE_ERROR 分类。 */
+function envelopeResults(envelope: unknown, expected: number): unknown[] {
+  if (!isRecord(envelope) || envelope.retCode !== 'CBC.0000') {
+    throw new DqeGatewayError(
+      'DQE_ENVELOPE_ERROR',
+      `DQE 返回失败:${String(isRecord(envelope) ? envelope.retCode : 'INVALID')}`,
+      { retCode: isRecord(envelope) ? String(envelope.retCode) : 'INVALID' }
+    );
+  }
+  if (!Array.isArray(envelope.results) || envelope.results.length !== expected) {
+    throw new DqeGatewayError(
+      'DQE_ENVELOPE_ERROR',
+      `DQE results 数量与 dsl_list 不一致:期望 ${expected},实际 ${
+        Array.isArray(envelope.results) ? envelope.results.length : '非数组'
+      }`,
+      {
+        expected,
+        actual: Array.isArray(envelope.results)
+          ? envelope.results.length
+          : describeType(envelope.results)
+      }
+    );
+  }
+  return envelope.results;
+}
+
+/**
+ * fetch 失败的稳定分类:已分类错误原样保留,网关自身超时(timedOut 旗标)、
+ * 外部取消(AbortError)与传输失败各有独立分类。
+ */
+function classifiedFetchError(
+  cause: unknown,
+  timedOut: boolean,
+  timeoutMs: number
+): DqeGatewayError {
+  if (cause instanceof DqeGatewayError) return cause;
+  if (timedOut) {
+    return new DqeGatewayError('DQE_TIMEOUT', `DQE 请求超过 ${timeoutMs}ms 未返回`, {
+      timeoutMs
+    });
+  }
+  if (isAbortError(cause)) {
+    return new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消');
+  }
+  return new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
 }
 
 /** 在不改变页面查询定义的前提下，克隆并覆盖当前生效筛选。 */

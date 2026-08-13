@@ -78,9 +78,6 @@ function recordingGateway(received: EffectiveQuery[]): DataGateway {
     async fetchData(query) {
       received.push(query);
       return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
-    },
-    async fetchDimensionValues() {
-      return [];
     }
   };
 }

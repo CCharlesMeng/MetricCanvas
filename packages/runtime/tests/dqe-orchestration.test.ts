@@ -102,9 +102,6 @@ describe('统一运行时编排 raw DQE 页面数据源', () => {
           ] satisfies Row[],
           totalCount: 1
         };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const filters = createFilterState();

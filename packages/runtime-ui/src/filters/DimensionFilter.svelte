@@ -1,9 +1,12 @@
 <script lang="ts">
   /**
-   * 维度筛选器(纯渲染):候选项与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。
+   * 维度筛选器(纯渲染):候选值快照与当前值由运行时传入,变更只上抛事件,不直接写筛选状态。
+   * 候选值按显式状态呈现:加载中、空结果、能力不可用与加载失败各自可区分,
+   * 不以空列表伪装任何一种(issue #54)。
    * 四种展示形态共用同一契约:select=下拉多选,tabs=tab 单选(存量 ti-tabs 场景),
    * tree=树形多选(存量 ti-treeselect 场景),search=输入过滤 + 多选(存量 ti-searchbox 场景)。
    */
+  import type { DimensionValuesSnapshot } from '@metriccanvas/runtime';
   import {
     buildFilterTree,
     nodeState as treeNodeState,
@@ -13,15 +16,29 @@
 
   interface Props {
     label?: string;
-    /** 候选维度值,运行时经数据网关查询后传入 */
-    options: string[];
+    /** 筛选候选值快照,运行时经维度候选值端口加载后传入 */
+    candidates: DimensionValuesSnapshot;
     /** 当前选中值;空数组表示不筛选 */
     value: string[];
     display?: 'select' | 'tabs' | 'tree' | 'search';
     onchange: (values: string[]) => void;
   }
 
-  let { label, options, value, display = 'select', onchange }: Props = $props();
+  let { label, candidates, value, display = 'select', onchange }: Props = $props();
+
+  const options = $derived(candidates.status === 'ready' ? candidates.values : []);
+  /** 非 ready 状态的显式提示;错误态展示分类标识,消息本身已脱值(issue #51)。 */
+  const statusText = $derived(
+    candidates.status === 'idle' || candidates.status === 'loading'
+      ? '候选项加载中…'
+      : candidates.status === 'empty'
+        ? '无候选项'
+        : candidates.status === 'unavailable'
+          ? '候选项不可用'
+          : candidates.status === 'error'
+            ? `候选项加载失败(${candidates.error.code})`
+            : null
+  );
 
   const selected = $derived(new Set(value));
 
@@ -85,6 +102,7 @@
         </button>
       {/each}
     </div>
+    {@render statusHint()}
   {:else if display === 'tree'}
     <details class="select">
       <summary>
@@ -95,7 +113,7 @@
         {#each tree as node (node.path)}
           {@render treeRow(node, 0)}
         {:else}
-          <span class="empty">候选项加载中…</span>
+          {@render statusHint()}
         {/each}
         {#if value.length > 0}
           <button type="button" class="clear" onclick={() => onchange([])}>清除筛选</button>
@@ -125,7 +143,11 @@
             <span>{option}</span>
           </label>
         {:else}
-          <span class="empty">{options.length === 0 ? '候选项加载中…' : '无匹配候选项'}</span>
+          {#if candidates.status === 'ready'}
+            <span class="empty">无匹配候选项</span>
+          {:else}
+            {@render statusHint()}
+          {/if}
         {/each}
         {#if value.length > 0}
           <button type="button" class="clear" onclick={() => onchange([])}>清除筛选</button>
@@ -149,7 +171,7 @@
             <span>{option}</span>
           </label>
         {:else}
-          <span class="empty">候选项加载中…</span>
+          {@render statusHint()}
         {/each}
         {#if value.length > 0}
           <button type="button" class="clear" onclick={() => onchange([])}>清除筛选</button>
@@ -158,6 +180,19 @@
     </details>
   {/if}
 </div>
+
+{#snippet statusHint()}
+  {#if statusText}
+    <span
+      class="empty"
+      class:failed={candidates.status === 'error'}
+      role={candidates.status === 'error' ? 'alert' : 'status'}
+      data-candidates-status={candidates.status}
+    >
+      {statusText}
+    </span>
+  {/if}
+{/snippet}
 
 {#snippet treeRow(node: FilterTreeNode, depth: number)}
   {@const state = nodeState(node)}
@@ -306,6 +341,9 @@
   .empty {
     padding: 6px 8px;
     color: #a1a1aa;
+  }
+  .empty.failed {
+    color: #b91c1c;
   }
   .clear {
     margin-top: 4px;

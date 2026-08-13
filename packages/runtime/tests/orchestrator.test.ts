@@ -91,9 +91,6 @@ describe('页面数据源快照编排', () => {
       async fetchData(query) {
         received.push(query);
         return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const pushes: PageDataSnapshots[] = [];
@@ -128,9 +125,6 @@ describe('页面数据源快照编排', () => {
       async fetchData(query) {
         received.push(query);
         return { rows: [], totalCount: 0 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const unsubscribe = orchestrate(page(), gateway, filters).subscribe(() => {});
@@ -164,9 +158,6 @@ describe('页面数据源快照编排', () => {
       async fetchData() {
         calls += 1;
         return { rows: [{ region: '动态', revenue: 20 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const initialPushes: PageDataSnapshots[] = [];
@@ -224,9 +215,6 @@ describe('页面数据源快照编排', () => {
     const stream = orchestrate(document, {
       async fetchData() {
         throw new Error('查询失败');
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     }, filters);
     const unsubscribe = stream.subscribe((value) => pushes.push(value));
@@ -254,9 +242,6 @@ describe('页面数据源快照编排', () => {
         async fetchData() {
           // 按结构携带分类,不依赖 DqeGatewayError 类(自定义网关同样成立)。
           throw Object.assign(new Error(`分类 ${code} 的脱值消息`), { code });
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       };
       const pushes: PageDataSnapshots[] = [];
@@ -289,9 +274,6 @@ describe('页面数据源快照编排', () => {
       const gateway: DataGateway = {
         async fetchData() {
           throw thrown;
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       };
       const filters = createFilterState();
@@ -337,9 +319,6 @@ describe('页面数据源快照编排', () => {
         return offset >= 25
           ? { rows: [], totalCount: 25 }
           : { rows: [{ region: `第${offset / 10 + 1}页`, revenue: offset }], totalCount: 25 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const filters = createFilterState();
@@ -382,9 +361,6 @@ describe('页面数据源快照编排', () => {
       async fetchData(_query, diagnosticContext) {
         contexts.push(diagnosticContext);
         return { rows: [{ region: '华东', revenue: 42 }], totalCount: 1 };
-      },
-      async fetchDimensionValues() {
-        return [];
       }
     };
     const document = page();

@@ -33,6 +33,9 @@ export interface QueryDiagnosticContext {
  * 数据网关 (Data Gateway):运行时的取数端口——生效查询进、标准化行与可选总条数出。
  * 按意图命名,不按实现方命名;适配器在 @metriccanvas/data-gateway,应用壳注入。
  * 当前 query 场景由 DQE 适配器实现；inline 静态场景不访问该端口。
+ *
+ * 主查询执行不假定数据源支持筛选候选值:候选值查询是独立端口
+ * DimensionValuesGateway,数据网关可以选择性实现(issue #54)。
  */
 export interface DataGateway {
   /**
@@ -46,10 +49,33 @@ export interface DataGateway {
     query: EffectiveQuery,
     diagnosticContext?: QueryDiagnosticContext
   ): Promise<DataGatewayResult>;
-  /**
-   * 维度候选值查询:维度筛选器候选项的唯一来源。
-   * 候选项是业务数据(随数据演化),不进入 Schema Metadata。
-   * 适配器尚未声明候选值查询时可返回空数组。
-   */
-  fetchDimensionValues(dimension: string): Promise<string[]>;
 }
+
+/**
+ * 维度候选值查询的成功结果:真实去重候选值,或该维度的候选值能力不可用。
+ * 不可用是显式结果而不是空数组——空数组只表示查询成功且候选为空(issue #54)。
+ */
+export type DimensionValuesResult =
+  | { kind: 'values'; values: string[] }
+  | { kind: 'unavailable' };
+
+/**
+ * 维度候选值端口 (Dimension Values Gateway):维度筛选器候选项的唯一来源。
+ * 候选项是业务数据(随数据演化),不进入 Schema Metadata。
+ *
+ * 独立于主查询执行端口:不支持候选值的数据网关不实现本接口(能力缺席即
+ * 不可用),实现方也可以按维度返回 `unavailable`。执行失败的拒绝原因与
+ * fetchData 同纪律:错误对象 `code` 取 QueryErrorCode 封闭集(issue #51),
+ * 错误消息与 detail 不携带候选值、筛选值、Secret 或上游响应正文(issue #47)。
+ */
+export interface DimensionValuesGateway {
+  fetchDimensionValues(
+    dimension: string,
+    options?: { signal?: AbortSignal }
+  ): Promise<DimensionValuesResult>;
+}
+
+/**
+ * 应用壳注入统一运行时的数据网关形状:主查询执行必备,候选值能力可选。
+ */
+export type RuntimeDataGateway = DataGateway & Partial<DimensionValuesGateway>;

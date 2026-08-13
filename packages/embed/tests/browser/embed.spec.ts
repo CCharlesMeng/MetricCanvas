@@ -552,9 +552,6 @@ test('查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主�
           dataGateway: {
             async fetchData() {
               throw Object.assign(new Error(message), { code });
-            },
-            async fetchDimensionValues() {
-              return [];
             }
           },
           onEvent(event) {
@@ -735,9 +732,6 @@ test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层'
       dataGateway: {
         async fetchData() {
           return pendingData;
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       }
     });
@@ -828,9 +822,6 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       dataGateway: {
         async fetchData() {
           return pendingData;
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       }
     });
@@ -1207,9 +1198,6 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
               pendingFlowData: Promise<DataGatewayResult>;
             }
           ).pendingFlowData;
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       }
     });
@@ -1237,9 +1225,6 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       dataGateway: {
         async fetchData() {
           return { rows: [], totalCount: 0 };
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       }
     });
@@ -1266,9 +1251,6 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       dataGateway: {
         async fetchData() {
           throw new Error('流水数据网关测试错误');
-        },
-        async fetchDimensionValues() {
-          return [];
         }
       }
     });
