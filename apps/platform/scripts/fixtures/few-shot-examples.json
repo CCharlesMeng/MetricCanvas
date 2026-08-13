@@ -1,0 +1,59 @@
+{
+  "$comment": "few-shot 提示词示例的唯一真源:探针脚本(apps/platform/scripts/probe-nl-to-unit.ts)从这里程序化渲染提示词内的输出示例。few-shot 样本与评测样本(seed-questions.json、golden-questions.json)物理分离,守卫测试(apps/platform/tests/ask/golden-questions.test.ts)断言问题交集为空——同一批样本既当示例又当考题时,准确率数字没有意义(ADR-0037)。",
+  "examples": [
+    {
+      "question": "上个月各模型的Tokens请求量是多少?",
+      "toolArguments": {
+        "status": "answer",
+        "unit": {
+          "domain": "运营分析",
+          "metrics": ["Tokens请求量"],
+          "groupBy": ["模型"],
+          "filters": [],
+          "time": { "granularity": "month", "range": "上个月" }
+        }
+      }
+    },
+    {
+      "question": "今年金融行业每个月流失了多少客户?",
+      "toolArguments": {
+        "status": "answer",
+        "unit": {
+          "domain": "客户经营",
+          "metrics": ["流失客户数"],
+          "groupBy": ["统计周期"],
+          "filters": [{ "dimension": "行业", "values": ["金融"] }],
+          "time": { "granularity": "month", "range": "今年以来" }
+        }
+      }
+    },
+    {
+      "question": "上季度的员工离职率是多少?",
+      "toolArguments": {
+        "status": "reject",
+        "reject": { "reason": "语义面中没有员工离职率相关指标,无法取数" }
+      }
+    },
+    {
+      "question": "最近业务增长得怎么样?",
+      "toolArguments": {
+        "status": "clarify",
+        "clarify": {
+          "question": "「增长」可以指哪个口径?请从候选中选择。",
+          "candidates": [
+            {
+              "domain": "客户经营",
+              "metric": "新增客户数",
+              "reason": "统计期内新增签约的客户数"
+            },
+            {
+              "domain": "运营分析",
+              "metric": "Tokens消耗量",
+              "reason": "Token 用量规模的增长趋势"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

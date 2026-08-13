@@ -3,11 +3,14 @@
  *
  * 单次模型调用(不走多轮工具循环、不碰 agent/runner.ts),验证模型能否在
  * 语义面闭集内把一句话自然语言问题填成结构化取数单元(CONTEXT.md、ADR-0032)。
- * 闭集提示词从 tools/dqe-sim/src/semantic-surface.ts 程序化渲染(真元归一),
- * 种子样本在 fixtures/seed-questions.json,与提示词内的 few-shot 示例物理分开。
+ * 闭集提示词从 tools/dqe-sim/src/semantic-surface.ts 程序化渲染(真元归一);
+ * few-shot 示例从 fixtures/few-shot-examples.json 渲染,与评测样本物理分开
+ * (混用防护由 tests/ask/golden-questions.test.ts 的守卫断言承担)。
  *
  * 运行(按需,不进 pnpm test / CI):
  *   pnpm exec tsx --env-file=apps/platform/.env apps/platform/scripts/probe-nl-to-unit.ts
+ *   # 黄金问题集评测(#69):同一脚本换评测 fixture
+ *   pnpm exec tsx --env-file=apps/platform/.env apps/platform/scripts/probe-nl-to-unit.ts --fixture golden-questions.json
  *
  * 输出:逐条判定 + 命中率汇总打印,JSON 报告写入仓库根 .learnings/(未被 git 跟踪)。
  * 无 Key 时优雅跳过(退出码 0)。报告与日志不得出现 DEEPSEEK_API_KEY 的值,
@@ -58,18 +61,25 @@ type SeedCategory = 'direct' | 'clarify' | 'no_metric' | 'cross_domain';
 
 interface SeedExpectation {
   status: ProbeStatus;
+  /** 可接受的替代状态(如跨域样本 reject 之外也接受 clarify)。 */
   altStatuses?: ProbeStatus[];
   domain?: string;
   metrics?: string[];
   groupBy?: string[];
+  /** 可接受的替代分组(多数问题有多个正确解,ADR-0037)。 */
+  altGroupBy?: string[][];
   filters?: ProbeFilter[];
   granularity?: TimeGranularity;
+  /** 期望时间口径的业务语言表述(黄金问题集,#69);探针不判定具体日期。 */
+  timeScope?: string;
   clarifyCandidateDomains?: string[];
 }
 
 interface SeedSample {
   id: string;
   category: SeedCategory;
+  /** 难度标签(黄金问题集,#69);种子样本可缺省。 */
+  difficulty?: 'easy' | 'medium' | 'hard';
   question: string;
   note: string;
   expected: SeedExpectation;
@@ -134,24 +144,30 @@ function renderClosedSet(): string {
 }
 
 /**
- * few-shot 示例只放在提示词里,问题与 fixtures/seed-questions.json 的种子样本
- * 物理分开,不得混用同一批问题。
+ * few-shot 示例从 fixtures/few-shot-examples.json 渲染(唯一真源):
+ * 提示词示例与评测样本物理分开,不得混用同一批问题。
  */
-const FEW_SHOT_EXAMPLES = `问题:「上个月各模型的Tokens请求量是多少?」
-工具参数:
-{"status":"answer","unit":{"domain":"运营分析","metrics":["Tokens请求量"],"groupBy":["模型"],"filters":[],"time":{"granularity":"month","range":"上个月"}}}
+interface FewShotExample {
+  question: string;
+  toolArguments: Record<string, unknown>;
+}
 
-问题:「今年金融行业每个月流失了多少客户?」
-工具参数:
-{"status":"answer","unit":{"domain":"客户经营","metrics":["流失客户数"],"groupBy":["统计周期"],"filters":[{"dimension":"行业","values":["金融"]}],"time":{"granularity":"month","range":"今年以来"}}}
+function loadFewShotExamples(): FewShotExample[] {
+  const fixturePath = join(scriptDir, 'fixtures', 'few-shot-examples.json');
+  const parsed = JSON.parse(readFileSync(fixturePath, 'utf8')) as {
+    examples: FewShotExample[];
+  };
+  return parsed.examples;
+}
 
-问题:「上季度的员工离职率是多少?」
-工具参数:
-{"status":"reject","reject":{"reason":"语义面中没有员工离职率相关指标,无法取数"}}
-
-问题:「最近业务增长得怎么样?」
-工具参数:
-{"status":"clarify","clarify":{"question":"「增长」可以指哪个口径?请从候选中选择。","candidates":[{"domain":"客户经营","metric":"新增客户数","reason":"统计期内新增签约的客户数"},{"domain":"运营分析","metric":"Tokens消耗量","reason":"Token 用量规模的增长趋势"}]}}`;
+function renderFewShotExamples(): string {
+  return loadFewShotExamples()
+    .map(
+      (example) =>
+        `问题:「${example.question}」\n工具参数:\n${JSON.stringify(example.toolArguments)}`
+    )
+    .join('\n\n');
+}
 
 function buildSystemPrompt(): string {
   return `你是 MetricCanvas(指标画布)的数据分析助手。用户会用一句话提出数据问题,你需要把它解析为一个结构化的「取数单元」:业务域、指标、维度分组、筛选条件、时间范围与粒度。
@@ -173,7 +189,7 @@ ${renderClosedSet()}
 
 ## 输出示例(与用户问题无关,仅演示输出形状)
 
-${FEW_SHOT_EXAMPLES}`;
+${renderFewShotExamples()}`;
 }
 
 const submitTool: ToolDefinition = {
@@ -542,11 +558,20 @@ function judgeSample(sample: SeedSample, output: ProbeOutput | null, parseSource
       );
     }
     const actualGroupBy = unit.groupBy.map((name) => canonicalDimension(domain, name) ?? name);
-    judgment.dimensionHit = sameSet(actualGroupBy, expected.groupBy ?? []);
+    const acceptableGroupBys = [expected.groupBy ?? [], ...(expected.altGroupBy ?? [])];
+    judgment.dimensionHit = acceptableGroupBys.some((groupBy) =>
+      sameSet(actualGroupBy, groupBy)
+    );
     if (!judgment.dimensionHit) {
       judgment.notes.push(
-        `维度分组偏差:期望 [${(expected.groupBy ?? []).join('、')}],实际 [${unit.groupBy.join('、')}]`
+        `维度分组偏差:期望 [${(expected.groupBy ?? []).join('、')}]` +
+          (expected.altGroupBy !== undefined && expected.altGroupBy.length > 0
+            ? `(替代 ${expected.altGroupBy.map((alt) => `[${alt.join('、')}]`).join(' / ')})`
+            : '') +
+          `,实际 [${unit.groupBy.join('、')}]`
       );
+    } else if (!sameSet(actualGroupBy, expected.groupBy ?? [])) {
+      judgment.notes.push('以可接受的替代分组命中');
     }
     judgment.filtersHit = sameSet(
       unit.filters.map((filter) => normalizeFilter(domain, filter)),
@@ -708,10 +733,24 @@ function collectWeaknesses(judgments: SampleJudgment[]): WeaknessEntry[] {
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(scriptDir, '..', '..', '..');
 
-function loadSeeds(): SeedSample[] {
-  const fixturePath = join(scriptDir, 'fixtures', 'seed-questions.json');
-  const parsed = JSON.parse(readFileSync(fixturePath, 'utf8')) as { samples: SeedSample[] };
-  return parsed.samples;
+/** 评测 fixture 按文件名选择(默认种子样本;黄金问题集传 golden-questions.json)。 */
+function resolveFixtureName(argv: string[]): string {
+  const flagIndex = argv.indexOf('--fixture');
+  if (flagIndex === -1) return 'seed-questions.json';
+  const name = argv[flagIndex + 1];
+  if (name === undefined || name.startsWith('--')) {
+    throw new Error('用法:probe-nl-to-unit.ts [--fixture <fixtures 下的评测样本文件名>]');
+  }
+  return name;
+}
+
+function loadSamples(fixtureName: string): { samples: SeedSample[]; version: string | null } {
+  const fixturePath = join(scriptDir, 'fixtures', fixtureName);
+  const parsed = JSON.parse(readFileSync(fixturePath, 'utf8')) as {
+    samples: SeedSample[];
+    version?: string;
+  };
+  return { samples: parsed.samples, version: parsed.version ?? null };
 }
 
 async function callModel(provider: ModelProvider, systemPrompt: string, question: string) {
@@ -762,12 +801,19 @@ async function main(): Promise<void> {
     baseUrl: config.baseUrl
   });
   const systemPrompt = buildSystemPrompt();
-  const seeds = loadSeeds();
-  console.log(`[probe] 模型:deepseek / ${config.model};种子样本 ${seeds.length} 条`);
+  const fixtureName = resolveFixtureName(process.argv.slice(2));
+  const { samples: seeds, version: fixtureVersion } = loadSamples(fixtureName);
+  console.log(
+    `[probe] 模型:deepseek / ${config.model};评测 fixture:${fixtureName}` +
+      `${fixtureVersion === null ? '' : `(${fixtureVersion})`},样本 ${seeds.length} 条`
+  );
 
   const judgments: SampleJudgment[] = [];
   for (const [index, sample] of seeds.entries()) {
-    console.log(`\n[${index + 1}/${seeds.length}] ${sample.id}(${sample.category})「${sample.question}」`);
+    console.log(
+      `\n[${index + 1}/${seeds.length}] ${sample.id}(${sample.category}` +
+        `${sample.difficulty === undefined ? '' : `/${sample.difficulty}`})「${sample.question}」`
+    );
     let judgment: SampleJudgment;
     try {
       const response = await callModel(provider, systemPrompt, sample.question);
@@ -840,6 +886,8 @@ async function main(): Promise<void> {
   const report = {
     generatedAt: new Date().toISOString(),
     script: 'apps/platform/scripts/probe-nl-to-unit.ts',
+    // 评测资产版本随报告落盘,准确率历史才可比较(ADR-0037)。
+    fixture: { name: fixtureName, version: fixtureVersion },
     model: { provider: config.provider, model: config.model, baseUrl: config.baseUrl },
     semanticSurfaceDomains: semanticSurface.map((domain) => domain.name),
     summary,

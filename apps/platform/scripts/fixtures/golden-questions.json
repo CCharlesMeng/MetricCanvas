@@ -1,0 +1,148 @@
+{
+  "$comment": "黄金问题集 V0(#69,ADR-0037):评测专用样本,10 条按 ADR-0037 配额覆盖四类(direct=直答 60% / clarify=需澄清 20% / no_metric=无指标缺口 10% / cross_domain=跨域近义易混 10%)。expected 中的域/指标/维度/取值/粒度一律使用语义面规范名(tools/dqe-sim/src/semantic-surface.ts,真元归一,由守卫测试与语义面程序化比对);expected.timeScope 是期望时间口径的业务语言表述,默认约定为『完整自然周期、以评测时钟为锚』——「本月」是否到昨天、「同比」比同月还是同期累计等默认约定待业务侧确认(ADR-0037 Consequences)。可接受的替代答案以 expected.altStatuses(可接受的替代状态)与 expected.altGroupBy(可接受的替代分组)结构化表达。本文件是评测样本,与 few-shot-examples.json(提示词示例)物理分离,守卫测试(apps/platform/tests/ask/golden-questions.test.ts)断言两份文件的问题交集为空。评测资产版本化:改动样本须递增 version 并在 $changelog 留痕,否则准确率历史不可比较。",
+  "version": "v0",
+  "$changelog": ["v0(2026-08-13):首版 10 条,#69 构造"],
+  "samples": [
+    {
+      "id": "gq-direct-1",
+      "category": "direct",
+      "difficulty": "easy",
+      "question": "上个月各区域的Tokens请求量是多少?",
+      "note": "直答:运营分析域,单维度分组,指标规范名直接命中",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["Tokens请求量"],
+        "groupBy": ["区域"],
+        "filters": [],
+        "granularity": "month",
+        "timeScope": "上个月"
+      }
+    },
+    {
+      "id": "gq-direct-2",
+      "category": "direct",
+      "difficulty": "easy",
+      "question": "今年以来每个月的新增客户数走势如何?",
+      "note": "直答:客户经营域,按时间维度展开的趋势问法",
+      "expected": {
+        "status": "answer",
+        "domain": "客户经营",
+        "metrics": ["新增客户数"],
+        "groupBy": ["统计周期"],
+        "filters": [],
+        "granularity": "month",
+        "timeScope": "今年以来"
+      }
+    },
+    {
+      "id": "gq-direct-3",
+      "category": "direct",
+      "difficulty": "medium",
+      "question": "上个月各行业的在册客户数是多少?",
+      "note": "直答(别名归一):「在册客户数」是客户经营域「客户数」的别名,输出必须用规范名;「行业」维度仅客户经营域有,足以判域,不应过度澄清",
+      "expected": {
+        "status": "answer",
+        "domain": "客户经营",
+        "metrics": ["客户数"],
+        "groupBy": ["行业"],
+        "filters": [],
+        "granularity": "month",
+        "timeScope": "上个月"
+      }
+    },
+    {
+      "id": "gq-direct-4",
+      "category": "direct",
+      "difficulty": "medium",
+      "question": "最近6个月华东的计费Tokens量每月是多少?",
+      "note": "直答(取值筛选):「华东」是区域维度的取值,应进 filters 而不是 groupBy;按月展开时间维度",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["计费Tokens量"],
+        "groupBy": ["统计周期"],
+        "filters": [{ "dimension": "区域", "values": ["华东"] }],
+        "granularity": "month",
+        "timeScope": "最近6个月",
+        "altGroupBy": [["统计周期", "区域"]]
+      }
+    },
+    {
+      "id": "gq-direct-5",
+      "category": "direct",
+      "difficulty": "medium",
+      "question": "上个月各客户级别的新增客户数和流失客户数是多少?",
+      "note": "直答(多指标):同域两个指标共用一个取数单元与同一维度分组",
+      "expected": {
+        "status": "answer",
+        "domain": "客户经营",
+        "metrics": ["新增客户数", "流失客户数"],
+        "groupBy": ["客户级别"],
+        "filters": [],
+        "granularity": "month",
+        "timeScope": "上个月"
+      }
+    },
+    {
+      "id": "gq-direct-6",
+      "category": "direct",
+      "difficulty": "hard",
+      "question": "今年以来多模态大模型每个月的用量趋势怎么样?",
+      "note": "直答(别名+取值筛选+趋势):「用量」是「Tokens消耗量」的别名,「多模态大模型」是模型维度的取值,应进 filters",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": ["Tokens消耗量"],
+        "groupBy": ["统计周期"],
+        "filters": [{ "dimension": "模型", "values": ["多模态大模型"] }],
+        "granularity": "month",
+        "timeScope": "今年以来",
+        "altGroupBy": [["统计周期", "模型"]]
+      }
+    },
+    {
+      "id": "gq-clarify-1",
+      "category": "clarify",
+      "difficulty": "medium",
+      "question": "6月份的客户数是多少?",
+      "note": "需澄清:「客户数」在运营分析(在用调用口径)与客户经营(期末在册口径)两域近义不同义,问题无任何域内线索,擅自选一个口径直接回答即为错",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": ["运营分析", "客户经营"]
+      }
+    },
+    {
+      "id": "gq-clarify-2",
+      "category": "clarify",
+      "difficulty": "hard",
+      "question": "上半年客户数是多少?",
+      "note": "需澄清:同为两域「客户数」歧义,叠加「上半年」时间口径换算仍不构成域内线索",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": ["运营分析", "客户经营"]
+      }
+    },
+    {
+      "id": "gq-gap-1",
+      "category": "no_metric",
+      "difficulty": "medium",
+      "question": "上个月的平均客单价是多少?",
+      "note": "无指标缺口:语义面无任何价格/金额类指标,应拒答并走缺口登记路径,不得用相近指标凑数或编造数据",
+      "expected": {
+        "status": "reject"
+      }
+    },
+    {
+      "id": "gq-cross-1",
+      "category": "cross_domain",
+      "difficulty": "hard",
+      "question": "各模型的新增客户数是多少?",
+      "note": "跨域近义易混:「模型」维度属运营分析,「新增客户数」指标属客户经营,同一取数单元不能跨域组合,应拒答(澄清亦可接受),绝不能丢掉维度硬答",
+      "expected": {
+        "status": "reject",
+        "altStatuses": ["clarify"]
+      }
+    }
+  ]
+}
