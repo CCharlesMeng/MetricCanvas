@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MetricCanvas 问数工作台 · 原型 v3(增强批次)</title>
+    <!--
+      原型 v3,用后即弃。承接 ask-workbench.v2 的产品原型惯例:自包含假产品,
+      可真实操作。呈现 PRD #85 v2 增强批次落进工作台后的完整体验:
+      空状态示例 / 输入联想 / 口径卡控制面板(时间chips·筛选直改·原地重跑) /
+      派生度量(公司口径) / 三层信任(验证参照·琥珀临时口径) / 消歧预选 /
+      建议追问 / 编辑原问题 / 提名已验证查询 / 转人工评审回执 / 本地排序 /
+      治理收件箱。无构建、无依赖、无网络、无持久化。
+    -->
+    <style>
+      :root {
+        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7; --line-soft: #f4f4f5;
+        --text: #18181b; --muted: #71717a; --faint: #a1a1aa;
+        --accent: #4f46e5; --accent-soft: #eef2ff;
+        --warn-bg: #fffbeb; --warn-line: #fde68a; --warn-text: #92400e;
+        --ok: #16a34a; --vq: #166534; --vq-bg: #f0fdf4; --vq-line: #bbf7d0;
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+      body { margin: 0; color: var(--text); background: var(--bg); font-size: 13px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased; }
+      button, input, select, textarea { font: inherit; color: inherit; }
+      button { cursor: pointer; }
+      h1,h2,h3,h4,p,dl,dd,ol,ul { margin: 0; }
+      ol, ul { padding: 0; list-style: none; }
+      code { font-size: 11.5px; color: #52525b; }
+
+      .topbar { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
+      .topbar b { color: #fff; font-size: 14px; }
+      .topbar > span { color: #a1a1aa; }
+      .topbar .nav { display: flex; gap: 6px; margin-left: 18px; }
+      .topbar .nav button { padding: 5px 12px; color: #d4d4d8; background: none; border: 1px solid #3f3f46; border-radius: 999px; font-size: 12px; }
+      .topbar .nav button.on { color: #fff; background: #3f3f46; }
+      .topbar .who { margin-left: auto; display: flex; align-items: center; gap: 8px; color: #a1a1aa; font-size: 12px; }
+      .topbar .avatar { display: grid; width: 24px; height: 24px; place-items: center; color: #fff; background: var(--accent); border-radius: 999px; font-size: 11px; }
+      .proto-pill { padding: 2px 9px; background: #7f1d1d; color: #fecaca; border-radius: 999px; font-size: 10.5px; }
+
+      .shell { display: grid; grid-template-columns: 340px minmax(0,1fr); height: calc(100% - 54px); }
+      .chat { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: var(--surface); border-right: 1px solid var(--line); }
+      .chat > header { display: flex; align-items: flex-start; justify-content: space-between; padding: 14px 18px 10px; border-bottom: 1px solid var(--line-soft); }
+      .eyebrow { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+      .chat h1 { margin-top: 3px; font-size: 15px; }
+      .chip { padding: 2px 8px; color: #52525b; background: var(--line-soft); border-radius: 999px; font-size: 11px; }
+      .thread { display: flex; flex: 1; flex-direction: column; gap: 13px; min-height: 0; padding: 14px 18px; overflow-y: auto; }
+
+      /* 空状态 */
+      .empty-block { display: grid; gap: 10px; }
+      .empty-block h6 { color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+      .examples { display: grid; gap: 6px; }
+      .examples button { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 8px 11px; background: #fafafa; border: 1px solid var(--line); border-radius: 10px; text-align: left; font-size: 12px; }
+      .examples button:hover { border-color: var(--accent); background: #fafaff; }
+      .examples .vq-mini { flex: none; padding: 1px 6px; color: var(--vq); background: var(--vq-bg); border-radius: 999px; font-size: 9.5px; }
+      .domains { padding: 10px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 10px; color: #3f3f46; font-size: 11.5px; line-height: 1.8; }
+      .domains b { font-size: 11.5px; }
+
+      /* 消息 */
+      .ask-row { display: flex; justify-content: flex-end; align-items: flex-start; gap: 6px; }
+      .ask-bubble { max-width: 86%; padding: 8px 12px; color: #fff; background: var(--accent); border-radius: 12px 12px 3px 12px; font-size: 13px; line-height: 1.6; }
+      .pencil { flex: none; margin-top: 6px; padding: 2px 5px; color: var(--faint); background: none; border: 0; font-size: 12px; opacity: 0; transition: opacity .15s; }
+      .ask-row:hover .pencil { opacity: 1; }
+      .revised { opacity: .5; }
+      .revised-tag { align-self: flex-end; color: var(--faint); font-size: 10.5px; }
+      .reply { display: grid; gap: 9px; }
+      .reply-text { font-size: 12.5px; line-height: 1.7; }
+
+      /* 时间线 */
+      .steps { display: grid; gap: 3px; }
+      .steps li { display: grid; grid-template-columns: 16px minmax(0,1fr); gap: 8px; align-items: baseline; font-size: 12px; }
+      .steps .ico { color: var(--faint); font-size: 11px; }
+      .steps .ok { color: var(--ok); font-weight: 700; }
+      .steps small { color: var(--muted); }
+      .spinner { display: inline-block; width: 9px; height: 9px; border: 1.5px solid #c7d2fe; border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -1px; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .linkish { padding: 0; color: #6366f1; background: none; border: 0; font-size: 11.5px; cursor: pointer; }
+      .steps-wrap { margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--line); }
+
+      /* 卡片 */
+      .card { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .card.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+      .card-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .05em; }
+      .pill { flex: none; padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+      .pill.warn { color: var(--warn-text); background: #fef3c7; }
+      .pill.vq { color: var(--vq); background: var(--vq-bg); border: 1px solid var(--vq-line); font-weight: 600; }
+      .kv { display: grid; gap: 6px; }
+      .kv > div { display: grid; grid-template-columns: 46px minmax(0,1fr); gap: 8px; }
+      .kv dt { color: var(--faint); font-size: 11px; }
+      .kv dd { font-size: 12px; line-height: 1.55; }
+      .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+      .tchip { padding: 3px 10px; background: #fff; border: 1px solid #d4d4d8; border-radius: 999px; font-size: 11px; color: #3f3f46; cursor: pointer; }
+      .tchip:hover { border-color: var(--accent); color: var(--accent); }
+      .tchip.on { border-color: var(--accent); color: var(--accent); font-weight: 650; background: #fafaff; }
+      .fchip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; background: #fff; border: 1px solid #d4d4d8; border-radius: 7px; font-size: 11px; }
+      .fchip select { border: 0; background: none; font-size: 11px; color: var(--accent); font-weight: 650; outline: none; cursor: pointer; }
+      .rerun-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); }
+      .rerun { padding: 5px 12px; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 8px; font-size: 11.5px; font-weight: 650; cursor: pointer; }
+      .rerun.ghost { color: #3f3f46; background: #fff; border-color: #d4d4d8; }
+      .note { color: var(--muted); font-size: 10.5px; line-height: 1.6; }
+      .derived-def { margin-top: 4px; padding: 7px 9px; background: #fff; border: 1px dashed #c7d2fe; border-radius: 8px; font-size: 11px; color: #4338ca; line-height: 1.6; }
+
+      /* 候选卡 */
+      .cand label { display: flex; align-items: flex-start; gap: 8px; padding: 5px 0; cursor: pointer; }
+      .cand label span { display: grid; gap: 2px; }
+      .cand b { font-size: 12.5px; }
+      .cand small { color: var(--muted); font-size: 11px; line-height: 1.5; }
+      .cand input { margin-top: 3px; accent-color: var(--accent); }
+      .cand input:checked + span b { color: var(--accent); }
+      .last-pick { margin-left: 5px; padding: 1px 7px; background: var(--accent-soft); color: #3730a3; border-radius: 999px; font-size: 9.5px; }
+
+      details.explain { border: 1px solid var(--line-soft); border-radius: 9px; padding: 7px 10px; background: #fff; }
+      details.explain summary { color: #6366f1; font-size: 11px; cursor: pointer; }
+      details.explain div { margin-top: 6px; color: var(--muted); font-size: 11px; line-height: 1.7; }
+
+      .suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+      .suggest button { padding: 4px 11px; background: #fff; border: 1px solid #c7d2fe; border-radius: 999px; color: #4338ca; font-size: 11.5px; }
+      .suggest button:hover { background: var(--accent-soft); }
+      .actions { display: flex; flex-wrap: wrap; gap: 6px; }
+      .actions button { padding: 4px 10px; background: #fff; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 11px; color: #52525b; }
+      .actions button:hover { border-color: var(--faint); }
+      .receipt { padding: 9px 11px; background: var(--vq-bg); border: 1px solid var(--vq-line); border-radius: 10px; font-size: 11.5px; color: var(--vq); line-height: 1.6; }
+
+      /* 输入区 */
+      .composer { position: relative; display: grid; gap: 8px; padding: 12px 18px 14px; border-top: 1px solid var(--line-soft); }
+      .composer textarea { width: 100%; padding: 9px 11px; border: 1px solid #d4d4d8; border-radius: 10px; resize: none; font-size: 12.5px; transition: border-color .15s, box-shadow .15s; }
+      .composer textarea:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgb(99 102 241 / .12); }
+      .composer .send { justify-self: end; padding: 6px 14px; background: #fff; border: 1px solid #d4d4d8; border-radius: 9px; font-size: 12px; font-weight: 600; }
+      .composer .send:disabled { opacity: .45; cursor: not-allowed; }
+      .ac { position: absolute; bottom: calc(100% - 4px); left: 18px; right: 18px; z-index: 40; background: #fff; border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 -8px 30px rgb(24 24 27 / .12); overflow: hidden; }
+      .ac .grp { padding: 5px 12px 3px; color: var(--faint); font-size: 9.5px; letter-spacing: .06em; text-transform: uppercase; background: #fafafa; }
+      .ac .it { display: flex; justify-content: space-between; gap: 8px; width: 100%; padding: 6px 12px; background: none; border: 0; text-align: left; font-size: 12px; }
+      .ac .it:hover { background: var(--accent-soft); }
+      .ac .it small { color: var(--faint); font-size: 10.5px; }
+
+      /* 中栏 */
+      main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+      .docbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+      .docbar .l, .docbar .r { display: flex; align-items: center; gap: 10px; }
+      .badge { padding: 3px 9px; color: #92400e; background: #fef3c7; border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .stat { color: var(--muted); font-size: 12px; }
+      .btn { padding: 6px 12px; background: #fff; border: 1px solid #d4d4d8; border-radius: 9px; font-size: 12px; font-weight: 600; }
+      .btn:hover { border-color: var(--faint); }
+      .scroll { flex: 1; min-height: 0; padding: 18px; overflow-y: auto; }
+      .canvas-grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 12px; }
+      .cell { grid-column: span var(--span,12); min-width: 0; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; }
+      .cell-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+      .cell-head h4 { font-size: 12.5px; font-weight: 650; }
+      .bars { display: grid; gap: 7px; }
+      .bars li { display: grid; grid-template-columns: 40px minmax(0,1fr) 110px; gap: 8px; align-items: center; font-size: 11.5px; }
+      .bars .bar { position: relative; height: 15px; background: var(--line-soft); border-radius: 4px; overflow: hidden; }
+      .bars .bar i { position: absolute; inset: 0 auto 0 0; background: var(--accent); border-radius: 4px; transition: width .5s; }
+      .bars .vl { color: var(--muted); text-align: right; white-space: nowrap; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); text-align: right; font-size: 12px; white-space: nowrap; }
+      th { color: var(--muted); font-weight: 600; font-size: 11px; cursor: pointer; user-select: none; }
+      th:hover { color: var(--accent); }
+      th:first-child, td:first-child { text-align: left; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .up { color: var(--ok); } .down { color: #dc2626; }
+      .kpi { font-size: 26px; font-weight: 700; letter-spacing: -.02em; }
+      .empty-canvas { display: grid; place-content: center; min-height: 50vh; text-align: center; color: var(--muted); }
+      .empty-canvas h2 { margin-bottom: 8px; font-size: 17px; color: #3f3f46; }
+
+      /* 收件箱视图 */
+      .inbox-view { max-width: 860px; margin: 0 auto; display: grid; gap: 16px; }
+      .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+      .panel > header { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); }
+      .panel > header b { font-size: 13px; }
+      .panel > header small { color: var(--faint); font-size: 11px; }
+      .rows > div { display: grid; grid-template-columns: minmax(0,1.6fr) auto auto; gap: 12px; align-items: center; padding: 10px 16px; border-bottom: 1px solid var(--line-soft); }
+      .rows > div:last-child { border-bottom: 0; }
+      .rows b { font-size: 12.5px; }
+      .rows small { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+      .count-pill { padding: 2px 9px; background: #fef3c7; color: var(--warn-text); border-radius: 999px; font-size: 11px; font-weight: 700; }
+      .adopted { color: var(--ok); font-size: 11.5px; font-weight: 650; }
+
+      .toast { position: fixed; bottom: 22px; left: 50%; z-index: 90; padding: 9px 16px; color: #fafafa; background: #18181b; border-radius: 999px; box-shadow: 0 10px 30px rgb(9 9 11 / .3); font-size: 12.5px; transform: translateX(-50%); }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>MetricCanvas</b>
+      <span>问数工作台</span>
+      <div class="nav">
+        <button id="nav-ask" class="on">问数</button>
+        <button id="nav-inbox">治理收件箱 <span id="inbox-count" style="color:#fbbf24">3</span></button>
+      </div>
+      <div class="who"><span class="proto-pill">原型 v3 · 假数据</span><span class="avatar">孟</span><span>developer-1</span></div>
+    </div>
+
+    <div class="shell" id="ask-view">
+      <aside class="chat">
+        <header>
+          <div><p class="eyebrow">分析会话</p><h1>问数</h1></div>
+          <span class="chip" id="turn-chip" style="display:none"></span>
+        </header>
+        <div class="thread" id="thread"></div>
+        <form class="composer" id="composer">
+          <div class="ac" id="ac" style="display:none"></div>
+          <textarea id="input" rows="2" placeholder="描述业务问题;输入指标/维度名试试联想"></textarea>
+          <button type="submit" class="send" id="send">发送</button>
+        </form>
+      </aside>
+      <main>
+        <div class="docbar">
+          <div class="l" id="docbar-l"><span class="stat">尚无页面文档</span></div>
+          <div class="r" id="docbar-r"></div>
+        </div>
+        <div class="scroll"><div id="canvas" class="canvas-grid"><div class="empty-canvas" style="grid-column: span 12">
+          <h2>左侧提问,看板在这里长出来</h2><p>数据经服务端取数入口取自仿真(原型内为假数据)</p></div></div></div>
+      </main>
+    </div>
+
+    <div class="shell" id="inbox-view" style="display:none; grid-template-columns: 1fr">
+      <main><div class="scroll"><div class="inbox-view" id="inbox-body"></div></div></main>
+    </div>
+
+    <script>
+      /* ================= 假数据与状态 ================= */
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+      const REGIONS = [
+        { r: '华东', cur: 4470, prev: 4180, yoy: 3620 }, { r: '华南', cur: 2760, prev: 2940, yoy: 2410 },
+        { r: '华北', cur: 2130, prev: 2030, yoy: 1890 }, { r: '西南', cur: 1410, prev: 1390, yoy: 1120 },
+        { r: '华中', cur: 1080, prev: 1100, yoy: 980 }, { r: '东北', cur: 620, prev: 615, yoy: 560 },
+        { r: '西北', cur: 370, prev: 356, yoy: 300 }
+      ];
+      const TIME_CHIPS = ['上个月', '本月', '今年以来', '最近3个月'];
+      const TIME_RANGE = { '上个月': '2026-07-01 ~ 2026-07-31', '本月': '2026-08-01 ~ 2026-08-31', '今年以来': '2026-01-01 ~ 2026-08-31', '最近3个月': '2026-06-01 ~ 2026-08-31' };
+      const TIME_SCALE = { '上个月': 1, '本月': 0.42, '今年以来': 7.4, '最近3个月': 2.9 };
+      const AC_DICT = [
+        { g: '指标 · 运营分析', items: [['Tokens消耗量', '别名:消耗量、用量'], ['计费Tokens量', '别名:计费量'], ['Tokens请求量', '别名:调用次数'], ['客户数', '在用调用口径']] },
+        { g: '指标 · 客户经营', items: [['客户数', '期末在册口径'], ['新增客户数', '别名:新客'], ['流失客户数', ''], ['客户留存率', '']] },
+        { g: '维度', items: [['区域', '7 个取值'], ['模型', '3 个取值'], ['客户级别', '4 个取值'], ['行业', '5 个取值']] },
+        { g: '时间(相对时间词表)', items: [['上个月', '→ 2026-07'], ['今年以来', '→ 2026-01~08'], ['最近3个月', '→ 2026-06~08']] }
+      ];
+      const state = { turns: 0, inbox: { gaps: 2, aliases: 1, noms: 0 }, adopted: {}, view: 'ask' };
+
+      const thread = document.getElementById('thread');
+      const canvas = document.getElementById('canvas');
+      const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+      function scrollThread() { thread.scrollTop = thread.scrollHeight; }
+      function toast(msg) {
+        const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg;
+        document.body.appendChild(el); setTimeout(() => el.remove(), 2600);
+      }
+      function bumpTurn() {
+        state.turns += 1;
+        const chip = document.getElementById('turn-chip');
+        chip.style.display = ''; chip.textContent = state.turns + ' 轮';
+      }
+
+      /* ================= 空状态 ================= */
+      function renderEmpty() {
+        thread.innerHTML = `<div class="empty-block">
+          <h6>试试这样问(来自黄金问题集与已验证查询)</h6>
+          <div class="examples">
+            <button data-q="上个月各区域的Tokens消耗量的环比是多少?"><span>上个月各区域的Tokens消耗量的环比是多少?</span><span class="vq-mini">已验证</span></button>
+            <button data-q="6月的客户数是多少?"><span>6月的客户数是多少?</span></button>
+            <button data-q="上个月的人均消耗量是多少?"><span>上个月的人均消耗量是多少?</span></button>
+          </div>
+          <h6 style="margin-top:6px">我懂两个业务域</h6>
+          <div class="domains"><b>运营分析</b>:Tokens消耗量 · 计费Tokens量 · Tokens请求量 · 客户数(在用) × 区域/模型<br/><b>客户经营</b>:客户数(在册) · 新增/流失客户数 · 留存率 × 客户级别/行业</div>
+        </div>`;
+        thread.querySelectorAll('.examples button').forEach((b) =>
+          b.addEventListener('click', () => submitQuestion(b.dataset.q)));
+      }
+
+      /* ================= 输入联想 ================= */
+      const input = document.getElementById('input');
+      const ac = document.getElementById('ac');
+      input.addEventListener('input', () => {
+        const t = input.value.trim();
+        if (t.length < 1) { ac.style.display = 'none'; return; }
+        const groups = AC_DICT.map((g) => ({ g: g.g, items: g.items.filter(([w, d]) => w.includes(t) || (d && d.includes(t))) }))
+          .filter((g) => g.items.length > 0);
+        if (groups.length === 0) { ac.style.display = 'none'; return; }
+        ac.innerHTML = groups.slice(0, 3).map((g) => `<div class="grp">${esc(g.g)}</div>` +
+          g.items.slice(0, 3).map(([w, d]) => `<button type="button" class="it" data-w="${esc(w)}"><span><b>${esc(w)}</b></span><small>${esc(d)}</small></button>`).join('')).join('');
+        ac.style.display = '';
+        ac.querySelectorAll('.it').forEach((b) => b.addEventListener('click', () => {
+          input.value = input.value + b.dataset.w; ac.style.display = 'none'; input.focus();
+        }));
+      });
+      input.addEventListener('blur', () => setTimeout(() => (ac.style.display = 'none'), 180));
+      document.getElementById('composer').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const q = input.value.trim(); if (!q) return;
+        input.value = ''; ac.style.display = 'none';
+        submitQuestion(q);
+      });
+
+      /* ================= 提问路由(脚本化) ================= */
+      function submitQuestion(q, opts = {}) {
+        if (state.turns === 0) thread.innerHTML = '';
+        bumpTurn();
+        if (q.includes('人均')) runAdHoc(q);
+        else if (q.includes('客户数') && !q.includes('消耗')) runDisambig(q);
+        else runMain(q, opts);
+      }
+
+      function askRow(q) {
+        const row = document.createElement('div'); row.className = 'ask-row';
+        row.innerHTML = `<button class="pencil" title="编辑原问题">✎</button><div class="ask-bubble">${esc(q)}</div>`;
+        thread.appendChild(row);
+        row.querySelector('.pencil').addEventListener('click', () => {
+          const nq = prompt('编辑原问题(新开一轮重答,旧轮折叠):', q);
+          if (!nq) return;
+          row.classList.add('revised');
+          const tag = document.createElement('div'); tag.className = 'revised-tag'; tag.textContent = '已修订 ↓';
+          row.after(tag);
+          submitQuestion(nq);
+        });
+        scrollThread();
+        return row;
+      }
+
+      async function timeline(el, steps) {
+        const ol = document.createElement('ol'); ol.className = 'steps'; el.appendChild(ol);
+        for (const [label, detail] of steps) {
+          const li = document.createElement('li');
+          li.innerHTML = `<span class="ico"><span class="spinner"></span></span><span>${esc(label)} <small>${esc(detail)}</small></span>`;
+          ol.appendChild(li); scrollThread();
+          await sleep(420);
+          li.querySelector('.ico').innerHTML = '<span class="ok">✓</span>';
+        }
+        return ol;
+      }
+      function collapseTimeline(reply, ol) {
+        const n = ol.children.length;
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `<button class="linkish">展开执行过程(${n} 步)</button><div class="steps-wrap" style="display:none"></div>`;
+        wrap.querySelector('.steps-wrap').appendChild(ol);
+        const btn = wrap.querySelector('.linkish');
+        btn.addEventListener('click', () => {
+          const w = wrap.querySelector('.steps-wrap');
+          const open = w.style.display !== 'none';
+          w.style.display = open ? 'none' : '';
+          btn.textContent = (open ? '展开' : '收起') + `执行过程(${n} 步)`;
+        });
+        reply.appendChild(wrap);
+      }
+
+      /* ================= 主线:环比(派生模板+控制面板口径卡) ================= */
+      async function runMain(q, opts) {
+        askRow(q);
+        const reply = document.createElement('div'); reply.className = 'reply'; thread.appendChild(reply);
+        const timeKey = opts.time || '上个月';
+        const withYoy = opts.yoy || /同比/.test(q);
+        const region = opts.region || null;
+        const ol = await timeline(reply, [
+          ['业务域路由', '运营分析'],
+          ['指标候选', '命中「Tokens消耗量」· "环比"命中派生模板' + (withYoy ? ' · "同比"命中派生模板' : '')],
+          ['口径成形', `「${timeKey}」词表换算 → ${TIME_RANGE[timeKey]}`],
+          ['真实执行', '本期 + 基期(模板自动扩展查询)'],
+          ['页面文档就绪', 'barChart + table']
+        ]);
+        collapseTimeline(reply, ol); ol.remove();
+        renderScopeCard(reply, { timeKey, region, withYoy, q });
+        reply.insertAdjacentHTML('beforeend',
+          `<p class="reply-text">已完成:业务域「运营分析」,指标 Tokens消耗量 + 环比${withYoy ? ' + 同比' : ''}(派生·公司口径),${TIME_RANGE[timeKey]},返回 ${region ? 1 : 7} 行,呈现为 柱状图 + 明细表。</p>
+          <details class="explain"><summary>系统如何得到这个答案</summary><div>理解:「${esc(timeKey)}」→ 相对时间词表确定性换算;「环比」→ 派生模板(公式公司预declared)。数据:运营分析域,自动扩展取基期。参照:已验证查询「区域消耗月报」(张三背书 · 08-02)。</div></details>`);
+        renderActions(reply);
+        renderSuggests(reply, withYoy);
+        renderCanvasMain({ timeKey, region, withYoy });
+        scrollThread();
+      }
+
+      function renderScopeCard(reply, ctx) {
+        const card = document.createElement('div'); card.className = 'card';
+        card.innerHTML = `
+          <div class="card-head"><span>口径卡 · 生效范围(可直接修改)</span><span class="pill vq">参照:已验证查询「区域消耗月报」</span></div>
+          <dl class="kv">
+            <div><dt>指标</dt><dd>Tokens消耗量 + <b>环比</b>${ctx.withYoy ? ' + <b>同比</b>' : ''} <span class="pill" style="color:#4338ca;background:var(--accent-soft)">派生·公司口径</span>
+              <div class="derived-def">环比 = (本期 − 基期) ÷ 基期 · 基期:上一自然周期${ctx.withYoy ? '<br/>同比 = (本期 − 去年同期) ÷ 去年同期' : ''}(模板声明于数据上下文,模型不可改写)</div></dd></div>
+            <div><dt>时间</dt><dd>${TIME_RANGE[ctx.timeKey]} <span class="pill" style="color:#0e7490;background:#ecfeff">「${esc(ctx.timeKey)}」词表换算</span>
+              <div class="chips">${TIME_CHIPS.map((c) => `<button type="button" class="tchip ${c === ctx.timeKey ? 'on' : ''}" data-t="${c}">${c}</button>`).join('')}<button type="button" class="tchip">自定义…</button></div></dd></div>
+            <div><dt>筛选</dt><dd><span class="fchip">区域 = <select data-f="region"><option ${!ctx.region ? 'selected' : ''}>全部</option>${REGIONS.map((x) => `<option ${ctx.region === x.r ? 'selected' : ''}>${x.r}</option>`).join('')}</select></span></dd></div>
+          </dl>
+          <div class="rerun-row"><button type="button" class="rerun ghost" disabled>改要素后原地重跑,不过模型</button></div>`;
+        reply.appendChild(card);
+        let pend = { time: ctx.timeKey, region: ctx.region };
+        const rerunBtn = card.querySelector('.rerun');
+        const arm = () => { rerunBtn.disabled = false; rerunBtn.classList.remove('ghost'); rerunBtn.textContent = '重新查询'; };
+        card.querySelectorAll('.tchip[data-t]').forEach((b) => b.addEventListener('click', () => {
+          card.querySelectorAll('.tchip[data-t]').forEach((x) => x.classList.remove('on'));
+          b.classList.add('on'); pend.time = b.dataset.t; arm();
+        }));
+        card.querySelector('select[data-f]').addEventListener('change', (e) => {
+          pend.region = e.target.value === '全部' ? null : e.target.value; arm();
+        });
+        rerunBtn.addEventListener('click', async () => {
+          rerunBtn.disabled = true; rerunBtn.textContent = '重跑中…';
+          await sleep(600);
+          rerunBtn.textContent = '已生效 ✓';
+          renderCanvasMain({ timeKey: pend.time, region: pend.region, withYoy: ctx.withYoy });
+          toast(`口径已改:${pend.time}${pend.region ? ' · 区域=' + pend.region : ''}(原地重跑,未过模型)`);
+        });
+      }
+
+      function renderActions(reply) {
+        const div = document.createElement('div'); div.className = 'actions';
+        div.innerHTML = `<button data-a="nominate">☆ 提名为已验证查询</button><button data-a="review">请求人工评审</button>`;
+        reply.appendChild(div);
+        div.querySelector('[data-a=nominate]').addEventListener('click', (e) => {
+          state.inbox.noms += 1; updateInboxCount();
+          e.target.textContent = '✓ 已提名,待治理背书'; e.target.disabled = true;
+          toast('已送入治理收件箱:已验证查询候选');
+        });
+        div.querySelector('[data-a=review]').addEventListener('click', async (e) => {
+          e.target.textContent = '已提交评审…'; e.target.disabled = true;
+          toast('已转 admin 评审,回执将回到本时间线');
+          await sleep(2400);
+          const r = document.createElement('div'); r.className = 'receipt';
+          r.innerHTML = `<b>评审回执</b> · admin-1 · 刚刚<br/>口径与数字核验无误。备注:环比基期取自然月,与财务月报口径一致。`;
+          reply.appendChild(r); scrollThread();
+        });
+      }
+
+      function renderSuggests(reply, withYoy) {
+        const div = document.createElement('div'); div.className = 'suggest';
+        const items = [['按模型拆分看看', () => submitQuestion('上个月各模型的Tokens消耗量是多少?')],
+          ...(!withYoy ? [['看同比', () => submitQuestion('上个月各区域Tokens消耗量的环比和同比?', { yoy: true })]] : []),
+          ['只看华东', () => submitQuestion('只看华东的Tokens消耗量环比', { region: '华东' })],
+          ['对比计费Tokens量', () => submitQuestion('上个月各区域的计费Tokens量是多少?')]];
+        for (const [t, fn] of items) {
+          const b = document.createElement('button'); b.textContent = t;
+          b.addEventListener('click', fn); div.appendChild(b);
+        }
+        reply.appendChild(div);
+      }
+
+      /* ================= 页面视图 ================= */
+      let sortKey = null, sortAsc = false;
+      function renderCanvasMain(ctx) {
+        const scale = TIME_SCALE[ctx.timeKey] ?? 1;
+        let rows = REGIONS.map((x) => ({ r: x.r, cur: Math.round(x.cur * scale), prev: Math.round(x.prev * scale), yoy: Math.round(x.yoy * scale) }));
+        if (ctx.region) rows = rows.filter((x) => x.r === ctx.region);
+        const mom = (x) => (x.cur - x.prev) / x.prev * 100;
+        const yoyPct = (x) => (x.cur - x.yoy) / x.yoy * 100;
+        if (sortKey) rows = [...rows].sort((a, b) => (sortAsc ? 1 : -1) * ((sortKey === 'r' ? a.r.localeCompare(b.r) : a[sortKey] - b[sortKey])) * -1);
+        const max = Math.max(...rows.map((x) => x.cur));
+        document.getElementById('docbar-l').innerHTML = `<span class="badge">临时页面态</span><code>ask-transient-9f2c1a3e</code><span class="stat">组件 2</span><span class="stat">数据源 1</span>`;
+        document.getElementById('docbar-r').innerHTML = `<button class="btn" onclick="window.__promote()">沉淀为长期资产…</button>`;
+        canvas.innerHTML = `
+          <div class="cell" style="--span:5"><div class="cell-head"><h4>各区域 Tokens消耗量(万)</h4></div>
+            <ul class="bars">${rows.map((x) => `<li><span>${x.r}</span><span class="bar"><i style="width:${(x.cur / max * 100).toFixed(0)}%"></i></span><span class="vl">${x.cur.toLocaleString()} <span class="${mom(x) >= 0 ? 'up' : 'down'}">${mom(x) >= 0 ? '▲' : '▼'}${Math.abs(mom(x)).toFixed(1)}%</span></span></li>`).join('')}</ul></div>
+          <div class="cell" style="--span:7"><div class="cell-head"><h4>明细(点表头本地排序,不重新提问)</h4></div>
+            <table><thead><tr>
+              <th data-k="r">区域</th><th data-k="cur">本期(万)</th><th data-k="prev">基期(万)</th><th data-k="mom">环比</th>${ctx.withYoy ? '<th data-k="yoy">同比</th>' : ''}
+            </tr></thead><tbody>
+            ${rows.map((x) => `<tr><td>${x.r}</td><td>${x.cur.toLocaleString()}</td><td style="color:var(--faint)">${x.prev.toLocaleString()}</td><td class="${mom(x) >= 0 ? 'up' : 'down'}">${mom(x) >= 0 ? '▲' : '▼'} ${Math.abs(mom(x)).toFixed(1)}%</td>${ctx.withYoy ? `<td class="${yoyPct(x) >= 0 ? 'up' : 'down'}">${yoyPct(x) >= 0 ? '▲' : '▼'} ${Math.abs(yoyPct(x)).toFixed(1)}%</td>` : ''}</tr>`).join('')}
+            </tbody></table></div>`;
+        canvas.querySelectorAll('th[data-k]').forEach((th) => th.addEventListener('click', () => {
+          const k = th.dataset.k === 'mom' ? 'cur' : th.dataset.k;
+          if (sortKey === k) sortAsc = !sortAsc; else { sortKey = k; sortAsc = false; }
+          renderCanvasMain(ctx);
+          toast('本地排序,不改生效查询');
+        }));
+      }
+      window.__promote = () => toast('打开沉淀面板(Data App / 报告)——已实现能力,原型略');
+
+      /* ================= 消歧场景(预选) ================= */
+      async function runDisambig(q) {
+        askRow(q);
+        const reply = document.createElement('div'); reply.className = 'reply'; thread.appendChild(reply);
+        const ol = await timeline(reply, [
+          ['业务域路由', '运营分析 / 客户经营(两域候选)'],
+          ['指标候选', '「客户数」两域近义 · 需消歧'],
+          ['口径卡', '命中阻塞条件,等待确认']
+        ]);
+        collapseTimeline(reply, ol); ol.remove();
+        const card = document.createElement('div'); card.className = 'card cand';
+        card.innerHTML = `
+          <div class="card-head"><span>命中 2 个近义指标,请选择口径</span></div>
+          <label><input type="radio" name="dc" checked/><span><b>客户数(客户经营)<span class="last-pick">上次你选了这个</span></b><small>期末在册口径 · 半可加,期末值</small></span></label>
+          <label><input type="radio" name="dc"/><span><b>客户数(运营分析)</b><small>在用调用口径 · 不可加,均值</small></span></label>
+          <div class="rerun-row"><button type="button" class="rerun">确认口径并执行</button><span class="note">已默认预选你上次的选择(仅你自己的历史);系统永不替你选</span></div>`;
+        reply.appendChild(card); scrollThread();
+        card.querySelector('.rerun').addEventListener('click', async () => {
+          const pick = card.querySelectorAll('input')[0].checked ? '客户经营' : '运营分析';
+          card.querySelector('.rerun-row').innerHTML = '<span class="note">✓ 已确认,执行中…</span>';
+          await sleep(600);
+          reply.insertAdjacentHTML('beforeend', `<p class="reply-text">2026-06 客户数(${pick}口径):<b>1,284 家</b>(期末在册)。本次选择继续累积为你的偏好。</p>`);
+          document.getElementById('docbar-l').innerHTML = `<span class="badge">临时页面态</span><code>ask-transient-c3d901aa</code><span class="stat">组件 1</span>`;
+          canvas.innerHTML = `<div class="cell" style="--span:4"><div class="cell-head"><h4>2026-06 客户数(${pick})</h4></div><p class="kpi">1,284 <small style="font-size:12px;color:var(--muted)">家</small></p></div>`;
+          renderActions(reply); scrollThread();
+        });
+      }
+
+      /* ================= 临时口径场景 ================= */
+      async function runAdHoc(q) {
+        askRow(q);
+        const reply = document.createElement('div'); reply.className = 'reply'; thread.appendChild(reply);
+        const ol = await timeline(reply, [
+          ['业务域路由', '运营分析'],
+          ['指标候选', '「人均消耗量」无命中,模板闭集外 · 生成临时口径'],
+          ['口径卡', '临时口径,阻塞等待确认']
+        ]);
+        collapseTimeline(reply, ol); ol.remove();
+        const card = document.createElement('div'); card.className = 'card warn';
+        card.innerHTML = `
+          <div class="card-head"><span>口径卡 · 生效范围</span><span class="pill warn">临时口径</span></div>
+          <dl class="kv">
+            <div><dt>口径</dt><dd><code>Tokens消耗量 ÷ 客户数(在用)</code><br/><span class="note" style="color:var(--warn-text)">公式由模型现场生成,未经公司认证</span></dd></div>
+            <div><dt>时间</dt><dd>2026-07-01 ~ 2026-07-31(「上个月」词表换算)</dd></div>
+          </dl>
+          <div class="rerun-row"><button type="button" class="rerun">确认口径并执行</button><span class="note">确认即登记一条指标需求(重复出现累加次数)</span></div>`;
+        reply.appendChild(card); scrollThread();
+        card.querySelector('.rerun').addEventListener('click', async () => {
+          card.querySelector('.rerun-row').innerHTML = '<span class="note">✓ 已确认并登记指标需求 · 执行中…</span>';
+          state.inbox.gaps += 1; updateInboxCount();
+          await sleep(600);
+          reply.insertAdjacentHTML('beforeend', `<p class="reply-text">2026-07 人均消耗量(临时口径):<b>10.1 万 Tokens/家</b>。该数字的组件标题将带「(临时口径)」标记。</p>`);
+          canvas.innerHTML = `<div class="cell" style="--span:4"><div class="cell-head"><h4>人均消耗量(临时口径)</h4><span class="pill warn">临时口径</span></div><p class="kpi">10.1 <small style="font-size:12px;color:var(--muted)">万 Tokens/家</small></p></div>`;
+          document.getElementById('docbar-l').innerHTML = `<span class="badge">临时页面态</span><code>ask-transient-77ab02fe</code><span class="stat">组件 1</span><span class="pill warn">临时口径 ×1</span>`;
+          renderActions(reply); scrollThread();
+        });
+      }
+
+      /* ================= 治理收件箱 ================= */
+      function updateInboxCount() {
+        document.getElementById('inbox-count').textContent = state.inbox.gaps + state.inbox.aliases + state.inbox.noms;
+      }
+      function renderInbox() {
+        const noms = state.inbox.noms > 0
+          ? `<div><span><b>「区域消耗环比月报」</b><small>developer-1 提名 · 刚刚 · 背书后兼任评测金标准与空状态示例</small></span><span></span><span><button class="btn" onclick="window.__endorse(this)">背书</button></span></div>`
+          : `<div><span><small style="margin:0">暂无提名。业务用户在满意的答案上点「提名为已验证查询」后出现在这里。</small></span><span></span><span></span></div>`;
+        document.getElementById('inbox-body').innerHTML = `
+          <div class="panel"><header><b>指标缺口台账</b><small>按出现次数排序 · 同一缺口幂等累加</small></header><div class="rows">
+            <div><span><b>人均消耗量</b><small>最接近:Tokens消耗量 · 需除以客户数 → 可评估为派生模板或新指标</small></span><span class="count-pill">出现 ${state.inbox.gaps === 3 ? 10 : 9} 次</span><span><button class="btn">处理</button></span></div>
+            <div><span><b>毛利率</b><small>语义面无价格/金额类指标</small></span><span class="count-pill">出现 3 次</span><span><button class="btn">处理</button></span></div>
+          </div></div>
+          <div class="panel"><header><b>待采纳别名</b><small>采纳后人工改数据上下文声明 · 上限 10/字段 · 全域唯一性校验</small></header><div class="rows">
+            <div><span><b>「调用量」→ Tokens请求量</b><small>7 次检索落空后经消歧确认 · 校验通过(3/10)</small></span><span></span><span id="alias-a"><button class="btn" onclick="window.__adopt(this)">采纳</button></span></div>
+          </div></div>
+          <div class="panel"><header><b>已验证查询提名</b><small>用户显式提名 · 背书人与时间将随答案回显</small></header><div class="rows">${noms}</div></div>
+          <p class="note" style="padding:0 4px">规则:自动化只在建议侧,人工只在采纳侧;背书后语义面长大,下次同样的问题直接命中。</p>`;
+      }
+      window.__adopt = (btn) => { btn.parentElement.innerHTML = '<span class="adopted">✓ 已标记采纳 · 待人工更新数据上下文</span>'; };
+      window.__endorse = (btn) => { btn.parentElement.parentElement.innerHTML = '<span></span><span></span><span class="adopted">✓ 已背书 · 进入语义面/评测集/空状态示例</span>'; };
+
+      /* ================= 视图切换 ================= */
+      const askView = document.getElementById('ask-view'), inboxView = document.getElementById('inbox-view');
+      document.getElementById('nav-ask').addEventListener('click', () => switchView('ask'));
+      document.getElementById('nav-inbox').addEventListener('click', () => switchView('inbox'));
+      function switchView(v) {
+        state.view = v;
+        askView.style.display = v === 'ask' ? '' : 'none';
+        inboxView.style.display = v === 'inbox' ? '' : 'none';
+        document.getElementById('nav-ask').classList.toggle('on', v === 'ask');
+        document.getElementById('nav-inbox').classList.toggle('on', v === 'inbox');
+        if (v === 'inbox') renderInbox();
+      }
+
+      renderEmpty(); updateInboxCount();
+    </script>
+  </body>
+</html>
