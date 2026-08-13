@@ -455,6 +455,40 @@ async function* orchestrate(
     // 通道兑现。
     decision = { outcome: 'operations', operations: [] };
   }
+
+  // 结构操作一致性闸门:问题命中结构操作动词(有限闭集,映射仅有的四种
+  // 单元操作,不是场景枚举)而模型回传空操作/面外时,不静默放行——带
+  // 反馈重试一次(复用违规反馈机制);重试仍空则诚实失败,绝不以「无变化」
+  // 假装完成。受控实验:同一输入下模型约 1/4 概率输出空结果,静默放行
+  // 会让用户感知指令被无视。
+  const structuralIntent = structuralOperationIntent(question, state.units.length);
+  if (
+    structuralIntent !== null &&
+    state.units.length > 0 &&
+    isEmptyStructuralResponse(decision)
+  ) {
+    haltIfAborted();
+    decision = await formUnitOnce([
+      `用户的这条追问要求对单元集合做结构调整(${structuralIntent}),但你回传了空结果。` +
+        '请输出定向单元操作(operations):合并 = remove 被并入的单元 + modify 保留单元把指标并齐;' +
+        '拆分 = modify 原单元只保留部分指标 + add 新单元承载其余;增加 = add;删除 = remove。'
+    ]);
+    if (isEmptyStructuralResponse(decision)) {
+      yield step(candidatesEvent(candidates, null, null));
+      yield step({
+        type: 'step_failed',
+        stage: 'generation',
+        code: 'STRUCTURAL_INTENT_NOT_APPLIED',
+        message: `模型两次未能把「${structuralIntent}」诉求翻译为单元操作,不以「无变化」假装完成`
+      });
+      yield assistant(
+        `这条结构调整(${structuralIntent})没有被成功理解,页面保持原样。` +
+          '可以换一种说法再试,例如「把两个组件合并成一个」「删除第二个组件」「拆成两个图,分别展示 A 和 B」。'
+      );
+      yield completed(state, null);
+      return;
+    }
+  }
   if (decision.outcome === 'out_of_scope') {
     yield step(candidatesEvent(candidates, null, null));
     yield step({
@@ -1403,6 +1437,64 @@ function catalogComponentType(
 /** 组件类型的中文名(componentCatalog 真源);目录外原样返回。 */
 function componentLabel(type: string): string {
   return componentCatalog.find((entry) => entry.type === type)?.label ?? type;
+}
+
+type StructuralIntentKind = '合并' | '拆分' | '删除' | '增加';
+
+/**
+ * 结构操作动词闭集:命中即认定本轮要求单元结构变化(映射仅有的四种
+ * 单元操作)。刻意不收裸词「增加/新增」(与指标名「新增客户数」冲突,
+ * 且 add 操作模型极少输出空结果),只收强操作词与带量词组合。
+ */
+const STRUCTURAL_INTENT_TERMS: ReadonlyArray<readonly [string, StructuralIntentKind]> = [
+  ['合并', '合并'],
+  ['合成一', '合并'],
+  ['合到', '合并'],
+  ['放到一', '合并'],
+  ['放在一', '合并'],
+  ['放一张', '合并'],
+  ['拆分', '拆分'],
+  ['拆成', '拆分'],
+  ['分成', '拆分'],
+  ['分开展示', '拆分'],
+  ['分别展示', '拆分'],
+  ['删除', '删除'],
+  ['移除', '删除'],
+  ['去掉', '删除'],
+  ['增加一个', '增加'],
+  ['添加一个', '增加'],
+  ['再加一个', '增加'],
+  ['加一个', '增加']
+];
+
+/**
+ * 结构诉求是否「尚未满足」:目标状态已成立时空操作是合法响应——
+ * 「分别展示」而单元已拆开、「合并」而只剩一个单元,都不该触发重试。
+ */
+function structuralOperationIntent(question: string, unitCount: number): string | null {
+  for (const [term, kind] of STRUCTURAL_INTENT_TERMS) {
+    if (!question.includes(term)) continue;
+    if (kind === '合并' && unitCount <= 1) continue;
+    if (kind === '拆分' && unitCount > 1) continue;
+    return kind;
+  }
+  return null;
+}
+
+/** 空结构响应:面外、空操作集或空 patch——对结构诉求而言等于什么都没做。 */
+function isEmptyStructuralResponse(decision: AskUnitFormingDecision): boolean {
+  if (decision.outcome === 'out_of_scope') return true;
+  if (decision.outcome === 'operations') {
+    return (
+      decision.operations.length === 0 ||
+      decision.operations.every(
+        (operation) =>
+          operation.op === 'modify' && Object.keys(operation.patch).length === 0
+      )
+    );
+  }
+  if (decision.outcome === 'patch') return Object.keys(decision.patch).length === 0;
+  return false;
 }
 
 function pinnedComponentFor(

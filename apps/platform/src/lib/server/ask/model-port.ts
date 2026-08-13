@@ -136,6 +136,7 @@ function unitPrompt(input: AskUnitFormingInput): string {
       '- {op:"replace", dataSourceId, unit}:指定单元的口径整体重来(「换成完全不同的指标」);',
       '- {op:"remove", dataSourceId}:删除指定单元。',
       '「分别展示 A 和 B」「拆成两个」= 拆分:modify 原单元只保留一个指标 + add 一个承载另一个指标的新单元。',
+      '「合并成一个」「放到一张图里」= 合并:remove 被并入的单元 + modify 保留单元把两边的指标并齐;合并是结构操作,必须输出这两个操作,不要返回空数组。',
       '未被用户提及的单元与字段绝对不要出现在 operations 里(未提及的显式设置保持不变);只换展示形态、不改口径时返回空数组 []。'
     );
   } else {

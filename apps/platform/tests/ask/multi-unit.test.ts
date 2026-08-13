@@ -432,6 +432,103 @@ describe('一轮多操作与删除单元', () => {
     expect(components.map((component) => component.type)).toEqual(['table', 'table']);
   });
 
+  it('结构一致性闸门:结构诉求遇模型空操作时带反馈重试一次,重试结果被采纳', async () => {
+    const base = await runRound({
+      runId: 'merge-gate-base',
+      question: '新增和流失客户数走势,分开展示',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: NEW_CUSTOMER_TREND },
+            { op: 'add', unit: CHURN_TREND }
+          ]
+        }
+      ],
+      intent: [{ intent: 'trend' }, { intent: 'trend' }]
+    });
+    expect(componentsOf(base.document)).toHaveLength(2);
+
+    // 首次决策空操作(模拟真实模型 ~1/4 概率的波动),重试给出合并操作。
+    const merged = await runRound({
+      runId: 'merge-gate-retry',
+      question: '两个组件合并到一起变成一个折线图',
+      baseline: base.baseline,
+      draft: base.document,
+      unit: [
+        { outcome: 'operations', operations: [] },
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'remove', dataSourceId: 'result-2' },
+            {
+              op: 'modify',
+              dataSourceId: 'result',
+              patch: {
+                metrics: [
+                  { kind: 'metric', name: '新增客户数' },
+                  { kind: 'metric', name: '流失客户数' }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      intent: [{ intent: 'trend' }]
+    });
+    expect(merged.harness.scripted.calls.unit).toHaveLength(2);
+    // 重试的反馈里点名结构诉求。
+    expect(merged.harness.scripted.calls.unit[1]?.violationFeedback?.[0]).toContain('合并');
+    const components = componentsOf(merged.document);
+    expect(components).toHaveLength(1);
+    expect(outputMetricsOf(merged.document, 'result')).toEqual(['新增客户数', '流失客户数']);
+  });
+
+  it('结构一致性闸门:两次空结果诚实失败,不以「无变化」假装完成', async () => {
+    const base = await runRound({
+      runId: 'merge-fail-base',
+      question: '新增和流失客户数走势,分开展示',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: NEW_CUSTOMER_TREND },
+            { op: 'add', unit: CHURN_TREND }
+          ]
+        }
+      ],
+      intent: [{ intent: 'trend' }, { intent: 'trend' }]
+    });
+
+    const harness = buildAskPorts({
+      script: {
+        unit: [
+          { outcome: 'operations', operations: [] },
+          { outcome: 'operations', operations: [] }
+        ],
+        intent: []
+      }
+    });
+    const runner = createAskOrchestrationRunner(harness.ports, {
+      runId: 'merge-fail-round',
+      draft: base.document
+    });
+    const events = await collect(
+      runner.run({ messages: userTurn('两个组件合并到一起', base.baseline) })
+    );
+    expect(stepEvents(events).find((event) => event.type === 'step_failed')).toMatchObject({
+      stage: 'generation',
+      code: 'STRUCTURAL_INTENT_NOT_APPLIED'
+    });
+    const { document, messages } = completedOf(events);
+    expect(document).toBeNull();
+    // 会话状态保持原单元集合,下一轮可继续追问。
+    const state = parseAskConversation(messages).state;
+    expect(state.units).toHaveLength(2);
+  });
+
   it('删除指定单元:文档只剩存留单元,存留单元不重新执行', async () => {
     const base = await runRound({
       runId: 'remove-base',
