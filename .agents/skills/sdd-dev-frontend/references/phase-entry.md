@@ -1,6 +1,6 @@
 # Phase -1 / Phase 0 细则 — 仓库接入门与需求执行起点
 
-本文件是 [SKILL.md](../SKILL.md) 工作流的组成部分，进入 Phase -1 时完整读取。硬门禁、输出规范 P1–P7、路径变量、浏览器驱动与 subagent 派发约定以 SKILL.md 为准，本文件不重复。
+本文件是 [SKILL.md](../SKILL.md) 工作流的组成部分，进入 Phase -1 时完整读取。硬门禁、输出规范 P1–P8、路径变量、浏览器驱动与 subagent 派发约定以 SKILL.md 为准，本文件不重复。
 
 ---
 
@@ -33,7 +33,7 @@ python3 "<init-skill-dir>/scripts/manage_repo_baseline.py" status \
 **Section 失效的判定以 Story 起点的树为准。** 开工之后再跑 `status`（重跑、Phase C 检视、收口复核），本 Story 自己新增或修改的源码文件同样会让 `REPO-3` 失效——那是本 Story 的产物，不是仓库事实过期，**不回本门**。认定为「自身改动引起」要两条同时成立：
 
 1. `git status --porcelain --untracked-files=all` 列出的文件全部落在本 Story 的改动范围内；
-2. `dev-baseline.md / 工程依据` 记录的 REPO-3 指纹与 `repo-baseline.md` 的 `## Section` 表一致。
+2. `dev-baseline.md` 记录的 REPO-3 指纹（指纹附录，旧产物在工程依据行）与 `repo-baseline.md` 的 `## Section` 表一致。
 
 有一条不成立就是真失效，回本门。**不得为了让 `status` 变绿去刷新 REPO-3**——那会把本 Story 尚未通过检视的代码直接写成仓库范式，检视也就失去了对照物。本 Story 确实产生了值得沉淀的仓库级范式时，走 Phase D 收口后由 `sdd-init-frontend` 刷新。
 

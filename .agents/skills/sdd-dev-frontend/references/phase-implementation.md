@@ -1,6 +1,6 @@
 # Phase B 细则 — 实现
 
-本文件是 [SKILL.md](../SKILL.md) 工作流的组成部分，进入 Phase B 时完整读取。硬门禁、输出规范 P1–P7 与路径变量以 SKILL.md 为准，本文件不重复。
+本文件是 [SKILL.md](../SKILL.md) 工作流的组成部分，进入 Phase B 时完整读取。硬门禁、输出规范 P1–P8 与路径变量以 SKILL.md 为准，本文件不重复。
 
 ---
 
@@ -82,6 +82,7 @@ Step ④ 不只证明「主要实现完成」。主 agent 必须读 `tasks.md` �
 **② 验 RED — 核出处、定位与 YELLOW**
 
 - 每条 RED 必须同时有期望值、实际值、`baseline_id` / `design_fact_source` 和实现 locator；缺一视为报告执行失败，不进 ③。
+- **语义等价核对**：expected 与 actual 语义相同、仅序列化不同（颜色写法、分量顺序、简写属性、空白）的 RED，是比对器归一化没覆盖的新形态——**不进 ③、不改实现去迎合字符串、不得为它新增豁免**，按 P7 上报为工具等价缺口，定位方法见 [CONTEXT.md 的问题分流](../CONTEXT.md#设计稿链路的问题分流)。已知等价形态比对器会自动拉平（见 [restore-contract.md](./restore-contract.md)），能走到这里的都值得上报。
 - YELLOW 先补页面、fixture 或状态触发，再重跑结构化采集。仍无法结构化判定且契约要求 visual 层时，按 restore-contract.md 第六节查视觉缓存：命中只读复用，未命中才截原型写入新缓存目录。**机器可检项不截图**（硬门禁 12）。实现侧截图写 `<story-dir>/evidence/<Task 编号>-r<轮次>/`。
 - 视觉补证发现偏差时，把 `visual-results.json` 对应规则写成 `red` 再重跑 RED 报告；**不得把主观观察直接塞进实现清单而绕过报告**。
 
