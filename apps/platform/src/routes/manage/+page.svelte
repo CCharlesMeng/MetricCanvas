@@ -57,7 +57,9 @@
   </div>
 
   {#if loading}
-    <p class="muted">加载看板页面目录…</p>
+    <div class="skeleton-list" aria-label="加载看板页面目录">
+      <i></i><i></i><i></i>
+    </div>
   {:else if error}
     <div class="error">
       <p>{error}</p>
@@ -202,6 +204,22 @@
     background: var(--line-soft);
     border-radius: 5px;
     font-size: 11.5px;
+  }
+  .skeleton-list {
+    display: grid;
+    gap: 10px;
+  }
+  .skeleton-list i {
+    height: 58px;
+    background: linear-gradient(100deg, #ececee 40%, #f6f6f7 50%, #ececee 60%);
+    background-size: 200% 100%;
+    border-radius: 12px;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
   }
   .empty,
   .error {

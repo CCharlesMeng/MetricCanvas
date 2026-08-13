@@ -60,9 +60,14 @@
     error?: { code?: string; message?: string };
   }
 
-  // 默认演示问题:命中语义面「运营分析」域,带具体年月(结构化相对时间
-  // 不在 V0 范围,「上个月」这类表述会在执行段被仿真如实拒答)。
-  let composerText = $state('2026年7月各区域的Tokens消耗量是多少？');
+  let composerText = $state('');
+  // 建议问题:全部命中语义面且带具体年月(结构化相对时间不在 V0 范围,
+  // 「上个月」这类表述会在执行段被仿真如实拒答),覆盖两域与多种展示。
+  const SUGGESTED_QUESTIONS = [
+    '2026年7月各区域的Tokens消耗量是多少？',
+    '2026年上半年每个月的新增客户数走势如何？',
+    '2026年6月各客户级别的流失客户数对比'
+  ];
   /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
   let sessionId = $state<string | null>(null);
   let runs = $state<WorkbenchRunView[]>([]);
@@ -77,6 +82,7 @@
   let cancelRequested = $state(false);
   let promoteOpen = $state(false);
   let threadEl: HTMLElement | null = $state(null);
+  let composerEl: HTMLTextAreaElement | null = $state(null);
   /** 消歧候选选择(runId → 用户选中的候选),随口径卡确认传回编排。 */
   let candidateChoices = $state<Record<string, MetricCandidate>>({});
   /** 执行过程展开状态(runId → 是否展开);缺省运行中展开、结束后收起。 */
@@ -154,6 +160,12 @@
     const question = composerText.trim();
     if (!question || running) return;
     composerText = '';
+    resetComposerHeight();
+    await startRun(question);
+  }
+
+  async function askSuggestion(question: string) {
+    if (running) return;
     await startRun(question);
   }
 
@@ -162,6 +174,17 @@
     if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
     event.preventDefault();
     (event.currentTarget as HTMLTextAreaElement).form?.requestSubmit();
+  }
+
+  /** 输入框随内容自动增高(1~6 行),业界聊天输入框通例。 */
+  function autoGrowComposer() {
+    if (!composerEl) return;
+    composerEl.style.height = 'auto';
+    composerEl.style.height = `${Math.min(composerEl.scrollHeight, 152)}px`;
+  }
+
+  function resetComposerHeight() {
+    if (composerEl) composerEl.style.height = 'auto';
   }
 
   /**
@@ -339,8 +362,18 @@
     <div class="thread" bind:this={threadEl}>
       {#if runs.length === 0}
         <div class="thread-empty">
-          <p>用一句业务问题开始。系统按步骤展开:业务域路由、指标候选、口径卡、真实执行、结果就绪、页面文档就绪。</p>
-          <p>动态取数会先检索数据上下文并生成查询定义;静态报告使用 inline 页面数据源。</p>
+          <h2>用一句业务问题开始</h2>
+          <p>
+            系统按步骤展开:业务域路由、指标候选、口径卡、真实执行、
+            页面文档就绪;满意的结果可沉淀为长期资产。
+          </p>
+          <div class="suggestions">
+            {#each SUGGESTED_QUESTIONS as question (question)}
+              <button type="button" onclick={() => askSuggestion(question)}>
+                {question}
+              </button>
+            {/each}
+          </div>
         </div>
       {/if}
       {#each runs as run (run.runId)}
@@ -404,9 +437,6 @@
           {#if run.status === 'running'}
             <p class="run-state running-state" in:fade={{ duration: 180 }}>
               <span class="dots" role="status" aria-label="运行中"><i></i><i></i><i></i></span>
-              <button type="button" class="linkish" onclick={cancelActiveRun}>
-                {cancelRequested ? '取消请求已发出' : '取消运行'}
-              </button>
             </p>
           {:else if run.status === 'interaction_required' && run.pendingInteraction && isLast && !awaitingScopeConfirmation(run)}
             <InteractionCard
@@ -437,15 +467,40 @@
     </div>
 
     <form class="composer" onsubmit={ask}>
-      <textarea
-        rows="2"
-        bind:value={composerText}
-        onkeydown={composerKeydown}
-        placeholder="描述业务问题,或追问:换维度、改筛选、调整展示(Enter 发送,Shift+Enter 换行)"
-      ></textarea>
-      <button type="submit" class="btn" disabled={running || !composerText.trim()}>
-        {running ? '运行中…' : '发送'}
-      </button>
+      <div class="composer-box">
+        <textarea
+          rows="1"
+          bind:this={composerEl}
+          bind:value={composerText}
+          onkeydown={composerKeydown}
+          oninput={autoGrowComposer}
+          placeholder="描述业务问题,或追问:换维度、改筛选、调整展示"
+        ></textarea>
+        {#if running}
+          <button
+            type="button"
+            class="action stop"
+            onclick={cancelActiveRun}
+            title={cancelRequested ? '取消请求已发出' : '停止运行'}
+            aria-label="停止运行"
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" /></svg>
+          </button>
+        {:else}
+          <button
+            type="submit"
+            class="action send"
+            disabled={!composerText.trim()}
+            title="发送(Enter)"
+            aria-label="发送"
+          >
+            <svg viewBox="0 0 16 16" aria-hidden="true">
+              <path d="M8 13V3.5M8 3.5L3.5 8M8 3.5L12.5 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+        {/if}
+      </div>
+      <p class="composer-hint">Enter 发送 · Shift+Enter 换行</p>
     </form>
   </aside>
 
@@ -517,6 +572,17 @@
     <div class="page-scroll">
       {#if currentDocument}
         <RuntimeView document={currentDocument} {dataGateway} />
+      {:else if running}
+        <div class="skeleton" aria-label="页面文档生成中">
+          <div class="skeleton-grid">
+            <i style="grid-column: span 4"></i>
+            <i style="grid-column: span 4"></i>
+            <i style="grid-column: span 4"></i>
+            <i class="tall" style="grid-column: span 8"></i>
+            <i class="tall" style="grid-column: span 4"></i>
+            <i class="tall" style="grid-column: span 12"></i>
+          </div>
+        </div>
       {:else}
         <div class="empty">
           <h2>描述你要解决的业务问题</h2>
@@ -590,12 +656,46 @@
     overflow-y: auto;
   }
   .thread-empty {
-    color: #71717a;
+    display: grid;
+    gap: 8px;
+    margin-top: 18vh;
+    color: var(--muted);
     font-size: 12.5px;
     line-height: 1.7;
+    text-align: center;
+  }
+  .thread-empty h2 {
+    margin: 0;
+    color: var(--text);
+    font-size: 16px;
+    letter-spacing: -0.01em;
   }
   .thread-empty p {
-    margin: 0 0 8px;
+    margin: 0 auto;
+    max-width: 26rem;
+  }
+  .suggestions {
+    display: grid;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .suggestions button {
+    padding: 10px 13px;
+    color: #3f3f46;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 11px;
+    font: inherit;
+    font-size: 12.5px;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .suggestions button:hover {
+    border-color: rgb(79 70 229 / 45%);
+    box-shadow: 0 2px 8px rgb(24 24 27 / 6%);
   }
   .ask-bubble {
     align-self: flex-end;
@@ -708,29 +808,90 @@
   }
   .composer {
     display: grid;
-    gap: 8px;
-    padding: 12px 18px 16px;
-    border-top: 1px solid #f4f4f5;
+    gap: 6px;
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--line-soft);
   }
-  .composer textarea {
-    width: 100%;
-    padding: 10px 11px;
+  /* 业界聊天输入框通例:容器承载边框与焦点光圈,动作按钮内嵌右下角。 */
+  .composer-box {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 8px 8px 8px 13px;
+    background: var(--surface);
     border: 1px solid #d4d4d8;
-    border-radius: 10px;
-    resize: none;
-    font: inherit;
-    font-size: 13px;
+    border-radius: 14px;
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
   }
-  .composer textarea:focus {
-    outline: none;
+  .composer-box:focus-within {
     border-color: #6366f1;
     box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
   }
-  .composer button {
-    justify-self: end;
+  .composer-box textarea {
+    flex: 1;
+    min-width: 0;
+    max-height: 152px;
+    padding: 5px 0;
+    border: 0;
+    resize: none;
+    background: none;
+    font: inherit;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .composer-box textarea:focus {
+    outline: none;
+  }
+  .composer .action {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition:
+      background 0.15s ease,
+      transform 0.1s ease,
+      opacity 0.15s ease;
+  }
+  .composer .action:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+  .composer .action svg {
+    width: 16px;
+    height: 16px;
+  }
+  .composer .send {
+    color: #fff;
+    background: var(--accent);
+  }
+  .composer .send:hover:not(:disabled) {
+    background: var(--accent-strong);
+  }
+  .composer .send:disabled {
+    background: #d4d4d8;
+    cursor: not-allowed;
+  }
+  .composer .stop {
+    color: #fff;
+    background: #18181b;
+  }
+  .composer .stop svg rect {
+    fill: currentColor;
+  }
+  .composer .stop:hover {
+    background: #3f3f46;
+  }
+  .composer-hint {
+    margin: 0;
+    padding-left: 4px;
+    color: var(--faint);
+    font-size: 10.5px;
   }
 
   main {
@@ -870,6 +1031,30 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+  }
+  /* 运行中的骨架屏:预示即将出现的看板网格,shimmer 呼吸。 */
+  .skeleton {
+    padding: 20px;
+  }
+  .skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+  }
+  .skeleton-grid i {
+    height: 96px;
+    background: linear-gradient(100deg, #ececee 40%, #f6f6f7 50%, #ececee 60%);
+    background-size: 200% 100%;
+    border-radius: 12px;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  .skeleton-grid i.tall {
+    height: 220px;
+  }
+  @keyframes shimmer {
+    to {
+      background-position: -200% 0;
+    }
   }
   .empty {
     display: grid;
