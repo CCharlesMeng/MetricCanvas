@@ -22,7 +22,8 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   'unit-derivation.ts': ['@metriccanvas/page', '@metriccanvas/mcp', '../session/step-event', './ports'],
   // 会话状态往返契约。
   'conversation.ts': ['@metriccanvas/mcp', '../agent/types', '../session/step-event', './ports'],
-  // 编排状态机:组件目录守卫 + Agent 运行设施 + 事件契约 + 本模块各件。
+  // 编排状态机:组件目录守卫 + Agent 运行设施 + 事件契约 + 本模块各件;
+  // 缺口幂等键派生(#67)与条目形状同源于 session 侧的唯一真源。
   'orchestrator.ts': [
     '@metriccanvas/page',
     '@metriccanvas/mcp',
@@ -30,6 +31,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     '../agent/abort',
     '../agent/runner',
     '../agent/types',
+    '../session/metric-gap',
     '../session/step-event',
     './conversation',
     './retrieval',

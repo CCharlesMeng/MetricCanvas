@@ -111,6 +111,41 @@ describe('统一运行时不按页面 id 分叉(ADR-0021 对照自证)', () => {
 });
 
 describe('工作台页面视图模型', () => {
+  it('临时口径可辨(#67):查询定义含 formula 项时检出表达式,inline 页面为空', () => {
+    // inline 文档没有查询定义,自然没有临时口径。
+    expect(workbenchPageViewModel(pageDocument(TRANSIENT_ID)).adHocFormulas).toEqual([]);
+
+    const withFormula = {
+      ...pageDocument(TRANSIENT_ID),
+      dataSources: {
+        result: {
+          fields: {
+            ratio: { queryField: '计费占比', type: 'number', role: 'measure', label: '计费占比', nullable: false }
+          },
+          source: {
+            type: 'query',
+            query: {
+              language: 'dqe',
+              body: {
+                dsl_list: [
+                  {
+                    output_dims: [],
+                    output_metrics: [{ formula: '计费Tokens量 / Tokens消耗量', alias: '计费占比' }],
+                    filter: { dims: [], metrics: [] },
+                    order: {}
+                  }
+                ]
+              }
+            }
+          }
+        }
+      }
+    };
+    expect(workbenchPageViewModel(withFormula).adHocFormulas).toEqual([
+      '计费Tokens量 / Tokens消耗量'
+    ]);
+  });
+
   it('派生组件清单:类型、目录中文名、数据槽引用与标题', () => {
     const model = workbenchPageViewModel(pageDocument(TRANSIENT_ID));
     expect(model).toMatchObject({

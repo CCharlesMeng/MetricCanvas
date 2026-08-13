@@ -12,12 +12,15 @@ import {
   ANALYSIS_INTENTS,
   type AnalysisIntent,
   type AnalysisStepEvent,
-  type MetricCandidate
+  type MetricCandidate,
+  type MetricGapOccurrence
 } from '../session/step-event';
+import { adHocGapKey, scopeGapKey } from '../session/metric-gap';
 import {
   withAskState,
   parseAskConversation,
   type AskConversationState,
+  type AskPendingGapEntry,
   type AskPendingScopeCard,
   type ScopeBlockReason
 } from './conversation';
@@ -27,6 +30,7 @@ import type {
   AskDataRequestUnitState,
   AskOrchestrationPorts,
   AskUnitFormingDecision,
+  AskUnitGapAspect,
   AskUnitPatch,
   RankedMetricCandidate
 } from './ports';
@@ -50,7 +54,12 @@ import type {
  * - 预算与止损:每阶段模型调用失败重试一次;清单校验被拒给模型一次带
  *   违规反馈的修复机会;真实执行的运行内次数上限由验真端口承载(#64)。
  * - 降级:面外问题与执行失败按四段分类落 step_failed,绝不编造数据,
- *   运行以解释性回复正常收束(缺口条目的落库是 #67 的范围)。
+ *   运行以解释性回复正常收束。
+ * - 缺口条目(#67,ADR-0036):检索不到合适指标不阻塞回答——临时口径
+ *   尽力作答,面外与部分缺失单独列出。缺口出现在用户确认后才登记:
+ *   临时口径以口径卡确认为确认时点,面外与部分缺失以 confirm_gap_entry
+ *   交互为确认时点;登记即产出 metric_gap_recorded 步骤事件,随会话
+ *   事件流落库,幂等键与计数聚合见 ../session/metric-gap.ts。
  *
  * 实现为 AgentRunner:步骤事件经 {type:'step'} 进入 #32 推送通道,由通道
  * 统一编号、落库与下发;取消与超时信号贯穿模型调用、检索与真实执行。
@@ -166,6 +175,32 @@ async function* orchestrate(
   const state = structuredClone(conversation.state);
   const question = conversation.question;
 
+  /** 缺口出现登记(#67):仅在用户确认后调用;事件流是唯一落库通道。 */
+  const recordGap = async function* (
+    occurrence: MetricGapOccurrence
+  ): AsyncGenerator<AgentEvent> {
+    try {
+      await ports.gapSink?.(occurrence);
+    } catch {
+      // 观察口失败不得中断已确认的登记;metric_gap_recorded 事件仍照常落库。
+    }
+    yield step({ type: 'metric_gap_recorded', gap: occurrence });
+  };
+
+  /* ---------- 续跑:缺口登记确认(无新问题) ---------- */
+  if (question === null && (state.pendingGapEntry ?? null) !== null) {
+    const pendingGap = state.pendingGapEntry!;
+    for (const occurrence of pendingGap.occurrences) {
+      yield* recordGap(occurrence);
+    }
+    yield assistant(
+      `已登记 ${pendingGap.occurrences.length} 条指标需求条目;` +
+        '同一缺口重复出现会累加出现次数,供数据侧评估是否建设指标。'
+    );
+    yield completed({ ...state, pendingGapEntry: null }, null);
+    return;
+  }
+
   /* ---------- 续跑:口径卡确认(无新问题) ---------- */
   if (question === null) {
     const pending = state.pending;
@@ -218,6 +253,21 @@ async function* orchestrate(
     };
     // 确认后的口径卡以非阻塞形态回显一次:本轮实际生效范围的锚点。
     yield step(scopeCardEvent(unit, false));
+    // 临时口径缺口(#67):口径卡确认即用户确认,此刻登记一次出现。
+    // 幂等键取表达式形状,与高频 formula 形状排行天然合并(ADR-0036)。
+    const confirmedAdHoc = adHocDefinitionOf(unit);
+    if (confirmedAdHoc !== null) {
+      yield* recordGap({
+        idempotencyKey: adHocGapKey(unit.businessDomain, confirmedAdHoc.formula),
+        question: pending.question,
+        searchTerms: dedupe(pending.candidates.map((candidate) => candidate.matchedTerm)),
+        closestCandidates: pending.candidates.map(toMetricCandidate),
+        adHocDefinition: confirmedAdHoc,
+        expectedDimensions: unit.groupBy,
+        expectedGranularity: unit.time?.granularity ?? null,
+        businessDomain: unit.businessDomain
+      });
+    }
     yield* executeAndPresent({
       ports,
       options,
@@ -226,6 +276,9 @@ async function* orchestrate(
       state: resumedState,
       question: pending.question,
       isNewQuestion: false,
+      candidates: pending.candidates,
+      gapAspects: pending.gapAspects ?? [],
+      messages,
       decide,
       haltIfAborted,
       signal,
@@ -235,6 +288,9 @@ async function* orchestrate(
     });
     return;
   }
+
+  // 新问题到来即放弃上一轮未确认的缺口登记(不登记,不重复提示)。
+  state.pendingGapEntry = null;
 
   /* ---------- 域路由(模型分类;用户指定优先;追问沿用既有域) ---------- */
   haltIfAborted();
@@ -343,12 +399,35 @@ async function* orchestrate(
       code: 'OUT_OF_SEMANTIC_SURFACE',
       message: decision.reason
     });
+    // 面外缺口(#67):运行以解释性回复正常收束,不阻塞后续提问;
+    // 是否登记为指标需求条目由用户确认(确认后才登记,#36 内核)。
+    const gapDomain = routedDomains[0]!;
+    const pendingGap: AskPendingGapEntry = {
+      interactionId: `confirm-gap:${options.runId}`,
+      occurrences: [
+        {
+          idempotencyKey: scopeGapKey(gapDomain, question),
+          question,
+          searchTerms: dedupe(candidates.map((candidate) => candidate.matchedTerm)),
+          closestCandidates: candidates.map(toMetricCandidate),
+          adHocDefinition: null,
+          expectedDimensions: [],
+          expectedGranularity: null,
+          businessDomain: gapDomain
+        }
+      ]
+    };
     yield assistant(
-      `语义面内没有能回答该问题的数据能力:${decision.reason}。已按发现阶段降级,不编造数据。`
+      `语义面内没有能回答该问题的数据能力:${decision.reason}。已按发现阶段降级,不编造数据。` +
+        '可确认把该需求登记为指标需求条目,供数据侧评估建设;也可直接换个问题。'
     );
-    yield completed(state, null);
+    yield gapInteractionRequired(pendingGap, question, messages, {
+      ...state,
+      pendingGapEntry: pendingGap
+    });
     return;
   }
+  const gapAspects = decision.gaps ?? [];
   let unit = resolveUnit(state.unit, decision);
   if (unit === null) {
     throw halt('MODEL_FAILED', '首轮口径成形必须产出完整取数单元,模型只回传了增量 patch');
@@ -404,7 +483,8 @@ async function* orchestrate(
       unit,
       ambiguousTerms,
       candidates,
-      question
+      question,
+      gapAspects
     };
     yield step(scopeCardEvent(unit, true));
     yield interactionRequired(pending, messages, { ...nextState, pending });
@@ -420,6 +500,9 @@ async function* orchestrate(
     state: nextState,
     question,
     isNewQuestion: true,
+    candidates,
+    gapAspects,
+    messages,
     formUnitOnce,
     decide,
     haltIfAborted,
@@ -440,6 +523,11 @@ interface ExecutionContext {
   state: AskConversationState;
   question: string;
   isNewQuestion: boolean;
+  /** 本轮检索候选:部分缺口条目「最接近候选与口径差异」的素材来源。 */
+  candidates: RankedMetricCandidate[];
+  /** 问题里语义面无法回答的部分(#67):单独列出,确认后登记。 */
+  gapAspects: AskUnitGapAspect[];
+  messages: AgentMessage[];
   /** 清单校验被拒后的修复重试入口;续跑轮没有(单元已经用户确认)。 */
   formUnitOnce?: (violationFeedback?: string[]) => Promise<AskUnitFormingDecision>;
   decide: <T>(call: () => Promise<T>) => Promise<T>;
@@ -541,9 +629,12 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
   }
 
   const pinnedType = pinnedComponentFor(options.pinnedComponents, ASK_DATA_SOURCE_ID);
+  // 临时口径在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档本身
+  // 走到任何渲染宿主,不依赖工作台外壳。
+  const adHoc = adHocDefinitionOf(unit);
   const executedUnit: ExecutedDataRequestUnit = {
     dataSourceId: ASK_DATA_SOURCE_ID,
-    title: unit.title ?? question,
+    title: `${unit.title ?? question}${adHoc === null ? '' : '(临时口径)'}`,
     fields: derived.fields,
     query: { language: 'dqe', body: derived.body },
     initial: {
@@ -603,8 +694,40 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     formulaTraces: verification.formulaTraces,
     pending: null
   };
+  const document = assembly.document as unknown as Record<string, unknown>;
   yield assistant(summaryText(unit, verification.returnedRowCount, components.map((c) => c.componentType)));
-  yield completed(finalState, assembly.document as unknown as Record<string, unknown>);
+  if (context.gapAspects.length === 0) {
+    yield completed(finalState, document);
+    return;
+  }
+
+  // 部分可答分开呈现(ADR-0036、#67):能答的部分已在上方作答;缺的部分
+  // 结构上不在取数单元与页面文档里,这里单独列出,经用户确认后才登记。
+  const pendingGap: AskPendingGapEntry = {
+    interactionId: `confirm-gap:${options.runId}`,
+    occurrences: context.gapAspects.map((gap) => ({
+      idempotencyKey: scopeGapKey(unit.businessDomain, gap.aspect),
+      question,
+      searchTerms: [gap.aspect],
+      closestCandidates: context.candidates.map(toMetricCandidate),
+      adHocDefinition: null,
+      expectedDimensions: unit.groupBy,
+      expectedGranularity: unit.time?.granularity ?? null,
+      businessDomain: unit.businessDomain
+    }))
+  };
+  yield assistant(
+    '以下部分当前数据能力无法回答,单独列为缺口,未混入本次结果:\n' +
+      context.gapAspects.map((gap) => `- ${gap.aspect}:${gap.reason}`).join('\n') +
+      '\n可确认登记为指标需求条目;也可直接继续追问。'
+  );
+  yield gapInteractionRequired(
+    pendingGap,
+    question,
+    context.messages,
+    { ...finalState, pendingGapEntry: pendingGap },
+    document
+  );
 }
 
 async function decideIntentWithFallback(
@@ -716,6 +839,38 @@ function interactionRequired(
     type: 'interaction_required',
     interaction,
     messages: withAskState(messages, state)
+  };
+}
+
+/**
+ * 缺口登记确认(#67):非阻塞出口——回答(或降级解释)已经给出,交互只
+ * 决定是否登记;用户不确认(换个问题)即放弃,不产生缺口条目。部分可答
+ * 时随事件携带已装配的页面文档,能答的部分照常交付。
+ */
+function gapInteractionRequired(
+  pendingGap: AskPendingGapEntry,
+  question: string,
+  messages: AgentMessage[],
+  state: AskConversationState,
+  document?: Record<string, unknown> | null
+): AgentEvent {
+  const interaction: AgentInteraction = {
+    id: pendingGap.interactionId,
+    kind: 'confirm_gap_entry',
+    payload: {
+      question,
+      entries: pendingGap.occurrences.map((occurrence) => ({
+        businessDomain: occurrence.businessDomain,
+        sought: occurrence.searchTerms.join('、') || occurrence.question,
+        adHocFormula: occurrence.adHocDefinition?.formula ?? null
+      }))
+    }
+  };
+  return {
+    type: 'interaction_required',
+    interaction,
+    messages: withAskState(messages, state),
+    ...(document === undefined ? {} : { document })
   };
 }
 

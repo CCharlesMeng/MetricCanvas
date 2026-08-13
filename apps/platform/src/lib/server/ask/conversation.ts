@@ -1,7 +1,11 @@
 import type { FormulaTrace } from '@metriccanvas/mcp';
 import type { AgentMessage } from '../agent/types';
-import type { AnalysisIntent } from '../session/step-event';
-import type { AskDataRequestUnitState, RankedMetricCandidate } from './ports';
+import type { AnalysisIntent, MetricGapOccurrence } from '../session/step-event';
+import type {
+  AskDataRequestUnitState,
+  AskUnitGapAspect,
+  RankedMetricCandidate
+} from './ports';
 
 /**
  * 问数会话状态的往返契约(#66)。
@@ -32,6 +36,14 @@ export interface AskPendingScopeCard {
   candidates: RankedMetricCandidate[];
   /** 产生该卡的问题原文:确认续跑后 formula 留痕与页面说明仍锚定它。 */
   question: string;
+  /** 本轮问题里语义面无法回答的部分(#67):随续跑传递,单独列为缺口。 */
+  gapAspects?: AskUnitGapAspect[];
+}
+
+/** 待人工确认的缺口登记(#67):确认后才产生 metric_gap_recorded 事件。 */
+export interface AskPendingGapEntry {
+  interactionId: string;
+  occurrences: MetricGapOccurrence[];
 }
 
 export interface AskConversationState {
@@ -46,6 +58,11 @@ export interface AskConversationState {
   /** 自由生成 formula 的留痕(ADR-0032);沉淀门槛(#68)的输入。 */
   formulaTraces: FormulaTrace[];
   pending: AskPendingScopeCard | null;
+  /**
+   * 待确认的缺口登记(#67)。历史状态消息可能缺该字段,读取处一律
+   * `?? null`;确认(空白续跑)即登记,新问题到来即放弃。
+   */
+  pendingGapEntry?: AskPendingGapEntry | null;
 }
 
 export function initialAskState(): AskConversationState {
@@ -57,7 +74,8 @@ export function initialAskState(): AskConversationState {
     intent: null,
     transientPageId: null,
     formulaTraces: [],
-    pending: null
+    pending: null,
+    pendingGapEntry: null
   };
 }
 

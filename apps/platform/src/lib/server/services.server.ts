@@ -5,6 +5,7 @@ import {
   createDataRequestUnitVerification,
   createPageIdConfirmationMcpClient,
   parseDataContextSnapshot,
+  semanticSurfaceOf,
   type DataContextSearch
 } from '@metriccanvas/mcp';
 import {
@@ -47,6 +48,10 @@ import {
   type OfflineTemplateSeed
 } from './offline-services';
 import { createMemoryAnalysisSessionStore } from './session/memory';
+import {
+  createSessionMetricGapLedger,
+  type MetricGapLedger
+} from './session/metric-gap';
 import type { AnalysisSessionStore } from './session/store';
 import bundledDataContext from '$fixtures/schema-metadata.example.json';
 
@@ -68,6 +73,8 @@ export interface PlatformServices {
   dataContext: DataContextSearch;
   dataGateway: DataGateway;
   sessions: AnalysisSessionStore;
+  /** 指标需求条目台账(#67):从会话事件流聚合,合并排行 + 状态流转。 */
+  metricGaps: MetricGapLedger;
   /** 进行中 Agent 运行的注册表:取消端点经由它中止运行。 */
   agentRuns: AgentRunRegistry;
   agentModel: AgentModelDescriptor;
@@ -142,6 +149,18 @@ async function createServices(): Promise<PlatformServices> {
   // 模式都用它;PostgreSQL 实现等 #52 的版本化迁移接入(不引入启动期建表),
   // 届时按 databaseUrl 分支并复用同一份契约测试。
   const sessions = createMemoryAnalysisSessionStore();
+  // 指标需求条目台账(#67,ADR-0036):缺口出现随会话事件流落库,这里只做
+  // 聚合与状态流转,不另建采集通道;fulfilled 关联校验以快照语义面为准。
+  const semanticSurfaces = semanticSurfaceOf(snapshot);
+  const metricGaps = createSessionMetricGapLedger({
+    sessions,
+    metricExists: async ({ businessDomain, metricName }) =>
+      semanticSurfaces.some(
+        (surface) =>
+          surface.businessDomain === businessDomain &&
+          surface.metrics.some((metric) => metric.name === metricName)
+      )
+  });
   if (offline) {
     await seedPublishedTemplates(
       templates,
@@ -196,6 +215,7 @@ async function createServices(): Promise<PlatformServices> {
     dataContext,
     dataGateway,
     sessions,
+    metricGaps,
     agentRuns,
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({

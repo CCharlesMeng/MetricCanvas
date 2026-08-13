@@ -57,7 +57,7 @@ function routed(question: string): AnalysisStepEvent {
   };
 }
 
-/** 覆盖全部七种事件的一条完整编排轨迹(域路由 → … → 文档就绪,外加一次失败)。 */
+/** 覆盖全部八种事件的一条完整编排轨迹(域路由 → … → 文档就绪,外加缺口登记与一次失败)。 */
 function fullTrace(question: string): AnalysisStepEvent[] {
   return [
     routed(question),
@@ -99,6 +99,21 @@ function fullTrace(question: string): AnalysisStepEvent[] {
       transientPageId: 'transient-page-1'
     },
     {
+      type: 'metric_gap_recorded',
+      gap: {
+        idempotencyKey: 'scope:运营分析:客户满意度',
+        question,
+        searchTerms: ['客户满意度'],
+        closestCandidates: [
+          { metricName: '客户数', businessDomain: '运营分析', definitionDifference: '含试用客户' }
+        ],
+        adHocDefinition: null,
+        expectedDimensions: ['区域'],
+        expectedGranularity: 'month',
+        businessDomain: '运营分析'
+      }
+    },
+    {
       type: 'step_failed',
       stage: 'presentation',
       code: 'COMPONENT_UNSUPPORTED_SHAPE',
@@ -120,9 +135,11 @@ export function runAnalysisSessionStoreContract(harness: AnalysisSessionStoreHar
 
       const result = await store.getSession({ sessionId: 's-1' }, developerOne);
       if (!result.ok) throw new Error(result.error.message);
-      expect(result.session.events.map((entry) => entry.sequence)).toEqual([1, 2, 3, 4, 5, 6, 7]);
+      expect(result.session.events.map((entry) => entry.sequence)).toEqual([
+        1, 2, 3, 4, 5, 6, 7, 8
+      ]);
       expect(result.session.events.map((entry) => entry.event)).toEqual(trace);
-      expect(result.session.eventCount).toBe(7);
+      expect(result.session.eventCount).toBe(8);
       expect(result.session.question).toBe('华东各月客户数走势?');
       expect(result.session.actorId).toBe('developer-1');
     });

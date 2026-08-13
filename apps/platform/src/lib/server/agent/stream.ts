@@ -166,7 +166,8 @@ export async function* streamAgentRun(
             outcome = {
               status: 'interaction_required',
               messages: event.messages,
-              document: validatedAgentDocument(agentEvents),
+              // 编排可携带停机前已产出的文档(#67 部分可答);工具循环回退推导。
+              document: event.document ?? validatedAgentDocument(agentEvents),
               interaction: event.interaction,
               failure: null
             };

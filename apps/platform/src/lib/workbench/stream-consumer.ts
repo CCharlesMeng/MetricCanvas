@@ -166,6 +166,7 @@ const STREAM_EVENT_TYPES: Record<AgentRunStreamEvent['type'], true> = {
   execution_started: true,
   rows_ready: true,
   document_ready: true,
+  metric_gap_recorded: true,
   step_failed: true,
   run_started: true,
   tool_call_started: true,

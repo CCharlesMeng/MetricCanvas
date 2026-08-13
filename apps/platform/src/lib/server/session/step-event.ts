@@ -126,6 +126,45 @@ export interface StepFailedEvent {
   message: string;
 }
 
+/**
+ * 指标需求条目的一次出现(CONTEXT.md:Metric Gap Entry;ADR-0036、#67)。
+ *
+ * 这是缺口条目形状的唯一声明:检索不到合适指标时,编排在用户确认后交出
+ * 一次结构化出现,随会话事件流落库(不另建采集通道);出现次数不在这里
+ * ——同一幂等键的多次出现由会话存储侧聚合为一个条目并累加计数
+ * (../session/metric-gap.ts)。
+ *
+ * 红线:只保存问题原文与结构化结果,不保存完整对话文本(ADR-0030)。
+ */
+export interface MetricGapOccurrence {
+  /**
+   * 幂等键:临时口径缺口按「业务域 + 表达式形状」派生,面外缺口按
+   * 「业务域 + 归一化检索对象」派生(派生函数见 ../session/metric-gap.ts)。
+   * 同一缺口的重复出现共享同一键,聚合时去重并累加出现次数。
+   */
+  idempotencyKey: string;
+  /** 问题原文(仅本次提问,不含对话上下文)。 */
+  question: string;
+  /** 检索过的词:候选命中词或缺失口径的业务描述。 */
+  searchTerms: readonly string[];
+  /** 最接近的候选及其口径差异说明。 */
+  closestCandidates: readonly MetricCandidate[];
+  /** 尽力回答所用的临时口径;完全无法回答时为 null。 */
+  adHocDefinition: AdHocDefinition | null;
+  /** 期望的切分维度。 */
+  expectedDimensions: readonly string[];
+  /** 期望的时间粒度;问题未涉及时间时为 null。 */
+  expectedGranularity: string | null;
+  /** 所属业务域(路由结果)。 */
+  businessDomain: string;
+}
+
+/** 缺口出现已登记:用户确认后才产生本事件(#36 内核在 #67 的继承)。 */
+export interface MetricGapRecordedEvent {
+  type: 'metric_gap_recorded';
+  gap: MetricGapOccurrence;
+}
+
 /** 步骤事件:分析会话事件流的可判别联合,判别字段为 `type`。 */
 export type AnalysisStepEvent =
   | DomainRoutedEvent
@@ -134,6 +173,7 @@ export type AnalysisStepEvent =
   | ExecutionStartedEvent
   | RowsReadyEvent
   | DocumentReadyEvent
+  | MetricGapRecordedEvent
   | StepFailedEvent;
 
 /*
@@ -233,6 +273,7 @@ export function isPersistedStepEvent(
     case 'execution_started':
     case 'rows_ready':
     case 'document_ready':
+    case 'metric_gap_recorded':
     case 'step_failed':
       return true;
     default:

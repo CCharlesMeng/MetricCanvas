@@ -3,9 +3,9 @@
 
   /**
    * 待人工交互卡:运行停机等待确认(run_interaction_required),确认后由
-   * 新运行继续。confirm_page_id 呈现结构化页面 id 确认;其余交互类型按
-   * 载荷回显并提供同一"确认并继续"动作——界面按事件契约实现,问数编排
-   * (#66)新增交互类型时无需改造。
+   * 新运行继续。confirm_page_id 呈现结构化页面 id 确认;confirm_gap_entry
+   * (#67)呈现待登记的指标需求条目——登记只在确认后发生,直接换个问题
+   * 即放弃;其余交互类型按载荷回显并提供同一"确认并继续"动作。
    */
   let {
     interaction,
@@ -22,6 +22,32 @@
       ([, value]) => typeof value !== 'object' || value === null
     )
   );
+
+  interface GapEntryPreview {
+    businessDomain: string;
+    sought: string;
+    adHocFormula: string | null;
+  }
+
+  const gapEntries = $derived.by((): GapEntryPreview[] => {
+    if (interaction.kind !== 'confirm_gap_entry') return [];
+    const entries = interaction.payload.entries;
+    if (!Array.isArray(entries)) return [];
+    return entries.flatMap((entry) =>
+      typeof entry === 'object' && entry !== null
+        ? [
+            {
+              businessDomain: String((entry as GapEntryPreview).businessDomain ?? ''),
+              sought: String((entry as GapEntryPreview).sought ?? ''),
+              adHocFormula:
+                typeof (entry as GapEntryPreview).adHocFormula === 'string'
+                  ? (entry as GapEntryPreview).adHocFormula
+                  : null
+            }
+          ]
+        : []
+    );
+  });
 </script>
 
 <div class="interaction">
@@ -37,6 +63,27 @@
     </p>
     <button type="button" disabled={confirming} onclick={onconfirm}>
       {confirming ? '继续运行中…' : '确认页面 id 并继续'}
+    </button>
+  {:else if interaction.kind === 'confirm_gap_entry'}
+    <strong>登记指标需求条目</strong>
+    <p class="meta">
+      以下口径当前数据能力无法覆盖;确认后登记为指标需求条目(同一缺口
+      重复出现会累加次数),不确认则直接继续追问即可。
+    </p>
+    <ul class="gap-list">
+      {#each gapEntries as entry, entryIndex (entryIndex)}
+        <li>
+          <b>{entry.sought}</b>
+          <small>
+            {entry.businessDomain}{entry.adHocFormula
+              ? ` · 临时口径 ${entry.adHocFormula}`
+              : ''}
+          </small>
+        </li>
+      {/each}
+    </ul>
+    <button type="button" disabled={confirming} onclick={onconfirm}>
+      {confirming ? '登记中…' : '登记为指标需求'}
     </button>
   {:else}
     <strong>等待人工确认 · {interaction.kind}</strong>
@@ -84,6 +131,27 @@
     display: grid;
     grid-template-columns: minmax(60px, auto) minmax(0, 1fr);
     gap: 8px;
+  }
+  .gap-list {
+    display: grid;
+    gap: 4px;
+    margin: 0;
+    padding: 6px 8px;
+    background: #fff;
+    border: 1px solid #e0e7ff;
+    border-radius: 8px;
+    list-style: none;
+  }
+  .gap-list li {
+    display: grid;
+    gap: 1px;
+  }
+  .gap-list b {
+    font-size: 11.5px;
+  }
+  .gap-list small {
+    color: #71717a;
+    font-size: 10.5px;
   }
   dt {
     color: #6366f1;
