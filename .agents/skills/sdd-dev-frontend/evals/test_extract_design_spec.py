@@ -7,6 +7,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -75,11 +76,11 @@ class SampleRegressionTests(unittest.TestCase):
             "pattern_covered_nodes": 192,
             "pattern_coverage_pct": 51.3,
         },
-        "设计稿导出件.html": {
-            "chars": 269_198,
-            "lines": 2,
-            "formatted": False,
-            "doc_hash": "c8bc1410",
+        "原型-客户风险简报.html": {
+            "chars": 415_398,
+            "lines": 5_391,
+            "formatted": True,
+            "doc_hash": "a3e5504f",
             "css_rules": 365,
             "class_rules": 363,
             "token_mode": "shared-class",
@@ -89,15 +90,15 @@ class SampleRegressionTests(unittest.TestCase):
             "font_sizes": 9,
             "assets": 53,
             "assets_missing": 53,
-            "element_nodes": 2_252,
-            "void_nodes": 71,
-            "text_nodes": 1_531,
-            "text_unique": 121,
-            "blocks": 115,
+            "element_nodes": 2_851,
+            "void_nodes": 86,
+            "text_nodes": 1_922,
+            "text_unique": 122,
+            "blocks": 150,
             "block_max_nodes": 109,
-            "patterns": 21,
-            "pattern_covered_nodes": 1_763,
-            "pattern_coverage_pct": 78.3,
+            "patterns": 15,
+            "pattern_covered_nodes": 1_883,
+            "pattern_coverage_pct": 66.0,
         },
     }
 
@@ -116,6 +117,23 @@ class SampleRegressionTests(unittest.TestCase):
                     {key: actual[key] for key in expected},
                     expected,
                 )
+
+    def test_unformatted_single_line_export_yields_identical_facts(self) -> None:
+        # 设计工具常导出成一整行的巨型 HTML。压平只应改变 `formatted`/`lines`，
+        # 其余事实与文档哈希必须逐项相同，否则同一份稿子会因导出选项判出两套基线。
+        source_path = EVAL_DIR / "原型-客户风险简报.html"
+        collapsed = re.sub(r"\n\s*", "", source_path.read_text(encoding="utf-8"))
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "single-line.html"
+            path.write_text(collapsed, encoding="utf-8")
+            actual = EXTRACTOR.stats(EXTRACTOR.extract(path, "auto", 80, 2, 2))
+
+        expected = dict(self.CASES["原型-客户风险简报.html"])
+        self.assertFalse(actual["formatted"])
+        self.assertEqual(actual["lines"], 1)
+        for key in ("formatted", "lines", "chars"):
+            expected.pop(key)
+        self.assertEqual({key: actual[key] for key in expected}, expected)
 
     def test_generated_artifacts_have_bounded_size(self) -> None:
         for filename, result in self.results.items():
@@ -237,7 +255,7 @@ class CoverageGapTests(unittest.TestCase):
 
     def test_real_prototypes_report_no_gap(self) -> None:
         # 误报会让调用方习惯性忽略缺口，所以 reset 型选择器与无害 at 规则不得计入。
-        for name in ("设计稿原型-标准版.html", "设计稿导出件.html"):
+        for name in ("设计稿原型-标准版.html", "原型-客户风险简报.html"):
             with self.subTest(name=name):
                 result = EXTRACTOR.extract(EVAL_DIR / name, "auto", 80, 2, 2)
                 self.assertEqual(result["coverage_gaps"], [])
@@ -627,7 +645,17 @@ def restore_rule(
 class RestoreContractVerificationTests(unittest.TestCase):
     def compile(self, root: Path, rules: list[dict]):
         baseline = root / "dev-baseline.md"
-        baseline.write_text("# Dev Baseline\n\n冻结状态：已冻结 ✅\n", encoding="utf-8")
+        # 契约要求与基线一一映射，所以基线要恰好列出这批规则引用的编号。
+        rows = "\n".join(
+            f"| {rule['baseline_id']} | {rule['dimension']} | {rule['id']} 主体 | 见规则 |"
+            for rule in rules
+        )
+        baseline.write_text(
+            "# Dev Baseline\n\n冻结状态：已冻结 ✅\n\n"
+            "| 编号 | 维度 | 主体 | 期望 |\n| --- | --- | --- | --- |\n"
+            f"{rows}\n",
+            encoding="utf-8",
+        )
         rules_path = root / "rules.json"
         rules_path.write_text(json.dumps({"rules": rules}, ensure_ascii=False), encoding="utf-8")
         contract = VERIFIER.compile_contract(baseline, rules_path, "dev-baseline.md")
@@ -967,157 +995,6 @@ class RestoreContractVerificationTests(unittest.TestCase):
                                 "name": "保存",
                             }
                         ],
-                    }
-                },
-            }
-            with self.assertRaisesRegex(VERIFIER.ContractError, "混入外部判定字段"):
-                VERIFIER.validate_adapter(adapter, contract)
-
-    def test_text_contract_checks_required_literals_and_patterns(self) -> None:
-        rule = restore_rule(
-            "R2-1",
-            "R2",
-            {
-                "required_texts": ["流水总览", "同比"],
-                "required_patterns": [
-                    {"name": "month", "pattern": r"2026年\d{1,2}月"},
-                ],
-            },
-            check_mode="text",
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            _, contract, adapter = self.compile(root, [rule])
-            green = VERIFIER.build_report(
-                contract,
-                adapter,
-                "green",
-                None,
-                self.render_payload(
-                    contract,
-                    {
-                        "R2-1": {
-                            "status": "ok",
-                            "actual": "流水总览 2026年8月 同比 12.3%",
-                        }
-                    },
-                ),
-                None,
-            )
-            red = VERIFIER.build_report(
-                contract,
-                adapter,
-                "red",
-                None,
-                self.render_payload(
-                    contract,
-                    {"R2-1": {"status": "ok", "actual": "流水总览"}},
-                ),
-                None,
-            )
-
-        self.assertEqual(green["overall"], "green")
-        self.assertEqual(red["overall"], "red")
-        comparison = red["entries"][0]["actual"]["render"]["comparison"]
-        self.assertEqual(comparison["missing_texts"], ["同比"])
-        self.assertEqual(comparison["missing_patterns"], ["month"])
-
-    def test_constraints_contract_checks_thresholds_and_tolerance(self) -> None:
-        rule = restore_rule(
-            "R6-1",
-            "R6",
-            {
-                "horizontal_overflow_css_px": {"max": 1},
-                "content_width_css_px": {"equals": 1200},
-                "center_offset_css_px": {"max": 1},
-            },
-            check_mode="constraints",
-        )
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            _, contract, adapter = self.compile(root, [rule])
-            green = VERIFIER.build_report(
-                contract,
-                adapter,
-                "green",
-                None,
-                self.render_payload(
-                    contract,
-                    {
-                        "R6-1": {
-                            "status": "ok",
-                            "actual": {
-                                "horizontal_overflow_css_px": 0,
-                                "content_width_css_px": 1199.4,
-                                "center_offset_css_px": 0.25,
-                            },
-                        }
-                    },
-                ),
-                None,
-            )
-            red = VERIFIER.build_report(
-                contract,
-                adapter,
-                "red",
-                None,
-                self.render_payload(
-                    contract,
-                    {
-                        "R6-1": {
-                            "status": "ok",
-                            "actual": {
-                                "horizontal_overflow_css_px": 12,
-                                "content_width_css_px": 1170,
-                                "center_offset_css_px": 15,
-                            },
-                        }
-                    },
-                ),
-                None,
-            )
-
-        self.assertEqual(green["overall"], "green")
-        self.assertEqual(red["overall"], "red")
-        failures = red["entries"][0]["actual"]["render"]["comparison"]["failures"]
-        self.assertEqual(
-            {failure["field"] for failure in failures},
-            {
-                "horizontal_overflow_css_px",
-                "content_width_css_px",
-                "center_offset_css_px",
-            },
-        )
-
-    def test_adapter_rejects_decision_fields_inside_object_collector(self) -> None:
-        with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
-            _, contract, _ = self.compile(
-                root,
-                [restore_rule("R1-1", "R1", {"button_count": 1})],
-            )
-            adapter = {
-                "schema_version": 1,
-                "rules": {
-                    "R1-1": {
-                        "locators": [
-                            {
-                                "strategy": "role",
-                                "role": "button",
-                                "name": "保存",
-                            }
-                        ],
-                        "source_files": ["src/view.tsx"],
-                        "collect": {
-                            "kind": "object",
-                            "fields": {
-                                "button_count": {
-                                    "kind": "count",
-                                    "selector": "button",
-                                    "expected": 1,
-                                }
-                            },
-                        },
                     }
                 },
             }

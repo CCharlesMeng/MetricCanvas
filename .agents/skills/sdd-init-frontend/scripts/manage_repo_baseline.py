@@ -31,7 +31,6 @@ IGNORED_DIRS = {
     ".next",
     ".nuxt",
     ".output",
-    ".svelte-kit",
     ".turbo",
     ".yarn",
     "__pycache__",
@@ -162,37 +161,6 @@ def relative(path: Path, root: Path) -> str:
 
 
 def walk_files(root: Path) -> list[Path]:
-    git_files = subprocess.run(
-        [
-            "git",
-            "-C",
-            str(root),
-            "ls-files",
-            "--cached",
-            "--others",
-            "--exclude-standard",
-            "-z",
-        ],
-        capture_output=True,
-        check=False,
-    )
-    if git_files.returncode == 0:
-        files: list[Path] = []
-        for raw_path in git_files.stdout.split(b"\0"):
-            if not raw_path:
-                continue
-            relative_path = Path(os.fsdecode(raw_path))
-            if any(
-                part in IGNORED_DIRS or part.startswith(".cache")
-                for part in relative_path.parts[:-1]
-            ):
-                continue
-            path = root / relative_path
-            if path.is_symlink() or not path.is_file():
-                continue
-            files.append(path)
-        return sorted(files, key=lambda path: relative(path, root))
-
     files: list[Path] = []
     for current, dirs, names in os.walk(root):
         dirs[:] = sorted(d for d in dirs if d not in IGNORED_DIRS and not d.startswith(".cache"))

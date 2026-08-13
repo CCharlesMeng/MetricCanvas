@@ -46,13 +46,24 @@
 
 每条规则必含：`id`、`baseline_id`、`dimension`、`block`、`subject`、`expected`、`check_mode`、`tolerance`、`state_scenario`、`design_fact_source`、`required_layers`。
 
+`expected` 可以是字面值，也可以按层给（键取 `static` / `render` / `visual`，如上例）。**编译器与 `validate` 都会拒绝下列写法**，它们的共同点是会让规则在报告里自动变绿或恒为红，却看不出原因：
+
+| 写法 | 为什么拒绝 |
+| --- | --- |
+| `baseline_id` 在基线的还原侧表格里找不到 | 基线哈希只锁住文档本身；引用一条不存在的基线行，规则就没有判据来源 |
+| 基线里某条 R 没有任何规则引用 | 契约全绿不再等于基线全部满足。确实不涉及的维度在基线里写「不适用」，那样的行不要求覆盖 |
+| 规则 `id` 重复 | 报告里会出现两条同 `rule_id` 的条目，落账时分不清哪条是哪条 |
+| `required_layers` 含 `render`，但该层取到的 `expected` 为空（`{}` / `[]` / `""` / 缺键） | `numeric` 产生不出差异项、`overflow` 家族对空容器取 0，两种都无条件判绿。注意 `0` 与 `false` 是合法期望值 |
+| `check_mode: visual` 同时要求 `render` 层 | visual 只能由视觉补证判定，render 层对它恒判不通过，这条规则永远 GREEN 不了 |
+| adapter 里有契约中不存在的规则条目 | 多半是契约改了 adapter 没跟着改；静默丢弃会让人以为旧定位还在生效 |
+
+字面值恰好长得像分层键时（例如 `expected` 就是 `{"visual": "hidden"}`）会命中第二条被拒——改写成 `{"render": {"visual": "hidden"}}` 明确层归属。
+
 ### 检查模式
 
 | `check_mode` | 判定 |
 | --- | --- |
 | `exact` / `structure` / `state` | JSON 精确相等 |
-| `text` | `required_texts` 全部为实际文本子串，`required_patterns` 全部命中实际文本；正则只存在冻结契约中 |
-| `constraints` | 对采集对象逐字段执行 `equals` / `min` / `max` 数值约束；`equals` 默认继承规则 CSS px 容差 |
 | `numeric` | 数字或 CSS px，默认 ±1 CSS px |
 | `color` | 颜色规范化后精确匹配 |
 | `overflow` / `overlap` / `clip` | 最大值不超过 1 CSS px |
@@ -106,23 +117,7 @@
 
 `locators` 按 `role/name` → 精确文案 → 稳定 test id → CSS 排序；数组可以提前结束。CSS 禁止构建生成随机 class。期望值、容差和设计事实出处不得写入 adapter。
 
-浏览器采集 `kind` 支持：`count`、`text`、`order`、`structure`、`style`、`rect`、`state`、`overflow`、`overlap`、`clip`，以及只返回原始事实的 `attribute`、`tag`、`text_node_count`、`descendant_counts`、`selector_order`、`document_overflow`、`center_offset`、`content_clip`、`sibling_overlap`。
-
-多个原始事实组成一条语义规则时使用 `object.fields`；每个 field 仍是上述只读采集模式，例如：
-
-```json
-{
-  "collect": {
-    "kind": "object",
-    "fields": {
-      "content_width_css_px": {"kind": "rect", "property": "width", "single": true},
-      "horizontal_overflow_css_px": {"kind": "document_overflow"}
-    }
-  }
-}
-```
-
-adapter 的任意深度都禁止出现 `expected`、`tolerance`、`design_fact_source`、`baseline_id`；验证器会递归拒绝，避免采集实现参与判定。状态必须先由浏览器驱动实际触发；采集脚本只读，不代替 hover、focus、loading 或 fixture。
+浏览器采集 `kind` 支持：`count`、`text`、`order`、`structure`、`style`、`rect`、`state`、`overflow`、`overlap`、`clip`。状态必须先由浏览器驱动实际触发；采集脚本只读，不代替 hover、focus、loading 或 fixture。
 
 ## 四、执行
 
@@ -141,7 +136,7 @@ python3 "<skill-dir>/scripts/verify_restore_contract.py" validate \
   --adapter <story-dir>/restore-adapter.json
 ```
 
-`dev-baseline.md` 任一字节变化都会使校验硬失败。确需修改时，先走基线变更记录与重新确认，再重新编译。
+`dev-baseline.md` 任一字节变化都会使校验硬失败。确需修改时，先走基线变更记录与重新确认，再带 `--after-reconfirmation` 重新编译——没有这个开关时，`contract` 拒绝覆盖一份记录了不同基线哈希的既有契约（基线正文里的「已冻结 ✅」不会因为内容被改就消失，拦不住就等于冻结名存实亡）。基线没变时重复编译是幂等的，不需要开关。
 
 ### 2. 静态预检
 
@@ -176,8 +171,6 @@ window.__SDD_RESTORE_INPUT__ = {
   "rules": {}
 }
 ```
-
-同一契约包含多个 `viewport-*` state scenario 时，浏览器驱动必须逐个设置对应视口后采集，只把该视口结果写回对应规则；`default` 规则使用冻结基线指定的默认视口。不得用一次默认视口采集替代全部响应式规则。
 
 ### 4. 报告
 

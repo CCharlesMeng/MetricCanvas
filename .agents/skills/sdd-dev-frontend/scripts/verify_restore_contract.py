@@ -13,6 +13,7 @@ import hashlib
 import json
 import re
 import sys
+from collections import Counter
 from pathlib import Path
 from typing import Any
 
@@ -29,8 +30,6 @@ DIMENSIONS = {f"R{index}" for index in range(1, 7)}
 CHECK_MODES = {
     "exact",
     "structure",
-    "text",
-    "constraints",
     "numeric",
     "color",
     "state",
@@ -38,34 +37,6 @@ CHECK_MODES = {
     "overlap",
     "clip",
     "visual",
-}
-COLLECT_KINDS = {
-    "count",
-    "text",
-    "order",
-    "structure",
-    "style",
-    "rect",
-    "state",
-    "overflow",
-    "overlap",
-    "clip",
-    "attribute",
-    "tag",
-    "text_node_count",
-    "descendant_counts",
-    "selector_order",
-    "document_overflow",
-    "center_offset",
-    "content_clip",
-    "sibling_overlap",
-    "object",
-}
-ADAPTER_DECISION_FIELDS = {
-    "expected",
-    "tolerance",
-    "design_fact_source",
-    "baseline_id",
 }
 LAYERS = {"static", "render", "visual"}
 LOCATOR_PRIORITY = {"role": 0, "text": 1, "testid": 2, "css": 3}
@@ -81,6 +52,8 @@ GENERATED_CLASS_RE = re.compile(
     r"(?:\.[A-Za-z_-]*[0-9a-fA-F]{8,}\b|\.[A-Za-z][\w-]*_[A-Za-z0-9]{6,}\b)"
 )
 CSS_NUMBER_RE = re.compile(r"^\s*([+-]?(?:\d+(?:\.\d*)?|\.\d+))(?:px)?\s*$")
+# 只匹配表格行的第一格，避免把「取证方式」列里提到的编号当成一行基线。
+BASELINE_RULE_ID_RE = re.compile(r"^\|\s*`?(R[1-6]-\d+)`?\s*\|")
 
 
 class ContractError(ValueError):
@@ -128,6 +101,13 @@ def default_tolerance(check_mode: str) -> dict[str, float]:
     return {"css_px": 0.0}
 
 
+def is_empty_expectation(payload: Any) -> bool:
+    """`0` / `False` 是合法期望值，空容器与缺省不是。"""
+    if payload is None:
+        return True
+    return isinstance(payload, (dict, list, tuple, str)) and len(payload) == 0
+
+
 def validate_rule(raw: Any, index: int) -> dict[str, Any]:
     if not isinstance(raw, dict):
         raise ContractError(f"第 {index} 条规则必须是对象")
@@ -155,70 +135,6 @@ def validate_rule(raw: Any, index: int) -> dict[str, Any]:
     check_mode = str(rule["check_mode"])
     if check_mode not in CHECK_MODES:
         raise ContractError(f"规则 {rule_id} 的 check_mode 不支持：{check_mode}")
-    if check_mode == "text":
-        expected = rule["expected"]
-        if not isinstance(expected, dict):
-            raise ContractError(f"规则 {rule_id} 的 text expected 必须是对象")
-        required_texts = expected.get("required_texts", [])
-        required_patterns = expected.get("required_patterns", [])
-        if not isinstance(required_texts, list) or any(
-            not isinstance(item, str) or not item for item in required_texts
-        ):
-            raise ContractError(f"规则 {rule_id} 的 required_texts 必须是非空字符串数组")
-        if not isinstance(required_patterns, list):
-            raise ContractError(f"规则 {rule_id} 的 required_patterns 必须是数组")
-        for pattern in required_patterns:
-            if (
-                not isinstance(pattern, dict)
-                or not isinstance(pattern.get("name"), str)
-                or not pattern["name"]
-                or not isinstance(pattern.get("pattern"), str)
-                or not pattern["pattern"]
-            ):
-                raise ContractError(
-                    f"规则 {rule_id} 的 required_patterns 必须包含 name/pattern"
-                )
-            try:
-                re.compile(pattern["pattern"])
-            except re.error as error:
-                raise ContractError(
-                    f"规则 {rule_id} 的文本正则无效：{pattern['name']}: {error}"
-                ) from error
-        if not required_texts and not required_patterns:
-            raise ContractError(f"规则 {rule_id} 的 text expected 至少包含一个判据")
-    if check_mode == "constraints":
-        expected = rule["expected"]
-        if not isinstance(expected, dict) or not expected:
-            raise ContractError(f"规则 {rule_id} 的 constraints expected 必须是非空对象")
-        for field, constraint in expected.items():
-            if not isinstance(field, str) or not field or not isinstance(constraint, dict):
-                raise ContractError(f"规则 {rule_id} 的 constraints 字段必须映射到对象")
-            operators = set(constraint).intersection({"equals", "min", "max"})
-            if not operators:
-                raise ContractError(
-                    f"规则 {rule_id} 的约束 {field} 至少包含 equals/min/max"
-                )
-            unknown = set(constraint).difference({"equals", "min", "max", "tolerance"})
-            if unknown:
-                raise ContractError(f"规则 {rule_id} 的约束 {field} 含未知字段：{sorted(unknown)}")
-            for operator in operators:
-                try:
-                    parse_css_number(constraint[operator])
-                except ValueError as error:
-                    raise ContractError(
-                        f"规则 {rule_id} 的约束 {field}.{operator} 必须是数字"
-                    ) from error
-            if "tolerance" in constraint:
-                try:
-                    constraint_tolerance = parse_css_number(constraint["tolerance"])
-                except ValueError as error:
-                    raise ContractError(
-                        f"规则 {rule_id} 的约束 {field}.tolerance 必须是数字"
-                    ) from error
-                if constraint_tolerance < 0:
-                    raise ContractError(
-                        f"规则 {rule_id} 的约束 {field}.tolerance 必须非负"
-                    )
 
     layers = rule.get("required_layers", DEFAULT_LAYERS[dimension])
     if not isinstance(layers, list) or not layers:
@@ -228,8 +144,22 @@ def validate_rule(raw: Any, index: int) -> dict[str, Any]:
         raise ContractError(f"规则 {rule_id} 含未知检查层：{unknown_layers}")
     if check_mode == "visual" and "visual" not in layers:
         raise ContractError(f"规则 {rule_id} 的 visual 模式必须要求 visual 层")
+    if check_mode == "visual" and "render" in layers:
+        # visual 模式的判定只能来自 visual-results；render 层对它恒判不通过，
+        # 两者同时要求会让这条规则永远 RED，且报告里的原因指向渲染值，极难排查。
+        raise ContractError(
+            f"规则 {rule_id} 的 visual 模式不能同时要求 render 层：render 层无法判定 visual 模式"
+        )
     if "static" in layers and not isinstance(rule.get("static_check"), dict):
         raise ContractError(f"规则 {rule_id} 要求 static 层但没有 static_check")
+
+    # render 层是唯一拿 expected 做比对的层（static 走 static_check，visual 走 visual-results）。
+    # 空期望值会让 numeric 产生不出差异项、overflow 家族取到 0，两种写法都无条件判绿——
+    # 没有期望值就没有判据，必须在编译期挡住，不能等它在报告里自动染绿。
+    if "render" in layers and is_empty_expectation(expected_for_layer(rule, "render")):
+        raise ContractError(
+            f"规则 {rule_id} 的 render 层 expected 为空：没有期望值就没有判据"
+        )
 
     tolerance = rule.get("tolerance", default_tolerance(check_mode))
     if not isinstance(tolerance, dict):
@@ -253,6 +183,58 @@ def validate_rule(raw: Any, index: int) -> dict[str, Any]:
     return rule
 
 
+def baseline_rule_ids(baseline_path: Path) -> tuple[set[str], set[str]]:
+    """从基线的还原侧表格里读出 R 编号。
+
+    只认表格行的第一格，避免把「取证方式」列里提到的编号当成一行基线。
+    返回 (基线里出现过的全部编号, 其中需要被规则覆盖的)——标了「不适用」的维度
+    不要求覆盖，但仍是合法的引用目标。
+    """
+    known: set[str] = set()
+    required: set[str] = set()
+    for line in baseline_path.read_text(encoding="utf-8").splitlines():
+        match = BASELINE_RULE_ID_RE.match(line.strip())
+        if not match:
+            continue
+        known.add(match.group(1))
+        if "不适用" not in line:
+            required.add(match.group(1))
+    return known, required
+
+
+def require_baseline_mapping(rules: list[dict[str, Any]], baseline_path: Path) -> None:
+    """规则与基线必须一一映射。
+
+    基线哈希只锁住文档本身；没有这一步，写一个基线里不存在的 `baseline_id`、
+    或者漏掉基线里的某一条 R，契约照样算合法，而这两种情况都会让
+    「全部规则 GREEN」不再等于「基线全部满足」。
+    """
+    known, required = baseline_rule_ids(baseline_path)
+    if not known:
+        raise ContractError(
+            f"{baseline_path} 的还原侧表格里找不到任何 R1–R6 编号，无法校验规则与基线的映射"
+        )
+
+    referenced = {str(rule["baseline_id"]) for rule in rules}
+    unknown = sorted(referenced - known)
+    if unknown:
+        raise ContractError(f"契约引用了基线里不存在的 baseline_id：{'、'.join(unknown)}")
+
+    uncovered = sorted(required - referenced)
+    if uncovered:
+        raise ContractError(
+            f"基线里这些条目没有对应的契约规则：{'、'.join(uncovered)}"
+            "（确实不涉及的维度在基线里写「不适用」）"
+        )
+
+
+def require_unique_rule_ids(rules: list[dict[str, Any]]) -> None:
+    counts = Counter(rule["id"] for rule in rules)
+    duplicates = sorted(rule_id for rule_id, count in counts.items() if count > 1)
+    if duplicates:
+        raise ContractError(f"规则 id 必须唯一，重复：{'、'.join(duplicates)}")
+
+
 def compile_contract(baseline_path: Path, rules_path: Path, baseline_ref: str | None = None) -> dict:
     require_frozen_baseline(baseline_path)
     rules_payload = load_json(rules_path)
@@ -261,9 +243,8 @@ def compile_contract(baseline_path: Path, rules_path: Path, baseline_ref: str | 
         raise ContractError("规则输入必须是非空数组，或含非空 rules 数组的对象")
 
     rules = [validate_rule(raw, index) for index, raw in enumerate(raw_rules, start=1)]
-    ids = [rule["id"] for rule in rules]
-    if len(ids) != len(set(ids)):
-        raise ContractError("规则 id 必须唯一")
+    require_unique_rule_ids(rules)
+    require_baseline_mapping(rules, baseline_path)
 
     baseline_sha256 = sha256_file(baseline_path)
     core = {
@@ -303,6 +284,9 @@ def validate_contract(contract: Any, baseline_path: Path) -> dict:
     rules = [validate_rule(raw, index) for index, raw in enumerate(raw_rules, start=1)]
     if rules != raw_rules:
         raise ContractError("契约规则未规范化；请重新运行 contract 命令生成")
+    # 编译期查过一次不等于此后成立：契约是落盘文件，自哈希连同重算就绕过去了。
+    require_unique_rule_ids(rules)
+    require_baseline_mapping(rules, baseline_path)
 
     core = {
         "schema_version": contract["schema_version"],
@@ -338,99 +322,28 @@ def validate_locator(locator: Any, rule_id: str) -> dict[str, Any]:
     return dict(locator)
 
 
-def find_adapter_decision_field(value: Any, path: str = "collect") -> str | None:
+ADAPTER_FORBIDDEN_JUDGMENT_FIELDS = (
+    "expected",
+    "tolerance",
+    "design_fact_source",
+    "baseline_id",
+)
+
+
+def find_forbidden_adapter_fields(value: Any, path: str = "") -> list[str]:
+    """Recursively find judgment-field keys hidden anywhere in an adapter entry."""
+    hits: list[str] = []
     if isinstance(value, dict):
         for key, child in value.items():
-            child_path = f"{path}.{key}"
-            if key in ADAPTER_DECISION_FIELDS:
-                return child_path
-            found = find_adapter_decision_field(child, child_path)
-            if found:
-                return found
+            child_path = f"{path}.{key}" if path else str(key)
+            if key in ADAPTER_FORBIDDEN_JUDGMENT_FIELDS:
+                hits.append(child_path)
+            hits.extend(find_forbidden_adapter_fields(child, child_path))
     elif isinstance(value, list):
         for index, child in enumerate(value):
-            found = find_adapter_decision_field(child, f"{path}[{index}]")
-            if found:
-                return found
-    return None
-
-
-def validate_collect_spec(spec: Any, rule_id: str, path: str = "collect") -> dict[str, Any]:
-    if spec is None:
-        return {"kind": "count"}
-    if not isinstance(spec, dict):
-        raise ContractError(f"规则 {rule_id} 的 {path} 必须是对象")
-    decision_field = find_adapter_decision_field(spec, path)
-    if decision_field:
-        raise ContractError(
-            f"规则 {rule_id} 的 adapter 混入外部判定字段：{decision_field}"
-        )
-    kind = spec.get("kind", "count")
-    if kind not in COLLECT_KINDS:
-        raise ContractError(f"规则 {rule_id} 的 {path}.kind 不支持：{kind}")
-    selector = spec.get("selector")
-    if selector is not None and (not isinstance(selector, str) or not selector):
-        raise ContractError(f"规则 {rule_id} 的 {path}.selector 必须是非空字符串")
-    if spec.get("scope", "root") not in {"root", "document"}:
-        raise ContractError(f"规则 {rule_id} 的 {path}.scope 仅支持 root/document")
-    if kind == "object":
-        fields = spec.get("fields")
-        if not isinstance(fields, dict) or not fields:
-            raise ContractError(f"规则 {rule_id} 的 {path}.fields 必须是非空对象")
-        normalized_fields = {
-            field: validate_collect_spec(child, rule_id, f"{path}.fields.{field}")
-            for field, child in fields.items()
-            if isinstance(field, str) and field
-        }
-        if len(normalized_fields) != len(fields):
-            raise ContractError(f"规则 {rule_id} 的 {path}.fields 名称必须是非空字符串")
-        return {**spec, "kind": kind, "fields": normalized_fields}
-    if kind == "style":
-        properties = spec.get("properties")
-        if not isinstance(properties, list) or not properties or any(
-            not isinstance(item, str) or not item for item in properties
-        ):
-            raise ContractError(f"规则 {rule_id} 的 {path}.properties 必须是非空字符串数组")
-    if kind == "state":
-        properties = spec.get("properties", [])
-        attributes = spec.get("attributes", [])
-        if any(
-            not isinstance(values, list)
-            or any(not isinstance(item, str) or not item for item in values)
-            for values in (properties, attributes)
-        ):
-            raise ContractError(f"规则 {rule_id} 的 {path} state 字段必须是字符串数组")
-    if kind == "attribute" and (
-        not isinstance(spec.get("name"), str) or not spec["name"]
-    ):
-        raise ContractError(f"规则 {rule_id} 的 {path}.name 必须是非空字符串")
-    if kind == "descendant_counts" and (
-        not isinstance(spec.get("child_selector"), str) or not spec["child_selector"]
-    ):
-        raise ContractError(f"规则 {rule_id} 的 {path}.child_selector 必须是非空字符串")
-    if kind == "selector_order":
-        items = spec.get("items")
-        if not isinstance(items, list) or not items:
-            raise ContractError(f"规则 {rule_id} 的 {path}.items 必须是非空数组")
-        for item in items:
-            if (
-                not isinstance(item, dict)
-                or not isinstance(item.get("name"), str)
-                or not item["name"]
-                or not isinstance(item.get("selector"), str)
-                or not item["selector"]
-            ):
-                raise ContractError(
-                    f"规则 {rule_id} 的 {path}.items 必须包含 name/selector"
-                )
-    if kind == "rect" and "property" in spec and spec["property"] not in {
-        "x", "y", "top", "right", "bottom", "left", "width", "height"
-    }:
-        raise ContractError(f"规则 {rule_id} 的 {path}.property 不支持")
-    for boolean_field in ("single", "numeric", "include_root", "group_by_parent"):
-        if boolean_field in spec and not isinstance(spec[boolean_field], bool):
-            raise ContractError(f"规则 {rule_id} 的 {path}.{boolean_field} 必须是布尔值")
-    return {**spec, "kind": kind}
+            child_path = f"{path}[{index}]" if path else f"[{index}]"
+            hits.extend(find_forbidden_adapter_fields(child, child_path))
+    return hits
 
 
 def validate_adapter(adapter: Any, contract: dict) -> dict:
@@ -450,11 +363,7 @@ def validate_adapter(adapter: Any, contract: dict) -> dict:
         entry = entries.get(rule_id)
         if not isinstance(entry, dict):
             raise ContractError(f"adapter 缺规则 {rule_id} 的实现定位")
-        forbidden_fields = [
-            field
-            for field in ADAPTER_DECISION_FIELDS
-            if field in entry
-        ]
+        forbidden_fields = find_forbidden_adapter_fields(entry)
         if forbidden_fields:
             raise ContractError(
                 f"规则 {rule_id} 的 adapter 混入外部判定字段：{forbidden_fields}"
@@ -477,8 +386,12 @@ def validate_adapter(adapter: Any, contract: dict) -> dict:
             **entry,
             "locators": checked,
             "source_files": source_files,
-            "collect": validate_collect_spec(entry.get("collect"), rule_id),
         }
+
+    # 多出来的条目多半是契约改了而 adapter 没跟着改，静默丢弃会让人以为它还在生效。
+    extra = sorted(set(entries) - {rule["id"] for rule in contract["rules"]})
+    if extra:
+        raise ContractError(f"adapter 含契约中不存在的规则：{'、'.join(extra)}")
 
     return {
         "schema_version": ADAPTER_SCHEMA_VERSION,
@@ -698,115 +611,11 @@ def max_metric(value: Any) -> float:
     return parse_css_number(value)
 
 
-def compare_text(expected: dict[str, Any], actual: Any) -> tuple[bool, dict[str, Any]]:
-    if isinstance(actual, list):
-        text = " ".join(str(item) for item in actual)
-    elif isinstance(actual, str):
-        text = actual
-    else:
-        return False, {
-            "actual": actual,
-            "missing_texts": list(expected.get("required_texts", [])),
-            "missing_patterns": [
-                item["name"] for item in expected.get("required_patterns", [])
-            ],
-            "reason": "actual is not text",
-        }
-    missing_texts = [
-        required
-        for required in expected.get("required_texts", [])
-        if required not in text
-    ]
-    missing_patterns = [
-        item["name"]
-        for item in expected.get("required_patterns", [])
-        if re.search(item["pattern"], text) is None
-    ]
-    return not missing_texts and not missing_patterns, {
-        "actual": text,
-        "missing_texts": missing_texts,
-        "missing_patterns": missing_patterns,
-    }
-
-
-def compare_constraints(
-    expected: dict[str, dict[str, Any]],
-    actual: Any,
-    default_tolerance: float,
-) -> tuple[bool, dict[str, Any]]:
-    if not isinstance(actual, dict):
-        return False, {
-            "actual": actual,
-            "failures": [{"field": "$", "reason": "actual is not an object"}],
-        }
-    failures: list[dict[str, Any]] = []
-    measurements: dict[str, Any] = {}
-    for field, constraint in expected.items():
-        if field not in actual:
-            failures.append({"field": field, "reason": "missing"})
-            continue
-        try:
-            measured = parse_css_number(actual[field])
-        except ValueError:
-            failures.append(
-                {"field": field, "reason": "not-numeric", "actual": actual[field]}
-            )
-            continue
-        measurements[field] = measured
-        constraint_tolerance = parse_css_number(
-            constraint.get(
-                "tolerance",
-                default_tolerance if "equals" in constraint else 0.0,
-            )
-        )
-        if "equals" in constraint:
-            target = parse_css_number(constraint["equals"])
-            if abs(measured - target) > constraint_tolerance:
-                failures.append(
-                    {
-                        "field": field,
-                        "operator": "equals",
-                        "expected": target,
-                        "actual": measured,
-                        "tolerance": constraint_tolerance,
-                    }
-                )
-        if "min" in constraint:
-            minimum = parse_css_number(constraint["min"])
-            if measured < minimum - constraint_tolerance:
-                failures.append(
-                    {
-                        "field": field,
-                        "operator": "min",
-                        "expected": minimum,
-                        "actual": measured,
-                        "tolerance": constraint_tolerance,
-                    }
-                )
-        if "max" in constraint:
-            maximum = parse_css_number(constraint["max"])
-            if measured > maximum + constraint_tolerance:
-                failures.append(
-                    {
-                        "field": field,
-                        "operator": "max",
-                        "expected": maximum,
-                        "actual": measured,
-                        "tolerance": constraint_tolerance,
-                    }
-                )
-    return not failures, {"measurements": measurements, "failures": failures}
-
-
 def compare_actual(rule: dict, expected: Any, actual: Any) -> tuple[bool, dict[str, Any]]:
     mode = rule["check_mode"]
     tolerance = float(rule["tolerance"]["css_px"])
     if mode in {"exact", "structure", "state"}:
         return expected == actual, {"expected": expected, "actual": actual}
-    if mode == "text":
-        return compare_text(expected, actual)
-    if mode == "constraints":
-        return compare_constraints(expected, actual, tolerance)
     if mode == "numeric":
         differences = numeric_differences(expected, actual)
         passed = all(
@@ -1068,18 +877,46 @@ def optional_json(path: str | None) -> dict | None:
     return load_json(Path(path).expanduser()) if path else None
 
 
+def require_recompile_is_allowed(out_path: Path, baseline_path: Path, acknowledged: bool) -> None:
+    """基线改过之后重新编译，必须先经过重新确认。
+
+    「已冻结 ✅」是写在基线正文里的，改基线内容不会把它去掉，所以这一步拦不住的话
+    一条命令就能把旧契约连同它记录的基线哈希一起换掉——冻结也就名存实亡。
+    """
+    if acknowledged or not out_path.exists():
+        return
+    try:
+        existing = load_json(out_path)
+    except ContractError:
+        return
+    if not isinstance(existing, dict):
+        return
+    previous = (existing.get("baseline") or {}).get("sha256")
+    if not previous or previous == sha256_file(baseline_path):
+        return
+    raise ContractError(
+        f"{out_path} 已存在，且它记录的基线哈希与当前 dev-baseline.md 不同："
+        f" contract={previous} actual={sha256_file(baseline_path)}。"
+        "基线冻结后每一次放宽都要先在「变更记录」登记并重新请用户确认；"
+        "确认过了再加 --after-reconfirmation 重新编译。"
+    )
+
+
 def command_contract(args: argparse.Namespace) -> int:
+    baseline_path = Path(args.baseline).expanduser()
+    out_path = Path(args.out).expanduser()
+    require_recompile_is_allowed(out_path, baseline_path, args.after_reconfirmation)
     contract = compile_contract(
-        Path(args.baseline).expanduser(),
+        baseline_path,
         Path(args.rules).expanduser(),
         args.baseline_ref,
     )
-    write_json(Path(args.out).expanduser(), contract)
+    write_json(out_path, contract)
     print(
         json.dumps(
             {
                 "status": "written",
-                "out": str(Path(args.out).expanduser()),
+                "out": str(out_path),
                 "contract_sha256": contract["contract_sha256"],
                 "rules": len(contract["rules"]),
             },
@@ -1205,6 +1042,11 @@ def main(argv: list[str] | None = None) -> int:
     contract_parser.add_argument(
         "--baseline-ref",
         help="写进契约的可移植基线路径；缺省使用 --baseline 原值",
+    )
+    contract_parser.add_argument(
+        "--after-reconfirmation",
+        action="store_true",
+        help="基线变更已在「变更记录」登记并重新经用户确认，允许覆盖已有契约",
     )
 
     validate_parser = subparsers.add_parser(
