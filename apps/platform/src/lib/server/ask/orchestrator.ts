@@ -390,7 +390,17 @@ async function* orchestrate(
         ...(signal ? { signal } : {})
       })
     );
-  const decision = await formUnitOnce();
+  let decision = await formUnitOnce();
+  if (
+    decision.outcome === 'out_of_scope' &&
+    state.unit !== null &&
+    explicitComponentRequest(question) !== null
+  ) {
+    // 纯展示追问的确定性保护:话语点名了组件形态且存在增量修改基线时,
+    // 模型的「面外」判定不成立——本轮的实质诉求就是换展示。按空 patch
+    // 继续(取数单元不变),组件选择由呈现阶段的确定性通道兑现。
+    decision = { outcome: 'patch', patch: {} };
+  }
   if (decision.outcome === 'out_of_scope') {
     yield step(candidatesEvent(candidates, null, null));
     yield step({
@@ -911,9 +921,11 @@ function explicitComponentRequest(
 ): ExecutedDataRequestUnit['pinnedComponent'] | null {
   let best: { type: ExecutedDataRequestUnit['pinnedComponent']; index: number } | null = null;
   for (const entry of componentCatalog) {
-    const index = question.lastIndexOf(entry.label);
-    if (index >= 0 && (best === null || index > best.index)) {
-      best = { type: entry.type, index };
+    for (const term of [entry.label, ...entry.aliases]) {
+      const index = question.lastIndexOf(term);
+      if (index >= 0 && (best === null || index > best.index)) {
+        best = { type: entry.type, index };
+      }
     }
   }
   return best?.type ?? null;

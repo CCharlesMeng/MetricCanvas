@@ -50,6 +50,7 @@ export const barChartComponentZ = z
 
 componentCatalogRegistry.add(barChartComponentZ, {
   label: '柱状图',
+  aliases: ['条形图', '柱图'],
   purpose: '比较离散类别之间的大小或展示分类分布',
   chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
   dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',
@@ -83,6 +84,7 @@ export const lineChartComponentZ = z
 
 componentCatalogRegistry.add(lineChartComponentZ, {
   label: '折线图',
+  aliases: ['线图', '趋势图'],
   purpose: '展示指标随时间或有序维度的变化趋势',
   chooseWhen: ['趋势、走势、按日/月变化、时间序列'],
   dataShape: '一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段',
@@ -112,6 +114,7 @@ export const pieChartComponentZ = z
 
 componentCatalogRegistry.add(pieChartComponentZ, {
   label: '饼图',
+  aliases: ['圆饼图', '环形图'],
   purpose: '展示少量类别对整体的占比或构成',
   chooseWhen: ['占比、构成、份额，且类别数量较少'],
   dataShape: '一个 dimension 类别字段 + 一个 metric 数值字段',

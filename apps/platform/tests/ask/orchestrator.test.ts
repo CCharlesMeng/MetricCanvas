@@ -386,6 +386,29 @@ describe('问数编排:追问是定向增量修改', () => {
     ).toMatchObject({
       components: [{ componentType: 'barChart', pinnedByUser: true }]
     });
+    const thirdBaseline = completedOf(thirdEvents).messages;
+
+    // 第四轮:目录别名同样命中确定性通道(「表格」是「明细表」的别名);
+    // 且模型把纯展示追问误判为面外时,确定性保护按空 patch 继续,
+    // 不走发现段降级。
+    const fourth = buildAskPorts({
+      script: {
+        unit: [{ outcome: 'out_of_scope', reason: '图表呈现方式不属于取数职责' }],
+        intent: [{ intent: 'trend' }]
+      }
+    });
+    const fourthRunner = createAskOrchestrationRunner(fourth.ports, { runId: 'req-4' });
+    const fourthEvents = await collect(
+      fourthRunner.run({ messages: userTurn('改成表格', thirdBaseline) })
+    );
+    expect(
+      stepEvents(fourthEvents).some((event) => event.type === 'step_failed')
+    ).toBe(false);
+    expect(
+      stepEvents(fourthEvents).find((event) => event.type === 'document_ready')
+    ).toMatchObject({
+      components: [{ componentType: 'table', pinnedByUser: true }]
+    });
   });
 });
 

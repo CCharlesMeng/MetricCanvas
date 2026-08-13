@@ -7,6 +7,12 @@ import { z } from 'zod';
  */
 export interface ComponentCatalogMeta {
   label: string;
+  /**
+   * 用户话语中指代该组件形态的常用叫法(如「表格」之于明细表),供显式
+   * 点名的确定性识别。必须是明确指代组件形态的名词,不得收录意图词
+   * (「对比」「排行」属于意图,归 chooseWhen)。
+   */
+  aliases?: string[];
   purpose: string;
   chooseWhen: string[];
   dataShape: string;

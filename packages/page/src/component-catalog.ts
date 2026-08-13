@@ -6,6 +6,8 @@ import { componentCatalogRegistry } from './schema/registry';
 export interface ComponentCatalogEntry {
   type: Component['type'];
   label: string;
+  /** 用户话语中指代该组件形态的常用叫法;显式点名识别的词汇与 label 同源。 */
+  aliases: string[];
   purpose: string;
   chooseWhen: string[];
   dataShape: string;
@@ -33,6 +35,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = componentSchem
     return {
       type: shape.type.value as Component['type'],
       label: meta.label,
+      aliases: meta.aliases ?? [],
       purpose: meta.purpose,
       chooseWhen: meta.chooseWhen,
       dataShape: meta.dataShape,

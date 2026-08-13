@@ -134,6 +134,7 @@ export const tableComponentZ = z
 
 componentCatalogRegistry.add(tableComponentZ, {
   label: '明细表',
+  aliases: ['表格', '列表'],
   purpose: '展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录',
   chooseWhen: ['明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细'],
   dataShape: '一个或多个 dimension/metric 字段组成的多行记录',
