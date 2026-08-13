@@ -87,6 +87,58 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     });
   });
 
+  it('DQE Sim 的拒答信封被映射为查询被拒绝,拒答说明(上游正文)不进入错误对象', async () => {
+    const server = createDqeSimServer({ logger: false });
+    servers.push(server);
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address() as AddressInfo;
+    const diagnostics = createInMemoryDqeDiagnostics();
+    const gateway = createDqeGateway({
+      endpoint: `http://127.0.0.1:${address.port}${DQE_EXECUTE_PATH}`,
+      diagnostics
+    });
+
+    // 仿真语义面之外的指标组合会得到 DQE_SIM_UNSUPPORTED_QUERY 拒答信封。
+    const rejected: EffectiveQuery = {
+      language: 'dqe',
+      body: {
+        dsl_list: [{
+          output_metrics: ['仿真面外指标'],
+          output_dims: [],
+          filter: { dims: [], metrics: [] },
+          order: {}
+        }]
+      },
+      fieldMappings: {
+        value: { queryField: '仿真面外指标', type: 'number', role: 'measure' }
+      },
+      filterValues: []
+    };
+
+    const caught = await gateway.fetchData(rejected).then(
+      () => {
+        throw new Error('拒答信封必须拒绝');
+      },
+      (cause: unknown) => cause as { code: string; message: string; detail?: unknown }
+    );
+
+    expect(caught).toMatchObject({
+      code: 'DQE_QUERY_REJECTED',
+      detail: { resultCode: 'DQE_SIM_UNSUPPORTED_QUERY' }
+    });
+    expect(diagnostics.records()[0]).toMatchObject({
+      status: 'error',
+      errorCode: 'DQE_QUERY_REJECTED'
+    });
+    // 仿真 retDesc 是上游响应正文,不得进入错误对象与诊断记录。
+    const serialized = JSON.stringify({
+      message: caught.message,
+      detail: caught.detail,
+      records: diagnostics.records()
+    });
+    expect(serialized).not.toContain('不支持的 output_metrics/output_dims 组合');
+  });
+
   it('把同一轮 NA 与 Top100 逻辑查询合并为一个真实 HTTP 请求', async () => {
     const requests: string[] = [];
     const server = createDqeSimServer({

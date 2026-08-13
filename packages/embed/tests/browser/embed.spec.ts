@@ -509,6 +509,86 @@ test('query 页面缺少接入依赖时给出配置错误而非页面错误', as
     .toBe(true);
 });
 
+test('查询失败按稳定分类呈现并上抛 data-error 嵌入事件,宿主不解析错误字符串', async ({
+  page
+}) => {
+  await page.goto('/examples/query.html');
+  await expect(
+    page.locator('[data-metriccanvas-runtime]').getByRole('table')
+  ).toBeVisible();
+
+  // 表驱动:嵌入宿主按分类决定重登或展示失败(issue #51)。
+  const cases = [
+    {
+      code: 'DQE_AUTH_REQUIRED',
+      message: '需要登录后才能执行查询(401)',
+      headline: '登录状态已失效，请重新登录后重试'
+    },
+    {
+      code: 'DQE_QUERY_REJECTED',
+      message: 'DQE 拒绝执行查询项:FAILED',
+      headline: '查询失败'
+    },
+    {
+      code: 'DQE_TIMEOUT',
+      message: 'DQE 请求超过 30000ms 未返回',
+      headline: '查询暂时不可用，请稍后重试'
+    }
+  ] as const;
+
+  await page.evaluate(() => {
+    window.queryRuntime.destroy();
+  });
+  for (const testCase of cases) {
+    await page.evaluate(
+      ({ code, message }) => {
+        window.failingRuntime?.destroy();
+        // 去掉内嵌初始行,让首次呈现立即执行查询。
+        const failingDocument = structuredClone(window.queryPageDocument);
+        delete failingDocument.dataSources.sales.source.initial;
+        window.queryEvents = [];
+        window.failingRuntime = MetricCanvas.mount('#dashboard', {
+          document: failingDocument,
+          dataGateway: {
+            async fetchData() {
+              throw Object.assign(new Error(message), { code });
+            },
+            async fetchDimensionValues() {
+              return [];
+            }
+          },
+          onEvent(event) {
+            window.queryEvents.push(event);
+          }
+        });
+      },
+      { code: testCase.code, message: testCase.message }
+    );
+
+    const host = page.locator('[data-metriccanvas-runtime]');
+    await expect(host.getByText(testCase.headline)).toBeVisible();
+    await expect(host.getByText(testCase.message)).toBeVisible();
+    await expect(host.getByText(testCase.code)).toBeVisible();
+    await expect
+      .poll(() =>
+        page.evaluate(() =>
+          window.queryEvents.filter(event => event.type === 'data-error')
+        )
+      )
+      .toEqual([
+        {
+          type: 'data-error',
+          dataSourceId: 'sales',
+          code: testCase.code,
+          message: testCase.message
+        }
+      ]);
+  }
+  await page.evaluate(() => {
+    window.failingRuntime.destroy();
+  });
+});
+
 test('ESM 单文件产物可直接导入', async ({ page }) => {
   await page.goto('/examples/esm.html');
   await expect(
@@ -1193,7 +1273,10 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       }
     });
   }, flowReportDocument);
-  await expect(yoyDropTable.getByRole('alert')).toHaveText('流水数据网关测试错误');
+  // 错误块按分类呈现:标题(处理语义)+ 脱值消息 + 分类标识(issue #51);
+  // 普通 Error 未携带查询错误分类,兜底为 UNKNOWN。
+  await expect(yoyDropTable.getByRole('alert')).toContainText('流水数据网关测试错误');
+  await expect(yoyDropTable.getByRole('alert')).toContainText('UNKNOWN');
   await expect(host.getByRole('heading', { name: '2026年2月流水分析报告' })).toBeVisible();
 });
 

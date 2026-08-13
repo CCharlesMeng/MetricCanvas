@@ -126,7 +126,7 @@ Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。
 
 ## 事件
 
-`RuntimeEvent` 是 `@metriccanvas/runtime-ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`configuration-error`、`filter-change`、`navigate`。
+`RuntimeEvent` 是 `@metriccanvas/runtime-ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`configuration-error`、`data-error`、`filter-change`、`navigate`。
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {
@@ -136,11 +136,16 @@ const runtime = MetricCanvas.mount('#dashboard', {
     if (event.type === 'navigate') {
       hostRouter.navigate(event.pageId, event.search);
     }
+    if (event.type === 'data-error' && event.code === 'DQE_AUTH_REQUIRED') {
+      hostAuth.promptLogin();
+    }
   }
 });
 ```
 
 Embed 通过事件通知宿主筛选变化和页面导航，不修改宿主 URL。
+
+`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`@metriccanvas/page` 的 `QueryErrorCode`，未携带分类的异常为 `UNKNOWN`)与脱值消息。宿主按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
 
 ## 生命周期
 

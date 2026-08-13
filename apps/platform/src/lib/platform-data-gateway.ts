@@ -1,4 +1,5 @@
 import { DqeGatewayError } from '@metriccanvas/data-gateway';
+import { isQueryErrorCode } from '@metriccanvas/page';
 import type {
   DataGateway,
   DataGatewayResult,
@@ -109,10 +110,12 @@ function isSuccessPayload(
 function isFailurePayload(
   payload: unknown
 ): payload is { ok: false; code: DqeGatewayError['code']; message: string } {
+  // code 必须落在查询错误分类封闭集内(失败关闭):集外字符串视为
+  // 非契约响应,收敛为 DQE_TRANSPORT_ERROR,不让任意分类进入运行时。
   return (
     isRecord(payload) &&
     payload.ok === false &&
-    typeof payload.code === 'string' &&
+    isQueryErrorCode(payload.code) &&
     typeof payload.message === 'string'
   );
 }

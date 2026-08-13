@@ -1,6 +1,8 @@
 import type { TypedError } from '@metriccanvas/page';
 import type { DataGateway } from '@metriccanvas/runtime';
+import type { DataErrorEvent } from './data-error-events';
 export type { AiSummaryConfig } from './ai-summary/pangu-sse';
+export type { DataErrorEvent } from './data-error-events';
 
 export interface AuthoringComponentLocator {
   sectionId: string;
@@ -56,6 +58,7 @@ export type RuntimeViewEvent =
       code: RuntimeConfigurationErrorCode;
       message: string;
     }
+  | DataErrorEvent
   | { type: 'filter-change'; search: string }
   | { type: 'navigate'; pageId: string; search: string };
 

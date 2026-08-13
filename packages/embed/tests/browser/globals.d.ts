@@ -17,6 +17,7 @@ declare global {
     queryCalls: Array<{ pagination?: { offset: number; limit: number } }>;
     queryRuntime: RuntimeHandle;
     missingRuntime: RuntimeHandle;
+    failingRuntime: RuntimeHandle;
     aiSummaryRuntime: RuntimeHandle;
     aiSummaryRequests: Array<{
       url: string;

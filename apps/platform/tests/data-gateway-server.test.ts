@@ -257,9 +257,9 @@ describe('生产态查询诊断日志(issue #47)', () => {
 
     const result = await executeDataQuery(gateway, { query: effectiveQuery() });
 
-    expect(result).toMatchObject({ ok: false, code: 'DQE_ITEM_ERROR' });
+    expect(result).toMatchObject({ ok: false, code: 'DQE_QUERY_REJECTED' });
     expect(JSON.stringify(result)).not.toContain(SENTINEL);
-    expect(records[0]).toMatchObject({ status: 'error', errorCode: 'DQE_ITEM_ERROR' });
+    expect(records[0]).toMatchObject({ status: 'error', errorCode: 'DQE_QUERY_REJECTED' });
     expect(JSON.stringify(records)).not.toContain(SENTINEL);
   });
 

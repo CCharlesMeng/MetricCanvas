@@ -5,6 +5,7 @@ export * from './data-source';
 export * from './field';
 export * from './filter';
 export * from './query';
+export * from './query-error';
 export * from './query-rows';
 export * from './result-field-contract';
 export * from './snapshot';

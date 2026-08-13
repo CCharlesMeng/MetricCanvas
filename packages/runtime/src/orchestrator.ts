@@ -1,9 +1,11 @@
 import {
+  isQueryErrorCode,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
   type Page,
-  type QueryDataSource
+  type QueryDataSource,
+  type QueryError
 } from '@metriccanvas/page';
 import {
   initialFilterValues,
@@ -412,11 +414,21 @@ async function execute(
     }
     return rowsSnapshot(result.rows, result.totalCount);
   } catch (cause) {
-    return {
-      status: 'error',
-      error: { message: cause instanceof Error ? cause.message : String(cause) }
-    };
+    return { status: 'error', error: preservedQueryError(cause) };
   }
+}
+
+/**
+ * 把数据网关的拒绝保留为数据快照的结构化查询错误(issue #51)。
+ * 按结构判别 code(自定义数据网关不必依赖 DqeGatewayError 类,
+ * 跨 realm 时 instanceof 也不可靠);封闭集之外的异常兜底为 UNKNOWN。
+ */
+function preservedQueryError(cause: unknown): QueryError {
+  const code = cause instanceof Error ? (cause as { code?: unknown }).code : undefined;
+  return {
+    code: isQueryErrorCode(code) ? code : 'UNKNOWN',
+    message: cause instanceof Error ? cause.message : String(cause)
+  };
 }
 
 function correctedPageIndex(

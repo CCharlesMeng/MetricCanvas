@@ -53,6 +53,7 @@
     type TableViewState
   } from '@metriccanvas/widgets';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
+  import { collectDataErrors } from './data-error-events';
   import DimensionFilter from './filters/DimensionFilter.svelte';
   import TimeRangeFilter from './filters/TimeRangeFilter.svelte';
   import WidgetHost from './WidgetHost.svelte';
@@ -222,10 +223,15 @@
       revisionId !== undefined ? { pageRevisionId: revisionId } : undefined
     );
     stream = pageStream;
+    const emittedDataErrors = new Map<string, string>();
     disposers.push(
       pageStream.subscribe((next) => {
         snapshots = next;
         syncQueryTablePages(loaded, next);
+        // 结构化查询错误上抛为嵌入事件,宿主按分类决定重试或重登(issue #51)。
+        for (const event of collectDataErrors(emittedDataErrors, next)) {
+          emit?.(event);
+        }
       })
     );
     emit?.({ type: 'ready', pageId: loaded.id });

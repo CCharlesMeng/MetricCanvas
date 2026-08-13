@@ -131,7 +131,7 @@ describe('DQE 数据网关', () => {
     expect(failed.status).toBe('rejected');
     expect(
       failed.status === 'rejected' ? (failed.reason as DqeGatewayError).code : ''
-    ).toBe('DQE_ITEM_ERROR');
+    ).toBe('DQE_QUERY_REJECTED');
     expect(succeeded).toEqual({
       status: 'fulfilled',
       value: {

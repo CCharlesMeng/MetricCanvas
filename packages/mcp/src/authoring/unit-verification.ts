@@ -217,6 +217,11 @@ export function createDataRequestUnitVerification(
 export const RUNTIME_QUERY_ERROR_STAGES: Readonly<Record<string, FailureStage>> = {
   DQE_CONFIG_ERROR: 'generation',
   DQE_FILTER_BINDING_ERROR: 'generation',
+  DQE_CANCELLED: 'execution',
+  DQE_AUTH_REQUIRED: 'execution',
+  DQE_FORBIDDEN: 'execution',
+  DQE_TIMEOUT: 'execution',
+  DQE_QUERY_REJECTED: 'execution',
   DQE_TRANSPORT_ERROR: 'execution',
   DQE_ENVELOPE_ERROR: 'execution',
   DQE_ITEM_ERROR: 'execution',

@@ -35,6 +35,13 @@ export interface QueryDiagnosticContext {
  * 当前 query 场景由 DQE 适配器实现；inline 静态场景不访问该端口。
  */
 export interface DataGateway {
+  /**
+   * 执行失败时,拒绝原因应携带稳定查询错误分类:错误对象的 `code`
+   * 属性取 @metriccanvas/page 的 QueryErrorCode 封闭集(issue #51)。
+   * 编排器按结构判别该属性并原样保留进数据快照错误态;未携带分类
+   * 的异常兜底为 UNKNOWN。错误消息不得包含查询结果、筛选值、Secret
+   * 或上游响应正文(issue #47)。
+   */
   fetchData(
     query: EffectiveQuery,
     diagnosticContext?: QueryDiagnosticContext

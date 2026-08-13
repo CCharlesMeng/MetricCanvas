@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery, Page } from '@metriccanvas/page';
+import { QUERY_ERROR_CODES, type EffectiveQuery, type Page } from '@metriccanvas/page';
 import { createFilterState } from '../src/filter-state';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import type { DataGateway, QueryDiagnosticContext } from '../src/ports';
@@ -237,11 +237,80 @@ describe('页面数据源快照编排', () => {
       values: ['华东']
     });
     await flush();
+    // 普通 Error 未携带查询错误分类,兜底为 UNKNOWN(issue #51)。
     expect(pushes.at(-1)?.get('sales')).toEqual({
       status: 'error',
-      error: { message: '查询失败' }
+      error: { code: 'UNKNOWN', message: '查询失败' }
     });
     unsubscribe();
+  });
+
+  it('数据快照错误态保留数据网关的稳定错误分类与安全上下文(表驱动)', async () => {
+    const filterSentinel = '筛选哨兵值-华东机密';
+    for (const code of QUERY_ERROR_CODES) {
+      const document = page();
+      const filters = createFilterState();
+      const gateway: DataGateway = {
+        async fetchData() {
+          // 按结构携带分类,不依赖 DqeGatewayError 类(自定义网关同样成立)。
+          throw Object.assign(new Error(`分类 ${code} 的脱值消息`), { code });
+        },
+        async fetchDimensionValues() {
+          return [];
+        }
+      };
+      const pushes: PageDataSnapshots[] = [];
+      const unsubscribe = orchestrate(document, gateway, filters).subscribe((value) =>
+        pushes.push(value)
+      );
+      filters.write('region-filter', {
+        type: 'dimension',
+        dimension: 'region',
+        values: [filterSentinel]
+      });
+      await flush();
+
+      const snapshot = pushes.at(-1)?.get('sales');
+      expect(snapshot).toEqual({
+        status: 'error',
+        error: { code, message: `分类 ${code} 的脱值消息` }
+      });
+      // 安全上下文:快照错误序列化检索不到筛选值。
+      expect(JSON.stringify(snapshot)).not.toContain(filterSentinel);
+      unsubscribe();
+    }
+  });
+
+  it('封闭集之外的 code 与非 Error 抛出都兜底为 UNKNOWN', async () => {
+    for (const [thrown, expectedMessage] of [
+      [Object.assign(new Error('未知分类'), { code: 'SOMETHING_ELSE' }), '未知分类'],
+      ['字符串异常', '字符串异常']
+    ] as const) {
+      const gateway: DataGateway = {
+        async fetchData() {
+          throw thrown;
+        },
+        async fetchDimensionValues() {
+          return [];
+        }
+      };
+      const filters = createFilterState();
+      const pushes: PageDataSnapshots[] = [];
+      const unsubscribe = orchestrate(page(), gateway, filters).subscribe((value) =>
+        pushes.push(value)
+      );
+      filters.write('region-filter', {
+        type: 'dimension',
+        dimension: 'region',
+        values: ['华东']
+      });
+      await flush();
+      expect(pushes.at(-1)?.get('sales')).toEqual({
+        status: 'error',
+        error: { code: 'UNKNOWN', message: expectedMessage }
+      });
+      unsubscribe();
+    }
   });
 
   it('查询分页写入 offset，越界时回查最后有效页，筛选变化回到第一页', async () => {

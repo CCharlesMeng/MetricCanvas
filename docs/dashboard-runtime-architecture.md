@@ -286,7 +286,9 @@ t:<from>~<to>
 | `loading` | 无 | 查询正在执行 |
 | `ready` | 一行或多行，可选总条数 | 数据可渲染 |
 | `empty` | 无，查询分页总条数为 `0` | 执行成功且结果为空 |
-| `error` | 错误消息 | 查询、协议、映射或契约失败 |
+| `error` | 结构化查询错误(稳定分类 + 脱值消息) | 查询、协议、映射或契约失败 |
+
+错误态保留数据网关的稳定查询错误分类(issue #51)。分类的唯一声明是 `@metriccanvas/page` 的 `QueryErrorCode` 封闭集,`DqeGatewayError.code` 以它为类型:取消(`DQE_CANCELLED`)、需要登录(`DQE_AUTH_REQUIRED`)、无权限(`DQE_FORBIDDEN`)、超时(`DQE_TIMEOUT`)、查询被拒绝(`DQE_QUERY_REJECTED`)、上游失败(`DQE_TRANSPORT_ERROR`/`DQE_ENVELOPE_ERROR`/`DQE_ITEM_ERROR`)、结果字段契约不匹配(`DQE_FIELD_MAPPING_ERROR`/`DQE_ROW_CONTRACT_ERROR`)与执行前的查询声明错误(`DQE_CONFIG_ERROR`/`DQE_FILTER_BINDING_ERROR`)各有独立分类;未携带分类的异常兜底为 `UNKNOWN`。组件呈现与嵌入事件按分类决定重试、重新登录或展示失败(`queryErrorDisposition`),不解析错误字符串;错误消息与 detail 不包含查询结果、筛选值、Secret 或上游响应正文(issue #47 红线)。
 
 数据快照按组件 id 和数据槽组织：
 
@@ -358,13 +360,15 @@ Widgets 不负责：
 | 页面不存在或不可访问 | 应用壳显示页面加载失败 |
 | 页面校验失败 | Runtime UI 显示页面错误列表 |
 | 查询页面缺少数据网关 | Runtime UI 显示配置错误 |
-| DQE HTTP 或外层信封失败 | 批次中的相关数据源进入 `error` |
-| DQE 单项失败 | 对应数据源进入 `error` |
-| 字段映射或类型失败 | 对应数据源进入 `error` |
+| DQE HTTP 或外层信封失败 | 批次中的相关数据源进入 `error`(401/403/超时/取消/传输各有分类) |
+| DQE 单项拒答 | 对应数据源进入 `error`(`DQE_QUERY_REJECTED`) |
+| 字段映射或类型失败 | 对应数据源进入 `error`(契约不匹配分类) |
 | 查询成功且无数据 | 对应数据源进入 `empty` |
 | 订阅方回调抛出异常 | 异常被隔离，其他订阅方继续接收状态 |
 
 运行时不以历史数据替代失败结果。
+
+数据源进入错误态时,`WidgetHost` 按分类的处理语义(重试/重新登录/展示失败)统一呈现标题、脱值消息与分类标识;统一运行时视图同时向宿主上抛 `data-error` 事件(页面数据源 id + 分类 + 脱值消息,进入错误态或错误变化时各一次),嵌入宿主据此决定重试或引导重新登录。
 
 ## 16. 查询诊断
 

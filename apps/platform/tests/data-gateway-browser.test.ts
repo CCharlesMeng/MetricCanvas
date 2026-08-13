@@ -69,15 +69,33 @@ describe('数据网关端口的浏览器适配器', () => {
     expect(bodies).toEqual([{ query }]);
   });
 
-  it('失败响应还原为 DqeGatewayError 并保留透传的 code', async () => {
+  it('失败响应还原为 DqeGatewayError 并保留透传的 code(表驱动)', async () => {
+    for (const [code, message] of [
+      ['DQE_FIELD_MAPPING_ERROR', '响应缺少映射字段:NA客户数'],
+      ['DQE_AUTH_REQUIRED', '需要登录后才能执行查询(401)'],
+      ['DQE_FORBIDDEN', '没有执行该查询的权限(403)'],
+      ['DQE_TIMEOUT', 'DQE 请求超过 30000ms 未返回'],
+      ['DQE_QUERY_REJECTED', 'DQE 拒绝执行查询项:FAILED']
+    ] as const) {
+      const gateway = createPlatformDataGateway({
+        fetchImpl: (async () =>
+          new Response(JSON.stringify({ ok: false, code, message }), {
+            status: 502
+          })) as typeof fetch
+      });
+
+      const failure = await gateway.fetchData(query).catch((cause: unknown) => cause);
+
+      expect(failure).toBeInstanceOf(DqeGatewayError);
+      expect(failure).toMatchObject({ code, message });
+    }
+  });
+
+  it('封闭集之外的 code 视为非契约响应,失败关闭为 DQE_TRANSPORT_ERROR', async () => {
     const gateway = createPlatformDataGateway({
       fetchImpl: (async () =>
         new Response(
-          JSON.stringify({
-            ok: false,
-            code: 'DQE_FIELD_MAPPING_ERROR',
-            message: '响应缺少映射字段:NA客户数'
-          }),
+          JSON.stringify({ ok: false, code: 'SOMETHING_ELSE', message: '未知分类' }),
           { status: 502 }
         )) as typeof fetch
     });
@@ -85,10 +103,7 @@ describe('数据网关端口的浏览器适配器', () => {
     const failure = await gateway.fetchData(query).catch((cause: unknown) => cause);
 
     expect(failure).toBeInstanceOf(DqeGatewayError);
-    expect(failure).toMatchObject({
-      code: 'DQE_FIELD_MAPPING_ERROR',
-      message: '响应缺少映射字段:NA客户数'
-    });
+    expect(failure).toMatchObject({ code: 'DQE_TRANSPORT_ERROR' });
   });
 
   it('非契约响应与网络失败都收敛为 DQE_TRANSPORT_ERROR', async () => {

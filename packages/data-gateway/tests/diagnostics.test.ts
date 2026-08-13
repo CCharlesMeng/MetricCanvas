@@ -164,12 +164,12 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
         (cause: unknown) => cause as { code: string; message: string; detail?: unknown }
       );
 
-    expect(caught).toMatchObject({ code: 'DQE_ITEM_ERROR' });
+    expect(caught).toMatchObject({ code: 'DQE_QUERY_REJECTED' });
     expect(diagnostics.records()).toHaveLength(1);
     expect(diagnostics.records()[0]).toMatchObject({
       pageId: 'na-customers',
       status: 'error',
-      errorCode: 'DQE_ITEM_ERROR'
+      errorCode: 'DQE_QUERY_REJECTED'
     });
     expect(JSON.stringify(diagnostics.records())).not.toContain(SENTINEL);
     expect(

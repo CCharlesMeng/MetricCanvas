@@ -1,5 +1,6 @@
 import {
   normalizeQueryRows,
+  type QueryErrorCode,
   type QueryRowNormalizationIssue,
   type EffectiveQuery,
   type JsonObject,
@@ -106,19 +107,15 @@ interface PendingQuery {
 
 export class DqeGatewayError extends Error {
   /**
+   * code 是查询错误分类的抛出根:类型即 @metriccanvas/page 的
+   * QueryErrorCode 封闭联合,不在本包另列一份(issue #51)。
+   *
    * detail 只允许结构化事实(类型名、数量、字段名、上游返回码):
    * 原始响应、数据行、字段值、筛选值与上游错误正文不得进入,
    * 否则会经错误日志泄漏业务数据(issue #47)。
    */
   constructor(
-    readonly code:
-      | 'DQE_CONFIG_ERROR'
-      | 'DQE_FILTER_BINDING_ERROR'
-      | 'DQE_TRANSPORT_ERROR'
-      | 'DQE_ENVELOPE_ERROR'
-      | 'DQE_ITEM_ERROR'
-      | 'DQE_FIELD_MAPPING_ERROR'
-      | 'DQE_ROW_CONTRACT_ERROR',
+    readonly code: QueryErrorCode,
     message: string,
     readonly detail?: unknown
   ) {
@@ -232,8 +229,12 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
     await acquireBatch();
     const batchId = `dqe-batch-${++batchSequence}`;
     let requestId: string | undefined;
+    let timedOut = false;
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    const timer = setTimeout(() => {
+      timedOut = true;
+      controller.abort();
+    }, timeoutMs);
     try {
       const response = await fetchImpl(endpoint, {
         method: 'POST',
@@ -244,11 +245,7 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
       });
       requestId = response.headers.get('x-request-id') ?? undefined;
       if (!response.ok) {
-        throw new DqeGatewayError(
-          'DQE_TRANSPORT_ERROR',
-          `DQE HTTP 请求失败:${response.status}`,
-          { status: response.status }
-        );
+        throw httpStatusError(response.status);
       }
       const envelope = await response.json();
       if (!isRecord(envelope) || envelope.retCode !== 'CBC.0000') {
@@ -274,11 +271,19 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
       envelope.results.forEach((rawResult, index) => {
         const call = calls[index]!;
         try {
-          if (!isRecord(rawResult) || rawResult.code !== 'SUCCESS') {
+          if (!isRecord(rawResult)) {
             throw new DqeGatewayError(
               'DQE_ITEM_ERROR',
-              `DQE 查询项执行失败:${String(isRecord(rawResult) ? rawResult.code : 'INVALID')}`,
-              { resultCode: isRecord(rawResult) ? String(rawResult.code) : 'INVALID' }
+              `DQE 查询项结果必须是对象,实际是 ${describeType(rawResult)}`,
+              { resultType: describeType(rawResult) }
+            );
+          }
+          if (rawResult.code !== 'SUCCESS') {
+            // 上游对本查询项的明确拒答;retDesc 属上游错误正文,不进入错误对象。
+            throw new DqeGatewayError(
+              'DQE_QUERY_REJECTED',
+              `DQE 拒绝执行查询项:${String(rawResult.code)}`,
+              { resultCode: String(rawResult.code) }
             );
           }
           const rows = normalizeRows(rawResult.data, call.query);
@@ -302,7 +307,15 @@ export function createDqeGateway(config: DqeGatewayConfig = {}): DataGateway {
       const error =
         cause instanceof DqeGatewayError
           ? cause
-          : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
+          : timedOut
+            ? new DqeGatewayError(
+                'DQE_TIMEOUT',
+                `DQE 请求超过 ${timeoutMs}ms 未返回`,
+                { timeoutMs }
+              )
+            : isAbortError(cause)
+              ? new DqeGatewayError('DQE_CANCELLED', 'DQE 请求已被取消')
+              : new DqeGatewayError('DQE_TRANSPORT_ERROR', `DQE 请求不可达:${String(cause)}`);
       for (const call of calls) {
         settleFailure(call, error, batchId, requestId);
       }
@@ -573,6 +586,34 @@ function gatewayNormalizationError(
         }
       );
   }
+}
+
+/** HTTP 状态 → 稳定分类:401 需要登录、403 无权限,其余为上游失败。 */
+function httpStatusError(status: number): DqeGatewayError {
+  if (status === 401) {
+    return new DqeGatewayError(
+      'DQE_AUTH_REQUIRED',
+      '需要登录后才能执行查询(401)',
+      { status }
+    );
+  }
+  if (status === 403) {
+    return new DqeGatewayError(
+      'DQE_FORBIDDEN',
+      '没有执行该查询的权限(403)',
+      { status }
+    );
+  }
+  return new DqeGatewayError(
+    'DQE_TRANSPORT_ERROR',
+    `DQE HTTP 请求失败:${status}`,
+    { status }
+  );
+}
+
+/** 外部取消(fetch AbortError)与网关自身超时分开分类;超时由 timedOut 旗标判定。 */
+function isAbortError(cause: unknown): boolean {
+  return cause instanceof Error && cause.name === 'AbortError';
 }
 
 function cloneJson<T extends JsonValue>(value: T): T {
