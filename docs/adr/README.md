@@ -48,6 +48,9 @@
 | [0036](./0036-metric-gap-non-blocking-exit.md) | 指标缺口不阻塞问数,临时口径可见、计数并在沉淀处设闸 | 现行 |
 | [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排顺序与人机分工:域回显、候选消歧、条件确认、分步流式 | 现行 |
 | [0038](./0038-section-container-and-row-alignment-invariant.md) | 分区容器 `container` 单一真源,行对齐为运行时不变量,Schema 5.0 硬切换 | 现行 |
+| [0039](./0039-derived-measure-templates-as-company-definitions.md) | 派生度量模板(环比/同比/占比)视同公司口径,本地确定性计算 | 现行 |
+| [0040](./0040-scope-card-as-control-panel.md) | 口径卡升级为控制面板:token 行、要素就地修改落事件、已验证查询快路径、消歧预选 | 现行 |
+| [0041](./0041-governance-inbox-unified-growth-loop.md) | 治理收件箱统一三条候选流,采纳不自动写回;评审回执走会话事件 | 现行 |
 
 ## 技术栈与建设策略
 
@@ -121,7 +124,9 @@
 
 口径治理承认一处开放面:指标检索不到时**尽力回答而不阻塞**(不恢复 0012 的 `METRIC_GAP` 状态),但临时口径必须在界面上与公司口径视觉可区分、缺口落库为带出现次数的指标需求条目、且沉淀为长期 App 时必须显式接受"本页面含无人负责的口径"并把该事实**持久化在页面上**。冷启动依赖人工构造的 30–50 条黄金问题集(存量页面可反向抽取的真实 DQE 查询体只有 4 个),配额为直答 60%、需澄清 20%、无指标缺口 10%、跨域近义易混 10%,且 few-shot 样本与评测样本必须切开。
 
-来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)。
+问数增强批次(2026-08,PRD #85)在上述框架内补三笔:**派生度量模板**(环比/同比/占比)的公式预先声明在数据上下文层,派生指标视同公司口径,收窄 0036 的临时口径边界(模板外仍走临时口径);**口径卡升级为控制面板**——非阻塞轮次 token 行呈现,时间与筛选要素就地修改为不经模型的数据校准并落步骤事件,已验证查询词面高度命中时跳过口径成形(验真不可跳),消歧候选按用户本人历史默认预选但永远阻塞确认;**治理收件箱**统一别名候选、指标需求候选与已验证查询提名为单列待办,采纳不自动写回,评审回执走会话事件流。问数的口语时间(「上个月」)由**相对时间词表**(数据上下文层闭集)映射为 0035 的结构化相对时间表达,词表外如实拒答——0035「不允许模型直接写死日期」的要求由此落实。
+
+来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)。
 
 ## 页面生命周期与发布治理
 
