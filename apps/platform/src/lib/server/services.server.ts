@@ -1,8 +1,6 @@
 import { env } from '$env/dynamic/private';
 import {
-  connectInProcessMetricCanvasMcp,
   createDataContextSearch,
-  createMetricCanvasMcpServer,
   createPageIdConfirmationMcpClient,
   type DataContextSnapshot,
   type DataContextSearch
@@ -21,6 +19,12 @@ import {
 } from '@metriccanvas/template-library';
 import type { DataGateway } from '@metriccanvas/runtime';
 import { createAgentRunner } from './agent/runner';
+import {
+  createRunAwareUnitQueryExecutor,
+  createRunScopedAgentRunner,
+  createRunScopedMcpConnector
+} from './agent/run-mcp';
+import { createAgentRunRegistry, type AgentRunRegistry } from './agent/run-registry';
 import { getServerDataGateway } from './data-gateway.server';
 import { createDeepSeekModelProvider } from './agent/deepseek.server';
 import type { AgentRunner } from './agent/types';
@@ -36,7 +40,6 @@ import {
   seedPublishedTemplates,
   type OfflineTemplateSeed
 } from './offline-services';
-import { createIdentity } from './identity.server';
 import { createMemoryAnalysisSessionStore } from './session/memory';
 import type { AnalysisSessionStore } from './session/store';
 import bundledDataContext from '$fixtures/schema-metadata.example.json';
@@ -49,12 +52,18 @@ const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }
   { eager: true }
 );
 
+/** Agent 运行可靠性上限(#32):超时与用量任一到达即安全停止。 */
+const AGENT_RUN_TIMEOUT_MS = 120_000;
+const AGENT_RUN_MAX_TOTAL_TOKENS = 200_000;
+
 export interface PlatformServices {
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
   dataContext: DataContextSearch;
   dataGateway: DataGateway;
   sessions: AnalysisSessionStore;
+  /** 进行中 Agent 运行的注册表:取消端点经由它中止运行。 */
+  agentRuns: AgentRunRegistry;
   agentModel: AgentModelDescriptor;
   createRunner(input: {
     confirmedPageIds: string[];
@@ -123,27 +132,26 @@ async function createServices(): Promise<PlatformServices> {
     );
   }
 
-  // MCP 的 context() thunk 在服务器创建时就固化了,不在请求上下文里
-  // (mcpServer 是跨请求单例)。真正的架构修复需要让 MCP server 工厂接收
-  // per-request context,但那要改 @metriccanvas/mcp 内部实现,不在本次范围内。
-  // 这里退而求其次:用一个可变引用把 createRunner 收到的 identity 参数
-  // 桥接给 thunk——同一进程内并发的多个 Agent 运行仍会互相覆盖这个引用,
-  // 这是已知且刻意接受的过渡态限制,而不是本次改造试图掩盖的问题。
   const dataGateway = getServerDataGateway(env);
 
-  let currentMcpIdentity: LifecycleContext = createIdentity('workbench');
-  const mcpServer = createMetricCanvasMcpServer({
+  // 按 run 隔离的 MCP 接线(#32):每次 Agent 运行创建自己的 MCP server 与
+  // 进程内连接,身份与取消信号是该次运行的构造参数。此前的模块级可变引用
+  // currentMcpIdentity(同进程并发运行互相覆盖)随之删除;取数单元验真的
+  // 单次运行执行上限(#64)也因此真正按 run 计数,不再跨运行累计。
+  const connectRunScopedMcp = createRunScopedMcpConnector({
     dataContext,
     lifecycle,
     templates,
-    // 创作期查询执行端口(#64):复用服务端数据网关,创作期验真与
-    // 统一运行时共用同一份结果归一化能力(ADR-0032)。
-    executeDataRequestUnitQuery: (query) => dataGateway.fetchData(query),
-    context: () => currentMcpIdentity,
     previewUrl: ({ pageId, revisionId }) =>
-      `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`
+      `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`,
+    // 创作期查询执行端口(#64):复用服务端数据网关的归一化能力(ADR-0032);
+    // 携带运行取消信号时以并入信号的 fetch 执行,取消即中止进行中的真实查询。
+    executeDataRequestUnitQuery: createRunAwareUnitQueryExecutor({
+      environment: env,
+      fallbackGateway: dataGateway
+    })
   });
-  const mcp = await connectInProcessMetricCanvasMcp(mcpServer);
+  const agentRuns = createAgentRunRegistry();
   const agentModelConfig = resolveAgentModelConfig(env);
   const deepSeekModel =
     agentModelConfig.provider === 'deepseek'
@@ -160,25 +168,32 @@ async function createServices(): Promise<PlatformServices> {
     dataContext,
     dataGateway,
     sessions,
+    agentRuns,
     agentModel: agentModelDescriptor(agentModelConfig),
     createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
-      currentMcpIdentity = identity;
-      const client =
-        mode === 'authoring' ? createAuthoringMcpClient(mcp.client) : mcp.client;
-      return createAgentRunner({
-        model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
-        mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
-        maxModelTurns: 12,
-        toolCallLimits:
-          mode === 'authoring'
-            ? {
-                search_data_context: 4,
-                search_templates: 2,
-                list_pages: 2,
-                get_page: 3,
-                validate_page: 4
-              }
-            : undefined
+      return createRunScopedAgentRunner({
+        connect: (signal) => connectRunScopedMcp({ identity, signal }),
+        createRunner: (runClient) => {
+          const client =
+            mode === 'authoring' ? createAuthoringMcpClient(runClient) : runClient;
+          return createAgentRunner({
+            model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
+            mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
+            maxModelTurns: 12,
+            timeoutMs: AGENT_RUN_TIMEOUT_MS,
+            maxTotalTokens: AGENT_RUN_MAX_TOTAL_TOKENS,
+            toolCallLimits:
+              mode === 'authoring'
+                ? {
+                    search_data_context: 4,
+                    search_templates: 2,
+                    list_pages: 2,
+                    get_page: 3,
+                    validate_page: 4
+                  }
+                : undefined
+          });
+        }
       });
     },
     runtimeOrigin
