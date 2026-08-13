@@ -119,6 +119,27 @@
       ? componentCandidatesFor(currentDocument, selectedView.dataSourceId)
       : []
   );
+  const selectedSpan = $derived.by(() => {
+    if (!currentDocument || !selectedComponent) return null;
+    const sections = Array.isArray(currentDocument.sections)
+      ? (currentDocument.sections as Array<Record<string, unknown>>)
+      : [];
+    for (const section of sections) {
+      if (section.id !== selectedComponent.sectionId) continue;
+      const components = Array.isArray(section.components)
+        ? (section.components as Array<Record<string, unknown>>)
+        : [];
+      const component = components.find(
+        (candidate) => candidate.id === selectedComponent?.componentId
+      );
+      const layout = component?.layout;
+      if (typeof layout === 'object' && layout !== null) {
+        const span = (layout as { span?: unknown }).span;
+        return typeof span === 'number' ? span : null;
+      }
+    }
+    return null;
+  });
   const selectedFieldRows = $derived.by(() => {
     if (!currentDocument || !selectedView?.dataSourceId) return [];
     const dataSources = currentDocument.dataSources;
@@ -271,7 +292,8 @@
             ? { scopeConfirmations }
             : {}),
           draft: currentDocument,
-          pinnedComponents: pins
+          pinnedComponents: pins,
+          ...(selectedComponent === null ? {} : { target: selectedComponent })
         })
       });
       for await (const frame of frames) {
@@ -553,6 +575,16 @@
     </div>
 
     <form class="composer" onsubmit={ask}>
+      {#if selectedView}
+        <div class="context-chip" in:fade={{ duration: 140 }}>
+          <span>针对:{selectedView.title ?? selectedView.componentLabel}</span>
+          <button
+            type="button"
+            aria-label="取消组件上下文"
+            onclick={() => (selectedComponent = null)}
+          >×</button>
+        </div>
+      {/if}
       <div class="composer-box">
         <textarea
           rows="1"
@@ -653,6 +685,7 @@
           {dataGateway}
           authoring={{
             ...(selectedComponent === null ? {} : { selected: selectedComponent }),
+            inlineControls: false,
             onintent: handleAuthoringIntent
           }}
         />
@@ -683,11 +716,17 @@
     {pageModel}
     selected={selectedComponent}
     {selectedView}
+    {selectedSpan}
     candidates={typeCandidates}
     fieldRows={selectedFieldRows}
     busy={running}
     onSelectType={selectComponentType}
     onSelectComponent={selectComponentFromList}
+    onEdit={(edit) => {
+      if (currentDocument && selectedComponent) {
+        applyDocumentEdit(editComponent(currentDocument, selectedComponent, edit));
+      }
+    }}
   />
 
   {#if promoteOpen && currentDocument && pageModel?.transient}
@@ -995,6 +1034,37 @@
     padding-left: 4px;
     color: var(--faint);
     font-size: 10.5px;
+  }
+  /* 选中组件的 AI 交互上下文:追问以它为默认修改目标。 */
+  .context-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    justify-self: start;
+    padding: 3px 6px 3px 9px;
+    color: #3730a3;
+    background: var(--accent-soft);
+    border: 1px solid #c7d2fe;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .context-chip button {
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    color: #6366f1;
+    background: none;
+    border: 0;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .context-chip button:hover {
+    background: rgb(99 102 241 / 15%);
   }
 
   main {

@@ -12,20 +12,25 @@
     pageModel,
     selected,
     selectedView,
+    selectedSpan = null,
     candidates,
     fieldRows,
     busy = false,
     onSelectType,
-    onSelectComponent
+    onSelectComponent,
+    onEdit
   }: {
     pageModel: WorkbenchPageViewModel | null;
     selected: ComponentLocator | null;
     selectedView: PageComponentView | null;
+    /** 选中组件的当前宽度(1–12 列);未选中为 null。 */
+    selectedSpan?: number | null;
     candidates: ComponentCandidate[];
     fieldRows: Array<{ fieldId: string; label: string; role: string; type: string }>;
     busy?: boolean;
     onSelectType: (type: ComponentCandidate['type']) => void;
     onSelectComponent: (componentId: string) => void;
+    onEdit: (edit: { title?: string; span?: number }) => void;
   } = $props();
 </script>
 
@@ -74,6 +79,38 @@
         <p class="hint">置灰的形态不满足数据形状硬闸,悬停可见原因。</p>
       </section>
 
+      <section>
+        <h5>布局</h5>
+        <label class="field">
+          <span>组件标题</span>
+          <input
+            value={selectedView.title ?? ''}
+            placeholder="留空使用默认标题"
+            disabled={busy}
+            onchange={(event) =>
+              onEdit({ title: (event.currentTarget as HTMLInputElement).value })}
+          />
+        </label>
+        {#if selectedSpan !== null}
+          <div class="span-row">
+            <span>宽度</span>
+            <button
+              type="button"
+              aria-label="缩小组件"
+              disabled={busy || selectedSpan <= 1}
+              onclick={() => onEdit({ span: selectedSpan! - 1 })}
+            >−</button>
+            <b>{selectedSpan}/12</b>
+            <button
+              type="button"
+              aria-label="加宽组件"
+              disabled={busy || selectedSpan >= 12}
+              onclick={() => onEdit({ span: selectedSpan! + 1 })}
+            >＋</button>
+          </div>
+        {/if}
+      </section>
+
       {#if selectedView.dataSourceId}
         <section>
           <h5>数据绑定</h5>
@@ -99,7 +136,7 @@
         </section>
       {/if}
 
-      <p class="hint">画布上选中组件可拖拽重排、改画布内标题与宽度(−/＋)。</p>
+      <p class="hint">画布上可直接拖拽组件重排;标题与宽度在此配置。</p>
     </div>
   {:else}
     <div class="panel">
@@ -306,5 +343,61 @@
     color: var(--faint);
     font-size: 11px;
     line-height: 1.6;
+  }
+  .field {
+    display: grid;
+    gap: 5px;
+  }
+  .field > span {
+    color: #52525b;
+    font-size: 11.5px;
+  }
+  .field input {
+    width: 100%;
+    height: 30px;
+    padding: 0 9px;
+    background: #fff;
+    border: 1px solid #d4d4d8;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 12.5px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .field input:focus-visible {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
+  }
+  .span-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #52525b;
+    font-size: 11.5px;
+  }
+  .span-row b {
+    min-width: 38px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .span-row button {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    background: #fff;
+    border: 1px solid #d4d4d8;
+    border-radius: 7px;
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  .span-row button:hover:not(:disabled) {
+    border-color: var(--faint);
+  }
+  .span-row button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 </style>

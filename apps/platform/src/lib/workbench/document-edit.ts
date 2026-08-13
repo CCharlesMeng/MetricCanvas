@@ -85,7 +85,7 @@ export function changeComponentType(
   locator: ComponentLocator,
   newType: ComponentCandidate['type']
 ): DocumentEditResult {
-  const next = structuredClone(document);
+  const next = jsonClone(document);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
   const dataSourceId =
@@ -123,7 +123,7 @@ export function moveComponent(
   source: ComponentLocator,
   before: ComponentLocator
 ): DocumentEditResult {
-  const next = structuredClone(document);
+  const next = jsonClone(document);
   const fromSection = findSection(next, source.sectionId);
   const toSection = findSection(next, before.sectionId);
   if (!fromSection || !toSection) return { ok: false, message: '分区不存在' };
@@ -145,7 +145,7 @@ export function editComponent(
   locator: ComponentLocator,
   edit: { title?: string; span?: number }
 ): DocumentEditResult {
-  const next = structuredClone(document);
+  const next = jsonClone(document);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
   if (edit.title !== undefined) {
@@ -227,4 +227,13 @@ function recordOf(value: unknown): Record<string, unknown> | null {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
     ? (value as Record<string, unknown>)
     : null;
+}
+
+/**
+ * 页面文档的深克隆:文档本就是 JSON 数据,用 JSON 往返而不是
+ * structuredClone——后者无法克隆 Svelte 5 `$state` 的深层 Proxy
+ * (DataCloneError),而工作台传入的文档正是响应式状态。
+ */
+function jsonClone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value)) as T;
 }

@@ -24,6 +24,12 @@ export type AuthoringIntent =
 
 export interface AuthoringOptions {
   selected?: AuthoringComponentLocator;
+  /**
+   * 是否在画布内展示选中组件的行内控件条(标题/宽度)。缺省 true 保持
+   * canvas 编辑器既有行为;工作台等把编辑收进外部配置面板的宿主传 false,
+   * 选中与拖拽交互不受影响。
+   */
+  inlineControls?: boolean;
   onintent(intent: AuthoringIntent): void;
 }
 

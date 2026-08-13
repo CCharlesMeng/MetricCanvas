@@ -40,6 +40,11 @@ export interface WorkbenchStreamRequestInput {
   draft: Record<string, unknown> | null;
   /** 用户钉住的组件形态,随请求传回。 */
   pinnedComponents: readonly PinnedComponentChoice[];
+  /**
+   * 画布选中组件的定位:作为本轮追问的默认修改目标随请求传回
+   * (服务端契约的 target 字段,「针对这个组件」的指代锚点)。
+   */
+  target?: { sectionId: string; componentId: string };
 }
 
 export function buildAgentStreamRequestBody(
@@ -65,7 +70,8 @@ export function buildAgentStreamRequestBody(
     ...(input.draft ? { draft: input.draft } : {}),
     ...(input.pinnedComponents.length > 0
       ? { pinnedComponents: [...input.pinnedComponents] }
-      : {})
+      : {}),
+    ...(input.target === undefined ? {} : { target: input.target })
   };
 }
 

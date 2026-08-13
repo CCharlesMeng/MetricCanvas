@@ -157,7 +157,7 @@
         ondrop={(event) => drop(event, component.id)}
         ondragend={() => (dragged = null)}
       >
-        {#if authoring && selected(component.id)}
+        {#if authoring && (authoring.inlineControls ?? true) && selected(component.id)}
           <div class="authoring-controls">
             <span class="authoring-drag" title="拖动组件">⠿</span>
             <label>
