@@ -2,14 +2,13 @@
   import { onMount } from 'svelte';
   import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
-  import { RuntimeView } from '@metriccanvas/runtime-ui';
+  import { RuntimeView, type AuthoringIntent } from '@metriccanvas/runtime-ui';
   import type { AgentMessage } from './server/agent/types';
   import { createPlatformDataGateway } from './platform-data-gateway';
   import type { MetricCandidate } from './server/session/step-event';
   import {
     buildAgentStreamRequestBody,
     pinComponent,
-    unpinComponent,
     type PinnedComponentChoice,
     type ScopeCardConfirmationChoice
   } from './workbench/agent-request';
@@ -29,8 +28,17 @@
   } from './workbench/session-replay';
   import { askFormulaTraces, type PromotedOutcome } from './workbench/promote-flow';
   import { workbenchPageViewModel } from './workbench/transient-page';
+  import {
+    changeComponentType,
+    componentCandidatesFor,
+    editComponent,
+    locatorOfComponent,
+    moveComponent,
+    type ComponentLocator,
+    type DocumentEditResult
+  } from './workbench/document-edit';
   import CandidatesCard from './workbench/CandidatesCard.svelte';
-  import ComponentPinStrip from './workbench/ComponentPinStrip.svelte';
+  import Inspector from './workbench/Inspector.svelte';
   import InteractionCard from './workbench/InteractionCard.svelte';
   import PromotePanel from './workbench/PromotePanel.svelte';
   import ScopeCard from './workbench/ScopeCard.svelte';
@@ -83,6 +91,10 @@
   let promoteOpen = $state(false);
   let threadEl: HTMLElement | null = $state(null);
   let composerEl: HTMLTextAreaElement | null = $state(null);
+  /** 画布选中的组件(检查器联动;文档改写后按组件 id 保持)。 */
+  let selectedComponent = $state<ComponentLocator | null>(null);
+  /** 本地文档改写失败的提示(改写出口过 validate,失败不落文档)。 */
+  let editError = $state('');
   /** 消歧候选选择(runId → 用户选中的候选),随口径卡确认传回编排。 */
   let candidateChoices = $state<Record<string, MetricCandidate>>({});
   /** 执行过程展开状态(runId → 是否展开);缺省运行中展开、结束后收起。 */
@@ -95,6 +107,35 @@
   const pageModel = $derived(
     currentDocument ? workbenchPageViewModel(currentDocument) : null
   );
+  const selectedView = $derived(
+    selectedComponent === null
+      ? null
+      : (pageModel?.components.find(
+          (component) => component.componentId === selectedComponent?.componentId
+        ) ?? null)
+  );
+  const typeCandidates = $derived(
+    currentDocument && selectedView?.dataSourceId
+      ? componentCandidatesFor(currentDocument, selectedView.dataSourceId)
+      : []
+  );
+  const selectedFieldRows = $derived.by(() => {
+    if (!currentDocument || !selectedView?.dataSourceId) return [];
+    const dataSources = currentDocument.dataSources;
+    if (typeof dataSources !== 'object' || dataSources === null) return [];
+    const dataSource = (dataSources as Record<string, unknown>)[selectedView.dataSourceId];
+    if (typeof dataSource !== 'object' || dataSource === null) return [];
+    const fields = (dataSource as { fields?: unknown }).fields;
+    if (typeof fields !== 'object' || fields === null) return [];
+    return Object.entries(fields as Record<string, Record<string, unknown>>).map(
+      ([fieldId, field]) => ({
+        fieldId,
+        label: typeof field.label === 'string' ? field.label : fieldId,
+        role: typeof field.role === 'string' ? field.role : '',
+        type: typeof field.type === 'string' ? field.type : ''
+      })
+    );
+  });
 
   const STATUS_LABELS: Record<WorkbenchRunView['status'], string> = {
     running: '运行中',
@@ -330,6 +371,51 @@
     }
   }
 
+  function applyDocumentEdit(result: DocumentEditResult) {
+    if (result.ok) {
+      currentDocument = result.document;
+      editError = '';
+    } else {
+      editError = result.message;
+    }
+  }
+
+  /** 画布创作意图分发:选中进检查器,重排与标题/宽度编辑走本地文档改写。 */
+  function handleAuthoringIntent(intent: AuthoringIntent) {
+    if (intent.type === 'select_component') {
+      selectedComponent = intent.locator;
+      return;
+    }
+    if (!currentDocument) return;
+    if (intent.type === 'move_component') {
+      applyDocumentEdit(moveComponent(currentDocument, intent.locator, intent.before));
+    } else if (intent.type === 'edit_component') {
+      applyDocumentEdit(editComponent(currentDocument, intent.locator, intent.edit));
+    }
+  }
+
+  /** 组件形态切换:装配唯一实现重建组件,即时生效并钉住(追问不被改写)。 */
+  function selectComponentType(type: string) {
+    if (!currentDocument || !selectedComponent || !selectedView?.dataSourceId) return;
+    const result = changeComponentType(
+      currentDocument,
+      selectedComponent,
+      type as Parameters<typeof changeComponentType>[2]
+    );
+    if (result.ok) {
+      pins = pinComponent(pins, {
+        dataSourceId: selectedView.dataSourceId,
+        componentType: type
+      });
+    }
+    applyDocumentEdit(result);
+  }
+
+  function selectComponentFromList(componentId: string) {
+    if (!currentDocument) return;
+    selectedComponent = locatorOfComponent(currentDocument, componentId);
+  }
+
   /** 沉淀完成:文档换上正式页面 id,后续保存以首个修订为基线走既有通道。 */
   function handlePromoted(outcome: PromotedOutcome) {
     promoteOpen = false;
@@ -558,20 +644,18 @@
     </div>
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
     {#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
-
-    {#if pageModel}
-      <ComponentPinStrip
-        components={pageModel.components}
-        {pins}
-        disabled={running}
-        onpin={(choice) => (pins = pinComponent(pins, choice))}
-        onunpin={(dataSourceId) => (pins = unpinComponent(pins, dataSourceId))}
-      />
-    {/if}
+    {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
       {#if currentDocument}
-        <RuntimeView document={currentDocument} {dataGateway} />
+        <RuntimeView
+          document={currentDocument}
+          {dataGateway}
+          authoring={{
+            ...(selectedComponent === null ? {} : { selected: selectedComponent }),
+            onintent: handleAuthoringIntent
+          }}
+        />
       {:else if running}
         <div class="skeleton" aria-label="页面文档生成中">
           <div class="skeleton-grid">
@@ -595,6 +679,17 @@
     </div>
   </main>
 
+  <Inspector
+    {pageModel}
+    selected={selectedComponent}
+    {selectedView}
+    candidates={typeCandidates}
+    fieldRows={selectedFieldRows}
+    busy={running}
+    onSelectType={selectComponentType}
+    onSelectComponent={selectComponentFromList}
+  />
+
   {#if promoteOpen && currentDocument && pageModel?.transient}
     <PromotePanel
       document={currentDocument}
@@ -608,9 +703,17 @@
 <style>
   .workbench {
     display: grid;
-    grid-template-columns: 330px minmax(0, 1fr);
+    grid-template-columns: 330px minmax(0, 1fr) 300px;
     height: calc(100vh - 54px);
     background: #f4f4f5;
+  }
+  @media (max-width: 1180px) {
+    .workbench {
+      grid-template-columns: 330px minmax(0, 1fr);
+    }
+    .workbench :global(.inspector) {
+      display: none;
+    }
   }
   .chat {
     display: flex;
