@@ -39,16 +39,34 @@ describe('数据网关端口的浏览器适配器', () => {
       }) as typeof fetch
     });
 
-    const result = await gateway.fetchData(query);
+    const result = await gateway.fetchData(query, {
+      pageId: 'na-customers',
+      dataSourceIds: ['na-count']
+    });
 
     expect(requests).toHaveLength(1);
     expect(requests[0]!.input).toBe(PLATFORM_DATA_QUERY_PATH);
     expect(requests[0]!.init).toMatchObject({ method: 'POST', credentials: 'same-origin' });
-    expect(JSON.parse(String(requests[0]!.init?.body))).toEqual(query);
+    expect(JSON.parse(String(requests[0]!.init?.body))).toEqual({
+      query,
+      diagnostics: { pageId: 'na-customers', dataSourceIds: ['na-count'] }
+    });
     expect(result).toEqual({
       rows: [{ 'customer-level': '卓越NA', 'na-customer-count': 15 }],
       totalCount: 1
     });
+  });
+
+  it('未提供诊断上下文时请求体只包含生效查询', async () => {
+    const bodies: unknown[] = [];
+    const gateway = createPlatformDataGateway({
+      fetchImpl: (async (_input, init) => {
+        bodies.push(JSON.parse(String(init?.body)));
+        return new Response(JSON.stringify({ ok: true, rows: [] }));
+      }) as typeof fetch
+    });
+    await gateway.fetchData(query);
+    expect(bodies).toEqual([{ query }]);
   });
 
   it('失败响应还原为 DqeGatewayError 并保留透传的 code', async () => {
@@ -80,7 +98,14 @@ describe('数据网关端口的浏览器适配器', () => {
       .fetchData(query)
       .catch((cause: unknown) => cause);
     expect(nonContract).toBeInstanceOf(DqeGatewayError);
-    expect(nonContract).toMatchObject({ code: 'DQE_TRANSPORT_ERROR' });
+    // 非契约响应可能是任意上游错误页,错误 detail 只保留状态码,不携带正文。
+    expect(nonContract).toMatchObject({
+      code: 'DQE_TRANSPORT_ERROR',
+      detail: { status: 500 }
+    });
+    expect(JSON.stringify((nonContract as DqeGatewayError).detail)).not.toContain(
+      'proxy error'
+    );
 
     const unreachable = await createPlatformDataGateway({
       fetchImpl: (async () => {

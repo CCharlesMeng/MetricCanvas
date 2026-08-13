@@ -92,7 +92,8 @@
     aiSummary,
     initialSearch = '',
     navigation,
-    onevent
+    onevent,
+    pageRevisionId
   }: {
     document: unknown;
     authoring?: AuthoringOptions;
@@ -101,6 +102,8 @@
     initialSearch?: string;
     navigation?: RuntimeNavigation;
     onevent?: (event: RuntimeViewEvent) => void;
+    /** 精确修订预览时的页面修订标识,只用于查询诊断定位,不影响渲染。 */
+    pageRevisionId?: string;
   } = $props();
 
   let pageState = $state<PageState>({ phase: 'loading' });
@@ -122,7 +125,7 @@
   let disposers: Array<() => void> = [];
 
   $effect(() => {
-    void run(document, dataGateway, initialSearch, navigation, onevent);
+    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId);
     return dispose;
   });
 
@@ -139,7 +142,8 @@
     gatewayOverride: DataGateway | undefined,
     search: string,
     navigationAdapter: RuntimeNavigation | undefined,
-    emit: ((event: RuntimeViewEvent) => void) | undefined
+    emit: ((event: RuntimeViewEvent) => void) | undefined,
+    revisionId: string | undefined
   ) {
     const mySession = ++session;
     pageState = { phase: 'loading' };
@@ -214,7 +218,8 @@
     const pageStream = orchestrate(
       loaded,
       activeGateway,
-      capabilities.filters ? state : undefined
+      capabilities.filters ? state : undefined,
+      revisionId !== undefined ? { pageRevisionId: revisionId } : undefined
     );
     stream = pageStream;
     disposers.push(

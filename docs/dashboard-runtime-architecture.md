@@ -366,7 +366,29 @@ Widgets 不负责：
 
 运行时不以历史数据替代失败结果。
 
-## 16. 应用接入
+## 16. 查询诊断
+
+生产态查询诊断默认不保留业务数据行(issue #47)。数据网关每次生效查询执行恰好落一条 `DqeDiagnosticRecord`,形状封闭、只声明一份:
+
+| 字段 | 含义 |
+|---|---|
+| `executionId` | 数据网关生成的执行标识 |
+| `batchId` | 批量请求标识(进入批次前失败的执行没有) |
+| `requestId` | 上游响应头 `x-request-id` |
+| `pageId` / `pageRevisionId` / `dataSourceIds` | 查询诊断上下文:看板页面、页面修订与页面数据源标识,由数据编排器随生效查询传入;生效查询去重后一次执行可对应多个数据源 |
+| `startedAt` / `durationMs` | 开始时间与耗时 |
+| `status` | `success` / `error` |
+| `rowCount` / `totalCount` | 结果行数与总条数(只有数量,没有行) |
+| `errorCode` | 结构化错误分类(`DqeGatewayError.code`) |
+
+安全约束:
+
+- 原始响应、数据行、字段值、筛选值和上游错误正文没有任何字段可以进入诊断记录;`DqeGatewayError.detail` 同样只允许结构化事实(类型名、数量、字段名、上游返回码)。
+- 平台服务端取数入口(`/api/data/query`)默认把诊断记录写为 `[query-diagnostics]` 结构化 console 日志;请求体中的诊断上下文是不可信输入,只收编格式正确的字符串标识。
+- 开发期明细(`DqeDevDetail`)是独立通道,三重闸门:必须显式配置(平台侧 `DQE_DEV_DETAIL=1`)、环境限制(仅 `development`,失败关闭)、按 `DQE_DEV_DETAIL_SAMPLE_RATE` 采样;落盘前对生效 DQE 项脱敏——保留指标名、维度名与结构,筛选值与未知取值一律替换为掩码。
+- 开发期明细与 QueryInspector 类调试界面只允许出现在页面搭建或开发通道,不得进入正式渲染通道(统一运行时、Runtime UI、纯渲染组件、Embed、Canvas),生产构建无法通过普通页面参数开启;由守卫测试 `apps/canvas/tests/query-diagnostics-isolation.test.ts` 静态校验,`packages/data-gateway/tests/diagnostics.test.ts` 与 `apps/platform/tests/data-gateway-server.test.ts` 以敏感哨兵值断言诊断、日志与响应中检索不到业务数据。
+
+## 17. 应用接入
 
 ### Canvas
 
@@ -374,7 +396,6 @@ Canvas 注入：
 
 - Platform 页面仓储或静态页面仓储；
 - DQE 数据网关；
-- DQE 诊断记录；
 - 页面导航。
 
 ### Embed
@@ -398,7 +419,7 @@ Platform 提供：
 - 页面和模板管理；
 - 发布确认。
 
-## 17. 运行时不变式
+## 18. 运行时不变式
 
 1. 页面文档在校验通过后进入渲染。
 2. 页面字段契约是组件数据的唯一字段依据。

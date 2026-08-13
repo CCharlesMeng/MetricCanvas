@@ -35,7 +35,12 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       diagnostics
     });
 
-    await expect(gateway.fetchData(query())).resolves.toEqual({
+    await expect(
+      gateway.fetchData(query(), {
+        pageId: 'na-customers',
+        dataSourceIds: ['na-count-by-level']
+      })
+    ).resolves.toEqual({
       rows: [
         { 'customer-level': '卓越NA', 'na-customer-count': 15 },
         { 'customer-level': '战略NA', 'na-customer-count': 12 },
@@ -43,19 +48,24 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       ],
       totalCount: 3
     });
-    expect(diagnostics.records().map((record) => record.phase)).toEqual([
-      'base',
-      'effective',
-      'batch',
-      'response',
-      'normalized'
-    ]);
-    expect(
-      diagnostics.records().find((record) => record.phase === 'response')?.detail
-    ).toMatchObject({
+    const records = diagnostics.records();
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      executionId: expect.stringMatching(/^dqe-exec-/),
+      batchId: expect.stringMatching(/^dqe-batch-/),
       requestId: expect.stringMatching(/^dqe-sim-/),
-      result: { code: 'SUCCESS' }
+      pageId: 'na-customers',
+      dataSourceIds: ['na-count-by-level'],
+      status: 'success',
+      rowCount: 3,
+      totalCount: 3
     });
+    expect(typeof records[0]!.durationMs).toBe('number');
+    // 诊断默认不保留业务数据行:真实往返后检索不到任何行值与筛选值。
+    const serialized = JSON.stringify(records);
+    for (const businessValue of ['卓越NA', '战略NA', '核心NA', '中国地区部']) {
+      expect(serialized).not.toContain(businessValue);
+    }
   });
 
   it('通过 DQE Sim 归一化公式指标 alias，并保持页面字段稳定', async () => {
