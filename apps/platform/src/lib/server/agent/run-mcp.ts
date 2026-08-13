@@ -5,7 +5,12 @@ import {
   type McpClient,
   type UnitQueryExecutionResult
 } from '@metriccanvas/mcp';
-import type { EffectiveQuery } from '@metriccanvas/page';
+import type {
+  DetailRecord,
+  EffectiveQuery,
+  QueryFieldDefinition,
+  Row
+} from '@metriccanvas/page';
 import type {
   LifecycleContext,
   PageLifecycle,
@@ -79,6 +84,12 @@ export function createRunScopedMcpConnector(
  * fetch 执行生效查询——取消运行即在 HTTP 层中止进行中的真实执行,而不是
  * 等它自然返回;无信号时复用进程级数据网关。端点、凭据仍只存在于服务端
  * 数据网关一层。
+ *
+ * 行键空间(#69 修正):数据网关按查询字段映射把行归一化为稳定页面字段 id,
+ * 而创作期端口的契约是 DQE 原始输出字段名——验真回传的样例行会成为
+ * 内嵌初始行(ADR-0020:字段键使用 DQE 输出字段名,页面文档解析时才归一化)。
+ * 这里经同一份查询字段映射把行映射回原始键,归一化校验(类型、可空性、
+ * 契约匹配)仍由数据网关执行,不重写第二份。
  */
 export function createRunAwareUnitQueryExecutor(options: {
   environment: ServerEnvironment;
@@ -87,18 +98,51 @@ export function createRunAwareUnitQueryExecutor(options: {
   fetchImpl?: typeof fetch;
 }): RunScopedMcpDependencies['executeDataRequestUnitQuery'] {
   const baseFetch = options.fetchImpl ?? fetch;
-  return (query, signal) => {
-    if (!signal) return options.fallbackGateway.fetchData(query);
-    const gateway = createServerDataGateway({
-      environment: options.environment,
-      fetchImpl: (input, init) =>
-        baseFetch(input, {
-          ...init,
-          signal: anySignal([init?.signal ?? undefined, signal])
+  return async (query, signal) => {
+    const gateway = signal
+      ? createServerDataGateway({
+          environment: options.environment,
+          fetchImpl: (input, init) =>
+            baseFetch(input, {
+              ...init,
+              signal: anySignal([init?.signal ?? undefined, signal])
+            })
         })
-    });
-    return gateway.fetchData(query);
+      : options.fallbackGateway;
+    const result = await gateway.fetchData(query);
+    return {
+      ...result,
+      rows: result.rows.map((row) => rawRowFromNormalized(row, query.fieldMappings))
+    };
   };
+}
+
+/** 归一化行(稳定页面字段 id 键)→ DQE 原始输出字段名键;明细项字段同样还原。 */
+function rawRowFromNormalized(
+  row: Row,
+  fieldMappings: Record<string, QueryFieldDefinition>
+): Row {
+  const raw: Row = {};
+  for (const [fieldId, definition] of Object.entries(fieldMappings)) {
+    if (!(fieldId in row)) continue;
+    const value = row[fieldId]!;
+    if (definition.type === 'recordList' && Array.isArray(value)) {
+      raw[definition.queryField] = value.map((item) => {
+        const rawItem: DetailRecord = {};
+        for (const [itemFieldId, itemDefinition] of Object.entries(
+          definition.items.fields
+        )) {
+          if (itemFieldId in item) {
+            rawItem[itemDefinition.queryField] = item[itemFieldId]!;
+          }
+        }
+        return rawItem;
+      });
+    } else {
+      raw[definition.queryField] = value;
+    }
+  }
+  return raw;
 }
 
 /**

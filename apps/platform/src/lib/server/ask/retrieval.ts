@@ -16,6 +16,11 @@ import type { AskRetrievalPort, RankedMetricCandidate } from './ports';
  * 打分,规范名命中优先于别名命中,更长的命中词优先。同一命中词在多个指标
  * 条目上得分相同(近义指标、跨域重名)即为消歧不确定,交由编排层阻塞转
  * 人工确认,检索不替用户选。
+ *
+ * 最长命中词优先(#69):命中词是另一候选更长命中词的真子串时,该命中视为
+ * 子串误命中并被剔除——「新增客户数」的问题不应再把「客户数」当作独立
+ * 概念触发跨域消歧。代价是「客户数和新增客户数」这类同句双概念会被长词
+ * 遮蔽,V0 接受;真正的近义歧义(问题只含「客户数」)不受影响。
  */
 
 const DEFAULT_CANDIDATE_LIMIT = 5;
@@ -62,6 +67,13 @@ export function createSnapshotAskRetrieval(dataContext: {
         }
       }
       return candidates
+        .filter((candidate) =>
+          candidates.every(
+            (other) =>
+              other.matchedTerm === candidate.matchedTerm ||
+              !other.matchedTerm.includes(candidate.matchedTerm)
+          )
+        )
         .sort(
           (left, right) =>
             right.score - left.score ||
@@ -73,21 +85,27 @@ export function createSnapshotAskRetrieval(dataContext: {
   };
 }
 
+/**
+ * 每个指标取其最长命中词(规范名与别名一并参与,等长时规范名优先):
+ * 命中词长度是子串遮蔽规则的判定依据,「在用客户数」命中时不得退回
+ * 短的规范名「客户数」,否则跨域同名的子串误命中无从剔除。
+ */
 function bestHit(
   question: string,
   name: string,
   aliases: readonly string[]
 ): { term: string; score: number } | null {
-  if (question.includes(name)) {
-    return { term: name, score: NAME_HIT_SCORE + name.length };
-  }
-  const matched = aliases
-    .filter((alias) => question.includes(alias))
-    .sort((left, right) => right.length - left.length)[0];
-  if (matched !== undefined) {
-    return { term: matched, score: ALIAS_HIT_SCORE + matched.length };
-  }
-  return null;
+  const hits = [
+    ...(question.includes(name) ? [{ term: name, base: NAME_HIT_SCORE }] : []),
+    ...aliases
+      .filter((alias) => question.includes(alias))
+      .map((alias) => ({ term: alias, base: ALIAS_HIT_SCORE }))
+  ].sort(
+    (left, right) => right.term.length - left.term.length || right.base - left.base
+  );
+  const top = hits[0];
+  if (top === undefined) return null;
+  return { term: top.term, score: top.base + top.term.length };
 }
 
 /**

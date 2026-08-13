@@ -257,14 +257,15 @@ describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () 
     expect(fetchSignals[0]?.aborted).toBe(true);
   });
 
-  it('无运行信号时复用进程级数据网关,不额外建网关', async () => {
+  it('无运行信号时复用进程级数据网关,行映射回 DQE 原始输出字段名', async () => {
     let fallbackCalls = 0;
     const execute = createRunAwareUnitQueryExecutor({
       environment: {},
       fallbackGateway: {
+        // 数据网关返回按查询字段映射归一化的行(稳定页面字段 id 键)。
         fetchData: async () => {
           fallbackCalls += 1;
-          return { rows: [{ region: '华东' }], totalCount: 1 };
+          return { rows: [{ 'field-1': '华东', 'field-2': 1200 }], totalCount: 1 };
         }
       },
       fetchImpl: () => {
@@ -272,9 +273,25 @@ describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () 
       }
     });
 
-    const result = await execute({} as unknown as EffectiveQuery, undefined);
+    const result = await execute(
+      {
+        language: 'dqe',
+        body: { dsl_list: [{ output_dims: ['区域'], output_metrics: ['Tokens消耗量'] }] },
+        fieldMappings: {
+          'field-1': { queryField: '区域', type: 'string', role: 'dimension' },
+          'field-2': { queryField: 'Tokens消耗量', type: 'number', role: 'measure' }
+        },
+        filterValues: []
+      } as unknown as EffectiveQuery,
+      undefined
+    );
 
-    expect(result).toEqual({ rows: [{ region: '华东' }], totalCount: 1 });
+    // 创作期端口契约(ADR-0020):样例行以 DQE 输出字段名为键,
+    // 成为内嵌初始行后由页面文档解析时再归一化。
+    expect(result).toEqual({
+      rows: [{ 区域: '华东', Tokens消耗量: 1200 }],
+      totalCount: 1
+    });
     expect(fallbackCalls).toBe(1);
   });
 });
