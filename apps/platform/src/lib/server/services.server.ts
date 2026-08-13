@@ -1,8 +1,10 @@
 import { env } from '$env/dynamic/private';
 import {
+  assembleTransientPage,
   createDataContextSearch,
+  createDataRequestUnitVerification,
   createPageIdConfirmationMcpClient,
-  type DataContextSnapshot,
+  parseDataContextSnapshot,
   type DataContextSearch
 } from '@metriccanvas/mcp';
 import {
@@ -25,6 +27,10 @@ import {
   createRunScopedMcpConnector
 } from './agent/run-mcp';
 import { createAgentRunRegistry, type AgentRunRegistry } from './agent/run-registry';
+import { createAskOrchestrationRunner, type AskScopeConfirmation } from './ask/orchestrator';
+import { createSnapshotAskRetrieval } from './ask/retrieval';
+import { createModelBackedAskModel } from './ask/model-port';
+import { createLexicalAskModel } from './ask/lexical-model';
 import { getServerDataGateway } from './data-gateway.server';
 import { createDeepSeekModelProvider } from './agent/deepseek.server';
 import type { AgentRunner } from './agent/types';
@@ -68,8 +74,12 @@ export interface PlatformServices {
   createRunner(input: {
     confirmedPageIds: string[];
     runId: string;
-    mode?: 'authoring' | 'lifecycle';
+    mode?: 'authoring' | 'lifecycle' | 'ask';
     identity: LifecycleContext;
+    /** 问数编排(mode=ask,#66)的人工确认与钉住状态;其余模式忽略。 */
+    scopeConfirmations?: AskScopeConfirmation[];
+    userDomains?: string[];
+    pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
   }): AgentRunner;
   runtimeOrigin: string;
 }
@@ -93,7 +103,15 @@ async function createServices(): Promise<PlatformServices> {
   const databaseUrl =
     env.DATABASE_URL ??
     'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas';
-  const snapshot = bundledDataContext as unknown as DataContextSnapshot;
+  // 内置快照经唯一校验入口进入类型世界(#80),不以双重 cast 硬闯。
+  const parsedSnapshot = parseDataContextSnapshot(bundledDataContext);
+  if (!parsedSnapshot.ok) {
+    throw new Error(
+      '内置数据上下文快照未通过结构校验:' +
+        parsedSnapshot.errors.map((error) => `${error.path} ${error.message}`).join(';')
+    );
+  }
+  const snapshot = parsedSnapshot.snapshot;
   const dataContext = createDataContextSearch({
     current: async () => snapshot
   });
@@ -134,6 +152,14 @@ async function createServices(): Promise<PlatformServices> {
 
   const dataGateway = getServerDataGateway(env);
 
+  // 创作期查询执行端口(#64):复用服务端数据网关的归一化能力(ADR-0032);
+  // 携带运行取消信号时以并入信号的 fetch 执行,取消即中止进行中的真实查询。
+  // 页面搭建工具循环与问数编排共用同一端口,查询正确性标准只有一份。
+  const executeUnitQuery = createRunAwareUnitQueryExecutor({
+    environment: env,
+    fallbackGateway: dataGateway
+  });
+
   // 按 run 隔离的 MCP 接线(#32):每次 Agent 运行创建自己的 MCP server 与
   // 进程内连接,身份与取消信号是该次运行的构造参数。此前的模块级可变引用
   // currentMcpIdentity(同进程并发运行互相覆盖)随之删除;取数单元验真的
@@ -144,12 +170,7 @@ async function createServices(): Promise<PlatformServices> {
     templates,
     previewUrl: ({ pageId, revisionId }) =>
       `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`,
-    // 创作期查询执行端口(#64):复用服务端数据网关的归一化能力(ADR-0032);
-    // 携带运行取消信号时以并入信号的 fetch 执行,取消即中止进行中的真实查询。
-    executeDataRequestUnitQuery: createRunAwareUnitQueryExecutor({
-      environment: env,
-      fallbackGateway: dataGateway
-    })
+    executeDataRequestUnitQuery: executeUnitQuery
   });
   const agentRuns = createAgentRunRegistry();
   const agentModelConfig = resolveAgentModelConfig(env);
@@ -162,6 +183,13 @@ async function createServices(): Promise<PlatformServices> {
         })
       : null;
 
+  // 问数编排(#66)的注入端口:结构化决策走非流式模型,无 Key 时用字面
+  // 命中的确定性回退;检索与语义面投影来自同一份内置快照(#80)。
+  const askModel = deepSeekModel
+    ? createModelBackedAskModel(deepSeekModel)
+    : createLexicalAskModel();
+  const askRetrieval = createSnapshotAskRetrieval({ current: async () => snapshot });
+
   return {
     lifecycle,
     templates,
@@ -170,7 +198,41 @@ async function createServices(): Promise<PlatformServices> {
     sessions,
     agentRuns,
     agentModel: agentModelDescriptor(agentModelConfig),
-    createRunner({ confirmedPageIds, runId, mode = 'lifecycle', identity }) {
+    createRunner({
+      confirmedPageIds,
+      runId,
+      mode = 'lifecycle',
+      identity,
+      scopeConfirmations,
+      userDomains,
+      pinnedComponents
+    }) {
+      if (mode === 'ask') {
+        // 问数编排(#66):确定性阶段状态机,不走工具循环。验真能力按 run
+        // 构造,执行上限(#64)按 run 计数;运行取消信号并入真实执行。
+        return {
+          run: (input) =>
+            createAskOrchestrationRunner(
+              {
+                model: askModel,
+                retrieval: askRetrieval,
+                verifyUnit: createDataRequestUnitVerification({
+                  dataContext: { current: async () => snapshot },
+                  executeDataRequestUnitQuery: (query) =>
+                    executeUnitQuery(query, input.signal)
+                }),
+                assemblePage: assembleTransientPage
+              },
+              {
+                runId,
+                timeoutMs: AGENT_RUN_TIMEOUT_MS,
+                ...(scopeConfirmations === undefined ? {} : { scopeConfirmations }),
+                ...(userDomains === undefined ? {} : { userDomains }),
+                ...(pinnedComponents === undefined ? {} : { pinnedComponents })
+              }
+            ).run(input)
+        };
+      }
       return createRunScopedAgentRunner({
         connect: (signal) => connectRunScopedMcp({ identity, signal }),
         createRunner: (runClient) => {

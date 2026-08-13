@@ -39,7 +39,7 @@ export interface AgentStreamServices {
   createRunner(input: {
     confirmedPageIds: string[];
     runId: string;
-    mode?: 'authoring' | 'lifecycle';
+    mode?: 'authoring' | 'lifecycle' | 'ask';
     identity: LifecycleContext;
     /** 问数编排(mode=ask)的人工确认与钉住状态;其余模式忽略。 */
     scopeConfirmations?: AskScopeConfirmation[];
@@ -89,10 +89,12 @@ export async function handleAgentStreamRequest(
 
   const sessionId = body.sessionId ?? null;
   const userDomains = userDomainsOf(body);
+  // 工作台推送端点走问数编排(#66):步骤事件由编排真实生产;
+  // 自由工具循环的搭建模式保留在非流式端点(../+server.ts)。
   const runner = services.createRunner({
     confirmedPageIds: confirmedPageIdsOf(body),
     runId: body.runId,
-    mode: 'authoring',
+    mode: 'ask',
     identity,
     scopeConfirmations: scopeConfirmationsOf(body),
     ...(userDomains === undefined ? {} : { userDomains }),
