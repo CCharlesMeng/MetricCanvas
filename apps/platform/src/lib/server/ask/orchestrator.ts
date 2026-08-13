@@ -2,6 +2,7 @@ import { componentCatalog } from '@metriccanvas/page';
 import type {
   DomainSemanticSurface,
   ExecutedDataRequestUnit,
+  FormulaTrace,
   AnalysisIntent as VisualizeIntent
 } from '@metriccanvas/mcp';
 import type { JSONValue } from '@metriccanvas/page-lifecycle';
@@ -19,9 +20,12 @@ import { adHocGapKey, scopeGapKey } from '../session/metric-gap';
 import {
   withAskState,
   parseAskConversation,
+  askUnitDataSourceId,
+  ASK_DATA_SOURCE_ID,
   type AskConversationState,
   type AskPendingGapEntry,
   type AskPendingScopeCard,
+  type AskUnitEntryState,
   type ScopeBlockReason
 } from '../../ask/conversation';
 import { disambiguateCandidates } from './retrieval';
@@ -31,7 +35,7 @@ import type {
   AskOrchestrationPorts,
   AskUnitFormingDecision,
   AskUnitGapAspect,
-  AskUnitPatch,
+  AskUnitOperation,
   RankedMetricCandidate
 } from './ports';
 
@@ -61,6 +65,13 @@ import type {
  *   交互为确认时点;登记即产出 metric_gap_recorded 步骤事件,随会话
  *   事件流落库,幂等键与计数聚合见 ../session/metric-gap.ts。
  *
+ * 多取数单元模型:会话状态承载单元集合(每单元稳定 dataSourceId),口径
+ * 成形的决策是定向单元操作集(新增/整单元重写/定向 patch/删除),一轮可含
+ * 多个操作;未被操作触及的单元结构性不变(ADR-0037),不重新执行——其
+ * 初始行从随请求传回的 draft 文档(上一轮临时页面)里按数据源名取回,
+ * draft 缺失时按原口径重新取数兜底,绝不编造。请求 target(画布选中组件)
+ * 映射为组件所绑数据源对应的单元,作为本轮定向修改的默认对象。
+ *
  * 实现为 AgentRunner:步骤事件经 {type:'step'} 进入 #32 推送通道,由通道
  * 统一编号、落库与下发;取消与超时信号贯穿模型调用、检索与真实执行。
  */
@@ -78,13 +89,23 @@ export interface AskRunnerOptions {
   scopeConfirmations?: AskScopeConfirmation[];
   /** 钉住的组件形态(#65 接线点 2):经 recommendComponents({ pinned }) 兑现。 */
   pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
+  /**
+   * 上一轮临时页面文档(工作台随请求传回的工作副本):未触及单元的
+   * 查询定义与初始行的合法载体——会话状态不内嵌业务数据行(ADR-0030)。
+   */
+  draft?: Record<string, unknown>;
+  /** 画布选中组件的定位:映射为该组件所绑数据源对应的单元,作本轮默认修改目标。 */
+  target?: { sectionId: string; componentId: string };
   timeoutMs?: number;
   /** 测试注入手动可控的超时信号。 */
   createTimeoutSignal?: (timeoutMs: number) => AbortSignal;
 }
 
-/** 问数的页面数据源名:一个问题对应一个取数单元与一个页面数据源(V0)。 */
-export const ASK_DATA_SOURCE_ID = 'result';
+/**
+ * 问数首个页面数据源名(声明真源在会话契约 ../../ask/conversation):
+ * 多单元模型下每个单元的数据源名由 askUnitDataSourceId 按序号派生。
+ */
+export { ASK_DATA_SOURCE_ID } from '../../ask/conversation';
 
 /** 步骤事件里的意图词汇 → 组件推荐(auto-visualize)意图词汇的唯一映射。 */
 const INTENT_TO_VISUALIZE: Record<AnalysisIntent, VisualizeIntent> = {
@@ -212,12 +233,24 @@ async function* orchestrate(
     const confirmation = options.scopeConfirmations?.find(
       (entry) => entry.interactionId === pending.interactionId
     );
-    let unit = pending.unit;
+    // 历史单 unit 口径卡兼容:单元集合与触及清单缺省时,以阻塞单元为
+    // 唯一被触及单元,替换(或补入)进当前单元集合。
+    const blockingId = pending.dataSourceId ?? ASK_DATA_SOURCE_ID;
+    let blockingUnit = pending.unit;
+    let entries: AskUnitEntryState[] =
+      pending.units ??
+      upsertUnitEntry(state.units, {
+        dataSourceId: blockingId,
+        unit: blockingUnit,
+        intent: null,
+        requestedComponent: null
+      });
+    const touched = pending.touchedDataSourceIds ?? [blockingId];
     if (pending.ambiguousTerms.length > 0) {
       const selection = confirmation?.selectedMetric;
       if (!selection) {
         // 消歧未决不接受空白确认:系统不替用户选(ADR-0037),原卡重新阻塞。
-        yield step(scopeCardEvent(unit, true));
+        yield step(scopeCardEvent(blockingUnit, true, blockingId));
         yield interactionRequired(pending, messages, state);
         return;
       }
@@ -237,41 +270,54 @@ async function* orchestrate(
         yield completed(state, null);
         return;
       }
-      unit = {
-        ...unit,
+      blockingUnit = {
+        ...blockingUnit,
         businessDomain: selection.businessDomain,
-        metrics: [...unit.metrics, { kind: 'metric', name: selection.metricName }]
+        metrics: [...blockingUnit.metrics, { kind: 'metric', name: selection.metricName }]
       };
     }
     haltIfAborted();
-    const surfaces = await ports.retrieval.domainSurfaces([unit.businessDomain]);
-    unit = canonicalizeUnit(unit, surfaces);
+    const surfaces = await ports.retrieval.domainSurfaces(
+      dedupe([blockingUnit.businessDomain, ...entries.map((entry) => entry.unit.businessDomain)])
+    );
+    blockingUnit = canonicalizeUnit(blockingUnit, surfaces);
+    entries = entries.map((entry) =>
+      entry.dataSourceId === blockingId ? { ...entry, unit: blockingUnit } : entry
+    );
     const resumedState: AskConversationState = {
       ...state,
-      businessDomains: dedupe([unit.businessDomain, ...state.businessDomains]).slice(0, 2),
+      businessDomains: dedupe([blockingUnit.businessDomain, ...state.businessDomains]).slice(0, 2),
       pending: null
     };
     // 确认后的口径卡以非阻塞形态回显一次:本轮实际生效范围的锚点。
-    yield step(scopeCardEvent(unit, false));
+    for (const id of touched) {
+      const entry = entries.find((candidate) => candidate.dataSourceId === id);
+      if (entry) yield step(scopeCardEvent(entry.unit, false, entry.dataSourceId));
+    }
     // 临时口径缺口(#67):口径卡确认即用户确认,此刻登记一次出现。
     // 幂等键取表达式形状,与高频 formula 形状排行天然合并(ADR-0036)。
-    const confirmedAdHoc = adHocDefinitionOf(unit);
+    const confirmedAdHoc = adHocDefinitionOf(blockingUnit);
     if (confirmedAdHoc !== null) {
       yield* recordGap({
-        idempotencyKey: adHocGapKey(unit.businessDomain, confirmedAdHoc.formula),
+        idempotencyKey: adHocGapKey(blockingUnit.businessDomain, confirmedAdHoc.formula),
         question: pending.question,
         searchTerms: dedupe(pending.candidates.map((candidate) => candidate.matchedTerm)),
         closestCandidates: pending.candidates.map(toMetricCandidate),
         adHocDefinition: confirmedAdHoc,
-        expectedDimensions: unit.groupBy,
-        expectedGranularity: unit.time?.granularity ?? null,
-        businessDomain: unit.businessDomain
+        expectedDimensions: blockingUnit.groupBy,
+        expectedGranularity: blockingUnit.time?.granularity ?? null,
+        businessDomain: blockingUnit.businessDomain
       });
     }
     yield* executeAndPresent({
       ports,
       options,
-      unit,
+      units: entries,
+      touched,
+      added: entries
+        .map((entry) => entry.dataSourceId)
+        .filter((id) => !state.units.some((entry) => entry.dataSourceId === id)),
+      targetDataSourceId: blockingId,
       surfaces,
       state: resumedState,
       question: pending.question,
@@ -312,7 +358,7 @@ async function* orchestrate(
       yield completed(state, null);
       return;
     }
-  } else if (state.businessDomains.length > 0 && state.unit !== null) {
+  } else if (state.businessDomains.length > 0 && state.units.length > 0) {
     // 追问轮:未提及的显式设置保持不变,域沿用上一轮(检索落空时再重路由)。
     routedDomains = state.businessDomains;
     overriddenByUser = state.domainsOverriddenByUser;
@@ -348,7 +394,7 @@ async function* orchestrate(
   });
   if (
     candidates.length === 0 &&
-    state.unit !== null &&
+    state.units.length > 0 &&
     (options.userDomains === undefined || options.userDomains.length === 0)
   ) {
     // 追问在既有域内检索落空时,确定性地在全部域清单内再检索一次:
@@ -373,8 +419,11 @@ async function* orchestrate(
   /* ---------- 候选消歧(确定性排序;并列最高分即歧义) ---------- */
   const { selected, ambiguousTerms } = disambiguateCandidates(candidates);
 
-  /* ---------- 口径成形(模型只产出结构化决策;增量修改按定向 patch) ---------- */
+  /* ---------- 口径成形(模型只产出结构化决策;定向单元操作集) ---------- */
   const surfaces = await ports.retrieval.domainSurfaces(routedDomains);
+  // target 消费:请求 target(画布选中组件)→ draft 文档里该组件的
+  // data.main → 对应单元,作为本轮定向修改的默认对象。
+  const targetDataSourceId = targetUnitIdOf(options, state.units);
   const formUnitOnce = (violationFeedback?: string[]) =>
     decide(() =>
       ports.model.formUnit({
@@ -385,7 +434,11 @@ async function* orchestrate(
           businessDomain: candidate.businessDomain,
           metricName: candidate.metricName
         })),
-        previousUnit: state.unit,
+        previousUnits: state.units.map((entry) => ({
+          dataSourceId: entry.dataSourceId,
+          unit: entry.unit
+        })),
+        targetDataSourceId,
         ...(violationFeedback === undefined ? {} : { violationFeedback }),
         ...(signal ? { signal } : {})
       })
@@ -393,13 +446,14 @@ async function* orchestrate(
   let decision = await formUnitOnce();
   if (
     decision.outcome === 'out_of_scope' &&
-    state.unit !== null &&
-    explicitComponentRequest(question) !== null
+    state.units.length > 0 &&
+    (explicitComponentRequest(question) !== null || genericVisualizationRequest(question))
   ) {
-    // 纯展示追问的确定性保护:话语点名了组件形态且存在增量修改基线时,
-    // 模型的「面外」判定不成立——本轮的实质诉求就是换展示。按空 patch
-    // 继续(取数单元不变),组件选择由呈现阶段的确定性通道兑现。
-    decision = { outcome: 'patch', patch: {} };
+    // 纯展示追问的确定性保护:话语点名了组件形态(或泛指换图表)且存在
+    // 增量修改基线时,模型的「面外」判定不成立——本轮的实质诉求就是换
+    // 展示。按空操作集继续(取数单元不变),组件选择由呈现阶段的确定性
+    // 通道兑现。
+    decision = { outcome: 'operations', operations: [] };
   }
   if (decision.outcome === 'out_of_scope') {
     yield step(candidatesEvent(candidates, null, null));
@@ -438,74 +492,123 @@ async function* orchestrate(
     return;
   }
   const gapAspects = decision.gaps ?? [];
-  let unit = resolveUnit(state.unit, decision);
-  if (unit === null) {
+
+  /* ---------- 操作集应用(确定性;未触及单元结构性不变,ADR-0037) ---------- */
+  const operations = operationsOf(decision, state.units, targetDataSourceId);
+  if (state.units.length === 0 && !operations.some((operation) => operation.op === 'add')) {
     throw halt('MODEL_FAILED', '首轮口径成形必须产出完整取数单元,模型只回传了增量 patch');
   }
-  if (!routedDomains.includes(unit.businessDomain)) {
-    unit = {
-      ...unit,
-      businessDomain: selected[0]?.businessDomain ?? routedDomains[0]!
-    };
-  }
-  // 歧义命中词对应的指标从单元中剔除:消歧只能由用户完成。
+  const applied = applyUnitOperations({
+    entries: state.units,
+    operations,
+    nextOrdinal: state.nextUnitOrdinal,
+    routedDomains,
+    fallbackDomain: selected[0]?.businessDomain ?? routedDomains[0]!,
+    question,
+    onUnknownUnit: (dataSourceId) => {
+      throw halt('MODEL_FAILED', `单元操作引用了不存在的取数单元:${dataSourceId}`);
+    }
+  });
+  let entries = applied.entries;
+  let touched = applied.touched;
+
+  // 歧义命中词对应的指标从被触及单元中剔除:消歧只能由用户完成。
   const ambiguousNames = new Set(
     candidates
       .filter((candidate) => ambiguousTerms.includes(candidate.matchedTerm))
       .map((candidate) => candidate.metricName)
   );
-  if (ambiguousNames.size > 0) {
-    unit = {
-      ...unit,
-      metrics: unit.metrics.filter(
-        (metric) => metric.kind !== 'metric' || !ambiguousNames.has(metric.name)
-      )
-    };
-  }
-  unit = canonicalizeUnit(unit, surfaces);
-
-  const adHoc = adHocDefinitionOf(unit);
-  yield step(
-    candidatesEvent(
-      candidates,
-      ambiguousTerms.length > 0 ? null : firstMetricName(unit),
-      adHoc
-    )
-  );
-
-  /* ---------- 口径卡:触发条件阻塞,其余直接执行(ADR-0037) ---------- */
-  const reasons: ScopeBlockReason[] = [];
-  if (ambiguousTerms.length > 0) reasons.push('ambiguous_metric');
-  if (adHoc !== null) reasons.push('ad_hoc_definition');
-  if (unit.time?.providedBy === 'model') reasons.push('model_completed_time');
+  entries = entries.map((entry) => {
+    if (!touched.includes(entry.dataSourceId)) return entry;
+    let unit = entry.unit;
+    if (ambiguousNames.size > 0) {
+      unit = {
+        ...unit,
+        metrics: unit.metrics.filter(
+          (metric) => metric.kind !== 'metric' || !ambiguousNames.has(metric.name)
+        )
+      };
+    }
+    return { ...entry, unit: canonicalizeUnit(unit, surfaces) };
+  });
 
   const nextState: AskConversationState = {
     ...state,
     businessDomains: routedDomains,
     domainsOverriddenByUser: overriddenByUser,
+    nextUnitOrdinal: applied.nextOrdinal,
     pending: null
   };
 
+  if (entries.length === 0) {
+    // 操作集删光了全部单元:如实收束,没有可呈现的内容。
+    yield step(candidatesEvent(candidates, null, null));
+    yield assistant('已按要求删除全部取数单元;当前没有可呈现的内容,请提出新的问题。');
+    yield completed({ ...nextState, units: [], transientPageId: null }, null);
+    return;
+  }
+
+  // 消歧未决且本轮没有结构性操作时,用户的选择仍需落到某个单元:
+  // 以默认目标单元(target 或首单元)为承接单元。
+  if (ambiguousTerms.length > 0 && touched.length === 0) {
+    touched = [targetDataSourceId ?? entries[0]!.dataSourceId];
+  }
+
+  const primaryEntry =
+    entries.find((entry) => entry.dataSourceId === touched[0]) ?? entries[0]!;
+  const adHocOfPrimary = adHocDefinitionOf(primaryEntry.unit);
+  yield step(
+    candidatesEvent(
+      candidates,
+      ambiguousTerms.length > 0 ? null : firstMetricName(primaryEntry.unit),
+      adHocOfPrimary
+    )
+  );
+
+  /* ---------- 口径卡:触发条件阻塞,其余直接执行(ADR-0037) ---------- */
+  const touchedEntries = entries.filter((entry) => touched.includes(entry.dataSourceId));
+  const reasons: ScopeBlockReason[] = [];
+  if (ambiguousTerms.length > 0) reasons.push('ambiguous_metric');
+  if (touchedEntries.some((entry) => adHocDefinitionOf(entry.unit) !== null)) {
+    reasons.push('ad_hoc_definition');
+  }
+  if (touchedEntries.some((entry) => entry.unit.time?.providedBy === 'model')) {
+    reasons.push('model_completed_time');
+  }
+
   if (reasons.length > 0) {
+    const blockingEntry =
+      touchedEntries.find(
+        (entry) =>
+          adHocDefinitionOf(entry.unit) !== null || entry.unit.time?.providedBy === 'model'
+      ) ?? touchedEntries[0]!;
     const pending: AskPendingScopeCard = {
       interactionId: `confirm-scope:${options.runId}`,
       reasons,
-      unit,
+      unit: blockingEntry.unit,
+      dataSourceId: blockingEntry.dataSourceId,
+      units: entries,
+      touchedDataSourceIds: touched,
       ambiguousTerms,
       candidates,
       question,
       gapAspects
     };
-    yield step(scopeCardEvent(unit, true));
+    yield step(scopeCardEvent(blockingEntry.unit, true, blockingEntry.dataSourceId));
     yield interactionRequired(pending, messages, { ...nextState, pending });
     return;
   }
 
-  yield step(scopeCardEvent(unit, false));
+  for (const entry of touchedEntries) {
+    yield step(scopeCardEvent(entry.unit, false, entry.dataSourceId));
+  }
   yield* executeAndPresent({
     ports,
     options,
-    unit,
+    units: entries,
+    touched,
+    added: applied.added,
+    targetDataSourceId,
     surfaces,
     state: nextState,
     question,
@@ -528,7 +631,14 @@ async function* orchestrate(
 interface ExecutionContext {
   ports: AskOrchestrationPorts;
   options: AskRunnerOptions;
-  unit: AskDataRequestUnitState;
+  /** 本轮全部单元的下一状态(含未触及单元),按呈现顺序。 */
+  units: AskUnitEntryState[];
+  /** 本轮被新增或修改、需要重新走清单校验→真实执行的单元。 */
+  touched: string[];
+  /** 本轮新增的单元(显式组件点名的新增语义作用对象)。 */
+  added: string[];
+  /** 本轮定向修改的默认目标单元(target 映射结果);无 target 时为 null。 */
+  targetDataSourceId: string | null;
   surfaces: DomainSemanticSurface[];
   state: AskConversationState;
   question: string;
@@ -551,126 +661,206 @@ interface ExecutionContext {
   ) => AgentEvent;
 }
 
+/** 单元的呈现来源:本轮真实执行的结果,或上一轮 draft 文档里的既有面。 */
+type UnitPresentation =
+  | {
+      kind: 'executed';
+      fields: ExecutedDataRequestUnit['fields'];
+      query: ExecutedDataRequestUnit['query'];
+      initial: NonNullable<ExecutedDataRequestUnit['initial']>;
+      rowCount: number;
+      formulaTraces: FormulaTrace[];
+    }
+  | {
+      kind: 'draft';
+      fields: ExecutedDataRequestUnit['fields'];
+      query: ExecutedDataRequestUnit['query'];
+      initial: NonNullable<ExecutedDataRequestUnit['initial']>;
+    };
+
 async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<AgentEvent> {
   const { ports, options, surfaces, state, question, step, assistant, completed } = context;
-  let unit = context.unit;
-  let derived = deriveExecutableUnit(unit, surfaces);
+  const entries = context.units.map((entry) => ({ ...entry }));
+  const presentations = new Map<string, UnitPresentation>();
 
-  // 事件语义:真实执行阶段开始(清单校验被拒时该阶段不产生真实查询)。
-  context.haltIfAborted();
-  yield step({
-    type: 'execution_started',
-    effectiveQuery: {
-      language: 'dqe',
-      body: derived.body,
-      fieldMappings: derived.fields
-    } as unknown as JSONValue
-  });
+  /* ---------- 清单校验 → 真实执行(仅被触及单元;未触及复用既有面) ---------- */
+  for (const entry of entries) {
+    const isTouched = context.touched.includes(entry.dataSourceId);
+    if (!isTouched) {
+      const fromDraft = draftPresentationOf(options.draft, entry.dataSourceId);
+      if (fromDraft !== null) {
+        presentations.set(entry.dataSourceId, fromDraft);
+        continue;
+      }
+      // draft 未随请求传回(或不含该数据源)的兜底:按原口径重新取数,
+      // 绝不编造初始行;口径未变,不重复呈现口径卡。
+    }
+    let unit = entry.unit;
+    let derived = deriveExecutableUnit(unit, surfaces);
 
-  // 运行取消会经注入的执行端口中止进行中的真实查询(#32/#64 设施);
-  // 验真把中止归一为执行失败返回,这里在解读失败前先裁决取消/超时。
-  const verify = async () => {
-    const result = await ports.verifyUnit({
-      dataSourceId: ASK_DATA_SOURCE_ID,
-      fields: derived.fields,
-      query: { language: 'dqe', body: derived.body },
-      question
-    });
     context.haltIfAborted();
-    return result;
-  };
-  let verification = await verify();
+    yield step({
+      type: 'execution_started',
+      effectiveQuery: {
+        language: 'dqe',
+        body: derived.body,
+        fieldMappings: derived.fields
+      } as unknown as JSONValue,
+      dataSourceId: entry.dataSourceId
+    });
 
-  // 清单校验被拒:给模型一次携带违规反馈的定向修复机会(名称与取值都有候选)。
-  if (
-    !verification.ok &&
-    verification.failure.code === 'UNIT_MANIFEST_REJECTED' &&
-    context.formUnitOnce !== undefined
-  ) {
-    const feedback = (verification.failure.violations ?? []).map(
-      (violation) =>
-        `${violation.message}${violation.candidates.length > 0 ? `;候选:${violation.candidates.join('、')}` : ''}`
-    );
-    const repaired = await context.formUnitOnce(feedback);
-    if (repaired.outcome !== 'out_of_scope') {
-      const resolved = resolveUnit(unit, repaired);
-      if (resolved !== null) {
-        unit = canonicalizeUnit({ ...resolved, businessDomain: unit.businessDomain }, surfaces);
+    // 运行取消会经注入的执行端口中止进行中的真实查询(#32/#64 设施);
+    // 验真把中止归一为执行失败返回,这里在解读失败前先裁决取消/超时。
+    const verify = async () => {
+      const result = await ports.verifyUnit({
+        dataSourceId: entry.dataSourceId,
+        fields: derived.fields,
+        query: { language: 'dqe', body: derived.body },
+        question
+      });
+      context.haltIfAborted();
+      return result;
+    };
+    let verification = await verify();
+
+    // 清单校验被拒:给模型一次携带违规反馈的定向修复机会(名称与取值都有
+    // 候选);修复决策里只采纳指向本单元的操作。
+    if (
+      !verification.ok &&
+      verification.failure.code === 'UNIT_MANIFEST_REJECTED' &&
+      isTouched &&
+      context.formUnitOnce !== undefined
+    ) {
+      const feedback = (verification.failure.violations ?? []).map(
+        (violation) =>
+          `${violation.message}${violation.candidates.length > 0 ? `;候选:${violation.candidates.join('、')}` : ''}`
+      );
+      const repaired = await context.formUnitOnce(feedback);
+      const repairedUnit = repairedUnitOf(repaired, unit, entry.dataSourceId);
+      if (repairedUnit !== null) {
+        unit = canonicalizeUnit(
+          { ...repairedUnit, businessDomain: unit.businessDomain },
+          surfaces
+        );
+        entry.unit = unit;
         derived = deriveExecutableUnit(unit, surfaces);
         verification = await verify();
       }
     }
-  }
-  // 执行段失败(传输、执行环境)重试一次;生成/呈现段失败重试没有意义。
-  if (!verification.ok && verification.failure.stage === 'execution') {
-    context.haltIfAborted();
-    verification = await verify();
-  }
-  if (!verification.ok) {
-    yield step({
-      type: 'step_failed',
-      stage: verification.failure.stage,
-      code: verification.failure.code,
-      message: verification.failure.message
-    });
-    yield assistant(
-      `本次取数未能完成(${verification.failure.code}:${verification.failure.message})。` +
-        '不以任何方式编造数据;可修改口径后重试。'
-    );
-    yield completed(state, null);
-    return;
-  }
-
-  yield step({
-    type: 'rows_ready',
-    summary: {
-      rowCount: verification.returnedRowCount,
-      totalCount: verification.totalCount ?? null,
-      outputFields: verification.outputFields.map((field) => field.queryField)
+    // 执行段失败(传输、执行环境)重试一次;生成/呈现段失败重试没有意义。
+    if (!verification.ok && verification.failure.stage === 'execution') {
+      context.haltIfAborted();
+      verification = await verify();
     }
-  });
+    if (!verification.ok) {
+      yield step({
+        type: 'step_failed',
+        stage: verification.failure.stage,
+        code: verification.failure.code,
+        message: verification.failure.message
+      });
+      yield assistant(
+        `本次取数未能完成(${verification.failure.code}:${verification.failure.message})。` +
+          '不以任何方式编造数据;可修改口径后重试。'
+      );
+      yield completed(state, null);
+      return;
+    }
+
+    yield step({
+      type: 'rows_ready',
+      summary: {
+        rowCount: verification.returnedRowCount,
+        totalCount: verification.totalCount ?? null,
+        outputFields: verification.outputFields.map((field) => field.queryField)
+      },
+      dataSourceId: entry.dataSourceId
+    });
+
+    presentations.set(entry.dataSourceId, {
+      kind: 'executed',
+      fields: derived.fields,
+      query: { language: 'dqe', body: derived.body },
+      initial: {
+        capturedAt: (ports.clock ?? (() => new Date()))().toISOString(),
+        rows: verification.sampleRows,
+        totalCount: verification.totalCount ?? verification.returnedRowCount
+      },
+      rowCount: verification.returnedRowCount,
+      formulaTraces: verification.formulaTraces
+    });
+  }
 
   /* ---------- 意图判定(可跳过)与组件选择(确定性硬闸) ---------- */
-  let intent: AnalysisIntent;
-  if (!context.isNewQuestion && state.intent !== null) {
-    intent = state.intent;
-  } else {
-    intent = await decideIntentWithFallback(context, unit);
+  for (const entry of entries) {
+    if (!context.touched.includes(entry.dataSourceId)) {
+      entry.intent = entry.intent ?? defaultIntent(entry.unit);
+      continue;
+    }
+    if (!context.isNewQuestion && entry.intent !== null) continue;
+    entry.intent = await decideIntentWithFallback(context, entry.unit, entry.intent);
   }
 
   // 用户话语显式点名组件形态(「改成柱状图」)是最强展示信号:确定性
   // 识别(词汇唯一来源是 componentCatalog 的中文名),不依赖模型意图
-  // 判定;跨追问轮保持,新点名覆盖,优先于 UI 钉住。
+  // 判定;按目标单元应用——本轮有新增单元时应用于新增单元,有 target
+  // 时应用于该单元,否则应用于全部单元;跨追问轮按单元保持,新点名
+  // 覆盖,优先于 UI 钉住。泛词(「图表」)不点名:解除既有点名,把该
+  // 单元的展示交还模型意图。
   const requestedNow = explicitComponentRequest(question);
-  const requestedComponent =
-    requestedNow ?? catalogComponentType(state.requestedComponent) ?? null;
-  const pinnedType =
-    requestedComponent ?? pinnedComponentFor(options.pinnedComponents, ASK_DATA_SOURCE_ID);
-  // 临时口径在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档本身
-  // 走到任何渲染宿主,不依赖工作台外壳。
-  const adHoc = adHocDefinitionOf(unit);
-  const executedUnit: ExecutedDataRequestUnit = {
-    dataSourceId: ASK_DATA_SOURCE_ID,
-    title: `${unit.title ?? question}${adHoc === null ? '' : '(临时口径)'}`,
-    fields: derived.fields,
-    query: { language: 'dqe', body: derived.body },
-    initial: {
-      capturedAt: (ports.clock ?? (() => new Date()))().toISOString(),
-      rows: verification.sampleRows,
-      totalCount: verification.totalCount ?? verification.returnedRowCount
-    },
-    intent: INTENT_TO_VISUALIZE[intent],
-    ...(pinnedType === undefined ? {} : { pinnedComponent: pinnedType })
-  };
+  if (requestedNow !== null) {
+    const targetIds =
+      context.added.length > 0
+        ? context.added
+        : context.targetDataSourceId !== null
+          ? [context.targetDataSourceId]
+          : entries.map((entry) => entry.dataSourceId);
+    for (const entry of entries) {
+      if (targetIds.includes(entry.dataSourceId)) entry.requestedComponent = requestedNow;
+    }
+  } else if (genericVisualizationRequest(question)) {
+    const targetIds =
+      context.targetDataSourceId !== null
+        ? [context.targetDataSourceId]
+        : entries.map((entry) => entry.dataSourceId);
+    for (const entry of entries) {
+      if (targetIds.includes(entry.dataSourceId)) entry.requestedComponent = null;
+    }
+  }
+
+  const pinnedTypeOf = (
+    entry: AskUnitEntryState
+  ): ExecutedDataRequestUnit['pinnedComponent'] =>
+    catalogComponentType(entry.requestedComponent) ??
+    pinnedComponentFor(options.pinnedComponents, entry.dataSourceId);
+
+  /* ---------- 装配(多 units 直接走 assembleTransientPage) ---------- */
+  const executedUnits: ExecutedDataRequestUnit[] = entries.map((entry) => {
+    const presentation = presentations.get(entry.dataSourceId)!;
+    const adHoc = adHocDefinitionOf(entry.unit);
+    const pinnedType = pinnedTypeOf(entry);
+    return {
+      dataSourceId: entry.dataSourceId,
+      // 临时口径在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档
+      // 本身走到任何渲染宿主,不依赖工作台外壳。
+      title: `${entry.unit.title ?? question}${adHoc === null ? '' : '(临时口径)'}`,
+      fields: presentation.fields,
+      query: presentation.query,
+      initial: presentation.initial,
+      intent: INTENT_TO_VISUALIZE[entry.intent ?? defaultIntent(entry.unit)],
+      ...(pinnedType === undefined ? {} : { pinnedComponent: pinnedType })
+    };
+  });
 
   const transientPageId = transientPageIdFor(options.runId);
   const assembly = ports.assemblePage({
     pageId: transientPageId,
     description: question,
-    units: [executedUnit],
+    units: executedUnits,
     sectionTitle: '问数结果',
     container: 'panel'
   });
+  const roundTraces = mergeFormulaTraces(state.formulaTraces, entries, presentations);
   if (!assembly.ok) {
     const pinnedIssue = assembly.issues.find((issue) => issue.code === 'PINNED_COMPONENT_REJECTED');
     const firstIssue = assembly.issues[0]!;
@@ -686,36 +876,48 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
         )
         .join(';')
     });
+    const rejectedEntry = entries.find(
+      (entry) => entry.dataSourceId === pinnedIssue?.dataSourceId
+    );
+    const rejectedRequest = catalogComponentType(rejectedEntry?.requestedComponent) ?? null;
     yield assistant(
       pinnedIssue !== undefined
-        ? requestedComponent !== null
-          ? `「${componentLabel(requestedComponent)}」不适配当前结果形状,系统不会替你改选:${pinnedIssue.message}。可换一种展示说法或改问。`
+        ? rejectedRequest !== null
+          ? `「${componentLabel(rejectedRequest)}」不适配当前结果形状,系统不会替你改选:${pinnedIssue.message}。可换一种展示说法或改问。`
           : `钉住的组件未通过组件能力硬闸,系统不会自动改写钉住选择:${pinnedIssue.message}。可取消钉住或改问。`
         : `结果无法装配为页面文档:${firstIssue.message}`
     );
-    yield completed({ ...state, unit, formulaTraces: verification.formulaTraces }, null);
+    yield completed({ ...state, units: entries, formulaTraces: roundTraces }, null);
     return;
   }
 
+  const entryOf = (dataSourceId: string): AskUnitEntryState | undefined =>
+    entries.find((entry) => entry.dataSourceId === dataSourceId);
   const components = assembly.document.sections.flatMap((section) =>
-    section.components.map((component) => ({
-      componentType: component.type,
-      pinnedByUser: pinnedType !== undefined && component.type === pinnedType
-    }))
+    section.components.map((component) => {
+      const owner = entryOf(component.data.main);
+      const pinned = owner === undefined ? undefined : pinnedTypeOf(owner);
+      return {
+        componentType: component.type,
+        pinnedByUser: pinned !== undefined && component.type === pinned,
+        dataSourceId: component.data.main
+      };
+    })
   );
-  yield step({ type: 'document_ready', intent, components, transientPageId });
+  const primaryEntry =
+    entries.find((entry) => entry.dataSourceId === context.touched[0]) ?? entries[0]!;
+  const primaryIntent = primaryEntry.intent ?? defaultIntent(primaryEntry.unit);
+  yield step({ type: 'document_ready', intent: primaryIntent, components, transientPageId });
 
   const finalState: AskConversationState = {
     ...state,
-    unit,
-    intent,
-    requestedComponent,
+    units: entries,
     transientPageId,
-    formulaTraces: verification.formulaTraces,
+    formulaTraces: roundTraces,
     pending: null
   };
   const document = assembly.document as unknown as Record<string, unknown>;
-  yield assistant(summaryText(unit, verification.returnedRowCount, components.map((c) => c.componentType)));
+  yield assistant(summaryText(entries, presentations, components.map((c) => c.componentType)));
   if (context.gapAspects.length === 0) {
     yield completed(finalState, document);
     return;
@@ -723,17 +925,18 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
 
   // 部分可答分开呈现(ADR-0036、#67):能答的部分已在上方作答;缺的部分
   // 结构上不在取数单元与页面文档里,这里单独列出,经用户确认后才登记。
+  const gapAnchor = primaryEntry.unit;
   const pendingGap: AskPendingGapEntry = {
     interactionId: `confirm-gap:${options.runId}`,
     occurrences: context.gapAspects.map((gap) => ({
-      idempotencyKey: scopeGapKey(unit.businessDomain, gap.aspect),
+      idempotencyKey: scopeGapKey(gapAnchor.businessDomain, gap.aspect),
       question,
       searchTerms: [gap.aspect],
       closestCandidates: context.candidates.map(toMetricCandidate),
       adHocDefinition: null,
-      expectedDimensions: unit.groupBy,
-      expectedGranularity: unit.time?.granularity ?? null,
-      businessDomain: unit.businessDomain
+      expectedDimensions: gapAnchor.groupBy,
+      expectedGranularity: gapAnchor.time?.granularity ?? null,
+      businessDomain: gapAnchor.businessDomain
     }))
   };
   yield assistant(
@@ -752,14 +955,15 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
 
 async function decideIntentWithFallback(
   context: ExecutionContext,
-  unit: AskDataRequestUnitState
+  unit: AskDataRequestUnitState,
+  previousIntent: AnalysisIntent | null
 ): Promise<AnalysisIntent> {
   try {
     const decision = await context.decide(() =>
       context.ports.model.decideIntent({
         question: context.question,
         unit,
-        previousIntent: context.state.intent,
+        previousIntent,
         ...(context.signal ? { signal: context.signal } : {})
       })
     );
@@ -780,18 +984,259 @@ function defaultIntent(unit: AskDataRequestUnitState): AnalysisIntent {
   return hasTimeGroup && unit.groupBy.length === 1 ? 'trend' : 'comparison';
 }
 
+/* ---------- 单元操作集的确定性应用 ---------- */
+
+/**
+ * 把口径成形决策归一为定向单元操作集:操作集原样返回;单单元简写
+ * (unit / patch)落到目标单元——有 target 时是 target 对应单元,否则
+ * 是首单元;首轮的 unit 简写即新增。
+ */
+function operationsOf(
+  decision: Exclude<AskUnitFormingDecision, { outcome: 'out_of_scope' }>,
+  entries: readonly AskUnitEntryState[],
+  targetDataSourceId: string | null
+): AskUnitOperation[] {
+  if (decision.outcome === 'operations') return decision.operations;
+  const targetId = targetDataSourceId ?? entries[0]?.dataSourceId ?? null;
+  if (decision.outcome === 'unit') {
+    return targetId === null
+      ? [{ op: 'add', unit: decision.unit }]
+      : [{ op: 'replace', dataSourceId: targetId, unit: decision.unit }];
+  }
+  if (targetId === null) return [];
+  return [{ op: 'modify', dataSourceId: targetId, patch: decision.patch }];
+}
+
+interface ApplyUnitOperationsInput {
+  entries: readonly AskUnitEntryState[];
+  operations: readonly AskUnitOperation[];
+  nextOrdinal: number;
+  routedDomains: readonly string[];
+  /** 单元业务域不在路由域内时的确定性纠偏(消歧胜出候选的域优先)。 */
+  fallbackDomain: string;
+  question: string;
+  onUnknownUnit: (dataSourceId: string) => never;
+}
+
+interface ApplyUnitOperationsResult {
+  entries: AskUnitEntryState[];
+  /** 被新增或实际修改的单元(空 patch 不触及,ADR-0037 的结构性不变)。 */
+  touched: string[];
+  added: string[];
+  nextOrdinal: number;
+}
+
+/**
+ * 应用定向单元操作集:add 由编排分配稳定数据源名(序号只增不复用),
+ * replace / modify 定向作用于指定单元,remove 删除。未被触及的单元
+ * 原对象原样保留(结构性不变是引用级保证)。
+ */
+function applyUnitOperations(input: ApplyUnitOperationsInput): ApplyUnitOperationsResult {
+  let entries = [...input.entries];
+  const touched: string[] = [];
+  const added: string[] = [];
+  let nextOrdinal = input.nextOrdinal;
+
+  const coerceDomain = (unit: AskDataRequestUnitState): AskDataRequestUnitState =>
+    input.routedDomains.includes(unit.businessDomain)
+      ? unit
+      : { ...unit, businessDomain: input.fallbackDomain };
+  const indexOf = (dataSourceId: string): number => {
+    const index = entries.findIndex((entry) => entry.dataSourceId === dataSourceId);
+    if (index === -1) input.onUnknownUnit(dataSourceId);
+    return index;
+  };
+  const touch = (dataSourceId: string): void => {
+    if (!touched.includes(dataSourceId)) touched.push(dataSourceId);
+  };
+
+  for (const operation of input.operations) {
+    switch (operation.op) {
+      case 'add': {
+        const unit = coerceDomain(operation.unit);
+        const dataSourceId = askUnitDataSourceId(nextOrdinal);
+        nextOrdinal += 1;
+        entries.push({
+          dataSourceId,
+          unit: { ...unit, title: unit.title ?? input.question },
+          intent: null,
+          requestedComponent: null
+        });
+        touch(dataSourceId);
+        added.push(dataSourceId);
+        break;
+      }
+      case 'replace': {
+        const index = indexOf(operation.dataSourceId);
+        const unit = coerceDomain(operation.unit);
+        entries[index] = {
+          ...entries[index]!,
+          unit: { ...unit, title: unit.title ?? input.question }
+        };
+        touch(operation.dataSourceId);
+        break;
+      }
+      case 'modify': {
+        const index = indexOf(operation.dataSourceId);
+        // 空 patch 不构成触及:定向增量语义下没有任何层被改变。
+        if (Object.keys(operation.patch).length === 0) break;
+        entries[index] = {
+          ...entries[index]!,
+          unit: { ...entries[index]!.unit, ...operation.patch }
+        };
+        touch(operation.dataSourceId);
+        break;
+      }
+      case 'remove': {
+        const index = indexOf(operation.dataSourceId);
+        entries = entries.filter((_, entryIndex) => entryIndex !== index);
+        break;
+      }
+    }
+  }
+  return {
+    entries,
+    touched: touched.filter((id) => entries.some((entry) => entry.dataSourceId === id)),
+    added: added.filter((id) => entries.some((entry) => entry.dataSourceId === id)),
+    nextOrdinal
+  };
+}
+
+/**
+ * 清单校验修复决策中指向指定单元的修复结果:操作集里取该单元的
+ * replace/modify;单单元简写按目标单元解读。无可用修复时返回 null。
+ */
+function repairedUnitOf(
+  decision: AskUnitFormingDecision,
+  current: AskDataRequestUnitState,
+  dataSourceId: string
+): AskDataRequestUnitState | null {
+  if (decision.outcome === 'out_of_scope') return null;
+  if (decision.outcome === 'unit') return decision.unit;
+  if (decision.outcome === 'patch') return { ...current, ...decision.patch };
+  for (const operation of decision.operations) {
+    if (operation.op === 'replace' && operation.dataSourceId === dataSourceId) {
+      return operation.unit;
+    }
+    if (operation.op === 'modify' && operation.dataSourceId === dataSourceId) {
+      return { ...current, ...operation.patch };
+    }
+    if (operation.op === 'add' && decision.operations.length === 1) {
+      // 模型把修复误报成新增:按整单元重写解读,不扩张单元集合。
+      return operation.unit;
+    }
+  }
+  return null;
+}
+
+/** 替换或补入一个单元条目(历史单 unit 口径卡的兼容续跑用)。 */
+function upsertUnitEntry(
+  entries: readonly AskUnitEntryState[],
+  entry: AskUnitEntryState
+): AskUnitEntryState[] {
+  return entries.some((candidate) => candidate.dataSourceId === entry.dataSourceId)
+    ? entries.map((candidate) =>
+        candidate.dataSourceId === entry.dataSourceId
+          ? { ...candidate, unit: entry.unit }
+          : candidate
+      )
+    : [...entries, entry];
+}
+
+/* ---------- 呈现来源辅助 ---------- */
+
+/**
+ * 从随请求传回的 draft 文档(上一轮临时页面)取未触及单元的既有面:
+ * 查询定义与初始行逐字节复用,不重新执行。draft 是文档态页面,其
+ * dataSources 形状由装配唯一实现产出并通过过 validate。
+ */
+function draftPresentationOf(
+  draft: Record<string, unknown> | undefined,
+  dataSourceId: string
+): UnitPresentation | null {
+  if (draft === undefined) return null;
+  const dataSources = draft.dataSources;
+  if (typeof dataSources !== 'object' || dataSources === null) return null;
+  const dataSource = (dataSources as Record<string, unknown>)[dataSourceId];
+  if (typeof dataSource !== 'object' || dataSource === null) return null;
+  const { fields, source } = dataSource as { fields?: unknown; source?: unknown };
+  if (typeof fields !== 'object' || fields === null) return null;
+  if (typeof source !== 'object' || source === null) return null;
+  const { type, query, initial } = source as {
+    type?: unknown;
+    query?: unknown;
+    initial?: unknown;
+  };
+  if (type !== 'query' || typeof query !== 'object' || query === null) return null;
+  if (
+    typeof initial !== 'object' ||
+    initial === null ||
+    !Array.isArray((initial as { rows?: unknown }).rows)
+  ) {
+    return null;
+  }
+  return {
+    kind: 'draft',
+    fields: fields as ExecutedDataRequestUnit['fields'],
+    query: query as ExecutedDataRequestUnit['query'],
+    initial: initial as NonNullable<ExecutedDataRequestUnit['initial']>
+  };
+}
+
+/**
+ * formula 留痕的跨轮维护(#68):本轮真实执行产生的留痕如实追加;上一轮
+ * 留痕仅在其表达式仍存在于当前单元集合的 formula 指标里时保留(单元被
+ * 删除或口径被改写后,留痕随之退场)。
+ */
+function mergeFormulaTraces(
+  previous: readonly FormulaTrace[],
+  entries: readonly AskUnitEntryState[],
+  presentations: ReadonlyMap<string, UnitPresentation>
+): FormulaTrace[] {
+  const fresh = entries.flatMap((entry) => {
+    const presentation = presentations.get(entry.dataSourceId);
+    return presentation?.kind === 'executed' ? presentation.formulaTraces : [];
+  });
+  const liveExpressions = new Set(
+    entries.flatMap((entry) =>
+      entry.unit.metrics.flatMap((metric) =>
+        metric.kind === 'formula' ? [metric.expression] : []
+      )
+    )
+  );
+  const freshExpressions = new Set(fresh.map((trace) => trace.expression));
+  const kept = previous.filter(
+    (trace) => liveExpressions.has(trace.expression) && !freshExpressions.has(trace.expression)
+  );
+  return [...kept, ...fresh];
+}
+
 /* ---------- 事件与决策的纯函数辅助 ---------- */
 
-function resolveUnit(
-  previous: AskDataRequestUnitState | null,
-  decision:
-    | { outcome: 'unit'; unit: AskDataRequestUnitState }
-    | { outcome: 'patch'; patch: AskUnitPatch }
-): AskDataRequestUnitState | null {
-  if (decision.outcome === 'unit') return decision.unit;
-  if (previous === null) return null;
-  // 定向增量 patch:只覆盖出现的层;未提及的显式设置结构上原样保留。
-  return { ...previous, ...decision.patch };
+/** 请求 target(sectionId/componentId)→ draft 文档组件的 data.main → 单元。 */
+function targetUnitIdOf(
+  options: Pick<AskRunnerOptions, 'draft' | 'target'>,
+  entries: readonly AskUnitEntryState[]
+): string | null {
+  const { draft, target } = options;
+  if (draft === undefined || target === undefined) return null;
+  const sections = Array.isArray(draft.sections)
+    ? (draft.sections as Array<Record<string, unknown>>)
+    : [];
+  const section = sections.find((candidate) => candidate.id === target.sectionId);
+  const components = Array.isArray(section?.components)
+    ? (section.components as Array<Record<string, unknown>>)
+    : [];
+  const component = components.find((candidate) => candidate.id === target.componentId);
+  const data = component?.data;
+  const main =
+    typeof data === 'object' && data !== null
+      ? (data as { main?: unknown }).main
+      : undefined;
+  return typeof main === 'string' &&
+    entries.some((entry) => entry.dataSourceId === main)
+    ? main
+    : null;
 }
 
 function candidatesEvent(
@@ -817,7 +1262,8 @@ function toMetricCandidate(candidate: RankedMetricCandidate): MetricCandidate {
 
 function scopeCardEvent(
   unit: AskDataRequestUnitState,
-  blockedOnConfirmation: boolean
+  blockedOnConfirmation: boolean,
+  dataSourceId: string
 ): AnalysisStepEvent {
   const derivedScope = deriveExecutableUnit(unit, []).scope;
   return {
@@ -828,7 +1274,8 @@ function scopeCardEvent(
     timeRange: derivedScope.timeRange,
     granularity: derivedScope.granularity,
     filters: derivedScope.filters,
-    blockedOnConfirmation
+    blockedOnConfirmation,
+    dataSourceId
   };
 }
 
@@ -931,6 +1378,17 @@ function explicitComponentRequest(
   return best?.type ?? null;
 }
 
+/**
+ * 泛指可视化的词面:不点名任何具体组件形态(「图表」不在组件目录的
+ * 名称与别名里),语义是「换成图表类展示」。命中时解除目标单元的既有
+ * 显式点名,把展示选择交还该单元的模型意图;仅在显式点名未命中时判定。
+ */
+const GENERIC_VISUALIZATION_TERMS = ['图表', '图形', '可视化'] as const;
+
+function genericVisualizationRequest(question: string): boolean {
+  return GENERIC_VISUALIZATION_TERMS.some((term) => question.includes(term));
+}
+
 /** 把状态里的宽字符串收窄回组件目录类型;目录外(历史脏值)按未点名处理。 */
 function catalogComponentType(
   value: string | null | undefined
@@ -960,20 +1418,35 @@ function pinnedComponentFor(
 }
 
 function summaryText(
-  unit: AskDataRequestUnitState,
-  rowCount: number,
+  entries: readonly AskUnitEntryState[],
+  presentations: ReadonlyMap<string, UnitPresentation>,
   componentTypes: readonly string[]
 ): string {
-  const metricText = unit.metrics
-    .map((metric) => (metric.kind === 'metric' ? metric.name : `${metric.label}(临时口径)`))
-    .join('、');
-  const timeText =
-    unit.time === null
-      ? '不限定时间范围'
-      : `${unit.time.start} ~ ${unit.time.end}(${unit.time.granularity})`;
+  const rowCountOf = (dataSourceId: string): number => {
+    const presentation = presentations.get(dataSourceId);
+    if (presentation === undefined) return 0;
+    return presentation.kind === 'executed'
+      ? presentation.rowCount
+      : presentation.initial.rows.length;
+  };
+  const unitLine = (entry: AskUnitEntryState): string => {
+    const unit = entry.unit;
+    const metricText = unit.metrics
+      .map((metric) => (metric.kind === 'metric' ? metric.name : `${metric.label}(临时口径)`))
+      .join('、');
+    const timeText =
+      unit.time === null
+        ? '不限定时间范围'
+        : `${unit.time.start} ~ ${unit.time.end}(${unit.time.granularity})`;
+    return `业务域「${unit.businessDomain}」,指标 ${metricText || '(待定)'},${timeText},返回 ${rowCountOf(entry.dataSourceId)} 行`;
+  };
+  if (entries.length === 1) {
+    return `已完成:${unitLine(entries[0]!)},呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`;
+  }
   return (
-    `已完成:业务域「${unit.businessDomain}」,指标 ${metricText || '(待定)'},` +
-    `${timeText},返回 ${rowCount} 行,呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`
+    `已完成 ${entries.length} 个取数单元:\n` +
+    entries.map((entry, index) => `${index + 1}. ${unitLine(entry)}`).join('\n') +
+    `\n呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`
   );
 }
 

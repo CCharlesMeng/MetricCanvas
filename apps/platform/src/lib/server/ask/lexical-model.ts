@@ -44,9 +44,12 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
       return { businessDomains: chosen.map((entry) => entry.name) };
     },
 
-    async formUnit({ question, surfaces, selectedMetrics, previousUnit }) {
-      // 追问轮的定向增量:回退实现只支持替换时间与筛选的字面变化,
-      // 其余追问按重新成形处理(仍在语义面内)。
+    async formUnit({ question, surfaces, selectedMetrics, previousUnits, targetDataSourceId }) {
+      // 追问轮的定向增量:回退实现支持「增加/新增」字面的新增单元与
+      // 时间/筛选的字面替换,其余追问按目标单元重新成形(仍在语义面内)。
+      const baseline =
+        previousUnits.find((binding) => binding.dataSourceId === targetDataSourceId) ??
+        previousUnits[0];
       const metrics: AskUnitMetric[] = [];
       let domain: DomainSemanticSurface | undefined;
       for (const selection of selectedMetrics) {
@@ -61,10 +64,10 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
         );
       }
       if (domain === undefined) {
-        if (previousUnit !== null) {
-          // 无新指标线索的追问:沿用上一单元的域,仅尝试时间/筛选补丁。
+        if (baseline !== undefined) {
+          // 无新指标线索的追问:沿用目标单元的域,仅尝试时间/筛选补丁。
           const previousDomain = surfaces.find(
-            (surface) => surface.businessDomain === previousUnit.businessDomain
+            (surface) => surface.businessDomain === baseline.unit.businessDomain
           );
           if (previousDomain !== undefined) {
             return {
@@ -109,7 +112,17 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
         time: timePatch(question, domain, clock).time ?? null,
         title: question
       };
-      // 命中新指标线索时按完整单元重新成形(追问轮也允许 outcome=unit)。
+      if (previousUnits.length > 0 && /增加|新增一个|再加|添加|加一个/u.test(question)) {
+        // 「增加一个……」的字面即新增单元:不把新指标塞进既有单元。
+        // 问题没给分组/时间时沿用基线单元的口径(同轴对照是常见诉求)。
+        const inherited: AskDataRequestUnitState = {
+          ...unit,
+          groupBy: unit.groupBy.length > 0 ? unit.groupBy : [...(baseline?.unit.groupBy ?? [])],
+          time: unit.time ?? baseline?.unit.time ?? null
+        };
+        return { outcome: 'operations', operations: [{ op: 'add', unit: inherited }] };
+      }
+      // 命中新指标线索时按完整单元重新成形(追问轮定向到目标单元)。
       return { outcome: 'unit', unit };
     },
 
@@ -167,6 +180,16 @@ function timePatch(
   if (question.includes('上个月')) {
     return {
       time: { granularity: 'month', start: month(-1), end: month(-1), providedBy: 'user' }
+    };
+  }
+  const halfYear = /(?:(\d{4})\s*年)?(上|下)半年/u.exec(question);
+  if (halfYear) {
+    const year = halfYear[1] === undefined ? now.getUTCFullYear() : Number(halfYear[1]);
+    return {
+      time:
+        halfYear[2] === '上'
+          ? { granularity: 'month', start: `${year}-01`, end: `${year}-06`, providedBy: 'user' }
+          : { granularity: 'month', start: `${year}-07`, end: `${year}-12`, providedBy: 'user' }
     };
   }
   const recent = /最近\s*(\d+)\s*个月|近\s*(\d+)\s*个月/u.exec(question);

@@ -91,7 +91,8 @@ describe('createModelBackedAskModel:结构化决策解析', () => {
         surfaces: [operationsSurface],
         candidates: [],
         selectedMetrics: [],
-        previousUnit: null
+        previousUnits: [],
+      targetDataSourceId: null
       })
     ).rejects.toBeInstanceOf(AskModelOutputError);
   });
@@ -156,7 +157,8 @@ describe('createModelBackedAskModel:结构化决策解析', () => {
       surfaces: [sensitiveSurface],
       candidates: [],
       selectedMetrics: [],
-      previousUnit: null
+      previousUnits: [],
+      targetDataSourceId: null
     });
     expect(seenPrompt).toContain('客户名单');
     expect(seenPrompt).toContain('敏感字段,取值域不可见');
@@ -182,7 +184,8 @@ describe('createLexicalAskModel:确定性回退', () => {
       surfaces: [operationsSurface],
       candidates: [],
       selectedMetrics: [{ businessDomain: '运营分析', metricName: 'Tokens消耗量' }],
-      previousUnit: null
+      previousUnits: [],
+      targetDataSourceId: null
     });
     expect(decision).toMatchObject({
       outcome: 'unit',
@@ -195,6 +198,59 @@ describe('createLexicalAskModel:确定性回退', () => {
     });
   });
 
+  it('「YYYY年上半年」求值为 1-6 月;「增加一个」字面产出新增单元操作并沿用基线口径', async () => {
+    const model = createLexicalAskModel({ clock });
+    const decision = await model.formUnit({
+      question: '页面中,增加一个流失客户数的走势',
+      surfaces: surfaces.filter((surface) => surface.businessDomain === '客户经营'),
+      candidates: [],
+      selectedMetrics: [{ businessDomain: '客户经营', metricName: '流失客户数' }],
+      previousUnits: [
+        {
+          dataSourceId: 'result',
+          unit: {
+            businessDomain: '客户经营',
+            metrics: [{ kind: 'metric', name: '新增客户数' }],
+            groupBy: ['统计周期'],
+            filters: [],
+            time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' }
+          }
+        }
+      ],
+      targetDataSourceId: null
+    });
+    expect(decision).toMatchObject({
+      outcome: 'operations',
+      operations: [
+        {
+          op: 'add',
+          unit: {
+            businessDomain: '客户经营',
+            metrics: [{ kind: 'metric', name: '流失客户数' }],
+            groupBy: ['统计周期'],
+            // 问题没给时间:沿用基线单元的时间口径(同轴对照)。
+            time: { granularity: 'month', start: '2026-01', end: '2026-06' }
+          }
+        }
+      ]
+    });
+
+    const halfYear = await model.formUnit({
+      question: '2026年上半年每个月的新增客户数走势如何?',
+      surfaces: surfaces.filter((surface) => surface.businessDomain === '客户经营'),
+      candidates: [],
+      selectedMetrics: [{ businessDomain: '客户经营', metricName: '新增客户数' }],
+      previousUnits: [],
+      targetDataSourceId: null
+    });
+    expect(halfYear).toMatchObject({
+      outcome: 'unit',
+      unit: {
+        time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' }
+      }
+    });
+  });
+
   it('解析不出指标时如实 out_of_scope,不编造', async () => {
     const model = createLexicalAskModel({ clock });
     const decision = await model.formUnit({
@@ -202,7 +258,8 @@ describe('createLexicalAskModel:确定性回退', () => {
       surfaces: [operationsSurface],
       candidates: [],
       selectedMetrics: [],
-      previousUnit: null
+      previousUnits: [],
+      targetDataSourceId: null
     });
     expect(decision.outcome).toBe('out_of_scope');
   });

@@ -60,6 +60,12 @@ export interface AskDataRequestUnitState {
   title?: string;
 }
 
+/** 会话中一个取数单元与其稳定页面数据源名的绑定(多单元模型的寻址单位)。 */
+export interface AskUnitBinding {
+  dataSourceId: string;
+  unit: AskDataRequestUnitState;
+}
+
 /* ---------- 检索端口:确定性候选排序 ---------- */
 
 /** 排序后的指标候选:口径差异说明来自指标条目的口径原文。 */
@@ -110,8 +116,13 @@ export interface AskUnitFormingInput {
    * 此列——模型不得代替用户在近义候选间做选择(ADR-0037)。
    */
   selectedMetrics: Array<{ businessDomain: string; metricName: string }>;
-  /** 追问轮的增量修改基线;首轮为 null。 */
-  previousUnit: AskDataRequestUnitState | null;
+  /** 追问轮的定向单元操作基线:当前全部取数单元(带数据源名);首轮为空。 */
+  previousUnits: AskUnitBinding[];
+  /**
+   * 本轮定向修改的默认目标单元(请求 target 映射到的数据源名):用户说
+   * 「这个」「改成饼图」时的指代锚点;无 target 时为 null。
+   */
+  targetDataSourceId: string | null;
   /** 清单校验被拒后的违规反馈(每阶段一次修复重试)。 */
   violationFeedback?: string[];
   signal?: AbortSignal;
@@ -121,6 +132,21 @@ export interface AskUnitFormingInput {
 export type AskUnitPatch = Partial<
   Pick<AskDataRequestUnitState, 'metrics' | 'groupBy' | 'filters' | 'time' | 'title'>
 >;
+
+/**
+ * 定向单元操作(多单元模型的唯一操作词汇):
+ * - add:新增一个完整取数单元(数据源名由编排分配,模型不指定);
+ * - replace:整单元重写指定单元(重新成形,如「换成完全不同的口径」);
+ * - modify:对指定单元做定向增量 patch(未提及的层结构上保持不变);
+ * - remove:删除指定单元。
+ * 一轮可含多个操作(「换成两个图表,分别展示」= modify 原单元 + add 新单元);
+ * 未被操作触及的单元结构性不变(ADR-0037)。
+ */
+export type AskUnitOperation =
+  | { op: 'add'; unit: AskDataRequestUnitState }
+  | { op: 'replace'; dataSourceId: string; unit: AskDataRequestUnitState }
+  | { op: 'modify'; dataSourceId: string; patch: AskUnitPatch }
+  | { op: 'remove'; dataSourceId: string };
 
 /**
  * 部分可答时缺的那一部分(ADR-0036、#67):问题里语义面无法回答的口径,
@@ -134,7 +160,11 @@ export interface AskUnitGapAspect {
 }
 
 export type AskUnitFormingDecision =
+  /** 定向单元操作集(多单元模型的完整口径成形出口)。 */
+  | { outcome: 'operations'; operations: AskUnitOperation[]; gaps?: AskUnitGapAspect[] }
+  /** 单单元简写:等价于对目标单元的 replace(首轮等价于 add)。 */
   | { outcome: 'unit'; unit: AskDataRequestUnitState; gaps?: AskUnitGapAspect[] }
+  /** 单单元简写:等价于对目标单元的 modify。 */
   | { outcome: 'patch'; patch: AskUnitPatch; gaps?: AskUnitGapAspect[] }
   /** 语义面之外的问题:降级而不是编造(ADR-0036)。 */
   | { outcome: 'out_of_scope'; reason: string };
