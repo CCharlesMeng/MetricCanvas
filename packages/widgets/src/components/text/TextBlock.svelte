@@ -59,7 +59,9 @@
     />
   {/if}
   {#if props.body && props.bodyFormat === 'semanticHtml'}
-    <div class="body semantic-body"><SemanticHtml source={props.body} /></div>
+    <div class="body semantic-body">
+      <SemanticHtml source={props.body} inline={props.variant === 'reportInline'} />
+    </div>
   {:else if props.body}<p class="body">{props.body}</p>{/if}
   {#if links.length > 0}
     <nav class="links">
@@ -79,12 +81,14 @@
     gap: 4px;
     min-height: 0;
   }
+  /* insight 摘要块外观真源在统一运行时根部的 --mc-insight-* 变量,
+     与 AI 总结 View 共用同一组数值,这里只引用不重写。 */
   .text-block.insight {
     box-sizing: border-box;
     justify-content: flex-start;
     gap: 0;
-    padding: 15px 18px 15px 15px;
-    border-radius: 16px;
+    padding: var(--mc-insight-padding, 15px 18px 15px 15px);
+    border-radius: var(--mc-insight-radius, 16px);
     background: var(--mc-color-surface, #fff);
   }
   .text-block.report-inline {
@@ -158,22 +162,23 @@
     line-height: var(--mc-text-heading-line-height, normal);
     text-align: var(--mc-text-heading-text-align, start);
   }
+  /* 居中图标标题的数值真源在统一运行时根部的 --mc-section-title-* 变量。 */
   .page-heading {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--mc-section-title-gap, 12px);
   }
   .page-heading img {
-    width: 20px;
-    height: 20px;
+    width: var(--mc-section-title-icon-size, 20px);
+    height: var(--mc-section-title-icon-size, 20px);
     flex: none;
   }
   .page-heading-title {
     color: var(--mc-color-primary, #0f1a4d);
-    font-size: 32px;
+    font-size: var(--mc-section-title-font-size, 32px);
     font-weight: 400;
-    line-height: 50px;
+    line-height: var(--mc-section-title-line-height, 50px);
     text-align: center;
   }
   .body {
@@ -187,21 +192,21 @@
     white-space: normal;
   }
   .insight .heading {
-    margin: 0 0 15px 5px;
-    color: #121e3b;
-    font-size: 20px;
+    margin: var(--mc-insight-heading-margin, 0 0 15px 5px);
+    color: var(--mc-color-report-heading, #121e3b);
+    font-size: var(--mc-insight-heading-font-size, 20px);
     font-weight: 600;
-    line-height: 25px;
+    line-height: var(--mc-insight-heading-line-height, 25px);
     text-align: left;
   }
   .insight .body {
-    padding: 9px 27px 12px 12px;
-    color: #191919;
+    padding: var(--mc-insight-body-padding, 9px 27px 12px 12px);
+    color: var(--mc-color-report-text, #191919);
     background: var(--mc-color-surface-subtle, #f1f4ff);
-    border-radius: 8px;
-    font-size: 18px;
+    border-radius: var(--mc-insight-body-radius, 8px);
+    font-size: var(--mc-insight-body-font-size, 18px);
     font-weight: 400;
-    line-height: 30px;
+    line-height: var(--mc-insight-body-line-height, 30px);
   }
   .insight .semantic-body {
     --mc-semantic-description-color: #191919;
@@ -218,17 +223,11 @@
     font-weight: inherit;
     line-height: inherit;
   }
+  /* 行内呈现由 SemanticHtml 的 inline 展示属性声明,调用方不再穿透其内部 DOM。 */
   .report-inline .semantic-body {
     --mc-semantic-description-color: #191919;
     --mc-semantic-font-size: 18px;
     --mc-semantic-line-height: 32px;
-  }
-  .report-inline .semantic-body :global(.semantic-html),
-  .report-inline .semantic-body :global(p) {
-    display: inline;
-  }
-  .report-inline .semantic-body :global(p + p)::before {
-    content: ' ';
   }
   .links {
     display: flex;

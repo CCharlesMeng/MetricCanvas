@@ -260,33 +260,31 @@
   .report-summary {
     margin: 0;
   }
+  /* 面板外观与居中图标标题的数值真源在统一运行时根部的 --mc-section-* 变量,
+     这里只引用不重写(fallback 仅覆盖脱离 RuntimeView 的孤立渲染)。 */
   .report-summary.layered {
-    padding: 15px 28px 29px;
-    background-color: transparent;
-    background-image: var(--mc-section-gradient, none);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
+    padding: var(--mc-section-panel-padding, 15px 28px 29px);
+    background: var(--mc-section-panel-background, none);
     border-radius: var(--mc-radius-section, 16px);
   }
   .report-summary-title {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--mc-section-title-gap, 12px);
     margin: 0 0 16px;
     text-align: center;
   }
   .report-summary-title img {
-    width: 20px;
-    height: 20px;
+    width: var(--mc-section-title-icon-size, 20px);
+    height: var(--mc-section-title-icon-size, 20px);
     flex: none;
   }
   .report-summary-title span {
     color: var(--mc-color-primary, #08359e);
-    font-size: 32px;
+    font-size: var(--mc-section-title-font-size, 32px);
     font-weight: 400;
-    line-height: 50px;
+    line-height: var(--mc-section-title-line-height, 50px);
   }
   .report-summary-frame {
     min-height: 152px;

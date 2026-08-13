@@ -34,15 +34,17 @@
 </section>
 
 <style>
+  /* 摘要块外观真源在 RuntimeView 根部的 --mc-insight-* 变量,
+     与 TextBlock(insight) 共用同一组数值,这里只引用不重写。 */
   .ai-summary {
     position: relative;
     display: grid;
     gap: 0;
     min-height: 0;
     grid-template-rows: auto auto;
-    padding: 15px 18px 15px 15px;
+    padding: var(--mc-insight-padding, 15px 18px 15px 15px);
     background: var(--mc-color-surface, #fff);
-    border-radius: 16px;
+    border-radius: var(--mc-insight-radius, 16px);
   }
   .ai-summary.report-inline {
     display: flex;
@@ -63,26 +65,26 @@
     white-space: nowrap;
   }
   h3 {
-    margin: 0 0 15px 5px;
-    color: #121e3b;
-    font-size: 20px;
+    margin: var(--mc-insight-heading-margin, 0 0 15px 5px);
+    color: var(--mc-color-report-heading, #121e3b);
+    font-size: var(--mc-insight-heading-font-size, 20px);
     font-weight: 600;
-    line-height: 25px;
+    line-height: var(--mc-insight-heading-line-height, 25px);
     text-align: left;
   }
   p { margin: 0; }
-  .muted { color: #71717a; }
+  .muted { color: var(--mc-color-muted, #71717a); }
   .summary-content {
     display: grid;
     align-content: start;
     gap: 0;
-    padding: 9px 27px 12px 12px;
-    color: #191919;
+    padding: var(--mc-insight-body-padding, 9px 27px 12px 12px);
+    color: var(--mc-color-report-text, #191919);
     background: var(--mc-color-surface-subtle, #f1f4ff);
-    border-radius: 8px;
-    font-size: 18px;
+    border-radius: var(--mc-insight-body-radius, 8px);
+    font-size: var(--mc-insight-body-font-size, 18px);
     font-weight: 400;
-    line-height: 30px;
+    line-height: var(--mc-insight-body-line-height, 30px);
   }
   .report-inline .summary-content {
     min-width: 0;

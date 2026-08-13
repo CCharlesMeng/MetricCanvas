@@ -1,7 +1,11 @@
 <script lang="ts">
   import { parseSemanticHtml, type SemanticHtmlNode } from './semantic-html';
 
-  let { source }: { source: string } = $props();
+  /**
+   * `inline`:以行内流呈现(根与段落 display:inline,段落间以空格衔接)。
+   * 调用方通过该展示属性声明意图,不得用选择器穿透本组件内部 DOM(ADR-0029)。
+   */
+  let { source, inline = false }: { source: string; inline?: boolean } = $props();
   const parsed = $derived(parseSemanticHtml(source));
 </script>
 
@@ -24,7 +28,7 @@
 {/snippet}
 
 {#if parsed.ok}
-  <div class="semantic-html">{@render renderNodes(parsed.document.nodes)}</div>
+  <div class="semantic-html" class:inline>{@render renderNodes(parsed.document.nodes)}</div>
 {:else}
   <span class="semantic-html-error">内容格式不受支持</span>
 {/if}
@@ -35,6 +39,15 @@
   }
   .semantic-html :global(p + p) {
     margin-top: var(--mc-semantic-paragraph-gap, 0);
+  }
+  .semantic-html.inline {
+    display: inline;
+  }
+  .semantic-html.inline :global(p) {
+    display: inline;
+  }
+  .semantic-html.inline :global(p + p)::before {
+    content: ' ';
   }
   .semantic-html :global(.detail-title) {
     min-width: 0;

@@ -395,17 +395,15 @@
     gap: 12px 14px;
   }
 
-  /* panel:渐变章节面板 + 居中图标标题 + 内层白底 */
+  /* panel:渐变章节面板 + 居中图标标题 + 内层白底
+     数值真源在 RuntimeView 根部的 --mc-section-* 变量,与 ReportHeader 摘要区、
+     TextBlock(heading) 共用,不得在任一消费方重写字面量。 */
   .page-section.container-panel {
     --mc-color-positive: var(--mc-color-report-positive);
     --mc-color-negative: var(--mc-color-report-negative);
 
-    padding: 15px 28px 29px;
-    background-color: transparent;
-    background-image: var(--mc-section-gradient);
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 100% 100%;
+    padding: var(--mc-section-panel-padding);
+    background: var(--mc-section-panel-background);
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
@@ -413,20 +411,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: var(--mc-section-title-gap);
     margin: 0 0 15px;
     color: var(--mc-color-primary);
-    font-size: 32px;
+    font-size: var(--mc-section-title-font-size);
     font-weight: 400;
-    line-height: 50px;
+    line-height: var(--mc-section-title-line-height);
     text-align: center;
   }
   .container-panel > .section-title::before {
     display: none;
   }
   .container-panel > .section-title img {
-    width: 20px;
-    height: 20px;
+    width: var(--mc-section-title-icon-size);
+    height: var(--mc-section-title-icon-size);
     flex: none;
   }
   .container-panel > .section-grid {

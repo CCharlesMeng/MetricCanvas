@@ -13,6 +13,12 @@ export { default as RankingCard } from './components/ranking-card/RankingCard.sv
 export { default as RankingDetailCard } from './components/ranking-detail-card/RankingDetailCard.svelte';
 export { default as TextBlock } from './components/text/TextBlock.svelte';
 export type { TextBlockLink } from './components/text/TextBlock.svelte';
+/*
+ * 分区标题装饰图标的唯一二进制真源。三个消费方(RuntimeSection、
+ * ReportHeader、TextBlock heading 变体)横跨 runtime-ui 与本包,依赖方向
+ * (runtime-ui → widgets)决定 widgets 是唯一合法的共享宿主——这是刻意的
+ * 资产导出,不是实现细节泄漏;不要在任何消费方复制这两个文件。
+ */
 export { default as sectionTitleLeftUrl } from './assets/section-title-left.svg';
 export { default as sectionTitleRightUrl } from './assets/section-title-right.svg';
 export { default as Table } from './components/table/Table.svelte';

@@ -911,6 +911,27 @@
     --mc-radius-section: 16px;
     --mc-section-gradient: url('./assets/section-gradient-panel.svg');
 
+    /* 分区面板外观真源:RuntimeSection(container-panel) 与 ReportHeader 摘要区共用。 */
+    --mc-section-panel-padding: 15px 28px 29px;
+    --mc-section-panel-background: var(--mc-section-gradient) no-repeat center / 100% 100%;
+
+    /* 分区居中图标标题真源:RuntimeSection、ReportHeader 摘要标题、TextBlock(heading) 共用。 */
+    --mc-section-title-gap: 12px;
+    --mc-section-title-font-size: 32px;
+    --mc-section-title-line-height: 50px;
+    --mc-section-title-icon-size: 20px;
+
+    /* 摘要块(insight)外观真源:TextBlock(insight) 与 AI 总结 View 共用。 */
+    --mc-insight-padding: 15px 18px 15px 15px;
+    --mc-insight-radius: 16px;
+    --mc-insight-heading-margin: 0 0 15px 5px;
+    --mc-insight-heading-font-size: 20px;
+    --mc-insight-heading-line-height: 25px;
+    --mc-insight-body-padding: 9px 27px 12px 12px;
+    --mc-insight-body-radius: 8px;
+    --mc-insight-body-font-size: 18px;
+    --mc-insight-body-line-height: 30px;
+
     width: 100%;
     min-width: 0;
     color: var(--mc-color-text);
