@@ -77,6 +77,8 @@
     --warn-text: #92400e;
     --ok: #16a34a;
     --down: #dc2626;
+    /* 顶栏高度唯一声明:页面满高布局引用它,不各自硬编码。 */
+    --topbar-h: 44px;
   }
   :global(body) {
     margin: 0;
@@ -90,16 +92,17 @@
   header {
     display: flex;
     align-items: center;
-    gap: 22px;
-    height: 54px;
-    padding: 0 22px;
-    color: #f4f4f5;
-    background: #18181b;
+    gap: 20px;
+    height: var(--topbar-h);
+    padding: 0 20px;
+    color: var(--text);
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
   .brand {
-    color: #fff;
+    color: var(--text);
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13.5px;
     text-decoration: none;
     letter-spacing: -0.01em;
   }
@@ -108,8 +111,8 @@
     gap: 4px;
   }
   nav a {
-    padding: 5px 11px;
-    color: #a1a1aa;
+    padding: 4px 11px;
+    color: var(--muted);
     border-radius: 999px;
     font-size: 12.5px;
     font-weight: 500;
@@ -119,11 +122,11 @@
       background 0.15s ease;
   }
   nav a:hover {
-    color: #f4f4f5;
+    color: var(--text);
   }
   nav a.active {
-    color: #fff;
-    background: rgb(255 255 255 / 12%);
+    color: #3730a3;
+    background: var(--accent-soft);
     font-weight: 600;
   }
   .who {
@@ -135,22 +138,22 @@
   .avatar {
     display: grid;
     place-items: center;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     color: #fff;
     background: var(--accent);
     border-radius: 999px;
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 700;
   }
   .avatar.admin {
     background: #b45309;
   }
   .switcher select {
-    padding: 4px 8px;
-    color: #e4e4e7;
-    background: rgb(255 255 255 / 8%);
-    border: 1px solid rgb(255 255 255 / 14%);
+    padding: 3px 8px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid #d4d4d8;
     border-radius: 8px;
     font: inherit;
     font-size: 12px;
@@ -158,10 +161,12 @@
     transition: border-color 0.15s ease;
   }
   .switcher select:hover {
-    border-color: rgb(255 255 255 / 32%);
+    border-color: var(--faint);
   }
   .switcher select:focus-visible {
-    outline: 2px solid rgb(99 102 241 / 60%);
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
   }
   .sr-only {
     position: absolute;
@@ -171,6 +176,6 @@
     clip: rect(0 0 0 0);
   }
   main {
-    min-height: calc(100vh - 54px);
+    min-height: calc(100vh - var(--topbar-h));
   }
 </style>

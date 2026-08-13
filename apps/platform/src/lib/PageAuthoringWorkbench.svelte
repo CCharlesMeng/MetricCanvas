@@ -743,7 +743,7 @@
   .workbench {
     display: grid;
     grid-template-columns: 330px minmax(0, 1fr) 300px;
-    height: calc(100vh - 54px);
+    height: calc(100vh - var(--topbar-h));
     background: #f4f4f5;
   }
   @media (max-width: 1180px) {
