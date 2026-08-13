@@ -62,6 +62,8 @@ export interface ExecutionResultSummary {
 export interface ComponentChoice {
   componentType: string;
   pinnedByUser: boolean;
+  /** 组件所绑取数单元的页面数据源名;单单元时期的历史事件缺省。 */
+  dataSourceId?: string;
 }
 
 /** 域路由完成:问题原文进入会话的唯一位置;路由结果必须可见且可改(ADR-0037)。 */
@@ -84,7 +86,10 @@ export interface CandidatesRetrievedEvent {
   adHocDefinition: AdHocDefinition | null;
 }
 
-/** 口径卡已呈现:完整生效范围(ADR-0037);指标名与临时口径二者其一。 */
+/**
+ * 口径卡已呈现:完整生效范围(ADR-0037);指标名与临时口径二者其一。
+ * 多单元轮次按被触及单元各产出一次(事件流允许同类事件重复)。
+ */
 export interface ScopeCardPresentedEvent {
   type: 'scope_card_presented';
   businessDomain: string;
@@ -95,18 +100,24 @@ export interface ScopeCardPresentedEvent {
   filters: readonly DimensionFilter[];
   /** 是否命中 ADR-0037 的阻塞条件(候选歧义、自由 formula、临时口径等),需等待用户确认。 */
   blockedOnConfirmation: boolean;
+  /** 该口径卡对应取数单元的页面数据源名;单单元时期的历史事件缺省。 */
+  dataSourceId?: string;
 }
 
 /** 真实执行开始:记录生效查询(查询定义 + 查询字段映射 + 当前筛选值,CONTEXT.md)。 */
 export interface ExecutionStartedEvent {
   type: 'execution_started';
   effectiveQuery: JSONValue;
+  /** 本次执行对应取数单元的页面数据源名;单单元时期的历史事件缺省。 */
+  dataSourceId?: string;
 }
 
 /** 执行结果行就绪:只落执行结果摘要。 */
 export interface RowsReadyEvent {
   type: 'rows_ready';
   summary: ExecutionResultSummary;
+  /** 本批结果对应取数单元的页面数据源名;单单元时期的历史事件缺省。 */
+  dataSourceId?: string;
 }
 
 /** 临时页面文档就绪:意图判定与组件选择随会话保存(ADR-0030、ADR-0037)。 */

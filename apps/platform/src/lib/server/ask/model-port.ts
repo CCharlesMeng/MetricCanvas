@@ -12,6 +12,7 @@ import type {
   AskUnitFormingInput,
   AskUnitGapAspect,
   AskUnitMetric,
+  AskUnitOperation,
   AskUnitPatch
 } from './ports';
 
@@ -52,7 +53,7 @@ export function createModelBackedAskModel(provider: ModelProvider): AskModelPort
       });
       return parseUnitDecision(
         structuredOutput(response.toolCalls, UNIT_TOOL.name, response.content),
-        input.previousUnit !== null
+        input.previousUnits.length > 0
       );
     },
 
@@ -118,12 +119,24 @@ function unitPrompt(input: AskUnitFormingInput): string {
     '6. 需要按时间展开(趋势、每月、每天)时,把该域的时间维度写入 groupBy。',
     '7. 必须调用工具 submit_data_request_unit 提交结果,不要用普通文本回答。'
   ];
-  if (input.previousUnit !== null) {
+  if (input.previousUnits.length > 0) {
     sections.push(
       '',
-      '## 增量修改(追问轮)',
-      `上一轮生效的取数单元:${JSON.stringify(input.previousUnit)}`,
-      'outcome=patch,patch 只包含用户本轮要求改变的字段(可同时改指标、筛选、时间等多层);用户未提及的字段绝对不要出现在 patch 里。'
+      '## 定向单元操作(追问轮)',
+      '当前生效的取数单元集合(每个单元对应页面上的一个组件):',
+      ...input.previousUnits.map(
+        (binding) => `- ${binding.dataSourceId}:${JSON.stringify(binding.unit)}`
+      ),
+      input.targetDataSourceId !== null
+        ? `用户当前选中了单元 ${input.targetDataSourceId} 对应的组件:「这个」「它」等指代默认指向该单元。`
+        : '',
+      'outcome=operations,operations 是定向单元操作数组,一轮可含多个操作:',
+      '- {op:"add", unit:完整取数单元}:用户要求增加一个新的展示(「再加一个」「增加流失客户的走势」),不要把新指标塞进既有单元;',
+      '- {op:"modify", dataSourceId, patch}:对指定单元做定向修改,patch 只包含要改变的字段(可同时改指标、筛选、时间等多层);',
+      '- {op:"replace", dataSourceId, unit}:指定单元的口径整体重来(「换成完全不同的指标」);',
+      '- {op:"remove", dataSourceId}:删除指定单元。',
+      '「分别展示 A 和 B」「拆成两个」= 拆分:modify 原单元只保留一个指标 + add 一个承载另一个指标的新单元。',
+      '未被用户提及的单元与字段绝对不要出现在 operations 里(未提及的显式设置保持不变);只换展示形态、不改口径时返回空数组 []。'
     );
   } else {
     sections.push('', '本轮是首个问题:outcome=unit,给出完整取数单元。');
@@ -256,27 +269,51 @@ const UNIT_FIELDS_SCHEMA = {
   title: { type: 'string' }
 } as const;
 
+const UNIT_SCHEMA = {
+  type: 'object',
+  properties: {
+    businessDomain: { type: 'string' },
+    ...UNIT_FIELDS_SCHEMA
+  },
+  required: ['businessDomain', 'metrics', 'groupBy', 'filters', 'time']
+} as const;
+
 const UNIT_TOOL: ToolDefinition = {
   name: 'submit_data_request_unit',
   description:
-    '提交口径成形结果:outcome=unit 给出完整取数单元;outcome=patch 给出定向增量;outcome=out_of_scope 说明语义面无法回答的原因。',
+    '提交口径成形结果:outcome=unit 给出完整取数单元(首轮);outcome=operations 给出定向单元操作数组(追问轮);outcome=out_of_scope 说明语义面无法回答的原因。',
   inputSchema: {
     type: 'object',
     additionalProperties: false,
     properties: {
-      outcome: { type: 'string', enum: ['unit', 'patch', 'out_of_scope'] },
-      unit: {
-        type: 'object',
-        properties: {
-          businessDomain: { type: 'string' },
-          ...UNIT_FIELDS_SCHEMA
-        },
-        required: ['businessDomain', 'metrics', 'groupBy', 'filters', 'time']
-      },
+      outcome: { type: 'string', enum: ['unit', 'patch', 'operations', 'out_of_scope'] },
+      unit: UNIT_SCHEMA,
       patch: {
         type: 'object',
         description: '只包含要改变的字段',
         properties: UNIT_FIELDS_SCHEMA
+      },
+      operations: {
+        type: 'array',
+        description:
+          '定向单元操作数组:add 新增单元(不指定 dataSourceId)、modify 定向修改、replace 整单元重写、remove 删除;未提及的单元不出现',
+        items: {
+          type: 'object',
+          properties: {
+            op: { type: 'string', enum: ['add', 'modify', 'replace', 'remove'] },
+            dataSourceId: {
+              type: 'string',
+              description: 'modify / replace / remove 的目标单元(取自当前单元集合)'
+            },
+            unit: UNIT_SCHEMA,
+            patch: {
+              type: 'object',
+              description: 'modify 时只包含要改变的字段',
+              properties: UNIT_FIELDS_SCHEMA
+            }
+          },
+          required: ['op']
+        }
       },
       gaps: {
         type: 'array',
@@ -363,6 +400,14 @@ function parseUnitDecision(value: unknown, hasPrevious: boolean): AskUnitForming
         ...(gaps.length === 0 ? {} : { gaps })
       };
     }
+    case 'operations': {
+      const operations = parseOperations(value.operations);
+      if (!hasPrevious && !operations.every((operation) => operation.op === 'add')) {
+        throw new AskModelOutputError('首轮只接受新增单元操作,必须给出完整取数单元');
+      }
+      const gaps = parseGapAspects(value.gaps);
+      return { outcome: 'operations', operations, ...(gaps.length === 0 ? {} : { gaps }) };
+    }
     case 'unit': {
       const unit = parseUnit(value.unit);
       const gaps = parseGapAspects(value.gaps);
@@ -371,6 +416,42 @@ function parseUnitDecision(value: unknown, hasPrevious: boolean): AskUnitForming
     default:
       throw new AskModelOutputError('口径成形输出缺少合法 outcome');
   }
+}
+
+function parseOperations(value: unknown): AskUnitOperation[] {
+  if (!Array.isArray(value)) {
+    throw new AskModelOutputError('outcome=operations 必须携带 operations 数组');
+  }
+  return value.map((entry): AskUnitOperation => {
+    if (!isRecord(entry)) throw new AskModelOutputError('单元操作不是对象');
+    switch (entry.op) {
+      case 'add':
+        return { op: 'add', unit: parseUnit(entry.unit) };
+      case 'replace':
+        return {
+          op: 'replace',
+          dataSourceId: operationTargetOf(entry),
+          unit: parseUnit(entry.unit)
+        };
+      case 'modify':
+        return {
+          op: 'modify',
+          dataSourceId: operationTargetOf(entry),
+          patch: parsePatch(entry.patch)
+        };
+      case 'remove':
+        return { op: 'remove', dataSourceId: operationTargetOf(entry) };
+      default:
+        throw new AskModelOutputError('单元操作缺少合法 op');
+    }
+  });
+}
+
+function operationTargetOf(entry: Record<string, unknown>): string {
+  if (typeof entry.dataSourceId !== 'string' || entry.dataSourceId === '') {
+    throw new AskModelOutputError(`单元操作 ${String(entry.op)} 缺少目标 dataSourceId`);
+  }
+  return entry.dataSourceId;
 }
 
 function parseGapAspects(value: unknown): AskUnitGapAspect[] {

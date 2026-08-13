@@ -299,11 +299,13 @@ describe('问数编排:追问是定向增量修改', () => {
       routedDomains: ['运营分析']
     });
 
-    // 增量修改基线:模型看到的 previousUnit 是上一轮生效单元。
-    expect(followUp.scripted.calls.unit[0]?.previousUnit).toMatchObject({
-      businessDomain: '运营分析',
-      groupBy: ['统计周期']
-    });
+    // 定向操作基线:模型看到的 previousUnits 是上一轮生效单元集合(带数据源名)。
+    expect(followUp.scripted.calls.unit[0]?.previousUnits).toMatchObject([
+      {
+        dataSourceId: ASK_DATA_SOURCE_ID,
+        unit: { businessDomain: '运营分析', groupBy: ['统计周期'] }
+      }
+    ]);
 
     const execution = stepEvents(events).find((event) => event.type === 'execution_started');
     expect(execution).toBeDefined();
