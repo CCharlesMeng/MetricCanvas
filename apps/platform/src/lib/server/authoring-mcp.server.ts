@@ -5,7 +5,8 @@ const AUTHORING_TOOLS = new Set([
   'search_templates',
   'list_pages',
   'get_page',
-  'validate_page'
+  'validate_page',
+  'execute_data_request_unit'
 ]);
 
 /**
