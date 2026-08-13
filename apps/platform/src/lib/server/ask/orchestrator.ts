@@ -803,28 +803,29 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
 
   // 用户话语显式点名组件形态(「改成柱状图」)是最强展示信号:确定性
   // 识别(词汇唯一来源是 componentCatalog 的中文名),不依赖模型意图
-  // 判定;按目标单元应用——本轮有新增单元时应用于新增单元,有 target
-  // 时应用于该单元,否则应用于全部单元;跨追问轮按单元保持,新点名
-  // 覆盖,优先于 UI 钉住。泛词(「图表」)不点名:解除既有点名,把该
-  // 单元的展示交还模型意图。
-  const requestedNow = explicitComponentRequest(question);
-  if (requestedNow !== null) {
-    const targetIds =
-      context.added.length > 0
-        ? context.added
-        : context.targetDataSourceId !== null
-          ? [context.targetDataSourceId]
-          : entries.map((entry) => entry.dataSourceId);
-    for (const entry of entries) {
-      if (targetIds.includes(entry.dataSourceId)) entry.requestedComponent = requestedNow;
-    }
-  } else if (genericVisualizationRequest(question)) {
-    const targetIds =
-      context.targetDataSourceId !== null
+  // 判定。作用域规则(点名与泛词解除共用):本轮被触及的全部单元
+  // (新增/替换/定向修改的对象——「拆分成两个表格」的 modify+add 两个
+  // 单元都要变表格)> 画布选中的 target 单元 > 全部单元;跨追问轮按
+  // 单元保持,新点名覆盖,优先于 UI 钉住。泛词(「图表」)不点名:
+  // 解除既有点名,把该单元的展示交还模型意图。
+  const presentationScopeIds =
+    context.touched.length > 0
+      ? context.touched
+      : context.targetDataSourceId !== null
         ? [context.targetDataSourceId]
         : entries.map((entry) => entry.dataSourceId);
+  const requestedNow = explicitComponentRequest(question);
+  if (requestedNow !== null) {
     for (const entry of entries) {
-      if (targetIds.includes(entry.dataSourceId)) entry.requestedComponent = null;
+      if (presentationScopeIds.includes(entry.dataSourceId)) {
+        entry.requestedComponent = requestedNow;
+      }
+    }
+  } else if (genericVisualizationRequest(question)) {
+    for (const entry of entries) {
+      if (presentationScopeIds.includes(entry.dataSourceId)) {
+        entry.requestedComponent = null;
+      }
     }
   }
 

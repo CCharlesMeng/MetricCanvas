@@ -383,6 +383,55 @@ describe('一轮多操作与删除单元', () => {
     }
   });
 
+  it('拆分携带点名:「拆分成两个表格」作用于被触及的全部单元,原单元的旧点名被覆盖', async () => {
+    // base 轮:单单元 + 「柱状图」点名(requestedComponent=barChart 进状态)。
+    const base = await runRound({
+      runId: 'split-pin-base',
+      question: '新增和流失客户数走势,用柱状图',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'unit',
+          unit: {
+            ...NEW_CUSTOMER_TREND,
+            metrics: [
+              { kind: 'metric', name: '新增客户数' },
+              { kind: 'metric', name: '流失客户数' }
+            ]
+          }
+        }
+      ],
+      intent: [{ intent: 'trend' }]
+    });
+    expect(componentsOf(base.document)[0]!.type).toBe('barChart');
+
+    // 拆分轮(modify + add)携带「表格」点名:修复前点名只作用于新增单元,
+    // 原单元保持旧点名 barChart——真实会话暴露的缺陷。
+    const split = await runRound({
+      runId: 'split-pin-round',
+      question: '拆分成两个表格,并排展示',
+      baseline: base.baseline,
+      draft: base.document,
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            {
+              op: 'modify',
+              dataSourceId: 'result',
+              patch: { metrics: [{ kind: 'metric', name: '新增客户数' }] }
+            },
+            { op: 'add', unit: CHURN_TREND }
+          ]
+        }
+      ],
+      intent: [{ intent: 'trend' }, { intent: 'trend' }]
+    });
+    const components = componentsOf(split.document);
+    expect(components).toHaveLength(2);
+    expect(components.map((component) => component.type)).toEqual(['table', 'table']);
+  });
+
   it('删除指定单元:文档只剩存留单元,存留单元不重新执行', async () => {
     const base = await runRound({
       runId: 'remove-base',
