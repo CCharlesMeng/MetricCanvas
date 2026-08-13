@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fade, fly } from 'svelte/transition';
   import { RuntimeView } from '@metriccanvas/runtime-ui';
   import type { AgentMessage } from './server/agent/types';
   import { createPlatformDataGateway } from './platform-data-gateway';
@@ -79,7 +80,7 @@
 
   $effect(() => {
     void runs;
-    if (threadEl) threadEl.scrollTop = threadEl.scrollHeight;
+    if (threadEl) threadEl.scrollTo({ top: threadEl.scrollHeight, behavior: 'smooth' });
   });
 
   async function ask(event: SubmitEvent) {
@@ -88,6 +89,13 @@
     if (!question || running) return;
     composerText = '';
     await startRun(question);
+  }
+
+  /** Enter 直接发送,Shift+Enter 换行;输入法组词中(isComposing)不触发。 */
+  function composerKeydown(event: KeyboardEvent) {
+    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+    event.preventDefault();
+    (event.currentTarget as HTMLTextAreaElement).form?.requestSubmit();
   }
 
   /**
@@ -227,14 +235,14 @@
       {#each runs as run (run.runId)}
         {@const isLast = run === activeRun}
         {#if run.question !== null}
-          <div class="ask-bubble">{run.question}</div>
+          <div class="ask-bubble" in:fly={{ y: 10, duration: 240 }}>{run.question}</div>
         {:else}
-          <div class="continuation">确认后继续运行</div>
+          <div class="continuation" in:fade={{ duration: 180 }}>确认后继续运行</div>
         {/if}
 
         <div class="reply">
           {#each run.replies as reply, replyIndex (replyIndex)}
-            <p class="reply-text">{reply}</p>
+            <p class="reply-text" in:fly={{ y: 8, duration: 260 }}>{reply}</p>
           {/each}
 
           {#each scopeCards(run) as card, cardIndex (cardIndex)}
@@ -256,8 +264,8 @@
           {/if}
 
           {#if run.status === 'running'}
-            <p class="run-state running-state">
-              运行中…
+            <p class="run-state running-state" in:fade={{ duration: 180 }}>
+              <span class="dots" role="status" aria-label="运行中"><i></i><i></i><i></i></span>
               <button type="button" class="linkish" onclick={cancelActiveRun}>
                 {cancelRequested ? '取消请求已发出' : '取消运行'}
               </button>
@@ -269,7 +277,7 @@
               onconfirm={() => confirmInteraction(run)}
             />
           {:else if run.status === 'failed' && run.failure}
-            <div class="failure" role="alert">
+            <div class="failure" role="alert" in:fly={{ y: 6, duration: 220 }}>
               <p>
                 <code>{run.failure.code}</code>
                 {run.failure.message}
@@ -294,7 +302,8 @@
       <textarea
         rows="3"
         bind:value={composerText}
-        placeholder="描述业务问题,或追问:换维度、改筛选、调整展示"
+        onkeydown={composerKeydown}
+        placeholder="描述业务问题,或追问:换维度、改筛选、调整展示(Enter 发送,Shift+Enter 换行)"
       ></textarea>
       <button type="submit" class="primary" disabled={running || !composerText.trim()}>
         {running ? '运行中…' : '发送'}
@@ -450,6 +459,11 @@
     color: #6366f1;
     font-size: 11.5px;
     cursor: pointer;
+    user-select: none;
+    transition: color 0.15s ease;
+  }
+  .timeline summary:hover {
+    color: #4338ca;
   }
   .timeline[open] summary {
     margin-bottom: 6px;
@@ -462,7 +476,37 @@
   .running-state {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+  }
+  .dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .dots i {
+    width: 5px;
+    height: 5px;
+    background: #6366f1;
+    border-radius: 50%;
+    animation: dot-bounce 1.2s ease-in-out infinite;
+  }
+  .dots i:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+  .dots i:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+  @keyframes dot-bounce {
+    0%,
+    60%,
+    100% {
+      opacity: 0.35;
+      transform: translateY(0);
+    }
+    30% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
   }
   .linkish {
     padding: 0;
@@ -471,6 +515,11 @@
     border: 0;
     font-size: 11.5px;
     cursor: pointer;
+    transition: color 0.15s ease;
+  }
+  .linkish:hover {
+    color: #4338ca;
+    text-decoration: underline;
   }
   .failure {
     padding: 10px 12px;
@@ -506,6 +555,14 @@
     resize: none;
     font: inherit;
     font-size: 13px;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .composer textarea:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
   }
   .composer button {
     justify-self: end;
@@ -557,8 +614,30 @@
     font-size: 12px;
   }
   .status-running {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     color: #4f46e5;
     font-weight: 650;
+  }
+  .status-running::before {
+    content: '';
+    width: 7px;
+    height: 7px;
+    background: #4f46e5;
+    border-radius: 50%;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.4;
+      transform: scale(0.75);
+    }
   }
   .status-failed {
     color: #b91c1c;
@@ -577,15 +656,37 @@
     font-size: 12.5px;
     font-weight: 600;
     cursor: pointer;
+    transition:
+      background 0.15s ease,
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.1s ease;
+  }
+  .btn:hover:not(:disabled) {
+    border-color: #a1a1aa;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   }
   .primary {
     color: #fff;
     background: #4f46e5;
     border-color: #4f46e5;
   }
+  .primary:hover:not(:disabled) {
+    background: #4338ca;
+    border-color: #4338ca;
+    box-shadow: 0 2px 8px rgb(79 70 229 / 30%);
+  }
+  .btn:active:not(:disabled),
+  .primary:active:not(:disabled) {
+    transform: translateY(1px);
+  }
   .btn.danger {
     color: #b91c1c;
     border-color: #fecaca;
+  }
+  .btn.danger:hover:not(:disabled) {
+    background: #fef2f2;
+    border-color: #fca5a5;
   }
   .btn:disabled,
   .primary:disabled {

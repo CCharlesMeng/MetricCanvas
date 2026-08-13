@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { fly } from 'svelte/transition';
   import type { RunStep } from './run-state';
 
   /**
@@ -50,8 +51,21 @@
 
 <ol class="steps">
   {#each steps as step, index (index)}
-    <li class:failed={step.kind === 'step_failed' || (step.kind === 'tool_call' && step.status === 'failed')}>
-      <span class="ico">{icon(step)}</span>
+    <li
+      in:fly={{ y: 6, duration: 220 }}
+      class:failed={step.kind === 'step_failed' || (step.kind === 'tool_call' && step.status === 'failed')}
+    >
+      <span class="marker">
+        {#if step.kind === 'tool_call' && step.status === 'running'}
+          <span class="spinner" aria-hidden="true"></span>
+        {:else if step.kind === 'tool_call' && step.status === 'succeeded'}
+          <span class="ico ok">✓</span>
+        {:else if step.kind === 'step_failed' || (step.kind === 'tool_call' && step.status === 'failed')}
+          <span class="ico bad">✕</span>
+        {:else}
+          <span class="ico">{icon(step)}</span>
+        {/if}
+      </span>
       {#if step.kind === 'domain_routed'}
         <span class="t">
           <b>业务域路由</b>
@@ -153,25 +167,68 @@
 <style>
   .steps {
     display: grid;
-    gap: 2px;
+    gap: 0;
     padding: 0;
     margin: 0;
     list-style: none;
   }
   .steps li {
+    position: relative;
     display: grid;
     grid-template-columns: 16px minmax(0, 1fr);
     gap: 8px;
     align-items: baseline;
-    padding: 3px 0;
+    padding: 4px 0;
+  }
+  /* 时间线连接线:串起各步骤的 marker,末项不再向下延伸。 */
+  .steps li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    bottom: -4px;
+    left: 7.5px;
+    width: 1px;
+    background: #e4e4e7;
   }
   .steps li.failed .t b,
   .steps li.failed .ico {
     color: #b91c1c;
   }
+  .marker {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    background: #fff;
+    border-radius: 50%;
+  }
   .ico {
     color: #a1a1aa;
     font-size: 11px;
+  }
+  .ico.ok {
+    color: #16a34a;
+    font-weight: 700;
+  }
+  .ico.bad {
+    color: #b91c1c;
+    font-weight: 700;
+  }
+  .spinner {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid #c7d2fe;
+    border-top-color: #4f46e5;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
   .t {
     display: grid;
