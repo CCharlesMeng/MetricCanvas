@@ -21,9 +21,6 @@ function controllableGateway(): { gateway: DataGateway; calls: GatewayCall[] } {
       return new Promise((resolve, reject) => {
         calls.push({ query, signal, resolve, reject });
       });
-    },
-    async fetchDimensionValues() {
-      return [];
     }
   };
   return { gateway, calls };
