@@ -270,7 +270,7 @@ date-month-day
 
 DQE 查询规则：
 
-- `language` 固定为 `"dqe"`；
+- `query` 是以 `language` 为判别符的判别联合（ADR-0034），协议闭集当前仅 `"dqe"` 一支；
 - `body.dsl_list` 恰好包含一个对象；
 - DQE 请求体保持外部协议原文；
 - 每个 DQE 输出字段具有一个 `queryField` 映射；

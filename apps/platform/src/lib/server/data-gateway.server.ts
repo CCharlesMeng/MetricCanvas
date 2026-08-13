@@ -1,13 +1,14 @@
 import {
   DEFAULT_DQE_ENDPOINT,
   DqeGatewayError,
+  createDataGateway,
   createDqeDevDetail,
   createDqeGateway,
   type DqeDevDetail,
   type DqeDevDetailRecord,
   type DqeDiagnosticRecord
 } from '@metriccanvas/data-gateway';
-import type { EffectiveQuery } from '@metriccanvas/page';
+import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page';
 import type { DataGateway, QueryDiagnosticContext } from '@metriccanvas/runtime';
 import type { PlatformDataQueryResponse } from '../platform-data-gateway';
 
@@ -33,6 +34,8 @@ export interface ServerDataGatewayConfig {
 
 /**
  * 服务端数据网关:端点、凭据与请求头只出现在这一层。
+ * 生效查询经数据网关的按 language 分发注册点路由到协议适配器
+ * (ADR-0034/issue #79),当前协议闭集仅注册 dqe 适配器。
  * 每次生效查询执行落一条生产态查询诊断记录(封闭形状,不含业务数据行,
  * issue #47);开发期明细见 resolveDevDetail 的环境闸。
  */
@@ -45,12 +48,14 @@ export function createServerDataGateway(
     ((record: DqeDiagnosticRecord) =>
       console.info('[query-diagnostics]', JSON.stringify(record)));
   const devDetail = resolveDevDetail(environment, config.devDetailSink);
-  return createDqeGateway({
-    endpoint: resolveDqeEndpoint(environment),
-    ...(headers ? { headers } : {}),
-    ...(fetchImpl ? { fetchImpl } : {}),
-    diagnostics: { record: diagnosticsSink },
-    ...(devDetail ? { devDetail } : {})
+  return createDataGateway({
+    dqe: createDqeGateway({
+      endpoint: resolveDqeEndpoint(environment),
+      ...(headers ? { headers } : {}),
+      ...(fetchImpl ? { fetchImpl } : {}),
+      diagnostics: { record: diagnosticsSink },
+      ...(devDetail ? { devDetail } : {})
+    })
   });
 }
 
@@ -126,8 +131,9 @@ function parseEffectiveQueryPayload(payload: unknown): EffectiveQuery {
   if (!isRecord(payload)) {
     throw invalidQuery('生效查询必须是 JSON 对象');
   }
-  if (payload.language !== 'dqe') {
-    throw invalidQuery('生效查询的 language 必须是 dqe');
+  // language 按协议闭集失败关闭;通过后按判别分支校验形状(当前闭集仅 dqe)。
+  if (!isQueryLanguage(payload.language)) {
+    throw invalidQuery('生效查询的 language 不在受支持的查询协议闭集内');
   }
   const body = payload.body;
   if (

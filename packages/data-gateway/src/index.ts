@@ -1,3 +1,5 @@
+export { createDataGateway } from './dispatch';
+export type { DataGatewayAdapters } from './dispatch';
 export {
   DEFAULT_DQE_ENDPOINT,
   DqeGatewayError,

@@ -4,7 +4,7 @@ import type {
   QueryFieldDefinition,
   ResolvedFieldDefinition
 } from './field';
-import type { DqeQueryDefinition } from './query';
+import type { PageQuery } from './query';
 
 export interface InlineSource {
   type: 'inline';
@@ -21,7 +21,8 @@ export interface EmbeddedInitialRows {
 export interface QuerySource {
   type: 'query';
   initial?: EmbeddedInitialRows;
-  query: DqeQueryDefinition;
+  /** 以 language 为判别符的页面查询定义(判别联合,ADR-0034)。 */
+  query: PageQuery;
 }
 
 export interface InlineDataSource {

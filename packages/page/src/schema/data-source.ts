@@ -53,6 +53,15 @@ export const dqeQueryZ = z
   })
   .meta({ id: 'dqeQuery' });
 
+/**
+ * 页面查询定义:以 language 为判别符的判别联合(ADR-0034),dqeQueryZ 是
+ * 其中一支。协议闭集的真源是 `../query`(QUERY_LANGUAGES),新增协议分支
+ * 时两处同步扩展,编译期守护见领域态类型旁的闭集覆盖断言。
+ */
+export const pageQueryZ = z
+  .discriminatedUnion('language', [dqeQueryZ])
+  .meta({ id: 'pageQuery' });
+
 export const embeddedInitialRowsZ = z
   .object({
     capturedAt: z
@@ -67,7 +76,7 @@ export const querySourceZ = z
   .object({
     type: z.literal('query'),
     initial: embeddedInitialRowsZ.optional(),
-    query: dqeQueryZ
+    query: pageQueryZ
   })
   .meta({ id: 'querySource' });
 

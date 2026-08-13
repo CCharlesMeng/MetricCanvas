@@ -1,4 +1,5 @@
 import {
+  declaredPaginationLimit,
   isQueryErrorCode,
   type DataSnapshot,
   type DataSource,
@@ -106,6 +107,7 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
       }
     }
   }
+  // 分页页大小取查询定义自述的协议中立分页能力,编排层不解析协议内部结构。
   const paginationLimits = new Map<string, number>();
   for (const section of page.sections) {
     for (const component of section.components) {
@@ -113,17 +115,11 @@ function collectReferencedSources(page: Page): DataSourceBinding[] {
         continue;
       }
       const source = page.dataSources[component.data.main];
-      const order = source?.source.type === 'query'
-        ? source.source.query.body.dsl_list[0].order
+      const limit = source?.source.type === 'query'
+        ? declaredPaginationLimit(source.source.query)
         : undefined;
-      if (
-        typeof order === 'object' &&
-        order !== null &&
-        !Array.isArray(order) &&
-        Number.isInteger(order.limit) &&
-        Number(order.limit) > 0
-      ) {
-        paginationLimits.set(component.data.main, Number(order.limit));
+      if (limit !== undefined) {
+        paginationLimits.set(component.data.main, limit);
       }
     }
   }
@@ -386,8 +382,9 @@ function composeEffectiveQuery(
       });
     }
   }
+  // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
-    language: 'dqe',
+    language: query.language,
     body: query.body,
     fieldMappings: dataSource.fields,
     ...(binding.pagination
