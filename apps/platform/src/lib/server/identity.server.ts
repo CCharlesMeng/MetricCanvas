@@ -32,6 +32,11 @@ export const DEFAULT_MOCK_ACTOR_ID = DEVELOPER_ONE.actorId;
 export const MOCK_ACTOR_HEADER = 'x-mock-actor';
 /** 开发环境切换 mock 用户的查询参数(便于浏览器地址栏直接切换)。 */
 export const MOCK_ACTOR_QUERY_PARAM = 'mock-actor';
+/**
+ * mock 用户的持久化 cookie:经查询参数显式切换后写入,使切换在后续导航
+ * 中保持(顶栏切换器的支撑)。请求头与查询参数始终优先于 cookie。
+ */
+export const MOCK_ACTOR_COOKIE = 'mock-actor';
 
 /**
  * 解析请求要求的 mock 用户。未要求(null / 空串)时返回默认用户;要求了
@@ -41,6 +46,44 @@ export const MOCK_ACTOR_QUERY_PARAM = 'mock-actor';
 export function resolveMockUser(requestedActorId: string | null): MockUser | null {
   if (!requestedActorId) return DEVELOPER_ONE;
   return MOCK_USERS.find((user) => user.actorId === requestedActorId) ?? null;
+}
+
+/** 请求级 mock 用户判定的输入:三个来源按优先级 header > query > cookie。 */
+export interface MockActorSources {
+  header: string | null;
+  query: string | null;
+  cookie: string | null;
+}
+
+export type MockActorResolution =
+  | {
+      ok: true;
+      user: MockUser;
+      /** 经查询参数显式切换:hooks 据此写持久化 cookie。 */
+      persist: boolean;
+      /** cookie 携带清单外残值(如清单变更后):hooks 据此清除。 */
+      clearCookie: boolean;
+    }
+  | { ok: false; requested: string };
+
+/**
+ * 请求级 mock 用户判定(hooks 的唯一逻辑来源,纯函数可测):
+ * 显式指定(header/query)清单外即拒绝;cookie 残值宽松回落默认并要求清除
+ * ——cookie 是系统自己写的,清单变更后不该让用户被旧值卡死。
+ */
+export function resolveMockActor(sources: MockActorSources): MockActorResolution {
+  const explicit = sources.header ?? sources.query;
+  if (explicit) {
+    const user = resolveMockUser(explicit);
+    if (!user) return { ok: false, requested: explicit };
+    return { ok: true, user, persist: sources.query === explicit, clearCookie: false };
+  }
+  if (sources.cookie) {
+    const user = MOCK_USERS.find((candidate) => candidate.actorId === sources.cookie);
+    if (user) return { ok: true, user, persist: false, clearCookie: false };
+    return { ok: true, user: DEVELOPER_ONE, persist: false, clearCookie: true };
+  }
+  return { ok: true, user: DEVELOPER_ONE, persist: false, clearCookie: false };
 }
 
 /** 各路由/客户端在发布生命周期里承担的角色,由这里统一决定,不再由路由各自编。 */

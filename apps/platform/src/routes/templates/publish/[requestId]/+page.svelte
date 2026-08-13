@@ -35,16 +35,25 @@
 
 <style>
   main { max-width: 720px; margin: 0 auto; padding: 48px 24px; }
-  .eyebrow { color: #4f46e5; font-size: 12px; font-weight: 800; letter-spacing: .08em; }
-  h1 { margin: 8px 0; }
-  dl { display: grid; gap: 10px; margin: 28px 0; padding: 20px; border: 1px solid #e4e4e7; border-radius: 12px; background: #fff; }
+  .eyebrow { color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+  h1 { margin: 8px 0; font-size: 22px; letter-spacing: -0.01em; }
+  dl { display: grid; gap: 10px; margin: 28px 0; padding: 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
   dl div { display: grid; grid-template-columns: 140px 1fr; gap: 16px; }
-  dt { color: #71717a; }
+  dt { color: var(--muted); }
   dd { margin: 0; overflow-wrap: anywhere; }
   form, .success { display: flex; align-items: center; gap: 14px; }
-  button, a { border-radius: 8px; padding: 9px 14px; font: inherit; text-decoration: none; }
-  button { border: 0; color: #fff; background: #27272a; cursor: pointer; }
-  a { color: #3f3f46; border: 1px solid #d4d4d8; }
+  button, a { border-radius: 9px; padding: 8px 14px; font: inherit; font-size: 13px; text-decoration: none; }
+  button {
+    border: 1px solid var(--accent);
+    color: #fff;
+    background: var(--accent);
+    font-weight: 650;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover { background: var(--accent-strong); border-color: var(--accent-strong); }
+  a { color: #3f3f46; border: 1px solid #d4d4d8; transition: border-color 0.15s ease; }
+  a:hover { border-color: var(--faint); }
   .success { padding: 16px; color: #166534; background: #f0fdf4; border-radius: 10px; }
   .error { color: #b91c1c; }
 </style>

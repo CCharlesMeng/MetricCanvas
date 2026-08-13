@@ -305,13 +305,26 @@
   .editor-page { max-width: 1680px; margin: 0 auto; padding: 24px 24px 64px; }
   .topbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 18px; }
   .topbar a { color: #3f3f46; font-size: 13px; }
-  .eyebrow { margin: 18px 0 4px; color: #52525b; font-size: 11px; font-weight: 800; letter-spacing: .08em; }
+  .eyebrow { margin: 18px 0 4px; color: var(--accent); font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
   h1, h2, p { margin-top: 0; }
-  h1 { margin-bottom: 0; font-size: 26px; }
+  h1 { margin-bottom: 0; font-size: 22px; letter-spacing: -0.01em; }
   h2 { margin-bottom: 2px; font-size: 15px; }
   .toolbar, .order-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-  button { border: 1px solid #27272a; border-radius: 7px; padding: 9px 13px; color: #fff; background: #27272a; font: inherit; cursor: pointer; }
-  button.secondary { color: #27272a; background: #fff; }
+  button {
+    border: 1px solid var(--accent);
+    border-radius: 9px;
+    padding: 8px 13px;
+    color: #fff;
+    background: var(--accent);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  button:hover:not(:disabled) { background: var(--accent-strong); border-color: var(--accent-strong); }
+  button.secondary { color: var(--text); background: #fff; border-color: #d4d4d8; }
+  button.secondary:hover:not(:disabled) { background: #fff; border-color: var(--faint); box-shadow: 0 1px 3px rgb(0 0 0 / 8%); }
   button:disabled { cursor: not-allowed; opacity: .42; }
   .statusbar { display: flex; flex-wrap: wrap; gap: 18px; padding: 11px 14px; margin-bottom: 14px; border: 1px solid #e4e4e7; border-radius: 8px; background: #fff; color: #52525b; font-size: 13px; }
   .statusbar .dirty { color: #9a3412; font-weight: 700; }
@@ -320,7 +333,7 @@
   .property-panel { display: grid; gap: 14px; }
   .panel-heading { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
   .panel-heading p { margin-bottom: 0; color: #71717a; font-size: 12px; }
-  .step { display: grid; place-items: center; flex: 0 0 25px; height: 25px; border-radius: 999px; color: #fff; background: #27272a; font-size: 12px; font-weight: 800; }
+  .step { display: grid; place-items: center; flex: 0 0 25px; height: 25px; border-radius: 999px; color: #fff; background: var(--accent); font-size: 12px; font-weight: 800; }
   .component-panel ol { display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
   .component-panel li button { display: grid; width: 100%; gap: 3px; padding: 11px; color: #27272a; text-align: left; background: #fafafa; border-color: #e4e4e7; }
   .component-panel li.selected button { background: #eef2ff; border-color: #6366f1; }

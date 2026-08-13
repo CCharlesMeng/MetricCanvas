@@ -107,15 +107,16 @@
   }
   .eyebrow {
     margin: 0;
-    color: #2563eb;
-    font-size: 12px;
+    color: var(--accent);
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
   }
   h1 {
     margin: 8px 0 12px;
-    font-size: 26px;
+    font-size: 22px;
+    letter-spacing: -0.01em;
   }
   p {
     color: #52525b;
@@ -125,14 +126,20 @@
     color: #18181b;
   }
   button {
-    border: 0;
-    border-radius: 8px;
-    padding: 10px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 9px;
+    padding: 9px 16px;
     color: #fff;
-    background: #18181b;
+    background: var(--accent);
     font: inherit;
+    font-size: 13px;
     font-weight: 650;
     cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  button:hover:not(:disabled) {
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
   }
   form,
   label {

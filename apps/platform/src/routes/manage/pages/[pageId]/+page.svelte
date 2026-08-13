@@ -303,34 +303,54 @@
   }
   .eyebrow {
     margin: 0;
-    color: #52525b;
-    font-size: 12px;
+    color: var(--accent);
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
   }
   h1 {
     margin: 4px 0;
-    font-size: 28px;
+    font-size: 24px;
+    letter-spacing: -0.01em;
   }
   h2 {
     margin: 0 0 14px;
-    font-size: 16px;
+    font-size: 15px;
   }
   h3 {
     margin: 0 0 6px;
-    font-size: 14px;
+    font-size: 13.5px;
   }
   .muted {
-    color: #71717a;
+    color: var(--muted);
+    font-size: 13px;
   }
   button {
-    border: 1px solid #27272a;
-    border-radius: 7px;
-    padding: 8px 12px;
-    color: #fff;
-    background: #27272a;
+    padding: 7px 13px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
     font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
     cursor: pointer;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.1s ease;
+  }
+  button:hover:not(:disabled) {
+    border-color: var(--faint);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+  }
+  button:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
   .layout {
     display: grid;
@@ -341,9 +361,9 @@
   .content > section,
   .error {
     padding: 18px;
-    background: #fff;
-    border: 1px solid #e4e4e7;
-    border-radius: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
   }
   .history {
     align-self: start;
@@ -363,12 +383,14 @@
     color: #3f3f46;
     text-align: left;
     background: #fafafa;
-    border-color: #e4e4e7;
+    border-color: var(--line);
+    font-weight: 500;
   }
   .history li.active button {
-    color: #18181b;
-    background: #f4f4f5;
-    border-color: #52525b;
+    color: var(--text);
+    background: #fafaff;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgb(79 70 229 / 10%);
   }
   .history strong {
     font-size: 14px;
@@ -398,12 +420,22 @@
     margin-top: 16px;
   }
   .button-link {
-    border: 1px solid #27272a;
-    border-radius: 7px;
-    padding: 8px 12px;
-    color: #27272a;
+    padding: 7px 13px;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
     font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
     text-decoration: none;
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+  }
+  .button-link:hover {
+    border-color: var(--faint);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   }
   .audit dl div {
     min-width: 0;

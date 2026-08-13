@@ -3,6 +3,7 @@ import {
   DEFAULT_MOCK_ACTOR_ID,
   MOCK_USERS,
   createIdentity,
+  resolveMockActor,
   resolveMockUser,
   toTemplateContext,
   withClient,
@@ -37,6 +38,49 @@ describe('mock 多用户身份', () => {
   it('清单外的用户返回 null,由 hooks 拒绝而不是静默回落', () => {
     expect(resolveMockUser('nobody')).toBeNull();
     expect(resolveMockUser('Developer-1')).toBeNull();
+  });
+
+  it('请求级判定:优先级 header > query > cookie > 默认', () => {
+    const none = { header: null, query: null, cookie: null };
+    expect(resolveMockActor(none)).toMatchObject({
+      ok: true,
+      user: { actorId: 'developer-1' },
+      persist: false
+    });
+    expect(
+      resolveMockActor({ header: 'admin-1', query: 'developer-2', cookie: 'developer-2' })
+    ).toMatchObject({ ok: true, user: { actorId: 'admin-1' }, persist: false });
+    expect(
+      resolveMockActor({ header: null, query: 'developer-2', cookie: 'admin-1' })
+    ).toMatchObject({ ok: true, user: { actorId: 'developer-2' }, persist: true });
+    expect(
+      resolveMockActor({ header: null, query: null, cookie: 'admin-1' })
+    ).toMatchObject({ ok: true, user: { actorId: 'admin-1' }, persist: false });
+  });
+
+  it('查询参数切换要求持久化 cookie;header 是 API 调用方式,不持久化', () => {
+    expect(resolveMockActor({ header: null, query: 'admin-1', cookie: null })).toMatchObject({
+      ok: true,
+      persist: true
+    });
+    expect(resolveMockActor({ header: 'admin-1', query: null, cookie: null })).toMatchObject({
+      ok: true,
+      persist: false
+    });
+  });
+
+  it('显式指定清单外用户拒绝;cookie 残值宽松回落默认并要求清除', () => {
+    expect(resolveMockActor({ header: 'nobody', query: null, cookie: null })).toEqual({
+      ok: false,
+      requested: 'nobody'
+    });
+    expect(resolveMockActor({ header: null, query: 'nobody', cookie: null })).toEqual({
+      ok: false,
+      requested: 'nobody'
+    });
+    expect(
+      resolveMockActor({ header: null, query: null, cookie: 'retired-user' })
+    ).toMatchObject({ ok: true, user: { actorId: 'developer-1' }, clearCookie: true });
   });
 
   it('默认身份与引入多用户前完全一致(workbench → developer-1 + publisher)', () => {

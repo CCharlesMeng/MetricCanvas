@@ -297,13 +297,24 @@
   aside button.active { border-color: #6366f1; background: #eef2ff; }
   aside span, aside small { color: #71717a; overflow-wrap: anywhere; }
   section { display: grid; align-content: start; gap: 14px; }
-  h2 { margin: 0 0 4px; font-size: 20px; }
+  h2 { margin: 0 0 4px; font-size: 16px; }
   label { display: grid; gap: 6px; color: #52525b; font-size: 13px; font-weight: 700; }
   input, textarea, select { width: 100%; box-sizing: border-box; padding: 9px 10px; color: #27272a; background: #fff; border: 1px solid #d4d4d8; border-radius: 7px; font: inherit; }
   input:disabled { background: #f4f4f5; }
   .actions { display: flex; gap: 10px; margin-top: 6px; }
-  .actions button { padding: 9px 13px; border: 1px solid #d4d4d8; border-radius: 7px; background: #fff; cursor: pointer; }
-  .actions .primary { color: #fff; background: #27272a; border-color: #27272a; }
+  .actions button {
+    padding: 8px 13px;
+    border: 1px solid #d4d4d8;
+    border-radius: 9px;
+    background: #fff;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .actions button:hover:not(:disabled) { border-color: var(--faint); box-shadow: 0 1px 3px rgb(0 0 0 / 8%); }
+  .actions .primary { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .actions .primary:hover:not(:disabled) { background: var(--accent-strong); border-color: var(--accent-strong); }
   button:disabled { cursor: not-allowed; opacity: .55; }
   .error, .notice { padding: 10px 12px; border-radius: 8px; }
   .error { color: #b91c1c; background: #fef2f2; }
