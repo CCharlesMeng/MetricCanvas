@@ -3,17 +3,18 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>问数增强 · 概念地图 · 原型 v2</title>
+    <title>MetricCanvas 问数增强 · 原型 v2(滚动叙事)</title>
     <!--
-      原型 v2(问数增强批次,PRD #85),用后即弃。
-      v1 反馈:操作太多、概念关系没理清。v2 改为概念优先:单屏三层信任分层
-      + 一条治理循环,四个增强【新】标注在对应位置。唯一交互:点卡片高亮
-      它的关系与一个具体例子,再点取消。无播放流程、无变体。
-      回答的问题:「这批增强的核心概念与关系是什么?」
+      原型 v2(问数增强批次,PRD #85 v2),用后即弃。
+      回答的问题:「核心概念、关系与用户感受到的工作流程是否理清了?」
+      形态:滚动叙事(scrollytelling)——零点击零操作,一条问数旅程随滚动展开,
+      左侧概念地图联动高亮当前所处的概念。
+      v1(四场景操作式)已废弃认知路线,保留作对照。
+      自包含:无构建、无依赖、无网络、无持久化;数据为内存假数据。
     -->
     <style>
       :root {
-        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7;
+        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7; --line-soft: #f4f4f5;
         --text: #18181b; --muted: #71717a; --faint: #a1a1aa;
         --accent: #4f46e5; --accent-soft: #eef2ff;
         --warn-bg: #fffbeb; --warn-line: #fde68a; --warn-text: #92400e;
@@ -23,180 +24,293 @@
       body { margin: 0; color: var(--text); background: var(--bg); font-size: 13px;
         font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
         -webkit-font-smoothing: antialiased; }
-      h1,h2,h3,h4,p { margin: 0; }
-      button { font: inherit; color: inherit; cursor: pointer; }
+      h1,h2,h3,h4,p,dl,dd,ol,ul { margin: 0; }
+      ol, ul { padding: 0; list-style: none; }
+      code { font-size: 12px; color: #52525b; }
 
-      .topbar { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
+      .topbar { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
       .topbar b { color: #fff; font-size: 14px; }
       .topbar span { color: #a1a1aa; }
       .topbar .throwaway { margin-left: auto; padding: 3px 10px; background: #7f1d1d; color: #fecaca; border-radius: 999px; font-size: 11px; }
 
-      .frame { max-width: 1100px; margin: 0 auto; padding: 22px; }
-      .thesis { margin-bottom: 18px; padding: 14px 18px; background: #18181b; color: #e4e4e7; border-radius: 14px; font-size: 14px; line-height: 1.8; }
-      .thesis b { color: #fff; }
-      .thesis .hl { color: #a5b4fc; font-weight: 700; }
+      .layout { display: grid; grid-template-columns: 330px minmax(0, 1fr); max-width: 1240px; margin: 0 auto; gap: 28px; padding: 24px 22px 120px; }
 
-      .layers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-      .layer { border-radius: 14px; padding: 14px; border: 1.5px solid var(--line); background: var(--surface); }
-      .layer.l1 { border-color: #86efac; background: #f0fdf4; }
-      .layer.l2 { border-color: #c7d2fe; background: #eef2ff; }
-      .layer.l3 { border-color: var(--warn-line); background: var(--warn-bg); }
-      .layer > header { margin-bottom: 4px; }
-      .layer > header h3 { font-size: 13.5px; }
-      .layer > header p { margin-top: 3px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
-      .l1 > header h3 { color: #166534; } .l2 > header h3 { color: #3730a3; } .l3 > header h3 { color: var(--warn-text); }
-      .cards { display: grid; gap: 8px; margin-top: 10px; }
+      /* 左:概念地图(粘性) */
+      .mapcol { position: sticky; top: 78px; align-self: start; }
+      .cmap { display: grid; gap: 10px; }
+      .cnode { padding: 12px 14px; background: var(--surface); border: 1.5px solid var(--line); border-radius: 12px; transition: border-color .25s, box-shadow .25s, opacity .25s; opacity: .55; }
+      .cnode b { display: flex; align-items: center; gap: 7px; font-size: 13px; }
+      .cnode .idx { display: grid; place-items: center; width: 20px; height: 20px; background: var(--line-soft); border-radius: 999px; color: #52525b; font-size: 11px; font-weight: 700; }
+      .cnode p { margin-top: 5px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+      .cnode.lit { border-color: var(--accent); box-shadow: 0 0 0 3px rgb(79 70 229 / .12); opacity: 1; }
+      .cnode.lit .idx { background: var(--accent); color: #fff; }
+      .carrow { text-align: center; color: var(--faint); font-size: 12px; line-height: 1; }
+      .maphint { margin-top: 14px; color: var(--faint); font-size: 11px; line-height: 1.7; }
 
-      .card { position: relative; padding: 10px 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: box-shadow .12s, border-color .12s, opacity .15s; }
-      .card:hover { border-color: var(--faint); }
-      .card b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
-      .card small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; line-height: 1.55; }
-      .new-pill { padding: 1px 7px; background: var(--new-bg); color: var(--new); border: 1px solid #a5f3fc; border-radius: 999px; font-size: 9.5px; font-weight: 700; }
-      .s-pill { padding: 1px 6px; background: #f4f4f5; color: #52525b; border-radius: 5px; font-size: 9.5px; }
+      /* 右:叙事流 */
+      .story { display: grid; gap: 26px; }
+      section { display: grid; gap: 12px; padding: 22px 24px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; scroll-margin-top: 78px; }
+      section .step-head { display: flex; align-items: baseline; gap: 10px; }
+      section .step-no { color: var(--accent); font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+      section h2 { font-size: 16px; }
+      section .lead { color: #3f3f46; font-size: 13px; line-height: 1.8; }
+      section .lead b { color: var(--text); }
+      .tagrow { display: flex; flex-wrap: wrap; gap: 6px; }
+      .tag { padding: 2px 9px; border-radius: 999px; font-size: 10.5px; font-weight: 600; }
+      .tag.new { color: var(--new); background: var(--new-bg); border: 1px solid #a5f3fc; }
+      .tag.have { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
+      .tag.src { color: #52525b; background: var(--line-soft); }
 
-      body.focusing .card { opacity: .25; }
-      body.focusing .card.lit { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 3px rgb(79 70 229 / .18); }
-      body.focusing .card.origin { border-color: #18181b; box-shadow: 0 0 0 3px rgb(24 24 27 / .25); }
-
-      .loop { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 12px; align-items: center; margin-top: 16px; padding: 13px 16px; background: var(--surface); border: 1.5px dashed #a5f3fc; border-radius: 14px; }
-      .loop .tag { display: grid; place-items: center; padding: 6px 10px; background: var(--new-bg); color: var(--new); border-radius: 10px; font-weight: 700; font-size: 12px; white-space: nowrap; }
-      .loop .chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
-      .loop .step { padding: 5px 10px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
-      .loop .step:hover { border-color: var(--faint); }
-      .loop .arr { color: var(--faint); }
-      body.focusing .loop .step { opacity: .3; }
-      body.focusing .loop .step.lit { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 2px rgb(79 70 229 / .18); }
-
-      .detail { margin-top: 16px; min-height: 108px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
-      .detail .placeholder { color: var(--faint); font-size: 12.5px; line-height: 1.8; }
-      .detail h4 { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 6px; }
-      .detail .rel { margin: 6px 0; font-size: 12.5px; line-height: 1.7; }
-      .detail .rel b { color: var(--accent); }
-      .detail .example { margin-top: 8px; padding: 9px 12px; background: #fafafa; border: 1px dashed var(--line); border-radius: 9px; font-size: 12px; line-height: 1.7; color: #3f3f46; }
-      .detail .example::before { content: '例 · '; color: var(--faint); font-weight: 700; }
-      .movearrow { margin: 14px 0 0; text-align: center; color: var(--new); font-size: 12.5px; font-weight: 700; }
+      /* 模拟 UI 通用 */
+      .mock { display: grid; gap: 10px; padding: 16px; background: var(--bg); border: 1px dashed #d4d4d8; border-radius: 12px; }
+      .mock-label { color: var(--faint); font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; }
+      .bubble { justify-self: end; max-width: 78%; padding: 8px 12px; color: #fff; background: var(--accent); border-radius: 12px 12px 3px 12px; line-height: 1.6; }
+      .card { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
+      .card.warn { background: var(--warn-bg); border-color: var(--warn-line); }
+      .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
+      .pill { padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; }
+      .pill.new { color: var(--new); background: var(--new-bg); border: 1px solid #a5f3fc; }
+      .pill.warn { color: var(--warn-text); background: #fef3c7; }
+      .pill.vq { color: #166534; background: #f0fdf4; border: 1px solid #bbf7d0; }
+      .kv { display: grid; gap: 5px; }
+      .kv > div { display: grid; grid-template-columns: 52px minmax(0,1fr); gap: 8px; }
+      .kv dt { color: var(--faint); font-size: 11px; }
+      .kv dd { font-size: 12px; line-height: 1.55; }
+      .chips { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
+      .chip { padding: 3px 9px; background: #fff; border: 1px solid #d4d4d8; border-radius: 999px; font-size: 11px; color: #3f3f46; }
+      .chip.on { border-color: var(--accent); color: var(--accent); font-weight: 650; }
+      .ghostbtn { display: inline-block; padding: 5px 11px; background: #fff; border: 1px solid #d4d4d8; border-radius: 8px; font-size: 11.5px; color: #3f3f46; }
+      .primarybtn { display: inline-block; padding: 6px 12px; color: #fff; background: var(--accent); border-radius: 8px; font-size: 12px; font-weight: 650; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { padding: 6px 8px; border-bottom: 1px solid var(--line-soft); text-align: right; font-size: 12px; white-space: nowrap; }
+      th { color: var(--muted); font-weight: 600; font-size: 11px; }
+      th:first-child, td:first-child { text-align: left; }
+      tbody tr:last-child td { border-bottom: 0; }
+      .up { color: var(--ok); }
+      .steps-line { display: grid; gap: 4px; }
+      .steps-line li { display: grid; grid-template-columns: 16px minmax(0,1fr); gap: 8px; align-items: baseline; font-size: 12px; }
+      .steps-line .ico { color: var(--faint); font-size: 11px; }
+      .steps-line small { color: var(--muted); }
+      details.explain { border: 1px solid var(--line-soft); border-radius: 9px; padding: 8px 10px; background: #fff; }
+      details.explain summary { color: #6366f1; font-size: 11.5px; cursor: pointer; }
+      details.explain p { margin-top: 6px; color: var(--muted); font-size: 11.5px; line-height: 1.7; }
+      .suggest { display: flex; flex-wrap: wrap; gap: 6px; }
+      .suggest span { padding: 4px 11px; background: #fff; border: 1px solid #c7d2fe; border-radius: 999px; color: #4338ca; font-size: 11.5px; }
+      .dropdown { background: #fff; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; box-shadow: 0 8px 24px rgb(24 24 27 / .08); }
+      .dropdown .grp { padding: 5px 12px 3px; color: var(--faint); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; background: #fafafa; }
+      .dropdown .it { display: flex; justify-content: space-between; padding: 6px 12px; font-size: 12px; }
+      .dropdown .it small { color: var(--faint); }
+      .dropdown .it.on { background: var(--accent-soft); }
+      .inputbox { padding: 10px 12px; background: #fff; border: 1px solid var(--accent); border-radius: 10px; font-size: 12.5px; box-shadow: 0 0 0 3px rgb(99 102 241 / .1); }
+      .caret { display: inline-block; width: 1px; height: 14px; background: var(--text); vertical-align: -2px; animation: blink 1s steps(1) infinite; }
+      @keyframes blink { 50% { opacity: 0; } }
+      .ladder { display: grid; gap: 8px; }
+      .ladder li { display: grid; grid-template-columns: 90px minmax(0,1fr); gap: 12px; padding: 9px 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; align-items: baseline; }
+      .ladder .cost { color: var(--accent); font-size: 11px; font-weight: 700; }
+      .ladder b { font-size: 12.5px; }
+      .ladder small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.6; }
+      .inbox-rows { display: grid; }
+      .inbox-rows > div { display: grid; grid-template-columns: minmax(0,1.5fr) auto auto; gap: 12px; align-items: center; padding: 9px 12px; background: #fff; border-bottom: 1px solid var(--line-soft); }
+      .inbox-rows > div:first-child { border-radius: 10px 10px 0 0; }
+      .inbox-rows > div:last-child { border-bottom: 0; border-radius: 0 0 10px 10px; }
+      .inbox-rows b { font-size: 12px; }
+      .inbox-rows small { display: block; color: var(--muted); font-size: 10.5px; margin-top: 1px; }
+      .principles { display: grid; gap: 10px; }
+      .principles li { padding: 12px 14px; background: var(--accent-soft); border: 1px solid #c7d2fe; border-radius: 11px; font-size: 12.5px; line-height: 1.7; }
+      .principles b { color: #3730a3; }
     </style>
   </head>
   <body>
     <div class="topbar">
       <b>MetricCanvas</b>
-      <span>问数增强 · 概念地图(原型 v2,PRD #85)</span>
-      <span class="throwaway">用后即弃</span>
+      <span>问数增强 · 原型 v2 滚动叙事(PRD #85 v2)</span>
+      <span class="throwaway">用后即弃 · 假数据 · 只需滚动</span>
     </div>
-    <div class="frame">
-      <div class="thesis">
-        每个数字的算法与含义,只有三种来源:<b>公司定的、你选的、模型编的</b>。
-        这批增强只做一件事:<span class="hl">把高频的东西从「模型编的」搬进「公司定的」</span>(S1 相对时间、S2 派生模板),
-        搬不动的让「你选的」更省力(S3 预选),并且给搬运装一条流水线(S4 治理循环)。点任何卡片看它的关系与例子。
-      </div>
 
-      <div class="layers">
-        <div class="layer l1">
-          <header><h3>① 公司口径 —— 数据上下文声明</h3><p>确定性、可验真、直接出数不打扰你。声明改了,行为就变。</p></header>
-          <div class="cards" id="l1"></div>
+    <div class="layout">
+      <!-- 左:概念地图 -->
+      <aside class="mapcol">
+        <div class="cmap">
+          <div class="cnode" data-c="surface"><b><span class="idx">①</span>语义面</b>
+            <p>公司认证的闭集:指标·维度·别名·<u>相对时间词表</u>·<u>派生模板</u>·<u>拒答面</u>·已验证查询。一切回答的语义锚点。</p></div>
+          <div class="carrow">↓ 闭集注入</div>
+          <div class="cnode" data-c="orch"><b><span class="idx">②</span>一次受控问答</b>
+            <p>八段编排(ADR-0037):引导→输入→等待→<u>唯一的打断点=口径卡</u>→答案→纠错→延续→沉淀。</p></div>
+          <div class="carrow">↓ 每个答案落在一层</div>
+          <div class="cnode" data-c="trust"><b><span class="idx">③</span>三层信任</b>
+            <p>公司口径(无标注)/ <u>验证参照(回显背书)</u> / 临时口径(琥珀,独有)。用户一眼可辨。</p></div>
+          <div class="carrow">↓ 落空与满意的痕迹</div>
+          <div class="cnode" data-c="inbox"><b><span class="idx">④</span>治理收件箱</b>
+            <p>别名候选·模板/指标需求·<u>已验证查询提名</u> → 人工背书 → 语义面长大 → 回到①。</p></div>
         </div>
-        <div class="layer l2">
-          <header><h3>② 用户选择 —— 你的主权</h3><p>该你决定的,系统记住但永远不代替(每次仍等你确认)。</p></header>
-          <div class="cards" id="l2"></div>
-        </div>
-        <div class="layer l3">
-          <header><h3>③ 模型产出 —— 现场生成,无人背书</h3><p>所以必须设防:阻塞确认、琥珀标注、登记缺口。</p></header>
-          <div class="cards" id="l3"></div>
-        </div>
-      </div>
-      <p class="movearrow">◀ S1/S2 的本质:把③里高频的两类东西(时间换算、环比公式)向左搬进① ◀</p>
+        <p class="maphint">下划线 = 本批次新增。右侧滚动,当前步骤涉及的概念会亮起。</p>
+      </aside>
 
-      <div class="loop">
-        <span class="tag">S4 治理循环<br/><small style="font-weight:400">唯一的闭环</small></span>
-        <div class="chain" id="loop"></div>
-      </div>
+      <!-- 右:八步旅程 -->
+      <div class="story">
+        <section data-lights="surface orch trust inbox">
+          <div class="step-head"><span class="step-no">开场</span><h2>四个概念,一条回路</h2></div>
+          <p class="lead">问数的全部设计压缩成左图:<b>语义面</b>定义系统懂什么;<b>受控问答</b>定义一次交互怎么走;<b>三层信任</b>定义每个数字的可信度如何呈现;<b>治理收件箱</b>定义系统怎么越用越懂。下面用一个问题走完整条旅程:<b>「上个月各区域Tokens消耗量的环比是多少?」</b></p>
+        </section>
 
-      <div class="detail" id="detail">
-        <p class="placeholder">点上面任何概念卡,这里显示:它是什么 → 它连着谁 → 一个具体例子。</p>
+        <section data-lights="inbox orch">
+          <div class="step-head"><span class="step-no">第 1 步</span><h2>进门:空状态就是能力说明书</h2></div>
+          <p class="lead">冷启动不再是一段说明文字——展示<b>可点击的示例问题</b>(抽自黄金问题集与已验证查询,治理资产的第三种用途,零新增维护面)和「系统懂什么」的域摘要。</p>
+          <div class="mock"><span class="mock-label">模拟 · 工作台空状态</span>
+            <div class="card"><div class="card-head"><span>试试这样问</span><span class="pill vq">来自已验证查询</span></div>
+              <div class="suggest"><span>上个月各区域的Tokens请求量是多少?</span><span>今年以来每月新增客户数走势</span><span>各行业的在册客户数</span></div></div>
+            <div class="card"><div class="card-head"><span>我懂两个业务域</span></div>
+              <p style="font-size:12px;color:#3f3f46;line-height:1.7">运营分析:Tokens消耗量·计费Tokens量·Tokens请求量·客户数(在用口径) × 区域/模型<br/>客户经营:客户数(在册口径)·新增/流失客户数·留存率 × 客户级别/行业</p></div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · 启示#17</span><span class="tag src">Databricks common questions / Snowflake onboarding question</span></div>
+        </section>
+
+        <section data-lights="surface">
+          <div class="step-head"><span class="step-no">第 2 步</span><h2>输入:联想即能力发现</h2></div>
+          <p class="lead">打字时词典联想,候选按<b>指标/维度/时间词</b>分组标注(不含维度取值)。联想词全部来自语义面闭集——<b>补全出来的一定能命中</b>,一部分缺口在提问前就被规避。</p>
+          <div class="mock"><span class="mock-label">模拟 · 输入联想</span>
+            <div class="inputbox">上个月各区域的Tokens消<span class="caret"></span></div>
+            <div class="dropdown">
+              <div class="grp">指标 · 运营分析</div>
+              <div class="it on"><span><b>Tokens消耗量</b></span><small>别名:消耗量、用量</small></div>
+              <div class="grp">时间</div>
+              <div class="it"><span>上个月</span><small>相对时间词表 → 2026-07</small></div>
+            </div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · 启示#18</span><span class="tag src">SuperSonic 词典联想(源码验证) / ThoughtSpot @引用</span></div>
+        </section>
+
+        <section data-lights="orch">
+          <div class="step-head"><span class="step-no">第 3 步</span><h2>等待:时间线只讲进度,解释收进答案</h2></div>
+          <p class="lead">分步流式时间线保留(四家竞品的过程反馈都不如它),但按新分工<b>只承载进度与确认点</b>;「系统怎么理解的、用了哪些数据、参照了什么」收进答案里的折叠解释段(第 5 步)。</p>
+          <div class="mock"><span class="mock-label">模拟 · 运行中的时间线</span>
+            <ul class="steps-line">
+              <li><span class="ico">✓</span><span>业务域路由 <small>运营分析</small></span></li>
+              <li><span class="ico">✓</span><span>指标候选 <small>命中「Tokens消耗量」·「环比」命中派生模板</small></span></li>
+              <li><span class="ico" style="color:var(--accent)">●</span><span>真实执行中 <small>本期 2026-07 + 基期 2026-06(模板自动扩展)</small></span></li>
+            </ul>
+          </div>
+          <div class="tagrow"><span class="tag have">已有 · 分步流式</span><span class="tag new">新 · 启示#19 分工</span><span class="tag src">Databricks Analysis 折叠段的反面教训</span></div>
+        </section>
+
+        <section data-lights="surface orch">
+          <div class="step-head"><span class="step-no">第 4 步</span><h2>口径卡:从确认卡升级为控制面板</h2></div>
+          <p class="lead">「上个月」被词表<b>确定性换算</b>(不再拒答);「环比」命中<b>派生模板</b>(公式是公司定的,不再阻塞)。口径卡任何时候可改:时间是预设 chips(=词表的 UI 形态)+日期范围,筛选值直改,<b>改完原地重跑、不过模型</b>。消歧时默认预选你上次的选择,但永远等你点确认。</p>
+          <div class="mock"><span class="mock-label">模拟 · 口径卡(控制面板形态)</span>
+            <div class="card">
+              <div class="card-head"><span>口径卡 · 生效范围(可直接修改)</span><span class="pill new">控制面板</span></div>
+              <dl class="kv">
+                <div><dt>指标</dt><dd>Tokens消耗量 <b>+ 环比</b> <span class="pill new">派生·公司口径</span></dd></div>
+                <div><dt>派生</dt><dd><code>(本期−基期)÷基期</code> · 基期 2026-06(上一自然周期)</dd></div>
+                <div><dt>时间</dt><dd>2026-07-01 ~ 2026-07-31 <span class="pill new">「上个月」词表换算</span>
+                  <div class="chips"><span class="chip on">上个月</span><span class="chip">本月</span><span class="chip">今年以来</span><span class="chip">最近3个月</span><span class="chip">自定义…</span></div></dd></div>
+                <div><dt>筛选</dt><dd><span class="chip">区域 = 全部 ✎</span></dd></div>
+              </dl>
+              <div style="margin-top:8px"><span class="ghostbtn">改完重新查询</span></div>
+            </div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · S1词表+S2模板+启示#20</span><span class="tag have">已有 · 条件阻塞消歧</span><span class="tag src">SuperSonic 解析卡(源码验证)</span></div>
+        </section>
+
+        <section data-lights="trust">
+          <div class="step-head"><span class="step-no">第 5 步</span><h2>答案:一眼可辨的三层信任</h2></div>
+          <p class="lead">每个数字属于哪一层,不用问:<b>公司口径</b>无标注;命中已验证查询时回显<b>「参照了谁背书的哪条查询」</b>;模型现场编的公式永远<b>琥珀标注</b>(竞品无等价物,独有保持)。解释段折叠在答案里,供事后核查。</p>
+          <div class="mock"><span class="mock-label">模拟 · 答案区</span>
+            <div class="card"><div class="card-head"><span>各区域 Tokens消耗量与环比 · 2026-07</span><span class="pill vq">参照:已验证查询「区域消耗月报」(张三背书 · 08-02)</span></div>
+              <table><thead><tr><th>区域</th><th>本期(万)</th><th>环比</th></tr></thead><tbody>
+                <tr><td>华东</td><td>4,470</td><td class="up">▲ 6.9%</td></tr>
+                <tr><td>华南</td><td>2,760</td><td style="color:#dc2626">▼ 6.1%</td></tr>
+                <tr><td>华北</td><td>2,130</td><td class="up">▲ 4.9%</td></tr>
+              </tbody></table>
+              <p style="margin-top:6px;color:var(--faint);font-size:11px">表格支持本地排序/搜索,不重新提问、不改口径(#25)</p>
+            </div>
+            <details class="explain"><summary>系统如何得到这个答案(折叠解释段)</summary>
+              <p>理解:「上个月」→词表换算 2026-07;「环比」→派生模板(公司口径)。数据:运营分析域,自动扩展取基期 2026-06。参照:已验证查询「区域消耗月报」。</p></details>
+            <div class="card warn" style="margin-top:2px"><div class="card-head"><span>对照:若问「人均消耗」(模板外)</span><span class="pill warn">临时口径</span></div>
+              <p style="font-size:11.5px;color:var(--warn-text)">公式由模型现场生成,未经公司认证——琥珀标注+执行前确认+登记指标需求。这层永远保留,兜住闭集外的长尾。</p></div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · 启示#8 验证参照回显</span><span class="tag have">已有 · 临时口径琥珀(独有)</span><span class="tag src">Snowflake confidence 回显</span></div>
+        </section>
+
+        <section data-lights="orch">
+          <div class="step-head"><span class="step-no">第 6 步</span><h2>纠错:四条路径,成本递增</h2></div>
+          <p class="lead">错误在<b>最小粒度</b>被纠正,而不是整轮重问——这是「事前结构化回显」路线相对 Databricks「事后解释」路线的核心优势。</p>
+          <div class="mock"><span class="mock-label">模拟 · 纠错成本阶梯</span>
+            <ol class="ladder">
+              <li><span class="cost">1–2 步·秒回</span><span><b>口径卡上直接改</b><small>时间 chips / 筛选值直改 → 原地重跑,确定性生效不过模型</small></span></li>
+              <li><span class="cost">2 步</span><span><b>编辑原问题</b><small>悬停铅笔改原文 → 新开一轮重答,旧轮折叠标「已修订」(事件流不可变)</small></span></li>
+              <li><span class="cost">1 句话</span><span><b>追问定向修改</b><small>「只看华东」「改成柱状图」——未提及的设置保持不变(已有,结构性防漂移)</small></span></li>
+              <li><span class="cost">异步</span><span><b>请求人工评审</b><small>「这个数对不对请人看看」→ admin 评审 → 回执以步骤事件回到你的时间线(有回执才不是黑洞)</small></span></li>
+            </ol>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · 启示#20/#21/#24</span><span class="tag have">已有 · 追问 patch</span><span class="tag src">SuperSonic 1-2步纠错 / Databricks Request review 回执</span></div>
+        </section>
+
+        <section data-lights="surface orch">
+          <div class="step-head"><span class="step-no">第 7 步</span><h2>延续:建议追问全部来自闭集</h2></div>
+          <p class="lead">答案下的「下一步问什么」由<b>确定性来源</b>生成——可下钻的维度、同域高频指标、适用的派生模板。不需要模型自由发挥,不会建议答不了的问题。</p>
+          <div class="mock"><span class="mock-label">模拟 · 建议追问</span>
+            <div class="suggest"><span>按模型拆分看看</span><span>对比计费Tokens量</span><span>看同比</span><span>只看华东</span></div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · 启示#22</span><span class="tag src">Databricks suggested follow-ups / SuperSonic 下钻维度</span></div>
+        </section>
+
+        <section data-lights="orch inbox">
+          <div class="step-head"><span class="step-no">第 8 步</span><h2>沉淀:两种资产 + 一条提名流</h2></div>
+          <p class="lead">满意的临时页面态沉淀为 <b>Data App</b>(活的,随查随新)或<b>报告</b>(冻结在采集时点)——已实现,且被 Snowflake 的 Artifact/快照二分印证。新增两条:查看者可从沉淀物<b>「就这个数再问一句」</b>;满意的答案可<b>「提名为已验证查询」</b>送进治理收件箱。</p>
+          <div class="mock"><span class="mock-label">模拟 · 答案的沉淀动作</span>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <span class="ghostbtn">沉淀为长期资产…</span>
+              <span class="ghostbtn">提名为已验证查询 ↗</span>
+              <span class="ghostbtn" style="border-style:dashed">查看者:就这个数再问一句</span>
+            </div>
+          </div>
+          <div class="tagrow"><span class="tag have">已有 · Data App/报告二分</span><span class="tag new">新 · 提名(S4)+沉淀追问(#26)</span><span class="tag src">Snowflake Artifact / Databricks Add as instruction</span></div>
+        </section>
+
+        <section data-lights="inbox surface">
+          <div class="step-head"><span class="step-no">治理侧</span><h2>收件箱:候选进来,背书出去</h2></div>
+          <p class="lead">治理者日常只看一个界面:三条候选流汇入,<b>逐条背书或驳回</b>;背书的进语义面,系统下次直接命中——回到第①个概念,回路闭合。<b>自动化只在建议侧,人工只在采纳侧</b>(Databricks 明文「反馈不自动改变行为」)。</p>
+          <div class="mock"><span class="mock-label">模拟 · 治理收件箱</span>
+            <div class="inbox-rows">
+              <div><span><b>缺口</b>「人均消耗量」<small>最接近 Tokens消耗量 · 出现 9 次 → 评估建指标或模板</small></span><span class="pill warn">出现 9 次</span><span class="ghostbtn">处理</span></div>
+              <div><span><b>别名候选</b>「调用量」→ Tokens请求量<small>7 次检索落空后经消歧确认 · 上限校验 3/10</small></span><span></span><span class="ghostbtn">采纳</span></div>
+              <div><span><b>已验证查询提名</b>「区域消耗月报」<small>李四提名 · 背书后兼任评测金标准与空状态示例</small></span><span></span><span class="ghostbtn">背书</span></div>
+            </div>
+          </div>
+          <div class="tagrow"><span class="tag new">新 · S4 治理收件箱</span><span class="tag src">Snowflake VQ suggestions / SuperSonic 记忆双评审</span></div>
+        </section>
+
+        <section data-lights="surface orch trust inbox">
+          <div class="step-head"><span class="step-no">收尾</span><h2>三条体验原则</h2></div>
+          <ol class="principles">
+            <li><b>事前回显优先于事后解释</b>——口径先亮出来,纠错发生在要素粒度,不重问整轮。</li>
+            <li><b>打断只在必要处,打断处即纠错处</b>——口径卡是唯一的执行前打断点,它同时是控制面板。</li>
+            <li><b>一切引导来自同一批治理资产</b>——示例=黄金问题集,联想=语义面,追问建议=维度与模板,信任回显=已验证查询。不为体验造第二份数据。</li>
+          </ol>
+        </section>
       </div>
     </div>
 
     <script>
-      const CONCEPTS = {
-        /* ① 公司口径 */
-        metric: { layer: 'l1', title: '指标', pills: [], oneliner: '闭集条目:定义、可加性、别名都声明过',
-          rels: [['底数', 'derived', '派生模板套在指标上:环比(Tokens消耗量)'], ['被检索', 'pick', '你的问法先检索指标(含别名),命中多个近义时进入消歧'], ['被扩充', 'adopt', '别名采纳后,指标的 aliases 增加,下次直接命中']],
-          example: '「Tokens消耗量」:可加,按求和聚合,别名[消耗量,用量]——这些都写在数据上下文里,谁问都是同一个答案。' },
-        vocab: { layer: 'l1', title: '相对时间词表', pills: ['新', 'S1'], oneliner: '「上个月」→ 具体日期范围的确定性换算',
-          rels: [['取代', 'adhoc', '以前:模型把「上个月」四个字直接塞进查询 → 拒答;以后:词表确定换算,零幻觉'], ['支撑', 'derived', '环比的「基期」=词表推导的上一自然周期,S2 依赖 S1']],
-          example: '「上个月」+ 时钟锚点 2026-08-13 → 2026-07-01 ~ 2026-07-31(完整自然周期;「本月到不到昨天」等业务约定确认后只改词表声明)。词表外的表述(如「前天」)如实拒答。' },
-        derived: { layer: 'l1', title: '派生模板(环比/同比/占比)', pills: ['新', 'S2'], oneliner: '公式预先声明死,模板 × 指标 = 派生指标',
-          rels: [['取代', 'adhoc', '以前:环比公式由模型现场编(临时口径,每次要确认);以后:公式是公司定的,直接出数'], ['依赖', 'vocab', '基期(上一周期/去年同期)由 S1 相对时间推导'], ['约束', 'metric', '与可加性联动:不可加指标禁止套求和类模板']],
-          example: '「各区域消耗量环比」→ 模板[环比] × 指标[Tokens消耗量]:系统自动多取 2026-06 的数,装配层算 (本期−基期)÷基期——不阻塞、不标琥珀,口径卡如实展示定义。' },
-        /* ② 用户选择 */
-        pick: { layer: 'l2', title: '消歧选择', pills: [], oneliner: '近义指标(两域「客户数」)选哪个口径,只能你定',
-          rels: [['产生信号', 'pref', '你的每次选择随会话落库,聚合成你自己的偏好'], ['产生证据', 'gap', '检索落空/反复消歧的说法进入缺口台账与别名建议']],
-          example: '「6月客户数」命中两域:客户经营(期末在册) vs 运营分析(在用调用)。口径差异是业务事实,系统与模型都不替你选(ADR-0037)。' },
-        pin: { layer: 'l2', title: '组件点名/钉住', pills: [], oneliner: '「改成柱状图」——展示形态你说了算',
-          rels: [['词汇同源', 'metric', '点名词汇来自组件目录(含别名「表格」),与指标别名同一思路'], ['优先级最高', 'derived', '你点名的组件 > 系统推荐;不适配时明确拒绝,不静默换']],
-          example: '「改成柱状图」词面命中组件目录 → 直接生效并跨轮保持;「只看华东」之后仍是柱状图(未提及的不变)。已上线。' },
-        pref: { layer: 'l2', title: '偏好记忆(预选)', pills: ['新', 'S3'], oneliner: '记住你上次的消歧选择,下次默认勾上——但仍弹卡等确认',
-          rels: [['来源', 'pick', '信号=已落库的会话步骤事件,零新增采集'], ['边界', 'pick', '只记你自己的(per-user);永远阻塞,红线不破,确认降为一次点击']],
-          example: '上周你选了「客户经营」口径 → 本周候选卡默认勾选它并标「上次你选了这个」,你点一下确认即执行;想改随时改。' },
-        /* ③ 模型产出 */
-        adhoc: { layer: 'l3', title: '临时口径 formula', pills: [], oneliner: '模型现场编的公式——兜底能力,但无人背书',
-          rels: [['被搬空', 'derived', 'S1/S2 之后,高频的时间换算与环比/占比不再走这条路;剩下的才是真正的长尾(如「人均消耗」)'], ['入台账', 'gap', '每次确认使用即登记缺口,反复出现的临时口径是「该建正式指标」的最强证据']],
-          example: '「人均消耗量」不在模板闭集 → 模型编 formula[消耗量÷客户数] → 阻塞等你确认 + 琥珀标注 + 登记缺口。防线一条不减。' },
-        /* 循环 */
-        gap: { layer: 'loop', title: '缺口台账', pills: ['界面新', 'S4'], oneliner: '落空与临时口径的结构化证据,按出现次数累加',
-          rels: [['来源', 'adhoc', '临时口径确认即登记;面外问题经你确认登记'], ['产出', 'adopt', '聚合出「用户说法→最接近指标」的待采纳别名清单']],
-          example: '「人均消耗量」出现 9 次、open;「客户满意度」出现 5 次、accepted 待建设——数据侧按这个排优先级。数据 #67 已有,这次补界面。' },
-        adopt: { layer: 'loop', title: '别名采纳', pills: ['新', 'S4'], oneliner: '人工把用户说法采纳为正式别名——循环的闸门',
-          rels: [['更新', 'metric', '采纳后人工改数据上下文声明(不自动写回),①层长大'], ['效果', 'pick', '下次「调用量」直接命中「Tokens请求量」,不再落空']],
-          example: '「调用量」7 次检索落空后经消歧确认 → 建议清单 → 你点「标记采纳」→ 人工把它加进指标 aliases → 闭环完成。' }
-      };
-
-      const LOOP_CHAIN = [
-        ['use', '日常问数'], ['miss', '落空 / 歧义 / 临时口径'], ['gap', '缺口台账(自动聚合)'],
-        ['adopt', '别名采纳(人工闸门)'], ['grow', '① 公司口径长大'], ['back', '下次直接命中']
-      ];
-
-      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-
-      function cardHtml(id) {
-        const c = CONCEPTS[id];
-        return `<div class="card" data-id="${id}" onclick="window.__focus('${id}')">
-          <b>${esc(c.title)}${c.pills.map((p) => p === '新' || p === '界面新' ? `<span class="new-pill">${p}</span>` : `<span class="s-pill">${p}</span>`).join('')}</b>
-          <small>${esc(c.oneliner)}</small></div>`;
-      }
-      document.getElementById('l1').innerHTML = ['metric', 'vocab', 'derived'].map(cardHtml).join('');
-      document.getElementById('l2').innerHTML = ['pick', 'pin', 'pref'].map(cardHtml).join('');
-      document.getElementById('l3').innerHTML = [cardHtml('adhoc')].join('');
-      document.getElementById('loop').innerHTML = LOOP_CHAIN.map(([key, label], i) => {
-        const clickable = CONCEPTS[key] ? `onclick="window.__focus('${key}')" data-id="${key}"` : `data-id="${key}"`;
-        return `<span class="step" ${clickable}>${esc(label)}</span>${i < LOOP_CHAIN.length - 1 ? '<span class="arr">→</span>' : '<span class="arr">↺</span>'}`;
-      }).join('');
-
-      let focused = null;
-      window.__focus = (id) => {
-        if (focused === id) { focused = null; document.body.classList.remove('focusing'); renderDetail(null); paint(); return; }
-        focused = id;
-        document.body.classList.add('focusing');
-        paint();
-        renderDetail(id);
-      };
-      function paint() {
-        const c = focused ? CONCEPTS[focused] : null;
-        const related = new Set(c ? c.rels.map((r) => r[1]) : []);
-        document.querySelectorAll('.card, .loop .step').forEach((el) => {
-          const id = el.dataset.id;
-          el.classList.toggle('origin', focused !== null && id === focused);
-          el.classList.toggle('lit', focused !== null && (id === focused || related.has(id)));
-        });
-      }
-      function renderDetail(id) {
-        const box = document.getElementById('detail');
-        if (!id) { box.innerHTML = `<p class="placeholder">点上面任何概念卡,这里显示:它是什么 → 它连着谁 → 一个具体例子。</p>`; return; }
-        const c = CONCEPTS[id];
-        box.innerHTML = `<h4>${esc(c.title)} ${c.pills.map((p) => `<span class="new-pill">${p}</span>`).join('')}</h4>
-          ${c.rels.map(([verb, target, note]) => `<p class="rel"><b>${esc(verb)} → ${esc(CONCEPTS[target]?.title ?? target)}</b>:${esc(note)}</p>`).join('')}
-          <div class="example">${esc(c.example)}</div>`;
-      }
+      /* 滚动联动:当前 section 进入视口 → 点亮其 data-lights 声明的概念节点 */
+      const nodes = Object.fromEntries(
+        [...document.querySelectorAll('.cnode')].map((el) => [el.dataset.c, el])
+      );
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          const lights = (visible.target.dataset.lights || '').split(' ');
+          for (const [key, el] of Object.entries(nodes)) {
+            el.classList.toggle('lit', lights.includes(key));
+          }
+        },
+        { rootMargin: '-25% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+      );
+      document.querySelectorAll('section[data-lights]').forEach((s) => observer.observe(s));
     </script>
   </body>
 </html>
