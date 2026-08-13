@@ -1,4 +1,5 @@
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+import type { AskScopeConfirmation } from '../ask/orchestrator';
 import type { AnalysisSessionStore } from '../session/store';
 import { anySignal } from './abort';
 import type { AgentRunRegistry } from './run-registry';
@@ -11,7 +12,10 @@ import {
 import type { AgentRunner } from './types';
 import {
   clientMessages,
+  confirmedPageIdsOf,
   isWorkbenchAgentRequest,
+  scopeConfirmationsOf,
+  userDomainsOf,
   workbenchMessages
 } from './workbench-request';
 
@@ -35,8 +39,12 @@ export interface AgentStreamServices {
   createRunner(input: {
     confirmedPageIds: string[];
     runId: string;
-    mode?: 'authoring' | 'lifecycle';
+    mode?: 'authoring' | 'lifecycle' | 'ask';
     identity: LifecycleContext;
+    /** 问数编排(mode=ask)的人工确认与钉住状态;其余模式忽略。 */
+    scopeConfirmations?: AskScopeConfirmation[];
+    userDomains?: string[];
+    pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
   }): AgentRunner;
   sessions: Pick<AnalysisSessionStore, 'appendEvent'>;
   agentRuns: AgentRunRegistry;
@@ -80,11 +88,19 @@ export async function handleAgentStreamRequest(
   }
 
   const sessionId = body.sessionId ?? null;
+  const userDomains = userDomainsOf(body);
+  // 工作台推送端点走问数编排(#66):步骤事件由编排真实生产;
+  // 自由工具循环的搭建模式保留在非流式端点(../+server.ts)。
   const runner = services.createRunner({
-    confirmedPageIds: (body.confirmations ?? []).map((confirmation) => confirmation.pageId),
+    confirmedPageIds: confirmedPageIdsOf(body),
     runId: body.runId,
-    mode: 'authoring',
-    identity
+    mode: 'ask',
+    identity,
+    scopeConfirmations: scopeConfirmationsOf(body),
+    ...(userDomains === undefined ? {} : { userDomains }),
+    ...(body.pinnedComponents === undefined
+      ? {}
+      : { pinnedComponents: body.pinnedComponents })
   });
 
   let outcome: AgentRunOutcome | null = null;

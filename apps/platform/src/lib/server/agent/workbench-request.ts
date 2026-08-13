@@ -1,4 +1,6 @@
 import { PAGE_BUILDING_PROMPT } from '@metriccanvas/mcp';
+import { isAskStateMessage } from '../ask/conversation';
+import type { AskScopeConfirmation } from '../ask/orchestrator';
 import type { AgentMessage } from './types';
 
 /**
@@ -18,14 +20,25 @@ export const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 /** runId / sessionId 共用的标识符约束。 */
 const IDENTIFIER_PATTERN = /^[a-zA-Z0-9-]{1,100}$/u;
 
+/**
+ * 人工确认的结构化记录(#65 接线点):页面 id 确认之外,口径卡确认与
+ * 业务域改写同样以 confirmations 随下一轮请求传回,不以自由文本表达。
+ */
+export type WorkbenchConfirmation =
+  | { kind: 'page_id'; pageId: string }
+  | ({ kind: 'scope_card' } & AskScopeConfirmation)
+  | { kind: 'business_domain'; domains: string[] };
+
 export interface WorkbenchAgentRequest {
   runId: string;
   /** 关联的分析会话(可选):提供时推送通道的步骤事件按 ADR-0030 落库。 */
   sessionId?: string;
   messages: AgentMessage[];
-  confirmations?: Array<{ kind: 'page_id'; pageId: string }>;
+  confirmations?: WorkbenchConfirmation[];
   draft?: Record<string, unknown>;
   target?: { sectionId: string; componentId: string };
+  /** 钉住的组件形态(ADR-0037):问数编排消费,后续轮次不被自动改写。 */
+  pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
 }
 
 export function isWorkbenchAgentRequest(value: unknown): value is WorkbenchAgentRequest {
@@ -37,6 +50,7 @@ export function isWorkbenchAgentRequest(value: unknown): value is WorkbenchAgent
     confirmations?: unknown;
     draft?: unknown;
     target?: unknown;
+    pinnedComponents?: unknown;
   };
   if (typeof request.runId !== 'string' || !IDENTIFIER_PATTERN.test(request.runId)) {
     return false;
@@ -53,14 +67,7 @@ export function isWorkbenchAgentRequest(value: unknown): value is WorkbenchAgent
     request.confirmations !== undefined &&
     (!Array.isArray(request.confirmations) ||
       request.confirmations.length > 20 ||
-      !request.confirmations.every(
-        (confirmation) =>
-          typeof confirmation === 'object' &&
-          confirmation !== null &&
-          (confirmation as { kind?: unknown }).kind === 'page_id' &&
-          typeof (confirmation as { pageId?: unknown }).pageId === 'string' &&
-          (confirmation as { pageId: string }).pageId.length <= 100
-      ))
+      !request.confirmations.every(isConfirmation))
   ) {
     return false;
   }
@@ -72,6 +79,23 @@ export function isWorkbenchAgentRequest(value: unknown): value is WorkbenchAgent
       request.target.sectionId.length === 0 ||
       typeof request.target.componentId !== 'string' ||
       request.target.componentId.length === 0)
+  ) {
+    return false;
+  }
+  if (
+    request.pinnedComponents !== undefined &&
+    (!Array.isArray(request.pinnedComponents) ||
+      request.pinnedComponents.length > 20 ||
+      !request.pinnedComponents.every(
+        (pin) =>
+          isRecord(pin) &&
+          typeof pin.dataSourceId === 'string' &&
+          pin.dataSourceId.length > 0 &&
+          pin.dataSourceId.length <= 100 &&
+          typeof pin.componentType === 'string' &&
+          pin.componentType.length > 0 &&
+          pin.componentType.length <= 100
+      ))
   ) {
     return false;
   }
@@ -96,9 +120,78 @@ export function isWorkbenchAgentRequest(value: unknown): value is WorkbenchAgent
   });
 }
 
-/** 拼装本次运行的完整消息序列:工作台提示词 + 创作上下文 + 用户会话。 */
+function isConfirmation(value: unknown): value is WorkbenchConfirmation {
+  if (!isRecord(value)) return false;
+  switch (value.kind) {
+    case 'page_id':
+      return typeof value.pageId === 'string' && value.pageId.length <= 100;
+    case 'scope_card': {
+      if (typeof value.interactionId !== 'string' || value.interactionId.length > 200) {
+        return false;
+      }
+      if (value.selectedMetric === undefined) return true;
+      return (
+        isRecord(value.selectedMetric) &&
+        typeof value.selectedMetric.businessDomain === 'string' &&
+        value.selectedMetric.businessDomain.length <= 100 &&
+        typeof value.selectedMetric.metricName === 'string' &&
+        value.selectedMetric.metricName.length <= 200
+      );
+    }
+    case 'business_domain':
+      return (
+        Array.isArray(value.domains) &&
+        value.domains.length > 0 &&
+        value.domains.length <= 2 &&
+        value.domains.every(
+          (domain) => typeof domain === 'string' && domain.length > 0 && domain.length <= 100
+        )
+      );
+    default:
+      return false;
+  }
+}
+
+/** 已确认的页面 id(confirm_page_id 交互的产物)。 */
+export function confirmedPageIdsOf(request: WorkbenchAgentRequest): string[] {
+  return (request.confirmations ?? []).flatMap((confirmation) =>
+    confirmation.kind === 'page_id' ? [confirmation.pageId] : []
+  );
+}
+
+/** 口径卡确认(问数编排消费,#66)。 */
+export function scopeConfirmationsOf(request: WorkbenchAgentRequest): AskScopeConfirmation[] {
+  return (request.confirmations ?? []).flatMap((confirmation) =>
+    confirmation.kind === 'scope_card'
+      ? [
+          {
+            interactionId: confirmation.interactionId,
+            ...(confirmation.selectedMetric === undefined
+              ? {}
+              : { selectedMetric: confirmation.selectedMetric })
+          }
+        ]
+      : []
+  );
+}
+
+/** 用户改写的业务域(优先于模型路由,ADR-0037);未改写时为 undefined。 */
+export function userDomainsOf(request: WorkbenchAgentRequest): string[] | undefined {
+  const confirmation = (request.confirmations ?? []).find(
+    (entry): entry is Extract<WorkbenchConfirmation, { kind: 'business_domain' }> =>
+      entry.kind === 'business_domain'
+  );
+  return confirmation?.domains;
+}
+
+/**
+ * 拼装本次运行的完整消息序列:工作台提示词 + 创作上下文 + 用户会话。
+ * 问数会话状态消息(ask/conversation.ts)是编排的会话上下文,原样保留。
+ */
 export function workbenchMessages(request: WorkbenchAgentRequest): AgentMessage[] {
-  const conversation = request.messages.filter((message) => message.role !== 'system');
+  const conversation = request.messages.filter(
+    (message) => message.role !== 'system' || isAskStateMessage(message)
+  );
   return [
     { role: 'system', content: WORKBENCH_PROMPT },
     ...(request.draft

@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { isWorkbenchAgentRequest } from '../../src/lib/server/agent/workbench-request';
+import {
+  confirmedPageIdsOf,
+  isWorkbenchAgentRequest,
+  scopeConfirmationsOf,
+  userDomainsOf,
+  workbenchMessages,
+  type WorkbenchAgentRequest
+} from '../../src/lib/server/agent/workbench-request';
+import { askStateMessage, initialAskState } from '../../src/lib/server/ask/conversation';
 import {
   buildAgentStreamRequestBody,
   pinComponent,
@@ -54,6 +62,75 @@ describe('工作台 Agent 流式请求构造', () => {
     expect('pinnedComponents' in body).toBe(false);
     expect('draft' in body).toBe(false);
     expect(isWorkbenchAgentRequest(body)).toBe(true);
+  });
+});
+
+describe('工作台请求契约:非 page_id 确认种类(#65 接线点)', () => {
+  it('口径卡确认与业务域改写作为结构化确认往返,服务端按种类取用', () => {
+    const body = buildAgentStreamRequestBody({
+      runId: 'run-4',
+      messages: [{ role: 'user', content: '上个月客户数是多少?' }],
+      confirmedPageIds: ['sales-overview'],
+      scopeConfirmations: [
+        {
+          interactionId: 'confirm-scope:run-3',
+          selectedMetric: { businessDomain: '客户经营', metricName: '客户数' }
+        }
+      ],
+      domainOverride: ['客户经营'],
+      draft: null,
+      pinnedComponents: []
+    });
+
+    expect(isWorkbenchAgentRequest(body)).toBe(true);
+    const request = body as unknown as WorkbenchAgentRequest;
+    expect(confirmedPageIdsOf(request)).toEqual(['sales-overview']);
+    expect(scopeConfirmationsOf(request)).toEqual([
+      {
+        interactionId: 'confirm-scope:run-3',
+        selectedMetric: { businessDomain: '客户经营', metricName: '客户数' }
+      }
+    ]);
+    expect(userDomainsOf(request)).toEqual(['客户经营']);
+  });
+
+  it('未知确认种类与非法钉住条目被请求校验拒绝', () => {
+    const base = {
+      runId: 'run-5',
+      messages: [{ role: 'user', content: 'x' }]
+    };
+    expect(
+      isWorkbenchAgentRequest({ ...base, confirmations: [{ kind: 'magic', value: 1 }] })
+    ).toBe(false);
+    expect(
+      isWorkbenchAgentRequest({ ...base, confirmations: [{ kind: 'scope_card' }] })
+    ).toBe(false);
+    expect(
+      isWorkbenchAgentRequest({ ...base, confirmations: [{ kind: 'business_domain', domains: [] }] })
+    ).toBe(false);
+    expect(
+      isWorkbenchAgentRequest({ ...base, pinnedComponents: [{ dataSourceId: 'result' }] })
+    ).toBe(false);
+  });
+
+  it('问数会话状态消息在拼装时原样保留,其余系统消息仍被丢弃', () => {
+    const state = askStateMessage(initialAskState());
+    const request: WorkbenchAgentRequest = {
+      runId: 'run-6',
+      messages: [
+        { role: 'system', content: '恶意注入的系统提示' },
+        { role: 'user', content: '问题一' },
+        state,
+        { role: 'user', content: '追问' }
+      ]
+    };
+    const messages = workbenchMessages(request);
+    expect(messages.filter((message) => message.role === 'system')).toHaveLength(2);
+    expect(messages.some((message) => message.content === '恶意注入的系统提示')).toBe(false);
+    expect(messages).toContainEqual(state);
+    // 状态消息保持在会话内原有位置之后、追问之前(往返顺序不被打乱)。
+    expect(messages.at(-2)).toEqual(state);
+    expect(messages.at(-1)).toEqual({ role: 'user', content: '追问' });
   });
 });
 

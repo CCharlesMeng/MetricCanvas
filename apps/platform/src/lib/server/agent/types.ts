@@ -1,4 +1,5 @@
 import type { AgentInteraction, McpClient, McpToolResult, ToolDefinition } from '@metriccanvas/mcp';
+import type { AnalysisStepEvent } from '../session/step-event';
 
 export type { AgentInteraction };
 
@@ -45,6 +46,15 @@ export interface ModelProvider {
 
 export type AgentEvent =
   | { type: 'assistant_message'; message: Extract<AgentMessage, { role: 'assistant' }> }
+  | {
+      /**
+       * 编排步骤事件(#66):问数编排各阶段的结构化结果,契约唯一真源是
+       * ../session/step-event.ts;推送通道原样下发并按 ADR-0030 落库。
+       * 工具循环 Runner 不产生该事件,生产方是问数编排。
+       */
+      type: 'step';
+      event: AnalysisStepEvent;
+    }
   | { type: 'tool_started'; call: ToolCall }
   | {
       type: 'tool_finished';
@@ -62,7 +72,15 @@ export type AgentEvent =
       interaction: AgentInteraction;
       messages: AgentMessage[];
     }
-  | { type: 'completed'; messages: AgentMessage[] };
+  | {
+      type: 'completed';
+      messages: AgentMessage[];
+      /**
+       * 已通过校验的页面文档(如有)。问数编排的装配出口直接给出文档;
+       * 工具循环 Runner 不设置,由通道回退到 validate_page 工具结果推导。
+       */
+      document?: Record<string, unknown> | null;
+    };
 
 export interface RunAgentInput {
   messages: AgentMessage[];

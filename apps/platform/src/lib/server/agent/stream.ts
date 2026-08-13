@@ -124,6 +124,11 @@ export async function* streamAgentRun(
           case 'assistant_message':
             yield emit({ type: 'assistant_replied', content: event.message.content });
             break;
+          case 'step':
+            // 编排步骤事件(#66):原样进入通道并按 ADR-0030 落库。
+            await persist(event.event);
+            yield emit(event.event);
+            break;
           case 'turn_completed':
             modelTurns = event.turn;
             if (event.usage) {
@@ -176,7 +181,8 @@ export async function* streamAgentRun(
             outcome = {
               status: 'completed',
               messages: event.messages,
-              document: validatedAgentDocument(agentEvents),
+              // 编排的装配出口直接给出已校验文档;工具循环回退到工具结果推导。
+              document: event.document ?? validatedAgentDocument(agentEvents),
               interaction: null,
               failure: null
             };

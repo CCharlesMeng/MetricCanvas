@@ -5,7 +5,9 @@ import { CallToolResultSchema } from '@modelcontextprotocol/sdk/types.js';
 import { z } from 'zod';
 import {
   componentCatalog,
+  pageListEntry,
   pageSchema,
+  parsePage,
   validate,
   versionPolicy
 } from '@metriccanvas/page';
@@ -42,6 +44,12 @@ export interface PageIdConfirmationMcpClientOptions {
   confirmedPageIds: Iterable<string>;
 }
 
+/**
+ * MCP server/client 实现版本的单点声明(#77):与 package.json 的 version
+ * 保持一致,由守护测试比对;不得在 server 与 client 各写一份字面量。
+ */
+export const MCP_IMPLEMENTATION_VERSION = '0.1.0';
+
 const pageDocumentSchema = z.record(z.string(), z.unknown());
 const pageRevisionSelectorSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('latest') }),
@@ -59,7 +67,7 @@ export const COMPONENT_SELECTION_GUIDE = componentCatalog
   .join('\n');
 
 const inlineExample = {
-  schemaVersion: '5.0',
+  schemaVersion: versionPolicy.current,
   id: 'revenue-overview',
   dataSources: {
     summary: {
@@ -93,7 +101,7 @@ const inlineExample = {
 };
 
 const dqeExample = {
-  schemaVersion: '5.0',
+  schemaVersion: versionPolicy.current,
   id: 'records-by-category',
   dataSources: {
     records: {
@@ -175,11 +183,11 @@ export const PAGE_BUILDING_PROMPT = [
 export function createMetricCanvasMcpServer(
   dependencies: MetricCanvasMcpDependencies
 ): McpServer {
-  const server = new McpServer({ name: 'metriccanvas', version: '0.2.0' });
+  const server = new McpServer({ name: 'metriccanvas', version: MCP_IMPLEMENTATION_VERSION });
 
   server.registerPrompt(
     'build_dashboard_page',
-    { description: 'MetricCanvas v4 受治理的看板页面生成流程' },
+    { description: `MetricCanvas 受治理的看板页面生成流程(当前 Schema ${versionPolicy.current})` },
     async () => ({
       messages: [{ role: 'user', content: { type: 'text', text: PAGE_BUILDING_PROMPT } }]
     })
@@ -187,12 +195,12 @@ export function createMetricCanvasMcpServer(
 
   registerJsonResource(server, 'page-schema', 'metriccanvas://page/schema', '当前页面 JSON Schema', pageSchema);
   registerJsonResource(server, 'component-catalog', 'metriccanvas://page/components', '组件能力目录', componentCatalog);
-  registerJsonResource(server, 'inline-example', 'metriccanvas://page/examples/inline', 'v4 inline 最小示例', inlineExample);
-  registerJsonResource(server, 'dqe-example', 'metriccanvas://page/examples/dqe', 'v4 DQE 最小示例', dqeExample);
+  registerJsonResource(server, 'inline-example', 'metriccanvas://page/examples/inline', `当前 Schema(${versionPolicy.current})inline 最小示例`, inlineExample);
+  registerJsonResource(server, 'dqe-example', 'metriccanvas://page/examples/dqe', `当前 Schema(${versionPolicy.current})DQE 最小示例`, dqeExample);
   server.registerResource(
     'page-rules',
     'metriccanvas://page/rules',
-    { title: 'v4 页面生成规则', mimeType: 'text/plain' },
+    { title: `当前 Schema(${versionPolicy.current})页面生成规则`, mimeType: 'text/plain' },
     async (uri) => ({
       contents: [{ uri: uri.toString(), mimeType: 'text/plain', text: PAGE_BUILDING_PROMPT }]
     })
@@ -250,7 +258,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'validate_page',
     {
-      description: '使用当前 v4 页面 Schema 校验页面文档。',
+      description: '使用当前页面 Schema 校验页面文档。',
       inputSchema: z.object({ document: pageDocumentSchema }),
       annotations: { readOnlyHint: true }
     },
@@ -387,7 +395,7 @@ export async function connectInProcessMetricCanvasMcp(
 ): Promise<{ client: McpClient; close(): Promise<void> }> {
   const protocolClient = new Client({
     name: 'metriccanvas-agent',
-    version: '0.2.0'
+    version: MCP_IMPLEMENTATION_VERSION
   });
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
   await Promise.all([
@@ -485,6 +493,10 @@ export function createPageIdConfirmationMcpClient(
       const document = request.arguments.document;
       const pageId = document.id;
       if (typeof pageId !== 'string' || confirmedPageIds.has(pageId)) return result;
+      // 确认弹窗标题与页面列表同源(#78):经 parsePage 进入类型世界后统一由
+      // pageListEntry 派生。本分支处于 validate_page 成功路径,parse 必然通过;
+      // 防御性兜底:解析失败时不带标题,不再保留第二份标题推导实现。
+      const parsed = parsePage(document);
       return {
         ...result,
         interaction: {
@@ -492,7 +504,7 @@ export function createPageIdConfirmationMcpClient(
           kind: 'confirm_page_id',
           payload: {
             pageId,
-            ...(documentTitle(document) ? { title: documentTitle(document) } : {}),
+            ...(parsed.ok ? { title: pageListEntry(parsed.page).title } : {}),
             stablePath: `/pages/${pageId}`,
             immutableAfterSave: true,
             ...(typeof document.schemaVersion === 'string'
@@ -537,18 +549,4 @@ function normalizeMcpContent(
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
-
-function documentTitle(document: Record<string, unknown>): string | undefined {
-  if (!Array.isArray(document.sections)) return undefined;
-  for (const section of document.sections) {
-    if (!isRecord(section)) continue;
-    if (typeof section.title === 'string') return section.title;
-    if (!Array.isArray(section.components)) continue;
-    for (const component of section.components) {
-      if (!isRecord(component) || !isRecord(component.props)) continue;
-      if (typeof component.props.title === 'string') return component.props.title;
-    }
-  }
-  return undefined;
 }

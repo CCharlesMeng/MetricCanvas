@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+import { pageListEntry, parsePage, versionPolicy } from '@metriccanvas/page';
 import { createPageIdConfirmationMcpClient, type McpClient } from '../src';
 
 const pageDocument = {
-  schemaVersion: '5.0',
+  schemaVersion: versionPolicy.current,
   id: 'sales-total',
   dataSources: {},
   sections: [
@@ -10,6 +11,12 @@ const pageDocument = {
       id: 'overview',
       title: '成交总额',
       components: [
+        {
+          id: 'header',
+          type: 'reportHeader',
+          layout: { span: 12 },
+          props: { title: '成交总额概览' }
+        },
         {
           id: 'intro',
           type: 'text',
@@ -67,12 +74,12 @@ describe('页面 id 确认 MCP Client adapter', () => {
     });
   });
 
-  it('合法页面校验完成后请求结构化页面 id 确认', async () => {
+  it('合法页面校验完成后请求结构化页面 id 确认,标题与页面列表同源(#78)', async () => {
     const client = createPageIdConfirmationMcpClient({
       client: fakeClient({
         ok: true,
         valid: true,
-        currentSchemaVersion: '4.0',
+        currentSchemaVersion: versionPolicy.current,
         errors: []
       }),
       confirmedPageIds: []
@@ -88,12 +95,45 @@ describe('页面 id 确认 MCP Client adapter', () => {
       kind: 'confirm_page_id',
       payload: {
         pageId: 'sales-total',
-        title: '成交总额',
+        title: '成交总额概览',
         stablePath: '/pages/sales-total',
         immutableAfterSave: true,
-        schemaVersion: '5.0'
+        schemaVersion: versionPolicy.current
       }
     });
+
+    // 同一函数守护:确认弹窗标题 ≡ 页面列表标题(pageListEntry 唯一派生)。
+    const parsed = parsePage(pageDocument);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(result.interaction?.payload.title).toBe(pageListEntry(parsed.page).title);
+  });
+
+  it('无 reportHeader 的页面回退到页面 id 作标题,与页面列表行为一致', async () => {
+    const headless = {
+      ...pageDocument,
+      sections: [
+        {
+          id: 'overview',
+          components: [
+            { id: 'intro', type: 'text', layout: { span: 12 }, props: { body: '说明' } }
+          ]
+        }
+      ]
+    };
+    const client = createPageIdConfirmationMcpClient({
+      client: fakeClient({ ok: true, valid: true, errors: [] }),
+      confirmedPageIds: []
+    });
+    const result = await client.callTool({
+      name: 'validate_page',
+      arguments: { document: headless }
+    });
+    const parsed = parsePage(headless);
+    expect(parsed.ok).toBe(true);
+    if (!parsed.ok) return;
+    expect(result.interaction?.payload.title).toBe(pageListEntry(parsed.page).title);
+    expect(result.interaction?.payload.title).toBe('sales-total');
   });
 
   it('保存未确认的页面 id 时,把确认状态翻译为命令字段并委托给 lifecycle 强制', async () => {
@@ -219,7 +259,7 @@ describe('页面 id 确认 MCP Client adapter', () => {
               structuredContent: {
                 ok: true,
                 valid: true,
-                currentSchemaVersion: '4.0',
+                currentSchemaVersion: versionPolicy.current,
                 errors: []
               },
               isError: false

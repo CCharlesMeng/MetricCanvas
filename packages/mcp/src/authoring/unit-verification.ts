@@ -3,7 +3,7 @@ import type {
   QueryFieldDefinition,
   Row
 } from '@metriccanvas/page';
-import type { DataContextSnapshot } from '../data-context';
+import { parseValueDomain, type DataContextSnapshot } from '../data-context';
 import type { ExecutedDataRequestUnit } from './assemble-page';
 
 /**
@@ -282,23 +282,8 @@ interface ClosedSets {
   timeDimensions: Map<string, TimeDimensionClosedEntry>;
 }
 
-/**
- * Schema 元数据 1.0 的字段结构封闭,维度取值域以受控句式
- * 「取值域:值1、值2。」写在字段 description(与 DQE 仿真语义面的
- * 同面投影一致);时间粒度写在字段 granularity(逗号分隔)。
- */
-const VALUE_DOMAIN_PATTERN = /取值域[:：]([^。]+)/u;
-
-function parseValueDomain(description: string): string[] | undefined {
-  const match = VALUE_DOMAIN_PATTERN.exec(description);
-  if (!match) return undefined;
-  const values = match[1]!
-    .split('、')
-    .map((value) => value.trim())
-    .filter((value) => value !== '');
-  return values.length > 0 ? values : undefined;
-}
-
+// 取值域受控句式的解析是数据上下文契约的一部分,唯一声明在
+// ../data-context 的 parseValueDomain;时间粒度写在字段 granularity(逗号分隔)。
 function closedSetsOf(snapshot: DataContextSnapshot): ClosedSets {
   const sets: ClosedSets = {
     metrics: new Map(),

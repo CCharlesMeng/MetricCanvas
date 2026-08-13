@@ -17,7 +17,8 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   // 核心循环:只有模型提供方接口(./types 的 ModelProvider)与 MCP 客户端
   // 接口(@metriccanvas/mcp 的类型),外加信号组合工具。
   'runner.ts': ['@metriccanvas/mcp', './abort', './types'],
-  'types.ts': ['@metriccanvas/mcp'],
+  // 事件类型:MCP 协议边界 + 步骤事件契约(问数编排经 step 事件进通道,#66)。
+  'types.ts': ['@metriccanvas/mcp', '../session/step-event'],
   'abort.ts': [],
   // 模型提供方 adapter:只依赖协议类型与信号判别。
   'deepseek.server.ts': ['./abort', './types'],
@@ -43,9 +44,10 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './runner',
     './types'
   ],
-  // 推送端点:HTTP/SSE 传输层。
+  // 推送端点:HTTP/SSE 传输层;口径卡确认类型来自问数编排(#66)。
   'stream-endpoint.ts': [
     '@metriccanvas/page-lifecycle',
+    '../ask/orchestrator',
     '../session/store',
     './abort',
     './run-registry',
@@ -53,7 +55,13 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './types',
     './workbench-request'
   ],
-  'workbench-request.ts': ['@metriccanvas/mcp', './types']
+  // 请求契约:确认种类含口径卡与业务域改写,问数会话状态消息原样保留(#66)。
+  'workbench-request.ts': [
+    '@metriccanvas/mcp',
+    '../ask/conversation',
+    '../ask/orchestrator',
+    './types'
+  ]
 };
 
 function importsOf(source: string): string[] {

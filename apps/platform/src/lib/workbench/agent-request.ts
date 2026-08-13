@@ -18,12 +18,22 @@ export interface PinnedComponentChoice {
   componentType: string;
 }
 
+/** 口径卡确认(confirm_scope_card 交互的产物);歧义候选须携带用户选择。 */
+export interface ScopeCardConfirmationChoice {
+  interactionId: string;
+  selectedMetric?: { businessDomain: string; metricName: string };
+}
+
 export interface WorkbenchStreamRequestInput {
   runId: string;
   /** 会话基线:上一轮 outcome.messages(如有)+ 本轮新增用户消息。 */
   messages: readonly AgentMessage[];
   /** 已确认的页面 id(confirm_page_id 交互的产物)。 */
   confirmedPageIds: readonly string[];
+  /** 口径卡确认(可选):结构化记录随下一轮请求传回。 */
+  scopeConfirmations?: readonly ScopeCardConfirmationChoice[];
+  /** 用户改写的业务域(可选):优先于模型路由(ADR-0037 的一键改)。 */
+  domainOverride?: readonly string[];
   /** 当前未保存工作副本;Agent 必须以它为基线做定向增量修改。 */
   draft: Record<string, unknown> | null;
   /** 用户钉住的组件形态,随请求传回。 */
@@ -36,10 +46,19 @@ export function buildAgentStreamRequestBody(
   return {
     runId: input.runId,
     messages: [...input.messages],
-    confirmations: input.confirmedPageIds.map((pageId) => ({
-      kind: 'page_id' as const,
-      pageId
-    })),
+    confirmations: [
+      ...input.confirmedPageIds.map((pageId) => ({
+        kind: 'page_id' as const,
+        pageId
+      })),
+      ...(input.scopeConfirmations ?? []).map((confirmation) => ({
+        kind: 'scope_card' as const,
+        ...confirmation
+      })),
+      ...(input.domainOverride !== undefined && input.domainOverride.length > 0
+        ? [{ kind: 'business_domain' as const, domains: [...input.domainOverride] }]
+        : [])
+    ],
     ...(input.draft ? { draft: input.draft } : {}),
     ...(input.pinnedComponents.length > 0
       ? { pinnedComponents: [...input.pinnedComponents] }
