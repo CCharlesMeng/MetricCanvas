@@ -185,7 +185,8 @@
     margin: 0;
     list-style: none;
   }
-  .steps li {
+  /* 只作用于步骤项本身(> li):嵌套的候选列表项不得继承两列网格与连接线。 */
+  .steps > li {
     position: relative;
     display: grid;
     grid-template-columns: 16px minmax(0, 1fr);
@@ -194,7 +195,7 @@
     padding: 4px 0;
   }
   /* 时间线连接线:串起各步骤的 marker,末项不再向下延伸。 */
-  .steps li:not(:last-child)::before {
+  .steps > li:not(:last-child)::before {
     content: '';
     position: absolute;
     top: 18px;
@@ -203,8 +204,8 @@
     width: 1px;
     background: #e4e4e7;
   }
-  .steps li.failed .t b,
-  .steps li.failed .ico {
+  .steps > li.failed .t b,
+  .steps > li.failed .ico {
     color: #b91c1c;
   }
   .marker {
