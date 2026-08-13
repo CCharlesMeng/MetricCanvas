@@ -97,6 +97,15 @@
       .tchip.on { border-color: var(--accent); color: var(--accent); font-weight: 650; background: #fafaff; }
       .fchip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; background: #fff; border: 1px solid #d4d4d8; border-radius: 7px; font-size: 11px; }
       .fchip select { border: 0; background: none; font-size: 11px; color: var(--accent); font-weight: 650; outline: none; cursor: pointer; }
+      /* 口径 token 行(轻量形态):一行摘要,点要素就地编辑 */
+      .scope-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+      .token { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; background: #fff; border: 1px solid var(--line); border-radius: 999px; font-size: 11.5px; cursor: pointer; transition: border-color .15s; }
+      .token:hover { border-color: var(--accent); }
+      .token.active { border-color: var(--accent); box-shadow: 0 0 0 2px rgb(79 70 229 / .12); }
+      .token .k { color: var(--faint); font-size: 10px; }
+      .token .caretv { color: var(--faint); font-size: 9px; }
+      .token.vq-token { border-color: var(--vq-line); background: var(--vq-bg); color: var(--vq); cursor: default; }
+      .token-editor { margin-top: 7px; padding: 9px 11px; background: #fff; border: 1px solid var(--line); border-radius: 10px; }
       .rerun-row { display: flex; align-items: center; gap: 10px; margin-top: 9px; padding-top: 9px; border-top: 1px dashed var(--line); }
       .rerun { padding: 5px 12px; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 8px; font-size: 11.5px; font-weight: 650; cursor: pointer; }
       .rerun.ghost { color: #3f3f46; background: #fff; border-color: #d4d4d8; }
@@ -369,36 +378,59 @@
         scrollThread();
       }
 
+      /* 口径 token 行:一行摘要,点要素就地展开编辑,改完即时重跑 */
       function renderScopeCard(reply, ctx) {
-        const card = document.createElement('div'); card.className = 'card';
-        card.innerHTML = `
-          <div class="card-head"><span>口径卡 · 生效范围(可直接修改)</span><span class="pill vq">参照:已验证查询「区域消耗月报」</span></div>
-          <dl class="kv">
-            <div><dt>指标</dt><dd>Tokens消耗量 + <b>环比</b>${ctx.withYoy ? ' + <b>同比</b>' : ''} <span class="pill" style="color:#4338ca;background:var(--accent-soft)">派生·公司口径</span>
-              <div class="derived-def">环比 = (本期 − 基期) ÷ 基期 · 基期:上一自然周期${ctx.withYoy ? '<br/>同比 = (本期 − 去年同期) ÷ 去年同期' : ''}(模板声明于数据上下文,模型不可改写)</div></dd></div>
-            <div><dt>时间</dt><dd>${TIME_RANGE[ctx.timeKey]} <span class="pill" style="color:#0e7490;background:#ecfeff">「${esc(ctx.timeKey)}」词表换算</span>
-              <div class="chips">${TIME_CHIPS.map((c) => `<button type="button" class="tchip ${c === ctx.timeKey ? 'on' : ''}" data-t="${c}">${c}</button>`).join('')}<button type="button" class="tchip">自定义…</button></div></dd></div>
-            <div><dt>筛选</dt><dd><span class="fchip">区域 = <select data-f="region"><option ${!ctx.region ? 'selected' : ''}>全部</option>${REGIONS.map((x) => `<option ${ctx.region === x.r ? 'selected' : ''}>${x.r}</option>`).join('')}</select></span></dd></div>
-          </dl>
-          <div class="rerun-row"><button type="button" class="rerun ghost" disabled>改要素后原地重跑,不过模型</button></div>`;
-        reply.appendChild(card);
-        let pend = { time: ctx.timeKey, region: ctx.region };
-        const rerunBtn = card.querySelector('.rerun');
-        const arm = () => { rerunBtn.disabled = false; rerunBtn.classList.remove('ghost'); rerunBtn.textContent = '重新查询'; };
-        card.querySelectorAll('.tchip[data-t]').forEach((b) => b.addEventListener('click', () => {
-          card.querySelectorAll('.tchip[data-t]').forEach((x) => x.classList.remove('on'));
-          b.classList.add('on'); pend.time = b.dataset.t; arm();
-        }));
-        card.querySelector('select[data-f]').addEventListener('change', (e) => {
-          pend.region = e.target.value === '全部' ? null : e.target.value; arm();
-        });
-        rerunBtn.addEventListener('click', async () => {
-          rerunBtn.disabled = true; rerunBtn.textContent = '重跑中…';
-          await sleep(600);
-          rerunBtn.textContent = '已生效 ✓';
-          renderCanvasMain({ timeKey: pend.time, region: pend.region, withYoy: ctx.withYoy });
-          toast(`口径已改:${pend.time}${pend.region ? ' · 区域=' + pend.region : ''}(原地重跑,未过模型)`);
-        });
+        const wrap = document.createElement('div'); wrap.dataset.scope = '1';
+        reply.appendChild(wrap);
+        const live = { time: ctx.timeKey, region: ctx.region, open: null };
+
+        function rerun() {
+          renderCanvasMain({ timeKey: live.time, region: live.region, withYoy: ctx.withYoy });
+          toast(`口径已改:${live.time}${live.region ? ' · 区域=' + live.region : ''}(原地重跑,未过模型)`);
+        }
+
+        function draw() {
+          wrap.innerHTML = `
+            <div class="scope-row">
+              <span class="token" data-e="metric"><span class="k">指标</span>Tokens消耗量+环比${ctx.withYoy ? '+同比' : ''}<span class="caretv">▾</span></span>
+              <span class="token ${live.open === 'time' ? 'active' : ''}" data-e="time"><span class="k">时间</span>${esc(live.time)}<span class="caretv">▾</span></span>
+              <span class="token ${live.open === 'filter' ? 'active' : ''}" data-e="filter"><span class="k">区域</span>${esc(live.region ?? '全部')}<span class="caretv">▾</span></span>
+              <span class="token vq-token" title="张三背书 · 08-02">✓ 参照已验证查询</span>
+              <button type="button" class="linkish" data-e="detail">详情</button>
+            </div>
+            ${live.open === 'time' ? `<div class="token-editor"><div class="chips" style="margin:0">
+              ${TIME_CHIPS.map((c) => `<button type="button" class="tchip ${c === live.time ? 'on' : ''}" data-t="${c}">${c}</button>`).join('')}
+              <button type="button" class="tchip">自定义…</button></div>
+              <p class="note" style="margin-top:6px">词表换算:${esc(live.time)} → ${TIME_RANGE[live.time]};选中即时生效,不过模型</p></div>` : ''}
+            ${live.open === 'filter' ? `<div class="token-editor"><span class="fchip">区域 = <select data-f>
+              <option ${!live.region ? 'selected' : ''}>全部</option>
+              ${REGIONS.map((x) => `<option ${live.region === x.r ? 'selected' : ''}>${x.r}</option>`).join('')}</select></span>
+              <p class="note" style="margin-top:6px">改筛选值即时生效,不过模型</p></div>` : ''}
+            ${live.open === 'metric' ? `<div class="token-editor">
+              <div class="derived-def" style="margin:0">环比 = (本期 − 基期) ÷ 基期 · 基期:上一自然周期${ctx.withYoy ? '<br/>同比 = (本期 − 去年同期) ÷ 去年同期' : ''}<br/>模板声明于数据上下文,公司口径,模型不可改写</div>
+              <p class="note" style="margin-top:6px">改指标或分组维度请直接追问(需重新检索与消歧)</p></div>` : ''}
+            ${live.open === 'detail' ? `<div class="token-editor"><dl class="kv">
+              <div><dt>指标</dt><dd>Tokens消耗量 + 环比${ctx.withYoy ? ' + 同比' : ''}(派生·公司口径)</dd></div>
+              <div><dt>时间</dt><dd>${TIME_RANGE[live.time]}(「${esc(live.time)}」词表换算)</dd></div>
+              <div><dt>筛选</dt><dd>区域 = ${esc(live.region ?? '全部')}</dd></div>
+              <div><dt>参照</dt><dd>已验证查询「区域消耗月报」· 张三背书 · 08-02</dd></div>
+            </dl></div>` : ''}`;
+
+          wrap.querySelectorAll('.token[data-e], .linkish[data-e]').forEach((t) =>
+            t.addEventListener('click', () => {
+              live.open = live.open === t.dataset.e ? null : t.dataset.e;
+              draw();
+            }));
+          wrap.querySelectorAll('.tchip[data-t]').forEach((b) => b.addEventListener('click', () => {
+            live.time = b.dataset.t; live.open = null; draw(); rerun();
+          }));
+          const sel = wrap.querySelector('select[data-f]');
+          if (sel) sel.addEventListener('change', (e) => {
+            live.region = e.target.value === '全部' ? null : e.target.value;
+            live.open = null; draw(); rerun();
+          });
+        }
+        draw();
       }
 
       function renderActions(reply) {
