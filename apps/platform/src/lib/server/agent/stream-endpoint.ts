@@ -45,6 +45,9 @@ export interface AgentStreamServices {
     scopeConfirmations?: AskScopeConfirmation[];
     userDomains?: string[];
     pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
+    /** 上一轮工作副本与画布选中组件定位(mode=ask 消费:未触及单元复用与 target 定向)。 */
+    draft?: Record<string, unknown>;
+    target?: { sectionId: string; componentId: string };
   }): AgentRunner;
   sessions: Pick<AnalysisSessionStore, 'appendEvent'>;
   agentRuns: AgentRunRegistry;
@@ -100,7 +103,9 @@ export async function handleAgentStreamRequest(
     ...(userDomains === undefined ? {} : { userDomains }),
     ...(body.pinnedComponents === undefined
       ? {}
-      : { pinnedComponents: body.pinnedComponents })
+      : { pinnedComponents: body.pinnedComponents }),
+    ...(body.draft === undefined ? {} : { draft: body.draft }),
+    ...(body.target === undefined ? {} : { target: body.target })
   });
 
   let outcome: AgentRunOutcome | null = null;

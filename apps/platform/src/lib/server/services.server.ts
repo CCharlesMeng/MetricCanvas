@@ -87,6 +87,9 @@ export interface PlatformServices {
     scopeConfirmations?: AskScopeConfirmation[];
     userDomains?: string[];
     pinnedComponents?: Array<{ dataSourceId: string; componentType: string }>;
+    /** 上一轮工作副本与画布选中组件定位(mode=ask 消费)。 */
+    draft?: Record<string, unknown>;
+    target?: { sectionId: string; componentId: string };
   }): AgentRunner;
   runtimeOrigin: string;
 }
@@ -225,7 +228,9 @@ async function createServices(): Promise<PlatformServices> {
       identity,
       scopeConfirmations,
       userDomains,
-      pinnedComponents
+      pinnedComponents,
+      draft,
+      target
     }) {
       if (mode === 'ask') {
         // 问数编排(#66):确定性阶段状态机,不走工具循环。验真能力按 run
@@ -248,7 +253,9 @@ async function createServices(): Promise<PlatformServices> {
                 timeoutMs: AGENT_RUN_TIMEOUT_MS,
                 ...(scopeConfirmations === undefined ? {} : { scopeConfirmations }),
                 ...(userDomains === undefined ? {} : { userDomains }),
-                ...(pinnedComponents === undefined ? {} : { pinnedComponents })
+                ...(pinnedComponents === undefined ? {} : { pinnedComponents }),
+                ...(draft === undefined ? {} : { draft }),
+                ...(target === undefined ? {} : { target })
               }
             ).run(input)
         };
