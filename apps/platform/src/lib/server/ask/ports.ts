@@ -1,0 +1,166 @@
+import type {
+  AssembleTransientPageInput,
+  AssembleTransientPageResult,
+  BusinessDomainSummary,
+  DataRequestUnitVerification,
+  DomainSemanticSurface
+} from '@metriccanvas/mcp';
+import type { AnalysisIntent } from '../session/step-event';
+
+/**
+ * 问数编排的注入端口(#66,ADR-0037)。
+ *
+ * 编排模块框架无关:不 import SvelteKit、不感知 HTTP 与凭据,模型提供方、
+ * 数据上下文检索、取数单元验真与临时页面装配全部经这里的端口注入。
+ * 人机分工(用户拍板的架构决策):模型只产出结构化决策(域选择、取数单元
+ * 填充、意图确认);检索、消歧排序、执行与装配全部由确定性代码接管。
+ *
+ * 上下文裁剪:域路由只注入域清单(BusinessDomainSummary);路由后只注入
+ * 命中域的语义面投影(DomainSemanticSurface);候选消歧由确定性检索排序,
+ * 模型只看 top-N 候选卡。接口按「检索结果注入」设计:V0 两域可全量注入,
+ * 形状为多域留好——检索面收窄发生在端口实现内,编排不感知域的总量。
+ */
+
+/* ---------- 取数单元(创作期状态,CONTEXT.md / ADR-0032) ---------- */
+
+/** 取数单元的指标项:命中指标条目,或临时口径 formula(ADR-0036)。 */
+export type AskUnitMetric =
+  | { kind: 'metric'; name: string }
+  | {
+      kind: 'formula';
+      expression: string;
+      /** 输出字段名与展示标签;formula 无指标条目,由生成时显式声明。 */
+      label: string;
+      /** 单位同样必须显式声明,不得从数值猜测(ADR-0032)。 */
+      unit?: string;
+      description?: string;
+    };
+
+export interface AskUnitFilter {
+  dimension: string;
+  values: string[];
+}
+
+export interface AskUnitTime {
+  granularity: string;
+  /** 时间范围端点,粒度对应的字面(如 2026-01 / 2026-01-15)。 */
+  start: string;
+  end: string;
+  /** 时间口径来源:模型补全而非用户明说时触发口径卡阻塞(ADR-0037)。 */
+  providedBy: 'user' | 'model';
+}
+
+/** 取数单元:业务语言描述「要什么数」;查询定义是它的派生物,不在这层手写。 */
+export interface AskDataRequestUnitState {
+  businessDomain: string;
+  metrics: AskUnitMetric[];
+  groupBy: string[];
+  filters: AskUnitFilter[];
+  time: AskUnitTime | null;
+  title?: string;
+}
+
+/* ---------- 检索端口:确定性候选排序 ---------- */
+
+/** 排序后的指标候选:口径差异说明来自指标条目的口径原文。 */
+export interface RankedMetricCandidate {
+  metricName: string;
+  businessDomain: string;
+  /** 口径说明(候选卡与口径差异说明的内容来源)。 */
+  definition: string;
+  unit?: string;
+  /** 命中依据:问题中出现的指标名或别名;消歧的确定性输入。 */
+  matchedTerm: string;
+  score: number;
+}
+
+export interface AskRetrievalPort {
+  /** 域清单:域路由阶段注入模型的全部内容。 */
+  domainInventory(): Promise<BusinessDomainSummary[]>;
+  /** 命中域的语义面投影(敏感字段已标注,#80)。 */
+  domainSurfaces(businessDomains: readonly string[]): Promise<DomainSemanticSurface[]>;
+  /** 确定性检索排序:返回排序候选,不做选择。 */
+  searchMetricCandidates(input: {
+    question: string;
+    businessDomains: readonly string[];
+    limit?: number;
+  }): Promise<RankedMetricCandidate[]>;
+}
+
+/* ---------- 模型端口:每阶段最多一次调用,只产出结构化决策 ---------- */
+
+export interface AskDomainRoutingInput {
+  question: string;
+  domains: BusinessDomainSummary[];
+  signal?: AbortSignal;
+}
+
+export interface AskDomainRoutingDecision {
+  /** 收窄后的一到两个业务域,必须取自注入的域清单。 */
+  businessDomains: string[];
+}
+
+export interface AskUnitFormingInput {
+  question: string;
+  surfaces: DomainSemanticSurface[];
+  /** top-N 候选卡:确定性检索排序的产物。 */
+  candidates: RankedMetricCandidate[];
+  /**
+   * 确定性消歧的结论:按命中词各自唯一胜出的候选。歧义未决的命中词不在
+   * 此列——模型不得代替用户在近义候选间做选择(ADR-0037)。
+   */
+  selectedMetrics: Array<{ businessDomain: string; metricName: string }>;
+  /** 追问轮的增量修改基线;首轮为 null。 */
+  previousUnit: AskDataRequestUnitState | null;
+  /** 清单校验被拒后的违规反馈(每阶段一次修复重试)。 */
+  violationFeedback?: string[];
+  signal?: AbortSignal;
+}
+
+/** 定向增量 patch:只包含要改变的层,未提及的显式设置结构上保持不变。 */
+export type AskUnitPatch = Partial<
+  Pick<AskDataRequestUnitState, 'metrics' | 'groupBy' | 'filters' | 'time' | 'title'>
+>;
+
+export type AskUnitFormingDecision =
+  | { outcome: 'unit'; unit: AskDataRequestUnitState }
+  | { outcome: 'patch'; patch: AskUnitPatch }
+  /** 语义面之外的问题:降级而不是编造(ADR-0036)。 */
+  | { outcome: 'out_of_scope'; reason: string };
+
+export interface AskIntentInput {
+  question: string;
+  unit: AskDataRequestUnitState;
+  /** 上一轮意图;追问未提及展示变化时应保持不变。 */
+  previousIntent: AnalysisIntent | null;
+  signal?: AbortSignal;
+}
+
+export interface AskIntentDecision {
+  intent: AnalysisIntent;
+}
+
+export interface AskModelPort {
+  routeDomains(input: AskDomainRoutingInput): Promise<AskDomainRoutingDecision>;
+  formUnit(input: AskUnitFormingInput): Promise<AskUnitFormingDecision>;
+  decideIntent(input: AskIntentInput): Promise<AskIntentDecision>;
+}
+
+/* ---------- 装配端口 ---------- */
+
+export type AssembleTransientPage = (
+  input: AssembleTransientPageInput
+) => AssembleTransientPageResult;
+
+/* ---------- 编排端口汇总 ---------- */
+
+export interface AskOrchestrationPorts {
+  model: AskModelPort;
+  retrieval: AskRetrievalPort;
+  /** 取数单元验真(#64):清单校验 → 真实执行 → 回传字段与样例行。 */
+  verifyUnit: DataRequestUnitVerification;
+  /** 临时页面装配(#62):出口过 validate,钉住语义由 recommendComponents 承载。 */
+  assemblePage: AssembleTransientPage;
+  /** 内嵌初始行 capturedAt 的时钟;测试注入固定时钟。 */
+  clock?: () => Date;
+}

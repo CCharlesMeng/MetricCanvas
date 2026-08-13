@@ -1,0 +1,450 @@
+import type { DomainSemanticSurface, ToolDefinition } from '@metriccanvas/mcp';
+import type { ModelProvider } from '../agent/types';
+import { ANALYSIS_INTENTS } from '../session/step-event';
+import type {
+  AskDataRequestUnitState,
+  AskDomainRoutingDecision,
+  AskDomainRoutingInput,
+  AskIntentDecision,
+  AskIntentInput,
+  AskModelPort,
+  AskUnitFormingDecision,
+  AskUnitFormingInput,
+  AskUnitMetric,
+  AskUnitPatch
+} from './ports';
+
+/**
+ * 模型端口的 ModelProvider 适配:把三个编排阶段的结构化决策各映射为一次
+ * 非流式模型调用(deepseek.server.ts 或确定性 scripted 提供方)。
+ *
+ * 上下文裁剪在这里落地:域路由只注入域清单;口径成形只注入命中域的语义面
+ * 投影与 top-N 候选卡;意图判定只注入取数单元摘要。每次调用要求模型以
+ * 工具参数提交结构化结果,输出不可解析按单次失败抛出,由编排层的
+ * 每阶段一次重试纪律兜底。
+ */
+
+export class AskModelOutputError extends Error {}
+
+export function createModelBackedAskModel(provider: ModelProvider): AskModelPort {
+  return {
+    async routeDomains(input) {
+      const response = await provider.complete({
+        messages: [
+          { role: 'system', content: routingPrompt(input) },
+          { role: 'user', content: input.question }
+        ],
+        tools: [ROUTE_TOOL],
+        ...(input.signal ? { signal: input.signal } : {})
+      });
+      return parseRouting(structuredOutput(response.toolCalls, ROUTE_TOOL.name, response.content));
+    },
+
+    async formUnit(input) {
+      const response = await provider.complete({
+        messages: [
+          { role: 'system', content: unitPrompt(input) },
+          { role: 'user', content: input.question }
+        ],
+        tools: [UNIT_TOOL],
+        ...(input.signal ? { signal: input.signal } : {})
+      });
+      return parseUnitDecision(
+        structuredOutput(response.toolCalls, UNIT_TOOL.name, response.content),
+        input.previousUnit !== null
+      );
+    },
+
+    async decideIntent(input) {
+      const response = await provider.complete({
+        messages: [
+          { role: 'system', content: intentPrompt(input) },
+          { role: 'user', content: input.question }
+        ],
+        tools: [INTENT_TOOL],
+        ...(input.signal ? { signal: input.signal } : {})
+      });
+      return parseIntent(structuredOutput(response.toolCalls, INTENT_TOOL.name, response.content));
+    }
+  };
+}
+
+/* ---------- 提示词(注入内容 = 上下文裁剪后的检索结果) ---------- */
+
+function routingPrompt(input: AskDomainRoutingInput): string {
+  const inventory = input.domains
+    .map((domain) => `- ${domain.name}:${domain.description}`)
+    .join('\n');
+  return [
+    '你是 MetricCanvas(指标画布)的业务域路由器。把用户的一句业务问题归入最相关的一到两个业务域。',
+    '',
+    '## 业务域清单(只能从这里选择)',
+    inventory,
+    '',
+    '规则:必须调用工具 route_business_domains 提交结果;businessDomains 取业务域名原文,至多两个;无法判断时给出最可能的候选域,不要留空。'
+  ].join('\n');
+}
+
+function unitPrompt(input: AskUnitFormingInput): string {
+  const sections = [
+    '你是 MetricCanvas(指标画布)的取数单元编排器。把用户的业务问题在语义面闭集内填成结构化取数单元:业务域、指标、分组维度、筛选条件、时间范围与粒度。',
+    '',
+    '## 语义面闭集(以下清单之外的指标、维度、取值、粒度一律不存在)',
+    renderSurfaces(input.surfaces),
+    '',
+    '## 检索候选卡(确定性检索的排序结果)',
+    input.candidates.length === 0
+      ? '(没有命中任何指标条目)'
+      : input.candidates
+          .map(
+            (candidate) =>
+              `- ${candidate.businessDomain}·${candidate.metricName}(命中词「${candidate.matchedTerm}」):${candidate.definition}`
+          )
+          .join('\n'),
+    '',
+    input.selectedMetrics.length > 0
+      ? `## 已确定选中的指标(消歧已完成,不得替换)\n${input.selectedMetrics
+          .map((metric) => `- ${metric.businessDomain}·${metric.metricName}`)
+          .join('\n')}`
+      : '## 注意:候选存在近义歧义或未命中时,不要自行挑选指标;歧义候选一律不写入 metrics,由用户在口径卡上确认。',
+    '',
+    '## 规则',
+    '1. 指标名、维度名、维度取值、时间粒度必须逐字取自语义面;别名用于理解,输出一律用规范名。',
+    '2. 一个取数单元只属于一个业务域;跨域组合不可满足时 outcome=out_of_scope 并说明原因。',
+    '3. 找不到指标但可用既有指标以 formula 组合出口径时,写入 kind=formula 的指标项,并显式声明 label 与 unit;完全无法回答时 outcome=out_of_scope,不得编造。',
+    '4. time.providedBy:问题原文明确给出时间范围时为 user;由你补全默认时间时为 model;不需要时间过滤时 time=null。',
+    '5. 需要按时间展开(趋势、每月、每天)时,把该域的时间维度写入 groupBy。',
+    '6. 必须调用工具 submit_data_request_unit 提交结果,不要用普通文本回答。'
+  ];
+  if (input.previousUnit !== null) {
+    sections.push(
+      '',
+      '## 增量修改(追问轮)',
+      `上一轮生效的取数单元:${JSON.stringify(input.previousUnit)}`,
+      'outcome=patch,patch 只包含用户本轮要求改变的字段(可同时改指标、筛选、时间等多层);用户未提及的字段绝对不要出现在 patch 里。'
+    );
+  } else {
+    sections.push('', '本轮是首个问题:outcome=unit,给出完整取数单元。');
+  }
+  if (input.violationFeedback !== undefined && input.violationFeedback.length > 0) {
+    sections.push(
+      '',
+      '## 清单校验违规反馈(修复后重新提交)',
+      input.violationFeedback.map((entry) => `- ${entry}`).join('\n')
+    );
+  }
+  return sections.join('\n');
+}
+
+function intentPrompt(input: AskIntentInput): string {
+  return [
+    '你是 MetricCanvas(指标画布)的分析意图判定器。根据用户问题与取数单元,从闭集中选择一个分析意图。',
+    '',
+    `意图闭集:${ANALYSIS_INTENTS.join('、')}(comparison=对比,trend=趋势,composition=构成,ranking=排名,detail=明细,single_value=单值)。`,
+    `取数单元:${JSON.stringify({
+      metrics: input.unit.metrics,
+      groupBy: input.unit.groupBy,
+      time: input.unit.time
+    })}`,
+    input.previousIntent !== null
+      ? `上一轮意图为 ${input.previousIntent};本轮问题未提及展示变化时保持不变。`
+      : '',
+    '必须调用工具 submit_analysis_intent 提交结果。'
+  ].join('\n');
+}
+
+function renderSurfaces(surfaces: readonly DomainSemanticSurface[]): string {
+  return surfaces
+    .map((surface) => {
+      const dimensions = surface.dimensions
+        .map(
+          (dimension) =>
+            `  - ${dimension.name}(别名:${dimension.aliases.join('、') || '无'}):${dimension.description}` +
+            (dimension.values !== undefined
+              ? `;取值域 [${dimension.values.join('、')}]`
+              : dimension.sensitive
+                ? ';敏感字段,取值域不可见,不得对其做取值筛选'
+                : '')
+        )
+        .join('\n');
+      const metrics = surface.metrics
+        .map(
+          (metric) =>
+            `  - ${metric.name}(别名:${metric.aliases.join('、') || '无'}):${metric.description}` +
+            (metric.unit !== undefined ? `;单位 ${metric.unit}` : '')
+        )
+        .join('\n');
+      const timeDimensions = surface.timeDimensions
+        .map(
+          (dimension) =>
+            `  - ${dimension.name}(别名:${dimension.aliases.join('、') || '无'});支持粒度:${dimension.granularities.join('、')}`
+        )
+        .join('\n');
+      return [
+        `### 业务域「${surface.businessDomain}」:${surface.description}`,
+        '- 时间维度:',
+        timeDimensions || '  (无)',
+        '- 维度:',
+        dimensions || '  (无)',
+        '- 指标:',
+        metrics || '  (无)'
+      ].join('\n');
+    })
+    .join('\n\n');
+}
+
+/* ---------- 工具契约与结构化输出解析 ---------- */
+
+const ROUTE_TOOL: ToolDefinition = {
+  name: 'route_business_domains',
+  description: '提交问题所属的一到两个业务域。',
+  inputSchema: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      businessDomains: {
+        type: 'array',
+        items: { type: 'string' },
+        minItems: 1,
+        maxItems: 2,
+        description: '业务域名原文,取自域清单'
+      }
+    },
+    required: ['businessDomains']
+  }
+};
+
+const METRIC_ITEM_SCHEMA = {
+  type: 'object',
+  properties: {
+    kind: { type: 'string', enum: ['metric', 'formula'] },
+    name: { type: 'string', description: 'kind=metric 时的指标规范名' },
+    expression: { type: 'string', description: 'kind=formula 时的表达式' },
+    label: { type: 'string', description: 'kind=formula 时的输出字段名/标签' },
+    unit: { type: 'string' },
+    description: { type: 'string' }
+  },
+  required: ['kind']
+} as const;
+
+const UNIT_FIELDS_SCHEMA = {
+  metrics: { type: 'array', items: METRIC_ITEM_SCHEMA },
+  groupBy: { type: 'array', items: { type: 'string' } },
+  filters: {
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        dimension: { type: 'string' },
+        values: { type: 'array', items: { type: 'string' } }
+      },
+      required: ['dimension', 'values']
+    }
+  },
+  time: {
+    type: ['object', 'null'],
+    properties: {
+      granularity: { type: 'string' },
+      start: { type: 'string' },
+      end: { type: 'string' },
+      providedBy: { type: 'string', enum: ['user', 'model'] }
+    },
+    required: ['granularity', 'start', 'end', 'providedBy']
+  },
+  title: { type: 'string' }
+} as const;
+
+const UNIT_TOOL: ToolDefinition = {
+  name: 'submit_data_request_unit',
+  description:
+    '提交口径成形结果:outcome=unit 给出完整取数单元;outcome=patch 给出定向增量;outcome=out_of_scope 说明语义面无法回答的原因。',
+  inputSchema: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      outcome: { type: 'string', enum: ['unit', 'patch', 'out_of_scope'] },
+      unit: {
+        type: 'object',
+        properties: {
+          businessDomain: { type: 'string' },
+          ...UNIT_FIELDS_SCHEMA
+        },
+        required: ['businessDomain', 'metrics', 'groupBy', 'filters', 'time']
+      },
+      patch: {
+        type: 'object',
+        description: '只包含要改变的字段',
+        properties: UNIT_FIELDS_SCHEMA
+      },
+      reason: { type: 'string' }
+    },
+    required: ['outcome']
+  }
+};
+
+const INTENT_TOOL: ToolDefinition = {
+  name: 'submit_analysis_intent',
+  description: '提交分析意图。',
+  inputSchema: {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+      intent: { type: 'string', enum: [...ANALYSIS_INTENTS] }
+    },
+    required: ['intent']
+  }
+};
+
+function structuredOutput(
+  toolCalls: ReadonlyArray<{ name: string; input: unknown }>,
+  toolName: string,
+  content: string
+): unknown {
+  const call = toolCalls.find((entry) => entry.name === toolName);
+  if (call) return call.input;
+  // 容错:模型未走工具时尝试从正文解析 JSON(与探针一致的兜底)。
+  const trimmed = content.trim();
+  const fenced = /```(?:json)?\s*([\s\S]*?)```/u.exec(trimmed);
+  const candidate = (fenced ? fenced[1]! : trimmed).trim();
+  const start = candidate.indexOf('{');
+  const end = candidate.lastIndexOf('}');
+  for (const attempt of [candidate, start >= 0 && end > start ? candidate.slice(start, end + 1) : '']) {
+    if (attempt === '') continue;
+    try {
+      return JSON.parse(attempt);
+    } catch {
+      // 尝试下一个片段
+    }
+  }
+  throw new AskModelOutputError(`模型未产出 ${toolName} 的结构化结果`);
+}
+
+function parseRouting(value: unknown): AskDomainRoutingDecision {
+  if (!isRecord(value) || !Array.isArray(value.businessDomains)) {
+    throw new AskModelOutputError('域路由输出缺少 businessDomains 数组');
+  }
+  const businessDomains = value.businessDomains.filter(
+    (entry): entry is string => typeof entry === 'string' && entry.trim() !== ''
+  );
+  if (businessDomains.length === 0) {
+    throw new AskModelOutputError('域路由输出为空');
+  }
+  return { businessDomains };
+}
+
+function parseUnitDecision(value: unknown, hasPrevious: boolean): AskUnitFormingDecision {
+  if (!isRecord(value)) throw new AskModelOutputError('口径成形输出不是对象');
+  switch (value.outcome) {
+    case 'out_of_scope':
+      return {
+        outcome: 'out_of_scope',
+        reason: typeof value.reason === 'string' ? value.reason : '语义面内没有可回答的口径'
+      };
+    case 'patch': {
+      if (!hasPrevious) throw new AskModelOutputError('首轮不接受 patch,必须给出完整取数单元');
+      return { outcome: 'patch', patch: parsePatch(value.patch) };
+    }
+    case 'unit': {
+      const unit = parseUnit(value.unit);
+      return { outcome: 'unit', unit };
+    }
+    default:
+      throw new AskModelOutputError('口径成形输出缺少合法 outcome');
+  }
+}
+
+function parseUnit(value: unknown): AskDataRequestUnitState {
+  if (!isRecord(value) || typeof value.businessDomain !== 'string') {
+    throw new AskModelOutputError('取数单元缺少 businessDomain');
+  }
+  const patch = parsePatch(value);
+  return {
+    businessDomain: value.businessDomain,
+    metrics: patch.metrics ?? [],
+    groupBy: patch.groupBy ?? [],
+    filters: patch.filters ?? [],
+    time: patch.time ?? null,
+    ...(patch.title === undefined ? {} : { title: patch.title })
+  };
+}
+
+function parsePatch(value: unknown): AskUnitPatch {
+  if (!isRecord(value)) return {};
+  const patch: AskUnitPatch = {};
+  if (Array.isArray(value.metrics)) {
+    patch.metrics = value.metrics.flatMap((entry): AskUnitMetric[] => {
+      if (!isRecord(entry)) return [];
+      if (entry.kind === 'metric' && typeof entry.name === 'string') {
+        return [{ kind: 'metric', name: entry.name }];
+      }
+      if (
+        entry.kind === 'formula' &&
+        typeof entry.expression === 'string' &&
+        typeof entry.label === 'string'
+      ) {
+        return [
+          {
+            kind: 'formula',
+            expression: entry.expression,
+            label: entry.label,
+            ...(typeof entry.unit === 'string' ? { unit: entry.unit } : {}),
+            ...(typeof entry.description === 'string' ? { description: entry.description } : {})
+          }
+        ];
+      }
+      return [];
+    });
+  }
+  if (Array.isArray(value.groupBy)) {
+    patch.groupBy = value.groupBy.filter((entry): entry is string => typeof entry === 'string');
+  }
+  if (Array.isArray(value.filters)) {
+    patch.filters = value.filters.flatMap((entry) => {
+      if (!isRecord(entry) || typeof entry.dimension !== 'string' || !Array.isArray(entry.values)) {
+        return [];
+      }
+      return [
+        {
+          dimension: entry.dimension,
+          values: entry.values.map((item) => String(item))
+        }
+      ];
+    });
+  }
+  if ('time' in value) {
+    if (value.time === null) {
+      patch.time = null;
+    } else if (isRecord(value.time)) {
+      const time = value.time;
+      if (
+        typeof time.granularity === 'string' &&
+        typeof time.start === 'string' &&
+        typeof time.end === 'string'
+      ) {
+        patch.time = {
+          granularity: time.granularity,
+          start: time.start,
+          end: time.end,
+          providedBy: time.providedBy === 'user' ? 'user' : 'model'
+        };
+      }
+    }
+  }
+  if (typeof value.title === 'string') patch.title = value.title;
+  return patch;
+}
+
+function parseIntent(value: unknown): AskIntentDecision {
+  if (
+    isRecord(value) &&
+    typeof value.intent === 'string' &&
+    (ANALYSIS_INTENTS as readonly string[]).includes(value.intent)
+  ) {
+    return { intent: value.intent as AskIntentDecision['intent'] };
+  }
+  throw new AskModelOutputError('分析意图输出不在闭集内');
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
