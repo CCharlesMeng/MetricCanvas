@@ -41,6 +41,8 @@
         return '◱';
       case 'tool_call':
         return step.status === 'running' ? '…' : step.status === 'failed' ? '✕' : '⚙';
+      case 'metric_gap':
+        return '◇';
       case 'step_failed':
         return '✕';
       case 'interaction_required':
@@ -147,6 +149,17 @@
               : step.status === 'succeeded'
                 ? '成功'
                 : `失败${step.errorCode ? ` · ${step.errorCode}` : ''}`}
+          </small>
+        </span>
+      {:else if step.kind === 'metric_gap'}
+        <span class="t">
+          <b>指标需求条目已登记</b>
+          <small>
+            {step.gap.businessDomain} ·
+            {step.gap.adHocDefinition
+              ? `临时口径 ${step.gap.adHocDefinition.formula}`
+              : step.gap.searchTerms.join('、') || step.gap.question}
+            · 同一缺口重复出现将累加次数
           </small>
         </span>
       {:else if step.kind === 'step_failed'}

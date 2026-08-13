@@ -65,6 +65,9 @@
     <div class="confirm-row">
       <button type="button" onclick={() => onconfirm?.()}>确认口径并执行</button>
       <p class="note">命中阻塞条件(候选歧义或自由生成表达式),已暂停执行;要修改口径,直接在下方追问。</p>
+      {#if card.adHocDefinition}
+        <p class="note">确认临时口径即登记一条指标需求条目(重复出现累加次数),供数据侧评估是否建设正式指标。</p>
+      {/if}
     </div>
   {:else if card.blockedOnConfirmation}
     <p class="note">该口径卡命中阻塞条件,曾在执行前等待确认。</p>

@@ -71,6 +71,11 @@ export type AgentEvent =
       type: 'interaction_required';
       interaction: AgentInteraction;
       messages: AgentMessage[];
+      /**
+       * 停机等待交互前已产出的已校验页面文档(如有)。问数编排的部分可答
+       * 出口(#67)用它保证能答的部分照常交付;工具循环 Runner 不设置。
+       */
+      document?: Record<string, unknown> | null;
     }
   | {
       type: 'completed';

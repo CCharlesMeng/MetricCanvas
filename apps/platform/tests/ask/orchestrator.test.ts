@@ -348,7 +348,11 @@ describe('问数编排:降级路径(四段分类,不编造数据)', () => {
       code: 'OUT_OF_SEMANTIC_SURFACE'
     });
     expect(harness.executions()).toBe(0);
-    expect(completedOf(events).document).toBeNull();
+    // 不编造数据:没有文档产出;运行停在缺口登记确认(#67 非阻塞出口),
+    // 登记与否由用户决定,直接换个问题即放弃。
+    const { interaction } = interactionOf(events);
+    expect(interaction.kind).toBe('confirm_gap_entry');
+    expect(events.some((event) => event.type === 'completed')).toBe(false);
   });
 
   it('真实执行失败按执行段降级,且执行段失败自动重试一次', async () => {
@@ -451,12 +455,14 @@ describe('问数编排:临时口径(自由 formula)', () => {
     expect(interaction.payload.reasons).toEqual(['ad_hoc_definition']);
     expect(first.executions()).toBe(0);
 
-    // 非歧义阻塞:普通确认续跑即可执行(不需要结构化选择)。
+    // 非歧义阻塞:普通确认续跑即可执行(不需要结构化选择);口径卡确认
+    // 即用户确认,临时口径缺口在此刻登记(#67)。
     const resume = buildAskPorts({ script: { intent: [{ intent: 'composition' }] } });
     const resumeRunner = createAskOrchestrationRunner(resume.ports, { runId: 'run-formula-2' });
     const events = await collect(resumeRunner.run({ messages }));
     expect(stepTypes(events)).toEqual([
       'scope_card_presented',
+      'metric_gap_recorded',
       'execution_started',
       'rows_ready',
       'document_ready'

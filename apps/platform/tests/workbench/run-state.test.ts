@@ -171,6 +171,34 @@ describe('工作台运行状态机:编排步骤时间线', () => {
     expect(awaitingScopeConfirmation(view)).toBe(false);
   });
 
+  it('metric_gap_recorded 映射为缺口登记步骤(#67)', () => {
+    const view = applyStreamEvent(
+      createRunView({ runId: 'run-1', question: '各区域计费占比' }),
+      {
+        type: 'metric_gap_recorded',
+        gap: {
+          idempotencyKey: 'adhoc:运营分析:消耗量/总量',
+          question: '各区域计费占比',
+          searchTerms: [],
+          closestCandidates: [],
+          adHocDefinition: { formula: '消耗量 / 总量', description: '占比' },
+          expectedDimensions: ['区域'],
+          expectedGranularity: 'month',
+          businessDomain: '运营分析'
+        }
+      }
+    );
+    expect(view.steps).toEqual([
+      {
+        kind: 'metric_gap',
+        gap: expect.objectContaining({
+          idempotencyKey: 'adhoc:运营分析:消耗量/总量',
+          businessDomain: '运营分析'
+        })
+      }
+    ]);
+  });
+
   it('assistant_replied 追加为对话回复', () => {
     const view = replay(createRunView({ runId: 'run-1', question: null }), [
       { type: 'assistant_replied', content: '已生成页面。' },

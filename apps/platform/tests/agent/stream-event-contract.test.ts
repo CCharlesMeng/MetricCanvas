@@ -51,6 +51,21 @@ const PERSISTED_SAMPLES: Record<AnalysisStepEvent['type'], AnalysisStepEvent> = 
     components: [{ componentType: 'lineChart', pinnedByUser: false }],
     transientPageId: 'transient-1'
   },
+  metric_gap_recorded: {
+    type: 'metric_gap_recorded',
+    gap: {
+      idempotencyKey: 'adhoc:运营分析:计费tokens量/tokens消耗量',
+      question: '上个月各区域的计费占比是多少?',
+      searchTerms: ['计费Tokens量'],
+      closestCandidates: [
+        { metricName: '计费Tokens量', businessDomain: '运营分析', definitionDifference: '仅计费部分' }
+      ],
+      adHocDefinition: { formula: '计费Tokens量 / Tokens消耗量', description: '计费占比' },
+      expectedDimensions: ['区域'],
+      expectedGranularity: 'month',
+      businessDomain: '运营分析'
+    }
+  },
   step_failed: {
     type: 'step_failed',
     stage: 'generation',
@@ -88,7 +103,7 @@ const STREAM_ONLY_SAMPLES: Record<StreamOnlyEvent['type'], StreamOnlyEvent> = {
 };
 
 describe('AgentRunStreamEvent 契约', () => {
-  it('覆盖 ADR-0037 编排各段:路由、候选、口径卡、执行中、行就绪、文档就绪与失败', () => {
+  it('覆盖 ADR-0037 编排各段:路由、候选、口径卡、执行中、行就绪、文档就绪、缺口登记与失败', () => {
     expect(Object.keys(PERSISTED_SAMPLES).sort()).toEqual(
       [
         'domain_routed',
@@ -97,6 +112,7 @@ describe('AgentRunStreamEvent 契约', () => {
         'execution_started',
         'rows_ready',
         'document_ready',
+        'metric_gap_recorded',
         'step_failed'
       ].sort()
     );

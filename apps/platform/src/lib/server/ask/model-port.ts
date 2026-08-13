@@ -10,6 +10,7 @@ import type {
   AskModelPort,
   AskUnitFormingDecision,
   AskUnitFormingInput,
+  AskUnitGapAspect,
   AskUnitMetric,
   AskUnitPatch
 } from './ports';
@@ -112,9 +113,10 @@ function unitPrompt(input: AskUnitFormingInput): string {
     '1. 指标名、维度名、维度取值、时间粒度必须逐字取自语义面;别名用于理解,输出一律用规范名。',
     '2. 一个取数单元只属于一个业务域;跨域组合不可满足时 outcome=out_of_scope 并说明原因。',
     '3. 找不到指标但可用既有指标以 formula 组合出口径时,写入 kind=formula 的指标项,并显式声明 label 与 unit;完全无法回答时 outcome=out_of_scope,不得编造。',
-    '4. time.providedBy:问题原文明确给出时间范围时为 user;由你补全默认时间时为 model;不需要时间过滤时 time=null。',
-    '5. 需要按时间展开(趋势、每月、每天)时,把该域的时间维度写入 groupBy。',
-    '6. 必须调用工具 submit_data_request_unit 提交结果,不要用普通文本回答。'
+    '4. 问题里只有一部分能回答时:能答的部分照常写入取数单元,答不了的部分写入 gaps(aspect=缺失口径的业务描述,reason=原因);绝不把答不了的部分混进取数单元。',
+    '5. time.providedBy:问题原文明确给出时间范围时为 user;由你补全默认时间时为 model;不需要时间过滤时 time=null。',
+    '6. 需要按时间展开(趋势、每月、每天)时,把该域的时间维度写入 groupBy。',
+    '7. 必须调用工具 submit_data_request_unit 提交结果,不要用普通文本回答。'
   ];
   if (input.previousUnit !== null) {
     sections.push(
@@ -276,6 +278,18 @@ const UNIT_TOOL: ToolDefinition = {
         description: '只包含要改变的字段',
         properties: UNIT_FIELDS_SCHEMA
       },
+      gaps: {
+        type: 'array',
+        description: '问题里语义面无法回答的部分;能答的部分仍以 unit/patch 给出',
+        items: {
+          type: 'object',
+          properties: {
+            aspect: { type: 'string', description: '缺失口径的业务描述' },
+            reason: { type: 'string' }
+          },
+          required: ['aspect', 'reason']
+        }
+      },
       reason: { type: 'string' }
     },
     required: ['outcome']
@@ -342,15 +356,30 @@ function parseUnitDecision(value: unknown, hasPrevious: boolean): AskUnitForming
       };
     case 'patch': {
       if (!hasPrevious) throw new AskModelOutputError('首轮不接受 patch,必须给出完整取数单元');
-      return { outcome: 'patch', patch: parsePatch(value.patch) };
+      const gaps = parseGapAspects(value.gaps);
+      return {
+        outcome: 'patch',
+        patch: parsePatch(value.patch),
+        ...(gaps.length === 0 ? {} : { gaps })
+      };
     }
     case 'unit': {
       const unit = parseUnit(value.unit);
-      return { outcome: 'unit', unit };
+      const gaps = parseGapAspects(value.gaps);
+      return { outcome: 'unit', unit, ...(gaps.length === 0 ? {} : { gaps }) };
     }
     default:
       throw new AskModelOutputError('口径成形输出缺少合法 outcome');
   }
+}
+
+function parseGapAspects(value: unknown): AskUnitGapAspect[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((entry) =>
+    isRecord(entry) && typeof entry.aspect === 'string' && typeof entry.reason === 'string'
+      ? [{ aspect: entry.aspect, reason: entry.reason }]
+      : []
+  );
 }
 
 function parseUnit(value: unknown): AskDataRequestUnitState {

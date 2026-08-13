@@ -5,7 +5,7 @@ import type {
   DataRequestUnitVerification,
   DomainSemanticSurface
 } from '@metriccanvas/mcp';
-import type { AnalysisIntent } from '../session/step-event';
+import type { AnalysisIntent, MetricGapOccurrence } from '../session/step-event';
 
 /**
  * 问数编排的注入端口(#66,ADR-0037)。
@@ -122,9 +122,20 @@ export type AskUnitPatch = Partial<
   Pick<AskDataRequestUnitState, 'metrics' | 'groupBy' | 'filters' | 'time' | 'title'>
 >;
 
+/**
+ * 部分可答时缺的那一部分(ADR-0036、#67):问题里语义面无法回答的口径,
+ * 与可答部分结构上分离——它不进入取数单元,因此不会混入同一数字或同一
+ * 组件;由编排单独列出,经用户确认后登记为指标需求条目。
+ */
+export interface AskUnitGapAspect {
+  /** 缺失口径的业务描述(如「NPS 趋势」)。 */
+  aspect: string;
+  reason: string;
+}
+
 export type AskUnitFormingDecision =
-  | { outcome: 'unit'; unit: AskDataRequestUnitState }
-  | { outcome: 'patch'; patch: AskUnitPatch }
+  | { outcome: 'unit'; unit: AskDataRequestUnitState; gaps?: AskUnitGapAspect[] }
+  | { outcome: 'patch'; patch: AskUnitPatch; gaps?: AskUnitGapAspect[] }
   /** 语义面之外的问题:降级而不是编造(ADR-0036)。 */
   | { outcome: 'out_of_scope'; reason: string };
 
@@ -152,6 +163,19 @@ export type AssembleTransientPage = (
   input: AssembleTransientPageInput
 ) => AssembleTransientPageResult;
 
+/* ---------- 缺口登记端口(#67,ADR-0036) ---------- */
+
+/**
+ * 缺口条目登记口:编排在降级分支(临时口径 / 面外)于用户确认后交出
+ * 结构化缺口出现,不感知存储。
+ *
+ * 落库通道只有一条:编排同时以 metric_gap_recorded 步骤事件产出同一
+ * 形状,随会话事件流落库并按存储侧聚合计数(ADR-0036:不另建采集通道)。
+ * 本端口供不消费步骤事件流的宿主(评测、离线回放)观察登记时点;
+ * 注入实现不得成为第二份缺口存储。
+ */
+export type GapEntrySink = (occurrence: MetricGapOccurrence) => void | Promise<void>;
+
 /* ---------- 编排端口汇总 ---------- */
 
 export interface AskOrchestrationPorts {
@@ -161,6 +185,8 @@ export interface AskOrchestrationPorts {
   verifyUnit: DataRequestUnitVerification;
   /** 临时页面装配(#62):出口过 validate,钉住语义由 recommendComponents 承载。 */
   assemblePage: AssembleTransientPage;
+  /** 缺口登记口(#67):缺省不注入,登记只走步骤事件流。 */
+  gapSink?: GapEntrySink;
   /** 内嵌初始行 capturedAt 的时钟;测试注入固定时钟。 */
   clock?: () => Date;
 }

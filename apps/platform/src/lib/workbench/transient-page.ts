@@ -39,6 +39,12 @@ export interface WorkbenchPageViewModel {
   description: string | null;
   dataSourceCount: number;
   components: PageComponentView[];
+  /**
+   * 页面文档里的临时口径 formula 表达式(#67,ADR-0036):从查询定义的
+   * output_metrics 直接检出,文档本身是唯一真源。非空时工作台在结果区
+   * 呈现「临时口径」徽标,与已定义指标视觉可区分。
+   */
+  adHocFormulas: string[];
 }
 
 /**
@@ -83,8 +89,30 @@ export function workbenchPageViewModel(
     description:
       typeof meta.description === 'string' ? meta.description : null,
     dataSourceCount: Object.keys(dataSources).length,
-    components
+    components,
+    adHocFormulas: adHocFormulasOf(dataSources)
   };
+}
+
+/** 查询定义 output_metrics 里的 formula 项即临时口径(ADR-0032/0036)。 */
+function adHocFormulasOf(dataSources: Record<string, unknown>): string[] {
+  const formulas: string[] = [];
+  for (const dataSource of Object.values(dataSources)) {
+    if (!isRecord(dataSource) || !isRecord(dataSource.source)) continue;
+    const query = dataSource.source.query;
+    if (!isRecord(query) || !isRecord(query.body)) continue;
+    const dslList = query.body.dsl_list;
+    if (!Array.isArray(dslList)) continue;
+    for (const item of dslList) {
+      if (!isRecord(item) || !Array.isArray(item.output_metrics)) continue;
+      for (const metric of item.output_metrics) {
+        if (isRecord(metric) && typeof metric.formula === 'string') {
+          formulas.push(metric.formula);
+        }
+      }
+    }
+  }
+  return formulas;
 }
 
 function catalogLabel(componentType: string): string {

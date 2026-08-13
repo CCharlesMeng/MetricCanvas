@@ -8,7 +8,8 @@ import type {
   DimensionFilter,
   ExecutionResultSummary,
   FailureStage,
-  MetricCandidate
+  MetricCandidate,
+  MetricGapOccurrence
 } from '../server/session/step-event';
 import type { AgentRunOutcomeFrame } from './stream-consumer';
 
@@ -25,6 +26,7 @@ import type { AgentRunOutcomeFrame } from './stream-consumer';
  * - domain_routed / candidates_retrieved / execution_started / rows_ready /
  *   document_ready           → 追加对应编排步骤(ADR-0037 顺序)
  * - scope_card_presented     → 追加口径卡;blockedOnConfirmation 标记阻塞
+ * - metric_gap_recorded      → 追加缺口登记步骤(#67 指标需求条目)
  * - step_failed              → 追加失败步骤(发现/生成/执行/呈现四段分类)
  * - run_interaction_required → 记录待人工交互;若最近口径卡处于阻塞且尚未
  *                              执行,标记该卡等待确认
@@ -78,6 +80,8 @@ export type RunStep =
       status: ToolCallStepStatus;
       errorCode: string | null;
     }
+  /** 缺口出现已登记(#67):用户确认后的指标需求条目登记。 */
+  | { kind: 'metric_gap'; gap: MetricGapOccurrence }
   | { kind: 'step_failed'; stage: FailureStage; code: string; message: string }
   | { kind: 'interaction_required'; interactionId: string; interactionKind: string };
 
@@ -185,6 +189,8 @@ export function applyStreamEvent(
         components: event.components,
         transientPageId: event.transientPageId
       });
+    case 'metric_gap_recorded':
+      return appendStep(view, { kind: 'metric_gap', gap: event.gap });
     case 'step_failed':
       return appendStep(view, {
         kind: 'step_failed',

@@ -335,6 +335,16 @@
           <span class="badge" class:transient={pageModel.transient}>
             {pageModel.transient ? '临时页面态' : '未保存工作副本'}
           </span>
+          {#if pageModel.adHocFormulas.length > 0}
+            <!-- 临时口径与已定义指标视觉可区分(ADR-0036、#67):文档含现场
+                 生成的 formula 口径时,结果区常驻警示徽标。 -->
+            <span
+              class="badge adhoc"
+              title={pageModel.adHocFormulas.join(';')}
+            >
+              临时口径 ×{pageModel.adHocFormulas.length}
+            </span>
+          {/if}
           <code class="page-id">{pageModel.pageId}</code>
           <span class="stat">组件 {pageModel.components.length}</span>
           <span class="stat">页面数据源 {pageModel.dataSourceCount}</span>
@@ -636,6 +646,11 @@
   .badge.transient {
     color: #92400e;
     background: #fef3c7;
+  }
+  .badge.adhoc {
+    color: #92400e;
+    background: #fef3c7;
+    border: 1px solid #fde68a;
   }
   .badge.idle {
     color: #71717a;
