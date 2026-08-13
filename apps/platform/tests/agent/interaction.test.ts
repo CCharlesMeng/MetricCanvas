@@ -117,11 +117,12 @@ describe('Agent Runner 人工交互', () => {
     );
 
     expect(events.map((event) => event.type)).toEqual([
+      'turn_completed',
       'tool_started',
       'tool_finished',
       'interaction_required'
     ]);
-    const interaction = events[2];
+    const interaction = events[3];
     expect(interaction).toMatchObject({
       type: 'interaction_required',
       interaction: {
