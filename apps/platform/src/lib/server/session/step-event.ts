@@ -135,3 +135,107 @@ export type AnalysisStepEvent =
   | RowsReadyEvent
   | DocumentReadyEvent
   | StepFailedEvent;
+
+/*
+ * 以下是步骤事件流式下发(#32)对本契约的最小扩展:Agent 运行经服务端推送
+ * 逐步下发时,除上方会落库的步骤事件外,还需要运行生命周期与工具调用进度
+ * 两类只进推送通道、不落库的事件(ADR-0030 的落库红线只覆盖步骤事件)。
+ * 它们与 AnalysisStepEvent 共用 `type` 判别字段,合并为 AgentRunStreamEvent;
+ * 消费方(工作台,#65)按 type 收窄即可顺序消费。
+ */
+
+/** 运行开始:流式通道的第一个事件,锚定 runId 与可选的分析会话。 */
+export interface RunStartedEvent {
+  type: 'run_started';
+  runId: string;
+  /** 关联的分析会话;调用方未开启会话落库时为 null。 */
+  sessionId: string | null;
+}
+
+/**
+ * 工具调用开始:工作台按 toolCallId 呈现"进行中"状态。
+ * 只带名称与调用 id,不带调用入参——入参可能含问题原文之外的敏感拼装内容,
+ * 工具审计(日志)与工作台展示都只需要名称与状态。
+ */
+export interface ToolCallStartedEvent {
+  type: 'tool_call_started';
+  toolCallId: string;
+  toolName: string;
+}
+
+/** 工具调用结束:成功或失败;失败时附工具结果中的稳定错误码。 */
+export interface ToolCallFinishedEvent {
+  type: 'tool_call_finished';
+  toolCallId: string;
+  toolName: string;
+  status: 'succeeded' | 'failed';
+  /** 失败时取工具结果 error.code;成功或无结构化错误码时为 null。 */
+  errorCode: string | null;
+}
+
+/** 助手文本回复(如澄清提问):只进推送通道供本人界面呈现,不落库、不进日志。 */
+export interface AssistantRepliedEvent {
+  type: 'assistant_replied';
+  content: string;
+}
+
+/** 运行等待人工交互(如页面 id 确认),等待期间运行结束;确认后由新运行继续。 */
+export interface RunInteractionRequiredEvent {
+  type: 'run_interaction_required';
+  interactionId: string;
+  kind: string;
+  payload: Record<string, unknown>;
+}
+
+/** 运行正常完成。 */
+export interface RunCompletedEvent {
+  type: 'run_completed';
+}
+
+/**
+ * 运行失败终态:纯生命周期标记。失败分类本身以紧邻在前的 step_failed
+ * 事件承载(并按 ADR-0030 落库),这里只补充传输层语义,不重复声明分类。
+ */
+export interface RunFailedEvent {
+  type: 'run_failed';
+  /** 以运行结束时的会话状态重试失败步骤是否有意义(取消/限流为 true,预算耗尽为 false)。 */
+  retryable: boolean;
+}
+
+/** 运行被用户取消:不是失败,不产生 step_failed,可携带既有会话状态重试。 */
+export interface RunCancelledEvent {
+  type: 'run_cancelled';
+}
+
+/**
+ * Agent 运行流事件:服务端推送通道的可判别联合(判别字段 `type`)。
+ * AnalysisStepEvent 子集按 ADR-0030 落库;其余为运行进度,只进通道。
+ */
+export type AgentRunStreamEvent =
+  | AnalysisStepEvent
+  | RunStartedEvent
+  | ToolCallStartedEvent
+  | ToolCallFinishedEvent
+  | AssistantRepliedEvent
+  | RunInteractionRequiredEvent
+  | RunCompletedEvent
+  | RunFailedEvent
+  | RunCancelledEvent;
+
+/** 判别一条流事件是否属于按 ADR-0030 落库的步骤事件。 */
+export function isPersistedStepEvent(
+  event: AgentRunStreamEvent
+): event is AnalysisStepEvent {
+  switch (event.type) {
+    case 'domain_routed':
+    case 'candidates_retrieved':
+    case 'scope_card_presented':
+    case 'execution_started':
+    case 'rows_ready':
+    case 'document_ready':
+    case 'step_failed':
+      return true;
+    default:
+      return false;
+  }
+}
