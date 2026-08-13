@@ -375,75 +375,133 @@ function normalizeRows(value: unknown, query: EffectiveQuery): Row[] {
   throw gatewayNormalizationError(normalized.issues[0]!);
 }
 
+/**
+ * 归一化问题 → 数据网关错误。与结果字段契约校验一致,错误只携带
+ * 行号、字段名、错误分类与预期类型,不回显业务字段值。
+ */
 function gatewayNormalizationError(
   issue: QueryRowNormalizationIssue
 ): DqeGatewayError {
   switch (issue.code) {
     case 'ROWS_NOT_ARRAY':
-      return new DqeGatewayError(
-        'DQE_ROW_CONTRACT_ERROR',
-        'DQE data 必须是数组',
-        issue.actual
-      );
+      return new DqeGatewayError('DQE_ROW_CONTRACT_ERROR', 'DQE data 必须是数组');
     case 'ROW_NOT_OBJECT':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
         `DQE data[${issue.rowIndex}] 必须是对象`,
-        issue.actual
+        { rowIndex: issue.rowIndex }
       );
     case 'MISSING_QUERY_FIELD':
       return new DqeGatewayError(
         'DQE_FIELD_MAPPING_ERROR',
         `响应缺少映射字段:${issue.queryField}`,
         {
+          rowIndex: issue.rowIndex,
           fieldId: issue.fieldId,
           queryField: issue.queryField,
           actual: issue.actualFields
         }
       );
-    case 'FIELD_TYPE_MISMATCH':
+    case 'NULL_NOT_ALLOWED':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `字段 ${issue.queryField} 为 null,契约声明 nullable=false`,
+        { rowIndex: issue.rowIndex, fieldId: issue.fieldId }
+      );
+    case 'TYPE_MISMATCH':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
         `字段 ${issue.queryField} 不符合类型 ${issue.expectedType}`,
-        { fieldId: issue.fieldId, value: issue.value }
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          expectedType: issue.expectedType
+        }
       );
     case 'DETAIL_LIST_TOO_LARGE':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
         `嵌套明细字段 ${issue.queryField} 超过 ${issue.maximum} 项上限`,
-        { fieldId: issue.fieldId, actualLength: issue.actualLength }
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          actualLength: issue.actualLength
+        }
       );
     case 'SEMANTIC_HTML_TOO_LARGE':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
         `语义 HTML 字段 ${issue.queryField} 超过 ${issue.maximum} 字符上限`,
-        { fieldId: issue.fieldId, actualLength: issue.actualLength }
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          actualLength: issue.actualLength
+        }
       );
     case 'DETAIL_ITEM_NOT_OBJECT':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
         `嵌套明细字段 ${issue.queryField}[${issue.itemIndex}] 必须是对象`,
-        { fieldId: issue.fieldId, value: issue.value }
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          itemIndex: issue.itemIndex
+        }
       );
     case 'MISSING_DETAIL_QUERY_FIELD':
       return new DqeGatewayError(
         'DQE_FIELD_MAPPING_ERROR',
         `嵌套明细 ${issue.queryField}[${issue.itemIndex}] 缺少映射字段:${issue.itemQueryField}`,
         {
+          rowIndex: issue.rowIndex,
           fieldId: issue.fieldId,
           itemFieldId: issue.itemFieldId,
           actual: issue.actualFields
         }
       );
-    case 'DETAIL_FIELD_TYPE_MISMATCH':
+    case 'DETAIL_UNDECLARED_FIELD':
       return new DqeGatewayError(
         'DQE_ROW_CONTRACT_ERROR',
-        `嵌套明细字段 ${issue.itemQueryField} 不符合类型 ${issue.expectedType}`,
+        `嵌套明细字段 ${issue.queryField}[${issue.itemIndex}] 包含未声明字段:${issue.itemFieldId}`,
         {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          itemIndex: issue.itemIndex,
+          itemFieldId: issue.itemFieldId
+        }
+      );
+    case 'DETAIL_MISSING_FIELD':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.queryField}[${issue.itemIndex}] 缺少字段:${issue.itemFieldId}`,
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          itemIndex: issue.itemIndex,
+          itemFieldId: issue.itemFieldId
+        }
+      );
+    case 'DETAIL_NULL_NOT_ALLOWED':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.itemQueryField ?? issue.itemFieldId} 为 null,契约声明 nullable=false`,
+        {
+          rowIndex: issue.rowIndex,
+          fieldId: issue.fieldId,
+          itemFieldId: issue.itemFieldId,
+          itemIndex: issue.itemIndex
+        }
+      );
+    case 'DETAIL_TYPE_MISMATCH':
+      return new DqeGatewayError(
+        'DQE_ROW_CONTRACT_ERROR',
+        `嵌套明细字段 ${issue.itemQueryField ?? issue.itemFieldId} 不符合类型 ${issue.expectedType}`,
+        {
+          rowIndex: issue.rowIndex,
           fieldId: issue.fieldId,
           itemFieldId: issue.itemFieldId,
           itemIndex: issue.itemIndex,
-          value: issue.value
+          expectedType: issue.expectedType
         }
       );
   }

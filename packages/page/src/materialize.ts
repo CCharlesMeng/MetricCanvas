@@ -86,41 +86,64 @@ function queryRowIssueError(
       return schemaError(rowsPath, 'DQE 内嵌初始行必须是数组');
     case 'ROW_NOT_OBJECT':
       return schemaError(`${rowsPath}/${issue.rowIndex}`, 'DQE 内嵌初始行必须是对象');
+  }
+  const fieldPath = `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`;
+  switch (issue.code) {
     case 'MISSING_QUERY_FIELD':
+      return schemaError(fieldPath, `DQE 内嵌初始行缺少映射字段:${issue.queryField}`);
+    case 'NULL_NOT_ALLOWED':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
-        `DQE 内嵌初始行缺少映射字段:${issue.queryField}`
+        fieldPath,
+        `DQE 字段 ${issue.queryField} 为 null，页面字段 ${issue.fieldId} 声明 nullable=false`
       );
-    case 'FIELD_TYPE_MISMATCH':
+    case 'TYPE_MISMATCH':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
+        fieldPath,
         `DQE 字段 ${issue.queryField} 不符合页面字段 ${issue.fieldId} 的类型 ${issue.expectedType}`
       );
     case 'DETAIL_LIST_TOO_LARGE':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
+        fieldPath,
         `DQE 嵌套明细字段 ${issue.queryField} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`
       );
     case 'SEMANTIC_HTML_TOO_LARGE':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}`,
+        fieldPath,
         `DQE 语义 HTML 字段 ${issue.queryField} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`
       );
     case 'DETAIL_ITEM_NOT_OBJECT':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}`,
+        `${fieldPath}/${issue.itemIndex}`,
         `DQE 嵌套明细字段 ${issue.queryField} 的第 ${issue.itemIndex + 1} 项必须是对象`
       );
     case 'MISSING_DETAIL_QUERY_FIELD':
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
         `DQE 嵌套明细项缺少映射字段:${issue.itemQueryField}`
       );
-    case 'DETAIL_FIELD_TYPE_MISMATCH':
+    case 'DETAIL_UNDECLARED_FIELD':
+    case 'DETAIL_MISSING_FIELD':
+    case 'DETAIL_NULL_NOT_ALLOWED':
+    case 'DETAIL_TYPE_MISMATCH': {
+      const itemField = issue.itemQueryField ?? issue.itemFieldId;
+      const itemPath = `${fieldPath}/${issue.itemIndex}/${escapePointer(itemField)}`;
+      if (issue.code === 'DETAIL_UNDECLARED_FIELD') {
+        return schemaError(itemPath, `DQE 嵌套明细项包含未声明字段:${itemField}`);
+      }
+      if (issue.code === 'DETAIL_MISSING_FIELD') {
+        return schemaError(itemPath, `DQE 嵌套明细项缺少字段:${itemField}`);
+      }
+      if (issue.code === 'DETAIL_NULL_NOT_ALLOWED') {
+        return schemaError(
+          itemPath,
+          `DQE 嵌套明细字段 ${itemField} 为 null，页面字段 ${issue.itemFieldId} 声明 nullable=false`
+        );
+      }
       return schemaError(
-        `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.queryField)}/${issue.itemIndex}/${escapePointer(issue.itemQueryField)}`,
-        `DQE 嵌套明细字段 ${issue.itemQueryField} 不符合页面字段 ${issue.itemFieldId} 的类型 ${issue.expectedType}`
+        itemPath,
+        `DQE 嵌套明细字段 ${itemField} 不符合页面字段 ${issue.itemFieldId} 的类型 ${issue.expectedType}`
       );
+    }
   }
 }
 

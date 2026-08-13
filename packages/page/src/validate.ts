@@ -24,7 +24,11 @@ import {
   type TableColumnNode
 } from './page';
 import { materializePageDocument } from './materialize';
-import { matchesFieldValue } from './query-rows';
+import {
+  matchesFieldValue,
+  validateContractRows,
+  type RowContractIssue
+} from './result-field-contract';
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
 import { pageSchema } from './schema';
 import { versionErrors } from './version';
@@ -157,28 +161,71 @@ function rowContractErrors(
   fields: Record<string, FieldDefinition>,
   rowsPath: string
 ): TypedError[] {
-  const errors: TypedError[] = [];
-  rows.forEach((row, rowIndex) => {
-    const rowPath = `${rowsPath}/${rowIndex}`;
-    for (const key of Object.keys(row)) {
-      if (!Object.hasOwn(fields, key)) {
-        errors.push(
-          schemaError(`${rowPath}/${escapePointer(key)}`, `行包含未声明字段:${key}`)
-        );
-      }
-    }
-    for (const [fieldName, field] of Object.entries(fields)) {
-      const fieldPath = `${rowPath}/${escapePointer(fieldName)}`;
-      if (!Object.hasOwn(row, fieldName)) {
-        errors.push(schemaError(fieldPath, `行缺少字段:${fieldName}`));
-      } else if (!matchesFieldValue(row[fieldName], field)) {
-        errors.push(
-          schemaError(fieldPath, `字段 ${fieldName} 的值不符合类型 ${field.type}`)
-        );
-      }
-    }
-  });
-  return errors;
+  const result = validateContractRows(rows, fields);
+  if (result.ok) return [];
+  return result.issues.map((issue) => rowContractError(issue, rowsPath));
+}
+
+/** 共享校验的结构化问题 → 指向页面文档数据行的定位错误。 */
+function rowContractError(issue: RowContractIssue, rowsPath: string): TypedError {
+  switch (issue.code) {
+    case 'ROWS_NOT_ARRAY':
+      return schemaError(rowsPath, '数据行必须是数组');
+    case 'ROW_NOT_OBJECT':
+      return schemaError(`${rowsPath}/${issue.rowIndex}`, '数据行必须是对象');
+  }
+  const fieldPath = `${rowsPath}/${issue.rowIndex}/${escapePointer(issue.fieldId)}`;
+  switch (issue.code) {
+    case 'UNDECLARED_FIELD':
+      return schemaError(fieldPath, `行包含未声明字段:${issue.fieldId}`);
+    case 'MISSING_FIELD':
+      return schemaError(fieldPath, `行缺少字段:${issue.fieldId}`);
+    case 'NULL_NOT_ALLOWED':
+      return schemaError(
+        fieldPath,
+        `字段 ${issue.fieldId} 声明 nullable=false,不允许为 null`
+      );
+    case 'TYPE_MISMATCH':
+      return schemaError(
+        fieldPath,
+        `字段 ${issue.fieldId} 的值不符合类型 ${issue.expectedType}`
+      );
+    case 'DETAIL_LIST_TOO_LARGE':
+      return schemaError(
+        fieldPath,
+        `嵌套明细字段 ${issue.fieldId} 最多允许 ${issue.maximum} 项，实际 ${issue.actualLength} 项`
+      );
+    case 'SEMANTIC_HTML_TOO_LARGE':
+      return schemaError(
+        fieldPath,
+        `语义 HTML 字段 ${issue.fieldId} 最多允许 ${issue.maximum} 字符，实际 ${issue.actualLength} 字符`
+      );
+    case 'DETAIL_ITEM_NOT_OBJECT':
+      return schemaError(
+        `${fieldPath}/${issue.itemIndex}`,
+        `嵌套明细字段 ${issue.fieldId} 的第 ${issue.itemIndex + 1} 项必须是对象`
+      );
+    case 'DETAIL_UNDECLARED_FIELD':
+      return schemaError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
+        `嵌套明细项包含未声明字段:${issue.itemFieldId}`
+      );
+    case 'DETAIL_MISSING_FIELD':
+      return schemaError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
+        `嵌套明细项缺少字段:${issue.itemFieldId}`
+      );
+    case 'DETAIL_NULL_NOT_ALLOWED':
+      return schemaError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
+        `嵌套明细项字段 ${issue.itemFieldId} 声明 nullable=false,不允许为 null`
+      );
+    case 'DETAIL_TYPE_MISMATCH':
+      return schemaError(
+        `${fieldPath}/${issue.itemIndex}/${escapePointer(issue.itemFieldId)}`,
+        `嵌套明细项字段 ${issue.itemFieldId} 的值不符合类型 ${issue.expectedType}`
+      );
+  }
 }
 
 function queryContractErrors(

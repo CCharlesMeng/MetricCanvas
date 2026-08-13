@@ -1,57 +1,28 @@
-import { validateCalendarTimeRange } from './filter';
 import type {
-  DetailRecord,
-  FieldDefinition,
   FieldValue,
   QueryFieldDefinition,
-  QueryRecordListFieldDefinition,
-  ScalarFieldDefinition,
-  ScalarFieldValue
+  QueryRecordListFieldDefinition
 } from './field';
-import { MAX_DETAIL_RECORDS, MAX_SEMANTIC_HTML_LENGTH } from './field';
+import {
+  fieldContractViolations,
+  type FieldContractIssue
+} from './result-field-contract';
 import type { Row } from './snapshot';
 
+/**
+ * 查询结果归一化的问题契约:查询字段映射问题以 DQE 输出字段名定位,
+ * 契约违规复用结果字段契约校验 Module 的分类并附映射上下文。
+ * 与共享校验一致,不回显业务字段值。
+ */
 export type QueryRowNormalizationIssue =
-  | { code: 'ROWS_NOT_ARRAY'; actual: unknown }
-  | { code: 'ROW_NOT_OBJECT'; rowIndex: number; actual: unknown }
+  | { code: 'ROWS_NOT_ARRAY' }
+  | { code: 'ROW_NOT_OBJECT'; rowIndex: number }
   | {
       code: 'MISSING_QUERY_FIELD';
       rowIndex: number;
       fieldId: string;
       queryField: string;
       actualFields: string[];
-    }
-  | {
-      code: 'FIELD_TYPE_MISMATCH';
-      rowIndex: number;
-      fieldId: string;
-      queryField: string;
-      expectedType: FieldDefinition['type'];
-      value: unknown;
-    }
-  | {
-      code: 'DETAIL_LIST_TOO_LARGE';
-      rowIndex: number;
-      fieldId: string;
-      queryField: string;
-      maximum: number;
-      actualLength: number;
-    }
-  | {
-      code: 'SEMANTIC_HTML_TOO_LARGE';
-      rowIndex: number;
-      fieldId: string;
-      queryField: string;
-      maximum: number;
-      actualLength: number;
-    }
-  | {
-      code: 'DETAIL_ITEM_NOT_OBJECT';
-      rowIndex: number;
-      fieldId: string;
-      queryField: string;
-      itemIndex: number;
-      value: unknown;
     }
   | {
       code: 'MISSING_DETAIL_QUERY_FIELD';
@@ -63,17 +34,7 @@ export type QueryRowNormalizationIssue =
       itemQueryField: string;
       actualFields: string[];
     }
-  | {
-      code: 'DETAIL_FIELD_TYPE_MISMATCH';
-      rowIndex: number;
-      fieldId: string;
-      queryField: string;
-      itemIndex: number;
-      itemFieldId: string;
-      itemQueryField: string;
-      expectedType: ScalarFieldDefinition['type'];
-      value: unknown;
-    };
+  | (FieldContractIssue & { queryField: string; itemQueryField?: string });
 
 export type QueryRowsNormalizationResult =
   | { ok: true; rows: Row[]; issues: [] }
@@ -81,21 +42,23 @@ export type QueryRowsNormalizationResult =
 
 /**
  * 使用查询字段映射把 DQE 原始结果归一化为稳定页面字段。
- * PageDocument 的内嵌初始行与数据网关的动态响应共用此纯计算接缝。
+ * PageDocument 的内嵌初始行与数据网关的动态响应共用此纯计算接缝;
+ * 本模块只负责查询字段映射,字段类型、nullable 与日期时间规则
+ * 全部委托结果字段契约校验 Module,不自持判断。
  */
 export function normalizeQueryRows(
   value: unknown,
   fieldMappings: Record<string, QueryFieldDefinition>
 ): QueryRowsNormalizationResult {
   if (!Array.isArray(value)) {
-    return { ok: false, issues: [{ code: 'ROWS_NOT_ARRAY', actual: value }] };
+    return { ok: false, issues: [{ code: 'ROWS_NOT_ARRAY' }] };
   }
 
   const issues: QueryRowNormalizationIssue[] = [];
   const rows: Row[] = [];
   value.forEach((rawRow, rowIndex) => {
     if (!isRecord(rawRow)) {
-      issues.push({ code: 'ROW_NOT_OBJECT', rowIndex, actual: rawRow });
+      issues.push({ code: 'ROW_NOT_OBJECT', rowIndex });
       return;
     }
 
@@ -112,40 +75,25 @@ export function normalizeQueryRows(
         continue;
       }
 
-      const value = rawRow[mapping.queryField];
-      if (mapping.type === 'recordList') {
-        const detail = normalizeDetailList(value, mapping, fieldId, rowIndex);
-        if (detail.ok) row[fieldId] = detail.value;
-        else issues.push(...detail.issues);
-        continue;
+      const mapped =
+        mapping.type === 'recordList'
+          ? mapDetailItems(rawRow[mapping.queryField], mapping, rowIndex, fieldId)
+          : { value: rawRow[mapping.queryField], issues: [], misses: NO_MISSES };
+      issues.push(...mapped.issues);
+
+      const violations = fieldContractViolations(mapped.value, mapping).filter(
+        (violation) =>
+          violation.code !== 'DETAIL_MISSING_FIELD' ||
+          !mapped.misses.has(`${violation.itemIndex}:${violation.itemFieldId}`)
+      );
+      if (violations.length === 0 && mapped.issues.length === 0) {
+        row[fieldId] = mapped.value as FieldValue;
       }
-      if (
-        mapping.type === 'semanticHtml' &&
-        typeof value === 'string' &&
-        value.length > MAX_SEMANTIC_HTML_LENGTH
-      ) {
-        issues.push({
-          code: 'SEMANTIC_HTML_TOO_LARGE',
-          rowIndex,
-          fieldId,
-          queryField: mapping.queryField,
-          maximum: MAX_SEMANTIC_HTML_LENGTH,
-          actualLength: value.length
-        });
-        continue;
-      }
-      if (!isScalarFieldValue(value) || !matchesFieldValue(value, mapping)) {
-        issues.push({
-          code: 'FIELD_TYPE_MISMATCH',
-          rowIndex,
-          fieldId,
-          queryField: mapping.queryField,
-          expectedType: mapping.type,
-          value
-        });
-        continue;
-      }
-      row[fieldId] = value;
+      issues.push(
+        ...violations.map((violation) =>
+          withQueryFields({ ...violation, rowIndex, fieldId }, mapping)
+        )
+      );
     }
     rows.push(row);
   });
@@ -155,107 +103,34 @@ export function normalizeQueryRows(
     : { ok: false, issues };
 }
 
-export function matchesFieldValue(
-  value: FieldValue,
-  field: FieldDefinition
-): boolean {
-  if (value === null) return field.nullable !== false;
-  if (field.type === 'recordList') {
-    return (
-      Array.isArray(value) &&
-      value.length <= MAX_DETAIL_RECORDS &&
-      value.every(
-        (item) =>
-          isRecord(item) &&
-          Object.keys(item).every((key) => Object.hasOwn(field.items.fields, key)) &&
-          Object.entries(field.items.fields).every(
-            ([itemFieldId, itemField]) =>
-              Object.hasOwn(item, itemFieldId) &&
-              isScalarFieldValue(item[itemFieldId]) &&
-              matchesScalarFieldValue(item[itemFieldId], itemField)
-          )
-      )
-    );
-  }
-  if (field.type === 'semanticHtml') {
-    return typeof value === 'string' && value.length <= MAX_SEMANTIC_HTML_LENGTH;
-  }
-  if (Array.isArray(value)) return false;
-  return matchesScalarFieldValue(value, field);
+const NO_MISSES: ReadonlySet<string> = new Set();
+
+interface MappedDetailValue {
+  value: unknown;
+  issues: QueryRowNormalizationIssue[];
+  /** 已作为映射缺失上报的 `${itemIndex}:${itemFieldId}`,契约判定不再重复上报。 */
+  misses: ReadonlySet<string>;
 }
 
-function matchesScalarFieldValue(
-  value: ScalarFieldValue,
-  field: ScalarFieldDefinition
-): boolean {
-  if (value === null) return field.nullable !== false;
-  if (field.type === 'date') {
-    return typeof value === 'string' && isCalendarDate(value);
-  }
-  if (field.type === 'datetime') {
-    return (
-      typeof value === 'string' &&
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?(?:Z|[+-]\d{2}:\d{2})?$/.test(value)
-    );
-  }
-  return typeof value === field.type;
-}
-
-type DetailNormalizationResult =
-  | { ok: true; value: DetailRecord[] | null }
-  | { ok: false; issues: QueryRowNormalizationIssue[] };
-
-function normalizeDetailList(
+/**
+ * 把嵌套明细的项按项级查询字段映射改写为稳定项字段;未映射的 DQE
+ * 追加字段就地丢弃,非对象项原样透传交契约判定裁决。
+ */
+function mapDetailItems(
   value: unknown,
   mapping: QueryRecordListFieldDefinition,
-  fieldId: string,
-  rowIndex: number
-): DetailNormalizationResult {
-  if (value === null && mapping.nullable !== false) return { ok: true, value: null };
-  if (!Array.isArray(value)) {
-    return {
-      ok: false,
-      issues: [{
-        code: 'FIELD_TYPE_MISMATCH',
-        rowIndex,
-        fieldId,
-        queryField: mapping.queryField,
-        expectedType: 'recordList',
-        value
-      }]
-    };
-  }
-  if (value.length > MAX_DETAIL_RECORDS) {
-    return {
-      ok: false,
-      issues: [{
-        code: 'DETAIL_LIST_TOO_LARGE',
-        rowIndex,
-        fieldId,
-        queryField: mapping.queryField,
-        maximum: MAX_DETAIL_RECORDS,
-        actualLength: value.length
-      }]
-    };
-  }
-
+  rowIndex: number,
+  fieldId: string
+): MappedDetailValue {
+  if (!Array.isArray(value)) return { value, issues: [], misses: NO_MISSES };
   const issues: QueryRowNormalizationIssue[] = [];
-  const records: DetailRecord[] = [];
-  value.forEach((rawItem, itemIndex) => {
-    if (!isRecord(rawItem)) {
-      issues.push({
-        code: 'DETAIL_ITEM_NOT_OBJECT',
-        rowIndex,
-        fieldId,
-        queryField: mapping.queryField,
-        itemIndex,
-        value: rawItem
-      });
-      return;
-    }
-    const record: DetailRecord = {};
+  const misses = new Set<string>();
+  const items = value.map((rawItem, itemIndex) => {
+    if (!isRecord(rawItem)) return rawItem;
+    const record: Record<string, unknown> = {};
     for (const [itemFieldId, itemMapping] of Object.entries(mapping.items.fields)) {
       if (!Object.hasOwn(rawItem, itemMapping.queryField)) {
+        misses.add(`${itemIndex}:${itemFieldId}`);
         issues.push({
           code: 'MISSING_DETAIL_QUERY_FIELD',
           rowIndex,
@@ -268,38 +143,26 @@ function normalizeDetailList(
         });
         continue;
       }
-      const itemValue = rawItem[itemMapping.queryField];
-      if (
-        !isScalarFieldValue(itemValue) ||
-        !matchesScalarFieldValue(itemValue, itemMapping)
-      ) {
-        issues.push({
-          code: 'DETAIL_FIELD_TYPE_MISMATCH',
-          rowIndex,
-          fieldId,
-          queryField: mapping.queryField,
-          itemIndex,
-          itemFieldId,
-          itemQueryField: itemMapping.queryField,
-          expectedType: itemMapping.type,
-          value: itemValue
-        });
-        continue;
-      }
-      record[itemFieldId] = itemValue;
+      record[itemFieldId] = rawItem[itemMapping.queryField];
     }
-    records.push(record);
+    return record;
   });
-  return issues.length === 0 ? { ok: true, value: records } : { ok: false, issues };
+  return { value: items, issues, misses };
 }
 
-function isCalendarDate(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  return validateCalendarTimeRange({ from: value, to: value }, 'date').length === 0;
-}
-
-function isScalarFieldValue(value: unknown): value is ScalarFieldValue {
-  return value === null || ['string', 'number', 'boolean'].includes(typeof value);
+function withQueryFields(
+  issue: FieldContractIssue,
+  mapping: QueryFieldDefinition
+): QueryRowNormalizationIssue {
+  const itemQueryField =
+    'itemFieldId' in issue && mapping.type === 'recordList'
+      ? mapping.items.fields[issue.itemFieldId]?.queryField
+      : undefined;
+  return {
+    ...issue,
+    queryField: mapping.queryField,
+    ...(itemQueryField === undefined ? {} : { itemQueryField })
+  };
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {

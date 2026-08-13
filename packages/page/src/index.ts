@@ -6,6 +6,7 @@ export * from './field';
 export * from './filter';
 export * from './query';
 export * from './query-rows';
+export * from './result-field-contract';
 export * from './snapshot';
 export * from './canonical-json';
 export * from './bar-forecast-boundary';
