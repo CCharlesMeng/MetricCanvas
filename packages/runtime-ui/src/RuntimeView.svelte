@@ -1,7 +1,6 @@
 <script lang="ts">
   import {
     dataSourceMode,
-    barForecastBoundaryIssues,
     derivePageCapabilities,
     isChartComponent,
     parsePage,
@@ -552,7 +551,6 @@
   }
 
   function hostSnapshot(
-    loaded: Page,
     component: Component,
     slots: ComponentSnapshots
   ): DataSnapshot {
@@ -567,22 +565,9 @@
     if (values.some((snapshot) => snapshot.status === 'loading')) {
       return { status: 'loading' };
     }
-    if (component.type === 'barChart') {
-      const snapshot = slots.get('main');
-      const source = loaded.dataSources[component.data.main];
-      if (
-        snapshot?.status === 'ready' &&
-        source?.source.type === 'query' &&
-        source.source.initial
-      ) {
-        const issue = barForecastBoundaryIssues(
-          component.props,
-          snapshot.rows,
-          source.source.initial.capturedAt
-        )[0];
-        if (issue) return { status: 'error', error: { message: issue.message } };
-      }
-    }
+    // 实际/预测边界规则只在创作期执行(validate.ts 对内嵌初始行校验)。
+    // 这里不再对实时快照复检:筛选/分页后的行属新数据时点,用冻结的
+    // initial.capturedAt 判定会误报;报告场景(ADR-0020)数据本就冻结在采集时点。
     if (component.type !== 'table' && slots.get('main')?.status === 'empty') {
       return { status: 'empty' };
     }
@@ -771,7 +756,7 @@
     />
   {:else}
     {@const slots = componentSnapshots(component)}
-    {@const snapshot = hostSnapshot(loaded, component, slots)}
+    {@const snapshot = hostSnapshot(component, slots)}
     <WidgetHost {snapshot}>
       {#snippet ready(_readySnapshot)}
         {@const capability = componentCapability(component)}
