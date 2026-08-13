@@ -32,9 +32,9 @@ export function formatValue(
     case 'number-grouped':
       return formatNumber(numeric, undefined, true);
     case 'compact-wan-0':
-      return `${formatNumber(numeric / 1e4, 0, true)}万`;
+      return `${wanUnits(numeric, 0)}万`;
     case 'compact-wan-1':
-      return `${formatNumber(numeric / 1e4, 1, true)}万`;
+      return `${wanUnits(numeric, 1)}万`;
     case 'compact-yi-1':
       return `${formatNumber(numeric / 1e8, 1, true)}亿`;
     case 'percent-0':
@@ -68,6 +68,15 @@ export function finiteNumber(value: FieldValue | undefined): number | undefined 
   if (value.trim() === '') return undefined;
   const numeric = Number(value);
   return Number.isFinite(numeric) ? numeric : undefined;
+}
+
+/**
+ * 数值 → 以「万」为单位的数字文本(不含单位后缀)。
+ * compact-wan 预设、图表数值标签与轴刻度共用这一份换算与舍入,
+ * 不得在组件目录内另写 /1e4 + 取整的第二实现。
+ */
+export function wanUnits(value: number, fractionDigits = 0, grouped = true): string {
+  return formatNumber(value / 1e4, fractionDigits, grouped);
 }
 
 function formatNumber(

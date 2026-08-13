@@ -119,3 +119,11 @@ export type FieldBinding =
     };
 
 export type DataRow = Record<string, FieldValue>;
+
+/**
+ * 字段绑定/字段引用 → 页面字段 id:字符串简写与对象形式的统一解包。
+ * 这是字段绑定契约的唯一解包实现,消费方不得自写同义函数。
+ */
+export function fieldName(binding: FieldBinding | FieldReference): string {
+  return typeof binding === 'string' ? binding : binding.field;
+}

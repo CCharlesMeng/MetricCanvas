@@ -1,8 +1,8 @@
-import type {
-  FieldBinding,
-  FieldDefinition,
-  TableColumn,
-  TableColumnNode
+import {
+  fieldName,
+  type FieldDefinition,
+  type TableColumn,
+  type TableColumnNode
 } from '@metriccanvas/page';
 
 export type TableHeaderCell =
@@ -102,8 +102,4 @@ function appendHeaderCell(
     rowspan: totalDepth - rowIndex,
     column: node
   });
-}
-
-function fieldName(binding: FieldBinding): string {
-  return typeof binding === 'string' ? binding : binding.field;
 }

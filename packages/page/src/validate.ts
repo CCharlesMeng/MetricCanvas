@@ -7,7 +7,12 @@ import {
   type QueryDataSource
 } from './data-source';
 import type { TypedError } from './errors';
-import type { FieldBinding, FieldDefinition, FieldValue } from './field';
+import {
+  fieldName as fieldNameOf,
+  type FieldBinding,
+  type FieldDefinition,
+  type FieldValue
+} from './field';
 import { validateCalendarTimeRange, type FilterDeclaration } from './filter';
 import {
   deriveComponentCapabilities,
@@ -948,7 +953,7 @@ function resolveBinding(
   | { field: FieldDefinition; fieldName: string }
   | { error: string } {
   const slot = typeof binding === 'string' ? 'main' : binding.data;
-  const fieldName = typeof binding === 'string' ? binding : binding.field;
+  const fieldName = fieldNameOf(binding);
   const sourceId = (component.data as ComponentData | undefined)?.[slot];
   if (sourceId === undefined) {
     return { error: `字段绑定引用了组件未声明的数据槽:${slot}` };

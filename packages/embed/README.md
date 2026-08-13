@@ -126,18 +126,7 @@ Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。
 
 ## 事件
 
-```ts
-type RuntimeEvent =
-  | { type: 'ready'; pageId: string }
-  | { type: 'invalid'; errors: TypedError[] }
-  | {
-      type: 'configuration-error';
-      code: 'DATA_GATEWAY_REQUIRED' | 'DATA_GATEWAY_INVALID';
-      message: string;
-    }
-  | { type: 'filter-change'; search: string }
-  | { type: 'navigate'; pageId: string; search: string };
-```
+`RuntimeEvent` 是 `@metriccanvas/runtime-ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`configuration-error`、`filter-change`、`navigate`。
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {

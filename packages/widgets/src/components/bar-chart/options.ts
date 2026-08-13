@@ -2,18 +2,8 @@ import type { BarChartProps } from '@metriccanvas/page';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
-import { finiteNumber, formatValue } from '../../shared/value-format';
-import { GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
-
-const BAR_BUSINESS_COLORS = [
-  '#5470c6',
-  '#91cc75',
-  '#fac858',
-  '#ee6666',
-  '#73c0de',
-  '#3ba272',
-  '#fc8452'
-] as const;
+import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
+import { CHART_PALETTE, GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
 const REPORT_FORECAST_COLORS = [
@@ -93,7 +83,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
           ? undefined
           : reportForecast
             ? REPORT_COLORS[roleIndex % REPORT_COLORS.length]
-            : BAR_BUSINESS_COLORS[roleIndex % BAR_BUSINESS_COLORS.length];
+            : CHART_PALETTE[roleIndex % CHART_PALETTE.length];
       const forecastColor =
         roleIndex === undefined || !reportForecast
           ? roleColor
@@ -185,13 +175,9 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
   };
 }
 
-function wanLabel(value: number): string {
-  return `${Math.round(value / 10_000).toLocaleString('zh-CN')}万`;
-}
-
 function wanLabelFromParams(params: unknown): string {
   const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
-  return value === undefined ? '' : wanLabel(value);
+  return value === undefined ? '' : `${wanUnits(value)}万`;
 }
 
 function reportValueAxis(axis: ReturnType<typeof dualOrSingleAxis>) {
@@ -202,7 +188,7 @@ function reportValueAxis(axis: ReturnType<typeof dualOrSingleAxis>) {
     nameLocation: 'end' as const,
     nameGap: 8,
     axisLabel: {
-      formatter: (value: number) => String(Math.round(value / 10_000))
+      formatter: (value: number) => wanUnits(value, 0, false)
     }
   };
 }

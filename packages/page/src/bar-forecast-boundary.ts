@@ -1,4 +1,4 @@
-import type { FieldBinding } from './field';
+import { fieldName } from './field';
 import type { BarChartProps } from './page';
 import type { Row } from './snapshot';
 
@@ -61,8 +61,4 @@ function categoryMonth(value: Row[string]): number | undefined {
   if (!match) return undefined;
   const month = Number(match[1]);
   return month >= 1 && month <= 12 ? month : undefined;
-}
-
-function fieldName(binding: FieldBinding): string {
-  return typeof binding === 'string' ? binding : binding.field;
 }

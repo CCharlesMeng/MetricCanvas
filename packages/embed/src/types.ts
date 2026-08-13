@@ -1,6 +1,5 @@
-import type { TypedError } from '@metriccanvas/page';
 import type { DataGateway } from '@metriccanvas/runtime';
-import type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
+import type { AiSummaryConfig, RuntimeViewEvent } from '@metriccanvas/runtime-ui';
 
 export interface RuntimeInput {
   document: unknown;
@@ -10,18 +9,12 @@ export interface RuntimeInput {
   initialSearch?: string;
 }
 
-export type RuntimeEvent =
-  | { type: 'ready'; pageId: string }
-  | { type: 'invalid'; errors: TypedError[] }
-  | {
-      type: 'configuration-error';
-      code:
-        | 'DATA_GATEWAY_REQUIRED'
-        | 'DATA_GATEWAY_INVALID';
-      message: string;
-    }
-  | { type: 'filter-change'; search: string }
-  | { type: 'navigate'; pageId: string; search: string };
+/**
+ * 嵌入 API 的事件面就是统一运行时视图的事件面。
+ * 真源在 `@metriccanvas/runtime-ui` 的 `RuntimeViewEvent`(ADR-0025),
+ * 这里只保留 embed 的历史公开名,不再逐字段复制。
+ */
+export type RuntimeEvent = RuntimeViewEvent;
 
 export interface MountOptions extends RuntimeInput {
   onEvent?: (event: RuntimeEvent) => void;

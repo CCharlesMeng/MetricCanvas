@@ -113,8 +113,12 @@
     return column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : '';
   }
 
+  // 表头行高唯一真源:多行粘性表头的 top 偏移与 CSS 行高共用同一数值,
+  // 经根元素 CSS 变量下发,JS 与样式不再各写一份(修复默认档 40/42 错位)。
+  const headerRowHeight = $derived(props.variant === 'reportCompact' ? 33 : 42);
+
   function headerTop(rowIndex: number): number {
-    return rowIndex * (props.variant === 'reportCompact' ? 33 : 40);
+    return rowIndex * headerRowHeight;
   }
 
   const sortIndexOf = $derived(new Map(view.sort.map((rule, index) => [rule.field, index])));
@@ -248,6 +252,7 @@
   class:report-compact={props.variant === 'reportCompact'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class="table-widget"
+  style:--table-header-row-height={`${headerRowHeight}px`}
 >
   {#if props.title || props.subtitle}
     <div class="table-heading">
@@ -560,7 +565,7 @@
     top: 0;
     z-index: 2;
     box-sizing: border-box;
-    height: 42px;
+    height: var(--table-header-row-height, 42px);
     background: var(--mc-color-surface-subtle, #f1f4ff);
     text-align: left;
     font-weight: 500;
@@ -945,7 +950,6 @@
     border-radius: 0;
   }
   .report-compact thead th {
-    height: 33px;
     padding: 5px 8px;
     border-right: 0;
     border-bottom: 1px solid #d8deeb;

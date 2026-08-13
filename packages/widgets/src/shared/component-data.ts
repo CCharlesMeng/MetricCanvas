@@ -1,9 +1,10 @@
-import type {
-  DataSnapshot,
-  FieldBinding,
-  ResolvedFieldDefinition,
-  ValueFormatPreset,
-  FieldValue
+import {
+  fieldName,
+  type DataSnapshot,
+  type FieldBinding,
+  type ResolvedFieldDefinition,
+  type ValueFormatPreset,
+  type FieldValue
 } from '@metriccanvas/page';
 
 export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
@@ -38,7 +39,7 @@ export function resolveField(
   data: NamedDataSlots
 ): ResolvedField {
   const dataName = typeof binding === 'string' ? 'main' : binding.data;
-  const field = typeof binding === 'string' ? binding : binding.field;
+  const field = fieldName(binding);
   const definition = data[dataName]?.fields[field];
   return {
     data: dataName,

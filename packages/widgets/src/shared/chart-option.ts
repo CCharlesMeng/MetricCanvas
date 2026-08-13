@@ -6,6 +6,20 @@
 /** 绘图区内边距 */
 export const GRID = { left: 8, right: 12, top: 28, bottom: 4, containLabel: true } as const;
 
+/**
+ * 业务图表默认色板(ECharts 默认七色)。
+ * 柱状图 role 着色与折线面积渐变共用,单一真源,不得在组件目录内复制。
+ */
+export const CHART_PALETTE = [
+  '#5470c6',
+  '#91cc75',
+  '#fac858',
+  '#ee6666',
+  '#73c0de',
+  '#3ba272',
+  '#fc8452'
+] as const;
+
 /** 双轴:第二个及之后的指标走右轴;单轴时只留左轴 */
 export function dualOrSingleAxis(
   dualAxis: boolean | undefined,

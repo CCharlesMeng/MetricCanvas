@@ -3,7 +3,7 @@ import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
-import { GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { CHART_PALETTE, GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
 
 /**
  * 已解析命名数据槽 + 折线图 props → ECharts option 的纯翻译。
@@ -58,12 +58,9 @@ export function lineOption(data: MainDataSlots, props: LineChartProps): EChartsO
   };
 }
 
-/** ECharts 默认色板(面积渐变需要按系列色构造 colorStops,故显式持有) */
-const PALETTE = ['#5470c6', '#91cc75', '#fac858', '#ee6666', '#73c0de', '#3ba272', '#fc8452'];
-
-/** 面积渐变:按系列色从 35% 不透明度渐隐到底部 */
+/** 面积渐变:按系列色从 35% 不透明度渐隐到底部(色板真源在 shared/chart-option.ts) */
 function gradientArea(seriesIndex: number) {
-  const color = PALETTE[seriesIndex % PALETTE.length];
+  const color = CHART_PALETTE[seriesIndex % CHART_PALETTE.length]!;
   return {
     color: {
       type: 'linear' as const,

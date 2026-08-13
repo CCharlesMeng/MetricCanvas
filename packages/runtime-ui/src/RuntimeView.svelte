@@ -2,6 +2,7 @@
   import {
     dataSourceMode,
     derivePageCapabilities,
+    fieldName,
     isChartComponent,
     parsePage,
     resolveDataSourceFields,
@@ -535,10 +536,6 @@
     const href = navigation?.href(pageId, search) ?? `#metriccanvas-page-${pageId}`;
     onevent?.({ type: 'navigate', pageId, search });
     navigation?.navigate({ pageId, search, href });
-  }
-
-  function fieldName(binding: string | { field: string }): string {
-    return typeof binding === 'string' ? binding : binding.field;
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
