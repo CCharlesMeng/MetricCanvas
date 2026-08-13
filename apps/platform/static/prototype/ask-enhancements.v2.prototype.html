@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>问数增强 · 概念地图 · 原型 v2</title>
+    <!--
+      原型 v2(问数增强批次,PRD #85),用后即弃。
+      v1 反馈:操作太多、概念关系没理清。v2 改为概念优先:单屏三层信任分层
+      + 一条治理循环,四个增强【新】标注在对应位置。唯一交互:点卡片高亮
+      它的关系与一个具体例子,再点取消。无播放流程、无变体。
+      回答的问题:「这批增强的核心概念与关系是什么?」
+    -->
+    <style>
+      :root {
+        --bg: #f4f4f5; --surface: #fff; --line: #e4e4e7;
+        --text: #18181b; --muted: #71717a; --faint: #a1a1aa;
+        --accent: #4f46e5; --accent-soft: #eef2ff;
+        --warn-bg: #fffbeb; --warn-line: #fde68a; --warn-text: #92400e;
+        --ok: #16a34a; --new: #0e7490; --new-bg: #ecfeff;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; color: var(--text); background: var(--bg); font-size: 13px;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+        -webkit-font-smoothing: antialiased; }
+      h1,h2,h3,h4,p { margin: 0; }
+      button { font: inherit; color: inherit; cursor: pointer; }
+
+      .topbar { display: flex; align-items: center; gap: 14px; height: 54px; padding: 0 22px; color: #f4f4f5; background: #18181b; }
+      .topbar b { color: #fff; font-size: 14px; }
+      .topbar span { color: #a1a1aa; }
+      .topbar .throwaway { margin-left: auto; padding: 3px 10px; background: #7f1d1d; color: #fecaca; border-radius: 999px; font-size: 11px; }
+
+      .frame { max-width: 1100px; margin: 0 auto; padding: 22px; }
+      .thesis { margin-bottom: 18px; padding: 14px 18px; background: #18181b; color: #e4e4e7; border-radius: 14px; font-size: 14px; line-height: 1.8; }
+      .thesis b { color: #fff; }
+      .thesis .hl { color: #a5b4fc; font-weight: 700; }
+
+      .layers { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+      .layer { border-radius: 14px; padding: 14px; border: 1.5px solid var(--line); background: var(--surface); }
+      .layer.l1 { border-color: #86efac; background: #f0fdf4; }
+      .layer.l2 { border-color: #c7d2fe; background: #eef2ff; }
+      .layer.l3 { border-color: var(--warn-line); background: var(--warn-bg); }
+      .layer > header { margin-bottom: 4px; }
+      .layer > header h3 { font-size: 13.5px; }
+      .layer > header p { margin-top: 3px; color: var(--muted); font-size: 11.5px; line-height: 1.6; }
+      .l1 > header h3 { color: #166534; } .l2 > header h3 { color: #3730a3; } .l3 > header h3 { color: var(--warn-text); }
+      .cards { display: grid; gap: 8px; margin-top: 10px; }
+
+      .card { position: relative; padding: 10px 12px; background: #fff; border: 1px solid var(--line); border-radius: 10px; cursor: pointer; transition: box-shadow .12s, border-color .12s, opacity .15s; }
+      .card:hover { border-color: var(--faint); }
+      .card b { display: flex; align-items: center; gap: 6px; font-size: 12.5px; }
+      .card small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+      .new-pill { padding: 1px 7px; background: var(--new-bg); color: var(--new); border: 1px solid #a5f3fc; border-radius: 999px; font-size: 9.5px; font-weight: 700; }
+      .s-pill { padding: 1px 6px; background: #f4f4f5; color: #52525b; border-radius: 5px; font-size: 9.5px; }
+
+      body.focusing .card { opacity: .25; }
+      body.focusing .card.lit { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 3px rgb(79 70 229 / .18); }
+      body.focusing .card.origin { border-color: #18181b; box-shadow: 0 0 0 3px rgb(24 24 27 / .25); }
+
+      .loop { display: grid; grid-template-columns: auto minmax(0,1fr); gap: 12px; align-items: center; margin-top: 16px; padding: 13px 16px; background: var(--surface); border: 1.5px dashed #a5f3fc; border-radius: 14px; }
+      .loop .tag { display: grid; place-items: center; padding: 6px 10px; background: var(--new-bg); color: var(--new); border-radius: 10px; font-weight: 700; font-size: 12px; white-space: nowrap; }
+      .loop .chain { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 12px; }
+      .loop .step { padding: 5px 10px; background: #fafafa; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; }
+      .loop .step:hover { border-color: var(--faint); }
+      .loop .arr { color: var(--faint); }
+      body.focusing .loop .step { opacity: .3; }
+      body.focusing .loop .step.lit { opacity: 1; border-color: var(--accent); box-shadow: 0 0 0 2px rgb(79 70 229 / .18); }
+
+      .detail { margin-top: 16px; min-height: 108px; padding: 14px 18px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+      .detail .placeholder { color: var(--faint); font-size: 12.5px; line-height: 1.8; }
+      .detail h4 { display: flex; align-items: center; gap: 8px; font-size: 13px; margin-bottom: 6px; }
+      .detail .rel { margin: 6px 0; font-size: 12.5px; line-height: 1.7; }
+      .detail .rel b { color: var(--accent); }
+      .detail .example { margin-top: 8px; padding: 9px 12px; background: #fafafa; border: 1px dashed var(--line); border-radius: 9px; font-size: 12px; line-height: 1.7; color: #3f3f46; }
+      .detail .example::before { content: '例 · '; color: var(--faint); font-weight: 700; }
+      .movearrow { margin: 14px 0 0; text-align: center; color: var(--new); font-size: 12.5px; font-weight: 700; }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <b>MetricCanvas</b>
+      <span>问数增强 · 概念地图(原型 v2,PRD #85)</span>
+      <span class="throwaway">用后即弃</span>
+    </div>
+    <div class="frame">
+      <div class="thesis">
+        每个数字的算法与含义,只有三种来源:<b>公司定的、你选的、模型编的</b>。
+        这批增强只做一件事:<span class="hl">把高频的东西从「模型编的」搬进「公司定的」</span>(S1 相对时间、S2 派生模板),
+        搬不动的让「你选的」更省力(S3 预选),并且给搬运装一条流水线(S4 治理循环)。点任何卡片看它的关系与例子。
+      </div>
+
+      <div class="layers">
+        <div class="layer l1">
+          <header><h3>① 公司口径 —— 数据上下文声明</h3><p>确定性、可验真、直接出数不打扰你。声明改了,行为就变。</p></header>
+          <div class="cards" id="l1"></div>
+        </div>
+        <div class="layer l2">
+          <header><h3>② 用户选择 —— 你的主权</h3><p>该你决定的,系统记住但永远不代替(每次仍等你确认)。</p></header>
+          <div class="cards" id="l2"></div>
+        </div>
+        <div class="layer l3">
+          <header><h3>③ 模型产出 —— 现场生成,无人背书</h3><p>所以必须设防:阻塞确认、琥珀标注、登记缺口。</p></header>
+          <div class="cards" id="l3"></div>
+        </div>
+      </div>
+      <p class="movearrow">◀ S1/S2 的本质:把③里高频的两类东西(时间换算、环比公式)向左搬进① ◀</p>
+
+      <div class="loop">
+        <span class="tag">S4 治理循环<br/><small style="font-weight:400">唯一的闭环</small></span>
+        <div class="chain" id="loop"></div>
+      </div>
+
+      <div class="detail" id="detail">
+        <p class="placeholder">点上面任何概念卡,这里显示:它是什么 → 它连着谁 → 一个具体例子。</p>
+      </div>
+    </div>
+
+    <script>
+      const CONCEPTS = {
+        /* ① 公司口径 */
+        metric: { layer: 'l1', title: '指标', pills: [], oneliner: '闭集条目:定义、可加性、别名都声明过',
+          rels: [['底数', 'derived', '派生模板套在指标上:环比(Tokens消耗量)'], ['被检索', 'pick', '你的问法先检索指标(含别名),命中多个近义时进入消歧'], ['被扩充', 'adopt', '别名采纳后,指标的 aliases 增加,下次直接命中']],
+          example: '「Tokens消耗量」:可加,按求和聚合,别名[消耗量,用量]——这些都写在数据上下文里,谁问都是同一个答案。' },
+        vocab: { layer: 'l1', title: '相对时间词表', pills: ['新', 'S1'], oneliner: '「上个月」→ 具体日期范围的确定性换算',
+          rels: [['取代', 'adhoc', '以前:模型把「上个月」四个字直接塞进查询 → 拒答;以后:词表确定换算,零幻觉'], ['支撑', 'derived', '环比的「基期」=词表推导的上一自然周期,S2 依赖 S1']],
+          example: '「上个月」+ 时钟锚点 2026-08-13 → 2026-07-01 ~ 2026-07-31(完整自然周期;「本月到不到昨天」等业务约定确认后只改词表声明)。词表外的表述(如「前天」)如实拒答。' },
+        derived: { layer: 'l1', title: '派生模板(环比/同比/占比)', pills: ['新', 'S2'], oneliner: '公式预先声明死,模板 × 指标 = 派生指标',
+          rels: [['取代', 'adhoc', '以前:环比公式由模型现场编(临时口径,每次要确认);以后:公式是公司定的,直接出数'], ['依赖', 'vocab', '基期(上一周期/去年同期)由 S1 相对时间推导'], ['约束', 'metric', '与可加性联动:不可加指标禁止套求和类模板']],
+          example: '「各区域消耗量环比」→ 模板[环比] × 指标[Tokens消耗量]:系统自动多取 2026-06 的数,装配层算 (本期−基期)÷基期——不阻塞、不标琥珀,口径卡如实展示定义。' },
+        /* ② 用户选择 */
+        pick: { layer: 'l2', title: '消歧选择', pills: [], oneliner: '近义指标(两域「客户数」)选哪个口径,只能你定',
+          rels: [['产生信号', 'pref', '你的每次选择随会话落库,聚合成你自己的偏好'], ['产生证据', 'gap', '检索落空/反复消歧的说法进入缺口台账与别名建议']],
+          example: '「6月客户数」命中两域:客户经营(期末在册) vs 运营分析(在用调用)。口径差异是业务事实,系统与模型都不替你选(ADR-0037)。' },
+        pin: { layer: 'l2', title: '组件点名/钉住', pills: [], oneliner: '「改成柱状图」——展示形态你说了算',
+          rels: [['词汇同源', 'metric', '点名词汇来自组件目录(含别名「表格」),与指标别名同一思路'], ['优先级最高', 'derived', '你点名的组件 > 系统推荐;不适配时明确拒绝,不静默换']],
+          example: '「改成柱状图」词面命中组件目录 → 直接生效并跨轮保持;「只看华东」之后仍是柱状图(未提及的不变)。已上线。' },
+        pref: { layer: 'l2', title: '偏好记忆(预选)', pills: ['新', 'S3'], oneliner: '记住你上次的消歧选择,下次默认勾上——但仍弹卡等确认',
+          rels: [['来源', 'pick', '信号=已落库的会话步骤事件,零新增采集'], ['边界', 'pick', '只记你自己的(per-user);永远阻塞,红线不破,确认降为一次点击']],
+          example: '上周你选了「客户经营」口径 → 本周候选卡默认勾选它并标「上次你选了这个」,你点一下确认即执行;想改随时改。' },
+        /* ③ 模型产出 */
+        adhoc: { layer: 'l3', title: '临时口径 formula', pills: [], oneliner: '模型现场编的公式——兜底能力,但无人背书',
+          rels: [['被搬空', 'derived', 'S1/S2 之后,高频的时间换算与环比/占比不再走这条路;剩下的才是真正的长尾(如「人均消耗」)'], ['入台账', 'gap', '每次确认使用即登记缺口,反复出现的临时口径是「该建正式指标」的最强证据']],
+          example: '「人均消耗量」不在模板闭集 → 模型编 formula[消耗量÷客户数] → 阻塞等你确认 + 琥珀标注 + 登记缺口。防线一条不减。' },
+        /* 循环 */
+        gap: { layer: 'loop', title: '缺口台账', pills: ['界面新', 'S4'], oneliner: '落空与临时口径的结构化证据,按出现次数累加',
+          rels: [['来源', 'adhoc', '临时口径确认即登记;面外问题经你确认登记'], ['产出', 'adopt', '聚合出「用户说法→最接近指标」的待采纳别名清单']],
+          example: '「人均消耗量」出现 9 次、open;「客户满意度」出现 5 次、accepted 待建设——数据侧按这个排优先级。数据 #67 已有,这次补界面。' },
+        adopt: { layer: 'loop', title: '别名采纳', pills: ['新', 'S4'], oneliner: '人工把用户说法采纳为正式别名——循环的闸门',
+          rels: [['更新', 'metric', '采纳后人工改数据上下文声明(不自动写回),①层长大'], ['效果', 'pick', '下次「调用量」直接命中「Tokens请求量」,不再落空']],
+          example: '「调用量」7 次检索落空后经消歧确认 → 建议清单 → 你点「标记采纳」→ 人工把它加进指标 aliases → 闭环完成。' }
+      };
+
+      const LOOP_CHAIN = [
+        ['use', '日常问数'], ['miss', '落空 / 歧义 / 临时口径'], ['gap', '缺口台账(自动聚合)'],
+        ['adopt', '别名采纳(人工闸门)'], ['grow', '① 公司口径长大'], ['back', '下次直接命中']
+      ];
+
+      const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+      function cardHtml(id) {
+        const c = CONCEPTS[id];
+        return `<div class="card" data-id="${id}" onclick="window.__focus('${id}')">
+          <b>${esc(c.title)}${c.pills.map((p) => p === '新' || p === '界面新' ? `<span class="new-pill">${p}</span>` : `<span class="s-pill">${p}</span>`).join('')}</b>
+          <small>${esc(c.oneliner)}</small></div>`;
+      }
+      document.getElementById('l1').innerHTML = ['metric', 'vocab', 'derived'].map(cardHtml).join('');
+      document.getElementById('l2').innerHTML = ['pick', 'pin', 'pref'].map(cardHtml).join('');
+      document.getElementById('l3').innerHTML = [cardHtml('adhoc')].join('');
+      document.getElementById('loop').innerHTML = LOOP_CHAIN.map(([key, label], i) => {
+        const clickable = CONCEPTS[key] ? `onclick="window.__focus('${key}')" data-id="${key}"` : `data-id="${key}"`;
+        return `<span class="step" ${clickable}>${esc(label)}</span>${i < LOOP_CHAIN.length - 1 ? '<span class="arr">→</span>' : '<span class="arr">↺</span>'}`;
+      }).join('');
+
+      let focused = null;
+      window.__focus = (id) => {
+        if (focused === id) { focused = null; document.body.classList.remove('focusing'); renderDetail(null); paint(); return; }
+        focused = id;
+        document.body.classList.add('focusing');
+        paint();
+        renderDetail(id);
+      };
+      function paint() {
+        const c = focused ? CONCEPTS[focused] : null;
+        const related = new Set(c ? c.rels.map((r) => r[1]) : []);
+        document.querySelectorAll('.card, .loop .step').forEach((el) => {
+          const id = el.dataset.id;
+          el.classList.toggle('origin', focused !== null && id === focused);
+          el.classList.toggle('lit', focused !== null && (id === focused || related.has(id)));
+        });
+      }
+      function renderDetail(id) {
+        const box = document.getElementById('detail');
+        if (!id) { box.innerHTML = `<p class="placeholder">点上面任何概念卡,这里显示:它是什么 → 它连着谁 → 一个具体例子。</p>`; return; }
+        const c = CONCEPTS[id];
+        box.innerHTML = `<h4>${esc(c.title)} ${c.pills.map((p) => `<span class="new-pill">${p}</span>`).join('')}</h4>
+          ${c.rels.map(([verb, target, note]) => `<p class="rel"><b>${esc(verb)} → ${esc(CONCEPTS[target]?.title ?? target)}</b>:${esc(note)}</p>`).join('')}
+          <div class="example">${esc(c.example)}</div>`;
+      }
+    </script>
+  </body>
+</html>
