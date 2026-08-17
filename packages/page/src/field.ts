@@ -13,7 +13,13 @@ export const MAX_SEMANTIC_HTML_LENGTH = 64_000;
 /** 页面数据行允许的字段值。 */
 export type FieldValue = ScalarFieldValue | DetailRecordList;
 
-export type FieldType = 'string' | 'number' | 'boolean' | 'date' | 'datetime';
+export type StandardFieldType =
+  | 'string'
+  | 'number'
+  | 'boolean'
+  | 'date'
+  | 'datetime';
+export type FieldType = StandardFieldType | 'money';
 export type FieldRole = 'dimension' | 'measure' | 'detail';
 
 export const valueFormatPresets = [
@@ -25,6 +31,7 @@ export const valueFormatPresets = [
   'compact-wan-0',
   'compact-wan-1',
   'compact-yi-1',
+  'cny-adaptive',
   'percent-0',
   'percent-1',
   'percent-2',
@@ -52,6 +59,8 @@ interface FieldMetadata {
 export interface ScalarFieldDefinition extends FieldMetadata {
   type: FieldType;
   role: 'dimension' | 'measure';
+  // 仅 money 字段合法，页面 Schema 将其封闭为 CNY。
+  currency?: 'CNY';
 }
 
 export interface RecordListFieldDefinition

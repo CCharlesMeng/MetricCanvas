@@ -135,6 +135,38 @@ describe('结果字段契约:标量类型规则(表驱动,两条路径同一实�
   });
 });
 
+describe('结果字段契约:货币金额字段', () => {
+  const field: FieldDefinition = {
+    type: 'money',
+    role: 'measure',
+    currency: 'CNY',
+    nullable: false
+  };
+
+  it('inline 与查询结果路径只接受有限数字', () => {
+    for (const value of [0, -0, 12.5, -13_123_173.26]) {
+      for (const verdict of bothVerdicts(field, value)) {
+        expect(verdict).toEqual({ ok: true, codes: [] });
+      }
+    }
+
+    for (const value of ['12.5', Number.NaN, Number.POSITIVE_INFINITY]) {
+      for (const verdict of bothVerdicts(field, value)) {
+        expect(verdict).toEqual({ ok: false, codes: ['TYPE_MISMATCH'] });
+      }
+    }
+  });
+
+  it('沿用结果字段契约的 nullable 语义', () => {
+    for (const verdict of bothVerdicts(field, null)) {
+      expect(verdict).toEqual({ ok: false, codes: ['NULL_NOT_ALLOWED'] });
+    }
+    for (const verdict of bothVerdicts({ ...field, nullable: true }, null)) {
+      expect(verdict).toEqual({ ok: true, codes: [] });
+    }
+  });
+});
+
 describe('结果字段契约:明细字段规则(两条路径同一实现)', () => {
   const recordListField: FieldDefinition = {
     type: 'recordList',

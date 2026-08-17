@@ -37,6 +37,8 @@ export function formatValue(
       return `${wanUnits(numeric, 1)}万`;
     case 'compact-yi-1':
       return `${formatNumber(numeric / 1e8, 1, true)}亿`;
+    case 'cny-adaptive':
+      return formatCnyAdaptive(numeric);
     case 'percent-0':
       return `${formatNumber(numeric, 0)}%`;
     case 'percent-1':
@@ -77,6 +79,25 @@ export function finiteNumber(value: FieldValue | undefined): number | undefined 
  */
 export function wanUnits(value: number, fractionDigits = 0, grouped = true): string {
   return formatNumber(value / 1e4, fractionDigits, grouped);
+}
+
+// 人民币元值按原始绝对值选档，再执行该档位的舍入。
+function formatCnyAdaptive(value: number): string {
+  const normalized = Object.is(value, -0) ? 0 : value;
+  const magnitude = Math.abs(normalized);
+  if (magnitude < 10_000) {
+    return `${formatNumber(normalized, 0, true)}元`;
+  }
+  if (magnitude < 100_000) {
+    return `${formatNumber(normalized / 1e4, 2, true)}万`;
+  }
+  if (magnitude < 100_000_000) {
+    return `${formatNumber(normalized / 1e4, 0, true)}万`;
+  }
+  if (magnitude < 1_000_000_000) {
+    return `${formatNumber(normalized / 1e8, 2, true)}亿`;
+  }
+  return `${formatNumber(normalized / 1e8, 1, true)}亿`;
 }
 
 function formatNumber(

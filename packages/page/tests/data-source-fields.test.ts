@@ -71,4 +71,36 @@ describe('v4 页面数据源字段解析', () => {
       }
     });
   });
+
+  it('query money 字段移除 queryField 后保留 CNY 语义与展示建议', () => {
+    const source: DataSource = {
+      fields: {
+        amount: {
+          queryField: '流水金额',
+          type: 'money',
+          role: 'measure',
+          currency: 'CNY',
+          nullable: false,
+          defaultFormat: 'cny-adaptive'
+        }
+      },
+      source: {
+        type: 'query',
+        query: {
+          language: 'dqe',
+          body: { dsl_list: [{ output_metrics: ['流水金额'] }] }
+        }
+      }
+    };
+
+    expect(resolveDataSourceFields(source)).toEqual({
+      amount: {
+        type: 'money',
+        role: 'measure',
+        currency: 'CNY',
+        nullable: false,
+        defaultFormat: 'cny-adaptive'
+      }
+    });
+  });
 });

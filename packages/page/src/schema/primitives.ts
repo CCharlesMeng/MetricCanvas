@@ -37,32 +37,63 @@ export const fieldValueZ = z
 
 export const valueFormatPresetZ = z.enum(valueFormatPresets);
 
-export const fieldTypeZ = z.enum(['string', 'number', 'boolean', 'date', 'datetime']);
+export const standardFieldTypeZ = z.enum([
+  'string',
+  'number',
+  'boolean',
+  'date',
+  'datetime'
+]);
+export const fieldTypeZ = z.enum([
+  'string',
+  'number',
+  'boolean',
+  'date',
+  'datetime',
+  'money'
+]);
 export const fieldRoleZ = z.enum(['dimension', 'measure', 'detail']);
 
-export const scalarFieldZ = z
+const standardScalarFieldZ = z
   .object({
-    type: fieldTypeZ,
+    type: standardFieldTypeZ,
     role: z.enum(['dimension', 'measure']),
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     defaultFormat: valueFormatPresetZ.optional()
   })
-  .strict()
+  .strict();
+
+const moneyFieldZ = z
+  .object({
+    type: z.literal('money'),
+    role: z.literal('measure'),
+    currency: z.literal('CNY'),
+    label: z.string().min(1).optional(),
+    unit: z.string().min(1).optional(),
+    nullable: z.boolean().optional(),
+    defaultFormat: valueFormatPresetZ.optional()
+  })
+  .strict();
+
+export const scalarFieldZ = z
+  .discriminatedUnion('type', [standardScalarFieldZ, moneyFieldZ])
   .meta({ id: 'scalarField' });
 
+const queryStandardScalarFieldZ = standardScalarFieldZ
+  .extend({ queryField: z.string().min(1) })
+  .strict();
+
+const queryMoneyFieldZ = moneyFieldZ
+  .extend({ queryField: z.string().min(1) })
+  .strict();
+
 export const queryScalarFieldZ = z
-  .object({
-    type: fieldTypeZ,
-    role: z.enum(['dimension', 'measure']),
-    queryField: z.string().min(1),
-    label: z.string().min(1).optional(),
-    unit: z.string().min(1).optional(),
-    nullable: z.boolean().optional(),
-    defaultFormat: valueFormatPresetZ.optional()
-  })
-  .strict()
+  .discriminatedUnion('type', [
+    queryStandardScalarFieldZ,
+    queryMoneyFieldZ
+  ])
   .meta({ id: 'queryScalarField' });
 
 const detailItemsZ = z
@@ -132,7 +163,7 @@ export const querySemanticHtmlFieldZ = z
   });
 
 export const fieldZ = z
-  .discriminatedUnion('type', [
+  .union([
     scalarFieldZ,
     recordListFieldZ,
     semanticHtmlFieldZ
@@ -140,7 +171,7 @@ export const fieldZ = z
   .meta({ id: 'field' });
 
 export const queryFieldZ = z
-  .discriminatedUnion('type', [
+  .union([
     queryScalarFieldZ,
     queryRecordListFieldZ,
     querySemanticHtmlFieldZ

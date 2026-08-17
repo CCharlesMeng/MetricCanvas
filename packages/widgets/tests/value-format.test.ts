@@ -19,6 +19,37 @@ describe('formatValue', () => {
     expect(formatValue(866_160_000_000, 'compact-yi-1')).toBe('8,661.6亿');
   });
 
+  it.each([
+    [9_999, '9,999元'],
+    [10_000, '1.00万'],
+    [99_999, '10.00万'],
+    [100_000, '10万'],
+    [99_999_999, '10,000万'],
+    [100_000_000, '1.00亿'],
+    [999_999_999, '10.00亿'],
+    [1_000_000_000, '10.0亿'],
+    [-9_999, '-9,999元'],
+    [-10_000, '-1.00万'],
+    [-99_999, '-10.00万'],
+    [-100_000, '-10万'],
+    [-99_999_999, '-10,000万'],
+    [-100_000_000, '-1.00亿'],
+    [-999_999_999, '-10.00亿'],
+    [-1_000_000_000, '-10.0亿']
+  ] as const)('cny-adaptive 按原始绝对值为 %s 选档后得到 %s', (value, expected) => {
+    expect(formatValue(value, 'cny-adaptive')).toBe(expected);
+  });
+
+  it('cny-adaptive 处理小数、零、空值与非有限值回退', () => {
+    expect(formatValue(12.6, 'cny-adaptive')).toBe('13元');
+    expect(formatValue(-12.6, 'cny-adaptive')).toBe('-13元');
+    expect(formatValue(0, 'cny-adaptive')).toBe('0元');
+    expect(formatValue(-0, 'cny-adaptive')).toBe('0元');
+    expect(formatValue(null, 'cny-adaptive')).toBe('—');
+    expect(formatValue(Number.NaN, 'cny-adaptive')).toBe('NaN');
+    expect(formatValue(Number.POSITIVE_INFINITY, 'cny-adaptive')).toBe('Infinity');
+  });
+
   it('百分比不乘 100,并接受数据快照中的数值字符串', () => {
     expect(formatValue(4.24, 'percent-2')).toBe('4.24%');
     expect(formatValue(4.24, 'percent-2-signed')).toBe('+4.24%');

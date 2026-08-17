@@ -69,6 +69,31 @@ describe('当前 page schema 边界行为', () => {
     expectInvalid('grouped fields 空对象', empty);
   });
 
+  it('money 字段只接受 measure/CNY，并支持查询字段映射与展示建议', () => {
+    const money: any = groupedPage();
+    money.dataSources.current.fields.measures.revenue = {
+      queryField: '销售额',
+      type: 'money',
+      currency: 'CNY',
+      defaultFormat: 'cny-adaptive'
+    };
+    expectValid('grouped money/CNY measure', money);
+
+    const wrongCurrency = structuredClone(money);
+    wrongCurrency.dataSources.current.fields.measures.revenue.currency = 'USD';
+    expectInvalid('money 非 CNY', wrongCurrency);
+
+    const missingCurrency = structuredClone(money);
+    delete missingCurrency.dataSources.current.fields.measures.revenue.currency;
+    expectInvalid('money 缺 currency', missingCurrency);
+
+    const dimensionMoney = structuredClone(money);
+    dimensionMoney.dataSources.current.fields.dimensions.amount =
+      dimensionMoney.dataSources.current.fields.measures.revenue;
+    delete dimensionMoney.dataSources.current.fields.measures.revenue;
+    expectInvalid('money 位于 dimensions', dimensionMoney);
+  });
+
   it('fieldReference/fieldBinding 非判别式联合:字符串与对象有效,数字无效', () => {
     const withValueField = (value: unknown) => {
       const clone: any = structuredClone(inlineReport);

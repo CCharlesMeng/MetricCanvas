@@ -233,6 +233,11 @@ function scalarVerdict(
       ? null
       : 'type';
   }
+  if (field.type === 'money') {
+    return typeof value === 'number' && Number.isFinite(value)
+      ? null
+      : 'type';
+  }
   return typeof value === field.type ? null : 'type';
 }
 

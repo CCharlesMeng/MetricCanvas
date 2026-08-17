@@ -125,13 +125,21 @@
     "unit": "元",
     "nullable": false,
     "defaultFormat": "number-grouped"
+  },
+  "annual-revenue": {
+    "type": "money",
+    "role": "measure",
+    "currency": "CNY",
+    "label": "年度流水",
+    "nullable": false,
+    "defaultFormat": "cny-adaptive"
   }
 }
 ```
 
 | 属性 | 必填 | 说明 |
 |---|---:|---|
-| `type` | 是 | 标量为 `string`、`number`、`boolean`、`date` 或 `datetime`；结构化明细为 `recordList`；语义 HTML 明细为 `semanticHtml` |
+| `type` | 是 | 标量为 `string`、`number`、`boolean`、`date`、`datetime` 或 `money`；结构化明细为 `recordList`；语义 HTML 明细为 `semanticHtml` |
 | `role` | 是 | 标量为 `dimension` 或 `measure`；两种明细字段均为 `detail` |
 | `label` | 否 | 默认展示名称 |
 | `unit` | 否 | 业务单位 |
@@ -139,6 +147,10 @@
 | `defaultFormat` | 否 | 默认展示格式 |
 
 `dimension` 用于类别、时间、分组、筛选和排序。`measure` 用于数值、计数、比例和其他可比较结果。`detail` 只用于受控的一层对象数组或语义 HTML，见下文专节。
+
+`money` 是专用的货币金额标量，第一版只允许 `role: "measure"` 与
+`currency: "CNY"`，原始单位固定为元且结果值必须是有限数字。它表达数据语义；
+`cny-adaptive` 只是展示策略，两者不能互相替代。查询字段仍必须声明 `queryField`。
 
 `标量 type` 描述外部结果归一后的真实标量类型，不由 `role` 推断。外部查询若返回
 `"41.67%"`，应声明为 `type: "string"`、`role: "measure"` 并使用 `text`
@@ -155,6 +167,7 @@ number-grouped
 compact-wan-0
 compact-wan-1
 compact-yi-1
+cny-adaptive
 percent-0
 percent-1
 percent-2
@@ -347,12 +360,15 @@ DQE 字段值示例：
 ```
 
 - 允许标签：`div`、`span`、`strong`、`p`、`br`；该能力用于一段说明，不接受列表标签；
+- 允许无属性 `<data>` 标记语义内嵌值；其内容只能是一个规范数字文本节点，可含显式正负号与小数部分；
+- `<data>` 的属性、子标签、单位、千分位、科学计数、空内容或前后空白使整段内容失败关闭；
 - 允许结构类：`detail-title`、`detail-value`、`detail-description`、`detail-meta`；
 - 允许状态类：`tone-positive`、`tone-negative`、`tone-neutral`；类名表达业务方向，不表达具体颜色；
 - 只允许 `class` 属性，禁止 `style`、事件属性、链接、脚本和未知标签或类；
 - 单个字段值最多 64000 字符，空字符串表示没有可展示明细；
 - 数据网关只校验字符串类型和长度，不解释 HTML；显式消费者解析为受控节点后渲染，不使用原始 HTML 注入；
 - `rankingDetailCard.props.semanticDescriptionField` 明示把该字段直接渲染在普通说明位置，不生成列表、折叠入口或明细计数；它与 `text.props.bodyFormat: "semanticHtml"` 共用安全解析和语义颜色映射，具体 CSS 由前端组件拥有。
+- Table 只有通过列字段绑定显式引用 `semanticHtml/detail` 时才消费它；对象绑定的 `format` 应用于全部 `<data>`，`visual: "signed"` 只给内嵌值分色。字符串简写不继承明细字段的 `defaultFormat`。
 
 页面数据源表示一个命名结果集。数据网关可以在传输层合并多个页面数据源的查询，不改变页面中的逻辑查询边界。
 

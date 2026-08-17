@@ -223,6 +223,8 @@ Schema 在执行环境内组织对象、关系和已验证查询。
 
 `unit` 描述业务单位，不指定组件展示格式。
 
+Schema 元数据的 `type: "number"` 描述查询发现层的数值能力，不直接决定看板页面的结果字段类型。页面搭建在业务语义已确认是人民币金额时，应把真实执行后的结果字段物化为 `type: "money"`、`role: "measure"`、`currency: "CNY"`；`defaultFormat: "cny-adaptive"` 仍只是可被组件字段绑定覆盖的展示建议。
+
 ## 对象关系
 
 ```json

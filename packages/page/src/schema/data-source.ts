@@ -2,10 +2,10 @@ import { z } from 'zod';
 import {
   fieldNameZ,
   fieldsZ,
-  fieldTypeZ,
   fieldValueZ,
   idZ,
   queryFieldsZ,
+  standardFieldTypeZ,
   valueFormatPresetZ
 } from './primitives';
 
@@ -84,25 +84,44 @@ export const inlineDataSourceZ = z
   .object({ fields: fieldsZ, source: inlineSourceZ })
   .meta({ id: 'inlineDataSource' });
 
-const groupedQueryFieldZ = z
+const groupedStandardQueryFieldZ = z
   .object({
     queryField: z.string().min(1),
-    type: fieldTypeZ,
+    type: standardFieldTypeZ,
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
     defaultFormat: valueFormatPresetZ.optional()
-  })
-  .meta({ id: 'groupedQueryField' });
+  });
 
-const groupedQueryFieldGroupZ = z
-  .record(fieldNameZ, groupedQueryFieldZ)
-  .meta({ id: 'groupedQueryFieldGroup', minProperties: 1 });
+const groupedMoneyQueryFieldZ = z.object({
+  queryField: z.string().min(1),
+  type: z.literal('money'),
+  currency: z.literal('CNY'),
+  label: z.string().min(1).optional(),
+  unit: z.string().min(1).optional(),
+  nullable: z.boolean().optional(),
+  defaultFormat: valueFormatPresetZ.optional()
+});
+
+const groupedDimensionQueryFieldGroupZ = z
+  .record(fieldNameZ, groupedStandardQueryFieldZ)
+  .meta({ id: 'groupedDimensionQueryFieldGroup', minProperties: 1 });
+
+const groupedMeasureQueryFieldGroupZ = z
+  .record(
+    fieldNameZ,
+    z.discriminatedUnion('type', [
+      groupedStandardQueryFieldZ,
+      groupedMoneyQueryFieldZ
+    ])
+  )
+  .meta({ id: 'groupedMeasureQueryFieldGroup', minProperties: 1 });
 
 const groupedQueryFieldsZ = z
   .object({
-    dimensions: groupedQueryFieldGroupZ.optional(),
-    measures: groupedQueryFieldGroupZ.optional()
+    dimensions: groupedDimensionQueryFieldGroupZ.optional(),
+    measures: groupedMeasureQueryFieldGroupZ.optional()
   })
   .meta({
     id: 'groupedQueryFields',
