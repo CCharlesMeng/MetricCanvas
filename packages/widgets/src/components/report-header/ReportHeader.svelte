@@ -2,7 +2,7 @@
   import type { ReportHeaderProps } from '@metriccanvas/page';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';
-  import headerFlowBackgroundUrl from './assets/header-flow-background-v2.jpg';
+  import headerFlowBackgroundUrl from '../../assets/header-flow-background-v2.jpg';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -175,7 +175,7 @@
     width: 28px;
     height: 28px;
     flex: 0 0 28px;
-    background: url('./assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
+    background: url('../../assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
     content: '';
   }
   .short-bar .title-line {

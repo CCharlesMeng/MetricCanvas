@@ -21,6 +21,7 @@ export type { TextBlockLink } from './components/text/TextBlock.svelte';
  */
 export { default as sectionTitleLeftUrl } from './assets/section-title-left.svg';
 export { default as sectionTitleRightUrl } from './assets/section-title-right.svg';
+export { default as sectionGradientPanelUrl } from './assets/section-gradient-panel.svg';
 export { default as Table } from './components/table/Table.svelte';
 export type {
   TablePaginationState,
