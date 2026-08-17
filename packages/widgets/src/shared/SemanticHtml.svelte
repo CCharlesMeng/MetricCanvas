@@ -37,13 +37,21 @@
         class:tone-neutral={presentation.tone === 'neutral'}
       >{presentation.text}</data>
     {:else if node.tag === 'div'}
-      <div class={node.classes.join(' ')}>{@render renderNodes(node.children)}</div>
+      {#if inline}
+        <span class={node.classes.join(' ')}>{@render renderNodes(node.children)}</span>
+      {:else}
+        <div class={node.classes.join(' ')}>{@render renderNodes(node.children)}</div>
+      {/if}
     {:else if node.tag === 'span'}
       <span class={node.classes.join(' ')}>{@render renderNodes(node.children)}</span>
     {:else if node.tag === 'strong'}
       <strong class={node.classes.join(' ')}>{@render renderNodes(node.children)}</strong>
     {:else if node.tag === 'p'}
-      <p class={node.classes.join(' ')}>{@render renderNodes(node.children)}</p>
+      {#if inline}
+        <span class={node.classes.join(' ')}>{@render renderNodes(node.children)}</span>
+      {:else}
+        <p class={node.classes.join(' ')}>{@render renderNodes(node.children)}</p>
+      {/if}
     {:else}
       <br />
     {/if}
