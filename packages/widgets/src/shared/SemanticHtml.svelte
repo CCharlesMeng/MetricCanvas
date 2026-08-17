@@ -48,7 +48,9 @@
       <strong class={node.classes.join(' ')}>{@render renderNodes(node.children)}</strong>
     {:else if node.tag === 'p'}
       {#if inline}
-        <span class={node.classes.join(' ')}>{@render renderNodes(node.children)}</span>
+        <span class={['semantic-inline-paragraph', ...node.classes].join(' ')}
+          >{@render renderNodes(node.children)}</span
+        >
       {:else}
         <p class={node.classes.join(' ')}>{@render renderNodes(node.children)}</p>
       {/if}
@@ -78,10 +80,7 @@
   .semantic-html.inline {
     display: inline;
   }
-  .semantic-html.inline :global(p) {
-    display: inline;
-  }
-  .semantic-html.inline :global(p + p)::before {
+  .semantic-html.inline :global(.semantic-inline-paragraph + .semantic-inline-paragraph)::before {
     content: ' ';
   }
   .semantic-html :global(.detail-title) {
