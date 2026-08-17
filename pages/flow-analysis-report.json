@@ -2356,25 +2356,25 @@
                   "format": "cny-adaptive"
                 },
                 "title": "风险分类",
-                "width": 100,
+                "width": 180,
                 "visual": "signed"
               },
               {
                 "field": "january-amount",
                 "title": "1月流水",
-                "width": 95,
+                "width": 80,
                 "align": "right"
               },
               {
                 "field": "previous-month-amount",
                 "title": "上月流水",
-                "width": 95,
+                "width": 80,
                 "align": "right"
               },
               {
                 "field": "current-month-amount",
                 "title": "本月流水",
-                "width": 95,
+                "width": 80,
                 "align": "right"
               }
             ],

@@ -335,8 +335,12 @@ describe('流水分析报告页面文档', () => {
       column.field.field === 'risk-type'
     )).toMatchObject({
       field: { data: 'main', field: 'risk-type', format: 'cny-adaptive' },
+      width: 180,
       visual: 'signed'
     });
+    expect(
+      risk.props.columns.map((column) => column.kind === 'group' ? undefined : column.width)
+    ).toEqual([145, 180, 80, 80, 80]);
     expect(yoy.props.columns.find((column) =>
       column.kind !== 'group' && column.field === 'drop-difference'
     )).not.toHaveProperty('visual', 'signed');
