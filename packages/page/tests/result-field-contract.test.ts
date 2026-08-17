@@ -6,7 +6,6 @@ import {
   normalizeQueryRows,
   validateContractRows,
   type FieldDefinition,
-  type FieldType,
   type QueryFieldDefinition,
   type StandardFieldType
 } from '../src';

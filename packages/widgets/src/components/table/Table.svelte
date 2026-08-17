@@ -407,7 +407,7 @@
                     aria-pressed={isSelected(i, column)}
                     onclick={() => oncellselect?.({ rowIndex: i, column })}
                   >
-                    <div class="cell-stack">
+                    <span class="cell-stack">
                       {#if semanticPresentation}
                         <SemanticHtml
                           source={semanticPresentation.source}
@@ -418,7 +418,7 @@
                       {:else}
                         <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
                       {/if}
-                    </div>
+                    </span>
                   </button>
                 {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
                   <span class="rate-cell">
