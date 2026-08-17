@@ -1,11 +1,26 @@
 <script lang="ts">
-  import { parseSemanticHtml, type SemanticHtmlNode } from './semantic-html';
+  import type { ValueFormatPreset } from '@metriccanvas/page';
+  import {
+    parseSemanticHtml,
+    semanticDataPresentation,
+    type SemanticHtmlNode
+  } from './semantic-html';
 
   /**
    * `inline`:以行内流呈现(根与段落 display:inline,段落间以空格衔接)。
    * 调用方通过该展示属性声明意图,不得用选择器穿透本组件内部 DOM(ADR-0029)。
    */
-  let { source, inline = false }: { source: string; inline?: boolean } = $props();
+  let {
+    source,
+    inline = false,
+    format,
+    visual
+  }: {
+    source: string;
+    inline?: boolean;
+    format?: ValueFormatPreset;
+    visual?: 'signed';
+  } = $props();
   const parsed = $derived(parseSemanticHtml(source));
 </script>
 
@@ -13,6 +28,14 @@
   {#each items as node}
     {#if node.type === 'text'}
       {node.value}
+    {:else if node.type === 'data'}
+      {@const presentation = semanticDataPresentation(node, format, visual)}
+      <data
+        class="semantic-data-value"
+        class:tone-positive={presentation.tone === 'positive'}
+        class:tone-negative={presentation.tone === 'negative'}
+        class:tone-neutral={presentation.tone === 'neutral'}
+      >{presentation.text}</data>
     {:else if node.tag === 'div'}
       <div class={node.classes.join(' ')}>{@render renderNodes(node.children)}</div>
     {:else if node.tag === 'span'}
@@ -61,6 +84,9 @@
     font-variant-numeric: tabular-nums;
     font-weight: 600;
     line-height: var(--mc-semantic-line-height, 18px);
+  }
+  .semantic-html :global(.semantic-data-value) {
+    font-variant-numeric: tabular-nums;
   }
   .semantic-html :global(.detail-description),
   .semantic-html :global(.detail-meta) {
