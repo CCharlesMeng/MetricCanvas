@@ -10,7 +10,7 @@
 <script lang="ts">
   import type { TextProps } from '@metriccanvas/page';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import aiSummaryIconUrl from '../../assets/ai-summary-icon.png';
+  import aiSummaryIconUrl from '../../assets/ai-summary-icon.svg';
   import riskWarningIconUrl from '../../assets/risk-warning.svg';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';

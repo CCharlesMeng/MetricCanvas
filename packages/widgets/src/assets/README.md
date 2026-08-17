@@ -4,7 +4,7 @@
 
 | 文件 | 原始尺寸 | 界面位置 | 主要消费方 |
 | --- | --- | --- | --- |
-| `ai-summary-icon.png` | 256 × 256 | AI 总结内联文本前缀图标 | `TextBlock.svelte` |
+| `ai-summary-icon.svg` | 256 × 256 | AI 总结内联文本前缀图标 | `TextBlock.svelte` |
 | `header-flow-background-v2.jpg` | 1774 × 887 | 流水分析报告页头背景 | `ReportHeader.svelte` |
 | `ranking-decline.svg` | 25 × 25 | 排名详情卡下降趋势图标 | `RankingDetailCard.svelte` |
 | `ranking-growth.svg` | 25 × 25 | 排名详情卡上升趋势图标 | `RankingDetailCard.svelte` |

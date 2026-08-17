@@ -1090,7 +1090,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(summaries.first().locator('.inline-icon')).toHaveCSS('height', '20px');
   await expect(summaries.first().locator('.inline-icon')).toHaveAttribute(
     'src',
-    /^data:image\/png;base64,/
+    /^data:image\/svg\+xml,/
   );
   await expect(summaries.first()).toHaveCSS('display', 'block');
   await expect(summaries.first().locator('.semantic-body')).toHaveCSS('display', 'inline');
