@@ -229,6 +229,65 @@ describe('v4 data source 与 binding 校验', () => {
     );
   });
 
+  it('Table 主字段显式消费 semanticHtml/detail，其他 detail 消费仍失败关闭', () => {
+    const semanticTable: any = structuredClone(queryDashboard);
+    semanticTable.dataSources.sales.fields.reason = {
+      queryField: 'reason',
+      type: 'semanticHtml',
+      role: 'detail'
+    };
+    semanticTable.dataSources.sales.source.query.body.dsl_list[0].output_metrics.push(
+      'reason'
+    );
+    semanticTable.sections[0].components[0].props.columns.push({
+      field: {
+        data: 'main',
+        field: 'reason',
+        format: 'cny-adaptive'
+      },
+      visual: 'signed'
+    });
+
+    expect(validate(semanticTable)).toEqual([]);
+
+    const shorthand: any = structuredClone(semanticTable);
+    shorthand.sections[0].components[0].props.columns[2].field = 'reason';
+    expect(validate(shorthand)).toEqual([]);
+
+    const secondary: any = structuredClone(semanticTable);
+    secondary.sections[0].components[0].props.columns[0].secondaryField = 'reason';
+    expect(validate(secondary)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/0/props/columns/0/secondaryField'
+      })
+    );
+
+    const recordList: any = structuredClone(queryDashboard);
+    recordList.dataSources.sales.fields.details = {
+      queryField: 'details',
+      type: 'recordList',
+      role: 'detail',
+      items: {
+        fields: {
+          name: {
+            queryField: 'name',
+            type: 'string',
+            role: 'dimension'
+          }
+        }
+      }
+    };
+    recordList.dataSources.sales.source.query.body.dsl_list[0].output_metrics.push(
+      'details'
+    );
+    recordList.sections[0].components[0].props.columns.push({ field: 'details' });
+    expect(validate(recordList)).toContainEqual(
+      expect.objectContaining({
+        path: '/sections/0/components/0/props/columns/2/field'
+      })
+    );
+  });
+
   it('允许组件布局声明与紧邻前一组件视觉连接', () => {
     const document: any = structuredClone(inlineReport);
     document.sections[0].components[1].layout.connectPrevious = true;

@@ -17,7 +17,11 @@
     TableProps as TableComponentProps
   } from '@metriccanvas/page';
   import type { NamedDataSlots } from '../../shared/component-data';
-  import { resolveField } from '../../shared/component-data';
+  import {
+    resolveField,
+    semanticHtmlFieldPresentation
+  } from '../../shared/component-data';
+  import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import { alignTableRows, alignedFieldValue } from './rows';
   import { buildTableColumnLayout } from './columns';
   import type {
@@ -252,6 +256,7 @@
   class:report-compact={props.variant === 'reportCompact'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class="table-widget"
+  data-table-title={props.title}
   style:--table-header-row-height={`${headerRowHeight}px`}
 >
   {#if props.title || props.subtitle}
@@ -290,6 +295,7 @@
                 <th
                   class:align-right={column.align === 'right'}
                   class:fixed={!!column.fixed}
+                  data-column-field={columnField(column)}
                   colspan={cell.colspan}
                   rowspan={cell.rowspan}
                   style={`${cellStyle(column)} top: ${headerTop(rowIndex)}px;`}
@@ -377,6 +383,11 @@
               {@const resolved = resolveField(column.field, data)}
               {@const rawValue = alignedFieldValue(column.field, data, row)}
               {@const polarity = valuePolarity(rawValue)}
+              {@const semanticPresentation = semanticHtmlFieldPresentation(
+                resolved,
+                rawValue,
+                column.visual === 'signed' ? 'signed' : undefined
+              )}
               <td
                 class:align-right={column.align === 'right'}
                 class:fixed={!!column.fixed}
@@ -384,8 +395,9 @@
                 class:selectable={Boolean(column.selection && interactive)}
                 class:selected={isSelected(i, column)}
                 class:danger={isDanger(column, rawValue)}
-                class:negative={column.visual === 'signed' && polarity === 'negative'}
-                class:positive={column.visual === 'signed' && polarity === 'positive'}
+                class:negative={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'negative'}
+                class:positive={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'positive'}
+                data-column-field={columnField(column)}
                 style={cellStyle(column)}
               >
                 {#if column.selection && interactive}
@@ -395,11 +407,20 @@
                     aria-pressed={isSelected(i, column)}
                     onclick={() => oncellselect?.({ rowIndex: i, column })}
                   >
-                    <span class="cell-stack">
-                      <span>{formatValue(rawValue, resolved.format)}</span>
-                    </span>
+                    <div class="cell-stack">
+                      {#if semanticPresentation}
+                        <SemanticHtml
+                          source={semanticPresentation.source}
+                          format={semanticPresentation.format}
+                          visual={semanticPresentation.visual}
+                          inline
+                        />
+                      {:else}
+                        <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                      {/if}
+                    </div>
                   </button>
-                {:else if column.visual === 'rateBar'}
+                {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
                   <span class="rate-cell">
                     <span
                       aria-hidden="true"
@@ -409,8 +430,17 @@
                     <span class="cell-value">{formatValue(rawValue, resolved.format)}</span>
                   </span>
                 {:else}
-                  <span class="cell-stack">
-                    <span>{formatValue(rawValue, resolved.format)}</span>
+                  <div class="cell-stack">
+                    {#if semanticPresentation}
+                      <SemanticHtml
+                        source={semanticPresentation.source}
+                        format={semanticPresentation.format}
+                        visual={semanticPresentation.visual}
+                        inline
+                      />
+                    {:else}
+                      <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                    {/if}
                     {#if column.secondaryField}
                       {@const secondary = resolveField(column.secondaryField, data)}
                       <small>
@@ -423,7 +453,7 @@
                         {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format)}
                       </small>
                     {/if}
-                  </span>
+                  </div>
                 {/if}
               </td>
             {/each}

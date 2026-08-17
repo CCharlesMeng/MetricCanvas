@@ -30,6 +30,12 @@ export interface ResolvedField {
   format?: ValueFormatPreset;
 }
 
+export interface SemanticHtmlFieldPresentation {
+  source: string;
+  format: ValueFormatPreset | undefined;
+  visual: 'signed' | undefined;
+}
+
 /**
  * 字符串字段绑定固定落到 main；显式绑定按命名槽解析。
  * 组件绑定 format 优先于元数据快照或旧页面归一出的 defaultFormat。
@@ -48,6 +54,29 @@ export function resolveField(
     format:
       (typeof binding === 'string' ? undefined : binding.format) ??
       (definition?.role === 'detail' ? undefined : definition?.defaultFormat)
+  };
+}
+
+/**
+ * 把显式支持 semanticHtml/detail 的组件字段收敛成安全渲染组件入参。
+ * 本函数不解析内容，也不格式化数值；两项职责仍由 SemanticHtml Module 持有。
+ */
+export function semanticHtmlFieldPresentation(
+  resolved: ResolvedField,
+  value: FieldValue | undefined,
+  visual?: 'signed'
+): SemanticHtmlFieldPresentation | undefined {
+  if (
+    resolved.definition?.type !== 'semanticHtml' ||
+    resolved.definition.role !== 'detail' ||
+    typeof value !== 'string'
+  ) {
+    return undefined;
+  }
+  return {
+    source: value,
+    format: resolved.format,
+    visual
   };
 }
 

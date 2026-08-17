@@ -4,13 +4,21 @@ import { fieldLabel, fieldValue, resolveField } from '../src/shared/component-da
 
 const data: MetricDataSlots = {
   main: {
-    snapshot: { status: 'ready', rows: [{ actual: 120 }] },
+    snapshot: {
+      status: 'ready',
+      rows: [{ actual: 120, reason: '下降<data>-12345.67</data>' }]
+    },
     fields: {
       actual: {
         type: 'number',
         role: 'measure',
         label: '实际值',
         defaultFormat: 'number-grouped'
+      },
+      reason: {
+        type: 'semanticHtml',
+        role: 'detail',
+        label: '变动原因'
       }
     }
   },
@@ -54,6 +62,24 @@ describe('component named data slots', () => {
 
     expect(resolveField(binding, data).format).toBe('compact-wan-1');
     expect(resolveField('actual', data).format).toBe('number-grouped');
+  });
+
+  it('detail 字符串简写不继承格式，对象绑定保留显式格式', () => {
+    expect(resolveField('reason', data)).toMatchObject({
+      data: 'main',
+      field: 'reason',
+      format: undefined
+    });
+    expect(
+      resolveField(
+        { data: 'main', field: 'reason', format: 'cny-adaptive' },
+        data
+      )
+    ).toMatchObject({
+      data: 'main',
+      field: 'reason',
+      format: 'cny-adaptive'
+    });
   });
 
   it('标量字段绑定按稳定页面字段显式匹配长表行', () => {

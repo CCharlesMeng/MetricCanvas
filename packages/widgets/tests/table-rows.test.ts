@@ -1,5 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import type { NamedDataSlots } from '../src/shared/component-data';
+import {
+  resolveField,
+  semanticHtmlFieldPresentation
+} from '../src/shared/component-data';
 import { alignTableRows, alignedFieldValue } from '../src/components/table/rows';
 
 const fields = {
@@ -75,5 +79,59 @@ describe('表格多数据槽行对齐', () => {
         row
       )
     ).toBeUndefined();
+  });
+});
+
+describe('表格 semanticHtml/detail 单元格', () => {
+  const semanticData: NamedDataSlots = {
+    main: {
+      fields: {
+        reason: { type: 'semanticHtml', role: 'detail' },
+        amount: { type: 'money', role: 'measure', currency: 'CNY' }
+      },
+      snapshot: {
+        status: 'ready',
+        rows: [{ reason: '下降<data>-12345.67</data>', amount: -12345.67 }]
+      }
+    }
+  };
+
+  it('只为 semanticHtml/detail 生成安全组件入参并透传 format 与 signed', () => {
+    const resolved = resolveField(
+      { data: 'main', field: 'reason', format: 'cny-adaptive' },
+      semanticData
+    );
+
+    expect(
+      semanticHtmlFieldPresentation(
+        resolved,
+        semanticData.main?.snapshot.rows[0]?.reason,
+        'signed'
+      )
+    ).toEqual({
+      source: '下降<data>-12345.67</data>',
+      format: 'cny-adaptive',
+      visual: 'signed'
+    });
+    expect(
+      semanticHtmlFieldPresentation(
+        resolveField('amount', semanticData),
+        semanticData.main?.snapshot.rows[0]?.amount,
+        'signed'
+      )
+    ).toBeUndefined();
+  });
+
+  it('省略 format 与 visual 时保留未指定状态', () => {
+    expect(
+      semanticHtmlFieldPresentation(
+        resolveField('reason', semanticData),
+        semanticData.main?.snapshot.rows[0]?.reason
+      )
+    ).toEqual({
+      source: '下降<data>-12345.67</data>',
+      format: undefined,
+      visual: undefined
+    });
   });
 });

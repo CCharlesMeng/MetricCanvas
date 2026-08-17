@@ -416,7 +416,8 @@ function componentErrors(
   const check = (
     binding: FieldBinding,
     path: string,
-    expectedRole?: FieldDefinition['role']
+    expectedRole?: FieldDefinition['role'],
+    allowedDetailType?: FieldDefinition['type']
   ) => {
     const resolved = resolveBinding(page, component, binding);
     if ('error' in resolved) {
@@ -430,11 +431,17 @@ function componentErrors(
           `字段 ${resolved.fieldName} 的 role 为 ${resolved.field.role}，此处要求 ${expectedRole}`
         )
       );
-    } else if (expectedRole === undefined && resolved.field.role === 'detail') {
+    } else if (
+      expectedRole === undefined &&
+      resolved.field.role === 'detail' &&
+      resolved.field.type !== allowedDetailType
+    ) {
       errors.push(
         schemaError(
           path,
-          `嵌套明细字段 ${resolved.fieldName} 只能由显式支持 detail 的组件属性消费`
+          allowedDetailType === undefined
+            ? `嵌套明细字段 ${resolved.fieldName} 只能由显式支持 detail 的组件属性消费`
+            : `此组件属性只支持 ${allowedDetailType} 类型的 detail 字段:${resolved.fieldName}`
         )
       );
     }
@@ -891,7 +898,8 @@ function jsonRecord(value: unknown): Record<string, unknown> | undefined {
 type BindingCheck = (
   binding: FieldBinding,
   path: string,
-  expectedRole?: FieldDefinition['role']
+  expectedRole?: FieldDefinition['role'],
+  allowedDetailType?: FieldDefinition['type']
 ) => void;
 
 function tableErrors(
@@ -907,7 +915,7 @@ function tableErrors(
       column.children.forEach((child, index) => visit(child, `${path}/children/${index}`));
       return;
     }
-    check(column.field, `${path}/field`);
+    check(column.field, `${path}/field`, undefined, 'semanticHtml');
     if (column.secondaryField) check(column.secondaryField, `${path}/secondaryField`);
     if (column.badgeField) check(column.badgeField, `${path}/badgeField`);
     for (const [filterId, write] of Object.entries(column.selection?.writes ?? {})) {
