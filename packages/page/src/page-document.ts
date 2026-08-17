@@ -6,7 +6,8 @@ import type {
 import type {
   DataRow,
   QueryFieldDefinition,
-  QueryScalarFieldDefinition
+  QueryScalarFieldDefinition,
+  QueryStandardScalarFieldDefinition
 } from './field';
 import type { Page } from './page';
 
@@ -29,11 +30,20 @@ export interface QueryDataSourceDocument extends Omit<QueryDataSource, 'source'>
  * query 页面数据源的局部显式字段声明。字段角色由所在分组决定，
  * 其余结果字段契约与查询字段映射必须在当前页面数据源中写全。
  */
-export type GroupedQueryFieldDefinition = Omit<QueryScalarFieldDefinition, 'role'>;
+type WithoutRole<Field> = Field extends QueryScalarFieldDefinition
+  ? Field extends QueryScalarFieldDefinition
+    ? Omit<Field, 'role'>
+    : never
+  : never;
+
+export type GroupedDimensionQueryFieldDefinition =
+  WithoutRole<QueryStandardScalarFieldDefinition>;
+export type GroupedMeasureQueryFieldDefinition =
+  WithoutRole<QueryScalarFieldDefinition>;
 
 export interface GroupedQueryFields {
-  dimensions?: Record<string, GroupedQueryFieldDefinition>;
-  measures?: Record<string, GroupedQueryFieldDefinition>;
+  dimensions?: Record<string, GroupedDimensionQueryFieldDefinition>;
+  measures?: Record<string, GroupedMeasureQueryFieldDefinition>;
 }
 
 export interface GroupedQueryDataSource extends Omit<QueryDataSourceDocument, 'fields'> {

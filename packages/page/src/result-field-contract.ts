@@ -1,7 +1,6 @@
 import { validateCalendarTimeRange } from './filter';
 import type {
   FieldDefinition,
-  FieldType,
   RecordListFieldDefinition,
   ScalarFieldDefinition,
   SemanticHtmlFieldDefinition
@@ -30,13 +29,13 @@ export type FieldContractViolation =
       code: 'DETAIL_NULL_NOT_ALLOWED';
       itemIndex: number;
       itemFieldId: string;
-      expectedType: FieldType;
+      expectedType: ScalarFieldDefinition['type'];
     }
   | {
       code: 'DETAIL_TYPE_MISMATCH';
       itemIndex: number;
       itemFieldId: string;
-      expectedType: FieldType;
+      expectedType: ScalarFieldDefinition['type'];
     };
 
 /** 定位到行与页面字段的契约违规。 */

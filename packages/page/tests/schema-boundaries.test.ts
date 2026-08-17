@@ -25,7 +25,18 @@ function expectInvalid(description: string, document: unknown): void {
   expect(valid, `${description} 应无效`).toBe(false);
 }
 
-function groupedPage() {
+interface GroupedPageTestDocument {
+  dataSources: {
+    current: {
+      fields: {
+        dimensions: Record<string, Record<string, unknown>>;
+        measures: Record<string, Record<string, unknown>>;
+      };
+    };
+  };
+}
+
+function groupedPage(): GroupedPageTestDocument {
   return structuredClone({
     schemaVersion: '5.0',
     id: 'grouped',
@@ -64,13 +75,19 @@ function groupedPage() {
 describe('当前 page schema 边界行为', () => {
   it('groupedQueryFields:双分组有效,空对象无效', () => {
     expectValid('grouped fields 双分组', groupedPage());
-    const empty: any = groupedPage();
-    empty.dataSources.current.fields = {};
+    const populated = groupedPage();
+    const empty = {
+      ...populated,
+      dataSources: {
+        ...populated.dataSources,
+        current: { ...populated.dataSources.current, fields: {} }
+      }
+    };
     expectInvalid('grouped fields 空对象', empty);
   });
 
   it('money 字段只接受 measure/CNY，并支持查询字段映射与展示建议', () => {
-    const money: any = groupedPage();
+    const money = groupedPage();
     money.dataSources.current.fields.measures.revenue = {
       queryField: '销售额',
       type: 'money',

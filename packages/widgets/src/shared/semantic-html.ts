@@ -55,6 +55,7 @@ const allowedClasses = new Set([
 const MAX_NODES = 1_000;
 const MAX_DEPTH = 12;
 const CANONICAL_DATA_NUMBER = /^[+-]?(?:0|[1-9]\d*)(?:\.\d+)?$/u;
+const CANONICAL_DATA_ZERO = /^[+-]?0(?:\.0+)?$/u;
 
 export function semanticDataPresentation(
   node: Extract<SemanticHtmlNode, { type: 'data' }>,
@@ -134,11 +135,15 @@ export function parseSemanticHtml(source: string): SemanticHtmlParseResult {
       if (!CANONICAL_DATA_NUMBER.test(raw)) {
         return { ok: false, error: 'data 只能包含一个规范数字文本节点' };
       }
+      const value = Number(raw);
+      if (!Number.isFinite(value) || (value === 0 && !CANONICAL_DATA_ZERO.test(raw))) {
+        return { ok: false, error: 'data 数字必须可表示为有限且不下溢的原始数值' };
+      }
       nodeCount += 1;
       if (nodeCount > MAX_NODES) {
         return { ok: false, error: `HTML 节点超过 ${MAX_NODES} 个` };
       }
-      stack.at(-1)?.children.push({ type: 'data', raw, value: Number(raw) });
+      stack.at(-1)?.children.push({ type: 'data', raw, value });
       cursor = closingStart + '</data>'.length;
       continue;
     }

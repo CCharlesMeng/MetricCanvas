@@ -1,31 +1,42 @@
 import { describe, expect, it } from 'vitest';
-import { parsePage } from '../../../packages/page/src';
+import {
+  isQueryDataSource,
+  parsePage,
+  type DataSources,
+  type QueryDataSource
+} from '../../../packages/page/src';
 import customerActivityRiskPage from '../../../pages/customer-activity-risk-briefing.json';
 import flowAnalysisReportPage from '../../../pages/flow-analysis-report.json';
 import { executeDqeItem } from '../src/execute';
 
-interface QueryDataSource {
-  source: {
-    query: {
-      body: { dsl_list: unknown[] };
-    };
-  };
-  fields: Record<string, { queryField: string }>;
+function requireQueryDataSources(
+  dataSources: DataSources
+): Record<string, QueryDataSource> {
+  const querySources: Record<string, QueryDataSource> = {};
+  for (const [sourceId, dataSource] of Object.entries(dataSources)) {
+    if (!isQueryDataSource(dataSource)) {
+      throw new Error(`正式页面数据源必须为 query:${sourceId}`);
+    }
+    querySources[sourceId] = dataSource;
+  }
+  return querySources;
 }
 
 const parsedPage = parsePage(customerActivityRiskPage);
 if (!parsedPage.ok) {
   throw new Error(`正式页面解析失败:${JSON.stringify(parsedPage.errors)}`);
 }
-const customerActivityRiskSources = parsedPage.page.dataSources as unknown as
-  Record<string, QueryDataSource>;
+const customerActivityRiskSources = requireQueryDataSources(
+  parsedPage.page.dataSources
+);
 
 const parsedFlowAnalysisReport = parsePage(flowAnalysisReportPage);
 if (!parsedFlowAnalysisReport.ok) {
   throw new Error(`流水分析报告解析失败:${JSON.stringify(parsedFlowAnalysisReport.errors)}`);
 }
-const flowAnalysisReportSources = parsedFlowAnalysisReport.page.dataSources as unknown as
-  Record<string, QueryDataSource>;
+const flowAnalysisReportSources = requireQueryDataSources(
+  parsedFlowAnalysisReport.page.dataSources
+);
 
 describe('正式页面 DQE 场景', () => {
   it('客户活动风险页的每条查询都能返回非空结果', () => {

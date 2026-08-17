@@ -19,7 +19,9 @@ export type StandardFieldType =
   | 'boolean'
   | 'date'
   | 'datetime';
-export type FieldType = StandardFieldType | 'money';
+/** 历史标量类型别名；页面金额合同通过 ScalarFieldDefinition 联合表达。 */
+export type FieldType = StandardFieldType;
+export type ScalarFieldType = StandardFieldType | 'money';
 export type FieldRole = 'dimension' | 'measure' | 'detail';
 
 export const valueFormatPresets = [
@@ -56,12 +58,21 @@ interface FieldMetadata {
   defaultFormat?: ValueFormatPreset;
 }
 
-export interface ScalarFieldDefinition extends FieldMetadata {
-  type: FieldType;
+export interface StandardScalarFieldDefinition extends FieldMetadata {
+  type: StandardFieldType;
   role: 'dimension' | 'measure';
-  // 仅 money 字段合法，页面 Schema 将其封闭为 CNY。
-  currency?: 'CNY';
+  currency?: never;
 }
+
+export interface MoneyFieldDefinition extends FieldMetadata {
+  type: 'money';
+  role: 'measure';
+  currency: 'CNY';
+}
+
+export type ScalarFieldDefinition =
+  | StandardScalarFieldDefinition
+  | MoneyFieldDefinition;
 
 export interface RecordListFieldDefinition
   extends Pick<FieldMetadata, 'label' | 'nullable'> {
@@ -88,9 +99,17 @@ export type FieldDefinition =
   | RecordListFieldDefinition
   | SemanticHtmlFieldDefinition;
 
-export interface QueryScalarFieldDefinition extends ScalarFieldDefinition {
+export type QueryStandardScalarFieldDefinition = StandardScalarFieldDefinition & {
   queryField: string;
-}
+};
+
+export type QueryMoneyFieldDefinition = MoneyFieldDefinition & {
+  queryField: string;
+};
+
+export type QueryScalarFieldDefinition =
+  | QueryStandardScalarFieldDefinition
+  | QueryMoneyFieldDefinition;
 
 export interface QueryRecordListFieldDefinition
   extends Omit<RecordListFieldDefinition, 'items'> {

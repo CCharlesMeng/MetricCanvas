@@ -55,7 +55,10 @@ export function materializePageDocument(input: unknown): MaterializedPageDocumen
           if (definition.label === fieldId) {
             errors.push(schemaError(`${path}/label`, `label 与字段 id 相同，应省略:${fieldId}`));
           }
-          expanded[fieldId] = { ...definition, role };
+          expanded[fieldId] =
+            definition.type === 'money'
+              ? { ...definition, role: 'measure' }
+              : { ...definition, role };
         }
       }
     }

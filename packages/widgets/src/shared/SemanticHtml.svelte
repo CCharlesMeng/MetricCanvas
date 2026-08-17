@@ -51,7 +51,11 @@
 {/snippet}
 
 {#if parsed.ok}
-  <div class="semantic-html" class:inline>{@render renderNodes(parsed.document.nodes)}</div>
+  {#if inline}
+    <span class="semantic-html inline">{@render renderNodes(parsed.document.nodes)}</span>
+  {:else}
+    <div class="semantic-html">{@render renderNodes(parsed.document.nodes)}</div>
+  {/if}
 {:else}
   <span class="semantic-html-error">内容格式不受支持</span>
 {/if}

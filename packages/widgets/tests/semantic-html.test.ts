@@ -91,4 +91,11 @@ describe('parseSemanticHtml', () => {
   ])('任一非法 data 使整段 semanticHtml 失败关闭:%s', (source) => {
     expect(parseSemanticHtml(`前缀${source}后缀`)).toMatchObject({ ok: false });
   });
+
+  it.each([
+    `<data>${'9'.repeat(309)}</data>`,
+    `<data>0.${'0'.repeat(323)}1</data>`
+  ])('对溢出或非零下溢的 data 失败关闭', (source) => {
+    expect(parseSemanticHtml(source)).toMatchObject({ ok: false });
+  });
 });

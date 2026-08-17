@@ -3,6 +3,29 @@ import { validate } from '../src';
 import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
+interface MutableTableTestDocument {
+  dataSources: {
+    sales: {
+      fields: Record<string, unknown>;
+      source: {
+        query: { body: { dsl_list: Array<{ output_metrics: string[] }> } };
+      };
+    };
+  };
+  sections: Array<{
+    components: Array<{
+      props: {
+        columns: Array<{
+          field: unknown;
+          secondaryField?: unknown;
+          emphasis?: string;
+          visual?: string;
+        }>;
+      };
+    }>;
+  }>;
+}
+
 describe('v4 data source 与 binding 校验', () => {
   it('展示字段绑定允许 format，action 字段引用拒绝 format', () => {
     const display: any = structuredClone(inlineReport);
@@ -216,7 +239,7 @@ describe('v4 data source 与 binding 校验', () => {
   });
 
   it('允许通过列 metadata 强调表格数据单元格', () => {
-    const document: any = structuredClone(queryDashboard);
+    const document: MutableTableTestDocument = structuredClone(queryDashboard);
     document.sections[0].components[0].props.columns[1].emphasis = 'strong';
 
     expect(validate(document)).toEqual([]);
@@ -230,7 +253,7 @@ describe('v4 data source 与 binding 校验', () => {
   });
 
   it('Table 主字段显式消费 semanticHtml/detail，其他 detail 消费仍失败关闭', () => {
-    const semanticTable: any = structuredClone(queryDashboard);
+    const semanticTable: MutableTableTestDocument = structuredClone(queryDashboard);
     semanticTable.dataSources.sales.fields.reason = {
       queryField: 'reason',
       type: 'semanticHtml',
@@ -250,11 +273,11 @@ describe('v4 data source 与 binding 校验', () => {
 
     expect(validate(semanticTable)).toEqual([]);
 
-    const shorthand: any = structuredClone(semanticTable);
+    const shorthand: MutableTableTestDocument = structuredClone(semanticTable);
     shorthand.sections[0].components[0].props.columns[2].field = 'reason';
     expect(validate(shorthand)).toEqual([]);
 
-    const secondary: any = structuredClone(semanticTable);
+    const secondary: MutableTableTestDocument = structuredClone(semanticTable);
     secondary.sections[0].components[0].props.columns[0].secondaryField = 'reason';
     expect(validate(secondary)).toContainEqual(
       expect.objectContaining({
@@ -262,7 +285,7 @@ describe('v4 data source 与 binding 校验', () => {
       })
     );
 
-    const recordList: any = structuredClone(queryDashboard);
+    const recordList: MutableTableTestDocument = structuredClone(queryDashboard);
     recordList.dataSources.sales.fields.details = {
       queryField: 'details',
       type: 'recordList',

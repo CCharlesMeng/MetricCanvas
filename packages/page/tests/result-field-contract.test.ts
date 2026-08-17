@@ -7,7 +7,8 @@ import {
   validateContractRows,
   type FieldDefinition,
   type FieldType,
-  type QueryFieldDefinition
+  type QueryFieldDefinition,
+  type StandardFieldType
 } from '../src';
 
 /**
@@ -66,7 +67,7 @@ function bothVerdicts(field: FieldDefinition, value: unknown): [Verdict, Verdict
 }
 
 const scalarRules: Array<{
-  type: FieldType;
+  type: StandardFieldType;
   accepted: unknown[];
   rejected: unknown[];
 }> = [
