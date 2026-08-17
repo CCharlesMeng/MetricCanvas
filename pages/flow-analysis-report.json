@@ -20,10 +20,11 @@
           "queryField": "captured-at"
         },
         "annual-total": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年累计",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "annual-total"
         },
@@ -36,10 +37,11 @@
           "queryField": "year-over-year"
         },
         "current-month": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "本月",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "current-month"
         },
@@ -52,10 +54,11 @@
           "queryField": "month-over-month"
         },
         "annual-projection": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年度推演",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "annual-projection"
         },
@@ -194,34 +197,38 @@
           "queryField": "captured-at"
         },
         "core-actual": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "Core流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "core-actual"
         },
         "communication-actual": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "云通信流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "communication-actual"
         },
         "core-forecast": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "Core流水(预测)",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "core-forecast"
         },
         "communication-forecast": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "云通信流水(预测)",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "communication-forecast"
         }
@@ -377,34 +384,38 @@
           "queryField": "captured-at"
         },
         "stable-actual": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "稳定流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "stable-actual"
         },
         "one-off-actual": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "一次性流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "one-off-actual"
         },
         "stable-forecast": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "稳定流水(预测)",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "stable-forecast"
         },
         "one-off-forecast": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "一次性流水(预测)",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "nullable": true,
           "queryField": "one-off-forecast"
         }
@@ -578,10 +589,11 @@
           "queryField": "captured-at"
         },
         "amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "本月流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "amount"
         },
         "change": {
@@ -752,10 +764,11 @@
           "queryField": "客户编号"
         },
         "amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "公有云流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "公有云流水"
         },
         "change": {
@@ -766,10 +779,11 @@
           "queryField": "公有云流水月环比"
         },
         "monthly-delta": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "公有云流水月变化",
-          "defaultFormat": "compact-wan-1",
+          "defaultFormat": "cny-adaptive",
           "queryField": "公有云流水月变化"
         },
         "attribution-details": {
@@ -847,8 +861,8 @@
           "queryField": "customer-level"
         },
         "reason": {
-          "type": "string",
-          "role": "dimension",
+          "type": "semanticHtml",
+          "role": "detail",
           "label": "掉量原因",
           "queryField": "reason"
         },
@@ -859,17 +873,19 @@
           "queryField": "captured-at"
         },
         "drop-difference": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "掉量同比差值",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "drop-difference"
         },
         "monthly-average": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "月均流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "monthly-average"
         }
       },
@@ -882,7 +898,7 @@
               "customer-name": "客户A",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "reason": "商务竞争",
+              "reason": "商务竞争；同比变化 <data>-10000000</data><br>月均流水 <data>6000000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 10000000,
               "monthly-average": 6000000
@@ -891,7 +907,7 @@
               "customer-name": "客户B",
               "customer-type": "KA",
               "customer-level": "战略",
-              "reason": "一次性收入",
+              "reason": "一次性收入；同比变化 <data>-9000000</data><br>月均流水 <data>5600000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 9000000,
               "monthly-average": 5600000
@@ -900,7 +916,7 @@
               "customer-name": "客户C",
               "customer-type": "SMB",
               "customer-level": "核心",
-              "reason": "资源缩容",
+              "reason": "资源缩容；同比变化 <data>-8000000</data><br>月均流水 <data>5200000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 8000000,
               "monthly-average": 5200000
@@ -909,7 +925,7 @@
               "customer-name": "客户D",
               "customer-type": "KA",
               "customer-level": "卓越",
-              "reason": "商务竞争",
+              "reason": "商务竞争；同比变化 <data>-7000000</data><br>月均流水 <data>4800000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 7000000,
               "monthly-average": 4800000
@@ -918,7 +934,7 @@
               "customer-name": "客户E",
               "customer-type": "SMB",
               "customer-level": "战略",
-              "reason": "项目收尾",
+              "reason": "项目收尾；同比变化 <data>-6000000</data><br>月均流水 <data>4400000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 6000000,
               "monthly-average": 4400000
@@ -927,7 +943,7 @@
               "customer-name": "客户F",
               "customer-type": "KA",
               "customer-level": "核心",
-              "reason": "一次性收入",
+              "reason": "一次性收入；同比变化 <data>-5000000</data><br>月均流水 <data>4000000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 5000000,
               "monthly-average": 4000000
@@ -936,7 +952,7 @@
               "customer-name": "客户G",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "reason": "资源缩容",
+              "reason": "资源缩容；同比变化 <data>-4000000</data><br>月均流水 <data>3600000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 4000000,
               "monthly-average": 3600000
@@ -945,7 +961,7 @@
               "customer-name": "客户H",
               "customer-type": "KA",
               "customer-level": "战略",
-              "reason": "商务竞争",
+              "reason": "商务竞争；同比变化 <data>-3000000</data><br>月均流水 <data>3200000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 3000000,
               "monthly-average": 3200000
@@ -954,7 +970,7 @@
               "customer-name": "客户I",
               "customer-type": "SMB",
               "customer-level": "核心",
-              "reason": "项目收尾",
+              "reason": "项目收尾；同比变化 <data>-2000000</data><br>月均流水 <data>2800000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 2000000,
               "monthly-average": 2800000
@@ -963,7 +979,7 @@
               "customer-name": "客户J",
               "customer-type": "KA",
               "customer-level": "卓越",
-              "reason": "资源缩容",
+              "reason": "资源缩容；同比变化 <data>-1000000</data><br>月均流水 <data>2400000</data>",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "drop-difference": 1000000,
               "monthly-average": 2400000
@@ -1025,8 +1041,8 @@
           "queryField": "customer-level"
         },
         "risk-type": {
-          "type": "string",
-          "role": "dimension",
+          "type": "semanticHtml",
+          "role": "detail",
           "label": "风险分类",
           "queryField": "risk-type"
         },
@@ -1037,24 +1053,27 @@
           "queryField": "captured-at"
         },
         "january-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "1月流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "january-amount"
         },
         "previous-month-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "上月流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "previous-month-amount"
         },
         "current-month-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "本月流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "current-month-amount"
         }
       },
@@ -1067,7 +1086,7 @@
               "customer-name": "客户A",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "risk-type": "较1月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 6000000,
               "previous-month-amount": 5500000,
@@ -1077,7 +1096,7 @@
               "customer-name": "客户B",
               "customer-type": "KA",
               "customer-level": "战略",
-              "risk-type": "较上月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 5500000,
               "previous-month-amount": 5000000,
@@ -1087,7 +1106,7 @@
               "customer-name": "客户C",
               "customer-type": "SMB",
               "customer-level": "核心",
-              "risk-type": "较1月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 5000000,
               "previous-month-amount": 4500000,
@@ -1097,7 +1116,7 @@
               "customer-name": "客户D",
               "customer-type": "KA",
               "customer-level": "卓越",
-              "risk-type": "较上月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 4500000,
               "previous-month-amount": 4000000,
@@ -1107,7 +1126,7 @@
               "customer-name": "客户E",
               "customer-type": "SMB",
               "customer-level": "战略",
-              "risk-type": "较1月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 4000000,
               "previous-month-amount": 3500000,
@@ -1117,7 +1136,7 @@
               "customer-name": "客户F",
               "customer-type": "KA",
               "customer-level": "核心",
-              "risk-type": "较上月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 3500000,
               "previous-month-amount": 3000000,
@@ -1127,7 +1146,7 @@
               "customer-name": "客户G",
               "customer-type": "SMB",
               "customer-level": "卓越",
-              "risk-type": "较1月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 3000000,
               "previous-month-amount": 2500000,
@@ -1137,7 +1156,7 @@
               "customer-name": "客户H",
               "customer-type": "KA",
               "customer-level": "战略",
-              "risk-type": "较上月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 2500000,
               "previous-month-amount": 2000000,
@@ -1147,7 +1166,7 @@
               "customer-name": "客户I",
               "customer-type": "SMB",
               "customer-level": "核心",
-              "risk-type": "较1月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 2000000,
               "previous-month-amount": 1500000,
@@ -1157,7 +1176,7 @@
               "customer-name": "客户J",
               "customer-type": "KA",
               "customer-level": "卓越",
-              "risk-type": "较上月下降",
+              "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)",
               "captured-at": "2026-02-28T23:59:59+08:00",
               "january-amount": 1500000,
               "previous-month-amount": 1000000,
@@ -1215,31 +1234,35 @@
           "queryField": "captured-at"
         },
         "annual-target": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年目标",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "annual-target"
         },
         "flow-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "flow-amount"
         },
         "public-region-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "公网Region流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "public-region-amount"
         },
         "current-month-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "2月",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "current-month-amount"
         },
         "month-over-month": {
@@ -1265,17 +1288,19 @@
           "queryField": "six-month-cagr"
         },
         "annual-projection": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年推演流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "annual-projection"
         },
         "projection-growth": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "较年初推演增长量",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "projection-growth"
         }
       },
@@ -1404,31 +1429,35 @@
           "queryField": "captured-at"
         },
         "annual-target": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年目标",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "annual-target"
         },
         "flow-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "flow-amount"
         },
         "public-region-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "公网Region流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "public-region-amount"
         },
         "current-month-amount": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "2月",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "current-month-amount"
         },
         "month-over-month": {
@@ -1454,17 +1483,19 @@
           "queryField": "six-month-cagr"
         },
         "annual-projection": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "年推演流水",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "annual-projection"
         },
         "projection-growth": {
-          "type": "number",
+          "type": "money",
           "role": "measure",
+          "currency": "CNY",
           "label": "较年初推演增长量",
-          "defaultFormat": "compact-wan-0",
+          "defaultFormat": "cny-adaptive",
           "queryField": "projection-growth"
         }
       },
@@ -2269,9 +2300,14 @@
                 "width": 160
               },
               {
-                "field": "reason",
+                "field": {
+                  "data": "main",
+                  "field": "reason",
+                  "format": "cny-adaptive"
+                },
                 "title": "掉量原因",
-                "width": 100
+                "width": 100,
+                "visual": "signed"
               },
               {
                 "field": "drop-difference",
@@ -2314,9 +2350,14 @@
                 "width": 145
               },
               {
-                "field": "risk-type",
+                "field": {
+                  "data": "main",
+                  "field": "risk-type",
+                  "format": "cny-adaptive"
+                },
                 "title": "风险分类",
-                "width": 100
+                "width": 100,
+                "visual": "signed"
               },
               {
                 "field": "january-amount",

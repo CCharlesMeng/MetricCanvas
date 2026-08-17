@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { parsePage } from '../../../packages/page/src';
 import customerActivityRiskPage from '../../../pages/customer-activity-risk-briefing.json';
+import flowAnalysisReportPage from '../../../pages/flow-analysis-report.json';
 import { executeDqeItem } from '../src/execute';
 
 interface QueryDataSource {
@@ -17,6 +18,13 @@ if (!parsedPage.ok) {
   throw new Error(`正式页面解析失败:${JSON.stringify(parsedPage.errors)}`);
 }
 const customerActivityRiskSources = parsedPage.page.dataSources as unknown as
+  Record<string, QueryDataSource>;
+
+const parsedFlowAnalysisReport = parsePage(flowAnalysisReportPage);
+if (!parsedFlowAnalysisReport.ok) {
+  throw new Error(`流水分析报告解析失败:${JSON.stringify(parsedFlowAnalysisReport.errors)}`);
+}
+const flowAnalysisReportSources = parsedFlowAnalysisReport.page.dataSources as unknown as
   Record<string, QueryDataSource>;
 
 describe('正式页面 DQE 场景', () => {
@@ -83,5 +91,21 @@ describe('正式页面 DQE 场景', () => {
             String(row['最近一次公司考察时间']) < '2026-01-01')
       )
     ).toBe(true);
+  });
+
+  it('流水分析报告的每条查询均按迁移后的结果字段契约返回', () => {
+    const sources = Object.values(flowAnalysisReportSources);
+    const results = sources.map((source) =>
+      executeDqeItem(source.source.query.body.dsl_list[0])
+    );
+
+    expect(results).toHaveLength(9);
+    expect(results.every((result) => result.code === 'SUCCESS')).toBe(true);
+    results.forEach((result, index) => {
+      expect(result.data.length).toBeGreaterThan(0);
+      for (const field of Object.values(sources[index]!.fields)) {
+        expect(result.data[0]).toHaveProperty(field.queryField);
+      }
+    });
   });
 });

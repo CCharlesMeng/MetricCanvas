@@ -186,16 +186,16 @@
       "output_metrics": ["drop-difference", "monthly-average"],
       "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
       "rows": [
-        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 10000000, "monthly-average": 6000000},
-        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "reason": "一次性收入", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 9000000, "monthly-average": 5600000},
-        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 8000000, "monthly-average": 5200000},
-        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 7000000, "monthly-average": 4800000},
-        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "reason": "项目收尾", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 6000000, "monthly-average": 4400000},
-        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "reason": "一次性收入", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 5000000, "monthly-average": 4000000},
-        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 4000000, "monthly-average": 3600000},
-        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "reason": "商务竞争", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 3000000, "monthly-average": 3200000},
-        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "reason": "项目收尾", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 2000000, "monthly-average": 2800000},
-        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "reason": "资源缩容", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 1000000, "monthly-average": 2400000}
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "reason": "商务竞争；同比变化 <data>-10000000</data><br>月均流水 <data>6000000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 10000000, "monthly-average": 6000000},
+        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "reason": "一次性收入；同比变化 <data>-9000000</data><br>月均流水 <data>5600000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 9000000, "monthly-average": 5600000},
+        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "reason": "资源缩容；同比变化 <data>-8000000</data><br>月均流水 <data>5200000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 8000000, "monthly-average": 5200000},
+        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "reason": "商务竞争；同比变化 <data>-7000000</data><br>月均流水 <data>4800000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 7000000, "monthly-average": 4800000},
+        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "reason": "项目收尾；同比变化 <data>-6000000</data><br>月均流水 <data>4400000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 6000000, "monthly-average": 4400000},
+        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "reason": "一次性收入；同比变化 <data>-5000000</data><br>月均流水 <data>4000000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 5000000, "monthly-average": 4000000},
+        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "reason": "资源缩容；同比变化 <data>-4000000</data><br>月均流水 <data>3600000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 4000000, "monthly-average": 3600000},
+        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "reason": "商务竞争；同比变化 <data>-3000000</data><br>月均流水 <data>3200000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 3000000, "monthly-average": 3200000},
+        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "reason": "项目收尾；同比变化 <data>-2000000</data><br>月均流水 <data>2800000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 2000000, "monthly-average": 2800000},
+        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "reason": "资源缩容；同比变化 <data>-1000000</data><br>月均流水 <data>2400000</data>", "captured-at": "2026-02-28T23:59:59+08:00", "drop-difference": 1000000, "monthly-average": 2400000}
       ]
     },
     "customer-risk-top": {
@@ -203,16 +203,16 @@
       "output_metrics": ["january-amount", "previous-month-amount", "current-month-amount"],
       "time": {"period": "month", "is_aggregate": true, "start": "2026-02", "end": "2026-02"},
       "rows": [
-        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 6000000, "previous-month-amount": 5500000, "current-month-amount": 5000000},
-        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5500000, "previous-month-amount": 5000000, "current-month-amount": 4500000},
-        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5000000, "previous-month-amount": 4500000, "current-month-amount": 4000000},
-        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4500000, "previous-month-amount": 4000000, "current-month-amount": 3500000},
-        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4000000, "previous-month-amount": 3500000, "current-month-amount": 3000000},
-        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3500000, "previous-month-amount": 3000000, "current-month-amount": 2500000},
-        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3000000, "previous-month-amount": 2500000, "current-month-amount": 2000000},
-        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2500000, "previous-month-amount": 2000000, "current-month-amount": 1500000},
-        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2000000, "previous-month-amount": 1500000, "current-month-amount": 1000000},
-        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较上月下降", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 1500000, "previous-month-amount": 1000000, "current-month-amount": 500000}
+        {"customer-name": "客户A", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 6000000, "previous-month-amount": 5500000, "current-month-amount": 5000000},
+        {"customer-name": "客户B", "customer-type": "KA", "customer-level": "战略", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5500000, "previous-month-amount": 5000000, "current-month-amount": 4500000},
+        {"customer-name": "客户C", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 5000000, "previous-month-amount": 4500000, "current-month-amount": 4000000},
+        {"customer-name": "客户D", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4500000, "previous-month-amount": 4000000, "current-month-amount": 3500000},
+        {"customer-name": "客户E", "customer-type": "SMB", "customer-level": "战略", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 4000000, "previous-month-amount": 3500000, "current-month-amount": 3000000},
+        {"customer-name": "客户F", "customer-type": "KA", "customer-level": "核心", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3500000, "previous-month-amount": 3000000, "current-month-amount": 2500000},
+        {"customer-name": "客户G", "customer-type": "SMB", "customer-level": "卓越", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 3000000, "previous-month-amount": 2500000, "current-month-amount": 2000000},
+        {"customer-name": "客户H", "customer-type": "KA", "customer-level": "战略", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2500000, "previous-month-amount": 2000000, "current-month-amount": 1500000},
+        {"customer-name": "客户I", "customer-type": "SMB", "customer-level": "核心", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 2000000, "previous-month-amount": 1500000, "current-month-amount": 1000000},
+        {"customer-name": "客户J", "customer-type": "KA", "customer-level": "卓越", "risk-type": "较1月 (<data>-1000000</data>)<br>较上月 (<data>-500000</data>)", "captured-at": "2026-02-28T23:59:59+08:00", "january-amount": 1500000, "previous-month-amount": 1000000, "current-month-amount": 500000}
       ]
     },
     "track-analysis": {

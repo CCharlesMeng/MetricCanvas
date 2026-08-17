@@ -187,6 +187,36 @@ describe('流水分析报告 DQE fixture', () => {
     }
   });
 
+  it('同比掉量原因返回负掉量与正月均流水两个受控内嵌值', () => {
+    const rows = fixture.queries['customer-yoy-drop-top']!.rows;
+
+    for (const row of rows) {
+      const reason = row.reason;
+      expect(typeof reason).toBe('string');
+      if (typeof reason !== 'string') continue;
+      expect(reason).not.toMatch(/<data\s/u);
+      expect(embeddedNumbers(reason)).toEqual([
+        -Number(row['drop-difference']),
+        Number(row['monthly-average'])
+      ]);
+    }
+  });
+
+  it('风险分类返回本月相对 1 月和上月的有符号差值', () => {
+    const rows = fixture.queries['customer-risk-top']!.rows;
+
+    for (const row of rows) {
+      const riskType = row['risk-type'];
+      expect(typeof riskType).toBe('string');
+      if (typeof riskType !== 'string') continue;
+      expect(riskType).not.toMatch(/<data\s/u);
+      expect(embeddedNumbers(riskType)).toEqual([
+        Number(row['current-month-amount']) - Number(row['january-amount']),
+        Number(row['current-month-amount']) - Number(row['previous-month-amount'])
+      ]);
+    }
+  });
+
   it('严格拒绝同字段但时间范围不匹配的查询', () => {
     const query = fixture.queries['flow-kpis']!;
     const item = dqeItem(query);
@@ -216,4 +246,11 @@ function dqeItem(query: FlowQueryFixture) {
     },
     order: query.order ?? {}
   };
+}
+
+function embeddedNumbers(source: string): number[] {
+  return Array.from(
+    source.matchAll(/<data>([+-]?(?:0|[1-9]\d*)(?:\.\d+)?)<\/data>/gu),
+    (match) => Number(match[1])
+  );
 }

@@ -6,7 +6,13 @@ import flowFixtureJson from '../../../tools/dqe-sim/fixtures/flow-analysis-repor
 type JsonRow = Record<string, string | number | boolean | null>;
 
 interface RawQuerySource {
-  fields: Record<string, { queryField: string }>;
+  fields: Record<string, {
+    queryField: string;
+    type: string;
+    role: string;
+    currency?: string;
+    defaultFormat?: string;
+  }>;
   source: {
     type: string;
     initial?: { capturedAt: string; rows: JsonRow[]; totalCount?: number };
@@ -36,6 +42,40 @@ const expectedSourceIds = [
   'customer-risk-top',
   'track-analysis',
   'industry-analysis'
+] as const;
+
+const expectedMoneyFields = [
+  'flow-kpis.annual-total',
+  'flow-kpis.current-month',
+  'flow-kpis.annual-projection',
+  'overall-monthly-trend.core-actual',
+  'overall-monthly-trend.communication-actual',
+  'overall-monthly-trend.core-forecast',
+  'overall-monthly-trend.communication-forecast',
+  'region-monthly-trend.stable-actual',
+  'region-monthly-trend.one-off-actual',
+  'region-monthly-trend.stable-forecast',
+  'region-monthly-trend.one-off-forecast',
+  'customer-growth-top.amount',
+  'customer-decline-top.amount',
+  'customer-decline-top.monthly-delta',
+  'customer-yoy-drop-top.drop-difference',
+  'customer-yoy-drop-top.monthly-average',
+  'customer-risk-top.january-amount',
+  'customer-risk-top.previous-month-amount',
+  'customer-risk-top.current-month-amount',
+  'track-analysis.annual-target',
+  'track-analysis.flow-amount',
+  'track-analysis.public-region-amount',
+  'track-analysis.current-month-amount',
+  'track-analysis.annual-projection',
+  'track-analysis.projection-growth',
+  'industry-analysis.annual-target',
+  'industry-analysis.flow-amount',
+  'industry-analysis.public-region-amount',
+  'industry-analysis.current-month-amount',
+  'industry-analysis.annual-projection',
+  'industry-analysis.projection-growth'
 ] as const;
 
 const fixture = flowFixtureJson as {
@@ -237,6 +277,69 @@ describe('流水分析报告页面文档', () => {
         (column) => !('dangerValues' in column) || column.dangerValues === undefined
       )
     ).toBe(true);
+  });
+
+  it('人民币字段完整迁移为 money/CNY，百分比继续保持 number', () => {
+    const sources: Record<string, RawQuerySource> = flowReportPageJson.dataSources;
+    const actualMoneyFields = Object.entries(sources).flatMap(([sourceId, source]) =>
+      Object.entries(source.fields)
+        .filter(([, field]) => field.type === 'money')
+        .map(([fieldName]) => `${sourceId}.${fieldName}`)
+    );
+
+    expect(actualMoneyFields).toEqual(expectedMoneyFields);
+    for (const path of expectedMoneyFields) {
+      const [sourceId, fieldName] = path.split('.');
+      expect(sources[sourceId]?.fields[fieldName], path).toMatchObject({
+        type: 'money',
+        role: 'measure',
+        currency: 'CNY',
+        defaultFormat: 'cny-adaptive'
+      });
+    }
+
+    const percentFields = Object.values(sources).flatMap((source) =>
+      Object.values(source.fields).filter((field) =>
+        field.defaultFormat?.startsWith('percent-')
+      )
+    );
+    expect(percentFields.length).toBeGreaterThan(0);
+    expect(percentFields.every((field) => field.type === 'number')).toBe(true);
+  });
+
+  it('两张客户表以对象绑定消费 semanticHtml/detail，掉量绝对值不启用 signed', () => {
+    const parsed = parsePage(flowReportPageJson);
+    if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+    const components = parsed.page.sections.flatMap((section) => section.components);
+    const yoy = components.find((component) => component.id === 'yoy-drop-table');
+    const risk = components.find((component) => component.id === 'risk-table');
+    if (yoy?.type !== 'table' || risk?.type !== 'table') {
+      throw new Error('目标客户表缺失');
+    }
+
+    expect(parsed.page.dataSources['customer-yoy-drop-top']?.fields.reason)
+      .toMatchObject({ type: 'semanticHtml', role: 'detail' });
+    expect(parsed.page.dataSources['customer-risk-top']?.fields['risk-type'])
+      .toMatchObject({ type: 'semanticHtml', role: 'detail' });
+    expect(yoy.props.columns.find((column) =>
+      column.kind !== 'group' &&
+      typeof column.field !== 'string' &&
+      column.field.field === 'reason'
+    )).toMatchObject({
+      field: { data: 'main', field: 'reason', format: 'cny-adaptive' },
+      visual: 'signed'
+    });
+    expect(risk.props.columns.find((column) =>
+      column.kind !== 'group' &&
+      typeof column.field !== 'string' &&
+      column.field.field === 'risk-type'
+    )).toMatchObject({
+      field: { data: 'main', field: 'risk-type', format: 'cny-adaptive' },
+      visual: 'signed'
+    });
+    expect(yoy.props.columns.find((column) =>
+      column.kind !== 'group' && column.field === 'drop-difference'
+    )).not.toHaveProperty('visual', 'signed');
   });
 
   it('三个摘要由页面文档直接返回受控语义 HTML text 正文，不声明 SSE AI 总结', () => {
