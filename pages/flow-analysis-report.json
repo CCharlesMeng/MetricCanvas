@@ -1629,7 +1629,8 @@
               "label": "数据统计时间截至",
               "value": "2026年2月28日"
             },
-            "subtitle": "截至本期，北京代表处整体流水保持平稳，Core流水仍是主要贡献来源，云通信流水延续增长。后续月份预测显示年度目标存在一定压力，建议持续关注重点客户掉量、一次性流水波动及公网Region流水目标达成情况。",
+            "subtitle": "<p>截至本期，北京代表处整体流水保持平稳，Core流水仍是主要贡献来源，云通信流水延续增长。后续月份预测显示年度目标存在一定压力，建议持续关注重点客户掉量、一次性流水波动及公网Region流水目标达成情况。</p>",
+            "subtitleFormat": "semanticHtml",
             "decoration": "shortBar"
           }
         }
@@ -1833,18 +1834,6 @@
                 ]
               }
             ]
-          }
-        },
-        {
-          "id": "risk-note",
-          "type": "text",
-          "layout": {
-            "span": 12
-          },
-          "props": {
-            "body": "基于当前流水表现及后续月份预测，年度目标达成存在一定压力，建议重点跟踪核心客户变化并及时调整经营动作。",
-            "variant": "riskNotice",
-            "maxWidth": 532
           }
         },
         {
@@ -2306,19 +2295,19 @@
                   "format": "cny-adaptive"
                 },
                 "title": "掉量原因",
-                "width": 100,
+                "width": 220,
                 "visual": "signed"
               },
               {
                 "field": "drop-difference",
                 "title": "掉量同比差值",
-                "width": 120,
+                "width": 100,
                 "align": "right"
               },
               {
                 "field": "monthly-average",
                 "title": "月均流水",
-                "width": 110,
+                "width": 90,
                 "align": "right"
               }
             ],

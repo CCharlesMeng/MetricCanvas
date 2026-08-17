@@ -433,6 +433,7 @@ date-month-day
 | `rankingDetailCard.props.semanticDescriptionField` | 直接渲染普通说明位置 |
 | `table.props.columns[].field` | 列字段绑定显式消费；对象绑定的 `format` 应用于全部 `<data>` |
 | `text.props.body` + `bodyFormat: "semanticHtml"` | 文本正文使用同一安全解析与语义颜色映射 |
+| `reportHeader.props.subtitle` + `subtitleFormat: "semanticHtml"` | 报告页头副标题使用同一安全解析与语义颜色映射 |
 
 表格列声明 `visual: "signed"` 时，只给 `<data>` 内嵌值映射正、负、中性样式，不给整个单元格染色。字符串字段绑定不能为内嵌值声明 `format`，也不为语义内嵌值继承字段级默认格式。
 
@@ -635,7 +636,8 @@ last90d
   "layout": { "span": 12 },
   "props": {
     "title": "经营简报",
-    "subtitle": "销售与客户概览",
+    "subtitle": "<p>销售与客户概览</p>",
+    "subtitleFormat": "semanticHtml",
     "generatedBy": "MetricCanvas",
     "badge": "月报",
     "asOf": { "label": "数据截至", "value": "2026-08-17" },
@@ -648,7 +650,8 @@ last90d
 | 属性 | 必填 | 允许值 / 说明 |
 |---|---:|---|
 | `title` | 是 | 非空页面标题 |
-| `subtitle` | 否 | 副标题 |
+| `subtitle` | 否 | 副标题字符串 |
+| `subtitleFormat` | 否 | 当前只允许 `semanticHtml`；省略时副标题始终按纯文本 |
 | `generatedBy` | 否 | 生成来源说明 |
 | `badge` | 否 | 徽标文本 |
 | `asOf` | 否 | `{ label, value }`，两者均为非空字符串 |

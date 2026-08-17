@@ -13,11 +13,13 @@
   let {
     source,
     inline = false,
+    toneWeight = 'emphasized',
     format,
     visual
   }: {
     source: string;
     inline?: boolean;
+    toneWeight?: 'emphasized' | 'regular';
     format?: ValueFormatPreset;
     visual?: 'signed';
   } = $props();
@@ -62,9 +64,13 @@
 
 {#if parsed.ok}
   {#if inline}
-    <span class="semantic-html inline">{@render renderNodes(parsed.document.nodes)}</span>
+    <span class:tone-regular={toneWeight === 'regular'} class="semantic-html inline"
+      >{@render renderNodes(parsed.document.nodes)}</span
+    >
   {:else}
-    <div class="semantic-html">{@render renderNodes(parsed.document.nodes)}</div>
+    <div class:tone-regular={toneWeight === 'regular'} class="semantic-html"
+      >{@render renderNodes(parsed.document.nodes)}</div
+    >
   {/if}
 {:else}
   <span class="semantic-html-error">内容格式不受支持</span>
@@ -110,6 +116,10 @@
   }
   .semantic-html :global(.tone-negative) {
     color: var(--mc-color-negative, #f5222d);
+  }
+  .semantic-html.tone-regular :global(.tone-positive),
+  .semantic-html.tone-regular :global(.tone-negative) {
+    font-weight: 400;
   }
   .semantic-html :global(.tone-neutral) {
     color: var(--mc-color-muted, #71717a);

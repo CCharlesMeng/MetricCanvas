@@ -700,6 +700,10 @@
     gap: 6px;
   }
   .compound-inline .cell-stack small {
+    padding: 2px 6px;
+    color: #1476ff;
+    background: rgb(20 118 255 / 0.08);
+    border-radius: 3px;
     font-size: 12px;
     line-height: 20px;
   }
@@ -970,7 +974,7 @@
   }
   .report-compact .content-frame {
     box-sizing: border-box;
-    padding: 6px;
+    padding: 0;
     overflow: visible;
     background: var(--mc-color-report-content-surface, #fcfcff);
     border-radius: var(--mc-radius-report-content, 12px);
@@ -980,10 +984,13 @@
   }
   .report-compact thead th {
     padding: 5px 8px;
-    border-right: 0;
+    border-right: 1px solid #d8deeb;
     border-bottom: 1px solid #d8deeb;
     font-size: 14px;
     line-height: 22px;
+  }
+  .report-compact thead th:last-child {
+    border-right: 0;
   }
   .report-compact tbody td {
     height: 42px;
@@ -1079,7 +1086,11 @@
   .fit-container table {
     table-layout: fixed;
   }
-  .fit-container thead th,
+  .fit-container thead th {
+    min-width: 0;
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
   .fit-container tbody td {
     min-width: 0;
     overflow-wrap: anywhere;

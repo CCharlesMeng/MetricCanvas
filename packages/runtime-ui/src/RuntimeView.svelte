@@ -63,6 +63,7 @@
   import WidgetHost from './WidgetHost.svelte';
   import { renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
+  import { resolveAuthoringSections } from './authoring-layout';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import {
     configurationError,
@@ -126,6 +127,12 @@
   let stream: PageSnapshotStream | null = null;
   let session = 0;
   let disposers: Array<() => void> = [];
+
+  const renderedSections = $derived.by(() =>
+    pageState.phase === 'ready'
+      ? resolveAuthoringSections(pageState.page.sections, authoring?.draftSections)
+      : []
+  );
 
   $effect(() => {
     void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId);
@@ -899,7 +906,7 @@
     {/if}
 
     <div class="page-sections">
-      {#each readyPage.sections as section (section.id)}
+      {#each renderedSections as section (section.id)}
         <RuntimeSection {section} {authoring}>
           {#snippet componentContent(component: Component)}
             {@render renderComponent(component, readyPage)}

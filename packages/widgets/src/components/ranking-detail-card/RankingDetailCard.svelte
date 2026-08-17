@@ -311,18 +311,18 @@
     flex: none;
   }
   .ranking-detail-card.report ol {
-    gap: 10px;
+    gap: 20px;
   }
   .ranking-detail-card.report .ranking-content {
-    padding: 20px 12px;
+    padding: 18px 12px;
     background: var(--mc-color-report-content-surface, #fcfcff);
     border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
     border-radius: var(--mc-radius-report-content, 12px);
   }
   .ranking-detail-card.report .ranking-detail-row {
-    min-height: 138px;
-    grid-template-columns: 26px minmax(0, 1fr);
-    gap: 10px;
+    min-height: 0;
+    grid-template-columns: 22px minmax(0, 1fr);
+    gap: 12px;
     padding: 0;
     background: transparent;
     border-radius: 0;
@@ -330,7 +330,7 @@
   .ranking-detail-card.report .detail {
     display: grid;
     align-content: start;
-    gap: 20px;
+    gap: 0;
   }
   .ranking-detail-card.report .rank,
   .ranking-detail-card.report .rank.top-three,
@@ -349,7 +349,7 @@
     line-height: 22px;
   }
   .ranking-detail-card.report .metric-line {
-    margin-top: 0;
+    margin-top: 16px;
     font-size: 18px;
     line-height: 28px;
   }
@@ -358,7 +358,7 @@
   }
   .ranking-detail-card.report p,
   .ranking-detail-card.report .semantic-description {
-    margin-top: 0;
+    margin-top: 12px;
     padding: 8px 10px;
     color: var(--mc-color-report-description, #595959);
     background: var(--mc-color-surface-subtle, #f1f4ff);
@@ -367,7 +367,7 @@
     line-height: 20px;
   }
   .ranking-detail-card.report .nested-details {
-    margin-top: 0;
+    margin-top: 12px;
     font-size: 14px;
   }
   .ranking-detail-card.report .nested-details p {

@@ -42,10 +42,17 @@
       <img src={sectionTitleRightUrl} alt="" aria-hidden="true" data-decorative-icon="section-title-right" />
     </span>
   {:else if props.variant === 'reportInline'}
-    <span class="inline-prefix">
+    <div class="inline-prefix">
       <img class="inline-icon" src={aiSummaryIconUrl} alt="" aria-hidden="true" />
-      <strong class="inline-label">{props.title ?? 'AI 总结'}：</strong>
-    </span>
+      <div class="inline-content">
+        <strong class="inline-label">{props.title ?? 'AI 总结'}：</strong>
+        {#if props.body && props.bodyFormat === 'semanticHtml'}
+          <div class="body semantic-body">
+            <SemanticHtml source={props.body} inline toneWeight="regular" />
+          </div>
+        {:else if props.body}<p class="body">{props.body}</p>{/if}
+      </div>
+    </div>
   {:else if props.title && !props.body && links.length === 0}
     <span class="heading">{props.title}</span>
   {:else if props.title}<h3 class="heading">{props.title}</h3>{/if}
@@ -58,11 +65,13 @@
       data-decorative-icon="risk-warning"
     />
   {/if}
-  {#if props.body && props.bodyFormat === 'semanticHtml'}
-    <div class="body semantic-body">
-      <SemanticHtml source={props.body} inline={props.variant === 'reportInline'} />
-    </div>
-  {:else if props.body}<p class="body">{props.body}</p>{/if}
+  {#if props.variant !== 'reportInline'}
+    {#if props.body && props.bodyFormat === 'semanticHtml'}
+      <div class="body semantic-body">
+        <SemanticHtml source={props.body} />
+      </div>
+    {:else if props.body}<p class="body">{props.body}</p>{/if}
+  {/if}
   {#if links.length > 0}
     <nav class="links">
       {#each links as link (link.label + link.href)}
@@ -96,28 +105,30 @@
     box-sizing: border-box;
     width: 100%;
     min-width: 0;
-    padding: 13px 16px 13px 28px;
+    padding: 10px 14px;
     color: #191919;
     background: var(--mc-color-surface-subtle, #f1f4ff);
     border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
     border-radius: var(--mc-radius-report-content, 12px);
     font-size: 18px;
     font-weight: 400;
-    line-height: 32px;
+    line-height: 26px;
   }
   .report-inline .inline-prefix {
-    display: inline-flex;
-    align-items: center;
+    display: grid;
+    align-items: start;
     gap: 6px;
-    margin-right: 4px;
-    vertical-align: top;
-    white-space: nowrap;
+    grid-template-columns: 20px minmax(0, 1fr);
   }
   .report-inline .inline-icon {
     width: 20px;
     height: 20px;
     flex: none;
+    margin-top: 3px;
     object-fit: contain;
+  }
+  .report-inline .inline-content {
+    min-width: 0;
   }
   .report-inline .inline-label {
     flex: none;
@@ -227,7 +238,7 @@
   .report-inline .semantic-body {
     --mc-semantic-description-color: #191919;
     --mc-semantic-font-size: 18px;
-    --mc-semantic-line-height: 32px;
+    --mc-semantic-line-height: 26px;
   }
   .links {
     display: flex;

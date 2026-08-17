@@ -18,6 +18,23 @@ function textDocument(): Record<string, any> {
   };
 }
 
+function reportHeaderDocument(): Record<string, any> {
+  return {
+    schemaVersion: '5.0',
+    id: 'report-header-title',
+    dataSources: {},
+    sections: [{
+      id: 'content',
+      components: [{
+        id: 'report-header',
+        type: 'reportHeader',
+        layout: { span: 12 },
+        props: { title: '经营简报', subtitle: '正文' }
+      }]
+    }]
+  };
+}
+
 describe('组件标题 Props 规范', () => {
   it('text 使用 props.title 并拒绝旧 heading', () => {
     expect(validate(textDocument())).toEqual([]);
@@ -45,6 +62,24 @@ describe('组件标题 Props 规范', () => {
     expect(validate(unsupported)).toEqual(
       expect.arrayContaining([
         expect.objectContaining({ path: '/sections/0/components/0/props/bodyFormat' })
+      ])
+    );
+  });
+
+  it('reportHeader 只在显式声明时把 subtitle 解释为受控语义 HTML', () => {
+    const semantic = reportHeaderDocument();
+    semantic.sections[0].components[0].props = {
+      title: '经营简报',
+      subtitle: '<p><strong>销售</strong>保持增长</p>',
+      subtitleFormat: 'semanticHtml'
+    };
+    expect(validate(semantic)).toEqual([]);
+
+    const unsupported = reportHeaderDocument();
+    unsupported.sections[0].components[0].props.subtitleFormat = 'html';
+    expect(validate(unsupported)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ path: '/sections/0/components/0/props/subtitleFormat' })
       ])
     );
   });
