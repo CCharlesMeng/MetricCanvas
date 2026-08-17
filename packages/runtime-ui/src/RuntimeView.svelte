@@ -42,6 +42,7 @@
     RankingCard,
     RankingDetailCard,
     ReportHeader,
+    sectionGradientPanelUrl,
     Table,
     TextBlock,
     buildTableColumnLayout,
@@ -62,6 +63,7 @@
   import WidgetHost from './WidgetHost.svelte';
   import { renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
+  import { resolveAuthoringSections } from './authoring-layout';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import {
     configurationError,
@@ -125,6 +127,12 @@
   let stream: PageSnapshotStream | null = null;
   let session = 0;
   let disposers: Array<() => void> = [];
+
+  const renderedSections = $derived.by(() =>
+    pageState.phase === 'ready'
+      ? resolveAuthoringSections(pageState.page.sections, authoring?.draftSections)
+      : []
+  );
 
   $effect(() => {
     void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId);
@@ -840,7 +848,10 @@
   {/if}
 {/snippet}
 
-<div class="runtime-view">
+<div
+  class="runtime-view"
+  style:--mc-section-gradient={`url("${sectionGradientPanelUrl}")`}
+>
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'configuration-error'}
@@ -895,7 +906,7 @@
     {/if}
 
     <div class="page-sections">
-      {#each readyPage.sections as section (section.id)}
+      {#each renderedSections as section (section.id)}
         <RuntimeSection {section} {authoring}>
           {#snippet componentContent(component: Component)}
             {@render renderComponent(component, readyPage)}
@@ -937,8 +948,6 @@
     --mc-radius-cell: 10px;
     --mc-radius-report-content: 12px;
     --mc-radius-section: 16px;
-    --mc-section-gradient: url('./assets/section-gradient-panel.svg');
-
     /* 分区面板外观真源:RuntimeSection(container-panel) 与 ReportHeader 摘要区共用。 */
     --mc-section-panel-padding: 15px 28px 29px;
     --mc-section-panel-background: var(--mc-section-gradient) no-repeat center / 100% 100%;

@@ -6,13 +6,18 @@ import {
   type ExecutedDataRequestUnit
 } from '@metriccanvas/mcp';
 import { validate, type QueryFieldDefinition } from '@metriccanvas/page';
+import {
+  normalizeAuthoringDropTarget,
+  type AuthoringDraftSection,
+  type AuthoringDropTarget
+} from '@metriccanvas/runtime-ui/types';
 
 /**
  * 画布与配置面板的本地文档改写(#65 检查器):全部为纯函数,输入输出都是
- * 已过校验的页面文档,出口一律重新 validate——组件类型替换复用装配唯一
- * 实现(assembleTransientPage)推导新组件 props,不在这里手写第二份组件
- * 构造逻辑(真元归一)。改写只动呈现层(组件类型/顺序/标题/宽度),
- * 查询定义与内嵌初始行原样保留,不触发重新取数。
+ * 创作态使用原子双投影：canvasDocument 允许内容分区暂时为空，
+ * pageDocument 非破坏性忽略空分区后整体 validate，是查询、Agent、保存、
+ * 沉淀与 metadata 的唯一输入。组件类型替换复用装配唯一实现
+ * (assembleTransientPage)推导新组件 props，不手写第二份组件构造逻辑。
  */
 
 export interface ComponentLocator {
@@ -20,9 +25,29 @@ export interface ComponentLocator {
   componentId: string;
 }
 
+export type ComponentDropTarget = AuthoringDropTarget;
+
+export interface CanvasAuthoringDraft {
+  /** 画布唯一真源；移动最后一个组件后保留空内容分区的身份和顺序。 */
+  canvasDocument: Record<string, unknown>;
+  /** 正式消费者唯一输入；空内容分区已过滤且通过完整页面校验。 */
+  pageDocument: Record<string, unknown>;
+  /** Runtime 只用这份轻量排布覆盖正式页面的 Section 渲染顺序。 */
+  authoringSections: AuthoringDraftSection[];
+}
+
 export type DocumentEditResult =
-  | { ok: true; document: Record<string, unknown> }
+  | { ok: true; draft: CanvasAuthoringDraft }
   | { ok: false; message: string };
+
+/** 只从正式有效 PageDocument 建立创作草稿；外部无效文档不得借草稿层进入。 */
+export function createCanvasAuthoringDraft(
+  document: Record<string, unknown>
+): DocumentEditResult {
+  const errors = validate(document);
+  if (errors.length > 0) return invalidResult(errors);
+  return projectCanvasDraft(jsonClone(document));
+}
 
 /** 由文档数据源反推取数单元(装配输入):字段契约、查询定义与内嵌初始行。 */
 export function unitOfDataSource(
@@ -81,11 +106,11 @@ export function componentCandidatesFor(
  * 用户调过的宽度与数据槽),出口整体 validate。
  */
 export function changeComponentType(
-  document: Record<string, unknown>,
+  draft: CanvasAuthoringDraft,
   locator: ComponentLocator,
   newType: ComponentCandidate['type']
 ): DocumentEditResult {
-  const next = jsonClone(document);
+  const next = jsonClone(draft.canvasDocument);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
   const dataSourceId =
@@ -114,38 +139,49 @@ export function changeComponentType(
 
   component.type = rebuilt.type;
   component.props = rebuilt.props;
-  return validated(next);
+  return projectCanvasDraft(next);
 }
 
-/** 组件重排:把 source 移动到 before 之前(支持跨分区)。 */
+/**
+ * 组件重排：把 source 移动到目标内容分区的插槽。
+ * 插槽索引基于拖拽开始前的目标组件数组，支持首位、组件之间与末位。
+ */
 export function moveComponent(
-  document: Record<string, unknown>,
+  draft: CanvasAuthoringDraft,
   source: ComponentLocator,
-  before: ComponentLocator
+  destination: ComponentDropTarget
 ): DocumentEditResult {
-  const next = jsonClone(document);
+  const next = jsonClone(draft.canvasDocument);
   const fromSection = findSection(next, source.sectionId);
-  const toSection = findSection(next, before.sectionId);
+  const toSection = findSection(next, destination.sectionId);
   if (!fromSection || !toSection) return { ok: false, message: '分区不存在' };
   const fromIndex = componentIndex(fromSection, source.componentId);
   if (fromIndex < 0) return { ok: false, message: '被移动的组件不在当前文档里' };
-  const [moved] = (fromSection.components as unknown[]).splice(fromIndex, 1);
-  const toIndex = componentIndex(toSection, before.componentId);
-  if (toIndex < 0) {
-    (fromSection.components as unknown[]).splice(fromIndex, 0, moved);
-    return { ok: false, message: '目标位置不在当前文档里' };
+  const destinationComponents = toSection.components as unknown[];
+  const normalized = normalizeAuthoringDropTarget(
+    { sectionId: source.sectionId, index: fromIndex },
+    destination,
+    destinationComponents.length
+  );
+  if (normalized.kind === 'invalid') {
+    return { ok: false, message: '目标插槽不在当前文档里' };
   }
-  (toSection.components as unknown[]).splice(toIndex, 0, moved);
-  return validated(next);
+  if (normalized.kind === 'unchanged') {
+    return { ok: true, draft };
+  }
+
+  const [moved] = (fromSection.components as unknown[]).splice(fromIndex, 1);
+  destinationComponents.splice(normalized.destination.index, 0, moved);
+  return projectCanvasDraft(next);
 }
 
 /** 组件标题与宽度编辑;宽度夹取在 1–12 列。 */
 export function editComponent(
-  document: Record<string, unknown>,
+  draft: CanvasAuthoringDraft,
   locator: ComponentLocator,
   edit: { title?: string; span?: number }
 ): DocumentEditResult {
-  const next = jsonClone(document);
+  const next = jsonClone(draft.canvasDocument);
   const component = findComponent(next, locator);
   if (!component) return { ok: false, message: '选中的组件不在当前文档里' };
   if (edit.title !== undefined) {
@@ -159,7 +195,7 @@ export function editComponent(
     layout.span = Math.min(12, Math.max(1, Math.round(edit.span)));
     component.layout = layout;
   }
-  return validated(next);
+  return projectCanvasDraft(next);
 }
 
 /** 由组件 id 反查其完整定位(检查器清单点击联动画布选中用)。 */
@@ -178,12 +214,70 @@ export function locatorOfComponent(
   return null;
 }
 
-function validated(document: Record<string, unknown>): DocumentEditResult {
-  const errors = validate(document);
-  if (errors.length > 0) {
-    return { ok: false, message: errors.map((error) => error.message).join('、') };
+function projectCanvasDraft(
+  canvasDocument: Record<string, unknown>
+): DocumentEditResult {
+  const authoringSections = authoringSectionsOf(canvasDocument);
+  if (authoringSections === null) {
+    return { ok: false, message: '创作草稿的内容分区结构无效' };
   }
-  return { ok: true, document };
+
+  const pageDocument = jsonClone(canvasDocument);
+  if (Array.isArray(pageDocument.sections)) {
+    pageDocument.sections = pageDocument.sections.filter((value) => {
+      const section = recordOf(value);
+      return !section || !Array.isArray(section.components) || section.components.length > 0;
+    });
+  }
+  const errors = validate(pageDocument);
+  if (errors.length > 0) {
+    return invalidResult(errors);
+  }
+  return {
+    ok: true,
+    draft: { canvasDocument, pageDocument, authoringSections }
+  };
+}
+
+function authoringSectionsOf(
+  document: Record<string, unknown>
+): AuthoringDraftSection[] | null {
+  if (!Array.isArray(document.sections)) return null;
+  const result: AuthoringDraftSection[] = [];
+  for (const value of document.sections) {
+    const section = recordOf(value);
+    if (!section || typeof section.id !== 'string' || !Array.isArray(section.components)) {
+      return null;
+    }
+    if (section.title !== undefined && typeof section.title !== 'string') return null;
+    if (
+      section.container !== undefined &&
+      section.container !== 'plain' &&
+      section.container !== 'panel' &&
+      section.container !== 'card'
+    ) {
+      return null;
+    }
+    const componentIds: string[] = [];
+    for (const componentValue of section.components) {
+      const component = recordOf(componentValue);
+      if (!component || typeof component.id !== 'string') return null;
+      componentIds.push(component.id);
+    }
+    result.push({
+      id: section.id,
+      ...(section.title === undefined ? {} : { title: section.title }),
+      ...(section.container === undefined ? {} : { container: section.container }),
+      componentIds
+    });
+  }
+  return result;
+}
+
+function invalidResult(
+  errors: ReturnType<typeof validate>
+): Extract<DocumentEditResult, { ok: false }> {
+  return { ok: false, message: errors.map((error) => error.message).join('、') };
 }
 
 interface MutableComponent extends Record<string, unknown> {

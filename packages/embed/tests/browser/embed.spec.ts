@@ -650,7 +650,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
               type: 'text',
               layout: { span: 12 },
               props: {
-                body: '<span>重点客户流水保持稳定。</span>',
+                body: '<span><span class="detail-title tone-positive">增长客户：</span><span class="detail-description">重点客户流水保持稳定。</span><span class="detail-title tone-negative">风险客户：</span><span class="detail-description">需要持续跟踪。</span></span>',
                 bodyFormat: 'semanticHtml',
                 variant: 'reportInline'
               }
@@ -689,6 +689,9 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   const summaries = host.locator('.text-block.report-inline');
   const summary = summaries.first();
   const longSummary = summaries.nth(1);
+  const summaryIcon = summary.locator('.inline-icon');
+  const positiveText = summary.locator('.tone-positive');
+  const negativeText = summary.locator('.tone-negative');
   const metricPanel = host.locator('.metric-panel');
 
   await expect(summaries).toHaveCount(2);
@@ -701,14 +704,25 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
     ]);
     return Boolean(shortBox && longBox && shortBox.height < 122 && longBox.height > shortBox.height);
   }).toBe(true);
-  await expect(summary).toHaveCSS('padding', '13px 16px 13px 28px');
+  await expect(summary).toHaveCSS('padding', '10px 14px');
   await expect(summary).toHaveCSS('background-color', 'rgb(241, 244, 255)');
   await expect(summary).toHaveCSS('border-color', 'rgb(212, 213, 255)');
   await expect(summary).toHaveCSS('border-style', 'solid');
   await expect(summary).toHaveCSS('border-width', '1px');
   await expect(summary).toHaveCSS('border-radius', '12px');
   await expect(summary).toHaveCSS('font-size', '18px');
-  await expect(summary).toHaveCSS('line-height', '32px');
+  await expect(summary).toHaveCSS('line-height', '26px');
+  await expect(summary.locator('.inline-prefix')).toHaveCSS('display', 'grid');
+  await expect(summaryIcon).toHaveCSS('margin-top', '3px');
+  await expect.poll(async () => {
+    const [iconBox, contentBox] = await Promise.all([
+      summaryIcon.boundingBox(),
+      summary.locator('.inline-content').boundingBox()
+    ]);
+    return Boolean(iconBox && contentBox && Math.abs(contentBox.x - iconBox.x - 26) <= 1);
+  }).toBe(true);
+  await expect(positiveText).toHaveCSS('font-weight', '400');
+  await expect(negativeText).toHaveCSS('font-weight', '400');
 
   await expect(metricPanel).toHaveCSS('background-color', 'rgb(241, 244, 255)');
   await expect(metricPanel).toHaveCSS('border-color', 'rgb(212, 213, 255)');
@@ -717,7 +731,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   await expect(metricPanel).toHaveCSS('border-radius', '12px');
 });
 
-test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层', async ({ page }) => {
+test('reportCompact 内容层与表格等宽且无滚动层', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/examples/inline.html');
   const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
@@ -744,7 +758,8 @@ test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层'
   const tables = reportTables.getByRole('table');
   await expect(frames).toHaveCount(2);
   await expect(reportTables.locator('.scroll')).toHaveCount(0);
-  await expect(frames.first()).toHaveCSS('padding', '6px');
+  await expect(frames.first()).toHaveCSS('border-width', '0px');
+  await expect(frames.first()).toHaveCSS('padding', '0px');
   await expect(frames.first()).toHaveCSS('overflow', 'visible');
   await expect(tables.first()).toHaveCSS('border-radius', '0px');
   await expect.poll(async () =>
@@ -756,13 +771,120 @@ test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层'
       const tableRect = table.getBoundingClientRect();
       const border = frame.clientLeft;
       return (
-        Math.abs(tableRect.left - frameRect.left - border - 6) <= 1 &&
-        Math.abs(tableRect.top - frameRect.top - border - 6) <= 1 &&
-        Math.abs(frameRect.right - border - tableRect.right - 6) <= 1 &&
-        Math.abs(frameRect.bottom - border - tableRect.bottom - 6) <= 1
+        Math.abs(tableRect.left - frameRect.left - border) <= 1 &&
+        Math.abs(tableRect.top - frameRect.top - border) <= 1 &&
+        Math.abs(frameRect.right - border - tableRect.right) <= 1 &&
+        Math.abs(frameRect.bottom - border - tableRect.bottom) <= 1
       );
     })
   ).toBe(true);
+});
+
+test('流水报告表头、分析宽度与客户标签保持统一', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/examples/inline.html');
+  const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
+    const response = await fetch('/pages/flow-analysis-report.json');
+    return response.json() as Promise<FlowReportDocument>;
+  });
+  await page.evaluate((document: FlowReportDocument) => {
+    window.runtime.destroy();
+    const pendingData = new Promise<DataGatewayResult>(() => {});
+    MetricCanvas.mount('#dashboard', {
+      document,
+      dataGateway: {
+        async fetchData() {
+          return pendingData;
+        }
+      }
+    });
+  }, flowReportDocument);
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const yoyDifferenceHeader = host.locator(
+    '[data-component="customer-analysis/yoy-drop-table"] th[data-column-field="drop-difference"]'
+  );
+  const analysisSections = host.locator(
+    '[data-section-id="track-analysis"], [data-section-id="industry-analysis"]'
+  );
+  const reportTableHeaderRows = host.locator(
+    '[data-component-type="table"] thead tr'
+  );
+  const customerTagCells = host.locator(
+    '[data-component="customer-analysis/yoy-drop-table"] tbody tr:first-child td[data-column-field="customer-name"], '
+      + '[data-component="customer-analysis/risk-table"] tbody tr:first-child td[data-column-field="customer-name"]'
+  );
+
+  expect.soft(await yoyDifferenceHeader.evaluate((header) => {
+    const head = header.querySelector('.head');
+    if (!(head instanceof HTMLElement)) return null;
+    const style = getComputedStyle(header);
+    return {
+      whiteSpace: style.whiteSpace,
+      singleLine: head.getBoundingClientRect().height <= Number.parseFloat(style.lineHeight) + 1,
+      fits: header.scrollWidth <= header.clientWidth
+    };
+  })).toEqual({ whiteSpace: 'nowrap', singleLine: true, fits: true });
+  expect.soft(await analysisSections.evaluateAll((sections) =>
+    sections.map((section) => {
+      const summary = section.querySelector('.text-block.report-inline');
+      const table = section.querySelector('table');
+      if (!(summary instanceof HTMLElement) || !(table instanceof HTMLTableElement)) return null;
+      return Math.round(summary.getBoundingClientRect().width - table.getBoundingClientRect().width);
+    })
+  )).toEqual([0, 0]);
+  expect.soft(await customerTagCells.evaluateAll((cells) =>
+    cells.map((cell) => Array.from(cell.querySelectorAll('small')).map((tag) => {
+      const style = getComputedStyle(tag);
+      return {
+        color: style.color,
+        backgroundColor: style.backgroundColor,
+        borderRadius: style.borderRadius,
+        padding: style.padding
+      };
+    }))
+  )).toEqual([
+    [
+      {
+        color: 'rgb(20, 118, 255)',
+        backgroundColor: 'rgba(20, 118, 255, 0.08)',
+        borderRadius: '3px',
+        padding: '2px 6px'
+      },
+      {
+        color: 'rgb(20, 118, 255)',
+        backgroundColor: 'rgba(20, 118, 255, 0.08)',
+        borderRadius: '3px',
+        padding: '2px 6px'
+      }
+    ],
+    [
+      {
+        color: 'rgb(20, 118, 255)',
+        backgroundColor: 'rgba(20, 118, 255, 0.08)',
+        borderRadius: '3px',
+        padding: '2px 6px'
+      },
+      {
+        color: 'rgb(20, 118, 255)',
+        backgroundColor: 'rgba(20, 118, 255, 0.08)',
+        borderRadius: '3px',
+        padding: '2px 6px'
+      }
+    ]
+  ]);
+  expect.soft(await reportTableHeaderRows.evaluateAll((rows) =>
+    rows.every((row) =>
+      Array.from(row.querySelectorAll('th')).every((header, index, headers) => {
+        const style = getComputedStyle(header);
+        return index === headers.length - 1
+          ? style.borderRightWidth === '0px'
+          : style.borderRightWidth === '1px' &&
+              style.borderRightStyle === 'solid' &&
+              style.borderRightColor === 'rgb(216, 222, 235)';
+      })
+    )
+  )).toBe(true);
 });
 
 test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态', async ({ page }) => {
@@ -829,6 +951,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   }, flowReportDocument);
 
   const host = page.locator('[data-metriccanvas-runtime]');
+  const analysisTableFrames = host
+    .locator('[data-section-id="track-analysis"], [data-section-id="industry-analysis"]')
+    .locator('[data-component-type="table"] .content-frame');
   await expect(
     host.getByRole('heading', { name: '2026年2月流水分析报告' })
   ).toBeVisible();
@@ -838,6 +963,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-component-type="rankingDetailCard"]')).toHaveCount(2);
   await expect(host.getByRole('table')).toHaveCount(4);
   await expect(host.locator('.ai-summary')).toHaveCount(0);
+  await expect(analysisTableFrames).toHaveCount(2);
+  await expect(analysisTableFrames.first()).toHaveCSS('border-width', '0px');
+  await expect(analysisTableFrames.last()).toHaveCSS('border-width', '0px');
   const customerAnalysis = host.locator('[data-section-id="customer-analysis"]');
   const customerAnalysisTitle = customerAnalysis.locator(':scope > .section-title');
   const customerReportTables = customerAnalysis.locator('[data-component-type="table"]');
@@ -858,14 +986,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(customerReportTableTitles).toHaveCount(2);
   await expect(customerReportTableTitles.first()).toHaveCSS('font-size', '18px');
   await expect(customerReportTableFrames).toHaveCount(2);
-  await expect(customerReportTableFrames.first()).toHaveCSS(
-    'border-color',
-    'rgb(212, 213, 255)'
-  );
-  await expect(customerReportTableFrames.first()).toHaveCSS('border-style', 'solid');
-  await expect(customerReportTableFrames.first()).toHaveCSS('border-width', '1px');
+  await expect(customerReportTableFrames.first()).toHaveCSS('border-width', '0px');
   await expect(customerReportTableFrames.first()).toHaveCSS('border-radius', '12px');
-  await expect(customerReportTableFrames.first()).toHaveCSS('padding', '6px');
+  await expect(customerReportTableFrames.first()).toHaveCSS('padding', '0px');
   await expect(customerReportTableFrames.first()).toHaveCSS('overflow', 'visible');
   await expect(customerReportTableFrames.first()).toHaveCSS(
     'background-color',
@@ -885,15 +1008,16 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       const tableRect = tableElement.getBoundingClientRect();
       const border = frameElement.clientLeft;
       return (
-        Math.abs(tableRect.left - frameRect.left - border - 6) <= 1 &&
-        Math.abs(tableRect.top - frameRect.top - border - 6) <= 1 &&
-        Math.abs(frameRect.right - border - tableRect.right - 6) <= 1 &&
-        Math.abs(frameRect.bottom - border - tableRect.bottom - 6) <= 1
+        Math.abs(tableRect.left - frameRect.left - border) <= 1 &&
+        Math.abs(tableRect.top - frameRect.top - border) <= 1 &&
+        Math.abs(frameRect.right - border - tableRect.right) <= 1 &&
+        Math.abs(frameRect.bottom - border - tableRect.bottom) <= 1
       );
     })
   ).toBe(true);
   await expect(reportRankingTitles).toHaveCount(1);
   await expect(reportRankingTitles.first()).toHaveCSS('margin-bottom', '6px');
+  await expect(reportRankingFrames.first()).toHaveCSS('padding', '18px 12px');
   await expect.poll(async () => {
     const [title, frame] = await Promise.all([
       reportRankingTitles.first().boundingBox(),
@@ -905,11 +1029,16 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
     firstReportRanking.evaluate((card) => {
       const frame = card.querySelector('.ranking-content');
       const row = card.querySelector('.ranking-detail-row');
+      const nextRow = row?.nextElementSibling;
+      const rank = row?.querySelector('.rank');
       const headline = row?.querySelector('.headline');
       const metric = row?.querySelector('.metric-line');
       const description = row?.querySelector('.semantic-description, p');
       if (
         !(frame instanceof HTMLElement) ||
+        !(row instanceof HTMLElement) ||
+        !(nextRow instanceof HTMLElement) ||
+        !(rank instanceof HTMLElement) ||
         !(headline instanceof HTMLElement) ||
         !(metric instanceof HTMLElement) ||
         !(description instanceof HTMLElement)
@@ -917,19 +1046,26 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
         return null;
       }
       const frameRect = frame.getBoundingClientRect();
+      const rowRect = row.getBoundingClientRect();
+      const nextRowRect = nextRow.getBoundingClientRect();
+      const rankRect = rank.getBoundingClientRect();
       const headlineRect = headline.getBoundingClientRect();
       const metricRect = metric.getBoundingClientRect();
       const descriptionRect = description.getBoundingClientRect();
       return {
         frameToHeadline: Math.round(headlineRect.top - frameRect.top - frame.clientTop),
+        rankToHeadline: Math.round(headlineRect.left - rankRect.right),
         headlineToMetric: Math.round(metricRect.top - headlineRect.bottom),
-        metricToDescription: Math.round(descriptionRect.top - metricRect.bottom)
+        metricToDescription: Math.round(descriptionRect.top - metricRect.bottom),
+        rowGap: Math.round(nextRowRect.top - rowRect.bottom)
       };
     })
   ).toEqual({
-    frameToHeadline: 20,
-    headlineToMetric: 20,
-    metricToDescription: 20
+    frameToHeadline: 18,
+    rankToHeadline: 12,
+    headlineToMetric: 16,
+    metricToDescription: 12,
+    rowGap: 20
   });
   await expect
     .poll(async () =>
@@ -972,14 +1108,14 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       )
     )
   ).toBe(true);
-  await expect(summaries.first()).toHaveCSS('padding', '13px 16px 13px 28px');
+  await expect(summaries.first()).toHaveCSS('padding', '10px 14px');
   await expect(summaries.first()).toHaveCSS('background-color', 'rgb(241, 244, 255)');
   await expect(summaries.first()).toHaveCSS('border-color', 'rgb(212, 213, 255)');
   await expect(summaries.first()).toHaveCSS('border-style', 'solid');
   await expect(summaries.first()).toHaveCSS('border-width', '1px');
   await expect(summaries.first()).toHaveCSS('border-radius', '12px');
   await expect(summaries.first()).toHaveCSS('font-size', '18px');
-  await expect(summaries.first()).toHaveCSS('line-height', '32px');
+  await expect(summaries.first()).toHaveCSS('line-height', '26px');
   await expect(host.getByText('增长客户：', { exact: true })).toHaveCSS(
     'color',
     'rgb(82, 196, 26)'
@@ -1013,16 +1149,25 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   const pageContent = host.locator('.page-content');
   const reportHeader = host.locator('.report-header.short-bar');
   const reportCover = reportHeader.locator('.report-cover');
+  const reportTitle = reportCover.locator('h1');
   const reportGeneratedBy = reportCover.locator('.generated-by');
   const reportSummary = reportHeader.locator('.report-summary');
   const reportSummaryFrame = reportSummary.locator('.report-summary-frame');
-  const reportSummaryBody = reportSummaryFrame.locator('p');
+  const reportSummaryBody = reportSummaryFrame.locator('.report-summary-content');
   const overviewMetricPanels = host.locator(
     '[data-section-id="flow-overview"] .metric-panel'
   );
   const reportMetricPanels = host.locator('[data-component-type="metricCard"] .metric-panel');
   const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
   await expect(reportCover).toHaveCount(1);
+  await expect.poll(async () => reportTitle.evaluate((title) => {
+    const titleStyle = getComputedStyle(title);
+    const decorationStyle = getComputedStyle(title, '::after');
+    const lineHeight = Number.parseFloat(titleStyle.lineHeight);
+    const fontSize = Number.parseFloat(titleStyle.fontSize);
+    const expectedTop = title.clientHeight - (lineHeight - fontSize) / 2;
+    return Math.abs(Number.parseFloat(decorationStyle.top) - expectedTop) <= 1;
+  })).toBe(true);
   await expect.poll(async () => {
     const [contentRect, coverRect, generatedByRect, summaryRect] = await Promise.all([
       pageContent.boundingBox(),
@@ -1047,6 +1192,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(reportSummaryFrame).toHaveCSS('border-width', '0px');
   await expect(reportSummaryFrame).toHaveCSS('border-radius', '16px');
   await expect(reportSummaryFrame).toHaveCSS('padding', '15px 16px');
+  await expect(reportSummaryBody.locator('p')).toHaveCount(1);
   await expect(reportSummaryBody).toHaveCSS('border-color', 'rgb(212, 213, 255)');
   await expect(reportSummaryBody).toHaveCSS('border-style', 'solid');
   await expect(reportSummaryBody).toHaveCSS('border-width', '1px');
@@ -1498,8 +1644,50 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
   const declineRows = host.locator(
     '[data-component="customer-analysis/decline-ranking"] .ranking-detail-row'
   );
+  const growthFrame = host.locator(
+    '[data-component="customer-analysis/growth-ranking"] .ranking-content'
+  );
   await expect(growthRows).toHaveCount(3);
   await expect(declineRows).toHaveCount(3);
+  await expect(growthFrame).toHaveCSS('padding', '18px 12px');
+  await expect.poll(async () =>
+    growthFrame.evaluate((frame) => {
+      const rows = frame.querySelectorAll('.ranking-detail-row');
+      const firstRow = rows[0];
+      const secondRow = rows[1];
+      const rank = firstRow?.querySelector('.rank');
+      const headline = firstRow?.querySelector('.headline');
+      const metric = firstRow?.querySelector('.metric-line');
+      const description = firstRow?.querySelector('.semantic-description');
+      if (
+        !(firstRow instanceof HTMLElement) ||
+        !(secondRow instanceof HTMLElement) ||
+        !(rank instanceof HTMLElement) ||
+        !(headline instanceof HTMLElement) ||
+        !(metric instanceof HTMLElement) ||
+        !(description instanceof HTMLElement)
+      ) {
+        return null;
+      }
+      const firstRowRect = firstRow.getBoundingClientRect();
+      const secondRowRect = secondRow.getBoundingClientRect();
+      const rankRect = rank.getBoundingClientRect();
+      const headlineRect = headline.getBoundingClientRect();
+      const metricRect = metric.getBoundingClientRect();
+      const descriptionRect = description.getBoundingClientRect();
+      return {
+        rankToHeadline: Math.round(headlineRect.left - rankRect.right),
+        headlineToMetric: Math.round(metricRect.top - headlineRect.bottom),
+        metricToDescription: Math.round(descriptionRect.top - metricRect.bottom),
+        rowGap: Math.round(secondRowRect.top - firstRowRect.bottom)
+      };
+    })
+  ).toEqual({
+    rankToHeadline: 12,
+    headlineToMetric: 16,
+    metricToDescription: 12,
+    rowGap: 20
+  });
   await expect.poll(async () => {
     const [growthBoxes, declineBoxes] = await Promise.all([
       growthRows.evaluateAll((rows) => rows.map((row) => row.getBoundingClientRect())),

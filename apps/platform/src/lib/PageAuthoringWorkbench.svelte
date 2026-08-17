@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { onMount, tick } from 'svelte';
   import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
   import { RuntimeView, type AuthoringIntent } from '@metriccanvas/runtime-ui';
@@ -12,6 +12,10 @@
     type PinnedComponentChoice,
     type ScopeCardConfirmationChoice
   } from './workbench/agent-request';
+  import {
+    canSubmitComposer,
+    shouldSubmitComposerKeydown
+  } from './workbench/composer-behavior';
   import {
     applyOutcome,
     applyStreamEvent,
@@ -31,15 +35,18 @@
   import {
     changeComponentType,
     componentCandidatesFor,
+    createCanvasAuthoringDraft,
     editComponent,
     locatorOfComponent,
     moveComponent,
     type ComponentLocator,
+    type CanvasAuthoringDraft,
     type DocumentEditResult
   } from './workbench/document-edit';
   import CandidatesCard from './workbench/CandidatesCard.svelte';
   import Inspector from './workbench/Inspector.svelte';
   import InteractionCard from './workbench/InteractionCard.svelte';
+  import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
   import PromotePanel from './workbench/PromotePanel.svelte';
   import ScopeCard from './workbench/ScopeCard.svelte';
   import StepTimeline from './workbench/StepTimeline.svelte';
@@ -78,17 +85,22 @@
   ];
   /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
   let sessionId = $state<string | null>(null);
+  /** 新建会话后使已在途中的旧会话回放结果失效。 */
+  let sessionGeneration = 0;
   let runs = $state<WorkbenchRunView[]>([]);
   let conversationBaseline = $state<AgentMessage[]>([]);
   let confirmedPageIds = $state<string[]>([]);
   let pins = $state<PinnedComponentChoice[]>([]);
-  let currentDocument = $state<Record<string, unknown> | null>(null);
+  /** 创作态原子双投影：画布可含空分区，正式消费者始终读取有效投影。 */
+  let currentDraft = $state<CanvasAuthoringDraft | null>(null);
   let baseRevisionId = $state<string | null>(null);
   let savePending = $state(false);
   let saveNotice = $state('');
   let saveError = $state('');
   let cancelRequested = $state(false);
   let promoteOpen = $state(false);
+  let metadataOpen = $state(false);
+  let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let threadEl: HTMLElement | null = $state(null);
   let composerEl: HTMLTextAreaElement | null = $state(null);
   /** 画布选中的组件(检查器联动;文档改写后按组件 id 保持)。 */
@@ -102,6 +114,8 @@
 
   const dataGateway = createPlatformDataGateway();
 
+  const currentDocument = $derived(currentDraft?.pageDocument ?? null);
+  const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const activeRun = $derived(runs.at(-1) ?? null);
   const running = $derived(activeRun?.status === 'running');
   const pageModel = $derived(
@@ -120,9 +134,9 @@
       : []
   );
   const selectedSpan = $derived.by(() => {
-    if (!currentDocument || !selectedComponent) return null;
-    const sections = Array.isArray(currentDocument.sections)
-      ? (currentDocument.sections as Array<Record<string, unknown>>)
+    if (!canvasDocument || !selectedComponent) return null;
+    const sections = Array.isArray(canvasDocument.sections)
+      ? (canvasDocument.sections as Array<Record<string, unknown>>)
       : [];
     for (const section of sections) {
       if (section.id !== selectedComponent.sectionId) continue;
@@ -202,15 +216,16 @@
     const fromUrl = new URLSearchParams(window.location.search).get('session');
     if (!fromUrl) return;
     sessionId = fromUrl;
-    void replayRecordedSession(fromUrl);
+    void replayRecordedSession(fromUrl, sessionGeneration);
   });
 
-  async function replayRecordedSession(id: string) {
+  async function replayRecordedSession(id: string, generation: number) {
     try {
       const response = await fetch(`/api/sessions/${encodeURIComponent(id)}`);
       if (!response.ok) return;
       const payload = (await response.json()) as { session?: RecordedSessionPayload };
       if (!payload.session || payload.session.events.length === 0) return;
+      if (generation !== sessionGeneration || sessionId !== id) return;
       runs = [...runs, sessionReplayView(payload.session)];
     } catch {
       // 回放不可用(如会话过保留期)不阻塞新提问。
@@ -219,8 +234,8 @@
 
   async function ask(event: SubmitEvent) {
     event.preventDefault();
+    if (!canSubmitComposer(composerText, running)) return;
     const question = composerText.trim();
-    if (!question || running) return;
     composerText = '';
     resetComposerHeight();
     await startRun(question);
@@ -233,20 +248,52 @@
 
   /** Enter 直接发送,Shift+Enter 换行;输入法组词中(isComposing)不触发。 */
   function composerKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return;
+    if (!shouldSubmitComposerKeydown(event)) return;
     event.preventDefault();
     (event.currentTarget as HTMLTextAreaElement).form?.requestSubmit();
   }
 
-  /** 输入框随内容自动增高(1~6 行),业界聊天输入框通例。 */
+  /** 输入框随内容自动增高到 4 行，第 5 行起只在输入框内部滚动。 */
   function autoGrowComposer() {
     if (!composerEl) return;
     composerEl.style.height = 'auto';
-    composerEl.style.height = `${Math.min(composerEl.scrollHeight, 152)}px`;
+    const maxHeight = 74;
+    composerEl.style.height = `${Math.min(composerEl.scrollHeight, maxHeight)}px`;
+    composerEl.style.overflowY = composerEl.scrollHeight > maxHeight ? 'auto' : 'hidden';
   }
 
   function resetComposerHeight() {
-    if (composerEl) composerEl.style.height = 'auto';
+    if (!composerEl) return;
+    composerEl.style.height = 'auto';
+    composerEl.style.overflowY = 'hidden';
+  }
+
+  /** 新建会话只清理本地工作台态，不写页面修订，也不改变接口契约。 */
+  function startNewSession() {
+    if (running || savePending) return;
+    sessionGeneration += 1;
+    sessionId = null;
+    runs = [];
+    conversationBaseline = [];
+    confirmedPageIds = [];
+    pins = [];
+    currentDraft = null;
+    baseRevisionId = null;
+    saveNotice = '';
+    saveError = '';
+    editError = '';
+    cancelRequested = false;
+    promoteOpen = false;
+    metadataOpen = false;
+    selectedComponent = null;
+    candidateChoices = {};
+    stepsOpen = {};
+    composerText = '';
+    resetComposerHeight();
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('session');
+    replaceState(`${url.pathname}${url.search}${url.hash}`, {});
   }
 
   /**
@@ -302,7 +349,7 @@
         } else {
           commit(applyOutcome(view, frame.outcome));
           conversationBaseline = frame.outcome.messages;
-          if (frame.outcome.document) currentDocument = frame.outcome.document;
+          if (frame.outcome.document) replaceCurrentDocument(frame.outcome.document);
         }
       }
       if (view.status === 'running') {
@@ -393,9 +440,33 @@
     }
   }
 
+  /** 文档替换后按组件 id 重定位选中项；组件已消失则清除检查器上下文。 */
+  function replaceCurrentDocument(document: Record<string, unknown>): boolean {
+    const result = createCanvasAuthoringDraft(document);
+    if (!result.ok) {
+      editError = result.message;
+      return false;
+    }
+    currentDraft = result.draft;
+    if (selectedComponent) {
+      selectedComponent = locatorOfComponent(
+        result.draft.canvasDocument,
+        selectedComponent.componentId
+      );
+    }
+    editError = '';
+    return true;
+  }
+
   function applyDocumentEdit(result: DocumentEditResult) {
     if (result.ok) {
-      currentDocument = result.document;
+      currentDraft = result.draft;
+      if (selectedComponent) {
+        selectedComponent = locatorOfComponent(
+          result.draft.canvasDocument,
+          selectedComponent.componentId
+        );
+      }
       editError = '';
     } else {
       editError = result.message;
@@ -404,23 +475,31 @@
 
   /** 画布创作意图分发:选中进检查器,重排与标题/宽度编辑走本地文档改写。 */
   function handleAuthoringIntent(intent: AuthoringIntent) {
+    if (running) return;
     if (intent.type === 'select_component') {
       selectedComponent = intent.locator;
       return;
     }
-    if (!currentDocument) return;
+    if (!currentDraft) return;
     if (intent.type === 'move_component') {
-      applyDocumentEdit(moveComponent(currentDocument, intent.locator, intent.before));
+      const result = moveComponent(currentDraft, intent.locator, intent.destination);
+      applyDocumentEdit(result);
+      if (result.ok) {
+        selectedComponent = locatorOfComponent(
+          result.draft.canvasDocument,
+          intent.locator.componentId
+        );
+      }
     } else if (intent.type === 'edit_component') {
-      applyDocumentEdit(editComponent(currentDocument, intent.locator, intent.edit));
+      applyDocumentEdit(editComponent(currentDraft, intent.locator, intent.edit));
     }
   }
 
   /** 组件形态切换:装配唯一实现重建组件,即时生效并钉住(追问不被改写)。 */
   function selectComponentType(type: string) {
-    if (!currentDocument || !selectedComponent || !selectedView?.dataSourceId) return;
+    if (running || !currentDraft || !selectedComponent || !selectedView?.dataSourceId) return;
     const result = changeComponentType(
-      currentDocument,
+      currentDraft,
       selectedComponent,
       type as Parameters<typeof changeComponentType>[2]
     );
@@ -434,14 +513,14 @@
   }
 
   function selectComponentFromList(componentId: string) {
-    if (!currentDocument) return;
-    selectedComponent = locatorOfComponent(currentDocument, componentId);
+    if (!canvasDocument) return;
+    selectedComponent = locatorOfComponent(canvasDocument, componentId);
   }
 
   /** 沉淀完成:文档换上正式页面 id,后续保存以首个修订为基线走既有通道。 */
   function handlePromoted(outcome: PromotedOutcome) {
     promoteOpen = false;
-    currentDocument = outcome.document;
+    if (!replaceCurrentDocument(outcome.document)) return;
     baseRevisionId = outcome.revisionId;
     confirmedPageIds = [...new Set([...confirmedPageIds, outcome.pageId])];
     saveNotice =
@@ -449,25 +528,105 @@
       `页面 ${outcome.pageId} 修订 R${outcome.revisionNumber},数据上下文版本:` +
       `${outcome.dataContextVersion ?? '纯静态页面'}`;
   }
+
+  function closeMetadataDrawer() {
+    metadataOpen = false;
+    void tick().then(() => metadataEntryEl?.focus());
+  }
 </script>
 
 <svelte:head>
   <title>MetricCanvas 页面搭建工作台</title>
 </svelte:head>
 
-<div class="workbench">
-  <aside class="chat">
-    <header>
-      <div>
-        <p class="eyebrow">分析会话</p>
-        <h1>页面搭建工作台</h1>
-      </div>
-      {#if runs.length > 0}
-        <span class="chip">{runs.filter((run) => run.question !== null).length} 轮</span>
+<div class="workbench" data-testid="workbench">
+  <div class="docbar" data-testid="workbench-contextbar" data-contract-critical>
+    <div class="l">
+      <strong class="canvas-title">页面画布</strong>
+      {#if pageModel}
+        <span class="badge" class:transient={pageModel.transient}>
+          {pageModel.transient ? '临时页面态' : '未保存工作副本'}
+        </span>
+        {#if pageModel.adHocFormulas.length > 0}
+          <!-- 临时口径与已定义指标视觉可区分(ADR-0036、#67):文档含现场
+               生成的 formula 口径时,结果区常驻警示徽标。 -->
+          <span class="badge adhoc" title={pageModel.adHocFormulas.join(';')}>
+            临时口径 ×{pageModel.adHocFormulas.length}
+          </span>
+        {/if}
+        <code class="page-id">{pageModel.pageId}</code>
+        <span class="stat">组件 {pageModel.components.length}</span>
+        <span class="stat">页面数据源 {pageModel.dataSourceCount}</span>
+      {:else}
+        <span class="badge idle">尚无页面文档</span>
       {/if}
+    </div>
+    <div class="r" data-testid="document-actions">
+      {#if activeRun}
+        <span class="stat status-{activeRun.status}">
+          {STATUS_LABELS[activeRun.status]}
+        </span>
+      {/if}
+      {#if running}
+        <button type="button" class="btn danger" onclick={cancelActiveRun}>
+          {cancelRequested ? '取消中…' : '取消运行'}
+        </button>
+      {/if}
+      <button
+        type="button"
+        class="btn"
+        bind:this={metadataEntryEl}
+        data-testid="metadata-json-entry"
+        disabled={!currentDocument}
+        title={currentDocument ? '查看元数据' : '页面文档生成后可查看'}
+        onclick={() => (metadataOpen = true)}
+      >
+        查看元数据
+      </button>
+      {#if pageModel && pageModel.transient}
+        <button
+          type="button"
+          class="btn"
+          disabled={running}
+          onclick={() => (promoteOpen = true)}
+        >
+          沉淀为长期资产…
+        </button>
+      {/if}
+      {#if pageModel && !pageModel.transient}
+        <button type="button" class="btn" disabled={savePending || running} onclick={saveRevision}>
+          {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
+        </button>
+      {/if}
+    </div>
+  </div>
+
+  <aside
+    class="chat"
+    aria-label="分析会话"
+    data-testid="workbench-track"
+    data-contract-critical
+  >
+    <header class="chat-header">
+      <h1 data-testid="session-title" data-contract-session-part>分析与搭建</h1>
+      <button
+        type="button"
+        class="new-session"
+        aria-label="新建会话"
+        title="新建会话"
+        data-icon="plus"
+        data-testid="new-session"
+        data-contract-session-part
+        disabled={running || savePending}
+        onclick={startNewSession}
+      >
+        <svg viewBox="0 0 16 16" aria-hidden="true">
+          <path d="M8 3v10M3 8h10" />
+        </svg>
+      </button>
     </header>
 
-    <div class="thread" bind:this={threadEl}>
+    <div class="thread" bind:this={threadEl} data-testid="analysis-thread">
       {#if runs.length === 0}
         <div class="thread-empty">
           <h2>用一句业务问题开始</h2>
@@ -575,6 +734,15 @@
     </div>
 
     <form class="composer" onsubmit={ask}>
+      <div
+        class="page-context"
+        aria-label="当前页面"
+        data-contract-session-part
+        data-contract-critical
+      >
+        <span>当前页面</span>
+        <strong>{pageModel?.pageId ?? '待生成'}</strong>
+      </div>
       {#if selectedView}
         <div class="context-chip" in:fade={{ duration: 140 }}>
           <span>针对:{selectedView.title ?? selectedView.componentLabel}</span>
@@ -585,13 +753,16 @@
           >×</button>
         </div>
       {/if}
-      <div class="composer-box">
+      <div class="composer-box" data-testid="composer-box">
         <textarea
           rows="1"
           bind:this={composerEl}
           bind:value={composerText}
           onkeydown={composerKeydown}
           oninput={autoGrowComposer}
+          aria-label="AI 输入"
+          data-testid="ai-composer-input"
+          data-contract-session-part
           placeholder="描述业务问题,或追问:换维度、改筛选、调整展示"
         ></textarea>
         {#if running}
@@ -601,6 +772,8 @@
             onclick={cancelActiveRun}
             title={cancelRequested ? '取消请求已发出' : '停止运行'}
             aria-label="停止运行"
+            data-contract-session-part
+            data-contract-critical
           >
             <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="4" y="4" width="8" height="8" rx="1.5" /></svg>
           </button>
@@ -608,9 +781,13 @@
           <button
             type="submit"
             class="action send"
-            disabled={!composerText.trim()}
+            disabled={!canSubmitComposer(composerText, running)}
             title="发送(Enter)"
             aria-label="发送"
+            data-icon="arrow-up"
+            data-testid="composer-send"
+            data-contract-session-part
+            data-contract-critical
           >
             <svg viewBox="0 0 16 16" aria-hidden="true">
               <path d="M8 13V3.5M8 3.5L3.5 8M8 3.5L12.5 8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
@@ -618,62 +795,11 @@
           </button>
         {/if}
       </div>
-      <p class="composer-hint">Enter 发送 · Shift+Enter 换行</p>
+      <p class="composer-hint" data-testid="composer-hint">Enter 发送 · Shift+Enter 换行</p>
     </form>
   </aside>
 
-  <main>
-    <div class="docbar">
-      <div class="l">
-        {#if pageModel}
-          <span class="badge" class:transient={pageModel.transient}>
-            {pageModel.transient ? '临时页面态' : '未保存工作副本'}
-          </span>
-          {#if pageModel.adHocFormulas.length > 0}
-            <!-- 临时口径与已定义指标视觉可区分(ADR-0036、#67):文档含现场
-                 生成的 formula 口径时,结果区常驻警示徽标。 -->
-            <span
-              class="badge adhoc"
-              title={pageModel.adHocFormulas.join(';')}
-            >
-              临时口径 ×{pageModel.adHocFormulas.length}
-            </span>
-          {/if}
-          <code class="page-id">{pageModel.pageId}</code>
-          <span class="stat">组件 {pageModel.components.length}</span>
-          <span class="stat">页面数据源 {pageModel.dataSourceCount}</span>
-        {:else}
-          <span class="badge idle">尚无页面文档</span>
-        {/if}
-      </div>
-      <div class="r">
-        {#if activeRun}
-          <span class="stat status-{activeRun.status}">
-            {STATUS_LABELS[activeRun.status]}
-          </span>
-        {/if}
-        {#if running}
-          <button type="button" class="btn danger" onclick={cancelActiveRun}>
-            {cancelRequested ? '取消中…' : '取消运行'}
-          </button>
-        {/if}
-        {#if pageModel && pageModel.transient}
-          <button
-            type="button"
-            class="btn"
-            disabled={running}
-            onclick={() => (promoteOpen = true)}
-          >
-            沉淀为长期资产…
-          </button>
-        {/if}
-        {#if pageModel && !pageModel.transient}
-          <button type="button" class="btn" disabled={savePending || running} onclick={saveRevision}>
-            {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
-          </button>
-        {/if}
-      </div>
-    </div>
+  <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
     {#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
@@ -683,11 +809,16 @@
         <RuntimeView
           document={currentDocument}
           {dataGateway}
-          authoring={{
-            ...(selectedComponent === null ? {} : { selected: selectedComponent }),
-            inlineControls: false,
-            onintent: handleAuthoringIntent
-          }}
+          authoring={running
+            ? undefined
+            : {
+                ...(selectedComponent === null ? {} : { selected: selectedComponent }),
+                ...(currentDraft === null
+                  ? {}
+                  : { draftSections: currentDraft.authoringSections }),
+                inlineControls: false,
+                onintent: handleAuthoringIntent
+              }}
         />
       {:else if running}
         <div class="skeleton" aria-label="页面文档生成中">
@@ -712,22 +843,29 @@
     </div>
   </main>
 
-  <Inspector
-    {pageModel}
-    selected={selectedComponent}
-    {selectedView}
-    {selectedSpan}
-    candidates={typeCandidates}
-    fieldRows={selectedFieldRows}
-    busy={running}
-    onSelectType={selectComponentType}
-    onSelectComponent={selectComponentFromList}
-    onEdit={(edit) => {
-      if (currentDocument && selectedComponent) {
-        applyDocumentEdit(editComponent(currentDocument, selectedComponent, edit));
-      }
-    }}
-  />
+  <aside
+    class="inspector-track"
+    aria-label="检查器"
+    data-testid="workbench-track"
+    data-contract-critical
+  >
+    <Inspector
+      {pageModel}
+      selected={selectedComponent}
+      {selectedView}
+      {selectedSpan}
+      candidates={typeCandidates}
+      fieldRows={selectedFieldRows}
+      busy={running}
+      onSelectType={selectComponentType}
+      onSelectComponent={selectComponentFromList}
+      onEdit={(edit) => {
+        if (!running && currentDraft && selectedComponent) {
+          applyDocumentEdit(editComponent(currentDraft, selectedComponent, edit));
+        }
+      }}
+    />
+  </aside>
 
   {#if promoteOpen && currentDocument && pageModel?.transient}
     <PromotePanel
@@ -737,98 +875,128 @@
       onpromoted={handlePromoted}
     />
   {/if}
+
+  {#if metadataOpen && currentDocument && pageModel}
+    <MetadataJsonDrawer
+      document={currentDocument}
+      pageId={pageModel.pageId}
+      transient={pageModel.transient}
+      onclose={closeMetadataDrawer}
+    />
+  {/if}
 </div>
 
 <style>
   .workbench {
     display: grid;
-    grid-template-columns: 330px minmax(0, 1fr) 300px;
+    grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr) var(--inspector-rail-w);
+    grid-template-rows: var(--contextbar-h) minmax(0, 1fr);
     height: calc(100vh - var(--topbar-h));
-    background: #f4f4f5;
-  }
-  @media (max-width: 1180px) {
-    .workbench {
-      grid-template-columns: 330px minmax(0, 1fr);
-    }
-    .workbench :global(.inspector) {
-      display: none;
-    }
+    min-width: 0;
+    background: var(--bg);
+    overflow: hidden;
   }
   .chat {
+    grid-column: 1;
+    grid-row: 2;
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
-    background: #fff;
-    border-right: 1px solid #e4e4e7;
+    color: var(--text);
+    background: var(--surface);
+    border-right: 1px solid var(--line);
   }
-  .chat > header {
+  .chat-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: space-between;
-    padding: 16px 18px 12px;
-    border-bottom: 1px solid #f4f4f5;
+    min-height: 40px;
+    padding: 7px 10px 7px 13px;
+    border-bottom: 1px solid var(--line);
   }
-  .eyebrow {
+  .chat-header h1 {
     margin: 0;
-    color: #4f46e5;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    color: var(--text);
+    font-size: 12.5px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
   }
-  h1 {
-    margin: 4px 0 0;
-    font-size: 16px;
+  .new-session {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
   }
-  .chip {
-    padding: 2px 8px;
-    color: #52525b;
-    background: #f4f4f5;
-    border-radius: 999px;
-    font-size: 11px;
+  .new-session:hover:not(:disabled) {
+    color: var(--accent-strong);
+    background: var(--surface-subtle);
+    border-color: var(--control-line);
+  }
+  .new-session:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .new-session:disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+  }
+  .new-session svg {
+    width: 14px;
+    height: 14px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
   }
   .thread {
     display: flex;
     flex: 1;
     flex-direction: column;
-    gap: 14px;
+    gap: 10px;
     min-height: 0;
-    padding: 16px 18px;
+    padding: 12px 13px;
     overflow-y: auto;
   }
   .thread-empty {
     display: grid;
-    gap: 8px;
-    margin-top: 18vh;
+    gap: 7px;
+    margin-top: 12vh;
     color: var(--muted);
-    font-size: 12.5px;
-    line-height: 1.7;
-    text-align: center;
+    font-size: 11px;
+    line-height: 1.55;
+    text-align: left;
   }
   .thread-empty h2 {
     margin: 0;
     color: var(--text);
-    font-size: 16px;
+    font-size: 13px;
     letter-spacing: -0.01em;
   }
   .thread-empty p {
-    margin: 0 auto;
+    margin: 0;
     max-width: 26rem;
   }
   .suggestions {
     display: grid;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 5px;
+    margin-top: 7px;
   }
   .suggestions button {
-    padding: 10px 13px;
-    color: #3f3f46;
-    background: var(--surface);
+    padding: 7px 9px;
+    color: var(--text);
+    background: var(--surface-subtle);
     border: 1px solid var(--line);
-    border-radius: 11px;
+    border-radius: 7px;
     font: inherit;
-    font-size: 12.5px;
+    font-size: 10.5px;
+    line-height: 1.45;
     text-align: left;
     cursor: pointer;
     transition:
@@ -836,23 +1004,29 @@
       box-shadow 0.15s ease;
   }
   .suggestions button:hover {
-    border-color: rgb(79 70 229 / 45%);
-    box-shadow: 0 2px 8px rgb(24 24 27 / 6%);
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border-color: var(--accent);
+  }
+  .suggestions button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
   }
   .ask-bubble {
     align-self: flex-end;
     max-width: 88%;
-    padding: 8px 12px;
-    color: #fff;
-    background: #4f46e5;
-    border-radius: 12px 12px 3px 12px;
-    font-size: 13px;
-    line-height: 1.6;
+    padding: 7px 10px;
+    color: var(--accent-strong);
+    background: var(--accent-soft);
+    border: 1px solid var(--line);
+    border-radius: 9px 9px 3px 9px;
+    font-size: 11.5px;
+    line-height: 1.5;
   }
   .continuation {
     align-self: flex-end;
-    color: #a1a1aa;
-    font-size: 11px;
+    color: var(--muted);
+    font-size: 10px;
   }
   .reply {
     display: grid;
@@ -860,8 +1034,9 @@
   }
   .reply-text {
     margin: 0;
-    font-size: 13px;
-    line-height: 1.7;
+    color: var(--text);
+    font-size: 11.5px;
+    line-height: 1.6;
     white-space: pre-wrap;
   }
   /* 执行过程:linkish 切换 + 展开区虚线分隔(原型 v2)。 */
@@ -873,12 +1048,12 @@
     width: 100%;
     margin-top: 8px;
     padding-top: 8px;
-    border-top: 1px dashed #e4e4e7;
+    border-top: 1px dashed var(--line);
   }
   .run-state {
     margin: 0;
-    color: #71717a;
-    font-size: 12px;
+    color: var(--muted);
+    font-size: 11px;
   }
   .running-state {
     display: flex;
@@ -893,7 +1068,7 @@
   .dots i {
     width: 5px;
     height: 5px;
-    background: #6366f1;
+    background: var(--accent);
     border-radius: 50%;
     animation: dot-bounce 1.2s ease-in-out infinite;
   }
@@ -917,7 +1092,7 @@
   }
   .linkish {
     padding: 0;
-    color: #6366f1;
+    color: var(--accent-strong);
     background: none;
     border: 0;
     font-size: 11.5px;
@@ -925,7 +1100,7 @@
     transition: color 0.15s ease;
   }
   .linkish:hover {
-    color: #4338ca;
+    color: var(--accent-strong);
     text-decoration: underline;
   }
   .failure {
@@ -950,38 +1125,71 @@
   }
   .composer {
     display: grid;
-    gap: 6px;
-    padding: 10px 14px 12px;
-    border-top: 1px solid var(--line-soft);
+    gap: 5px;
+    padding: 8px 10px 9px;
+    background: var(--surface);
+    border-top: 1px solid var(--line);
   }
-  /* 业界聊天输入框通例:容器承载边框与焦点光圈,动作按钮内嵌右下角。 */
+  .page-context {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: var(--muted);
+    font-size: 9.5px;
+    line-height: 1.3;
+  }
+  .page-context::before {
+    content: '';
+    flex: none;
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .page-context strong {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--text);
+    font-size: inherit;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* 紧凑输入容器：单行约 32px，1～4 行增高，第 5 行内部滚动。 */
   .composer-box {
     display: flex;
     align-items: flex-end;
-    gap: 8px;
-    padding: 8px 8px 8px 13px;
-    background: var(--surface);
-    border: 1px solid #d4d4d8;
-    border-radius: 14px;
+    gap: 5px;
+    padding: 3px 4px 3px 9px;
+    background: var(--surface-subtle);
+    border: 1px solid var(--control-line);
+    border-radius: 8px;
     transition:
       border-color 0.15s ease,
       box-shadow 0.15s ease;
   }
   .composer-box:focus-within {
-    border-color: #6366f1;
-    box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
   }
   .composer-box textarea {
     flex: 1;
     min-width: 0;
-    max-height: 152px;
+    height: auto;
+    max-height: 74px;
     padding: 5px 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    color: var(--text);
     border: 0;
     resize: none;
     background: none;
-    font: inherit;
-    font-size: 13px;
-    line-height: 1.55;
+    font-size: 11px;
+    line-height: 16px;
+  }
+  .composer-box textarea::placeholder {
+    color: var(--faint);
   }
   .composer-box textarea:focus {
     outline: none;
@@ -990,11 +1198,11 @@
     display: grid;
     flex: none;
     place-items: center;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 0;
-    border-radius: 999px;
+    border-radius: 6px;
     cursor: pointer;
     transition:
       background 0.15s ease,
@@ -1005,35 +1213,35 @@
     transform: scale(0.94);
   }
   .composer .action svg {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
   }
   .composer .send {
-    color: #fff;
+    color: var(--text-on-strong);
     background: var(--accent);
   }
   .composer .send:hover:not(:disabled) {
     background: var(--accent-strong);
   }
   .composer .send:disabled {
-    background: #d4d4d8;
+    background: var(--control-line);
     cursor: not-allowed;
   }
   .composer .stop {
-    color: #fff;
-    background: #18181b;
+    color: var(--text-on-strong);
+    background: var(--down);
   }
   .composer .stop svg rect {
     fill: currentColor;
   }
   .composer .stop:hover {
-    background: #3f3f46;
+    background: var(--down-strong);
   }
   .composer-hint {
     margin: 0;
-    padding-left: 4px;
+    padding-left: 1px;
     color: var(--faint);
-    font-size: 10.5px;
+    font-size: 9px;
   }
   /* 选中组件的 AI 交互上下文:追问以它为默认修改目标。 */
   .context-chip {
@@ -1041,12 +1249,12 @@
     align-items: center;
     gap: 6px;
     justify-self: start;
-    padding: 3px 6px 3px 9px;
-    color: #3730a3;
+    padding: 2px 5px 2px 7px;
+    color: var(--accent-strong);
     background: var(--accent-soft);
-    border: 1px solid #c7d2fe;
-    border-radius: 999px;
-    font-size: 11px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 9.5px;
     font-weight: 600;
   }
   .context-chip button {
@@ -1055,7 +1263,7 @@
     width: 16px;
     height: 16px;
     padding: 0;
-    color: #6366f1;
+    color: var(--accent-strong);
     background: none;
     border: 0;
     border-radius: 999px;
@@ -1064,37 +1272,67 @@
     transition: background 0.15s ease;
   }
   .context-chip button:hover {
-    background: rgb(99 102 241 / 15%);
+    background: var(--surface);
   }
 
-  main {
+  .canvas {
+    grid-column: 2;
+    grid-row: 2;
     display: flex;
     flex-direction: column;
     min-width: 0;
     min-height: 0;
+    background: var(--bg);
+  }
+  .inspector-track {
+    grid-column: 3;
+    grid-row: 2;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+    background: var(--surface);
+    border-left: 1px solid var(--line);
+  }
+  .inspector-track :global(.inspector) {
+    width: 100%;
+    height: 100%;
   }
   .docbar {
+    grid-column: 1 / -1;
+    grid-row: 1;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
-    padding: 10px 18px;
-    background: #fff;
-    border-bottom: 1px solid #e4e4e7;
+    gap: 12px;
+    height: var(--contextbar-h);
+    min-width: 0;
+    padding: 0 10px 0 13px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
   }
   .docbar .l,
   .docbar .r {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
+    min-width: 0;
+  }
+  .docbar .r {
+    flex: none;
+  }
+  .canvas-title {
+    flex: none;
+    color: var(--text);
+    font-size: 11.5px;
+    font-weight: 650;
   }
   .badge {
-    padding: 3px 9px;
+    padding: 2px 7px;
     color: #3730a3;
     background: #eef2ff;
-    border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
+    border-radius: 5px;
+    font-size: 9.5px;
+    font-weight: 650;
   }
   .badge.transient {
     color: #92400e;
@@ -1110,12 +1348,16 @@
     background: #f4f4f5;
   }
   .page-id {
+    max-width: 160px;
+    overflow: hidden;
     color: #3f3f46;
-    font-size: 12.5px;
+    font-size: 10.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .stat {
     color: #71717a;
-    font-size: 12px;
+    font-size: 10.5px;
   }
   .status-running {
     display: inline-flex;
@@ -1152,12 +1394,14 @@
     font-weight: 650;
   }
   .btn {
-    padding: 7px 13px;
-    background: #fff;
+    height: 28px;
+    padding: 0 9px;
+    color: var(--text);
+    background: var(--surface);
     border: 1px solid #d4d4d8;
-    border-radius: 9px;
-    font-size: 12.5px;
-    font-weight: 600;
+    border-radius: 6px;
+    font-size: 10.5px;
+    font-weight: 550;
     cursor: pointer;
     transition:
       background 0.15s ease,
@@ -1171,6 +1415,10 @@
   }
   .btn:active:not(:disabled) {
     transform: translateY(1px);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   .btn.danger {
     color: #b91c1c;
@@ -1186,19 +1434,19 @@
   }
   .notice {
     margin: 0;
-    padding: 8px 18px;
+    padding: 6px 12px;
     color: #166534;
     background: #f0fdf4;
     border-bottom: 1px solid #dcfce7;
-    font-size: 12px;
+    font-size: 10.5px;
   }
   .error {
     margin: 0;
-    padding: 8px 18px;
+    padding: 6px 12px;
     color: #b91c1c;
     background: #fef2f2;
     border-bottom: 1px solid #fecaca;
-    font-size: 12px;
+    font-size: 10.5px;
   }
   .page-scroll {
     flex: 1;
@@ -1247,14 +1495,19 @@
     font-size: 13px;
     line-height: 1.7;
   }
-  @media (max-width: 900px) {
-    .workbench {
-      grid-template-columns: 1fr;
-      height: auto;
+  @media (max-width: 1100px) {
+    .docbar .stat,
+    .page-id {
+      display: none;
     }
-    .chat {
-      border-right: 0;
-      border-bottom: 1px solid #e4e4e7;
+  }
+  @media (max-width: 760px) {
+    .workbench {
+      --analysis-rail-w: 250px;
+      grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr);
+    }
+    .inspector-track {
+      display: none;
     }
   }
 </style>

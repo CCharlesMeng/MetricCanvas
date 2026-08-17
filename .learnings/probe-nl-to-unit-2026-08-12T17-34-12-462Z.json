@@ -1,0 +1,521 @@
+{
+  "generatedAt": "2026-08-12T17:34:12.461Z",
+  "script": "apps/platform/scripts/probe-nl-to-unit.ts",
+  "model": {
+    "provider": "deepseek",
+    "model": "deepseek-v4-flash",
+    "baseUrl": "https://api.deepseek.com"
+  },
+  "semanticSurfaceDomains": [
+    "运营分析",
+    "客户经营"
+  ],
+  "summary": {
+    "totalSamples": 10,
+    "parsedSamples": 10,
+    "statusHit": {
+      "hit": 9,
+      "total": 10,
+      "rate": "90.0%"
+    },
+    "domainHit": {
+      "hit": 4,
+      "total": 4,
+      "rate": "100.0%"
+    },
+    "metricHit": {
+      "hit": 4,
+      "total": 4,
+      "rate": "100.0%"
+    },
+    "dimensionHit": {
+      "hit": 4,
+      "total": 4,
+      "rate": "100.0%"
+    },
+    "filtersHit": {
+      "hit": 4,
+      "total": 4,
+      "rate": "100.0%"
+    },
+    "granularityHit": {
+      "hit": 4,
+      "total": 4,
+      "rate": "100.0%"
+    },
+    "withinClosedSet": {
+      "hit": 5,
+      "total": 5,
+      "rate": "100.0%"
+    },
+    "rejectWhenShould": {
+      "hit": 3,
+      "total": 4,
+      "rate": "75.0%"
+    },
+    "clarifyWhenShould": {
+      "hit": 1,
+      "total": 2,
+      "rate": "50.0%"
+    },
+    "fabricatedWhenShouldReject": 0,
+    "statusHitByCategory": {
+      "direct": {
+        "hit": 3,
+        "total": 3,
+        "rate": "100.0%"
+      },
+      "clarify": {
+        "hit": 1,
+        "total": 2,
+        "rate": "50.0%"
+      },
+      "no_metric": {
+        "hit": 2,
+        "total": 2,
+        "rate": "100.0%"
+      },
+      "cross_domain": {
+        "hit": 3,
+        "total": 3,
+        "rate": "100.0%"
+      }
+    }
+  },
+  "weaknesses": [
+    {
+      "kind": "近义指标未澄清",
+      "count": 1,
+      "sampleIds": [
+        "clarify-2"
+      ],
+      "detail": "需澄清样本被模型擅自选择口径直接回答"
+    }
+  ],
+  "samples": [
+    {
+      "id": "direct-1",
+      "category": "direct",
+      "question": "最近6个月各区域每个月的Tokens消耗量是多少?",
+      "note": "直答:运营分析域,按区域与时间双分组",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": [
+          "Tokens消耗量"
+        ],
+        "groupBy": [
+          "区域",
+          "统计周期"
+        ],
+        "filters": [],
+        "granularity": "month"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "answer",
+      "statusHit": true,
+      "domainHit": true,
+      "metricHit": true,
+      "dimensionHit": true,
+      "filtersHit": true,
+      "granularityHit": true,
+      "withinClosedSet": true,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "answer",
+        "unit": {
+          "domain": "运营分析",
+          "metrics": [
+            "Tokens消耗量"
+          ],
+          "groupBy": [
+            "统计周期",
+            "区域"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "range": "最近6个月"
+          }
+        }
+      }
+    },
+    {
+      "id": "direct-2",
+      "category": "direct",
+      "question": "上个月各行业的新增客户数是多少?",
+      "note": "直答:客户经营域,单维度分组",
+      "expected": {
+        "status": "answer",
+        "domain": "客户经营",
+        "metrics": [
+          "新增客户数"
+        ],
+        "groupBy": [
+          "行业"
+        ],
+        "filters": [],
+        "granularity": "month"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "answer",
+      "statusHit": true,
+      "domainHit": true,
+      "metricHit": true,
+      "dimensionHit": true,
+      "filtersHit": true,
+      "granularityHit": true,
+      "withinClosedSet": true,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "answer",
+        "unit": {
+          "domain": "客户经营",
+          "metrics": [
+            "新增客户数"
+          ],
+          "groupBy": [
+            "行业"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "range": "上个月"
+          }
+        }
+      }
+    },
+    {
+      "id": "direct-3",
+      "category": "direct",
+      "question": "今年以来代码大模型每个月的计费Tokens量走势如何?",
+      "note": "直答:带维度取值筛选(模型=代码大模型)与时间分组",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": [
+          "计费Tokens量"
+        ],
+        "groupBy": [
+          "统计周期"
+        ],
+        "filters": [
+          {
+            "dimension": "模型",
+            "values": [
+              "代码大模型"
+            ]
+          }
+        ],
+        "granularity": "month"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "answer",
+      "statusHit": true,
+      "domainHit": true,
+      "metricHit": true,
+      "dimensionHit": true,
+      "filtersHit": true,
+      "granularityHit": true,
+      "withinClosedSet": true,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "answer",
+        "unit": {
+          "domain": "运营分析",
+          "metrics": [
+            "计费Tokens量"
+          ],
+          "groupBy": [
+            "统计周期"
+          ],
+          "filters": [
+            {
+              "dimension": "模型",
+              "values": [
+                "代码大模型"
+              ]
+            }
+          ],
+          "time": {
+            "granularity": "month",
+            "range": "今年以来"
+          }
+        }
+      }
+    },
+    {
+      "id": "clarify-1",
+      "category": "clarify",
+      "question": "上个月客户数是多少?",
+      "note": "需澄清:「客户数」在运营分析(在用调用口径)与客户经营(期末在册口径)两域近义不同义,问题无域内线索",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": [
+          "运营分析",
+          "客户经营"
+        ]
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "clarify",
+      "statusHit": true,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": null,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": true,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "clarify",
+        "clarify": {
+          "question": "「客户数」存在两个域的不同口径,请从候选中选择您要的口径。",
+          "candidates": [
+            {
+              "domain": "客户经营",
+              "metric": "客户数",
+              "reason": "期末在册客户总数,存量在册口径"
+            },
+            {
+              "domain": "运营分析",
+              "metric": "客户数",
+              "reason": "统计期内发起过模型调用的去重在用客户数"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "clarify-2",
+      "category": "clarify",
+      "question": "最近半年客户数的变化趋势怎么样?",
+      "note": "需澄清:同为两域「客户数」歧义,叠加趋势表述仍无法判定业务域",
+      "expected": {
+        "status": "clarify",
+        "clarifyCandidateDomains": [
+          "运营分析",
+          "客户经营"
+        ]
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "answer",
+      "statusHit": false,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": true,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [
+        "近义指标未澄清:模型擅自选择了一个口径直接回答"
+      ],
+      "modelOutput": {
+        "status": "answer",
+        "unit": {
+          "domain": "客户经营",
+          "metrics": [
+            "客户数"
+          ],
+          "groupBy": [
+            "统计周期"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "range": "最近半年"
+          }
+        }
+      }
+    },
+    {
+      "id": "gap-1",
+      "category": "no_metric",
+      "question": "上个月的营业收入是多少?",
+      "note": "缺口:语义面无任何收入类指标,应拒答不得编造",
+      "expected": {
+        "status": "reject"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "reject",
+      "statusHit": true,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": null,
+      "fabricatedWhenShouldReject": false,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "reject",
+        "reject": {
+          "reason": "语义面中没有「营业收入」相关指标,两个业务域均不包含收入/营收指标,无法取数"
+        }
+      }
+    },
+    {
+      "id": "gap-2",
+      "category": "no_metric",
+      "question": "各区域的客户满意度评分怎么样?",
+      "note": "缺口:维度「区域」存在但满意度指标不存在,应拒答不得用相近指标凑数",
+      "expected": {
+        "status": "reject"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "reject",
+      "statusHit": true,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": null,
+      "fabricatedWhenShouldReject": false,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "reject",
+        "reject": {
+          "reason": "语义面中没有「客户满意度评分」相关指标。运营分析域仅有Tokens消耗量、计费Tokens量、Tokens请求量、客户数四个指标;客户经营域仅有客户数、新增客户数、流失客户数、客户留存率四个指标,均不包含满意度评分,无法取数。"
+        }
+      }
+    },
+    {
+      "id": "cross-1",
+      "category": "cross_domain",
+      "question": "各行业的Tokens消耗量是多少?",
+      "note": "跨域易混:「行业」属客户经营,「Tokens消耗量」属运营分析,同一取数单元不能跨域组合,应拒答(澄清亦可接受)",
+      "expected": {
+        "status": "reject",
+        "altStatuses": [
+          "clarify"
+        ]
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "reject",
+      "statusHit": true,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": null,
+      "fabricatedWhenShouldReject": false,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "reject",
+        "reject": {
+          "reason": "「Tokens消耗量」属于「运营分析」业务域,而「行业」维度属于「客户经营」业务域。不同业务域的指标与维度不能组合在同一取数单元中,该跨域组合不可满足。"
+        }
+      }
+    },
+    {
+      "id": "cross-2",
+      "category": "cross_domain",
+      "question": "按天看各客户级别的流失客户数",
+      "note": "跨域易混(粒度越界):客户经营域只支持 month 粒度,不得擅自替换为月,应拒答(澄清亦可接受)",
+      "expected": {
+        "status": "reject",
+        "altStatuses": [
+          "clarify"
+        ]
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "clarify",
+      "statusHit": true,
+      "domainHit": null,
+      "metricHit": null,
+      "dimensionHit": null,
+      "filtersHit": null,
+      "granularityHit": null,
+      "withinClosedSet": null,
+      "fabricatedWhenShouldReject": false,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [
+        "以可接受的替代状态命中:期望 reject,实际 clarify"
+      ],
+      "modelOutput": {
+        "status": "clarify",
+        "clarify": {
+          "question": "您要求的「按天」粒度在客户经营域中不支持,该域仅支持按月粒度。是否改用按月粒度查看各客户级别的流失客户数?",
+          "candidates": [
+            {
+              "domain": "客户经营",
+              "metric": "流失客户数",
+              "reason": "按月粒度查看各客户级别的流失客户数"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "cross-3",
+      "category": "cross_domain",
+      "question": "上个月各区域的在用客户数是多少?",
+      "note": "跨域易混但可判:「在用客户数」是运营分析「客户数」的别名,且「区域」维度仅运营分析有,应直答而非过度澄清",
+      "expected": {
+        "status": "answer",
+        "domain": "运营分析",
+        "metrics": [
+          "客户数"
+        ],
+        "groupBy": [
+          "区域"
+        ],
+        "filters": [],
+        "granularity": "month"
+      },
+      "parseSource": "tool_call",
+      "actualStatus": "answer",
+      "statusHit": true,
+      "domainHit": true,
+      "metricHit": true,
+      "dimensionHit": true,
+      "filtersHit": true,
+      "granularityHit": true,
+      "withinClosedSet": true,
+      "fabricatedWhenShouldReject": null,
+      "clarifyCandidatesCoverExpectedDomains": null,
+      "closedSetViolations": [],
+      "notes": [],
+      "modelOutput": {
+        "status": "answer",
+        "unit": {
+          "domain": "运营分析",
+          "metrics": [
+            "客户数"
+          ],
+          "groupBy": [
+            "区域"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "range": "上个月"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -11,6 +11,7 @@ export const reportHeaderComponentZ = z
       .object({
         title: z.string().min(1),
         subtitle: z.string().optional(),
+        subtitleFormat: z.literal('semanticHtml').optional(),
         generatedBy: z.string().optional(),
         badge: z.string().optional(),
         asOf: z
@@ -27,7 +28,7 @@ export const reportHeaderComponentZ = z
 
 componentCatalogRegistry.add(reportHeaderComponentZ, {
   label: '报告页头',
-  purpose: '表达页面标题、说明、时间点与标签',
+  purpose: '表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML',
   chooseWhen: ['任何完整看板页面的开头'],
   dataShape: '不绑定页面数据源',
   title: 'required',

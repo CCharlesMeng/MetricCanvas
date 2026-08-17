@@ -1,8 +1,9 @@
 <script lang="ts">
   import type { ReportHeaderProps } from '@metriccanvas/page';
+  import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';
-  import headerFlowBackgroundUrl from './assets/header-flow-background-v2.jpg';
+  import headerFlowBackgroundUrl from '../../assets/header-flow-background-v2.jpg';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -46,9 +47,17 @@
             <img src={sectionTitleRightUrl} alt="" data-decorative-icon="section-title-right" />
           </div>
           <div class="report-summary-frame">
-            <p>{props.subtitle}</p>
+            {#if props.subtitleFormat === 'semanticHtml'}
+              <div class="report-summary-content">
+                <SemanticHtml source={props.subtitle} />
+              </div>
+            {:else}
+              <p>{props.subtitle}</p>
+            {/if}
           </div>
         </section>
+      {:else if props.subtitle && props.subtitleFormat === 'semanticHtml'}
+        <div class="subtitle-content"><SemanticHtml source={props.subtitle} /></div>
       {:else if props.subtitle}<p>{props.subtitle}</p>{/if}
       {#if props.tags?.length}
         <div class="tags" aria-label="报告标签">
@@ -66,7 +75,9 @@
       </div>
       {#if props.badge}<span class="badge">{props.badge}</span>{/if}
       {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
-      {#if props.subtitle}<p>{props.subtitle}</p>{/if}
+      {#if props.subtitle && props.subtitleFormat === 'semanticHtml'}
+        <div class="subtitle-content"><SemanticHtml source={props.subtitle} /></div>
+      {:else if props.subtitle}<p>{props.subtitle}</p>{/if}
       {#if props.tags?.length}
         <div class="tags" aria-label="报告标签">
           {#each props.tags as tag, index (`${tag}:${index}`)}
@@ -150,6 +161,17 @@
     font-size: 14px;
     line-height: 1.65;
   }
+  .subtitle-content {
+    --mc-semantic-font-size: 14px;
+    --mc-semantic-line-height: 1.65;
+    --mc-semantic-title-color: #667085;
+    --mc-semantic-description-color: #667085;
+    max-width: 720px;
+    margin: 10px 0 0;
+    color: #667085;
+    font-size: 14px;
+    line-height: 1.65;
+  }
   .generated-by {
     margin-top: 10px;
     color: #445593;
@@ -175,18 +197,44 @@
     width: 28px;
     height: 28px;
     flex: 0 0 28px;
-    background: url('./assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
+    background: url('../../assets/report-assistant-icon.svg') center / 100% 100% no-repeat;
     content: '';
   }
   .short-bar .title-line {
     margin-left: 34px;
   }
   .short-bar h1 {
-    color: #000;
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    background: linear-gradient(
+      270deg,
+      rgb(46 50 149) 0%,
+      rgb(46 36 180) 23.629%,
+      rgb(73 119 255) 80.57%,
+      rgb(20 77 184) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'PingFang SC', sans-serif;
+    font-style: normal;
     font-size: 60px;
     font-weight: 400;
     line-height: 72px;
     letter-spacing: 0;
+    text-align: left;
+    -webkit-text-stroke-width: 0.4px;
+  }
+  .short-bar h1::after {
+    position: absolute;
+    top: calc(100% - 6px);
+    right: 0;
+    left: 0;
+    height: 9px;
+    background: rgb(102 196 255);
+    content: '';
+    opacity: 0.28;
   }
   .badge,
   .tags span {
@@ -252,10 +300,25 @@
     font-weight: 600;
   }
   .short-bar .as-of.inline {
-    color: #000;
+    color: transparent;
+    background: linear-gradient(
+      270deg,
+      rgb(46 50 149) 0%,
+      rgb(46 36 180) 23.629%,
+      rgb(73 119 255) 80.57%,
+      rgb(20 77 184) 100%
+    );
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: 'PingFang SC', sans-serif;
+    font-style: normal;
     font-size: 16px;
     font-weight: 400;
     line-height: 22px;
+    letter-spacing: 0;
+    text-align: left;
+    -webkit-text-stroke-width: 0.4px;
   }
   .report-summary {
     margin: 0;
@@ -293,7 +356,8 @@
     border: 0;
     border-radius: var(--mc-radius-section, 16px);
   }
-  .report-summary p {
+  .report-summary p,
+  .report-summary-content {
     max-width: none;
     min-height: 122px;
     margin: 0;
@@ -304,6 +368,12 @@
     border-radius: var(--mc-radius-report-content, 12px);
     font-size: 18px;
     line-height: 32px;
+  }
+  .report-summary-content {
+    --mc-semantic-font-size: 18px;
+    --mc-semantic-line-height: 32px;
+    --mc-semantic-title-color: var(--mc-color-report-text, #191919);
+    --mc-semantic-description-color: var(--mc-color-report-text, #191919);
   }
   @media (max-width: 760px) {
     .report-header {

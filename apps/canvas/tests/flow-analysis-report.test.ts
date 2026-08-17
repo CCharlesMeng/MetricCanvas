@@ -118,6 +118,12 @@ describe('流水分析报告页面文档', () => {
       'card'
     ]);
     const components = parsed.page.sections.flatMap((section) => section.components);
+    const reportHeader = components.find((component) => component.id === 'report-header');
+    expect(reportHeader?.type).toBe('reportHeader');
+    if (reportHeader?.type === 'reportHeader') {
+      expect(reportHeader.props.subtitleFormat).toBe('semanticHtml');
+      expect(reportHeader.props.subtitle).toMatch(/^<p>.*<\/p>$/u);
+    }
     const growthRanking = components.find((component) => component.id === 'growth-ranking');
     expect(growthRanking?.type).toBe('rankingDetailCard');
     if (growthRanking?.type === 'rankingDetailCard') {
