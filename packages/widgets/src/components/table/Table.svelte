@@ -34,7 +34,7 @@
 
   /**
    * 表格(纯渲染):行与列定义 props 进,翻页/排序/表头筛选事件出,自身零状态。
-   * 常规表格使用固定表头 + 表体滚动;reportCompact 使用独立内容外框且不设滚动层;
+   * 常规表格使用固定表头 + 表体滚动;reportCompact 使用无边框内容层且不设滚动层;
    * 固定列(left/right)以 sticky 实现;
    * 排序状态显示在列头(多列时带优先级序号);分页由壳传入页大小与总条数。
    */
@@ -973,7 +973,6 @@
     padding: 6px;
     overflow: visible;
     background: var(--mc-color-report-content-surface, #fcfcff);
-    border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
     border-radius: var(--mc-radius-report-content, 12px);
   }
   .report-compact .content-frame table {

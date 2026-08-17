@@ -717,7 +717,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   await expect(metricPanel).toHaveCSS('border-radius', '12px');
 });
 
-test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层', async ({ page }) => {
+test('reportCompact 无边框内容层与表格保持 6px 间距且无滚动层', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/examples/inline.html');
   const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
@@ -744,6 +744,7 @@ test('reportCompact 四级内容外框与表格保持 6px 间距且无滚动层'
   const tables = reportTables.getByRole('table');
   await expect(frames).toHaveCount(2);
   await expect(reportTables.locator('.scroll')).toHaveCount(0);
+  await expect(frames.first()).toHaveCSS('border-width', '0px');
   await expect(frames.first()).toHaveCSS('padding', '6px');
   await expect(frames.first()).toHaveCSS('overflow', 'visible');
   await expect(tables.first()).toHaveCSS('border-radius', '0px');
@@ -829,6 +830,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   }, flowReportDocument);
 
   const host = page.locator('[data-metriccanvas-runtime]');
+  const analysisTableFrames = host
+    .locator('[data-section-id="track-analysis"], [data-section-id="industry-analysis"]')
+    .locator('[data-component-type="table"] .content-frame');
   await expect(
     host.getByRole('heading', { name: '2026年2月流水分析报告' })
   ).toBeVisible();
@@ -838,6 +842,9 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(host.locator('[data-component-type="rankingDetailCard"]')).toHaveCount(2);
   await expect(host.getByRole('table')).toHaveCount(4);
   await expect(host.locator('.ai-summary')).toHaveCount(0);
+  await expect(analysisTableFrames).toHaveCount(2);
+  await expect(analysisTableFrames.first()).toHaveCSS('border-width', '0px');
+  await expect(analysisTableFrames.last()).toHaveCSS('border-width', '0px');
   const customerAnalysis = host.locator('[data-section-id="customer-analysis"]');
   const customerAnalysisTitle = customerAnalysis.locator(':scope > .section-title');
   const customerReportTables = customerAnalysis.locator('[data-component-type="table"]');
@@ -858,12 +865,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(customerReportTableTitles).toHaveCount(2);
   await expect(customerReportTableTitles.first()).toHaveCSS('font-size', '18px');
   await expect(customerReportTableFrames).toHaveCount(2);
-  await expect(customerReportTableFrames.first()).toHaveCSS(
-    'border-color',
-    'rgb(212, 213, 255)'
-  );
-  await expect(customerReportTableFrames.first()).toHaveCSS('border-style', 'solid');
-  await expect(customerReportTableFrames.first()).toHaveCSS('border-width', '1px');
+  await expect(customerReportTableFrames.first()).toHaveCSS('border-width', '0px');
   await expect(customerReportTableFrames.first()).toHaveCSS('border-radius', '12px');
   await expect(customerReportTableFrames.first()).toHaveCSS('padding', '6px');
   await expect(customerReportTableFrames.first()).toHaveCSS('overflow', 'visible');
