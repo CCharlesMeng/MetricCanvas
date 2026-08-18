@@ -157,7 +157,7 @@ describe('流水分析报告页面文档', () => {
       components.filter(
         (component) => component.type === 'text' && component.props.variant === 'riskNotice'
       )
-    ).toHaveLength(2);
+    ).toHaveLength(1);
     expect(
       components.filter(
         (component) => component.type === 'text' && component.props.variant === 'heading'
