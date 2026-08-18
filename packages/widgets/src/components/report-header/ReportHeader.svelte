@@ -373,7 +373,7 @@
     line-height: var(--mc-section-title-line-height, 50px);
   }
   .report-summary-frame {
-    min-height: 152px;
+    min-height: 0;
     padding: 15px 16px;
     background: var(--mc-color-surface, #fff);
     border: 0;
@@ -382,7 +382,7 @@
   .report-summary p,
   .report-summary-content {
     max-width: none;
-    min-height: 122px;
+    min-height: 0;
     margin: 0;
     padding: 13px 16px 13px 28px;
     color: var(--mc-color-report-text, #191919);

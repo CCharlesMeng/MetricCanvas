@@ -4,11 +4,13 @@ import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
+const distRoot = resolve(root, 'dist');
 const pagesRoot = resolve(root, '../../pages');
 const contentTypes = new Map([
   ['.html', 'text/html; charset=utf-8'],
   ['.js', 'text/javascript; charset=utf-8'],
-  ['.json', 'application/json; charset=utf-8']
+  ['.json', 'application/json; charset=utf-8'],
+  ['.svg', 'image/svg+xml']
 ]);
 
 createServer(async (request, response) => {
@@ -21,7 +23,8 @@ createServer(async (request, response) => {
       return;
     }
     const servingPages = pathname.startsWith('/pages/');
-    const publicRoot = servingPages ? pagesRoot : root;
+    const servingDistAsset = pathname === '/report-badge-background.svg';
+    const publicRoot = servingPages ? pagesRoot : servingDistAsset ? distRoot : root;
     const publicPath = servingPages
       ? pathname.slice('/pages'.length)
       : pathname;

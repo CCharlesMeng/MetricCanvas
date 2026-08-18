@@ -140,25 +140,26 @@
   .text-block.risk-notice {
     box-sizing: border-box;
     width: min(100%, calc(var(--risk-notice-max-width) + 26px));
-    height: 32px;
+    min-height: 32px;
     flex: none;
     flex-direction: row;
-    align-items: center;
+    align-items: flex-start;
     justify-content: flex-start;
     gap: 6px;
     padding: 6px 10px;
-    overflow: hidden;
+    overflow: visible;
     color: #363b51;
     background: rgb(242 30 30 / 0.1);
     border-radius: 6px;
   }
   .risk-notice .body {
     min-width: 0;
-    overflow: hidden;
+    overflow: visible;
+    overflow-wrap: anywhere;
     color: inherit;
     font-size: 10px;
     line-height: 20px;
-    white-space: nowrap;
+    white-space: normal;
   }
   .risk-warning-icon {
     width: 20px;

@@ -177,15 +177,15 @@
   .metric-panel {
     box-sizing: border-box;
     width: 100%;
-    height: 136px;
+    min-height: 136px;
     padding: 10px 12px;
-    overflow: hidden;
+    overflow: visible;
     background: var(--mc-color-surface-subtle, #f1f4ff);
     border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
     border-radius: var(--mc-radius-report-content, 12px);
   }
   .metric-panel h3 {
-    margin: 0 0 1px;
+    margin: 0 0 12px;
     color: var(--mc-color-text-strong, #0f1a4d);
     font-size: 18px;
     font-weight: 400;
@@ -198,7 +198,7 @@
   }
   .metric-panel .metric-row {
     display: grid;
-    height: 45px;
+    min-height: 40px;
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: baseline;
     gap: 6px;

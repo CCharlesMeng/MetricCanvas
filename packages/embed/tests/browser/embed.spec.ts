@@ -693,6 +693,9 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   const positiveText = summary.locator('.tone-positive');
   const negativeText = summary.locator('.tone-negative');
   const metricPanel = host.locator('.metric-panel');
+  const metricTitle = metricPanel.locator('h3');
+  const metricRows = metricPanel.locator('.metric-row');
+  const metricValueLines = metricPanel.locator('.value-line');
 
   await expect(summaries).toHaveCount(2);
   await expect(summary).toHaveCSS('min-height', '0px');
@@ -729,6 +732,110 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   await expect(metricPanel).toHaveCSS('border-style', 'solid');
   await expect(metricPanel).toHaveCSS('border-width', '1px');
   await expect(metricPanel).toHaveCSS('border-radius', '12px');
+  await expect(metricPanel).toHaveCSS('padding', '10px 12px');
+  await expect(metricTitle).toHaveCSS('margin-bottom', '12px');
+  await expect(metricPanel.locator('.metric-values')).toHaveCSS('row-gap', '0px');
+  await expect(metricRows.first()).toHaveCSS('min-height', '40px');
+  await expect(metricRows.first().locator('.row-value')).toHaveCSS('line-height', '40px');
+  await expect.poll(async () => {
+    const [titleBox, firstValueLineBox, secondValueLineBox] = await Promise.all([
+      metricTitle.boundingBox(),
+      metricValueLines.first().boundingBox(),
+      metricValueLines.nth(1).boundingBox()
+    ]);
+    return Boolean(
+      titleBox &&
+      firstValueLineBox &&
+      secondValueLineBox &&
+      Math.abs(firstValueLineBox.y - titleBox.y - titleBox.height - 12) <= 1 &&
+      Math.abs(
+        secondValueLineBox.y - firstValueLineBox.y - firstValueLineBox.height
+      ) <= 1
+    );
+  }).toBe(true);
+});
+
+test('指标面板与风险提示随业务内容自然增高', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/examples/inline.html');
+  await page.evaluate(() => {
+    window.runtime.destroy();
+    window.runtime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '5.0',
+        id: 'adaptive-report-content-browser',
+        dataSources: {
+          metrics: {
+            fields: {
+              annual: { type: 'number', role: 'measure' },
+              monthly: { type: 'number', role: 'measure' },
+              projection: { type: 'number', role: 'measure' }
+            },
+            source: {
+              type: 'inline',
+              rows: [{ annual: 22_900_000, monthly: 11_600_000, projection: 34_500_000 }]
+            }
+          }
+        },
+        sections: [{
+          id: 'adaptive-content',
+          container: 'plain',
+          components: [
+            {
+              id: 'metrics',
+              type: 'metricCard',
+              layout: { span: 12 },
+              data: { main: 'metrics' },
+              props: {
+                title: '流水',
+                variant: 'compactSummary',
+                rows: [
+                  { label: '年累计', valueField: 'annual' },
+                  { label: '本月', valueField: 'monthly' },
+                  { label: '年度推演', valueField: 'projection' }
+                ]
+              }
+            },
+            {
+              id: 'risk',
+              type: 'text',
+              layout: { span: 12 },
+              props: {
+                body: '这是一条需要在窄容器内自然换行的长风险提示，它不应该被固定高度截断。',
+                variant: 'riskNotice',
+                maxWidth: 180
+              }
+            }
+          ]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const metricPanel = host.locator('.metric-panel');
+  const metricRows = metricPanel.locator('.metric-row');
+  const riskNotice = host.locator('.risk-notice');
+  const riskBody = riskNotice.locator('.body');
+
+  await expect(metricRows).toHaveCount(3);
+  await expect(metricPanel).toHaveCSS('min-height', '136px');
+  await expect(metricPanel).toHaveCSS('overflow', 'visible');
+  await expect(metricRows.first()).toHaveCSS('min-height', '40px');
+  await expect.poll(async () => {
+    const box = await metricPanel.boundingBox();
+    return Boolean(box && box.height > 136);
+  }).toBe(true);
+  await expect(riskNotice).toHaveCSS('min-height', '32px');
+  await expect(riskNotice).toHaveCSS('overflow', 'visible');
+  await expect(riskBody).toHaveCSS('white-space', 'normal');
+  await expect.poll(async () => {
+    const box = await riskNotice.boundingBox();
+    return Boolean(box && box.height > 32);
+  }).toBe(true);
+  await expect.poll(async () => riskBody.evaluate((body) =>
+    body.scrollWidth <= body.clientWidth + 1 && body.scrollHeight <= body.clientHeight + 1
+  )).toBe(true);
 });
 
 test('reportCompact 内容层与表格等宽且无滚动层', async ({ page }) => {
@@ -1219,12 +1326,23 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   );
   await expect(reportSummary).toHaveCSS('border-radius', '20px');
   await expect(reportSummaryTitle).toHaveCSS('font-weight', '600');
+  await expect(reportSummaryFrame).toHaveCSS('min-height', '0px');
+  await expect(reportSummaryBody).toHaveCSS('min-height', '0px');
+  await expect.poll(async () => {
+    const [frameRect, bodyRect] = await Promise.all([
+      reportSummaryFrame.boundingBox(),
+      reportSummaryBody.boundingBox()
+    ]);
+    return Boolean(
+      frameRect && bodyRect && Math.abs(frameRect.height - bodyRect.height - 30) <= 1
+    );
+  }).toBe(true);
   await expect(panelSections).toHaveCount(2);
   await expect(panelSections.first()).toHaveCSS('border-radius', '20px');
   await expect(panelSectionTitles).toHaveCount(2);
   await expect(panelSectionTitles.first()).toHaveCSS('font-weight', '600');
   await expect(pageHeadingTitle).toHaveCSS('font-weight', '600');
-  await expect(reportBadgeBackground).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(reportBadgeBackground).toHaveAttribute('src', /\/report-badge-background\.svg$/u);
   await expect(reportBadgeBackground).toHaveCSS('object-fit', 'fill');
   await expect.poll(async () => reportBadgeBackground.evaluate((image) => {
     if (!(image instanceof HTMLImageElement)) return false;
@@ -1304,13 +1422,13 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   })).toBe(true);
   await expect(host.locator('[data-decorative-icon="section-title-left"]')).toHaveCount(4);
   await expect(host.locator('[data-decorative-icon="section-title-right"]')).toHaveCount(4);
-  await expect(host.locator('[data-decorative-icon="risk-warning"]')).toHaveCount(2);
+  await expect(host.locator('[data-decorative-icon="risk-warning"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-growth"]')).toHaveCount(1);
   await expect(host.locator('[data-decorative-icon="ranking-decline"]')).toHaveCount(0);
-  await expect(decorativeIcons).toHaveCount(11);
+  await expect(decorativeIcons).toHaveCount(10);
   await expect(decorativeIcons.first()).toHaveAttribute('src', /^data:image\/svg\+xml/);
   const riskNotices = host.locator('.text-block.risk-notice');
-  await expect(riskNotices).toHaveCount(2);
+  await expect(riskNotices).toHaveCount(1);
   await expect.poll(async () => riskNotices.evaluateAll((notices) => notices.every((notice) => {
     const body = notice.querySelector('.body');
     return body instanceof HTMLElement && body.scrollWidth - body.clientWidth <= 1;
