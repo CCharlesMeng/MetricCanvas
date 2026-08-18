@@ -780,7 +780,7 @@ test('reportCompact 内容层与表格等宽且无滚动层', async ({ page }) =
   ).toBe(true);
 });
 
-test('流水报告表头、分析宽度与客户标签保持统一', async ({ page }) => {
+test('流水报告页头背景、表头、分析宽度与客户标签保持统一', async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/examples/inline.html');
   const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
@@ -801,6 +801,7 @@ test('流水报告表头、分析宽度与客户标签保持统一', async ({ pa
   }, flowReportDocument);
 
   const host = page.locator('[data-metriccanvas-runtime]');
+  const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
   const yoyDifferenceHeader = host.locator(
     '[data-component="customer-analysis/yoy-drop-table"] th[data-column-field="drop-difference"]'
   );
@@ -815,6 +816,13 @@ test('流水报告表头、分析宽度与客户标签保持统一', async ({ pa
       + '[data-component="customer-analysis/risk-table"] tbody tr:first-child td[data-column-field="customer-name"]'
   );
 
+  await expect(headerBackground).toHaveAttribute('src', /^data:image\/svg\+xml,/);
+  await expect.poll(async () => headerBackground.evaluate((image) =>
+    image instanceof HTMLImageElement &&
+    image.complete &&
+    image.naturalWidth === 1774 &&
+    image.naturalHeight === 887
+  )).toBe(true);
   expect.soft(await yoyDifferenceHeader.evaluate((header) => {
     const head = header.querySelector('.head');
     if (!(head instanceof HTMLElement)) return null;

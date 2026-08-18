@@ -3,7 +3,7 @@
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';
-  import headerFlowBackgroundUrl from '../../assets/header-flow-background-v2.jpg';
+  import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
