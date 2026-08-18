@@ -1,0 +1,135 @@
+# policies-index.yaml — POL-* 策略指针
+# 版本:1.0
+# 说明:策略正文在各 source yaml;本文档为索引。severity: BLOCKED / WARNING / GUIDANCE。
+# 校验器引用:harness/tools/validate_*.py 按 POL-* 编号检查。
+
+design_policies:
+  - id: POL-DESIGN-001
+    severity: BLOCKED
+    summary: ADS 禁止直接从 SDI 加工;优先调用 DWS
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_layer_consumption.py
+  - id: POL-DESIGN-002
+    severity: BLOCKED
+    summary: ADS 库名须从 actual_schemas 枚举选择
+    source: knowledge-base/specification/data-design/platform-conventions.yaml
+    validator: validate_sql_bindings.py
+  - id: POL-DESIGN-003
+    severity: BLOCKED
+    summary: ADS 表命名须符合 ads_dm pattern
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_ads_table_design.py
+  - id: POL-DESIGN-004
+    severity: BLOCKED
+    summary: 维度列须走一致性维度注册表
+    source: knowledge-base/architecture/dimension/dimension-registry.yaml
+    validator: validate_registry_consistency.py
+  - id: POL-DESIGN-005
+    severity: BLOCKED
+    summary: 相同字段不允许叠加计算规则
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_indicator_source_binding.py
+  - id: POL-DESIGN-007
+    severity: BLOCKED
+    summary: 地图类 ADS 表须带地图前缀
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_ads_table_design.py
+  - id: POL-DESIGN-008
+    severity: BLOCKED
+    summary: ads_reuse 跨 FE 复用须授权
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_reuse_precheck.py
+  - id: POL-DESIGN-009
+    severity: BLOCKED
+    summary: 同一区域 table 字段来源统一
+    source: knowledge-base/specification/data-design/data-design-constraints.yaml
+    validator: validate_area_source_consistency.py
+  - id: POL-DESIGN-010
+    severity: BLOCKED
+    summary: P0 澄清 open 时 gate 不得 pass
+    source: behavioral-guards.yaml
+    validator: validate_ads_clarification.py
+
+sql_policies:
+  - id: POL-SQL-DDL-001
+    scope: ddl
+    severity: BLOCKED
+    summary: DDL 须含固定 ORC SerDe(DLI 豁免)
+    validator: validate_sql_ddl.py
+  - id: POL-SQL-DDL-002
+    scope: ddl
+    severity: BLOCKED
+    summary: 测试态目标库按 engine 分支(bi_test / cbc_test)
+    validator: validate_sql_ddl.py
+  - id: POL-SQL-DDL-005
+    scope: ddl
+    severity: BLOCKED
+    summary: CREATE 前 DROP TABLE IF EXISTS
+    validator: validate_sql_ddl.py
+  - id: POL-SQL-DDL-006
+    scope: ddl
+    severity: BLOCKED
+    summary: 字段顺序与设计文档一致
+    validator: validate_sql_column_refs.py
+  - id: POL-SQL-DDL-007
+    scope: ddl
+    severity: BLOCKED
+    summary: 分区表加列须 CASCADE
+    validator: validate_sql_ddl.py
+  - id: POL-SQL-DDL-009
+    scope: ddl
+    severity: BLOCKED
+    summary: 测试态表名格式 {原始表名}*_{MMDD}_*{原始库名}
+    validator: validate_sql_file_naming.py
+  - id: POL-SQL-ETL-002
+    scope: etl
+    severity: BLOCKED
+    summary: CTE 须在 INSERT 之前
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-ETL-003
+    scope: etl
+    severity: BLOCKED
+    summary: INSERT OVERWRITE 分区表须显式 PARTITION
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-ETL-005
+    scope: etl
+    severity: BLOCKED
+    summary: active 列 NULL 用 COALESCE;reserved 恒 NULL
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-ETL-006
+    scope: etl
+    severity: BLOCKED
+    summary: 率值分母为 0 时结果为 NULL
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-ETL-007
+    scope: etl
+    severity: BLOCKED
+    summary: 先过滤→再 JOIN→再聚合
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-ETL-009
+    scope: etl
+    severity: BLOCKED
+    summary: 聚合函数内部须先 COALESCE
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-QRY-001
+    scope: query
+    severity: BLOCKED
+    summary: 表须有有意义别名,禁止 t1/t2
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-QRY-002
+    scope: query
+    severity: BLOCKED
+    summary: 引用字段必须带表别名
+    validator: validate_sql_etl_patterns.py
+  - id: POL-SQL-QRY-005
+    scope: query
+    severity: BLOCKED
+    summary: 禁止 SELECT *;嵌套不超过 3 层
+    validator: validate_sql_etl_patterns.py
+
+platform_policies:
+  - id: POL-REV-PLATFORM-003
+    severity: BLOCKED
+    summary: 引擎分离 HIVE/DLI 双分支(engine 字段驱动)
+    source: knowledge-base/specification/data-design/engine-differences.yaml
+    validator: validate_sql_ddl.py

@@ -1,0 +1,23 @@
+# data-design-constraints.yaml — 分层/命名/建模约束
+# 引用:validate_layer_consumption.py / validate_ads_table_design.py 等
+
+layer_consumption:   # KW-AX8
+  ads_forbidden: [SDI, ODS]
+  ads_allowed: [DWD, DWS, DM, DIM]
+
+naming:
+  ads_table_pattern: "^(ads|ads_dm|dm)_[a-z0-9_]+$"     # POL-DESIGN-003
+  map_ads_prefix: "^map_"                                # POL-DESIGN-007 地图类前缀
+  test_table_pattern: "^[a-z0-9_]+_[0-9]{4}_[a-z0-9_]+$" # POL-SQL-DDL-009 测试态表名
+
+constraints:
+  - id: POL-DESIGN-001
+    rule: ADS 禁止直接从 SDI 加工;优先调用 DWS
+  - id: POL-DESIGN-002
+    rule: ADS 库名须从 actual_schemas 枚举选择
+  - id: POL-DESIGN-005
+    rule: 相同字段不允许叠加计算规则
+  - id: POL-DESIGN-008
+    rule: ads_reuse 跨 FE 复用须授权
+  - id: POL-DESIGN-009
+    rule: 同一区域 table 字段来源统一

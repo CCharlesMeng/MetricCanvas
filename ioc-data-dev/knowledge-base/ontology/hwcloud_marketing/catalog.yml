@@ -1,0 +1,27 @@
+# hwcloud_marketing 语义层(catalog)
+
+> 唯一真源:本目录为营销域语义层基线。写指标/维表/ADS 设计前必须查此目录(CORE-AX4)。
+> 六层调用规则见 ../ontology-layers.yaml(KW-AX8)。
+
+## 域 → 事实正向索引
+
+| 域 | 事实表 | 粒度 | 维度 | 状态 |
+|----|--------|------|------|------|
+| 客户洞察 | dwd_t_customer_insight_map_m | 月/客户 | 客户、区域、产品 | baseline |
+| 收入 | dws_t_revenue_daily | 天/产品 | 产品、区域、汇率 | baseline |
+
+## 共享维度(详见 shared-dimensions.yml)
+
+- dim_customer(客户)— 唯一键 party_id
+- dim_product(云服务产品)— SCD 维,JOIN 须带生效日期(PAT-DOM-SRC-003)
+- dim_area(区域)— 站点:china / oversea / europe(PAT-DOM-SITE-001)
+
+## 指标索引
+
+| 指标 | 语义模型 | 来源分层 | 生命周期 |
+|------|----------|----------|----------|
+| {feature 新增指标} | models/ | DWS/DM | 由 feature-delta-indicator.md 登记 |
+
+## 变更纪律
+
+- 基线变更须经 archive 阶段的 baseline-update.md 登记合并。

@@ -1,0 +1,40 @@
+{
+  "name": "dsh-plugin-ioc-data-dev",
+  "version": "0.1.0",
+  "description": "IOC 数据开发垂直领域插件:阶段门禁、SQL/设计/指标校验器、行为守卫、领域技能与知识底座。把 DeepSeek Harness 变成 IOC 数据开发的专用工作台。",
+  "type": "module",
+  "main": "dsh/index.js",
+  "exports": {
+    ".": "./dsh/index.js",
+    "./guards": "./dsh/guards.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dsh",
+    "skills",
+    "codespec",
+    "harness",
+    "knowledge-base",
+    "preset",
+    ".cac",
+    "AGENTS.md",
+    "cordis.patch.yml",
+    "README.md",
+    "examples"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "ioc",
+    "data-development",
+    "etl",
+    "data-warehouse",
+    "kimball",
+    "agent-skill"
+  ],
+  "license": "MIT"
+}

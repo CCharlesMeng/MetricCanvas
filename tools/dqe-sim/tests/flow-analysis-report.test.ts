@@ -93,8 +93,6 @@ describe('流水分析报告 DQE fixture', () => {
       'stable-forecast',
       'one-off-forecast',
       'amount',
-      'drop-difference',
-      'monthly-average',
       'january-amount',
       'previous-month-amount',
       'current-month-amount',
@@ -123,18 +121,19 @@ describe('流水分析报告 DQE fixture', () => {
       'customer-risk-top'
     ]) {
       const rows = fixture.queries[id]!.rows;
-      const field = id === 'customer-decline-top'
-        ? '公有云流水月变化'
-        : id === 'customer-yoy-drop-top'
-        ? 'drop-difference'
-        : id === 'customer-risk-top'
-          ? 'current-month-amount'
-          : 'amount';
-      const values = rows.map((row) => Number(row[field]));
+      const values = id === 'customer-yoy-drop-top'
+        ? rows.map((row) => embeddedNumbers(String(row.reason))[0] ?? Number.NaN)
+        : rows.map((row) => Number(row[
+          id === 'customer-decline-top'
+            ? '公有云流水月变化'
+            : id === 'customer-risk-top'
+              ? 'current-month-amount'
+              : 'amount'
+        ]));
       expect(
         values.every((value, index) =>
           index === 0 || (
-            id === 'customer-decline-top'
+            id === 'customer-decline-top' || id === 'customer-yoy-drop-top'
               ? values[index - 1]! < value
               : values[index - 1]! > value
           )
@@ -187,18 +186,23 @@ describe('流水分析报告 DQE fixture', () => {
     }
   });
 
-  it('同比掉量原因返回负掉量与正月均流水两个受控内嵌值', () => {
-    const rows = fixture.queries['customer-yoy-drop-top']!.rows;
+  it('同比掉量查询只用 reason 承载负掉量与正月均流水差值', () => {
+    const query = fixture.queries['customer-yoy-drop-top']!;
+    const rows = query.rows;
+
+    expect(query.output_metrics).toEqual([]);
 
     for (const row of rows) {
       const reason = row.reason;
       expect(typeof reason).toBe('string');
       if (typeof reason !== 'string') continue;
       expect(reason).not.toMatch(/<data\s/u);
-      expect(embeddedNumbers(reason)).toEqual([
-        -Number(row['drop-difference']),
-        Number(row['monthly-average'])
-      ]);
+      expect(reason).toContain('月均流水差值');
+      expect(row).not.toHaveProperty('drop-difference');
+      expect(row).not.toHaveProperty('monthly-average');
+      const [dropDifference, monthlyAverage] = embeddedNumbers(reason);
+      expect(dropDifference).toBeLessThan(0);
+      expect(monthlyAverage).toBeGreaterThan(0);
     }
   });
 

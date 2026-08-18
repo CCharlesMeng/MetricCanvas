@@ -1,0 +1,36 @@
+# kimball-profile.yaml — Kimball 数仓 Profile
+# 分层与消费规则(KW-AX8 的 Profile 化)
+
+layers:
+  - id: ODS
+    description: 贴源层
+    consumers: [SDI, DWD, DWS]
+  - id: SDI
+    description: 标准数据接口层
+    consumers: [DWD]
+  - id: DWD
+    description: 明细层
+    consumers: [DWS, DM, ADS]
+  - id: DWS
+    description: 汇总层
+    consumers: [DM, ADS]
+  - id: DM
+    description: 数据集市层
+    consumers: [ADS]
+  - id: DIM
+    description: 维度层
+    consumers: [ADS, DM, DWS, DWD]
+  - id: ADS
+    description: 应用层
+    consumers: []
+
+# ADS 消费规则(与 ontology-layers.yaml 一致)
+ads_consumption:
+  allowed: [DWD, DWS, DM, DIM]
+  forbidden: [SDI, ODS]
+  severity: BLOCKED        # POL-DESIGN-001
+
+dimension_rules:
+  - 维度列必须来自一致性维度注册表(POL-DESIGN-004)
+  - 同一区域 table 字段来源统一(POL-DESIGN-009)
+  - 相同字段不允许叠加计算规则(POL-DESIGN-005)

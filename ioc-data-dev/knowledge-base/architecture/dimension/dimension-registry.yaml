@@ -1,0 +1,16 @@
+# dimension-registry.yaml — 维度注册表
+# ontology_ref 桥接:与 knowledge-base/ontology/ 共享维度一一对应(POL-DESIGN-004)。
+
+registry:
+  - id: dim_customer
+    ontology_ref: hwcloud_marketing.shared-dimensions.dim_customer
+    natural_key: party_id
+    usage: 客户维度列
+  - id: dim_product
+    ontology_ref: hwcloud_marketing.shared-dimensions.dim_product
+    natural_key: product_code
+    usage: 云服务产品维度列(SCD,JOIN 带生效日期)
+  - id: dim_area
+    ontology_ref: hwcloud_marketing.shared-dimensions.dim_area
+    natural_key: data_site_type
+    usage: 区域维度列(站点路由)

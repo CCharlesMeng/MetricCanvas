@@ -1,0 +1,22 @@
+# feature-tree.yaml — 基线特性树(L1→L2→L3→L4)
+# 归档时 ADDED/MODIFIED 回写(archive → baseline-update.md → 合并本文件)。
+
+tree:
+  - id: L1.marketing
+    name: 营销域
+    children:
+      - id: L2.customer-insight
+        name: 客户洞察
+        children:
+          - id: L3.map-report
+            name: 地图月报
+            status: baseline
+          - id: L3.customer-profile
+            name: 客户画像
+            status: baseline
+      - id: L2.revenue
+        name: 收入分析
+        children:
+          - id: L3.revenue-report
+            name: 收入报表
+            status: baseline

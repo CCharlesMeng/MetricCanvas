@@ -59,8 +59,6 @@ const expectedMoneyFields = [
   'customer-growth-top.amount',
   'customer-decline-top.amount',
   'customer-decline-top.monthly-delta',
-  'customer-yoy-drop-top.drop-difference',
-  'customer-yoy-drop-top.monthly-average',
   'customer-risk-top.january-amount',
   'customer-risk-top.previous-month-amount',
   'customer-risk-top.current-month-amount',
@@ -313,7 +311,7 @@ describe('流水分析报告页面文档', () => {
     expect(percentFields.every((field) => field.type === 'number')).toBe(true);
   });
 
-  it('两张客户表以对象绑定消费 semanticHtml/detail，掉量绝对值不启用 signed', () => {
+  it('两张客户表以对象绑定消费 semanticHtml/detail，同比掉量表只保留 reason 金额真源', () => {
     const parsed = parsePage(flowReportPageJson);
     if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
     const components = parsed.page.sections.flatMap((section) => section.components);
@@ -347,9 +345,26 @@ describe('流水分析报告页面文档', () => {
     expect(
       risk.props.columns.map((column) => column.kind === 'group' ? undefined : column.width)
     ).toEqual([145, 180, 80, 80, 80]);
-    expect(yoy.props.columns.find((column) =>
-      column.kind !== 'group' && column.field === 'drop-difference'
-    )).not.toHaveProperty('visual', 'signed');
+    expect(parsed.page.dataSources['customer-yoy-drop-top']?.fields['drop-difference'])
+      .toBeUndefined();
+    expect(parsed.page.dataSources['customer-yoy-drop-top']?.fields['monthly-average'])
+      .toBeUndefined();
+    expect(yoy.props.columns.map((column) =>
+      column.kind === 'group'
+        ? undefined
+        : typeof column.field === 'string'
+          ? column.field
+          : column.field.field
+    )).toEqual(['customer-name', 'reason']);
+    expect(
+      yoy.props.columns.map((column) => column.kind === 'group' ? undefined : column.width)
+    ).toEqual([160, 410]);
+
+    const rows = (flowReportPageJson.dataSources['customer-yoy-drop-top'] as RawQuerySource)
+      .source.initial?.rows ?? [];
+    expect(rows.every((row) => !('drop-difference' in row))).toBe(true);
+    expect(rows.every((row) => !('monthly-average' in row))).toBe(true);
+    expect(rows.every((row) => String(row.reason).match(/<data>/gu)?.length === 2)).toBe(true);
   });
 
   it('三个摘要由页面文档直接返回受控语义 HTML text 正文，不声明 SSE AI 总结', () => {

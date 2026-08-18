@@ -1,0 +1,42 @@
+# change-manifest.yaml — 变更治理清单(CTR-GOV-001)
+# 模板:每字段必填;gates.* 由对应 activity 置位,禁止自改(CORE-AX9)。
+
+schema: ioc-workflow
+version: "{version}"          # 迭代版本,如 0.1.0
+feature_id: "{feature-id}"    # 如 fw-2026-0818-001
+feature_name: "{feature-name}"
+main_path: data | subject
+engine: hive | dli            # POL-REV-PLATFORM-003 驱动分支
+
+# 门禁(12 个,由置位者写入;取值见 gates-glossary.md)
+gates:
+  data_design: not_started            # setter: ioc-data-design
+  ads_design_validation: not_started  # setter: ioc-ads-design-validate
+  clouddevops_review: not_started     # setter: sdd-clouddevops-update
+  ads_clarification_applied: not_started  # setter: 澄清闭环回写
+  service_design: not_started         # setter: ioc-service-design
+  service_develop: not_started        # setter: ioc-service-develop
+  sql_bindings_ready: not_started     # setter: sql-bindings-ready
+  sql_validation_static: not_started  # setter: sql-validator
+  test_execution: not_started         # setter: platform-test
+  platform_test: not_started          # setter: platform-test
+  sql_promotion: not_started          # setter: promotion
+  platform_formal: not_started        # setter: platform-formal
+
+artifacts:
+  proposal-fe.md: not_started
+  feature-delta-spec.md: not_started
+  feature-delta-acceptance.md: not_started
+  feature-delta-indicator.md: not_started
+  GWT验收.md: not_started
+  delta-design-ads.md: not_started
+  sql-source-bindings.yaml: not_started
+  "hql_test/*_test.sql": not_started
+  mock-data-plan.md: not_started
+  validation-report.md: not_started
+  "hql/*.sql": not_started
+  archive-summary.md: not_started
+  baseline-update.md: not_started
+
+evidence_index: evidence-index.md
+packet: packets/change-packet.md

@@ -1,0 +1,161 @@
+# activities-registry.yaml — Activity 机读注册表
+# 版本:v2.0(分片式)
+# 说明:每 activity 一个分片(codespec/guidelines/ioc-kernel/activities/<act.id>.yaml),
+#       本文件为聚合索引。共 34 个 activity(data 20 + parallel 6 + subject 8)。
+
+activities_version: "2.0"
+total: 34
+
+# ── data_main_path(20)──────────────────────────────────────────────────────
+data_main_path:
+  - id: act.intake
+    stage_id: intake
+    skill: null
+    harness_card: 00-intake.md
+    artifacts: [.codespec.yaml, change-manifest.yaml]
+  - id: act.requirement
+    stage_id: requirement
+    skill: sdd-explore
+    harness_card: 01-requirement.md
+    artifacts: [change-packet.md]
+  - id: act.prd
+    stage_id: requirement
+    skill: sdd-prd
+    harness_card: 01-requirement.md
+    artifacts: [proposal-fe.md, feature-delta-spec.md, feature-delta-acceptance.md, feature-delta-indicator.md, GWT验收.md]
+  - id: act.data-design
+    stage_id: data-design
+    skill: ioc-data-design
+    harness_card: 02-data-design.md
+    artifacts: ["indicator v1 回填"]
+  - id: act.ads-design
+    stage_id: ads-design
+    skill: ioc-ads-design
+    harness_card: 03-ads-design.md
+    artifacts: [delta-design-ads.md, "indicator v2 回填"]
+  - id: act.ads-validate
+    stage_id: ads-design-validation
+    skill: ioc-ads-design-validate
+    harness_card: 03b-ads-design-validation.md
+    artifacts: [ads-design-validation-report.md]
+  - id: act.ads-clarification-apply
+    stage_id: ads-clarification-apply
+    skill: ioc-ads-design
+    harness_card: 03c-ads-clarification-apply.md
+    artifacts: [澄清回写 ADS]
+  - id: act.clouddevops-review
+    stage_id: clouddevops-review
+    skill: sdd-clouddevops-update
+    harness_card: 03e-clouddevops-review.md
+    artifacts: [clouddevops-review-report.md]
+  - id: act.sql-bindings
+    stage_id: sql-bindings-ready
+    skill: sql-generator
+    harness_card: 03d-sql-bindings-ready.md
+    artifacts: [sql-source-bindings.yaml, table-schema.json]
+  - id: act.sql-generate
+    stage_id: sql-generate
+    skill: sql-generator
+    harness_card: 06-sql-generate.md
+    artifacts: ["hql_test/*_test.sql"]
+  - id: act.sql-validation
+    stage_id: sql-validation
+    skill: sql-validator
+    harness_card: 07-sql-validation.md
+    artifacts: [mock-data-plan.md, validation-report.md]
+  - id: act.job-create
+    stage_id: job-create
+    skill: sdd-job-creator
+    harness_card: 10-job-create.md
+    artifacts: ["TEST/FORMAL zip"]
+  - id: act.platform-test
+    stage_id: platform-test
+    skill: null
+    harness_card: 06b-platform-test.md
+    artifacts: [platform-test-execution.md]
+  - id: act.promotion
+    stage_id: promotion
+    skill: sql-generator
+    harness_card: 08-promotion.md
+    artifacts: ["hql/*.sql"]
+  - id: act.platform-formal
+    stage_id: platform-formal
+    skill: null
+    harness_card: 08b-platform-formal.md
+    artifacts: [platform-formal-execution.md]
+  - id: act.archive
+    stage_id: archive
+    skill: sdd-archive-workspace
+    harness_card: 09-archive.md
+    artifacts: [archive-summary.md, baseline-update.md]
+
+# ── parallel_tracks(6)───────────────────────────────────────────────────────
+parallel_tracks:
+  - id: act.service-design
+    skill: ioc-service-design
+    trigger: ads-design-validation 后
+    artifacts: [ioc-service-design.md, data-service-manifest.yaml]
+  - id: act.service-develop
+    skill: ioc-service-develop
+    trigger: 条件触发(service_design pass)
+    artifacts: [service 实现]
+  - id: act.frontend-plan
+    skill: ioc-frontend-plan
+    trigger: service_design pass 后
+    artifacts: [Frontend-Plan.md]
+  - id: act.test-analyzer
+    skill: sdd-test-analyzer
+    trigger: ads-design-validation 后
+    artifacts: [测试分析(P)]
+  - id: act.testpoint-analyzer
+    skill: sdd-testpoint-analyzer
+    trigger: ads-design-validation 后
+    artifacts: [测试点分析(S)]
+  - id: act.testcase-designer
+    skill: sdd-testcase-designer
+    trigger: ads-design-validation 后
+    artifacts: [测试用例设计(E)]
+
+# ── subject_main_path(8)────────────────────────────────────────────────────
+# 与 data 路径对称:stage_id 前缀 subject-,使用 ioc-subject-design 替代 ioc-ads-design。
+subject_main_path:
+  - id: act.subject-requirement
+    stage_id: subject-requirement
+    skill: sdd-explore
+    harness_card: 01b-subject-requirement.md
+    artifacts: [change-packet.md]
+  - id: act.subject-design
+    stage_id: subject-design
+    skill: ioc-subject-design
+    harness_card: 02b-subject-design.md
+    artifacts: [subject-design.md]
+  - id: act.subject-design-validate
+    stage_id: subject-design-validation
+    skill: ioc-subject-design-validate
+    harness_card: 03f-subject-design-validation.md
+    artifacts: [subject-design-validation-report.md]
+  - id: act.subject-clarification-apply
+    stage_id: subject-clarification-apply
+    skill: ioc-subject-design
+    harness_card: 03g-subject-clarification-apply.md
+    artifacts: [澄清回写 subject-design]
+  - id: act.subject-sql-bindings
+    stage_id: subject-sql-bindings-ready
+    skill: sql-generator
+    harness_card: 03h-subject-sql-bindings-ready.md
+    artifacts: [sql-source-bindings.yaml, table-schema.json]
+  - id: act.subject-sql-generate
+    stage_id: sql-generate
+    skill: sql-generator
+    harness_card: 06-sql-generate.md
+    artifacts: ["hql_test/*_test.sql"]
+  - id: act.subject-sql-validation
+    stage_id: sql-validation
+    skill: sql-validator
+    harness_card: 07-sql-validation.md
+    artifacts: [mock-data-plan.md, validation-report.md]
+  - id: act.subject-archive
+    stage_id: archive
+    skill: sdd-archive-workspace
+    harness_card: 09-archive.md
+    artifacts: [archive-summary.md, baseline-update.md]

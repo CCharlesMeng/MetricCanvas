@@ -1,0 +1,10 @@
+# sql-source-bindings.yaml — 源绑定(示例)
+
+bindings:
+  - id: BIND-001
+    source_table: dws_t_customer_active_daily
+    source_layer: DWS
+    target_table: ads_dm_customer_active_m
+    target_db: ads_db_marketing
+    filter: "data_site_type IN ('china','oversea','europe')"
+    engine: hive

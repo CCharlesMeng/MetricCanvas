@@ -1,0 +1,323 @@
+# ioc-workflow schema — IOC 数据开发流程全量注册表
+# 版本:1.0 · 2026-08-18
+# 真源:本文档定义流程(artifacts DAG + skills 白名单 + validation + gates)。
+# 修改须同步 codespec/guidelines/ioc-kernel/ 与 harness/stages/、harness/tools/。
+schema: ioc-workflow
+version: "1.0"
+
+meta:
+  name: IOC 数据开发工作流
+  source: 《IOC 数据开发全流程与周边依赖》v1.0
+  main_paths:
+    data: 15 阶段
+    subject: 13 阶段
+  artifacts: 11 节点
+  skills: 58 个(7 类)
+  activities: 34 个
+
+# ─────────────────────────────────────────────────────────────────────────
+# 1. 主流程路径
+# ─────────────────────────────────────────────────────────────────────────
+main_paths:
+  data_main_path: &data_path
+    order: 1
+    stages:
+      - intake
+      - requirement
+      - data-design
+      - ads-design
+      - ads-design-validation
+      - ads-clarification-apply
+      - clouddevops-review
+      - sql-bindings-ready
+      - sql-generate
+      - sql-validation
+      - job-create            # TEST
+      - platform-test
+      - promotion
+      - job-create            # FORMAL
+      - platform-formal
+      - archive
+  subject_main_path: &subject_path
+    order: 2
+    stages:
+      - requirement
+      - subject-design
+      - subject-design-validation
+      - subject-clarification-apply
+      - subject-sql-bindings-ready
+      - sql-generate
+      - sql-validation
+      - job-create
+      - platform-test
+      - promotion
+      - platform-formal
+      - archive
+  parallel_tracks: &parallel_tracks
+    order: 3
+    trigger_after: [ads-design-validation]
+    tracks:
+      service_track:
+        - act.service-design
+        - act.service-develop        # 条件触发
+        - act.frontend-plan
+      test_track:
+        - act.test-analyzer
+        - act.testpoint-analyzer
+        - act.testcase-designer
+
+# ─────────────────────────────────────────────────────────────────────────
+# 2. artifacts DAG(11 个产物节点)
+#    phase: 所属阶段; generates: 产物文件; requires: 前置产物
+# ─────────────────────────────────────────────────────────────────────────
+artifacts:
+  - id: proposal-fe
+    phase: prd
+    generates: [proposal-fe.md]
+    requires: []
+    description: 需求澄清
+  - id: feature-delta-spec
+    phase: prd
+    generates: [feature-delta-spec.md]
+    requires: [proposal-fe]
+    description: FE 级增量规格
+  - id: feature-delta-acceptance
+    phase: prd
+    generates: [feature-delta-acceptance.md]
+    requires: [feature-delta-spec]
+    description: FE 级验收摘要
+  - id: feature-delta-indicator
+    phase: prd
+    generates: [feature-delta-indicator.md]
+    requires: [feature-delta-spec]
+    description: 指标盘点 v0(后续 v1/v2/v3 回填,见 indicator-lifecycle)
+  - id: gwt-acceptance
+    phase: prd
+    generates: [GWT验收.md]
+    requires: [feature-delta-acceptance, feature-delta-indicator]
+    description: GWT 全场景验收
+  - id: delta-design-ads
+    phase: design
+    generates: [delta-design-ads.md]
+    requires: [proposal-fe, feature-delta-spec, feature-delta-acceptance, feature-delta-indicator, gwt-acceptance]
+    description: ADS 增量设计(ioc-ads-design 产出)
+  - id: sql-test
+    phase: sql
+    generates: ["hql_test/*_test.sql"]
+    requires: [delta-design-ads]
+    description: 测试态 SQL(目标库 bi_test / cbc_test)
+  - id: mock-data-plan
+    phase: validation
+    generates: [mock-data-plan.md]
+    requires: [delta-design-ads, sql-test, gwt-acceptance]
+    description: Mock 数据方案
+  - id: validation-report
+    phase: validation
+    generates: [validation-report.md]
+    requires: [mock-data-plan, sql-test]
+    description: SQL 验证报告
+  - id: sql-promotion
+    phase: sql
+    generates: ["hql/*.sql"]
+    requires: [validation-report]
+    description: 正式 SQL 脚本
+  - id: archive
+    phase: archive
+    generates: [archive-summary.md, baseline-update.md]
+    requires: [validation-report, sql-promotion]
+    description: 归档 + knowledge-base 回写
+
+# ─────────────────────────────────────────────────────────────────────────
+# 3. skills 白名单(58 个,7 类)
+#    仅白名单内 skill 可被调度;白名单外一律禁止。
+# ─────────────────────────────────────────────────────────────────────────
+skills:
+  - category: 多仓 SDD 标准
+    count: 19
+    ids:
+      - sdd-knowledge-index
+      - sdd-reverse
+      - sdd-standard-runtime
+      - sdd-explore
+      - sdd-ux-decode
+      - sdd-style-reference
+      - sdd-prd
+      - sdd-design
+      - sdd-frontend-design
+      - sdd-requirement-review
+      - sdd-create-us
+      - sdd-task
+      - sdd-dev
+      - sdd-dev-subagent
+      - sdd-review-story
+      - sdd-review-feature
+      - sdd-archive-workspace
+      - sdd-evaluate-knowledge-consumption
+      - sdd-issue-resolve
+  - category: IOC 定制
+    count: 11
+    ids:
+      - ioc-ads-design
+      - ioc-ads-design-validate
+      - ioc-data-design
+      - ioc-data-plan
+      - ioc-frontend-graphql
+      - ioc-frontend-plan
+      - ioc-service-design
+      - ioc-service-develop
+      - ioc-sketch-decode
+      - ioc-subject-design
+      - ioc-subject-design-validate
+  - category: SDD 扩展
+    count: 5
+    ids:
+      - sdd-init
+      - sdd-verify
+      - sdd-job-creator
+      - sdd-clouddevops-update
+      - sdd-reverse-data
+  - category: 数据工具
+    count: 4
+    ids:
+      - clouddp-cli
+      - cloudioc-cli
+      - sql-generator
+      - sql-validator
+  - category: 测试三件套
+    count: 3
+    ids:
+      - sdd-test-analyzer
+      - sdd-testcase-designer
+      - sdd-testpoint-analyzer
+  - category: 数据治理/稽核
+    count: 12
+    ids:
+      - audit-report-view
+      - bigdata-knowledge-reverse
+      - clarification-view
+      - data-context-gather
+      - data-table-update
+      - data-validation
+      - datav-lowcode
+      - excel-table-schema-extractor
+      - grain-join-analysis
+      - semantic-creator
+      - single-data-table-update
+      - table-validation
+  - category: 通用工具
+    count: 4
+    ids:
+      - generate-prototype
+      - grill-prd
+      - reverse-prototype
+      - sdd-knowledge-fetch
+
+# ─────────────────────────────────────────────────────────────────────────
+# 4. manifest gates.* 字段(12 个)
+#    gate: manifest 字段名; setter: 置位者; blocks: 阻塞下游
+# ─────────────────────────────────────────────────────────────────────────
+gates:
+  - gate: data_design
+    setter: ioc-data-design
+    blocks: [ads-design]
+  - gate: ads_design_validation
+    setter: ioc-ads-design-validate
+    blocks: [sql-generate]            # = fail 时阻塞
+  - gate: clouddevops_review
+    setter: sdd-clouddevops-update
+    blocks: [sql-bindings-ready]
+  - gate: ads_clarification_applied
+    setter: 澄清闭环回写
+    blocks: [*]                       # P0 open 时阻塞各阶段
+  - gate: service_design
+    setter: ioc-service-design
+    blocks: [service-develop, frontend-plan]
+  - gate: service_develop
+    setter: ioc-service-develop
+    blocks: [frontend-plan]           # 条件
+  - gate: sql_bindings_ready
+    setter: sql-bindings-ready
+    blocks: [sql-generate]
+  - gate: sql_validation_static
+    setter: sql-validator
+    blocks: [job-create(TEST), platform-test]
+  - gate: test_execution
+    setter: platform-test
+    blocks: [promotion]
+  - gate: platform_test
+    setter: platform-test
+    blocks: [promotion]
+  - gate: sql_promotion
+    setter: promotion
+    blocks: [archive]
+  - gate: platform_formal
+    setter: platform-formal
+    blocks: [archive]                 # 建议 pass
+
+# ─────────────────────────────────────────────────────────────────────────
+# 5. validation(机器校验映射)
+#    artifact → 结构校验器(harness/tools/validate_*.py)
+# ─────────────────────────────────────────────────────────────────────────
+validation:
+  change-manifest.yaml:
+    - validate_gate_change.py         # gates.* 变更校验(CORE-AX9)
+    - validate_sdd_state.py           # manifest/evidence/artifacts 一致性
+  feature-delta-indicator.md:
+    - validate_lifecycle_columns.py   # 指标生命周期列定义(CORE-AX6)
+    - validate_layer_consumption.py   # 语义层分层约束(KW-AX8)
+  delta-design-ads.md:
+    - validate_layer_consumption.py   # KW-AX8
+    - validate_ads_table_design.py    # ADS 表设计
+    - validate_indicator_ads_binding.py
+  *-clarification-questions.md:
+    - validate_ads_clarification.py   # AI 不得 closed P0(CORE-AX8)
+    - validate_data_design_clarification.py
+    - validate_subject_clarification.py
+  sql-source-bindings.yaml:
+    - validate_sql_bindings.py
+    - validate_layer_consumption.py   # KW-AX8
+    - validate_domain_patterns.py     # KW-AX5
+    - validate_area_source_consistency.py
+  "hql_test/*_test.sql":
+    - validate_sql_ddl.py             # DDL 结构
+    - validate_sql_etl_patterns.py    # ETL 模式(KW-AX3)
+    - validate_domain_patterns.py     # 领域模式(KW-AX5)
+    - validate_sql_file_naming.py
+    - validate_sql_column_refs.py     # 列引用(从 evidence)
+  "hql/*.sql":
+    - validate_sql_ddl.py
+    - validate_sql_etl_patterns.py
+    - validate_domain_patterns.py
+    - validate_sql_file_naming.py
+    - validate_sql_column_refs.py
+  evidence/schema_*.json:
+    - validate_evidence_provenance.py # 证据溯源
+    - validate_tool_evidence.py       # 工具失败禁止落盘(CORE-AX10)
+  evidence/etl-sql/*.sql:
+    - validate_etl_lineage_evidence.py
+    - validate_upstream_job_lineage.py
+
+# ─────────────────────────────────────────────────────────────────────────
+# 6. blocks_when 规则(机读)
+#    stage: 阶段; gates: 需要置位的 manifest gate; min_level: 产物最低等级
+# ─────────────────────────────────────────────────────────────────────────
+blocks_when:
+  - stage: ads-design
+    requires_gates: [data_design]
+  - stage: sql-generate
+    requires_gates: [ads_design_validation, clouddevops_review, sql_bindings_ready]
+  - stage: sql-bindings-ready
+    requires_gates: [clouddevops_review]
+  - stage: job-create
+    requires_gates: [sql_validation_static]
+    min_level: L2                    # validation-report 至少 L2
+  - stage: promotion
+    requires_gates: [test_execution, platform_test, sql_validation_static]
+  - stage: archive
+    requires_gates: [sql_promotion, platform_formal]
+  - stage: service-develop
+    requires_gates: [service_design]
+  - stage: frontend-plan
+    requires_gates: [service_design] # service_develop 条件触发
+  - stage: "*"
+    requires_gates: [ads_clarification_applied]  # P0 open 时全局阻塞

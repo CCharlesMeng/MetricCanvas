@@ -1,0 +1,24 @@
+# job-profile.yaml — 作业开发 Profile
+# job-create / platform-test / promotion / platform-formal 的作业侧约定
+
+job_lifecycle:
+  - phase: TEST
+    source: hql_test/*_test.sql
+    target: 测试环境(工作平台试算)
+    gate: sql_validation_static pass
+    output: TEST zip
+  - phase: FORMAL
+    source: hql/*.sql
+    target: 正式环境(工作平台再确认)
+    gate: sql_promotion pass
+    output: FORMAL zip
+
+decision_gates:      # validate_job_decision_gates.py
+  - job-create TEST 前置: sql_validation_static = pass
+  - promotion 前置: test_execution = pass AND platform_test = pass
+  - job-create FORMAL 前置: sql_promotion = pass
+  - archive 前置: platform_formal = pass(建议)
+
+platform_steps:
+  - platform-test: 工作平台试算,产出 platform-test-execution.md
+  - platform-formal: 工作平台再确认,产出 platform-formal-execution.md

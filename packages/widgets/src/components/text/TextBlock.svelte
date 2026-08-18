@@ -188,7 +188,7 @@
   .page-heading-title {
     color: var(--mc-color-primary, #0f1a4d);
     font-size: var(--mc-section-title-font-size, 32px);
-    font-weight: 400;
+    font-weight: var(--mc-section-title-font-weight, 600);
     line-height: var(--mc-section-title-line-height, 50px);
     text-align: center;
   }

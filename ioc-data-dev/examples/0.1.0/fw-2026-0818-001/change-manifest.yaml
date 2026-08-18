@@ -1,0 +1,39 @@
+# change-manifest.yaml — 示例 feature(端到端测试)
+schema: ioc-workflow
+version: "0.1.0"
+feature_id: fw-2026-0818-001
+feature_name: 客户洞察地图月报 ADS 表
+main_path: data
+engine: hive
+
+gates:
+  data_design: pass
+  ads_design_validation: pass
+  clouddevops_review: pass
+  ads_clarification_applied: not_started
+  service_design: not_started
+  service_develop: not_started
+  sql_bindings_ready: pass
+  sql_validation_static: pass
+  test_execution: not_started
+  platform_test: not_started
+  sql_promotion: not_started
+  platform_formal: not_started
+
+artifacts:
+  proposal-fe.md: done
+  feature-delta-spec.md: done
+  feature-delta-acceptance.md: done
+  feature-delta-indicator.md: done
+  GWT验收.md: done
+  delta-design-ads.md: done
+  sql-source-bindings.yaml: done
+  "hql_test/*_test.sql": done
+  mock-data-plan.md: not_started
+  validation-report.md: not_started
+  "hql/*.sql": not_started
+  archive-summary.md: not_started
+  baseline-update.md: not_started
+
+evidence_index: evidence-index.md
+packet: packets/change-packet.md

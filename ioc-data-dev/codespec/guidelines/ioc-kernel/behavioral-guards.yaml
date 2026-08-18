@@ -1,0 +1,133 @@
+# behavioral-guards.yaml — 行为守卫定义 v2.0
+# 说明:守卫是"行为层"的约束。结构型守卫由 sdd_post_write.py 自动触发 validate_*.py;
+#       语义型守卫由 sdd-verify skill 执行(独立读取 evidence 语义比对)。
+# DSH 落地:守卫脚本见 .cac/hooks/(由 agent 在写前/写后显式调用,或由 ioc-stage-gate skill 触发)。
+
+version: "2.0"
+
+# ── Hook 级守卫(PreToolUse/PostToolUse)────────────────────────────────────
+hooks:
+  - id: hook-read-from-disk
+    trigger: post_write
+    files:
+      - delta-design-ads.md
+      - sql-source-bindings.yaml
+      - hql_test/**.sql
+      - hql/**.sql
+      - evidence/etl-sql/*.sql
+      - feature-delta-indicator.md
+      - validation-report.md
+      - mock-data-plan.md
+      - ioc-service-design.md
+      - data-service-manifest.yaml
+      - Frontend-Plan.md
+      - Testability-Map.md
+      - archive-summary.md
+      - baseline-update.md
+    axiom: CORE-AX3
+    policy: retry(2)→BLOCKED
+    description: 写入列名/表名时必须从磁盘重读 evidence,禁止凭记忆
+  - id: hook-context-consistency
+    trigger: post_write
+    files:
+      - delta-design-ads.md
+      - feature-delta-indicator.md
+      - ioc-service-design.md
+      - validation-report.md
+      - mock-data-plan.md
+      - hql_test/**.sql
+      - hql/**.sql
+      - Frontend-Plan.md
+      - Testability-Map.md
+      - ads-design-validation-report.md
+      - data-service-manifest.yaml
+      - archive-summary.md
+      - baseline-update.md
+    axiom: CORE-AX1+AX3
+    policy: retry(2)→BLOCKED
+    description: 结论必须与 evidence 语义一致
+  - id: hook-clarification-write
+    trigger: post_write
+    files:
+      - ads-clarification-questions.md
+      - data-design-clarification-questions.md
+      - subject-clarification-questions.md
+    axiom: CORE-AX8
+    policy: abort→BLOCKED
+    description: 澄清项 answered/closed 只能由人类裁定,AI 不得 closed P0
+  - id: hook-tool-evidence-write
+    trigger: post_write
+    files:
+      - evidence/schema_*.json
+      - metric_ZB*.json
+      - lineage-draft.yaml
+      - data-tree-changes/evidence/schema_*.json
+      - evidence/**-receipt.json
+      - evidence/**-service-evidence.json
+    axiom: CORE-AX10
+    policy: abort→BLOCKED
+    description: required_tools 失败时禁止落盘 evidence
+
+# ── 结构型守卫(自动 validate_*.py)──────────────────────────────────────────
+structural_guards:
+  - id: verify-produces-scope
+    script: validate_produces_scope.py
+    files: ["*"]
+    axiom: CORE-AX4
+    description: 产物范围一致性(所有写入)
+  - id: verify-gate-change
+    script: validate_gate_change.py
+    files: [change-manifest.yaml]
+    axiom: CORE-AX9
+    description: gates.* 变更校验,禁止自改绕过
+  - id: verify-no-ai-close-p0
+    script: validate_ads_clarification.py
+    files: ["*-clarification-questions.md"]
+    axiom: CORE-AX8
+    description: AI 不得 closed P0 澄清项
+  - id: verify-tool-failure-stop
+    script: validate_tool_evidence.py
+    files: [evidence/schema_*.json]
+    axiom: CORE-AX10
+    description: 工具失败禁止落盘 evidence
+  - id: verify-lifecycle-columns
+    script: validate_lifecycle_columns.py
+    files: [feature-delta-indicator.md]
+    axiom: CORE-AX6
+    description: 指标生命周期列定义
+  - id: verify-layer-consumption
+    script: validate_layer_consumption.py
+    files: [delta-design-ads.md, feature-delta-indicator.md, sql-source-bindings.yaml]
+    axiom: KW-AX8
+    description: 语义层分层约束
+  - id: verify-domain-patterns
+    script: validate_domain_patterns.py
+    files: [hql_test/**.sql, hql/**.sql, sql-source-bindings.yaml]
+    axiom: KW-AX5
+    description: 领域模式必选过滤
+  - id: verify-etl-patterns
+    script: validate_sql_etl_patterns.py
+    files: [hql_test/**.sql, hql/**.sql]
+    axiom: KW-AX3
+    description: ETL 模式(CTE/分区/聚合)
+
+# ── 语义型守卫(sdd-verify skill 执行)──────────────────────────────────────
+semantic_guards:
+  - id: verify-column-from-evidence
+    code: BG-READ-001
+    axiom: CORE-AX3
+    description: 独立读取 evidence 比对列名/表名
+  - id: verify-context-consistency
+    code: BG-CONTEXT-001
+    axiom: CORE-AX1
+    description: 结论与 evidence 语义一致
+  - id: verify-reuse-evidence
+    code: BG-REUSE-001
+    axiom: CORE-AX4
+    description: 复用需有 evidence 支撑
+
+# ── 处置语义───────────────────────────────────────────────────────────────
+policy_semantics:
+  retry(2)->BLOCKED: 允许重试 2 次,仍失败则 BLOCKED 停工
+  abort->BLOCKED: 立即中止并 BLOCKED 停工
+  MANDATORY: stage gate 检查 guard-report.md,缺失即 BLOCKED

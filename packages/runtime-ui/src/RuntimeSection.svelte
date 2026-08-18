@@ -564,7 +564,7 @@
     margin: 0 0 15px;
     color: var(--mc-color-primary);
     font-size: var(--mc-section-title-font-size);
-    font-weight: 400;
+    font-weight: var(--mc-section-title-font-weight, 600);
     line-height: var(--mc-section-title-line-height);
     text-align: center;
   }

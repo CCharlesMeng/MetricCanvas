@@ -1,0 +1,8 @@
+# dsh bundle layer: IOC 数据开发垂直领域插件
+# 单行注入:host 半在 dsh/index.js 中注册 ioc_* 工具、行为守卫与领域技能。
+- insert:
+    - id: ioc-data-dev
+      name: dsh-plugin-ioc-data-dev
+      config:
+        guardsEnabled: true   # 行为守卫总开关(模板约束 deny + 写后结构校验)
+        skillsEnabled: true   # 注册捆绑的 IOC 领域技能

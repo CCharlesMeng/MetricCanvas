@@ -1,0 +1,41 @@
+# stage-index.yaml — 阶段→卡片索引(机读)
+# 说明:data 15 张 + subject 13 张 = 28 张薄卡片;共享阶段复用同一卡片文件。
+
+data_main_path:
+  intake: 00-intake.md
+  requirement: 01-requirement.md
+  data-design: 02-data-design.md
+  ads-design: 03-ads-design.md
+  ads-design-validation: 03b-ads-design-validation.md
+  ads-clarification-apply: 03c-ads-clarification-apply.md
+  clouddevops-review: 03e-clouddevops-review.md
+  sql-bindings-ready: 03d-sql-bindings-ready.md
+  sql-generate: 06-sql-generate.md
+  sql-validation: 07-sql-validation.md
+  job-create: 10-job-create.md
+  platform-test: 06b-platform-test.md
+  promotion: 08-promotion.md
+  platform-formal: 08b-platform-formal.md
+  archive: 09-archive.md
+
+subject_main_path:
+  requirement: 01b-subject-requirement.md
+  subject-design: 02b-subject-design.md
+  subject-design-validation: 03f-subject-design-validation.md
+  subject-clarification-apply: 03g-subject-clarification-apply.md
+  subject-sql-bindings-ready: 03h-subject-sql-bindings-ready.md
+  sql-generate: 06-sql-generate.md          # 共享
+  sql-validation: 07-sql-validation.md      # 共享
+  job-create: 10-job-create.md              # 共享
+  platform-test: 06b-platform-test.md       # 共享
+  promotion: 08-promotion.md                # 共享
+  platform-formal: 08b-platform-formal.md   # 共享
+  archive: 09-archive.md                    # 共享
+
+parallel_tracks:
+  service-design: 04-service-design.md
+  service-develop: 04b-service-develop.md
+  frontend-plan: 05-frontend-plan.md
+  test-analyzer: 05b-test-analyzer.md
+  testpoint-analyzer: 05c-testpoint-analyzer.md
+  testcase-designer: 05d-testcase-designer.md

@@ -1,0 +1,32 @@
+# domain-source-patterns.yaml — PAT-DOM-* 领域模式正文
+# 索引见 codespec/guidelines/ioc-kernel/domain-patterns-index.yaml;
+# 校验器:validate_domain_patterns.py(内置触发词与此表对齐)。
+
+patterns:
+  - id: PAT-DOM-SITE-001
+    pattern: 站点枚举
+    must: 站点取值为 china / oversea / europe
+  - id: PAT-DOM-SITE-002
+    pattern: 多区域路由
+    must: global 表通过 data_site_type 区分站点
+  - id: PAT-DOM-SITE-003
+    pattern: 区域表名映射
+    must: "dwd_t_xxx_global → WHERE data_site_type;dwd_t_xxx_intl → 直接查"
+  - id: PAT-DOM-SITE-008
+    pattern: 非 global 表
+    must: 不得用 data_site_type 判定站点路由
+  - id: PAT-DOM-SRC-001
+    pattern: 客户洞察地图月表
+    must: "map_type='LANDSCAPE_MAP' AND space IS NOT NULL"
+  - id: PAT-DOM-SRC-002
+    pattern: CDH 客户信息表
+    must: cdh_party_relation_valid_flag = 1
+  - id: PAT-DOM-SRC-003
+    pattern: 云服务产品 SCD 维表
+    must: JOIN 须带生效日期条件
+  - id: PAT-DOM-SRC-004
+    pattern: 客户根资源关系维表
+    must: JOIN 须带有效标识
+  - id: PAT-DOM-SRC-005
+    pattern: 汇率维表
+    must: "exchange_rate_type_cn_name='Corporate' AND exchange_rate_date <= date_sub(current_date,1)"

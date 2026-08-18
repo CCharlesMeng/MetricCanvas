@@ -1,0 +1,29 @@
+# 一致性维度定义(shared-dimensions)
+# 引用:POL-DESIGN-004(维度列须走一致性维度注册表)
+
+dimensions:
+  - id: dim_customer
+    name: 客户维度
+    natural_key: party_id
+    source: cdh_party_relation(valid_flag=1,PAT-DOM-SRC-002)
+    attributes:
+      - party_id
+      - party_name
+      - customer_level
+  - id: dim_product
+    name: 云服务产品维度(SCD)
+    natural_key: product_code
+    source: 云服务产品 SCD 维表
+    join_rule: 必须带生效日期条件(PAT-DOM-SRC-003)
+    attributes:
+      - product_code
+      - product_name
+      - product_family
+  - id: dim_area
+    name: 区域维度
+    natural_key: data_site_type
+    enum: [china, oversea, europe]
+    route_rule: global 表用 data_site_type 区分(PAT-DOM-SITE-002);intl 表不得用(PAT-DOM-SITE-008)
+    attributes:
+      - data_site_type
+      - area_name

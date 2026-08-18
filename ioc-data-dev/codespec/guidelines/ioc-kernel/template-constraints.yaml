@@ -1,0 +1,61 @@
+# template-constraints.yaml — 模板格式约束 v1.2
+# 说明:PreToolUse Hook(sdd_pre_write.py)在写入前检测文件是否匹配受约束文件名。
+#       违反格式 → deny 拒绝写入;合规 → 允许写入 + 注入约束提醒与必读规范。
+#       required_reads:写入 DDL/ETL 前从规范 yaml 读取指定 sections 注入。
+
+version: "1.2"
+
+constraints:
+  - file: change-manifest.yaml
+    rules:
+      - manifest 必须含 feature_id / version / engine 字段
+      - gates.* 必须为 gates-glossary 已登记字段,禁止新增未登记 gate
+      - engine 必须为 hive 或 dli
+    required_reads:
+      - knowledge-base/specification/data-design/engine-differences.yaml#engine
+  - file: feature-delta-indicator.md
+    rules:
+      - 必须含指标表格(名称/类型/展示组件/含义/口径/GWT映射/PM来源建议/需支持维度)
+      - v0 阶段来源类型固定为「待确认」,禁止编造 ZB/物理表名(CORE-AX6)
+    required_reads:
+      - codespec/guidelines/ioc-kernel/references/indicator-lifecycle.md#v0
+  - file: delta-design-ads.md
+    rules:
+      - 必须引用全部 5 个 PRD 前置产物(proposal-fe/feature-delta-spec/feature-delta-acceptance/feature-delta-indicator/GWT验收)
+      - 每张 ADS 表须声明 库名/表名/粒度/维度/事实/来源分层
+      - ADS 禁止消费 SDI/ODS(POL-DESIGN-001)
+    required_reads:
+      - knowledge-base/ontology/ontology-layers.yaml#layers
+      - knowledge-base/architecture/dimension/dimension-registry.yaml#dimensions
+  - file: sql-source-bindings.yaml
+    rules:
+      - 每个绑定须含 source_table / target_table / filter / engine
+      - source 分层必须满足 KW-AX8 消费规则
+    required_reads:
+      - knowledge-base/specification/data-design/domain-source-patterns.yaml#patterns
+  - file: "hql_test/*_test.sql"
+    rules:
+      - 目标库为 bi_test(hive)/ cbc_test(dli)(POL-SQL-DDL-002)
+      - 测试态表名格式 {原始表名}*_{MMDD}_*{原始库名}(POL-SQL-DDL-009)
+      - DDL 须含固定 ORC SerDe(hive;DLI 豁免)
+    required_reads:
+      - knowledge-base/specification/data-design/engine-differences.yaml#serde
+  - file: "hql/*.sql"
+    rules:
+      - DDL 须含固定 ORC SerDe(hive;DLI 豁免)
+      - CTE 先于 INSERT;INSERT OVERWRITE 分区表须显式 PARTITION
+    required_reads:
+      - knowledge-base/specification/data-design/engine-differences.yaml#serde
+  - file: "*-clarification-questions.md"
+    rules:
+      - 澄清项含 id/status/priority/owner;status ∈ {open, answered, closed}
+      - closed 只能由人类裁定(CORE-AX8)
+    required_reads:
+      - codespec/guidelines/ioc-kernel/gates-glossary.md#gate
+  - file: evidence/schema_*.json
+    rules:
+      - 必须由 clouddp-cli/cloudioc-cli 生成,含 provenance(工具/时间/命令)
+      - required_tools 失败时禁止生成(CORE-AX10)
+    required_reads: []
+
+# 通用:未列出的文件名不受格式约束,但仍受结构守卫(produces-scope)约束

@@ -1,0 +1,10 @@
+{
+  "table": "dws_t_customer_active_daily",
+  "columns": [
+    {"name": "party_id", "type": "string", "comment": "客户ID"},
+    {"name": "data_site_type", "type": "string", "comment": "区域"},
+    {"name": "active_cnt", "type": "bigint", "comment": "活跃数"},
+    {"name": "stat_date", "type": "string", "comment": "统计日"}
+  ],
+  "provenance": {"tool": "clouddp-cli", "command": "get-columns-info", "ts": "2026-08-18T00:00:00Z"}
+}

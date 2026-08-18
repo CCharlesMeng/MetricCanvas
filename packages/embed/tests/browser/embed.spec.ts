@@ -802,8 +802,16 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
 
   const host = page.locator('[data-metriccanvas-runtime]');
   const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
-  const yoyDifferenceHeader = host.locator(
-    '[data-component="customer-analysis/yoy-drop-table"] th[data-column-field="drop-difference"]'
+  const yoyReasonHeader = host.locator(
+    '[data-component="customer-analysis/yoy-drop-table"] th[data-column-field="reason"]'
+  );
+  const yoyReasonNegativeValue = host.locator(
+    '[data-component="customer-analysis/yoy-drop-table"] tbody tr:first-child '
+      + 'td[data-column-field="reason"] data.tone-negative'
+  );
+  const yoyReasonPositiveValue = host.locator(
+    '[data-component="customer-analysis/yoy-drop-table"] tbody tr:first-child '
+      + 'td[data-column-field="reason"] data.tone-positive'
   );
   const analysisSections = host.locator(
     '[data-section-id="track-analysis"], [data-section-id="industry-analysis"]'
@@ -823,7 +831,7 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
     image.naturalWidth === 1774 &&
     image.naturalHeight === 887
   )).toBe(true);
-  expect.soft(await yoyDifferenceHeader.evaluate((header) => {
+  expect.soft(await yoyReasonHeader.evaluate((header) => {
     const head = header.querySelector('.head');
     if (!(head instanceof HTMLElement)) return null;
     const style = getComputedStyle(header);
@@ -833,6 +841,8 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
       fits: header.scrollWidth <= header.clientWidth
     };
   })).toEqual({ whiteSpace: 'nowrap', singleLine: true, fits: true });
+  await expect(yoyReasonNegativeValue).toHaveCSS('color', 'rgb(245, 34, 45)');
+  await expect(yoyReasonPositiveValue).toHaveCSS('color', 'rgb(82, 196, 26)');
   expect.soft(await analysisSections.evaluateAll((sections) =>
     sections.map((section) => {
       const summary = section.querySelector('.text-block.report-inline');
@@ -1160,12 +1170,22 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   const reportTitle = reportCover.locator('h1');
   const reportGeneratedBy = reportCover.locator('.generated-by');
   const reportSummary = reportHeader.locator('.report-summary');
+  const reportSummaryTitle = reportSummary.locator('.report-summary-title span');
   const reportSummaryFrame = reportSummary.locator('.report-summary-frame');
   const reportSummaryBody = reportSummaryFrame.locator('.report-summary-content');
+  const reportBadge = reportCover.locator('.lead-badge');
+  const reportBadgeBackground = reportBadge.locator(
+    '[data-decorative-image="report-badge-background"]'
+  );
   const overviewMetricPanels = host.locator(
     '[data-section-id="flow-overview"] .metric-panel'
   );
   const reportMetricPanels = host.locator('[data-component-type="metricCard"] .metric-panel');
+  const panelSections = host.locator('[data-section-container="panel"]');
+  const panelSectionTitles = panelSections.locator(':scope > .section-title');
+  const pageHeadingTitle = host.locator(
+    '[data-component="analysis-heading/heading"] .page-heading-title'
+  );
   const headerBackground = host.locator('[data-decorative-image="header-flow-background"]');
   await expect(reportCover).toHaveCount(1);
   await expect.poll(async () => reportTitle.evaluate((title) => {
@@ -1193,7 +1213,29 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       Math.abs(summaryRect.y - (coverRect.y + coverRect.height)) <= 1
     );
   }).toBe(true);
-  await expect(reportSummary).toHaveCSS('background-image', /section-gradient-panel/u);
+  await expect(reportSummary).toHaveCSS('background-image', /data:image\/svg\+xml/u);
+  await expect(reportSummary).toHaveCSS('background-size', 'cover');
+  await expect(reportSummaryTitle).toHaveCSS('font-weight', '600');
+  await expect(panelSections).toHaveCount(2);
+  await expect(panelSections.first()).toHaveCSS('background-size', 'cover');
+  await expect(panelSectionTitles).toHaveCount(2);
+  await expect(panelSectionTitles.first()).toHaveCSS('font-weight', '600');
+  await expect(pageHeadingTitle).toHaveCSS('font-weight', '600');
+  await expect(reportBadgeBackground).toHaveAttribute('src', /^data:image\/svg\+xml/);
+  await expect(reportBadgeBackground).toHaveCSS('object-fit', 'fill');
+  await expect.poll(async () => reportBadgeBackground.evaluate((image) => {
+    if (!(image instanceof HTMLImageElement)) return false;
+    const imageRect = image.getBoundingClientRect();
+    const badgeRect = image.parentElement?.getBoundingClientRect();
+    return Boolean(
+      image.complete &&
+      image.naturalWidth === 208 &&
+      image.naturalHeight === 50 &&
+      badgeRect &&
+      Math.abs(imageRect.width - badgeRect.width) <= 1 &&
+      Math.abs(imageRect.height - badgeRect.height) <= 1
+    );
+  })).toBe(true);
   await expect(reportSummaryFrame).toHaveCount(1);
   await expect(reportSummaryFrame).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(reportSummaryFrame).toHaveCSS('border-style', 'none');
@@ -1227,7 +1269,7 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
     );
   }))).toBe(true);
   await expect(headerBackground).toHaveCount(1);
-  await expect(headerBackground).toHaveAttribute('src', /^data:image\/jpeg;base64,/);
+  await expect(headerBackground).toHaveAttribute('src', /^data:image\/svg\+xml/);
   await expect(headerBackground).toHaveCSS('object-fit', 'cover');
   await expect.poll(async () => headerBackground.evaluate((image) => {
     if (!(image instanceof HTMLImageElement)) return false;

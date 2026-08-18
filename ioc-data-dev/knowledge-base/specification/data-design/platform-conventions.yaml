@@ -1,0 +1,25 @@
+# platform-conventions.yaml — 平台约定
+
+actual_schemas:
+  - ads_db_marketing
+  - ads_db_finance
+  # ADS 库名必须从本枚举选择(POL-DESIGN-002)
+
+environment:
+  test: 工作平台试算(platform-test)
+  formal: 正式执行(platform-formal)
+
+external_tools:          # CORE-AX10:失败即停工,禁止替代取数
+  clouddp-cli:
+    - get-columns-info
+    - get-metric-info
+    - import-job
+  cloudioc-cli:
+    - get-table-lineage
+    - get-table-list
+    - get-script-detail
+    - get-job-detail
+    - 服务创建/更新
+  codespec-cli:
+    - schema 调度 / new change / instructions / status / list
+    - 失败降级为手动路径

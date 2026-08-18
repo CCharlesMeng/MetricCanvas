@@ -950,11 +950,12 @@
     --mc-radius-section: 16px;
     /* 分区面板外观真源:RuntimeSection(container-panel) 与 ReportHeader 摘要区共用。 */
     --mc-section-panel-padding: 15px 28px 29px;
-    --mc-section-panel-background: var(--mc-section-gradient) no-repeat center / 100% 100%;
+    --mc-section-panel-background: var(--mc-section-gradient) no-repeat center / cover;
 
     /* 分区居中图标标题真源:RuntimeSection、ReportHeader 摘要标题、TextBlock(heading) 共用。 */
     --mc-section-title-gap: 12px;
     --mc-section-title-font-size: 32px;
+    --mc-section-title-font-weight: 600;
     --mc-section-title-line-height: 50px;
     --mc-section-title-icon-size: 20px;
 

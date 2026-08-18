@@ -1,0 +1,29 @@
+# qa — 质量标准(ioc-workflow QA)
+# 每个产物契约的退出质量标准(Definition of Done 引用)。
+
+standards:
+  - id: qa-prd
+    applies: [proposal-fe.md, feature-delta-spec.md, feature-delta-acceptance.md, feature-delta-indicator.md, GWT验收.md]
+    criteria:
+      - 全部 GWT 场景可追溯到验收摘要
+      - 指标 v0 无编造来源(来源类型=待确认)
+      - 澄清项有 id/owner/priority
+  - id: qa-design
+    applies: [delta-design-ads.md]
+    criteria:
+      - 引用全部 5 个 PRD 产物
+      - 分层合规(KW-AX8)自查通过
+      - ADS 表命名/库名符合 POL-DESIGN-002/003
+      - 指标 v2 回填完成
+  - id: qa-sql
+    applies: ["hql_test/*_test.sql", "hql/*.sql", sql-source-bindings.yaml]
+    criteria:
+      - 全部 validate_*.py PASS(结构)
+      - 领域模式(KW-AX5)必选过滤齐全
+      - 列引用与 evidence 一致(CORE-AX3)
+      - engine 分支正确(hive/dli)
+  - id: qa-validation
+    applies: [validation-report.md]
+    criteria:
+      - 等级 ≥ L2 才能进入 job-create(TEST)
+      - 所有 P0 问题 closed 或挂起澄清

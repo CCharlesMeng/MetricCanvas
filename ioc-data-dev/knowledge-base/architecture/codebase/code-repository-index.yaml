@@ -1,0 +1,21 @@
+# code-repository-index.yaml — 代码仓索引(多仓协同)
+
+repositories:
+  - id: schemas
+    role: 流程定义(artifacts DAG + skills 白名单 + validation)
+    path: codespec/schemas/ioc-workflow/schema.yaml
+  - id: ioc-kernel
+    role: 规范单向约束源(MetaSpec)
+    path: codespec/guidelines/ioc-kernel/
+  - id: skills
+    role: skill 执行逻辑(SKILL.md + references + scripts)
+    path: skills/(插件捆绑,全局注册)
+  - id: harness
+    role: 阶段卡片 + 工具脚本
+    path: harness/stages/ + harness/tools/
+  - id: knowledge-base
+    role: 基线真源
+    path: knowledge-base/
+  - id: changes
+    role: 增量工作区
+    path: codespec/changes/{version}/{feature-id}/

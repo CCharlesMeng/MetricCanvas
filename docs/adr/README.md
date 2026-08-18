@@ -1,8 +1,8 @@
-# ADR 基线:42 份决策记录的当前生效结论
+# ADR 基线:43 份决策记录的当前生效结论
 
-`docs/adr/` 现有 42 份 ADR(0001–0042)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这 42 份 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 43 份 ADR(0001–0043)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这 43 份 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0043-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0044-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 当前状态说明(current/superseded/proposed)以 ADR 正文和 frontmatter 为准;本文件的补充判断(例如"实际已被后续 ADR 取代但原文未标注")会明确说明理由和依据。
 
@@ -52,6 +52,7 @@
 | [0040](./0040-scope-card-as-control-panel.md) | 口径卡升级为控制面板:token 行、要素就地修改落事件、已验证查询快路径、消歧预选 | 现行 |
 | [0041](./0041-governance-inbox-unified-growth-loop.md) | 治理收件箱统一三条候选流,采纳不自动写回;评审回执走会话事件 | 现行 |
 | [0042](./0042-money-fields-and-semantic-embedded-values.md) | 人民币金额专用结果字段、五档自适应格式与语义内嵌值 | 现行 |
+| [0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md) | 归因诊断作为与问数并列的分析形态 | 提议中,未实现,设计基线见原文 |
 
 ## 技术栈与建设策略
 
@@ -127,7 +128,9 @@
 
 问数增强批次(2026-08,PRD #85)在上述框架内补三笔:**派生度量模板**(环比/同比/占比)的公式预先声明在数据上下文层,派生指标视同公司口径,收窄 0036 的临时口径边界(模板外仍走临时口径);**口径卡升级为控制面板**——非阻塞轮次 token 行呈现,时间与筛选要素就地修改为不经模型的数据校准并落步骤事件,已验证查询词面高度命中时跳过口径成形(验真不可跳),消歧候选按用户本人历史默认预选但永远阻塞确认;**治理收件箱**统一别名候选、指标需求候选与已验证查询提名为单列待办,采纳不自动写回,评审回执走会话事件流。问数的口语时间(「上个月」)由**相对时间词表**(数据上下文层闭集)映射为 0035 的结构化相对时间表达,词表外如实拒答——0035「不允许模型直接写死日期」的要求由此落实。
 
-来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)。
+**归因诊断([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed)不改变上述编排,而是与它并列。** 本节描述的固定顺序状态机回答"是多少";"为什么变了"是结果驱动的多阶段过程,由 `AgentRunner` 的第二个实现承担,与问数共享步骤事件落库、SSE、临时页面态与页面校验准入,**不共享编排状态机**。归因逻辑只面向分析证据 Port 编程,生产侧适配器复用 ADR-0032 的验真链路,因此 0032 与 0037 的全部约束原样适用于归因取到的每一份证据。该 ADR 目前是设计基线,未实现;读本节时不要把它当作已生效的编排分支。
+
+来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)、[ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md)。
 
 ## 页面生命周期与发布治理
 
@@ -145,13 +148,15 @@
 
 - **级联页面数据源输入语义**([ADR-0015](./0015-defer-cascading-data-source-input-semantics.md),proposed):恢复设计前需要依次确定空集与失败传播、输入集合上限、循环依赖校验、缓存键和取消语义;在明确 SQL 与 DQE 共同支持的受控参数模型之前,不得向页面 schema 加入临时 `inputs`、表达式或任意结果转换能力。
 - **模板发布的治理强度**([ADR-0024](./0024-converge-authoring-time-packages.md) 待决节):`template-library` 当前的发布流程没有租约过期、审计事件或拒绝/取消/强制释放,治理强度明显弱于页面发布(ADR-0008 的 7 态 + 全量审计),但没有 ADR 说明这是刻意的产品裁决还是实现漂移。在这一点被显式裁决(写新 ADR)之前,不应该以此为由抽取页面/模板共享的发布内核。
-- **真实身份接入是上生产的前置条件**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):会话内容含问题原文(客户名、代表处、业务黑话),按身份可见性过滤是首版能力,但当前身份仍是 mock。mock 阶段的隐私承诺结构上成立、来源不可信,因此在接入真实身份之前不得把会话数据用于跨用户的推荐、评测或对外分享。**数据权限本身(行级与指标级过滤由 DQE 承担还是由本平台承担)尚未裁决**,这一点未定之前,`actorId` 过滤只保证会话可见性,不保证数据行可见性。
+- **真实身份接入是上生产的前置条件**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):会话内容含问题原文(客户名、代表处、业务黑话),按身份可见性过滤是首版能力,但当前身份仍是 mock。mock 阶段的隐私承诺结构上成立、来源不可信,因此在接入真实身份之前不得把会话数据用于跨用户的推荐、评测或对外分享。**数据权限本身(行级与指标级过滤由 DQE 承担还是由本平台承担)尚未裁决**,这一点未定之前,`actorId` 过滤只保证会话可见性,不保证数据行可见性。**归因诊断(ADR-0043)把这条未决事项的代价放大:** 自动下钻会主动查询用户未提及的维度,因此在权限归属裁决前,0043 把下钻候选集限制为"用户已明确出现在筛选条件里的维度及其声明过的下级",不做自主探索;这是一条显式的、待裁决后可放开的约束,不要当作实现不完整。
 - **查询成本、配额与成本预估**([ADR-0032](./0032-authoring-time-query-verification.md) Consequences、[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):创作期真实执行与每轮问数都产生真实数仓成本,按身份的次数与资源限制策略尚未确定;ADR-0037 口径卡的"预估成本超阈值才阻塞确认"依赖尚不存在的成本预估能力,在其具备之前该条件退化为按域或按粒度的粗略阈值。
 - **计算数据集的恢复条件**([ADR-0033](./0033-suspend-dataset-runtime.md),proposed):需同时满足指标条目的可加性与时间聚合方式在目标域真实可用、ADR-0015 的五项级联语义有确定答案、且 formula 的口径复制成本已实际发生(同一口径在多个页面各持副本并已漂移)。在此之前不得以任何名义在服务端或页面协议中引入 Transform/Compute 层,也不得提供通用 `arithmetic`。
 - **Explore 是否需要独立于 Ask 的构造能力**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):当前 Explore 被视为 Ask 的多轮延续,共用同一份临时页面态与同一套编排。若出现并排对比、分叉比较或跨会话拼装这类 Ask 编排无法表达的需求,才需单独裁决;在此之前不要为 Explore 建立第二套状态模型。
 - **首个落地域与黄金问题集的业务输入**([ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):黄金问题集需要域清单与一句话描述、每域高频指标 top 20 与常见口头说法、时间口径的默认约定("本月"是否到昨天、"同比"比同月还是同期累计)、以及哪些指标是存量哪些是流量。后两项无法从数据推断,必须由业务侧给出;在拿到之前,问数的准确率数字不具备可比较的基线。
 - **英文 `metric_code` 与 DQE 中文指标名的关系**([ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) Consequences):`packages/data-gateway/fixtures/metric-base-info.json` 记录的是英文指标 code,而两个存量页面的 DQE 查询体使用中文指标名,二者是否指向同一实体尚未确认。指标条目允许同时携带两者,但不得假设映射,也不得据此推断名称转换规则。
 - **Monitor 的调度与通知归属**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):主动洞察需要调度、基线与通知,当前都在系统边界之外,且尚未确定由本平台承担还是由数据侧承担。在这一点被裁决前,不要为此在统一运行时或平台内引入定时任务、订阅或消息通道。
+- **Schema 元数据 `1.1` 与一等指标条目从未落地**([ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) 决策节):0031 裁决指标条目进入数据上下文快照并把 `formatVersion` 升到 `1.1`,但代码至今是 `1.0`——"指标"是 `roleHints: ['measure']` 的 `DataField`,可加性与时间聚合方式塞在 `description` 的一句受控中文散文里(`docs/examples/schema-metadata.example.json`),`tools/dqe-sim` 的投影函数负责拼那句话。zod `strictObject` 与 JSON Schema 的 `additionalProperties: false` 使任何新字段无法附加,因此这是一笔阻塞后续声明式能力的欠账:ADR-0039 的派生度量模板、ADR-0035 的相对时间词表与 ADR-0043 需要的受控归因规则**都没有地方可挂**。偿还它需要同步改 `packages/mcp/src/data-context.ts`、`docs/schema-metadata.schema.json`、`docs/schema-metadata.md`、example fixture 与 sim 投影(有 same-surface 守卫测试强制两边一致)。
+- **归因诊断的受控业务规则与第一期落地输入**([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed):承载归因规则的概念已定名为**指标归因定义**并进入 `CONTEXT.md`,但它的字段集、与派生度量模板的关系,以及是否需要独立版本化仍未定,留给 ADR-0044;它依赖上一条欠账先被偿还。首个真实切片为公有云流水,阻塞于两项必须由数据侧给出的输入——指标条目所需的可加性与**维度层级关系**(当前快照里每个业务域只有 2 个非时间维度、零层级,下钻深度在数据里表达不出来),以及一个业务认可的黄金案例。此外分析会话当前是进程内存储(Postgres 等 #52),不足以支撑 0043 要求的诊断复跑与事后审计。
 - **表现层包名与 `WidgetHost` 的术语归属**([ADR-0025](./0025-converge-runtime-presentation-packages.md) 待决节):ADR-0006 第 3 条把包名 `widgets` 的理由写为"取自规格字段",但该字段自 ADR-0017 硬切换后已是 `sections[].components`,根级 `widgets` 现被校验器作为旧版遗留字段拒绝,`CONTEXT.md` 亦无 `widget` 词条。ADR-0006 的 Consequences 要求"词汇表术语变更需评估包/端口命名级联",故这是一笔由 0006 自己规定要偿还的欠账;改名波及 `package.json`、跨包 import 与公开符号,应作为独立的命名决策处理,在此之前不要以"顺手"为由局部改名。
 
 ## 编号与历史记录说明

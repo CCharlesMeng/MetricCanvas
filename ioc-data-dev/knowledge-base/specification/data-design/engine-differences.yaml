@@ -1,0 +1,14 @@
+# engine-differences.yaml — DLI/HIVE 引擎差异(POL-REV-PLATFORM-003)
+
+| 维度 | HIVE | DLI |
+|------|------|-----|
+| SET 配置 | 从 hive-set-config.yaml 生成 | 跳过(平台托管) |
+| CDM 节点 | 需要 | 跳过 |
+| ORC SerDe | 需要 | 完全省略 |
+| 测试库 | bi_test | cbc_test |
+| engine 字段 | 默认 | 须显式声明 engine: dli |
+
+## 分支规则
+
+- change-manifest.yaml 的 `engine` 字段驱动全部 SQL 生成与校验分支。
+- DDL 校验(`validate_sql_ddl.py --engine <engine>`)按上表分支。

@@ -4,6 +4,7 @@
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';
   import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg';
+  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -27,7 +28,16 @@
         {#if props.generatedBy}<p class="generated-by">{props.generatedBy}</p>{/if}
         {#if props.badge}
           <div class="lead-row">
-            <span class="badge lead-badge">{props.badge}</span>
+            <span class="badge lead-badge">
+              <img
+                class="lead-badge-background"
+                src={reportBadgeBackgroundUrl}
+                alt=""
+                aria-hidden="true"
+                data-decorative-image="report-badge-background"
+              />
+              <span>{props.badge}</span>
+            </span>
           </div>
         {/if}
         <div class="title-line">
@@ -247,16 +257,29 @@
     font-weight: 700;
   }
   .lead-badge {
+    position: relative;
+    isolation: isolate;
     min-width: 208px;
     min-height: 50px;
     justify-content: center;
     padding: 4px 16px;
+    overflow: hidden;
     color: #fff;
     background: var(--mc-color-report-header-accent, #2098ff);
     border-radius: 0;
     font-size: 32px;
     font-weight: 500;
     line-height: 42px;
+  }
+  .lead-badge-background {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
   }
   .lead-row {
     display: flex;
@@ -346,7 +369,7 @@
   .report-summary-title span {
     color: var(--mc-color-primary, #08359e);
     font-size: var(--mc-section-title-font-size, 32px);
-    font-weight: 400;
+    font-weight: var(--mc-section-title-font-weight, 600);
     line-height: var(--mc-section-title-line-height, 50px);
   }
   .report-summary-frame {

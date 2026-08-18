@@ -1,0 +1,38 @@
+# ontology-layers.yaml — 六层调用规则(KW-AX8 机读)
+# 引用:TABLE_TOKEN_RE / VALID_SOURCE_TYPES 从此生成,禁止硬编码。
+
+layers:
+  - id: ODS
+    order: 1
+    consumers: [SDI, DWD, DWS]
+  - id: SDI
+    order: 2
+    consumers: [DWD]
+  - id: DWD
+    order: 3
+    consumers: [DWS, DM, ADS]
+  - id: DWS
+    order: 4
+    consumers: [DM, ADS]
+  - id: DM
+    order: 5
+    consumers: [ADS]
+  - id: DIM
+    order: 5
+    consumers: [ADS, DM, DWS, DWD]
+  - id: ADS
+    order: 6
+    consumers: []
+
+consumption_rules:
+  - from: ADS
+    allowed: [DWD, DWS, DM, DIM]
+    forbidden: [SDI, ODS]
+    severity: BLOCKED        # POL-DESIGN-001
+  - from: DWS
+    allowed: [DWD, ODS]
+    forbidden: [SDI, ADS]
+    severity: BLOCKED
+
+table_token_pattern: "^(ods|sdi|dwd|dws|dm|dim|ads)_t_[a-z0-9_]+$"
+valid_source_types: [ODS, SDI, DWD, DWS, DM, DIM, ADS]
