@@ -18,6 +18,7 @@ interface FlowReportDocument {
       id: string;
       type: string;
       data?: { main: string; [key: string]: string };
+      props?: Record<string, unknown>;
     }>;
   }>;
 }
@@ -1010,6 +1011,68 @@ test('流水报告页头背景、表头、分析宽度与客户标签保持统�
       })
     )
   )).toBe(true);
+});
+
+test('流水报告的长代表处名称仍由完整背景包裹', async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 900 });
+  await page.goto('/examples/inline.html');
+  const flowReportDocument = await page.evaluate<FlowReportDocument>(async () => {
+    const response = await fetch('/pages/flow-analysis-report.json');
+    return response.json() as Promise<FlowReportDocument>;
+  });
+  const reportHeader = flowReportDocument.sections
+    .flatMap((section) => section.components)
+    .find((component) => component.type === 'reportHeader');
+  if (!reportHeader?.props) throw new Error('流水分析报告必须声明 reportHeader props');
+  reportHeader.props.badge = '北京政企客户联合代表处';
+
+  await page.evaluate((document: FlowReportDocument) => {
+    window.runtime.destroy();
+    const pendingData = new Promise<DataGatewayResult>(() => {});
+    MetricCanvas.mount('#dashboard', {
+      document,
+      dataGateway: {
+        async fetchData() {
+          return pendingData;
+        }
+      }
+    });
+  }, flowReportDocument);
+
+  const badge = page.locator('[data-metriccanvas-runtime] .lead-badge');
+  const badgeText = badge.locator(':scope > span');
+  const badgeBackground = badge.locator(
+    '[data-decorative-image="report-badge-background"]'
+  );
+  await expect(badgeText).toHaveText('北京政企客户联合代表处');
+  await expect.poll(async () => badgeBackground.evaluate(async (image) => {
+    if (!(image instanceof HTMLImageElement) || !image.complete) return null;
+    const badgeRect = image.parentElement?.getBoundingClientRect();
+    const imageRect = image.getBoundingClientRect();
+    const textRect = image.nextElementSibling?.getBoundingClientRect();
+    if (!badgeRect || !textRect) return null;
+    const response = await fetch(image.currentSrc);
+    const svg = new DOMParser()
+      .parseFromString(await response.text(), 'image/svg+xml')
+      .documentElement;
+    return {
+      stretchesPastIntrinsicWidth: badgeRect.width > image.naturalWidth,
+      imageMatchesBadge:
+        Math.abs(imageRect.width - badgeRect.width) <= 1 &&
+        Math.abs(imageRect.height - badgeRect.height) <= 1,
+      textFitsSafeArea:
+        textRect.left >= badgeRect.left + 15 &&
+        textRect.right <= badgeRect.right - 15 &&
+        textRect.top >= badgeRect.top + 3 &&
+        textRect.bottom <= badgeRect.bottom - 3,
+      preserveAspectRatio: svg.getAttribute('preserveAspectRatio')
+    };
+  })).toEqual({
+    stretchesPastIntrinsicWidth: true,
+    imageMatchesBadge: true,
+    textFitsSafeArea: true,
+    preserveAspectRatio: 'none'
+  });
 });
 
 test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态', async ({ page }) => {
