@@ -11,12 +11,13 @@
 | `ranking-growth.svg` | 25 × 25 | 排名详情卡上升趋势图标 | `RankingDetailCard.svelte` |
 | `report-assistant-icon.svg` | 28 × 28 | 报告页头“AI 助手生成”图标 | `ReportHeader.svelte` |
 | `risk-warning.svg` | 20 × 20 | 风险提示文本图标 | `TextBlock.svelte` |
-| `section-gradient-panel.svg` | 1200 × 640 | 内容分区面板及报告摘要背景 | `RuntimeView.svelte` |
 | `section-title-left.svg` | 20 × 20 | 内容分区标题左侧装饰 | `RuntimeSection.svelte`、`ReportHeader.svelte`、`TextBlock.svelte` |
 | `section-title-right.svg` | 20 × 20 | 内容分区标题右侧装饰 | `RuntimeSection.svelte`、`ReportHeader.svelte`、`TextBlock.svelte` |
 
 ## 替换约束
 
 - 保持上述文件名与扩展名不变，可直接批量覆盖。
-- SVG 应保留 `viewBox`；分区背景会以 `cover` 铺满容器，边缘可能裁切，重要图形应放在画布中心安全区。
+- SVG 应保留 `viewBox`；PNG/JPG 建议保持原始宽高比，避免拉伸或裁切变化。
 - 不要直接修改 `apps/*/build` 或 `.svelte-kit` 下的图片，它们会在构建时重新生成。
+
+内容分区面板及报告摘要的背景已改为 `RuntimeView.svelte` 中的 CSS 渐变，不再依赖图片资源。

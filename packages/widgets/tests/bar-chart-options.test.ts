@@ -39,17 +39,29 @@ const data: MainDataSlots = {
   main: {
     fields: {
       month: { type: 'string', role: 'dimension' },
-      coreActual: { type: 'number', role: 'measure', defaultFormat: 'compact-wan-0' },
-      communicationActual: {
-        type: 'number',
+      coreActual: {
+        type: 'money',
         role: 'measure',
-        defaultFormat: 'compact-wan-0'
+        currency: 'CNY',
+        defaultFormat: 'cny-adaptive'
       },
-      coreForecast: { type: 'number', role: 'measure', defaultFormat: 'compact-wan-0' },
-      communicationForecast: {
-        type: 'number',
+      communicationActual: {
+        type: 'money',
         role: 'measure',
-        defaultFormat: 'compact-wan-0'
+        currency: 'CNY',
+        defaultFormat: 'cny-adaptive'
+      },
+      coreForecast: {
+        type: 'money',
+        role: 'measure',
+        currency: 'CNY',
+        defaultFormat: 'cny-adaptive'
+      },
+      communicationForecast: {
+        type: 'money',
+        role: 'measure',
+        currency: 'CNY',
+        defaultFormat: 'cny-adaptive'
       }
     },
     snapshot: {
@@ -101,8 +113,8 @@ describe('barOption 实际/预测系列', () => {
     expect(option.yAxis).toMatchObject({ type: 'value' });
     expect(option.legend).toEqual({ top: 0, right: 0 });
     expect(option.grid?.top).toBe(44);
-    expect(option.yAxis.name).toBe('万');
-    expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1200');
+    expect(option.yAxis.name).toBeUndefined();
+    expect(option.yAxis.axisLabel?.formatter?.(12_000_000)).toBe('1,200万');
     expect(option.series.map((series) => series.name)).toEqual([
       'Core流水',
       '云通信流水',
@@ -148,7 +160,7 @@ describe('barOption 实际/预测系列', () => {
     expect(option.series.every((series) => series.label === undefined)).toBe(true);
   });
 
-  it('按声明的堆叠顺序把绿色系列置底，并配置分段与总额万单位标签', () => {
+  it('按声明的堆叠顺序把绿色系列置底，并让分段与总额标签继承人民币格式', () => {
     const labeledProps = {
       ...props,
       rounded: true,
@@ -177,6 +189,10 @@ describe('barOption 实际/预测系列', () => {
     expect(option.series[3]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
     expect(option.series.every((series) => series.label?.show === true)).toBe(true);
     expect(option.series[0]?.label?.formatter?.({ value: 3_100_000 })).toBe('310万');
+    expect(option.series[0]?.label?.formatter?.({ value: 9_999 })).toBe('9,999元');
+    expect(option.series[0]?.label?.formatter?.({ value: 10_000 })).toBe('1.00万');
+    expect(option.series[0]?.label?.formatter?.({ value: 100_000_000 })).toBe('1.00亿');
+    expect(option.series[0]?.label?.formatter?.({ value: 1_000_000_000 })).toBe('10.0亿');
     expect(option.series[2]?.markPoint?.data?.map((point) => point.value)).toEqual([
       11_300_000,
       11_600_000

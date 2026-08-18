@@ -3,6 +3,11 @@ declare module '*.svg' {
   export default url;
 }
 
+declare module '*.svg?no-inline' {
+  const url: string;
+  export default url;
+}
+
 declare module '*.png' {
   const url: string;
   export default url;

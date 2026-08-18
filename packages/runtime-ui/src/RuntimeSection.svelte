@@ -553,7 +553,7 @@
 
     padding: var(--mc-section-panel-padding);
     background: var(--mc-section-panel-background);
-    border-radius: var(--mc-radius-section);
+    border-radius: var(--mc-section-panel-radius, var(--mc-radius-section));
     box-shadow: none;
   }
   .container-panel > .section-title {

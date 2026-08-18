@@ -42,7 +42,6 @@
     RankingCard,
     RankingDetailCard,
     ReportHeader,
-    sectionGradientPanelUrl,
     Table,
     TextBlock,
     buildTableColumnLayout,
@@ -848,10 +847,7 @@
   {/if}
 {/snippet}
 
-<div
-  class="runtime-view"
-  style:--mc-section-gradient={`url("${sectionGradientPanelUrl}")`}
->
+<div class="runtime-view">
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
   {:else if pageState.phase === 'configuration-error'}
@@ -948,9 +944,16 @@
     --mc-radius-cell: 10px;
     --mc-radius-report-content: 12px;
     --mc-radius-section: 16px;
-    /* 分区面板外观真源:RuntimeSection(container-panel) 与 ReportHeader 摘要区共用。 */
+    /* 分区面板外观真源:RuntimeSection(container-panel)、ReportHeader 摘要区
+       与 MetricCard 渐变变体共用。角度与色标位置换算自 Pixso SVG 的线性渐变向量。 */
+    --mc-section-gradient: linear-gradient(
+      204deg,
+      rgb(218 214 255) 4%,
+      rgb(189 213 255) 45%
+    );
     --mc-section-panel-padding: 15px 28px 29px;
-    --mc-section-panel-background: var(--mc-section-gradient) no-repeat center / cover;
+    --mc-section-panel-background: var(--mc-section-gradient);
+    --mc-section-panel-radius: 20px;
 
     /* 分区居中图标标题真源:RuntimeSection、ReportHeader 摘要标题、TextBlock(heading) 共用。 */
     --mc-section-title-gap: 12px;

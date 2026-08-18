@@ -1,4 +1,4 @@
-import type { BarChartProps } from '@metriccanvas/page';
+import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
@@ -23,8 +23,11 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
   );
   const categoryAxis = { type: 'category' as const, data: categories };
   const baseValueAxis = dualOrSingleAxis(props.dualAxis, props.series.length);
+  const reportValueFormat = props.series[0]
+    ? resolveField(props.series[0].field, data).format
+    : undefined;
   const valueAxis = props.variant === 'reportForecast'
-    ? reportValueAxis(baseValueAxis)
+    ? reportValueAxis(baseValueAxis, reportValueFormat)
     : baseValueAxis;
   const reportForecast = props.variant === 'reportForecast';
   const roleIndexes = { actual: 0, forecast: 0 };
@@ -129,7 +132,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
                 position: 'inside' as const,
                 color: series.role === 'forecast' ? roleColor : '#fff',
                 fontSize: 12,
-                formatter: wanLabelFromParams
+                formatter: valueLabelFormatter(field.format)
               }
             }
           : {}),
@@ -145,7 +148,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
                   distance: 5,
                   color: '#121e3b',
                   fontSize: 12,
-                  formatter: wanLabelFromParams
+                  formatter: valueLabelFormatter(field.format)
                 },
                 data: totalPoints
               }
@@ -175,13 +178,27 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
   };
 }
 
-function wanLabelFromParams(params: unknown): string {
-  const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
-  return value === undefined ? '' : `${wanUnits(value)}万`;
+function valueLabelFormatter(format?: ValueFormatPreset) {
+  return (params: unknown): string => {
+    const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
+    if (value === undefined) return '';
+    return format === undefined ? `${wanUnits(value)}万` : formatValue(value, format);
+  };
 }
 
-function reportValueAxis(axis: ReturnType<typeof dualOrSingleAxis>) {
+function reportValueAxis(
+  axis: ReturnType<typeof dualOrSingleAxis>,
+  format?: ValueFormatPreset
+) {
   if (Array.isArray(axis)) return axis;
+  if (format !== undefined) {
+    return {
+      ...axis,
+      axisLabel: {
+        formatter: (value: number) => formatValue(value, format)
+      }
+    };
+  }
   return {
     ...axis,
     name: '万',

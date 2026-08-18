@@ -4,7 +4,7 @@
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg';
   import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg';
-  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg';
+  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg?no-inline';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -265,7 +265,7 @@
     padding: 4px 16px;
     overflow: hidden;
     color: #fff;
-    background: var(--mc-color-report-header-accent, #2098ff);
+    background: transparent;
     border-radius: 0;
     font-size: 32px;
     font-weight: 500;
@@ -351,7 +351,7 @@
   .report-summary.layered {
     padding: var(--mc-section-panel-padding, 15px 28px 29px);
     background: var(--mc-section-panel-background, none);
-    border-radius: var(--mc-radius-section, 16px);
+    border-radius: var(--mc-section-panel-radius, var(--mc-radius-section, 16px));
   }
   .report-summary-title {
     display: flex;

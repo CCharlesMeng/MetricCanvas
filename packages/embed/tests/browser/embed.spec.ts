@@ -1213,11 +1213,14 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
       Math.abs(summaryRect.y - (coverRect.y + coverRect.height)) <= 1
     );
   }).toBe(true);
-  await expect(reportSummary).toHaveCSS('background-image', /data:image\/svg\+xml/u);
-  await expect(reportSummary).toHaveCSS('background-size', 'cover');
+  await expect(reportSummary).toHaveCSS(
+    'background-image',
+    /linear-gradient\(204deg, rgb\(218, 214, 255\) 4%, rgb\(189, 213, 255\) 45%\)/u
+  );
+  await expect(reportSummary).toHaveCSS('border-radius', '20px');
   await expect(reportSummaryTitle).toHaveCSS('font-weight', '600');
   await expect(panelSections).toHaveCount(2);
-  await expect(panelSections.first()).toHaveCSS('background-size', 'cover');
+  await expect(panelSections.first()).toHaveCSS('border-radius', '20px');
   await expect(panelSectionTitles).toHaveCount(2);
   await expect(panelSectionTitles.first()).toHaveCSS('font-weight', '600');
   await expect(pageHeadingTitle).toHaveCSS('font-weight', '600');
