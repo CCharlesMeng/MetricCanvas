@@ -1041,38 +1041,52 @@ test('流水报告的长代表处名称仍由完整背景包裹', async ({ page 
 
   const badge = page.locator('[data-metriccanvas-runtime] .lead-badge');
   const badgeText = badge.locator(':scope > span');
-  const badgeBackground = badge.locator(
-    '[data-decorative-image="report-badge-background"]'
-  );
   await expect(badgeText).toHaveText('北京政企客户联合代表处');
-  await expect.poll(async () => badgeBackground.evaluate(async (image) => {
-    if (!(image instanceof HTMLImageElement) || !image.complete) return null;
-    const badgeRect = image.parentElement?.getBoundingClientRect();
-    const imageRect = image.getBoundingClientRect();
-    const textRect = image.nextElementSibling?.getBoundingClientRect();
-    if (!badgeRect || !textRect) return null;
-    const response = await fetch(image.currentSrc);
-    const svg = new DOMParser()
-      .parseFromString(await response.text(), 'image/svg+xml')
-      .documentElement;
+  const badgePresentation = await badge.evaluate((element) => {
+    const text = element.querySelector(':scope > span');
+    if (!(text instanceof HTMLElement)) return null;
+    const badgeRect = element.getBoundingClientRect();
+    const textRect = text.getBoundingClientRect();
+    const shape = getComputedStyle(element, '::before');
+    const transform = new DOMMatrixReadOnly(shape.transform);
     return {
-      stretchesPastIntrinsicWidth: badgeRect.width > image.naturalWidth,
-      imageMatchesBadge:
-        Math.abs(imageRect.width - badgeRect.width) <= 1 &&
-        Math.abs(imageRect.height - badgeRect.height) <= 1,
+      hasSvgImage: element.querySelector('img') !== null,
+      stretchesPastBaseWidth: badgeRect.width > 208,
       textFitsSafeArea:
         textRect.left >= badgeRect.left + 15 &&
         textRect.right <= badgeRect.right - 15 &&
         textRect.top >= badgeRect.top + 3 &&
         textRect.bottom <= badgeRect.bottom - 3,
-      preserveAspectRatio: svg.getAttribute('preserveAspectRatio')
+      shape: {
+        content: shape.content,
+        backgroundImage: shape.backgroundImage,
+        borderRadius: shape.borderRadius,
+        top: shape.top,
+        right: shape.right,
+        bottom: shape.bottom,
+        left: shape.left,
+        skewX: transform.c
+      }
     };
-  })).toEqual({
-    stretchesPastIntrinsicWidth: true,
-    imageMatchesBadge: true,
-    textFitsSafeArea: true,
-    preserveAspectRatio: 'none'
   });
+  expect(badgePresentation).not.toBeNull();
+  expect(badgePresentation).toMatchObject({
+    hasSvgImage: false,
+    stretchesPastBaseWidth: true,
+    textFitsSafeArea: true,
+    shape: {
+      content: '\"\"',
+      borderRadius: '12px',
+      top: '0px',
+      right: '1px',
+      bottom: '0px',
+      left: '1px'
+    }
+  });
+  expect(badgePresentation?.shape.backgroundImage).toMatch(
+    /linear-gradient\(270deg, rgb\(91, 143, 255\).*rgb\(39, 188, 253\)/u
+  );
+  expect(badgePresentation?.shape.skewX).toBeCloseTo(Math.tan(-2 * Math.PI / 180), 3);
 });
 
 test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态', async ({ page }) => {
@@ -1344,9 +1358,6 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   const reportSummaryFrame = reportSummary.locator('.report-summary-frame');
   const reportSummaryBody = reportSummaryFrame.locator('.report-summary-content');
   const reportBadge = reportCover.locator('.lead-badge');
-  const reportBadgeBackground = reportBadge.locator(
-    '[data-decorative-image="report-badge-background"]'
-  );
   const overviewMetricPanels = host.locator(
     '[data-section-id="flow-overview"] .metric-panel'
   );
@@ -1405,21 +1416,21 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(panelSectionTitles).toHaveCount(2);
   await expect(panelSectionTitles.first()).toHaveCSS('font-weight', '600');
   await expect(pageHeadingTitle).toHaveCSS('font-weight', '600');
-  await expect(reportBadgeBackground).toHaveAttribute('src', /\/report-badge-background\.svg$/u);
-  await expect(reportBadgeBackground).toHaveCSS('object-fit', 'fill');
-  await expect.poll(async () => reportBadgeBackground.evaluate((image) => {
-    if (!(image instanceof HTMLImageElement)) return false;
-    const imageRect = image.getBoundingClientRect();
-    const badgeRect = image.parentElement?.getBoundingClientRect();
-    return Boolean(
-      image.complete &&
-      image.naturalWidth === 208 &&
-      image.naturalHeight === 50 &&
-      badgeRect &&
-      Math.abs(imageRect.width - badgeRect.width) <= 1 &&
-      Math.abs(imageRect.height - badgeRect.height) <= 1
-    );
-  })).toBe(true);
+  await expect(reportBadge.locator('img')).toHaveCount(0);
+  const reportBadgeShape = await reportBadge.evaluate((element) => {
+    const style = getComputedStyle(element, '::before');
+    const transform = new DOMMatrixReadOnly(style.transform);
+    return {
+      backgroundImage: style.backgroundImage,
+      borderRadius: style.borderRadius,
+      skewX: transform.c
+    };
+  });
+  expect(reportBadgeShape.backgroundImage).toMatch(
+    /linear-gradient\(270deg, rgb\(91, 143, 255\).*rgb\(39, 188, 253\)/u
+  );
+  expect(reportBadgeShape.borderRadius).toBe('12px');
+  expect(reportBadgeShape.skewX).toBeCloseTo(Math.tan(-2 * Math.PI / 180), 3);
   await expect(reportSummaryFrame).toHaveCount(1);
   await expect(reportSummaryFrame).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(reportSummaryFrame).toHaveCSS('border-style', 'none');

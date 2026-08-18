@@ -4,7 +4,6 @@
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg?inline';
   import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg?inline';
-  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg?inline';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
@@ -29,13 +28,6 @@
         {#if props.badge}
           <div class="lead-row">
             <span class="badge lead-badge">
-              <img
-                class="lead-badge-background"
-                src={reportBadgeBackgroundUrl}
-                alt=""
-                aria-hidden="true"
-                data-decorative-image="report-badge-background"
-              />
               <span>{props.badge}</span>
             </span>
           </div>
@@ -263,7 +255,7 @@
     min-height: 50px;
     justify-content: center;
     padding: 4px 16px;
-    overflow: hidden;
+    overflow: visible;
     color: #fff;
     background: transparent;
     border-radius: 0;
@@ -271,15 +263,16 @@
     font-weight: 500;
     line-height: 42px;
   }
-  .lead-badge-background {
+  .lead-badge::before {
     position: absolute;
-    inset: 0;
+    inset: 0 1px;
     z-index: -1;
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
+    background: linear-gradient(270deg, rgb(91 143 255) 0%, rgb(39 188 253) 100%);
+    border-radius: 12px;
+    content: '';
     pointer-events: none;
+    transform: skewX(-2deg);
+    transform-origin: center;
   }
   .lead-row {
     display: flex;
