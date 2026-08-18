@@ -10,9 +10,11 @@
 //   3. ioc_init_workspace— 在项目工作区落地领域骨架(codespec/harness/knowledge-base)
 //   4. 领域技能 Provider — 把包内 skills/ 注册进 ctx.skills 目录
 //   5. 行为守卫          — dsh/guards.js(pre/post-execute)
+//   6. 工作台只读接口    — dsh/api.js(/ioc-api/*,client 可视化数据源)
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { apply as applyGuards } from './guards.js'
+import { registerIocApi } from './api.js'
 import { ROOT, TOOLS_DIR, SKILLS_DIR, py, parseFrontmatter } from './lib.js'
 
 export const name = 'ioc-data-dev'
@@ -241,5 +243,9 @@ export function apply(ctx, config = {}) {
     }
   }
   registerTools(ctx)
-  console.log('[ioc-data-dev] 垂直领域已加载: ioc_stage_gate / ioc_validate / ioc_init_workspace + 守卫 + 技能')
+  // 工作台只读数据接口(web 形态下挂载;非 web 形态静默跳过)
+  ctx.inject(['webServer'], (webCtx) => {
+    webCtx.effect(() => registerIocApi(webCtx))
+  })
+  console.log('[ioc-data-dev] 垂直领域已加载: ioc_stage_gate / ioc_validate / ioc_init_workspace + 守卫 + 技能 + 工作台接口')
 }

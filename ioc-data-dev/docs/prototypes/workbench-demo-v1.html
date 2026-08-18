@@ -1,0 +1,221 @@
+<div id="ioc-dash" style="font-family: var(--font-sans, system-ui, sans-serif); padding: 4px 2px;">
+<style>
+  #ioc-dash { --ok: var(--viz-series-1); --warn: #d97706; --todo: var(--border); --text: var(--foreground); --muted: var(--muted-foreground); }
+  #ioc-dash * { box-sizing: border-box; }
+  #ioc-dash .head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+  #ioc-dash .title { font-size: 18px; font-weight: 700; color: var(--text); }
+  #ioc-dash .sub { font-size: 12px; color: var(--muted); margin-top: 3px; font-variant-numeric: tabular-nums; }
+  #ioc-dash .stats { display: flex; gap: 10px; flex-wrap: wrap; }
+  #ioc-dash .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 14px; min-width: 92px; }
+  #ioc-dash .stat b { display: block; font-size: 20px; color: var(--text); font-variant-numeric: tabular-nums; line-height: 1.2; }
+  #ioc-dash .stat span { font-size: 11px; color: var(--muted); }
+  #ioc-dash .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; margin-bottom: 12px; }
+  #ioc-dash .panel h3 { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; }
+  #ioc-dash .cols { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; }
+  @media (max-width: 860px) { #ioc-dash .cols { grid-template-columns: 1fr; } }
+  #ioc-dash .stage { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; }
+  #ioc-dash .stage:hover { background: color-mix(in srgb, var(--primary) 8%, transparent); border-color: var(--border); }
+  #ioc-dash .stage.sel { background: color-mix(in srgb, var(--primary) 12%, transparent); border-color: var(--primary); }
+  #ioc-dash .dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+  #ioc-dash .dot.done { background: var(--ok); }
+  #ioc-dash .dot.cur { background: var(--warn); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 22%, transparent); }
+  #ioc-dash .dot.todo { background: var(--todo); }
+  #ioc-dash .sname { flex: 1; font-size: 13px; color: var(--text); }
+  #ioc-dash .stag { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #ioc-dash .bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; margin: 10px 0 4px; background: var(--border); }
+  #ioc-dash .bar i { display: block; background: var(--ok); }
+  #ioc-dash .prog { font-size: 11px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+  #ioc-dash .gate-row { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 7px; font-size: 12.5px; color: var(--text); }
+  #ioc-dash .gate-row .gname { flex: 1; }
+  #ioc-dash .gstatus { font-size: 10.5px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+  #ioc-dash .gstatus.pass { background: color-mix(in srgb, var(--ok) 16%, transparent); color: var(--ok); }
+  #ioc-dash .gstatus.warn { background: color-mix(in srgb, var(--warn) 16%, transparent); color: var(--warn); }
+  #ioc-dash .gstatus.todo { background: color-mix(in srgb, var(--muted) 14%, transparent); color: var(--muted); }
+  #ioc-dash .art { display: flex; align-items: center; gap: 8px; padding: 4px 6px; font-size: 12.5px; color: var(--text); border-radius: 6px; }
+  #ioc-dash .art .an { flex: 1; font-family: ui-monospace, monospace; font-size: 11.5px; }
+  #ioc-dash .tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  #ioc-dash .tab { font-size: 12px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
+  #ioc-dash .tab.on { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+  #ioc-dash .detail { font-size: 12.5px; color: var(--text); line-height: 1.7; }
+  #ioc-dash .detail b { color: var(--text); }
+  #ioc-dash .kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+  #ioc-dash .kv .k { color: var(--muted); }
+  #ioc-dash .life { font-size: 11.5px; color: var(--text); font-family: ui-monospace, monospace; }
+  #ioc-dash .life .v { display: inline-block; padding: 1px 7px; border-radius: 999px; margin-right: 6px; font-weight: 700; font-size: 10.5px; }
+  #ioc-dash .v.v1 { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--muted); }
+  #ioc-dash .v.v2 { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+  #ioc-dash .clr { font-size: 12px; color: var(--text); padding: 6px 8px; border-radius: 8px; background: color-mix(in srgb, var(--primary) 6%, transparent); margin-bottom: 6px; }
+  #ioc-dash .clr b { font-family: ui-monospace, monospace; font-size: 11px; margin-right: 6px; }
+  #ioc-dash .clr .pill { font-size: 10.5px; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-left: 6px; }
+  #ioc-dash .pill.p0 { background: color-mix(in srgb, var(--warn) 20%, transparent); color: var(--warn); }
+  #ioc-dash .pill.done { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+</style>
+
+<div class="head">
+  <div>
+    <div class="title">IOC 数据开发工作台</div>
+    <div class="sub">fw-2026-0818-001 · 客户洞察地图月报 ADS 表 · data 主路径 · engine: hive</div>
+  </div>
+  <div class="stats">
+    <div class="stat"><b id="st-done">8</b><span>阶段完成</span></div>
+    <div class="stat"><b id="st-gate">4</b><span>门禁通过</span></div>
+    <div class="stat"><b id="st-art">7</b><span>产物完成</span></div>
+    <div class="stat"><b id="st-clr">1</b><span>澄清项</span></div>
+  </div>
+</div>
+
+<div class="cols">
+  <div>
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab on" data-path="data">data 主路径 (16)</button>
+        <button class="tab" data-path="subject">subject 主路径 (13)</button>
+      </div>
+      <div id="stage-list"></div>
+      <div class="bar"><i id="prog-bar" style="width:0%"></i></div>
+      <div class="prog" id="prog-label"></div>
+    </div>
+    <div class="panel">
+      <h3>阶段详情</h3>
+      <div class="detail" id="stage-detail">点击左侧任意阶段查看:出口门禁、产物与阻塞规则。</div>
+    </div>
+  </div>
+  <div>
+    <div class="panel">
+      <h3>门禁矩阵 (12 gates)</h3>
+      <div id="gate-list"></div>
+    </div>
+    <div class="panel">
+      <h3>指标生命周期 · 区域客户活跃数</h3>
+      <div class="life"><span class="v v1">v1</span>dws_t_customer_active_daily → 区域维度</div>
+      <div class="life" style="margin-top:6px"><span class="v v2">v2</span>ads_db_marketing.ads_dm_customer_active_m.cust_active_cnt → 已绑定</div>
+    </div>
+    <div class="panel">
+      <h3>澄清确认逻辑</h3>
+      <div class="clr"><b>CL-001</b>客户活跃口径:月内成交还是访问?<span class="pill done">closed</span><span class="pill p0">P0</span><div style="font-size:11px;color:var(--muted);margin-top:2px">裁定:张工 → 已按成交口径回写 delta-design-ads.md §2</div></div>
+      <div class="detail" style="font-size:11.5px;color:var(--muted)">CORE-AX8:澄清项只能由人工裁定,AI 不得关闭 P0。</div>
+    </div>
+  </div>
+</div>
+
+<div class="panel">
+  <h3>产物 DAG (11 节点)</h3>
+  <div id="art-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:2px 14px;"></div>
+</div>
+
+<script>
+(function () {
+  const root = document.getElementById('ioc-dash');
+  const stages = {
+    data: [
+      ['intake', 'done'], ['requirement', 'done'], ['data-design', 'done'], ['ads-design', 'done'],
+      ['ads-design-validation', 'done'], ['ads-clarification-apply', 'cur'], ['clouddevops-review', 'done'],
+      ['sql-bindings-ready', 'done'], ['sql-generate', 'done'], ['sql-validation', 'done'],
+      ['job-create · TEST', 'todo'], ['platform-test', 'todo'], ['promotion', 'todo'],
+      ['job-create · FORMAL', 'todo'], ['platform-formal', 'todo'], ['archive', 'todo']
+    ],
+    subject: [
+      ['requirement', 'done'], ['subject-design', 'done'], ['subject-design-validation', 'done'],
+      ['subject-clarification-apply', 'cur'], ['subject-sql-bindings-ready', 'done'], ['sql-generate', 'todo'],
+      ['sql-validation', 'todo'], ['job-create', 'todo'], ['platform-test', 'todo'], ['promotion', 'todo'],
+      ['platform-formal', 'todo'], ['archive', 'todo']
+    ]
+  };
+  const stageInfo = {
+    'intake': ['门禁:—', '产物:evidence 收集、feature 初始化'],
+    'requirement': ['门禁:—', '产物:proposal-fe.md'],
+    'data-design': ['门禁:data_design', '产物:feature-delta-indicator.md(v0→v1)'],
+    'ads-design': ['门禁:data_design', '产物:delta-design-ads.md'],
+    'ads-design-validation': ['门禁:ads_design_validation', '校验:KW-AX8 分层 / ADS 表设计'],
+    'ads-clarification-apply': ['门禁:ads_clarification_applied(阻塞所有)', '规则:CORE-AX8 P0 须人工裁定'],
+    'clouddevops-review': ['门禁:clouddevops_review', '校验:命名枚举 / pattern'],
+    'sql-bindings-ready': ['门禁:sql_bindings_ready', '产物:sql-source-bindings.yaml'],
+    'sql-generate': ['门禁:ads_design_validation + clouddevops_review + sql_bindings_ready', '产物:hql_test/*_test.sql'],
+    'sql-validation': ['门禁:sql_validation_static', '校验:sql-ddl / sql-etl / domain-patterns'],
+    'job-create · TEST': ['门禁:sql_validation_static, 产物等级 ≥ L2', '动作:clouddp-cli 建 TEST 作业'],
+    'platform-test': ['门禁:test_execution + platform_test', '产物:mock-data-plan.md / validation-report.md'],
+    'promotion': ['门禁:test_execution + platform_test + sql_validation_static', '产物:hql/*.sql 正式脚本'],
+    'job-create · FORMAL': ['门禁:sql_validation_static', '动作:正式作业上线'],
+    'platform-formal': ['门禁:platform_formal', '验收:正式平台核对'],
+    'archive': ['门禁:sql_promotion + platform_formal', '产物:archive-summary.md + baseline-update.md'],
+    'subject-design': ['门禁:—', '产物:主题域设计'],
+    'subject-design-validation': ['门禁:—', '校验:主题域一致性'],
+    'subject-clarification-apply': ['门禁:ads_clarification_applied', '规则:CORE-AX8 人工裁定'],
+    'subject-sql-bindings-ready': ['门禁:—', '产物:sql-source-bindings.yaml'],
+    'job-create': ['门禁:sql_validation_static', '动作:作业创建']
+  };
+  const gates = [
+    ['data_design', 'pass', 'ioc-data-design'], ['ads_design_validation', 'pass', 'ioc-ads-design-validate'],
+    ['clouddevops_review', 'pass', 'sdd-clouddevops-update'], ['ads_clarification_applied', 'warn', '澄清闭环回写'],
+    ['service_design', 'todo', 'ioc-service-design'], ['service_develop', 'todo', 'ioc-service-develop'],
+    ['sql_bindings_ready', 'pass', 'sql-bindings-ready'], ['sql_validation_static', 'pass', 'sql-validator'],
+    ['test_execution', 'todo', 'platform-test'], ['platform_test', 'todo', 'platform-test'],
+    ['sql_promotion', 'todo', 'promotion'], ['platform_formal', 'todo', 'platform-formal']
+  ];
+  const arts = [
+    ['proposal-fe.md', 'done'], ['feature-delta-spec.md', 'done'], ['feature-delta-acceptance.md', 'done'],
+    ['feature-delta-indicator.md', 'done'], ['GWT验收.md', 'done'], ['delta-design-ads.md', 'done'],
+    ['sql-source-bindings.yaml', 'done'], ['hql_test/*_test.sql', 'done'], ['mock-data-plan.md', 'todo'],
+    ['validation-report.md', 'todo'], ['hql/*.sql', 'todo'], ['archive-summary.md', 'todo'], ['baseline-update.md', 'todo']
+  ];
+  const stl = root.querySelector('#stage-list');
+  const sdet = root.querySelector('#stage-detail');
+  const gateList = root.querySelector('#gate-list');
+  const artList = root.querySelector('#art-list');
+  const bar = root.querySelector('#prog-bar');
+  const plabel = root.querySelector('#prog-label');
+  let curPath = 'data';
+
+  function renderStages(path) {
+    stl.innerHTML = '';
+    const list = stages[path];
+    list.forEach(function (row, i) {
+      const el = document.createElement('div');
+      el.className = 'stage' + (row[1] === 'cur' ? ' sel' : '');
+      el.innerHTML = '<span class="dot ' + row[1] + '"></span><span class="sname">' + row[0] + '</span><span class="stag">' + (i + 1) + '/' + list.length + '</span>';
+      el.addEventListener('click', function () {
+        Array.prototype.forEach.call(stl.children, function (c) { c.classList.remove('sel'); });
+        el.classList.add('sel');
+        const info = stageInfo[row[0]] || ['门禁:—', '—'];
+        sdet.innerHTML = '<div class="kv"><span class="k">阶段</span><span><b>' + row[0] + '</b></span><span class="k">状态</span><span>' + ({ done: '已完成', cur: '进行中', todo: '未开始' }[row[1]]) + '</span><span class="k">出口门禁</span><span>' + info[0] + '</span><span class="k">产物/动作</span><span>' + info[1] + '</span></div>';
+      });
+      stl.appendChild(el);
+    });
+    const done = list.filter(function (r) { return r[1] === 'done'; }).length;
+    const pct = Math.round(done / list.length * 100);
+    bar.style.width = pct + '%';
+    plabel.textContent = done + ' / ' + list.length + ' 阶段完成 · 当前: ' + (list.find(function (r) { return r[1] === 'cur'; }) || ['—'])[0];
+  }
+  Array.prototype.forEach.call(root.querySelectorAll('.tab'), function (t) {
+    t.addEventListener('click', function () {
+      Array.prototype.forEach.call(root.querySelectorAll('.tab'), function (x) { x.classList.remove('on'); });
+      t.classList.add('on');
+      curPath = t.getAttribute('data-path');
+      renderStages(curPath);
+    });
+  });
+  function renderGates() {
+    gateList.innerHTML = '';
+    gates.forEach(function (g) {
+      const el = document.createElement('div');
+      el.className = 'gate-row';
+      el.innerHTML = '<span class="gname">' + g[0] + '</span><span class="gstatus ' + g[1] + '">' + ({ pass: 'PASS', warn: '进行中', todo: '未开始' }[g[1]]) + '</span>';
+      el.title = 'setter: ' + g[2];
+      gateList.appendChild(el);
+    });
+  }
+  function renderArts() {
+    artList.innerHTML = '';
+    arts.forEach(function (a) {
+      const el = document.createElement('div');
+      el.className = 'art';
+      el.innerHTML = '<span class="dot ' + a[1] + '"></span><span class="an">' + a[0] + '</span><span class="gstatus ' + a[1] + '">' + ({ done: 'done', todo: 'todo' }[a[1]]) + '</span>';
+      artList.appendChild(el);
+    });
+  }
+  renderStages('data');
+  renderGates();
+  renderArts();
+})();
+</script>
+</div>

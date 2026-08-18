@@ -1,0 +1,179 @@
+<div id="wbp4-root" style="font-family: var(--font-sans, system-ui, sans-serif);">
+<style>
+  #wbp4-root * { box-sizing: border-box; }
+  #wbp4-root { --ok: var(--viz-series-1); --warn: #d97706; --bad: #dc2626; --todo: var(--border); --muted: var(--muted-foreground); --txt: var(--foreground); --s2: var(--viz-series-2, #3b82f6); --s3: var(--viz-series-3, #8b5cf6); }
+  #wbp4-root .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 13px; margin-bottom: 10px; }
+  #wbp4-root .panel h4 { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 0 9px; }
+  #wbp4-root .head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+  #wbp4-root .ttl { font-size: 17px; font-weight: 700; color: var(--txt); }
+  #wbp4-root .sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  #wbp4-root .phases { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  #wbp4-root .ph { font-size: 12px; padding: 5px 13px; border-radius: 999px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
+  #wbp4-root .ph.on { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); font-weight: 600; }
+  #wbp4-root .ph .tag { font-size: 9.5px; opacity: .75; margin-left: 5px; }
+  #wbp4-root .lin { position: relative; overflow-x: auto; }
+  #wbp4-root .lin svg { display: block; width: 100%; min-width: 820px; }
+  #wbp4-root .tbl { cursor: pointer; }
+  #wbp4-root .tbl rect { fill: var(--card); stroke: var(--border); stroke-width: 1; rx: 8; }
+  #wbp4-root .tbl.sel rect { stroke: var(--ok); stroke-width: 2; }
+  #wbp4-root .tbl text.n { font-size: 11px; font-weight: 700; fill: var(--txt); }
+  #wbp4-root .tbl text.m { font-size: 8.5px; fill: var(--muted); }
+  #wbp4-root .edge { stroke: var(--todo); stroke-width: 1.3; fill: none; }
+  #wbp4-root .edge.bound { stroke: var(--s2); stroke-dasharray: 5 3; }
+  #wbp4-root .edge.agg { stroke: var(--s3); }
+  #wbp4-root .edge.hot { stroke: var(--ok); stroke-width: 2.2; }
+  #wbp4-root .lyr { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; fill: var(--muted); }
+  #wbp4-root .newmark { font-size: 8.5px; font-weight: 700; fill: var(--ok); }
+  #wbp4-root table { border-collapse: collapse; width: 100%; font-size: 11.5px; }
+  #wbp4-root th { text-align: left; font-size: 10px; color: var(--muted); font-weight: 600; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+  #wbp4-root td { padding: 5px 8px; color: var(--txt); border-bottom: 1px solid color-mix(in srgb, var(--border) 55%, transparent); font-variant-numeric: tabular-nums; }
+  #wbp4-root .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+  #wbp4-root .legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 5px; }
+  #wbp4-root .legend .l1 i { border-color: var(--s2); border-style: dashed; }
+  #wbp4-root .legend .l2 i { border-color: var(--s3); }
+  #wbp4-root .legend .l3 i { border-color: var(--todo); }
+  #wbp4-root .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+</style>
+
+<div class="head">
+  <div><div class="ttl">血缘演进 · 最终模型</div><div class="sub">fw-2026-0818-001 · 消费端字段 → ADS → DWS/DWD → 贴源表 · 随阶段展开</div></div>
+  <div style="display:flex;gap:8px"><div style="font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted)">点击表节点 → 下钻字段级</div></div>
+</div>
+
+<div class="panel">
+  <h4>血缘演进阶段(点按钮看它"长出来")</h4>
+  <div class="phases" id="phases4">
+    <button class="ph" data-p="0">ads-design<span class="tag">指标→ADS 绑定</span></button>
+    <button class="ph" data-p="1">sql-generate<span class="tag">+ DWS/DWD 源</span></button>
+    <button class="ph" data-p="2">job-create<span class="tag">+ 贴源表(最深)</span></button>
+  </div>
+  <div class="lin" id="lin4"></div>
+  <div class="legend">
+    <span class="l1"><i></i>字段绑定</span>
+    <span class="l2"><i></i>聚合(SUM/COALESCE)</span>
+    <span class="l3"><i></i>待展开(后续阶段)</span>
+  </div>
+</div>
+
+<div class="panel">
+  <h4>表详情(下钻)</h4>
+  <div id="det4"><div style="font-size:12px;color:var(--muted)">点击任一表节点查看:粒度、引擎、字段绑定与来源。</div></div>
+</div>
+
+<script>
+(function () {
+  var ns = 'http://www.w3.org/2000/svg';
+  var lin = document.getElementById('lin4');
+  var det = document.getElementById('det4');
+  var phases = document.querySelectorAll('#phases4 .ph');
+
+  var W = 880, H = 320;
+  var COL = { consume: 20, ads: 250, dw: 500, src: 740 };
+  var TABLES = {
+    'consume_active': { x: COL.consume, y: 70, n: '区域客户活跃数', m: '页面组件字段 · 趋势图', f: ['cust_active_cnt'], layer: '消费端' },
+    'consume_gmv': { x: COL.consume, y: 190, n: '区域 GMV', m: '页面组件字段 · 数值卡', f: ['gmv_amt'], layer: '消费端' },
+    'ads_active': { x: COL.ads, y: 55, n: 'ads_dm_customer_active_m', m: 'ADS · 月/客户/区域', f: ['party_id','data_site_type','cust_active_cnt'], layer: 'ADS' },
+    'ads_gmv': { x: COL.ads, y: 185, n: 'ads_dm_order_gmv_m', m: 'ADS · 月/区域/产品线', f: ['party_id','gmv_amt'], layer: 'ADS' },
+    'dws_active': { x: COL.dw, y: 70, n: 'dws_t_customer_active_daily', m: 'DWS · 日粒度', f: ['party_id','active_cnt'], layer: 'DWS/DWD' },
+    'dwd_order': { x: COL.dw, y: 195, n: 'dwd_t_order_detail', m: 'DWD · 订单明细', f: ['party_id','gmv_amt'], layer: 'DWS/DWD' },
+    'src_cust': { x: COL.src, y: 90, n: 'ods_customer_profile', m: '贴源表 · 客户档案', f: ['party_id','site_type'], layer: '贴源' },
+    'src_order': { x: COL.src, y: 210, n: 'ods_order', m: '贴源表 · 订单', f: ['party_id','amount'], layer: '贴源' }
+  };
+  var EDGES = [
+    { from: 'consume_active', to: 'ads_active', kind: 'bound', phase: 0 },
+    { from: 'consume_gmv', to: 'ads_gmv', kind: 'bound', phase: 0 },
+    { from: 'ads_active', to: 'dws_active', kind: 'agg', phase: 1 },
+    { from: 'ads_gmv', to: 'dwd_order', kind: 'agg', phase: 1 },
+    { from: 'dws_active', to: 'src_cust', kind: 'agg', phase: 2 },
+    { from: 'dwd_order', to: 'src_order', kind: 'agg', phase: 2 }
+  ];
+  var DETAILS = {
+    'ads_active': ['ads_dm_customer_active_m','ADS · 月/客户/区域 · engine hive · ads_db_marketing','粒度:月/客户/区域 · 复用授权:无(新建)','字段绑定:',[['cust_active_cnt','bigint','active_cnt(SUM+COALESCE)','DWS','✓'],['party_id','string','party_id(直接映射)','DWS','✓'],['data_site_type','string','data_site_type(区域路由)','DWS','✓']]],
+    'ads_gmv': ['ads_dm_order_gmv_m','ADS · 月/区域/产品线 · engine hive','粒度:月/区域/产品线','字段绑定:',[['gmv_amt','bigint','gmv_amt(SUM)','DWD','✓'],['party_id','string','party_id(直接映射)','DWD','✓']]],
+    'dws_active': ['dws_t_customer_active_daily','DWS · 日粒度 · evidence: clouddp-cli','来源:贴源表日汇总','字段:',[['party_id','string','客户ID','贴源','✓'],['active_cnt','bigint','活跃数','贴源','✓'],['stat_date','string','统计日','贴源','✓']]],
+    'dwd_order': ['dwd_t_order_detail','DWD · 订单明细','来源:贴源表明细清洗','字段:',[['party_id','string','客户ID','贴源','✓'],['gmv_amt','bigint','GMV','贴源','✓']]],
+    'src_cust': ['ods_customer_profile','贴源表 · 客户档案','来源:源系统同步(SDI)','字段:',[['party_id','string','客户ID','源','✓'],['site_type','string','区域','源','✓']]],
+    'src_order': ['ods_order','贴源表 · 订单','来源:源系统同步(SDI)','字段:',[['party_id','string','客户ID','源','✓'],['amount','decimal','订单金额','源','✓']]],
+    'consume_active': ['区域客户活跃数','页面组件字段 · 趋势图 · GWT-01','含义:区域月活跃客户数 · 口径:月内成交(CL-001 已裁定)','绑定:',[['cust_active_cnt','bigint','ads_dm_customer_active_m.cust_active_cnt','ADS','✓']]],
+    'consume_gmv': ['区域 GMV','页面组件字段 · 数值卡','含义:区域月 GMV','绑定:',[['gmv_amt','bigint','ads_dm_order_gmv_m.gmv_amt','ADS','✓']]]
+  };
+  function draw(phase) {
+    lin.innerHTML = '';
+    var svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    var order = ['consume_active','consume_gmv','ads_active','ads_gmv','dws_active','dwd_order','src_cust','src_order'];
+    var minPhase = { consume_active: 0, consume_gmv: 0, ads_active: 0, ads_gmv: 0, dws_active: 1, dwd_order: 1, src_cust: 2, src_order: 2 };
+    var edges = EDGES.filter(function (e) { return e.phase <= phase; });
+    edges.forEach(function (e) {
+      var a = TABLES[e.from], b = TABLES[e.to];
+      var x1 = a.x + 165, y1 = a.y + 30, x2 = b.x - 12, y2 = b.y + 30;
+      var mx = (x1 + x2) / 2;
+      var p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2);
+      p.setAttribute('class', 'edge ' + (e.kind === 'bound' ? 'bound' : 'agg'));
+      p.dataset.from = e.from; p.dataset.to = e.to;
+      svg.appendChild(p);
+    });
+    order.forEach(function (id) {
+      if (minPhase[id] > phase) return;
+      var t = TABLES[id];
+      var g = document.createElementNS(ns, 'g');
+      g.setAttribute('class', 'tbl');
+      g.dataset.id = id;
+      var rect = document.createElementNS(ns, 'rect');
+      rect.setAttribute('x', t.x); rect.setAttribute('y', t.y); rect.setAttribute('width', 165); rect.setAttribute('height', 60);
+      g.appendChild(rect);
+      var n = document.createElementNS(ns, 'text');
+      n.setAttribute('x', t.x + 9); n.setAttribute('y', t.y + 17); n.setAttribute('class', 'n');
+      n.textContent = t.n;
+      g.appendChild(n);
+      var m = document.createElementNS(ns, 'text');
+      m.setAttribute('x', t.x + 9); m.setAttribute('y', t.y + 30); m.setAttribute('class', 'm');
+      m.textContent = t.m;
+      g.appendChild(m);
+      var f = document.createElementNS(ns, 'text');
+      f.setAttribute('x', t.x + 9); f.setAttribute('y', t.y + 46); f.setAttribute('class', 'm');
+      f.textContent = t.f.join(' · ');
+      g.appendChild(f);
+      if (minPhase[id] === phase && phase > 0) {
+        var nm = document.createElementNS(ns, 'text');
+        nm.setAttribute('x', t.x + 9); nm.setAttribute('y', t.y + 58); nm.setAttribute('class', 'newmark');
+        nm.textContent = '✦ 本阶段新增';
+        g.appendChild(nm);
+      }
+      g.addEventListener('click', function () {
+        Array.prototype.forEach.call(svg.querySelectorAll('.tbl'), function (x) { x.classList.remove('sel'); });
+        g.classList.add('sel');
+        var d = DETAILS[id];
+        var rows = d[4].map(function (r) {
+          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td style="color:var(--ok)">' + r[4] + '</td></tr>';
+        }).join('');
+        det.innerHTML = '<div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:2px">' + d[0] + '</div>' +
+          '<div style="font-size:11px;color:var(--muted);margin-bottom:8px">' + d[1] + '<br>' + d[2] + '</div>' +
+          '<div style="font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:4px">' + d[3] + '</div>' +
+          '<table><tr><th>字段</th><th>类型</th><th>来源</th><th>分层</th><th>状态</th></tr>' + rows + '</table>';
+        Array.prototype.forEach.call(svg.querySelectorAll('.edge'), function (e) {
+          e.classList.toggle('hot', e.dataset.from === id || e.dataset.to === id);
+        });
+      });
+      svg.appendChild(g);
+    });
+    [['消费端', COL.consume], ['ADS 层', COL.ads], ['DWS/DWD', COL.dw], ['贴源表', COL.src]].forEach(function (L) {
+      var t = document.createElementNS(ns, 'text');
+      t.setAttribute('x', L[1]); t.setAttribute('y', 18); t.setAttribute('class', 'lyr');
+      t.textContent = L[0];
+      svg.appendChild(t);
+    });
+    lin.appendChild(svg);
+  }
+  phases.forEach(function (b) {
+    b.addEventListener('click', function () {
+      phases.forEach(function (x) { x.classList.remove('on'); });
+      b.classList.add('on');
+      draw(+b.dataset.p);
+    });
+  });
+  draw(0);
+})();
+</script>
+</div>

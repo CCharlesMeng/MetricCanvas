@@ -1,0 +1,220 @@
+<div id="wbp2-root" style="font-family: var(--font-sans, system-ui, sans-serif);">
+<style>
+  #wbp2-root * { box-sizing: border-box; }
+  #wbp2-root { --ok: var(--viz-series-1); --warn: #d97706; --bad: #dc2626; --todo: var(--border); --muted: var(--muted-foreground); --txt: var(--foreground); --s2: var(--viz-series-2, #3b82f6); --s3: var(--viz-series-3, #8b5cf6); }
+  #wbp2-root .var { display: none; } #wbp2-root .var.on { display: block; }
+  #wbp2-root .switcher { position: sticky; bottom: 0; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 14px; padding: 8px 14px; background: var(--primary); color: var(--primary-foreground); border-radius: 999px; width: fit-content; margin-left: auto; margin-right: auto; box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+  #wbp2-root .switcher button { background: transparent; border: none; color: var(--primary-foreground); font-size: 16px; cursor: pointer; padding: 2px 8px; border-radius: 999px; }
+  #wbp2-root .switcher button:hover { background: color-mix(in srgb, var(--primary-foreground) 18%, transparent); }
+  #wbp2-root .switcher span { font-size: 12px; font-weight: 700; min-width: 150px; text-align: center; }
+  #wbp2-root .head { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; }
+  #wbp2-root .ttl { font-size: 17px; font-weight: 700; color: var(--txt); }
+  #wbp2-root .sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+  #wbp2-root .stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 7px 13px; }
+  #wbp2-root .stat b { display: block; font-size: 19px; color: var(--txt); font-variant-numeric: tabular-nums; line-height: 1.15; }
+  #wbp2-root .stat span { font-size: 10.5px; color: var(--muted); }
+  #wbp2-root .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 13px; margin-bottom: 10px; }
+  #wbp2-root .panel h4 { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin: 0 0 9px; }
+  #wbp2-root .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+  #wbp2-root .dot.done { background: var(--ok); } #wbp2-root .dot.cur { background: var(--warn); box-shadow: 0 0 0 4px color-mix(in srgb, var(--warn) 22%, transparent); } #wbp2-root .dot.todo { background: var(--todo); }
+  #wbp2-root .pl { display: flex; flex-direction: column; gap: 2px; }
+  #wbp2-root .pl-row { display: flex; align-items: center; gap: 9px; padding: 5px 8px; border-radius: 8px; font-size: 12.5px; color: var(--txt); border: 1px solid transparent; }
+  #wbp2-root .pl-row.cur { background: color-mix(in srgb, var(--warn) 12%, transparent); border-color: var(--warn); }
+  #wbp2-root .pl-row .nm { flex: 1; }
+  #wbp2-root .pl-row .gt { font-size: 10px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #wbp2-root .pl-row .blk { font-size: 10px; color: var(--bad); font-weight: 700; }
+  #wbp2-root .banner { display: flex; gap: 8px; align-items: flex-start; padding: 9px 12px; border-radius: 10px; font-size: 12px; line-height: 1.55; }
+  #wbp2-root .banner.bad { background: color-mix(in srgb, var(--bad) 10%, transparent); border: 1px solid color-mix(in srgb, var(--bad) 35%, transparent); color: var(--txt); }
+  #wbp2-root .banner.warn { background: color-mix(in srgb, var(--warn) 10%, transparent); border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent); color: var(--txt); }
+  /* lineage */
+  #wbp2-root .lin { position: relative; overflow-x: auto; }
+  #wbp2-root .lin svg { display: block; width: 100%; min-width: 720px; }
+  #wbp2-root .tbl { cursor: pointer; }
+  #wbp2-root .tbl rect { fill: var(--card); stroke: var(--border); stroke-width: 1; rx: 8; }
+  #wbp2-root .tbl.sel rect { stroke: var(--ok); stroke-width: 2; }
+  #wbp2-root .tbl text.n { font-size: 11.5px; font-weight: 700; fill: var(--txt); }
+  #wbp2-root .tbl text.m { font-size: 9px; fill: var(--muted); }
+  #wbp2-root .tbl text.f { font-size: 9px; fill: var(--muted); }
+  #wbp2-root .edge { stroke: var(--todo); stroke-width: 1.4; fill: none; }
+  #wbp2-root .edge.map { stroke: var(--s2); stroke-dasharray: 5 3; }
+  #wbp2-root .edge.agg { stroke: var(--s3); }
+  #wbp2-root .edge.hot { stroke: var(--ok); stroke-width: 2.2; }
+  #wbp2-root .lyr { font-size: 9.5px; font-weight: 700; letter-spacing: .08em; fill: var(--muted); }
+  #wbp2-root .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 10.5px; color: var(--muted); margin-top: 8px; }
+  #wbp2-root .legend i { display: inline-block; width: 22px; height: 0; border-top: 2px solid; vertical-align: middle; margin-right: 5px; }
+  #wbp2-root .legend .l1 i { border-color: var(--s2); border-style: dashed; }
+  #wbp2-root .legend .l2 i { border-color: var(--s3); }
+  #wbp2-root .legend .l3 i { border-color: var(--todo); }
+  #wbp2-root .lindetail { font-size: 12px; color: var(--txt); line-height: 1.7; }
+  #wbp2-root .lindetail b { font-family: ui-monospace, monospace; font-size: 11.5px; }
+  #wbp2-root .kv { display: grid; grid-template-columns: auto 1fr; gap: 2px 12px; font-size: 12px; }
+  #wbp2-root .kv .k { color: var(--muted); }
+</style>
+
+<!-- ══════ V1 主视图:流水线 + 卡点融合 ══════ -->
+<div id="v1" class="var on">
+  <div class="head">
+    <div><div class="ttl">客户洞察地图月报 ADS 表</div><div class="sub">fw-2026-0818-001 · data 主路径 · hive · 多 ADS 产出</div></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="stat"><b>9/16</b><span>阶段完成</span></div>
+      <div class="stat"><b>4/12</b><span>门禁通过</span></div>
+      <div class="stat"><b>2/3</b><span>ADS 表</span></div>
+    </div>
+  </div>
+  <div class="banner bad" style="margin-bottom:10px"><span>⏸</span><div><b>卡点:ads-clarification-apply</b> — gate <code>ads_clarification_applied</code> 未置位。CL-001 已 closed(成交口径),待人工确认闭环。接棒人:张工。</div></div>
+  <div class="panel">
+    <h4>data 主路径 · 16 阶段</h4>
+    <div class="pl" id="pl2"></div>
+  </div>
+</div>
+
+<!-- ══════ V2 血缘图:多 ADS + 多级联 ══════ -->
+<div id="v2" class="var">
+  <div class="head">
+    <div><div class="ttl">数据血缘 · 多 ADS 多级联</div><div class="sub">示意:3 源表 → 2 ADS → 1 级联 · 字段级绑定 · 点击节点聚焦</div></div>
+    <div style="display:flex;gap:8px"><div class="chip" style="font-size:10.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--border);color:var(--muted)">同 feature 多张 ADS</div></div>
+  </div>
+  <div class="panel">
+    <h4>血缘 DAG</h4>
+    <div class="lin" id="lin2"></div>
+    <div class="legend">
+      <span class="l1"><i></i>直接映射</span>
+      <span class="l2"><i></i>聚合(SUM/COALESCE)</span>
+      <span class="l3"><i></i>级联(ADS→ADS)</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h4>节点详情</h4>
+    <div class="lindetail" id="lindet">点击上方任一表节点查看字段绑定与上下游。</div>
+  </div>
+</div>
+
+<div class="switcher">
+  <button id="sw2-prev" title="上一个">←</button>
+  <span id="sw2-label">1 — 流水线主视图</span>
+  <button id="sw2-next" title="下一个">→</button>
+</div>
+
+<script>
+(function () {
+  var root = document.getElementById('wbp2-root');
+  var VS = [ { k: '1', n: '流水线主视图', el: 'v1' }, { k: '2', n: '多 ADS 血缘图', el: 'v2' } ];
+  var i = 0;
+  function show(x) {
+    i = (x + VS.length) % VS.length;
+    VS.forEach(function (v, j) { document.getElementById(v.el).classList.toggle('on', j === i); });
+    document.getElementById('sw2-label').textContent = VS[i].k + ' — ' + VS[i].n;
+  }
+  document.getElementById('sw2-prev').addEventListener('click', function () { show(i - 1); });
+  document.getElementById('sw2-next').addEventListener('click', function () { show(i + 1); });
+  document.addEventListener('keydown', function (e) {
+    var t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key === 'ArrowLeft') show(i - 1);
+    if (e.key === 'ArrowRight') show(i + 1);
+  });
+
+  /* V1 pipeline */
+  var stages = [
+    ['intake','done','',''],['requirement','done','',''],['data-design','done','✓ data_design',''],
+    ['ads-design','done','',''],['ads-design-validation','done','✓ ads_design_validation',''],
+    ['ads-clarification-apply','cur','◌ ads_clarification_applied','🔴 等人工'],
+    ['clouddevops-review','done','✓ clouddevops_review',''],['sql-bindings-ready','done','✓ sql_bindings_ready',''],
+    ['sql-generate','done','✓ sql_validation_static',''],['sql-validation','done','',''],
+    ['job-create · TEST','todo','',''],['platform-test','todo','',''],['promotion','todo','',''],
+    ['job-create · FORMAL','todo','',''],['platform-formal','todo','',''],['archive','todo','','']
+  ];
+  var pl = document.getElementById('pl2');
+  stages.forEach(function (s) {
+    var r = document.createElement('div');
+    r.className = 'pl-row' + (s[1] === 'cur' ? ' cur' : '');
+    r.innerHTML = '<span class="dot ' + s[1] + '"></span><span class="nm">' + s[0] + '</span>' + (s[3] ? '<span class="blk">' + s[3] + '</span>' : '') + (s[2] ? '<span class="gt">' + s[2] + '</span>' : '');
+    pl.appendChild(r);
+  });
+
+  /* V2 lineage DAG — SVG */
+  var W = 780, H = 330;
+  var ns = 'http://www.w3.org/2000/svg';
+  var svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  var T = [
+    { id: 'dws_active', x: 20, y: 40, n: 'dws_t_customer_active_daily', m: 'DWS · 月/客户/区域', f: ['party_id','data_site_type','active_cnt'] },
+    { id: 'dws_order', x: 20, y: 180, n: 'dws_t_order_daily', m: 'DWS · 日/订单', f: ['party_id','gmv_amt','order_cnt'] },
+    { id: 'dim_region', x: 20, y: 270, n: 'dim_region', m: 'DIM · 区域字典', f: ['site_code','site_name'] },
+    { id: 'ads_active', x: 300, y: 55, n: 'ads_dm_customer_active_m', m: 'ADS · 月/客户/区域', f: ['party_id','data_site_type','cust_active_cnt'] },
+    { id: 'ads_gmv', x: 300, y: 205, n: 'ads_dm_order_gmv_m', m: 'ADS · 月/区域/产品线', f: ['party_id','gmv_amt','order_cnt'] },
+    { id: 'ads_region', x: 560, y: 130, n: 'ads_dm_customer_region_m', m: 'ADS · 月/区域(汇总)', f: ['data_site_type','cust_active_cnt'] }
+  ];
+  var E = [
+    { from: 'dws_active', to: 'ads_active', kind: 'map' },
+    { from: 'dws_order', to: 'ads_gmv', kind: 'agg' },
+    { from: 'dim_region', to: 'ads_gmv', kind: 'map' },
+    { from: 'ads_active', to: 'ads_region', kind: 'cascade' },
+    { from: 'ads_gmv', to: 'ads_region', kind: 'cascade' }
+  ];
+  var byId = {}; T.forEach(function (t) { byId[t.id] = t; });
+  var DETAILS = {
+    'ads_region': '字段绑定:<br><b>data_site_type</b> ← ads_dm_customer_active_m.data_site_type(映射)<br><b>cust_active_cnt</b> ← ads_dm_customer_active_m.cust_active_cnt(SUM 汇总)<br>另有 <b>gmv_amt</b> ← ads_dm_order_gmv_m(级联)',
+    'ads_active': '字段绑定:<br><b>party_id</b> ← dws_t_customer_active_daily.party_id<br><b>cust_active_cnt</b> ← active_cnt,SUM + COALESCE<br>filter: data_site_type IN (china,oversea,europe)',
+    'ads_gmv': '字段绑定:<br><b>gmv_amt</b> ← dws_t_order_daily.gmv_amt(SUM)<br><b>site_name</b> ← dim_region.site_name(JOIN 映射)',
+    'dws_active': '上游:evidence/etl-sql · 无 ADS 消费 SDI/ODS(KW-AX8 ✓)',
+    'dws_order': '上游:ODS 层 → DWS 日粒度汇总',
+    'dim_region': '维度注册表:dim_region · 区域字典'
+  };
+  function colOf(id) { return T.find(function (t) { return t.id === id; }).x; }
+  // edges first (under nodes)
+  E.forEach(function (e) {
+    var a = byId[e.from], b = byId[e.to];
+    var x1 = a.x + 165, y1 = a.y + 32, x2 = b.x - 12, y2 = b.y + 32;
+    var mx = (x1 + x2) / 2;
+    var p = document.createElementNS(ns, 'path');
+    p.setAttribute('d', 'M ' + x1 + ' ' + y1 + ' C ' + mx + ' ' + y1 + ', ' + mx + ' ' + y2 + ', ' + x2 + ' ' + y2);
+    p.setAttribute('class', 'edge ' + (e.kind === 'map' ? 'map' : e.kind === 'agg' ? 'agg' : 'cascade'));
+    p.dataset.from = e.from; p.dataset.to = e.to; p.dataset.kind = e.kind;
+    svg.appendChild(p);
+  });
+  // nodes
+  T.forEach(function (t) {
+    var g = document.createElementNS(ns, 'g');
+    g.setAttribute('class', 'tbl');
+    g.dataset.id = t.id;
+    var rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', t.x); rect.setAttribute('y', t.y); rect.setAttribute('width', 165); rect.setAttribute('height', 64);
+    g.appendChild(rect);
+    var n = document.createElementNS(ns, 'text');
+    n.setAttribute('x', t.x + 10); n.setAttribute('y', t.y + 18); n.setAttribute('class', 'n');
+    n.textContent = t.n;
+    g.appendChild(n);
+    var m = document.createElementNS(ns, 'text');
+    m.setAttribute('x', t.x + 10); m.setAttribute('y', t.y + 32); m.setAttribute('class', 'm');
+    m.textContent = t.m;
+    g.appendChild(m);
+    var f = document.createElementNS(ns, 'text');
+    f.setAttribute('x', t.x + 10); f.setAttribute('y', t.y + 50); f.setAttribute('class', 'f');
+    f.textContent = t.f.join(' · ');
+    g.appendChild(f);
+    g.addEventListener('click', function () {
+      Array.prototype.forEach.call(svg.querySelectorAll('.tbl'), function (x) { x.classList.remove('sel'); });
+      g.classList.add('sel');
+      var detail = DETAILS[t.id] || '该节点暂无字段级详情。';
+      document.getElementById('lindet').innerHTML = '<div class="kv"><span class="k">表</span><span><b>' + t.n + '</b></span><span class="k">描述</span><span>' + t.m + '</span></div><div style="margin-top:6px">' + detail + '</div>';
+      // highlight connected edges
+      Array.prototype.forEach.call(svg.querySelectorAll('.edge'), function (e) {
+        e.classList.toggle('hot', e.dataset.from === t.id || e.dataset.to === t.id);
+      });
+    });
+    svg.appendChild(g);
+  });
+  var lin = document.getElementById('lin2');
+  lin.appendChild(svg);
+  // layer labels
+  var labels = [ [18, '源表层'], [296, 'ADS 层'], [556, '级联层'] ];
+  labels.forEach(function (L) {
+    var t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', L[0]); t.setAttribute('y', 20); t.setAttribute('class', 'lyr');
+    t.textContent = L[1];
+    svg.appendChild(t);
+  });
+})();
+</script>
+</div>
