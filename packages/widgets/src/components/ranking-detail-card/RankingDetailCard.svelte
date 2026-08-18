@@ -7,8 +7,8 @@
     type RowAlignmentHandle
   } from '../../shared/row-alignment';
   import { buildRankingDetailRows } from './rows';
-  import rankingDeclineIconUrl from '../../assets/ranking-decline.svg';
-  import rankingGrowthIconUrl from '../../assets/ranking-growth.svg';
+  import rankingDeclineIconUrl from '../../assets/ranking-decline.svg?inline';
+  import rankingGrowthIconUrl from '../../assets/ranking-growth.svg?inline';
 
   interface Props {
     data: MainDataSlots;

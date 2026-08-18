@@ -13,7 +13,7 @@ declare module '*.svg' {
   export default url;
 }
 
-declare module '*.svg?no-inline' {
+declare module '*.svg?inline' {
   const url: string;
   export default url;
 }

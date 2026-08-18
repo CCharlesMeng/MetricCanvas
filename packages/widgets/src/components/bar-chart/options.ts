@@ -1,5 +1,5 @@
 import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page';
-import type { EChartsOption } from 'echarts';
+import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
@@ -10,6 +10,7 @@ const REPORT_FORECAST_COLORS = [
   'rgba(20, 118, 255, 0.2)',
   'rgba(12, 184, 178, 0.2)'
 ] as const;
+const FLOATING_LABEL_MIN_LENGTH = 7;
 
 /**
  * 已解析命名数据槽 + 柱状图 props → ECharts option 的纯翻译。
@@ -113,6 +114,18 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
           : {})
       };
       const values = rows.map((row) => finiteNumber(row[field.field]));
+      const segmentLabelFormatter = valueLabelFormatter(field.format);
+      const displayedValues = props.showSegmentLabels
+        ? values.map((value) => {
+            if (value === undefined) return undefined;
+            return isFloatingLabel(segmentLabelFormatter({ value }))
+              ? {
+                  value,
+                  label: floatingLabelStyle(roleColor)
+                }
+              : value;
+          })
+        : values;
       const totalPoints = rows.flatMap((row, rowIndex) => {
         if (values[rowIndex] === undefined) return [];
         const value = stackTotals[rowIndex] ?? 0;
@@ -127,12 +140,14 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
         ...(Object.keys(itemStyle).length > 0 ? { itemStyle } : {}),
         ...(props.showSegmentLabels
           ? {
+              // 短金额保持柱内居中；长金额才横向避让，避免在画布边缘被截断。
+              labelLayout: floatingLabelLayout,
               label: {
                 show: true,
                 position: 'inside' as const,
                 color: series.role === 'forecast' ? roleColor : '#fff',
                 fontSize: 12,
-                formatter: valueLabelFormatter(field.format)
+                formatter: segmentLabelFormatter
               }
             }
           : {}),
@@ -172,7 +187,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
               }
             }
           : {}),
-        data: values
+        data: displayedValues
       };
     })
   };
@@ -183,6 +198,25 @@ function valueLabelFormatter(format?: ValueFormatPreset) {
     const value = finiteNumber(formatterValue((params as { value?: unknown })?.value));
     if (value === undefined) return '';
     return format === undefined ? `${wanUnits(value)}万` : formatValue(value, format);
+  };
+}
+
+function floatingLabelLayout({ text }: LabelLayoutOptionCallbackParams) {
+  return isFloatingLabel(text)
+    ? { moveOverlap: 'shiftX' as const }
+    : {};
+}
+
+function isFloatingLabel(text: string): boolean {
+  return text.length >= FLOATING_LABEL_MIN_LENGTH;
+}
+
+function floatingLabelStyle(color?: string) {
+  return {
+    color: color ?? '#121e3b',
+    backgroundColor: 'rgba(255, 255, 255, 0.88)',
+    borderRadius: 2,
+    padding: [1, 3]
   };
 }
 

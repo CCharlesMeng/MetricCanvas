@@ -52,7 +52,7 @@ describe('流水分析报告 DQE fixture', () => {
     }
   });
 
-  it('两张趋势固定十二行并保持 actual/forecast 空值互斥和确定性公式', () => {
+  it('两张趋势固定十二行，分别使用 1.x 亿与千亿级并保持 actual/forecast 互斥', () => {
     const overall = fixture.queries['overall-monthly-trend']!.rows;
     const region = fixture.queries['region-monthly-trend']!.rows;
 
@@ -61,21 +61,33 @@ describe('流水分析报告 DQE fixture', () => {
     overall.forEach((row, index) => {
       const month = index + 1;
       expect(row.month).toBe(`${month}月`);
-      expect(row['core-actual']).toBe(month <= 2 ? 8_000_000 + month * 200_000 : null);
-      expect(row['communication-actual']).toBe(
-        month <= 2 ? 3_000_000 + month * 100_000 : null
+      expect(row['core-actual']).toBe(
+        month <= 2 ? 120_000_000 + month * 2_000_000 : null
       );
-      expect(row['core-forecast']).toBe(month >= 3 ? 8_000_000 + month * 200_000 : null);
+      expect(row['communication-actual']).toBe(
+        month <= 2 ? 105_000_000 + month * 1_000_000 : null
+      );
+      expect(row['core-forecast']).toBe(
+        month >= 3 ? 120_000_000 + month * 2_000_000 : null
+      );
       expect(row['communication-forecast']).toBe(
-        month >= 3 ? 3_000_000 + month * 100_000 : null
+        month >= 3 ? 105_000_000 + month * 1_000_000 : null
       );
     });
     region.forEach((row, index) => {
       const month = index + 1;
-      expect(row['stable-actual']).toBe(month <= 2 ? 5_800_000 + month * 150_000 : null);
-      expect(row['one-off-actual']).toBe(month <= 2 ? 1_800_000 + month * 120_000 : null);
-      expect(row['stable-forecast']).toBe(month >= 3 ? 5_800_000 + month * 150_000 : null);
-      expect(row['one-off-forecast']).toBe(month >= 3 ? 1_800_000 + month * 120_000 : null);
+      expect(row['stable-actual']).toBe(
+        month <= 2 ? 115_000_000_000 + month * 1_500_000_000 : null
+      );
+      expect(row['one-off-actual']).toBe(
+        month <= 2 ? 101_000_000_000 + month * 1_200_000_000 : null
+      );
+      expect(row['stable-forecast']).toBe(
+        month >= 3 ? 115_000_000_000 + month * 1_500_000_000 : null
+      );
+      expect(row['one-off-forecast']).toBe(
+        month >= 3 ? 101_000_000_000 + month * 1_200_000_000 : null
+      );
     });
   });
 

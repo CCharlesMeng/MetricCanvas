@@ -225,7 +225,7 @@ describe('流水分析报告页面文档', () => {
     }
   });
 
-  it('两张预测趋势保持实际/预测互斥，组件只声明 Tooltip 和图例能力', () => {
+  it('两张预测趋势保持实际/预测互斥，分别使用 1.x 亿与千亿级金额', () => {
     const sources: Record<string, RawQuerySource> = flowReportPageJson.dataSources;
     for (const [id, actualFields, forecastFields] of [
       ['overall-monthly-trend', ['core-actual', 'communication-actual'], ['core-forecast', 'communication-forecast']],
@@ -234,10 +234,18 @@ describe('流水分析报告页面文档', () => {
       const initial = sources[id]!.source.initial;
       if (!initial) throw new Error(`${id} 必须有内嵌初始行`);
       const rows = initial.rows;
+      const range = id === 'overall-monthly-trend'
+        ? { min: 100_000_000, max: 200_000_000 }
+        : { min: 100_000_000_000, max: 200_000_000_000 };
       expect(rows).toHaveLength(12);
       rows.forEach((row, index) => {
         for (const field of index < 2 ? actualFields : forecastFields) {
-          expect(typeof row[field], `${id}:${index}:${field}`).toBe('number');
+          const value = row[field];
+          expect(typeof value, `${id}:${index}:${field}`).toBe('number');
+          if (typeof value === 'number') {
+            expect(value, `${id}:${index}:${field}`).toBeGreaterThan(range.min);
+            expect(value, `${id}:${index}:${field}`).toBeLessThan(range.max);
+          }
         }
         for (const field of index < 2 ? forecastFields : actualFields) {
           expect(row[field], `${id}:${index}:${field}`).toBeNull();

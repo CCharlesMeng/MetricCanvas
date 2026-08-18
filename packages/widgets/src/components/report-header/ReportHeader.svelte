@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { ReportHeaderProps } from '@metriccanvas/page';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
-  import sectionTitleRightUrl from '../../assets/section-title-right.svg';
-  import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg';
-  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg?no-inline';
+  import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
+  import sectionTitleRightUrl from '../../assets/section-title-right.svg?inline';
+  import headerFlowBackgroundUrl from '../../assets/header-flow-background.svg?inline';
+  import reportBadgeBackgroundUrl from '../../assets/report-badge-background.svg?inline';
 
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {

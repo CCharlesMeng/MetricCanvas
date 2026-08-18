@@ -10,10 +10,10 @@
 <script lang="ts">
   import type { TextProps } from '@metriccanvas/page';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
-  import aiSummaryIconUrl from '../../assets/ai-summary-icon.svg';
-  import riskWarningIconUrl from '../../assets/risk-warning.svg';
-  import sectionTitleLeftUrl from '../../assets/section-title-left.svg';
-  import sectionTitleRightUrl from '../../assets/section-title-right.svg';
+  import aiSummaryIconUrl from '../../assets/ai-summary-icon.svg?inline';
+  import riskWarningIconUrl from '../../assets/risk-warning.svg?inline';
+  import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
+  import sectionTitleRightUrl from '../../assets/section-title-right.svg?inline';
 
   /**
    * 文本组件(纯渲染):标题/说明静态文案 + 带参跳转链接。

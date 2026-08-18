@@ -14,11 +14,31 @@ interface TestedBarOption {
   series: Array<{
     name: string;
     stack?: string;
-    data: Array<number | undefined>;
+    data: Array<
+      | number
+      | undefined
+      | {
+          value: number;
+          label?: {
+            color?: string;
+            backgroundColor?: string;
+            borderRadius?: number;
+            padding?: number[];
+          };
+        }
+    >;
     label?: {
       show?: boolean;
+      position?: string;
+      color?: string;
+      backgroundColor?: string;
+      borderRadius?: number;
+      padding?: number[];
       formatter?: (params: { value: number }) => string;
     };
+    labelLayout?:
+      | { moveOverlap?: string }
+      | ((params: { text: string }) => { moveOverlap?: string });
     markPoint?: {
       data?: Array<{ value: number }>;
       label?: { formatter?: (params: { value: number }) => string };
@@ -160,7 +180,7 @@ describe('barOption 实际/预测系列', () => {
     expect(option.series.every((series) => series.label === undefined)).toBe(true);
   });
 
-  it('按声明的堆叠顺序把绿色系列置底，并让分段与总额标签继承人民币格式', () => {
+  it('按声明顺序堆叠，短金额保持柱内样式并继承人民币格式', () => {
     const labeledProps = {
       ...props,
       rounded: true,
@@ -188,11 +208,33 @@ describe('barOption 实际/预测系列', () => {
     expect(option.series[2]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
     expect(option.series[3]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
     expect(option.series.every((series) => series.label?.show === true)).toBe(true);
+    expect(option.series.every((series) => series.label?.position === 'inside')).toBe(true);
+    const labelLayout = option.series[0]?.labelLayout;
+    expect(typeof labelLayout).toBe('function');
+    if (typeof labelLayout === 'function') {
+      expect(labelLayout({ text: '1.22亿' })).toEqual({});
+      expect(labelLayout({ text: '1,220.0亿' })).toEqual({ moveOverlap: 'shiftX' });
+    }
+    expect(option.series.map((series) => series.label?.color)).toEqual([
+      '#fff',
+      '#0cb8b2',
+      '#fff',
+      '#1476ff'
+    ]);
+    expect(
+      option.series.every(
+        (series) =>
+          series.label?.backgroundColor === undefined &&
+          series.label?.borderRadius === undefined &&
+          series.label?.padding === undefined
+      )
+    ).toBe(true);
     expect(option.series[0]?.label?.formatter?.({ value: 3_100_000 })).toBe('310万');
     expect(option.series[0]?.label?.formatter?.({ value: 9_999 })).toBe('9,999元');
     expect(option.series[0]?.label?.formatter?.({ value: 10_000 })).toBe('1.00万');
     expect(option.series[0]?.label?.formatter?.({ value: 100_000_000 })).toBe('1.00亿');
     expect(option.series[0]?.label?.formatter?.({ value: 1_000_000_000 })).toBe('10.0亿');
+    expect(option.series[0]?.label?.formatter?.({ value: 123_456_789_000 })).toBe('1,234.6亿');
     expect(option.series[2]?.markPoint?.data?.map((point) => point.value)).toEqual([
       11_300_000,
       11_600_000
@@ -201,6 +243,36 @@ describe('barOption 实际/预测系列', () => {
       '1,130万'
     );
     expect(option.series[3]?.markPoint?.data?.map((point) => point.value)).toEqual([11_900_000]);
+  });
+
+  it('只为超出柱宽的长金额数据项增加悬浮底', () => {
+    const longAmountData: MainDataSlots = {
+      main: {
+        ...data.main,
+        snapshot: {
+          ...data.main.snapshot,
+          rows: data.main.snapshot.rows.map((row, index) =>
+            index === 0 ? { ...row, coreActual: 123_456_789_000 } : row
+          )
+        }
+      }
+    };
+    const option = barOption(longAmountData, {
+      ...props,
+      showSegmentLabels: true
+    }) as unknown as TestedBarOption;
+    const coreActual = option.series.find((series) => series.name === 'Core流水');
+
+    expect(coreActual?.data[0]).toEqual({
+      value: 123_456_789_000,
+      label: {
+        color: '#1476ff',
+        backgroundColor: 'rgba(255, 255, 255, 0.88)',
+        borderRadius: 2,
+        padding: [1, 3]
+      }
+    });
+    expect(coreActual?.data[1]).toBe(8_400_000);
   });
 
   it('非堆叠系列各自保留生长端圆角', () => {
