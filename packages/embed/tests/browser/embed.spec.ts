@@ -74,7 +74,7 @@ test('经典脚本在 Shadow DOM 中渲染 inline 页面并隔离宿主样式', 
   await expect(page.locator('link[rel="stylesheet"]')).toHaveCount(0);
 });
 
-test('独立 HTML 最终报告页加载真实看板页面并完成客户端渲染', async ({
+test('独立 HTML 最终报告页加载真实页面并完成客户端渲染', async ({
   page
 }) => {
   await page.goto('/examples/report.html');
@@ -147,7 +147,7 @@ test('挂载接口支持更新、重复挂载保护和幂等销毁', async ({ pa
   await expect(page.locator('[data-metriccanvas-runtime]')).toHaveCount(0);
 });
 
-test('看板页面 id 不影响统一运行时的 DOM 与计算样式', async ({ page }) => {
+test('页面 id 不影响统一运行时的 DOM 与计算样式', async ({ page }) => {
   await page.goto('/examples/inline.html');
   const before = await runtimeShellSnapshot(page);
 

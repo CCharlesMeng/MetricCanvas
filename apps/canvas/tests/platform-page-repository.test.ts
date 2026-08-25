@@ -4,7 +4,7 @@ import { createPlatformPageRepository } from '../src/lib/platform-page-repositor
 describe('平台页面仓库目录', () => {
   afterEach(() => vi.unstubAllGlobals());
 
-  it('从统一运行时公开目录列出已发布看板页面', async () => {
+  it('从统一运行时公开目录列出已发布页面', async () => {
     const fetchMock = vi.fn().mockResolvedValue(
       new Response(
         JSON.stringify({

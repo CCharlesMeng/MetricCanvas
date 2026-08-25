@@ -21,7 +21,7 @@ function productSourceFiles(root: string): string[] {
   });
 }
 
-describe('看板页面 id 中立性', () => {
+describe('页面 id 中立性', () => {
   it('产品源码不得根据任何正式页面 id 分支', () => {
     const pageIds = readdirSync(resolve(repoRoot, 'pages'))
       .filter((name) => name.endsWith('.json'))

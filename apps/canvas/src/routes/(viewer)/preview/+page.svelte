@@ -87,11 +87,17 @@
 </div>
 
 <style>
+  /* 宽度与另两条查看器路由同一条语义:1440 是内容盒基准,左右各 24 的内边距
+     加在它之外。`min-height` 随之也按内容盒计,故减去上下内边距共 48。 */
   .preview-page {
     display: flex;
-    min-height: calc(100vh - 100px);
+    max-width: 1440px;
+    min-height: calc(100vh - 148px);
+    box-sizing: content-box;
     flex-direction: column;
     gap: 18px;
+    padding: 24px;
+    margin: 0 auto;
   }
   .preview-heading {
     display: flex;

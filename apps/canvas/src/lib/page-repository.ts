@@ -3,7 +3,9 @@ import { pageListEntry, parsePage } from '@metriccanvas/page';
 
 /**
  * PageRepository 静态文件实现(一期,ADR-0004):页面文档来自仓库根 pages/ 目录($pages 别名)。
- * dev 模式下 Vite 监听 JSON 模块,改页面即热刷新;二期换平台 API 实现,运行时零改动。
+ * 只在未配置 VITE_PLATFORM_URL 时生效(见 $lib/services);配了平台地址,页面文档由平台接口供给,
+ * 本实现不参与。pages/ 在 Vite root 之外,dev 下的监听靠 vite.config.ts 的 watch-page-assets
+ * 插件补齐,改页面即热刷新;二期换平台 API 实现,运行时零改动。
  */
 const modules = import.meta.glob<{ default: unknown }>('$pages/*.json');
 

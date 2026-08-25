@@ -16,7 +16,7 @@
 pnpm --filter @metriccanvas/embed build
 ```
 
-## 挂载静态页面
+## 挂载仅内联页面
 
 ```html
 <div id="dashboard"></div>
@@ -117,12 +117,14 @@ interface RuntimeInput {
 
 | 属性 | 说明 |
 |---|---|
-| `document` | 未校验的看板页面文档 |
+| `document` | 未校验的页面文档 |
 | `dataGateway` | 查询页面使用的数据网关 |
 | `aiSummary` | AI 总结组件的连接配置，仅包含 `conversationBaseUrl` 与可选 `env` |
 | `initialSearch` | 不含前导 `?` 的筛选状态查询串 |
 
 Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。
+
+**宿主必须交出宽度。** 页面外框几何由页面文档的 `layoutForm` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，宿主不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。完整宿主义务见 [宿主契约](../../docs/host-contract.md)。
 
 ## 事件
 
@@ -134,6 +136,7 @@ const runtime = MetricCanvas.mount('#dashboard', {
   dataGateway,
   onEvent(event) {
     if (event.type === 'navigate') {
+      hostRememberReturn(event.pageId, event.sourcePageId, event.sourceSearch);
       hostRouter.navigate(event.pageId, event.search);
     }
     if (event.type === 'data-error' && event.code === 'DQE_AUTH_REQUIRED') {
@@ -143,7 +146,7 @@ const runtime = MetricCanvas.mount('#dashboard', {
 });
 ```
 
-Embed 通过事件通知宿主筛选变化和页面导航，不修改宿主 URL。
+Embed 通过事件通知宿主筛选变化和页面导航，不修改宿主 URL。`navigate` 携带 `sourcePageId` / `sourceSearch`，回跳与面包屑由宿主实现，见 [宿主契约](../../docs/host-contract.md)。查询串须原样保留 `p:` 与筛选前缀 `d:` / `h:` / `t:` / `m:` / `b:` / `n:` / `s:`。
 
 `data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`@metriccanvas/page` 的 `QueryErrorCode`，未携带分类的异常为 `UNKNOWN`)与脱值消息。宿主按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
 
@@ -204,7 +207,7 @@ http://127.0.0.1:4175/examples/esm.html
 | 示例 | 内容 |
 |---|---|
 | `report.html` | 完整静态报告 |
-| `inline.html` | 最小静态页面 |
+| `inline.html` | 最小仅内联页面 |
 | `query.html` | DQE 查询页面 |
 | `esm.html` | ES module 接入 |
 

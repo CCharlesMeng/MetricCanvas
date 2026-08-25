@@ -2,33 +2,43 @@
   import { pageRepository } from '$lib/services';
 </script>
 
-<h1>看板目录</h1>
+<div class="page-frame">
+  <h1>看板目录</h1>
 
-<a class="preview-entry" href="/preview">
-  <span class="title">Page JSON 即时预览</span>
-  <span class="desc">粘贴或编辑页面文档，并直接查看严格校验后的渲染结果。</span>
-</a>
+  <a class="preview-entry" href="/preview">
+    <span class="title">Page JSON 即时预览</span>
+    <span class="desc">粘贴或编辑页面文档，并直接查看严格校验后的渲染结果。</span>
+  </a>
 
-{#await pageRepository.list()}
-  <p class="muted">加载中…</p>
-{:then pages}
-  {#if pages.length === 0}
-    <p class="muted">pages/ 目录还没有页面。</p>
-  {:else}
-    <ul class="catalog">
-      {#each pages as p (p.id)}
-        <li>
-          <a href="/pages/{p.id}">
-            <span class="title">{p.title}</span>
-            {#if p.description}<span class="desc">{p.description}</span>{/if}
-          </a>
-        </li>
-      {/each}
-    </ul>
-  {/if}
-{/await}
+  {#await pageRepository.list()}
+    <p class="muted">加载中…</p>
+  {:then pages}
+    {#if pages.length === 0}
+      <p class="muted">pages/ 目录还没有页面。</p>
+    {:else}
+      <ul class="catalog">
+        {#each pages as p (p.id)}
+          <li>
+            <a href="/pages/{p.id}">
+              <span class="title">{p.title}</span>
+              {#if p.description}<span class="desc">{p.description}</span>{/if}
+            </a>
+          </li>
+        {/each}
+      </ul>
+    {/if}
+  {/await}
+</div>
 
 <style>
+  /* 外框宽度是内容盒基准:1440 指主区内容宽,左右各 24 的内边距加在它之外
+     (border-box 1488)。三条查看器路由与 `preview` 共用这一条语义。 */
+  .page-frame {
+    max-width: 1440px;
+    box-sizing: content-box;
+    padding: 24px;
+    margin: 0 auto;
+  }
   h1 {
     font-size: 20px;
     margin: 8px 0 20px;
