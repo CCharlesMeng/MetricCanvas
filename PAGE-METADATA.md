@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.0`；未定义属性会被拒绝。
+页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.1`；未定义属性会被拒绝。
 
 ## 1. 概念与关联关系
 
@@ -16,7 +16,7 @@
 
 ```mermaid
 flowchart LR
-  context["数据上下文快照（创作期）"] -->|"约束查询生成"| page["看板页面 / 页面元数据"]
+  context["数据上下文快照（创作期）"] -->|"约束查询生成"| page["页面 / 页面元数据"]
   page -->|"拥有 0..N"| source["页面数据源"]
   source -->|"声明 1..N"| field["结果字段契约"]
   source -->|"inline 分支"| rows["静态数据行"]
@@ -29,7 +29,7 @@ flowchart LR
   component -->|"data 槽引用"| source
   component -->|"字段绑定引用"| field
   component -->|"action 写入"| filter
-  component -->|"navigate 指向"| target["目标看板页面"]
+  component -->|"navigate 指向"| target["目标页面"]
   component -->|"relatedData 只读引用"| source
 ```
 
@@ -46,7 +46,7 @@ flowchart LR
 | 组件数据槽 | `data.<slot>` | 页面数据源 | 每槽 `1` | 被引用的数据源必须存在 |
 | 组件字段绑定 | `field` | 数据槽对应的数据源字段 | 每绑定 `1` | 必须引用稳定页面字段 id，不得引用 DQE 原始字段名 |
 | 组件 action | `writeFilter` | 页面筛选器 | `1` | 只能写入 `dimension` 筛选器 |
-| 导航 action | `navigate.page` | 目标看板页面 | `1` | 全目录校验时目标页必须存在 |
+| 导航 action | `navigate.page` | 目标页面 | `1` | 全目录校验时目标页必须存在 |
 | AI 总结 | `relatedData.*.source` | 页面数据源 | 每项 `1` | 只读白名单字段，不使用普通组件数据槽 |
 
 ### 1.3 三个字段空间
@@ -102,14 +102,83 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `schemaVersion` | string | 是 | 固定为 `"5.0"` |
-| `id` | string | 是 | 看板页面稳定标识；正式文件名为 `<id>.json` |
+| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"` 与 `"5.1"`，新页面声明 `"5.1"` |
+| `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | object | 否 | 页面资产信息；当前只允许 `description` |
+| `layoutForm` | string | 否 | 页面布局形态（5.1 起）：`report`（缺省）或 `dashboard` |
+| `params` | array | 否 | 页面参数声明（5.1 起），至少一项 |
 | `dataSources` | object | 是 | 命名页面数据源；纯标题或说明页可以为空对象 |
 | `filters` | array | 否 | 页面级筛选状态声明 |
 | `sections` | array | 是 | 内容分区，至少一项 |
 
-`id` 只承载看板页面的同一性，用于文件命名、页面仓储加载、路由和修订归属。统一运行时不得根据某个正式页面 `id` 切换样式、组件或开发工具。
+`id` 只承载页面的同一性，用于文件命名、页面仓储加载、路由和修订归属。统一运行时不得根据某个正式页面 `id` 切换样式、组件或开发工具。
+
+### 3.2 版本策略
+
+次版本只承载纯增量变更（新增可选字段、判别联合新增分支、封闭闭集新增成员、放宽既有约束），因此当前主版本内最新的 schema 是全部次版本的超集，校验器接受该主版本内不高于当前值的任意次版本。跨主版本不接受，也不提供自动迁移。
+
+**声明的版本是能力下限。** 校验器维护一张「能力 → 引入次版本」表，从文档实际使用的结构推算它所需的最低次版本，高于声明值即报错。声明 `"5.0"` 却使用下表任一能力的文档会被拒绝。
+
+| 能力 | 引入次版本 |
+|---|---:|
+| 顶层 `layoutForm`：页面布局形态 | 5.1 |
+| 组件 `layout.layer`：分区内叠放层 | 5.1 |
+| 顶层 `params`：页面参数声明 | 5.1 |
+| 文本取值引用页面参数 | 5.1 |
+| 页面数据源的受控计算阶段 | 5.1 |
+| 结果字段契约上的 `collapsible` | 5.1 |
+| `table.props.rowKindField` | 5.1 |
+| `table.props.mergeBy` | 5.1 |
+| `keyValuePanel` 组件 | 5.1 |
+| `fieldText` 组件 | 5.1 |
+| `boolean` / `timePoint` / `numberRange` / `search` 筛选器 | 5.1 |
+| 层级维度筛选器 `hierarchy` | 5.1 |
+| 筛选器级联 `dependsOn` | 5.1 |
+| `timeRange.default` 结构化相对时间 | 5.1 |
+| 表格列 `link`（行点击导航入口） | 5.1 |
+| 导航 `setParams` | 5.1 |
+| `tabContainer` 组件 | 5.1 |
+| `gauge` 组件 | 5.1 |
+| `mapChart.hierarchyFilter`（层级下钻） | 5.1 |
+
+存量页面不迁移：声明 `"5.0"` 且只使用 5.0 结构的文档继续有效。
+
+### 3.3 页面参数与文本取值
+
+页面参数是页面打开时由 URL 确定、此后不可改变的具名输入。它与筛选器按**可变性**分界：页面打开后还能被控件、组件 action 或跨页下钻改变的是筛选器，不能改变的是页面参数——换一个取值意味着打开另一个页面实例。
+
+```json
+{
+  "params": [
+    { "id": "opportunity-code", "type": "string", "required": true, "label": "机会点编码" },
+    { "id": "ati-status-label", "type": "string", "required": false, "label": "立项状态" }
+  ]
+}
+```
+
+| 属性 | 类型 | 必填 | 说明 |
+|---|---|---:|---|
+| `id` | string | 是 | 参数标识；不得与任何筛选器 id 相同 |
+| `type` | `string` / `number` / `boolean` | 是 | 取值只能是标量 |
+| `required` | boolean | 是 | 必需参数缺失时页面呈现「页面输入不完整」 |
+| `label` | non-empty string | 否 | 缺失提示与创作期展示用 |
+| `default` | scalar | 否 | URL 未提供时的取值 |
+
+**文本取值**：页面文档中一切渲染为用户可见文本的属性位置，取值类型都由 `string` 放宽为「字面量或页面参数引用」。规则落在**位置**上，不按组件类型维护白名单：分区标题、组件标题与副标题、`reportHeader` 的标题与标签、`text` 的正文、表格列标题、指标卡行标签与单位等都适用。
+
+```json
+{ "title": { "param": "page-title" } }
+{ "value": { "param": "order-amount", "format": "cny-adaptive" } }
+```
+
+引用的约束：
+
+- **整值替换，不是模板插值。** `"{{参数}} 详情"` 这类拼接一律不允许；需要拼好的文本由参数本身或数据侧提供。
+- 引用可携带 `format`，复用组件字段绑定已有的封闭格式闭集；格式必须与参数类型相容（数值格式只配 `number`，日历格式只配 `string`）。
+- **可选参数缺失时，引用位置整体消失**：该属性视为未声明，数组型位置中的该项被移除，而不是渲染成空字符串。因此**必填文本属性只能引用必需参数**。
+- **每个声明的页面参数必须至少有一个消费者**，否则校验失败——没有消费者通常意味着作者绑错了位置。
+
+URL 编码为参数开了自己的命名空间：查询串里键是参数 id，值以 `p:` 前缀标记，与筛选状态的 `d:` / `h:` / `t:` / `m:` / `b:` / `n:` / `s:` 并列。参数不进筛选状态，也不参与 `carryFilters`。
 
 ### 3.1 标识符与唯一性
 
@@ -183,9 +252,10 @@ flowchart LR
 | `label` | non-empty string | 否 | 默认展示名称；与字段 id 相同时应该省略 |
 | `unit` | non-empty string | 否 | 业务单位 |
 | `nullable` | boolean | 否 | 是否允许 `null`；省略表示允许 |
+| `collapsible` | boolean | 否 | 该度量是否允许被折叠算子求和（见 4.10）；缺席即不允许 |
 | `defaultFormat` | enum | 否 | 默认展示建议，可被组件字段绑定覆盖 |
 | `currency` | `"CNY"` | 条件必填 | 仅 `type: "money"` 必须声明 |
-| `queryField` | non-empty string | 查询字段必填 | DQE 输出字段名；`inline` 字段不得声明 |
+| `queryField` | non-empty string | 查询字段必填 | DQE 输出字段名；`inline` 字段与计算阶段产出字段不得声明 |
 
 上表的 `unit` 与 `defaultFormat` 只适用于标量字段。`recordList/detail` 只接受 `label`、`nullable`、`items`，查询分支再加外层与项级 `queryField`；`semanticHtml/detail` 只接受 `label`、`nullable`，查询分支再加 `queryField`。
 
@@ -254,11 +324,14 @@ date-month-day
 }
 ```
 
-`inline.rows` 直接使用稳定页面字段 id。仅含 `inline` 数据源的静态页面：
+`inline.rows` 直接使用稳定页面字段 id。全部数据源都是 `inline` 的页面称为**仅内联页面**（旧称「静态页面」，该词已退休：数据固定不等于界面不动）。
 
-- 不得声明页面级 `filters`；
-- 绑定 `inline` 数据源的组件不得声明 action；
-- 表格仍可以使用本地排序、表头筛选和本地分页，因为这些只作用于已有数据快照。
+不变量是**交互必须在页面自己能观察到的状态上产生可见效果**，不是「`inline` 页面不许有交互」。据此：
+
+- 可以声明页面级 `filters`：筛选值进 URL、驱动筛选控件，层级维度筛选器还能驱动地图下钻——地图直接读筛选状态的当前层级，不经过查询；
+- 可以在绑定 `inline` 数据源的组件上声明 `navigate` action，也可以声明页面参数；
+- **不得声明 `writeFilter`**：它写入的筛选值只在生效查询里才有意义，而仅内联页面没有生效查询，写了不产生任何可见效果——这才是当初要拒绝的「假交互」；
+- 不得使用远程分页（`pagination.mode: "query"` 要求 `query` 数据源）；表格仍可以使用本地排序、表头筛选和本地分页，因为这些只作用于已有数据快照。
 
 ### 4.6 `query` 页面数据源
 
@@ -437,6 +510,49 @@ date-month-day
 
 表格列声明 `visual: "signed"` 时，只给 `<data>` 内嵌值映射正、负、中性样式，不给整个单元格染色。字符串字段绑定不能为内嵌值声明 `format`，也不为语义内嵌值继承字段级默认格式。
 
+### 4.10 受控计算阶段
+
+页面数据源可以声明一个可选的 `compute`：输入是该数据源已归一化的行集，输出仍是同一个数据源的数据快照。计算阶段没有独立 id、没有独立修订、不参与发布治理——数据源仍然是数据源。`inline` 与 `query` 两类数据源都在同一位置声明，两条路径都会经过算子。
+
+**只提供封闭的具名算子，不提供通用运算、公式字段或任何表达式。** 算子的参数只有字段引用与封闭枚举。
+
+```json
+{
+  "compute": [
+    {
+      "op": "groupSubtotal",
+      "groupBy": "business-type",
+      "measures": ["object-forecast-jan", "lift-forecast-jan"],
+      "rowKind": { "field": "row-kind", "value": "subtotal" },
+      "labelSuffix": "合计"
+    },
+    {
+      "op": "grandTotal",
+      "measures": ["object-forecast-jan", "lift-forecast-jan"],
+      "rowKind": { "field": "row-kind", "value": "total" },
+      "label": { "field": "business-type", "value": "合计" }
+    }
+  ]
+}
+```
+
+| `op` | 参数 | 行为 |
+|---|---|---|
+| `ratio` | `numerator`、`denominator`、`output`、`onZeroDenominator` | 逐行相除；分母为零或缺失时按声明取空或取零，分子缺失一律取空 |
+| `delta` | `minuend`、`subtrahend`、`output` | 逐行相减；任一为空取空 |
+| `groupSubtotal` | `groupBy`、`measures`、`rowKind`、可选 `labelSuffix` | 按分组字段折叠，每组明细行后追加一行小计 |
+| `grandTotal` | `measures`、`rowKind`、`label` | 末尾追加一行全局合计；只累加明细行，不把小计行计第二遍 |
+| `pivot` | `categoryField`、`valueField`、`columns`、可选 `keyFields` | 行转列；每个目标列声明有序类别取值列表，取第一个命中的 |
+
+规则：
+
+- 算子按声明顺序作用，后一个算子看到前一个算子的产出。
+- **计算产出的字段必须就地声明在该数据源的结果字段契约里**，与查询字段一样声明类型、角色、标签与可空性；区别只是不声明 `queryField`。产出字段不得出现在 `inline` 数据行或内嵌初始行中——那些行是算子的输入。
+- **折叠类算子（`groupSubtotal`、`grandTotal`）只能作用于显式声明 `collapsible: true` 的度量字段**，声明缺失即校验失败。折叠求和时空值视为 0 参与累加，整组都没有数值时取空。
+- 行类别字段（`rowKind.field`）必须是可空的 `string` 维度，取值闭集为 `subtotal` / `total`；明细行上取空。它与 `table.props.rowKindField` 构成一份跨层契约，两侧同时校验。
+- 折叠行上被折叠字段以外的字段取空；`pivot` 产出行只含分组键与目标列。
+- **格式化不是计算。** 亿/万自适应、百分比、千分位继续走组件字段绑定的 `format` 与结果字段契约的 `defaultFormat`，不进计算层，也不生成 `_label` 之类的伴生字段。
+
 ## 5. 筛选器与查询绑定
 
 筛选器在页面顶层声明，形成页面级共享筛选状态。组件 action 写入筛选状态；查询定义通过 `filterBindings` 订阅筛选状态。组件之间不直接连线。
@@ -464,8 +580,15 @@ date-month-day
 | `display` | 否 | `select`、`tabs`、`tree`、`search`；省略默认为 `select` |
 | `visible` | 否 | `false` 表示隐藏控件但保留可写状态 |
 | `default` | 否 | 初始字符串值数组；省略表示不筛选 |
+| `hierarchy` | 否 | 有序层级，至少两级；每级声明 `id`、`dimension` 与可选 `label` |
+| `defaultLevel` | 否 | 缺省层级 id；只能与 `hierarchy` 一起使用 |
+| `dependsOn` | 否 | 级联上游筛选器 id；只允许依赖一个 dimension 筛选器 |
 
 维度候选值由数据网关提供，不写入 Schema 元数据或页面元数据。`tree` 当前按候选值中的 `/` 分隔层级。
+
+**层级维度筛选器**：筛选值同时携带选中取值与取值所在层级。层级是查询谓词选择目标字段的依据，也是地图等分层视图当前视角的唯一来源；分层视图不维护自己的层级状态。URL 编码为 `h:<dimension>:<level>:<v1>,<v2>`，与扁平维度的 `d:` 并列。
+
+**级联**：`dependsOn` 只收窄下游候选值，不改变下游绑定字段，也不让下游出现或消失。禁止自依赖与循环。这不是数据源级联输入（ADR-0015 仍挂起）。
 
 ### 5.2 时间范围筛选器
 
@@ -490,7 +613,7 @@ date-month-day
 | `label` | 否 | 控件名称 |
 | `precision` | 否 | `date` 或 `datetime`；省略默认为 `date` |
 | `visible` | 否 | `false` 表示隐藏控件但保留状态 |
-| `default` | 否 | 当前只允许预设字符串或绝对闭区间 |
+| `default` | 否 | 天级预设、绝对闭区间或结构化相对时间 |
 
 当前预设闭集：
 
@@ -509,7 +632,41 @@ last90d
 - 两端构成闭区间，且 `from` 不得晚于 `to`；
 - 日期必须是有效公历日期时间。
 
-### 5.3 DQE 筛选绑定
+结构化相对时间（ADR-0035）与预设、绝对区间并列：
+
+```json
+{
+  "unit": "month",
+  "range": { "kind": "lastN", "n": 6 },
+  "includeCurrent": false,
+  "anchor": "2026-03-15"
+}
+```
+
+| 字段 | 必填 | 规则 |
+|---|---:|---|
+| `unit` | 是 | `day` / `week` / `month` / `quarter` / `year` |
+| `range.kind` | 是 | `lastN`（最近 N 个单位，须带 `n ≥ 1`）、`previousComplete`（上一个完整单位）、`currentToDate`（本单位至今） |
+| `includeCurrent` | 是 | 必须显式声明。只对 `lastN` 生效：为真时当前未完成周期计入 N；为假时区间止于上一完整周期 |
+| `anchor` | 否 | `YYYY-MM-DD`；省略则取页面打开时刻的本地日期 |
+
+求值发生在筛选状态初始化（以及此后的取数编排）时，一次页面加载内共享同一个求值时刻。周从周一起算；季按自然年。输出仍是绝对 `timeRange` 值，URL 继续用 `t:<from>~<to>`。
+
+### 5.3 布尔、时间点、数值区间与搜索
+
+闭集六类。新增类型必须走新的决策，不接受通用 `custom` 类型。
+
+**boolean**：勾选才生成条件，未勾选不占位（无条件）。「未勾选」与「勾选为否」是同一件事。URL：`b:1`（仅勾选时出现）。
+
+**timePoint**：单个时间点，`granularity` 为 `month`（`YYYY-MM`）或 `date`（`YYYY-MM-DD`）。谓词是等值，不是区间。URL：`m:<granularity>:<value>`。不要用 `tp:`——`t:` 已被时间范围占用。
+
+**numberRange**：上下界，任一端可缺省，两端都空则不筛选。URL：`n:<from>~<to>`，缺省端留空，例如 `n:100~`、`n:~500`。
+
+**search**：自由文本，跨字段模糊匹配。它是页面筛选器，不是表格属性。URL：`s:<text>`。`inline` 数据源上运行时对字符串字段做不区分大小写包含；查询数据源上的 `like` 谓词留给 GraphQL 批次。
+
+无关查询参数继续由 RuntimeView `mergedSearch` 保留。页面参数占用 `p:`，筛选状态不识别它。
+
+### 5.4 DQE 筛选绑定
 
 `filterBindings` 位于每个查询数据源的 `source.query` 中：
 
@@ -570,13 +727,23 @@ last90d
 
 不得使用已删除的 `section.variant`、`section.layout` 或根据组件组合推断分区外观。
 
+**页面布局形态（`layoutForm`，5.1 起）** 决定页面外框几何与画布外观，是这两者的唯一真源。它与 `container` 是两层：形态管页面外框，`container` 管分区外观，同一档 `container` 在两种形态下表达同一语义、观感随形态调整。
+
+| 值 | 语义 |
+|---|---|
+| `report` | 缺省。定宽居中的报表外框，浅色画布，分区自带外壳 |
+| `dashboard` | 满宽看板外框，占满宿主给出的全部宽度，中性画布，缺省容器把外壳让给画布、由组件单元格自己成为模块卡 |
+
+看板形态下写标题要注意落点：缺省容器的分区不再有外壳，因此模块标题应写在组件的 `props.title` 上，而不是分区的 `title` 上；需要一张卡装多个组件时用 `container: "card"`，标题写在分区上。
+
 组件布局：
 
 ```json
 {
   "layout": {
     "span": 6,
-    "connectPrevious": true
+    "connectPrevious": true,
+    "layer": "backdrop"
   }
 }
 ```
@@ -587,6 +754,15 @@ last90d
 - `connectPrevious: true` 把当前组件与紧邻前一组件组成视觉组，不建立数据依赖；
 - 第一个组件上的 `connectPrevious` 会被安全忽略，但生成器不应该写这种无效声明；
 - 同一视觉行内、同类型、同 `props.variant` 且支持行对齐的组件由统一运行时自动对齐；页面不得声明高度同步字段。
+
+**叠放层（`layout.layer`，5.1 起）** 是分区内的层次声明，闭集当前只有一个成员 `backdrop`：该组件铺满整个分区并置于同分区其余组件之下，其余组件仍按 12 列网格自动流排布。典型用法是让地图成为背景、指标卡与表格悬浮其上。
+
+- 页面不声明坐标、宽高或 `z-index`；叠放只有「铺满分区的一层」与「普通流」两种位置；
+- 一个内容分区最多一个 `backdrop`，且分区必须还有别的组件叠在它上面；
+- `backdrop` 只能声明在分区顶层组件上，Tab 容器内的子组件不得声明；
+- 声明 `backdrop` 的分区必须是 `container: "plain"`——分区自带外壳时铺满的组件会被壳裁掉；
+- 分区高度只由叠在上面的组件决定，统一运行时另给一个高度下限，页面不声明高度；
+- **窄屏退化**：单列宽度下叠放一律取消，`backdrop` 回到普通流，按它在 `components` 数组中的位置与其余组件上下排列。
 
 ## 7. 组件模型与选择目录
 
@@ -619,9 +795,13 @@ last90d
 | `lineChart` | 时间或有序维度趋势 | `main` | x = dimension，series = measure | 8 |
 | `pieChart` | 少量类别的构成或占比 | `main` | category = dimension，value = measure | 4 |
 | `table` | 明细、多字段核对、多级表头、分页 | `main` 必填，可增加命名槽 | 普通列可用 dimension/measure；主列可显式消费 semanticHtml/detail | 12 |
-| `mapChart` | 中国或世界地域分布 | `main` | name = dimension，value = measure | 8 |
+| `mapChart` | 中国或世界地域分布，可按层级维度筛选器三级下钻 | `main` | name = dimension，value = measure | 8 |
+| `gauge` | 单个比率或完成度 KPI | `main` | value = measure | 2 |
+| `tabContainer` | 卡内切换多张表格 | 无 | 每个 Tab 内的表格自己声明数据槽 | 4 |
 | `rankingCard` | Top N 或简单排名 | `main` | name = dimension，value/change = measure | 4 |
 | `rankingDetailCard` | 带徽标、说明或展开明细的排名 | `main` | 名称/徽标/说明、度量及受控 detail | 6 |
+| `keyValuePanel` | 一条记录按「标签：取值」逐项列出 | `main` | 每项一个 dimension 或 measure | 12 |
+| `fieldText` | 整段长文本来自数据字段 | `main` | 一个 string 字段或 semanticHtml/detail | 12 |
 | `text` | 说明、口径、已确认结论、默认摘要、页面链接 | 无 | 无 | 12 |
 | `aiSummary` | 需求明确要求运行时通过 SSE 动态生成总结 | `relatedData` | 只读非 detail 页面字段 | 12 |
 
@@ -767,6 +947,8 @@ last90d
 | `variant` | 否 | 当前只允许 `reportCompact` |
 | `compoundCellLayout` | 否 | 当前只允许 `inline` |
 | `rowKey` | 条件必填 | 多数据槽表格用于行对齐的稳定页面字段 id |
+| `rowKindField` | 否 | 行类别字段；取值 `subtotal` / `total` 分别套用小计与合计呈现档位 |
+| `mergeBy` | 否 | 按该列字段合并相邻同值单元格 |
 | `fit` | 否 | `content` 保留像素宽并允许横向滚动；`container` 按比例压缩到容器 |
 | `columns` | 是 | 至少一个字段列或列组 |
 | `pagination` | 否 | `none`、`local` 或 `query` |
@@ -787,11 +969,14 @@ last90d
 | `fixed` | 否 | `left` 或 `right` |
 | `sortable` | 否 | 本地排序 |
 | `filterable` | 否 | `{ "mode": "select" }` 或 `{ "mode": "dateRange" }`；绑定字段必须为 `dimension` |
+| `link` | 否 | `true` 表示该列是行点击导航入口；与 `selection` 同时存在时以 `selection` 为准 |
 | `align` | 否 | `left` 或 `right` |
 | `emphasis` | 否 | 当前只允许 `strong`，只强调数据单元格 |
 | `visual` | 否 | `plain`、`rateBar`、`signed` |
 
 同一表格中相同“数据槽 + 字段”的主列绑定不得重复，即使使用了不同 `format` 或 `match`。
+
+**小计行与合计行由计算阶段产出，表格只识别不计算。** `rowKindField` 必须确由该数据源上某个折叠算子写入（见 4.10），否则校验失败；表格自己不做求和。`mergeBy` 只声明按哪个字段合并，相邻同值合并是确定性渲染规则——不接受预先算好的 `rowSpan` 数值，那种形态一旦排序或筛选改变行序立刻失效。`mergeBy` 必须是该表格已声明的列字段。
 
 递归列组：
 
@@ -869,9 +1054,53 @@ last90d
 
 必填属性：`nameField`（地域名称 `dimension`）、`valueField`（`measure`）、`map`（`china` 或 `world`）、`data.main`。
 
-可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`。
+可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`、`hierarchyFilter`（层级维度筛选器 id）、`levelField` / `parentField` / `codeField`（行上的层级、父级与写入编码）、`levelMaps`（各层级底图，`china` 或 `world`）。
 
 选择地图前必须确认地域名称可以直接命中或通过 `nameMap` 显式映射；不得按样例猜测地理层级。
+
+`hierarchyFilter` 指向一个声明了 `hierarchy` 的维度筛选器。地图读该筛选器的当前层级决定底图与可见行，中间级点击把下一层取值写回筛选状态（不是页面文档里的 `writeFilter`），最深一级再走 `actions.navigate`。当前层级因此可经 URL 的 `h:` 前缀分享。
+
+### 7.7a `gauge`
+
+必填属性：`valueField`（`measure`）、`data.main`。
+
+可选属性：`title`、`min`（缺省 0）、`max`（缺省 100）、`unit`、`label`、`actions`。只读第一行。
+
+### 7.7b `tabContainer`
+
+卡内 Tab 是交互，不是内容分区。每个 Tab 当前只允许一张 `table`；子表不参加 12 列栅格，宽度跟随容器。
+
+```json
+{
+  "id": "overview-tabs",
+  "type": "tabContainer",
+  "layout": { "span": 4 },
+  "props": {
+    "defaultTab": "overview",
+    "tabs": [
+      {
+        "id": "overview",
+        "label": "概览",
+        "component": {
+          "id": "overview-table",
+          "type": "table",
+          "layout": { "span": 12 },
+          "data": { "main": "overview-by-office" },
+          "props": { "columns": [{ "field": "rep-office-name" }] }
+        }
+      }
+    ]
+  }
+}
+```
+
+| 属性 | 必填 | 说明 |
+|---|---:|---|
+| `tabs` | 是 | 至少一项；`id` 页面内唯一，`component` 必须是 `table` |
+| `defaultTab` | 否 | 缺省打开的 Tab id |
+| `title` | 否 | 容器标题 |
+
+当前活动 Tab 是局部 UI 状态，不进 URL。子组件 id 与顶层组件一起判重。
 
 ### 7.8 排名组件
 
@@ -925,7 +1154,51 @@ last90d
 
 该组件当前不支持 `props.actions`。
 
-### 7.9 `text`
+### 7.9 `keyValuePanel` 与 `fieldText`
+
+两者都只读数据槽的第一行——它们表达的是一条记录，不是一个行集。详情页的基本信息区与长文本区块用它们承载，不再把这类内容写死进 `text`。
+
+```json
+{
+  "id": "basics-panel",
+  "type": "keyValuePanel",
+  "layout": { "span": 12 },
+  "data": { "main": "project-detail" },
+  "props": {
+    "columns": 3,
+    "items": [
+      { "label": "地区部", "field": "region-dept-name" },
+      { "label": "客户名称", "field": "party-company-name" }
+    ]
+  }
+}
+```
+
+| 属性 | 必填 | 允许值 / 说明 |
+|---|---:|---|
+| `title` | 否 | 标题 |
+| `columns` | 否 | 每行放几组键值；`2`、`3` 或 `4`，缺省 `3` |
+| `items` | 是 | 至少一项；每项 `label` 是文本取值，`field` 是字段绑定，不得绑定 `detail` |
+
+```json
+{
+  "id": "project-background",
+  "type": "fieldText",
+  "layout": { "span": 6 },
+  "data": { "main": "project-detail" },
+  "props": { "title": "项目背景", "field": "project-background" }
+}
+```
+
+| 属性 | 必填 | 允许值 / 说明 |
+|---|---:|---|
+| `title` | 否 | 标题 |
+| `field` | 是 | 字段绑定；`semanticHtml/detail` 走受控语义 HTML，其余按纯文本并保留换行 |
+| `variant` | 否 | `plain` 或 `quote` |
+
+正文写死在页面文档里时使用 `text`；正文来自数据字段时使用 `fieldText`。
+
+### 7.10 `text`
 
 ```json
 {
@@ -970,7 +1243,7 @@ last90d
 
 每个链接的 `label` 和目标 `page` 必填；`carryFilters` 可携带当前页筛选状态。
 
-### 7.10 `aiSummary`
+### 7.11 `aiSummary`
 
 ```json
 {
@@ -1034,8 +1307,8 @@ last90d
 |---|---|
 | `metricCard` | `main` 必填；`compare`、`target` 可选 |
 | `table` | `main` 必填；可以增加符合 id 规则的命名槽 |
-| `barChart`、`lineChart`、`pieChart`、`mapChart`、`rankingCard`、`rankingDetailCard` | 只允许 `main` |
-| `reportHeader`、`text`、`aiSummary` | 不允许 `data` |
+| `barChart`、`lineChart`、`pieChart`、`mapChart`、`gauge`、`rankingCard`、`rankingDetailCard` | 只允许 `main` |
+| `reportHeader`、`text`、`aiSummary`、`tabContainer` | 不允许 `data` |
 
 ### 8.2 字段引用与字段绑定
 
@@ -1094,19 +1367,26 @@ action 位于数据组件的 `props.actions`，数组至少一项，当前事件
 {
   "on": "click",
   "navigate": {
-    "page": "sales-detail",
-    "carryFilters": ["time-filter"],
+    "page": "ioc-project-detail",
+    "carryFilters": ["mtime"],
     "setFilters": {
       "region-filter": "region"
+    },
+    "setParams": {
+      "opportunity-code": "opportunity-code",
+      "page-title": "page-title"
     }
   }
 }
 ```
 
-- `page` 是目标看板页面 id；
+- `page` 是目标页面 id；
 - `carryFilters` 中的筛选器必须存在于当前页，全目录校验时目标页也必须有同名筛选器；
 - `setFilters` 的键是目标页 `dimension` 筛选器，值是当前点击上下文的 `dimension` 字段引用；
-- 目标页存在性和目标筛选器类型需要全量 `pages/` 目录校验，单文档校验无法独立确认全部跨页关系。
+- `setParams` 的键是目标页页面参数，值是当前点击行的字段引用；参数编码到 `p:` 命名空间，不进筛选状态；
+- 表格行点击：`table.props.actions` 的 navigate 挂到声明了 `link: true` 的列；`metricCard` / `rankingCard` 行点击本批未接线；
+- 统一运行时只上抛导航意图（目标页 id、目标查询串、来源页 id、来源查询串），不执行跳转、不维护导航栈。路由与回跳属于宿主；
+- 目标页存在性、目标筛选器、目标参数名与类型需要全量 `pages/` 目录校验（`crossPageReferenceErrors`），单文档校验无法独立确认全部跨页关系。
 
 ### 8.4 文本链接与表格选择
 
@@ -1142,7 +1422,7 @@ flowchart LR
 
 ## 10. 完整生成示例
 
-### 10.1 静态页面
+### 10.1 仅内联页面
 
 ```json
 {
@@ -1306,10 +1586,11 @@ flowchart LR
 
 更多已校验示例：
 
-- 静态页面：[`pages/tokens-report.json`](./pages/tokens-report.json)
+- 仅内联页面：[`pages/tokens-report.json`](./pages/tokens-report.json)
 - DQE 页面：[`pages/demo.json`](./pages/demo.json)
 - 混合页面：[`packages/page/fixtures/contract-valid/mixed-page.json`](./packages/page/fixtures/contract-valid/mixed-page.json)
 - 嵌套明细与报告组件：[`pages/flow-analysis-report.json`](./pages/flow-analysis-report.json)
+- IOC 概览骨架：[`pages/ioc-project-overview.json`](./pages/ioc-project-overview.json)
 
 ## 11. 生成后自检清单
 
@@ -1317,8 +1598,8 @@ flowchart LR
 
 ### 11.1 结构
 
-- [ ] 顶层只有 `schemaVersion`、`id`、`meta`、`dataSources`、`filters`、`sections`；
-- [ ] `schemaVersion` 精确为 `5.0`；
+- [ ] 顶层只有 `schemaVersion`、`id`、`meta`、可选 `params`、`dataSources`、`filters`、`sections`；
+- [ ] `schemaVersion` 为 `"5.0"` 或 `"5.1"`；只用 5.0 结构时声明 `"5.0"`，用了 5.1 能力时必须声明 `"5.1"`；
 - [ ] 所有对象没有未定义属性；
 - [ ] `sections`、每个 `components`、每个页面数据源 `fields` 均满足最小数量；
 - [ ] 所有 id 符合各自正则，筛选器、分区和组件 id 无重复。
@@ -1361,7 +1642,7 @@ flowchart LR
 | 生成 `definitions`、字段集、列集或继承 | 页面要求局部顺序自描述 | 在每个数据源和组件就地声明完整信息 |
 | 生成 `section.variant`、`section.layout` | 已从 Schema 5.0 删除 | 使用 `section.container` 和组件 `layout.span` |
 | 生成根级 `widgets` 或组件 `heading` | 旧协议字段 | 使用 `sections[].components` 和 `props.title` |
-| 给静态页面声明筛选器或 action | `inline` 不会响应查询状态 | 使用本地表格能力，或改为真实 `query` 数据源 |
+| 在仅内联页面上声明 `writeFilter` | 没有生效查询可以响应它，写了没有任何可见效果 | 使用本地表格能力，或改为真实 `query` 数据源；`navigate` 与页面级 `filters` 不在此列 |
 | 把任意 JSON 当作 detail | 无法校验与安全渲染 | 使用一层 `recordList` 或受控 `semanticHtml` |
 | 默认把摘要写成 `aiSummary` | 会引入不必要的运行时生成 | 后端或已确认摘要使用 `text` |
 | 把 Schema 元数据或 `dataContextVersion` 放进页面 | 创作上下文与运行协议边界混淆 | 由页面修订记录保存上下文版本 |
