@@ -23,3 +23,6 @@ deliverables/
 # 由 moon-skills 维护的 skill,以本机软链接接入,不随本仓交付
 .agents/skills/sdd-*
 .agents/skills/session-optimize
+
+# agent 可视化工具产物,不属于仓库交付内容
+viz/
