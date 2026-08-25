@@ -62,6 +62,12 @@ const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }
   '$templates/*.json',
   { eager: true }
 );
+const bundledPageSeeds = Object.values(bundledPageModules).map((module) => module.default);
+const bundledTemplateSeeds = Object.values(bundledTemplateModules).map(
+  (module) => module.default
+);
+/** 内置种子的内容指纹:dev 下种子 JSON 变更会重新执行本模块,指纹随之改变。 */
+const seedSignature = JSON.stringify([bundledPageSeeds, bundledTemplateSeeds]);
 
 /** Agent 运行可靠性上限(#32):超时与用量任一到达即安全停止。 */
 const AGENT_RUN_TIMEOUT_MS = 120_000;
@@ -96,14 +102,29 @@ export interface PlatformServices {
 
 const serviceCache = globalThis as typeof globalThis & {
   __metricCanvasPlatformServicesPromise?: Promise<PlatformServices>;
+  __metricCanvasPlatformSeedSignature?: string;
 };
 
 export function getPlatformServices(): Promise<PlatformServices> {
+  discardServicesOnSeedChange();
   serviceCache.__metricCanvasPlatformServicesPromise ??= createServices().catch((cause) => {
     serviceCache.__metricCanvasPlatformServicesPromise = undefined;
     throw cause;
   });
   return serviceCache.__metricCanvasPlatformServicesPromise;
+}
+
+/**
+ * offline 播种只发生在服务实例创建的那一刻,而实例缓存挂在 globalThis 上,
+ * 模块被 dev 重新执行也活着。种子指纹变了就丢弃实例重新播种,否则改了页面
+ * JSON 仍然只能读到进程启动那一刻的快照。代价是内存态(会话、草稿、进行中
+ * 的 Agent 运行)随之清空,只在 dev 的 offline 档位付这个代价。
+ */
+function discardServicesOnSeedChange(): void {
+  if (!import.meta.env.DEV || env.METRICCANVAS_OFFLINE !== '1') return;
+  if (serviceCache.__metricCanvasPlatformSeedSignature === seedSignature) return;
+  serviceCache.__metricCanvasPlatformSeedSignature = seedSignature;
+  serviceCache.__metricCanvasPlatformServicesPromise = undefined;
 }
 
 async function createServices(): Promise<PlatformServices> {
