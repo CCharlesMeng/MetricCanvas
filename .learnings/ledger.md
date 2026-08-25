@@ -1,10 +1,12 @@
-# Learnings
+# 复盘台账（session-optimize）
 
-复盘台账：按 Pattern-Key 去重，按 Recurrence-Count 计数。格式见 session-optimize/references/learnings-ledger.md。
+按 Pattern-Key 去重，按 Recurrence-Count 计数。格式见 session-optimize/references/learnings-ledger.md。
+
+本文件独立于同目录下其他工具的 LEARNINGS.md / ERRORS.md 等文件，清理那些文件时不要连带删除本文件。
 
 ---
 
-## [LRN-20260810-001] decision.ask-before-discovery
+## [RETRO-20260810-001] decision.ask-before-discovery
 
 **类别**: 流程/决策（L2）
 **严重程度**: 中
@@ -34,7 +36,7 @@
 - 相关文件: `.agents/skills/sdd-dev-frontend/references/story-artifact-templates.md`
 - See Also: —
 
-## [LRN-20260810-002] decision.constraint-drop
+## [RETRO-20260810-002] decision.constraint-drop
 
 **类别**: 流程/决策（L2）
 **严重程度**: 高
@@ -62,9 +64,9 @@ Task 计划已明确的行为、响应式与工程约束没有在对应 Task 结
 
 - 去向: 移交 `sdd-dev-frontend` 维护者
 - 相关文件: `.agents/skills/sdd-dev-frontend/SKILL.md`
-- See Also: LRN-20260810-001
+- See Also: RETRO-20260810-001
 
-## [LRN-20260810-003] project.silent-failure
+## [RETRO-20260810-003] project.silent-failure
 
 **类别**: 项目实现（L4）
 **严重程度**: 高
@@ -92,9 +94,9 @@ Task 计划已明确的行为、响应式与工程约束没有在对应 Task 结
 
 - 去向: 移交 `sdd-dev-frontend` 维护者
 - 相关文件: `.agents/skills/sdd-dev-frontend/references/restore-contract.md`, `.agents/skills/sdd-dev-frontend/evals/test_extract_design_spec.py`
-- See Also: LRN-20260810-002
+- See Also: RETRO-20260810-002
 
-## [LRN-20260810-004] decision.undeclared-input
+## [RETRO-20260810-004] decision.undeclared-input
 
 **类别**: 流程/决策（L2）
 **严重程度**: 中
@@ -122,4 +124,4 @@ Task 计划已明确的行为、响应式与工程约束没有在对应 Task 结
 
 - 去向: 移交 `sdd-dev-frontend` 维护者
 - 相关文件: `.agents/skills/sdd-dev-frontend/agents/review-layout.md`
-- See Also: LRN-20260810-003
+- See Also: RETRO-20260810-003

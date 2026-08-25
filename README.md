@@ -1,6 +1,6 @@
 # MetricCanvas（指标画布）
 
-MetricCanvas 是以看板页面为核心资产的 AI 原生数据分析与可视化平台。页面使用领域 DSL 声明数据源、筛选状态、内容分区、组件和交互，统一运行时负责查询执行、状态管理与渲染。
+MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平台。页面使用领域 DSL 声明数据源、筛选状态、内容分区、组件和交互，统一运行时负责查询执行、状态管理与渲染。
 
 ## 核心模型
 
@@ -9,7 +9,7 @@ MetricCanvas 是以看板页面为核心资产的 AI 原生数据分析与可视
 业务需求
   → 数据上下文
   → DQE 查询定义或 inline 静态数据
-  → 看板页面
+  → 页面
   → 校验与预览
   → 页面修订
   → 人工确认发布
@@ -90,7 +90,7 @@ pnpm build        # 构建 Embed、Canvas 和 Platform
 pnpm test:embed   # 嵌入运行时浏览器测试
 ```
 
-## 最小静态页面
+## 最小仅内联页面
 
 ```json
 {
@@ -165,7 +165,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `apps/canvas/` | 页面目录、渲染和预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
-| `pages/` | 看板页面 |
+| `pages/` | 页面 |
 
 ## 文档入口
 
@@ -173,10 +173,10 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 |---|---|
 | [产品目标与边界](./origin.md) | 产品定位、能力和非目标 |
 | [领域词汇表](./CONTEXT.md) | 当前领域术语 |
-| [看板页面协议](./PAGE-METADATA.md) | `dataSources`、`filters`、`sections` 及组件规则 |
+| [页面协议](./PAGE-METADATA.md) | `dataSources`、`filters`、`sections` 及组件规则 |
 | [数据上下文 Schema 元数据](./docs/schema-metadata.md) | 创作期 Schema 元数据规则 |
 | [整体解决方案](./docs/solution.md) | 当前架构和模块职责 |
-| [页面构建流程](./docs/dashboard-page-building-process.md) | 从需求到发布的业务工作流 |
-| [运行态架构](./docs/dashboard-runtime-architecture.md) | 页面加载、查询和渲染 |
+| [页面构建流程](./docs/page-building-process.md) | 从需求到发布的业务工作流 |
+| [运行态架构](./docs/runtime-architecture.md) | 页面加载、查询和渲染 |
 | [嵌入运行时](./packages/embed/README.md) | 浏览器接入契约 |
 | [架构决策记录](./docs/adr/README.md) | 24 份 ADR 按主题聚合的当前生效结论(基线);原始决策记录见 `docs/adr/000N-*.md` |
