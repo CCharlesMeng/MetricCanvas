@@ -160,6 +160,39 @@ describe('筛选状态 store:URL 序列化', () => {
     expect(pushes[0].size).toBe(0);
   });
 
+  it('新类型前缀可往返且不把 p: 页面参数读进筛选状态', () => {
+    const source = createFilterState(
+      new Map<string, FilterValue>([
+        ['flag', { type: 'boolean', value: true }],
+        ['month', { type: 'timePoint', granularity: 'month', value: '2026-04' }],
+        ['amount', { type: 'numberRange', from: 1, to: 9 }],
+        ['keyword', { type: 'search', query: '云迁移' }],
+        [
+          'region',
+          { type: 'dimension', dimension: 'region-dept-code', values: ['R01'], level: 'region-dept' }
+        ]
+      ])
+    );
+    const restored = createFilterState();
+    restored.fromURL(`${source.toURL()}&page-title=p%3A详情`);
+    const { pushes } = collect(restored);
+    expect(pushes[0].get('flag')).toEqual({ type: 'boolean', value: true });
+    expect(pushes[0].get('month')).toEqual({
+      type: 'timePoint',
+      granularity: 'month',
+      value: '2026-04'
+    });
+    expect(pushes[0].get('amount')).toEqual({ type: 'numberRange', from: 1, to: 9 });
+    expect(pushes[0].get('keyword')).toEqual({ type: 'search', query: '云迁移' });
+    expect(pushes[0].get('region')).toEqual({
+      type: 'dimension',
+      dimension: 'region-dept-code',
+      values: ['R01'],
+      level: 'region-dept'
+    });
+    expect(pushes[0].has('page-title')).toBe(false);
+  });
+
   it('fromURL 以 URL 内容整体替换当前状态并通知订阅者', () => {
     const state = createFilterState(new Map<string, FilterValue>([['f-region', region]]));
     const { pushes } = collect(state);
@@ -198,6 +231,25 @@ describe('筛选状态初值:按页面 filters 声明初始化', () => {
       type: 'timeRange',
       from: '2026-07-14',
       to: '2026-07-20'
+    });
+  });
+
+  it('结构化相对时间 default 按打开时刻求值', () => {
+    const now = new Date(2026, 6, 20);
+    const values = initialFilterValues(
+      [
+        {
+          id: 'f-time',
+          type: 'timeRange',
+          default: { unit: 'month', range: { kind: 'previousComplete' }, includeCurrent: false }
+        }
+      ],
+      now
+    );
+    expect(values.get('f-time')).toEqual({
+      type: 'timeRange',
+      from: '2026-06-01',
+      to: '2026-06-30'
     });
   });
 

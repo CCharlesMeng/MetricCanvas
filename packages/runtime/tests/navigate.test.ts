@@ -87,4 +87,28 @@ describe('drillThroughSearch:筛选值 + 点击上下文 → 目标页 URL 查�
   it('无可携带内容时返回空字符串(目标页回落到自身 default)', () => {
     expect(drillThroughSearch({ page: 'sales-detail' }, new Map(), {})).toBe('');
   });
+
+  it('setParams 编码到 p: 命名空间,不进筛选状态', () => {
+    const search = drillThroughSearch(
+      {
+        page: 'ioc-project-detail',
+        carryFilters: ['f-region'],
+        setParams: {
+          'opportunity-code': 'opportunity-code',
+          mtime: 'mtime'
+        }
+      },
+      current,
+      { 'opportunity-code': 'OPP202604001', mtime: '202604' }
+    );
+    const params = new URLSearchParams(search);
+    expect(params.get('opportunity-code')).toBe('p:OPP202604001');
+    expect(params.get('mtime')).toBe('p:202604');
+    expect(restore(search).get('f-region')).toEqual({
+      type: 'dimension',
+      dimension: 'region',
+      values: ['华东']
+    });
+    expect(restore(search).has('opportunity-code')).toBe(false);
+  });
 });

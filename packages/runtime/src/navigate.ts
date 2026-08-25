@@ -1,11 +1,13 @@
-import { fieldName, type DataRow, type NavigateAction } from '@metriccanvas/page';
+import { fieldName, type DataRow, type NavigateAction, type PageParamValue } from '@metriccanvas/page';
 import { createFilterState, type FilterValues } from './filter-state';
+import { pageParamSearch } from './page-params';
 
 type NavigateTarget = NavigateAction['navigate'];
 
 /**
  * 跨页下钻(生命周期⑨的 navigate 分支):筛选值 + 点击上下文 → 目标页 URL 查询串(不含 '?')。
  * carryFilters 取当前筛选状态值,setFilters 从点击行按字段绑定取值;
+ * setParams 编码到 `p:` 命名空间,不进筛选状态。
  * 序列化复用筛选状态 store 的 toURL 编码——目标页生命周期④用同一套 fromURL 恢复,
  * 跨页传参的物理载体是 URL,编解码只有一处实现。
  * 路由拼接(/pages/<id>)属应用壳知识,不在此层。
@@ -30,5 +32,25 @@ export function drillThroughSearch(
     outgoing.write(filterId, { type: 'dimension', dimension: code, values: [String(clicked)] });
   }
 
-  return outgoing.toURL();
+  const filterSearch = outgoing.toURL();
+  const params = new Map<string, PageParamValue>();
+  for (const [paramId, binding] of Object.entries(navigate.setParams ?? {})) {
+    const code = fieldName(binding);
+    const clicked = row[code];
+    if (clicked == null) continue;
+    if (typeof clicked === 'string' || typeof clicked === 'number' || typeof clicked === 'boolean') {
+      params.set(paramId, clicked);
+    }
+  }
+  return mergeSearch(filterSearch, pageParamSearch(params));
+}
+
+function mergeSearch(left: string, right: string): string {
+  if (!left) return right;
+  if (!right) return left;
+  const params = new URLSearchParams(left);
+  for (const [key, value] of new URLSearchParams(right)) {
+    params.set(key, value);
+  }
+  return params.toString();
 }

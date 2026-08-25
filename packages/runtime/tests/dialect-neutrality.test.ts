@@ -133,7 +133,12 @@ describe('编排器方言无关性', () => {
       dirname(fileURLToPath(import.meta.url)),
       '../src'
     );
-    for (const fileName of readdirSync(sourceDirectory)) {
+    // 递归:把实现挪进子目录不该让它逃过这条守护。
+    const fileNames = readdirSync(sourceDirectory, { recursive: true })
+      .map(String)
+      .filter((entry) => entry.endsWith('.ts'));
+    expect(fileNames.length).toBeGreaterThan(0);
+    for (const fileName of fileNames) {
       const content = readFileSync(join(sourceDirectory, fileName), 'utf8');
       expect(content, `${fileName} 不得直读 DQE 线格式`).not.toContain('dsl_list');
       expect(content, `${fileName} 不得硬编码协议判别值`).not.toContain(

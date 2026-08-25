@@ -6,7 +6,7 @@ export interface DataGatewayResult {
 }
 
 /**
- * 页面仓储端口(DDD Repository):按 id 取看板页面。
+ * 页面仓储端口(DDD Repository):按 id 取页面。
  * 一期实现:静态文件;二期实现:平台 API。运行时只依赖此接口。
  * load 返回 unknown:按页面生命周期,加载(②)与校验(③)是两步,
  * 拿到的是不可信页面文档,通过 @metriccanvas/page 校验后才可视为 Page(ADR-0007)。
@@ -19,7 +19,7 @@ export interface PageRepository {
 
 /**
  * 查询诊断上下文:一次生效查询执行的定位标识,随查询穿过数据网关端口。
- * 只承载标识(看板页面、页面修订、页面数据源),不承载业务数据;
+ * 只承载标识(页面、页面修订、页面数据源),不承载业务数据;
  * 缺失时诊断记录仍按请求标识定位(issue #47)。
  */
 export interface QueryDiagnosticContext {
@@ -74,10 +74,19 @@ export type DimensionValuesResult =
  * fetchData 同纪律:错误对象 `code` 取 QueryErrorCode 封闭集(issue #51),
  * 错误消息与 detail 不携带候选值、筛选值、Secret 或上游响应正文(issue #47)。
  */
+export interface DimensionValuesRequest {
+  signal?: AbortSignal;
+  /**
+   * 级联约束:上游筛选器当前选中值。键是上游维度 code,值是选中取值。
+   * 候选值端口按上游当前值收窄下游候选;缺席表示不约束。
+   */
+  constraints?: Readonly<Record<string, readonly string[]>>;
+}
+
 export interface DimensionValuesGateway {
   fetchDimensionValues(
     dimension: string,
-    options?: { signal?: AbortSignal }
+    options?: DimensionValuesRequest
   ): Promise<DimensionValuesResult>;
 }
 

@@ -1,11 +1,14 @@
 import {
   declaredPaginationLimit,
+  type DataRow,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
   type Page,
-  type QueryDataSource
+  type QueryDataSource,
+  flattenPageComponents
 } from '@metriccanvas/page';
+import { applyComputation } from './compute';
 import {
   initialFilterValues,
   type FilterState,
@@ -104,32 +107,25 @@ interface InFlightRequest {
 
 function collectReferencedSources(page: Page): DataSourceBinding[] {
   const sourceIds = new Set<string>();
-  for (const section of page.sections) {
-    for (const component of section.components) {
-      for (const sourceId of Object.values(component.data ?? {})) {
-        sourceIds.add(sourceId);
-      }
-      if (component.type === 'aiSummary') {
-        for (const related of Object.values(component.props.relatedData)) {
-          sourceIds.add(related.source);
-        }
+  const paginationLimits = new Map<string, number>();
+  for (const component of flattenPageComponents(page)) {
+    for (const sourceId of Object.values(component.data ?? {})) {
+      sourceIds.add(sourceId);
+    }
+    if (component.type === 'aiSummary') {
+      for (const related of Object.values(component.props.relatedData)) {
+        sourceIds.add(related.source);
       }
     }
-  }
-  // 分页页大小取查询定义自述的协议中立分页能力,编排层不解析协议内部结构。
-  const paginationLimits = new Map<string, number>();
-  for (const section of page.sections) {
-    for (const component of section.components) {
-      if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
-        continue;
-      }
-      const source = page.dataSources[component.data.main];
-      const limit = source?.source.type === 'query'
-        ? declaredPaginationLimit(source.source.query)
-        : undefined;
-      if (limit !== undefined) {
-        paginationLimits.set(component.data.main, limit);
-      }
+    if (component.type !== 'table' || component.props.pagination?.mode !== 'query') {
+      continue;
+    }
+    const source = page.dataSources[component.data.main];
+    const limit = source?.source.type === 'query'
+      ? declaredPaginationLimit(source.source.query)
+      : undefined;
+    if (limit !== undefined) {
+      paginationLimits.set(component.data.main, limit);
     }
   }
   return [...sourceIds].flatMap((sourceId) => {
@@ -156,9 +152,10 @@ function initialSnapshots(
     bindings.map((binding) => [
       binding.sourceId,
       binding.dataSource.source.type === 'inline'
-        ? rowsSnapshot(binding.dataSource.source.rows)
+        ? rowsSnapshot(binding.dataSource, binding.dataSource.source.rows)
         : useEmbeddedInitialRows && binding.dataSource.source.initial
           ? rowsSnapshot(
+              binding.dataSource,
               binding.dataSource.source.initial.rows,
               binding.dataSource.source.initial.totalCount
             )
@@ -167,7 +164,24 @@ function initialSnapshots(
   );
 }
 
+/**
+ * 行集 → 数据快照,受控计算阶段在这里生效。
+ *
+ * 收敛在这一处是刻意的:inline 行、内嵌初始行与远程执行结果都必须过算子,
+ * 只在远程执行侧加算子会让 inline 骨架与线上行为分叉(ADR-0046)。
+ */
 function rowsSnapshot(
+  dataSource: DataSource,
+  rows: ReadonlyArray<Record<string, unknown>>,
+  totalCount?: number
+): DataSnapshot {
+  return rawSnapshot(
+    applyComputation(dataSource.compute ?? [], rows as ReadonlyArray<DataRow>),
+    totalCount
+  );
+}
+
+function rawSnapshot(
   rows: ReadonlyArray<Record<string, unknown>>,
   totalCount?: number
 ): DataSnapshot {
@@ -178,6 +192,18 @@ function rowsSnapshot(
         rows: rows as Extract<DataSnapshot, { status: 'ready' }>['rows'],
         ...(totalCount === undefined ? {} : { totalCount })
       };
+}
+
+/**
+ * 远程执行结果 → 该数据源的快照。生效查询去重后一次执行可服务多个数据源,
+ * 但计算阶段属各自的数据源,因此在落地时按成员分别求值,缓存里存的是
+ * 未经计算的原始结果。
+ */
+function computedSnapshot(dataSource: DataSource, snapshot: DataSnapshot): DataSnapshot {
+  if (snapshot.status !== 'ready' || (dataSource.compute ?? []).length === 0) {
+    return snapshot;
+  }
+  return rowsSnapshot(dataSource, snapshot.rows, snapshot.totalCount);
 }
 
 function notify(run: (value: PageDataSnapshots) => void, snapshots: PageDataSnapshots): void {
@@ -298,7 +324,7 @@ function startSession(
         publish(
           members
             .filter(([binding, sequence]) => !isStale(binding, sequence))
-            .map(([binding]) => [binding, snapshot])
+            .map(([binding]) => [binding, computedSnapshot(binding.dataSource, snapshot)])
         );
       };
       const cached = cache.get(cacheKey);
@@ -452,7 +478,7 @@ async function execute(
     if (query.pagination && result.totalCount === undefined) {
       throw new Error('查询分页结果缺少 totalCount');
     }
-    return rowsSnapshot(result.rows, result.totalCount);
+    return rawSnapshot(result.rows, result.totalCount);
   } catch (cause) {
     return { status: 'error', error: preservedQueryError(cause) };
   }

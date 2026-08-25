@@ -30,9 +30,11 @@ export type DimensionValuesSnapshots = ReadonlyMap<string, DimensionValuesSnapsh
 export interface DimensionValuesStream extends Subscribable<DimensionValuesSnapshots> {
   /**
    * 请求一个维度的候选值。同一会话内按维度幂等:已在加载或已有终态的
-   * 维度不重复请求。
+   * 维度不重复请求。约束变化时用 `reload` 重新取。
    */
-  load(dimension: string): void;
+  load(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>): void;
+  /** 丢弃该维度当前快照并按新约束重新请求。 */
+  reload(dimension: string, constraints?: Readonly<Record<string, readonly string[]>>): void;
   /** 结束会话:取消全部在途候选值请求,过期结果不再发布。 */
   dispose(): void;
 }
@@ -68,37 +70,50 @@ export function createDimensionValuesLoader(
     publish(dimension, snapshot);
   }
 
+  function start(
+    dimension: string,
+    constraints: Readonly<Record<string, readonly string[]>> | undefined,
+    force: boolean
+  ): void {
+    if (disposed) return;
+    if (!force && snapshots.get(dimension) !== undefined) return;
+    controllers.get(dimension)?.abort();
+    const fetchDimensionValues = capability(gateway);
+    if (!fetchDimensionValues) {
+      publish(dimension, { status: 'unavailable' });
+      return;
+    }
+    const controller = new AbortController();
+    controllers.set(dimension, controller);
+    publish(dimension, { status: 'loading' });
+    fetchDimensionValues(dimension, { signal: controller.signal, constraints }).then(
+      (result) => {
+        settle(
+          dimension,
+          result.kind === 'unavailable'
+            ? { status: 'unavailable' }
+            : result.values.length === 0
+              ? { status: 'empty' }
+              : { status: 'ready', values: result.values }
+        );
+      },
+      (cause: unknown) => {
+        settle(dimension, { status: 'error', error: preservedQueryError(cause) });
+      }
+    );
+  }
+
   return {
     subscribe(run) {
       subscribers.add(run);
       notify(run, new Map(snapshots));
       return () => subscribers.delete(run);
     },
-    load(dimension) {
-      if (disposed || snapshots.get(dimension) !== undefined) return;
-      const fetchDimensionValues = capability(gateway);
-      if (!fetchDimensionValues) {
-        publish(dimension, { status: 'unavailable' });
-        return;
-      }
-      const controller = new AbortController();
-      controllers.set(dimension, controller);
-      publish(dimension, { status: 'loading' });
-      fetchDimensionValues(dimension, { signal: controller.signal }).then(
-        (result) => {
-          settle(
-            dimension,
-            result.kind === 'unavailable'
-              ? { status: 'unavailable' }
-              : result.values.length === 0
-                ? { status: 'empty' }
-                : { status: 'ready', values: result.values }
-          );
-        },
-        (cause: unknown) => {
-          settle(dimension, { status: 'error', error: preservedQueryError(cause) });
-        }
-      );
+    load(dimension, constraints) {
+      start(dimension, constraints, false);
+    },
+    reload(dimension, constraints) {
+      start(dimension, constraints, true);
     },
     dispose() {
       if (disposed) return;
