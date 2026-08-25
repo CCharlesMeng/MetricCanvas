@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repair Page Metadata"
+  short_description: "定位并修复 MetricCanvas 页面元数据错误"
+  default_prompt: "Use $repair-page-metadata to locate, repair, and verify errors in this MetricCanvas page metadata."

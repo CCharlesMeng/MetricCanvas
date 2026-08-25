@@ -19,3 +19,7 @@ __pycache__/
 .scratch/
 deliverables/
 参考/
+
+# 由 moon-skills 维护的 skill,以本机软链接接入,不随本仓交付
+.agents/skills/sdd-*
+.agents/skills/session-optimize
