@@ -22,7 +22,8 @@ export const navigateActionZ = z
       .object({
         page: idZ,
         carryFilters: z.array(idZ).meta({ uniqueItems: true }).optional(),
-        setFilters: z.record(z.string(), fieldReferenceZ).optional()
+        setFilters: z.record(z.string(), fieldReferenceZ).optional(),
+        setParams: z.record(z.string(), fieldReferenceZ).optional()
       })
       .strict()
   })

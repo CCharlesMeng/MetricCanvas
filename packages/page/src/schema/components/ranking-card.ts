@@ -1,5 +1,11 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ, fieldBindingZ, mainDataZ } from '../primitives';
+import {
+  componentIdZ,
+  componentLayoutZ,
+  fieldBindingZ,
+  mainDataZ,
+  textValueZ
+} from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 
@@ -11,7 +17,7 @@ export const rankingCardComponentZ = z
     data: mainDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         nameField: fieldBindingZ,
         valueField: fieldBindingZ,
         changeField: fieldBindingZ.optional(),

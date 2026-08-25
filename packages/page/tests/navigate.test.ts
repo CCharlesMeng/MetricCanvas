@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { navigateErrors, type Page } from '../src';
+import { crossPageReferenceErrors, navigateErrors, type Page } from '../src';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
 function sourcePage(target: string): Page {
@@ -57,6 +57,31 @@ describe('navigateErrors', () => {
       '/sections/0/components/0/props/actions/0/navigate/carryFilters/0',
       '/sections/0/components/0/props/actions/0/navigate/setFilters/region-filter'
     ]);
+  });
+
+  it('setParams 要求目标页声明同名参数且类型相容', () => {
+    const source: any = structuredClone(queryDashboard);
+    source.schemaVersion = '5.1';
+    source.sections[0].components[0].props.actions = [
+      {
+        on: 'click',
+        navigate: {
+          page: 'sales-detail',
+          setParams: { code: 'region', missing: 'region' }
+        }
+      }
+    ];
+    const target: any = structuredClone(queryDashboard);
+    target.id = 'sales-detail';
+    target.params = [{ id: 'code', type: 'string', required: true }];
+
+    expect(
+      crossPageReferenceErrors(
+        source as Page,
+        new Set(['sales-detail']),
+        new Map([['sales-detail', target as Page]])
+      ).map((error) => error.path)
+    ).toEqual(['/sections/0/components/0/props/actions/0/navigate/setParams/missing']);
   });
 
   it('文本组件 links 使用相同跨文档规则', () => {

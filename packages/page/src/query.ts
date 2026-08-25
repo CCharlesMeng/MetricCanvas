@@ -1,5 +1,5 @@
 import type { TimeRangeValue } from './filter';
-import type { QueryFieldDefinition } from './field';
+import type { QueryDataSourceFieldDefinition } from './field';
 
 export type JsonValue =
   | string
@@ -64,7 +64,7 @@ export function isDqeQueryDefinition(
 export interface DqeEffectiveQuery {
   language: 'dqe';
   body: DqeRequestBody;
-  fieldMappings: Record<string, QueryFieldDefinition>;
+  fieldMappings: Record<string, QueryDataSourceFieldDefinition>;
   pagination?: {
     offset: number;
     limit: number;

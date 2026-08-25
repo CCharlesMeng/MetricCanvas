@@ -1,22 +1,29 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ, fieldBindingZ, metricDataZ } from '../primitives';
+import {
+  componentIdZ,
+  componentLayoutZ,
+  fieldBindingZ,
+  metricDataZ,
+  nonEmptyTextValueZ,
+  textValueZ
+} from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 
 const metricCardChangeZ = z
   .object({
-    label: z.string().min(1),
+    label: nonEmptyTextValueZ,
     field: fieldBindingZ,
-    unit: z.string().optional(),
+    unit: textValueZ.optional(),
     tone: z.enum(['auto', 'neutral', 'positive', 'danger']).optional()
   })
   .strict();
 
 const metricCardRowZ = z
   .object({
-    label: z.string().min(1),
+    label: nonEmptyTextValueZ,
     valueField: fieldBindingZ,
-    unit: z.string().optional(),
+    unit: textValueZ.optional(),
     changes: z.array(metricCardChangeZ).optional()
   })
   .strict();
@@ -24,7 +31,7 @@ const metricCardRowZ = z
 const metricCardProgressZ = z
   .object({
     valueField: fieldBindingZ,
-    label: z.string().optional(),
+    label: textValueZ.optional(),
     ringPercent: z.number().min(0).max(100).optional()
   })
   .strict();
@@ -37,11 +44,11 @@ export const metricCardComponentZ = z
     data: metricDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         variant: z
           .enum(['summary', 'activityProgress', 'compactSummary', 'dualSummary'])
           .optional(),
-        secondaryTitle: z.string().min(1).optional(),
+        secondaryTitle: nonEmptyTextValueZ.optional(),
         rows: z.array(metricCardRowZ).min(1),
         secondaryRows: z.array(metricCardRowZ).min(1).optional(),
         panelLayout: z.enum(['stacked', 'twoColumn']).optional(),

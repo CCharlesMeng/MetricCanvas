@@ -158,7 +158,7 @@ describe('v4 data source 与 binding 校验', () => {
     );
   });
 
-  it('inline 绑定拒绝 filters 与 actions，但允许本地分页', () => {
+  it('inline 绑定允许 filters 与本地分页，仍拒绝 writeFilter', () => {
     const document: any = structuredClone(queryDashboard);
     document.dataSources.sales = {
       fields: {
@@ -182,11 +182,9 @@ describe('v4 data source 与 binding 校验', () => {
     };
 
     const paths = validate(document).map((error) => error.path);
+    expect(paths).not.toContain('/filters');
     expect(paths).toEqual(
-      expect.arrayContaining([
-        '/filters',
-        '/sections/0/components/0/props/actions'
-      ])
+      expect.arrayContaining(['/sections/0/components/0/props/actions'])
     );
   });
 

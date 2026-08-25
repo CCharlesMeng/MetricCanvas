@@ -9,7 +9,7 @@ import { MAX_DETAIL_RECORDS, MAX_SEMANTIC_HTML_LENGTH } from './field';
 
 /**
  * 结果字段契约校验 Module:字段类型、nullable 语义、日期时间规则与
- * 明细约束的唯一实现。看板页面的 inline 数据校验(validate.ts)与
+ * 明细约束的唯一实现。页面的 inline 数据校验(validate.ts)与
  * 查询结果归一化(query-rows.ts,服务内嵌初始行与数据网关)都引用
  * 这里,两条路径不得各自维护字段类型判断。
  *

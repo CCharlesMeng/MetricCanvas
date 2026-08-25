@@ -6,24 +6,39 @@ import {
   type DataSource,
   type QueryDataSource
 } from './data-source';
+import {
+  computeOutputFields,
+  isFoldingOperator,
+  type ComputeOperator
+} from './compute';
 import type { TypedError } from './errors';
 import {
   fieldName as fieldNameOf,
+  hasQueryFieldMapping,
   type FieldBinding,
   type FieldDefinition,
   type FieldValue
 } from './field';
-import { validateCalendarTimeRange, type FilterDeclaration } from './filter';
+import {
+  isRelativeTimeExpression,
+  isTimeRangeValue,
+  validateCalendarTimeRange,
+  validateTimePointValue,
+  type FilterDeclaration
+} from './filter';
 import {
   deriveComponentCapabilities,
-  derivePageCapabilities,
   type Component,
   type ComponentAction,
   type ComponentData,
   type Page,
+  type PageSection,
   type TableColumnNode
 } from './page';
+import { walkComponents, walkPageComponents } from './component-walk';
 import { materializePageDocument } from './materialize';
+import { pageParamErrors, type PageParamDeclaration } from './page-param';
+import type { TextValueResolution } from './text-value';
 import {
   matchesFieldValue,
   validateContractRows,
@@ -31,7 +46,7 @@ import {
 } from './result-field-contract';
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
 import { pageSchema } from './schema';
-import { versionErrors } from './version';
+import { capabilityFloorErrors, versionErrors } from './version';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSchema);
@@ -40,8 +55,19 @@ export type PageParseResult =
   | { ok: true; page: Page; errors: [] }
   | { ok: false; errors: TypedError[] };
 
+export interface PageParseOptions {
+  /**
+   * 本次打开的页面参数取值与展示格式化。缺省时按校验期代入处理:
+   * 必需参数代入默认值或占位符,可选参数按缺席处理(见 `validationResolution`)。
+   */
+  textValues?: TextValueResolution;
+}
+
 /** 不可信文档通过结构、字段分组、引用、字段契约和能力校验后才可视为 Page。 */
-export function parsePage(document: unknown): PageParseResult {
+export function parsePage(
+  document: unknown,
+  options: PageParseOptions = {}
+): PageParseResult {
   if (!validateStructure(document)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
     const guided = versionErrors(document);
@@ -54,14 +80,30 @@ export function parsePage(document: unknown): PageParseResult {
     return { ok: false, errors: structural };
   }
 
-  const materialized = materializePageDocument(document);
+  // 能力下限与页面参数判定都必须跑在文本取值替换之前:替换会把引用消解掉,
+  // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
+  const declarations = pageParamDeclarations(document);
+  const documentErrors = [
+    ...capabilityFloorErrors(document),
+    ...pageParamErrors(
+      declarations,
+      new Set(filterDeclarations(document).map((filter) => filter.id)),
+      document
+    )
+  ];
+  if (documentErrors.length > 0) return { ok: false, errors: documentErrors };
+
+  const materialized = materializePageDocument(document, options.textValues);
   if (materialized.errors.length > 0) {
     return { ok: false, errors: materialized.errors };
   }
   if (!validateStructure(materialized.document)) {
+    const structural = (validateStructure.errors ?? []).map(toTypedError);
     return {
       ok: false,
-      errors: (validateStructure.errors ?? []).map(toTypedError)
+      errors: declarations.some((declaration) => !declaration.required)
+        ? [...structural, optionalParamHint()]
+        : structural
     };
   }
 
@@ -70,6 +112,28 @@ export function parsePage(document: unknown): PageParseResult {
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
+}
+
+/**
+ * 可选参数缺失时引用处整体消失,必填文本属性因此不能引用可选参数。
+ * 这条规则不需要一张按位置枚举的必填性表:代入可选参数缺席后再做一次
+ * 结构复检,缺了必填属性的文档自然过不去,这里只补上原因。
+ */
+function optionalParamHint(): TypedError {
+  return schemaError(
+    '/params',
+    '可选页面参数缺失时引用处整体消失；必填文本属性只能引用必需参数'
+  );
+}
+
+function pageParamDeclarations(document: unknown): PageParamDeclaration[] {
+  const params = (document as { params?: unknown } | null)?.params;
+  return Array.isArray(params) ? (params as PageParamDeclaration[]) : [];
+}
+
+function filterDeclarations(document: unknown): FilterDeclaration[] {
+  const filters = (document as { filters?: unknown } | null)?.filters;
+  return Array.isArray(filters) ? (filters as FilterDeclaration[]) : [];
 }
 
 export function validate(document: unknown): TypedError[] {
@@ -88,25 +152,13 @@ function invariantErrors(page: Page): TypedError[] {
     }
     filterIds.add(filter.id);
     filtersById.set(filter.id, filter);
-    if (filter.type === 'timeRange') {
-      if (filter.default !== undefined && typeof filter.default !== 'string') {
-        for (const issue of validateCalendarTimeRange(
-          filter.default,
-          filter.precision ?? 'date'
-        )) {
-          errors.push(
-            schemaError(
-              `/filters/${index}/default${issue.field === null ? '' : `/${issue.field}`}`,
-              issue.message
-            )
-          );
-        }
-      }
-    }
+    errors.push(...filterDeclarationErrors(filter, index, `/filters/${index}`));
   });
+  errors.push(...filterDependsOnErrors(filters));
 
   for (const [sourceId, dataSource] of Object.entries(page.dataSources)) {
     const path = `/dataSources/${escapePointer(sourceId)}`;
+    errors.push(...computeErrors(dataSource, path));
     if (isInlineDataSource(dataSource)) {
       errors.push(...inlineRowErrors(dataSource, path));
     } else if (isQueryDataSource(dataSource)) {
@@ -123,9 +175,9 @@ function invariantErrors(page: Page): TypedError[] {
       );
     }
     sectionIds.add(section.id);
+    errors.push(...sectionLayerErrors(section, sectionIndex));
 
-    section.components.forEach((component, componentIndex) => {
-      const path = `/sections/${sectionIndex}/components/${componentIndex}`;
+    walkComponents(section.components, `/sections/${sectionIndex}/components`, (component, path) => {
       if (componentIds.has(component.id)) {
         errors.push(schemaError(`${path}/id`, `component id 重复:${component.id}`));
       }
@@ -135,25 +187,186 @@ function invariantErrors(page: Page): TypedError[] {
   });
   errors.push(...queryPaginationErrors(page));
 
-  const capabilities = derivePageCapabilities(page);
-  if (capabilities.static && filters.length > 0) {
+  return errors;
+}
+
+/**
+ * 叠放层是分区内的层次声明，因此三条边界都由分区自己决定：`backdrop`
+ * 只能出现在分区顶层（Tab 内没有分区可铺满）、一个分区最多一个、且
+ * 分区必须还有别的组件叠在它上面，否则叠放本身没有意义。外观由
+ * `container: plain` 承载——分区自带外壳时铺满的组件会被壳裁掉。
+ */
+function sectionLayerErrors(section: PageSection, sectionIndex: number): TypedError[] {
+  const errors: TypedError[] = [];
+  const basePath = `/sections/${sectionIndex}/components`;
+
+  walkComponents(section.components, basePath, (component, path) => {
+    if (component.layout.layer === undefined) return;
+    const topLevel = /^\/sections\/\d+\/components\/\d+$/.test(path);
+    if (!topLevel) {
+      errors.push(
+        schemaError(`${path}/layout/layer`, 'layout.layer 只能声明在内容分区的顶层组件上')
+      );
+    }
+  });
+
+  const backdrops = section.components.filter(
+    (component) => component.layout.layer === 'backdrop'
+  );
+  if (backdrops.length === 0) return errors;
+
+  if (backdrops.length > 1) {
+    section.components.forEach((component, index) => {
+      if (component.layout.layer !== 'backdrop') return;
+      errors.push(
+        schemaError(
+          `${basePath}/${index}/layout/layer`,
+          `内容分区 ${section.id} 声明了 ${backdrops.length} 个 backdrop，最多允许一个`
+        )
+      );
+    });
+  }
+  if (section.components.length === backdrops.length) {
     errors.push(
       schemaError(
-        '/filters',
-        '仅含 inline 数据源的静态页面不得声明 filters；筛选不会触发任何数据变化'
+        `/sections/${sectionIndex}/components`,
+        `内容分区 ${section.id} 只有 backdrop 组件，没有可叠放其上的组件`
+      )
+    );
+  }
+  if (section.container !== 'plain') {
+    errors.push(
+      schemaError(
+        `/sections/${sectionIndex}/container`,
+        `声明 backdrop 的内容分区必须使用 container: plain，当前为 ${
+          section.container ?? '缺省'
+        }`
       )
     );
   }
   return errors;
 }
 
+function filterDeclarationErrors(
+  filter: FilterDeclaration,
+  _index: number,
+  path: string
+): TypedError[] {
+  const errors: TypedError[] = [];
+  if (filter.type === 'timeRange') {
+    if (filter.default !== undefined && typeof filter.default !== 'string') {
+      if (isTimeRangeValue(filter.default)) {
+        for (const issue of validateCalendarTimeRange(
+          filter.default,
+          filter.precision ?? 'date'
+        )) {
+          errors.push(
+            schemaError(
+              `${path}/default${issue.field === null ? '' : `/${issue.field}`}`,
+              issue.message
+            )
+          );
+        }
+      } else if (isRelativeTimeExpression(filter.default) && filter.default.anchor) {
+        const issue = validateTimePointValue(filter.default.anchor, 'date');
+        if (issue) errors.push(schemaError(`${path}/default/anchor`, issue));
+      }
+    }
+  } else if (filter.type === 'timePoint' && filter.default !== undefined) {
+    const issue = validateTimePointValue(filter.default, filter.granularity);
+    if (issue) errors.push(schemaError(`${path}/default`, issue));
+  } else if (filter.type === 'numberRange' && filter.default) {
+    const { from, to } = filter.default;
+    if (from === undefined && to === undefined) {
+      errors.push(schemaError(`${path}/default`, '数值区间至少要有一端'));
+    } else if (from !== undefined && to !== undefined && from > to) {
+      errors.push(schemaError(`${path}/default`, '数值区间 from 不得大于 to'));
+    }
+  } else if (filter.type === 'dimension') {
+    const hierarchy = filter.hierarchy ?? [];
+    const levelIds = new Set<string>();
+    hierarchy.forEach((level, levelIndex) => {
+      if (levelIds.has(level.id)) {
+        errors.push(schemaError(`${path}/hierarchy/${levelIndex}/id`, `层级 id 重复:${level.id}`));
+      }
+      levelIds.add(level.id);
+    });
+    if (filter.defaultLevel) {
+      if (hierarchy.length === 0) {
+        errors.push(schemaError(`${path}/defaultLevel`, 'defaultLevel 只能用于声明了 hierarchy 的维度筛选器'));
+      } else if (!levelIds.has(filter.defaultLevel)) {
+        errors.push(
+          schemaError(`${path}/defaultLevel`, `defaultLevel 引用了未知层级:${filter.defaultLevel}`)
+        );
+      }
+    }
+  }
+  return errors;
+}
+
+function filterDependsOnErrors(filters: FilterDeclaration[]): TypedError[] {
+  const errors: TypedError[] = [];
+  const byId = new Map(filters.map((filter) => [filter.id, filter]));
+  filters.forEach((filter, index) => {
+    if (filter.type !== 'dimension' || !filter.dependsOn) return;
+    const path = `/filters/${index}/dependsOn`;
+    if (filter.dependsOn === filter.id) {
+      errors.push(schemaError(path, '筛选器不能依赖自己'));
+      return;
+    }
+    const upstream = byId.get(filter.dependsOn);
+    if (!upstream) {
+      errors.push(schemaError(path, `dependsOn 引用了未声明的筛选器:${filter.dependsOn}`));
+      return;
+    }
+    if (upstream.type !== 'dimension') {
+      errors.push(schemaError(path, `级联上游必须是 dimension 筛选器:${filter.dependsOn}`));
+      return;
+    }
+    if (hasDependsOnCycle(filter.id, byId)) {
+      errors.push(schemaError(path, `筛选器级联存在循环:${filter.id}`));
+    }
+  });
+  return errors;
+}
+
+function hasDependsOnCycle(
+  startId: string,
+  byId: ReadonlyMap<string, FilterDeclaration>
+): boolean {
+  const seen = new Set<string>();
+  let current: string | undefined = startId;
+  while (current) {
+    if (seen.has(current)) return true;
+    seen.add(current);
+    const filter = byId.get(current);
+    current = filter?.type === 'dimension' ? filter.dependsOn : undefined;
+  }
+  return false;
+}
+
 function inlineRowErrors(dataSource: DataSource, sourcePath: string): TypedError[] {
   if (!isInlineDataSource(dataSource)) return [];
   return rowContractErrors(
     dataSource.source.rows,
-    dataSource.fields,
+    inputFields(dataSource),
     `${sourcePath}/source/rows`
   );
+}
+
+/**
+ * 算子的输入字段契约:结果字段契约减去算子产出字段。数据行是算子的输入,
+ * 产出字段既不该在行里出现,也不该被要求出现。
+ */
+function inputFields<Field extends FieldDefinition>(dataSource: {
+  fields: Record<string, Field>;
+  compute?: ComputeOperator[];
+}): Record<string, Field> {
+  const produced = new Set(computeOutputFields(dataSource.compute ?? []));
+  if (produced.size === 0) return dataSource.fields;
+  return Object.fromEntries(
+    Object.entries(dataSource.fields).filter(([fieldId]) => !produced.has(fieldId))
+  ) as Record<string, Field>;
 }
 
 function rowContractErrors(
@@ -253,14 +466,27 @@ function queryContractErrors(
     errors.push(
       ...rowContractErrors(
         dataSource.source.initial.rows,
-        dataSource.fields,
+        inputFields(dataSource),
         `${sourcePath}/source/initial/rows`
       )
     );
   }
 
+  const produced = new Set(computeOutputFields(dataSource.compute ?? []));
   for (const [fieldId, definition] of Object.entries(dataSource.fields)) {
-    if (!('queryField' in definition) || typeof definition.queryField !== 'string') continue;
+    if (!hasQueryFieldMapping(definition)) {
+      // 没有 queryField 的字段只能是计算阶段产出;否则它永远拿不到值。
+      if (!produced.has(fieldId)) {
+        errors.push(
+          typedError(
+            'QUERY_MAPPING_ERROR',
+            `${sourcePath}/fields/${escapePointer(fieldId)}`,
+            `页面字段 ${fieldId} 既没有 queryField 映射，也不是计算阶段产出字段`
+          )
+        );
+      }
+      continue;
+    }
     const path = `${sourcePath}/fields/${escapePointer(fieldId)}/queryField`;
     const previous = mapped.get(definition.queryField);
     if (previous !== undefined) {
@@ -368,6 +594,166 @@ function queryContractErrors(
         )
       );
     }
+  }
+  return errors;
+}
+
+/**
+ * 受控计算阶段的判定(ADR-0046):算子输入字段存在且角色相容、产出字段已在
+ * 结果字段契约中声明且不来自外部响应、折叠类算子的可折叠声明齐全、
+ * 产出字段之间不重名。算子按声明顺序作用,后一个算子可以消费前一个的产出。
+ */
+function computeErrors(dataSource: DataSource, sourcePath: string): TypedError[] {
+  const operators = dataSource.compute ?? [];
+  if (operators.length === 0) return [];
+
+  const errors: TypedError[] = [];
+  const fields = dataSource.fields as Record<string, FieldDefinition>;
+  const produced = new Set<string>();
+  const rowKindFields = new Set<string>();
+
+  const declared = (
+    fieldId: string,
+    path: string,
+    expectedRole?: FieldDefinition['role']
+  ): FieldDefinition | undefined => {
+    const field = fields[fieldId];
+    if (!field) {
+      errors.push(schemaError(path, `算子引用了未声明的字段:${fieldId}`));
+      return undefined;
+    }
+    if (expectedRole !== undefined && field.role !== expectedRole) {
+      errors.push(
+        schemaError(path, `字段 ${fieldId} 的 role 为 ${field.role}，此处要求 ${expectedRole}`)
+      );
+    }
+    return field;
+  };
+
+  const numericInput = (fieldId: string, path: string) => {
+    const field = declared(fieldId, path, 'measure');
+    if (field && field.type !== 'number' && field.type !== 'money') {
+      errors.push(schemaError(path, `字段 ${fieldId} 的类型 ${field.type} 不能参与数值算子`));
+    }
+  };
+
+  const output = (fieldId: string, path: string, expectedRole: FieldDefinition['role']) => {
+    if (produced.has(fieldId)) {
+      errors.push(schemaError(path, `算子产出字段重复:${fieldId}`));
+    }
+    produced.add(fieldId);
+    const field = declared(fieldId, path, expectedRole);
+    if (field && 'queryField' in field) {
+      errors.push(
+        schemaError(path, `算子产出字段 ${fieldId} 不来自外部响应，不得声明 queryField`)
+      );
+    }
+  };
+
+  const collapsibleMeasures = (measures: string[], path: string) => {
+    measures.forEach((fieldId, index) => {
+      const measurePath = `${path}/${index}`;
+      const field = declared(fieldId, measurePath, 'measure');
+      if (field && field.role === 'measure' && field.collapsible !== true) {
+        errors.push(
+          schemaError(
+            measurePath,
+            `折叠算子只能作用于显式声明 collapsible 的度量字段:${fieldId}`
+          )
+        );
+      }
+    });
+  };
+
+  const rowKind = (mark: { field: string }, path: string) => {
+    rowKindFields.add(mark.field);
+    const field = declared(mark.field, `${path}/field`, 'dimension');
+    if (field && field.type !== 'string') {
+      errors.push(
+        schemaError(`${path}/field`, `行类别字段 ${mark.field} 必须是 string 类型`)
+      );
+    }
+    if (field && field.nullable === false) {
+      errors.push(
+        schemaError(
+          `${path}/field`,
+          `行类别字段 ${mark.field} 在明细行上没有取值，必须允许为空`
+        )
+      );
+    }
+  };
+
+  operators.forEach((operator, index) => {
+    const path = `${sourcePath}/compute/${index}`;
+    switch (operator.op) {
+      case 'ratio':
+        numericInput(operator.numerator, `${path}/numerator`);
+        numericInput(operator.denominator, `${path}/denominator`);
+        output(operator.output, `${path}/output`, 'measure');
+        break;
+      case 'delta':
+        numericInput(operator.minuend, `${path}/minuend`);
+        numericInput(operator.subtrahend, `${path}/subtrahend`);
+        output(operator.output, `${path}/output`, 'measure');
+        break;
+      case 'groupSubtotal':
+        declared(operator.groupBy, `${path}/groupBy`, 'dimension');
+        collapsibleMeasures(operator.measures, `${path}/measures`);
+        rowKind(operator.rowKind, `${path}/rowKind`);
+        break;
+      case 'grandTotal':
+        collapsibleMeasures(operator.measures, `${path}/measures`);
+        rowKind(operator.rowKind, `${path}/rowKind`);
+        declared(operator.label.field, `${path}/label/field`, 'dimension');
+        break;
+      case 'pivot': {
+        declared(operator.categoryField, `${path}/categoryField`, 'dimension');
+        declared(operator.valueField, `${path}/valueField`, 'measure');
+        (operator.keyFields ?? []).forEach((fieldId, keyIndex) =>
+          declared(fieldId, `${path}/keyFields/${keyIndex}`, 'dimension')
+        );
+        const categories = new Set<string>();
+        operator.columns.forEach((column, columnIndex) => {
+          const columnPath = `${path}/columns/${columnIndex}`;
+          output(column.output, `${columnPath}/output`, 'measure');
+          column.categories.forEach((category, categoryIndex) => {
+            if (categories.has(category)) {
+              errors.push(
+                schemaError(
+                  `${columnPath}/categories/${categoryIndex}`,
+                  `类别取值已映射到其它目标列:${category}`
+                )
+              );
+            }
+            categories.add(category);
+          });
+        });
+        break;
+      }
+    }
+  });
+
+  // 行类别字段由多个折叠算子共同写入,不算重复产出;这里补回它的产出身份。
+  for (const fieldId of rowKindFields) produced.add(fieldId);
+
+  const rows =
+    dataSource.source.type === 'inline'
+      ? { rows: dataSource.source.rows, path: `${sourcePath}/source/rows` }
+      : dataSource.source.initial
+        ? { rows: dataSource.source.initial.rows, path: `${sourcePath}/source/initial/rows` }
+        : undefined;
+  if (rows) {
+    rows.rows.forEach((row, rowIndex) => {
+      for (const fieldId of Object.keys(row)) {
+        if (!produced.has(fieldId)) continue;
+        errors.push(
+          schemaError(
+            `${rows.path}/${rowIndex}/${escapePointer(fieldId)}`,
+            `算子产出字段 ${fieldId} 不得出现在数据行中，它由计算阶段产出`
+          )
+        );
+      }
+    });
   }
   return errors;
 }
@@ -593,6 +979,7 @@ function componentErrors(
       break;
     case 'table':
       errors.push(...tableDataErrors(page, component, componentPath));
+      errors.push(...tablePresentationErrors(page, component, componentPath));
       errors.push(
         ...tableErrors(
           component.props.columns,
@@ -603,11 +990,49 @@ function componentErrors(
       );
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
+    case 'keyValuePanel':
+      component.props.items.forEach((item, index) =>
+        check(item.field, `${componentPath}/props/items/${index}/field`)
+      );
+      break;
+    case 'fieldText': {
+      const path = `${componentPath}/props/field`;
+      check(component.props.field, path, undefined, 'semanticHtml');
+      break;
+    }
     case 'mapChart':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
       check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+      errors.push(...mapHierarchyErrors(page, component, componentPath, check));
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
+    case 'gauge':
+      check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+      errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
+      break;
+    case 'tabContainer': {
+      const tabIds = new Set<string>();
+      component.props.tabs.forEach((tab, tabIndex) => {
+        if (tabIds.has(tab.id)) {
+          errors.push(
+            schemaError(`${componentPath}/props/tabs/${tabIndex}/id`, `Tab id 重复:${tab.id}`)
+          );
+        }
+        tabIds.add(tab.id);
+      });
+      if (
+        component.props.defaultTab !== undefined &&
+        !tabIds.has(component.props.defaultTab)
+      ) {
+        errors.push(
+          schemaError(
+            `${componentPath}/props/defaultTab`,
+            `defaultTab 不是已声明的 Tab:${component.props.defaultTab}`
+          )
+        );
+      }
+      break;
+    }
     case 'rankingCard':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
       check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
@@ -758,6 +1183,65 @@ function tableDataErrors(
   return errors;
 }
 
+/**
+ * 表格呈现能力的判定(ADR-0049)。
+ *
+ * 行类别字段在计算层与表格之间是一份跨层契约:算子产出什么标记、表格认
+ * 哪些标记,两侧必须同时校验,否则会出现「算出了合计行却渲染成普通明细行」
+ * 这种只能靠肉眼发现的偏差。因此这里要求行类别字段确由该数据源上的折叠
+ * 算子写入,而不只是「存在这么一个字段」。
+ */
+function tablePresentationErrors(
+  page: Page,
+  component: Extract<Component, { type: 'table' }>,
+  componentPath: string
+): TypedError[] {
+  const errors: TypedError[] = [];
+  const source = page.dataSources[component.data.main];
+  if (!source) return errors;
+  const fields = resolveDataSourceFields(source);
+
+  const { rowKindField, mergeBy } = component.props;
+  if (rowKindField !== undefined) {
+    const path = `${componentPath}/props/rowKindField`;
+    const field = fields[rowKindField];
+    if (!field) {
+      errors.push(
+        schemaError(path, `行类别字段 ${rowKindField} 不在数据源 ${component.data.main} 中`)
+      );
+    } else {
+      const written = (source.compute ?? []).some(
+        (operator) => isFoldingOperator(operator) && operator.rowKind.field === rowKindField
+      );
+      if (!written) {
+        errors.push(
+          schemaError(
+            path,
+            `行类别字段 ${rowKindField} 没有任何折叠算子写入；小计与合计由计算阶段产出，表格只识别不计算`
+          )
+        );
+      }
+    }
+  }
+
+  if (mergeBy !== undefined) {
+    const path = `${componentPath}/props/mergeBy`;
+    const merged = buildTableLeafFields(component.props.columns);
+    if (!merged.includes(mergeBy)) {
+      errors.push(schemaError(path, `mergeBy 必须是表格已声明的列字段:${mergeBy}`));
+    }
+  }
+  return errors;
+}
+
+function buildTableLeafFields(columns: TableColumnNode[]): string[] {
+  return columns.flatMap((column) =>
+    column.kind === 'group'
+      ? buildTableLeafFields(column.children)
+      : [fieldNameOf(column.field)]
+  );
+}
+
 function queryPaginationErrors(page: Page): TypedError[] {
   const errors: TypedError[] = [];
   const references = new Map<string, string[]>();
@@ -772,9 +1256,7 @@ function queryPaginationErrors(page: Page): TypedError[] {
     references.set(sourceId, paths);
   };
 
-  page.sections.forEach((section, sectionIndex) => {
-    section.components.forEach((component, componentIndex) => {
-      const componentPath = `/sections/${sectionIndex}/components/${componentIndex}`;
+  walkPageComponents(page, (component, componentPath) => {
       for (const [slot, sourceId] of Object.entries(component.data ?? {})) {
         addReference(sourceId, `${componentPath}/data/${escapePointer(slot)}`);
       }
@@ -850,7 +1332,6 @@ function queryPaginationErrors(page: Page): TypedError[] {
         }
       }
       rejectQueryTableViewColumns(component.props.columns, componentPath, errors);
-    });
   });
 
   for (const { sourceId, componentPath } of queryTables) {
@@ -949,6 +1430,78 @@ function tableErrors(
   return errors;
 }
 
+function mapHierarchyErrors(
+  page: Page,
+  component: Extract<Component, { type: 'mapChart' }>,
+  componentPath: string,
+  check: BindingCheck
+): TypedError[] {
+  const errors: TypedError[] = [];
+  const filterId = component.props.hierarchyFilter;
+  if (filterId === undefined) {
+    if (component.props.levelField) {
+      errors.push(
+        schemaError(`${componentPath}/props/levelField`, 'levelField 只能与 hierarchyFilter 一起使用')
+      );
+    }
+    if (component.props.parentField) {
+      errors.push(
+        schemaError(
+          `${componentPath}/props/parentField`,
+          'parentField 只能与 hierarchyFilter 一起使用'
+        )
+      );
+    }
+    if (component.props.levelMaps) {
+      errors.push(
+        schemaError(`${componentPath}/props/levelMaps`, 'levelMaps 只能与 hierarchyFilter 一起使用')
+      );
+    }
+    return errors;
+  }
+  const target = (page.filters ?? []).find((filter) => filter.id === filterId);
+  if (!target) {
+    errors.push(
+      schemaError(
+        `${componentPath}/props/hierarchyFilter`,
+        `地图下钻引用了未声明的筛选器:${filterId}`
+      )
+    );
+    return errors;
+  }
+  if (target.type !== 'dimension' || !target.hierarchy || target.hierarchy.length === 0) {
+    errors.push(
+      schemaError(
+        `${componentPath}/props/hierarchyFilter`,
+        `地图下钻目标必须是声明了 hierarchy 的维度筛选器:${filterId}`
+      )
+    );
+  }
+  if (component.props.levelField) {
+    check(component.props.levelField, `${componentPath}/props/levelField`, 'dimension');
+  }
+  if (component.props.parentField) {
+    check(component.props.parentField, `${componentPath}/props/parentField`, 'dimension');
+  }
+  if (component.props.codeField) {
+    check(component.props.codeField, `${componentPath}/props/codeField`, 'dimension');
+  }
+  if (target.type === 'dimension' && target.hierarchy && component.props.levelMaps) {
+    const levelIds = new Set(target.hierarchy.map((level) => level.id));
+    for (const levelId of Object.keys(component.props.levelMaps)) {
+      if (!levelIds.has(levelId)) {
+        errors.push(
+          schemaError(
+            `${componentPath}/props/levelMaps/${escapePointer(levelId)}`,
+            `levelMaps 引用了筛选器 ${filterId} 未声明的层级:${levelId}`
+          )
+        );
+      }
+    }
+  }
+  return errors;
+}
+
 function actionErrors(
   actions: ComponentAction[] | undefined,
   componentPath: string,
@@ -960,12 +1513,15 @@ function actionErrors(
   if (!actions) return [];
   const errors: TypedError[] = [];
   if (!deriveComponentCapabilities(page, component).live) {
-    errors.push(
-      schemaError(
-        `${componentPath}/props/actions`,
-        'actions 只允许绑定 query 数据源的组件；inline 数据不会响应交互'
-      )
-    );
+    const hasNonNavigate = actions.some((action) => !('navigate' in action));
+    if (hasNonNavigate) {
+      errors.push(
+        schemaError(
+          `${componentPath}/props/actions`,
+          'writeFilter 只允许绑定 query 数据源的组件；navigate 可以挂在 inline 组件上'
+        )
+      );
+    }
   }
   actions.forEach((action, index) => {
     const path = `${componentPath}/props/actions/${index}`;
@@ -995,6 +1551,9 @@ function actionErrors(
     });
     for (const [filterId, binding] of Object.entries(action.navigate.setFilters ?? {})) {
       check(binding, `${path}/navigate/setFilters/${escapePointer(filterId)}`, 'dimension');
+    }
+    for (const [paramId, binding] of Object.entries(action.navigate.setParams ?? {})) {
+      check(binding, `${path}/navigate/setParams/${escapePointer(paramId)}`);
     }
   });
   return errors;

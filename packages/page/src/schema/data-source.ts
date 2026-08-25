@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { computeZ } from './compute';
 import {
   fieldNameZ,
   fieldsZ,
@@ -81,7 +82,7 @@ export const querySourceZ = z
   .meta({ id: 'querySource' });
 
 export const inlineDataSourceZ = z
-  .object({ fields: fieldsZ, source: inlineSourceZ })
+  .object({ fields: fieldsZ, compute: computeZ.optional(), source: inlineSourceZ })
   .meta({ id: 'inlineDataSource' });
 
 const groupedStandardQueryFieldZ = z
@@ -91,6 +92,7 @@ const groupedStandardQueryFieldZ = z
     label: z.string().min(1).optional(),
     unit: z.string().min(1).optional(),
     nullable: z.boolean().optional(),
+    collapsible: z.boolean().optional(),
     defaultFormat: valueFormatPresetZ.optional()
   });
 
@@ -101,6 +103,7 @@ const groupedMoneyQueryFieldZ = z.object({
   label: z.string().min(1).optional(),
   unit: z.string().min(1).optional(),
   nullable: z.boolean().optional(),
+  collapsible: z.boolean().optional(),
   defaultFormat: valueFormatPresetZ.optional()
 });
 
@@ -131,6 +134,7 @@ const groupedQueryFieldsZ = z
 export const queryDataSourceDocumentZ = z
   .object({
     fields: z.union([queryFieldsZ, groupedQueryFieldsZ]),
+    compute: computeZ.optional(),
     source: querySourceZ
   })
   .meta({ id: 'queryDataSource' });

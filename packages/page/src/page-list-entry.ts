@@ -6,7 +6,7 @@ export interface PageListEntry {
   description?: string;
 }
 
-/** 从已校验的看板页面统一派生目录展示信息。 */
+/** 从已校验的页面统一派生目录展示信息。 */
 export function pageListEntry(
   page: Pick<Page, 'id' | 'meta' | 'sections'>
 ): PageListEntry {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { supportedVersions } from '../version';
-import { idZ } from './primitives';
+import { idZ, nonEmptyTextValueZ, pageParamZ } from './primitives';
 import { componentZ } from './component';
 import { filterDeclarationZ } from './filter';
 import { dataSourceDocumentZ } from './data-source';
@@ -27,12 +27,26 @@ export const sectionContainerZ = z
 export const sectionZ = z
   .object({
     id: idZ,
-    title: z.string().min(1).optional(),
+    title: nonEmptyTextValueZ.optional(),
     container: sectionContainerZ.optional(),
     components: z.array(componentZ).min(1)
   })
   .strict()
   .meta({ id: 'section' });
+
+/**
+ * 页面布局形态：页面外框几何与画布外观的唯一真源，封闭两档。
+ * `report` 是缺省，保持定宽居中的报表观感；`dashboard` 占满宿主给出的
+ * 全部宽度并使用中性画布，供作战地图这类看板形态使用。12 列网格在两档
+ * 下都是统一运行时不变量，形态不改变分区内部的几何。
+ */
+export const pageLayoutFormZ = z
+  .enum(['report', 'dashboard'])
+  .meta({
+    id: 'pageLayoutForm',
+    description:
+      'report 定宽居中报表外框（缺省）；dashboard 满宽看板外框，中性画布、无外层留白'
+  });
 
 /**
  * 文档态的完整页面根 Schema，唯一职责是喂给 `z.toJSONSchema` 生成
@@ -50,9 +64,11 @@ export const pageDocumentSchemaZ = z
       }),
     id: idZ,
     meta: pageMetaZ.optional(),
+    layoutForm: pageLayoutFormZ.optional(),
+    params: z.array(pageParamZ).min(1).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),
     sections: z.array(sectionZ).min(1)
   })
   .strict()
-  .meta({ title: '看板页面' });
+  .meta({ title: '页面' });

@@ -1,12 +1,18 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ, fieldBindingZ, mainDataZ } from '../primitives';
+import {
+  componentIdZ,
+  componentLayoutZ,
+  fieldBindingZ,
+  mainDataZ,
+  textValueZ
+} from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
 
 export const chartSeriesZ = z
   .object({
     field: fieldBindingZ,
-    label: z.string().optional()
+    label: textValueZ.optional()
   })
   .strict()
   .meta({ id: 'chartSeries' });
@@ -31,7 +37,7 @@ export const barChartComponentZ = z
     data: mainDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         variant: z.literal('reportForecast').optional(),
         categoryField: fieldBindingZ,
         series: z.array(barChartSeriesZ).min(1),
@@ -66,7 +72,7 @@ export const lineChartComponentZ = z
     data: mainDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         xField: fieldBindingZ,
         series: z.array(chartSeriesZ).min(1),
         smooth: z.boolean().optional(),
@@ -100,7 +106,7 @@ export const pieChartComponentZ = z
     data: mainDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         categoryField: fieldBindingZ,
         valueField: fieldBindingZ,
         ring: z.string().regex(/^\d{1,2}%$/).optional(),

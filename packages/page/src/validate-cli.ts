@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { TypedError } from './errors';
 import { fileNameErrors } from './file-name';
-import { navigateErrors } from './navigate';
+import { crossPageReferenceErrors } from './navigate';
 import type { Page } from './page';
 import { parsePage } from './validate';
 
@@ -53,7 +53,7 @@ function main(argv: string[]): number {
   for (const result of results) {
     if (result.page) {
       result.errors.push(
-        ...navigateErrors(result.page, knownPageIds, pagesById)
+        ...crossPageReferenceErrors(result.page, knownPageIds, pagesById)
       );
     }
     if (result.errors.length === 0) {

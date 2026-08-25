@@ -174,7 +174,7 @@ describe('当前 page schema 边界行为', () => {
     expectInvalid('2 项', withDslList([item, item]));
   });
 
-  it('timeRangeFilter.default:预设与绝对区间有效,数字无效', () => {
+  it('timeRangeFilter.default:预设、绝对区间与结构化相对时间有效,数字无效', () => {
     const base: any = structuredClone(queryDashboard);
     base.filters = [{ id: 'range', type: 'timeRange' }];
     const withDefault = (value: unknown) => {
@@ -184,7 +184,34 @@ describe('当前 page schema 边界行为', () => {
     };
     expectValid('预设字符串', withDefault('last7d'));
     expectValid('绝对区间', withDefault({ from: '2026-01-01', to: '2026-01-31' }));
+    expectValid('结构化相对时间', withDefault({
+      unit: 'month',
+      range: { kind: 'lastN', n: 6 },
+      includeCurrent: false
+    }));
     expectInvalid('数字', withDefault(42));
+  });
+
+  it('筛选器闭集六类与层级、级联有效', () => {
+    const base: any = structuredClone(queryDashboard);
+    base.schemaVersion = '5.1';
+    base.filters = [
+      { id: 'flag', type: 'boolean', label: '仅看重点国代' },
+      { id: 'month', type: 'timePoint', granularity: 'month', default: '2026-04' },
+      { id: 'amount', type: 'numberRange', default: { from: 1, to: 9 } },
+      { id: 'keyword', type: 'search' },
+      {
+        id: 'region',
+        type: 'dimension',
+        dimension: 'geo',
+        hierarchy: [
+          { id: 'geo', dimension: 'geo' },
+          { id: 'office', dimension: 'office' }
+        ]
+      },
+      { id: 'child', type: 'dimension', dimension: 'city', dependsOn: 'region' }
+    ];
+    expectValid('六类筛选器', base);
   });
 
   it('table.pagination 判别式联合:三态有效,缺 pageSize 与未知 mode 无效', () => {

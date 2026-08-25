@@ -5,6 +5,8 @@ import {
   fieldBindingZ,
   fieldNameZ,
   mainDataZ,
+  nonEmptyTextValueZ,
+  textValueZ,
   valueFormatPresetZ
 } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
@@ -34,9 +36,9 @@ export const rankingDetailCardComponentZ = z
     data: mainDataZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         variant: z.literal('report').optional(),
-        metricLabel: z.string().min(1).optional(),
+        metricLabel: nonEmptyTextValueZ.optional(),
         tone: z.enum(['positive', 'negative', 'neutral']).optional(),
         nameField: fieldBindingZ,
         valueField: fieldBindingZ,

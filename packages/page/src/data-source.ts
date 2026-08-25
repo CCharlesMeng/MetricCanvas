@@ -1,8 +1,10 @@
-import type {
-  DataRow,
-  FieldDefinition,
-  QueryFieldDefinition,
-  ResolvedFieldDefinition
+import type { ComputeOperator } from './compute';
+import {
+  hasQueryFieldMapping,
+  type DataRow,
+  type FieldDefinition,
+  type QueryDataSourceFieldDefinition,
+  type ResolvedFieldDefinition
 } from './field';
 import type { PageQuery } from './query';
 
@@ -27,11 +29,14 @@ export interface QuerySource {
 
 export interface InlineDataSource {
   fields: Record<string, FieldDefinition>;
+  /** 受控计算阶段（ADR-0046）；inline 与 query 都在同一位置声明。 */
+  compute?: ComputeOperator[];
   source: InlineSource;
 }
 
 export interface QueryDataSource {
-  fields: Record<string, QueryFieldDefinition>;
+  fields: Record<string, QueryDataSourceFieldDefinition>;
+  compute?: ComputeOperator[];
   source: QuerySource;
 }
 
@@ -72,6 +77,8 @@ export function resolveDataSourceFields(
   }
   return Object.fromEntries(
     Object.entries(dataSource.fields).map(([fieldId, definition]) => {
+      // 计算阶段产出字段本就没有外部响应字段名，直接原样交付。
+      if (!hasQueryFieldMapping(definition)) return [fieldId, { ...definition }];
       if (definition.type !== 'recordList') {
         const { queryField: _queryField, ...field } = definition;
         return [fieldId, field];

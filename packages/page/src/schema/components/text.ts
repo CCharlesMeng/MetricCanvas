@@ -1,10 +1,16 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ, idZ } from '../primitives';
+import {
+  componentIdZ,
+  componentLayoutZ,
+  idZ,
+  nonEmptyTextValueZ,
+  textValueZ
+} from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 
 const textLinkZ = z
   .object({
-    label: z.string().min(1),
+    label: nonEmptyTextValueZ,
     page: idZ,
     carryFilters: z.array(idZ).meta({ uniqueItems: true }).optional()
   })
@@ -17,8 +23,8 @@ export const textComponentZ = z
     layout: componentLayoutZ,
     props: z
       .object({
-        title: z.string().optional(),
-        body: z.string().optional(),
+        title: textValueZ.optional(),
+        body: textValueZ.optional(),
         bodyFormat: z.literal('semanticHtml').optional(),
         variant: z
           .enum(['plain', 'heading', 'insight', 'reportInline', 'riskNotice'])

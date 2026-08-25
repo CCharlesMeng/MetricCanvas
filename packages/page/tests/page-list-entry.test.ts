@@ -24,7 +24,7 @@ function page(): Page {
   };
 }
 
-describe('看板页面列表条目', () => {
+describe('页面列表条目', () => {
   it('统一从报告页头派生列表标题和说明', () => {
     expect(pageListEntry(page())).toEqual({
       id: 'inventory-overview',

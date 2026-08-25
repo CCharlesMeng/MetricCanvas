@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ } from '../primitives';
+import {
+  componentIdZ,
+  componentLayoutZ,
+  nonEmptyTextValueZ,
+  textValueZ
+} from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 
 export const reportHeaderComponentZ = z
@@ -9,16 +14,16 @@ export const reportHeaderComponentZ = z
     layout: componentLayoutZ,
     props: z
       .object({
-        title: z.string().min(1),
-        subtitle: z.string().optional(),
+        title: nonEmptyTextValueZ,
+        subtitle: textValueZ.optional(),
         subtitleFormat: z.literal('semanticHtml').optional(),
-        generatedBy: z.string().optional(),
-        badge: z.string().optional(),
+        generatedBy: textValueZ.optional(),
+        badge: textValueZ.optional(),
         asOf: z
-          .object({ label: z.string().min(1), value: z.string().min(1) })
+          .object({ label: nonEmptyTextValueZ, value: nonEmptyTextValueZ })
           .strict()
           .optional(),
-        tags: z.array(z.string().min(1)).optional(),
+        tags: z.array(nonEmptyTextValueZ).optional(),
         decoration: z.literal('shortBar').optional()
       })
       .strict()
@@ -29,7 +34,7 @@ export const reportHeaderComponentZ = z
 componentCatalogRegistry.add(reportHeaderComponentZ, {
   label: '报告页头',
   purpose: '表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML',
-  chooseWhen: ['任何完整看板页面的开头'],
+  chooseWhen: ['任何完整页面的开头'],
   dataShape: '不绑定页面数据源',
   title: 'required',
   defaultSpan: 12

@@ -55,6 +55,11 @@ interface FieldMetadata {
   label?: string;
   unit?: string;
   nullable?: boolean;
+  /**
+   * 该度量字段是否允许被折叠算子求和（ADR-0046）。缺席即不允许：
+   * `groupSubtotal` / `grandTotal` 作用于未声明可折叠的字段是校验失败。
+   */
+  collapsible?: boolean;
   defaultFormat?: ValueFormatPreset;
 }
 
@@ -129,6 +134,19 @@ export type QueryFieldDefinition =
   | QueryScalarFieldDefinition
   | QueryRecordListFieldDefinition
   | QuerySemanticHtmlFieldDefinition;
+
+/**
+ * query 页面数据源结果字段契约里的一个字段：映射外部响应的查询字段，
+ * 或计算阶段产出字段。后者同样就地声明类型、角色、标签与可空性，
+ * 区别只是不声明 `queryField`——它不来自外部响应（ADR-0046）。
+ */
+export type QueryDataSourceFieldDefinition = QueryFieldDefinition | FieldDefinition;
+
+export function hasQueryFieldMapping(
+  field: QueryDataSourceFieldDefinition
+): field is QueryFieldDefinition {
+  return 'queryField' in field && typeof field.queryField === 'string';
+}
 
 /** 统一运行时向组件提供的字段契约，不包含外部查询字段名。 */
 export type ResolvedFieldDefinition = FieldDefinition;

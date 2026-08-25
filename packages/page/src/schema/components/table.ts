@@ -7,7 +7,9 @@ import {
   fieldNameZ,
   fieldReferenceZ,
   idZ,
-  tableDataZ
+  nonEmptyTextValueZ,
+  tableDataZ,
+  textValueZ
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
@@ -36,6 +38,11 @@ export interface TableColumn {
   fixed?: 'left' | 'right';
   sortable?: boolean;
   filterable?: { mode: 'select' | 'dateRange' };
+  /**
+   * 该列是行点击导航入口(ADR-0049)。只有声明了的列才响应 navigate;
+   * 与 `selection` 同时存在时以 `selection` 为准。
+   */
+  link?: boolean;
   align?: 'left' | 'right';
   emphasis?: 'strong';
   visual?: 'plain' | 'rateBar' | 'signed';
@@ -69,11 +76,12 @@ const tableColumnZ: z.ZodType<TableColumn> = z
     badgeField: fieldBindingZ.optional(),
     dangerValues: z.array(z.string()).meta({ uniqueItems: true }).optional(),
     selection: tableCellSelectionZ.optional(),
-    title: z.string().optional(),
+    title: textValueZ.optional(),
     width: z.int().min(1).optional(),
     fixed: z.enum(['left', 'right']).optional(),
     sortable: z.boolean().optional(),
     filterable: z.object({ mode: z.enum(['select', 'dateRange']) }).strict().optional(),
+    link: z.boolean().optional(),
     align: z.enum(['left', 'right']).optional(),
     emphasis: z.literal('strong').optional(),
     visual: z.enum(['plain', 'rateBar', 'signed']).optional()
@@ -86,7 +94,7 @@ const tableColumnGroupZ: z.ZodType<TableColumnGroup> = z.lazy(() =>
     .object({
       kind: z.literal('group'),
       id: idZ,
-      title: z.string().min(1),
+      title: nonEmptyTextValueZ,
       children: z.array(tableColumnNodeZ).min(1)
     })
     .strict()
@@ -117,11 +125,21 @@ export const tableComponentZ = z
     data: tableDataZ,
     props: z
       .object({
-        title: z.string().optional(),
-        subtitle: z.string().optional(),
+        title: textValueZ.optional(),
+        subtitle: textValueZ.optional(),
         variant: z.literal('reportCompact').optional(),
         compoundCellLayout: z.literal('inline').optional(),
         rowKey: fieldNameZ.optional(),
+        /**
+         * 行类别字段（ADR-0049）：取值来自计算阶段折叠算子写入的闭集，
+         * 表格按它套用明细 / 小计 / 合计三档呈现。表格只识别，不计算。
+         */
+        rowKindField: fieldNameZ.optional(),
+        /**
+         * 按字段合并相邻同值单元格。合并是确定性渲染规则，页面文档只声明
+         * 按哪个字段合并；不引入 rowSpan 数值——排序或筛选一变它立刻失效。
+         */
+        mergeBy: fieldNameZ.optional(),
         fit: z.enum(['content', 'container']).optional(),
         columns: z.array(tableColumnNodeZ).min(1),
         pagination: paginationZ.optional(),

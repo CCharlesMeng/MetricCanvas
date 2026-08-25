@@ -1,7 +1,9 @@
-import type {
-  FieldValue,
-  QueryFieldDefinition,
-  QueryRecordListFieldDefinition
+import {
+  hasQueryFieldMapping,
+  type FieldValue,
+  type QueryDataSourceFieldDefinition,
+  type QueryFieldDefinition,
+  type QueryRecordListFieldDefinition
 } from './field';
 import {
   fieldContractViolations,
@@ -48,7 +50,7 @@ export type QueryRowsNormalizationResult =
  */
 export function normalizeQueryRows(
   value: unknown,
-  fieldMappings: Record<string, QueryFieldDefinition>
+  fieldMappings: Record<string, QueryDataSourceFieldDefinition>
 ): QueryRowsNormalizationResult {
   if (!Array.isArray(value)) {
     return { ok: false, issues: [{ code: 'ROWS_NOT_ARRAY' }] };
@@ -64,6 +66,8 @@ export function normalizeQueryRows(
 
     const row: Row = {};
     for (const [fieldId, mapping] of Object.entries(fieldMappings)) {
+      // 计算阶段产出字段不来自外部响应,归一化阶段跳过;它们由算子写入。
+      if (!hasQueryFieldMapping(mapping)) continue;
       if (!Object.hasOwn(rawRow, mapping.queryField)) {
         issues.push({
           code: 'MISSING_QUERY_FIELD',

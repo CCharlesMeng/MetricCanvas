@@ -1,10 +1,20 @@
-import type { QueryFieldDefinition, QueryScalarFieldDefinition } from './field';
+import type {
+  QueryDataSourceFieldDefinition,
+  QueryFieldDefinition,
+  QueryScalarFieldDefinition
+} from './field';
 import type { GroupedQueryFields } from './page-document';
 import type { TypedError } from './errors';
+import type { PageParamDeclaration } from './page-param';
 import {
   normalizeQueryRows,
   type QueryRowNormalizationIssue
 } from './query-rows';
+import {
+  resolveTextValues,
+  validationResolution,
+  type TextValueResolution
+} from './text-value';
 
 export interface MaterializedPageDocument {
   document: unknown;
@@ -12,23 +22,32 @@ export interface MaterializedPageDocument {
 }
 
 /**
- * 把 query 页面数据源中按角色分组的局部显式字段展开，并按 queryField
- * 将 DQE 原始内嵌初始行归一化为稳定页面字段，最终解析为完整 Page。
- * 这是纯计算接缝：不读取局部或跨页定义，不做默认值继承，不修改输入。
+ * 把 query 页面数据源中按角色分组的局部显式字段展开，按 queryField 将 DQE
+ * 原始内嵌初始行归一化为稳定页面字段，并把文本取值引用整值替换为字符串，
+ * 最终解析为完整 Page。这是纯计算接缝：不读取局部或跨页定义，不做默认值
+ * 继承，不修改输入。
  */
-export function materializePageDocument(input: unknown): MaterializedPageDocument {
+export function materializePageDocument(
+  input: unknown,
+  textValues?: TextValueResolution
+): MaterializedPageDocument {
   if (!isRecord(input)) return { document: input, errors: [] };
 
   // Svelte 等宿主可能把不可信页面文档包成 Proxy；structuredClone 不能复制 Proxy。
   // 页面已经通过结构校验，此处按 JSON 树逐层复制，仍保持不修改输入的纯计算边界。
-  const document = cloneJsonTree(input) as Record<string, unknown>;
+  const cloned = cloneJsonTree(input) as Record<string, unknown>;
+  const declarations = (cloned.params ?? []) as PageParamDeclaration[];
+  const document = resolveTextValues(
+    cloned,
+    textValues ?? validationResolution(declarations)
+  ) as Record<string, unknown>;
   const errors: TypedError[] = [];
 
   if (!isRecord(document.dataSources)) return { document, errors };
 
   for (const [sourceId, candidate] of Object.entries(document.dataSources)) {
     if (!isRecord(candidate) || !isQuerySource(candidate.source)) continue;
-    let fields = candidate.fields as Record<string, QueryFieldDefinition>;
+    let fields = candidate.fields as Record<string, QueryDataSourceFieldDefinition>;
 
     if (isGroupedQueryFields(candidate.fields)) {
       const grouped = candidate.fields;

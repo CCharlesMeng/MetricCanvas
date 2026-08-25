@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { componentIdZ, componentLayoutZ, fieldNameZ, idZ } from '../primitives';
+import { componentIdZ, componentLayoutZ, fieldNameZ, idZ, textValueZ } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 
 const nonBlankZ = (minLength: number) => z.string().min(minLength).regex(/\S/);
@@ -28,7 +28,7 @@ export const aiSummaryComponentZ = z
     layout: componentLayoutZ,
     props: z
       .object({
-        title: z.string().optional(),
+        title: textValueZ.optional(),
         variant: z.literal('reportInline').optional(),
         promptTemplate: nonBlankZ(1),
         relatedData: z

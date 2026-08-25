@@ -4,9 +4,13 @@ import { metricCardComponentZ } from './components/metric-card';
 import { barChartComponentZ, lineChartComponentZ, pieChartComponentZ } from './components/charts';
 import { tableComponentZ } from './components/table';
 import { mapChartComponentZ } from './components/map-chart';
+import { gaugeComponentZ } from './components/gauge';
+import { tabContainerComponentZ } from './components/tab-container';
 import { rankingCardComponentZ } from './components/ranking-card';
 import { rankingDetailCardComponentZ } from './components/ranking-detail-card';
 import { textComponentZ } from './components/text';
+import { fieldTextComponentZ } from './components/field-text';
+import { keyValuePanelComponentZ } from './components/key-value-panel';
 import { aiSummaryComponentZ } from './components/ai-summary';
 
 /**
@@ -22,8 +26,12 @@ export const componentSchemas = [
   pieChartComponentZ,
   tableComponentZ,
   mapChartComponentZ,
+  gaugeComponentZ,
+  tabContainerComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
+  keyValuePanelComponentZ,
+  fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ
 ] as const;
@@ -38,8 +46,12 @@ export {
   pieChartComponentZ,
   tableComponentZ,
   mapChartComponentZ,
+  gaugeComponentZ,
+  tabContainerComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
+  keyValuePanelComponentZ,
+  fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ
 };

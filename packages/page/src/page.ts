@@ -1,6 +1,7 @@
 import type { z } from 'zod';
 import type { DataSourceMode, DataSources } from './data-source';
 import type { FilterDeclaration } from './filter';
+import type { PageParamDeclaration } from './page-param';
 import type { VersionPolicy } from './version';
 import {
   reportHeaderComponentZ,
@@ -10,8 +11,12 @@ import {
   pieChartComponentZ,
   tableComponentZ,
   mapChartComponentZ,
+  gaugeComponentZ,
+  tabContainerComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
+  keyValuePanelComponentZ,
+  fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ,
   chartSeriesZ,
@@ -24,7 +29,13 @@ import {
 } from './schema/component';
 import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
 import { writeFilterActionZ, navigateActionZ } from './schema/actions';
-import { pageMetaZ, sectionContainerZ, sectionZ } from './schema/page';
+import {
+  pageLayoutFormZ,
+  pageMetaZ,
+  sectionContainerZ,
+  sectionZ
+} from './schema/page';
+import { flattenPageComponents } from './component-walk';
 
 /*
  * 组件形状的单一真源在 `./schema/`（Zod 4 定义）：本文件的每个组件类型都
@@ -83,11 +94,33 @@ export type TableComponent = z.infer<typeof tableComponentZ> & { data: TableData
 export type MapChartProps = z.infer<typeof mapChartComponentZ>['props'];
 export type MapChartComponent = z.infer<typeof mapChartComponentZ>;
 
+export type GaugeProps = z.infer<typeof gaugeComponentZ>['props'];
+export type GaugeComponent = z.infer<typeof gaugeComponentZ>;
+
+export type TabContainerProps = z.infer<typeof tabContainerComponentZ>['props'];
+export type TabItem = Omit<TabContainerProps['tabs'][number], 'component'> & {
+  component: TableComponent;
+};
+export type TabContainerComponent = Omit<
+  z.infer<typeof tabContainerComponentZ>,
+  'props'
+> & {
+  data?: never;
+  props: Omit<TabContainerProps, 'tabs'> & { tabs: TabItem[] };
+};
+
 export type RankingCardProps = z.infer<typeof rankingCardComponentZ>['props'];
 export type RankingCardComponent = z.infer<typeof rankingCardComponentZ>;
 
 export type RankingDetailCardProps = z.infer<typeof rankingDetailCardComponentZ>['props'];
 export type RankingDetailCardComponent = z.infer<typeof rankingDetailCardComponentZ>;
+
+export type KeyValuePanelProps = z.infer<typeof keyValuePanelComponentZ>['props'];
+export type KeyValuePanelItem = KeyValuePanelProps['items'][number];
+export type KeyValuePanelComponent = z.infer<typeof keyValuePanelComponentZ>;
+
+export type FieldTextProps = z.infer<typeof fieldTextComponentZ>['props'];
+export type FieldTextComponent = z.infer<typeof fieldTextComponentZ>;
 
 export type TextProps = z.infer<typeof textComponentZ>['props'];
 export type TextLink = NonNullable<TextProps['links']>[number];
@@ -106,14 +139,18 @@ export type Component =
   | PieChartComponent
   | TableComponent
   | MapChartComponent
+  | GaugeComponent
+  | TabContainerComponent
   | RankingCardComponent
   | RankingDetailCardComponent
+  | KeyValuePanelComponent
+  | FieldTextComponent
   | TextComponent
   | AiSummaryComponent;
 
 export type DataComponent = Exclude<
   Component,
-  ReportHeaderComponent | TextComponent | AiSummaryComponent
+  ReportHeaderComponent | TextComponent | AiSummaryComponent | TabContainerComponent
 >;
 export type ChartComponent =
   | BarChartComponent
@@ -126,6 +163,7 @@ export type NavigateAction = z.infer<typeof navigateActionZ>;
 export type ComponentAction = WriteFilterAction | NavigateAction;
 
 export type PageMeta = z.infer<typeof pageMetaZ>;
+export type PageLayoutForm = z.infer<typeof pageLayoutFormZ>;
 export type SectionContainer = z.infer<typeof sectionContainerZ>;
 export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
   components: Component[];
@@ -135,16 +173,36 @@ export interface Page {
   schemaVersion: VersionPolicy['current'];
   id: string;
   meta?: PageMeta;
+  /** 页面布局形态；缺省等价于 `report`。 */
+  layoutForm?: PageLayoutForm;
+  /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */
+  params?: PageParamDeclaration[];
   dataSources: DataSources;
   filters?: FilterDeclaration[];
   sections: PageSection[];
+}
+
+/**
+ * 页面布局形态的结构读取。宿主要在页面校验之前决定页面外框几何，因此
+ * 按原始文档读；未声明、声明了非法值或文档根本不是对象都退化为缺省的
+ * `report`，让非法文档走各自的错误页而不是先把外框算错。
+ */
+export function documentLayoutForm(document: unknown): PageLayoutForm {
+  const declared = (document as { layoutForm?: unknown } | null)?.layoutForm;
+  return declared === 'dashboard' ? 'dashboard' : 'report';
+}
+
+/** 内容分区声明的 backdrop 组件；分区最多一个，由页面校验保证。 */
+export function sectionBackdrop(section: PageSection): Component | undefined {
+  return section.components.find((component) => component.layout.layer === 'backdrop');
 }
 
 export function isDataComponent(component: Component): component is DataComponent {
   return (
     component.type !== 'reportHeader' &&
     component.type !== 'text' &&
-    component.type !== 'aiSummary'
+    component.type !== 'aiSummary' &&
+    component.type !== 'tabContainer'
   );
 }
 
@@ -189,15 +247,13 @@ export function derivePageCapabilities(page: Page): PageCapabilities {
   let actions = false;
   let remotePagination = false;
 
-  for (const section of page.sections) {
-    for (const component of section.components) {
-      const capability = deriveComponentCapabilities(page, component);
-      components[component.id] = capability;
-      hasInline ||= capability.dataMode === 'inline' || capability.dataMode === 'mixed';
-      hasQuery ||= capability.dataMode === 'query' || capability.dataMode === 'mixed';
-      actions ||= capability.actions;
-      remotePagination ||= capability.remotePagination;
-    }
+  for (const component of flattenPageComponents(page)) {
+    const capability = deriveComponentCapabilities(page, component);
+    components[component.id] = capability;
+    hasInline ||= capability.dataMode === 'inline' || capability.dataMode === 'mixed';
+    hasQuery ||= capability.dataMode === 'query' || capability.dataMode === 'mixed';
+    actions ||= capability.actions;
+    remotePagination ||= capability.remotePagination;
   }
 
   // 未绑定的数据源仍决定页面数据形态，避免隐藏的 query source 被误判为静态。
@@ -211,7 +267,11 @@ export function derivePageCapabilities(page: Page): PageCapabilities {
     dataMode,
     static: !hasQuery,
     live: hasQuery,
-    filters: hasQuery,
+    /**
+     * 筛选能力跟筛选器声明走,不再绑死 query。inline 骨架页也可以持有
+     * URL 可分享的筛选状态;查询重跑仍只发生在绑定了筛选的 query 数据源上。
+     */
+    filters: hasQuery || (page.filters?.length ?? 0) > 0,
     actions,
     remotePagination,
     components
@@ -236,11 +296,22 @@ export function deriveComponentCapabilities(
   const tableSelection =
     component.type === 'table' &&
     component.props.columns.some((column) => tableColumnHasSelection(column));
+  const hasNavigate = (props.actions ?? []).some((action) => 'navigate' in action);
+  const hasMapHierarchy =
+    component.type === 'mapChart' && component.props.hierarchyFilter !== undefined;
   return {
     dataMode,
     live: hasQuery,
-    filters: hasQuery,
-    actions: hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection),
+    filters: hasQuery || (page.filters?.length ?? 0) > 0,
+    /**
+     * navigate 读当前行、上抛导航意图,不依赖 query 重跑,因此 inline
+     * 组件也可以声明。writeFilter / 单元格选择仍只在 live 组件上有意义。
+     * 地图层级下钻写的是筛选状态,不是页面文档里的 writeFilter。
+     */
+    actions:
+      (hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
+      hasNavigate ||
+      hasMapHierarchy,
     remotePagination:
       component.type === 'table' && component.props.pagination?.mode === 'query'
   };
