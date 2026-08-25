@@ -1,0 +1,1626 @@
+{
+  "schemaVersion": "5.1",
+  "id": "ioc-project-detail",
+  "meta": {
+    "description": "IOC 作战地图项目详情页。页面参数全部来自 URL，数据源是 inline，数据行是依据页面规格编造的合成数据，不来自任何真实系统，不得用于业务判断。设计稿把项目运作规范性与客户关系规范性收在同一张「项目规范性」卡内，内容分区不能嵌套分区，因此这里是并排的两张模块卡，标题各自由组件承载；设计稿的「项目分析会（最近）」把主题、时间与结论合成一段，本页按页面规格 003 的字段边界分别呈现主题与结论，时间在项目基本信息里；「风险管理和管控措施」同样拆回项目风险与困难求助两个字段。GraphQL 通路到位后只替换数据源的 source 段，页面结构、页面参数与表格列全部复用。"
+  },
+  "params": [
+    {
+      "id": "page-title",
+      "type": "string",
+      "required": true,
+      "label": "页面标题",
+      "default": "XX 云迁移项目"
+    },
+    {
+      "id": "opportunity-code",
+      "type": "string",
+      "required": true,
+      "label": "机会点编码",
+      "default": "OPP202604001"
+    },
+    {
+      "id": "mtime",
+      "type": "string",
+      "required": true,
+      "label": "数据月份",
+      "default": "202604"
+    },
+    {
+      "id": "ati-status-label",
+      "type": "string",
+      "required": false,
+      "label": "立项状态",
+      "default": "已立项"
+    },
+    {
+      "id": "project-initiation-level",
+      "type": "string",
+      "required": false,
+      "label": "立项级别",
+      "default": "L1"
+    },
+    {
+      "id": "public-cloud-na-level-name",
+      "type": "string",
+      "required": false,
+      "label": "客户级别",
+      "default": "战略客户"
+    },
+    {
+      "id": "sub-industry-level1-name",
+      "type": "string",
+      "required": false,
+      "label": "行业",
+      "default": "运营商"
+    },
+    {
+      "id": "party-number",
+      "type": "string",
+      "required": false,
+      "label": "客户编号"
+    }
+  ],
+  "dataSources": {
+    "project-detail": {
+      "fields": {
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "party-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称"
+        },
+        "owner-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "Owner"
+        },
+        "bd-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "BD"
+        },
+        "main-competitor": {
+          "type": "string",
+          "role": "dimension",
+          "label": "主要竞对"
+        },
+        "order-date-estimated": {
+          "type": "string",
+          "role": "dimension",
+          "label": "预签日期"
+        },
+        "opportunity-step-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点阶段"
+        },
+        "partner-real-customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "伙伴客户"
+        },
+        "latest-analysis-meeting-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "最近分析会时间"
+        },
+        "project-background": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目背景",
+          "nullable": true
+        },
+        "project-objectives": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目目标",
+          "nullable": true
+        },
+        "project-help-required": {
+          "type": "string",
+          "role": "dimension",
+          "label": "困难求助",
+          "nullable": true
+        },
+        "competitor-update": {
+          "type": "string",
+          "role": "dimension",
+          "label": "竞对动态",
+          "nullable": true
+        },
+        "project-risks": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目风险",
+          "nullable": true
+        },
+        "project-progress": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目进展",
+          "nullable": true
+        },
+        "latest-analysis-meeting-topic": {
+          "type": "string",
+          "role": "dimension",
+          "label": "最近分析会主题",
+          "nullable": true
+        },
+        "latest-analysis-meeting-conclusion": {
+          "type": "string",
+          "role": "dimension",
+          "label": "最近分析会结论",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "region-dept-name": "欧洲地区部",
+            "rep-office-name": "德国代表处",
+            "party-company-name": "XX 科技有限公司",
+            "owner-name": "张三",
+            "bd-name": "李四",
+            "main-competitor": "AWS",
+            "order-date-estimated": "2026-06",
+            "opportunity-step-name": "方案确认",
+            "partner-real-customer-name": "XX 集成商",
+            "latest-analysis-meeting-time": "2026-04-10",
+            "project-background": "客户 2025 年完成核心业务上云评估，2026 年启动一期迁移，预算已进入年度 IT 规划。",
+            "project-objectives": "一期迁移 120 套应用与两个核心数据库，年内完成灰度切换并通过等保三级复测。",
+            "project-help-required": "需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。",
+            "competitor-update": "竞对在 3 月提交了降价 12% 的替代方案，并承诺免费提供一年专属技术服务。",
+            "project-risks": "客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。",
+            "project-progress": "方案已通过客户技术委员会评审，商务条款进入第二轮谈判，预计 6 月完成预签。",
+            "latest-analysis-meeting-topic": "一期迁移方案收敛与竞对降价应对策略。",
+            "latest-analysis-meeting-conclusion": "维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。"
+          }
+        ]
+      }
+    },
+    "operation-norm": {
+      "fields": {
+        "ati-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "立项"
+        },
+        "is-timely-projected": {
+          "type": "string",
+          "role": "dimension",
+          "label": "立项及时"
+        },
+        "is-actual-project-analysis-meeting": {
+          "type": "string",
+          "role": "dimension",
+          "label": "立项开工会"
+        },
+        "is-analysis-meeting-held-current-month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "近 30 天项目分析会"
+        },
+        "is-owner-attended-analysis": {
+          "type": "string",
+          "role": "dimension",
+          "label": "Owner/Sponsor 与会"
+        },
+        "is-review-completed": {
+          "type": "string",
+          "role": "dimension",
+          "label": "复盘总结"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "ati-status": "已立项",
+            "is-timely-projected": "Y",
+            "is-actual-project-analysis-meeting": "Y",
+            "is-analysis-meeting-held-current-month": "N",
+            "is-owner-attended-analysis": "Y",
+            "is-review-completed": "N"
+          }
+        ]
+      }
+    },
+    "customer-relation": {
+      "fields": {
+        "activity-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "活动类型"
+        },
+        "activity-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "当月活动次数"
+        },
+        "high-level-visit-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "高层拜访",
+          "nullable": true
+        },
+        "company-visit-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "公司考察",
+          "nullable": true
+        },
+        "workshop-exchange-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "专题交流",
+          "nullable": true
+        },
+        "summit-meeting-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "高层峰会",
+          "nullable": true
+        },
+        "circle-activities-count": {
+          "type": "number",
+          "role": "measure",
+          "label": "圈层活动",
+          "nullable": true
+        }
+      },
+      "compute": [
+        {
+          "op": "pivot",
+          "categoryField": "activity-type",
+          "valueField": "activity-count",
+          "columns": [
+            {
+              "output": "high-level-visit-count",
+              "categories": [
+                "高层拜访"
+              ]
+            },
+            {
+              "output": "company-visit-count",
+              "categories": [
+                "公司考察"
+              ]
+            },
+            {
+              "output": "workshop-exchange-count",
+              "categories": [
+                "专题交流",
+                "技术交流"
+              ]
+            },
+            {
+              "output": "summit-meeting-count",
+              "categories": [
+                "高层峰会"
+              ]
+            },
+            {
+              "output": "circle-activities-count",
+              "categories": [
+                "圈层活动"
+              ]
+            }
+          ]
+        }
+      ],
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "activity-type": "高层拜访",
+            "activity-count": 5
+          },
+          {
+            "activity-type": "公司考察",
+            "activity-count": 3
+          },
+          {
+            "activity-type": "技术交流",
+            "activity-count": 2
+          },
+          {
+            "activity-type": "圈层活动",
+            "activity-count": 4
+          }
+        ]
+      }
+    },
+    "sales-forecast": {
+      "fields": {
+        "business-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "云业务类型"
+        },
+        "sub-business-type": {
+          "type": "string",
+          "role": "dimension",
+          "label": "云业务子类型",
+          "nullable": true
+        },
+        "row-kind": {
+          "type": "string",
+          "role": "dimension",
+          "label": "行类别",
+          "nullable": true
+        },
+        "object-forecast-jan": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "1月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-jan": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "1月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-jan": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "1月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-feb": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "2月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-feb": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "2月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-feb": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "2月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-mar": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "3月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-mar": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "3月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-mar": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "3月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-apr": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "4月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-apr": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "4月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-apr": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "4月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-may": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "5月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-may": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "5月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-may": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "5月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-jun": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "6月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-jun": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "6月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-jun": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "6月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-jul": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "7月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-jul": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "7月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-jul": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "7月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-aug": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "8月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-aug": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "8月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-aug": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "8月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-sep": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "9月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-sep": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "9月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-sep": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "9月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-oct": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "10月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-oct": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "10月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-oct": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "10月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-nov": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "11月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-nov": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "11月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-nov": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "11月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "object-forecast-dec": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "12月客观预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "lift-forecast-dec": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "12月提拉预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "total-forecast-dec": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "12月合计预测",
+          "collapsible": true,
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "compute": [
+        {
+          "op": "groupSubtotal",
+          "groupBy": "business-type",
+          "measures": [
+            "object-forecast-jan",
+            "lift-forecast-jan",
+            "total-forecast-jan",
+            "object-forecast-feb",
+            "lift-forecast-feb",
+            "total-forecast-feb",
+            "object-forecast-mar",
+            "lift-forecast-mar",
+            "total-forecast-mar",
+            "object-forecast-apr",
+            "lift-forecast-apr",
+            "total-forecast-apr",
+            "object-forecast-may",
+            "lift-forecast-may",
+            "total-forecast-may",
+            "object-forecast-jun",
+            "lift-forecast-jun",
+            "total-forecast-jun",
+            "object-forecast-jul",
+            "lift-forecast-jul",
+            "total-forecast-jul",
+            "object-forecast-aug",
+            "lift-forecast-aug",
+            "total-forecast-aug",
+            "object-forecast-sep",
+            "lift-forecast-sep",
+            "total-forecast-sep",
+            "object-forecast-oct",
+            "lift-forecast-oct",
+            "total-forecast-oct",
+            "object-forecast-nov",
+            "lift-forecast-nov",
+            "total-forecast-nov",
+            "object-forecast-dec",
+            "lift-forecast-dec",
+            "total-forecast-dec"
+          ],
+          "rowKind": {
+            "field": "row-kind",
+            "value": "subtotal"
+          },
+          "labelSuffix": "合计"
+        },
+        {
+          "op": "grandTotal",
+          "measures": [
+            "object-forecast-jan",
+            "lift-forecast-jan",
+            "total-forecast-jan",
+            "object-forecast-feb",
+            "lift-forecast-feb",
+            "total-forecast-feb",
+            "object-forecast-mar",
+            "lift-forecast-mar",
+            "total-forecast-mar",
+            "object-forecast-apr",
+            "lift-forecast-apr",
+            "total-forecast-apr",
+            "object-forecast-may",
+            "lift-forecast-may",
+            "total-forecast-may",
+            "object-forecast-jun",
+            "lift-forecast-jun",
+            "total-forecast-jun",
+            "object-forecast-jul",
+            "lift-forecast-jul",
+            "total-forecast-jul",
+            "object-forecast-aug",
+            "lift-forecast-aug",
+            "total-forecast-aug",
+            "object-forecast-sep",
+            "lift-forecast-sep",
+            "total-forecast-sep",
+            "object-forecast-oct",
+            "lift-forecast-oct",
+            "total-forecast-oct",
+            "object-forecast-nov",
+            "lift-forecast-nov",
+            "total-forecast-nov",
+            "object-forecast-dec",
+            "lift-forecast-dec",
+            "total-forecast-dec"
+          ],
+          "rowKind": {
+            "field": "row-kind",
+            "value": "total"
+          },
+          "label": {
+            "field": "business-type",
+            "value": "合计"
+          }
+        }
+      ],
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "business-type": "弹性云服务 ECS",
+            "sub-business-type": "通用计算型",
+            "object-forecast-jan": 5000000,
+            "lift-forecast-jan": 900000,
+            "total-forecast-jan": 5900000,
+            "object-forecast-feb": 5400000,
+            "lift-forecast-feb": 972000,
+            "total-forecast-feb": 6372000,
+            "object-forecast-mar": 5800000,
+            "lift-forecast-mar": 1044000,
+            "total-forecast-mar": 6844000,
+            "object-forecast-apr": 6200000,
+            "lift-forecast-apr": 1116000,
+            "total-forecast-apr": 7316000,
+            "object-forecast-may": 6600000,
+            "lift-forecast-may": 1188000,
+            "total-forecast-may": 7788000,
+            "object-forecast-jun": 7000000,
+            "lift-forecast-jun": 1260000,
+            "total-forecast-jun": 8260000,
+            "object-forecast-jul": 7400000,
+            "lift-forecast-jul": 1332000,
+            "total-forecast-jul": 8732000,
+            "object-forecast-aug": 7800000,
+            "lift-forecast-aug": 1404000,
+            "total-forecast-aug": 9204000,
+            "object-forecast-sep": 8200000,
+            "lift-forecast-sep": 1476000,
+            "total-forecast-sep": 9676000,
+            "object-forecast-oct": 8600000,
+            "lift-forecast-oct": 1548000,
+            "total-forecast-oct": 10148000,
+            "object-forecast-nov": 9000000,
+            "lift-forecast-nov": 1620000,
+            "total-forecast-nov": 10620000,
+            "object-forecast-dec": 9400000,
+            "lift-forecast-dec": 1692000,
+            "total-forecast-dec": 11092000
+          },
+          {
+            "business-type": "弹性云服务 ECS",
+            "sub-business-type": "内存优化型",
+            "object-forecast-jan": 3000000,
+            "lift-forecast-jan": 540000,
+            "total-forecast-jan": 3540000,
+            "object-forecast-feb": 3240000,
+            "lift-forecast-feb": 583200,
+            "total-forecast-feb": 3823200,
+            "object-forecast-mar": 3480000,
+            "lift-forecast-mar": 626400,
+            "total-forecast-mar": 4106400,
+            "object-forecast-apr": 3720000,
+            "lift-forecast-apr": 669600,
+            "total-forecast-apr": 4389600,
+            "object-forecast-may": 3960000,
+            "lift-forecast-may": 712800,
+            "total-forecast-may": 4672800,
+            "object-forecast-jun": 4200000,
+            "lift-forecast-jun": 756000,
+            "total-forecast-jun": 4956000,
+            "object-forecast-jul": 4440000,
+            "lift-forecast-jul": 799200,
+            "total-forecast-jul": 5239200,
+            "object-forecast-aug": 4680000,
+            "lift-forecast-aug": 842400,
+            "total-forecast-aug": 5522400,
+            "object-forecast-sep": 4920000,
+            "lift-forecast-sep": 885600,
+            "total-forecast-sep": 5805600,
+            "object-forecast-oct": 5160000,
+            "lift-forecast-oct": 928800,
+            "total-forecast-oct": 6088800,
+            "object-forecast-nov": 5400000,
+            "lift-forecast-nov": 972000,
+            "total-forecast-nov": 6372000,
+            "object-forecast-dec": 5640000,
+            "lift-forecast-dec": 1015200,
+            "total-forecast-dec": 6655200
+          },
+          {
+            "business-type": "云数据库 GaussDB",
+            "sub-business-type": "主备版",
+            "object-forecast-jan": 3800000,
+            "lift-forecast-jan": 684000,
+            "total-forecast-jan": 4484000,
+            "object-forecast-feb": 4104000,
+            "lift-forecast-feb": 738720,
+            "total-forecast-feb": 4842720,
+            "object-forecast-mar": 4408000,
+            "lift-forecast-mar": 793440,
+            "total-forecast-mar": 5201440,
+            "object-forecast-apr": 4712000,
+            "lift-forecast-apr": 848160,
+            "total-forecast-apr": 5560160,
+            "object-forecast-may": 5016000,
+            "lift-forecast-may": 902880,
+            "total-forecast-may": 5918880,
+            "object-forecast-jun": 5320000,
+            "lift-forecast-jun": 957600,
+            "total-forecast-jun": 6277600,
+            "object-forecast-jul": 5624000,
+            "lift-forecast-jul": 1012320,
+            "total-forecast-jul": 6636320,
+            "object-forecast-aug": 5928000,
+            "lift-forecast-aug": 1067040,
+            "total-forecast-aug": 6995040,
+            "object-forecast-sep": 6232000,
+            "lift-forecast-sep": 1121760,
+            "total-forecast-sep": 7353760,
+            "object-forecast-oct": 6536000,
+            "lift-forecast-oct": 1176480,
+            "total-forecast-oct": 7712480,
+            "object-forecast-nov": 6840000,
+            "lift-forecast-nov": 1231200,
+            "total-forecast-nov": 8071200,
+            "object-forecast-dec": 7144000,
+            "lift-forecast-dec": 1285920,
+            "total-forecast-dec": 8429920
+          },
+          {
+            "business-type": "云数据库 GaussDB",
+            "sub-business-type": "分布式版",
+            "object-forecast-jan": 1710000,
+            "lift-forecast-jan": 307800,
+            "total-forecast-jan": 2017800,
+            "object-forecast-feb": 1846800,
+            "lift-forecast-feb": 332424,
+            "total-forecast-feb": 2179224,
+            "object-forecast-mar": 1983600,
+            "lift-forecast-mar": 357048,
+            "total-forecast-mar": 2340648,
+            "object-forecast-apr": 2120400,
+            "lift-forecast-apr": 381672,
+            "total-forecast-apr": 2502072,
+            "object-forecast-may": 2257200,
+            "lift-forecast-may": 406296,
+            "total-forecast-may": 2663496,
+            "object-forecast-jun": 2394000,
+            "lift-forecast-jun": 430920,
+            "total-forecast-jun": 2824920,
+            "object-forecast-jul": 2530800,
+            "lift-forecast-jul": 455544,
+            "total-forecast-jul": 2986344,
+            "object-forecast-aug": 2667600,
+            "lift-forecast-aug": 480168,
+            "total-forecast-aug": 3147768,
+            "object-forecast-sep": 2804400,
+            "lift-forecast-sep": 504792,
+            "total-forecast-sep": 3309192,
+            "object-forecast-oct": 2941200,
+            "lift-forecast-oct": 529416,
+            "total-forecast-oct": 3470616,
+            "object-forecast-nov": 3078000,
+            "lift-forecast-nov": 554040,
+            "total-forecast-nov": 3632040,
+            "object-forecast-dec": 3214800,
+            "lift-forecast-dec": 578664,
+            "total-forecast-dec": 3793464
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "page-header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "param": "page-title"
+            },
+            "badge": {
+              "param": "opportunity-code"
+            },
+            "asOf": {
+              "label": "数据月份",
+              "value": {
+                "param": "mtime"
+              }
+            },
+            "tags": [
+              {
+                "param": "ati-status-label"
+              },
+              {
+                "param": "project-initiation-level"
+              },
+              {
+                "param": "public-cloud-na-level-name"
+              },
+              {
+                "param": "sub-industry-level1-name"
+              },
+              {
+                "param": "party-number"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "project-profile",
+      "components": [
+        {
+          "id": "basics-panel",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 3
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "columns": 2,
+            "items": [
+              {
+                "label": "地区部",
+                "field": "region-dept-name"
+              },
+              {
+                "label": "代表处",
+                "field": "rep-office-name"
+              },
+              {
+                "label": "客户名称",
+                "field": "party-company-name"
+              },
+              {
+                "label": "Owner",
+                "field": "owner-name"
+              },
+              {
+                "label": "BD",
+                "field": "bd-name"
+              },
+              {
+                "label": "主要竞对",
+                "field": "main-competitor"
+              },
+              {
+                "label": "预签日期",
+                "field": "order-date-estimated"
+              },
+              {
+                "label": "机会点阶段",
+                "field": "opportunity-step-name"
+              },
+              {
+                "label": "伙伴客户",
+                "field": "partner-real-customer-name"
+              },
+              {
+                "label": "最近分析会时间",
+                "field": "latest-analysis-meeting-time"
+              }
+            ],
+            "title": "项目基本信息"
+          }
+        },
+        {
+          "id": "project-norms",
+          "type": "tabContainer",
+          "layout": {
+            "span": 9
+          },
+          "props": {
+            "title": "项目规范性",
+            "defaultTab": "operation-norm",
+            "tabs": [
+              {
+                "id": "operation-norm",
+                "label": "项目运作规范性",
+                "component": {
+                  "id": "operation-norm-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "operation-norm"
+                  },
+                  "props": {
+                    "fit": "container",
+                    "columns": [
+                      {
+                        "field": "ati-status",
+                        "title": "立项",
+                        "width": 120
+                      },
+                      {
+                        "field": "is-timely-projected",
+                        "title": "立项及时",
+                        "width": 100
+                      },
+                      {
+                        "field": "is-actual-project-analysis-meeting",
+                        "title": "立项开工会",
+                        "width": 120
+                      },
+                      {
+                        "field": "is-analysis-meeting-held-current-month",
+                        "title": "近 30 天项目分析会",
+                        "width": 150
+                      },
+                      {
+                        "field": "is-owner-attended-analysis",
+                        "title": "Owner/Sponsor 与会",
+                        "width": 150
+                      },
+                      {
+                        "field": "is-review-completed",
+                        "title": "复盘总结",
+                        "width": 100
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "customer-relation",
+                "label": "客户关系规范性",
+                "component": {
+                  "id": "customer-relation-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "customer-relation"
+                  },
+                  "props": {
+                    "subtitle": "专题交流缺失时取技术交流",
+                    "fit": "container",
+                    "columns": [
+                      {
+                        "field": "high-level-visit-count",
+                        "title": "高层拜访",
+                        "width": 120,
+                        "align": "right"
+                      },
+                      {
+                        "field": "company-visit-count",
+                        "title": "公司考察",
+                        "width": 120,
+                        "align": "right"
+                      },
+                      {
+                        "field": "workshop-exchange-count",
+                        "title": "专题交流",
+                        "width": 120,
+                        "align": "right"
+                      },
+                      {
+                        "field": "summit-meeting-count",
+                        "title": "高层峰会",
+                        "width": 120,
+                        "align": "right"
+                      },
+                      {
+                        "field": "circle-activities-count",
+                        "title": "圈层活动",
+                        "width": 120,
+                        "align": "right"
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "sales-forecast",
+      "title": "销售预测",
+      "container": "card",
+      "components": [
+        {
+          "id": "sales-forecast-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales-forecast"
+          },
+          "props": {
+            "subtitle": "小计与合计由数据源计算阶段产出",
+            "rowKindField": "row-kind",
+            "mergeBy": "business-type",
+            "columns": [
+              {
+                "field": "business-type",
+                "title": "云业务类型",
+                "width": 160,
+                "fixed": "left"
+              },
+              {
+                "field": "sub-business-type",
+                "title": "云业务子类型",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "kind": "group",
+                "id": "forecast-jan",
+                "title": "1月",
+                "children": [
+                  {
+                    "field": "object-forecast-jan",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-jan",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-jan",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-feb",
+                "title": "2月",
+                "children": [
+                  {
+                    "field": "object-forecast-feb",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-feb",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-feb",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-mar",
+                "title": "3月",
+                "children": [
+                  {
+                    "field": "object-forecast-mar",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-mar",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-mar",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-apr",
+                "title": "4月",
+                "children": [
+                  {
+                    "field": "object-forecast-apr",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-apr",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-apr",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-may",
+                "title": "5月",
+                "children": [
+                  {
+                    "field": "object-forecast-may",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-may",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-may",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-jun",
+                "title": "6月",
+                "children": [
+                  {
+                    "field": "object-forecast-jun",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-jun",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-jun",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-jul",
+                "title": "7月",
+                "children": [
+                  {
+                    "field": "object-forecast-jul",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-jul",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-jul",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-aug",
+                "title": "8月",
+                "children": [
+                  {
+                    "field": "object-forecast-aug",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-aug",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-aug",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-sep",
+                "title": "9月",
+                "children": [
+                  {
+                    "field": "object-forecast-sep",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-sep",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-sep",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-oct",
+                "title": "10月",
+                "children": [
+                  {
+                    "field": "object-forecast-oct",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-oct",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-oct",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-nov",
+                "title": "11月",
+                "children": [
+                  {
+                    "field": "object-forecast-nov",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-nov",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-nov",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              },
+              {
+                "kind": "group",
+                "id": "forecast-dec",
+                "title": "12月",
+                "children": [
+                  {
+                    "field": "object-forecast-dec",
+                    "title": "客观",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "lift-forecast-dec",
+                    "title": "提拉",
+                    "width": 96,
+                    "align": "right"
+                  },
+                  {
+                    "field": "total-forecast-dec",
+                    "title": "合计",
+                    "width": 96,
+                    "align": "right"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "project-narrative",
+      "components": [
+        {
+          "id": "project-background",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "项目背景",
+            "field": "project-background"
+          }
+        },
+        {
+          "id": "project-objectives",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "项目目标",
+            "field": "project-objectives"
+          }
+        },
+        {
+          "id": "project-help-required",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "困难求助",
+            "field": "project-help-required"
+          }
+        },
+        {
+          "id": "competitor-update",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "竞对动态",
+            "field": "competitor-update"
+          }
+        },
+        {
+          "id": "project-risks",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "项目风险",
+            "field": "project-risks"
+          }
+        },
+        {
+          "id": "project-progress",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "项目进展",
+            "field": "project-progress"
+          }
+        },
+        {
+          "id": "latest-analysis-meeting-topic",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "最近分析会主题",
+            "field": "latest-analysis-meeting-topic"
+          }
+        },
+        {
+          "id": "latest-analysis-meeting-conclusion",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "最近分析会结论",
+            "field": "latest-analysis-meeting-conclusion"
+          }
+        }
+      ]
+    }
+  ],
+  "layoutForm": "dashboard"
+}

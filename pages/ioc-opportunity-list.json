@@ -1,0 +1,1152 @@
+{
+  "schemaVersion": "5.1",
+  "id": "ioc-opportunity-list",
+  "meta": {
+    "description": "IOC 作战地图机会点清单页。数据源是 inline，数据行是依据页面规格编造的合成数据，不来自任何真实系统，不得用于业务判断。页面结构按页面规格 002 §2：顶部筛选栏 + 搜索 + 32 列明细表格 + 总条数，`list` 分区不设分区标题（规格 §2 结构图无此项，页面标题「机会点清单」已由 §2.1 `headerOpt.title` 承担）。原「机会点总览」「按BG类型看机会点」「机会点销售预测」三张分组透视表与地区部/代表处 Tab 切换来自设计稿 `opportunity-lits.html`，该稿画的是另一个屏（聚合分析），已于 2026-08-25 经用户判定退出事实源并归档至 `参考/项目地图/设计稿/archive-not-a-source/`，故本页不呈现，也不再作为缺口登记在本页；如需聚合分析应另立页面。排序与列头筛选目前是本地能力，查询分页下的服务端下推仍受 ADR-0049 的拒绝规则约束。GraphQL 通路到位后只替换数据源的 source 段与筛选绑定，页面结构、筛选器、表格列与行点击导航全部复用。"
+  },
+  "filters": [
+    {
+      "id": "mtime",
+      "type": "timePoint",
+      "granularity": "month",
+      "label": "数据月份",
+      "default": "2026-04"
+    },
+    {
+      "id": "key-office",
+      "type": "boolean",
+      "label": "仅看重点国代"
+    },
+    {
+      "id": "industry-type",
+      "type": "dimension",
+      "dimension": "cloud-class",
+      "label": "产业"
+    },
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "geo-pc-code",
+      "label": "区域",
+      "hierarchy": [
+        {
+          "id": "geo",
+          "dimension": "geo-pc-code",
+          "label": "全球"
+        },
+        {
+          "id": "region-dept",
+          "dimension": "region-dept-code",
+          "label": "地区部"
+        },
+        {
+          "id": "office",
+          "dimension": "rep-office-code",
+          "label": "代表处"
+        }
+      ],
+      "defaultLevel": "geo"
+    },
+    {
+      "id": "na-type",
+      "type": "dimension",
+      "dimension": "public-cloud-na-level",
+      "label": "NA类型"
+    },
+    {
+      "id": "industry-l1",
+      "type": "dimension",
+      "dimension": "sub-industry-level1",
+      "label": "云行业"
+    },
+    {
+      "id": "industry-l2",
+      "type": "dimension",
+      "dimension": "sub-industry-level2",
+      "label": "云子行业",
+      "dependsOn": "industry-l1"
+    },
+    {
+      "id": "overdue",
+      "type": "dimension",
+      "dimension": "overdue-status",
+      "label": "超期状态"
+    },
+    {
+      "id": "opportunity-stage",
+      "type": "dimension",
+      "dimension": "opportunity-step",
+      "label": "机会点阶段"
+    },
+    {
+      "id": "bidding-amount",
+      "type": "numberRange",
+      "label": "预签金额"
+    },
+    {
+      "id": "keyword",
+      "type": "search",
+      "label": "搜索机会点 / 客户"
+    }
+  ],
+  "dataSources": {
+    "opportunity-list": {
+      "fields": {
+        "opportunity-code": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点编码"
+        },
+        "opportunity-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点名称"
+        },
+        "page-title": {
+          "type": "string",
+          "role": "dimension",
+          "label": "页面标题"
+        },
+        "party-company-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户名称"
+        },
+        "party-number": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户编号"
+        },
+        "public-cloud-na-level-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "客户级别"
+        },
+        "cloud-class": {
+          "type": "string",
+          "role": "dimension",
+          "label": "产业类型"
+        },
+        "bidding-amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "总预签金额",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "amount-estimated": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "本年度预计收入",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "winodds": {
+          "type": "number",
+          "role": "measure",
+          "label": "赢率",
+          "nullable": true,
+          "defaultFormat": "percent-1"
+        },
+        "opportunity-step": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点阶段"
+        },
+        "opportunity-type-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点类型"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部"
+        },
+        "rep-office-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "代表处"
+        },
+        "sub-industry-level1-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "云行业"
+        },
+        "sub-industry-level2-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "云子行业"
+        },
+        "create-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点创建时间"
+        },
+        "update-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "进展更新时间"
+        },
+        "is-unupdated-opportunity-label": {
+          "type": "string",
+          "role": "dimension",
+          "label": "未刷新机会点"
+        },
+        "order-date-estimated": {
+          "type": "string",
+          "role": "dimension",
+          "label": "预签时间"
+        },
+        "overdue-status": {
+          "type": "string",
+          "role": "dimension",
+          "label": "超期状态"
+        },
+        "opportunity-owner": {
+          "type": "string",
+          "role": "dimension",
+          "label": "机会点责任人"
+        },
+        "ati-status-label": {
+          "type": "string",
+          "role": "dimension",
+          "label": "立项状态"
+        },
+        "should-project-level-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "应立项级别"
+        },
+        "project-initiation-level": {
+          "type": "string",
+          "role": "dimension",
+          "label": "立项级别"
+        },
+        "project-progress": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目进展"
+        },
+        "project-risks": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目风险"
+        },
+        "project-help-required": {
+          "type": "string",
+          "role": "dimension",
+          "label": "困难求助"
+        },
+        "latest-analysis-meeting-time": {
+          "type": "string",
+          "role": "dimension",
+          "label": "最近一次分析会时间"
+        },
+        "sales-mode": {
+          "type": "string",
+          "role": "dimension",
+          "label": "销售模式"
+        },
+        "partner-real-customer-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "伙伴名称"
+        },
+        "mtime": {
+          "type": "string",
+          "role": "dimension",
+          "label": "数据月份"
+        },
+        "is-key-office": {
+          "type": "boolean",
+          "role": "dimension",
+          "label": "重点国代"
+        },
+        "forecast-jan": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "1月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-feb": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "2月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-mar": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "3月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-apr": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "4月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-may": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "5月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-jun": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "6月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-jul": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "7月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-aug": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "8月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-sep": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "9月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-oct": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "10月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-nov": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "11月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        },
+        "forecast-dec": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "12月客观预测",
+          "nullable": true,
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "opportunity-code": "OPP202604001",
+            "opportunity-name": "XX 云迁移项目",
+            "page-title": "XX 云迁移项目",
+            "party-company-name": "XX 科技有限公司",
+            "party-number": "PN10001",
+            "public-cloud-na-level-name": "战略客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 86000000,
+            "amount-estimated": 12000000,
+            "winodds": 0.72,
+            "opportunity-step": "商务谈判",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华东地区部",
+            "rep-office-name": "上海代表处",
+            "sub-industry-level1-name": "运营商",
+            "sub-industry-level2-name": "运营商-核心网",
+            "create-time": "2025-11",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-09",
+            "overdue-status": "正常",
+            "opportunity-owner": "张三",
+            "ati-status-label": "已立项",
+            "should-project-level-name": "L1",
+            "project-initiation-level": "L1",
+            "project-progress": "迁移窗口已对齐",
+            "project-risks": "迁移窗口审批未完成",
+            "project-help-required": "需要网络割接窗口",
+            "latest-analysis-meeting-time": "2026-03-12",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "伙伴甲",
+            "mtime": "202604",
+            "is-key-office": true,
+            "forecast-jan": 12000000,
+            "forecast-feb": 9000000,
+            "forecast-mar": 8000000,
+            "forecast-apr": 11000000,
+            "forecast-may": 10000000,
+            "forecast-jun": 7000000,
+            "forecast-jul": 6000000,
+            "forecast-aug": 9000000,
+            "forecast-sep": 8000000,
+            "forecast-oct": 11000000,
+            "forecast-nov": 10000000,
+            "forecast-dec": 13000000
+          },
+          {
+            "opportunity-code": "OPP202604002",
+            "opportunity-name": "政务云一期",
+            "page-title": "政务云一期",
+            "party-company-name": "YY 政务集团",
+            "party-number": "PN10002",
+            "public-cloud-na-level-name": "重要客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 54000000,
+            "amount-estimated": 8000000,
+            "winodds": 0.55,
+            "opportunity-step": "技术方案",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华北地区部",
+            "rep-office-name": "北京代表处",
+            "sub-industry-level1-name": "政府",
+            "sub-industry-level2-name": "政府-电子政务",
+            "create-time": "2025-09",
+            "update-time": "2026-02",
+            "is-unupdated-opportunity-label": "是",
+            "order-date-estimated": "2026-08",
+            "overdue-status": "超期",
+            "opportunity-owner": "李四",
+            "ati-status-label": "立项中",
+            "should-project-level-name": "L2",
+            "project-initiation-level": "L2",
+            "project-progress": "方案评审中",
+            "project-risks": "预算尚未下达",
+            "project-help-required": "需要行业专家",
+            "latest-analysis-meeting-time": "2026-02-20",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "伙伴乙",
+            "mtime": "202604",
+            "is-key-office": true,
+            "forecast-jan": 10800000,
+            "forecast-feb": 8100000,
+            "forecast-mar": 7200000,
+            "forecast-apr": 9900000,
+            "forecast-may": 9000000,
+            "forecast-jun": 6300000,
+            "forecast-jul": 5400000,
+            "forecast-aug": 8100000,
+            "forecast-sep": 7200000,
+            "forecast-oct": 9900000,
+            "forecast-nov": 9000000,
+            "forecast-dec": 11700000
+          },
+          {
+            "opportunity-code": "OPP202604003",
+            "opportunity-name": "制造数智化",
+            "page-title": "制造数智化",
+            "party-company-name": "ZZ 制造",
+            "party-number": "PN10003",
+            "public-cloud-na-level-name": "普通客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 21000000,
+            "amount-estimated": 3500000,
+            "winodds": 0.4,
+            "opportunity-step": "需求确认",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华南地区部",
+            "rep-office-name": "深圳代表处",
+            "sub-industry-level1-name": "制造",
+            "sub-industry-level2-name": "制造-离散",
+            "create-time": "2026-01",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-12",
+            "overdue-status": "正常",
+            "opportunity-owner": "王五",
+            "ati-status-label": "达标待立项",
+            "should-project-level-name": "L3",
+            "project-initiation-level": "L3",
+            "project-progress": "需求访谈完成",
+            "project-risks": "产线停机窗口不足",
+            "project-help-required": "",
+            "latest-analysis-meeting-time": null,
+            "sales-mode": "渠道",
+            "partner-real-customer-name": "伙伴丙",
+            "mtime": "202604",
+            "is-key-office": false,
+            "forecast-jan": 9600000,
+            "forecast-feb": 7200000,
+            "forecast-mar": 6400000,
+            "forecast-apr": 8800000,
+            "forecast-may": 8000000,
+            "forecast-jun": 5600000,
+            "forecast-jul": 4800000,
+            "forecast-aug": 7200000,
+            "forecast-sep": 6400000,
+            "forecast-oct": 8800000,
+            "forecast-nov": 8000000,
+            "forecast-dec": 10400000
+          },
+          {
+            "opportunity-code": "OPP202604004",
+            "opportunity-name": "金融核心上云",
+            "page-title": "金融核心上云",
+            "party-company-name": "AA 银行",
+            "party-number": "PN10004",
+            "public-cloud-na-level-name": "战略客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 120000000,
+            "amount-estimated": 18000000,
+            "winodds": 0.81,
+            "opportunity-step": "商务谈判",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华东地区部",
+            "rep-office-name": "杭州代表处",
+            "sub-industry-level1-name": "金融",
+            "sub-industry-level2-name": "金融-银行",
+            "create-time": "2025-06",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-07",
+            "overdue-status": "正常",
+            "opportunity-owner": "赵六",
+            "ati-status-label": "已立项",
+            "should-project-level-name": "L1",
+            "project-initiation-level": "L1",
+            "project-progress": "POC 通过",
+            "project-risks": "等保测评排队",
+            "project-help-required": "需要安全团队",
+            "latest-analysis-meeting-time": "2026-03-01",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "伙伴丁",
+            "mtime": "202604",
+            "is-key-office": true,
+            "forecast-jan": 8400000,
+            "forecast-feb": 6300000,
+            "forecast-mar": 5600000,
+            "forecast-apr": 7700000,
+            "forecast-may": 7000000,
+            "forecast-jun": 4900000,
+            "forecast-jul": 4200000,
+            "forecast-aug": 6300000,
+            "forecast-sep": 5600000,
+            "forecast-oct": 7700000,
+            "forecast-nov": 7000000,
+            "forecast-dec": 9100000
+          },
+          {
+            "opportunity-code": "OPP202604005",
+            "opportunity-name": "零售中台",
+            "page-title": "零售中台",
+            "party-company-name": "BB 零售",
+            "party-number": "PN10005",
+            "public-cloud-na-level-name": "重要客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 18000000,
+            "amount-estimated": 2200000,
+            "winodds": 0.33,
+            "opportunity-step": "初步接洽",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "西部地区部",
+            "rep-office-name": "成都代表处",
+            "sub-industry-level1-name": "零售",
+            "sub-industry-level2-name": "零售-连锁",
+            "create-time": "2026-02",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "是",
+            "order-date-estimated": "2027-03",
+            "overdue-status": "正常",
+            "opportunity-owner": "钱七",
+            "ati-status-label": "无需立项",
+            "should-project-level-name": "L4",
+            "project-initiation-level": "L4",
+            "project-progress": "客户内部立项中",
+            "project-risks": "",
+            "project-help-required": "",
+            "latest-analysis-meeting-time": null,
+            "sales-mode": "渠道",
+            "partner-real-customer-name": "",
+            "mtime": "202604",
+            "is-key-office": false,
+            "forecast-jan": 7200000,
+            "forecast-feb": 5400000,
+            "forecast-mar": 4800000,
+            "forecast-apr": 6600000,
+            "forecast-may": 6000000,
+            "forecast-jun": 4200000,
+            "forecast-jul": 3600000,
+            "forecast-aug": 5400000,
+            "forecast-sep": 4800000,
+            "forecast-oct": 6600000,
+            "forecast-nov": 6000000,
+            "forecast-dec": 7800000
+          },
+          {
+            "opportunity-code": "OPP202604006",
+            "opportunity-name": "出海协同办公",
+            "page-title": "出海协同办公",
+            "party-company-name": "CC 出海",
+            "party-number": "PN10006",
+            "public-cloud-na-level-name": "普通客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 9600000,
+            "amount-estimated": 1500000,
+            "winodds": 0.28,
+            "opportunity-step": "需求确认",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "亚太地区部",
+            "rep-office-name": "新加坡代表处",
+            "sub-industry-level1-name": "互联网",
+            "sub-industry-level2-name": "互联网-跨境",
+            "create-time": "2025-12",
+            "update-time": "2026-01",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-11",
+            "overdue-status": "超期",
+            "opportunity-owner": "孙八",
+            "ati-status-label": "达标待立项",
+            "should-project-level-name": "L3",
+            "project-initiation-level": "L3",
+            "project-progress": "海外合规评估",
+            "project-risks": "数据驻留未决",
+            "project-help-required": "需要法务",
+            "latest-analysis-meeting-time": "2026-01-18",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "伙伴戊",
+            "mtime": "202604",
+            "is-key-office": false,
+            "forecast-jan": 6000000,
+            "forecast-feb": 4500000,
+            "forecast-mar": 4000000,
+            "forecast-apr": 5500000,
+            "forecast-may": 5000000,
+            "forecast-jun": 3500000,
+            "forecast-jul": 3000000,
+            "forecast-aug": 4500000,
+            "forecast-sep": 4000000,
+            "forecast-oct": 5500000,
+            "forecast-nov": 5000000,
+            "forecast-dec": 6500000
+          },
+          {
+            "opportunity-code": "OPP202604007",
+            "opportunity-name": "教育云桌面",
+            "page-title": "教育云桌面",
+            "party-company-name": "DD 大学",
+            "party-number": "PN10007",
+            "public-cloud-na-level-name": "普通客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 7200000,
+            "amount-estimated": 900000,
+            "winodds": 0.22,
+            "opportunity-step": "技术方案",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华北地区部",
+            "rep-office-name": "天津代表处",
+            "sub-industry-level1-name": "教育",
+            "sub-industry-level2-name": "教育-高校",
+            "create-time": "2026-01",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-10",
+            "overdue-status": "正常",
+            "opportunity-owner": "周九",
+            "ati-status-label": "立项中",
+            "should-project-level-name": "L3",
+            "project-initiation-level": "L3",
+            "project-progress": "试点院系已定",
+            "project-risks": "寒暑假窗口",
+            "project-help-required": "",
+            "latest-analysis-meeting-time": null,
+            "sales-mode": "渠道",
+            "partner-real-customer-name": "伙伴己",
+            "mtime": "202604",
+            "is-key-office": false,
+            "forecast-jan": 4800000,
+            "forecast-feb": 3600000,
+            "forecast-mar": 3200000,
+            "forecast-apr": 4400000,
+            "forecast-may": 4000000,
+            "forecast-jun": 2800000,
+            "forecast-jul": 2400000,
+            "forecast-aug": 3600000,
+            "forecast-sep": 3200000,
+            "forecast-oct": 4400000,
+            "forecast-nov": 4000000,
+            "forecast-dec": 5200000
+          },
+          {
+            "opportunity-code": "OPP202604008",
+            "opportunity-name": "能源调度平台",
+            "page-title": "能源调度平台",
+            "party-company-name": "EE 能源",
+            "party-number": "PN10008",
+            "public-cloud-na-level-name": "战略客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 67000000,
+            "amount-estimated": 9400000,
+            "winodds": 0.61,
+            "opportunity-step": "商务谈判",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "西部地区部",
+            "rep-office-name": "西安代表处",
+            "sub-industry-level1-name": "能源",
+            "sub-industry-level2-name": "能源-电力",
+            "create-time": "2025-08",
+            "update-time": "2026-02",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2026-08",
+            "overdue-status": "正常",
+            "opportunity-owner": "吴十",
+            "ati-status-label": "已立项",
+            "should-project-level-name": "L2",
+            "project-initiation-level": "L2",
+            "project-progress": "可研通过",
+            "project-risks": "调度网隔离",
+            "project-help-required": "需要专线",
+            "latest-analysis-meeting-time": "2026-02-11",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "伙伴庚",
+            "mtime": "202604",
+            "is-key-office": true,
+            "forecast-jan": 3600000,
+            "forecast-feb": 2700000,
+            "forecast-mar": 2400000,
+            "forecast-apr": 3300000,
+            "forecast-may": 3000000,
+            "forecast-jun": 2100000,
+            "forecast-jul": 1800000,
+            "forecast-aug": 2700000,
+            "forecast-sep": 2400000,
+            "forecast-oct": 3300000,
+            "forecast-nov": 3000000,
+            "forecast-dec": 3900000
+          },
+          {
+            "opportunity-code": "OPP202604009",
+            "opportunity-name": "医疗影像云",
+            "page-title": "医疗影像云",
+            "party-company-name": "FF 医院",
+            "party-number": "PN10009",
+            "public-cloud-na-level-name": "重要客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 15000000,
+            "amount-estimated": 2100000,
+            "winodds": 0.36,
+            "opportunity-step": "技术方案",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华南地区部",
+            "rep-office-name": "广州代表处",
+            "sub-industry-level1-name": "医疗",
+            "sub-industry-level2-name": "医疗-三甲",
+            "create-time": "2025-10",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "是",
+            "order-date-estimated": "2026-12",
+            "overdue-status": "正常",
+            "opportunity-owner": "郑十一",
+            "ati-status-label": "立项中",
+            "should-project-level-name": "L2",
+            "project-initiation-level": "L2",
+            "project-progress": "等保三级进行中",
+            "project-risks": "影像合规",
+            "project-help-required": "需要等保顾问",
+            "latest-analysis-meeting-time": "2026-03-08",
+            "sales-mode": "直销",
+            "partner-real-customer-name": "",
+            "mtime": "202604",
+            "is-key-office": true,
+            "forecast-jan": 2400000,
+            "forecast-feb": 1800000,
+            "forecast-mar": 1600000,
+            "forecast-apr": 2200000,
+            "forecast-may": 2000000,
+            "forecast-jun": 1400000,
+            "forecast-jul": 1200000,
+            "forecast-aug": 1800000,
+            "forecast-sep": 1600000,
+            "forecast-oct": 2200000,
+            "forecast-nov": 2000000,
+            "forecast-dec": 2600000
+          },
+          {
+            "opportunity-code": "OPP202604010",
+            "opportunity-name": "SMB 协同套件",
+            "page-title": "SMB 协同套件",
+            "party-company-name": "GG 贸易",
+            "party-number": "PN10010",
+            "public-cloud-na-level-name": "普通客户",
+            "cloud-class": "公有云",
+            "bidding-amount": 1800000,
+            "amount-estimated": 260000,
+            "winodds": 0.18,
+            "opportunity-step": "初步接洽",
+            "opportunity-type-name": "新增",
+            "region-dept-name": "华东地区部",
+            "rep-office-name": "南京代表处",
+            "sub-industry-level1-name": "零售",
+            "sub-industry-level2-name": "零售-外贸",
+            "create-time": "2026-03",
+            "update-time": "2026-03",
+            "is-unupdated-opportunity-label": "否",
+            "order-date-estimated": "2027-01",
+            "overdue-status": "正常",
+            "opportunity-owner": "冯十二",
+            "ati-status-label": "无需立项",
+            "should-project-level-name": "L4",
+            "project-initiation-level": "L4",
+            "project-progress": "",
+            "project-risks": "",
+            "project-help-required": "",
+            "latest-analysis-meeting-time": null,
+            "sales-mode": "渠道",
+            "partner-real-customer-name": "",
+            "mtime": "202604",
+            "is-key-office": false,
+            "forecast-jan": 1200000,
+            "forecast-feb": 900000,
+            "forecast-mar": 800000,
+            "forecast-apr": 1100000,
+            "forecast-may": 1000000,
+            "forecast-jun": 700000,
+            "forecast-jul": 600000,
+            "forecast-aug": 900000,
+            "forecast-sep": 800000,
+            "forecast-oct": 1100000,
+            "forecast-nov": 1000000,
+            "forecast-dec": 1300000
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "components": [
+        {
+          "id": "list-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "机会点清单"
+          }
+        }
+      ],
+      "container": "plain"
+    },
+    {
+      "id": "list",
+      "container": "card",
+      "components": [
+        {
+          "id": "opportunity-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "opportunity-list"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "opportunity-code",
+                "title": "机会点编码",
+                "width": 140,
+                "fixed": "left"
+              },
+              {
+                "field": "opportunity-name",
+                "title": "机会点名称",
+                "width": 180,
+                "fixed": "left",
+                "link": true
+              },
+              {
+                "field": "party-company-name",
+                "title": "客户名称",
+                "width": 160
+              },
+              {
+                "field": "public-cloud-na-level-name",
+                "title": "客户级别",
+                "width": 100
+              },
+              {
+                "field": "cloud-class",
+                "title": "产业类型",
+                "width": 90
+              },
+              {
+                "field": "bidding-amount",
+                "title": "总预签金额",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "amount-estimated",
+                "title": "本年度预计收入",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "winodds",
+                "title": "赢率",
+                "align": "right",
+                "sortable": true,
+                "width": 80
+              },
+              {
+                "field": "opportunity-step",
+                "title": "机会点阶段",
+                "width": 100
+              },
+              {
+                "field": "opportunity-type-name",
+                "title": "机会点类型",
+                "width": 90
+              },
+              {
+                "field": "region-dept-name",
+                "title": "地区部",
+                "width": 120
+              },
+              {
+                "field": "rep-office-name",
+                "title": "代表处",
+                "width": 120
+              },
+              {
+                "field": "sub-industry-level1-name",
+                "title": "云行业",
+                "width": 90
+              },
+              {
+                "field": "sub-industry-level2-name",
+                "title": "云子行业",
+                "width": 120
+              },
+              {
+                "field": "create-time",
+                "title": "机会点创建时间",
+                "width": 120,
+                "filterable": {
+                  "mode": "dateRange"
+                }
+              },
+              {
+                "field": "update-time",
+                "title": "进展更新时间",
+                "width": 120,
+                "filterable": {
+                  "mode": "dateRange"
+                }
+              },
+              {
+                "field": "is-unupdated-opportunity-label",
+                "title": "未刷新机会点",
+                "width": 110,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "order-date-estimated",
+                "title": "预签时间",
+                "width": 110
+              },
+              {
+                "field": "overdue-status",
+                "title": "超期状态",
+                "width": 90
+              },
+              {
+                "field": "opportunity-owner",
+                "title": "机会点责任人",
+                "width": 110
+              },
+              {
+                "field": "ati-status-label",
+                "title": "立项状态",
+                "width": 110,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "should-project-level-name",
+                "title": "应立项级别",
+                "width": 110,
+                "filterable": {
+                  "mode": "select"
+                }
+              },
+              {
+                "field": "project-progress",
+                "title": "项目进展",
+                "width": 160
+              },
+              {
+                "field": "project-risks",
+                "title": "项目风险",
+                "width": 160
+              },
+              {
+                "field": "project-help-required",
+                "title": "困难求助",
+                "width": 140
+              },
+              {
+                "field": "latest-analysis-meeting-time",
+                "title": "最近一次分析会时间",
+                "width": 150
+              },
+              {
+                "field": "sales-mode",
+                "title": "销售模式",
+                "width": 90
+              },
+              {
+                "field": "partner-real-customer-name",
+                "title": "伙伴名称",
+                "width": 120
+              },
+              {
+                "field": "forecast-jan",
+                "title": "1月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-feb",
+                "title": "2月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-mar",
+                "title": "3月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-apr",
+                "title": "4月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-may",
+                "title": "5月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-jun",
+                "title": "6月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-jul",
+                "title": "7月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-aug",
+                "title": "8月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-sep",
+                "title": "9月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-oct",
+                "title": "10月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-nov",
+                "title": "11月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              },
+              {
+                "field": "forecast-dec",
+                "title": "12月客观预测",
+                "align": "right",
+                "sortable": true,
+                "width": 120
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10,
+              "numbered": true
+            },
+            "actions": [
+              {
+                "on": "click",
+                "navigate": {
+                  "page": "ioc-project-detail",
+                  "setParams": {
+                    "page-title": "page-title",
+                    "opportunity-code": "opportunity-code",
+                    "mtime": "mtime",
+                    "ati-status-label": "ati-status-label",
+                    "project-initiation-level": "project-initiation-level",
+                    "public-cloud-na-level-name": "public-cloud-na-level-name",
+                    "sub-industry-level1-name": "sub-industry-level1-name",
+                    "party-number": "party-number"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "layoutForm": "dashboard"
+}
