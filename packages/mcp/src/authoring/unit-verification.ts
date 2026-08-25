@@ -292,12 +292,15 @@ function closedSetsOf(snapshot: DataContextSnapshot): ClosedSets {
   };
   for (const environment of snapshot.executionEnvironments) {
     for (const schema of environment.schemas) {
+      // 指标名闭集来自业务域的指标条目(ADR-0044),不再从字段角色推断。
+      for (const metric of schema.metrics) {
+        mergeAliases(sets.metrics, metric.name, metric.aliases ?? [], () => ({
+          aliases: []
+        }));
+      }
       for (const object of schema.objects) {
         for (const field of object.fields) {
           const aliases = field.aliases ?? [];
-          if (field.roleHints.includes('measure')) {
-            mergeAliases(sets.metrics, field.name, aliases, () => ({ aliases: [] }));
-          }
           if (field.roleHints.includes('time')) {
             const entry = mergeAliases(sets.timeDimensions, field.name, aliases, () => ({
               aliases: [],

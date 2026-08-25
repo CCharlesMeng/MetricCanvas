@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { createDevLaunch, parseDevArguments } from '../src/dev';
 
 describe('开发模式入口', () => {
-  it('默认模式从仓库加载看板页面并注入 DQE Sim 端点', () => {
+  it('默认模式从仓库加载页面并注入 DQE Sim 端点', () => {
     const launch = createDevLaunch({
       profile: 'local',
       processEnv: { npm_execpath: '/pnpm.cjs' },

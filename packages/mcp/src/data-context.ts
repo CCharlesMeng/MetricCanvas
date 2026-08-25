@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { FieldType, JsonObject, JsonValue } from '@metriccanvas/page';
 
 /**
- * 数据上下文快照契约(Schema 元数据 1.0)。
+ * 数据上下文快照契约(Schema 元数据 1.1)。
  *
  * 对外契约的三件事都在本模块完成,不得在消费方再写一份:
  * - 形状声明:下方 interface,与 docs/schema-metadata.schema.json 逐层对应
@@ -11,10 +11,13 @@ import type { FieldType, JsonObject, JsonValue } from '@metriccanvas/page';
  * - 语义面投影:semanticSurfaceOf,把快照投影为按业务域组织的检索面,
  *   受控句式(取值域)只在这里解析一次;敏感字段在投影与检索侧统一标注,
  *   其取值域语义不外泄(#80)。
+ *
+ * 1.1 起指标是业务域级的**指标条目**(ADR-0044),不再是 roleHints 含
+ * 'measure' 的字段,可加性与时间聚合方式为结构化闭集而非 description 散文。
  */
 
 export interface DataContextSnapshot {
-  formatVersion: '1.0';
+  formatVersion: '1.1';
   id: string;
   version: string;
   generatedAt: string;
@@ -46,9 +49,42 @@ export interface DataSchema {
   id: string;
   name: string;
   description: string;
+  /** 业务域的指标条目(ADR-0031、ADR-0044);指标不再以字段身份出现。 */
+  metrics: MetricEntry[];
   objects: DataObject[];
   relationships: DataRelationship[];
   verifiedQueries: VerifiedQuery[];
+}
+
+/**
+ * 可加性(CONTEXT.md、ADR-0044)。`不可加` 的含义是「不得折叠已返回的
+ * 数据行」,不等于不可用:在目标粒度重新查询仍然合法。
+ */
+export type Additivity = '可加' | '半可加' | '不可加';
+
+/** 时间聚合方式:跨时间应求和、取均值还是取期末值。 */
+export type TimeAggregation = '求和' | '均值' | '期末值';
+
+/**
+ * 指标条目:业务域内一个可被发现与锚定口径的业务指标。
+ * 所属业务域由所在 schema 承载,不在条目内重复声明。
+ */
+export interface MetricEntry {
+  /** 业务名,即 DQE 语义面中的中文指标名。 */
+  name: string;
+  type: FieldType;
+  /** 口径说明;1.1 起不再承载可加性与时间聚合方式的受控句式。 */
+  description: string;
+  aliases?: string[];
+  unit?: string;
+  additivity: Additivity;
+  timeAggregation: TimeAggregation;
+  /** 是否为比率;比率指标的分子分母声明不属于 1.1(ADR-0044 本轮不做)。 */
+  isRatio: boolean;
+  /** 可与该指标组合的维度名(含时间维度);空数组表示未声明可组合性。 */
+  dimensions: string[];
+  nullable: boolean;
+  sensitive: boolean;
 }
 
 export interface DataObject {
@@ -59,8 +95,11 @@ export interface DataObject {
   fields: DataField[];
 }
 
-/** 字段角色提示;与 JSON Schema 的 roleHints 枚举一致('detail' 不属于快照契约)。 */
-export type DataFieldRoleHint = 'dimension' | 'measure' | 'time';
+/**
+ * 字段角色提示;与 JSON Schema 的 roleHints 枚举一致。
+ * 1.1 起不含 'measure'(指标是指标条目),也不含 'detail'(不属于快照契约)。
+ */
+export type DataFieldRoleHint = 'dimension' | 'time';
 
 export interface DataField {
   name: string;
@@ -121,7 +160,7 @@ const dataFieldZ = z
       .refine(uniqueItems, { message: '别名不得重复' })
       .optional(),
     roleHints: z
-      .array(z.enum(['dimension', 'measure', 'time']))
+      .array(z.enum(['dimension', 'time']))
       .min(1)
       .refine(uniqueItems, { message: '角色提示不得重复' }),
     unit: nonEmptyStringZ.optional(),
@@ -129,6 +168,25 @@ const dataFieldZ = z
     nullable: z.boolean(),
     sensitive: z.boolean()
   });
+
+const metricEntryZ = z.strictObject({
+  name: nonEmptyStringZ,
+  type: fieldTypeZ,
+  description: nonEmptyStringZ,
+  aliases: z
+    .array(nonEmptyStringZ)
+    .refine(uniqueItems, { message: '别名不得重复' })
+    .optional(),
+  unit: nonEmptyStringZ.optional(),
+  additivity: z.enum(['可加', '半可加', '不可加']),
+  timeAggregation: z.enum(['求和', '均值', '期末值']),
+  isRatio: z.boolean(),
+  dimensions: z
+    .array(nonEmptyStringZ)
+    .refine(uniqueItems, { message: '可用维度不得重复' }),
+  nullable: z.boolean(),
+  sensitive: z.boolean()
+});
 
 const relationshipEndZ = z.strictObject({
   object: nonEmptyStringZ,
@@ -186,6 +244,7 @@ const dataSchemaZ = z.strictObject({
   id: nonEmptyStringZ,
   name: nonEmptyStringZ,
   description: nonEmptyStringZ,
+  metrics: z.array(metricEntryZ),
   objects: z.array(dataObjectZ),
   relationships: z.array(relationshipZ),
   verifiedQueries: z.array(verifiedQueryZ)
@@ -212,7 +271,7 @@ const executionEnvironmentZ = z.strictObject({
 });
 
 const dataContextSnapshotZ = z.strictObject({
-  formatVersion: z.literal('1.0'),
+  formatVersion: z.literal('1.1'),
   id: nonEmptyStringZ,
   version: nonEmptyStringZ,
   generatedAt: z.iso.datetime({ offset: true }),
@@ -264,9 +323,10 @@ void _interfaceAssignableToZodShape;
 /* ---------- 语义面投影:业务域检索面与受控句式的唯一解析 ---------- */
 
 /**
- * Schema 元数据 1.0 的字段结构封闭,维度取值域以受控句式
- * 「取值域:值1、值2。」写在字段 description(与 DQE 仿真语义面的
- * 同面投影一致)。这是该句式的唯一解析声明,不得另写第二份 pattern。
+ * 维度取值域以受控句式「取值域:值1、值2。」写在字段 description
+ * (与 DQE 仿真语义面的同面投影一致)。这是该句式的唯一解析声明,不得
+ * 另写第二份 pattern。1.1 起它只适用于维度:指标的可加性与时间聚合方式
+ * 已是指标条目上的结构化字段,不再需要从散文里解析(ADR-0044)。
  */
 const VALUE_DOMAIN_PATTERN = /取值域[:：]([^。]+)/u;
 
@@ -299,10 +359,14 @@ export interface BusinessDomainSummary {
 export interface SemanticSurfaceMetric {
   name: string;
   aliases: string[];
-  /** 口径说明(含可加性与时间聚合方式的受控句式原文)。 */
+  /** 口径说明。 */
   description: string;
   type: FieldType;
   unit?: string;
+  additivity: Additivity;
+  timeAggregation: TimeAggregation;
+  isRatio: boolean;
+  dimensions: string[];
   nullable: boolean;
   sensitive: boolean;
 }
@@ -349,24 +413,25 @@ export function semanticSurfaceOf(
       const surface: DomainSemanticSurface = {
         businessDomain: schema.name,
         description: schema.description,
-        metrics: [],
+        metrics: schema.metrics.map((metric) => ({
+          name: metric.name,
+          aliases: metric.aliases ?? [],
+          description: metric.description,
+          type: metric.type,
+          ...(metric.unit === undefined ? {} : { unit: metric.unit }),
+          additivity: metric.additivity,
+          timeAggregation: metric.timeAggregation,
+          isRatio: metric.isRatio,
+          dimensions: [...metric.dimensions],
+          nullable: metric.nullable,
+          sensitive: metric.sensitive
+        })),
         dimensions: [],
         timeDimensions: []
       };
       for (const object of schema.objects) {
         for (const rawField of object.fields) {
           const field = redactSensitiveField(rawField);
-          if (field.roleHints.includes('measure')) {
-            surface.metrics.push({
-              name: field.name,
-              aliases: field.aliases ?? [],
-              description: field.description,
-              type: field.type,
-              ...(field.unit === undefined ? {} : { unit: field.unit }),
-              nullable: field.nullable,
-              sensitive: field.sensitive
-            });
-          }
           if (field.roleHints.includes('time')) {
             surface.timeDimensions.push({
               name: field.name,
@@ -420,6 +485,12 @@ export type DataContextMatch =
       objectId: string;
       name: string;
       description: string;
+    }
+  | {
+      kind: 'metric';
+      environmentId: string;
+      schemaId: string;
+      metric: MetricEntry;
     }
   | {
       kind: 'field';
@@ -476,6 +547,17 @@ export function createDataContextSearch(
             },
             text: [schema.id, schema.name, schema.description].join(' ')
           });
+          for (const metric of schema.metrics) {
+            candidates.push({
+              match: {
+                kind: 'metric',
+                environmentId: environment.id,
+                schemaId: schema.id,
+                metric
+              },
+              text: [metric.name, metric.description, ...(metric.aliases ?? [])].join(' ')
+            });
+          }
           for (const object of schema.objects) {
             candidates.push({
               match: {

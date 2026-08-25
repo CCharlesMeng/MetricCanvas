@@ -117,6 +117,13 @@ const dataShapeReadings: Record<string, DataShapeReading> = {
     measures: { min: 1, max: 1 },
     unprovableSemantics: '地域名称'
   },
+  gauge: {
+    bindsData: true,
+    dimensions: { min: 0, max: 0 },
+    measures: { min: 1, max: 1 },
+    maxRows: 1
+  },
+  tabContainer: { bindsData: false },
   // 「名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制」
   rankingCard: {
     bindsData: true,
@@ -130,6 +137,17 @@ const dataShapeReadings: Record<string, DataShapeReading> = {
     bindsData: true,
     dimensions: { min: 1, max: 1 },
     measures: { min: 1, max: 1 }
+  },
+  // 「单行记录；每项绑定一个 dimension 或 measure 字段」：
+  // 逐项的标签由作者给定，必填 props「items」无法由结果字段契约自动补齐。
+  keyValuePanel: { bindsData: true, minScalarFields: 1, maxRows: 1 },
+  // 「单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段」：
+  // 结果形状证明不了某个 string 字段承载的是整段长文本。
+  fieldText: {
+    bindsData: true,
+    dimensions: { min: 1 },
+    maxRows: 1,
+    unprovableSemantics: '整段长文本'
   },
   // 「不绑定页面数据源」
   text: { bindsData: false },

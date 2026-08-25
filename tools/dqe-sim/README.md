@@ -92,7 +92,9 @@ curl 'http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute' \
 - 两个业务域各有一个口径不同的「客户数」（在用调用口径 / 期末在册
   口径），仅凭指标名无法唯一路由时拒答并列出候选域，供消歧使用。
 - `docs/examples/schema-metadata.example.json` 中两个业务域 schema 的
-  字段与取值域由 `src/semantic-surface-metadata.ts` 从同一份声明投影，
-  同面守卫测试（`tests/semantic-surface-guard.test.ts`）保证二者一致。
+  指标条目、字段与取值域由 `src/semantic-surface-metadata.ts` 从同一份声明
+  投影，同面守卫测试（`tests/semantic-surface-guard.test.ts`）保证二者一致。
+  自 Schema 元数据 `1.1`（ADR-0044）起指标投影为业务域级指标条目，
+  可加性与时间聚合方式是结构化字段，不再拼进 `description`。
 - 存量正式页面依赖的精确匹配分支保持原样，语义面只在它们全部落空
   之后生效。

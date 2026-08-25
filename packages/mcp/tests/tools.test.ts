@@ -10,7 +10,7 @@ import {
 } from '../src';
 
 const snapshot: DataContextSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '1.1',
   id: 'test-context',
   version: 'context-v1',
   generatedAt: '2026-07-31T00:00:00.000Z',
@@ -24,17 +24,30 @@ const snapshot: DataContextSnapshot = {
       id: 'sales',
       name: '销售',
       description: '销售分析',
+      metrics: [{
+        name: '成交总额',
+        type: 'number',
+        description: '订单成交金额',
+        aliases: ['GMV'],
+        additivity: '可加',
+        timeAggregation: '求和',
+        isRatio: false,
+        dimensions: ['下单日期'],
+        nullable: false,
+        sensitive: false
+      }],
       objects: [{
         id: 'orders',
         name: '订单',
         kind: 'dataset',
         description: '订单汇总',
         fields: [{
-          name: '成交总额',
-          type: 'number',
-          description: '订单成交金额',
-          aliases: ['GMV'],
-          roleHints: ['measure'],
+          name: '下单日期',
+          type: 'date',
+          description: '订单成交日期',
+          aliases: ['成交日期'],
+          roleHints: ['dimension', 'time'],
+          granularity: 'day',
           nullable: false,
           sensitive: false
         }]
@@ -91,7 +104,7 @@ describe('页面搭建 MCP(当前 Schema 由 versionPolicy 声明)', () => {
     expect(result.structuredContent).toMatchObject({
       ok: true,
       dataContextVersion: 'context-v1',
-      matches: [{ kind: 'field', field: { name: '成交总额' } }]
+      matches: [{ kind: 'metric', metric: { name: '成交总额' } }]
     });
     await connection.close();
   });

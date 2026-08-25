@@ -1,22 +1,23 @@
 # 数据上下文 Schema 元数据
 
-Schema 元数据是数据上下文快照中的结构化数据说明。页面搭建 Agent 使用它发现可用执行环境、对象、字段、关系和查询约束。
+Schema 元数据是数据上下文快照中的结构化数据说明。页面搭建 Agent 使用它发现可用执行环境、指标条目、对象、字段、关系和查询约束。
 
-本文描述创作期的数据上下文，不描述看板页面。看板页面协议见 [PAGE-METADATA.md](../PAGE-METADATA.md)。
+本文描述创作期的数据上下文，不描述页面。页面协议见 [PAGE-METADATA.md](../PAGE-METADATA.md)。
 
 配套文件：
 
 - [JSON Schema](./schema-metadata.schema.json)
 - [完整示例](./examples/schema-metadata.example.json)
 
-格式版本为 `1.0`。
+格式版本为 `1.1`。
 
 ## 作用范围
 
 Schema 元数据提供：
 
 - 当前身份可访问的执行环境；
-- 可用于查询的 Schema、对象和字段；
+- 可用于查询的 Schema、指标条目、对象和字段；
+- 指标的口径说明、可加性与时间聚合方式；
 - 字段类型、业务含义、别名、单位和角色提示；
 - 对象之间受支持的关系；
 - 查询安全边界和资源限制；
@@ -26,7 +27,7 @@ Schema 元数据提供：
 Schema 元数据不包含：
 
 - 业务数据行；
-- 看板页面布局；
+- 页面布局；
 - 组件配置；
 - 页面筛选状态；
 - 执行端点 URL 或凭据；
@@ -34,7 +35,7 @@ Schema 元数据不包含：
 
 ## 与页面协议的关系
 
-| 内容 | Schema 元数据 | 看板页面 |
+| 内容 | Schema 元数据 | 页面 |
 |---|---:|---:|
 | 执行环境与可访问对象 | 是 | 否 |
 | 字段业务说明与关系 | 是 | 否 |
@@ -51,7 +52,7 @@ Schema 元数据不包含：
 
 ```json
 {
-  "formatVersion": "1.0",
+  "formatVersion": "1.1",
   "id": "sales-analytics",
   "version": "2026-07-31.1",
   "generatedAt": "2026-07-31T08:00:00.000Z",
@@ -62,7 +63,7 @@ Schema 元数据不包含：
 
 | 字段 | 必填 | 说明 |
 |---|---:|---|
-| `formatVersion` | 是 | 固定为 `"1.0"` |
+| `formatVersion` | 是 | 固定为 `"1.1"` |
 | `id` | 是 | 数据上下文的稳定标识 |
 | `version` | 是 | 不可变快照版本 |
 | `generatedAt` | 是 | ISO 8601 生成时间 |
@@ -152,22 +153,62 @@ Schema 元数据不包含：
   "id": "sales",
   "name": "销售分析",
   "description": "销售订单与区域分析",
+  "metrics": [],
   "objects": [],
   "relationships": [],
   "verifiedQueries": []
 }
 ```
 
-Schema 在执行环境内组织对象、关系和已验证查询。
+Schema 在执行环境内组织指标条目、对象、关系和已验证查询。一个 Schema 即一个业务域。
 
 | 字段 | 必填 | 说明 |
 |---|---:|---|
 | `id` | 是 | 执行环境内唯一标识 |
-| `name` | 是 | 展示名称 |
+| `name` | 是 | 展示名称，即业务域名 |
 | `description` | 是 | 业务范围 |
+| `metrics` | 是 | 业务域内的指标条目 |
 | `objects` | 是 | 可查询对象 |
 | `relationships` | 是 | 受支持的对象关系 |
 | `verifiedQueries` | 是 | 已验证查询 |
+
+## 指标条目
+
+```json
+{
+  "name": "成交总额",
+  "type": "number",
+  "description": "统计期内已完成订单的成交金额合计",
+  "aliases": ["GMV", "成交额"],
+  "unit": "元",
+  "additivity": "可加",
+  "timeAggregation": "求和",
+  "isRatio": false,
+  "dimensions": ["区域", "客户级别", "统计周期"],
+  "nullable": false,
+  "sensitive": false
+}
+```
+
+| 字段 | 必填 | 说明 |
+|---|---:|---|
+| `name` | 是 | 查询协议使用的业务指标名 |
+| `type` | 是 | 与字段相同的类型闭集 |
+| `description` | 是 | 口径说明 |
+| `aliases` | 否 | 检索别名 |
+| `unit` | 否 | 业务单位 |
+| `additivity` | 是 | `可加`、`半可加` 或 `不可加` |
+| `timeAggregation` | 是 | `求和`、`均值` 或 `期末值` |
+| `isRatio` | 是 | 是否为比率 |
+| `dimensions` | 是 | 可与该指标组合的维度名；空数组表示未声明可组合性 |
+| `nullable` | 是 | 查询结果是否允许空值 |
+| `sensitive` | 是 | 是否为敏感指标 |
+
+指标条目是业务域级的发现条目，不是某个对象的字段。所属业务域由所在 Schema 承载，不在条目内重复声明。
+
+`additivity` 描述**能否折叠已经返回的数据行**：`可加` 允许在任意维度上求和；`半可加` 允许在非时间维度上求和，跨时间按 `timeAggregation` 处理；`不可加` 表示不得折叠已返回的数据行，但在目标粒度重新查询仍然合法。声明缺失时不得跨粒度派生（见 [ADR-0039](./adr/0039-derived-measure-templates-as-company-definitions.md)）。
+
+比率指标的分子分母声明不属于 `1.1`。
 
 ## 数据对象
 
@@ -193,11 +234,11 @@ Schema 在执行环境内组织对象、关系和已验证查询。
 
 ```json
 {
-  "name": "gmv",
-  "type": "number",
-  "description": "成交总额",
-  "aliases": ["成交额", "交易额"],
-  "roleHints": ["measure"],
+  "name": "region",
+  "type": "string",
+  "description": "销售区域",
+  "aliases": ["大区", "区域"],
+  "roleHints": ["dimension"],
   "unit": "元",
   "granularity": "order",
   "nullable": false,
@@ -211,19 +252,19 @@ Schema 在执行环境内组织对象、关系和已验证查询。
 | `type` | 是 | `string`、`number`、`boolean`、`date` 或 `datetime` |
 | `description` | 是 | 业务含义和口径 |
 | `aliases` | 否 | 检索别名 |
-| `roleHints` | 是 | `dimension`、`measure` 或 `time` |
+| `roleHints` | 是 | `dimension` 或 `time` |
 | `unit` | 否 | 业务单位 |
 | `granularity` | 否 | 时间或统计粒度 |
 | `nullable` | 是 | 查询结果是否允许空值 |
 | `sensitive` | 是 | 是否为敏感字段 |
 
-`roleHints` 用于查询生成和字段发现。看板页面仍显式声明自己的结果字段 `role`。
+`roleHints` 用于查询生成和字段发现。自 `1.1` 起字段只描述维度与时间维度，指标由 Schema 的 `metrics` 声明。页面仍显式声明自己的结果字段 `role`。
 
 `aliases` 只参与发现，不作为查询输出字段名。
 
 `unit` 描述业务单位，不指定组件展示格式。
 
-Schema 元数据的 `type: "number"` 描述查询发现层的数值能力，不直接决定看板页面的结果字段类型。页面搭建在业务语义已确认是人民币金额时，应把真实执行后的结果字段物化为 `type: "money"`、`role: "measure"`、`currency: "CNY"`；`defaultFormat: "cny-adaptive"` 仍只是可被组件字段绑定覆盖的展示建议。
+Schema 元数据的 `type: "number"` 描述查询发现层的数值能力，不直接决定页面的结果字段类型。页面搭建在业务语义已确认是人民币金额时，应把真实执行后的结果字段物化为 `type: "money"`、`role: "measure"`、`currency: "CNY"`；`defaultFormat: "cny-adaptive"` 仍只是可被组件字段绑定覆盖的展示建议。
 
 ## 对象关系
 
@@ -305,6 +346,7 @@ Schema 元数据的 `type: "number"` 描述查询发现层的数值能力，不�
 
 - 执行环境；
 - Schema；
+- 指标条目；
 - 对象；
 - 字段；
 - 已验证查询。
@@ -314,7 +356,7 @@ Schema 元数据的 `type: "number"` 描述查询发现层的数值能力，不�
 页面搭建步骤：
 
 1. 根据页面需求检索数据上下文；
-2. 选择执行环境、对象、字段或已验证查询；
+2. 选择执行环境、指标条目、维度字段或已验证查询；
 3. 形成 DQE 查询定义；
 4. 声明页面结果字段契约；
 5. 通过页面校验和真实查询预览确认结果。
@@ -328,6 +370,7 @@ Schema 元数据文件满足以下约束：
 - 所有必填字段存在；
 - 未定义属性被拒绝；
 - id 在各自作用域内唯一；
+- 指标条目名在业务域内唯一，且 `additivity` 与 `timeAggregation` 取自闭集；
 - 时间使用 ISO 8601；
 - 数值限制为正整数；
 - `readOnly` 固定为 `true`；
@@ -345,6 +388,7 @@ Schema 元数据文件满足以下约束：
 - DQE 执行环境；
 - 查询约束与安全范围；
 - 销售分析 Schema；
+- 指标条目；
 - 数据对象与字段；
 - 对象关系；
 - 已验证 DQE 查询。

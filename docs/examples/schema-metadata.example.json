@@ -1,5 +1,5 @@
 {
-  "formatVersion": "1.0",
+  "formatVersion": "1.1",
   "id": "customer-activity-context",
   "version": "2026-07-31.1",
   "generatedAt": "2026-07-31T08:00:00.000Z",
@@ -16,6 +16,27 @@
           "id": "customer-activity",
           "name": "客户活动",
           "description": "客户分层、活动次数与活动完成情况",
+          "metrics": [
+            {
+              "name": "NA客户数",
+              "type": "number",
+              "description": "符合当前查询条件的 NA 客户数量",
+              "aliases": [
+                "客户数"
+              ],
+              "unit": "个",
+              "additivity": "半可加",
+              "timeAggregation": "期末值",
+              "isRatio": false,
+              "dimensions": [
+                "客户级别",
+                "地区部",
+                "统计月份"
+              ],
+              "nullable": false,
+              "sensitive": false
+            }
+          ],
           "objects": [
             {
               "id": "customer-activity-summary",
@@ -62,20 +83,6 @@
                     "time"
                   ],
                   "granularity": "month",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "NA客户数",
-                  "type": "number",
-                  "description": "符合当前查询条件的 NA 客户数量",
-                  "aliases": [
-                    "客户数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "个",
                   "nullable": false,
                   "sensitive": false
                 }
@@ -128,6 +135,86 @@
           "id": "operations-analytics",
           "name": "运营分析",
           "description": "Tokens 服务的用量、计费与调用运营分析",
+          "metrics": [
+            {
+              "name": "Tokens消耗量",
+              "type": "number",
+              "description": "统计期内推理与训练消耗的 Token 总量",
+              "aliases": [
+                "消耗量",
+                "用量"
+              ],
+              "unit": "Token",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "区域",
+                "模型",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "计费Tokens量",
+              "type": "number",
+              "description": "统计期内计费的 Token 量,排除内部试用额度",
+              "aliases": [
+                "计费量"
+              ],
+              "unit": "Token",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "区域",
+                "模型",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "Tokens请求量",
+              "type": "number",
+              "description": "统计期内的模型调用请求次数,按请求计数而非 Token 计数",
+              "aliases": [
+                "调用次数"
+              ],
+              "unit": "次",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "区域",
+                "模型",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "客户数",
+              "type": "number",
+              "description": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同",
+              "aliases": [
+                "在用客户数",
+                "活跃客户数"
+              ],
+              "unit": "家",
+              "additivity": "不可加",
+              "timeAggregation": "均值",
+              "isRatio": false,
+              "dimensions": [
+                "区域",
+                "模型",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            }
+          ],
           "objects": [
             {
               "id": "operations-analytics-surface",
@@ -173,64 +260,6 @@
                     "time"
                   ],
                   "granularity": "month,day",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "Tokens消耗量",
-                  "type": "number",
-                  "description": "统计期内推理与训练消耗的 Token 总量。可加性:可加;时间聚合方式:求和。",
-                  "aliases": [
-                    "消耗量",
-                    "用量"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "Token",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "计费Tokens量",
-                  "type": "number",
-                  "description": "统计期内计费的 Token 量,排除内部试用额度。可加性:可加;时间聚合方式:求和。",
-                  "aliases": [
-                    "计费量"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "Token",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "Tokens请求量",
-                  "type": "number",
-                  "description": "统计期内的模型调用请求次数,按请求计数而非 Token 计数。可加性:可加;时间聚合方式:求和。",
-                  "aliases": [
-                    "调用次数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "次",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "客户数",
-                  "type": "number",
-                  "description": "统计期内发起过模型调用的去重客户数,与客户经营域的期末在册口径不同。可加性:不可加;时间聚合方式:均值。",
-                  "aliases": [
-                    "在用客户数",
-                    "活跃客户数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "家",
                   "nullable": false,
                   "sensitive": false
                 }
@@ -288,6 +317,85 @@
           "id": "customer-management",
           "name": "客户经营",
           "description": "客户规模、增长与流失的经营分析",
+          "metrics": [
+            {
+              "name": "客户数",
+              "type": "number",
+              "description": "期末在册客户总数,与运营分析域的在用调用口径不同",
+              "aliases": [
+                "在册客户数",
+                "存量客户数"
+              ],
+              "unit": "家",
+              "additivity": "半可加",
+              "timeAggregation": "期末值",
+              "isRatio": false,
+              "dimensions": [
+                "客户级别",
+                "行业",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "新增客户数",
+              "type": "number",
+              "description": "统计期内新增签约的客户数",
+              "aliases": [
+                "新签客户数"
+              ],
+              "unit": "家",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "客户级别",
+                "行业",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "流失客户数",
+              "type": "number",
+              "description": "统计期内终止合作的客户数",
+              "aliases": [
+                "流失数"
+              ],
+              "unit": "家",
+              "additivity": "可加",
+              "timeAggregation": "求和",
+              "isRatio": false,
+              "dimensions": [
+                "客户级别",
+                "行业",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            },
+            {
+              "name": "客户留存率",
+              "type": "number",
+              "description": "统计期末仍然在册的客户占期初在册客户的比例",
+              "aliases": [
+                "留存率"
+              ],
+              "unit": "%",
+              "additivity": "不可加",
+              "timeAggregation": "均值",
+              "isRatio": true,
+              "dimensions": [
+                "客户级别",
+                "行业",
+                "统计周期"
+              ],
+              "nullable": false,
+              "sensitive": false
+            }
+          ],
           "objects": [
             {
               "id": "customer-management-surface",
@@ -333,63 +441,6 @@
                     "time"
                   ],
                   "granularity": "month",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "客户数",
-                  "type": "number",
-                  "description": "期末在册客户总数,与运营分析域的在用调用口径不同。可加性:半可加;时间聚合方式:期末值。",
-                  "aliases": [
-                    "在册客户数",
-                    "存量客户数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "家",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "新增客户数",
-                  "type": "number",
-                  "description": "统计期内新增签约的客户数。可加性:可加;时间聚合方式:求和。",
-                  "aliases": [
-                    "新签客户数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "家",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "流失客户数",
-                  "type": "number",
-                  "description": "统计期内终止合作的客户数。可加性:可加;时间聚合方式:求和。",
-                  "aliases": [
-                    "流失数"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "家",
-                  "nullable": false,
-                  "sensitive": false
-                },
-                {
-                  "name": "客户留存率",
-                  "type": "number",
-                  "description": "统计期末仍然在册的客户占期初在册客户的比例。可加性:不可加;时间聚合方式:均值。",
-                  "aliases": [
-                    "留存率"
-                  ],
-                  "roleHints": [
-                    "measure"
-                  ],
-                  "unit": "%",
                   "nullable": false,
                   "sensitive": false
                 }

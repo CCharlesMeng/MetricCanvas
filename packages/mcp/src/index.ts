@@ -187,7 +187,7 @@ export function createMetricCanvasMcpServer(
 
   server.registerPrompt(
     'build_dashboard_page',
-    { description: `MetricCanvas 受治理的看板页面生成流程(当前 Schema ${versionPolicy.current})` },
+    { description: `MetricCanvas 受治理的页面生成流程(当前 Schema ${versionPolicy.current})` },
     async () => ({
       messages: [{ role: 'user', content: { type: 'text', text: PAGE_BUILDING_PROMPT } }]
     })
@@ -221,7 +221,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'search_data_context',
     {
-      description: '按名称、说明或别名检索当前身份可用的执行环境、Schema、对象、字段与已验证查询。',
+      description: '按名称、说明或别名检索当前身份可用的执行环境、Schema、指标条目、对象、字段与已验证查询。',
       inputSchema: z.object({
         query: z.string().min(1),
         limit: z.number().int().min(1).max(50).default(10)
@@ -276,7 +276,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'save_page',
     {
-      description: '校验并保存看板页面修订。',
+      description: '校验并保存页面修订。',
       inputSchema: z.object({
         pageId: z.string().min(1),
         baseRevisionId: z.string().nullable(),
@@ -295,7 +295,7 @@ export function createMetricCanvasMcpServer(
   server.registerTool(
     'list_pages',
     {
-      description: '按 pageId 升序分页列出看板页面摘要。',
+      description: '按 pageId 升序分页列出页面摘要。',
       inputSchema: z.object({
         cursor: z.string().min(1).optional(),
         limit: z.number().int().min(1).max(100).default(50)

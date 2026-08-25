@@ -105,9 +105,41 @@ describe('数据上下文快照契约:parse ↔ JSON Schema 等价守护', () =>
 
   it.each([
     {
-      label: 'formatVersion 非 1.0',
+      label: 'formatVersion 非 1.1',
       apply: (root: Record<string, unknown>) => {
         root.formatVersion = '2.0';
+      }
+    },
+    {
+      label: '指标条目 additivity 不在闭集',
+      apply: (root: Record<string, unknown>) => {
+        nodeAt(root, [
+          'executionEnvironments', 0, 'schemas', 0, 'metrics', 0
+        ]).additivity = '可加的';
+      }
+    },
+    {
+      label: '指标条目 timeAggregation 不在闭集',
+      apply: (root: Record<string, unknown>) => {
+        nodeAt(root, [
+          'executionEnvironments', 0, 'schemas', 0, 'metrics', 0
+        ]).timeAggregation = '取最后一条';
+      }
+    },
+    {
+      label: '指标条目 isRatio 非布尔',
+      apply: (root: Record<string, unknown>) => {
+        nodeAt(root, [
+          'executionEnvironments', 0, 'schemas', 0, 'metrics', 0
+        ]).isRatio = '否';
+      }
+    },
+    {
+      label: '指标条目可用维度重复',
+      apply: (root: Record<string, unknown>) => {
+        nodeAt(root, [
+          'executionEnvironments', 0, 'schemas', 0, 'metrics', 0
+        ]).dimensions = ['客户级别', '客户级别'];
       }
     },
     {
@@ -241,6 +273,32 @@ describe('sensitive 字段:检索侧标注,取值域语义不外泄(#80)', () =>
 
     const byValue = await search.search({ query: '甲公司' });
     expect(byValue.matches).toEqual([]);
+  });
+
+  // ADR-0044:可加性与时间聚合方式是结构化闭集,不再由消费方解析散文。
+  it('语义面把指标条目的可加性与时间聚合方式结构化投影', () => {
+    const parsed = parseDataContextSnapshot(example);
+    if (!parsed.ok) throw new Error('示例快照必须可解析');
+    const surfaces = semanticSurfaceOf(parsed.snapshot);
+    const management = surfaces.find((surface) => surface.businessDomain === '客户经营');
+
+    const retention = management?.metrics.find((metric) => metric.name === '客户留存率');
+    expect(retention).toMatchObject({
+      additivity: '不可加',
+      timeAggregation: '均值',
+      isRatio: true
+    });
+    expect(retention?.description).not.toContain('可加性');
+
+    const newCustomers = management?.metrics.find(
+      (metric) => metric.name === '新增客户数'
+    );
+    expect(newCustomers).toMatchObject({
+      additivity: '可加',
+      timeAggregation: '求和',
+      isRatio: false
+    });
+    expect(newCustomers?.dimensions).toContain('统计周期');
   });
 
   it('取值域受控句式只有一份解析声明', () => {

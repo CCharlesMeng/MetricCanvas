@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  hasQueryFieldMapping,
   isQueryDataSource,
   parsePage,
   type DataSources,
@@ -55,6 +56,7 @@ describe('正式页面 DQE 场景', () => {
     results.forEach((result, index) => {
       const firstRow = result.data[0]!;
       for (const field of Object.values(sources[index]!.fields)) {
+        if (!hasQueryFieldMapping(field)) continue;
         expect(firstRow).toHaveProperty(field.queryField);
       }
     });
@@ -115,6 +117,7 @@ describe('正式页面 DQE 场景', () => {
     results.forEach((result, index) => {
       expect(result.data.length).toBeGreaterThan(0);
       for (const field of Object.values(sources[index]!.fields)) {
+        if (!hasQueryFieldMapping(field)) continue;
         expect(result.data[0]).toHaveProperty(field.queryField);
       }
     });

@@ -10,12 +10,15 @@ import { executeDqeItem } from '../src/execute';
 import { semanticSurface } from '../src/semantic-surface';
 import {
   projectDomainFields,
-  type MetadataField
+  projectDomainMetrics,
+  type MetadataField,
+  type MetadataMetricEntry
 } from '../src/semantic-surface-metadata';
 
 interface ExampleSchema {
   id: string;
   name: string;
+  metrics: MetadataMetricEntry[];
   objects: Array<{ id: string; fields: MetadataField[] }>;
   verifiedQueries: Array<{
     id: string;
@@ -60,14 +63,43 @@ describe('数据上下文同面守卫', () => {
     }
   );
 
-  it('语义面指标名与维度名不与示例中其他 schema 的字段声明冲突', () => {
+  // 指标自 Schema 元数据 1.1 起是业务域级指标条目(ADR-0044),不再是
+  // roleHints 含 'measure' 的字段,可加性与时间聚合方式为结构化闭集。
+  it.each(semanticSurface.map((domain) => [domain.name, domain] as const))(
+    '业务域「%s」的指标条目与语义面完全一致',
+    (_name, domain) => {
+      const schema = exampleSchemas.find((candidate) => candidate.id === domain.id)!;
+      const actualMetrics = schema.metrics;
+      const expectedMetrics = projectDomainMetrics(domain);
+
+      const differences = diffEntries(actualMetrics, expectedMetrics, '指标条目');
+      expect(
+        differences,
+        `业务域「${domain.name}」的指标条目与语义面不同步:${differences.join(';')}`
+      ).toEqual([]);
+      expect(actualMetrics).toEqual(expectedMetrics);
+    }
+  );
+
+  it('示例中的字段声明不含 measure 角色(指标已迁出为指标条目)', () => {
+    const measureFields = exampleSchemas
+      .flatMap((schema) => schema.objects.flatMap((object) => object.fields))
+      .filter((field) => (field.roleHints as string[]).includes('measure'))
+      .map((field) => field.name);
+    expect(measureFields).toEqual([]);
+  });
+
+  it('语义面指标名与维度名不与示例中其他 schema 的声明冲突', () => {
     const surfaceSchemaIds = new Set(semanticSurface.map((domain) => domain.id));
-    const otherFieldNames = new Set(
-      exampleSchemas
-        .filter((schema) => !surfaceSchemaIds.has(schema.id))
-        .flatMap((schema) => schema.objects.flatMap((object) => object.fields))
-        .map((field) => field.name)
+    const otherSchemas = exampleSchemas.filter(
+      (schema) => !surfaceSchemaIds.has(schema.id)
     );
+    const otherFieldNames = new Set([
+      ...otherSchemas
+        .flatMap((schema) => schema.objects.flatMap((object) => object.fields))
+        .map((field) => field.name),
+      ...otherSchemas.flatMap((schema) => schema.metrics.map((metric) => metric.name))
+    ]);
     const surfaceNames = semanticSurface.flatMap((domain) => [
       ...domain.metrics.map((metric) => metric.name),
       ...domain.dimensions.map((dimension) => dimension.name)
@@ -110,21 +142,29 @@ function diffFields(
   actual: MetadataField[],
   expected: MetadataField[]
 ): string[] {
-  const actualByName = new Map(actual.map((field) => [field.name, field]));
-  const expectedByName = new Map(expected.map((field) => [field.name, field]));
+  return diffEntries(actual, expected, '字段');
+}
+
+function diffEntries<Entry extends { name: string }>(
+  actual: Entry[],
+  expected: Entry[],
+  label: string
+): string[] {
+  const actualByName = new Map(actual.map((entry) => [entry.name, entry]));
+  const expectedByName = new Map(expected.map((entry) => [entry.name, entry]));
   const differences: string[] = [];
   for (const name of expectedByName.keys()) {
-    if (!actualByName.has(name)) differences.push(`示例缺少字段「${name}」`);
+    if (!actualByName.has(name)) differences.push(`示例缺少${label}「${name}」`);
   }
   for (const name of actualByName.keys()) {
-    if (!expectedByName.has(name)) differences.push(`示例多出字段「${name}」`);
+    if (!expectedByName.has(name)) differences.push(`示例多出${label}「${name}」`);
   }
-  for (const [name, expectedField] of expectedByName) {
-    const actualField = actualByName.get(name);
-    if (!actualField) continue;
-    if (stableStringify(actualField) !== stableStringify(expectedField)) {
+  for (const [name, expectedEntry] of expectedByName) {
+    const actualEntry = actualByName.get(name);
+    if (!actualEntry) continue;
+    if (stableStringify(actualEntry) !== stableStringify(expectedEntry)) {
       differences.push(
-        `字段「${name}」声明不一致(期望 ${JSON.stringify(expectedField)},实际 ${JSON.stringify(actualField)})`
+        `${label}「${name}」声明不一致(期望 ${JSON.stringify(expectedEntry)},实际 ${JSON.stringify(actualEntry)})`
       );
     }
   }

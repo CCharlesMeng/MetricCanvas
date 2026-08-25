@@ -22,7 +22,7 @@ import {
  * 语义面的同面投影一致)。
  */
 const snapshot: DataContextSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '1.1',
   id: 'unit-verification-context',
   version: 'context-v1',
   generatedAt: '2026-08-12T00:00:00.000Z',
@@ -36,6 +36,34 @@ const snapshot: DataContextSnapshot = {
       id: 'operations-analytics',
       name: '运营分析',
       description: 'Tokens 服务的用量运营分析',
+      metrics: [
+        {
+          name: 'Tokens消耗量',
+          type: 'number',
+          description: '统计期内消耗的 Token 总量',
+          aliases: ['消耗量'],
+          unit: 'Token',
+          additivity: '可加',
+          timeAggregation: '求和',
+          isRatio: false,
+          dimensions: ['区域', '统计周期'],
+          nullable: false,
+          sensitive: false
+        },
+        {
+          name: '客户数',
+          type: 'number',
+          description: '统计期内发起过调用的去重客户数',
+          aliases: ['活跃客户数'],
+          unit: '家',
+          additivity: '不可加',
+          timeAggregation: '均值',
+          isRatio: false,
+          dimensions: ['区域', '统计周期'],
+          nullable: false,
+          sensitive: false
+        }
+      ],
       objects: [{
         id: 'ops-summary',
         name: '运营汇总',
@@ -58,26 +86,6 @@ const snapshot: DataContextSnapshot = {
             aliases: ['统计时间'],
             roleHints: ['dimension', 'time'],
             granularity: 'month,day',
-            nullable: false,
-            sensitive: false
-          },
-          {
-            name: 'Tokens消耗量',
-            type: 'number',
-            description: '统计期内消耗的 Token 总量。可加性:可加;时间聚合方式:求和。',
-            aliases: ['消耗量'],
-            roleHints: ['measure'],
-            unit: 'Token',
-            nullable: false,
-            sensitive: false
-          },
-          {
-            name: '客户数',
-            type: 'number',
-            description: '统计期内发起过调用的去重客户数。可加性:不可加;时间聚合方式:均值。',
-            aliases: ['活跃客户数'],
-            roleHints: ['measure'],
-            unit: '家',
             nullable: false,
             sensitive: false
           }

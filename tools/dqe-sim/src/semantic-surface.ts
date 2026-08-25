@@ -27,6 +27,8 @@ export interface SurfaceMetric {
   unit: string;
   additivity: Additivity;
   timeAggregation: TimeAggregation;
+  /** 是否为比率(ADR-0044 的指标条目要素);分子分母声明不属于 1.1。 */
+  isRatio: boolean;
   /** 确定性合成的取值区间,decimals 为保留小数位。 */
   valueRange: { min: number; max: number; decimals: number };
 }
@@ -93,6 +95,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: 'Token',
         additivity: '可加',
         timeAggregation: '求和',
+        isRatio: false,
         valueRange: { min: 200000, max: 8000000, decimals: 0 }
       },
       {
@@ -102,6 +105,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: 'Token',
         additivity: '可加',
         timeAggregation: '求和',
+        isRatio: false,
         valueRange: { min: 100000, max: 6000000, decimals: 0 }
       },
       {
@@ -111,6 +115,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '次',
         additivity: '可加',
         timeAggregation: '求和',
+        isRatio: false,
         valueRange: { min: 2000, max: 90000, decimals: 0 }
       },
       {
@@ -121,6 +126,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '家',
         additivity: '不可加',
         timeAggregation: '均值',
+        isRatio: false,
         valueRange: { min: 40, max: 900, decimals: 0 }
       }
     ]
@@ -157,6 +163,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '家',
         additivity: '半可加',
         timeAggregation: '期末值',
+        isRatio: false,
         valueRange: { min: 300, max: 5000, decimals: 0 }
       },
       {
@@ -166,6 +173,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '家',
         additivity: '可加',
         timeAggregation: '求和',
+        isRatio: false,
         valueRange: { min: 5, max: 400, decimals: 0 }
       },
       {
@@ -175,6 +183,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '家',
         additivity: '可加',
         timeAggregation: '求和',
+        isRatio: false,
         valueRange: { min: 0, max: 200, decimals: 0 }
       },
       {
@@ -184,6 +193,7 @@ export const semanticSurface: readonly BusinessDomain[] = [
         unit: '%',
         additivity: '不可加',
         timeAggregation: '均值',
+        isRatio: true,
         valueRange: { min: 60, max: 99.9, decimals: 1 }
       }
     ]
