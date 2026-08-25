@@ -174,15 +174,18 @@
     gap: 12px;
     margin-top: 6px;
   }
+  /* 面板表面经 --mc-metric-panel-* 可被页面布局形态覆写,缺省值即报表形态
+     的既有观感;看板形态需要的是白底中性描边,不是报表的淡蓝内容区。 */
   .metric-panel {
     box-sizing: border-box;
     width: 100%;
     min-height: 136px;
-    padding: 10px 12px;
+    padding: var(--mc-metric-panel-padding, 10px 12px);
     overflow: visible;
-    background: var(--mc-color-surface-subtle, #f1f4ff);
-    border: 1px solid var(--mc-color-report-content-frame, #d4d5ff);
-    border-radius: var(--mc-radius-report-content, 12px);
+    background: var(--mc-metric-panel-surface, var(--mc-color-surface-subtle, #f1f4ff));
+    border: 1px solid
+      var(--mc-metric-panel-border, var(--mc-color-report-content-frame, #d4d5ff));
+    border-radius: var(--mc-metric-panel-radius, var(--mc-radius-report-content, 12px));
   }
   .metric-panel h3 {
     margin: 0 0 12px;

@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import type { QueryError } from '@metriccanvas/page';
-import { queryErrorView, renderableDataSnapshot } from '../src/widget-host-state';
+import type { Component, DataSnapshot, QueryError } from '@metriccanvas/page';
+import {
+  hostRenderSnapshot,
+  queryErrorView,
+  renderableDataSnapshot
+} from '../src/widget-host-state';
 
 describe('renderableDataSnapshot', () => {
   it('不把查询错误投影为就绪快照', () => {
@@ -25,6 +29,60 @@ describe('renderableDataSnapshot', () => {
 
     expect(renderableDataSnapshot(ready)).toBe(ready);
     expect(renderableDataSnapshot({ status: 'loading' })).toBeUndefined();
+  });
+});
+
+describe('hostRenderSnapshot:多数据槽 → 单一宿主态', () => {
+  const component = (type: string, data: Record<string, string>): Component =>
+    ({ id: 'widget', type, layout: { span: 6 }, data, props: {} }) as unknown as Component;
+  const slots = (entries: Record<string, DataSnapshot>) =>
+    new Map(Object.entries(entries));
+
+  const error: DataSnapshot = {
+    status: 'error',
+    error: { code: 'DQE_TIMEOUT', message: '查询超时' }
+  };
+
+  it('任一槽错误即整体错误，错误优先于加载中', () => {
+    expect(
+      hostRenderSnapshot(
+        component('metricCard', { main: 'a', compare: 'b' }),
+        slots({ main: { status: 'loading' }, compare: error })
+      )
+    ).toBe(error);
+  });
+
+  it('任一槽加载中即整体加载中', () => {
+    expect(
+      hostRenderSnapshot(
+        component('metricCard', { main: 'a', compare: 'b' }),
+        slots({ main: { status: 'ready', rows: [{}] }, compare: { status: 'loading' } })
+      )
+    ).toEqual({ status: 'loading' });
+  });
+
+  it('缺席的数据槽按加载中处理', () => {
+    expect(
+      hostRenderSnapshot(component('metricCard', { main: 'a' }), slots({}))
+    ).toEqual({ status: 'loading' });
+  });
+
+  it('非表格组件的 main 空结果投影为空态', () => {
+    expect(
+      hostRenderSnapshot(
+        component('barChart', { main: 'a' }),
+        slots({ main: { status: 'empty' } })
+      )
+    ).toEqual({ status: 'empty' });
+  });
+
+  it('表格空结果仍要渲染表头，因此不投影为空态', () => {
+    expect(
+      hostRenderSnapshot(
+        component('table', { main: 'a' }),
+        slots({ main: { status: 'empty' } })
+      )
+    ).toEqual({ status: 'ready', rows: [] });
   });
 });
 

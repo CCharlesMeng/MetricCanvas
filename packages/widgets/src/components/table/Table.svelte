@@ -13,6 +13,7 @@
 <script lang="ts">
   import type {
     FieldValue,
+    Row,
     TableColumn,
     TableProps as TableComponentProps
   } from '@metriccanvas/page';
@@ -23,6 +24,7 @@
   } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import { alignTableRows, alignedFieldValue } from './rows';
+  import { mergeSpans, tableRowTier } from './presentation';
   import { buildTableColumnLayout } from './columns';
   import type {
     TableHeaderFilterValue,
@@ -55,6 +57,7 @@
     onsort?: (sort: TableSortRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
+    onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }) => void;
   }
 
   let {
@@ -69,12 +72,17 @@
     onpagesize,
     onsort,
     onheaderfilter,
-    oncellselect
+    oncellselect,
+    onlink
   }: Props = $props();
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
   const rows = $derived(alignTableRows(data, props.rowKey));
+  const rowTiers = $derived(rows.map((row) => tableRowTier(row, props.rowKindField)));
+  /** 首列合并:相邻同值折成一个单元格,rowSpan 为 0 的行不渲染该列。 */
+  const rowSpans = $derived(mergeSpans(rows, props.mergeBy));
+  const mergedColumnField = $derived(props.mergeBy);
   const columnWidthTotal = $derived(
     leaves.reduce((total, column) => total + (column.width ?? 120), 0)
   );
@@ -378,36 +386,82 @@
       </thead>
       <tbody>
         {#each rows as row, i (i)}
-          <tr>
+          <tr class:subtotal-row={rowTiers[i] === 'subtotal'} class:total-row={rowTiers[i] === 'total'}>
             {#each leaves as column (columnField(column))}
-              {@const resolved = resolveField(column.field, data)}
-              {@const rawValue = alignedFieldValue(column.field, data, row)}
-              {@const polarity = valuePolarity(rawValue)}
-              {@const semanticPresentation = semanticHtmlFieldPresentation(
-                resolved,
-                rawValue,
-                column.visual === 'signed' ? 'signed' : undefined
-              )}
-              <td
-                class:align-right={column.align === 'right'}
-                class:fixed={!!column.fixed}
-                class:emphasized={column.emphasis === 'strong'}
-                class:selectable={Boolean(column.selection && interactive)}
-                class:selected={isSelected(i, column)}
-                class:danger={isDanger(column, rawValue)}
-                class:negative={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'negative'}
-                class:positive={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'positive'}
-                data-column-field={columnField(column)}
-                style={cellStyle(column)}
-              >
-                {#if column.selection && interactive}
-                  <button
-                    type="button"
-                    class="selectable-cell"
-                    aria-pressed={isSelected(i, column)}
-                    onclick={() => oncellselect?.({ rowIndex: i, column })}
-                  >
-                    <span class="cell-stack">
+              <!-- 合并列上被并入上方单元格的行不渲染该列 -->
+              {#if columnField(column) !== mergedColumnField || rowSpans[i] !== 0}
+                {@const resolved = resolveField(column.field, data)}
+                {@const rawValue = alignedFieldValue(column.field, data, row)}
+                {@const polarity = valuePolarity(rawValue)}
+                {@const semanticPresentation = semanticHtmlFieldPresentation(
+                  resolved,
+                  rawValue,
+                  column.visual === 'signed' ? 'signed' : undefined
+                )}
+                <td
+                  class:align-right={column.align === 'right'}
+                  class:fixed={!!column.fixed}
+                  class:emphasized={column.emphasis === 'strong'}
+                  class:selectable={Boolean(column.selection && interactive)}
+                  class:linkable={Boolean(column.link && interactive && !column.selection)}
+                  class:selected={isSelected(i, column)}
+                  class:danger={isDanger(column, rawValue)}
+                  class:negative={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'negative'}
+                  class:positive={semanticPresentation === undefined && column.visual === 'signed' && polarity === 'positive'}
+                  data-column-field={columnField(column)}
+                  rowspan={columnField(column) === mergedColumnField ? rowSpans[i] : undefined}
+                  style={cellStyle(column)}
+                >
+                  {#if column.selection && interactive}
+                    <button
+                      type="button"
+                      class="selectable-cell"
+                      aria-pressed={isSelected(i, column)}
+                      onclick={() => oncellselect?.({ rowIndex: i, column })}
+                    >
+                      <span class="cell-stack">
+                        {#if semanticPresentation}
+                          <SemanticHtml
+                            source={semanticPresentation.source}
+                            format={semanticPresentation.format}
+                            visual={semanticPresentation.visual}
+                            inline
+                          />
+                        {:else}
+                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                        {/if}
+                      </span>
+                    </button>
+                  {:else if column.link && interactive && !column.selection}
+                    <button
+                      type="button"
+                      class="link-cell"
+                      onclick={() => onlink?.({ rowIndex: i, column, row: row.main })}
+                    >
+                      <span class="cell-stack">
+                        {#if semanticPresentation}
+                          <SemanticHtml
+                            source={semanticPresentation.source}
+                            format={semanticPresentation.format}
+                            visual={semanticPresentation.visual}
+                            inline
+                          />
+                        {:else}
+                          <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
+                        {/if}
+                      </span>
+                    </button>
+                  {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
+                    <span class="rate-cell">
+                      <span
+                        aria-hidden="true"
+                        class="rate-bar"
+                        style={`width: ${rateBarWidth(column, rawValue)}%;`}
+                      ></span>
+                      <span class="cell-value">{formatValue(rawValue, resolved.format)}</span>
+                    </span>
+                  {:else}
+                    <div class="cell-stack">
                       {#if semanticPresentation}
                         <SemanticHtml
                           source={semanticPresentation.source}
@@ -418,44 +472,22 @@
                       {:else}
                         <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
                       {/if}
-                    </span>
-                  </button>
-                {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
-                  <span class="rate-cell">
-                    <span
-                      aria-hidden="true"
-                      class="rate-bar"
-                      style={`width: ${rateBarWidth(column, rawValue)}%;`}
-                    ></span>
-                    <span class="cell-value">{formatValue(rawValue, resolved.format)}</span>
-                  </span>
-                {:else}
-                  <div class="cell-stack">
-                    {#if semanticPresentation}
-                      <SemanticHtml
-                        source={semanticPresentation.source}
-                        format={semanticPresentation.format}
-                        visual={semanticPresentation.visual}
-                        inline
-                      />
-                    {:else}
-                      <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
-                    {/if}
-                    {#if column.secondaryField}
-                      {@const secondary = resolveField(column.secondaryField, data)}
-                      <small>
-                        {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format)}
-                      </small>
-                    {/if}
-                    {#if column.badgeField}
-                      {@const badge = resolveField(column.badgeField, data)}
-                      <small class="cell-badge">
-                        {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format)}
-                      </small>
-                    {/if}
-                  </div>
-                {/if}
-              </td>
+                      {#if column.secondaryField}
+                        {@const secondary = resolveField(column.secondaryField, data)}
+                        <small>
+                          {formatValue(alignedFieldValue(column.secondaryField, data, row), secondary.format)}
+                        </small>
+                      {/if}
+                      {#if column.badgeField}
+                        {@const badge = resolveField(column.badgeField, data)}
+                        <small class="cell-badge">
+                          {formatValue(alignedFieldValue(column.badgeField, data, row), badge.format)}
+                        </small>
+                      {/if}
+                    </div>
+                  {/if}
+                </td>
+              {/if}
             {/each}
           </tr>
         {:else}
@@ -648,6 +680,16 @@
   tbody tr:last-child td {
     border-bottom: 0;
   }
+  /* 行类别档位:小计与合计的视觉区分。档位由计算阶段的标记决定,表格不判定业务。 */
+  tbody tr.subtotal-row td {
+    background: #f7f9ff;
+    font-weight: 600;
+  }
+  tbody tr.total-row td {
+    background: #eef3ff;
+    color: #08359e;
+    font-weight: 700;
+  }
   tbody td.positive {
     color: var(--mc-color-positive, #52c41a);
   }
@@ -675,6 +717,26 @@
     color: #1476ff;
     border-color: #1476ff;
     outline: none;
+  }
+  .link-cell {
+    width: 100%;
+    padding: 0;
+    color: #08359e;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    text-align: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .link-cell:focus-visible {
+    outline: 2px solid rgb(8 53 158 / 0.28);
+    outline-offset: 1px;
+    border-radius: 4px;
+  }
+  td.linkable {
+    cursor: pointer;
   }
   .cell-stack {
     display: inline-flex;

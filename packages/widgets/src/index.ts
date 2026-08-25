@@ -9,8 +9,14 @@ export { default as BarChart } from './components/bar-chart/BarChart.svelte';
 export { default as LineChart } from './components/line-chart/LineChart.svelte';
 export { default as PieChart } from './components/pie-chart/PieChart.svelte';
 export { default as MapChart } from './components/map-chart/MapChart.svelte';
+export { default as Gauge } from './components/gauge/Gauge.svelte';
+export { gaugeProgress, gaugeArc } from './components/gauge/gauge';
+export { default as TabContainer } from './components/tab-container/TabContainer.svelte';
+export { resolveActiveTab, type TabLabel } from './components/tab-container/tabs';
 export { default as RankingCard } from './components/ranking-card/RankingCard.svelte';
 export { default as RankingDetailCard } from './components/ranking-detail-card/RankingDetailCard.svelte';
+export { default as KeyValuePanel } from './components/key-value-panel/KeyValuePanel.svelte';
+export { default as FieldText } from './components/field-text/FieldText.svelte';
 export { default as TextBlock } from './components/text/TextBlock.svelte';
 export type { TextBlockLink } from './components/text/TextBlock.svelte';
 /*
@@ -34,6 +40,17 @@ export {
   type TableViewState
 } from './components/table/view-state';
 export { buildTableColumnLayout } from './components/table/columns';
+export {
+  mergeSpans,
+  tableRowTier,
+  type TableRowTier
+} from './components/table/presentation';
+/*
+ * 展示格式化预设的呈现实现。统一运行时把页面参数替换进文本取值时要用同一
+ * 套格式(ADR-0047 复用 ADR-0013 的封闭闭集),因此这一份实现必须共享而不是
+ * 各写一遍;它仍是本包的内核,新增消费方前先确认没有第二种格式化语义。
+ */
+export { formatValue } from './shared/value-format';
 export type {
   MainDataSlots,
   MetricDataSlots,

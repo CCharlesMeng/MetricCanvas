@@ -1,5 +1,6 @@
 import {
   queryErrorDisposition,
+  type Component,
   type DataSnapshot,
   type QueryError,
   type QueryErrorDisposition
@@ -23,6 +24,35 @@ export function renderableDataSnapshot(
       ? { totalCount: snapshot.totalCount }
       : {})
   };
+}
+
+/**
+ * 组件宿主态:把组件全部数据槽的快照收敛为 WidgetHost 呈现的单一状态。
+ * 任一槽错误即错误、任一槽加载中即加载中;表格空结果仍要渲染表头,
+ * 因此只有非表格组件的 main 空结果才投影为空态。
+ */
+export function hostRenderSnapshot(
+  component: Component,
+  slots: ReadonlyMap<string, DataSnapshot>
+): DataSnapshot {
+  const values = Object.keys(component.data ?? {}).map(
+    (slot) => slots.get(slot) ?? ({ status: 'loading' } as const)
+  );
+  const error = values.find(
+    (snapshot): snapshot is Extract<DataSnapshot, { status: 'error' }> =>
+      snapshot.status === 'error'
+  );
+  if (error) return error;
+  if (values.some((snapshot) => snapshot.status === 'loading')) {
+    return { status: 'loading' };
+  }
+  // 实际/预测边界规则只在创作期执行(validate.ts 对内嵌初始行校验)。
+  // 这里不再对实时快照复检:筛选/分页后的行属新数据时点,用冻结的
+  // initial.capturedAt 判定会误报;报告场景(ADR-0020)数据本就冻结在采集时点。
+  if (component.type !== 'table' && slots.get('main')?.status === 'empty') {
+    return { status: 'empty' };
+  }
+  return { status: 'ready', rows: [] };
 }
 
 export interface QueryErrorView {

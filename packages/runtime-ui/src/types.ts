@@ -99,6 +99,10 @@ export interface RuntimeNavigationTarget {
   /** URLSearchParams 形式，不带前导问号。 */
   search: string;
   href: string;
+  /** 来源页面 id;宿主用它记录回跳,运行时不维护导航栈。 */
+  sourcePageId?: string;
+  /** 来源页当前查询串,含筛选与页面参数。 */
+  sourceSearch?: string;
 }
 
 /** Canvas 等宿主在统一运行时导航接缝上的适配器。 */
@@ -127,7 +131,13 @@ export type RuntimeViewEvent =
     }
   | DataErrorEvent
   | { type: 'filter-change'; search: string }
-  | { type: 'navigate'; pageId: string; search: string };
+  | {
+      type: 'navigate';
+      pageId: string;
+      search: string;
+      sourcePageId?: string;
+      sourceSearch?: string;
+    };
 
 export function configurationError(
   code: RuntimeConfigurationErrorCode,

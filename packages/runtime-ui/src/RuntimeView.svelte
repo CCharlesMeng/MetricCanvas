@@ -6,25 +6,29 @@
     isChartComponent,
     parsePage,
     resolveDataSourceFields,
+    flattenPageComponents,
     type ChartComponent,
     type Component,
     type ComponentCapabilities,
     type DataSnapshot,
     type FilterDeclaration,
     type Page,
+    type PageParamDeclaration,
     type Row,
     type TableColumn,
     type TableComponent,
     type TextLink,
+    type NumberRangeValue,
+    type TimeRangeValue,
     type TypedError
   } from '@metriccanvas/page';
   import {
     createDimensionValuesLoader,
     createFilterState,
-    dimensionValuesSnapshot,
     drillThroughSearch,
     initialFilterValues,
     orchestrate,
+    resolvePageParams,
     type DimensionValuesSnapshots,
     type FilterState,
     type FilterValue,
@@ -34,33 +38,34 @@
     type RuntimeDataGateway
   } from '@metriccanvas/runtime';
   import {
-    BarChart,
-    LineChart,
-    MapChart,
-    MetricCard,
-    PieChart,
-    RankingCard,
-    RankingDetailCard,
-    ReportHeader,
-    Table,
-    TextBlock,
     buildTableColumnLayout,
+    formatValue,
     initialTableSort,
     shouldApplyTableHeaderFilter,
-    type MainDataSlots,
-    type MetricDataSlots,
     type NamedDataSlots,
     type TableHeaderFilterValue,
     type TablePaginationState,
     type TableSelectedCell,
     type TableViewState
   } from '@metriccanvas/widgets';
-  import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
+  import ComponentRenderer from './ComponentRenderer.svelte';
+  import type { NestedComponentRender, TableRenderBinding } from './component-render';
+  import {
+    filterMapRows,
+    isHierarchyDeclaration,
+    resolveMapBasemap,
+    resolveMapClick
+  } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
-  import DimensionFilter from './filters/DimensionFilter.svelte';
-  import TimeRangeFilter from './filters/TimeRangeFilter.svelte';
-  import WidgetHost from './WidgetHost.svelte';
-  import { renderableDataSnapshot } from './widget-host-state';
+  import FilterBar from './filters/FilterBar.svelte';
+  import {
+    cascadeConstraints,
+    clearDependentUpdates,
+    dimensionValueOf
+  } from './filters/cascade';
+  import { hasVisibleFilters } from './filters/filter-bar';
+  import { applySearchFilters } from './filters/inline-search';
+  import { hostRenderSnapshot, renderableDataSnapshot } from './widget-host-state';
   import RuntimeSection from './RuntimeSection.svelte';
   import { resolveAuthoringSections } from './authoring-layout';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
@@ -79,12 +84,14 @@
     | { phase: 'loading' }
     | { phase: 'invalid'; errors: TypedError[] }
     | { phase: 'configuration-error'; error: RuntimeConfigurationError }
+    /** 必需页面参数缺失:页面输入不完整,与查询错误分类区分开(ADR-0047)。 */
+    | { phase: 'params-incomplete'; missing: PageParamDeclaration[] }
     | { phase: 'ready'; page: Page; capabilities: PageCapabilities };
 
   // inline 页面不访问数据网关;候选值能力缺席即不可用,不需要抛错桩。
   const inlineGateway: RuntimeDataGateway = {
     async fetchData() {
-      throw new Error('inline 看板页面不应访问数据网关');
+      throw new Error('inline 页面不应访问数据网关');
     }
   };
 
@@ -123,6 +130,7 @@
 
   let declarations = $state<FilterDeclaration[]>([]);
   let filterState: FilterState | null = null;
+  let candidatesLoader: ReturnType<typeof createDimensionValuesLoader> | null = null;
   let stream: PageSnapshotStream | null = null;
   let session = 0;
   let disposers: Array<() => void> = [];
@@ -167,7 +175,29 @@
     await Promise.resolve();
     if (session !== mySession) return;
 
-    const parsed = parsePage(raw);
+    // 页面参数不可变:先按声明解析一次 URL 输入,再用它们把文本取值引用
+    // 整值替换掉。首次解析只为读到 params 声明,替换后的文档才是渲染依据。
+    const declared = parsePage(raw);
+    if (!declared.ok) {
+      pageState = { phase: 'invalid', errors: declared.errors };
+      emit?.({ type: 'invalid', errors: declared.errors });
+      return;
+    }
+    const paramDeclarations = declared.page.params ?? [];
+    const params = resolvePageParams(search, paramDeclarations);
+    if (params.missing.length > 0) {
+      pageState = {
+        phase: 'params-incomplete',
+        missing: paramDeclarations.filter((declaration) =>
+          params.missing.includes(declaration.id)
+        )
+      };
+      return;
+    }
+    const parsed =
+      paramDeclarations.length === 0
+        ? declared
+        : parsePage(raw, { textValues: { values: params.values, format: formatValue } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: parsed.errors };
       emit?.({ type: 'invalid', errors: parsed.errors });
@@ -247,10 +277,14 @@
 
     // 筛选候选值:显式状态经加载器发布,dispose 时取消在途请求,
     // 过期结果不会覆盖新会话的筛选状态(issue #54)。
-    const candidatesLoader = createDimensionValuesLoader(activeGateway);
-    disposers.push(() => candidatesLoader.dispose());
+    candidatesLoader = createDimensionValuesLoader(activeGateway);
+    const loader = candidatesLoader;
+    disposers.push(() => {
+      loader.dispose();
+      if (candidatesLoader === loader) candidatesLoader = null;
+    });
     disposers.push(
-      candidatesLoader.subscribe((next) => {
+      loader.subscribe((next) => {
         if (session !== mySession) return;
         dimensionCandidates = next;
       })
@@ -258,7 +292,7 @@
 
     for (const declaration of declarations) {
       if (declaration.type !== 'dimension') continue;
-      candidatesLoader.load(declaration.dimension);
+      loadDimensionCandidates(loader, declaration, filterValues);
     }
 
     const filterableFields = new Set<string>();
@@ -296,14 +330,14 @@
     if (gatewayValue === undefined) {
       return configurationError(
         'DATA_GATEWAY_REQUIRED',
-        `${mode} 看板页面必须提供数据网关。`
+        `${mode} 页面必须提供数据网关。`
       );
     }
     return null;
   }
 
   function pageComponents(loaded: Page): Component[] {
-    return loaded.sections.flatMap((section) => section.components);
+    return flattenPageComponents(loaded);
   }
 
   function componentCapability(component: Component): ComponentCapabilities | undefined {
@@ -491,36 +525,123 @@
     return params.toString();
   }
 
-  function dimensionValue(filterId: string): string[] {
-    const value = filterValues.get(filterId);
-    return value?.type === 'dimension' ? value.values : [];
-  }
-
-  function timeRangeValue(filterId: string) {
-    const value = filterValues.get(filterId);
-    return value?.type === 'timeRange' ? { from: value.from, to: value.to } : null;
-  }
-
   function writeDimension(
     declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
-    values: string[]
+    values: string[],
+    level?: string
   ) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
-    filterState?.write(
-      declaration.id,
-      values.length > 0
-        ? { type: 'dimension', dimension: declaration.dimension, values }
-        : null
-    );
+    const dimension =
+      declaration.hierarchy && level
+        ? (declaration.hierarchy.find((item) => item.id === level)?.dimension ??
+          declaration.dimension)
+        : declaration.dimension;
+    filterState?.writeMany([
+      [
+        declaration.id,
+        values.length > 0
+          ? {
+              type: 'dimension',
+              dimension,
+              values,
+              ...(level ? { level } : {})
+            }
+          : null
+      ],
+      ...clearDependentUpdates(declarations, declaration.id)
+    ]);
+    reloadDependentCandidates(declaration.id);
   }
 
-  function writeTimeRange(filterId: string, range: { from: string; to: string } | null) {
+  function writeTimeRange(filterId: string, range: TimeRangeValue | null) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
     filterState?.write(filterId, range ? { type: 'timeRange', ...range } : null);
   }
 
+  function writeTimePoint(
+    filterId: string,
+    granularity: 'month' | 'date',
+    value: string | null
+  ) {
+    if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    filterState?.write(filterId, value ? { type: 'timePoint', granularity, value } : null);
+  }
+
+  function writeBoolean(filterId: string, checked: boolean) {
+    if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    filterState?.write(filterId, checked ? { type: 'boolean', value: true } : null);
+  }
+
+  function writeNumberRange(filterId: string, range: NumberRangeValue | null) {
+    if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    filterState?.write(filterId, range ? { type: 'numberRange', ...range } : null);
+  }
+
+  function writeSearch(filterId: string, query: string) {
+    if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
+    filterState?.write(filterId, query.trim() === '' ? null : { type: 'search', query });
+  }
+
+  function loadDimensionCandidates(
+    loader: NonNullable<typeof candidatesLoader>,
+    declaration: Extract<FilterDeclaration, { type: 'dimension' }>,
+    values: FilterValues
+  ) {
+    const constraints = cascadeConstraints(declaration, declarations, values);
+    if (declaration.hierarchy) {
+      for (const level of declaration.hierarchy) {
+        loader.load(level.dimension, constraints);
+      }
+      return;
+    }
+    loader.load(declaration.dimension, constraints);
+  }
+
+  function reloadDependentCandidates(parentId: string) {
+    if (!candidatesLoader) return;
+    for (const declaration of declarations) {
+      if (declaration.type !== 'dimension' || declaration.dependsOn !== parentId) continue;
+      const constraints = cascadeConstraints(declaration, declarations, filterValues);
+      const current = dimensionValueOf(filterValues, declaration.id);
+      const dimension = declaration.hierarchy
+        ? (declaration.hierarchy.find((item) => item.id === current.level)?.dimension ??
+          declaration.hierarchy[0]!.dimension)
+        : declaration.dimension;
+      candidatesLoader.reload(dimension, constraints);
+    }
+  }
+
+  function handleTableLink(component: TableComponent, row: Row) {
+    if (!componentCapability(component)?.actions) return;
+    for (const action of component.props.actions ?? []) {
+      if ('navigate' in action) {
+        const search = drillThroughSearch(action.navigate, filterValues, row);
+        navigate(action.navigate.page, search);
+        return;
+      }
+    }
+  }
+
   function handleChartClick(component: ChartComponent, row: Row) {
     if (!componentCapability(component)?.actions) return;
+    if (component.type === 'mapChart' && component.props.hierarchyFilter) {
+      const declaration = declarations.find(
+        (item) => item.id === component.props.hierarchyFilter
+      );
+      if (isHierarchyDeclaration(declaration)) {
+        const decision = resolveMapClick(
+          component.props,
+          declaration,
+          filterValues.get(declaration.id),
+          row
+        );
+        if (decision.kind === 'ignore') return;
+        if (decision.kind === 'drill') {
+          writeDimension(declaration, decision.value.values, decision.value.level);
+          return;
+        }
+      }
+    }
     for (const action of component.props.actions ?? []) {
       if ('navigate' in action) {
         const search = drillThroughSearch(action.navigate, filterValues, row);
@@ -557,8 +678,10 @@
 
   function navigate(pageId: string, search: string) {
     const href = navigation?.href(pageId, search) ?? `#metriccanvas-page-${pageId}`;
-    onevent?.({ type: 'navigate', pageId, search });
-    navigation?.navigate({ pageId, search, href });
+    const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
+    const sourceSearch = filterState ? mergedSearch(filterState, initialSearch) : initialSearch;
+    onevent?.({ type: 'navigate', pageId, search, sourcePageId, sourceSearch });
+    navigation?.navigate({ pageId, search, href, sourcePageId, sourceSearch });
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
@@ -568,30 +691,6 @@
         snapshots.get(sourceId) ?? ({ status: 'loading' } as DataSnapshot)
       ])
     );
-  }
-
-  function hostSnapshot(
-    component: Component,
-    slots: ComponentSnapshots
-  ): DataSnapshot {
-    const values = Object.keys(component.data ?? {}).map(
-      (slot) => slots.get(slot) ?? ({ status: 'loading' } as const)
-    );
-    const error = values.find(
-      (snapshot): snapshot is Extract<DataSnapshot, { status: 'error' }> =>
-        snapshot.status === 'error'
-    );
-    if (error) return error;
-    if (values.some((snapshot) => snapshot.status === 'loading')) {
-      return { status: 'loading' };
-    }
-    // 实际/预测边界规则只在创作期执行(validate.ts 对内嵌初始行校验)。
-    // 这里不再对实时快照复检:筛选/分页后的行属新数据时点,用冻结的
-    // initial.capturedAt 判定会误报;报告场景(ADR-0020)数据本就冻结在采集时点。
-    if (component.type !== 'table' && slots.get('main')?.status === 'empty') {
-      return { status: 'empty' };
-    }
-    return { status: 'ready', rows: [] };
   }
 
   function componentData(
@@ -607,10 +706,30 @@
       const fields = resolveDataSourceFields(source);
       const renderable = renderableDataSnapshot(snapshot);
       if (!renderable) continue;
-      const visible =
+      let visible =
         component.type === 'table' && slot === 'main'
           ? tableSnapshot(component, renderable)
           : renderable;
+      if (
+        component.type === 'mapChart' &&
+        slot === 'main' &&
+        component.props.hierarchyFilter
+      ) {
+        const declaration = declarations.find(
+          (item) => item.id === component.props.hierarchyFilter
+        );
+        if (isHierarchyDeclaration(declaration)) {
+          visible = {
+            ...visible,
+            rows: filterMapRows(
+              visible.rows,
+              component.props,
+              declaration,
+              filterValues.get(declaration.id)
+            )
+          };
+        }
+      }
       data[slot] = { snapshot: visible, fields };
     }
     return data;
@@ -632,7 +751,13 @@
       return snapshot;
     }
     const applied = appliedHeaderFiltersOf(component);
-    let rows = snapshot.rows.filter((row) =>
+    const source = pageState.phase === 'ready' ? pageState.page.dataSources[component.data.main] : undefined;
+    const searched = applySearchFilters(
+      snapshot.rows,
+      filterValues,
+      source ? resolveDataSourceFields(source) : {}
+    );
+    let rows = searched.filter((row) =>
       Object.entries(applied).every(([field, filter]) => {
         const value = row[field];
         if (filter.mode === 'select') {
@@ -745,107 +870,56 @@
     return tablePageSizes[component.id] ?? queryPageSize(loaded, component);
   }
 
-  function mainData(
+  function tableBinding(
     loaded: Page,
     component: Component,
-    snapshotsBySlot: ComponentSnapshots
-  ): MainDataSlots {
-    const data = componentData(loaded, component, snapshotsBySlot);
-    return { main: data.main! };
-  }
-
-  function metricData(
-    loaded: Page,
-    component: Component,
-    snapshotsBySlot: ComponentSnapshots
-  ): MetricDataSlots {
-    const data = componentData(loaded, component, snapshotsBySlot);
+    slots: ComponentSnapshots
+  ): TableRenderBinding | undefined {
+    if (component.type !== 'table') return undefined;
     return {
-      main: data.main!,
-      ...(data.compare ? { compare: data.compare } : {}),
-      ...(data.target ? { target: data.target } : {})
+      view: tableViewOf(component),
+      selectedCell: tableSelectedCell(component),
+      filterOptions: tableFilterOptions(component),
+      pagination: tablePaginationState(loaded, component, slots),
+      onpage: (pageIndex) => handleTablePage(component, pageIndex),
+      onpagesize: (pageSize) => handleTablePageSize(component, pageSize),
+      onsort: (sort) => handleTableSort(component, sort),
+      onheaderfilter: (field, value) => handleTableHeaderFilter(component, field, value),
+      oncellselect: ({ rowIndex, column }) =>
+        handleTableCellSelect(component, rowIndex, column),
+      onlink: ({ row }) => handleTableLink(component, row)
     };
   }
 
-</script>
+  function chartClickHandler(component: Component): ((row: Row) => void) | undefined {
+    if (!componentCapability(component)?.actions || !isChartComponent(component)) {
+      return undefined;
+    }
+    const chart: ChartComponent = component;
+    return (row: Row) => handleChartClick(chart, row);
+  }
 
-{#snippet renderComponent(component: Component, loaded: Page)}
-  {#if component.type === 'reportHeader'}
-    <ReportHeader props={component.props} />
-  {:else if component.type === 'text'}
-    <TextBlock
-      props={component.props}
-      links={(component.props.links ?? []).map(textLink)}
-    />
-  {:else if component.type === 'aiSummary'}
-    <AiSummaryHost
-      props={component.props}
-      sourceSnapshots={snapshots}
-      config={aiSummary}
-    />
-  {:else}
-    {@const slots = componentSnapshots(component)}
-    {@const snapshot = hostSnapshot(component, slots)}
-    <WidgetHost {snapshot}>
-      {#snippet ready(_readySnapshot)}
-        {@const capability = componentCapability(component)}
-        {@const chart = isChartComponent(component) ? component : null}
-        {@const onclick =
-          capability?.actions && chart
-            ? ({ row }: { row: Row }) => handleChartClick(chart, row)
-            : undefined}
-        {#if component.type === 'metricCard'}
-          <MetricCard data={metricData(loaded, component, slots)} props={component.props} />
-        {:else if component.type === 'barChart'}
-          <BarChart
-            data={mainData(loaded, component, slots)}
-            props={component.props}
-            onbarclick={onclick}
-          />
-        {:else if component.type === 'lineChart'}
-          <LineChart
-            data={mainData(loaded, component, slots)}
-            props={component.props}
-            onpointclick={onclick}
-          />
-        {:else if component.type === 'pieChart'}
-          <PieChart
-            data={mainData(loaded, component, slots)}
-            props={component.props}
-            onsliceclick={onclick}
-          />
-        {:else if component.type === 'rankingCard'}
-          <RankingCard data={mainData(loaded, component, slots)} props={component.props} />
-        {:else if component.type === 'rankingDetailCard'}
-          <RankingDetailCard data={mainData(loaded, component, slots)} props={component.props} />
-        {:else if component.type === 'table'}
-          <Table
-            data={componentData(loaded, component, slots) as NamedDataSlots & { main: NonNullable<NamedDataSlots['main']> }}
-            props={component.props}
-            interactive={true}
-            view={tableViewOf(component)}
-            selectedCell={tableSelectedCell(component)}
-            filterOptions={tableFilterOptions(component)}
-            pagination={tablePaginationState(loaded, component, slots)}
-            onpage={(pageIndex) => handleTablePage(component, pageIndex)}
-            onpagesize={(pageSize) => handleTablePageSize(component, pageSize)}
-            onsort={(sort) => handleTableSort(component, sort)}
-            onheaderfilter={(field, value) =>
-              handleTableHeaderFilter(component, field, value)}
-            oncellselect={({ rowIndex, column }) =>
-              handleTableCellSelect(component, rowIndex, column)}
-          />
-        {:else if component.type === 'mapChart'}
-          <MapChart
-            data={mainData(loaded, component, slots)}
-            props={component.props}
-            onregionclick={onclick}
-          />
-        {/if}
-      {/snippet}
-    </WidgetHost>
-  {/if}
-{/snippet}
+  function mapOverride(component: Component): 'china' | 'world' | undefined {
+    if (component.type !== 'mapChart' || !component.props.hierarchyFilter) return undefined;
+    const declaration = declarations.find((item) => item.id === component.props.hierarchyFilter);
+    if (!isHierarchyDeclaration(declaration)) return undefined;
+    return resolveMapBasemap(
+      component.props,
+      declaration,
+      filterValues.get(declaration.id)
+    );
+  }
+
+  function nestedRender(loaded: Page): NestedComponentRender {
+    return {
+      data: (child) => componentData(loaded, child, componentSnapshots(child)),
+      snapshot: (child) => hostRenderSnapshot(child, componentSnapshots(child)),
+      table: (child) => tableBinding(loaded, child, componentSnapshots(child)),
+      onchartclick: chartClickHandler,
+      map: mapOverride
+    };
+  }
+</script>
 
 <div class="runtime-view">
   {#if pageState.phase === 'loading'}
@@ -855,6 +929,19 @@
       <h1>统一运行时接入配置不完整</h1>
       <p><code class="badge">{pageState.error.code}</code></p>
       <p>{pageState.error.message}</p>
+    </div>
+  {:else if pageState.phase === 'params-incomplete'}
+    <div class="error-page">
+      <h1>页面输入不完整</h1>
+      <p class="muted">以下页面参数是必需的，请检查链接是否被裁剪。</p>
+      <ul class="errors">
+        {#each pageState.missing as declaration (declaration.id)}
+          <li>
+            <code class="path">{declaration.id}</code>
+            <span>{declaration.label ?? '缺少取值'}</span>
+          </li>
+        {/each}
+      </ul>
     </div>
   {:else if pageState.phase === 'invalid'}
     <div class="error-page">
@@ -872,40 +959,45 @@
     </div>
   {:else}
     {@const readyPage = pageState.page}
-    <div class="page-content">
-    {#if pageState.capabilities.filters && declarations.some((declaration) => declaration.visible !== false)}
-      <div class="filter-bar">
-        {#each declarations as declaration (declaration.id)}
-          {#if declaration.visible !== false}
-            {#if declaration.type === 'dimension'}
-              <DimensionFilter
-                label={declaration.label}
-                candidates={dimensionValuesSnapshot(
-                  dimensionCandidates,
-                  declaration.dimension
-                )}
-                value={dimensionValue(declaration.id)}
-                display={declaration.display ?? 'select'}
-                onchange={(values) => writeDimension(declaration, values)}
-              />
-            {:else}
-              <TimeRangeFilter
-                label={declaration.label}
-                precision={declaration.precision ?? 'date'}
-                value={timeRangeValue(declaration.id)}
-                onchange={(range) => writeTimeRange(declaration.id, range)}
-              />
-            {/if}
-          {/if}
-        {/each}
-      </div>
+    {@const layoutForm = readyPage.layoutForm ?? 'report'}
+    <div
+      class:layout-dashboard={layoutForm === 'dashboard'}
+      class="page-content"
+      data-page-layout-form={layoutForm}
+    >
+    {#if pageState.capabilities.filters && hasVisibleFilters(declarations)}
+      <FilterBar
+        {declarations}
+        values={filterValues}
+        candidates={dimensionCandidates}
+        ondimension={writeDimension}
+        ontimerange={writeTimeRange}
+        ontimepoint={writeTimePoint}
+        onboolean={writeBoolean}
+        onnumberrange={writeNumberRange}
+        onsearch={writeSearch}
+      />
     {/if}
 
     <div class="page-sections">
       {#each renderedSections as section (section.id)}
         <RuntimeSection {section} {authoring}>
           {#snippet componentContent(component: Component)}
-            {@render renderComponent(component, readyPage)}
+            {@const slots = componentSnapshots(component)}
+            <ComponentRenderer
+              {component}
+              data={componentData(readyPage, component, slots)}
+              snapshot={hostRenderSnapshot(component, slots)}
+              pageSnapshots={snapshots}
+              {aiSummary}
+              textLinks={component.type === 'text'
+                ? (component.props.links ?? []).map(textLink)
+                : []}
+              onchartclick={chartClickHandler(component)}
+              table={tableBinding(readyPage, component, slots)}
+              map={mapOverride(component)}
+              nested={nestedRender(readyPage)}
+            />
           {/snippet}
         </RuntimeSection>
       {/each}
@@ -917,6 +1009,8 @@
 <style>
   .runtime-view {
     --mc-color-canvas: #daeaff;
+    /* 看板形态画布:中性灰,让白色分区自己成为模块边界。 */
+    --mc-color-dashboard-canvas: #f8f8f8;
     --mc-color-surface: #fff;
     --mc-color-surface-subtle: #f1f4ff;
     --mc-color-text: #18181b;
@@ -999,16 +1093,46 @@
       var(--mc-page-content-padding-inline) 54px;
     background: var(--mc-color-canvas);
   }
-  .filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 20px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    background: var(--mc-color-surface);
-    border: 1px solid var(--mc-color-border);
-    border-radius: var(--mc-radius-cell);
+  /* 看板形态:占满宿主给出的全部宽度,中性画布,分区之间只靠间距分隔。
+     报表形态的定宽居中与浅蓝画布留在 `.page-content` 缺省规则里不动,
+     两档的差别全部落在这一处,分区内部的 12 列网格两档共用。 */
+  .page-content.layout-dashboard {
+    --mc-page-content-padding-block-start: 16px;
+    --mc-page-content-padding-inline: 24px;
+    --mc-section-card-padding: 16px 20px 20px;
+    --mc-section-card-title-margin: 0 0 12px;
+    --mc-section-card-title-color: var(--mc-color-report-text);
+    --mc-section-card-title-font-size: 16px;
+    --mc-section-card-title-font-weight: 500;
+    --mc-section-card-title-line-height: 24px;
+    --mc-section-card-grid-gap: 16px;
+    --mc-section-card-grid-column-gap: 16px;
+    --mc-section-plain-grid-gap: 16px;
+    --mc-section-plain-grid-column-gap: 16px;
+    --mc-metric-panel-surface: var(--mc-color-surface);
+    --mc-metric-panel-border: rgb(25 25 25 / 0.08);
+    --mc-metric-panel-radius: var(--mc-radius-section);
+    --mc-metric-panel-padding: 16px 20px;
+    --mc-gauge-surface: var(--mc-color-surface);
+    --mc-gauge-border: 1px solid rgb(25 25 25 / 0.08);
+    --mc-gauge-radius: var(--mc-radius-section);
+    --mc-gauge-padding: 16px 12px;
+    --mc-section-default-padding: 0;
+    --mc-section-default-surface: transparent;
+    --mc-section-default-shadow: none;
+    --mc-cell-padding: 16px 20px 20px;
+    --mc-cell-border: rgb(25 25 25 / 0.08);
+    --mc-cell-radius: var(--mc-radius-section);
+    --mc-cell-shadow: none;
+    --mc-field-text-body-surface: rgb(0 0 0 / 0.03);
+    --mc-field-text-body-radius: 8px;
+    --mc-field-text-body-padding: 14px 17px;
+
+    max-width: none;
+    padding: var(--mc-page-content-padding-block-start)
+      var(--mc-page-content-padding-inline);
+    color: var(--mc-color-report-text);
+    background: var(--mc-color-dashboard-canvas);
   }
   .page-sections {
     display: flex;

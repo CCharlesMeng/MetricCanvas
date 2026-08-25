@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     isChartComponent,
+    sectionBackdrop,
     type Component,
     type PageSection
   } from '@metriccanvas/page';
@@ -12,6 +13,11 @@
     decodeAuthoringComponentLocator
   } from './authoring-layout';
   import { installRowAlignment } from './row-alignment';
+  import {
+    backdropSafeArea,
+    safeAreaCustomProperties,
+    type SafeAreaRect
+  } from './backdrop-safe-area';
   import type { AuthoringComponentLocator, AuthoringOptions } from './types';
 
   /**
@@ -31,10 +37,127 @@
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(section.container);
   const dropSlots = $derived(authoringDropSlots(section.components.length));
+  const backdropId = $derived(sectionBackdrop(section)?.id);
 
   $effect(() => {
     if (!sectionGrid) return;
     return installRowAlignment(sectionGrid);
+  });
+
+  /**
+   * 未遮挡矩形:布局完成后量 backdrop 与浮层单元格,算出 backdrop 局部坐标系里
+   * 最大的没被压住的矩形,以 IFC 约定的四个自定义属性下发给 backdrop 单元格。
+   * 无解时四者一并缺席,消费方(`MapChart`)据此退回全容器渲染。
+   *
+   * 这里**不复用** `installRowAlignment` 的 ResizeObserver:那一处只在宽度变化
+   * 超过 0.5px 时才重算(`row-alignment.ts:98-103`),而浮层高度变化不改宽度,
+   * 安全区却必须跟着变。
+   */
+  let safeArea = $state<SafeAreaRect | null>(null);
+
+  /**
+   * 叠放容器的「分区可用高度」:分区顶边到视口底边之间还剩多少。
+   * 冻结基线 R6-2 要求容器高度取它而不是一个固定下限——RED 相实测坐实,固定
+   * 下限下容器由浮层内容撑成 608,在 1280×800 / 1366×768 两档分别有 38 / 70px
+   * 落到视口折叠线以下,那一段里的散点看不见也点不到。
+   * CSS 侧算不出这个数(它取决于分区自己的 top 偏移),所以在这里量,以自定义
+   * 属性交给样式块消费。
+   */
+  let availableHeight = $state<number | null>(null);
+
+  const gridStyle = $derived(
+    availableHeight === null ? '' : `--mc-backdrop-available-h:${availableHeight}px;`
+  );
+
+  const safeAreaStyle = $derived(
+    safeArea
+      ? Object.entries(safeAreaCustomProperties(safeArea))
+          .map(([name, value]) => `${name}:${value};`)
+          .join('')
+      : ''
+  );
+  const safeAreaAnchor = $derived(
+    safeArea ? `${safeArea.x},${safeArea.y},${safeArea.width},${safeArea.height}` : undefined
+  );
+
+  /** 返回 true 表示高度刚被改写,需要在下一帧用新几何再量一次安全区。 */
+  function measureSafeArea(grid: HTMLElement): boolean {
+    const backdrop = grid.querySelector<HTMLElement>(':scope > .cell.backdrop-cell');
+    if (!backdrop) {
+      safeArea = null;
+      availableHeight = null;
+      return false;
+    }
+    // 先定高:容器高度变了浮层落位随之变,安全区必须用定高之后的几何算
+    const gridTop = grid.getBoundingClientRect().top;
+    const nextAvailable = Math.max(0, Math.round(window.innerHeight - gridTop));
+    if (nextAvailable !== availableHeight) {
+      availableHeight = nextAvailable;
+      return true;
+    }
+    const frame = backdrop.getBoundingClientRect();
+    const overlays = Array.from(
+      grid.querySelectorAll<HTMLElement>(':scope > .cell:not(.backdrop-cell)')
+    ).map((cell) => {
+      const rect = cell.getBoundingClientRect();
+      // 归一到 backdrop 单元格自身盒的坐标系(IFC 语义)
+      return {
+        x: rect.left - frame.left,
+        y: rect.top - frame.top,
+        width: rect.width,
+        height: rect.height
+      };
+    });
+    safeArea = backdropSafeArea(
+      { x: 0, y: 0, width: frame.width, height: frame.height },
+      overlays
+    );
+    return false;
+  }
+
+  $effect(() => {
+    const grid = sectionGrid;
+    // section 进入依赖:组件数量或跨列数变化时重新量测(它们会改浮层的落位)
+    void section.components.length;
+    void backdropId;
+    if (!grid || backdropId === undefined) {
+      safeArea = null;
+      return;
+    }
+
+    let active = true;
+    let frame: number | undefined;
+    const schedule = () => {
+      if (!active) return;
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        frame = undefined;
+        // 高度刚改写时再排一帧:用生效后的几何量安全区,不用旧几何
+        if (measureSafeArea(grid)) schedule();
+      });
+    };
+
+    // 同步量一次:effect 在 DOM 插入之后运行,此时几何已可读,消费方在下一帧
+    // 就能拿到值。随后的 rAF 再校正字体与底图懒加载引起的回流。
+    measureSafeArea(grid);
+    schedule();
+
+    // 宽高任一变化都重算(与行对齐那处只看宽度不同)
+    const resizeObserver = new ResizeObserver(schedule);
+    resizeObserver.observe(grid);
+    for (const cell of grid.querySelectorAll<HTMLElement>(':scope > .cell')) {
+      resizeObserver.observe(cell);
+    }
+    const onResize = () => schedule();
+    window.addEventListener('resize', onResize);
+    void document.fonts?.ready.then(schedule);
+
+    return () => {
+      active = false;
+      if (frame !== undefined) cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', onResize);
+    };
   });
 
   function componentVariant(component: Component): string | undefined {
@@ -188,7 +311,12 @@
       {/if}
     </h2>
   {/if}
-  <div bind:this={sectionGrid} class="section-grid">
+  <div
+    bind:this={sectionGrid}
+    class:has-backdrop={backdropId !== undefined}
+    class="section-grid"
+    style={gridStyle}
+  >
     {#if authoring && section.components.length === 0}
       <div
         role="presentation"
@@ -207,8 +335,8 @@
       <article
         class:chart-cell={isChartComponent(component)}
         class:header-cell={component.type === 'reportHeader'}
-        class:metric-cell={component.type === 'metricCard'}
-        class:table-cell={component.type === 'table'}
+        class:metric-cell={component.type === 'metricCard' || component.type === 'gauge'}
+        class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
         class:ranking-detail-cell={component.type === 'rankingDetailCard'}
         class:ai-summary-cell={component.type === 'aiSummary'}
         class:connect-next={section.components[componentIndex + 1]?.layout
@@ -217,11 +345,15 @@
           component.layout.connectPrevious === true}
         class:authoring-cell={Boolean(authoring)}
         class:authoring-selected={selected(component.id)}
+        class:backdrop-cell={component.id === backdropId}
         class="cell"
         data-component={`${section.id}/${component.id}`}
         data-component-type={component.type}
         data-component-variant={componentVariant(component)}
-        style={`grid-column: span ${component.layout.span};`}
+        data-backdrop-safe={component.id === backdropId ? safeAreaAnchor : undefined}
+        style={`grid-column: span ${component.layout.span};${
+          component.id === backdropId ? safeAreaStyle : ''
+        }`}
         draggable={Boolean(authoring)}
         onclickcapture={(event) => select(event, component.id)}
         ondragstart={(event) => dragStart(event, component.id)}
@@ -282,13 +414,16 @@
 </section>
 
 <style>
-  /* ==== 缺省容器:通用看板外观(白色分区 + 带边框组件单元格) ==== */
+  /* ==== 缺省容器:通用看板外观 ====
+     报表形态下是「白色分区 + 带边框组件单元格」;看板形态把分区外壳让给画布,
+     由单元格自己成为模块卡片。两者都是「通用看板外观」的同一档,只是形态不同,
+     因此走 --mc-section-default-* / --mc-cell-* 覆写而不是新增容器档位。 */
   .page-section {
-    padding: 18px;
+    padding: var(--mc-section-default-padding, 18px);
     border: 0;
     border-radius: var(--mc-radius-section);
-    background: var(--mc-color-surface);
-    box-shadow: 0 8px 24px rgb(68 85 147 / 0.06);
+    background: var(--mc-section-default-surface, var(--mc-color-surface));
+    box-shadow: var(--mc-section-default-shadow, 0 8px 24px rgb(68 85 147 / 0.06));
   }
   .section-title {
     margin: 0 0 18px;
@@ -321,12 +456,12 @@
     min-height: 112px;
     flex-direction: column;
     gap: 6px;
-    padding: 14px 16px;
+    padding: var(--mc-cell-padding, 14px 16px);
     overflow: hidden;
-    background: var(--mc-color-surface);
-    border: 1px solid rgb(91 114 234 / 0.12);
-    border-radius: var(--mc-radius-cell);
-    box-shadow: 0 8px 22px rgb(53 65 130 / 0.06);
+    background: var(--mc-cell-surface, var(--mc-color-surface));
+    border: 1px solid var(--mc-cell-border, rgb(91 114 234 / 0.12));
+    border-radius: var(--mc-cell-radius, var(--mc-radius-cell));
+    box-shadow: var(--mc-cell-shadow, 0 8px 22px rgb(53 65 130 / 0.06));
   }
   .metric-cell {
     background: var(--mc-color-surface-subtle);
@@ -380,6 +515,47 @@
     border-top: 1px dashed #000;
     content: '';
     pointer-events: none;
+  }
+
+  /* ==== 叠放层:一个组件铺满分区,其余组件按 12 列网格叠在它之上 ====
+     backdrop 用 auto 网格定位换取「包含块是网格容器的 padding box」,
+     因此它铺满的是整个分区而不是自己那几列。窄屏退化见文件末尾。 */
+  .section-grid.has-backdrop {
+    position: relative;
+    /* 建立层叠上下文:backdrop 单元格内部的定位后代(图例、面包屑)否则能越过
+       浮层单元格——`position: relative` 不带 `z-index` 并不建立层叠上下文。 */
+    isolation: isolate;
+    /* 下限取「分区可用高度」(分区顶边到视口底边),由脚本量出后以自定义属性
+       下发,取不到时回落到原来的固定值。
+       **只写 min-height,不写 height**:容器一旦定高,网格的隐式行会被压到
+       「容器高度减去下一行的最小高度」——实测在 1280×800 下浮层指标卡从 272
+       被压到 30。浮层要保持自然高度,所以容器只设下限、允许被内容撑高;
+       真正需要收在折叠线以内的是底图那一层,见 .backdrop-cell。 */
+    min-height: var(--mc-backdrop-available-h, 560px);
+    /* 容器比内容高时,行按内容起排,余下的空间露出底图,而不是把卡片抽长。 */
+    align-content: start;
+  }
+  .section-grid.has-backdrop > .cell {
+    position: relative;
+    z-index: 1;
+  }
+  /* 底图层收在「分区可用高度」以内:容器可以被浮层内容撑到折叠线以下,底图
+     不能——落到折叠线以下的那一段里,散点看不见也点不到(RED 相实测 1280 有
+     38px、1366 有 70px 落在线下)。取不到可用高度时退回铺满容器。 */
+  .section-grid.has-backdrop > .cell.backdrop-cell {
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 0;
+    height: var(--mc-backdrop-available-h, 100%);
+    grid-column: auto !important;
+  }
+  /* 叠放分区里的 Tab 卡纵向档位(冻结基线 R3-1,用户 2026-08-24 决定的 524):
+     顶边由上一行 + 网格间距决定,这里只定高。按组件类型选中而不是按类名,
+     `table-cell` 同时覆盖 table 与 tabContainer 两类。 */
+  .section-grid.has-backdrop > .cell[data-component-type='tabContainer'] {
+    min-height: 524px;
   }
 
   /* ==== 创作态控件 ==== */
@@ -539,9 +715,10 @@
     box-shadow: none;
   }
   .container-plain .section-grid {
-    --section-grid-gap: 12px;
+    --section-grid-gap: var(--mc-section-plain-grid-gap, 12px);
 
-    gap: 12px 14px;
+    gap: var(--mc-section-plain-grid-gap, 12px)
+      var(--mc-section-plain-grid-column-gap, 14px);
   }
 
   /* panel:渐变章节面板 + 居中图标标题 + 内层白底
@@ -596,28 +773,34 @@
     margin-top: calc(2px - var(--section-grid-gap));
   }
 
-  /* card:白色小节卡片 + 左对齐小标题 */
+  /* card:白色小节卡片 + 左对齐小标题
+     内边距、标题字号与网格间距经 --mc-section-card-* 可被页面布局形态覆写,
+     缺省值即报表形态的既有观感;真源在 RuntimeView 根部,不在这里改字面量。 */
   .page-section.container-card {
-    padding: 20px;
+    padding: var(--mc-section-card-padding, 20px);
     background: var(--mc-color-surface);
     border-radius: var(--mc-radius-section);
     box-shadow: none;
   }
   .container-card > .section-title {
-    margin: 0 0 10px 9px;
-    color: var(--mc-color-report-heading);
-    font-size: var(--mc-font-size-report-level-3, 20px);
-    font-weight: 400;
-    line-height: 30px;
+    margin: var(--mc-section-card-title-margin, 0 0 10px 9px);
+    color: var(--mc-section-card-title-color, var(--mc-color-report-heading));
+    font-size: var(
+      --mc-section-card-title-font-size,
+      var(--mc-font-size-report-level-3, 20px)
+    );
+    font-weight: var(--mc-section-card-title-font-weight, 400);
+    line-height: var(--mc-section-card-title-line-height, 30px);
     text-align: left;
   }
   .container-card > .section-title::before {
     display: none;
   }
   .container-card > .section-grid {
-    --section-grid-gap: 10px;
+    --section-grid-gap: var(--mc-section-card-grid-gap, 10px);
 
-    gap: 10px 25px;
+    gap: var(--mc-section-card-grid-gap, 10px)
+      var(--mc-section-card-grid-column-gap, 25px);
   }
 
   /* 创作态边界放在容器去镶边规则之后，确保三种内容分区都清晰可见。 */
@@ -665,6 +848,18 @@
     }
     .cell {
       grid-column: 1 / -1 !important;
+    }
+    /* 单列宽度下叠放会让底层组件被完全遮住,因此窄屏一律取消叠放:
+       backdrop 回到普通流,按它在组件数组中的位置与其余组件上下排列。
+       回流后分区高度重新由内容决定,而铺满时不占高度的组件需要自己拿到
+       一个高度下限,否则会被压成零高。 */
+    .section-grid.has-backdrop {
+      min-height: 0;
+    }
+    .section-grid.has-backdrop > .cell.backdrop-cell {
+      position: static;
+      min-height: 320px;
+      inset: auto;
     }
   }
 </style>
