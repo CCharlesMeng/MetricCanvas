@@ -25,7 +25,7 @@
       const payload = (await response.json()) as { pages: PageListItem[] };
       pages = payload.pages;
     } catch (cause) {
-      error = cause instanceof Error ? cause.message : '看板页面目录加载失败';
+      error = cause instanceof Error ? cause.message : '页面目录加载失败';
     } finally {
       loading = false;
     }
@@ -40,14 +40,14 @@
 </script>
 
 <svelte:head>
-  <title>看板页面管理 | MetricCanvas</title>
+  <title>页面管理 | MetricCanvas</title>
 </svelte:head>
 
 <section class="management">
   <div class="heading">
     <div>
       <p class="eyebrow">管理</p>
-      <h1>看板页面</h1>
+      <h1>页面</h1>
       <p class="muted">查看页面修订、审计信息、差异与统一运行时预览。</p>
     </div>
     <div class="heading-actions">
@@ -57,7 +57,7 @@
   </div>
 
   {#if loading}
-    <div class="skeleton-list" aria-label="加载看板页面目录">
+    <div class="skeleton-list" aria-label="加载页面目录">
       <i></i><i></i><i></i>
     </div>
   {:else if error}
@@ -67,7 +67,7 @@
     </div>
   {:else if pages.length === 0}
     <div class="empty">
-      <h2>暂无看板页面</h2>
+      <h2>暂无页面</h2>
       <p>可先在页面搭建工作台创建页面。</p>
       <a href="/">打开页面搭建工作台</a>
     </div>

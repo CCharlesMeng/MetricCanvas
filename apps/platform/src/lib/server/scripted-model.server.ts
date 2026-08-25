@@ -37,7 +37,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
         : inlinePage(pageId, intent));
       if (!document) {
         return {
-          content: '数据上下文没有返回可执行的已验证查询，无法在不猜测字段和 DQE 协议的前提下生成动态看板页面。',
+          content: '数据上下文没有返回可执行的已验证查询，无法在不猜测字段和 DQE 协议的前提下生成动态页面。',
           toolCalls: []
         };
       }
@@ -46,7 +46,7 @@ export function createComponentSelectingScriptedProvider(runId = 'local'): Model
       }
       if (isAuthoringConversation(messages)) {
         return {
-          content: 'v4 看板页面已生成并校验，当前仍是未保存工作副本。',
+          content: 'v4 页面已生成并校验，当前仍是未保存工作副本。',
           toolCalls: []
         };
       }

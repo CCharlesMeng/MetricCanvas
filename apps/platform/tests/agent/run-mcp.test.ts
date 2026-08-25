@@ -16,7 +16,7 @@ import {
 
 /** 与 packages/mcp 契约测试同款的最小数据上下文:一个可执行的取数单元语义面。 */
 const snapshot: DataContextSnapshot = {
-  formatVersion: '1.0',
+  formatVersion: '1.1',
   id: 'run-mcp-context',
   version: 'context-v1',
   generatedAt: '2026-08-12T00:00:00.000Z',
@@ -30,6 +30,18 @@ const snapshot: DataContextSnapshot = {
       id: 'operations-analytics',
       name: '运营分析',
       description: 'Tokens 服务的用量运营分析',
+      metrics: [{
+        name: 'Tokens消耗量',
+        type: 'number',
+        description: '统计期内消耗的 Token 总量',
+        unit: 'Token',
+        additivity: '可加',
+        timeAggregation: '求和',
+        isRatio: false,
+        dimensions: ['区域'],
+        nullable: false,
+        sensitive: false
+      }],
       objects: [{
         id: 'ops-summary',
         name: '运营汇总',
@@ -41,15 +53,6 @@ const snapshot: DataContextSnapshot = {
             type: 'string',
             description: '业务归属区域。取值域:华东、华南、华北。',
             roleHints: ['dimension'],
-            nullable: false,
-            sensitive: false
-          },
-          {
-            name: 'Tokens消耗量',
-            type: 'number',
-            description: '统计期内消耗的 Token 总量。可加性:可加;时间聚合方式:求和。',
-            roleHints: ['measure'],
-            unit: 'Token',
             nullable: false,
             sensitive: false
           }

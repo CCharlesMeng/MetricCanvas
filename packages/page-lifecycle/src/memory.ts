@@ -106,7 +106,7 @@ export function createMemoryPageLifecycle(
           const active = requests.get(page.activePublishRequestId);
           const state = active ? publishLeaseState(active.status, active.expiresAt, now) : 'closed';
           if (state === 'active') {
-            return failure('PAGE_LOCKED', `看板页面有活动发布租约:${active!.requestId}`);
+            return failure('PAGE_LOCKED', `页面有活动发布租约:${active!.requestId}`);
           }
           if (state === 'expired') {
             expiredActiveRequest = active!;
@@ -183,7 +183,7 @@ export function createMemoryPageLifecycle(
 
     async listRevisionHistory({ pageId }) {
       const page = pages.get(pageId);
-      if (!page) return failure('PAGE_NOT_FOUND', `看板页面不存在:${pageId}`);
+      if (!page) return failure('PAGE_NOT_FOUND', `页面不存在:${pageId}`);
       return {
         ok: true,
         history: { pageId, revisions: clone([...page.revisions].reverse()) }
@@ -229,7 +229,7 @@ export function createMemoryPageLifecycle(
         const replayed = idempotency.get(key);
         if (replayed) return clone(replayed) as PublishRequestResult;
         const page = pages.get(command.pageId);
-        if (!page) return failure('PAGE_NOT_FOUND', `看板页面不存在:${command.pageId}`);
+        if (!page) return failure('PAGE_NOT_FOUND', `页面不存在:${command.pageId}`);
         const latest = page.revisions.at(-1);
         if (latest?.revisionId !== command.revisionId) {
           return failure(
@@ -242,7 +242,7 @@ export function createMemoryPageLifecycle(
           const active = requests.get(page.activePublishRequestId);
           const state = active ? publishLeaseState(active.status, active.expiresAt, now) : 'closed';
           if (state === 'active') {
-            return failure('PAGE_LOCKED', `看板页面已有活动发布租约:${active!.requestId}`);
+            return failure('PAGE_LOCKED', `页面已有活动发布租约:${active!.requestId}`);
           }
           if (state === 'expired') {
             finishRequest(active!, 'expired', null, now, PUBLISH_LEASE_EXPIRED_REASON);
@@ -487,7 +487,7 @@ export function createMemoryPageLifecycle(
 
   async function selectPage(reference: PageReference): Promise<RevisionResult> {
     const page = pages.get(reference.pageId);
-    if (!page) return failure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+    if (!page) return failure('PAGE_NOT_FOUND', `页面不存在:${reference.pageId}`);
     const revision = reference.selector.type === 'latest'
       ? page.revisions.at(-1)
       : reference.selector.type === 'published'
@@ -497,7 +497,7 @@ export function createMemoryPageLifecycle(
         : findRevision(reference.pageId, reference.selector.revisionId);
     if (!revision) {
       return reference.selector.type === 'published'
-        ? failure('PAGE_NOT_PUBLISHED', `看板页面尚未发布:${reference.pageId}`)
+        ? failure('PAGE_NOT_PUBLISHED', `页面尚未发布:${reference.pageId}`)
         : failure(
             'REVISION_NOT_FOUND',
             `页面修订不存在:${reference.selector.type === 'exact' ? reference.selector.revisionId : '无'}`

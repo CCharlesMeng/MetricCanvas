@@ -1,8 +1,8 @@
 import { createHash } from 'node:crypto';
 import {
   canonicalizeJson,
+  supportedVersions,
   validate,
-  versionPolicy,
   type PageDocument
 } from '@metriccanvas/page';
 import type {
@@ -103,7 +103,7 @@ export function saveRevisionPrecondition(
   return null;
 }
 
-/** 保存文档的内容判定:结构校验 + 当前版本 + 命令与文档 id 一致。 */
+/** 保存文档的内容判定:结构校验 + 受支持的次版本 + 命令与文档 id 一致。 */
 export function checkSaveDocument(
   raw: unknown,
   pageId: string
@@ -116,10 +116,12 @@ export function checkSaveDocument(
     };
   }
   const document = raw as PageDocument;
-  if (document.schemaVersion !== versionPolicy.current) {
+  // 页面修订不可变(ADR-0008),旧次版本的文档必须继续可保存与可读;
+  // 拒绝的只有当前主版本之外或高于当前次版本的声明(ADR-0051)。
+  if (!supportedVersions().includes(document.schemaVersion)) {
     return lifecycleFailure(
       'INVALID_PAGE',
-      `保存只接受当前 schemaVersion ${versionPolicy.current}`
+      `保存只接受 schemaVersion ${supportedVersions().join(' / ')}`
     );
   }
   if (document.id !== pageId) {

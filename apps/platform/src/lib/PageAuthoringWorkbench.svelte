@@ -432,7 +432,7 @@
       baseRevisionId = payload.revision.revisionId;
       saveNotice =
         `已保存修订 R${payload.revision.revisionNumber}，数据上下文版本：` +
-        `${payload.revision.dataContextVersion ?? '纯静态页面'}`;
+        `${payload.revision.dataContextVersion ?? '仅内联页面'}`;
     } catch (cause) {
       saveError = cause instanceof Error ? cause.message : String(cause);
     } finally {
@@ -526,7 +526,7 @@
     saveNotice =
       `已沉淀为${outcome.direction === 'dataApp' ? ' Data App' : '报告'}:` +
       `页面 ${outcome.pageId} 修订 R${outcome.revisionNumber},数据上下文版本:` +
-      `${outcome.dataContextVersion ?? '纯静态页面'}`;
+      `${outcome.dataContextVersion ?? '仅内联页面'}`;
   }
 
   function closeMetadataDrawer() {

@@ -61,7 +61,7 @@
       selectedRevisionId = pageData.revision.revisionId;
       await loadDiff(pageData.revision.revisionId);
     } catch (cause) {
-      error = cause instanceof Error ? cause.message : '看板页面加载失败';
+      error = cause instanceof Error ? cause.message : '页面加载失败';
     } finally {
       loading = false;
     }
@@ -163,11 +163,11 @@
 </script>
 
 <svelte:head>
-  <title>看板页面修订 | MetricCanvas</title>
+  <title>页面修订 | MetricCanvas</title>
 </svelte:head>
 
 <section class="management">
-  <a class="back" href="/manage">← 看板页面</a>
+  <a class="back" href="/manage">← 页面</a>
 
   {#if loading}
     <p class="muted">加载页面修订…</p>
@@ -200,7 +200,7 @@
                 <span>时间：{revision.createdAt}</span>
                 <span>基线：{revision.baseRevisionId ?? '无（首个修订）'}</span>
                 <span>内容哈希：{revision.contentHash}</span>
-                <span>数据上下文版本：{revision.dataContextVersion ?? '纯静态页面'}</span>
+                <span>数据上下文版本：{revision.dataContextVersion ?? '仅内联页面'}</span>
               </button>
             </li>
           {/each}
@@ -215,7 +215,7 @@
             <div><dt>创建时间</dt><dd>{comparison.selected.createdAt}</dd></div>
             <div><dt>基线修订</dt><dd>{comparison.selected.baseRevisionId ?? '无（首个修订）'}</dd></div>
             <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash}</code></dd></div>
-            <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '纯静态页面'}</dd></div>
+            <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '仅内联页面'}</dd></div>
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}

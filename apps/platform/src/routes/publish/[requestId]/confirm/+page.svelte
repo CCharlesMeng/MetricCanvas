@@ -5,7 +5,7 @@
 <section>
   <p class="eyebrow">人工发布确认</p>
   <h1>确认发布 R{data.revision.revisionNumber}</h1>
-  <p>请核对下面绑定的看板页面与精确修订。确认后稳定页面 URL 将切换到该修订。</p>
+  <p>请核对下面绑定的页面与精确修订。确认后稳定页面 URL 将切换到该修订。</p>
 
   <dl>
     <div>
@@ -13,7 +13,7 @@
       <dd><code>{data.request.requestId}</code></dd>
     </div>
     <div>
-      <dt>看板页面</dt>
+      <dt>页面</dt>
       <dd><code>{data.request.pageId}</code></dd>
     </div>
     <div>
@@ -22,7 +22,7 @@
     </div>
     <div>
       <dt>数据上下文版本</dt>
-      <dd><code>{data.revision.dataContextVersion ?? '纯静态页面'}</code></dd>
+      <dd><code>{data.revision.dataContextVersion ?? '仅内联页面'}</code></dd>
     </div>
     <div>
       <dt>内容指纹</dt>

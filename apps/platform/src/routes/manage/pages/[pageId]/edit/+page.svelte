@@ -160,7 +160,7 @@
 </script>
 
 <svelte:head>
-  <title>编辑看板页面 | MetricCanvas</title>
+  <title>编辑页面 | MetricCanvas</title>
 </svelte:head>
 
 <section class="editor-page">

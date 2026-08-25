@@ -167,5 +167,5 @@ function pageIdOf(document: unknown): string {
   ) {
     return document.id;
   }
-  throw new Error('离线种子不是合法看板页面:缺少 id');
+  throw new Error('离线种子不是合法页面:缺少 id');
 }

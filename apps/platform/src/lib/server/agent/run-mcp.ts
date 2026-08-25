@@ -5,10 +5,11 @@ import {
   type McpClient,
   type UnitQueryExecutionResult
 } from '@metriccanvas/mcp';
+import { hasQueryFieldMapping } from '@metriccanvas/page';
 import type {
   DetailRecord,
   EffectiveQuery,
-  QueryFieldDefinition,
+  QueryDataSourceFieldDefinition,
   Row
 } from '@metriccanvas/page';
 import type {
@@ -120,11 +121,12 @@ export function createRunAwareUnitQueryExecutor(options: {
 /** 归一化行(稳定页面字段 id 键)→ DQE 原始输出字段名键;明细项字段同样还原。 */
 function rawRowFromNormalized(
   row: Row,
-  fieldMappings: Record<string, QueryFieldDefinition>
+  fieldMappings: Record<string, QueryDataSourceFieldDefinition>
 ): Row {
   const raw: Row = {};
   for (const [fieldId, definition] of Object.entries(fieldMappings)) {
-    if (!(fieldId in row)) continue;
+    // 计算阶段产出字段不来自外部响应，还原原始行时没有它的位置。
+    if (!(fieldId in row) || !hasQueryFieldMapping(definition)) continue;
     const value = row[fieldId]!;
     if (definition.type === 'recordList' && Array.isArray(value)) {
       raw[definition.queryField] = value.map((item) => {

@@ -29,7 +29,7 @@ export function metadataInitialSources(
 
 /**
  * 页面文档的只读序列化投影：query initial 默认排除，按页面数据源 id
- * 显式保留；静态页面数据源和所有其他字段不变，输入文档不被修改。
+ * 显式保留；内联页面数据源和所有其他字段不变，输入文档不被修改。
  */
 export function formatMetadataJson(
   document: Record<string, unknown>,

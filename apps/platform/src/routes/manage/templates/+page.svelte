@@ -196,7 +196,7 @@
       <h1>页面模板</h1>
       <p>模板修订只引用精确的已发布页面修订，不复制页面文档。</p>
     </div>
-    <a href="/manage">返回看板页面</a>
+    <a href="/manage">返回页面</a>
   </header>
 
   {#if loading}

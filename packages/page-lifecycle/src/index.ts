@@ -167,7 +167,7 @@ export async function createPostgresPageLifecycle(
           if (state === 'active') {
             return lifecycleFailure(
               'PAGE_LOCKED',
-              `看板页面有活动发布租约:${active!.request_id}`
+              `页面有活动发布租约:${active!.request_id}`
             );
           }
           if (state === 'expired') {
@@ -364,7 +364,7 @@ export async function createPostgresPageLifecycle(
         WHERE page_id = ${reference.pageId}
       `) as unknown as Array<{ page_id: string }>;
       if (pages.length === 0) {
-        return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+        return lifecycleFailure('PAGE_NOT_FOUND', `页面不存在:${reference.pageId}`);
       }
       const rows = (await sql`
         SELECT
@@ -470,7 +470,7 @@ export async function createPostgresPageLifecycle(
         }>;
         const page = pages[0];
         if (!page) {
-          return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${command.pageId}`);
+          return lifecycleFailure('PAGE_NOT_FOUND', `页面不存在:${command.pageId}`);
         }
         if (page.latest_revision_id !== command.revisionId) {
           return lifecycleFailure(
@@ -497,7 +497,7 @@ export async function createPostgresPageLifecycle(
           if (state === 'active') {
             return lifecycleFailure(
               'PAGE_LOCKED',
-              `看板页面已有活动发布租约:${active!.request_id}`
+              `页面已有活动发布租约:${active!.request_id}`
             );
           }
           if (state === 'expired') {
@@ -907,12 +907,12 @@ export async function createPostgresPageLifecycle(
       `) as unknown as Array<RevisionRow & { revision_id: string | null }>;
 
       if (rows.length === 0) {
-        return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+        return lifecycleFailure('PAGE_NOT_FOUND', `页面不存在:${reference.pageId}`);
       }
       if (!rows[0].revision_id) {
         return lifecycleFailure(
           'PAGE_NOT_PUBLISHED',
-          `看板页面尚未发布:${reference.pageId}`
+          `页面尚未发布:${reference.pageId}`
         );
       }
       return { ok: true, revision: toRevision(rows[0] as RevisionRow) };
@@ -1320,7 +1320,7 @@ async function selectPageRevision(
       SELECT page_id FROM dashboard_pages WHERE page_id = ${reference.pageId}
     `) as unknown as Array<{ page_id: string }>;
     if (existingPages.length === 0) {
-      return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+      return lifecycleFailure('PAGE_NOT_FOUND', `页面不存在:${reference.pageId}`);
     }
     const rows = await selectRevision(sql, reference.pageId, reference.selector.revisionId);
     if (!rows[0]) {
@@ -1344,13 +1344,13 @@ async function selectPageRevision(
   )) as unknown as Array<{ revision_id: string | null }>;
   const page = pages[0];
   if (!page) {
-    return lifecycleFailure('PAGE_NOT_FOUND', `看板页面不存在:${reference.pageId}`);
+    return lifecycleFailure('PAGE_NOT_FOUND', `页面不存在:${reference.pageId}`);
   }
   if (!page.revision_id) {
     return lifecycleFailure(
       reference.selector.type === 'published' ? 'PAGE_NOT_PUBLISHED' : 'REVISION_NOT_FOUND',
       reference.selector.type === 'published'
-        ? `看板页面尚未发布:${reference.pageId}`
+        ? `页面尚未发布:${reference.pageId}`
         : `页面没有最新修订:${reference.pageId}`
     );
   }

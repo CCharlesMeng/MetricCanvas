@@ -7,6 +7,7 @@ import {
   type DataContextSnapshot,
   type ExecuteDataRequestUnitQuery
 } from '@metriccanvas/mcp';
+import { hasQueryFieldMapping } from '@metriccanvas/page';
 import type { AgentEvent, AgentMessage } from '../../../src/lib/server/agent/types';
 import type { AnalysisStepEvent } from '../../../src/lib/server/session/step-event';
 import { createSnapshotAskRetrieval } from '../../../src/lib/server/ask/retrieval';
@@ -97,7 +98,7 @@ export function syntheticExecutor(options: {
       const rows = Array.from({ length: rowCount }, (_, index) => {
         const row: Record<string, string | number> = {};
         for (const definition of Object.values(query.fieldMappings)) {
-          if (definition.role === 'detail') continue;
+          if (definition.role === 'detail' || !hasQueryFieldMapping(definition)) continue;
           if (definition.role === 'measure') {
             row[definition.queryField] = (index + 1) * 10;
           } else if (definition.type === 'date') {
