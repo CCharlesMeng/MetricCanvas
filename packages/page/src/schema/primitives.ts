@@ -285,12 +285,21 @@ export const componentLayerZ = z.enum(['backdrop']).meta({
   description: 'backdrop 铺满分区并置于同分区其余组件之下；省略为普通流'
 });
 
+/*
+ * `layout` 与每个组件的 `props` 一样是 `.strict()`：写错键名（例如 `spans`）
+ * 必须报错，而不是静默通过、页面看起来正常而声明无效。
+ *
+ * 补 strict 是一次收紧，按 ADR-0051 的「零使用开放面可按次版本收紧」例外
+ * 行使：`layout` 的未知键在全部存量页面文档与校验样例中零使用，该事实由
+ * `tests/layout-strict-zero-usage.test.ts` 随本次收紧一并证明。
+ */
 export const componentLayoutZ = z
   .object({
     span: z.int().min(1).max(12),
     connectPrevious: z.boolean().optional(),
     layer: componentLayerZ.optional()
   })
+  .strict()
   .meta({ id: 'componentLayout' });
 
 export const mainDataZ = z

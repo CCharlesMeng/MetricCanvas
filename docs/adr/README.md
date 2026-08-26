@@ -1,8 +1,8 @@
-# ADR 基线:52 份决策记录的当前生效结论
+# ADR 基线:53 份决策记录的当前生效结论
 
-`docs/adr/` 现有 52 份 ADR(0001–0052)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 53 份 ADR(0001–0053)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0053-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0054-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0052:** 这八份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)与 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) 补记同一批次里的页面外框与分区内层次决策——`layoutForm` 与 `layout.layer` 的协议部分已随 5.1 交付,安全区通道尚未实现——并把聚合根改称**页面**。页面协议变更全部为纯增量,交付 `schemaVersion` 5.1。评审与落地计划见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md)。
 
@@ -66,6 +66,7 @@
 | [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展,层级维度承载地图下钻 | 现行 |
 | [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进,主版本递增须论证 | 现行(2026-08-25 补了"零使用开放面可按次版本收紧"的例外) |
 | [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行(安全区通道未实现,由当前 Story 落地) |
+| [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行(协议层已随 5.2 交付,widget 与运行时渲染未实现;同批附带叶子组件「分类明细」) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -111,13 +112,15 @@
 
 **页面外框与分区内层次([ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)):** 顶层可选 `layoutForm` 封闭两档 `report`(缺省)/`dashboard`,是页面外框几何与画布外观的唯一真源,`dashboard` 要求宿主交出全部宽度(见 [`docs/host-contract.md`](../host-contract.md));组件 `layout.layer: "backdrop"` 让组件铺满分区并置于同分区其余组件之下,其余组件仍走 12 列自动流,页面不写坐标、宽高或 z-index。三个声明各管一层:`layoutForm` 管页面外框、`container` 管分区外壳、`layer` 管分区内层次,唯一硬冲突是 `backdrop` 要求 `container: "plain"`。铺底组件的未遮挡矩形(**安全区**)由 `RuntimeSection` 计算并经 CSS 自定义属性下发,**明确不进页面 schema**——那会把布局结果写进元数据;该通道**尚未实现**。`dashboard` + `panel` 与 `report` + `backdrop` 两个组合合法但没有设计过观感,决定不禁、以测试钉住现状。同一份 ADR 把聚合根改称**页面**,「看板」与「报表」降为布局形态。
 
+**组件级分组容器([ADR-0053](./0053-composite-card-component-level-grouping-container.md),proposed):** 新增组件类型 `compositeCard`(**组合卡**)——一张卡框住若干组件,自身不承载数据,子组件是五种的白名单(`metricCard`、`pieChart`、`gauge`、`keyValuePanel`、`categoryBreakdown`)、禁止递归、卡内复用同一条 12 列自动流,分隔线是容器上的一位布尔信息且位置由结构派生。同批附带一个叶子组件 `categoryBreakdown`(**分类明细**,按类别逐行、按度量逐列的紧凑明细)——按仓里先例新增叶子组件不单写 ADR,因此它登记在这份 ADR 的白名单里;它与并排饼图之间有一条硬约束:**颜色按类别取值决定,不按行序决定**,该约束不进页面文档,只能由测试钉住。它与 `section.container: "card"` 的判据是层次而不是功能:`container` 是**分区级**、卡与卡只能纵向堆叠;组合卡是**组件级**、进 12 列栅格、可以横向并排若干张。`container` 仍是分区外观的唯一真源,组合卡不改变也不推断分区外观,因此 ADR-0038 那条「新增 `container` 档位必须证明结构上不可区分且视觉上必须不同」不被触发。该 ADR **推翻了 ADR-0038 否决「`group` 层级」时的前提**——「当前没有需要独立 DOM 所有权的场景」已不成立——但只放开一层非递归的组件级容器,不引入 `rows`/`stack` 递归布局语言。按 ADR-0051 是纯增量,登记为 **5.2**;**协议层(`packages/page` 与 `PAGE-METADATA.md`)已交付,Svelte widget 与运行时渲染尚未实现**,因此概览页那六个同级卡位的权宜表达还没有撤销。
+
 `timeRange` 筛选器的 `default` 除既有天级预设与绝对区间外,新增**结构化相对时间**分支(粒度单位 + 区间描述 + 锚点,并显式承载是否包含当前未完成周期);它是声明式数据而不是表达式字符串,求值发生在服务端取数编排期且一次页面加载内共享同一求值时刻,0003 的"禁表达式与脚本"原样成立。页面另需一处可表达"本页面含 N 个临时口径"及其已被显式接受的声明(ADR-0036),使这一风险在后续查看与审计中始终可见。
 
 **已生效的 5.1 增量:** [ADR-0047](./0047-first-class-page-parameters.md) 顶层新增可选的 `params`,文本属性取值从 `string` 放宽为「字面量或页面参数引用」;物化后领域类型仍是 `string`。[ADR-0048](./0048-navigation-intent-and-host-routing.md) 跨页下钻只上抛导航意图,路由与回跳属宿主。[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) 筛选器闭集从两类扩到六类并支持层级与级联,**ADR-0035 的结构化相对时间欠账已随 0050 偿还**。[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) 新增顶层 `layoutForm` 与组件 `layout.layer`(见上一段)。**仍为提议的 5.1 增量:** [ADR-0049](./0049-table-server-side-and-presentation-capabilities.md)——表格的排序与列头筛选按数据源模式整体下推或整体本地化,查询分页下的拒绝规则尚未解除。全部为纯增量,存量页面不迁移。
 
 ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方式是**限制间接的形态而不是限制它出现的位置**:页面参数引用只允许整值替换、不允许模板插值,取值只能是标量,格式复用 ADR-0013 的既有闭集;计算产出字段必须就地声明在结果字段契约里;层级到谓词字段的映射写在查询里而不是网关配置里。按组件类型限制参数消费面的方案已被 ADR-0047 否决——那会让页面为了显示一个值而被迫引入某个组件。
 
-来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)、[ADR-0042](./0042-money-fields-and-semantic-embedded-values.md)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)。
+来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)、[ADR-0042](./0042-money-fields-and-semantic-embedded-values.md)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)、[ADR-0053](./0053-composite-card-component-level-grouping-container.md)。
 
 ## 数据获取与查询模型
 
@@ -145,11 +148,11 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 **仍为提议的扩展:** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 落地 ADR-0034 留白的 GraphQL 分支,筛选条件以结构化谓词(封闭算子 + 绑定筛选器或页面参数 + 空值省略)表达,排序以排序绑定表达,总条数由计数声明复用主查询谓词。**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`。**
 
-当前 `versionPolicy.current` 已经是 `5.1`(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。
+当前 `versionPolicy.current` 已经是 `5.1`(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.2 已发布**(`versionPolicy.current` 现为 `5.2`,`supportedVersions()` 返回 5.0 / 5.1 / 5.2):[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是其中两条能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`。存量页面继续声明 5.0/5.1,不迁移。
 
 **已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 已按此策略承载主版本、次版本与能力表,接受 5.0 与 5.1。
 
-该策略有**一条例外**(2026-08-25 补入 ADR-0051):**从未被任何存量文档行使的开放面,可以按次版本收紧。** 判据是零使用、可证(测试或脚本随收紧一并落地)、并承认形式超集让位于真实文档集合上的超集。它被刻意限定得很死——"很少使用"不是判据,只有"零使用且可证"才是——否则它就是绕过版本策略的后门。第一个适用对象是组件 `layout` 对象补 `.strict()`(每个组件的 `props` 都是 strict,`layout` 不是,写错键名会静默通过)。
+该策略有**一条例外**(2026-08-25 补入 ADR-0051):**从未被任何存量文档行使的开放面,可以按次版本收紧。** 判据是零使用、可证(测试或脚本随收紧一并落地)、并承认形式超集让位于真实文档集合上的超集。它被刻意限定得很死——"很少使用"不是判据,只有"零使用且可证"才是——否则它就是绕过版本策略的后门。第一个适用对象是组件 `layout` 对象补 `.strict()`(每个组件的 `props` 都是 strict,`layout` 不是,写错键名会静默通过),该收紧已随 5.2 行使,零使用证明是 `packages/page/tests/layout-strict-zero-usage.test.ts`。
 
 ## 产品形态谱系与两速生命周期
 

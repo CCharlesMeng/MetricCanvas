@@ -26,8 +26,10 @@ export const keyValuePanelComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        /** 每行放几组键值；缺省三列。 */
-        columns: z.union([z.literal(2), z.literal(3), z.literal(4)]).optional(),
+        /** 每行放几组键值；缺省三列。`1` 用于窄卡位里的单列纵向罗列。 */
+        columns: z
+          .union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
+          .optional(),
         items: z.array(keyValueItemZ).min(1)
       })
       .strict()

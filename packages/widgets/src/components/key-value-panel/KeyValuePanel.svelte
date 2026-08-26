@@ -41,19 +41,23 @@
 </div>
 
 <style>
+  /* 表面经 --mc-key-value-panel-* 下发,与 --mc-metric-panel-* / --mc-gauge-*
+     同一族做法;缺省值即两档形态共有的既有观感(白底 16px 圆角 19px 内边距),
+     因此这三个量不进布局形态定义点。走 token 是为了「卡里不套卡」:放进组合卡
+     时由卡内作用域压平,组件本身不认识自己被谁装着。 */
   .key-value-panel {
     flex: 1;
     min-width: 0;
-    padding: 19px;
-    background: var(--mc-color-surface, #fff);
-    border-radius: 16px;
+    padding: var(--mc-key-value-panel-padding, 19px);
+    background: var(--mc-key-value-panel-surface, var(--mc-color-surface, #fff));
+    border-radius: var(--mc-key-value-panel-radius, var(--mc-radius-section, 16px));
   }
   h3 {
     margin: 0 0 12px;
-    color: #121e3b;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 30px;
+    color: var(--mc-card-title-color, #121e3b);
+    font-size: var(--mc-card-title-font-size, 20px);
+    font-weight: var(--mc-card-title-font-weight, 600);
+    line-height: var(--mc-card-title-line-height, 30px);
   }
   dl {
     display: grid;

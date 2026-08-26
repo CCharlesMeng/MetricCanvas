@@ -227,13 +227,17 @@
 {/snippet}
 
 <style>
+  /* 控件铬(字号、盒子、描边、圆角)与外置字段名标签的可见性两档形态取值不同,
+     七个筛选控件横跨多个文件共用同一组 --mc-filter-* 量,真源在统一运行时根部;
+     缺省值即报表形态的既有观感,不在任一控件里改字面量。 */
   .filter {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
   }
   .label {
+    display: var(--mc-filter-label-display, inline);
     color: #71717a;
     white-space: nowrap;
   }
@@ -249,14 +253,14 @@
     background: transparent;
     padding: 5px 12px;
     border-radius: 6px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
     color: #52525b;
     cursor: pointer;
   }
   .tab.active {
     background: #fff;
     color: #18181b;
-    font-weight: 600;
+    font-weight: var(--mc-tab-active-font-weight, 600);
     box-shadow: 0 1px 2px rgb(0 0 0 / 0.08);
   }
   .select {
@@ -267,13 +271,14 @@
     display: flex;
     align-items: center;
     gap: 6px;
+    height: var(--mc-filter-control-height, auto);
     padding: 6px 12px;
     background: #fff;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
+    border: 1px solid var(--mc-filter-control-border-color, #e4e4e7);
+    border-radius: var(--mc-filter-control-radius, 8px);
     cursor: pointer;
     user-select: none;
-    min-width: 96px;
+    min-width: var(--mc-filter-control-min-width, 96px);
   }
   .select summary::-webkit-details-marker {
     display: none;

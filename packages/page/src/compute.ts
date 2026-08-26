@@ -21,12 +21,26 @@ export interface RowKindMark {
   value: RowKind;
 }
 
+/**
+ * 比值的输出刻度。`ratio` 本身产出 `numerator / denominator`,是 0–1 分数;
+ * 而仓内 `percent-*` 展示格式按原值加 `%`,存量页面的百分比字段都存 0–100。
+ * `scale: 100` 让算子直接产出 0–100,省掉「算出 0.42 却显示 0.42%」这类
+ * 只能靠肉眼发现的偏差。
+ *
+ * 闭集只有 `100`:开放数值等于在算子里引入一个乘法表达式,而 ADR-0046 的
+ * 立场是算子的参数只能是字段引用与封闭枚举,不能是可求值的东西。真出现
+ * 第二个刻度(千分比之类)时按闭集新增成员放开,那是纯增量。
+ */
+export type RatioScale = 100;
+
 export interface RatioOperator {
   op: 'ratio';
   numerator: string;
   denominator: string;
   output: string;
   onZeroDenominator: ZeroDenominatorSemantics;
+  /** 输出刻度;缺省产出 0–1 分数,`100` 产出 0–100。 */
+  scale?: RatioScale;
 }
 
 export interface DeltaOperator {

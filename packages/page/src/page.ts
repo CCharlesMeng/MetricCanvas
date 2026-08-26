@@ -13,9 +13,11 @@ import {
   mapChartComponentZ,
   gaugeComponentZ,
   tabContainerComponentZ,
+  compositeCardComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
   keyValuePanelComponentZ,
+  categoryBreakdownComponentZ,
   fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ,
@@ -109,6 +111,16 @@ export type TabContainerComponent = Omit<
   props: Omit<TabContainerProps, 'tabs'> & { tabs: TabItem[] };
 };
 
+export type CompositeCardProps = z.infer<typeof compositeCardComponentZ>['props'];
+export type CompositeCardChild = CompositeCardProps['components'][number];
+export type CompositeCardComponent = z.infer<typeof compositeCardComponentZ> & {
+  data?: never;
+};
+
+export type CategoryBreakdownProps = z.infer<typeof categoryBreakdownComponentZ>['props'];
+export type CategoryBreakdownColumn = CategoryBreakdownProps['columns'][number];
+export type CategoryBreakdownComponent = z.infer<typeof categoryBreakdownComponentZ>;
+
 export type RankingCardProps = z.infer<typeof rankingCardComponentZ>['props'];
 export type RankingCardComponent = z.infer<typeof rankingCardComponentZ>;
 
@@ -141,16 +153,22 @@ export type Component =
   | MapChartComponent
   | GaugeComponent
   | TabContainerComponent
+  | CompositeCardComponent
   | RankingCardComponent
   | RankingDetailCardComponent
   | KeyValuePanelComponent
+  | CategoryBreakdownComponent
   | FieldTextComponent
   | TextComponent
   | AiSummaryComponent;
 
 export type DataComponent = Exclude<
   Component,
-  ReportHeaderComponent | TextComponent | AiSummaryComponent | TabContainerComponent
+  | ReportHeaderComponent
+  | TextComponent
+  | AiSummaryComponent
+  | TabContainerComponent
+  | CompositeCardComponent
 >;
 export type ChartComponent =
   | BarChartComponent
@@ -202,7 +220,8 @@ export function isDataComponent(component: Component): component is DataComponen
     component.type !== 'reportHeader' &&
     component.type !== 'text' &&
     component.type !== 'aiSummary' &&
-    component.type !== 'tabContainer'
+    component.type !== 'tabContainer' &&
+    component.type !== 'compositeCard'
   );
 }
 

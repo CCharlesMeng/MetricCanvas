@@ -13,6 +13,13 @@ export { default as Gauge } from './components/gauge/Gauge.svelte';
 export { gaugeProgress, gaugeArc } from './components/gauge/gauge';
 export { default as TabContainer } from './components/tab-container/TabContainer.svelte';
 export { resolveActiveTab, type TabLabel } from './components/tab-container/tabs';
+export { default as CompositeCard } from './components/composite-card/CompositeCard.svelte';
+export {
+  compositeCardFlow,
+  COMPOSITE_CARD_COLUMNS,
+  type CompositeCardSlot
+} from './components/composite-card/flow';
+export { default as CategoryBreakdown } from './components/category-breakdown/CategoryBreakdown.svelte';
 export { default as RankingCard } from './components/ranking-card/RankingCard.svelte';
 export { default as RankingDetailCard } from './components/ranking-detail-card/RankingDetailCard.svelte';
 export { default as KeyValuePanel } from './components/key-value-panel/KeyValuePanel.svelte';

@@ -6,13 +6,16 @@
    * 不再与筛选栏、参数水合、表格状态挤在同一份源文件里。
    * 本身零状态:数据槽、宿主态与交互回调全部由统一运行时传入。
    *
-   * reportHeader / text / aiSummary / tabContainer 不经 WidgetHost——
-   * 它们不声明数据槽,没有加载态与错误态可呈现(见 `rendersWithoutWidgetHost`)。
+   * 走不走 WidgetHost 由 `rendersWithoutWidgetHost` 判,模板不再自己列一遍
+   * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
+   * (组合卡这次正是这么漏的)。
    */
   import type { Component, DataSnapshot, Row } from '@metriccanvas/page';
   import type { PageDataSnapshots } from '@metriccanvas/runtime';
   import {
     BarChart,
+    CategoryBreakdown,
+    CompositeCard,
     FieldText,
     Gauge,
     KeyValuePanel,
@@ -34,7 +37,11 @@
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import WidgetHost from './WidgetHost.svelte';
-  import type { NestedComponentRender, TableRenderBinding } from './component-render';
+  import {
+    rendersWithoutWidgetHost,
+    type NestedComponentRender,
+    type TableRenderBinding
+  } from './component-render';
   import Self from './ComponentRenderer.svelte';
 
   interface Props {
@@ -80,39 +87,57 @@
   );
 </script>
 
-{#if component.type === 'reportHeader'}
-  <ReportHeader props={component.props} />
-{:else if component.type === 'text'}
-  <TextBlock props={component.props} links={textLinks} />
-{:else if component.type === 'aiSummary'}
-  <AiSummaryHost
-    props={component.props}
-    sourceSnapshots={pageSnapshots}
-    config={aiSummary}
-  />
-{:else if component.type === 'tabContainer'}
-  <TabContainer
-    title={component.props.title}
-    tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
-    defaultTab={component.props.defaultTab}
-  >
-    {#snippet children(activeId)}
-      {@const child = component.props.tabs.find((tab) => tab.id === activeId)?.component}
-      {#if child && nested}
-        <Self
-          component={child}
-          data={nested.data(child)}
-          snapshot={nested.snapshot(child)}
-          {pageSnapshots}
-          {aiSummary}
-          table={nested.table(child)}
-          onchartclick={nested.onchartclick(child)}
-          map={nested.map?.(child)}
-          {nested}
-        />
-      {/if}
-    {/snippet}
-  </TabContainer>
+<!-- 容器内的子组件递归回本组件;数据与交互仍由统一运行时按组件提供。 -->
+{#snippet child(nestedComponent: Component)}
+  {#if nested}
+    <Self
+      component={nestedComponent}
+      data={nested.data(nestedComponent)}
+      snapshot={nested.snapshot(nestedComponent)}
+      {pageSnapshots}
+      {aiSummary}
+      table={nested.table(nestedComponent)}
+      onchartclick={nested.onchartclick(nestedComponent)}
+      map={nested.map?.(nestedComponent)}
+      {nested}
+    />
+  {/if}
+{/snippet}
+
+{#if rendersWithoutWidgetHost(component)}
+  {#if component.type === 'reportHeader'}
+    <ReportHeader props={component.props} />
+  {:else if component.type === 'text'}
+    <TextBlock props={component.props} links={textLinks} />
+  {:else if component.type === 'aiSummary'}
+    <AiSummaryHost
+      props={component.props}
+      sourceSnapshots={pageSnapshots}
+      config={aiSummary}
+    />
+  {:else if component.type === 'tabContainer'}
+    <TabContainer
+      title={component.props.title}
+      tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
+      defaultTab={component.props.defaultTab}
+    >
+      {#snippet children(activeId)}
+        {@const tab = component.props.tabs.find((candidate) => candidate.id === activeId)}
+        {#if tab}{@render child(tab.component)}{/if}
+      {/snippet}
+    </TabContainer>
+  {:else if component.type === 'compositeCard'}
+    <CompositeCard
+      title={component.props.title}
+      spans={component.props.components.map((item) => item.layout.span)}
+      dividers={component.props.dividers}
+    >
+      {#snippet children(index)}
+        {@const nestedChild = component.props.components[index]}
+        {#if nestedChild}{@render child(nestedChild)}{/if}
+      {/snippet}
+    </CompositeCard>
+  {/if}
 {:else}
   <WidgetHost {snapshot}>
     {#snippet ready(_readySnapshot)}
@@ -142,6 +167,8 @@
         <RankingDetailCard data={mainData} props={component.props} />
       {:else if component.type === 'keyValuePanel'}
         <KeyValuePanel data={mainData} props={component.props} />
+      {:else if component.type === 'categoryBreakdown'}
+        <CategoryBreakdown data={mainData} props={component.props} />
       {:else if component.type === 'fieldText'}
         <FieldText data={mainData} props={component.props} />
       {:else if component.type === 'gauge'}

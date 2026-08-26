@@ -73,9 +73,11 @@
   }
   h3 {
     margin: 0;
-    color: #121e3b;
-    font-size: 13px;
-    font-weight: 600;
+    color: var(--mc-card-title-color, #121e3b);
+    font-size: var(--mc-card-title-font-size, 13px);
+    font-weight: var(--mc-card-title-font-weight, 600);
+    /* 缺省 inherit 而不是 normal:原来这里没有声明,行高走的是继承值。 */
+    line-height: var(--mc-card-title-line-height, inherit);
   }
   .dial {
     position: relative;

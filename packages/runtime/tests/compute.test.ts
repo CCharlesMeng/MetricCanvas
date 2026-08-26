@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ComputeOperator, DataRow } from '@metriccanvas/page';
+import type { ComputeOperator, DataRow, RatioScale } from '@metriccanvas/page';
 import { applyComputation } from '../src/compute';
 
 describe('ratio:分母为零的语义必须显式声明', () => {
@@ -42,6 +42,62 @@ describe('ratio:分母为零的语义必须显式声明', () => {
       0,
       null
     ]);
+  });
+});
+
+describe('ratio.scale:输出刻度只作用于算出来的商', () => {
+  const rows: DataRow[] = [
+    { done: 100, plan: 150 },
+    { done: 3, plan: 0 },
+    { done: 5, plan: null },
+    { done: null, plan: 10 }
+  ];
+
+  /** 未声明刻度时 `scale` 真的不在文档里,不是显式的 undefined。 */
+  const ratioOp = (
+    onZeroDenominator: 'null' | 'zero',
+    scale?: RatioScale
+  ): ComputeOperator =>
+    scale === undefined
+      ? { op: 'ratio', numerator: 'done', denominator: 'plan', output: 'rate', onZeroDenominator }
+      : {
+          op: 'ratio',
+          numerator: 'done',
+          denominator: 'plan',
+          output: 'rate',
+          onZeroDenominator,
+          scale
+        };
+
+  const rates = (operator: ComputeOperator) =>
+    applyComputation([operator], rows).map((row) => row.rate);
+
+  it('声明 scale: 100 时逐值是未声明时的 100 倍', () => {
+    for (const onZeroDenominator of ['null', 'zero'] as const) {
+      const unscaled = rates(ratioOp(onZeroDenominator));
+      expect(rates(ratioOp(onZeroDenominator, 100))).toEqual(
+        unscaled.map((value) => (typeof value === 'number' ? value * 100 : value))
+      );
+    }
+
+    expect(rates(ratioOp('null', 100))[0]).toBe((100 / 150) * 100);
+  });
+
+  it('未声明 scale 时逐值与引入该参数前一致', () => {
+    expect(rates(ratioOp('null'))).toEqual([100 / 150, null, null, null]);
+    expect(rates(ratioOp('zero'))).toEqual([100 / 150, 0, 0, null]);
+  });
+
+  it('分母为零或缺失的两种语义在声明刻度后仍分别取空与取零', () => {
+    expect(rates(ratioOp('null', 100)).slice(1, 3)).toEqual([null, null]);
+    expect(rates(ratioOp('zero', 100)).slice(1, 3)).toEqual([0, 0]);
+  });
+
+  it('分子缺失一律取空,与刻度无关', () => {
+    expect(rates(ratioOp('null', 100))[3]).toBeNull();
+    expect(rates(ratioOp('zero', 100))[3]).toBeNull();
+    expect(rates(ratioOp('null'))[3]).toBeNull();
+    expect(rates(ratioOp('zero'))[3]).toBeNull();
   });
 });
 

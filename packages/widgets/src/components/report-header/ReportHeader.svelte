@@ -149,11 +149,14 @@
   .heading {
     min-width: 0;
   }
+  /* 页面标题的字重、行高与色两档形态取值不同(字号两档同为 24,不设量);
+     缺省值即报表形态的既有观感,shortBar 装饰档自己的覆写在文件后面不受影响。 */
   h1 {
     margin: 0;
-    color: #445593;
+    color: var(--mc-page-title-color, #445593);
     font-size: 24px;
-    line-height: 1.15;
+    font-weight: var(--mc-page-title-font-weight, 700);
+    line-height: var(--mc-page-title-line-height, 1.15);
     letter-spacing: -0.025em;
   }
   p {

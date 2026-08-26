@@ -45,14 +45,16 @@
 </div>
 
 <style>
+  /* 控件铬与外置字段名标签的可见性经 --mc-filter-* 下发,真源在统一运行时根部。 */
   .hierarchy {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
   }
   .label {
+    display: var(--mc-filter-label-display, inline);
     color: #71717a;
     white-space: nowrap;
   }
@@ -61,11 +63,11 @@
     gap: 4px;
   }
   .tab {
-    border: 1px solid #e4e4e7;
+    border: 1px solid var(--mc-filter-control-border-color, #e4e4e7);
     background: #fff;
-    border-radius: 8px;
+    border-radius: var(--mc-filter-control-radius, 8px);
     padding: 4px 10px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
     color: #3f3f46;
     cursor: pointer;
   }

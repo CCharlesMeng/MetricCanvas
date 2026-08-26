@@ -9,6 +9,26 @@ import {
 type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 
 /**
+ * 不经 WidgetHost 的组件:它们不声明数据槽,没有加载态与错误态可呈现。
+ * 判定与 `isDataComponent` 同源但方向相反,单独命名是为了让组件分发里那条
+ * 「特例分支」有名字可查——而且分发**只按这个名字分支**,不再自己列一遍类型,
+ * 否则新增一个纯容器改了模板、判定却落在后面(组合卡这次正是这么漏的)。
+ *
+ * 两个容器都在这里:Tab 容器与组合卡都是纯容器,加载态与错误态归各自的子组件
+ * ——卡壳先画出来、卡内某个子组件单独报错,比整张卡塌成一块错误面更接近作者的
+ * 声明(ADR-0053:组合卡自己不承载数据)。
+ */
+export function rendersWithoutWidgetHost(component: Component): boolean {
+  return (
+    component.type === 'reportHeader' ||
+    component.type === 'text' ||
+    component.type === 'aiSummary' ||
+    component.type === 'tabContainer' ||
+    component.type === 'compositeCard'
+  );
+}
+
+/**
  * 把数据快照投影为纯渲染组件可消费的就绪快照。
  * 空态投影为空行；加载态和错误态由 WidgetHost 统一呈现。
  */

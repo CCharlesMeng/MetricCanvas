@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.1`；未定义属性会被拒绝。
+页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.2`；未定义属性会被拒绝。
 
 ## 1. 概念与关联关系
 
@@ -102,7 +102,7 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"` 与 `"5.1"`，新页面声明 `"5.1"` |
+| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"`、`"5.1"` 与 `"5.2"`，新页面声明 `"5.2"` |
 | `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | object | 否 | 页面资产信息；当前只允许 `description` |
 | `layoutForm` | string | 否 | 页面布局形态（5.1 起）：`report`（缺省）或 `dashboard` |
@@ -140,8 +140,16 @@ flowchart LR
 | `tabContainer` 组件 | 5.1 |
 | `gauge` 组件 | 5.1 |
 | `mapChart.hierarchyFilter`（层级下钻） | 5.1 |
+| `compositeCard` 组件（组件级分组容器） | 5.2 |
+| `categoryBreakdown` 组件 | 5.2 |
+| `mapChart.legend`（分档图例） | 5.2 |
+| `mapChart.tooltipFields` | 5.2 |
+| `keyValuePanel.columns: 1` | 5.2 |
+| `ratio.scale`（比值输出刻度） | 5.2 |
 
 存量页面不迁移：声明 `"5.0"` 且只使用 5.0 结构的文档继续有效。
+
+**一处例外方向的变更（5.2）：** 组件 `layout` 对象补齐了 `.strict()`，写错键名（例如 `spans`）不再静默通过。这是一次收紧，按 ADR-0051 的「零使用开放面可按次版本收紧」例外行使——`layout` 的未知键在全部存量页面文档与校验样例中零使用，该事实由 `packages/page/tests/layout-strict-zero-usage.test.ts` 证明。声明任何次版本的既有文档都不受影响。
 
 ### 3.3 页面参数与文本取值
 
@@ -538,7 +546,7 @@ date-month-day
 
 | `op` | 参数 | 行为 |
 |---|---|---|
-| `ratio` | `numerator`、`denominator`、`output`、`onZeroDenominator` | 逐行相除；分母为零或缺失时按声明取空或取零，分子缺失一律取空 |
+| `ratio` | `numerator`、`denominator`、`output`、`onZeroDenominator`、可选 `scale` | 逐行相除；分母为零或缺失时按声明取空或取零，分子缺失一律取空 |
 | `delta` | `minuend`、`subtrahend`、`output` | 逐行相减；任一为空取空 |
 | `groupSubtotal` | `groupBy`、`measures`、`rowKind`、可选 `labelSuffix` | 按分组字段折叠，每组明细行后追加一行小计 |
 | `grandTotal` | `measures`、`rowKind`、`label` | 末尾追加一行全局合计；只累加明细行，不把小计行计第二遍 |
@@ -551,6 +559,7 @@ date-month-day
 - **折叠类算子（`groupSubtotal`、`grandTotal`）只能作用于显式声明 `collapsible: true` 的度量字段**，声明缺失即校验失败。折叠求和时空值视为 0 参与累加，整组都没有数值时取空。
 - 行类别字段（`rowKind.field`）必须是可空的 `string` 维度，取值闭集为 `subtotal` / `total`；明细行上取空。它与 `table.props.rowKindField` 构成一份跨层契约，两侧同时校验。
 - 折叠行上被折叠字段以外的字段取空；`pivot` 产出行只含分组键与目标列。
+- **`ratio.scale`（5.2 起）决定输出刻度**：缺省产出 `numerator / denominator`，是 0–1 分数；`scale: 100` 产出 0–100。选它是因为 `percent-*` 展示格式按原值加 `%`，本仓的百分比字段都存 0–100——不声明刻度就会出现“算出 0.42 却显示 0.42%”。闭集只有 `100`：开放数值等于在算子里引入一个乘法表达式，而算子的参数只能是字段引用与封闭枚举。
 - **格式化不是计算。** 亿/万自适应、百分比、千分位继续走组件字段绑定的 `format` 与结果字段契约的 `defaultFormat`，不进计算层，也不生成 `_label` 之类的伴生字段。
 
 ## 5. 筛选器与查询绑定
@@ -749,6 +758,7 @@ last90d
 ```
 
 - 内容分区固定使用 12 列网格，列数不进入页面元数据；
+- `layout` 只接受 `span`、`connectPrevious`、`layer` 三个键，未定义键一律拒绝；
 - `span` 是 1–12 的整数且必填；组件能力目录的建议跨度不会替模型自动写入；
 - 组件数组顺序决定自动流布局顺序；
 - `connectPrevious: true` 把当前组件与紧邻前一组件组成视觉组，不建立数据依赖；
@@ -781,7 +791,7 @@ last90d
 }
 ```
 
-每个组件必须声明 `id`、`type`、`layout` 和 `props`。数据组件还必须声明 `data`；`reportHeader`、`text`、`aiSummary` 不得声明 `data`。
+每个组件必须声明 `id`、`type`、`layout` 和 `props`。数据组件还必须声明 `data`；`reportHeader`、`text`、`aiSummary`、`tabContainer`、`compositeCard` 不得声明 `data`。
 
 组件自身的可见标题统一使用 `props.title`。不得生成 `heading`、组件根级 `title` 或其他同义字段。
 
@@ -797,15 +807,21 @@ last90d
 | `table` | 明细、多字段核对、多级表头、分页 | `main` 必填，可增加命名槽 | 普通列可用 dimension/measure；主列可显式消费 semanticHtml/detail | 12 |
 | `mapChart` | 中国或世界地域分布，可按层级维度筛选器三级下钻 | `main` | name = dimension，value = measure | 8 |
 | `gauge` | 单个比率或完成度 KPI | `main` | value = measure | 2 |
-| `tabContainer` | 卡内切换多张表格 | 无 | 每个 Tab 内的表格自己声明数据槽 | 4 |
+| `tabContainer` | 卡内**切换**多张表格 | 无 | 每个 Tab 内的表格自己声明数据槽 | 4 |
+| `compositeCard` | 卡内**分组**若干组件，并让整张卡进 12 列栅格横向并排 | 无 | 每个子组件自己声明数据槽 | 4 |
 | `rankingCard` | Top N 或简单排名 | `main` | name = dimension，value/change = measure | 4 |
 | `rankingDetailCard` | 带徽标、说明或展开明细的排名 | `main` | 名称/徽标/说明、度量及受控 detail | 6 |
 | `keyValuePanel` | 一条记录按「标签：取值」逐项列出 | `main` | 每项一个 dimension 或 measure | 12 |
+| `categoryBreakdown` | 少数几行 × 少数几列、带列头、无分页无排序的分类明细 | `main` | category = dimension，每列一个 measure | 6 |
 | `fieldText` | 整段长文本来自数据字段 | `main` | 一个 string 字段或 semanticHtml/detail | 12 |
 | `text` | 说明、口径、已确认结论、默认摘要、页面链接 | 无 | 无 | 12 |
 | `aiSummary` | 需求明确要求运行时通过 SSE 动态生成总结 | `relatedData` | 只读非 detail 页面字段 | 12 |
 
 “标题中含 AI”“页面存在数据”或“文案曾由 AI 生成”都不构成选择 `aiSummary` 的理由。未明确要求运行时 SSE 时使用 `text`。
+
+目录里有两个“装东西”的类型，选择条件互斥：多张表格**互斥切换**用 `tabContainer`，若干组件**同时可见地被一张卡框住**用 `compositeCard`。
+
+“把若干行列出来”的三个类型也互斥：需要分页、排序、表头筛选、固定列、列组或选择写回的用 `table`；一条记录的若干字段各只有一个取值的用 `keyValuePanel`；少数几行 × 少数几列、带列头、上述表格能力一条都用不上的用 `categoryBreakdown`。`categoryBreakdown` 不是“小一号的表格”，行数或列数一多就应该改用 `table`。
 
 ### 7.3 `reportHeader`
 
@@ -1054,9 +1070,43 @@ last90d
 
 必填属性：`nameField`（地域名称 `dimension`）、`valueField`（`measure`）、`map`（`china` 或 `world`）、`data.main`。
 
-可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`、`hierarchyFilter`（层级维度筛选器 id）、`levelField` / `parentField` / `codeField`（行上的层级、父级与写入编码）、`levelMaps`（各层级底图，`china` 或 `world`）。
+可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`、`hierarchyFilter`（层级维度筛选器 id）、`levelField` / `parentField` / `codeField`（行上的层级、父级与写入编码）、`levelMaps`（各层级底图，`china` 或 `world`）、`legend`（分档图例，5.2 起）、`tooltipFields`（tooltip 扩展字段，5.2 起）。
 
 选择地图前必须确认地域名称可以直接命中或通过 `nameMap` 显式映射；不得按样例猜测地理层级。
+
+**分档图例（`legend`，5.2 起）** 是分档着色的契约，不是一张图片：运行时按行的 `valueField` 落在哪一档取色阶的哪一级。因此取值下界进页面文档，具体颜色不进。
+
+```json
+{
+  "legend": {
+    "title": "管道支持率",
+    "bands": [
+      { "label": "0", "from": 0 },
+      { "label": "1%~50%", "from": 1 },
+      { "label": "51%~80%", "from": 51 },
+      { "label": "80%以上", "from": 81 }
+    ]
+  }
+}
+```
+
+- `title` 可选，是文本取值；`bands` 至少两档；
+- 每档只声明 `label`（非空文本取值）与 `from`（取值下界，含）；上界由下一档的 `from` 隐含，最后一档开口向上；
+- `from` 必须严格递增，否则“某个取值属于哪一档”没有唯一答案，校验失败；
+- 不写颜色、色号、色阶名或档位宽度——那些是主题实现。
+
+**tooltip 扩展字段（`tooltipFields`，5.2 起）** 在地域名与 `valueField` 之外追加若干条目，例如机会点数、预签金额、年度费用：
+
+```json
+{
+  "tooltipFields": [
+    { "label": "机会点数", "field": "opportunity-count" },
+    { "label": "预签金额", "field": { "data": "main", "field": "pre-sign-amount", "format": "cny-adaptive" } }
+  ]
+}
+```
+
+每项的 `label` 是非空文本取值，`field` 是普通字段绑定（不得绑定 `detail`）。
 
 `hierarchyFilter` 指向一个声明了 `hierarchy` 的维度筛选器。地图读该筛选器的当前层级决定底图与可见行，中间级点击把下一层取值写回筛选状态（不是页面文档里的 `writeFilter`），最深一级再走 `actions.navigate`。当前层级因此可经 URL 的 `h:` 前缀分享。
 
@@ -1101,6 +1151,82 @@ last90d
 | `title` | 否 | 容器标题 |
 
 当前活动 Tab 是局部 UI 状态，不进 URL。子组件 id 与顶层组件一起判重。
+
+### 7.7c `compositeCard`
+
+组合卡是一个**组件级**的分组容器：一张卡就是一个组件，因此它进内容分区的 12 列自动流，卡宽由自己的 `layout.span` 决定，同一分区里可以并排若干张。
+
+它与 `section.container: "card"` 的分工是**层次，不是功能**。判据只有一条，不看内容也不看观感：**要装的这组组件本身是不是一个分区。**
+
+| | `section.container: "card"` | `compositeCard` |
+|---|---|---|
+| 声明层次 | 分区级：一个内容分区一张卡 | 组件级：一张卡是一个组件 |
+| 卡宽 | 由分区决定 | 由 `layout.span` 决定 |
+| 排布 | 卡与卡只能纵向堆叠 | 进 12 列栅格，可以横向并排若干张 |
+| 何时用 | 一整段内容自成一节，下一节接着往下排 | 需要若干张卡横向并排 |
+
+两者可以嵌套（一个 `card` 分区里并排三张组合卡），但不得互相替代：`container` 仍是分区外观的唯一真源，组合卡不改变、不推断，也不参与分区外观。
+
+```json
+{
+  "id": "opportunity-card",
+  "type": "compositeCard",
+  "layout": { "span": 4 },
+  "props": {
+    "title": "机会点概况",
+    "dividers": true,
+    "components": [
+      {
+        "id": "opportunity-total",
+        "type": "metricCard",
+        "layout": { "span": 12 },
+        "data": { "main": "opportunity-tiers" },
+        "props": { "rows": [{ "label": "机会点数", "valueField": "opportunity-count" }] }
+      },
+      {
+        "id": "opportunity-pie",
+        "type": "pieChart",
+        "layout": { "span": 6 },
+        "data": { "main": "opportunity-tiers" },
+        "props": { "categoryField": "tier", "valueField": "opportunity-count", "ring": "60%" }
+      },
+      {
+        "id": "opportunity-breakdown",
+        "type": "categoryBreakdown",
+        "layout": { "span": 6 },
+        "data": { "main": "opportunity-tiers" },
+        "props": {
+          "categoryField": "tier",
+          "swatches": true,
+          "columns": [{ "label": "机会点数", "field": "opportunity-count" }]
+        }
+      }
+    ]
+  }
+}
+```
+
+| 属性 | 必填 | 说明 |
+|---|---:|---|
+| `components` | 是 | 至少一个子组件；类型限白名单 |
+| `title` | 否 | 卡标题；可选，设计源里确有无标题的卡 |
+| `dividers` | 否 | 相邻子组件之间是否分隔 |
+
+**组合卡自己不承载数据。** 它不声明 `data`、不声明字段绑定、不声明 `actions`。“用组合卡还是用 `metricCard`”因此是一条结构判据——**有没有子组件**，一眼可判。交互仍归子组件：卡里哪个数字可点，由那个数字所属的组件自己的 `actions` 声明。
+
+**子组件是白名单，不是“任意叶子组件”。** 首批准入五种：`metricCard`、`pieChart`、`gauge`、`keyValuePanel`、`categoryBreakdown`。明确不准入的与理由：`table` 自带卡壳与分页（卡内多表切换归 `tabContainer`）；`mapChart` 的几何自适应与安全区通道以分区为单位；`barChart` / `lineChart` 需要自己的宽高基线；`rankingCard` / `rankingDetailCard` 自带卡面；`reportHeader` 是页面级；`aiSummary` 是生成型垂直组件。真实需要时按闭集新增成员放开，每次放开都要有一次“在卡壳里渲染正确”的实证。
+
+**禁止递归：卡内不得再出现 `compositeCard` 或 `tabContainer`。** 页面树最深到「分区 → 组合卡 → 组件」三层。
+
+**卡内复用同一条 12 列自动流，不引入第二套布局词汇。** 子组件照常声明 `layout.span`，含义从“分区内容宽度的十二分之几”变为“卡内容宽度的十二分之几”；组件数组顺序仍决定自动流顺序。上例的“数字行 + 环形图与分类明细并排”因此是一个 `span: 12` 加两个 `span: 6`；2×2 分格是四个 `span: 6`。不存在 `rows`、`stack`、`direction`、`gap`、`align` 这类布局轴。
+
+**卡内禁止 `layout.layer`**（叠放是分区内的层次，卡内没有分区可铺满）；`connectPrevious` 在卡内保持同一语义。
+
+**分隔线是容器上的一位信息，位置由结构派生。** `dividers: true` 声明“相邻子组件之间分隔”，线画在 12 列自动流已经形成的单元格边界上——行与行之间是横线，同一行相邻子组件之间是竖线。不写索引、不写坐标、不写线型；线型与颜色是主题实现，不进页面文档。不得为了画线插入装饰组件，也不得在子组件的 `layout` 上写 `dividerBefore` 这类位置字段。
+
+**卡高不进页面文档。** 同一视觉行的组合卡由 12 列栅格天然等高，但卡**内**的分段高度各卡自算：首批不为组合卡发布行对齐能力，因此并排几张卡的分隔线不保证落在同一高度。
+
+子组件 id 与顶层组件一起判重。
 
 ### 7.8 排名组件
 
@@ -1177,7 +1303,7 @@ last90d
 | 属性 | 必填 | 允许值 / 说明 |
 |---|---:|---|
 | `title` | 否 | 标题 |
-| `columns` | 否 | 每行放几组键值；`2`、`3` 或 `4`，缺省 `3` |
+| `columns` | 否 | 每行放几组键值；`1`、`2`、`3` 或 `4`，缺省 `3`。`1` 用于窄卡位里的单列纵向罗列 |
 | `items` | 是 | 至少一项；每项 `label` 是文本取值，`field` 是字段绑定，不得绑定 `detail` |
 
 ```json
@@ -1197,6 +1323,42 @@ last90d
 | `variant` | 否 | `plain` 或 `quote` |
 
 正文写死在页面文档里时使用 `text`；正文来自数据字段时使用 `fieldText`。
+
+### 7.9a `categoryBreakdown`
+
+分类明细按类别逐行、按度量逐列，带列头，可选类别色点。它是一份**独立的数据展示**，不是图表的附属物，因此自己声明 `data` 与字段绑定。
+
+```json
+{
+  "id": "opportunity-breakdown",
+  "type": "categoryBreakdown",
+  "layout": { "span": 6 },
+  "data": { "main": "opportunity-tiers" },
+  "props": {
+    "categoryLabel": "分层",
+    "categoryField": "tier",
+    "swatches": true,
+    "columns": [
+      { "label": "机会点数", "field": "opportunity-count" },
+      { "label": "预签金额", "field": { "data": "main", "field": "pre-sign-amount", "format": "cny-adaptive" } }
+    ]
+  }
+}
+```
+
+| 属性 | 必填 | 允许值 / 说明 |
+|---|---:|---|
+| `categoryField` | 是 | 逐行列出的类别字段，必须是 `dimension` |
+| `columns` | 是 | 至少一列；每列 `label` 是非空文本取值，`field` 必须是 `measure` |
+| `title` | 否 | 组件标题 |
+| `categoryLabel` | 否 | 类别列的列头：不写取字段自己的 `label`，写文本用那段文本，写 `false` 表示这一列不要列头 |
+| `swatches` | 否 | 类别列前是否显示色点 |
+
+**类别列的列头有三种表达，各占一个取值形状。** 度量列一律有列头，类别列不一定：设计源里那一列就是没有列头的。三种意图因此分别写成——不写 `categoryLabel`（取字段自己的 `label`）、写一段文本（用那段文本）、写 `false`（这一列不要列头，列头行只剩度量列）。用 `false` 而不是空串或 `"none"` 这类字符串哨兵：任何字符串哨兵都可能与一段真实文案撞上，读的人得先知道哪个取值被征用了才看得懂；布尔是类型上的互斥，不可能与文案混淆。三种表达都落在同一个属性上，因此不存在“两处声明互相矛盾”的组合。
+
+**色点与并排饼图之间有一条硬约束：颜色按类别取值决定，不按行序决定。** 两边各自按调色板顺序取色只是“看起来对上了”——数据顺序一变就错位，而且错位是静默的：图和表各自都自洽，只有对着看才发现颜色串了。
+
+协议侧因此这样表达：页面文档只声明两处的**类别字段**，颜色不进页面文档；`swatches: true` 是一位加入声明，表示该组件参与页面共享的类别配色，色点由类别取值查得。校验要求开启 `swatches` 的分类明细，其 `categoryField` 必须与同页某个 `pieChart` 的 `categoryField` 指向**同一个数据源上的同一个字段**——否则“同色”没有对照物。不需要与扇区同色时去掉 `swatches` 即可。
 
 ### 7.10 `text`
 
@@ -1646,6 +1808,10 @@ flowchart LR
 | 把任意 JSON 当作 detail | 无法校验与安全渲染 | 使用一层 `recordList` 或受控 `semanticHtml` |
 | 默认把摘要写成 `aiSummary` | 会引入不必要的运行时生成 | 后端或已确认摘要使用 `text` |
 | 把 Schema 元数据或 `dataContextVersion` 放进页面 | 创作上下文与运行协议边界混淆 | 由页面修订记录保存上下文版本 |
+| 给 `compositeCard` 声明 `data`、字段绑定或 `actions` | 组合卡是纯容器；能显示数据的容器会与 `metricCard` 语义重叠 | 数据与交互写在子组件上 |
+| 在组合卡里嵌套组合卡或 `tabContainer` | 无界递归会让 `span` 的参照系逐层重新定义 | 页面树最深到「分区 → 组合卡 → 组件」三层 |
+| 为了画线插入装饰组件，或在子组件 `layout` 上写 `dividerBefore` | 前者是一条到处可画线的自由样式面，后者把位置索引写进页面文档 | 用容器上的 `dividers` 一位布尔，位置由结构派生 |
+| 拿 `categoryBreakdown` 当“小一号的表格” | 行列一多就需要分页与排序，那是 `table` 的职责 | 少数几行 × 少数几列才用分类明细 |
 
 ## 13. 校验与错误
 

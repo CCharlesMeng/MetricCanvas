@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 5;
-const CURRENT_MINOR = 1;
+const CURRENT_MINOR = 2;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -172,6 +172,51 @@ export const pageCapabilities = {
         document,
         (component) => component.type === 'mapChart' && has(props(component), 'hierarchyFilter')
       ).map((path) => `${path}/props/hierarchyFilter`)
+  },
+  'composite-card-component': {
+    minor: 2,
+    description: '组合卡:组件级分组容器(ADR-0053)',
+    usedAt: (document) =>
+      componentPaths(document, (component) => component.type === 'compositeCard')
+  },
+  'category-breakdown-component': {
+    minor: 2,
+    description: '分类明细组件(ADR-0053)',
+    usedAt: (document) =>
+      componentPaths(document, (component) => component.type === 'categoryBreakdown')
+  },
+  'map-legend-bands': {
+    minor: 2,
+    description: '地图分档图例',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'mapChart' && has(props(component), 'legend')
+      ).map((path) => `${path}/props/legend`)
+  },
+  'map-tooltip-fields': {
+    minor: 2,
+    description: '地图 tooltip 扩展字段',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'mapChart' && has(props(component), 'tooltipFields')
+      ).map((path) => `${path}/props/tooltipFields`)
+  },
+  'key-value-panel-single-column': {
+    minor: 2,
+    description: 'key-value 信息面板的单列排布',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) =>
+          component.type === 'keyValuePanel' && props(component)?.columns === 1
+      ).map((path) => `${path}/props/columns`)
+  },
+  'ratio-scale': {
+    minor: 2,
+    description: 'ratio 算子的输出刻度 scale(ADR-0046)',
+    usedAt: (document) => ratioScalePaths(document)
   }
 } satisfies Record<string, PageCapabilityDefinition>;
 
@@ -334,6 +379,20 @@ function collapsibleFieldPaths(document: unknown): string[] {
         if (nested) visit(nested, `${path}/${escapePointer(key)}`);
       }
     }
+  });
+}
+
+function ratioScalePaths(document: unknown): string[] {
+  const dataSources = record(record(document)?.dataSources) ?? {};
+  return Object.entries(dataSources).flatMap(([sourceId, candidate]) => {
+    const compute = record(candidate)?.compute;
+    if (!Array.isArray(compute)) return [];
+    return compute.flatMap((operatorCandidate, index) => {
+      const operator = record(operatorCandidate);
+      return operator?.op === 'ratio' && has(operator, 'scale')
+        ? [`/dataSources/${escapePointer(sourceId)}/compute/${index}/scale`]
+        : [];
+    });
   });
 }
 

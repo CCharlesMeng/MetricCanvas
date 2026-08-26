@@ -4,6 +4,7 @@ import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue, wanUnits } from '../../shared/value-format';
 import { CHART_PALETTE, GRID, dualOrSingleAxis, formatterValue } from '../../shared/chart-option';
+import { serialColor, type ColorList } from '../../shared/chart-palette';
 
 const REPORT_COLORS = ['#1476ff', '#0cb8b2'] as const;
 const REPORT_FORECAST_COLORS = [
@@ -15,8 +16,16 @@ const FLOATING_LABEL_MIN_LENGTH = 7;
 /**
  * 已解析命名数据槽 + 柱状图 props → ECharts option 的纯翻译。
  * 标签继承字段契约;最终格式由组件字段绑定覆盖 defaultFormat 展示建议。
+ *
+ * `palette` 缺席即沿用包内 `CHART_PALETTE`(报表形态的既有取值);给出时
+ * 它同时接管 role 档位色与未显式着色系列的取色。`reportForecast` 变体的
+ * 实测/预测双色是该变体自己的语义色,不受形态色板影响。
  */
-export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOption {
+export function barOption(
+  data: MainDataSlots,
+  props: BarChartProps,
+  palette?: ColorList
+): EChartsOption {
   const rows = data.main.snapshot.rows;
   const category = resolveField(props.categoryField, data);
   const categories = rows.map((row) =>
@@ -59,6 +68,7 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
     return series.label ?? field.definition?.label ?? field.field;
   });
   return {
+    ...(palette ? { color: [...palette] } : {}),
     grid: reportForecast
       ? { top: 44, right: 0, bottom: 20, left: 0, containLabel: true }
       : GRID,
@@ -87,7 +97,8 @@ export function barOption(data: MainDataSlots, props: BarChartProps): EChartsOpt
           ? undefined
           : reportForecast
             ? REPORT_COLORS[roleIndex % REPORT_COLORS.length]
-            : CHART_PALETTE[roleIndex % CHART_PALETTE.length];
+            : (serialColor(palette, roleIndex) ??
+              CHART_PALETTE[roleIndex % CHART_PALETTE.length]);
       const forecastColor =
         roleIndex === undefined || !reportForecast
           ? roleColor

@@ -1,0 +1,12 @@
+{
+  "name": "@metriccanvas/design-facts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json"
+  },
+  "exports": {
+    ".": "./src/extract.ts"
+  }
+}

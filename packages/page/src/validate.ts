@@ -35,7 +35,12 @@ import {
   type PageSection,
   type TableColumnNode
 } from './page';
-import { walkComponents, walkPageComponents } from './component-walk';
+import {
+  walkComponents,
+  walkDocumentComponents,
+  walkPageComponents
+} from './component-walk';
+import { compositeCardChildTypes } from './schema/component';
 import { materializePageDocument } from './materialize';
 import { pageParamErrors, type PageParamDeclaration } from './page-param';
 import type { TextValueResolution } from './text-value';
@@ -70,12 +75,9 @@ export function parsePage(
 ): PageParseResult {
   if (!validateStructure(document)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
-    const guided = versionErrors(document);
+    const guided = [...versionErrors(document), ...compositeCardStructureErrors(document)];
     if (guided.length > 0) {
-      return {
-        ok: false,
-        errors: [...guided, ...structural.filter((error) => error.path !== '/schemaVersion')]
-      };
+      return { ok: false, errors: [...guided, ...withoutGuidedPaths(structural, guided)] };
     }
     return { ok: false, errors: structural };
   }
@@ -112,6 +114,83 @@ export function parsePage(
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
+}
+
+/**
+ * 少数几处形状由结构自己说不清楚:版本枚举失配读起来像「取值不在允许范围」,
+ * 判别联合失配在 ajv 侧摊成一堆 anyOf 分支错误。这些位置先给出定位到位的
+ * 引导错误,再把它们已经解释过的那段结构噪声去掉。
+ */
+function withoutGuidedPaths(
+  structural: TypedError[],
+  guided: TypedError[]
+): TypedError[] {
+  return structural.filter(
+    (error) =>
+      !guided.some(
+        (hint) => error.path === hint.path || error.path.startsWith(`${hint.path}/`)
+      )
+  );
+}
+
+/**
+ * 组合卡的四条结构不变量(ADR-0053)。它们都在结构校验的接缝上判定,读的是
+ * **原始文档**:白名单由判别联合表达,失配后 ajv 只会说某个分支不匹配,说不出
+ * 「这个子组件类型不在白名单里」。
+ *
+ * 纯容器与至少一个子组件同样在这里,理由一致——`additionalProperties` 与
+ * `minItems` 的原文都不解释为什么。
+ */
+function compositeCardStructureErrors(document: unknown): TypedError[] {
+  const errors: TypedError[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'compositeCard') return;
+    if (component.data !== undefined) {
+      errors.push(
+        schemaError(
+          `${path}/data`,
+          '组合卡是纯容器，自己不承载数据，不得声明 data；数据由子组件各自声明'
+        )
+      );
+    }
+    const props = component.props as Record<string, unknown> | undefined;
+    if (props?.actions !== undefined) {
+      errors.push(
+        schemaError(
+          `${path}/props/actions`,
+          '组合卡是纯容器，不承载交互，不得声明 actions；卡里哪个数字可点由那个数字所属的子组件自己声明'
+        )
+      );
+    }
+    const children = props?.components;
+    if (!Array.isArray(children)) return;
+    if (children.length === 0) {
+      errors.push(schemaError(`${path}/props/components`, '组合卡至少要有一个子组件'));
+      return;
+    }
+    children.forEach((candidate, index) => {
+      const childType = (candidate as { type?: unknown } | null)?.type;
+      if (typeof childType !== 'string') return;
+      if (childType === 'compositeCard' || childType === 'tabContainer') {
+        errors.push(
+          schemaError(
+            `${path}/props/components/${index}`,
+            `组合卡内不得再嵌套容器组件:${childType}；页面树最深到「分区 → 组合卡 → 组件」三层`
+          )
+        );
+        return;
+      }
+      if (!compositeCardChildTypes.includes(childType)) {
+        errors.push(
+          schemaError(
+            `${path}/props/components/${index}`,
+            `组合卡子组件不在白名单内:${childType}；当前只准入 ${compositeCardChildTypes.join(' / ')}`
+          )
+        );
+      }
+    });
+  });
+  return errors;
 }
 
 /**
@@ -864,6 +943,12 @@ function componentErrors(
   switch (component.type) {
     case 'reportHeader':
     case 'text':
+    /*
+     * 组合卡自己没有可判的东西:子组件由 `walkComponents` 单独走到,
+     * 结构不变量在解析接缝由 `compositeCardStructureErrors` 判定,
+     * 卡内禁 `layout.layer` 归 `sectionLayerErrors`(与 Tab 同一条规则)。
+     */
+    case 'compositeCard':
       break;
     case 'aiSummary': {
       const terms = new Map<string, string>();
@@ -995,6 +1080,13 @@ function componentErrors(
         check(item.field, `${componentPath}/props/items/${index}/field`)
       );
       break;
+    case 'categoryBreakdown':
+      check(component.props.categoryField, `${componentPath}/props/categoryField`, 'dimension');
+      component.props.columns.forEach((column, index) =>
+        check(column.field, `${componentPath}/props/columns/${index}/field`, 'measure')
+      );
+      errors.push(...categorySwatchErrors(page, component, componentPath));
+      break;
     case 'fieldText': {
       const path = `${componentPath}/props/field`;
       check(component.props.field, path, undefined, 'semanticHtml');
@@ -1003,6 +1095,10 @@ function componentErrors(
     case 'mapChart':
       check(component.props.nameField, `${componentPath}/props/nameField`, 'dimension');
       check(component.props.valueField, `${componentPath}/props/valueField`, 'measure');
+      (component.props.tooltipFields ?? []).forEach((item, index) =>
+        check(item.field, `${componentPath}/props/tooltipFields/${index}/field`)
+      );
+      errors.push(...mapLegendErrors(component, componentPath));
       errors.push(...mapHierarchyErrors(page, component, componentPath, check));
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
       break;
@@ -1427,6 +1523,79 @@ function tableErrors(
   columns.forEach((column, index) =>
     visit(column, `${componentPath}/props/columns/${index}`)
   );
+  return errors;
+}
+
+/**
+ * 分类明细的「同色同序」在协议侧的判定(ADR-0053)。
+ *
+ * 页面文档只声明两处的类别字段,颜色不进页面文档;色点因此按**类别取值**
+ * 在页面共享的类别配色中查得,不按行序或扇区序号查得。开启色点却没有一个
+ * 绑同一个类别字段的饼图,「同色」就没有对照物——两边各自按调色板顺序取色
+ * 只是「看起来对上了」,数据换一次行序就静默错位。
+ */
+function categorySwatchErrors(
+  page: Page,
+  component: Extract<Component, { type: 'categoryBreakdown' }>,
+  componentPath: string
+): TypedError[] {
+  if (component.props.swatches !== true) return [];
+  const own = categoryDomainKey(page, component, component.props.categoryField);
+  // 绑定本身有错时不再叠加这条,错误已由字段绑定判定给出。
+  if (own === undefined) return [];
+
+  let shared = false;
+  walkPageComponents(page, (candidate) => {
+    if (candidate.type !== 'pieChart') return;
+    if (categoryDomainKey(page, candidate, candidate.props.categoryField) === own) {
+      shared = true;
+    }
+  });
+  if (shared) return [];
+  return [
+    schemaError(
+      `${componentPath}/props/swatches`,
+      `色点按类别取值取色，要求同页有饼图绑定同一个类别字段:${own} 没有配对的饼图；` +
+        '不需要与扇区同色时去掉 swatches'
+    )
+  ];
+}
+
+/** 类别域的同一性:同一个页面数据源上的同一个字段才算同一批类别取值。 */
+function categoryDomainKey(
+  page: Page,
+  component: Component,
+  binding: FieldBinding
+): string | undefined {
+  const resolved = resolveBinding(page, component, binding);
+  if ('error' in resolved) return undefined;
+  const slot = typeof binding === 'string' ? 'main' : binding.data;
+  const sourceId = (component.data as ComponentData | undefined)?.[slot];
+  return sourceId === undefined ? undefined : `${sourceId}.${resolved.fieldName}`;
+}
+
+/**
+ * 分档图例是着色契约:每档只声明取值下界,上界由下一档隐含,最后一档开口
+ * 向上。下界必须严格递增,否则「某个取值属于哪一档」没有唯一答案。
+ */
+function mapLegendErrors(
+  component: Extract<Component, { type: 'mapChart' }>,
+  componentPath: string
+): TypedError[] {
+  const bands = component.props.legend?.bands;
+  if (!bands) return [];
+  const errors: TypedError[] = [];
+  bands.forEach((band, index) => {
+    const previous = bands[index - 1];
+    if (previous !== undefined && band.from <= previous.from) {
+      errors.push(
+        schemaError(
+          `${componentPath}/props/legend/bands/${index}/from`,
+          `图例档位下界必须严格递增:第 ${index + 1} 档 ${band.from} 不大于第 ${index} 档 ${previous.from}`
+        )
+      );
+    }
+  });
   return errors;
 }
 

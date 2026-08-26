@@ -3,7 +3,9 @@
   import type { MainDataSlots } from '../../shared/component-data';
   import { resolveField } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
+  import { MAP_SCALE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { geoRegionName, mapOption, type MapSafeArea } from './options';
+  import { mapLegendLevels } from './legend';
   import { ensureBasemap, type BasemapMeta, type BasemapName } from './basemap';
 
   /**
@@ -77,6 +79,16 @@
   let host = $state<HTMLElement | null>(null);
   let safeArea = $state<MapSafeArea | undefined>();
 
+  /* 形态分档色与安全区共用这一个读样式锚点(见 shared/chart-palette.ts):
+     两者都是经继承可见的自定义属性,只是分档色不随几何变化,读一次即定。 */
+  const mapScale = $derived(readColorList(host, MAP_SCALE_PROPERTY));
+
+  /* 图例只在拿到分档色板时画:档位色取自分档色板,报表形态不定义它,
+     那里的地图仍是连续渐变加图表库自带的视觉映射条(见 options.ts)。 */
+  const legendLevels = $derived(
+    props.legend && mapScale ? mapLegendLevels(props.legend.bands, mapScale) : undefined
+  );
+
   function readSafeArea(element: HTMLElement): MapSafeArea | undefined {
     const style = getComputedStyle(element);
     const px = (property: string): number | undefined => {
@@ -136,10 +148,40 @@
 <div class="safe-area-probe" bind:this={host}>
   {#if props.title}<h3>{props.title}</h3>{/if}
   {#if basemap}
-    <EChart
-      option={mapOption(data, chartProps, basemap.meta.centers, safeArea)}
-      onitemclick={onregionclick ? handleClick : undefined}
-    />
+    <!-- 图例贴在绘图区左下角(图表库自带那块视觉映射条原来的位置),所以
+         这里要有一个定位参照物;它接手 EChart 原来占的那一格弹性空间,
+         `.echart` 仍是 `flex: 1`,几何与加壳之前一致。 -->
+    <div class="map-frame">
+      <EChart
+        option={mapOption(
+          data,
+          chartProps,
+          basemap.meta.centers,
+          safeArea,
+          false,
+          mapScale
+        )}
+        onitemclick={onregionclick ? handleClick : undefined}
+      />
+      {#if legendLevels}
+        <div class="map-legend">
+          {#if props.legend?.title}
+            <div class="legend-title">{props.legend.title}</div>
+          {/if}
+          <ul>
+            {#each legendLevels as level, levelIndex (levelIndex)}
+              <li>
+                <span
+                  class="legend-dot"
+                  style={level.color ? `background:${level.color};` : undefined}
+                ></span>
+                <span class="legend-label">{level.label}</span>
+              </li>
+            {/each}
+          </ul>
+        </div>
+      {/if}
+    </div>
   {:else}
     <div class="loading">底图加载中…</div>
   {/if}
@@ -151,9 +193,11 @@
   }
   h3 {
     margin: 0;
-    color: #18181b;
-    font-size: 13px;
-    font-weight: 500;
+    color: var(--mc-card-title-color, #18181b);
+    font-size: var(--mc-card-title-font-size, 13px);
+    font-weight: var(--mc-card-title-font-weight, 500);
+    /* 缺省 inherit 而不是 normal:原来这里没有声明,行高走的是继承值。 */
+    line-height: var(--mc-card-title-line-height, inherit);
   }
   .loading {
     flex: 1;
@@ -161,5 +205,56 @@
     align-items: center;
     color: #a1a1aa;
     font-size: 13px;
+  }
+  .map-frame {
+    position: relative;
+    display: flex;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+  .map-legend {
+    position: absolute;
+    bottom: 8px;
+    left: 8px;
+    display: flex;
+    min-width: 80px;
+    flex-direction: column;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .legend-title {
+    color: var(--mc-color-report-text, #191919);
+    font-size: 14px;
+    line-height: 22px;
+  }
+  .map-legend ul {
+    display: flex;
+    margin: 0;
+    flex-direction: column;
+    /* 色点 13px、标签行 18px,行距 3px 时两者的行距都是 21px。 */
+    gap: 3px;
+    padding: 0;
+    list-style: none;
+  }
+  .map-legend li {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .legend-dot {
+    display: block;
+    width: 13px;
+    height: 13px;
+    flex: none;
+    border-radius: 999px;
+    box-shadow: 0 4px 4px 0 rgb(0 0 0 / 0.12);
+  }
+  .legend-label {
+    color: var(--mc-color-report-text, #191919);
+    font-size: 12px;
+    line-height: 18px;
+    opacity: 0.9;
+    white-space: nowrap;
   }
 </style>

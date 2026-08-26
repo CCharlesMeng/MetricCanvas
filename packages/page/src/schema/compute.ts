@@ -26,7 +26,15 @@ const ratioOperatorZ = z
     output: fieldNameZ,
     onZeroDenominator: z.enum(['null', 'zero']).meta({
       description: '分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数'
-    })
+    }),
+    scale: z
+      .literal(100)
+      .optional()
+      .meta({
+        description:
+          '输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，' +
+          '开放数值等于在算子里引入乘法表达式'
+      })
   })
   .strict();
 

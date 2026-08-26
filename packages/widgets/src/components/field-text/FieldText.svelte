@@ -46,10 +46,10 @@
   }
   h3 {
     margin: 0 0 8px;
-    color: #121e3b;
-    font-size: 16px;
-    font-weight: 600;
-    line-height: 24px;
+    color: var(--mc-card-title-color, #121e3b);
+    font-size: var(--mc-card-title-font-size, 16px);
+    font-weight: var(--mc-card-title-font-weight, 600);
+    line-height: var(--mc-card-title-line-height, 24px);
   }
   /* 正文承载区经 --mc-field-text-body-* 可被页面布局形态覆写:报表形态里
      正文直接落在卡面上,看板形态把它收进一块浅底圆角内容区。 */
@@ -60,9 +60,10 @@
     background: var(--mc-field-text-body-surface, transparent);
     border-radius: var(--mc-field-text-body-radius, 0);
     font-size: 14px;
-    /* 正文行高档位(冻结基线 R3-3,用户 2026-08-24 决定的 28);与同族其余
-       --mc-field-text-body-* 一样可被页面布局形态就地覆写。 */
-    line-height: var(--mc-field-text-body-line-height, 28px);
+    /* 正文行高两档形态取值不同:看板 28(冻结基线 R3-3,用户 2026-08-24 决定),
+       报表 24。定义点与同族其余 --mc-field-text-body-* 一起落在统一运行时的
+       看板形态块里,这里的缺省值即报表档。 */
+    line-height: var(--mc-field-text-body-line-height, 24px);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }

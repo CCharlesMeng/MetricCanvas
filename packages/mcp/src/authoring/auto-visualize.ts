@@ -124,6 +124,16 @@ const dataShapeReadings: Record<string, DataShapeReading> = {
     maxRows: 1
   },
   tabContainer: { bindsData: false },
+  // 「不绑定页面数据源；每个子组件自己声明数据槽与字段绑定」
+  compositeCard: { bindsData: false },
+  // 「每行一个类别；一个 dimension 类别字段 + 一到多个 measure 字段」：
+  // 它是少数几行的紧凑明细，行数上限与「单行或少量行」同一档。
+  categoryBreakdown: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1 },
+    maxRows: FEW_ROWS_LIMIT
+  },
   // 「名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制」
   rankingCard: {
     bindsData: true,

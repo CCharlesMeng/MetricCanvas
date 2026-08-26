@@ -5,6 +5,7 @@ import type {
   GrandTotalOperator,
   GroupSubtotalOperator,
   PivotOperator,
+  RatioScale,
   ScalarFieldValue
 } from '@metriccanvas/page';
 
@@ -36,7 +37,8 @@ function applyOperator(operator: ComputeOperator, rows: DataRow[]): DataRow[] {
         [operator.output]: ratio(
           numeric(row[operator.numerator]),
           numeric(row[operator.denominator]),
-          operator.onZeroDenominator
+          operator.onZeroDenominator,
+          operator.scale
         )
       }));
     case 'delta':
@@ -58,17 +60,24 @@ function applyOperator(operator: ComputeOperator, rows: DataRow[]): DataRow[] {
   }
 }
 
-/** 分母为零或缺失时按声明的语义取空或取零;分子缺失一律取空。 */
+/**
+ * 分母为零或缺失时按声明的语义取空或取零;分子缺失一律取空。
+ *
+ * `scale` 只作用于真正算出来的商:取空与取零都是声明的替代取值,不是比值,
+ * 刻度乘不到它们身上。缺省不乘,商与未声明刻度时逐值相同。
+ */
 function ratio(
   numerator: number | undefined,
   denominator: number | undefined,
-  onZeroDenominator: 'null' | 'zero'
+  onZeroDenominator: 'null' | 'zero',
+  scale: RatioScale | undefined
 ): number | null {
   if (denominator === undefined || denominator === 0) {
     return onZeroDenominator === 'zero' ? 0 : null;
   }
   if (numerator === undefined) return null;
-  return numerator / denominator;
+  const quotient = numerator / denominator;
+  return scale === undefined ? quotient : quotient * scale;
 }
 
 /**

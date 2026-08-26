@@ -18,11 +18,13 @@
 </label>
 
 <style>
+  /* 只吃字号那一档:勾选框的标签就是控件的全部所指,不是可以隐去的外置字段名,
+     所以这里刻意不接 --mc-filter-label-display。 */
   .filter {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
     color: #18181b;
     cursor: pointer;
   }

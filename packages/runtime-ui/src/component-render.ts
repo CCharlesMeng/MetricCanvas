@@ -35,15 +35,8 @@ export interface NestedComponentRender {
 }
 
 /**
- * 不经 WidgetHost 的组件:它们不声明数据槽,没有加载态与错误态可呈现。
- * 判定与 `isDataComponent` 同源但方向相反,单独命名是为了让组件分发
- * 里那条「特例分支」有名字可查。
+ * 走不走 WidgetHost 的判定与它呈现的宿主态是同一件事的两半,因此同住
+ * `widget-host-state`:那份源文件只依赖页面领域类型,可以单测;本文件的表格
+ * 契约要认识 widgets 的视图类型,进不了纯 TS 的测试程序。
  */
-export function rendersWithoutWidgetHost(component: Component): boolean {
-  return (
-    component.type === 'reportHeader' ||
-    component.type === 'text' ||
-    component.type === 'aiSummary' ||
-    component.type === 'tabContainer'
-  );
-}
+export { rendersWithoutWidgetHost } from './widget-host-state';

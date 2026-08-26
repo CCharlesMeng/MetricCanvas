@@ -6,6 +6,8 @@ import { tableComponentZ } from './components/table';
 import { mapChartComponentZ } from './components/map-chart';
 import { gaugeComponentZ } from './components/gauge';
 import { tabContainerComponentZ } from './components/tab-container';
+import { compositeCardComponentZ } from './components/composite-card';
+import { categoryBreakdownComponentZ } from './components/category-breakdown';
 import { rankingCardComponentZ } from './components/ranking-card';
 import { rankingDetailCardComponentZ } from './components/ranking-detail-card';
 import { textComponentZ } from './components/text';
@@ -28,9 +30,11 @@ export const componentSchemas = [
   mapChartComponentZ,
   gaugeComponentZ,
   tabContainerComponentZ,
+  compositeCardComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
   keyValuePanelComponentZ,
+  categoryBreakdownComponentZ,
   fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ
@@ -48,13 +52,16 @@ export {
   mapChartComponentZ,
   gaugeComponentZ,
   tabContainerComponentZ,
+  compositeCardComponentZ,
   rankingCardComponentZ,
   rankingDetailCardComponentZ,
   keyValuePanelComponentZ,
+  categoryBreakdownComponentZ,
   fieldTextComponentZ,
   textComponentZ,
   aiSummaryComponentZ
 };
+export { compositeCardChildTypes, compositeCardChildZ } from './components/composite-card';
 export {
   chartSeriesZ,
   barChartSeriesZ,

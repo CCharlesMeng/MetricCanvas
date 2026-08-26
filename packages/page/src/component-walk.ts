@@ -1,8 +1,11 @@
 /**
- * 页面组件树遍历:内容分区顶层组件,以及 Tab 容器内的子组件。
- * 校验、能力探测、编排与导航都走这一处,避免各层各写一遍漏掉嵌套表。
+ * 页面组件树遍历:内容分区顶层组件,以及两种容器内的子组件——Tab 容器的
+ * `props.tabs[].component` 与组合卡的 `props.components[]`。校验、能力探测、
+ * 编排与导航都走这一处,避免各层各写一遍漏掉嵌套。
  *
- * 只依赖 `type` 与可选 `props.tabs`,不依赖 `./page` 的领域类型,以免成环。
+ * 页面树深度有界:组合卡内禁止再出现容器(ADR-0053),Tab 内只有表。
+ *
+ * 只依赖 `type` 与两个容器的 props 形状,不依赖 `./page` 的领域类型,以免成环。
  */
 
 type Json = Record<string, unknown>;
@@ -42,12 +45,21 @@ function visitTree<T extends { type: string }>(
   visit: (component: T, path: string) => void
 ): void {
   visit(component, path);
-  if (component.type !== 'tabContainer') return;
-  const tabs = (component as { props?: { tabs?: Array<{ component?: T }> } }).props?.tabs ?? [];
-  tabs.forEach((tab, tabIndex) => {
-    if (!tab.component) return;
-    visitTree(tab.component, `${path}/props/tabs/${tabIndex}/component`, visit);
-  });
+  if (component.type === 'tabContainer') {
+    const tabs = (component as { props?: { tabs?: Array<{ component?: T }> } }).props?.tabs ?? [];
+    tabs.forEach((tab, tabIndex) => {
+      if (!tab.component) return;
+      visitTree(tab.component, `${path}/props/tabs/${tabIndex}/component`, visit);
+    });
+    return;
+  }
+  if (component.type === 'compositeCard') {
+    const children =
+      (component as { props?: { components?: T[] } }).props?.components ?? [];
+    children.forEach((child, childIndex) => {
+      visitTree(child, `${path}/props/components/${childIndex}`, visit);
+    });
+  }
 }
 
 function record(value: unknown): Json | undefined {
@@ -87,14 +99,23 @@ function visitDocumentTree(
   const component = record(candidate);
   if (!component) return;
   visit(component, path);
-  if (component.type !== 'tabContainer') return;
-  const tabs = record(component.props)?.tabs;
-  if (!Array.isArray(tabs)) return;
-  tabs.forEach((tabCandidate, tabIndex) => {
-    visitDocumentTree(
-      record(tabCandidate)?.component,
-      `${path}/props/tabs/${tabIndex}/component`,
-      visit
-    );
-  });
+  if (component.type === 'tabContainer') {
+    const tabs = record(component.props)?.tabs;
+    if (!Array.isArray(tabs)) return;
+    tabs.forEach((tabCandidate, tabIndex) => {
+      visitDocumentTree(
+        record(tabCandidate)?.component,
+        `${path}/props/tabs/${tabIndex}/component`,
+        visit
+      );
+    });
+    return;
+  }
+  if (component.type === 'compositeCard') {
+    const children = record(component.props)?.components;
+    if (!Array.isArray(children)) return;
+    children.forEach((child, childIndex) => {
+      visitDocumentTree(child, `${path}/props/components/${childIndex}`, visit);
+    });
+  }
 }

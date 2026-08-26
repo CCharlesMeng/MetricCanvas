@@ -13,9 +13,10 @@ const doc = (schemaVersion: unknown): unknown => ({ schemaVersion });
 
 describe('MAJOR.MINOR 版本判定', () => {
   it('接受当前主版本内不高于 current 的任意次版本', () => {
-    expect(supportedVersions()).toEqual(['5.0', '5.1']);
+    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2']);
     expect(versionErrors(doc('5.0'))).toEqual([]);
     expect(versionErrors(doc('5.1'))).toEqual([]);
+    expect(versionErrors(doc('5.2'))).toEqual([]);
   });
 
   it('拒绝更高的次版本并说明原因', () => {
@@ -275,6 +276,126 @@ describe('能力下限推算', () => {
       '/sections/0/components/1/props/tabs/0/component/props/columns/0/link',
       '/sections/0/components/2/props/hierarchyFilter'
     ]);
+  });
+
+  it('5.2 的六条能力各自登记并定位到使用点', () => {
+    const page = basePage({
+      dataSources: {
+        pipeline: {
+          fields: { rate: { type: 'number', role: 'measure' } },
+          compute: [{ op: 'ratio', numerator: 'a', denominator: 'b', output: 'rate', scale: 100 }],
+          source: { type: 'inline', rows: [] }
+        }
+      },
+      sections: [
+        {
+          id: 'body',
+          components: [
+            {
+              id: 'summary-card',
+              type: 'compositeCard',
+              layout: { span: 4 },
+              props: {
+                components: [
+                  {
+                    id: 'tier-breakdown',
+                    type: 'categoryBreakdown',
+                    layout: { span: 6 },
+                    data: { main: 'pipeline' },
+                    props: { categoryField: 'tier', columns: [{ label: '数量', field: 'count' }] }
+                  },
+                  {
+                    id: 'basics',
+                    type: 'keyValuePanel',
+                    layout: { span: 6 },
+                    data: { main: 'pipeline' },
+                    props: { columns: 1, items: [] }
+                  }
+                ]
+              }
+            },
+            {
+              id: 'map',
+              type: 'mapChart',
+              layout: { span: 8 },
+              data: { main: 'pipeline' },
+              props: {
+                nameField: 'name',
+                valueField: 'rate',
+                map: 'china',
+                legend: { title: '管道支持率', bands: [{ label: '0', from: 0 }] },
+                tooltipFields: [{ label: '机会点数', field: 'count' }]
+              }
+            }
+          ]
+        }
+      ]
+    });
+    expect(requiredMinorVersion(page)).toBe(2);
+    expect(capabilityFloorErrors(page).map((error) => error.path).sort()).toEqual([
+      '/dataSources/pipeline/compute',
+      '/dataSources/pipeline/compute/0/scale',
+      '/sections/0/components/0',
+      '/sections/0/components/0/props/components/0',
+      '/sections/0/components/0/props/components/1',
+      '/sections/0/components/0/props/components/1/props/columns',
+      '/sections/0/components/1/props/legend',
+      '/sections/0/components/1/props/tooltipFields'
+    ]);
+  });
+
+  it('组合卡内的子组件参与能力探测', () => {
+    const page = basePage({
+      schemaVersion: '5.2',
+      sections: [
+        {
+          id: 'body',
+          components: [
+            {
+              id: 'summary-card',
+              type: 'compositeCard',
+              layout: { span: 4 },
+              props: {
+                components: [
+                  {
+                    id: 'nested-title',
+                    type: 'metricCard',
+                    layout: { span: 12 },
+                    data: { main: 'a' },
+                    props: { title: { param: 'code' }, rows: [] }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    });
+    // 声明 5.2 仍要能看见卡内的 5.1 文本取值引用，说明遍历确实走进了容器。
+    expect(requiredMinorVersion(page)).toBe(2);
+    expect(
+      pageCapabilities['text-value-reference'].usedAt(page)
+    ).toEqual(['/sections/0/components/0/props/components/0/props/title']);
+  });
+
+  it('keyValuePanel 的 2/3/4 列不是 5.2 能力', () => {
+    const page = basePage({
+      sections: [
+        {
+          id: 'body',
+          components: [
+            {
+              id: 'basics',
+              type: 'keyValuePanel',
+              layout: { span: 12 },
+              data: { main: 'a' },
+              props: { columns: 3, items: [] }
+            }
+          ]
+        }
+      ]
+    });
+    expect(pageCapabilities['key-value-panel-single-column'].usedAt(page)).toEqual([]);
   });
 
   it('声明 5.1 后不再报能力下限错误', () => {

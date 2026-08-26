@@ -34,13 +34,15 @@ export const versionPolicy: VersionPolicy = { current: '5.0' };
 
 **这不是"加严既有约束"的一般性豁免。** 只要有一份存量文档行使过该开放面,哪怕只有一处、哪怕看起来无关紧要,收紧就是破坏性变更、就是主版本递增。"很少使用"不是判据,"零使用且可证"才是;判据必须是一条可执行的检查,否则这条例外就是绕过版本策略的后门——每次变更都会有人论证自己那次的使用量足够接近零。
 
-本条的第一个适用对象是组件 `layout` 对象缺少 `.strict()`:每个组件的 `props` 都是 `.strict()`,`layout` 不是,因此写错键名(例如 `spans`)会静默通过,页面看起来正常而声明无效。补上 `.strict()` 是一次收紧,但 `layout` 的未知键从未被任何存量文档写过,满足上述三条。
+本条的第一个适用对象是组件 `layout` 对象缺少 `.strict()`:每个组件的 `props` 都是 `.strict()`,`layout` 不是,因此写错键名(例如 `spans`)会静默通过,页面看起来正常而声明无效。补上 `.strict()` 是一次收紧,但 `layout` 的未知键从未被任何存量文档写过,满足上述三条。**该收紧已随 5.2 行使**,判据二的证明是 `packages/page/tests/layout-strict-zero-usage.test.ts`——它扫描 `pages/` 下的全部页面文档与 `packages/*/fixtures/` 下的全部校验样例,断言没有任何一处 `layout` 写过 `span` / `connectPrevious` / `layer` 之外的键。
 
 **校验器接受当前主版本内不高于 current 的任意次版本。** 跨主版本不接受,也不提供自动迁移。
 
 **声明的版本是能力下限,不是装饰。** 维护一张「能力 → 引入次版本」表,校验器从文档实际使用的结构推算它所需的最低次版本,高于声明值即报错。没有这条,`schemaVersion` 会退化成一个谁都可以随便填的字段:一份声明 `5.0` 却使用了 5.1 能力的文档能通过校验,然后在只支持 5.0 的嵌入宿主里渲染失败。这张表每个次版本只增几条——本批次是 `params`、页面布局形态与叠放层、数据源计算阶段、四类新筛选器、层级维度、级联、表格的三个新属性、四个新组件,二十余条——维护成本远低于它挡住的失败。[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 的 `graphql` 查询分支**不在本批次内**:它仍是提议,`QUERY_LANGUAGES` 只有 `dqe`,该能力由它真正落地的那个次版本登记。
 
 **本批次交付 5.1。** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 至 [ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) 的全部页面协议变更逐条核对后均满足增量四条判据,没有一处破坏性变更。ADR-0048 不改页面协议。
+
+**5.2(2026-08-25 补记)** 交付 [ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的两个新组件类型(判别联合新增分支)、地图分档图例与 tooltip 扩展字段、`ratio` 的输出刻度(新增可选字段)、`keyValuePanel.columns` 的 `1`(闭集新增成员),外加上述那一处按例外行使的收紧。存量页面继续声明 5.0/5.1,不迁移。
 
 ## Consequences
 

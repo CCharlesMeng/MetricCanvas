@@ -1,9 +1,12 @@
 import type { MapChartProps, Row } from '@metriccanvas/page';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
-import { resolveField } from '../../shared/component-data';
+import { fieldLabel, resolveField } from '../../shared/component-data';
 import { finiteNumber, formatValue } from '../../shared/value-format';
 import { formatterValue } from '../../shared/chart-option';
+import type { ColorList } from '../../shared/chart-palette';
+import { mapLegendLevels, mapLegendPieces } from './legend';
+import { mapTooltipMarkup, mapTooltipRows, type MapTooltipField } from './tooltip';
 
 /**
  * 维度值 → 底图区域名。页面文档经 props.nameMap 声明式改名,
@@ -36,13 +39,16 @@ export interface MapSafeArea {
  *
  * `safeArea` 给出时把底图投影进该矩形,缺席即全容器渲染(退回路径)。
  * `compact` 是档位标记而不是视口判断——关掉散点文字标签,由调用方决定档位。
+ *
+ * `scale` 是形态分档色,色列**从高档到低档**;缺席即连续渐变(报表形态的既有取值)。
  */
 export function mapOption(
   data: MainDataSlots,
   props: MapChartProps,
   centers: ReadonlyMap<string, [number, number]>,
   safeArea?: MapSafeArea,
-  compact = false
+  compact = false,
+  scale?: ColorList
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const name = resolveField(props.nameField, data);
@@ -77,16 +83,54 @@ export function mapOption(
         }
       : undefined;
 
+  /* 档位既是图例的档,也是着色的档:声明了 `legend` 就按档位取色,不再把取值
+     区间均分。没有分档色板(报表形态)时档位无色可配,退回原来的连续渐变。 */
+  const levels = props.legend ? mapLegendLevels(props.legend.bands, scale) : undefined;
+  const pieces = levels && scale ? mapLegendPieces(levels) : undefined;
+
+  const tooltipFields: MapTooltipField[] = (props.tooltipFields ?? []).map((entry) => {
+    const resolved = resolveField(entry.field, data);
+    return {
+      label: entry.label,
+      field: resolved.field,
+      ...(resolved.format === undefined ? {} : { format: resolved.format })
+    };
+  });
+  // 区域着色系列上抛底图区域名,散点系列上抛原始维度值,两种都要能查回行
+  const rowByName = new Map<string, Row>();
+  for (const row of rows) {
+    rowByName.set(geoName(row), row);
+    rowByName.set(String(row[name.field] ?? ''), row);
+  }
+
   return {
-    tooltip: {
-      trigger: 'item',
-      ...(value.format
+    tooltip:
+      tooltipFields.length > 0
         ? {
-            valueFormatter: (raw: unknown) =>
-              formatValue(mapFormatterValue(raw), value.format)
+            trigger: 'item',
+            formatter: (params: unknown) => {
+              const hovered = rowByName.get(itemName(params));
+              const title = hovered
+                ? String(hovered[name.field] ?? '')
+                : itemName(params);
+              return mapTooltipMarkup(title, [
+                {
+                  label: fieldLabel(props.valueField, data),
+                  value: formatValue(hovered?.[value.field], value.format)
+                },
+                ...mapTooltipRows(hovered, tooltipFields)
+              ]);
+            }
           }
-        : {})
-    },
+        : {
+            trigger: 'item',
+            ...(value.format
+              ? {
+                  valueFormatter: (raw: unknown) =>
+                    formatValue(mapFormatterValue(raw), value.format)
+                }
+              : {})
+          },
     // geo 组件承载底图(散点叠加需要 geo 坐标系),map 系列经 geoIndex 挂靠其上
     geo: {
       map: props.map,
@@ -100,16 +144,38 @@ export function mapOption(
       },
       select: { disabled: true }
     },
-    visualMap: {
-      type: 'continuous',
-      min: lo,
-      max: hi,
-      seriesIndex: 0,
-      left: 8,
-      bottom: 8,
-      itemHeight: 80,
-      inRange: { color: ['#dbeafe', '#2563eb'] }
-    },
+    visualMap: pieces
+      ? {
+          type: 'piecewise',
+          // 档位自带上下界与颜色,取值落在哪一档就取那一档的色。图例由组件用
+          // DOM 画(设计源的图例是「标题 + 四档色点区间」),关掉图表库这一块。
+          pieces,
+          seriesIndex: 0,
+          show: false
+        }
+      : scale
+      ? {
+          type: 'piecewise',
+          min: lo,
+          max: hi,
+          // 档数由色列长度决定:色列是分档的定义,不是渐变的取样
+          splitNumber: scale.length,
+          seriesIndex: 0,
+          left: 8,
+          bottom: 8,
+          // inRange 从低到高,而色列从高到低——这里翻过来
+          inRange: { color: [...scale].reverse() }
+        }
+      : {
+          type: 'continuous',
+          min: lo,
+          max: hi,
+          seriesIndex: 0,
+          left: 8,
+          bottom: 8,
+          itemHeight: 80,
+          inRange: { color: ['#dbeafe', '#2563eb'] }
+        },
     series: [
       {
         type: 'map',
@@ -135,6 +201,12 @@ export function mapOption(
         : [])
     ]
   };
+}
+
+/** tooltip 回调参数里的数据项名;`trigger: 'item'` 下恒为单项。 */
+function itemName(params: unknown): string {
+  const name = (params as { name?: unknown } | null)?.name;
+  return typeof name === 'string' ? name : '';
 }
 
 function mapFormatterValue(value: unknown): string | number | null | undefined {

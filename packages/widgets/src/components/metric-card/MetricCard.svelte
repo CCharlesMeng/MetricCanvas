@@ -183,16 +183,18 @@
     padding: var(--mc-metric-panel-padding, 10px 12px);
     overflow: visible;
     background: var(--mc-metric-panel-surface, var(--mc-color-surface-subtle, #f1f4ff));
-    border: 1px solid
-      var(--mc-metric-panel-border, var(--mc-color-report-content-frame, #d4d5ff));
+    /* 两档形态取值不同的只有宽度(看板形态无边框),色两档同为报表内容区描边色,
+       因此色不设量;只把色改透明达不到「无边框」,会留下 1px 的占位。 */
+    border: var(--mc-metric-panel-border-width, 1px) solid
+      var(--mc-color-report-content-frame, #d4d5ff);
     border-radius: var(--mc-metric-panel-radius, var(--mc-radius-report-content, 12px));
   }
   .metric-panel h3 {
     margin: 0 0 12px;
-    color: var(--mc-color-text-strong, #0f1a4d);
-    font-size: 18px;
-    font-weight: 400;
-    line-height: 25px;
+    color: var(--mc-card-title-color, var(--mc-color-text-strong, #0f1a4d));
+    font-size: var(--mc-card-title-font-size, 18px);
+    font-weight: var(--mc-card-title-font-weight, 400);
+    line-height: var(--mc-card-title-line-height, 25px);
     text-align: left;
   }
   .metric-panel .metric-values {
@@ -206,11 +208,13 @@
     align-items: baseline;
     gap: 6px;
   }
+  /* 指标行的三个排版量(标签 / 大数字 / 单位)两档形态取值不同,
+     经 --mc-metric-* 下发;缺省值即报表形态的既有观感。 */
   .metric-panel .row-label {
-    color: #505a84;
-    font-size: 16px;
+    color: var(--mc-metric-label-color, #505a84);
+    font-size: var(--mc-metric-label-font-size, 16px);
     font-weight: 400;
-    line-height: 22px;
+    line-height: var(--mc-metric-label-line-height, 22px);
     white-space: nowrap;
   }
   .metric-panel .value-line {
@@ -219,14 +223,16 @@
     white-space: nowrap;
   }
   .metric-panel .row-value {
-    color: var(--mc-color-text-strong, #0f1a4d);
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 40px;
+    color: var(--mc-metric-value-color, var(--mc-color-text-strong, #0f1a4d));
+    font-size: var(--mc-metric-value-font-size, 20px);
+    font-weight: var(--mc-metric-value-font-weight, 500);
+    line-height: var(--mc-metric-value-line-height, 40px);
   }
   .metric-panel .unit {
-    font-size: 16px;
-    line-height: 40px;
+    color: var(--mc-metric-unit-color, #0f1a4d);
+    font-size: var(--mc-metric-unit-font-size, 16px);
+    font-weight: var(--mc-metric-unit-font-weight, 500);
+    line-height: var(--mc-metric-unit-line-height, 40px);
   }
   .metric-panel .changes {
     display: block;

@@ -85,6 +85,7 @@ pnpm dev:dqe
 ```bash
 pnpm validate     # 校验 pages/*.json
 pnpm test         # 自动化测试
+pnpm design:facts # 重新抽取设计稿字面量(docs/design-facts/)
 pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)
 pnpm build        # 构建 Embed、Canvas 和 Platform
 pnpm test:embed   # 嵌入运行时浏览器测试
@@ -165,7 +166,9 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `apps/canvas/` | 页面目录、渲染和预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
+| `tools/design-facts/` | 设计稿字面量抽取 |
 | `pages/` | 页面 |
+| `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
 ## 文档入口
 

@@ -301,3 +301,42 @@ describe('barOption 实际/预测系列', () => {
     expect(option.series[1]?.itemStyle?.borderRadius).toEqual([4, 4, 0, 0]);
   });
 });
+
+describe('barOption · 形态类别色板', () => {
+  const plainProps = {
+    categoryField: 'month',
+    series: [
+      { field: 'coreActual', label: 'Core流水', role: 'actual' },
+      { field: 'coreForecast', label: 'Core流水(预测)', role: 'forecast' }
+    ]
+  } satisfies BarChartProps;
+
+  it('色板缺席时不写顶层 color,role 档位取包内 CHART_PALETTE', () => {
+    const option = barOption(data, plainProps) as unknown as {
+      color?: string[];
+      series: Array<{ itemStyle?: { color?: string } }>;
+    };
+
+    expect(option).not.toHaveProperty('color');
+    expect(option.series[0]?.itemStyle?.color).toBe('#5470c6');
+  });
+
+  it('色板给出时同时接管顶层 color 与 role 档位色', () => {
+    const palette = ['#5b72ea', '#3cc6c1'];
+    const option = barOption(data, plainProps, palette) as unknown as {
+      color?: string[];
+      series: Array<{ itemStyle?: { color?: string } }>;
+    };
+
+    expect(option.color).toEqual(palette);
+    expect(option.series[0]?.itemStyle?.color).toBe('#5b72ea');
+  });
+
+  it('reportForecast 变体的实测/预测双色是变体语义色,不受形态色板影响', () => {
+    const option = barOption(data, props, ['#5b72ea', '#3cc6c1']) as unknown as {
+      series: Array<{ itemStyle?: { color?: string } }>;
+    };
+
+    expect(option.series[0]?.itemStyle?.color).toBe('#1476ff');
+  });
+});

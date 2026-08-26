@@ -4,6 +4,7 @@
   import { resolveField } from '../../shared/component-data';
   import { formatValue } from '../../shared/value-format';
   import EChart from '../../shared/EChart.svelte';
+  import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { barOption } from './options';
 
   /**
@@ -20,7 +21,10 @@
 
   let { data, props, onbarclick }: Props = $props();
 
-  const option = $derived(barOption(data, props));
+  /* 形态色板从绘图容器的计算样式读(见 shared/chart-palette.ts)。 */
+  let chartContainer = $state<HTMLDivElement>();
+  const palette = $derived(readColorList(chartContainer, CATEGORICAL_PALETTE_PROPERTY));
+  const option = $derived(barOption(data, props, palette));
   const forecast = $derived(props.series.some((series) => series.role === 'forecast'));
   const category = $derived(resolveField(props.categoryField, data));
   const categories = $derived(
@@ -49,6 +53,7 @@
   </span>
   <EChart
     {option}
+    bind:container={chartContainer}
     onitemclick={onbarclick
       ? (dataIndex) => onbarclick({ row: data.main.snapshot.rows[dataIndex] })
       : undefined}
@@ -64,10 +69,10 @@
   }
   h3 {
     margin: 0 0 8px;
-    color: var(--mc-color-report-heading, #121e3b);
-    font-size: 18px;
-    font-weight: 600;
-    line-height: 28px;
+    color: var(--mc-card-title-color, var(--mc-color-report-heading, #121e3b));
+    font-size: var(--mc-card-title-font-size, 18px);
+    font-weight: var(--mc-card-title-font-weight, 600);
+    line-height: var(--mc-card-title-line-height, 28px);
   }
   .forecast {
     min-height: 292px;

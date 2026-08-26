@@ -370,8 +370,16 @@ _Avoid_: 路由跳转、面包屑、导航历史
 
 以下词条属于 IOC 作战地图批次中**尚未生效**的决策,列在此处是为了让评审期间的讨论有统一措辞;决策生效后并入上方对应章节,被否决则整节删除。
 
-[ADR-0046](docs/adr/0046-controlled-computation-with-named-operators.md)、[ADR-0047](docs/adr/0047-first-class-page-parameters.md)、[ADR-0048](docs/adr/0048-navigation-intent-and-host-routing.md)、[ADR-0050](docs/adr/0050-filter-type-closure-and-hierarchical-dimensions.md) 与 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 已 accepted,对应的**页面参数**、**文本取值**、**具名算子**、**层级维度筛选器**、**导航意图**已并入上方章节。[ADR-0049](docs/adr/0049-table-server-side-and-presentation-capabilities.md) 仍是 `proposed`:呈现已落地,查询分页下排序与表头筛选的拒绝仍在,主体决策未齐。[ADR-0045](docs/adr/0045-graphql-query-branch-with-structured-predicates.md) 的**查询谓词**尚未进入系统。
+[ADR-0046](docs/adr/0046-controlled-computation-with-named-operators.md)、[ADR-0047](docs/adr/0047-first-class-page-parameters.md)、[ADR-0048](docs/adr/0048-navigation-intent-and-host-routing.md)、[ADR-0050](docs/adr/0050-filter-type-closure-and-hierarchical-dimensions.md) 与 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 已 accepted,对应的**页面参数**、**文本取值**、**具名算子**、**层级维度筛选器**、**导航意图**已并入上方章节。[ADR-0049](docs/adr/0049-table-server-side-and-presentation-capabilities.md) 仍是 `proposed`:呈现已落地,查询分页下排序与表头筛选的拒绝仍在,主体决策未齐。[ADR-0045](docs/adr/0045-graphql-query-branch-with-structured-predicates.md) 的**查询谓词**尚未进入系统。[ADR-0053](docs/adr/0053-composite-card-component-level-grouping-container.md) 是 `proposed`:**组合卡**与同批的**分类明细**命名与边界已定,两个组件类型都尚未进入页面协议。
 
 **查询谓词 (Query Predicate)**:
 查询定义中一条结构化的筛选条件,由目标字段、封闭闭集内的算子、值来源(字面量或绑定到筛选器与页面参数)和空值行为组成。绑定值为空时整条谓词消失,这是唯一的条件语义。谓词到具体协议请求形态的编译属于执行适配器,不属于页面文档。
 _Avoid_: WHERE 片段、查询模板、条件表达式
+
+**组合卡 (Composite Card)**:
+把若干组件框进同一张卡的组件级容器,自身不承载数据,卡内子组件沿用与内容分区同一条 12 列自动流。它是组件而不是分区,因此能与其他组件在同一条栅格里横向并排;分区容器的 `card` 档是分区级、只能纵向堆叠,两者按层次分工,不可互相替代。
+_Avoid_: 分区卡片、卡片组件、组件分组、布局容器
+
+**分类明细 (Category Breakdown)**:
+按类别逐行、按度量逐列列出一小组数据的组件,带列头与可选类别色点,是一份独立的数据展示而不是图表的附属物。与饼图并排时两者绑同一个类别字段,色点按类别取值取色,不按行序取色。
+_Avoid_: 图例、饼图图例、迷你表格、键值面板

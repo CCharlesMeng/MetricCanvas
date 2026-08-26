@@ -339,6 +339,7 @@
         class:table-cell={component.type === 'table' || component.type === 'tabContainer'}
         class:ranking-detail-cell={component.type === 'rankingDetailCard'}
         class:ai-summary-cell={component.type === 'aiSummary'}
+        class:composite-cell={component.type === 'compositeCard'}
         class:connect-next={section.components[componentIndex + 1]?.layout
           .connectPrevious === true}
         class:connect-previous={componentIndex > 0 &&
@@ -459,7 +460,9 @@
     padding: var(--mc-cell-padding, 14px 16px);
     overflow: hidden;
     background: var(--mc-cell-surface, var(--mc-color-surface));
-    border: 1px solid var(--mc-cell-border, rgb(91 114 234 / 0.12));
+    /* 两档形态取值不同的只有宽度(看板形态无边框),色两档同为这一个值,
+       因此色留字面量;只把色改透明达不到「无边框」,会留下 1px 的占位。 */
+    border: var(--mc-cell-border-width, 1px) solid rgb(91 114 234 / 0.12);
     border-radius: var(--mc-cell-radius, var(--mc-radius-cell));
     box-shadow: var(--mc-cell-shadow, 0 8px 22px rgb(53 65 130 / 0.06));
   }
@@ -488,6 +491,15 @@
     border: 0;
     box-shadow: none;
   }
+  /* 组合卡自带卡壳,单元格因此让出全部外观——否则缺省容器下(单元格本身就是
+     一张白卡)会是卡里套卡。三档分区容器已经统一去了镶边,这一条补的是缺省档。 */
+  .composite-cell {
+    min-height: 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
   .cell.connect-next {
     --table-widget-radius-bottom-right: 0;
     --table-widget-radius-bottom-left: 0;
@@ -512,7 +524,8 @@
     top: calc(var(--section-grid-gap) / 2);
     right: 16px;
     left: 16px;
-    border-top: 1px dashed #000;
+    /* 卡内分隔线:两档形态取值不同,缺省值即报表形态的既有取值。 */
+    border-top: 1px dashed var(--mc-cell-divider-color, #000);
     content: '';
     pointer-events: none;
   }

@@ -1095,7 +1095,16 @@
   }
   /* 看板形态:占满宿主给出的全部宽度,中性画布,分区之间只靠间距分隔。
      报表形态的定宽居中与浅蓝画布留在 `.page-content` 缺省规则里不动,
-     两档的差别全部落在这一处,分区内部的 12 列网格两档共用。 */
+     两档的差别全部落在这一处,分区内部的 12 列网格两档共用。
+
+     ==== 这一处就是「按页面布局形态生效的 token 通道」的唯一定义点 ====
+     规则只有两条,新增量之前先对着它判一次:
+     ① 只有「两档形态取值不同」和「跨文件下发」两类量走 --mc-,其余保持字面量;
+     ② 报表形态的取值一律留在**消费点的 var() 缺省值**里,不在这里也不在
+        `.runtime-view` 根部重复一遍。因此这个块只增不改:块里出现的每一行
+        都是看板档,把某一行删掉就退回报表档,报表形态因此不可能被这里改到。
+     消费点跨包时(色板、卡片标题、筛选控件铬)名字仍以这里为真源,
+     不允许任一消费方改自己的缺省字面量来「就地调档」。 */
   .page-content.layout-dashboard {
     --mc-page-content-padding-block-start: 16px;
     --mc-page-content-padding-inline: 24px;
@@ -1110,23 +1119,87 @@
     --mc-section-plain-grid-gap: 16px;
     --mc-section-plain-grid-column-gap: 16px;
     --mc-metric-panel-surface: var(--mc-color-surface);
-    --mc-metric-panel-border: rgb(25 25 25 / 0.08);
     --mc-metric-panel-radius: var(--mc-radius-section);
     --mc-metric-panel-padding: 16px 20px;
     --mc-gauge-surface: var(--mc-color-surface);
-    --mc-gauge-border: 1px solid rgb(25 25 25 / 0.08);
     --mc-gauge-radius: var(--mc-radius-section);
     --mc-gauge-padding: 16px 12px;
     --mc-section-default-padding: 0;
     --mc-section-default-surface: transparent;
     --mc-section-default-shadow: none;
     --mc-cell-padding: 16px 20px 20px;
-    --mc-cell-border: rgb(25 25 25 / 0.08);
     --mc-cell-radius: var(--mc-radius-section);
     --mc-cell-shadow: none;
     --mc-field-text-body-surface: rgb(0 0 0 / 0.03);
     --mc-field-text-body-radius: 8px;
     --mc-field-text-body-padding: 14px 17px;
+
+    /* 图表色板。不是 CSS 声明而是要塞进 ECharts option 的数据,由图表组件从
+       自己的绘图容器读计算样式(见 widgets/src/shared/chart-palette.ts)。
+       报表形态不定义这两个名字,图表因此沿用图表库内置色板与连续渐变。 */
+    --mc-chart-categorical-colors: #5b72ea, #3cc6c1, #fec72a, #4ba0f7;
+    /* 分档色从**高档到低档**;档数由色列长度决定。 */
+    --mc-chart-map-scale-colors: #7184e7, #acb9f0, #d9dff6, rgba(0, 0, 0, 0.05);
+
+    /* 卡面无边框:宽度归零而不是把颜色改透明,否则留下 1px 占位。 */
+    --mc-cell-border-width: 0;
+    --mc-metric-panel-border-width: 0;
+    --mc-gauge-border: 0;
+
+    /* 卡内分隔线 */
+    --mc-cell-divider-color: #dcdbdb;
+
+    /* 组件卡片标题:报表形态下这一族在十个文件里各有一套字号字重,
+       看板形态收敛成同一档。 */
+    --mc-card-title-font-size: 16px;
+    --mc-card-title-font-weight: 500;
+    --mc-card-title-line-height: 24px;
+    --mc-card-title-color: var(--mc-color-report-text);
+
+    /* 页面标题(字号两档同为 24px,不设量) */
+    --mc-page-title-font-weight: 500;
+    --mc-page-title-line-height: 36px;
+    --mc-page-title-color: var(--mc-color-report-text);
+
+    /* 指标行:标签、大数字、数值单位 */
+    --mc-metric-label-font-size: 14px;
+    --mc-metric-label-line-height: 20px;
+    --mc-metric-label-color: var(--mc-color-report-text);
+    --mc-metric-value-font-size: 28px;
+    --mc-metric-value-font-weight: 400;
+    --mc-metric-value-line-height: 34px;
+    --mc-metric-value-color: var(--mc-color-report-text);
+    --mc-metric-unit-font-size: 14px;
+    --mc-metric-unit-font-weight: 400;
+    --mc-metric-unit-line-height: 20px;
+    --mc-metric-unit-color: var(--mc-color-report-text);
+
+    /* 表格:表头高度与底色、行高、横竖分隔线同色 */
+    --mc-table-header-row-height: 64px;
+    --mc-table-header-surface: rgb(0 0 0 / 0.05);
+    --mc-table-header-border: rgb(0 0 0 / 0.15);
+    --mc-table-row-height: 48px;
+    --mc-table-cell-border: rgb(0 0 0 / 0.15);
+
+    /* Tab:整条底边着色的下划线页签换成短指示条,轨保留 1px */
+    --mc-tab-font-size: 16px;
+    --mc-tab-active-font-weight: 500;
+    --mc-tab-active-color: var(--mc-color-report-text);
+    --mc-tab-active-underline-color: transparent;
+    --mc-tab-indicator: linear-gradient(currentcolor, currentcolor) bottom center /
+      32px 2px no-repeat border-box;
+    --mc-tab-track-color: rgb(25 25 25 / 0.1);
+
+    /* 筛选控件:字段名不再外置,当前值自己就是控件的所指 */
+    --mc-filter-font-size: 14px;
+    --mc-filter-control-min-width: 220px;
+    --mc-filter-control-height: 34px;
+    --mc-filter-control-radius: 6px;
+    --mc-filter-control-border-color: #c2c2c2;
+    --mc-filter-label-display: none;
+
+    /* 长文本正文行高(冻结基线 R3-3) */
+    --mc-field-text-body-line-height: 28px;
 
     max-width: none;
     padding: var(--mc-page-content-padding-block-start)

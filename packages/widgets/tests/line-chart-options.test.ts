@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { LineChartProps } from '@metriccanvas/page';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { lineOption } from '../src/components/line-chart/options';
 
@@ -101,5 +102,62 @@ describe('lineOption', () => {
       axisTick: { show: false },
       axisLine: { show: false }
     });
+  });
+});
+
+describe('lineOption · 形态类别色板', () => {
+  const data: MainDataSlots = {
+    main: {
+      snapshot: {
+        status: 'ready',
+        rows: [
+          { date: '06-22', tokens: 1 },
+          { date: '06-23', tokens: 2 }
+        ]
+      },
+      fields: {
+        date: { type: 'date', role: 'dimension' },
+        tokens: { type: 'number', role: 'measure' }
+      }
+    }
+  };
+  const props: LineChartProps = {
+    xField: 'date',
+    areaGradient: true,
+    series: [{ field: 'tokens', label: 'Token' }]
+  };
+
+  it('色板缺席时不写顶层 color,面积渐变取包内 CHART_PALETTE', () => {
+    const option = lineOption(data, props) as unknown as {
+      color?: string[];
+      series: Array<{ areaStyle?: { color: { colorStops: { color: string }[] } } }>;
+    };
+
+    expect(option).not.toHaveProperty('color');
+    expect(option.series[0]?.areaStyle?.color.colorStops[0]?.color).toBe(
+      'rgba(84,112,198,0.35)'
+    );
+  });
+
+  it('色板给出时顶层 color 与面积渐变都跟着走', () => {
+    const option = lineOption(data, props, ['#5b72ea']) as unknown as {
+      color?: string[];
+      series: Array<{ areaStyle?: { color: { colorStops: { color: string }[] } } }>;
+    };
+
+    expect(option.color).toEqual(['#5b72ea']);
+    expect(option.series[0]?.areaStyle?.color.colorStops[0]?.color).toBe(
+      'rgba(91,114,234,0.35)'
+    );
+  });
+
+  it('非十六进制写法的色值原样进渐变,不算出 NaN 通道', () => {
+    const option = lineOption(data, props, ['rgb(0 0 0 / 0.05)']) as unknown as {
+      series: Array<{ areaStyle?: { color: { colorStops: { color: string }[] } } }>;
+    };
+
+    expect(option.series[0]?.areaStyle?.color.colorStops[0]?.color).toBe(
+      'rgb(0 0 0 / 0.05)'
+    );
   });
 });

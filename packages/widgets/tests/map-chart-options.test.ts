@@ -79,6 +79,50 @@ describe('mapOption', () => {
   });
 });
 
+describe('mapOption · 形态分档色', () => {
+  const props = { map: 'china' as const, nameField: 'region', valueField: 'rate' };
+  const scale = ['#7184e7', '#acb9f0', '#d9dff6', 'rgba(0, 0, 0, 0.05)'];
+
+  it('分档色缺席时是连续渐变,取值与改动前逐字相同', () => {
+    const option = mapOption(data, props, new Map()) as unknown as {
+      visualMap: { type: string; itemHeight?: number; inRange: { color: string[] } };
+    };
+
+    expect(option.visualMap.type).toBe('continuous');
+    expect(option.visualMap.itemHeight).toBe(80);
+    expect(option.visualMap.inRange.color).toEqual(['#dbeafe', '#2563eb']);
+  });
+
+  it('分档色给出时换成分档,档数取色列长度', () => {
+    const option = mapOption(data, props, new Map(), undefined, false, scale) as unknown as {
+      visualMap: { type: string; splitNumber: number };
+    };
+
+    expect(option.visualMap.type).toBe('piecewise');
+    expect(option.visualMap.splitNumber).toBe(4);
+  });
+
+  it('色列从高档到低档,而 inRange 从低到高,所以要翻过来', () => {
+    const option = mapOption(data, props, new Map(), undefined, false, scale) as unknown as {
+      visualMap: { inRange: { color: string[] } };
+    };
+
+    expect(option.visualMap.inRange.color).toEqual([
+      'rgba(0, 0, 0, 0.05)',
+      '#d9dff6',
+      '#acb9f0',
+      '#7184e7'
+    ]);
+  });
+
+  it('翻转不改写传入的色列', () => {
+    const input = [...scale];
+    mapOption(data, props, new Map(), undefined, false, input);
+
+    expect(input).toEqual(scale);
+  });
+});
+
 describe('geoRegionName', () => {
   it('维度值经 nameMap 改名后定位底图区域,未声明时原样返回', () => {
     expect(geoRegionName({ region: '沪' }, 'region', { 沪: '上海' })).toBe('上海');

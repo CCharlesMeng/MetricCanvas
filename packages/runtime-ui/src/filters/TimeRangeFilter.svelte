@@ -43,22 +43,26 @@
 </div>
 
 <style>
+  /* 控件铬与外置字段名标签的可见性经 --mc-filter-* 下发,真源在统一运行时根部。
+     区间控件是并排两个输入框,不吃单值控件的 --mc-filter-control-min-width。 */
   .filter {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
   }
   .label {
+    display: var(--mc-filter-label-display, inline);
     color: #71717a;
     white-space: nowrap;
   }
   input {
+    height: var(--mc-filter-control-height, auto);
     padding: 5px 8px;
-    border: 1px solid #e4e4e7;
-    border-radius: 8px;
+    border: 1px solid var(--mc-filter-control-border-color, #e4e4e7);
+    border-radius: var(--mc-filter-control-radius, 8px);
     background: #fff;
-    font-size: 13px;
+    font-size: var(--mc-filter-font-size, 13px);
     color: #18181b;
     font-family: inherit;
   }

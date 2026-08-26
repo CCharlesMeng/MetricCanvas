@@ -5,10 +5,41 @@ import {
   fieldBindingZ,
   idZ,
   mainDataZ,
+  nonEmptyTextValueZ,
   textValueZ
 } from '../primitives';
 import { actionsZ } from '../actions';
 import { componentCatalogRegistry } from '../registry';
+
+/**
+ * 图例档位:一个标签配一个取值下界(含),上界由下一档的 `from` 隐含,
+ * 最后一档开口向上。档位是分档着色的契约而不是一张图片——运行时按行
+ * 的 `valueField` 落在哪一档取色阶的哪一级——因此下界进页面文档,
+ * 具体颜色不进(ADR-0003)。
+ */
+const mapLegendBandZ = z
+  .object({
+    label: nonEmptyTextValueZ,
+    from: z.number()
+  })
+  .strict()
+  .meta({ id: 'mapLegendBand' });
+
+const mapLegendZ = z
+  .object({
+    title: textValueZ.optional(),
+    bands: z.array(mapLegendBandZ).min(2)
+  })
+  .strict()
+  .meta({ id: 'mapLegend' });
+
+const mapTooltipFieldZ = z
+  .object({
+    label: nonEmptyTextValueZ,
+    field: fieldBindingZ
+  })
+  .strict()
+  .meta({ id: 'mapTooltipField' });
 
 export const mapChartComponentZ = z
   .object({
@@ -37,6 +68,10 @@ export const mapChartComponentZ = z
         codeField: fieldBindingZ.optional(),
         /** 各层级使用的底图;未列出的层级回落到 props.map。 */
         levelMaps: z.record(z.string(), z.enum(['china', 'world'])).optional(),
+        /** 分档图例:一个标题加若干取值档位;缺省不画图例。 */
+        legend: mapLegendZ.optional(),
+        /** tooltip 在地域名与 valueField 之外追加的字段;每项一个标签与一个字段绑定。 */
+        tooltipFields: z.array(mapTooltipFieldZ).min(1).optional(),
         actions: actionsZ.optional()
       })
       .strict()

@@ -17,6 +17,7 @@ export * from './bar-forecast-boundary';
 export * from './component-catalog';
 export * from './errors';
 export { pageSchema } from './schema';
+export { compositeCardChildTypes } from './schema/component';
 export {
   parsePage,
   validate,

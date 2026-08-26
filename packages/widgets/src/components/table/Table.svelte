@@ -33,6 +33,7 @@
   } from './view-state';
   import { shouldShowTablePaginationControls } from './view-state';
   import { finiteNumber, formatValue, valuePolarity } from '../../shared/value-format';
+  import { readPixelLength } from '../../shared/inherited-style';
 
   /**
    * 表格(纯渲染):行与列定义 props 进,翻页/排序/表头筛选事件出,自身零状态。
@@ -125,9 +126,19 @@
     return column.width ? `width: ${column.width}px; min-width: ${column.width}px;` : '';
   }
 
-  // 表头行高唯一真源:多行粘性表头的 top 偏移与 CSS 行高共用同一数值,
-  // 经根元素 CSS 变量下发,JS 与样式不再各写一份(修复默认档 40/42 错位)。
-  const headerRowHeight = $derived(props.variant === 'reportCompact' ? 33 : 42);
+  /**
+   * 表头行高唯一真源:多行粘性表头的 top 偏移与 CSS 行高共用同一数值,
+   * 经根元素 CSS 变量下发,JS 与样式不再各写一份(修复默认档 40/42 错位)。
+   *
+   * 行高两档形态取值不同,而它同时是 JS 里的偏移量,光靠 CSS 覆写会让粘性
+   * 偏移与实际行高脱钩。所以形态取值也从自身容器的计算样式读回 JS:
+   * `--mc-table-header-row-height` 缺席即变体缺省档(报表形态的既有取值)。
+   */
+  let root = $state<HTMLElement | null>(null);
+  const variantHeaderRowHeight = $derived(props.variant === 'reportCompact' ? 33 : 42);
+  const headerRowHeight = $derived(
+    readPixelLength(root, '--mc-table-header-row-height') ?? variantHeaderRowHeight
+  );
 
   function headerTop(rowIndex: number): number {
     return rowIndex * headerRowHeight;
@@ -260,6 +271,7 @@
 </script>
 
 <div
+  bind:this={root}
   class:fit-container={props.fit === 'container'}
   class:report-compact={props.variant === 'reportCompact'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
@@ -592,10 +604,10 @@
   }
   h3 {
     margin: 0;
-    color: #121e3b;
-    font-size: 20px;
-    font-weight: 600;
-    line-height: 30px;
+    color: var(--mc-card-title-color, #121e3b);
+    font-size: var(--mc-card-title-font-size, 20px);
+    font-weight: var(--mc-card-title-font-weight, 600);
+    line-height: var(--mc-card-title-line-height, 30px);
   }
   .subtitle {
     color: #595959;
@@ -622,19 +634,21 @@
     border-spacing: 0;
     table-layout: auto;
   }
+  /* 表头的高度、底色与分隔线两档形态取值不同;高度由脚本按同一个自定义属性
+     算出后写回本元素,粘性偏移与行高因此仍共用一个数。 */
   thead th {
     position: sticky;
     top: 0;
     z-index: 2;
     box-sizing: border-box;
     height: var(--table-header-row-height, 42px);
-    background: var(--mc-color-surface-subtle, #f1f4ff);
+    background: var(--mc-table-header-surface, var(--mc-color-surface-subtle, #f1f4ff));
     text-align: left;
     font-weight: 500;
     color: #595959;
     padding: 8px 10px;
-    border-right: 1px solid #d8deeb;
-    border-bottom: 1px solid #d8deeb;
+    border-right: 1px solid var(--mc-table-header-border, #d8deeb);
+    border-bottom: 1px solid var(--mc-table-header-border, #d8deeb);
     white-space: nowrap;
   }
   thead th.group-header {
@@ -654,11 +668,12 @@
     z-index: 1;
     background: #fff;
   }
+  /* 行高与横竖分隔线两档形态取值不同;分隔线共用一个色,横竖不分家。 */
   tbody td {
-    height: 40px;
+    height: var(--mc-table-row-height, 40px);
     padding: 8px 10px;
-    border-right: 1px solid #edf0f5;
-    border-bottom: 1px solid #edf0f5;
+    border-right: 1px solid var(--mc-table-cell-border, #edf0f5);
+    border-bottom: 1px solid var(--mc-table-cell-border, #edf0f5);
     background: #fff;
     color: #191919;
     white-space: nowrap;
