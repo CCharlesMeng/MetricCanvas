@@ -11,7 +11,7 @@
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
     "build": "pnpm --filter @metriccanvas/embed build && pnpm --filter canvas build && pnpm --filter platform build",
-    "test": "pnpm --filter platform exec svelte-kit sync && vitest run",
+    "test": "pnpm --filter platform --filter canvas exec svelte-kit sync && vitest run",
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "design:facts": "tsx tools/design-facts/src/cli.ts",
