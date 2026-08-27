@@ -115,4 +115,46 @@ describe('页面修订编辑工作副本', () => {
     expect(redone.current.sections[0]?.components[1]?.layout.span).toBe(6);
     expect(alternate.future).toEqual([]);
   });
+
+  it('组合卡只作为顶层原子编辑，修改标题与跨度不破坏子组件 JSON', () => {
+    const compositeDocument: Page = {
+      ...document,
+      schemaVersion: '5.2',
+      sections: [{
+        id: 'overview',
+        components: [{
+          id: 'summary-card',
+          type: 'compositeCard',
+          layout: { span: 4 },
+          props: {
+            title: '机会点概况',
+            components: [{
+              id: 'summary-metrics',
+              type: 'metricCard',
+              layout: { span: 12 },
+              data: { main: 'summary' },
+              props: { rows: [{ label: '成交总额', valueField: 'gmv' }] }
+            }]
+          }
+        }]
+      }]
+    };
+    const beforeChildren = JSON.stringify(
+      (compositeDocument.sections[0]!.components[0] as Extract<Page['sections'][number]['components'][number], { type: 'compositeCard' }>).props.components
+    );
+
+    expect(listEditableComponents(compositeDocument).map((item) => item.locator)).toEqual([
+      { sectionId: 'overview', componentId: 'summary-card' }
+    ]);
+    const edited = editComponent(
+      compositeDocument,
+      { sectionId: 'overview', componentId: 'summary-card' },
+      { title: '机会点总览', span: 6 }
+    );
+    const card = edited.sections[0]!.components[0];
+    if (card?.type !== 'compositeCard') throw new Error('组合卡丢失');
+    expect(card.layout.span).toBe(6);
+    expect(card.props.title).toBe('机会点总览');
+    expect(JSON.stringify(card.props.components)).toBe(beforeChildren);
+  });
 });

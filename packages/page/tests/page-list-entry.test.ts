@@ -25,7 +25,21 @@ function page(): Page {
 }
 
 describe('页面列表条目', () => {
-  it('统一从报告页头派生列表标题和说明', () => {
+  it('meta title 优先于报告页头标题', () => {
+    const document = page();
+    document.meta = {
+      ...document.meta,
+      title: '全球/区域作战地图'
+    };
+
+    expect(pageListEntry(document)).toEqual({
+      id: 'inventory-overview',
+      title: '全球/区域作战地图',
+      description: '库存经营看板'
+    });
+  });
+
+  it('meta title 缺席时从报告页头派生列表标题和说明', () => {
     expect(pageListEntry(page())).toEqual({
       id: 'inventory-overview',
       title: '库存概览',

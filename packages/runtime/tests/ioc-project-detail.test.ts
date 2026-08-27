@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parsePage, type Page } from '@metriccanvas/page';
+import { parsePage, requiredMinorVersion, type Page } from '@metriccanvas/page';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import { resolvePageParams } from '../src/page-params';
 
@@ -49,8 +49,10 @@ function readyRows(snapshots: PageDataSnapshots, sourceId: string) {
 }
 
 describe('ioc-project-detail 骨架', () => {
-  it('声明看板布局形态，基本信息与两张规范性表并排成三张模块卡', () => {
+  it('声明 5.2 看板形态，基本信息与项目规范性按 3:9 并排', () => {
     const page = loadPage('');
+    expect(page.schemaVersion).toBe('5.2');
+    expect(requiredMinorVersion(document)).toBe(2);
     expect(page.layoutForm).toBe('dashboard');
     expect(page.sections.map((section) => section.id)).toEqual([
       'page-header',
@@ -59,11 +61,6 @@ describe('ioc-project-detail 骨架', () => {
       'project-narrative'
     ]);
 
-    // 缺省容器在看板形态下把外壳让给画布，模块卡是组件单元格本身，
-    // 因此并排的各块各自用 props.title 承载标题，而不是分区标题。
-    // 信息区是两卡分组（冻结基线 R1-7 + R3-4：跨列数 3 : 9，2026-08-25 实测定案）：
-    // 右卡「项目规范性」内含两段规范性表——协议里能把两个子组件装进一张卡的
-    // 只有 tabContainer，所以两段成为它的两个 Tab。
     const profile = page.sections.find((section) => section.id === 'project-profile');
     expect(profile?.container).toBeUndefined();
     expect(profile?.title).toBeUndefined();
@@ -79,17 +76,27 @@ describe('ioc-project-detail 骨架', () => {
     ]);
 
     const norms = profile?.components.find((component) => component.id === 'project-norms');
-    expect(norms?.type).toBe('tabContainer');
+    expect(norms?.type).toBe('compositeCard');
     expect(
-      norms?.type === 'tabContainer'
-        ? norms.props.tabs.map((tab) => [tab.id, tab.label, tab.component.type])
+      norms?.type === 'compositeCard'
+        ? norms.props.components.map((component) => [
+            component.id, component.type, component.layout.span, component.props.title
+          ])
         : undefined
     ).toEqual([
-      ['operation-norm', '项目运作规范性', 'table'],
-      ['customer-relation', '客户关系规范性', 'table']
+      ['operation-norm-panel', 'keyValuePanel', 12, '项目运作规范性'],
+      ['customer-relation-panel', 'keyValuePanel', 12, '客户关系规范性']
     ]);
 
     const narrative = page.sections.find((section) => section.id === 'project-narrative');
+    expect(narrative?.components.map((component) => component.id)).toEqual([
+      'project-background',
+      'project-objectives',
+      'competitor-update',
+      'latest-analysis-meeting',
+      'risk-management',
+      'project-progress'
+    ]);
     expect(narrative?.components.every((component) => component.layout.span === 12)).toBe(
       true
     );
@@ -149,5 +156,19 @@ describe('ioc-project-detail 骨架', () => {
     expect(rows).toHaveLength(1);
     expect(rows[0]!['party-company-name']).toBe('XX 科技有限公司');
     expect(String(rows[0]!['project-risks'])).toContain('迁移窗口审批');
+    for (const field of [
+      'project-background',
+      'project-objectives',
+      'project-help-required',
+      'competitor-update',
+      'project-risks',
+      'project-progress',
+      'latest-analysis-meeting-topic',
+      'latest-analysis-meeting-conclusion'
+    ]) {
+      expect(rows[0]).toHaveProperty(field);
+    }
+    expect(String(rows[0]!['latest-analysis-meeting-display'])).toContain('2026-04-10');
+    expect(String(rows[0]!['risk-management-display'])).toContain('困难求助');
   });
 });

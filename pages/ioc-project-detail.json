@@ -1,8 +1,8 @@
 {
-  "schemaVersion": "5.1",
+  "schemaVersion": "5.2",
   "id": "ioc-project-detail",
   "meta": {
-    "description": "IOC 作战地图项目详情页。页面参数全部来自 URL，数据源是 inline，数据行是依据页面规格编造的合成数据，不来自任何真实系统，不得用于业务判断。设计稿把项目运作规范性与客户关系规范性收在同一张「项目规范性」卡内，内容分区不能嵌套分区，因此这里是并排的两张模块卡，标题各自由组件承载；设计稿的「项目分析会（最近）」把主题、时间与结论合成一段，本页按页面规格 003 的字段边界分别呈现主题与结论，时间在项目基本信息里；「风险管理和管控措施」同样拆回项目风险与困难求助两个字段。GraphQL 通路到位后只替换数据源的 source 段，页面结构、页面参数与表格列全部复用。"
+    "description": "IOC 作战地图项目详情页。页面参数来自 URL，业务数据全部是 inline 合成演示数据，不来自真实系统。页面按有效设计源收口为 3:9 的项目基本信息与项目规范性双卡，规范性两组信息同时展示；销售预测继续保留十二个月、小计、总计和合并逻辑；项目叙事收口为六块。原始八个业务长文本字段全部保留，latest-analysis-meeting-display 与 risk-management-display 仅为 inline 展示合成字段，不构成未来 GraphQL 契约。"
   },
   "params": [
     {
@@ -161,6 +161,18 @@
           "role": "dimension",
           "label": "最近分析会结论",
           "nullable": true
+        },
+        "latest-analysis-meeting-display": {
+          "type": "string",
+          "role": "dimension",
+          "label": "项目分析会（最近）",
+          "nullable": true
+        },
+        "risk-management-display": {
+          "type": "string",
+          "role": "dimension",
+          "label": "风险管理和管控措施",
+          "nullable": true
         }
       },
       "source": {
@@ -184,7 +196,9 @@
             "project-risks": "客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。",
             "project-progress": "方案已通过客户技术委员会评审，商务条款进入第二轮谈判，预计 6 月完成预签。",
             "latest-analysis-meeting-topic": "一期迁移方案收敛与竞对降价应对策略。",
-            "latest-analysis-meeting-conclusion": "维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。"
+            "latest-analysis-meeting-conclusion": "维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
+            "latest-analysis-meeting-display": "主题：一期迁移方案收敛与竞对降价应对策略。\n时间：2026-04-10\n结论：维持现有报价，以专属服务与迁移保障方案换取客户对总价的接受；四月底前完成高层拜访。",
+            "risk-management-display": "项目风险：客户内部尚未完成迁移窗口审批，若 6 月前未获批，交付节点将顺延一个季度。\n困难求助：需要总部数据库迁移专家两人现场支持四周，并申请一次高层拜访窗口。"
           }
         ]
       }
@@ -1008,7 +1022,7 @@
             "main": "project-detail"
           },
           "props": {
-            "columns": 2,
+            "columns": 1,
             "items": [
               {
                 "label": "地区部",
@@ -1056,111 +1070,88 @@
         },
         {
           "id": "project-norms",
-          "type": "tabContainer",
+          "type": "compositeCard",
           "layout": {
             "span": 9
           },
           "props": {
             "title": "项目规范性",
-            "defaultTab": "operation-norm",
-            "tabs": [
+            "dividers": true,
+            "components": [
               {
-                "id": "operation-norm",
-                "label": "项目运作规范性",
-                "component": {
-                  "id": "operation-norm-table",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "operation-norm"
-                  },
-                  "props": {
-                    "fit": "container",
-                    "columns": [
-                      {
-                        "field": "ati-status",
-                        "title": "立项",
-                        "width": 120
-                      },
-                      {
-                        "field": "is-timely-projected",
-                        "title": "立项及时",
-                        "width": 100
-                      },
-                      {
-                        "field": "is-actual-project-analysis-meeting",
-                        "title": "立项开工会",
-                        "width": 120
-                      },
-                      {
-                        "field": "is-analysis-meeting-held-current-month",
-                        "title": "近 30 天项目分析会",
-                        "width": 150
-                      },
-                      {
-                        "field": "is-owner-attended-analysis",
-                        "title": "Owner/Sponsor 与会",
-                        "width": 150
-                      },
-                      {
-                        "field": "is-review-completed",
-                        "title": "复盘总结",
-                        "width": 100
-                      }
-                    ]
-                  }
+                "id": "operation-norm-panel",
+                "type": "keyValuePanel",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "operation-norm"
+                },
+                "props": {
+                  "title": "项目运作规范性",
+                  "columns": 3,
+                  "items": [
+                    {
+                      "label": "立项",
+                      "field": "ati-status"
+                    },
+                    {
+                      "label": "立项及时",
+                      "field": "is-timely-projected"
+                    },
+                    {
+                      "label": "立项开工会",
+                      "field": "is-actual-project-analysis-meeting"
+                    },
+                    {
+                      "label": "近 30 天项目分析会",
+                      "field": "is-analysis-meeting-held-current-month"
+                    },
+                    {
+                      "label": "Owner/Sponsor 与会",
+                      "field": "is-owner-attended-analysis"
+                    },
+                    {
+                      "label": "复盘总结",
+                      "field": "is-review-completed"
+                    }
+                  ]
                 }
               },
               {
-                "id": "customer-relation",
-                "label": "客户关系规范性",
-                "component": {
-                  "id": "customer-relation-table",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "customer-relation"
-                  },
-                  "props": {
-                    "subtitle": "专题交流缺失时取技术交流",
-                    "fit": "container",
-                    "columns": [
-                      {
-                        "field": "high-level-visit-count",
-                        "title": "高层拜访",
-                        "width": 120,
-                        "align": "right"
-                      },
-                      {
-                        "field": "company-visit-count",
-                        "title": "公司考察",
-                        "width": 120,
-                        "align": "right"
-                      },
-                      {
-                        "field": "workshop-exchange-count",
-                        "title": "专题交流",
-                        "width": 120,
-                        "align": "right"
-                      },
-                      {
-                        "field": "summit-meeting-count",
-                        "title": "高层峰会",
-                        "width": 120,
-                        "align": "right"
-                      },
-                      {
-                        "field": "circle-activities-count",
-                        "title": "圈层活动",
-                        "width": 120,
-                        "align": "right"
-                      }
-                    ]
-                  }
+                "id": "customer-relation-panel",
+                "type": "keyValuePanel",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "customer-relation"
+                },
+                "props": {
+                  "title": "客户关系规范性",
+                  "columns": 3,
+                  "items": [
+                    {
+                      "label": "高层拜访",
+                      "field": "high-level-visit-count"
+                    },
+                    {
+                      "label": "公司考察",
+                      "field": "company-visit-count"
+                    },
+                    {
+                      "label": "专题交流",
+                      "field": "workshop-exchange-count"
+                    },
+                    {
+                      "label": "高层峰会",
+                      "field": "summit-meeting-count"
+                    },
+                    {
+                      "label": "圈层活动",
+                      "field": "circle-activities-count"
+                    }
+                  ]
                 }
               }
             ]
@@ -1536,20 +1527,6 @@
           }
         },
         {
-          "id": "project-help-required",
-          "type": "fieldText",
-          "layout": {
-            "span": 12
-          },
-          "data": {
-            "main": "project-detail"
-          },
-          "props": {
-            "title": "困难求助",
-            "field": "project-help-required"
-          }
-        },
-        {
           "id": "competitor-update",
           "type": "fieldText",
           "layout": {
@@ -1559,12 +1536,12 @@
             "main": "project-detail"
           },
           "props": {
-            "title": "竞对动态",
+            "title": "友商动态",
             "field": "competitor-update"
           }
         },
         {
-          "id": "project-risks",
+          "id": "latest-analysis-meeting",
           "type": "fieldText",
           "layout": {
             "span": 12
@@ -1573,8 +1550,22 @@
             "main": "project-detail"
           },
           "props": {
-            "title": "项目风险",
-            "field": "project-risks"
+            "title": "项目分析会（最近）",
+            "field": "latest-analysis-meeting-display"
+          }
+        },
+        {
+          "id": "risk-management",
+          "type": "fieldText",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "project-detail"
+          },
+          "props": {
+            "title": "风险管理和管控措施",
+            "field": "risk-management-display"
           }
         },
         {
@@ -1587,36 +1578,8 @@
             "main": "project-detail"
           },
           "props": {
-            "title": "项目进展",
+            "title": "最新项目进展",
             "field": "project-progress"
-          }
-        },
-        {
-          "id": "latest-analysis-meeting-topic",
-          "type": "fieldText",
-          "layout": {
-            "span": 12
-          },
-          "data": {
-            "main": "project-detail"
-          },
-          "props": {
-            "title": "最近分析会主题",
-            "field": "latest-analysis-meeting-topic"
-          }
-        },
-        {
-          "id": "latest-analysis-meeting-conclusion",
-          "type": "fieldText",
-          "layout": {
-            "span": 12
-          },
-          "data": {
-            "main": "project-detail"
-          },
-          "props": {
-            "title": "最近分析会结论",
-            "field": "latest-analysis-meeting-conclusion"
           }
         }
       ]

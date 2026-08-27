@@ -26,6 +26,7 @@ export function pieOption(
   const category = resolveField(props.categoryField, data);
   const value = resolveField(props.valueField, data);
   const showLabelLine = props.labelLine ?? true;
+  const compactRing = props.variant === 'compactRing';
   const names = rows.map((row) => formatValue(row[category.field], category.format));
   const domain = categoryDomain(names);
   return {
@@ -41,9 +42,14 @@ export function pieOption(
     series: [
       {
         type: 'pie',
-        radius: props.ring ? [props.ring, '72%'] : '72%',
-        label: { show: showLabelLine, formatter: '{b}: {d}%' },
-        labelLine: { show: showLabelLine },
+        radius: compactRing
+          ? [props.ring ?? '58%', '82%']
+          : props.ring
+            ? [props.ring, '72%']
+            : '72%',
+        center: compactRing ? ['50%', '50%'] : undefined,
+        label: { show: compactRing ? false : showLabelLine, formatter: '{b}: {d}%' },
+        labelLine: { show: compactRing ? false : showLabelLine },
         data: rows.map((row, index) => {
           const name = names[index] ?? '';
           const color = categoricalColor(palette, name, domain);

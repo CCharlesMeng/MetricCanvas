@@ -104,10 +104,12 @@
   class:summary={props.variant === 'summary'}
   class:compact-summary={props.variant === 'compactSummary'}
   class:dual-summary={props.variant === 'dualSummary'}
+  class:compact-strip={props.variant === 'compactStrip'}
+  class:compact-stack={props.variant === 'compactStack'}
   class:two-column-panels={props.variant === 'dualSummary' && props.panelLayout === 'twoColumn'}
   class="metric-card"
 >
-  {#if props.variant === 'compactSummary' || props.variant === 'dualSummary'}
+  {#if props.variant === 'compactSummary' || props.variant === 'dualSummary' || props.variant === 'compactStrip' || props.variant === 'compactStack'}
     {@render metricPanel(props.title, props.rows)}
     {#if props.variant === 'dualSummary'}
       {@render metricPanel(props.secondaryTitle, props.secondaryRows)}
@@ -162,11 +164,23 @@
     font-weight: 500;
   }
   .compact-summary,
-  .dual-summary {
+  .dual-summary,
+  .compact-strip,
+  .compact-stack {
     justify-content: flex-start;
     height: auto;
     gap: 8px;
     container-type: inline-size;
+  }
+  .compact-strip {
+    --mc-compact-summary-flow: column;
+    --mc-compact-summary-row-columns: minmax(0, 1fr);
+    --mc-metric-panel-min-height: 0;
+  }
+  .compact-stack {
+    --mc-compact-summary-flow: row;
+    --mc-compact-summary-row-columns: minmax(0, 1fr);
+    --mc-metric-panel-min-height: 0;
   }
   .dual-summary.two-column-panels {
     display: grid;
@@ -179,7 +193,7 @@
   .metric-panel {
     box-sizing: border-box;
     width: 100%;
-    min-height: 136px;
+    min-height: var(--mc-metric-panel-min-height, 136px);
     padding: var(--mc-metric-panel-padding, 10px 12px);
     overflow: visible;
     background: var(--mc-metric-panel-surface, var(--mc-color-surface-subtle, #f1f4ff));
@@ -199,14 +213,29 @@
   }
   .metric-panel .metric-values {
     display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: var(--mc-compact-summary-flow, row);
     gap: 0;
   }
   .metric-panel .metric-row {
     display: grid;
     min-height: 40px;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: var(
+      --mc-compact-summary-row-columns,
+      auto minmax(0, 1fr) auto
+    );
     align-items: baseline;
     gap: 6px;
+  }
+  .compact-strip .metric-row,
+  .compact-stack .metric-row {
+    align-content: start;
+    gap: 2px;
+  }
+  @media (max-width: 760px) {
+    .compact-strip {
+      --mc-compact-summary-flow: row;
+    }
   }
   /* 指标行的三个排版量(标签 / 大数字 / 单位)两档形态取值不同,
      经 --mc-metric-* 下发;缺省值即报表形态的既有观感。 */
@@ -251,6 +280,18 @@
     font-size: 16px;
     font-weight: 400;
   }
+  .compact-strip .change {
+    align-items: baseline;
+    flex-direction: row;
+    gap: 2px;
+    font-size: 12px;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+  .compact-strip .change-label {
+    font-size: 11px;
+    line-height: 18px;
+  }
   .metric-panel .placeholder-values .row-value,
   .metric-panel .placeholder-values .change {
     color: var(--mc-color-muted, #71717a);
@@ -262,6 +303,9 @@
     }
     .metric-panel .metric-row {
       gap: 2px;
+    }
+    .metric-panel .metric-values {
+      grid-auto-flow: row;
     }
     .metric-panel .row-label {
       font-size: 13px;

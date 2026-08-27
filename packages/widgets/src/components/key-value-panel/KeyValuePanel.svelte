@@ -19,7 +19,7 @@
   const columns = $derived(props.columns ?? 3);
 </script>
 
-<div class="key-value-panel">
+<div class:counter-strip={props.variant === 'counterStrip'} class="key-value-panel">
   {#if props.title}<h3>{props.title}</h3>{/if}
   <dl style:--key-value-columns={columns}>
     {#each props.items as item (item.label)}
@@ -87,6 +87,24 @@
     color: #191919;
     font-size: 14px;
     line-height: 22px;
+  }
+  .counter-strip dl {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .counter-strip .entry {
+    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+    text-align: center;
+  }
+  .counter-strip dt::after {
+    content: none;
+  }
+  .counter-strip dd {
+    color: var(--mc-color-report-text, #191919);
+    font-size: 28px;
+    line-height: 34px;
   }
   @media (max-width: 760px) {
     dl {

@@ -147,4 +147,16 @@ describe('组合卡的卡内表面压平', () => {
       expect(surfaceTokensRead(source(file))).toEqual([]);
     }
   });
+
+  it('组合卡给满宽 compactSummary 下发横排上下文，窄容器保留纵排回退', () => {
+    const card = source('composite-card/CompositeCard.svelte');
+    const metric = source('metric-card/MetricCard.svelte');
+
+    expect(card).toMatch(/\.composite-grid\s*\{[^}]*--mc-compact-summary-flow:\s*column;/s);
+    expect(card).toMatch(/\.composite-card\s*\{[^}]*min-height:\s*280px;/s);
+    expect(metric).toContain('grid-auto-flow: var(--mc-compact-summary-flow, row);');
+    expect(metric).toMatch(
+      /@container \(max-width: 230px\)[\s\S]*?\.metric-panel \.metric-values\s*\{[^}]*grid-auto-flow:\s*row;/
+    );
+  });
 });

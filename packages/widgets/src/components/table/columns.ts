@@ -28,6 +28,16 @@ export interface TableColumnLayout {
 }
 
 /**
+ * 容器适配表格只有在高列数时才允许表头换行；常规报表继续保持单行表头。
+ */
+export function shouldWrapTableHeaders(
+  fit: 'content' | 'container' | undefined,
+  columnCount: number
+): boolean {
+  return fit === 'container' && columnCount >= 8;
+}
+
+/**
  * 将递归列树翻译为表体叶子顺序和 HTML 多层表头网格。
  * 空列组不产出表头单元格,避免生成 colspan=0。
  */

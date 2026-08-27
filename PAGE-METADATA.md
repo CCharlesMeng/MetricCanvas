@@ -82,7 +82,7 @@ flowchart LR
 {
   "schemaVersion": "5.0",
   "id": "sales-overview",
-  "meta": { "description": "销售概览" },
+  "meta": { "title": "销售概览", "description": "销售概览" },
   "dataSources": {},
   "sections": [
     {
@@ -104,7 +104,7 @@ flowchart LR
 |---|---|---:|---|
 | `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"`、`"5.1"` 与 `"5.2"`，新页面声明 `"5.2"` |
 | `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
-| `meta` | object | 否 | 页面资产信息；当前只允许 `description` |
+| `meta` | object | 否 | 页面资产信息；允许可选 `title` 与 `description`。目录标题按 `meta.title` → 首个 `reportHeader.props.title` → 页面 `id` 回退；dashboard 工具栏使用同一结果 |
 | `layoutForm` | string | 否 | 页面布局形态（5.1 起）：`report`（缺省）或 `dashboard` |
 | `params` | array | 否 | 页面参数声明（5.1 起），至少一项 |
 | `dataSources` | object | 是 | 命名页面数据源；纯标题或说明页可以为空对象 |
@@ -1761,7 +1761,7 @@ flowchart LR
 ### 11.1 结构
 
 - [ ] 顶层只有 `schemaVersion`、`id`、`meta`、可选 `params`、`dataSources`、`filters`、`sections`；
-- [ ] `schemaVersion` 为 `"5.0"` 或 `"5.1"`；只用 5.0 结构时声明 `"5.0"`，用了 5.1 能力时必须声明 `"5.1"`；
+- [ ] `schemaVersion` 为 `"5.0"`、`"5.1"` 或 `"5.2"`；新页面声明 `"5.2"`，存量页面继续声明满足其能力下限的已发布版本；
 - [ ] 所有对象没有未定义属性；
 - [ ] `sections`、每个 `components`、每个页面数据源 `fields` 均满足最小数量；
 - [ ] 所有 id 符合各自正则，筛选器、分区和组件 id 无重复。

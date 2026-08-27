@@ -26,7 +26,11 @@
   const view = $derived(categoryBreakdownView(data, props, palette));
 </script>
 
-<div bind:this={host} class="category-breakdown">
+<div
+  bind:this={host}
+  class:compact-list={props.variant === 'compactList'}
+  class="category-breakdown"
+>
   {#if props.title}<h3>{props.title}</h3>{/if}
   <table>
     <thead>
@@ -153,5 +157,25 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
+  }
+  .compact-list {
+    gap: 4px;
+  }
+  .compact-list table {
+    table-layout: fixed;
+  }
+  .compact-list .category {
+    width: 40%;
+  }
+  .compact-list .measure + .measure,
+  .compact-list .category + .measure {
+    padding-left: 8px;
+  }
+  .compact-list thead th {
+    font-size: 11px;
+  }
+  .compact-list tbody tr:not(:first-child) th,
+  .compact-list tbody tr:not(:first-child) td {
+    padding-top: 4px;
   }
 </style>

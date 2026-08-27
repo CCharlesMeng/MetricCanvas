@@ -5,6 +5,7 @@
     fieldName,
     isChartComponent,
     parsePage,
+    pageListEntry,
     resolveDataSourceFields,
     flattenPageComponents,
     type ChartComponent,
@@ -58,6 +59,7 @@
   } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
   import FilterBar from './filters/FilterBar.svelte';
+  import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
   import {
     cascadeConstraints,
     clearDependentUpdates,
@@ -965,7 +967,20 @@
       class="page-content"
       data-page-layout-form={layoutForm}
     >
-    {#if pageState.capabilities.filters && hasVisibleFilters(declarations)}
+    {#if layoutForm === 'dashboard'}
+      <DashboardToolbar
+        title={pageListEntry(readyPage).title}
+        {declarations}
+        values={filterValues}
+        candidates={dimensionCandidates}
+        ondimension={writeDimension}
+        ontimerange={writeTimeRange}
+        ontimepoint={writeTimePoint}
+        onboolean={writeBoolean}
+        onnumberrange={writeNumberRange}
+        onsearch={writeSearch}
+      />
+    {:else if pageState.capabilities.filters && hasVisibleFilters(declarations)}
       <FilterBar
         {declarations}
         values={filterValues}
@@ -1106,8 +1121,9 @@
      消费点跨包时(色板、卡片标题、筛选控件铬)名字仍以这里为真源,
      不允许任一消费方改自己的缺省字面量来「就地调档」。 */
   .page-content.layout-dashboard {
-    --mc-page-content-padding-block-start: 16px;
+    --mc-page-content-padding-block-start: 0;
     --mc-page-content-padding-inline: 24px;
+    --mc-page-sections-margin-top: 16px;
     --mc-section-card-padding: 16px 20px 20px;
     --mc-section-card-title-margin: 0 0 12px;
     --mc-section-card-title-color: var(--mc-color-report-text);
@@ -1211,6 +1227,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
+    margin-top: var(--mc-page-sections-margin-top, 0);
   }
   @media (max-width: 1050px) {
     .page-content {

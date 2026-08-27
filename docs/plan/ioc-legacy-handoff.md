@@ -246,12 +246,15 @@ rg -n "graphql|/gql|query \{|variables|operationName" --no-ignore -g '!*.map'
 | C1-7 | `cloud_class_code`（产业） | 筛选器变量名叫 `lv2ProdRdTeam`（产业二级团队），显示列叫 `cloud_class` | code 全集与对应中文；以及"产业二级团队"和 `cloud_class` 是不是同一套编码 | `lv2ProdRdTeam`、`cloud_class_code` |
 | C1-8 | 行业 `sub_industry_level1_code` / `sub_industry_level2_code` | 清单页的行业筛选是**级联**（选了一级才能选二级），WHERE 里两级分别 `IN` | **完整的两级树**：一级 code → 中文名 → 其下属的二级 code 列表。从属关系是这一项的重点 | `showIndustrySelect`、`sub_industry_level1_code`、`industry` |
 | C1-9 | `bg_type_code` / `bg_type` | 出现在清单页的查询字段里，但没有对应的展示列 | 取值集合，以及这个字段现在到底有没有在用 | `bg_type_code` |
-| C1-10 | 机会点三档构成（概览页顶部卡） | 类别名取自设计稿逐字值：`卓越` / `战略` / `核心`。我们已在 `pages/ioc-project-overview.json` 用合成字段 `tier-excellent-cnt` / `tier-strategic-cnt` / `tier-core-cnt` 占位 | **这三档在四份规格里零命中**。请给出真实的字段名与 code→中文映射，以及它和 `public_cloud_na_level`（C1-6）是不是同一套编码 | `卓越`、`战略`、`核心`、`naType` |
-| C1-11 | 项目分层分级四档（概览页顶部卡） | 类别名取自设计稿逐字值：`公司特级` / `公司级` / `地区部级` / `代表处级`。我们已用合成字段 `level-company-premier-cnt` / `level-company-cnt` / `level-region-dept-cnt` / `level-rep-office-cnt` 占位 | 真实字段名与取值。**与 C1-4 直接相关**：那一项里 `should_project_level_name` 的示例值是 `"L1"`，与这四个中文档位对不上，请一并说明 | `projectLevelItems`、`project_initiation_level` |
+| C1-10 | 机会点三档构成（概览页顶部卡） | 类别名取自设计稿逐字值：`卓越` / `战略` / `核心`。`opportunity-tiers` 内联页面数据源用合成的 `tier-name` / `tier-cnt` / `bidding-amount` 行占位 | **这三档在四份规格里零命中**。请给出真实的字段名、数量和预签金额口径、code→中文映射，以及它和 `public_cloud_na_level`（C1-6）是不是同一套编码 | `卓越`、`战略`、`核心`、`naType` |
+| C1-11 | 项目分层分级四档（概览页顶部卡） | 类别名取自设计稿逐字值：`公司特级` / `公司级` / `地区部级` / `代表处级`。`project-levels` 内联页面数据源用合成的 `level-name` / `level-cnt` / `bidding-amount` 行占位 | 真实字段名、数量和预签金额口径及取值。**与 C1-4 直接相关**：那一项里 `should_project_level_name` 的示例值是 `"L1"`，与这四个中文档位对不上，请一并说明 | `projectLevelItems`、`project_initiation_level` |
 | C1-12 | 复盘奖惩四档（概览页顶部卡） | 类别名取自设计稿逐字值：`金牌` / `银牌` / `红牌` / `黄牌`。我们已用合成字段 `medal-gold-cnt` / `medal-silver-cnt` / `medal-red-cnt` / `medal-yellow-cnt` 占位 | 真实字段名与判定口径（是复盘结果的评级，还是另一套奖惩流程？）。**四份规格里同样零命中** | `金牌`、`is_review_completed` |
-| C1-13 | 管道支撑率的四个分量 | 概览页现在用受控计算表达：`(target − stock − realized) / effective`，四个分量落在 `kpi-summary` 的 `pipeline-target` / `pipeline-stock` / `pipeline-realized` / `pipeline-effective` 上，全是合成值 | **真实口径**：这四个分量各自对应哪个字段？分母是"有效机会点"还是别的？零分母时业务上该显示什么（我们暂取空值） | `管道支撑率`、`pipeline` |
+| C1-13 | 管道支撑率 | 概览页暂用预计算的 `pipeline-support-rate` 和地图行 `support-rate` 合成值，不在页面中反推公式 | **真实口径**：服务端最终返回哪个字段、0–100 还是 0–1、各聚合层级如何计算、零分母显示什么 | `管道支撑率`、`pipeline` |
+| C1-14 | 立项率 / 分析会召开率 / 赢单率 / 复盘率 | 页面用 `ratio.scale: 100` 分别计算 `initiated-cnt / should-initiate-cnt`、`actual-analysis-meeting-cnt / planned-analysis-meeting-cnt`、`won-opportunity-cnt / resulted-opportunity-cnt`、`reviewed-cnt / should-review-cnt`，零分母返回空值；分子分母均为合成演示值 | 确认四组分子/分母的真实字段、聚合粒度和业务口径 | `立项率`、`分析会召开率`、`赢单率`、`复盘率` |
+| C1-15 | 地图年度费用与概览八列表字段 | `map-regions.yearly-fee`、`overview-by-office.rank` / `region-dept-name` / `analysis-meeting-rate` / `current-month-new-signed-amount` 是为设计展示补入的合成演示字段 | 给出真实字段名、金额单位、排名口径与分析会统计范围 | `年度费用`、`本月新增签单`、`排名` |
+| C1-16 | 详情六块叙事的两个合成展示字段 | `latest-analysis-meeting-display` 由主题/时间/结论合并，`risk-management-display` 由项目风险/求助事项合并；仅存在于当前内联页面数据源，不是未来 GraphQL 结果字段契约 | 确认真实 GraphQL 是否返回原有八个业务字段；若要由服务端提供展示文本，另行确定契约 | `latest_analysis_meeting_topic`、`project_risks`、`project_help_required` |
 
-> 上面 C1-10～C1-13 是 **IOC-S1 这一轮新增的合成字段**（`REQ-DEC-3`：本页 5 个数据源全是 `inline`，类别标签取设计稿逐字值、数值是合成的）。它们在 `pages/ioc-project-overview.json` 里一处集中，替换时只动那一个文件。
+> C1-10～C1-16 覆盖 IOC-S1 / IOC-S2 使用的合成演示字段。它们只服务当前内联页面数据源；接入 GraphQL 时应从真实结果字段契约重新映射，不能把这些占位字段当作后端既定接口。
 
 **另外请说明这些候选项是怎么来的**：硬编码常量数组、字典表、还是某个接口返回。如果是接口，请贴调用那段代码。这决定我们的筛选器候选项要怎么实现。
 

@@ -4,8 +4,13 @@
   import { resolveField } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
   import { MAP_SCALE_PROPERTY, readColorList } from '../../shared/chart-palette';
-  import { geoRegionName, mapOption, type MapSafeArea } from './options';
-  import { mapLegendLevels } from './legend';
+  import {
+    geoRegionName,
+    mapOption,
+    projectionRect,
+    type MapSafeArea
+  } from './options';
+  import { mapLegendFrameStyle, mapLegendLevels } from './legend';
   import { ensureBasemap, type BasemapMeta, type BasemapName } from './basemap';
 
   /**
@@ -78,6 +83,7 @@
    */
   let host = $state<HTMLElement | null>(null);
   let safeArea = $state<MapSafeArea | undefined>();
+  const projection = $derived(projectionRect(safeArea));
 
   /* 形态分档色与安全区共用这一个读样式锚点(见 shared/chart-palette.ts):
      两者都是经继承可见的自定义属性,只是分档色不随几何变化,读一次即定。 */
@@ -131,6 +137,18 @@
     schedule();
     const resizeObserver = new ResizeObserver(schedule);
     resizeObserver.observe(element);
+    /* RuntimeSection 把安全区写在 backdrop 单元格的 style 上。窗口 resize 时生产方
+       和消费方的回调没有先后保证：只听 window 可能先读到上一视口的四个值，且
+       display:contents 的 probe 本身不一定产生 ResizeObserver 事件。直接观察 IFC
+       生产节点的 style 变化，让 projection 与安全区落在同一轮更新。 */
+    const safeAreaSource = element.closest<HTMLElement>('[data-component]');
+    const mutationObserver = safeAreaSource
+      ? new MutationObserver(schedule)
+      : undefined;
+    mutationObserver?.observe(safeAreaSource!, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
     const onResize = () => schedule();
     window.addEventListener('resize', onResize);
 
@@ -138,6 +156,7 @@
       active = false;
       if (frame !== undefined) cancelAnimationFrame(frame);
       resizeObserver.disconnect();
+      mutationObserver?.disconnect();
       window.removeEventListener('resize', onResize);
     };
   });
@@ -151,34 +170,39 @@
     <!-- 图例贴在绘图区左下角(图表库自带那块视觉映射条原来的位置),所以
          这里要有一个定位参照物;它接手 EChart 原来占的那一格弹性空间,
          `.echart` 仍是 `flex: 1`,几何与加壳之前一致。 -->
-    <div class="map-frame">
+    <div
+      class="map-frame"
+      data-projection-square={projection ? String(projection.width === projection.height) : undefined}
+    >
       <EChart
         option={mapOption(
           data,
           chartProps,
           basemap.meta.centers,
-          safeArea,
+          projection,
           false,
           mapScale
         )}
         onitemclick={onregionclick ? handleClick : undefined}
       />
       {#if legendLevels}
-        <div class="map-legend">
-          {#if props.legend?.title}
-            <div class="legend-title">{props.legend.title}</div>
-          {/if}
-          <ul>
-            {#each legendLevels as level, levelIndex (levelIndex)}
-              <li>
-                <span
-                  class="legend-dot"
-                  style={level.color ? `background:${level.color};` : undefined}
-                ></span>
-                <span class="legend-label">{level.label}</span>
-              </li>
-            {/each}
-          </ul>
+        <div class="legend-frame" style={mapLegendFrameStyle(projection)}>
+          <div class="map-legend">
+            {#if props.legend?.title}
+              <div class="legend-title">{props.legend.title}</div>
+            {/if}
+            <ul>
+              {#each legendLevels as level, levelIndex (levelIndex)}
+                <li>
+                  <span
+                    class="legend-dot"
+                    style={level.color ? `background:${level.color};` : undefined}
+                  ></span>
+                  <span class="legend-label">{level.label}</span>
+                </li>
+              {/each}
+            </ul>
+          </div>
         </div>
       {/if}
     </div>
@@ -213,6 +237,13 @@
     flex: 1;
     flex-direction: column;
   }
+  .legend-frame {
+    position: absolute;
+    inset: 0;
+    min-width: 0;
+    min-height: 0;
+    pointer-events: none;
+  }
   .map-legend {
     position: absolute;
     bottom: 8px;
@@ -221,7 +252,6 @@
     min-width: 80px;
     flex-direction: column;
     gap: 4px;
-    pointer-events: none;
   }
   .legend-title {
     color: var(--mc-color-report-text, #191919);
@@ -256,5 +286,17 @@
     line-height: 18px;
     opacity: 0.9;
     white-space: nowrap;
+  }
+  @media (max-width: 760px) {
+    .legend-frame {
+      position: static;
+      inset: auto !important;
+      width: auto !important;
+      height: auto !important;
+      margin-top: 8px;
+    }
+    .map-legend {
+      position: static;
+    }
   }
 </style>

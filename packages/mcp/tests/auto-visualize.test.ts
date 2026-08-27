@@ -162,6 +162,12 @@ describe('自动可视化:硬闸拒绝(表驱动)', () => {
       shape: shapeOf(),
       type: 'aiSummary',
       reason: '不消费页面数据源'
+    },
+    {
+      name: '组合卡是纯容器，不能承载单个取数单元',
+      shape: shapeOf({ dimensionCount: 0, measureCount: 2, rowCount: 1 }),
+      type: 'compositeCard',
+      reason: '不消费页面数据源'
     }
   ];
 

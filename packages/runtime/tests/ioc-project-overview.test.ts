@@ -29,18 +29,18 @@ function loadPage(): Page {
 }
 
 describe('ioc-project-overview 骨架', () => {
-  it('声明 5.1，能力下限覆盖 Tab / gauge / 地图层级', () => {
+  it('声明 5.2，能力下限覆盖组合卡、分类明细、地图图例与 ratio.scale', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('5.1');
-    expect(requiredMinorVersion(document)).toBe(1);
-    expect(page.sections.flatMap((section) => section.components).map((item) => item.type)).toEqual(
-      expect.arrayContaining(['gauge', 'mapChart', 'tabContainer'])
-    );
+    expect(page.schemaVersion).toBe('5.2');
+    expect(requiredMinorVersion(document)).toBe(2);
   });
 
-  it('声明看板布局形态，指标卡与 Tab 表叠放在作为 backdrop 的地图之上', () => {
+  it('声明看板布局形态，三张组合卡与 Tab 叠放在作为 backdrop 的地图之上', () => {
     const page = loadPage();
     expect(page.layoutForm).toBe('dashboard');
+    expect(page.meta?.title).toBe('全球/区域作战地图');
+    expect(page.sections.flatMap((section) => section.components))
+      .not.toEqual(expect.arrayContaining([expect.objectContaining({ type: 'reportHeader' })]));
 
     const board = page.sections.find((section) => section.id === 'map-board');
     if (!board) throw new Error('缺少地图分区');
@@ -54,26 +54,56 @@ describe('ioc-project-overview 骨架', () => {
     const overlaid = board.components
       .filter((component) => component.layout.layer === undefined)
       .map((component) => component.id);
-    // 冻结基线 R1-1（2026-08-25 18:0x 修订：6 → 9 个单元格）的枚举与次序。
-    // 三档环形 / 四档环形 / 四档奖惩各占一个同级卡位——方案 B 已把设计稿那三张
-    // 复合卡压成指标带（EX-2），协议里也没有卡内嵌组件的入口，所以既有类型
-    // （pieChart(ring) / keyValuePanel）只能同级成卡位。
     expect(overlaid).toEqual([
       'kpi-opportunity-outline',
-      'opportunity-tier-ring',
-      'kpi-pipeline-rate',
       'kpi-initiation-management',
-      'project-level-ring',
       'kpi-review',
-      'review-medals',
       'overview-tabs'
     ]);
+
+    const composites = board.components.filter(
+      (component) => component.type === 'compositeCard'
+    );
+    expect(composites.map((component) => [component.id, component.layout.span])).toEqual([
+      ['kpi-opportunity-outline', 4],
+      ['kpi-initiation-management', 4],
+      ['kpi-review', 3]
+    ]);
+    expect(composites.map((component) => component.props.components.map((child) => child.type)))
+      .toEqual([
+        ['metricCard', 'pieChart', 'categoryBreakdown', 'gauge'],
+        ['metricCard', 'pieChart', 'categoryBreakdown', 'metricCard'],
+        ['metricCard', 'keyValuePanel']
+      ]);
+    expect(composites.map((component) => component.props.components.map((child) => child.props.variant)))
+      .toEqual([
+        ['compactStrip', 'compactRing', 'compactList', 'mini'],
+        ['compactStack', 'compactRing', 'compactList', 'compactStrip'],
+        ['compactStrip', 'counterStrip']
+      ]);
   });
 
-  it('管道支撑率是预计算字段，计算阶段没有 joinAggregate', () => {
+  it('四个比率由 ratio.scale 计算，管道支撑率仍是预计算字段', () => {
     const page = loadPage();
     const kpi = page.dataSources['kpi-summary'];
-    expect(kpi?.compute).toBeUndefined();
+    expect(kpi?.compute).toEqual([
+      expect.objectContaining({
+        op: 'ratio', output: 'project-initiation-rate', scale: 100,
+        onZeroDenominator: 'null'
+      }),
+      expect.objectContaining({
+        op: 'ratio', output: 'analysis-meeting-rate', scale: 100,
+        onZeroDenominator: 'null'
+      }),
+      expect.objectContaining({
+        op: 'ratio', output: 'win-rate', scale: 100,
+        onZeroDenominator: 'null'
+      }),
+      expect.objectContaining({
+        op: 'ratio', output: 'review-rate', scale: 100,
+        onZeroDenominator: 'null'
+      })
+    ]);
     expect(kpi?.source.type).toBe('inline');
     expect(kpi?.fields['pipeline-support-rate']?.type).toBe('number');
     for (const source of Object.values(page.dataSources)) {
@@ -84,7 +114,7 @@ describe('ioc-project-overview 骨架', () => {
     }
   });
 
-  it('编排后 KPI、地图与三张 Tab 表都就绪', () => {
+  it('编排后嵌套叶子的数据源都就绪且比率按百分数刻度产出', () => {
     const page = loadPage();
     let snapshots: PageDataSnapshots = new Map();
     orchestrate(page, {
@@ -99,10 +129,63 @@ describe('ioc-project-overview 骨架', () => {
       'map-regions',
       'overview-by-office',
       'top-initiated',
-      'lost-orders'
+      'lost-orders',
+      'opportunity-tiers',
+      'project-levels'
     ]) {
       expect(snapshots.get(sourceId)?.status, sourceId).toBe('ready');
     }
+    const kpi = snapshots.get('kpi-summary');
+    if (kpi?.status !== 'ready') throw new Error('KPI 未就绪');
+    expect(kpi.rows[0]).toMatchObject({
+      'project-initiation-rate': 42.857142857142854,
+      'analysis-meeting-rate': 86.25,
+      'win-rate': 61.53846153846154,
+      'review-rate': 64.58333333333334,
+      'pipeline-support-rate': 72.4
+    });
+  });
+
+  it('地图使用四档图例和年度费用 tooltip，概览表按设计结构为八列', () => {
+    const page = loadPage();
+    const board = page.sections.find((section) => section.id === 'map-board');
+    const map = board?.components.find((component) => component.type === 'mapChart');
+    if (!map || map.type !== 'mapChart') throw new Error('缺少地图');
+    expect(map.props.legend).toEqual({
+      title: '管道支持率',
+      bands: [
+        { label: '0', from: 0 },
+        { label: '1%~50%', from: 1 },
+        { label: '51%~80%', from: 51 },
+        { label: '80%以上', from: 80 }
+      ]
+    });
+    expect(map.props.tooltipFields?.map((field) => field.label)).toEqual([
+      '机会点数', '预签金额', '年度费用'
+    ]);
+
+    const tabs = board?.components.find((component) => component.type === 'tabContainer');
+    if (!tabs || tabs.type !== 'tabContainer') throw new Error('缺少 Tab 容器');
+    expect(tabs.props.tabs.map((tab) => tab.label)).toEqual([
+      '概览', 'TOP预签项目', '丢单项目'
+    ]);
+    const overview = tabs.props.tabs[0]?.component;
+    if (!overview || overview.type !== 'table') throw new Error('缺少概览表');
+    expect(overview.props.fit).toBe('container');
+    expect(overview.props.columns).toHaveLength(8);
+    expect(overview.props.columns.map((column) => column.kind === 'group' ? column.title : column.title))
+      .toEqual([
+        '排名',
+        '代表处',
+        '地区部',
+        '预签金额',
+        '管道支撑率',
+        '项目分析会召开率',
+        '本月新增签单',
+        '立项率'
+      ]);
+    expect(overview.props.columns.every((column) => column.kind === 'group' || column.width))
+      .toBe(true);
   });
 
   it('地图末级 navigate 携带筛选前缀，TOP 表 setParams 带 party-number', () => {

@@ -23,11 +23,36 @@ const props = { categoryField: 'region', valueField: 'amount' };
 
 interface PieSeries {
   data: { name: string; value: number; itemStyle?: { color?: string } }[];
+  radius?: string | [string, string];
+  center?: [string, string];
+  label?: { show?: boolean };
+  labelLine?: { show?: boolean };
 }
 
 function slices(option: unknown): PieSeries['data'] {
   return (option as { series: PieSeries[] }).series[0]!.data;
 }
+
+function series(option: unknown): PieSeries {
+  return (option as { series: PieSeries[] }).series[0]!;
+}
+
+describe('pieOption · compactRing', () => {
+  it('紧凑环图扩大外环并关闭外置标签，缺省饼图语义保持', () => {
+    expect(series(pieOption(data, { ...props, variant: 'compactRing' }))).toMatchObject({
+      radius: ['58%', '82%'],
+      center: ['50%', '50%'],
+      label: { show: false },
+      labelLine: { show: false }
+    });
+
+    expect(series(pieOption(data, props))).toMatchObject({
+      radius: '72%',
+      label: { show: true },
+      labelLine: { show: true }
+    });
+  });
+});
 
 describe('pieOption · 形态类别色板', () => {
   it('色板缺席时扇区不带 itemStyle,取图表库内置色', () => {

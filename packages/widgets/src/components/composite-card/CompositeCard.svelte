@@ -46,8 +46,10 @@
        所以线位与间距是同一个量,不能各写一份。 */
     --composite-card-gap: 12px;
 
+    box-sizing: border-box;
     display: flex;
     min-width: 0;
+    min-height: 280px;
     flex: 1;
     flex-direction: column;
     gap: var(--composite-card-gap);
@@ -79,6 +81,13 @@
     line-height: var(--mc-card-title-line-height, 24px);
   }
   .composite-grid {
+    /* 满宽 compactSummary 的指标组按设计横排；窄卡由 MetricCard 自己的
+       容器查询退回纵排。量只在组合卡作用域下发，不影响报表顶层指标卡。 */
+    --mc-compact-summary-flow: column;
+    --mc-compact-summary-row-columns: minmax(0, 1fr);
+    --mc-metric-panel-min-height: 60px;
+    --mc-gauge-dial-size: 64px;
+
     display: grid;
     min-width: 0;
     flex: 1;
@@ -88,7 +97,7 @@
        定高就会把它们压成零高。分区单元格靠 `.cell`/`.chart-cell` 的 min-height
        解决同一件事,卡内的对应物就是这一行。取 90px——设计源里组合卡第一行的
        竖分隔线正是 `h-[90px]`,行装得下就照内容长。 */
-    grid-auto-rows: minmax(90px, auto);
+    grid-auto-rows: minmax(60px, auto);
     gap: var(--composite-card-gap);
   }
   .composite-slot {

@@ -18,6 +18,7 @@ export const gaugeComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        variant: z.literal('mini').optional(),
         valueField: fieldBindingZ,
         min: z.number().optional(),
         max: z.number().positive().optional(),

@@ -34,10 +34,30 @@ export interface MapSafeArea {
 }
 
 /**
+ * 地图内容投影矩形。它与 safeArea 使用同一坐标系，但已经归一为居中正方形；
+ * ECharts option 与 DOM 图例只消费这一份结果，避免各自重算后漂移。
+ */
+export interface MapProjectionRect extends MapSafeArea {}
+
+/** safeArea → 以其中心为中心、边长取短边的正方形投影；无正面积时回退。 */
+export function projectionRect(
+  safeArea: MapSafeArea | undefined
+): MapProjectionRect | undefined {
+  if (!safeArea || safeArea.width <= 0 || safeArea.height <= 0) return undefined;
+  const size = Math.min(safeArea.width, safeArea.height);
+  return {
+    x: safeArea.x + (safeArea.width - size) / 2,
+    y: safeArea.y + (safeArea.height - size) / 2,
+    width: size,
+    height: size
+  };
+}
+
+/**
  * 地图:nameField 的值定位底图区域,valueField 驱动着色;
  * 散点叠加坐标取底图资产的区域中心点(centers,见 basemap.ts)。
  *
- * `safeArea` 给出时把底图投影进该矩形,缺席即全容器渲染(退回路径)。
+ * `projection` 给出时把底图投影进该正方形,缺席即全容器渲染(退回路径)。
  * `compact` 是档位标记而不是视口判断——关掉散点文字标签,由调用方决定档位。
  *
  * `scale` 是形态分档色,色列**从高档到低档**;缺席即连续渐变(报表形态的既有取值)。
@@ -46,7 +66,7 @@ export function mapOption(
   data: MainDataSlots,
   props: MapChartProps,
   centers: ReadonlyMap<string, [number, number]>,
-  safeArea?: MapSafeArea,
+  projection?: MapProjectionRect,
   compact = false,
   scale?: ColorList
 ): EChartsOption {
@@ -70,18 +90,15 @@ export function mapOption(
     return [{ name: rawName, value: [...cp, finiteNumber(row[value.field]) ?? 0] }];
   });
 
-  // 宽或高非正视为无解,与 backdropSafeArea 返回 null 走同一条退回路径
-  const projected =
-    safeArea && safeArea.width > 0 && safeArea.height > 0
-      ? {
-          layoutCenter: [
-            `${safeArea.x + safeArea.width / 2}px`,
-            `${safeArea.y + safeArea.height / 2}px`
-          ] as [string, string],
-          // 取短边:保证底图内容整体落在矩形内,不越出去被浮层压住
-          layoutSize: Math.min(safeArea.width, safeArea.height)
-        }
-      : undefined;
+  const projected = projection && projection.width > 0 && projection.height > 0
+    ? {
+        layoutCenter: [
+          `${projection.x + projection.width / 2}px`,
+          `${projection.y + projection.height / 2}px`
+        ] as [string, string],
+        layoutSize: projection.width
+      }
+    : undefined;
 
   /* 档位既是图例的档,也是着色的档:声明了 `legend` 就按档位取色,不再把取值
      区间均分。没有分档色板(报表形态)时档位无色可配,退回原来的连续渐变。 */

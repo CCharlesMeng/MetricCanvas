@@ -1,6 +1,9 @@
 import type { TableColumnNode } from '@metriccanvas/page';
 import { describe, expect, it } from 'vitest';
-import { buildTableColumnLayout } from '../src/components/table/columns';
+import {
+  buildTableColumnLayout,
+  shouldWrapTableHeaders
+} from '../src/components/table/columns';
 
 describe('buildTableColumnLayout', () => {
   it('兼容存量 flat columns,生成单行表头与同序叶子', () => {
@@ -99,5 +102,14 @@ describe('buildTableColumnLayout', () => {
     );
 
     expect(layout.headerRows[0][0].title).toBe('Tokens消耗量');
+  });
+});
+
+describe('shouldWrapTableHeaders', () => {
+  it('只让高列数的 container 表格换行，保护存量紧凑报表的单行表头', () => {
+    expect(shouldWrapTableHeaders('container', 8)).toBe(true);
+    expect(shouldWrapTableHeaders('container', 5)).toBe(false);
+    expect(shouldWrapTableHeaders('content', 8)).toBe(false);
+    expect(shouldWrapTableHeaders(undefined, 8)).toBe(false);
   });
 });

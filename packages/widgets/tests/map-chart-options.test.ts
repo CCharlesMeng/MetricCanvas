@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { MainDataSlots } from '../src/shared/component-data';
-import { geoRegionName, mapOption } from '../src/components/map-chart/options';
+import {
+  geoRegionName,
+  mapOption,
+  projectionRect
+} from '../src/components/map-chart/options';
 
 const data: MainDataSlots = {
   main: {
@@ -261,14 +265,36 @@ describe('mapOption · 散点文字标签开关(AT-IOC-S1-008a)', () => {
   });
 });
 
-describe('mapOption · 投影到安全区(AT-IOC-S1-002)', () => {
-  it('给 safeArea 时 geo 产出 layoutCenter 与 layoutSize', () => {
-    const option = mapOption(regionDeptData, regionDeptProps, worldCenters, {
-      x: 100,
-      y: 50,
-      width: 800,
-      height: 400
-    }) as unknown as {
+describe('projectionRect / mapOption · 投影到安全区(AT-IOC-S3-006)', () => {
+  it.each([
+    [
+      '宽矩形',
+      { x: 100, y: 50, width: 800, height: 400 },
+      { x: 300, y: 50, width: 400, height: 400 }
+    ],
+    [
+      '高矩形',
+      { x: 20, y: 40, width: 300, height: 700 },
+      { x: 20, y: 240, width: 300, height: 300 }
+    ],
+    [
+      '正方形',
+      { x: 12, y: 24, width: 320, height: 320 },
+      { x: 12, y: 24, width: 320, height: 320 }
+    ]
+  ])('%s 归一成以 safeArea 为中心的短边正方形', (_label, safeArea, expected) => {
+    expect(projectionRect(safeArea)).toEqual(expected);
+  });
+
+  it('零宽、零高或缺席时统一返回空结果', () => {
+    expect(projectionRect(undefined)).toBeUndefined();
+    expect(projectionRect({ x: 0, y: 0, width: 0, height: 400 })).toBeUndefined();
+    expect(projectionRect({ x: 0, y: 0, width: 400, height: 0 })).toBeUndefined();
+  });
+
+  it('给 projection rectangle 时 geo 产出同源 layoutCenter 与 layoutSize', () => {
+    const projection = projectionRect({ x: 100, y: 50, width: 800, height: 400 });
+    const option = mapOption(regionDeptData, regionDeptProps, worldCenters, projection) as unknown as {
       geo: { layoutCenter?: [string, string]; layoutSize?: number };
     };
 
@@ -277,7 +303,7 @@ describe('mapOption · 投影到安全区(AT-IOC-S1-002)', () => {
     expect(option.geo.layoutSize).toBe(400);
   });
 
-  it('safeArea 缺席时不产出投影字段,退回全容器渲染', () => {
+  it('projection rectangle 缺席时不产出投影字段,退回全容器渲染', () => {
     const option = mapOption(regionDeptData, regionDeptProps, worldCenters) as unknown as {
       geo: Record<string, unknown>;
     };

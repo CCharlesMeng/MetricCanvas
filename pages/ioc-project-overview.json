@@ -1,9 +1,10 @@
 {
-  "schemaVersion": "5.1",
+  "schemaVersion": "5.2",
   "id": "ioc-project-overview",
   "layoutForm": "dashboard",
   "meta": {
-    "description": "IOC 作战地图概览页。数据源全部是 inline，数据行是依据页面规格编造的合成数据，不来自任何真实系统，不得用于业务判断；管道支撑率、立项率、分析会召开率、赢单率与复盘率都已按口径预计算后写入字段，不在本页实现 joinAggregate。设计稿中嵌在指标卡内部的项目等级/立项级别环形构成与「及时奖惩」金银红黄牌在页面规格的 14 个数据源里没有对应取数，本轮不发明数据形状，故未呈现；地图的分档图例与散点 tooltip 扩展字段超出 mapChart 当前属性闭集，同样留待后续。GraphQL 通路到位后只替换数据源的 source 段与筛选绑定，页面结构、筛选器、地图下钻、Tab 表与跨页导航全部复用。"
+    "title": "全球/区域作战地图",
+    "description": "IOC 作战地图概览页。页面结构按有效设计源收口为地图 backdrop、三张组合卡与总览 Tab；数据源全部是 inline，数据行与新增分类金额均为合成演示数据，不来自真实系统，不得用于业务判断。立项率、分析会召开率、赢单率与复盘率由受控 ratio 算子按 0–100 刻度计算，管道支撑率仍是预计算字段，不引入 joinAggregate。六个未知区域编码保留 TBD-*；项目等级筛选缺真实枚举与维度绑定，本轮不渲染空控件。GraphQL、真实编码、枚举、认证与权限到位后另行对接。"
   },
   "filters": [
     {
@@ -170,6 +171,36 @@
           "role": "measure",
           "label": "黄牌数",
           "defaultFormat": "number-grouped"
+        },
+        "should-initiate-cnt": {
+          "type": "number",
+          "role": "measure",
+          "label": "应立项",
+          "defaultFormat": "number-grouped"
+        },
+        "planned-analysis-meeting-cnt": {
+          "type": "number",
+          "role": "measure",
+          "label": "计划召开分析会",
+          "defaultFormat": "number-grouped"
+        },
+        "actual-analysis-meeting-cnt": {
+          "type": "number",
+          "role": "measure",
+          "label": "实际召开分析会",
+          "defaultFormat": "number-grouped"
+        },
+        "resulted-opportunity-cnt": {
+          "type": "number",
+          "role": "measure",
+          "label": "已出结果机会点",
+          "defaultFormat": "number-grouped"
+        },
+        "won-opportunity-cnt": {
+          "type": "number",
+          "role": "measure",
+          "label": "赢单机会点",
+          "defaultFormat": "number-grouped"
         }
       },
       "source": {
@@ -185,19 +216,54 @@
             "pipeline-support-rate": 72.4,
             "initiated-cnt": 36,
             "initiated-amount": 510000000,
-            "project-initiation-rate": 42.8,
-            "analysis-meeting-rate": 86.3,
-            "win-rate": 61.5,
             "should-review-cnt": 48,
             "reviewed-cnt": 31,
-            "review-rate": 64.6,
             "medal-gold-cnt": 12,
             "medal-silver-cnt": 20,
             "medal-red-cnt": 5,
-            "medal-yellow-cnt": 9
+            "medal-yellow-cnt": 9,
+            "should-initiate-cnt": 84,
+            "planned-analysis-meeting-cnt": 80,
+            "actual-analysis-meeting-cnt": 69,
+            "resulted-opportunity-cnt": 65,
+            "won-opportunity-cnt": 40
           }
         ]
-      }
+      },
+      "compute": [
+        {
+          "op": "ratio",
+          "numerator": "initiated-cnt",
+          "denominator": "should-initiate-cnt",
+          "output": "project-initiation-rate",
+          "onZeroDenominator": "null",
+          "scale": 100
+        },
+        {
+          "op": "ratio",
+          "numerator": "actual-analysis-meeting-cnt",
+          "denominator": "planned-analysis-meeting-cnt",
+          "output": "analysis-meeting-rate",
+          "onZeroDenominator": "null",
+          "scale": 100
+        },
+        {
+          "op": "ratio",
+          "numerator": "won-opportunity-cnt",
+          "denominator": "resulted-opportunity-cnt",
+          "output": "win-rate",
+          "onZeroDenominator": "null",
+          "scale": 100
+        },
+        {
+          "op": "ratio",
+          "numerator": "reviewed-cnt",
+          "denominator": "should-review-cnt",
+          "output": "review-rate",
+          "onZeroDenominator": "null",
+          "scale": 100
+        }
+      ]
     },
     "map-regions": {
       "fields": {
@@ -238,6 +304,13 @@
           "currency": "CNY",
           "label": "预签金额",
           "defaultFormat": "cny-adaptive"
+        },
+        "yearly-fee": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "年度费用",
+          "defaultFormat": "cny-adaptive"
         }
       },
       "source": {
@@ -250,7 +323,8 @@
             "parent-code": "",
             "support-rate": 64.7,
             "opportunity-cnt": 24,
-            "bidding-amount": 150000000
+            "bidding-amount": 150000000,
+            "yearly-fee": 202500000
           },
           {
             "map-level": "geo",
@@ -259,7 +333,8 @@
             "parent-code": "",
             "support-rate": 61.2,
             "opportunity-cnt": 28,
-            "bidding-amount": 160000000
+            "bidding-amount": 160000000,
+            "yearly-fee": 216000000
           },
           {
             "map-level": "geo",
@@ -268,7 +343,8 @@
             "parent-code": "",
             "support-rate": 39.4,
             "opportunity-cnt": 7,
-            "bidding-amount": 26000000
+            "bidding-amount": 26000000,
+            "yearly-fee": 35100000
           },
           {
             "map-level": "geo",
@@ -277,7 +353,8 @@
             "parent-code": "",
             "support-rate": 83.2,
             "opportunity-cnt": 18,
-            "bidding-amount": 210000000
+            "bidding-amount": 210000000,
+            "yearly-fee": 283500000
           },
           {
             "map-level": "geo",
@@ -286,7 +363,8 @@
             "parent-code": "",
             "support-rate": 72.4,
             "opportunity-cnt": 80,
-            "bidding-amount": 600000000
+            "bidding-amount": 600000000,
+            "yearly-fee": 810000000
           },
           {
             "map-level": "geo",
@@ -295,7 +373,8 @@
             "parent-code": "",
             "support-rate": 55.2,
             "opportunity-cnt": 14,
-            "bidding-amount": 76000000
+            "bidding-amount": 76000000,
+            "yearly-fee": 102600000
           },
           {
             "map-level": "geo",
@@ -304,7 +383,8 @@
             "parent-code": "",
             "support-rate": 47.9,
             "opportunity-cnt": 10,
-            "bidding-amount": 44000000
+            "bidding-amount": 44000000,
+            "yearly-fee": 59400000
           },
           {
             "map-level": "geo",
@@ -313,7 +393,8 @@
             "parent-code": "",
             "support-rate": 44.1,
             "opportunity-cnt": 11,
-            "bidding-amount": 52000000
+            "bidding-amount": 52000000,
+            "yearly-fee": 70200000
           },
           {
             "map-level": "region-dept",
@@ -322,7 +403,8 @@
             "parent-code": "R99",
             "support-rate": 68.1,
             "opportunity-cnt": 22,
-            "bidding-amount": 180000000
+            "bidding-amount": 180000000,
+            "yearly-fee": 243000000
           },
           {
             "map-level": "region-dept",
@@ -331,16 +413,18 @@
             "parent-code": "R99",
             "support-rate": 81.5,
             "opportunity-cnt": 30,
-            "bidding-amount": 260000000
+            "bidding-amount": 260000000,
+            "yearly-fee": 351000000
           },
           {
             "map-level": "region-dept",
             "region-name": "广东",
             "region-code": "CN-GD",
             "parent-code": "R99",
-            "support-rate": 63.0,
+            "support-rate": 63,
             "opportunity-cnt": 28,
-            "bidding-amount": 160000000
+            "bidding-amount": 160000000,
+            "yearly-fee": 216000000
           },
           {
             "map-level": "office",
@@ -349,7 +433,8 @@
             "parent-code": "CN-BJ",
             "support-rate": 68.1,
             "opportunity-cnt": 12,
-            "bidding-amount": 90000000
+            "bidding-amount": 90000000,
+            "yearly-fee": 121500000
           }
         ]
       }
@@ -384,6 +469,30 @@
           "role": "measure",
           "label": "立项率",
           "defaultFormat": "percent-1"
+        },
+        "rank": {
+          "type": "number",
+          "role": "measure",
+          "label": "排名",
+          "defaultFormat": "number"
+        },
+        "region-dept-name": {
+          "type": "string",
+          "role": "dimension",
+          "label": "地区部"
+        },
+        "analysis-meeting-rate": {
+          "type": "number",
+          "role": "measure",
+          "label": "项目分析会召开率",
+          "defaultFormat": "percent-1"
+        },
+        "current-month-new-signed-amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "本月新增签单",
+          "defaultFormat": "cny-adaptive"
         }
       },
       "source": {
@@ -394,21 +503,33 @@
             "rep-office-code": "SH-01",
             "bidding-amount": 260000000,
             "support-rate": 81.5,
-            "project-initiation-rate": 42.0
+            "project-initiation-rate": 42,
+            "rank": 1,
+            "region-dept-name": "中国地区部",
+            "analysis-meeting-rate": 91.2,
+            "current-month-new-signed-amount": 32000000
           },
           {
             "rep-office-name": "北京代表处",
             "rep-office-code": "BJ-01",
             "bidding-amount": 180000000,
             "support-rate": 68.1,
-            "project-initiation-rate": 35.5
+            "project-initiation-rate": 35.5,
+            "rank": 2,
+            "region-dept-name": "中国地区部",
+            "analysis-meeting-rate": 84.5,
+            "current-month-new-signed-amount": 18000000
           },
           {
             "rep-office-name": "广州代表处",
             "rep-office-code": "GD-01",
             "bidding-amount": 160000000,
-            "support-rate": 63.0,
-            "project-initiation-rate": 28.4
+            "support-rate": 63,
+            "project-initiation-rate": 28.4,
+            "rank": 3,
+            "region-dept-name": "中国地区部",
+            "analysis-meeting-rate": 79.8,
+            "current-month-new-signed-amount": 12000000
           }
         ]
       }
@@ -619,6 +740,13 @@
           "role": "measure",
           "label": "机会点数",
           "defaultFormat": "number-grouped"
+        },
+        "bidding-amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "预签金额",
+          "defaultFormat": "cny-adaptive"
         }
       },
       "source": {
@@ -626,15 +754,18 @@
         "rows": [
           {
             "tier-name": "卓越",
-            "tier-cnt": 42
+            "tier-cnt": 42,
+            "bidding-amount": 360000000
           },
           {
             "tier-name": "战略",
-            "tier-cnt": 78
+            "tier-cnt": 78,
+            "bidding-amount": 320000000
           },
           {
             "tier-name": "核心",
-            "tier-cnt": 60
+            "tier-cnt": 60,
+            "bidding-amount": 180000000
           }
         ]
       }
@@ -651,6 +782,13 @@
           "role": "measure",
           "label": "项目数",
           "defaultFormat": "number-grouped"
+        },
+        "bidding-amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "预签金额",
+          "defaultFormat": "cny-adaptive"
         }
       },
       "source": {
@@ -658,45 +796,29 @@
         "rows": [
           {
             "level-name": "公司特级",
-            "level-cnt": 6
+            "level-cnt": 6,
+            "bidding-amount": 120000000
           },
           {
             "level-name": "公司级",
-            "level-cnt": 18
+            "level-cnt": 18,
+            "bidding-amount": 180000000
           },
           {
             "level-name": "地区部级",
-            "level-cnt": 34
+            "level-cnt": 34,
+            "bidding-amount": 130000000
           },
           {
             "level-name": "代表处级",
-            "level-cnt": 52
+            "level-cnt": 52,
+            "bidding-amount": 80000000
           }
         ]
       }
     }
   },
   "sections": [
-    {
-      "id": "header",
-      "container": "plain",
-      "components": [
-        {
-          "id": "overview-header",
-          "type": "reportHeader",
-          "layout": {
-            "span": 12
-          },
-          "props": {
-            "title": "全球/区域作战地图",
-            "asOf": {
-              "label": "数据月份",
-              "value": "202604"
-            }
-          }
-        }
-      ]
-    },
     {
       "id": "map-board",
       "container": "plain",
@@ -755,42 +877,48 @@
               "北京": "北京市",
               "上海": "上海市",
               "广东": "广东省"
-            }
-          }
-        },
-        {
-          "id": "kpi-opportunity-outline",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "kpi-summary"
-          },
-          "props": {
-            "title": "机会点概况",
-            "variant": "compactSummary",
-            "rows": [
+            },
+            "legend": {
+              "title": "管道支持率",
+              "bands": [
+                {
+                  "label": "0",
+                  "from": 0
+                },
+                {
+                  "label": "1%~50%",
+                  "from": 1
+                },
+                {
+                  "label": "51%~80%",
+                  "from": 51
+                },
+                {
+                  "label": "80%以上",
+                  "from": 80
+                }
+              ]
+            },
+            "tooltipFields": [
               {
                 "label": "机会点数",
-                "unit": "个",
-                "valueField": {
+                "field": {
                   "data": "main",
                   "field": "opportunity-cnt",
                   "format": "number-grouped"
                 }
               },
               {
-                "label": "总预签金额",
-                "valueField": {
+                "label": "预签金额",
+                "field": {
                   "data": "main",
                   "field": "bidding-amount",
                   "format": "cny-adaptive"
                 }
               },
               {
-                "label": "年度销售预测",
-                "valueField": {
+                "label": "年度费用",
+                "field": {
                   "data": "main",
                   "field": "yearly-fee",
                   "format": "cny-adaptive"
@@ -800,184 +928,379 @@
           }
         },
         {
-          "id": "opportunity-tier-ring",
-          "type": "pieChart",
+          "id": "kpi-opportunity-outline",
+          "type": "compositeCard",
           "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "opportunity-tiers"
+            "span": 4
           },
           "props": {
-            "title": "机会点构成",
-            "categoryField": "tier-name",
-            "valueField": "tier-cnt",
-            "ring": "60%"
-          }
-        },
-        {
-          "id": "kpi-pipeline-rate",
-          "type": "gauge",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "kpi-summary"
-          },
-          "props": {
-            "title": "年度管道支撑率",
-            "valueField": {
-              "data": "main",
-              "field": "pipeline-support-rate",
-              "format": "percent-1"
-            },
-            "min": 0,
-            "max": 100
+            "title": "机会点概况",
+            "dividers": true,
+            "components": [
+              {
+                "id": "opportunity-summary-metrics",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+                "props": {
+                "variant": "compactStrip",
+                  "showTrendArrows": true,
+                  "rows": [
+                    {
+                      "label": "机会点数",
+                      "unit": "个",
+                      "valueField": {
+                        "data": "main",
+                        "field": "opportunity-cnt",
+                        "format": "number-grouped"
+                      },
+                      "changes": [
+                        {
+                          "label": "较上月",
+                          "field": {
+                            "data": "main",
+                            "field": "opportunity-cnt-mom",
+                            "format": "number"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "label": "总预签金额",
+                      "valueField": {
+                        "data": "main",
+                        "field": "bidding-amount",
+                        "format": "cny-adaptive"
+                      },
+                      "changes": [
+                        {
+                          "label": "较上月",
+                          "field": {
+                            "data": "main",
+                            "field": "bidding-amount-mom",
+                            "format": "cny-adaptive"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "label": "年度销售预测",
+                      "valueField": {
+                        "data": "main",
+                        "field": "yearly-fee",
+                        "format": "cny-adaptive"
+                      },
+                      "changes": [
+                        {
+                          "label": "较上月",
+                          "field": {
+                            "data": "main",
+                            "field": "yearly-fee-mom",
+                            "format": "cny-adaptive"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "opportunity-tier-ring",
+                "type": "pieChart",
+                "layout": {
+                  "span": 3
+                },
+                "data": {
+                  "main": "opportunity-tiers"
+                },
+              "props": {
+                "variant": "compactRing",
+                "categoryField": "tier-name",
+                  "valueField": "tier-cnt",
+                  "ring": "60%",
+                  "labelLine": false
+                }
+              },
+              {
+                "id": "opportunity-tier-breakdown",
+                "type": "categoryBreakdown",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "opportunity-tiers"
+                },
+              "props": {
+                "variant": "compactList",
+                "categoryField": "tier-name",
+                  "categoryLabel": false,
+                  "swatches": true,
+                  "columns": [
+                    {
+                      "label": "机会点数",
+                      "field": {
+                        "data": "main",
+                        "field": "tier-cnt",
+                        "format": "number-grouped"
+                      }
+                    },
+                    {
+                      "label": "预签金额",
+                      "field": {
+                        "data": "main",
+                        "field": "bidding-amount",
+                        "format": "cny-adaptive"
+                      }
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "kpi-pipeline-rate",
+                "type": "gauge",
+                "layout": {
+                  "span": 3
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+              "props": {
+                "variant": "mini",
+                "title": "年度管道支撑率",
+                  "valueField": {
+                    "data": "main",
+                    "field": "pipeline-support-rate",
+                    "format": "percent-1"
+                  },
+                  "min": 0,
+                  "max": 100
+                }
+              }
+            ]
           }
         },
         {
           "id": "kpi-initiation-management",
-          "type": "metricCard",
+          "type": "compositeCard",
           "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "kpi-summary"
+            "span": 4
           },
           "props": {
             "title": "项目分层分级管理",
-            "variant": "compactSummary",
-            "rows": [
+            "dividers": true,
+            "components": [
               {
-                "label": "已立项",
-                "unit": "个",
-                "valueField": {
-                  "data": "main",
-                  "field": "initiated-cnt",
-                  "format": "number-grouped"
+                "id": "initiation-summary",
+                "type": "metricCard",
+                "layout": {
+                  "span": 3
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+                "props": {
+                "variant": "compactStack",
+                  "rows": [
+                    {
+                      "label": "已立项",
+                      "unit": "个",
+                      "valueField": {
+                        "data": "main",
+                        "field": "initiated-cnt",
+                        "format": "number-grouped"
+                      }
+                    },
+                    {
+                      "label": "预签金额",
+                      "valueField": {
+                        "data": "main",
+                        "field": "initiated-amount",
+                        "format": "cny-adaptive"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "label": "预签金额",
-                "valueField": {
-                  "data": "main",
-                  "field": "initiated-amount",
-                  "format": "cny-adaptive"
+                "id": "project-level-ring",
+                "type": "pieChart",
+                "layout": {
+                  "span": 3
+                },
+                "data": {
+                  "main": "project-levels"
+                },
+              "props": {
+                "variant": "compactRing",
+                "categoryField": "level-name",
+                  "valueField": "level-cnt",
+                  "ring": "60%",
+                  "labelLine": false
                 }
               },
               {
-                "label": "立项率",
-                "valueField": {
-                  "data": "main",
-                  "field": "project-initiation-rate",
-                  "format": "percent-1"
+                "id": "project-level-breakdown",
+                "type": "categoryBreakdown",
+                "layout": {
+                  "span": 6
+                },
+                "data": {
+                  "main": "project-levels"
+                },
+              "props": {
+                "variant": "compactList",
+                "categoryField": "level-name",
+                  "categoryLabel": false,
+                  "swatches": true,
+                  "columns": [
+                    {
+                      "label": "机会点数",
+                      "field": {
+                        "data": "main",
+                        "field": "level-cnt",
+                        "format": "number-grouped"
+                      }
+                    },
+                    {
+                      "label": "预签金额",
+                      "field": {
+                        "data": "main",
+                        "field": "bidding-amount",
+                        "format": "cny-adaptive"
+                      }
+                    }
+                  ]
                 }
               },
               {
-                "label": "项目分析会召开率",
-                "valueField": {
-                  "data": "main",
-                  "field": "analysis-meeting-rate",
-                  "format": "percent-1"
-                }
-              },
-              {
-                "label": "赢单率",
-                "valueField": {
-                  "data": "main",
-                  "field": "win-rate",
-                  "format": "percent-1"
+                "id": "project-rates",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+                "props": {
+                "variant": "compactStrip",
+                  "rows": [
+                    {
+                      "label": "立项率",
+                      "valueField": {
+                        "data": "main",
+                        "field": "project-initiation-rate",
+                        "format": "percent-1"
+                      }
+                    },
+                    {
+                      "label": "项目分析会召开率",
+                      "valueField": {
+                        "data": "main",
+                        "field": "analysis-meeting-rate",
+                        "format": "percent-1"
+                      }
+                    },
+                    {
+                      "label": "赢单率",
+                      "valueField": {
+                        "data": "main",
+                        "field": "win-rate",
+                        "format": "percent-1"
+                      }
+                    }
+                  ]
                 }
               }
             ]
-          }
-        },
-        {
-          "id": "project-level-ring",
-          "type": "pieChart",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "project-levels"
-          },
-          "props": {
-            "title": "项目分层分级",
-            "categoryField": "level-name",
-            "valueField": "level-cnt",
-            "ring": "60%"
           }
         },
         {
           "id": "kpi-review",
-          "type": "metricCard",
-          "layout": {
-            "span": 2
-          },
-          "data": {
-            "main": "kpi-summary"
-          },
-          "props": {
-            "title": "复盘总结",
-            "variant": "compactSummary",
-            "rows": [
-              {
-                "label": "应复盘",
-                "unit": "个",
-                "valueField": {
-                  "data": "main",
-                  "field": "should-review-cnt",
-                  "format": "number-grouped"
-                }
-              },
-              {
-                "label": "已复盘",
-                "unit": "个",
-                "valueField": {
-                  "data": "main",
-                  "field": "reviewed-cnt",
-                  "format": "number-grouped"
-                }
-              },
-              {
-                "label": "复盘率",
-                "valueField": {
-                  "data": "main",
-                  "field": "review-rate",
-                  "format": "percent-1"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "id": "review-medals",
-          "type": "keyValuePanel",
+          "type": "compositeCard",
           "layout": {
             "span": 3
           },
-          "data": {
-            "main": "kpi-summary"
-          },
           "props": {
-            "title": "奖惩",
-            "columns": 2,
-            "items": [
+            "title": "复盘总结",
+            "dividers": true,
+            "components": [
               {
-                "label": "金牌",
-                "field": "medal-gold-cnt"
+                "id": "review-summary",
+                "type": "metricCard",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+                "props": {
+                "variant": "compactStrip",
+                  "rows": [
+                    {
+                      "label": "应复盘",
+                      "unit": "个",
+                      "valueField": {
+                        "data": "main",
+                        "field": "should-review-cnt",
+                        "format": "number-grouped"
+                      }
+                    },
+                    {
+                      "label": "已复盘",
+                      "unit": "个",
+                      "valueField": {
+                        "data": "main",
+                        "field": "reviewed-cnt",
+                        "format": "number-grouped"
+                      }
+                    },
+                    {
+                      "label": "复盘率",
+                      "valueField": {
+                        "data": "main",
+                        "field": "review-rate",
+                        "format": "percent-1"
+                      }
+                    }
+                  ]
+                }
               },
               {
-                "label": "银牌",
-                "field": "medal-silver-cnt"
-              },
-              {
-                "label": "红牌",
-                "field": "medal-red-cnt"
-              },
-              {
-                "label": "黄牌",
-                "field": "medal-yellow-cnt"
+                "id": "review-medals",
+                "type": "keyValuePanel",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "kpi-summary"
+                },
+              "props": {
+                "title": "及时奖惩",
+                "variant": "counterStrip",
+                  "columns": 4,
+                  "items": [
+                    {
+                      "label": "金牌",
+                      "field": "medal-gold-cnt"
+                    },
+                    {
+                      "label": "银牌",
+                      "field": "medal-silver-cnt"
+                    },
+                    {
+                      "label": "红牌",
+                      "field": "medal-red-cnt"
+                    },
+                    {
+                      "label": "黄牌",
+                      "field": "medal-yellow-cnt"
+                    }
+                  ]
+                }
               }
             ]
           }
@@ -1004,11 +1327,24 @@
                     "main": "overview-by-office"
                   },
                   "props": {
+                    "fit": "container",
                     "columns": [
+                      {
+                        "field": "rank",
+                        "title": "排名",
+                        "align": "right",
+                        "width": 50
+                      },
                       {
                         "field": "rep-office-name",
                         "title": "代表处",
-                        "link": true
+                        "link": true,
+                        "width": 70
+                      },
+                      {
+                        "field": "region-dept-name",
+                        "title": "地区部",
+                        "width": 70
                       },
                       {
                         "field": {
@@ -1018,7 +1354,8 @@
                         },
                         "title": "预签金额",
                         "align": "right",
-                        "sortable": true
+                        "sortable": true,
+                        "width": 78
                       },
                       {
                         "field": {
@@ -1028,7 +1365,30 @@
                         },
                         "title": "管道支撑率",
                         "align": "right",
-                        "sortable": true
+                        "sortable": true,
+                        "width": 88
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "analysis-meeting-rate",
+                          "format": "percent-1"
+                        },
+                        "title": "项目分析会召开率",
+                        "align": "right",
+                        "sortable": true,
+                        "width": 128
+                      },
+                      {
+                        "field": {
+                          "data": "main",
+                          "field": "current-month-new-signed-amount",
+                          "format": "cny-adaptive"
+                        },
+                        "title": "本月新增签单",
+                        "align": "right",
+                        "sortable": true,
+                        "width": 105
                       },
                       {
                         "field": {
@@ -1038,7 +1398,8 @@
                         },
                         "title": "立项率",
                         "align": "right",
-                        "sortable": true
+                        "sortable": true,
+                        "width": 70
                       }
                     ],
                     "actions": [
@@ -1062,7 +1423,7 @@
               },
               {
                 "id": "pre-approval-project",
-                "label": "TOP已立项项目",
+                "label": "TOP预签项目",
                 "component": {
                   "id": "initiated-table",
                   "type": "table",

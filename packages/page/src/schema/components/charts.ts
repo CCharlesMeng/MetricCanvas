@@ -107,6 +107,7 @@ export const pieChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        variant: z.literal('compactRing').optional(),
         categoryField: fieldBindingZ,
         valueField: fieldBindingZ,
         ring: z.string().regex(/^\d{1,2}%$/).optional(),

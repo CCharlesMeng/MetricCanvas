@@ -152,13 +152,15 @@
 <style>
   .filter-bar {
     display: flex;
+    flex: var(--mc-filter-bar-flex, 0 1 auto);
     flex-wrap: wrap;
     align-items: center;
+    justify-content: var(--mc-filter-bar-justify-content, normal);
     gap: 20px;
-    padding: 12px 16px;
-    margin-bottom: 18px;
-    background: var(--mc-color-surface);
-    border: 1px solid var(--mc-color-border);
-    border-radius: var(--mc-radius-cell);
+    padding: var(--mc-filter-bar-padding, 12px 16px);
+    margin: var(--mc-filter-bar-margin, 0 0 18px);
+    background: var(--mc-filter-bar-background, var(--mc-color-surface));
+    border: var(--mc-filter-bar-border, 1px solid var(--mc-color-border));
+    border-radius: var(--mc-filter-bar-radius, var(--mc-radius-cell));
   }
 </style>

@@ -1,5 +1,6 @@
 import type { MapChartProps } from '@metriccanvas/page';
 import type { ColorList } from '../../shared/chart-palette';
+import type { MapProjectionRect } from './options';
 
 type MapLegend = NonNullable<MapChartProps['legend']>;
 export type MapLegendBand = MapLegend['bands'][number];
@@ -12,6 +13,20 @@ export interface MapLegendLevel {
   to?: number;
   /** 分档色板里对应的那一级;色板缺席即缺席(报表形态没有分档色)。 */
   color?: string;
+}
+
+/**
+ * 把 DOM 图例的定位参照物收进与地图投影相同的安全区。
+ *
+ * 安全区缺席或没有正面积时不写局部几何，由组件 CSS 的 `inset: 0`
+ * 回退覆盖整个地图 frame。返回完整 style 字符串，避免 Svelte 模板再复制
+ * 四个几何字段的有效性判断。
+ */
+export function mapLegendFrameStyle(
+  projection: MapProjectionRect | undefined
+): string | undefined {
+  if (!projection || projection.width <= 0 || projection.height <= 0) return undefined;
+  return `left:${projection.x}px;top:${projection.y}px;width:${projection.width}px;height:${projection.height}px;`;
 }
 
 /**

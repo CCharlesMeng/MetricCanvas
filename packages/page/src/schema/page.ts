@@ -7,6 +7,8 @@ import { dataSourceDocumentZ } from './data-source';
 
 export const pageMetaZ = z
   .object({
+    /** 页面级展示标题；缺席时由消费方回退到 ReportHeader，再回退到页面 id。 */
+    title: nonEmptyTextValueZ.optional(),
     description: z.string().optional()
   })
   .strict();

@@ -46,7 +46,14 @@ export const metricCardComponentZ = z
       .object({
         title: textValueZ.optional(),
         variant: z
-          .enum(['summary', 'activityProgress', 'compactSummary', 'dualSummary'])
+          .enum([
+            'summary',
+            'activityProgress',
+            'compactSummary',
+            'dualSummary',
+            'compactStrip',
+            'compactStack'
+          ])
           .optional(),
         secondaryTitle: nonEmptyTextValueZ.optional(),
         rows: z.array(metricCardRowZ).min(1),

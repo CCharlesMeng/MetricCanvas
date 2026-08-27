@@ -37,6 +37,13 @@ describe('ioc-opportunity-list 骨架', () => {
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe('5.1');
+    expect(page.filters).toHaveLength(11);
+    const table = page.sections
+      .flatMap((section) => section.components)
+      .find((component) => component.type === 'table');
+    if (!table || table.type !== 'table') throw new Error('缺少清单表格');
+    expect(table.props.columns).toHaveLength(40);
+    expect(table.props.pagination).toEqual({ mode: 'local', pageSize: 10, numbered: true });
     const initial = initialFilterValues(page.filters ?? []);
     expect(initial.get('mtime')).toEqual({
       type: 'timePoint',

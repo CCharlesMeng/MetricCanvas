@@ -872,6 +872,9 @@
     .section-grid.has-backdrop > .cell.backdrop-cell {
       position: static;
       min-height: 320px;
+      /* 覆盖宽屏铺底规则的 `grid-column: auto !important`。这里只写 `.cell`
+         优先级不够，会让回流后的地图仍缩在一个 12 列网格列里。 */
+      grid-column: 1 / -1 !important;
       inset: auto;
     }
   }

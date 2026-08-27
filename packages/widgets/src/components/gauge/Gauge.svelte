@@ -28,7 +28,7 @@
   const valueArc = $derived(gaugeArc(progress, 36));
 </script>
 
-<div class="gauge">
+<div class:mini={props.variant === 'mini'} class="gauge">
   {#if props.title}<h3>{props.title}</h3>{/if}
   {#if onclick}
     <button type="button" class="dial" {onclick}>
@@ -82,8 +82,8 @@
   .dial {
     position: relative;
     display: grid;
-    width: 112px;
-    height: 112px;
+    width: var(--mc-gauge-dial-size, 112px);
+    height: var(--mc-gauge-dial-size, 112px);
     place-items: center;
     padding: 0;
     background: transparent;
@@ -93,8 +93,8 @@
     cursor: pointer;
   }
   svg {
-    width: 112px;
-    height: 112px;
+    width: var(--mc-gauge-dial-size, 112px);
+    height: var(--mc-gauge-dial-size, 112px);
   }
   .track,
   .value {
@@ -126,5 +126,14 @@
     margin: 0;
     color: #71717a;
     font-size: 12px;
+  }
+  .mini {
+    --mc-gauge-dial-size: 68px;
+
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  .mini strong {
+    font-size: 16px;
   }
 </style>

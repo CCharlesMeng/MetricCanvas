@@ -62,7 +62,7 @@ data-gateway
 
 ```json
 {
-  "schemaVersion": "5.0",
+  "schemaVersion": "5.2",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -342,7 +342,7 @@ Canvas 从 Platform API 或静态页面仓储加载页面。数据网关端点�
 ## 15. 系统不变式
 
 1. 页面是统一运行时的唯一页面输入。
-2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源(当前为 `5.0`)。
+2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源(当前为 `5.2`)。
 3. 页面数据源完整声明结果字段契约。
 4. 页面字段和 DQE 字段只通过显式映射对应。
 5. 筛选状态只通过显式筛选绑定影响查询。

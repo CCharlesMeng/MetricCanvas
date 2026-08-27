@@ -38,6 +38,7 @@ export const categoryBreakdownComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        variant: z.literal('compactList').optional(),
         /** 逐行列出的类别字段。 */
         categoryField: fieldBindingZ,
         /**

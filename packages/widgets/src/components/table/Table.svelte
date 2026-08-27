@@ -25,7 +25,7 @@
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import { alignTableRows, alignedFieldValue } from './rows';
   import { mergeSpans, tableRowTier } from './presentation';
-  import { buildTableColumnLayout } from './columns';
+  import { buildTableColumnLayout, shouldWrapTableHeaders } from './columns';
   import type {
     TableHeaderFilterValue,
     TableSortRule,
@@ -79,6 +79,7 @@
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
   const leaves = $derived(columnLayout.leaves);
+  const wrapHeaders = $derived(shouldWrapTableHeaders(props.fit, leaves.length));
   const rows = $derived(alignTableRows(data, props.rowKey));
   const rowTiers = $derived(rows.map((row) => tableRowTier(row, props.rowKindField)));
   /** 首列合并:相邻同值折成一个单元格,rowSpan 为 0 的行不渲染该列。 */
@@ -273,6 +274,7 @@
 <div
   bind:this={root}
   class:fit-container={props.fit === 'container'}
+  class:wrap-headers={wrapHeaders}
   class:report-compact={props.variant === 'reportCompact'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class="table-widget"
@@ -1167,6 +1169,28 @@
     min-width: 0;
     overflow-wrap: normal;
     white-space: nowrap;
+  }
+  .wrap-headers thead th {
+    padding-right: 6px;
+    padding-left: 6px;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .wrap-headers .head,
+  .wrap-headers .sort-toggle {
+    min-width: 0;
+  }
+  .wrap-headers .sort-toggle {
+    width: 100%;
+  }
+  .wrap-headers .sort-toggle > span:first-child {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+  .wrap-headers .sort-state,
+  .wrap-headers .sort-hint {
+    flex: none;
   }
   .fit-container tbody td {
     min-width: 0;

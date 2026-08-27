@@ -1,12 +1,17 @@
 import { describe, expect, it } from 'vitest';
 import type { MapChartProps } from '@metriccanvas/page';
 import type { MainDataSlots } from '../src/shared/component-data';
-import { mapLegendLevels, mapLegendPieces } from '../src/components/map-chart/legend';
+import {
+  mapLegendFrameStyle,
+  mapLegendLevels,
+  mapLegendPieces
+} from '../src/components/map-chart/legend';
 import {
   mapTooltipMarkup,
   mapTooltipRows
 } from '../src/components/map-chart/tooltip';
 import { mapOption } from '../src/components/map-chart/options';
+import { projectionRect } from '../src/components/map-chart/options';
 
 /** 设计源的分档色列:从高档到低档。 */
 const scale = ['#7184e7', '#acb9f0', '#d9dff6', 'rgba(0, 0, 0, 0.05)'];
@@ -69,6 +74,21 @@ describe('mapLegendPieces', () => {
       { gte: 1, lt: 51, label: '1%~50%', color: '#d9dff6' },
       { gte: 0, lt: 1, label: '0', color: 'rgba(0, 0, 0, 0.05)' }
     ]);
+  });
+});
+
+describe('mapLegendFrameStyle', () => {
+  it('消费与地图 option 同一份 projection rectangle', () => {
+    const projection = projectionRect({ x: 628, y: 12, width: 532, height: 474 });
+    expect(projection).toEqual({ x: 657, y: 12, width: 474, height: 474 });
+    expect(mapLegendFrameStyle(projection)).toBe(
+      'left:657px;top:12px;width:474px;height:474px;'
+    );
+  });
+
+  it('安全区缺席或无正面积时不写局部几何，由 frame 的 inset 回退覆盖全图', () => {
+    expect(mapLegendFrameStyle(undefined)).toBeUndefined();
+    expect(mapLegendFrameStyle({ x: 0, y: 0, width: 0, height: 474 })).toBeUndefined();
   });
 });
 
