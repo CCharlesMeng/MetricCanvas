@@ -255,6 +255,7 @@ function invariantErrors(page: Page): TypedError[] {
     }
     sectionIds.add(section.id);
     errors.push(...sectionLayerErrors(section, sectionIndex));
+    errors.push(...sectionColumnTrackErrors(section, sectionIndex));
 
     walkComponents(section.components, `/sections/${sectionIndex}/components`, (component, path) => {
       if (componentIds.has(component.id)) {
@@ -264,9 +265,48 @@ function invariantErrors(page: Page): TypedError[] {
       errors.push(...componentErrors(page, component, path, filterIds));
     });
   });
+  errors.push(...hiddenHierarchyPickerErrors(page));
   errors.push(...queryPaginationErrors(page));
 
   return errors;
+}
+
+/** 隐藏层级切换器时，必须有地图承担下钻；否则用户没有任何切层入口。 */
+function hiddenHierarchyPickerErrors(page: Page): TypedError[] {
+  const mapFilters = new Set<string>();
+  walkPageComponents(page, (component) => {
+    if (component.type === 'mapChart' && component.props.hierarchyFilter) {
+      mapFilters.add(component.props.hierarchyFilter);
+    }
+  });
+  return (page.filters ?? []).flatMap((filter, index) =>
+    filter.type === 'dimension' &&
+    filter.hierarchyPicker === 'hidden' &&
+    !mapFilters.has(filter.id)
+      ? [
+          schemaError(
+            `/filters/${index}/hierarchyPicker`,
+            `隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:${filter.id}`
+          )
+        ]
+      : []
+  );
+}
+
+/** 自定义列轨只改变分区顶层网格；backdrop 铺底不占轨，其余顶层组件不得跨出轨数。 */
+function sectionColumnTrackErrors(section: PageSection, sectionIndex: number): TypedError[] {
+  const columnCount = section.columnTracks?.length;
+  if (columnCount === undefined) return [];
+  return section.components.flatMap((component, componentIndex) =>
+    component.layout.layer !== 'backdrop' && component.layout.span > columnCount
+      ? [
+          schemaError(
+            `/sections/${sectionIndex}/components/${componentIndex}/layout/span`,
+            `内容分区 ${section.id} 声明了 ${columnCount} 条列轨，组件 ${component.id} 的 span 不能超过 ${columnCount}`
+          )
+        ]
+      : []
+  );
 }
 
 /**
@@ -378,6 +418,14 @@ function filterDeclarationErrors(
           schemaError(`${path}/defaultLevel`, `defaultLevel 引用了未知层级:${filter.defaultLevel}`)
         );
       }
+    }
+    if (filter.hierarchyPicker && hierarchy.length === 0) {
+      errors.push(
+        schemaError(
+          `${path}/hierarchyPicker`,
+          'hierarchyPicker 只能用于声明了 hierarchy 的维度筛选器'
+        )
+      );
     }
   }
   return errors;
@@ -1098,6 +1146,22 @@ function componentErrors(
       (component.props.tooltipFields ?? []).forEach((item, index) =>
         check(item.field, `${componentPath}/props/tooltipFields/${index}/field`)
       );
+      if (component.props.pinnedSummary) {
+        check(
+          component.props.pinnedSummary.matchField,
+          `${componentPath}/props/pinnedSummary/matchField`,
+          'dimension'
+        );
+        check(
+          component.props.pinnedSummary.titleField,
+          `${componentPath}/props/pinnedSummary/titleField`,
+          'dimension'
+        );
+        component.props.pinnedSummary.fields.forEach((item, index) =>
+          check(item.field, `${componentPath}/props/pinnedSummary/fields/${index}/field`)
+        );
+      }
+      errors.push(...mapPinnedSummaryErrors(page, component, componentPath));
       errors.push(...mapLegendErrors(component, componentPath));
       errors.push(...mapHierarchyErrors(page, component, componentPath, check));
       errors.push(...actionErrors(component.props.actions, componentPath, page, component, filterIds, check));
@@ -1595,6 +1659,49 @@ function mapLegendErrors(
         )
       );
     }
+  });
+  return errors;
+}
+
+/**
+ * 固定地域摘要是 regionalOverview 形态的一部分。声明在其它形态上会被组件
+ * 静默忽略，因此在协议层拒绝；匹配值与重复标签也必须在进入 keyed 渲染前
+ * 判定，避免「合法页面但没有摘要」或重复 key 的运行时错误。
+ */
+function mapPinnedSummaryErrors(
+  page: Page,
+  component: Extract<Component, { type: 'mapChart' }>,
+  componentPath: string
+): TypedError[] {
+  const summary = component.props.pinnedSummary;
+  if (!summary) return [];
+  const path = `${componentPath}/props/pinnedSummary`;
+  const errors: TypedError[] = [];
+  if (component.props.variant !== 'regionalOverview') {
+    errors.push(
+      schemaError(path, 'pinnedSummary 只能用于 variant: regionalOverview 的地图')
+    );
+  }
+
+  const matched = resolveBinding(page, component, summary.matchField);
+  if (!('error' in matched) && !matchesFieldValue(summary.matchValue, matched.field)) {
+    errors.push(
+      schemaError(
+        `${path}/matchValue`,
+        `匹配值不符合字段 ${matched.fieldName} 的类型 ${matched.field.type}`
+      )
+    );
+  }
+
+  const labels = new Set<string>();
+  summary.fields.forEach((field, index) => {
+    const label = String(field.label);
+    if (labels.has(label)) {
+      errors.push(
+        schemaError(`${path}/fields/${index}/label`, `地域摘要字段标签重复:${label}`)
+      );
+    }
+    labels.add(label);
   });
   return errors;
 }

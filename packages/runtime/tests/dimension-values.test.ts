@@ -57,13 +57,22 @@ describe('筛选候选值加载器', () => {
     loader.load('模型');
     expect(snapshotOf('区域')).toEqual({ status: 'loading' });
 
-    calls[0]!.deferred.resolve({ kind: 'values', values: ['华东', '华南'] });
-    calls[1]!.deferred.resolve({ kind: 'values', values: [] });
+    calls[0]!.deferred.resolve({
+      kind: 'values',
+      candidates: [
+        { value: 'east', label: '华东' },
+        { value: 'south', label: '华南' }
+      ]
+    });
+    calls[1]!.deferred.resolve({ kind: 'values', candidates: [] });
     await settled();
 
     expect(snapshotOf('区域')).toEqual({
       status: 'ready',
-      values: ['华东', '华南']
+      candidates: [
+        { value: 'east', label: '华东' },
+        { value: 'south', label: '华南' }
+      ]
     });
     expect(snapshotOf('模型')).toEqual({ status: 'empty' });
   });
@@ -140,7 +149,10 @@ describe('筛选候选值加载器', () => {
     expect(calls[0]!.signal?.aborted).toBe(true);
 
     // 上游无视取消、迟到返回:结果必须被丢弃,状态停在取消时刻。
-    calls[0]!.deferred.resolve({ kind: 'values', values: ['迟到值'] });
+    calls[0]!.deferred.resolve({
+      kind: 'values',
+      candidates: [{ value: 'late', label: '迟到值' }]
+    });
     await settled();
     expect(snapshotOf('区域')).toEqual({ status: 'loading' });
 
@@ -159,9 +171,15 @@ describe('筛选候选值加载器', () => {
     const snapshotOf = track(loader);
 
     loader.load('区域');
-    calls[0]!.deferred.resolve({ kind: 'values', values: ['华东'] });
+    calls[0]!.deferred.resolve({
+      kind: 'values',
+      candidates: [{ value: 'east', label: '华东' }]
+    });
     await settled();
 
-    expect(snapshotOf('区域')).toEqual({ status: 'ready', values: ['华东'] });
+    expect(snapshotOf('区域')).toEqual({
+      status: 'ready',
+      candidates: [{ value: 'east', label: '华东' }]
+    });
   });
 });

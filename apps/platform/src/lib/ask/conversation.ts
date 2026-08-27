@@ -13,7 +13,7 @@ import type {
  * 编排的输入是「问题与会话上下文」:会话上下文以一条带前缀的 system 消息
  * 随 outcome.messages 往返(工作台把 outcome.messages 原样作为下一轮基线,
  * 服务端请求契约 workbench-request.ts 予以保留)。状态只承载结构化结果——
- * 路由域、生效取数单元集合、临时页面 id、formula 留痕与待确认口径卡;
+ * 路由域、生效取数单元集合、临时页面 id、formula 留痕与待确认取数核对;
  * 不含对话文本与模型 prompt(ADR-0030 红线),也不内嵌业务数据行
  * (未触及单元的初始行由随请求传回的 draft 文档承载)。
  *
@@ -38,7 +38,7 @@ export function askUnitDataSourceId(ordinal: number): string {
   return ordinal <= 1 ? ASK_DATA_SOURCE_ID : `${ASK_DATA_SOURCE_ID}-${ordinal}`;
 }
 
-/** 口径卡阻塞原因(ADR-0037 触发条件的已实现子集)。 */
+/** 取数核对阻塞原因(ADR-0037 触发条件的已实现子集)。 */
 export type ScopeBlockReason =
   | 'ambiguous_metric'
   | 'ad_hoc_definition'
@@ -59,7 +59,7 @@ export interface AskUnitEntryState {
   requestedComponent?: string | null;
 }
 
-/** 待人工确认的口径卡:阻塞原因、待执行单元与消歧候选。 */
+/** 待人工确认的取数核对:阻塞原因、待执行单元与消歧候选。 */
 export interface AskPendingScopeCard {
   interactionId: string;
   reasons: ScopeBlockReason[];
@@ -134,7 +134,7 @@ export function isAskStateMessage(message: AgentMessage): boolean {
 
 export interface AskConversation {
   /**
-   * 本轮新问题。续跑(口径卡确认、重试)以上一轮 outcome.messages 为基线
+   * 本轮新问题。续跑(取数核对确认、重试)以上一轮 outcome.messages 为基线
    * 且不追加新用户消息,此时为 null。
    */
   question: string | null;

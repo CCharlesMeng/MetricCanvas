@@ -4,6 +4,7 @@
   import { resolveField } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
   import { MAP_SCALE_PROPERTY, readColorList } from '../../shared/chart-palette';
+  import { formatValue } from '../../shared/value-format';
   import {
     geoRegionName,
     mapOption,
@@ -12,6 +13,8 @@
   } from './options';
   import { mapLegendFrameStyle, mapLegendLevels } from './legend';
   import { ensureBasemap, type BasemapMeta, type BasemapName } from './basemap';
+  import { regionalOverviewFrameStyle } from './regional-overview';
+  import regionalPinUrl from '../../assets/ioc-map-region-pin.svg?inline';
 
   /**
    * 地图(纯渲染,ECharts map):区域着色 + 散点叠加,点击区域只上抛行上下文。
@@ -93,6 +96,35 @@
      那里的地图仍是连续渐变加图表库自带的视觉映射条(见 options.ts)。 */
   const legendLevels = $derived(
     props.legend && mapScale ? mapLegendLevels(props.legend.bands, mapScale) : undefined
+  );
+
+  const pinnedSummary = $derived.by(() => {
+    const declaration = props.pinnedSummary;
+    if (!declaration) return undefined;
+    const match = resolveField(declaration.matchField, data);
+    const row = data.main.snapshot.rows.find(
+      (candidate) => candidate[match.field] === declaration.matchValue
+    );
+    if (!row) return undefined;
+    const title = resolveField(declaration.titleField, data);
+    return {
+      title: formatValue(row[title.field], title.format),
+      fields: declaration.fields.map((entry) => {
+        const field = resolveField(entry.field, data);
+        return {
+          label: entry.label,
+          value: formatValue(row[field.field], field.format)
+        };
+      })
+    };
+  });
+
+  /**
+   * regionalOverview 只固定一个“地域注释帧”，其几何由运行时安全区派生，
+   * 页面文档仍不能写坐标。安全区未就绪的首帧用同等右下回退。
+   */
+  const regionalFrameStyle = $derived(
+    regionalOverviewFrameStyle(safeArea)
   );
 
   function readSafeArea(element: HTMLElement): MapSafeArea | undefined {
@@ -181,13 +213,51 @@
           basemap.meta.centers,
           projection,
           false,
-          mapScale
+          mapScale,
+          regionalPinUrl
         )}
         onitemclick={onregionclick ? handleClick : undefined}
       />
-      {#if legendLevels}
+      {#if props.variant === 'regionalOverview'}
+        <div class="regional-overview-frame" style={regionalFrameStyle}>
+          {#if pinnedSummary}
+            <div
+              class="regional-annotations"
+              data-map-region-annotations
+              data-map-region-summary={pinnedSummary ? '' : undefined}
+            >
+              <div class="pinned-summary">
+                <strong>{pinnedSummary.title}</strong>
+                <dl>
+                  {#each pinnedSummary.fields as field, fieldIndex (fieldIndex)}
+                    <div><dt>{field.label}</dt><dd>{field.value}</dd></div>
+                  {/each}
+                </dl>
+              </div>
+            </div>
+          {/if}
+          {#if legendLevels}
+            <div class="map-legend regional-legend" data-map-legend>
+              {#if props.legend?.title}
+                <div class="legend-title">{props.legend.title}</div>
+              {/if}
+              <ul>
+                {#each legendLevels as level, levelIndex (levelIndex)}
+                  <li>
+                    <span
+                      class="legend-dot"
+                      style={level.color ? `background:${level.color};` : undefined}
+                    ></span>
+                    <span class="legend-label">{level.label}</span>
+                  </li>
+                {/each}
+              </ul>
+            </div>
+          {/if}
+        </div>
+      {:else if legendLevels}
         <div class="legend-frame" style={mapLegendFrameStyle(projection)}>
-          <div class="map-legend">
+          <div class="map-legend" data-map-legend>
             {#if props.legend?.title}
               <div class="legend-title">{props.legend.title}</div>
             {/if}
@@ -252,6 +322,62 @@
     min-width: 80px;
     flex-direction: column;
     gap: 4px;
+  }
+  .regional-overview-frame {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+  }
+  .regional-annotations {
+    position: absolute;
+    top: 60px;
+    left: 273px;
+    width: 650px;
+    height: 303px;
+  }
+  .pinned-summary {
+    position: absolute;
+    top: 57px;
+    left: 330px;
+    box-sizing: border-box;
+    width: 173px;
+    height: 101px;
+    padding: 13px 10px 14px 14px;
+    background: #fff;
+  }
+  .pinned-summary strong {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--mc-color-report-text, #191919);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  .pinned-summary dl {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+  }
+  .pinned-summary dl div {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .pinned-summary dt,
+  .pinned-summary dd {
+    margin: 0;
+    color: #595959;
+    font-size: 14px;
+    line-height: 20px;
+    white-space: nowrap;
+  }
+  .pinned-summary dd {
+    color: var(--mc-color-report-text, #191919);
+  }
+  .regional-legend {
+    top: 300px;
+    bottom: auto;
+    left: 0;
   }
   .legend-title {
     color: var(--mc-color-report-text, #191919);

@@ -30,6 +30,7 @@
     sessionReplayView,
     type RecordedSessionPayload
   } from './workbench/session-replay';
+  import { SUGGESTED_QUESTIONS } from './ask/suggested-questions';
   import { askFormulaTraces, type PromotedOutcome } from './workbench/promote-flow';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
@@ -76,13 +77,6 @@
   }
 
   let composerText = $state('');
-  // 建议问题:全部命中语义面且带具体年月(结构化相对时间不在 V0 范围,
-  // 「上个月」这类表述会在执行段被仿真如实拒答),覆盖两域与多种展示。
-  const SUGGESTED_QUESTIONS = [
-    '2026年7月各区域的Tokens消耗量是多少？',
-    '2026年上半年每个月的新增客户数走势如何？',
-    '2026年6月各客户级别的流失客户数对比'
-  ];
   /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
   let sessionId = $state<string | null>(null);
   /** 新建会话后使已在途中的旧会话回放结果失效。 */
@@ -107,7 +101,7 @@
   let selectedComponent = $state<ComponentLocator | null>(null);
   /** 本地文档改写失败的提示(改写出口过 validate,失败不落文档)。 */
   let editError = $state('');
-  /** 消歧候选选择(runId → 用户选中的候选),随口径卡确认传回编排。 */
+  /** 消歧候选选择(runId → 用户选中的候选),随取数核对确认传回编排。 */
   let candidateChoices = $state<Record<string, MetricCandidate>>({});
   /** 执行过程展开状态(runId → 是否展开);缺省运行中展开、结束后收起。 */
   let stepsOpen = $state<Record<string, boolean>>({});
@@ -153,6 +147,14 @@
       }
     }
     return null;
+  });
+  const selectedColumnCount = $derived.by(() => {
+    if (!canvasDocument || !selectedComponent) return 12;
+    const sections = Array.isArray(canvasDocument.sections)
+      ? (canvasDocument.sections as Array<Record<string, unknown>>)
+      : [];
+    const section = sections.find((candidate) => candidate.id === selectedComponent?.sectionId);
+    return Array.isArray(section?.columnTracks) ? section.columnTracks.length : 12;
   });
   const selectedFieldRows = $derived.by(() => {
     if (!currentDocument || !selectedView?.dataSourceId) return [];
@@ -386,7 +388,7 @@
       if (pageId) confirmedPageIds = [...new Set([...confirmedPageIds, pageId])];
     }
     if (interaction.kind === 'confirm_scope_card') {
-      // 口径卡确认(#66 契约):歧义候选须携带用户在候选卡上的结构化选择,
+      // 取数核对确认(#66 契约):歧义候选须携带用户在候选卡上的结构化选择,
       // 空白确认会被编排安全地重新阻塞。
       const choice = candidateChoices[run.runId];
       if (disambiguationPending(run) && !choice) return;
@@ -548,10 +550,10 @@
           {pageModel.transient ? '临时页面态' : '未保存工作副本'}
         </span>
         {#if pageModel.adHocFormulas.length > 0}
-          <!-- 临时口径与已定义指标视觉可区分(ADR-0036、#67):文档含现场
+          <!-- 临时指标与已定义指标视觉可区分(ADR-0036、#67):文档含现场
                生成的 formula 口径时,结果区常驻警示徽标。 -->
           <span class="badge adhoc" title={pageModel.adHocFormulas.join(';')}>
-            临时口径 ×{pageModel.adHocFormulas.length}
+            临时指标 ×{pageModel.adHocFormulas.length}
           </span>
         {/if}
         <code class="page-id">{pageModel.pageId}</code>
@@ -631,13 +633,13 @@
         <div class="thread-empty">
           <h2>用一句业务问题开始</h2>
           <p>
-            系统按步骤展开:业务域路由、指标候选、口径卡、真实执行、
+            系统按步骤展开:业务域路由、指标候选、取数核对、真实执行、
             页面文档就绪;满意的结果可沉淀为长期资产。
           </p>
           <div class="suggestions">
-            {#each SUGGESTED_QUESTIONS as question (question)}
-              <button type="button" onclick={() => askSuggestion(question)}>
-                {question}
+            {#each SUGGESTED_QUESTIONS as suggestion (suggestion.question)}
+              <button type="button" onclick={() => askSuggestion(suggestion.question)}>
+                {suggestion.question}
               </button>
             {/each}
           </div>
@@ -854,6 +856,7 @@
       selected={selectedComponent}
       {selectedView}
       {selectedSpan}
+      {selectedColumnCount}
       candidates={typeCandidates}
       fieldRows={selectedFieldRows}
       busy={running}

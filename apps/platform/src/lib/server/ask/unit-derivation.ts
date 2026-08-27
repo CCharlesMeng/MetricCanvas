@@ -22,8 +22,10 @@ export interface DerivedExecutableUnit {
   fields: Record<string, QueryFieldDefinition>;
   /** DQE 原始请求体。 */
   body: DqeRequestBody;
-  /** 口径卡的生效范围呈现内容。 */
+  /** 取数核对的生效范围呈现内容;同时是口径组的判等依据(ADR-0055)。 */
   scope: {
+    /** 分组维度:决定这份结果按什么切分,是口径组之间最常见的差别。 */
+    groupBy: string[];
     timeRange: string;
     granularity: string;
     filters: DimensionFilter[];
@@ -104,6 +106,7 @@ export function deriveExecutableUnit(
     fields,
     body,
     scope: {
+      groupBy: [...unit.groupBy],
       timeRange:
         unit.time === null ? '不限定时间范围' : `${unit.time.start} ~ ${unit.time.end}`,
       granularity: unit.time?.granularity ?? '未指定',

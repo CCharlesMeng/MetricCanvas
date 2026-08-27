@@ -30,7 +30,7 @@
   }: {
     /** 当前临时页面态(已通过页面校验的完整文档)。 */
     document: Record<string, unknown>;
-    /** 临时口径留痕(ask 会话状态,#66):沉淀警告的问题原文来源。 */
+    /** 临时指标留痕(ask 会话状态,#66):沉淀警告的问题原文来源。 */
     formulaTraces: FormulaTrace[];
     onclose: () => void;
     onpromoted: (outcome: PromotedOutcome) => void;
@@ -70,7 +70,7 @@
           formulaTraces
         })
   );
-  /** 临时口径闸的问题由勾选块呈现,不重复列入问题清单。 */
+  /** 临时指标闸的问题由勾选块呈现,不重复列入问题清单。 */
   const issues = $derived(
     preview !== null && !preview.ok
       ? preview.issues.filter((issue) => issue.code !== 'AD_HOC_DEFINITIONS_NOT_ACCEPTED')
@@ -150,7 +150,7 @@
       </p>
       {#if needsAcceptance}
         <div class="adhoc" role="alert">
-          <p class="adhoc-title">本页面含 {adHocDefinitions.length} 个临时口径,无人负责其长期正确性:</p>
+          <p class="adhoc-title">本页面含 {adHocDefinitions.length} 个临时指标,无人负责其长期正确性:</p>
           <ul>
             {#each adHocDefinitions as usage (usage.dataSourceId + usage.expression)}
               <li>
@@ -162,7 +162,7 @@
           </ul>
           <label class="accept">
             <input type="checkbox" bind:checked={adHocAccepted} />
-            我已知晓并接受:沉淀为 Data App 后这些临时口径无人负责
+            我已知晓并接受:沉淀为 Data App 后这些临时指标无人负责
           </label>
         </div>
       {/if}

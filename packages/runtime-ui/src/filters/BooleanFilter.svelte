@@ -32,4 +32,13 @@
     color: #3f3f46;
     white-space: nowrap;
   }
+  input {
+    width: 16px;
+    height: 16px;
+    box-sizing: border-box;
+    margin: 0;
+    border: 1px solid var(--mc-filter-control-border-color, #c2c2c2);
+    border-radius: 4px;
+    accent-color: #6177e4;
+  }
 </style>

@@ -29,6 +29,7 @@
 <style>
   /* 控件铬与外置字段名标签的可见性经 --mc-filter-* 下发,真源在统一运行时根部。 */
   .filter {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -40,6 +41,7 @@
     white-space: nowrap;
   }
   input {
+    box-sizing: border-box;
     min-width: var(--mc-filter-control-min-width, 0);
     height: var(--mc-filter-control-height, auto);
     padding: 5px 8px;
@@ -51,6 +53,8 @@
     font-family: inherit;
   }
   .clear {
+    position: absolute;
+    right: 6px;
     border: 0;
     background: transparent;
     color: #a1a1aa;

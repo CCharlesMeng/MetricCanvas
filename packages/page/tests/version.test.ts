@@ -13,10 +13,11 @@ const doc = (schemaVersion: unknown): unknown => ({ schemaVersion });
 
 describe('MAJOR.MINOR 版本判定', () => {
   it('接受当前主版本内不高于 current 的任意次版本', () => {
-    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2']);
+    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3']);
     expect(versionErrors(doc('5.0'))).toEqual([]);
     expect(versionErrors(doc('5.1'))).toEqual([]);
     expect(versionErrors(doc('5.2'))).toEqual([]);
+    expect(versionErrors(doc('5.3'))).toEqual([]);
   });
 
   it('拒绝更高的次版本并说明原因', () => {
@@ -396,6 +397,113 @@ describe('能力下限推算', () => {
       ]
     });
     expect(pageCapabilities['key-value-panel-single-column'].usedAt(page)).toEqual([]);
+  });
+
+  it('5.3 的分区列轨与筛选空态文案分别定位到使用点', () => {
+    const page = basePage({
+      filters: [
+        {
+          id: 'industry',
+          type: 'dimension',
+          dimension: 'cloud-class',
+          emptyLabel: '全部产业',
+          hierarchyPicker: 'hidden'
+        }
+      ],
+      sections: [
+        {
+          id: 'weighted',
+          columnTracks: [29, 29, 22],
+          components: [
+            {
+              id: 'summary',
+              type: 'metricCard',
+              layout: { span: 1 },
+              data: { main: 'a' },
+              props: { rows: [] }
+            }
+          ]
+        }
+      ]
+    });
+    expect(requiredMinorVersion(page)).toBe(3);
+    expect(capabilityFloorErrors(page).map((error) => error.path).sort()).toEqual([
+      '/filters/0/emptyLabel',
+      '/filters/0/hierarchyPicker',
+      '/sections/0/columnTracks'
+    ]);
+
+    (page as { schemaVersion: string }).schemaVersion = '5.3';
+    expect(capabilityFloorErrors(page)).toEqual([]);
+  });
+
+  it('5.3 的显式紧凑呈现、单位、指标上下文与地域摘要分别定位到使用点', () => {
+    const page = basePage({
+      schemaVersion: '5.2',
+      sections: [
+        {
+          id: 'body',
+          components: [
+            {
+              id: 'card', type: 'compositeCard', layout: { span: 4 },
+              props: {
+                variant: 'compact',
+                titleIcon: 'opportunity',
+                components: [{
+                  id: 'metric', type: 'metricCard', layout: { span: 12 }, data: { main: 'a' },
+                  props: { rows: [{ label: '召开率', context: '近60天', valueField: 'rate' }] }
+                }]
+              }
+            },
+            {
+              id: 'panel', type: 'keyValuePanel', layout: { span: 4 }, data: { main: 'a' },
+              props: {
+                titleIcon: 'reward',
+                items: [{ label: '金牌', field: 'gold', unit: '个', icon: 'goldMedal' }]
+              }
+            },
+            {
+              id: 'map', type: 'mapChart', layout: { span: 4 }, data: { main: 'a' },
+              props: {
+                variant: 'regionalOverview', nameField: 'name', valueField: 'rate', map: 'world',
+                pinnedSummary: {
+                  matchField: 'code', matchValue: 'R99', titleField: 'name',
+                  fields: [{ label: '支撑率', field: 'rate' }]
+                }
+              }
+            },
+            {
+              id: 'tabs', type: 'tabContainer', layout: { span: 4 },
+              props: {
+                variant: 'compact',
+                tabs: [{
+                  id: 'one', label: '概览',
+                  component: {
+                    id: 'grid', type: 'table', layout: { span: 12 }, data: { main: 'a' },
+                    props: { variant: 'embedded', bottomFade: true, columns: [{ field: 'name' }] }
+                  }
+                }]
+              }
+            }
+          ]
+        }
+      ]
+    });
+
+    expect(requiredMinorVersion(page)).toBe(3);
+    expect(capabilityFloorErrors(page).map((error) => error.path).sort()).toEqual([
+      '/sections/0/components/0/props/components/0/props/rows/0/context',
+      '/sections/0/components/0/props/titleIcon',
+      '/sections/0/components/0/props/variant',
+      '/sections/0/components/1/props/items/0/icon',
+      '/sections/0/components/1/props/items/0/unit',
+      '/sections/0/components/1/props/titleIcon',
+      '/sections/0/components/2/props/pinnedSummary',
+      '/sections/0/components/2/props/variant',
+      '/sections/0/components/3/props/tabs/0/component/props/bottomFade',
+      '/sections/0/components/3/props/tabs/0/component/props/variant',
+      '/sections/0/components/3/props/variant'
+    ]);
   });
 
   it('声明 5.1 后不再报能力下限错误', () => {

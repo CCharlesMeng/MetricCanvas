@@ -57,12 +57,18 @@ export interface DataGateway {
   ): Promise<DataGatewayResult>;
 }
 
+/** 维度候选项:稳定筛选值参与查询与 URL 序列化,显示名只用于界面呈现。 */
+export interface DimensionValueCandidate {
+  value: string;
+  label: string;
+}
+
 /**
- * 维度候选值查询的成功结果:真实去重候选值,或该维度的候选值能力不可用。
+ * 维度候选值查询的成功结果:真实去重候选项,或该维度的候选值能力不可用。
  * 不可用是显式结果而不是空数组——空数组只表示查询成功且候选为空(issue #54)。
  */
 export type DimensionValuesResult =
-  | { kind: 'values'; values: string[] }
+  | { kind: 'values'; candidates: DimensionValueCandidate[] }
   | { kind: 'unavailable' };
 
 /**

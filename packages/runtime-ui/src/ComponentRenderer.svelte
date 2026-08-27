@@ -118,6 +118,7 @@
   {:else if component.type === 'tabContainer'}
     <TabContainer
       title={component.props.title}
+      variant={component.props.variant}
       tabs={component.props.tabs.map((tab) => ({ id: tab.id, label: tab.label }))}
       defaultTab={component.props.defaultTab}
     >
@@ -129,6 +130,8 @@
   {:else if component.type === 'compositeCard'}
     <CompositeCard
       title={component.props.title}
+      titleIcon={component.props.titleIcon}
+      variant={component.props.variant}
       spans={component.props.components.map((item) => item.layout.span)}
       dividers={component.props.dividers}
     >

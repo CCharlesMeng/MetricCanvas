@@ -23,7 +23,7 @@ import type { AnalysisIntent, MetricGapOccurrence } from '../session/step-event'
 
 /* ---------- 取数单元(创作期状态,CONTEXT.md / ADR-0032) ---------- */
 
-/** 取数单元的指标项:命中指标条目,或临时口径 formula(ADR-0036)。 */
+/** 取数单元的指标项:命中指标条目,或临时指标 formula(ADR-0036)。 */
 export type AskUnitMetric =
   | { kind: 'metric'; name: string }
   | {
@@ -46,7 +46,7 @@ export interface AskUnitTime {
   /** 时间范围端点,粒度对应的字面(如 2026-01 / 2026-01-15)。 */
   start: string;
   end: string;
-  /** 时间口径来源:模型补全而非用户明说时触发口径卡阻塞(ADR-0037)。 */
+  /** 时间口径来源:模型补全而非用户明说时触发取数核对阻塞(ADR-0037)。 */
   providedBy: 'user' | 'model';
 }
 
@@ -170,6 +170,11 @@ export type AskUnitFormingDecision =
   | { outcome: 'out_of_scope'; reason: string };
 
 export interface AskIntentInput {
+  /**
+   * 该取数单元对应的那句问法:一轮多个单元时是该单元的业务标题,单单元轮次
+   * 是问题原文。不传整句问题——整句里的「走势」会把同一轮按维度切分的单元
+   * 也判成趋势(ADR-0055)。
+   */
   question: string;
   unit: AskDataRequestUnitState;
   /** 上一轮意图;追问未提及展示变化时应保持不变。 */
@@ -196,7 +201,7 @@ export type AssembleTransientPage = (
 /* ---------- 缺口登记端口(#67,ADR-0036) ---------- */
 
 /**
- * 缺口条目登记口:编排在降级分支(临时口径 / 面外)于用户确认后交出
+ * 缺口条目登记口:编排在降级分支(临时指标 / 面外)于用户确认后交出
  * 结构化缺口出现,不感知存储。
  *
  * 落库通道只有一条:编排同时以 metric_gap_recorded 步骤事件产出同一

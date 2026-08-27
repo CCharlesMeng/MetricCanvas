@@ -108,6 +108,16 @@ describe('组合卡', () => {
     ]);
   });
 
+  it('只接受受控的标题图标，不接受任意资源路径', () => {
+    const page = cardPage();
+    page.schemaVersion = '5.3';
+    card(page).props.titleIcon = 'opportunity';
+    expect(parsePage(page).errors).toEqual([]);
+
+    card(page).props.titleIcon = '/assets/custom.svg';
+    expect(parsePage(page).errors.some((error) => error.path.endsWith('/props/titleIcon'))).toBe(true);
+  });
+
   it('子组件白名单外的类型被拒绝，并说出白名单', () => {
     const page = cardPage();
     children(page)[0] = {
@@ -333,6 +343,51 @@ describe('地图图例与 tooltip 扩展字段', () => {
       messagesAt(page, '/sections/0/components/0/props/tooltipFields/0/field')
     ).toEqual(['字段 missing 不在数据槽 main 的数据源 regions 中']);
   });
+
+  it('地域摘要按稳定维度值匹配，且所有绑定都经过字段契约校验', () => {
+    const page = mapPage();
+    page.schemaVersion = '5.3';
+    page.sections[0].components[0].props.variant = 'regionalOverview';
+    page.sections[0].components[0].props.pinnedSummary = {
+      matchField: 'name',
+      matchValue: '中国',
+      titleField: 'name',
+      fields: [{ label: '管道支持率', field: 'rate' }]
+    };
+    expect(validate(page)).toEqual([]);
+
+    page.sections[0].components[0].props.pinnedSummary.fields[0].field = 'missing';
+    expect(
+      messagesAt(page, '/sections/0/components/0/props/pinnedSummary/fields/0/field')
+    ).toEqual(['字段 missing 不在数据槽 main 的数据源 regions 中']);
+  });
+
+  it('地域摘要只属于 regionalOverview，匹配值类型与字段标签必须有效', () => {
+    const page = mapPage();
+    page.schemaVersion = '5.3';
+    page.sections[0].components[0].props.pinnedSummary = {
+      matchField: 'name',
+      matchValue: '中国',
+      titleField: 'name',
+      fields: [
+        { label: '管道支持率', field: 'rate' },
+        { label: '管道支持率', field: 'amount' }
+      ]
+    };
+    expect(
+      messagesAt(page, '/sections/0/components/0/props/pinnedSummary')
+    ).toEqual(['pinnedSummary 只能用于 variant: regionalOverview 的地图']);
+    expect(
+      messagesAt(page, '/sections/0/components/0/props/pinnedSummary/fields/1/label')
+    ).toEqual(['地域摘要字段标签重复:管道支持率']);
+
+    page.sections[0].components[0].props.variant = 'regionalOverview';
+    page.sections[0].components[0].props.pinnedSummary.matchValue = 42;
+    expect(
+      messagesAt(page, '/sections/0/components/0/props/pinnedSummary/matchValue')
+    ).toEqual(['匹配值不符合字段 name 的类型 string']);
+  });
+
 });
 
 describe('同批的字段级增量', () => {

@@ -10,6 +10,7 @@ import {
 import type {
   DataGateway,
   DataGatewayResult,
+  DimensionValueCandidate,
   DimensionValuesGateway,
   DimensionValuesResult,
   QueryDiagnosticContext
@@ -377,7 +378,10 @@ export function createDqeGateway(
       // 上游对候选值查询的明确拒答 = 该维度的候选值能力不可用,
       // 不伪装成空结果;retDesc 属上游错误正文,不进入任何对象。
       if (result.code !== 'SUCCESS') return { kind: 'unavailable' };
-      return { kind: 'values', values: dedupedDimensionValues(result.data, dimension) };
+      return {
+        kind: 'values',
+        candidates: dedupedDimensionValues(result.data, dimension)
+      };
     } catch (cause) {
       throw classifiedFetchError(cause, timedOut, timeoutMs);
     } finally {
@@ -478,14 +482,21 @@ export function dimensionValuesDqeItem(dimension: string): JsonObject {
   };
 }
 
-/** 候选值提取与去重:错误只携带行号与类型事实,不回显业务值(issue #47)。 */
-function dedupedDimensionValues(data: unknown, dimension: string): string[] {
+/**
+ * 候选值提取与去重:维度字段是稳定值,可选的 `${dimension}__label` 是显示名;
+ * 真实 DQE 未提供伴随显示名时安全回退为稳定值。错误只携带行号与类型事实,
+ * 不回显业务值(issue #47)。
+ */
+function dedupedDimensionValues(
+  data: unknown,
+  dimension: string
+): DimensionValueCandidate[] {
   if (!Array.isArray(data)) {
     throw new DqeGatewayError('DQE_ITEM_ERROR', 'DQE 候选值 data 必须是数组', {
       dataType: describeType(data)
     });
   }
-  const values = new Set<string>();
+  const values = new Map<string, DimensionValueCandidate>();
   data.forEach((row, rowIndex) => {
     if (!isRecord(row)) {
       throw new DqeGatewayError(
@@ -504,9 +515,20 @@ function dedupedDimensionValues(data: unknown, dimension: string): string[] {
         { rowIndex, valueType: describeType(value) }
       );
     }
-    values.add(String(value));
+    const normalized = String(value);
+    const label = row[`${dimension}__label`];
+    if (label !== undefined && label !== null && typeof label !== 'string') {
+      throw new DqeGatewayError(
+        'DQE_ITEM_ERROR',
+        `DQE 候选值 data[${rowIndex}] 的显示名必须是字符串`,
+        { rowIndex, labelType: describeType(label) }
+      );
+    }
+    if (!values.has(normalized)) {
+      values.set(normalized, { value: normalized, label: label ?? normalized });
+    }
   });
-  return [...values];
+  return [...values.values()];
 }
 
 /** 校验 DQE 响应信封并返回结果项数组;信封失败按 DQE_ENVELOPE_ERROR 分类。 */

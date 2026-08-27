@@ -59,10 +59,16 @@ export function createDataGateway(
       if (results.every((result) => result.kind === 'unavailable')) {
         return { kind: 'unavailable' };
       }
-      const values = results.flatMap((result) =>
-        result.kind === 'values' ? result.values : []
-      );
-      return { kind: 'values', values: [...new Set(values)] };
+      const candidates = new Map<string, { value: string; label: string }>();
+      for (const result of results) {
+        if (result.kind !== 'values') continue;
+        for (const candidate of result.candidates) {
+          if (!candidates.has(candidate.value)) {
+            candidates.set(candidate.value, candidate);
+          }
+        }
+      }
+      return { kind: 'values', candidates: [...candidates.values()] };
     }
   };
 }

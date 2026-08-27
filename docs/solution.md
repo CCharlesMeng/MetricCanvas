@@ -62,7 +62,7 @@ data-gateway
 
 ```json
 {
-  "schemaVersion": "5.2",
+  "schemaVersion": "5.3",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
@@ -76,7 +76,7 @@ data-gateway
 - 命名页面数据源；
 - 完整结果字段契约；
 - 页面级筛选状态；
-- 内容分区和 12 列布局；
+- 内容分区和缺省 12 列、可选受控权重列轨布局；
 - 组件数据槽和字段绑定；
 - 页内联动与跨页下钻。
 
@@ -255,7 +255,7 @@ force_released
 | Widgets | 纯渲染组件 |
 | AI Summary 垂直组件 Module | 关联数据解析、请求组装、生成会话、私有 SSE 适配与纯渲染 View |
 
-Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格、页面搭建覆盖层和 `connectPrevious`。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
+Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格、页面搭建覆盖层和 `connectPrevious`。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
 
 查询数据源执行行为：
 
@@ -342,7 +342,7 @@ Canvas 从 Platform API 或静态页面仓储加载页面。数据网关端点�
 ## 15. 系统不变式
 
 1. 页面是统一运行时的唯一页面输入。
-2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源(当前为 `5.2`)。
+2. 页面协议版本以 `packages/page/src/version.ts` 的 `versionPolicy.current` 为唯一真源(当前为 `5.3`)。
 3. 页面数据源完整声明结果字段契约。
 4. 页面字段和 DQE 字段只通过显式映射对应。
 5. 筛选状态只通过显式筛选绑定影响查询。

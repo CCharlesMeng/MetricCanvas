@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.2`；未定义属性会被拒绝。
+页面元数据是统一运行时直接消费的声明式 JSON 文档，也是大模型生成页面的输出格式。当前协议版本为 `5.3`；未定义属性会被拒绝。
 
 ## 1. 概念与关联关系
 
@@ -102,7 +102,7 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"`、`"5.1"` 与 `"5.2"`，新页面声明 `"5.2"` |
+| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前主版本内已发布 `"5.0"`、`"5.1"`、`"5.2"` 与 `"5.3"`，新页面声明 `"5.3"` |
 | `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | object | 否 | 页面资产信息；允许可选 `title` 与 `description`。目录标题按 `meta.title` → 首个 `reportHeader.props.title` → 页面 `id` 回退；dashboard 工具栏使用同一结果 |
 | `layoutForm` | string | 否 | 页面布局形态（5.1 起）：`report`（缺省）或 `dashboard` |
@@ -146,6 +146,16 @@ flowchart LR
 | `mapChart.tooltipFields` | 5.2 |
 | `keyValuePanel.columns: 1` | 5.2 |
 | `ratio.scale`（比值输出刻度） | 5.2 |
+| `section.columnTracks`（受控权重列轨） | 5.3 |
+| 维度筛选器 `emptyLabel` | 5.3 |
+| 层级维度筛选器 `hierarchyPicker` | 5.3 |
+| `metricCard.rows[].context`（与主值同排的短上下文） | 5.3 |
+| `compositeCard.variant: "compact"` | 5.3 |
+| `tabContainer.variant: "compact"` | 5.3 |
+| `table.variant: "embedded"` / `bottomFade` | 5.3 |
+| `keyValuePanel.items[].unit` | 5.3 |
+| `compositeCard.titleIcon` / `keyValuePanel.titleIcon` / `items[].icon` | 5.3 |
+| `mapChart.variant: "regionalOverview"` / `pinnedSummary` | 5.3 |
 
 存量页面不迁移：声明 `"5.0"` 且只使用 5.0 结构的文档继续有效。
 
@@ -589,13 +599,15 @@ date-month-day
 | `display` | 否 | `select`、`tabs`、`tree`、`search`；省略默认为 `select` |
 | `visible` | 否 | `false` 表示隐藏控件但保留可写状态 |
 | `default` | 否 | 初始字符串值数组；省略表示不筛选 |
+| `emptyLabel` | 否 | 5.3 起；空选时的可见文案，缺省为“全部” |
+| `hierarchyPicker` | 否 | 5.3 起；`tabs`（缺省）或 `hidden`。`hidden` 要求同页地图以 `hierarchyFilter` 绑定该筛选器并承担下钻 |
 | `hierarchy` | 否 | 有序层级，至少两级；每级声明 `id`、`dimension` 与可选 `label` |
 | `defaultLevel` | 否 | 缺省层级 id；只能与 `hierarchy` 一起使用 |
 | `dependsOn` | 否 | 级联上游筛选器 id；只允许依赖一个 dimension 筛选器 |
 
-维度候选值由数据网关提供，不写入 Schema 元数据或页面元数据。`tree` 当前按候选值中的 `/` 分隔层级。
+维度候选值由数据网关以稳定值与显示名成对提供，不写入 Schema 元数据或页面元数据。稳定值进入筛选状态、查询谓词与 URL，显示名只用于控件呈现；`tree` 当前按候选稳定值中的 `/` 分隔层级，并以对应显示名渲染。
 
-**层级维度筛选器**：筛选值同时携带选中取值与取值所在层级。层级是查询谓词选择目标字段的依据，也是地图等分层视图当前视角的唯一来源；分层视图不维护自己的层级状态。URL 编码为 `h:<dimension>:<level>:<v1>,<v2>`，与扁平维度的 `d:` 并列。
+**层级维度筛选器**：筛选值同时携带选中取值与取值所在层级。层级是查询谓词选择目标字段的依据，也是地图等分层视图当前视角的唯一来源；分层视图不维护自己的层级状态。URL 编码为 `h:<dimension>:<level>:<v1>,<v2>`，与扁平维度的 `d:` 并列。地图下钻进入下一级时，父级编码只用于收窄地图行，不作为下一级候选回显；`hierarchyPicker: "hidden"` 的运行时在下钻态提供返回第一级的入口。
 
 **级联**：`dependsOn` 只收窄下游候选值，不改变下游绑定字段，也不让下游出现或消失。禁止自依赖与循环。这不是数据源级联输入（ADR-0015 仍挂起）。
 
@@ -707,6 +719,7 @@ last90d
   "id": "overview",
   "title": "经营概览",
   "container": "panel",
+  "columnTracks": [29, 29, 22],
   "components": [
     {
       "id": "overview-note",
@@ -723,6 +736,7 @@ last90d
 | `id` | 是 | 页面内唯一 |
 | `title` | 否 | 非空可见标题 |
 | `container` | 否 | `plain`、`panel`、`card`；省略使用通用看板外观 |
+| `columnTracks` | 否 | 5.3 起；1–12 个 1–1000 的整数权重，缺省为 12 列等权轨 |
 | `components` | 是 | 至少一个组件 |
 
 `container` 是内容分区外观的唯一真源：
@@ -757,15 +771,16 @@ last90d
 }
 ```
 
-- 内容分区固定使用 12 列网格，列数不进入页面元数据；
+- 内容分区缺省使用 12 列等权网格；5.3 起可用 `section.columnTracks` 声明 1–12 条正整数权重轨；
 - `layout` 只接受 `span`、`connectPrevious`、`layer` 三个键，未定义键一律拒绝；
 - `span` 是 1–12 的整数且必填；组件能力目录的建议跨度不会替模型自动写入；
+- 分区声明 `columnTracks` 时，非 `backdrop` 顶层组件的 `span` 不得超过轨数；权重表示比例而非像素；
 - 组件数组顺序决定自动流布局顺序；
 - `connectPrevious: true` 把当前组件与紧邻前一组件组成视觉组，不建立数据依赖；
 - 第一个组件上的 `connectPrevious` 会被安全忽略，但生成器不应该写这种无效声明；
 - 同一视觉行内、同类型、同 `props.variant` 且支持行对齐的组件由统一运行时自动对齐；页面不得声明高度同步字段。
 
-**叠放层（`layout.layer`，5.1 起）** 是分区内的层次声明，闭集当前只有一个成员 `backdrop`：该组件铺满整个分区并置于同分区其余组件之下，其余组件仍按 12 列网格自动流排布。典型用法是让地图成为背景、指标卡与表格悬浮其上。
+**叠放层（`layout.layer`，5.1 起）** 是分区内的层次声明，闭集当前只有一个成员 `backdrop`：该组件铺满整个分区并置于同分区其余组件之下，其余组件仍按该分区当前列轨自动流排布（缺省为 12 列）。典型用法是让地图成为背景、指标卡与表格悬浮其上。
 
 - 页面不声明坐标、宽高或 `z-index`；叠放只有「铺满分区的一层」与「普通流」两种位置；
 - 一个内容分区最多一个 `backdrop`，且分区必须还有别的组件叠在它上面；
@@ -885,7 +900,7 @@ last90d
 | 属性 | 必填 | 允许值 / 说明 |
 |---|---:|---|
 | `title` | 否 | 组件标题 |
-| `variant` | 否 | `summary`、`activityProgress`、`compactSummary`、`dualSummary` |
+| `variant` | 否 | `summary`、`activityProgress`、`compactSummary`、`dualSummary`、`compactStrip`、`compactStack` |
 | `secondaryTitle` | 否 | 第二摘要面板标题 |
 | `rows` | 是 | 至少一行 |
 | `secondaryRows` | 否 | 至少一行，配合双摘要形态 |
@@ -894,7 +909,7 @@ last90d
 | `progress` | 否 | 进度环配置 |
 | `actions` | 否 | 查询数据组件 action |
 
-`rows[]` 的 `label` 与 `valueField` 必填，`valueField` 必须为 `measure`；`unit` 和 `changes` 可选。
+`rows[]` 的 `label` 与 `valueField` 必填，`valueField` 必须为 `measure`；`unit`、`changes` 和 5.3 起的 `context` 可选。`context` 是与主值同排的短统计口径（例如“近60天”），不是变化值。
 
 `changes[]` 的 `label` 与 `field` 必填，`field` 必须为 `measure`；`unit` 可选；`tone` 可为 `auto`、`neutral`、`positive`、`danger`。
 
@@ -960,7 +975,8 @@ last90d
 |---|---:|---|
 | `title` | 否 | 标题 |
 | `subtitle` | 否 | 副标题 |
-| `variant` | 否 | 当前只允许 `reportCompact` |
+| `variant` | 否 | `reportCompact` 或 5.3 起的 `embedded`；后者去掉自有卡壳以嵌入容器 |
+| `bottomFade` | 否 | 5.3 起；是否在可滚动表格底部显示渐隐提示 |
 | `compoundCellLayout` | 否 | 当前只允许 `inline` |
 | `rowKey` | 条件必填 | 多数据槽表格用于行对齐的稳定页面字段 id |
 | `rowKindField` | 否 | 行类别字段；取值 `subtotal` / `total` 分别套用小计与合计呈现档位 |
@@ -1070,7 +1086,7 @@ last90d
 
 必填属性：`nameField`（地域名称 `dimension`）、`valueField`（`measure`）、`map`（`china` 或 `world`）、`data.main`。
 
-可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`、`hierarchyFilter`（层级维度筛选器 id）、`levelField` / `parentField` / `codeField`（行上的层级、父级与写入编码）、`levelMaps`（各层级底图，`china` 或 `world`）、`legend`（分档图例，5.2 起）、`tooltipFields`（tooltip 扩展字段，5.2 起）。
+可选属性：`title`、`scatter`（`point` 或 `effect`）、`nameMap`（外部地域名到地图名称的字符串映射）、`actions`、`hierarchyFilter`（层级维度筛选器 id）、`levelField` / `parentField` / `codeField`（行上的层级、父级与写入编码）、`levelMaps`（各层级底图，`china` 或 `world`）、`legend`（分档图例，5.2 起）、`tooltipFields`（tooltip 扩展字段，5.2 起）、`variant: "regionalOverview"` 与 `pinnedSummary`（5.3 起）。
 
 选择地图前必须确认地域名称可以直接命中或通过 `nameMap` 显式映射；不得按样例猜测地理层级。
 
@@ -1107,6 +1123,10 @@ last90d
 ```
 
 每项的 `label` 是非空文本取值，`field` 是普通字段绑定（不得绑定 `detail`）。
+
+`pinnedSummary` 用稳定字段值固定展示一条地域摘要：它只能与 `variant: "regionalOverview"` 同时声明；`matchField` 与 `titleField` 必须是 `dimension`，`matchValue` 必须符合 `matchField` 的字段类型，`fields` 为 1–4 个标签不重复的普通字段绑定。不得按显示名称、页面 id 或数组行序写运行时分支。
+
+`regionalOverview` 的地域文字、定位针、tooltip 与 hover 强调态由同一个 ECharts scatter 系列按 `nameField` 和底图中心点动态产生；页面不声明 CSS 坐标，也不用静态 DOM 文字代替地图交互。
 
 `hierarchyFilter` 指向一个声明了 `hierarchy` 的维度筛选器。地图读该筛选器的当前层级决定底图与可见行，中间级点击把下一层取值写回筛选状态（不是页面文档里的 `writeFilter`），最深一级再走 `actions.navigate`。当前层级因此可经 URL 的 `h:` 前缀分享。
 
@@ -1149,6 +1169,7 @@ last90d
 | `tabs` | 是 | 至少一项；`id` 页面内唯一，`component` 必须是 `table` |
 | `defaultTab` | 否 | 缺省打开的 Tab id |
 | `title` | 否 | 容器标题 |
+| `variant` | 否 | 5.3 起可为 `compact`，只改变紧凑呈现，不改变 Tab 语义 |
 
 当前活动 Tab 是局部 UI 状态，不进 URL。子组件 id 与顶层组件一起判重。
 
@@ -1210,7 +1231,9 @@ last90d
 |---|---:|---|
 | `components` | 是 | 至少一个子组件；类型限白名单 |
 | `title` | 否 | 卡标题；可选，设计源里确有无标题的卡 |
+| `titleIcon` | 否 | 5.3 起的受控语义图标：`opportunity` / `tieredManagement` / `review` |
 | `dividers` | 否 | 相邻子组件之间是否分隔 |
+| `variant` | 否 | 5.3 起可为 `compact`，只改变卡壳密度 |
 
 **组合卡自己不承载数据。** 它不声明 `data`、不声明字段绑定、不声明 `actions`。“用组合卡还是用 `metricCard`”因此是一条结构判据——**有没有子组件**，一眼可判。交互仍归子组件：卡里哪个数字可点，由那个数字所属的组件自己的 `actions` 声明。
 
@@ -1303,8 +1326,9 @@ last90d
 | 属性 | 必填 | 允许值 / 说明 |
 |---|---:|---|
 | `title` | 否 | 标题 |
+| `titleIcon` | 否 | 5.3 起可为 `reward` |
 | `columns` | 否 | 每行放几组键值；`1`、`2`、`3` 或 `4`，缺省 `3`。`1` 用于窄卡位里的单列纵向罗列 |
-| `items` | 是 | 至少一项；每项 `label` 是文本取值，`field` 是字段绑定，不得绑定 `detail` |
+| `items` | 是 | 至少一项；每项 `label` 是文本取值，`field` 是字段绑定，不得绑定 `detail`；5.3 起可带 `unit`，以及 `goldMedal` / `silverMedal` / `redCard` / `yellowCard` 之一的 `icon` |
 
 ```json
 {
@@ -1761,7 +1785,7 @@ flowchart LR
 ### 11.1 结构
 
 - [ ] 顶层只有 `schemaVersion`、`id`、`meta`、可选 `params`、`dataSources`、`filters`、`sections`；
-- [ ] `schemaVersion` 为 `"5.0"`、`"5.1"` 或 `"5.2"`；新页面声明 `"5.2"`，存量页面继续声明满足其能力下限的已发布版本；
+- [ ] `schemaVersion` 为 `"5.0"`、`"5.1"`、`"5.2"` 或 `"5.3"`；新页面声明 `"5.3"`，存量页面继续声明满足其能力下限的已发布版本；
 - [ ] 所有对象没有未定义属性；
 - [ ] `sections`、每个 `components`、每个页面数据源 `fields` 均满足最小数量；
 - [ ] 所有 id 符合各自正则，筛选器、分区和组件 id 无重复。

@@ -276,6 +276,7 @@
   class:fit-container={props.fit === 'container'}
   class:wrap-headers={wrapHeaders}
   class:report-compact={props.variant === 'reportCompact'}
+  class:embedded={props.variant === 'embedded'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class="table-widget"
   data-table-title={props.title}
@@ -513,6 +514,10 @@
     </table>
   </div>
 
+  {#if props.bottomFade}
+    <div class="bottom-fade" aria-hidden="true"></div>
+  {/if}
+
   {#if props.pagination && props.pagination.mode !== 'none' && interactive && pagination}
     <div class="pager">
       <span class="total">总条数： <span>{pagination.totalCount}</span></span>
@@ -582,6 +587,7 @@
 
 <style>
   .table-widget {
+    position: relative;
     flex: 1;
     min-height: 0;
     display: flex;
@@ -595,6 +601,24 @@
       var(--table-widget-radius-bottom-right, 16px)
       var(--table-widget-radius-bottom-left, 16px);
     font-size: 14px;
+  }
+  .embedded {
+    box-sizing: border-box;
+    width: 532px;
+    height: 448px;
+    flex: none;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+    font-size: 14px;
+  }
+  .embedded .scroll {
+    box-sizing: border-box;
+    width: 532px;
+    height: 448px;
+    flex: none;
+    overflow: hidden;
+    border: 0;
   }
   .table-heading {
     display: flex;
@@ -679,6 +703,66 @@
     background: #fff;
     color: #191919;
     white-space: nowrap;
+  }
+  .embedded tbody td {
+    box-sizing: border-box;
+    height: 48px;
+    padding: 0 6px;
+    overflow: hidden;
+    border-right: 0;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .embedded thead th {
+    box-sizing: border-box;
+    height: 64px;
+    padding: 0 6px;
+    line-height: 20px;
+  }
+  .embedded thead th:last-child {
+    border-right: 0;
+  }
+  .embedded .head > span:first-child,
+  .embedded .sort-toggle > span:first-child {
+    overflow-wrap: normal;
+    white-space: pre-line;
+  }
+  .embedded .cell-stack,
+  .embedded .cell-primary-value,
+  .embedded .link-cell {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    line-height: 20px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .embedded .link-cell {
+    color: #191919;
+    text-decoration: none;
+  }
+  .embedded .sort-hint,
+  .embedded .sort-state {
+    opacity: 0;
+  }
+  .embedded th:hover .sort-hint,
+  .embedded th:focus-within .sort-hint,
+  .embedded th:focus-within .sort-state {
+    opacity: 1;
+  }
+  .bottom-fade {
+    position: absolute;
+    z-index: 5;
+    right: auto;
+    bottom: -18px;
+    left: -18px;
+    width: 518px;
+    height: 25px;
+    border-radius: 0 0 16px 16px;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.32));
+    pointer-events: none;
   }
   tbody td.danger {
     color: #f23030;
@@ -1196,6 +1280,11 @@
     min-width: 0;
     overflow-wrap: anywhere;
     white-space: normal;
+  }
+  .fit-container.embedded tbody td {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .fit-container .cell-stack,
   .fit-container .rate-cell {

@@ -212,7 +212,7 @@
               >
                 <span class="component-type">{component.typeLabel}</span>
                 <strong>{component.title || component.locator.componentId}</strong>
-                <small>{component.locator.componentId} · {component.span}/12</small>
+                <small>{component.locator.componentId} · {component.span}/{component.columnCount}</small>
               </button>
             </li>
           {/each}
@@ -250,7 +250,7 @@
           <section>
             <div class="panel-heading">
               <span class="step">3</span>
-              <div><h2>布局</h2><p>12 列自动流网格</p></div>
+              <div><h2>布局</h2><p>{selected.columnCount} 列自动流网格</p></div>
             </div>
             <label>
               网格跨度
@@ -259,8 +259,8 @@
                 onchange={(event) =>
                   applyComponentEdit({ span: Number((event.currentTarget as HTMLSelectElement).value) })}
               >
-                {#each Array.from({ length: 12 }, (_, index) => index + 1) as span}
-                  <option value={span}>{span} / 12</option>
+                {#each Array.from({ length: selected.columnCount }, (_, index) => index + 1) as span}
+                  <option value={span}>{span} / {selected.columnCount}</option>
                 {/each}
               </select>
             </label>

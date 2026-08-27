@@ -108,7 +108,7 @@ function unitPrompt(input: AskUnitFormingInput): string {
       ? `## 已确定选中的指标(消歧已完成,不得替换)\n${input.selectedMetrics
           .map((metric) => `- ${metric.businessDomain}·${metric.metricName}`)
           .join('\n')}`
-      : '## 注意:候选存在近义歧义或未命中时,不要自行挑选指标;歧义候选一律不写入 metrics,由用户在口径卡上确认。',
+      : '## 注意:候选存在近义歧义或未命中时,不要自行挑选指标;歧义候选一律不写入 metrics,由用户在取数核对上确认。',
     '',
     '## 规则',
     '1. 指标名、维度名、维度取值、时间粒度必须逐字取自语义面;别名用于理解,输出一律用规范名。',
@@ -140,7 +140,21 @@ function unitPrompt(input: AskUnitFormingInput): string {
       '未被用户提及的单元与字段绝对不要出现在 operations 里(未提及的显式设置保持不变);只换展示形态、不改口径时返回空数组 []。'
     );
   } else {
-    sections.push('', '本轮是首个问题:outcome=unit,给出完整取数单元。');
+    sections.push(
+      '',
+      '## 首轮:视角数量决定单元数量',
+      '一个取数单元对应页面上的一个组件。问题只问一个视角时 outcome=unit,给出完整取数单元。',
+      '问题一次问了多个指标或多个视角(「A、B、C 分别是多少」「总览」「大盘」「同时看」)时,' +
+        'outcome=operations,每个视角一个 {op:"add", unit:完整取数单元}。',
+      '一个单元只承载一个指标——问对比是这样,问趋势也是这样,' +
+        '只有问题明确要求把若干指标放进同一个视角(「放在一张图里」「叠在一起看」)才合并;' +
+        '单位不同的指标(Token 与 次、家 与 %)一律不得合并,同一张图叠不同单位会误导。',
+      '拆成多个单元时必须口径一致,否则组件之间无法横向对照:',
+      '- 全部单元同一业务域、同一 groupBy、同一 time(起止与粒度逐字相同),' +
+        '除非问题明确要求不同的维度或周期;',
+      '- 每个单元的 title 是该视角的业务标题(含指标名),彼此不重复;',
+      '- 单元只覆盖问题实际问到的指标,至多 6 个;不要为了铺满页面自行添加问题没问的指标。'
+    );
   }
   if (input.violationFeedback !== undefined && input.violationFeedback.length > 0) {
     sections.push(

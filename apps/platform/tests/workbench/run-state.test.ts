@@ -208,8 +208,8 @@ describe('工作台运行状态机:编排步骤时间线', () => {
   });
 });
 
-describe('工作台运行状态机:口径卡与阻塞确认', () => {
-  it('未命中阻塞条件的口径卡直接呈现,不等待确认', () => {
+describe('工作台运行状态机:取数核对与阻塞确认', () => {
+  it('未命中阻塞条件的取数核对直接呈现,不等待确认', () => {
     const view = replay(createRunView({ runId: 'run-1', question: null }), [
       SCOPE_CARD_DIRECT,
       { type: 'execution_started', effectiveQuery: {} },
@@ -223,22 +223,31 @@ describe('工作台运行状态机:口径卡与阻塞确认', () => {
     expect(awaitingScopeConfirmation(view)).toBe(false);
   });
 
-  it('口径卡完整回显生效范围:业务域、临时口径、时间与粒度、筛选', () => {
+  it('取数核对完整回显生效范围:业务域、临时指标、分组维度、时间与粒度、筛选', () => {
     const view = applyStreamEvent(
       createRunView({ runId: 'run-1', question: null }),
-      SCOPE_CARD_BLOCKED
+      { ...SCOPE_CARD_BLOCKED, groupBy: ['区域'] }
     );
     expect(scopeCards(view)[0]).toMatchObject({
       businessDomain: '运营分析',
       metricName: null,
       adHocDefinition: { formula: '消耗量 / 总量', description: '占比,现场生成' },
+      groupBy: ['区域'],
       timeRange: '2026-07',
       granularity: '月',
       filters: [{ dimension: '区域', values: ['华东'] }]
     });
   });
 
-  it('阻塞口径卡后运行停在人工交互:该卡进入等待确认', () => {
+  it('多单元之前的历史事件没有分组维度:视图按不切分读取,不报错', () => {
+    const view = applyStreamEvent(
+      createRunView({ runId: 'run-1', question: null }),
+      SCOPE_CARD_DIRECT
+    );
+    expect(scopeCards(view)[0]?.groupBy).toEqual([]);
+  });
+
+  it('阻塞取数核对后运行停在人工交互:该卡进入等待确认', () => {
     const view = replay(createRunView({ runId: 'run-1', question: null }), [
       SCOPE_CARD_BLOCKED,
       {
@@ -257,7 +266,7 @@ describe('工作台运行状态机:口径卡与阻塞确认', () => {
     expect(scopeCards(view)[0]?.awaitingConfirmation).toBe(true);
   });
 
-  it('口径卡之后已真实执行时,后续交互不再指向该卡', () => {
+  it('取数核对之后已真实执行时,后续交互不再指向该卡', () => {
     const view = replay(createRunView({ runId: 'run-1', question: null }), [
       SCOPE_CARD_BLOCKED,
       { type: 'execution_started', effectiveQuery: {} },

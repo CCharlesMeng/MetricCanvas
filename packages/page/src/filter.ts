@@ -29,6 +29,10 @@ export interface DimensionFilterDeclaration {
   dimension: string;
   /** 筛选器标签,显示于筛选器区 */
   label?: string;
+  /** 空选时的控件内文案；缺省为“全部”。 */
+  emptyLabel?: string;
+  /** 层级级别切换器；缺省 tabs，只有其它交互承担切层时才声明 hidden。 */
+  hierarchyPicker?: 'tabs' | 'hidden';
   /**
    * 展示形态,四种共用同一纯渲染契约(候选项/当前值进、变更事件出):
    * select=下拉多选(默认)| tabs=tab 单选 | tree=树形多选(层级按候选值的 '/' 分隔符约定)

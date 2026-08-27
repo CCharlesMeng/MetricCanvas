@@ -167,3 +167,54 @@ describe('分区叠放层', () => {
     );
   });
 });
+
+describe('分区受控列轨', () => {
+  it('缺省仍为 12 列，5.3 可声明最多 12 条正整数权重轨', () => {
+    const legacy = dashboardPage();
+    expect(validate(legacy)).toEqual([]);
+
+    const weighted = dashboardPage();
+    weighted.schemaVersion = '5.3';
+    weighted.sections[0].columnTracks = [29, 29, 22];
+    weighted.sections[0].components[1].layout.span = 1;
+    expect(validate(weighted)).toEqual([]);
+    const parsed = parsePage(weighted);
+    expect(parsed.ok).toBe(true);
+    if (parsed.ok) expect(parsed.page.sections[0]?.columnTracks).toEqual([29, 29, 22]);
+  });
+
+  it('空数组、0、负数、小数和超过 12 条都由结构校验拒绝', () => {
+    for (const tracks of [[], [1, 0], [1, -1], [1, 1.5], Array(13).fill(1)]) {
+      const page = dashboardPage();
+      page.schemaVersion = '5.3';
+      page.sections[0].columnTracks = tracks;
+      expect(
+        validate(page).some((error) => error.path.startsWith('/sections/0/columnTracks')),
+        JSON.stringify(tracks)
+      ).toBe(true);
+    }
+  });
+
+  it('非 backdrop 顶层组件不得跨出轨数，backdrop 仍可保留 span 12', () => {
+    const page = dashboardPage();
+    page.schemaVersion = '5.3';
+    page.sections[0].columnTracks = [29, 29, 22];
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({ path: '/sections/0/components/1/layout/span' })
+    );
+    expect(validate(page)).not.toContainEqual(
+      expect.objectContaining({ path: '/sections/0/components/0/layout/span' })
+    );
+  });
+
+  it('声明列轨但仍写 5.2 时报到 columnTracks 能力使用点', () => {
+    const page = dashboardPage();
+    page.schemaVersion = '5.2';
+    page.sections[0].columnTracks = [29, 29, 22];
+    page.sections[0].components[1].layout.span = 1;
+    expect(requiredMinorVersion(page)).toBe(3);
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({ path: '/sections/0/columnTracks' })
+    );
+  });
+});

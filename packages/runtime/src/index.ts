@@ -2,6 +2,7 @@ export type {
   PageRepository,
   DataGateway,
   DataGatewayResult,
+  DimensionValueCandidate,
   DimensionValuesGateway,
   DimensionValuesResult,
   RuntimeDataGateway,

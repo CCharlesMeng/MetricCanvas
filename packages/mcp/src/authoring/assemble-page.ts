@@ -23,6 +23,25 @@ import {
  * 引用。纯函数：不依赖浏览器、不依赖统一运行时、不做 IO。
  */
 
+/** 取数核对与口径组共用的维度筛选条件。 */
+export interface ScopeDimensionFilter {
+  dimension: string;
+  values: readonly string[];
+}
+
+/**
+ * 取数单元的口径（CONTEXT.md：口径组）：决定它与哪些单元可以横向对照。
+ * 时间窗口与粒度取取数核对呈现用的同一份文案，装配不再二次解释时间语义。
+ */
+export interface DataRequestUnitScope {
+  businessDomain: string;
+  /** 分组维度；口径组按组合而非顺序判等 */
+  groupBy: readonly string[];
+  timeRange: string;
+  granularity: string;
+  filters: readonly ScopeDimensionFilter[];
+}
+
 /**
  * 经清单校验与真实执行后的取数单元（ADR-0032）：携带派生的查询定义、
  * 结果字段契约与可选的内嵌初始行。一个取数单元对应页面的一个页面数据源。
@@ -46,6 +65,11 @@ export interface ExecutedDataRequestUnit {
   intent?: AnalysisIntent;
   /** 用户显式钉住的组件；钉住后装配不得改写组件类型 */
   pinnedComponent?: ComponentCandidate['type'];
+  /**
+   * 口径：一个口径组一个内容分区（ADR-0055）。只有全部单元都声明口径时
+   * 才按口径组分区；任一单元缺省即整体退回单分区。
+   */
+  scope?: DataRequestUnitScope;
 }
 
 export interface AssembleTransientPageInput {
@@ -54,7 +78,7 @@ export interface AssembleTransientPageInput {
   /** 页面说明，写入 meta.description */
   description?: string;
   units: ExecutedDataRequestUnit[];
-  /** 内容分区标题 */
+  /** 内容分区标题；只在页面收敛为单个口径组时使用（多组时标题由各组口径派生） */
   sectionTitle?: string;
   /** 分区容器：分区外观的唯一真源 */
   container?: SectionContainer;
@@ -158,14 +182,7 @@ export function assembleTransientPage(
       : { meta: { description: input.description } }),
     dataSources,
     ...(input.filters === undefined ? {} : { filters: input.filters }),
-    sections: [
-      {
-        id: 'main',
-        ...(input.sectionTitle === undefined ? {} : { title: input.sectionTitle }),
-        ...(input.container === undefined ? {} : { container: input.container }),
-        components
-      }
-    ]
+    sections: sectionsOf(input.units, components, input)
   };
 
   const errors = validate(document);
@@ -180,6 +197,146 @@ export function assembleTransientPage(
     };
   }
   return { ok: true, document };
+}
+
+/** 一个口径组：同组结果可以横向对照，跨组不能（CONTEXT.md：口径组）。 */
+export interface ScopeGroupSummary {
+  scope: DataRequestUnitScope;
+  /** 该组口径的完整文案，供对话轨与时间线复用同一份措辞 */
+  label: string;
+  /** 组内取数单元的数据源名，按首次出现顺序 */
+  dataSourceIds: string[];
+}
+
+/**
+ * 按口径组归并取数单元（ADR-0055）。分组与文案只在这里定义一次：装配用它
+ * 划分内容分区，问数回复用它说明哪几块可以横向对照，两处不得各写一份。
+ * 任一单元未声明口径时返回 null——此时页面退回单分区。
+ */
+export function scopeGroupsOfUnits(
+  units: ReadonlyArray<Pick<ExecutedDataRequestUnit, 'dataSourceId' | 'scope'>>
+): ScopeGroupSummary[] | null {
+  const groups: ScopeGroupSummary[] = [];
+  const keys: string[] = [];
+  for (const unit of units) {
+    if (unit.scope === undefined) return null;
+    const key = scopeKeyOf(unit.scope);
+    const index = keys.indexOf(key);
+    if (index >= 0) {
+      groups[index]!.dataSourceIds.push(unit.dataSourceId);
+      continue;
+    }
+    keys.push(key);
+    groups.push({
+      scope: unit.scope,
+      label: scopeLabel(unit.scope),
+      dataSourceIds: [unit.dataSourceId]
+    });
+  }
+  return groups;
+}
+
+/**
+ * 按口径组划分内容分区（ADR-0055）。页面收敛为单个口径组时仍是单个分区、
+ * 标题用调用方给的 sectionTitle，不给口径一致的页面引入多余结构；任一单元
+ * 未声明口径时整体退回这条路径。
+ */
+function sectionsOf(
+  units: readonly ExecutedDataRequestUnit[],
+  components: readonly TransientPageComponent[],
+  input: AssembleTransientPageInput
+): TransientPageDocument['sections'] {
+  const container = input.container === undefined ? {} : { container: input.container };
+  const groups = scopeGroupsOfUnits(units);
+  if (groups === null || groups.length === 1) {
+    return [
+      {
+        id: 'main',
+        ...(input.sectionTitle === undefined ? {} : { title: input.sectionTitle }),
+        ...container,
+        components: [...components]
+      }
+    ];
+  }
+  const titles = scopeGroupTitles(groups.map((group) => group.scope));
+  return groups.map((group, index) => ({
+    id: `scope-${index + 1}`,
+    title: titles[index]!,
+    ...container,
+    components: group.dataSourceIds.flatMap((dataSourceId) =>
+      components.filter((component) => component.data.main === dataSourceId)
+    )
+  }));
+}
+
+/** 口径判等：分组维度与筛选按组合判等，声明顺序不同不构成两个口径组。 */
+function scopeKeyOf(scope: DataRequestUnitScope): string {
+  return JSON.stringify([
+    scope.businessDomain,
+    [...scope.groupBy].sort(),
+    scope.timeRange,
+    scope.granularity,
+    scope.filters
+      .map((filter) => `${filter.dimension}=${[...filter.values].sort().join('|')}`)
+      .sort()
+  ]);
+}
+
+/** 口径的完整文案：业务域 · 分组维度 · 时间窗口（粒度）· 维度筛选。 */
+function scopeLabel(scope: DataRequestUnitScope): string {
+  const filters = filtersLabel(scope);
+  return [
+    scope.businessDomain,
+    dimensionsLabel(scope.groupBy),
+    timeLabel(scope),
+    ...(filters === '' ? [] : [filters])
+  ].join(' · ');
+}
+
+/**
+ * 分区标题：分组维度恒定出现，其余口径要素只在各组之间不同时出现。差异
+ * 才是标题要说的事——全页共用的时间窗口重复几遍只是噪声，它在取数核对与
+ * 助手回复里已经完整可见。任一对口径组至少有一项要素不同，该项因此必然
+ * 出现在标题里，标题不会撞车。
+ */
+function scopeGroupTitles(scopes: readonly DataRequestUnitScope[]): string[] {
+  const varies = (project: (scope: DataRequestUnitScope) => string): boolean =>
+    new Set(scopes.map(project)).size > 1;
+  const showDomain = varies((scope) => scope.businessDomain);
+  const showTime = varies((scope) => `${scope.timeRange}|${scope.granularity}`);
+  const showFilters = varies(filtersLabel);
+  return scopes.map((scope) =>
+    [
+      ...(showDomain ? [scope.businessDomain] : []),
+      dimensionsLabel(scope.groupBy),
+      ...(showTime ? [timeLabel(scope)] : []),
+      ...(showFilters ? [filtersLabel(scope) || '不限筛选'] : [])
+    ].join(' · ')
+  );
+}
+
+function dimensionsLabel(groupBy: readonly string[]): string {
+  return groupBy.length === 0 ? '总量' : `按${groupBy.join('、')}`;
+}
+
+/** 粒度标识来自 DQE 的 filter.time.period；表外标识原样不译。 */
+const GRANULARITY_LABELS: Record<string, string> = {
+  day: '日',
+  week: '周',
+  month: '月',
+  quarter: '季',
+  year: '年'
+};
+
+function timeLabel(scope: DataRequestUnitScope): string {
+  const granularity = GRANULARITY_LABELS[scope.granularity];
+  return granularity === undefined ? scope.timeRange : `${scope.timeRange}(${granularity})`;
+}
+
+function filtersLabel(scope: DataRequestUnitScope): string {
+  return scope.filters
+    .map((filter) => `${filter.dimension}=${filter.values.join('、')}`)
+    .join('、');
 }
 
 /** 由取数单元的结果字段契约与真实执行结果推导结果形状；不读样例值语义。 */

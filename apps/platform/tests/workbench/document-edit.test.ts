@@ -319,6 +319,24 @@ describe('画布与配置面板的本地文档改写', () => {
     expect(validate(cleared.draft.pageDocument)).toEqual([]);
   });
 
+  it('自定义列轨分区按实际轨数夹取宽度，编辑结果保持可发布', () => {
+    const document = assembled();
+    document.schemaVersion = '5.3';
+    const section = (document.sections as Array<Record<string, unknown>>)[0]!;
+    section.columnTracks = [29, 29, 22];
+    for (const component of section.components as Array<Record<string, unknown>>) {
+      (component.layout as { span: number }).span = 1;
+    }
+    const first = componentAt(document, 0);
+    const locator = { sectionId: 'main', componentId: first.id as string };
+
+    const widened = editComponent(authoringDraftOf(document), locator, { span: 99 });
+    expect(widened.ok).toBe(true);
+    if (!widened.ok) return;
+    expect((componentAt(widened.draft.canvasDocument, 0).layout as { span: number }).span).toBe(3);
+    expect(validate(widened.draft.pageDocument)).toEqual([]);
+  });
+
   it('组件 id 反查定位:存在返回分区+组件,不存在返回 null', () => {
     const document = assembled();
     const first = componentAt(document, 0);

@@ -51,6 +51,7 @@ export function resolveAuthoringSections(
     if (seenSections.has(draftSection.id)) return pageSections;
     seenSections.add(draftSection.id);
     const components = [];
+    const sourceSection = pageSections.find((section) => section.id === draftSection.id);
     for (const componentId of draftSection.componentIds) {
       const component = componentsById.get(componentId);
       if (!component || seenComponents.has(componentId)) return pageSections;
@@ -63,6 +64,9 @@ export function resolveAuthoringSections(
       ...(draftSection.container === undefined
         ? {}
         : { container: draftSection.container }),
+      ...(sourceSection?.columnTracks === undefined
+        ? {}
+        : { columnTracks: sourceSection.columnTracks }),
       components
     });
   }

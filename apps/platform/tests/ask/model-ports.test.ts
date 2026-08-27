@@ -251,6 +251,45 @@ describe('createLexicalAskModel:确定性回退', () => {
     });
   });
 
+  it('首轮命中多个指标即多个视角:一个指标一个单元,口径逐字共用', async () => {
+    const model = createLexicalAskModel({ clock });
+    const decision = await model.formUnit({
+      question: '2026年上半年各区域的Tokens消耗量、计费Tokens量和Tokens请求量对比情况如何?',
+      surfaces: [operationsSurface],
+      candidates: [],
+      selectedMetrics: [
+        { businessDomain: '运营分析', metricName: 'Tokens消耗量' },
+        { businessDomain: '运营分析', metricName: '计费Tokens量' },
+        { businessDomain: '运营分析', metricName: 'Tokens请求量' }
+      ],
+      previousUnits: [],
+      targetDataSourceId: null
+    });
+    if (decision.outcome !== 'operations') throw new Error('首轮多指标应拆成多个新增单元');
+    expect(decision.operations.map((operation) => operation.op)).toEqual(['add', 'add', 'add']);
+    const units = decision.operations.map((operation) =>
+      operation.op === 'add' ? operation.unit : null
+    );
+    expect(units.map((unit) => unit!.metrics)).toEqual([
+      [{ kind: 'metric', name: 'Tokens消耗量' }],
+      [{ kind: 'metric', name: '计费Tokens量' }],
+      [{ kind: 'metric', name: 'Tokens请求量' }]
+    ]);
+    // 组件之间要能按相同的维度与周期横向对照:分组、筛选与时间逐字相同。
+    const scopes = units.map((unit) =>
+      JSON.stringify({ groupBy: unit!.groupBy, filters: unit!.filters, time: unit!.time })
+    );
+    expect(new Set(scopes).size).toBe(1);
+    expect(units[0]!.groupBy).toEqual(['区域']);
+    expect(units[0]!.time).toMatchObject({ start: '2026-01', end: '2026-06' });
+    // 标题彼此可区分,否则多个组件的可见标题都是同一句问题。
+    expect(units.map((unit) => unit!.title)).toEqual([
+      'Tokens消耗量',
+      '计费Tokens量',
+      'Tokens请求量'
+    ]);
+  });
+
   it('解析不出指标时如实 out_of_scope,不编造', async () => {
     const model = createLexicalAskModel({ clock });
     const decision = await model.formUnit({

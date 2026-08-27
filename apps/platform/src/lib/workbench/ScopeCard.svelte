@@ -2,10 +2,13 @@
   import type { ScopeCardView } from './run-state';
 
   /**
-   * 口径卡(CONTEXT.md / ADR-0037):执行前完整回显生效范围——业务域、
-   * 指标或临时口径、时间范围与粒度、筛选条件。临时口径与已定义指标
-   * 视觉可区分;命中阻塞条件(候选歧义、自由生成表达式)时在卡上等待
+   * 取数核对(CONTEXT.md / ADR-0037):执行前完整回显生效范围——业务域、
+   * 指标或临时指标、分组维度、时间范围与粒度、筛选条件。临时指标与已定义
+   * 指标视觉可区分;命中阻塞条件(候选歧义、自由生成表达式)时在卡上等待
    * 用户确认后才继续执行。
+   *
+   * 分组维度必须在卡上:一轮多个单元时,同一指标按不同维度切分是几张卡
+   * 之间唯一的差别(ADR-0055)。
    */
   let {
     card,
@@ -22,9 +25,9 @@
 
 <div class="scope" class:temporary={card.adHocDefinition !== null}>
   <div class="scope-head">
-    <span>口径卡 · 生效范围</span>
+    <span>取数核对 · 生效范围</span>
     {#if card.adHocDefinition}
-      <span class="warn-pill">临时口径</span>
+      <span class="warn-pill">临时指标</span>
     {/if}
   </div>
   <dl>
@@ -33,7 +36,7 @@
       <dd>{card.businessDomain}</dd>
     </div>
     <div>
-      <dt>{card.metricName !== null ? '指标' : '临时口径'}</dt>
+      <dt>{card.metricName !== null ? '指标' : '临时指标'}</dt>
       <dd>
         {#if card.metricName !== null}
           {card.metricName}
@@ -44,6 +47,16 @@
           {/if}
         {:else}
           <span class="muted">未声明</span>
+        {/if}
+      </dd>
+    </div>
+    <div>
+      <dt>切分</dt>
+      <dd>
+        {#if card.groupBy.length > 0}
+          {card.groupBy.join('、')}
+        {:else}
+          <span class="muted">不切分,只出总量</span>
         {/if}
       </dd>
     </div>
@@ -74,11 +87,11 @@
       {/if}
       <p class="note">命中阻塞条件(候选歧义或自由生成表达式),已暂停执行;要修改口径,直接在下方追问。</p>
       {#if card.adHocDefinition}
-        <p class="note">确认临时口径即登记一条指标需求条目(重复出现累加次数),供数据侧评估是否建设正式指标。</p>
+        <p class="note">确认临时指标即登记一条指标需求条目(重复出现累加次数),供数据侧评估是否建设正式指标。</p>
       {/if}
     </div>
   {:else if card.blockedOnConfirmation}
-    <p class="note">该口径卡命中阻塞条件,曾在执行前等待确认。</p>
+    <p class="note">该取数核对命中阻塞条件,曾在执行前等待确认。</p>
   {/if}
 </div>
 

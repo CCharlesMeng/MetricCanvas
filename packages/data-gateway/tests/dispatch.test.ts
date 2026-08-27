@@ -109,13 +109,26 @@ describe('数据网关按 language 分发注册点', () => {
   });
 
   it('维度候选值按声明能力的适配器合并去重,取消信号原样透传', async () => {
-    const dqe = adapterSpy({ kind: 'values', values: ['华东', '华南', '华东'] });
+    const dqe = adapterSpy({
+      kind: 'values',
+      candidates: [
+        { value: 'east', label: '华东' },
+        { value: 'south', label: '华南' },
+        { value: 'east', label: '重复华东' }
+      ]
+    });
     const gateway = createDataGateway({ dqe: dqe.gateway });
     const controller = new AbortController();
 
     await expect(
       gateway.fetchDimensionValues('区域', { signal: controller.signal })
-    ).resolves.toEqual({ kind: 'values', values: ['华东', '华南'] });
+    ).resolves.toEqual({
+      kind: 'values',
+      candidates: [
+        { value: 'east', label: '华东' },
+        { value: 'south', label: '华南' }
+      ]
+    });
     expect(dqe.dimensionCalls).toEqual([
       { dimension: '区域', signal: controller.signal }
     ]);

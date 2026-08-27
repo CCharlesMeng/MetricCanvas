@@ -6,11 +6,11 @@ import type { JSONValue } from '@metriccanvas/page-lifecycle';
  * 这是问数编排各阶段落库共用的唯一事件类型声明:会话存储(./store.ts)、
  * 可见性过滤、测试以及后续切片(模型探针、#32 步骤事件流式下发)都从这里
  * 导入,不得另写一份。事件顺序对应 ADR-0037 的编排阶段:
- * 域路由 → 候选检索 → 口径卡 → 真实执行 → 行就绪 → 文档就绪;任一阶段
+ * 域路由 → 候选检索 → 取数核对 → 真实执行 → 行就绪 → 文档就绪;任一阶段
  * 失败以 step_failed 收尾。
  *
  * 红线(ADR-0030):事件只记录结构化结果——问题原文、路由域、候选与选中
- * 指标、临时口径、生效查询、执行结果摘要、意图与组件选择、失败分类;
+ * 指标、临时指标、生效查询、执行结果摘要、意图与组件选择、失败分类;
  * 不保存完整对话文本,也不保存模型 prompt。
  */
 
@@ -29,7 +29,7 @@ export const ANALYSIS_INTENTS = [
 ] as const;
 export type AnalysisIntent = (typeof ANALYSIS_INTENTS)[number];
 
-/** 指标候选:检索返回的排序候选及其口径差异说明,是口径卡消歧的输入(ADR-0037)。 */
+/** 指标候选:检索返回的排序候选及其口径差异说明,是取数核对消歧的输入(ADR-0037)。 */
 export interface MetricCandidate {
   metricName: string;
   /** 所属业务域(CONTEXT.md:业务域是路由标签,不表达数据隔离)。 */
@@ -38,13 +38,13 @@ export interface MetricCandidate {
   definitionDifference: string | null;
 }
 
-/** 临时口径(CONTEXT.md:Ad-hoc Definition):未命中指标条目时现场生成的计算口径。 */
+/** 临时指标(CONTEXT.md:Ad-hoc Definition):未命中指标条目时现场生成的计算口径。 */
 export interface AdHocDefinition {
   formula: string;
   description: string | null;
 }
 
-/** 维度筛选条件,口径卡生效范围的组成部分。 */
+/** 维度筛选条件,取数核对生效范围的组成部分。 */
 export interface DimensionFilter {
   dimension: string;
   values: readonly string[];
@@ -64,6 +64,12 @@ export interface ComponentChoice {
   pinnedByUser: boolean;
   /** 组件所绑取数单元的页面数据源名;单单元时期的历史事件缺省。 */
   dataSourceId?: string;
+  /**
+   * 该组件所绑单元的分析意图。意图按单元成立而不是按页面成立:跨口径页面
+   * 里各单元的意图本就不同(ADR-0055)。单单元时期的历史事件缺省,那时它
+   * 记在事件顶层。
+   */
+  intent?: AnalysisIntent;
 }
 
 /** 域路由完成:问题原文进入会话的唯一位置;路由结果必须可见且可改(ADR-0037)。 */
@@ -77,17 +83,17 @@ export interface DomainRoutedEvent {
   overriddenByUser: boolean;
 }
 
-/** 指标与维度检索完成:排序候选、选中指标与可能的临时口径。 */
+/** 指标与维度检索完成:排序候选、选中指标与可能的临时指标。 */
 export interface CandidatesRetrievedEvent {
   type: 'candidates_retrieved';
   candidates: readonly MetricCandidate[];
-  /** 选中指标名;检索未命中、改走临时口径时为 null。 */
+  /** 选中指标名;检索未命中、改走临时指标时为 null。 */
   selectedMetric: string | null;
   adHocDefinition: AdHocDefinition | null;
 }
 
 /**
- * 口径卡已呈现:完整生效范围(ADR-0037);指标名与临时口径二者其一。
+ * 取数核对已呈现:完整生效范围(ADR-0037);指标名与临时指标二者其一。
  * 多单元轮次按被触及单元各产出一次(事件流允许同类事件重复)。
  */
 export interface ScopeCardPresentedEvent {
@@ -95,12 +101,17 @@ export interface ScopeCardPresentedEvent {
   businessDomain: string;
   metricName: string | null;
   adHocDefinition: AdHocDefinition | null;
+  /**
+   * 分组维度:同一指标按不同维度切分是多单元轮次里最常见的差别,不带上它
+   * 时几张卡会逐字相同(ADR-0055)。多单元之前的历史事件缺省。
+   */
+  groupBy?: readonly string[];
   timeRange: string;
   granularity: string;
   filters: readonly DimensionFilter[];
-  /** 是否命中 ADR-0037 的阻塞条件(候选歧义、自由 formula、临时口径等),需等待用户确认。 */
+  /** 是否命中 ADR-0037 的阻塞条件(候选歧义、自由 formula、临时指标等),需等待用户确认。 */
   blockedOnConfirmation: boolean;
-  /** 该口径卡对应取数单元的页面数据源名;单单元时期的历史事件缺省。 */
+  /** 该取数核对对应取数单元的页面数据源名;单单元时期的历史事件缺省。 */
   dataSourceId?: string;
 }
 
@@ -123,7 +134,8 @@ export interface RowsReadyEvent {
 /** 临时页面文档就绪:意图判定与组件选择随会话保存(ADR-0030、ADR-0037)。 */
 export interface DocumentReadyEvent {
   type: 'document_ready';
-  intent: AnalysisIntent;
+  /** 单单元时期的页面级意图;新事件按 components[].intent 逐单元携带(ADR-0055)。 */
+  intent?: AnalysisIntent;
   components: readonly ComponentChoice[];
   /** 临时页面 id(ADR-0030):不进页面仓储、不产生页面修订。 */
   transientPageId: string;
@@ -149,7 +161,7 @@ export interface StepFailedEvent {
  */
 export interface MetricGapOccurrence {
   /**
-   * 幂等键:临时口径缺口按「业务域 + 表达式形状」派生,面外缺口按
+   * 幂等键:临时指标缺口按「业务域 + 表达式形状」派生,面外缺口按
    * 「业务域 + 归一化检索对象」派生(派生函数见 ../session/metric-gap.ts)。
    * 同一缺口的重复出现共享同一键,聚合时去重并累加出现次数。
    */
@@ -160,7 +172,7 @@ export interface MetricGapOccurrence {
   searchTerms: readonly string[];
   /** 最接近的候选及其口径差异说明。 */
   closestCandidates: readonly MetricCandidate[];
-  /** 尽力回答所用的临时口径;完全无法回答时为 null。 */
+  /** 尽力回答所用的临时指标;完全无法回答时为 null。 */
   adHocDefinition: AdHocDefinition | null;
   /** 期望的切分维度。 */
   expectedDimensions: readonly string[];

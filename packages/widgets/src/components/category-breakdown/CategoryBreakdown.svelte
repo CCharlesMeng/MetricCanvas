@@ -162,20 +162,27 @@
     gap: 4px;
   }
   .compact-list table {
-    table-layout: fixed;
+    width: auto;
+    align-self: flex-end;
+    table-layout: auto;
   }
   .compact-list .category {
-    width: 40%;
+    width: auto;
   }
   .compact-list .measure + .measure,
   .compact-list .category + .measure {
-    padding-left: 8px;
+    padding-left: 24px;
   }
   .compact-list thead th {
-    font-size: 11px;
+    font-size: 12px;
+    text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
   }
   .compact-list tbody tr:not(:first-child) th,
   .compact-list tbody tr:not(:first-child) td {
-    padding-top: 4px;
+    padding-top: 6px;
+  }
+  .compact-list tbody tr:first-child th,
+  .compact-list tbody tr:first-child td {
+    padding-top: 2px;
   }
 </style>

@@ -254,6 +254,252 @@ describe('五轮真实场景重放:单取数单元 → 多取数单元', () => {
   });
 });
 
+describe('首轮多单元:一句问题直接铺开多个组件', () => {
+  it('模型漏写 title 时缺省标题按各单元指标派生,组件标题彼此可区分', async () => {
+    const untitled = (name: string): AskDataRequestUnitState => ({
+      businessDomain: '客户经营',
+      metrics: [{ kind: 'metric', name }],
+      groupBy: ['行业'],
+      filters: [],
+      time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' }
+    });
+    const page = await runRound({
+      runId: 'first-round-many',
+      question: '2026年上半年各行业的新增客户数、流失客户数和客户留存率对比情况如何?',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: untitled('新增客户数') },
+            { op: 'add', unit: untitled('流失客户数') },
+            { op: 'add', unit: untitled('客户留存率') }
+          ]
+        }
+      ],
+      intent: [{ intent: 'comparison' }, { intent: 'comparison' }, { intent: 'comparison' }]
+    });
+
+    const components = componentsOf(page.document);
+    expect(components).toHaveLength(3);
+    expect(components.map((component) => component.props.title)).toEqual([
+      '新增客户数',
+      '流失客户数',
+      '客户留存率'
+    ]);
+    // 三个单元各自走一次真实取数,口径(分组与时间)逐字共用。
+    expect(page.harness.executions()).toBe(3);
+  });
+
+  it('单单元轮的缺省标题仍是整句问题(多单元规则不外溢)', async () => {
+    const page = await runRound({
+      runId: 'first-round-single',
+      question: '2026年上半年各行业的新增客户数对比情况如何?',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'unit',
+          unit: {
+            businessDomain: '客户经营',
+            metrics: [{ kind: 'metric', name: '新增客户数' }],
+            groupBy: ['行业'],
+            filters: [],
+            time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' }
+          }
+        }
+      ],
+      intent: [{ intent: 'comparison' }]
+    });
+    expect(componentsOf(page.document)[0]!.props.title).toBe(
+      '2026年上半年各行业的新增客户数对比情况如何?'
+    );
+  });
+});
+
+describe('跨口径页面:口径组作为分区边界(ADR-0055)', () => {
+  const CUSTOMER_SCOPES = {
+    total: {
+      businessDomain: '客户经营',
+      metrics: [{ kind: 'metric', name: '新增客户数' } as const],
+      groupBy: [] as string[],
+      filters: [],
+      time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' } as const,
+      title: '整体新增客户数总量'
+    },
+    monthly: {
+      businessDomain: '客户经营',
+      metrics: [{ kind: 'metric', name: '新增客户数' } as const],
+      groupBy: ['统计周期'],
+      filters: [],
+      time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' } as const,
+      title: '每月新增客户数走势'
+    },
+    byIndustry: {
+      businessDomain: '客户经营',
+      metrics: [{ kind: 'metric', name: '新增客户数' } as const],
+      groupBy: ['行业'],
+      filters: [],
+      time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' } as const,
+      title: '各行业新增客户数对比'
+    }
+  } satisfies Record<string, AskDataRequestUnitState>;
+
+  async function crossScopeRound(): Promise<RoundResult> {
+    return runRound({
+      runId: 'cross-scope',
+      question:
+        '复刻一份2026年上半年的客户经营月报:整体的新增客户数总量、每月新增客户数走势、各行业新增客户数对比',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: CUSTOMER_SCOPES.total },
+            { op: 'add', unit: CUSTOMER_SCOPES.monthly },
+            { op: 'add', unit: CUSTOMER_SCOPES.byIndustry }
+          ]
+        }
+      ],
+      intent: [{ intent: 'single_value' }, { intent: 'trend' }, { intent: 'comparison' }]
+    });
+  }
+
+  it('一个口径组一个内容分区,分区标题写出各组的分组维度', async () => {
+    const page = await crossScopeRound();
+    const sections = page.document.sections as Array<{
+      id: string;
+      title: string;
+      components: Array<{ data: { main: string } }>;
+    }>;
+    expect(sections.map((section) => [section.id, section.title])).toEqual([
+      ['scope-1', '总量'],
+      ['scope-2', '按统计周期'],
+      ['scope-3', '按行业']
+    ]);
+    expect(
+      sections.map((section) => section.components.map((component) => component.data.main))
+    ).toEqual([['result'], ['result-2'], ['result-3']]);
+  });
+
+  it('取数核对带上分组维度:否则三张卡除数据源名外逐字相同', async () => {
+    const page = await crossScopeRound();
+    const cards = stepEvents(page.events).flatMap((event) =>
+      event.type === 'scope_card_presented' ? [event] : []
+    );
+    expect(cards.map((card) => card.groupBy)).toEqual([[], ['统计周期'], ['行业']]);
+    // 除分组维度以外的要素本轮全同:不带 groupBy 时这三张卡不可区分。
+    expect(
+      new Set(
+        cards.map((card) =>
+          JSON.stringify([card.businessDomain, card.metricName, card.timeRange, card.granularity])
+        )
+      ).size
+    ).toBe(1);
+  });
+
+  it('助手回复按口径组汇总,并明说跨组不能横向对照', async () => {
+    const page = await crossScopeRound();
+    const reply = page.events
+      .flatMap((event) => (event.type === 'assistant_message' ? [event.message.content] : []))
+      .join('\n');
+    expect(reply).toContain('分属 3 组口径');
+    expect(reply).toContain('跨组不能');
+    expect(reply).toContain('【客户经营 · 总量 · 2026-01 ~ 2026-06(月)】');
+    expect(reply).toContain('【客户经营 · 按行业 · 2026-01 ~ 2026-06(月)】');
+  });
+
+  it('口径一致的多单元页面仍是单分区,回复说明可以横向对照', async () => {
+    const byIndustry = (name: string): AskDataRequestUnitState => ({
+      ...CUSTOMER_SCOPES.byIndustry,
+      metrics: [{ kind: 'metric', name }],
+      title: `各行业${name}对比`
+    });
+    const page = await runRound({
+      runId: 'same-scope',
+      question: '2026年上半年各行业的新增客户数、流失客户数对比情况如何?',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: byIndustry('新增客户数') },
+            { op: 'add', unit: byIndustry('流失客户数') }
+          ]
+        }
+      ],
+      intent: [{ intent: 'comparison' }, { intent: 'comparison' }]
+    });
+    const sections = page.document.sections as Array<{ id: string; title: string }>;
+    expect(sections.map((section) => [section.id, section.title])).toEqual([['main', '问数结果']]);
+    const reply = page.events
+      .flatMap((event) => (event.type === 'assistant_message' ? [event.message.content] : []))
+      .join('\n');
+    expect(reply).toContain('口径一致');
+    expect(reply).toContain('可以横向对照');
+  });
+
+  it('意图判定只看该单元自己那句问法,不看整句问题', async () => {
+    const page = await crossScopeRound();
+    // 整句里有「走势」;按整句判定会把「各行业对比」也判成趋势。
+    expect(page.harness.scripted.calls.intent.map((call) => call.question)).toEqual([
+      '整体新增客户数总量',
+      '每月新增客户数走势',
+      '各行业新增客户数对比'
+    ]);
+  });
+
+  it('单单元轮次仍传问题原文:没有串味的余地,原句里的说法不该丢', async () => {
+    const question = '2026年上半年各行业的新增客户数排名前三是哪些?';
+    const page = await runRound({
+      runId: 'single-unit-intent',
+      question,
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [{ outcome: 'unit', unit: CUSTOMER_SCOPES.byIndustry }],
+      intent: [{ intent: 'ranking' }]
+    });
+    expect(page.harness.scripted.calls.intent.map((call) => call.question)).toEqual([question]);
+  });
+
+  it('单元数上限是编排侧的确定性闸:超出的视角不取数,并如实告知', async () => {
+    const metric = (name: string): AskDataRequestUnitState => ({
+      ...CUSTOMER_SCOPES.byIndustry,
+      metrics: [{ kind: 'metric', name }],
+      title: `各行业${name}`
+    });
+    // 8 个视角:上限 6 个,后 2 个不取数。
+    const names = [
+      '新增客户数',
+      '流失客户数',
+      '客户留存率',
+      '在册客户数',
+      '新增客户数',
+      '流失客户数',
+      '客户留存率',
+      '在册客户数'
+    ];
+    const page = await runRound({
+      runId: 'unit-cap',
+      question: '2026年上半年各行业的客户经营指标全都看一遍',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: names.map((name) => ({ op: 'add', unit: metric(name) }))
+        }
+      ],
+      intent: Array.from({ length: 6 }, () => ({ intent: 'comparison' as const }))
+    });
+    expect(componentsOf(page.document)).toHaveLength(6);
+    // 每个单元一次真实执行:上限之外的视角连查询都不发。
+    expect(page.harness.executions()).toBe(6);
+    const reply = page.events
+      .flatMap((event) => (event.type === 'assistant_message' ? [event.message.content] : []))
+      .join('\n');
+    expect(reply).toContain('超过一页 6 个的上限');
+    expect(reply).toContain('另 2 个视角没有取数');
+  });
+});
+
 describe('target 定向:请求 target 映射为组件所绑数据源对应的单元', () => {
   async function twoUnits(): Promise<RoundResult> {
     return runRound({

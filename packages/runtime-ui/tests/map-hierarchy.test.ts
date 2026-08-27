@@ -3,6 +3,7 @@ import type { FilterDeclaration } from '@metriccanvas/page';
 import {
   currentHierarchyLevelId,
   filterMapRows,
+  hierarchyControlValues,
   resolveMapBasemap,
   resolveMapClick
 } from '../src/map-hierarchy';
@@ -74,6 +75,27 @@ describe('地图层级下钻', () => {
         level: 'region-dept'
       }).map((row) => row['region-code'])
     ).toEqual(['BJ-01']);
+    expect(
+      filterMapRows(rows, props, region, {
+        type: 'dimension',
+        dimension: 'geo-pc-code',
+        values: ['CN'],
+        level: 'geo'
+      }).map((row) => row['region-code'])
+    ).toEqual(['CN']);
+  });
+
+  it('下钻父码只负责收窄地图，不冒充下一级控件候选；真实子级选择仍回显', () => {
+    const candidates = {
+      status: 'ready' as const,
+      candidates: [
+        { value: 'BJ-01', label: '北京' },
+        { value: 'SH-01', label: '上海' }
+      ]
+    };
+    expect(hierarchyControlValues(['CN'], candidates)).toEqual([]);
+    expect(hierarchyControlValues(['BJ-01'], candidates)).toEqual(['BJ-01']);
+    expect(hierarchyControlValues(['BJ-01'], { status: 'loading' })).toEqual([]);
   });
 
   it('中间级点击产出下一层筛选值,最深一级转为跨页导航', () => {

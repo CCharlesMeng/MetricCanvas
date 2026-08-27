@@ -170,14 +170,24 @@ describe('数据网关端口的浏览器适配器', () => {
       fetchImpl: (async (input, init) => {
         requests.push({ input: String(input), init });
         return new Response(
-          JSON.stringify({ ok: true, kind: 'values', values: ['卓越', '战略'] })
+          JSON.stringify({
+            ok: true,
+            kind: 'values',
+            candidates: [
+              { value: '卓越', label: '卓越' },
+              { value: '战略', label: '战略' }
+            ]
+          })
         );
       }) as typeof fetch
     });
 
     await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual({
       kind: 'values',
-      values: ['卓越', '战略']
+      candidates: [
+        { value: '卓越', label: '卓越' },
+        { value: '战略', label: '战略' }
+      ]
     });
     expect(requests).toHaveLength(1);
     expect(requests[0]!.input).toBe(PLATFORM_DIMENSION_VALUES_PATH);
@@ -212,11 +222,15 @@ describe('数据网关端口的浏览器适配器', () => {
     expect(failed).toBeInstanceOf(DqeGatewayError);
     expect(failed).toMatchObject({ code: 'DQE_AUTH_REQUIRED' });
 
-    // values 含非字符串的响应不满足契约,失败关闭为传输错误且不回显正文。
+    // candidates 含非字符串字段的响应不满足契约,失败关闭且不回显正文。
     const nonContract = await createPlatformDataGateway({
       fetchImpl: (async () =>
         new Response(
-          JSON.stringify({ ok: true, kind: 'values', values: ['华东', 42] }),
+          JSON.stringify({
+            ok: true,
+            kind: 'values',
+            candidates: [{ value: 'east', label: 42 }]
+          }),
           { status: 200 }
         )) as typeof fetch
     })

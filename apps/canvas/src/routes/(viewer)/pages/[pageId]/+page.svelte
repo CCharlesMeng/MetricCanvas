@@ -121,8 +121,15 @@
     margin: 0 auto;
   }
   .page-frame.frame-dashboard {
+    width: 1679px;
     max-width: none;
     padding: 0;
+    margin: 0;
+  }
+  @media (max-width: 1679px) {
+    .page-frame.frame-dashboard {
+      width: 100%;
+    }
   }
   .muted {
     color: #71717a;

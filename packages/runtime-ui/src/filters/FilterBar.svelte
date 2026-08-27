@@ -96,9 +96,11 @@
       {@const current = dimensionValueOf(values, declaration.id)}
       <HierarchyFilter
         label={declaration.label}
+        emptyLabel={declaration.emptyLabel}
         levels={declaration.hierarchy}
         level={current.level ?? declaration.defaultLevel ?? declaration.hierarchy[0]!.id}
         values={current.values}
+        picker={declaration.hierarchyPicker ?? 'tabs'}
         display={declaration.display ?? 'select'}
         candidates={dimensionValuesSnapshot(candidates, currentDimension(declaration))}
         onchange={(next) => ondimension(declaration, next.values, next.level)}
@@ -106,6 +108,7 @@
     {:else if declaration.type === 'dimension'}
       <DimensionFilter
         label={declaration.label}
+        emptyLabel={declaration.emptyLabel}
         candidates={dimensionValuesSnapshot(candidates, declaration.dimension)}
         value={dimensionValueOf(values, declaration.id).values}
         display={declaration.display ?? 'select'}
@@ -156,7 +159,7 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: var(--mc-filter-bar-justify-content, normal);
-    gap: 20px;
+    gap: var(--mc-filter-bar-gap, 20px);
     padding: var(--mc-filter-bar-padding, 12px 16px);
     margin: var(--mc-filter-bar-margin, 0 0 18px);
     background: var(--mc-filter-bar-background, var(--mc-color-surface));

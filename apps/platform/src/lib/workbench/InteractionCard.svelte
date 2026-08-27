@@ -72,7 +72,7 @@
           <b>{entry.sought}</b>
           <small>
             {entry.businessDomain}{entry.adHocFormula
-              ? ` · 临时口径 ${entry.adHocFormula}`
+              ? ` · 临时指标 ${entry.adHocFormula}`
               : ''}
           </small>
         </li>

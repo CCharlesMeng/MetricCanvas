@@ -111,8 +111,8 @@ describe('统一运行时不按页面 id 分叉(ADR-0021 对照自证)', () => {
 });
 
 describe('工作台页面视图模型', () => {
-  it('临时口径可辨(#67):查询定义含 formula 项时检出表达式,inline 页面为空', () => {
-    // inline 文档没有查询定义,自然没有临时口径。
+  it('临时指标可辨(#67):查询定义含 formula 项时检出表达式,inline 页面为空', () => {
+    // inline 文档没有查询定义,自然没有临时指标。
     expect(workbenchPageViewModel(pageDocument(TRANSIENT_ID)).adHocFormulas).toEqual([]);
 
     const withFormula = {

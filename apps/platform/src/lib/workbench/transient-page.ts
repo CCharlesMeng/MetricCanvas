@@ -40,9 +40,9 @@ export interface WorkbenchPageViewModel {
   dataSourceCount: number;
   components: PageComponentView[];
   /**
-   * 页面文档里的临时口径 formula 表达式(#67,ADR-0036):从查询定义的
+   * 页面文档里的临时指标 formula 表达式(#67,ADR-0036):从查询定义的
    * output_metrics 直接检出,文档本身是唯一真源。非空时工作台在结果区
-   * 呈现「临时口径」徽标,与已定义指标视觉可区分。
+   * 呈现「临时指标」徽标,与已定义指标视觉可区分。
    */
   adHocFormulas: string[];
 }
@@ -94,7 +94,7 @@ export function workbenchPageViewModel(
   };
 }
 
-/** 查询定义 output_metrics 里的 formula 项即临时口径(ADR-0032/0036)。 */
+/** 查询定义 output_metrics 里的 formula 项即临时指标(ADR-0032/0036)。 */
 function adHocFormulasOf(dataSources: Record<string, unknown>): string[] {
   const formulas: string[] = [];
   for (const dataSource of Object.values(dataSources)) {

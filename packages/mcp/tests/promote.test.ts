@@ -81,7 +81,7 @@ const regionGmvUnit: ExecutedDataRequestUnit = {
   intent: 'comparison'
 };
 
-/** 临时口径(ADR-0036):formula 项以 alias 声明 DQE 输出字段名。 */
+/** 临时指标(ADR-0036):formula 项以 alias 声明 DQE 输出字段名。 */
 const adHocUnit: ExecutedDataRequestUnit = {
   dataSourceId: 'avg-ticket',
   title: '平均客单价',
@@ -230,10 +230,10 @@ describe('沉淀为 Data App:换正式页面 id,其余原样保留', () => {
   });
 });
 
-describe('沉淀为 Data App:临时口径设闸(ADR-0036)', () => {
+describe('沉淀为 Data App:临时指标设闸(ADR-0036)', () => {
   const document = transientPage({ units: [adHocUnit] });
 
-  it('含临时口径且未获用户接受时拒绝,并列出口径清单', () => {
+  it('含临时指标且未获用户接受时拒绝,并列出口径清单', () => {
     const result = promoteToDataApp({ document, pageId: 'avg-ticket-app' });
     expect(result.ok).toBe(false);
     if (result.ok) return;
@@ -273,7 +273,7 @@ describe('沉淀为 Data App:临时口径设闸(ADR-0036)', () => {
     ]);
   });
 
-  it('不含临时口径的页面无需接受动作', () => {
+  it('不含临时指标的页面无需接受动作', () => {
     const clean = transientPage({ units: [regionGmvUnit] });
     const result = promoteToDataApp({ document: clean, pageId: 'region-app' });
     expect(result.ok && result.adHocDefinitions).toEqual([]);
@@ -316,7 +316,7 @@ describe('沉淀为报告:保留查询定义与内嵌初始行,去掉筛选绑�
       document: transientPage({ units: [regionGmvUnit] })
     },
     {
-      name: '含临时口径的查询页面(报告保留口径溯源,不设闸)',
+      name: '含临时指标的查询页面(报告保留口径溯源,不设闸)',
       document: transientPage({ units: [adHocUnit] })
     },
     { name: '纯静态 inline 页面(原样保留)', document: inlineTransientPage }
@@ -407,8 +407,8 @@ describe('正式页面 id 的确认与校验(复用 confirm_page_id 机制的判
   });
 });
 
-describe('临时口径扫描:文档是唯一真源,留痕只补充问题原文', () => {
-  it('跨数据源扫描 formula 项;指标名字符串不是临时口径', () => {
+describe('临时指标扫描:文档是唯一真源,留痕只补充问题原文', () => {
+  it('跨数据源扫描 formula 项;指标名字符串不是临时指标', () => {
     const document = transientPage({ units: [regionGmvUnit, adHocUnit] });
     expect(adHocDefinitionsOf(document)).toEqual([
       {
@@ -423,7 +423,7 @@ describe('临时口径扫描:文档是唯一真源,留痕只补充问题原文',
     );
   });
 
-  it('inline 页面没有查询体,不产生临时口径', () => {
+  it('inline 页面没有查询体,不产生临时指标', () => {
     expect(adHocDefinitionsOf(inlineTransientPage)).toEqual([]);
   });
 });

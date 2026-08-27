@@ -6,7 +6,10 @@
    * 四种展示形态共用同一契约:select=下拉多选,tabs=tab 单选(存量 ti-tabs 场景),
    * tree=树形多选(存量 ti-treeselect 场景),search=输入过滤 + 多选(存量 ti-searchbox 场景)。
    */
-  import type { DimensionValuesSnapshot } from '@metriccanvas/runtime';
+  import type {
+    DimensionValueCandidate,
+    DimensionValuesSnapshot
+  } from '@metriccanvas/runtime';
   import {
     buildFilterTree,
     nodeState as treeNodeState,
@@ -16,6 +19,7 @@
 
   interface Props {
     label?: string;
+    emptyLabel?: string;
     /** 筛选候选值快照,运行时经维度候选值端口加载后传入 */
     candidates: DimensionValuesSnapshot;
     /** 当前选中值;空数组表示不筛选 */
@@ -24,9 +28,9 @@
     onchange: (values: string[]) => void;
   }
 
-  let { label, candidates, value, display = 'select', onchange }: Props = $props();
+  let { label, emptyLabel = '全部', candidates, value, display = 'select', onchange }: Props = $props();
 
-  const options = $derived(candidates.status === 'ready' ? candidates.values : []);
+  const options = $derived(candidates.status === 'ready' ? candidates.candidates : []);
   /** 非 ready 状态的显式提示;错误态展示分类标识,消息本身已脱值(issue #51)。 */
   const statusText = $derived(
     candidates.status === 'idle' || candidates.status === 'loading'
@@ -42,14 +46,22 @@
 
   const selected = $derived(new Set(value));
 
-  function toggle(option: string) {
+  function toggle(option: DimensionValueCandidate) {
     onchange(
-      selected.has(option) ? value.filter((v) => v !== option) : [...value, option]
+      selected.has(option.value)
+        ? value.filter((candidate) => candidate !== option.value)
+        : [...value, option.value]
     );
   }
 
+  const labels = $derived(new Map(options.map((option) => [option.value, option.label])));
+
   const summary = $derived(
-    value.length === 0 ? '全部' : value.length <= 2 ? value.join('、') : `已选 ${value.length} 项`
+    value.length === 0
+      ? emptyLabel
+      : value.length <= 2
+        ? value.map((candidate) => labels.get(candidate) ?? candidate).join('、')
+        : `已选 ${value.length} 项`
   );
 
   // —— 树选:'/' 分隔符约定建层级(纯逻辑在 tree.ts);父节点复选批量作用于后代候选值 ——
@@ -70,7 +82,10 @@
   const filtered = $derived(
     keyword.trim() === ''
       ? options
-      : options.filter((option) => option.toLowerCase().includes(keyword.trim().toLowerCase()))
+      : options.filter((option) => {
+          const needle = keyword.trim().toLowerCase();
+          return option.label.toLowerCase().includes(needle) || option.value.toLowerCase().includes(needle);
+        })
   );
 </script>
 
@@ -87,18 +102,18 @@
         aria-selected={value.length === 0}
         onclick={() => onchange([])}
       >
-        全部
+        {emptyLabel}
       </button>
-      {#each options as option (option)}
+      {#each options as option (option.value)}
         <button
           type="button"
           role="tab"
           class="tab"
-          class:active={selected.has(option)}
-          aria-selected={selected.has(option)}
-          onclick={() => onchange([option])}
+          class:active={selected.has(option.value)}
+          aria-selected={selected.has(option.value)}
+          onclick={() => onchange([option.value])}
         >
-          {option}
+          {option.label}
         </button>
       {/each}
     </div>
@@ -133,14 +148,14 @@
           placeholder="输入过滤候选项…"
           bind:value={keyword}
         />
-        {#each filtered as option (option)}
+        {#each filtered as option (option.value)}
           <label class="option">
             <input
               type="checkbox"
-              checked={selected.has(option)}
+              checked={selected.has(option.value)}
               onchange={() => toggle(option)}
             />
-            <span>{option}</span>
+            <span>{option.label}</span>
           </label>
         {:else}
           {#if candidates.status === 'ready'}
@@ -161,14 +176,14 @@
         <span class="caret" aria-hidden="true">▾</span>
       </summary>
       <div class="menu">
-        {#each options as option (option)}
+        {#each options as option (option.value)}
           <label class="option">
             <input
               type="checkbox"
-              checked={selected.has(option)}
+              checked={selected.has(option.value)}
               onchange={() => toggle(option)}
             />
-            <span>{option}</span>
+            <span>{option.label}</span>
           </label>
         {:else}
           {@render statusHint()}
@@ -267,6 +282,7 @@
     position: relative;
   }
   .select summary {
+    box-sizing: border-box;
     list-style: none;
     display: flex;
     align-items: center;

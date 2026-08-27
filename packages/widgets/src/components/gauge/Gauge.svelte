@@ -128,12 +128,52 @@
     font-size: 12px;
   }
   .mini {
-    --mc-gauge-dial-size: 68px;
+    --mc-gauge-dial-size: 112px;
 
+    position: relative;
+    box-sizing: border-box;
+    width: 120px;
+    height: 128px;
+    min-width: 120px;
+    flex: none;
     justify-content: flex-start;
-    gap: 4px;
+    gap: 0;
+    padding: 0;
+    text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
+  }
+  .mini .dial {
+    position: absolute;
+    top: 0;
+    left: 4px;
+  }
+  .mini .reading {
+    top: 48px;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0;
   }
   .mini strong {
-    font-size: 16px;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 24px;
+  }
+  .mini .reading span {
+    margin-left: 1px;
+    font-size: 12px;
+    line-height: 14px;
+  }
+  .mini p {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 48px;
+    height: 28px;
+    margin: 0 auto;
+    color: #777;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    white-space: pre-line;
   }
 </style>

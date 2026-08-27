@@ -7,6 +7,9 @@ import {
   mapLegendPieces
 } from '../src/components/map-chart/legend';
 import {
+  regionalOverviewFrameStyle
+} from '../src/components/map-chart/regional-overview';
+import {
   mapTooltipMarkup,
   mapTooltipRows
 } from '../src/components/map-chart/tooltip';
@@ -89,6 +92,23 @@ describe('mapLegendFrameStyle', () => {
   it('安全区缺席或无正面积时不写局部几何，由 frame 的 inset 回退覆盖全图', () => {
     expect(mapLegendFrameStyle(undefined)).toBeUndefined();
     expect(mapLegendFrameStyle({ x: 0, y: 0, width: 0, height: 474 })).toBeUndefined();
+  });
+});
+
+describe('regionalOverviewFrameStyle', () => {
+  it('从安全区派生横向受控、纵向对齐安全区底边的地域注释帧', () => {
+    expect(regionalOverviewFrameStyle({ x: 580, y: 280, width: 1053, height: 642 })).toBe(
+      'left:620px;top:302px;width:980px;height:620px;'
+    );
+  });
+
+  it('安全区变窄时夹取宽度并保持底边，未就绪时使用右下回退', () => {
+    expect(regionalOverviewFrameStyle({ x: 20, y: 30, width: 700, height: 500 })).toBe(
+      'left:60px;top:52px;width:628px;height:478px;'
+    );
+    expect(regionalOverviewFrameStyle()).toBe(
+      'right:33px;bottom:0;width:980px;height:502px;'
+    );
   });
 });
 

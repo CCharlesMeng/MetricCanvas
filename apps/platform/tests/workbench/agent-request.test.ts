@@ -80,7 +80,7 @@ describe('工作台 Agent 流式请求构造', () => {
 });
 
 describe('工作台请求契约:非 page_id 确认种类(#65 接线点)', () => {
-  it('口径卡确认与业务域改写作为结构化确认往返,服务端按种类取用', () => {
+  it('取数核对确认与业务域改写作为结构化确认往返,服务端按种类取用', () => {
     const body = buildAgentStreamRequestBody({
       runId: 'run-4',
       messages: [{ role: 'user', content: '上个月客户数是多少?' }],

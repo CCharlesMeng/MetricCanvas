@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 5;
-const CURRENT_MINOR = 2;
+const CURRENT_MINOR = 3;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -217,6 +217,88 @@ export const pageCapabilities = {
     minor: 2,
     description: 'ratio 算子的输出刻度 scale(ADR-0046)',
     usedAt: (document) => ratioScalePaths(document)
+  },
+  'section-column-tracks': {
+    minor: 3,
+    description: '内容分区的受控列轨权重(ADR-0054)',
+    usedAt: (document) => sectionColumnTrackPaths(document)
+  },
+  'filter-empty-label': {
+    minor: 3,
+    description: '维度筛选器的空选展示文案',
+    usedAt: (document) =>
+      filterPaths(document, (filter) => typeof filter.emptyLabel === 'string').map(
+        (path) => `${path}/emptyLabel`
+      )
+  },
+  'filter-hierarchy-picker': {
+    minor: 3,
+    description: '层级维度筛选器的显式级别切换器形态',
+    usedAt: (document) =>
+      filterPaths(document, (filter) => typeof filter.hierarchyPicker === 'string').map(
+        (path) => `${path}/hierarchyPicker`
+      )
+  },
+  'metric-row-context': {
+    minor: 3,
+    description: '指标行与主值同排的短上下文',
+    usedAt: (document) => metricRowContextPaths(document)
+  },
+  'composite-card-compact': {
+    minor: 3,
+    description: '组合卡紧凑呈现档',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'compositeCard' && props(component)?.variant === 'compact'
+      ).map((path) => `${path}/props/variant`)
+  },
+  'tab-container-compact': {
+    minor: 3,
+    description: 'Tab 容器紧凑呈现档',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'tabContainer' && props(component)?.variant === 'compact'
+      ).map((path) => `${path}/props/variant`)
+  },
+  'table-embedded': {
+    minor: 3,
+    description: '表格嵌入式密度与底部渐隐',
+    usedAt: (document) => [
+      ...componentPaths(
+        document,
+        (component) => component.type === 'table' && props(component)?.variant === 'embedded'
+      ).map((path) => `${path}/props/variant`),
+      ...componentPaths(
+        document,
+        (component) => component.type === 'table' && has(props(component), 'bottomFade')
+      ).map((path) => `${path}/props/bottomFade`)
+    ]
+  },
+  'key-value-item-unit': {
+    minor: 3,
+    description: '信息面板条目的展示单位',
+    usedAt: (document) => keyValueItemUnitPaths(document)
+  },
+  'widget-symbol-icons': {
+    minor: 3,
+    description: '组合卡和信息面板的受控语义图标',
+    usedAt: (document) => widgetSymbolIconPaths(document)
+  },
+  'map-regional-overview': {
+    minor: 3,
+    description: '地域概览地图与稳定字段匹配的固定摘要',
+    usedAt: (document) => [
+      ...componentPaths(
+        document,
+        (component) => component.type === 'mapChart' && props(component)?.variant === 'regionalOverview'
+      ).map((path) => `${path}/props/variant`),
+      ...componentPaths(
+        document,
+        (component) => component.type === 'mapChart' && has(props(component), 'pinnedSummary')
+      ).map((path) => `${path}/props/pinnedSummary`)
+    ]
   }
 } satisfies Record<string, PageCapabilityDefinition>;
 
@@ -428,6 +510,66 @@ function componentLayerPaths(document: unknown): string[] {
   const paths: string[] = [];
   walkDocumentComponents(document, (component, path) => {
     if (has(record(component.layout), 'layer')) paths.push(`${path}/layout/layer`);
+  });
+  return paths;
+}
+
+function sectionColumnTrackPaths(document: unknown): string[] {
+  const sections = record(document)?.sections;
+  if (!Array.isArray(sections)) return [];
+  return sections.flatMap((candidate, index) =>
+    has(record(candidate), 'columnTracks')
+      ? [`/sections/${index}/columnTracks`]
+      : []
+  );
+}
+
+function keyValueItemUnitPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'keyValuePanel') return;
+    const items = record(component.props)?.items;
+    if (!Array.isArray(items)) return;
+    items.forEach((candidate, index) => {
+      if (has(record(candidate), 'unit')) paths.push(`${path}/props/items/${index}/unit`);
+    });
+  });
+  return paths;
+}
+
+function widgetSymbolIconPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    const componentProps = record(component.props);
+    if (
+      (component.type === 'compositeCard' || component.type === 'keyValuePanel') &&
+      has(componentProps, 'titleIcon')
+    ) {
+      paths.push(`${path}/props/titleIcon`);
+    }
+    if (component.type !== 'keyValuePanel') return;
+    const items = componentProps?.items;
+    if (!Array.isArray(items)) return;
+    items.forEach((candidate, index) => {
+      if (has(record(candidate), 'icon')) paths.push(`${path}/props/items/${index}/icon`);
+    });
+  });
+  return paths;
+}
+
+function metricRowContextPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'metricCard') return;
+    for (const rowsKey of ['rows', 'secondaryRows'] as const) {
+      const rows = record(component.props)?.[rowsKey];
+      if (!Array.isArray(rows)) continue;
+      rows.forEach((candidate, index) => {
+        if (has(record(candidate), 'context')) {
+          paths.push(`${path}/props/${rowsKey}/${index}/context`);
+        }
+      });
+    }
   });
   return paths;
 }

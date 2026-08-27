@@ -104,4 +104,62 @@ describe('navigateErrors', () => {
       })
     ]);
   });
+
+  it('文本 links 不得携带只在目标页存在、源页没有的筛选器', () => {
+    const source: any = structuredClone(queryDashboard);
+    source.filters = [];
+    source.sections[0].components = [{
+      id: 'detail-link',
+      type: 'text',
+      layout: { span: 12 },
+      props: {
+        links: [{ label: '详情', page: 'sales-detail', carryFilters: ['region-filter'] }]
+      }
+    }];
+    const target = targetPage();
+    expect(
+      navigateErrors(
+        source as Page,
+        new Set(['sales-detail']),
+        new Map([['sales-detail', target]])
+      )
+    ).toContainEqual({
+      type: 'SCHEMA_ERROR',
+      path: '/sections/0/components/0/props/links/0/carryFilters/0',
+      message: '源页没有筛选器 region-filter，无法携带当前值'
+    });
+  });
+
+  it('carryFilters 要求两页用相同类型、时间粒度与维度层级解释编码值', () => {
+    const source: any = sourcePage('sales-detail');
+    source.filters = [
+      { id: 'region-filter', type: 'dimension', dimension: 'geo-code' },
+      { id: 'mtime', type: 'timePoint', granularity: 'month' }
+    ];
+    source.sections[0].components[0].props.actions[0].navigate.carryFilters = [
+      'region-filter', 'mtime'
+    ];
+    const target: any = targetPage();
+    target.filters = [
+      { id: 'region-filter', type: 'dimension', dimension: 'office-code' },
+      { id: 'mtime', type: 'timePoint', granularity: 'date' }
+    ];
+
+    expect(
+      crossPageReferenceErrors(
+        source as Page,
+        new Set(['sales-detail']),
+        new Map([['sales-detail', target as Page]])
+      ).map((error) => [error.path, error.message])
+    ).toEqual([
+      [
+        '/sections/0/components/0/props/actions/0/navigate/carryFilters/0',
+        '筛选器 region-filter 的源页与目标页契约不相容'
+      ],
+      [
+        '/sections/0/components/0/props/actions/0/navigate/carryFilters/1',
+        '筛选器 mtime 的源页与目标页契约不相容'
+      ]
+    ]);
+  });
 });

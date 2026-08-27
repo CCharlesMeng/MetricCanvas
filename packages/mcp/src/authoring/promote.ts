@@ -11,7 +11,7 @@ import type { FormulaTrace } from './unit-verification';
  * 两个方向,时间语义相反:
  *
  * - 沉淀为 Data App:临时页面 id 换为经确认的正式页面 id,其余不动,
- *   产物交由既有 saveRevision 通道保存为页面修订。含临时口径(ADR-0036)
+ *   产物交由既有 saveRevision 通道保存为页面修订。含临时指标(ADR-0036)
  *   时必须由调用方显式传入用户接受,否则拒绝——沉淀处设闸。
  * - 沉淀为报告:同样换上正式页面 id,保留查询定义与采集时点的内嵌初始行,
  *   去掉全部筛选绑定。依据 ADR-0020,默认状态存在内嵌初始行且无筛选变化
@@ -30,7 +30,7 @@ export const DATA_APP_ROLLING_TIME_LIMITATION =
   '沉淀出的 Data App 当前缺少滚动时间语义:页面时间冻结在提问时的绝对区间,' +
   '不会随周期滚动(结构化相对时间不在当前版本范围,ADR-0035)。';
 
-/** 页面文档中检出的一处临时口径(ADR-0036):formula 及其留痕。 */
+/** 页面文档中检出的一处临时指标(ADR-0036):formula 及其留痕。 */
 export interface AdHocDefinitionUsage {
   dataSourceId: string;
   /** formula 项的 DQE 输出字段名(alias);查询体未声明时为 null。 */
@@ -51,7 +51,7 @@ export interface PromotionIssue {
   message: string;
   /** 出问题的页面数据源;页面级问题时缺省。 */
   dataSourceId?: string;
-  /** 未被接受的临时口径清单(AD_HOC_DEFINITIONS_NOT_ACCEPTED)。 */
+  /** 未被接受的临时指标清单(AD_HOC_DEFINITIONS_NOT_ACCEPTED)。 */
   adHocDefinitions?: AdHocDefinitionUsage[];
   /** validate() 的原始错误,逐条透传(PAGE_VALIDATION_FAILED)。 */
   errors?: TypedError[];
@@ -61,7 +61,7 @@ export interface PromotedPage {
   ok: true;
   /** 换上正式页面 id 且整体通过 validate() 的页面文档。 */
   document: Record<string, unknown>;
-  /** 文档中检出的临时口径(Data App 方向即用户已显式接受的清单)。 */
+  /** 文档中检出的临时指标(Data App 方向即用户已显式接受的清单)。 */
   adHocDefinitions: AdHocDefinitionUsage[];
   /** 报告方向各查询数据源的采集时点;Data App 方向为空数组。 */
   frozenAt: Array<{ dataSourceId: string; capturedAt: string }>;
@@ -76,9 +76,9 @@ export interface PromoteToDataAppInput {
   document: Record<string, unknown>;
   /** 经确认的正式页面 id。 */
   pageId: string;
-  /** 文档含临时口径时必须为 true(用户已显式接受其无人负责)。 */
+  /** 文档含临时指标时必须为 true(用户已显式接受其无人负责)。 */
   acceptAdHocDefinitions?: boolean;
-  /** 临时口径留痕(#66 ask 会话状态携带),用于警告的问题原文溯源。 */
+  /** 临时指标留痕(#66 ask 会话状态携带),用于警告的问题原文溯源。 */
   formulaTraces?: readonly FormulaTrace[];
 }
 
@@ -88,7 +88,7 @@ export interface PromoteToReportInput {
   formulaTraces?: readonly FormulaTrace[];
 }
 
-/** 沉淀为 Data App:换正式页面 id,临时口径设闸,其余原样保留。 */
+/** 沉淀为 Data App:换正式页面 id,临时指标设闸,其余原样保留。 */
 export function promoteToDataApp(input: PromoteToDataAppInput): PromoteResult {
   const precondition = pageIdIssues(input.document, input.pageId);
   if (precondition.length > 0) return { ok: false, issues: precondition };
@@ -100,7 +100,7 @@ export function promoteToDataApp(input: PromoteToDataAppInput): PromoteResult {
       issues: [{
         code: 'AD_HOC_DEFINITIONS_NOT_ACCEPTED',
         message:
-          '页面含临时口径,沉淀为 Data App 前必须由用户显式接受其无人负责:' +
+          '页面含临时指标,沉淀为 Data App 前必须由用户显式接受其无人负责:' +
           adHocDefinitions.map((usage) => usage.expression).join('、'),
         adHocDefinitions
       }]
@@ -166,8 +166,8 @@ export function promoteToReport(input: PromoteToReportInput): PromoteResult {
 }
 
 /**
- * 扫描页面文档 query 数据源的 DQE 查询体,列出全部临时口径(formula 项)。
- * 文档本身是「本页面含临时口径」的唯一真源;formulaTraces 只补充问题原文。
+ * 扫描页面文档 query 数据源的 DQE 查询体,列出全部临时指标(formula 项)。
+ * 文档本身是「本页面含临时指标」的唯一真源;formulaTraces 只补充问题原文。
  */
 export function adHocDefinitionsOf(
   document: Record<string, unknown>,

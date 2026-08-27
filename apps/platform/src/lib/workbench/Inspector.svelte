@@ -13,6 +13,7 @@
     selected,
     selectedView,
     selectedSpan = null,
+    selectedColumnCount = 12,
     candidates,
     fieldRows,
     busy = false,
@@ -23,8 +24,10 @@
     pageModel: WorkbenchPageViewModel | null;
     selected: ComponentLocator | null;
     selectedView: PageComponentView | null;
-    /** 选中组件的当前宽度(1–12 列);未选中为 null。 */
+    /** 选中组件的当前宽度；未选中为 null。 */
     selectedSpan?: number | null;
+    /** 所属分区当前列轨数；缺省分区为 12。 */
+    selectedColumnCount?: number;
     candidates: ComponentCandidate[];
     fieldRows: Array<{ fieldId: string; label: string; role: string; type: string }>;
     busy?: boolean;
@@ -100,11 +103,11 @@
               disabled={busy || selectedSpan <= 1}
               onclick={() => onEdit({ span: selectedSpan! - 1 })}
             >−</button>
-            <b>{selectedSpan}/12</b>
+            <b>{selectedSpan}/{selectedColumnCount}</b>
             <button
               type="button"
               aria-label="加宽组件"
-              disabled={busy || selectedSpan >= 12}
+              disabled={busy || selectedSpan >= selectedColumnCount}
               onclick={() => onEdit({ span: selectedSpan! + 1 })}
             >＋</button>
           </div>

@@ -68,7 +68,9 @@ export function mapOption(
   centers: ReadonlyMap<string, [number, number]>,
   projection?: MapProjectionRect,
   compact = false,
-  scale?: ColorList
+  scale?: ColorList,
+  /** 地域概览定位针由 Svelte 资源管线解析，纯 option 层只消费 URL。 */
+  regionalPinUrl?: string
 ): EChartsOption {
   const rows = data.main.snapshot.rows;
   const name = resolveField(props.nameField, data);
@@ -79,6 +81,10 @@ export function mapOption(
   const rawMax = values.length > 0 ? Math.max(...values) : 0;
   const lo = rawMin < rawMax ? rawMin : Math.min(0, rawMin);
   const hi = rawMax > rawMin ? rawMax : Math.max(1, rawMax);
+  const regionalOverview = props.variant === 'regionalOverview';
+  const pinnedMatch = props.pinnedSummary
+    ? resolveField(props.pinnedSummary.matchField, data)
+    : undefined;
 
   /* 散点持「双名」:坐标查询用映射后的底图区域名(centers 的键),
      而 name 用原始维度值——否则 8 个中文地区部经 nameMap 映射到底图区域后,
@@ -87,7 +93,14 @@ export function mapOption(
     const cp = centers.get(geoName(row));
     if (!cp) return [];
     const rawName = String(row[name.field] ?? '');
-    return [{ name: rawName, value: [...cp, finiteNumber(row[value.field]) ?? 0] }];
+    const pinned =
+      pinnedMatch !== undefined &&
+      row[pinnedMatch.field] === props.pinnedSummary?.matchValue;
+    return [{
+      name: rawName,
+      value: [...cp, finiteNumber(row[value.field]) ?? 0],
+      ...(pinned ? { label: { show: false }, emphasis: { label: { show: false } } } : {})
+    }];
   });
 
   const projected = projection && projection.width > 0 && projection.height > 0
@@ -208,10 +221,41 @@ export function mapOption(
             {
               type: props.scatter === 'effect' ? ('effectScatter' as const) : ('scatter' as const),
               coordinateSystem: 'geo' as const,
-              symbolSize: 10,
-              itemStyle: { color: '#f59e0b' },
+              ...(regionalOverview
+                ? {
+                    ...(regionalPinUrl ? { symbol: `image://${regionalPinUrl}` } : {}),
+                    symbolSize: [15.51, 20],
+                    symbolOffset: [0, 10]
+                  }
+                : { symbolSize: 10 }),
+              itemStyle: { color: regionalOverview ? '#6177e4' : '#f59e0b' },
               // `{b}` 取数据项的 name,即上面的原始维度值
-              label: { show: !compact, formatter: '{b}', position: 'top' as const },
+              label: regionalOverview
+                ? {
+                    show: true,
+                    formatter: '{b}',
+                    position: 'top' as const,
+                    distance: 2,
+                    padding: [2, 8],
+                    color: '#191919',
+                    fontSize: 12,
+                    lineHeight: 18,
+                    backgroundColor: '#fff',
+                    borderColor: 'rgba(97, 119, 228, 0.35)',
+                    borderWidth: 1,
+                    borderRadius: 11
+                  }
+                : { show: !compact, formatter: '{b}', position: 'top' as const },
+              emphasis: regionalOverview
+                ? {
+                    scale: 1.12,
+                    label: {
+                      show: true,
+                      backgroundColor: '#eef3ff',
+                      borderColor: '#6177e4'
+                    }
+                  }
+                : undefined,
               data: scatterData
             }
           ]

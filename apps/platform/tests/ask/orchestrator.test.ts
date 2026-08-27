@@ -70,6 +70,9 @@ describe('问数编排:成功路径', () => {
       type: 'scope_card_presented',
       businessDomain: '运营分析',
       metricName: 'Tokens消耗量',
+      // 分组维度必须在卡上:同一指标按不同维度切分时,那是几张卡之间
+      // 唯一的差别(ADR-0055)。
+      groupBy: ['统计周期'],
       timeRange: '2026-01 ~ 2026-06',
       granularity: 'month',
       blockedOnConfirmation: false
@@ -78,10 +81,10 @@ describe('问数编排:成功路径', () => {
       type: 'rows_ready',
       summary: { rowCount: 3, totalCount: 3, outputFields: ['统计周期', 'Tokens消耗量'] }
     });
+    // 意图按单元携带在组件选择上(ADR-0055):跨口径页面没有页面级意图。
     expect(steps[5]).toMatchObject({
       type: 'document_ready',
-      intent: 'trend',
-      components: [{ componentType: 'lineChart', pinnedByUser: false }],
+      components: [{ componentType: 'lineChart', pinnedByUser: false, intent: 'trend' }],
       transientPageId: transientPageIdFor('run-trend')
     });
 
@@ -324,8 +327,7 @@ describe('问数编排:追问是定向增量修改', () => {
 
     const documentReady = stepEvents(events).find((event) => event.type === 'document_ready');
     expect(documentReady).toMatchObject({
-      intent: 'detail',
-      components: [{ componentType: 'table', pinnedByUser: true }]
+      components: [{ componentType: 'table', pinnedByUser: true, intent: 'detail' }]
     });
     const { document } = completedOf(events);
     expect(validate(document!)).toEqual([]);
@@ -499,7 +501,7 @@ describe('问数编排:降级路径(四段分类,不编造数据)', () => {
   });
 });
 
-describe('问数编排:临时口径(自由 formula)', () => {
+describe('问数编排:临时指标(自由 formula)', () => {
   it('formula 口径阻塞确认;普通确认(无需选择)后执行并留痕', async () => {
     const formulaUnit: AskDataRequestUnitState = {
       businessDomain: '运营分析',
@@ -539,8 +541,8 @@ describe('问数编排:临时口径(自由 formula)', () => {
     expect(interaction.payload.reasons).toEqual(['ad_hoc_definition']);
     expect(first.executions()).toBe(0);
 
-    // 非歧义阻塞:普通确认续跑即可执行(不需要结构化选择);口径卡确认
-    // 即用户确认,临时口径缺口在此刻登记(#67)。
+    // 非歧义阻塞:普通确认续跑即可执行(不需要结构化选择);取数核对确认
+    // 即用户确认,临时指标缺口在此刻登记(#67)。
     const resume = buildAskPorts({ script: { intent: [{ intent: 'composition' }] } });
     const resumeRunner = createAskOrchestrationRunner(resume.ports, { runId: 'run-formula-2' });
     const events = await collect(resumeRunner.run({ messages }));

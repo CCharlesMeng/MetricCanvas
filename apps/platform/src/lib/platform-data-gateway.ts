@@ -118,7 +118,7 @@ export function createPlatformDataGateway(
       }
       return payload.kind === 'unavailable'
         ? { kind: 'unavailable' }
-        : { kind: 'values', values: payload.values };
+        : { kind: 'values', candidates: payload.candidates };
     }
   };
 }
@@ -179,8 +179,13 @@ function isDimensionValuesPayload(
   if (payload.kind === 'unavailable') return true;
   return (
     payload.kind === 'values' &&
-    Array.isArray(payload.values) &&
-    payload.values.every((value) => typeof value === 'string')
+    Array.isArray(payload.candidates) &&
+    payload.candidates.every(
+      (candidate) =>
+        isRecord(candidate) &&
+        typeof candidate.value === 'string' &&
+        typeof candidate.label === 'string'
+    )
   );
 }
 

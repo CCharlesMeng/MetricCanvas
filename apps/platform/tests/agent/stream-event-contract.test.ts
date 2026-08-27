@@ -103,7 +103,7 @@ const STREAM_ONLY_SAMPLES: Record<StreamOnlyEvent['type'], StreamOnlyEvent> = {
 };
 
 describe('AgentRunStreamEvent 契约', () => {
-  it('覆盖 ADR-0037 编排各段:路由、候选、口径卡、执行中、行就绪、文档就绪、缺口登记与失败', () => {
+  it('覆盖 ADR-0037 编排各段:路由、候选、取数核对、执行中、行就绪、文档就绪、缺口登记与失败', () => {
     expect(Object.keys(PERSISTED_SAMPLES).sort()).toEqual(
       [
         'domain_routed',

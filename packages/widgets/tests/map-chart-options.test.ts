@@ -189,8 +189,11 @@ const worldCenters = new Map<string, [number, number]>([
 
 interface ScatterSeries {
   type: string;
-  data: { name: string; value: number[] }[];
-  label?: { show?: boolean };
+  symbol?: string;
+  symbolSize?: number | number[];
+  data: { name: string; value: number[]; label?: { show?: boolean } }[];
+  label?: { show?: boolean; backgroundColor?: string; borderRadius?: number };
+  emphasis?: { scale?: number };
 }
 
 function scatterSeries(option: unknown): ScatterSeries {
@@ -262,6 +265,51 @@ describe('mapOption · 散点文字标签开关(AT-IOC-S1-008a)', () => {
     const scatter = scatterSeries(mapOption(regionDeptData, regionDeptProps, worldCenters));
 
     expect(scatter.label?.show).toBe(true);
+  });
+});
+
+describe('mapOption · 地域概览的真实散点交互', () => {
+  const regionalProps = {
+    ...regionDeptProps,
+    variant: 'regionalOverview' as const,
+    pinnedSummary: {
+      matchField: 'region-name',
+      matchValue: '中国',
+      titleField: 'region-name',
+      fields: [{ label: '管道支撑率', field: 'support-rate' }]
+    }
+  };
+
+  it('定位针、文字壳与 hover 强调都在 ECharts scatter 上', () => {
+    const scatter = scatterSeries(
+      mapOption(
+        regionDeptData,
+        regionalProps,
+        worldCenters,
+        undefined,
+        true,
+        undefined,
+        'data:image/svg+xml,%3Csvg/%3E'
+      )
+    );
+
+    expect(scatter.symbol).toMatch(/^image:\/\//);
+    expect(scatter.symbolSize).toEqual([15.51, 20]);
+    expect(scatter.label).toMatchObject({
+      show: true,
+      backgroundColor: '#fff',
+      borderRadius: 11
+    });
+    expect(scatter.emphasis?.scale).toBe(1.12);
+  });
+
+  it('中国固定摘要对应的真实行不再叠一枚普通文字标签', () => {
+    const scatter = scatterSeries(mapOption(regionDeptData, regionalProps, worldCenters));
+    const china = scatter.data.find((point) => point.name === '中国');
+    const europe = scatter.data.find((point) => point.name === '欧洲');
+
+    expect(china?.label?.show).toBe(false);
+    expect(europe?.label).toBeUndefined();
   });
 });
 

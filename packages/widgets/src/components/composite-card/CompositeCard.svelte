@@ -1,6 +1,15 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import { compositeCardFlow } from './flow';
+  import opportunityIconUrl from '../../assets/ioc-card-title-opportunity.svg?inline';
+  import managementIconUrl from '../../assets/ioc-card-title-tiered-management.svg?inline';
+  import reviewIconUrl from '../../assets/ioc-card-title-review.svg?inline';
+
+  const titleIcons = {
+    opportunity: opportunityIconUrl,
+    tieredManagement: managementIconUrl,
+    review: reviewIconUrl
+  } as const;
 
   /**
    * 组合卡(纯呈现):卡壳、可选标题、卡内 12 列自动流与派生的分隔线。
@@ -9,6 +18,8 @@
    */
   interface Props {
     title?: string;
+    titleIcon?: keyof typeof titleIcons;
+    variant?: 'compact';
     /** 子组件声明的 `layout.span`,数组顺序即自动流顺序。 */
     spans: readonly number[];
     /** 相邻子组件之间是否分隔;位置由自动流落位派生,不由声明给出。 */
@@ -17,13 +28,16 @@
     children: Snippet<[number]>;
   }
 
-  let { title, spans, dividers, children }: Props = $props();
+  let { title, titleIcon, variant, spans, dividers, children }: Props = $props();
 
   const slots = $derived(compositeCardFlow(spans));
 </script>
 
-<div class="composite-card">
-  {#if title}<h3>{title}</h3>{/if}
+<div class:compact={variant === 'compact'} class="composite-card">
+  {#if title}<h3>
+    {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
+    <span>{title}</span>
+  </h3>{/if}
   <div class:with-dividers={dividers === true} class="composite-grid">
     {#each slots as slot, index}
       <div
@@ -73,12 +87,27 @@
     --mc-key-value-panel-padding: 0;
     --mc-key-value-panel-radius: 0;
   }
+  .compact {
+    height: 280px;
+    min-height: 280px;
+  }
+  .compact > h3 {
+    text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
+  }
   h3 {
+    display: flex;
+    align-items: center;
+    gap: 4px;
     margin: 0;
     color: var(--mc-card-title-color, #191919);
     font-size: var(--mc-card-title-font-size, 16px);
     font-weight: var(--mc-card-title-font-weight, 500);
     line-height: var(--mc-card-title-line-height, 24px);
+  }
+  h3 img {
+    width: 20px;
+    height: 20px;
+    flex: none;
   }
   .composite-grid {
     /* 满宽 compactSummary 的指标组按设计横排；窄卡由 MetricCard 自己的

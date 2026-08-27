@@ -1,6 +1,10 @@
 import type { QueryError } from '@metriccanvas/page';
 import type { Subscribable } from './orchestrator';
-import type { DimensionValuesGateway, RuntimeDataGateway } from './ports';
+import type {
+  DimensionValueCandidate,
+  DimensionValuesGateway,
+  RuntimeDataGateway
+} from './ports';
 import { preservedQueryError } from './query-error';
 
 /**
@@ -19,7 +23,7 @@ import { preservedQueryError } from './query-error';
 export type DimensionValuesSnapshot =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'ready'; values: string[] }
+  | { status: 'ready'; candidates: DimensionValueCandidate[] }
   | { status: 'empty' }
   | { status: 'unavailable' }
   | { status: 'error'; error: QueryError };
@@ -92,9 +96,9 @@ export function createDimensionValuesLoader(
           dimension,
           result.kind === 'unavailable'
             ? { status: 'unavailable' }
-            : result.values.length === 0
+            : result.candidates.length === 0
               ? { status: 'empty' }
-              : { status: 'ready', values: result.values }
+              : { status: 'ready', candidates: result.candidates }
         );
       },
       (cause: unknown) => {

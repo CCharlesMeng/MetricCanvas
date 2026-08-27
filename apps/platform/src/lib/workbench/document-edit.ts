@@ -175,7 +175,7 @@ export function moveComponent(
   return projectCanvasDraft(next);
 }
 
-/** 组件标题与宽度编辑;宽度夹取在 1–12 列。 */
+/** 组件标题与宽度编辑；宽度按所属分区的实际列轨数夹取。 */
 export function editComponent(
   draft: CanvasAuthoringDraft,
   locator: ComponentLocator,
@@ -192,7 +192,10 @@ export function editComponent(
   }
   if (edit.span !== undefined) {
     const layout = recordOf(component.layout) ?? {};
-    layout.span = Math.min(12, Math.max(1, Math.round(edit.span)));
+    const section = findSection(next, locator.sectionId);
+    const tracks = section?.columnTracks;
+    const columnCount = Array.isArray(tracks) ? tracks.length : 12;
+    layout.span = Math.min(columnCount, Math.max(1, Math.round(edit.span)));
     component.layout = layout;
   }
   return projectCanvasDraft(next);

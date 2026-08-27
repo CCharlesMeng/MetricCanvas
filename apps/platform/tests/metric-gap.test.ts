@@ -106,7 +106,7 @@ describe('幂等键派生:同一缺口的重复出现共享同一键', () => {
     expect(normalizeExpressionShape('a / b')).not.toBe(normalizeExpressionShape('a * b'));
   });
 
-  it('临时口径键 = 业务域 + 表达式形状;面外键 = 业务域 + 归一化检索对象', () => {
+  it('临时指标键 = 业务域 + 表达式形状;面外键 = 业务域 + 归一化检索对象', () => {
     expect(adHocGapKey('运营分析', '计费Tokens量 / Tokens消耗量')).toBe(
       adHocGapKey('运营分析', '计费tokens量/Tokens消耗量')
     );
@@ -159,7 +159,7 @@ describe('聚合:去重、计数与合并排行', () => {
       { occurredAt: '2026-08-04T00:00:00.000Z', gap: scopeGap }
     ]);
 
-    // 一份排行合并两类缺口:临时口径(表达式形状)与面外(检索对象)。
+    // 一份排行合并两类缺口:临时指标(表达式形状)与面外(检索对象)。
     expect(entries.map((entry) => [entry.idempotencyKey, entry.occurrenceCount])).toEqual([
       [scopeGap.idempotencyKey, 3],
       [formulaGap.idempotencyKey, 1]

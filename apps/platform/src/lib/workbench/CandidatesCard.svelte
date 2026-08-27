@@ -3,7 +3,7 @@
 
   /**
    * 指标候选卡(原型 ask-workbench.v2 的 .candidates):对话轨一等公民。
-   * 消歧阻塞时(编排未选中且候选多于一个)radio 可选,选择随口径卡确认
+   * 消歧阻塞时(编排未选中且候选多于一个)radio 可选,选择随取数核对确认
    * 以 scope_card 确认(selectedMetric)传回编排;非阻塞时只读回显编排
    * 的选中项。候选与口径差异说明来自 candidates_retrieved 步骤事件。
    */

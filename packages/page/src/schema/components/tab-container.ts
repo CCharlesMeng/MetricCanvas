@@ -24,6 +24,7 @@ export const tabContainerComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        variant: z.literal('compact').optional(),
         defaultTab: idZ.optional(),
         tabs: z.array(tabItemZ).min(1)
       })

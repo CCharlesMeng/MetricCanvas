@@ -23,16 +23,33 @@
   const option = $derived(pieOption(data, props, palette));
 </script>
 
-{#if props.title}<h3>{props.title}</h3>{/if}
-<EChart
-  {option}
-  bind:container={chartContainer}
-  onitemclick={onsliceclick
-    ? (dataIndex) => onsliceclick({ row: data.main.snapshot.rows[dataIndex] })
-    : undefined}
-/>
+<div class:compact-ring={props.variant === 'compactRing'} class="pie-chart">
+  {#if props.title}<h3>{props.title}</h3>{/if}
+  <EChart
+    {option}
+    bind:container={chartContainer}
+    onitemclick={onsliceclick
+      ? (dataIndex) => onsliceclick({ row: data.main.snapshot.rows[dataIndex] })
+      : undefined}
+  />
+</div>
 
 <style>
+  .pie-chart {
+    display: flex;
+    min-width: 0;
+    min-height: 0;
+    flex: 1;
+    flex-direction: column;
+  }
+  .compact-ring {
+    width: 108px;
+    height: 108px;
+    min-width: 108px;
+    min-height: 108px;
+    flex: none;
+    margin: auto;
+  }
   h3 {
     margin: 0;
     color: var(--mc-card-title-color, #18181b);

@@ -230,7 +230,14 @@ describe('平台服务端候选值入口(issue #54)', () => {
         }
       ]
     });
-    expect(result).toEqual({ ok: true, kind: 'values', values: ['卓越', '战略'] });
+    expect(result).toEqual({
+      ok: true,
+      kind: 'values',
+      candidates: [
+        { value: '卓越', label: '卓越' },
+        { value: '战略', label: '战略' }
+      ]
+    });
     expect(dimensionValuesHttpStatus(result)).toBe(200);
   });
 

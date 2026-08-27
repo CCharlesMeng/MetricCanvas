@@ -12,7 +12,10 @@ import { componentCatalogRegistry } from '../registry';
 const keyValueItemZ = z
   .object({
     label: nonEmptyTextValueZ,
-    field: fieldBindingZ
+    field: fieldBindingZ,
+    unit: textValueZ.optional(),
+    /** 奖惩形状是有限语义闭集，不接受任意资源路径。 */
+    icon: z.enum(['goldMedal', 'silverMedal', 'redCard', 'yellowCard']).optional()
   })
   .strict()
   .meta({ id: 'keyValueItem' });
@@ -26,6 +29,7 @@ export const keyValuePanelComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        titleIcon: z.literal('reward').optional(),
         variant: z.literal('counterStrip').optional(),
         /** 每行放几组键值；缺省三列。`1` 用于窄卡位里的单列纵向罗列。 */
         columns: z

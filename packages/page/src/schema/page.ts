@@ -16,7 +16,7 @@ export const pageMetaZ = z
 /**
  * 分区容器：内容分区外观的唯一真源，封闭三档、命名表现中性。
  * 缺省为通用看板外观（白色分区 + 带边框组件单元格）。几何布局
- * 恒为 12 列 Grid，是统一运行时不变量，不进入页面文档。
+ * 缺省为 12 列等权 Grid；可选受控权重列轨由 ADR-0054 定义。
  */
 export const sectionContainerZ = z
   .enum(['plain', 'panel', 'card'])
@@ -26,11 +26,26 @@ export const sectionContainerZ = z
       'plain 无容器组件自带外观；panel 渐变章节面板+居中图标标题+内层白底；card 白色小节卡片+左对齐小标题'
   });
 
+/**
+ * 分区列轨权重（ADR-0054）：缺省仍是 12 条等权列；只有外部结构事实无法
+ * 用等权列表达时，页面才声明最多 12 条正整数权重轨。权重只表达比例，
+ * 不接受 px/CSS 字符串，也不开放 gap、坐标或高度。
+ */
+export const sectionColumnTracksZ = z
+  .array(z.int().min(1).max(1000))
+  .min(1)
+  .max(12)
+  .meta({
+    id: 'sectionColumnTracks',
+    description: '内容分区的受控列轨权重；缺省为 12 条等权列'
+  });
+
 export const sectionZ = z
   .object({
     id: idZ,
     title: nonEmptyTextValueZ.optional(),
     container: sectionContainerZ.optional(),
+    columnTracks: sectionColumnTracksZ.optional(),
     components: z.array(componentZ).min(1)
   })
   .strict()
@@ -40,7 +55,7 @@ export const sectionZ = z
  * 页面布局形态：页面外框几何与画布外观的唯一真源，封闭两档。
  * `report` 是缺省，保持定宽居中的报表观感；`dashboard` 占满宿主给出的
  * 全部宽度并使用中性画布，供作战地图这类看板形态使用。12 列网格在两档
- * 下都是统一运行时不变量，形态不改变分区内部的几何。
+ * 下都由统一运行时解释，形态不改变分区内部的几何。
  */
 export const pageLayoutFormZ = z
   .enum(['report', 'dashboard'])

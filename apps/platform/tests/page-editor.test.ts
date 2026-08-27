@@ -51,14 +51,16 @@ describe('页面修订编辑工作副本', () => {
         title: '销售概览',
         detail: '原始说明',
         detailLabel: '副标题',
-        span: 12
+        span: 12,
+        columnCount: 12
       }),
       expect.objectContaining({
         locator: { sectionId: 'overview', componentId: 'gmv' },
         typeLabel: '指标卡',
         title: '成交总额',
         detailLabel: null,
-        span: 3
+        span: 3,
+        columnCount: 12
       })
     ]);
   });
@@ -156,5 +158,31 @@ describe('页面修订编辑工作副本', () => {
     expect(card.layout.span).toBe(6);
     expect(card.props.title).toBe('机会点总览');
     expect(JSON.stringify(card.props.components)).toBe(beforeChildren);
+  });
+
+  it('自定义列轨分区按实际轨数展示并夹取组件跨度', () => {
+    const weighted: Page = {
+      ...document,
+      schemaVersion: '5.3',
+      sections: [{
+        id: 'overview',
+        columnTracks: [29, 29, 22],
+        components: [{
+          id: 'gmv',
+          type: 'metricCard',
+          layout: { span: 1 },
+          data: { main: 'summary' },
+          props: { rows: [{ label: '成交总额', valueField: 'gmv' }] }
+        }]
+      }]
+    };
+
+    expect(listEditableComponents(weighted)[0]).toMatchObject({ span: 1, columnCount: 3 });
+    const edited = editComponent(
+      weighted,
+      { sectionId: 'overview', componentId: 'gmv' },
+      { span: 99 }
+    );
+    expect(edited.sections[0]?.components[0]?.layout.span).toBe(3);
   });
 });

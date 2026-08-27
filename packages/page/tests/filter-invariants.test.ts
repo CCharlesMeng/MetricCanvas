@@ -45,6 +45,37 @@ describe('筛选器不变式', () => {
       expect.objectContaining({ path: '/filters/0/defaultLevel' })
     );
   });
+
+  it('层级切换器形态只能用于声明了 hierarchy 的维度筛选器', () => {
+    const page: any = structuredClone(queryDashboard);
+    page.schemaVersion = '5.3';
+    page.filters = [{
+      id: 'region', type: 'dimension', dimension: 'geo', hierarchyPicker: 'hidden'
+    }];
+    expect(validate(page)).toContainEqual(
+      expect.objectContaining({ path: '/filters/0/hierarchyPicker' })
+    );
+  });
+
+  it('隐藏层级切换器时必须由同页地图承担下钻入口', () => {
+    const page: any = structuredClone(queryDashboard);
+    page.schemaVersion = '5.3';
+    page.filters = [{
+      id: 'region',
+      type: 'dimension',
+      dimension: 'geo',
+      hierarchyPicker: 'hidden',
+      hierarchy: [
+        { id: 'geo', dimension: 'geo' },
+        { id: 'office', dimension: 'office' }
+      ]
+    }];
+    expect(validate(page)).toContainEqual({
+      type: 'SCHEMA_ERROR',
+      path: '/filters/0/hierarchyPicker',
+      message: '隐藏层级切换器要求同页地图通过 hierarchyFilter 承担下钻:region'
+    });
+  });
 });
 
 describe('ioc-project-overview 页面文档', () => {

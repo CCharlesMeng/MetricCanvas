@@ -112,6 +112,21 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
         time: timePatch(question, domain, clock).time ?? null,
         title: question
       };
+      if (previousUnits.length === 0 && metrics.length > 1) {
+        // 首轮命中多个指标即多个视角:一个指标一个单元,口径(分组、筛选、
+        // 时间)逐字共用,组件之间才能横向对照。
+        return {
+          outcome: 'operations',
+          operations: metrics.map((metric) => ({
+            op: 'add',
+            unit: {
+              ...unit,
+              metrics: [metric],
+              title: metric.kind === 'metric' ? metric.name : metric.label
+            }
+          }))
+        };
+      }
       if (previousUnits.length > 0 && /增加|新增一个|再加|添加|加一个/u.test(question)) {
         // 「增加一个……」的字面即新增单元:不把新指标塞进既有单元。
         // 问题没给分组/时间时沿用基线单元的口径(同轴对照是常见诉求)。

@@ -73,6 +73,7 @@ describe('画布创作态插槽', () => {
     const pageSections = [
       {
         id: 'main',
+        columnTracks: [29, 29, 22],
         components: [
           {
             id: 'one',
@@ -97,6 +98,7 @@ describe('画布创作态插槽', () => {
       components: []
     });
     expect(resolved[1]!.components[0]).toBe(pageSections[0]!.components[0]);
+    expect(resolved[1]!.columnTracks).toEqual([29, 29, 22]);
     expect(
       resolveAuthoringSections(pageSections, [
         { id: 'main', componentIds: ['missing'] }

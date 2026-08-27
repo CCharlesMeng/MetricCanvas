@@ -22,9 +22,9 @@ import {
 } from './support/ask-harness';
 
 /**
- * 指标缺口条目与临时口径标注的编排自证(#67,ADR-0036):
+ * 指标缺口条目与临时指标标注的编排自证(#67,ADR-0036):
  * - 检索不到指标仍尽力回答,不出现阻塞状态,不要求先走指标建设流程;
- * - 缺口出现在用户确认后才登记(临时口径以口径卡确认为时点,面外与
+ * - 缺口出现在用户确认后才登记(临时指标以取数核对确认为时点,面外与
  *   部分缺失以 confirm_gap_entry 交互为时点),放弃即不登记;
  * - 缺口条目结构化、只含问题原文,随会话事件流落库,不另建采集通道;
  * - 部分可答分开呈现:能答的照答,缺的单独列出,不混入同一数字或组件。
@@ -52,7 +52,7 @@ function formulaUnit(expression: string): AskDataRequestUnitState {
   };
 }
 
-/** 跑一轮临时口径流:阻塞 → 口径卡确认续跑,返回续跑轮的事件与观察到的登记。 */
+/** 跑一轮临时指标流:阻塞 → 取数核对确认续跑,返回续跑轮的事件与观察到的登记。 */
 async function runAdHocFlow(input: {
   expression: string;
   question: string;
@@ -91,7 +91,7 @@ function gapEventsOf(events: Awaited<ReturnType<typeof collect>>): MetricGapOccu
   );
 }
 
-describe('临时口径:尽力回答 + 口径卡确认即登记', () => {
+describe('临时指标:尽力回答 + 取数核对确认即登记', () => {
   it('确认前不登记;确认续跑后登记完整结构化出现并照常出数', async () => {
     const { firstEvents, resumeEvents, sinkCalls } = await runAdHocFlow({
       expression: '计费Tokens量 / Tokens消耗量',
@@ -123,11 +123,11 @@ describe('临时口径:尽力回答 + 口径卡确认即登记', () => {
     expect(sinkCalls).toEqual(recorded);
 
     // 尽力回答未被缺口阻塞:确认后照常执行并产出通过校验的文档,
-    // 且组件可见标题携带「临时口径」标记(与已定义指标可区分)。
+    // 且组件可见标题携带「临时指标」标记(与已定义指标可区分)。
     const { document } = completedOf(resumeEvents);
     expect(validate(document!)).toEqual([]);
     const titles = JSON.stringify(document);
-    expect(titles).toContain('(临时口径)');
+    expect(titles).toContain('(临时指标)');
   });
 
   it('同一表达式形状的重复出现共享幂等键,台账累加次数不产生重复条目', async () => {

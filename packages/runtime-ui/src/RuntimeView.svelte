@@ -811,7 +811,9 @@
   function remoteHeaderOptions(): Record<string, string[]> {
     const options: Record<string, string[]> = {};
     for (const [dimension, snapshot] of dimensionCandidates) {
-      if (snapshot.status === 'ready') options[dimension] = snapshot.values;
+      if (snapshot.status === 'ready') {
+        options[dimension] = snapshot.candidates.map((candidate) => candidate.value);
+      }
     }
     return options;
   }
@@ -1122,7 +1124,7 @@
      不允许任一消费方改自己的缺省字面量来「就地调档」。 */
   .page-content.layout-dashboard {
     --mc-page-content-padding-block-start: 0;
-    --mc-page-content-padding-inline: 24px;
+    --mc-page-content-padding-inline: 0;
     --mc-page-sections-margin-top: 16px;
     --mc-section-card-padding: 16px 20px 20px;
     --mc-section-card-title-margin: 0 0 12px;
@@ -1228,6 +1230,11 @@
     flex-direction: column;
     gap: 16px;
     margin-top: var(--mc-page-sections-margin-top, 0);
+  }
+  .page-content.layout-dashboard > .page-sections {
+    /* 1920 参考宿主的非对称内距是 23/24px，内容轨因此恰为 1632px。 */
+    padding-right: 24px;
+    padding-left: 23px;
   }
   @media (max-width: 1050px) {
     .page-content {

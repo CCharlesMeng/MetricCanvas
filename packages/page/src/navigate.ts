@@ -5,6 +5,7 @@ import { walkPageComponents } from './component-walk';
 import type { PageParamDeclaration, PageParamType } from './page-param';
 import { resolveDataSourceFields } from './data-source';
 import type { TypedError } from './errors';
+import type { FilterDeclaration } from './filter';
 
 /**
  * 跨文档引用校验入口(ADR-0047 / ADR-0048):目标页必须存在,
@@ -93,15 +94,32 @@ function targetErrors(
   const target = pagesById.get(targetId);
   if (!target) return [];
   const targetFilters = new Map((target.filters ?? []).map((filter) => [filter.id, filter]));
+  const sourceFilters = new Map((source.filters ?? []).map((filter) => [filter.id, filter]));
   const targetParams = new Map((target.params ?? []).map((param) => [param.id, param]));
   const errors: TypedError[] = [];
 
   (carryFilters ?? []).forEach((filterId, index) => {
-    if (!targetFilters.has(filterId)) {
+    const targetFilter = targetFilters.get(filterId);
+    if (!targetFilter) {
       errors.push({
         type: 'SCHEMA_ERROR',
         path: `${path}/carryFilters/${index}`,
         message: `目标页 ${targetId} 没有同名筛选器 ${filterId}`
+      });
+      return;
+    }
+    const sourceFilter = sourceFilters.get(filterId);
+    if (!sourceFilter) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `${path}/carryFilters/${index}`,
+        message: `源页没有筛选器 ${filterId}，无法携带当前值`
+      });
+    } else if (!compatibleFilterContract(sourceFilter, targetFilter)) {
+      errors.push({
+        type: 'SCHEMA_ERROR',
+        path: `${path}/carryFilters/${index}`,
+        message: `筛选器 ${filterId} 的源页与目标页契约不相容`
       });
     }
   });
@@ -142,6 +160,36 @@ function targetErrors(
     }
   }
   return errors;
+}
+
+/**
+ * carryFilters 搬运的是已编码筛选值，不只是同名字符串。目标页必须能用同一
+ * 类型、时间粒度或维度层级解释该值，否则 URL 能生成却会在目标页静默丢失。
+ */
+function compatibleFilterContract(
+  source: FilterDeclaration,
+  target: FilterDeclaration
+): boolean {
+  if (source.type !== target.type) return false;
+  switch (source.type) {
+    case 'timePoint':
+      return target.type === 'timePoint' && source.granularity === target.granularity;
+    case 'timeRange':
+      return target.type === 'timeRange' &&
+        (source.precision ?? 'date') === (target.precision ?? 'date');
+    case 'dimension': {
+      if (target.type !== 'dimension' || source.dimension !== target.dimension) return false;
+      const sourceHierarchy = source.hierarchy ?? [];
+      const targetHierarchy = target.hierarchy ?? [];
+      return sourceHierarchy.length === targetHierarchy.length &&
+        sourceHierarchy.every((level, index) => {
+          const other = targetHierarchy[index];
+          return other?.id === level.id && other.dimension === level.dimension;
+        });
+    }
+    default:
+      return true;
+  }
 }
 
 function sourceField(

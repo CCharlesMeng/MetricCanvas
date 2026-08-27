@@ -32,9 +32,9 @@ export interface PromotionRequest {
   direction: PromoteDirection;
   /** 用户拟定的正式页面 id(经面板显式确认后保存)。 */
   pageId: string;
-  /** Data App 方向:用户已显式接受临时口径无人负责(ADR-0036)。 */
+  /** Data App 方向:用户已显式接受临时指标无人负责(ADR-0036)。 */
   acceptAdHocDefinitions: boolean;
-  /** 临时口径留痕:来自 ask 会话状态消息(#66),充实沉淀警告。 */
+  /** 临时指标留痕:来自 ask 会话状态消息(#66),充实沉淀警告。 */
   formulaTraces: readonly FormulaTrace[];
 }
 
@@ -67,7 +67,7 @@ export function formalPageIdError(pageId: string): string | null {
   return null;
 }
 
-/** 从会话基线消息提取临时口径留痕(ask 状态消息是唯一携带位置,#66)。 */
+/** 从会话基线消息提取临时指标留痕(ask 状态消息是唯一携带位置,#66)。 */
 export function askFormulaTraces(
   messages: readonly AgentMessage[] | null
 ): FormulaTrace[] {
@@ -75,7 +75,7 @@ export function askFormulaTraces(
   return parseAskConversation(messages).state.formulaTraces;
 }
 
-/** 文档中的临时口径清单(沉淀警告内容),留痕补充问题原文。 */
+/** 文档中的临时指标清单(沉淀警告内容),留痕补充问题原文。 */
 export { adHocDefinitionsOf };
 
 /** 沉淀成功的回报:工作台据此把工作副本切换到正式页面 id 与首个修订。 */

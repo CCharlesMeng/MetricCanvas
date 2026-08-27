@@ -5,6 +5,17 @@ import { buildFilterTree, nodeState, toggleNodeValues } from '../src/filters/tre
 const options = ['华东/上海', '华东/杭州', '华北/北京', '海外'];
 
 describe("buildFilterTree:候选值 '/' 分隔符约定建树", () => {
+  it('显示名建文案，稳定值仍作为筛选叶子', () => {
+    const tree = buildFilterTree([
+      { value: 'CN/BJ', label: '中国/北京' },
+      { value: 'CN/SH', label: '中国/上海' }
+    ]);
+
+    expect(tree[0]?.label).toBe('中国');
+    expect(tree[0]?.children.map((node) => node.label)).toEqual(['北京', '上海']);
+    expect(tree[0]?.leaves).toEqual(['CN/BJ', 'CN/SH']);
+  });
+
   it('按分隔符分层:两级路径成父子,无分隔符的候选值是根层叶子', () => {
     const tree = buildFilterTree(options);
     expect(tree.map((node) => node.label)).toEqual(['华东', '华北', '海外']);

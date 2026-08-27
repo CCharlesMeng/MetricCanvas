@@ -1,5 +1,7 @@
 import { componentCatalog } from '@metriccanvas/page';
+import { scopeGroupsOfUnits } from '@metriccanvas/mcp';
 import type {
+  DataRequestUnitScope,
   DomainSemanticSurface,
   ExecutedDataRequestUnit,
   FormulaTrace,
@@ -52,16 +54,16 @@ import type {
  *   仅当检索一无所获时重路由一次。
  * - 候选消歧:确定性检索排序 + 并列最高分即歧义;歧义阻塞转人工确认,
  *   系统与模型都不替用户选。
- * - 口径卡:歧义、临时口径(自由 formula)、时间口径由模型补全三类触发
+ * - 取数核对:歧义、临时指标(自由 formula)、时间口径由模型补全三类触发
  *   条件阻塞等待确认,其余直接执行(ADR-0037 的成本阈值触发条件待成本
  *   预估能力,当前不实现)。
  * - 预算与止损:每阶段模型调用失败重试一次;清单校验被拒给模型一次带
  *   违规反馈的修复机会;真实执行的运行内次数上限由验真端口承载(#64)。
  * - 降级:面外问题与执行失败按四段分类落 step_failed,绝不编造数据,
  *   运行以解释性回复正常收束。
- * - 缺口条目(#67,ADR-0036):检索不到合适指标不阻塞回答——临时口径
+ * - 缺口条目(#67,ADR-0036):检索不到合适指标不阻塞回答——临时指标
  *   尽力作答,面外与部分缺失单独列出。缺口出现在用户确认后才登记:
- *   临时口径以口径卡确认为确认时点,面外与部分缺失以 confirm_gap_entry
+ *   临时指标以取数核对确认为确认时点,面外与部分缺失以 confirm_gap_entry
  *   交互为确认时点;登记即产出 metric_gap_recorded 步骤事件,随会话
  *   事件流落库,幂等键与计数聚合见 ../session/metric-gap.ts。
  *
@@ -76,7 +78,7 @@ import type {
  * 统一编号、落库与下发;取消与超时信号贯穿模型调用、检索与真实执行。
  */
 
-/** 口径卡确认(#65 接线点 1):interactionId 锚定待确认卡;歧义时必须携带选择。 */
+/** 取数核对确认(#65 接线点 1):interactionId 锚定待确认卡;歧义时必须携带选择。 */
 export interface AskScopeConfirmation {
   interactionId: string;
   selectedMetric?: { businessDomain: string; metricName: string };
@@ -222,18 +224,18 @@ async function* orchestrate(
     return;
   }
 
-  /* ---------- 续跑:口径卡确认(无新问题) ---------- */
+  /* ---------- 续跑:取数核对确认(无新问题) ---------- */
   if (question === null) {
     const pending = state.pending;
     if (!pending) {
-      yield assistant('当前没有待确认的口径卡,也没有新的问题;请输入业务问题。');
+      yield assistant('当前没有待确认的取数核对,也没有新的问题;请输入业务问题。');
       yield completed({ ...state, pending: null }, null);
       return;
     }
     const confirmation = options.scopeConfirmations?.find(
       (entry) => entry.interactionId === pending.interactionId
     );
-    // 历史单 unit 口径卡兼容:单元集合与触及清单缺省时,以阻塞单元为
+    // 历史单 unit 取数核对兼容:单元集合与触及清单缺省时,以阻塞单元为
     // 唯一被触及单元,替换(或补入)进当前单元集合。
     const blockingId = pending.dataSourceId ?? ASK_DATA_SOURCE_ID;
     let blockingUnit = pending.unit;
@@ -289,12 +291,12 @@ async function* orchestrate(
       businessDomains: dedupe([blockingUnit.businessDomain, ...state.businessDomains]).slice(0, 2),
       pending: null
     };
-    // 确认后的口径卡以非阻塞形态回显一次:本轮实际生效范围的锚点。
+    // 确认后的取数核对以非阻塞形态回显一次:本轮实际生效范围的锚点。
     for (const id of touched) {
       const entry = entries.find((candidate) => candidate.dataSourceId === id);
       if (entry) yield step(scopeCardEvent(entry.unit, false, entry.dataSourceId));
     }
-    // 临时口径缺口(#67):口径卡确认即用户确认,此刻登记一次出现。
+    // 临时指标缺口(#67):取数核对确认即用户确认,此刻登记一次出现。
     // 幂等键取表达式形状,与高频 formula 形状排行天然合并(ADR-0036)。
     const confirmedAdHoc = adHocDefinitionOf(blockingUnit);
     if (confirmedAdHoc !== null) {
@@ -599,7 +601,7 @@ async function* orchestrate(
     )
   );
 
-  /* ---------- 口径卡:触发条件阻塞,其余直接执行(ADR-0037) ---------- */
+  /* ---------- 取数核对:触发条件阻塞,其余直接执行(ADR-0037) ---------- */
   const touchedEntries = entries.filter((entry) => touched.includes(entry.dataSourceId));
   const reasons: ScopeBlockReason[] = [];
   if (ambiguousTerms.length > 0) reasons.push('ambiguous_metric');
@@ -649,6 +651,7 @@ async function* orchestrate(
     isNewQuestion: true,
     candidates,
     gapAspects,
+    droppedUnitAdds: applied.droppedAdds,
     messages,
     formUnitOnce,
     decide,
@@ -681,6 +684,8 @@ interface ExecutionContext {
   candidates: RankedMetricCandidate[];
   /** 问题里语义面无法回答的部分(#67):单独列出,确认后登记。 */
   gapAspects: AskUnitGapAspect[];
+  /** 触到单元数上限而未取数的视角数(ADR-0055);续跑轮不再新增,缺省为 0。 */
+  droppedUnitAdds?: number;
   messages: AgentMessage[];
   /** 清单校验被拒后的修复重试入口;续跑轮没有(单元已经用户确认)。 */
   formUnitOnce?: (violationFeedback?: string[]) => Promise<AskUnitFormingDecision>;
@@ -727,7 +732,7 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
         continue;
       }
       // draft 未随请求传回(或不含该数据源)的兜底:按原口径重新取数,
-      // 绝不编造初始行;口径未变,不重复呈现口径卡。
+      // 绝不编造初始行;口径未变,不重复呈现取数核对。
     }
     let unit = entry.unit;
     let derived = deriveExecutableUnit(unit, surfaces);
@@ -832,7 +837,17 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
       continue;
     }
     if (!context.isNewQuestion && entry.intent !== null) continue;
-    entry.intent = await decideIntentWithFallback(context, entry.unit, entry.intent);
+    // 一轮多个单元时,意图判定只看该单元自己那句问法(单元业务标题):整句
+    // 问题里的「走势」会把同一轮按区域切分的单元也判成趋势(ADR-0055)。
+    // 单单元轮次没有串味的余地,仍用问题原文,不丢原句里的排名、占比等说法。
+    const intentQuestion =
+      entries.length > 1 ? (entry.unit.title ?? context.question) : context.question;
+    entry.intent = await decideIntentWithFallback(
+      context,
+      entry.unit,
+      entry.intent,
+      intentQuestion
+    );
   }
 
   // 用户话语显式点名组件形态(「改成柱状图」)是最强展示信号:确定性
@@ -876,9 +891,12 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     const pinnedType = pinnedTypeOf(entry);
     return {
       dataSourceId: entry.dataSourceId,
-      // 临时口径在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档
+      // 口径随单元交给装配:一个口径组一个内容分区(ADR-0055),跨口径的
+      // 一整页因此在页面自己身上说清了各块按什么切分。
+      scope: scopeOf(entry.unit),
+      // 临时指标在呈现处可辨(ADR-0036):组件可见标题携带标记,随文档
       // 本身走到任何渲染宿主,不依赖工作台外壳。
-      title: `${entry.unit.title ?? question}${adHoc === null ? '' : '(临时口径)'}`,
+      title: `${entry.unit.title ?? question}${adHoc === null ? '' : '(临时指标)'}`,
       fields: presentation.fields,
       query: presentation.query,
       initial: presentation.initial,
@@ -935,14 +953,16 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
       return {
         componentType: component.type,
         pinnedByUser: pinned !== undefined && component.type === pinned,
-        dataSourceId: component.data.main
+        dataSourceId: component.data.main,
+        ...(owner === undefined
+          ? {}
+          : { intent: owner.intent ?? defaultIntent(owner.unit) })
       };
     })
   );
   const primaryEntry =
     entries.find((entry) => entry.dataSourceId === context.touched[0]) ?? entries[0]!;
-  const primaryIntent = primaryEntry.intent ?? defaultIntent(primaryEntry.unit);
-  yield step({ type: 'document_ready', intent: primaryIntent, components, transientPageId });
+  yield step({ type: 'document_ready', components, transientPageId });
 
   const finalState: AskConversationState = {
     ...state,
@@ -952,7 +972,10 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
     pending: null
   };
   const document = assembly.document as unknown as Record<string, unknown>;
-  yield assistant(summaryText(entries, presentations, components.map((c) => c.componentType)));
+  yield assistant(
+    summaryText(entries, presentations, components.map((c) => c.componentType)) +
+      capNotice(context.droppedUnitAdds ?? 0)
+  );
   if (context.gapAspects.length === 0) {
     yield completed(finalState, document);
     return;
@@ -991,12 +1014,13 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
 async function decideIntentWithFallback(
   context: ExecutionContext,
   unit: AskDataRequestUnitState,
-  previousIntent: AnalysisIntent | null
+  previousIntent: AnalysisIntent | null,
+  question: string
 ): Promise<AnalysisIntent> {
   try {
     const decision = await context.decide(() =>
       context.ports.model.decideIntent({
-        question: context.question,
+        question,
         unit,
         previousIntent,
         ...(context.signal ? { signal: context.signal } : {})
@@ -1059,7 +1083,17 @@ interface ApplyUnitOperationsResult {
   touched: string[];
   added: string[];
   nextOrdinal: number;
+  /** 触到单元数上限而未被新增的视角数(ADR-0055)。 */
+  droppedAdds: number;
 }
+
+/**
+ * 一份问数页面的取数单元上限(ADR-0055)。每个单元都是一次真实 DQE 执行
+ * 加一次意图模型调用,成本与延迟随单元数线性增长,而按身份的成本预估能力
+ * 尚不存在(ADR-0037 未决事项)。这是编排侧的确定性闸,不只写在提示词里:
+ * 提示词管不住模型一次列出十几个视角。上限之外的视角走追问增量添加。
+ */
+const MAX_UNITS_PER_PAGE = 6;
 
 /**
  * 应用定向单元操作集:add 由编排分配稳定数据源名(序号只增不复用),
@@ -1071,11 +1105,21 @@ function applyUnitOperations(input: ApplyUnitOperationsInput): ApplyUnitOperatio
   const touched: string[] = [];
   const added: string[] = [];
   let nextOrdinal = input.nextOrdinal;
+  let droppedAdds = 0;
 
   const coerceDomain = (unit: AskDataRequestUnitState): AskDataRequestUnitState =>
     input.routedDomains.includes(unit.businessDomain)
       ? unit
       : { ...unit, businessDomain: input.fallbackDomain };
+  // 一轮产出多个单元时,缺省标题必须逐单元可区分:整句问题当标题会让
+  // 页面上的多个组件挂同一个可见标题,用户分不出哪个组件是哪个指标。
+  // 模型漏写 title 时按该单元的指标名派生,不靠模型的自觉。
+  const producesManyUnits =
+    input.operations.filter(
+      (operation) => operation.op === 'add' || operation.op === 'replace'
+    ).length > 1;
+  const titleOf = (unit: AskDataRequestUnitState): string =>
+    unit.title ?? (producesManyUnits ? metricsLabelOf(unit) ?? input.question : input.question);
   const indexOf = (dataSourceId: string): number => {
     const index = entries.findIndex((entry) => entry.dataSourceId === dataSourceId);
     if (index === -1) input.onUnknownUnit(dataSourceId);
@@ -1088,12 +1132,16 @@ function applyUnitOperations(input: ApplyUnitOperationsInput): ApplyUnitOperatio
   for (const operation of input.operations) {
     switch (operation.op) {
       case 'add': {
+        if (entries.length >= MAX_UNITS_PER_PAGE) {
+          droppedAdds += 1;
+          break;
+        }
         const unit = coerceDomain(operation.unit);
         const dataSourceId = askUnitDataSourceId(nextOrdinal);
         nextOrdinal += 1;
         entries.push({
           dataSourceId,
-          unit: { ...unit, title: unit.title ?? input.question },
+          unit: { ...unit, title: titleOf(unit) },
           intent: null,
           requestedComponent: null
         });
@@ -1106,7 +1154,7 @@ function applyUnitOperations(input: ApplyUnitOperationsInput): ApplyUnitOperatio
         const unit = coerceDomain(operation.unit);
         entries[index] = {
           ...entries[index]!,
-          unit: { ...unit, title: unit.title ?? input.question }
+          unit: { ...unit, title: titleOf(unit) }
         };
         touch(operation.dataSourceId);
         break;
@@ -1133,7 +1181,8 @@ function applyUnitOperations(input: ApplyUnitOperationsInput): ApplyUnitOperatio
     entries,
     touched: touched.filter((id) => entries.some((entry) => entry.dataSourceId === id)),
     added: added.filter((id) => entries.some((entry) => entry.dataSourceId === id)),
-    nextOrdinal
+    nextOrdinal,
+    droppedAdds
   };
 }
 
@@ -1164,7 +1213,7 @@ function repairedUnitOf(
   return null;
 }
 
-/** 替换或补入一个单元条目(历史单 unit 口径卡的兼容续跑用)。 */
+/** 替换或补入一个单元条目(历史单 unit 取数核对的兼容续跑用)。 */
 function upsertUnitEntry(
   entries: readonly AskUnitEntryState[],
   entry: AskUnitEntryState
@@ -1295,20 +1344,36 @@ function toMetricCandidate(candidate: RankedMetricCandidate): MetricCandidate {
   };
 }
 
+/**
+ * 取数单元的口径(ADR-0055):判等依据与呈现文案都取 deriveExecutableUnit
+ * 的同一份派生结果,取数核对、分区标题与助手回复因此不会各说一套。
+ */
+function scopeOf(unit: AskDataRequestUnitState): DataRequestUnitScope {
+  const derived = deriveExecutableUnit(unit, []).scope;
+  return {
+    businessDomain: unit.businessDomain,
+    groupBy: derived.groupBy,
+    timeRange: derived.timeRange,
+    granularity: derived.granularity,
+    filters: derived.filters
+  };
+}
+
 function scopeCardEvent(
   unit: AskDataRequestUnitState,
   blockedOnConfirmation: boolean,
   dataSourceId: string
 ): AnalysisStepEvent {
-  const derivedScope = deriveExecutableUnit(unit, []).scope;
+  const scope = scopeOf(unit);
   return {
     type: 'scope_card_presented',
-    businessDomain: unit.businessDomain,
+    businessDomain: scope.businessDomain,
     metricName: firstMetricName(unit),
     adHocDefinition: adHocDefinitionOf(unit),
-    timeRange: derivedScope.timeRange,
-    granularity: derivedScope.granularity,
-    filters: derivedScope.filters,
+    groupBy: scope.groupBy,
+    timeRange: scope.timeRange,
+    granularity: scope.granularity,
+    filters: scope.filters,
     blockedOnConfirmation,
     dataSourceId
   };
@@ -1384,6 +1449,14 @@ function adHocDefinitionOf(
   );
   if (formula === undefined) return null;
   return { formula: formula.expression, description: formula.description ?? formula.label };
+}
+
+/** 单元指标的可读标签(formula 取声明的 label);无指标时为 null。 */
+function metricsLabelOf(unit: AskDataRequestUnitState): string | null {
+  const labels = unit.metrics.map((metric) =>
+    metric.kind === 'metric' ? metric.name : metric.label
+  );
+  return labels.length === 0 ? null : labels.join('、');
 }
 
 function firstMetricName(unit: AskDataRequestUnitState): string | null {
@@ -1510,6 +1583,16 @@ function pinnedComponentFor(
     : undefined;
 }
 
+/** 触到单元上限时如实说明,并给出继续的方式(ADR-0055)。 */
+function capNotice(droppedAdds: number): string {
+  if (droppedAdds === 0) return '';
+  return (
+    `\n本轮问到的视角超过一页 ${MAX_UNITS_PER_PAGE} 个的上限,` +
+    `另 ${droppedAdds} 个视角没有取数——每个视角都是一次真实查询,一次问太多会很慢。` +
+    `想看剩下的,追问一句「再加上……」即可。`
+  );
+}
+
 function summaryText(
   entries: readonly AskUnitEntryState[],
   presentations: ReadonlyMap<string, UnitPresentation>,
@@ -1522,24 +1605,52 @@ function summaryText(
       ? presentation.rowCount
       : presentation.initial.rows.length;
   };
+  const metricsText = (entry: AskUnitEntryState): string =>
+    entry.unit.metrics
+      .map((metric) => (metric.kind === 'metric' ? metric.name : `${metric.label}(临时指标)`))
+      .join('、') || '(待定)';
   const unitLine = (entry: AskUnitEntryState): string => {
     const unit = entry.unit;
-    const metricText = unit.metrics
-      .map((metric) => (metric.kind === 'metric' ? metric.name : `${metric.label}(临时口径)`))
-      .join('、');
     const timeText =
       unit.time === null
         ? '不限定时间范围'
         : `${unit.time.start} ~ ${unit.time.end}(${unit.time.granularity})`;
-    return `业务域「${unit.businessDomain}」,指标 ${metricText || '(待定)'},${timeText},返回 ${rowCountOf(entry.dataSourceId)} 行`;
+    return `业务域「${unit.businessDomain}」,指标 ${metricsText(entry)},${timeText},返回 ${rowCountOf(entry.dataSourceId)} 行`;
   };
+  const presentedAs = `呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`;
   if (entries.length === 1) {
-    return `已完成:${unitLine(entries[0]!)},呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`;
+    return `已完成:${unitLine(entries[0]!)},${presentedAs}`;
   }
+
+  // 多单元轮次按口径组汇总(ADR-0055):同组能横向对照,跨组不能——这句
+  // 提示是非阻塞的,与页面上的分区标题说的是同一件事。
+  const groups = scopeGroupsOfUnits(
+    entries.map((entry) => ({ dataSourceId: entry.dataSourceId, scope: scopeOf(entry.unit) }))
+  );
+  const entryOf = (dataSourceId: string): AskUnitEntryState =>
+    entries.find((entry) => entry.dataSourceId === dataSourceId)!;
+  const shortLine = (entry: AskUnitEntryState): string =>
+    `指标 ${metricsText(entry)},返回 ${rowCountOf(entry.dataSourceId)} 行`;
+  if (groups === null || groups.length === 1) {
+    const scopeText = groups === null ? '' : `,口径一致(${groups[0]!.label}),可以横向对照`;
+    return (
+      `已完成 ${entries.length} 个取数单元${scopeText}:\n` +
+      entries.map((entry, index) => `${index + 1}. ${shortLine(entry)}`).join('\n') +
+      `\n${presentedAs}`
+    );
+  }
+  let ordinal = 0;
+  const groupBlocks = groups.map((group) => {
+    const lines = group.dataSourceIds.map((dataSourceId) => {
+      ordinal += 1;
+      return `  ${ordinal}. ${shortLine(entryOf(dataSourceId))}`;
+    });
+    return `【${group.label}】\n${lines.join('\n')}`;
+  });
   return (
-    `已完成 ${entries.length} 个取数单元:\n` +
-    entries.map((entry, index) => `${index + 1}. ${unitLine(entry)}`).join('\n') +
-    `\n呈现为 ${componentTypes.map(componentLabel).join(' + ')}。`
+    `已完成 ${entries.length} 个取数单元,分属 ${groups.length} 组口径;` +
+    `同组之间可以横向对照,跨组不能——页面已按口径分区。\n` +
+    `${groupBlocks.join('\n')}\n${presentedAs}`
   );
 }
 

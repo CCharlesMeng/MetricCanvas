@@ -9,7 +9,9 @@ import {
 import {
   assembleTransientPage,
   resultShapeOfUnit,
+  scopeGroupsOfUnits,
   type AssembleTransientPageInput,
+  type DataRequestUnitScope,
   type ExecutedDataRequestUnit
 } from '../src';
 
@@ -281,6 +283,147 @@ describe('临时页面态装配:产出 5.0 页面文档并通过 validate', () =
       ]
     });
     expect(document.filters).toEqual(filters);
+  });
+});
+
+/** 给取数单元挂上口径;未指定的要素取同一份缺省,便于只让一项不同。 */
+function withScope(
+  unit: ExecutedDataRequestUnit,
+  scope: Partial<DataRequestUnitScope> & Pick<DataRequestUnitScope, 'groupBy'>
+): ExecutedDataRequestUnit {
+  return {
+    ...unit,
+    scope: {
+      businessDomain: '销售分析',
+      timeRange: '2026-01-01 ~ 2026-06-30',
+      granularity: 'month',
+      filters: [],
+      ...scope
+    }
+  };
+}
+
+describe('临时页面态装配:口径组作为分区边界(ADR-0055)', () => {
+  it('口径一致的页面仍是单个分区,标题用调用方给的 sectionTitle', () => {
+    const document = assembled({
+      pageId: 'ask-transient-scope-one',
+      units: [
+        withScope(regionGmvUnit, { groupBy: ['区域'] }),
+        withScope(
+          { ...noInitialRegionUnit, initial: regionGmvUnit.initial },
+          { groupBy: ['区域'] }
+        )
+      ],
+      sectionTitle: '问数结果',
+      container: 'panel'
+    });
+    expect(document.sections).toHaveLength(1);
+    expect(document.sections[0]).toMatchObject({ id: 'main', title: '问数结果' });
+    expect(document.sections[0]!.components).toHaveLength(2);
+  });
+
+  it('跨口径的页面一组一个分区,标题只写各组之间真正不同的口径要素', () => {
+    const document = assembled({
+      pageId: 'ask-transient-scope-many',
+      units: [
+        withScope(gmvSummaryUnit, { groupBy: [] }),
+        withScope(monthlyGmvUnit, { groupBy: ['月份'] }),
+        withScope(regionGmvUnit, { groupBy: ['区域'] })
+      ],
+      sectionTitle: '问数结果',
+      container: 'panel'
+    });
+    expect(validate(document)).toEqual([]);
+    // 三组共用同一业务域、同一时间窗口,标题因此只落在分组维度上。
+    expect(document.sections.map((section) => [section.id, section.title])).toEqual([
+      ['scope-1', '总量'],
+      ['scope-2', '按月份'],
+      ['scope-3', '按区域']
+    ]);
+    expect(
+      document.sections.map((section) => section.components.map((component) => component.data.main))
+    ).toEqual([['gmv-summary'], ['monthly-gmv'], ['region-gmv']]);
+    // 分区外观仍由 container 单一声明,逐分区一致(ADR-0038)。
+    expect(document.sections.every((section) => section.container === 'panel')).toBe(true);
+  });
+
+  it('只有时间窗口不同时,标题写到时间与粒度上', () => {
+    const document = assembled({
+      pageId: 'ask-transient-scope-time',
+      units: [
+        withScope(regionGmvUnit, { groupBy: ['区域'] }),
+        withScope(
+          { ...noInitialRegionUnit, initial: regionGmvUnit.initial },
+          { groupBy: ['区域'], timeRange: '2025-01-01 ~ 2025-06-30' }
+        )
+      ],
+      container: 'panel'
+    });
+    expect(document.sections.map((section) => section.title)).toEqual([
+      '按区域 · 2026-01-01 ~ 2026-06-30(月)',
+      '按区域 · 2025-01-01 ~ 2025-06-30(月)'
+    ]);
+  });
+
+  it('分组维度只是声明顺序不同不构成两个口径组', () => {
+    const twoDimUnit: ExecutedDataRequestUnit = {
+      ...regionGmvUnit,
+      dataSourceId: 'region-month-gmv',
+      fields: { region: regionGmvUnit.fields.region!, month: monthlyGmvUnit.fields.month!, gmv: gmvField },
+      query: dqeQuery(['区域', '月份'], ['成交总额']),
+      initial: {
+        capturedAt: '2026-08-12T00:00:00+08:00',
+        rows: [{ 区域: '华东', 月份: '2026-03-01', 成交总额: 520000 }],
+        totalCount: 1
+      }
+    };
+    const document = assembled({
+      pageId: 'ask-transient-scope-order',
+      units: [
+        withScope(twoDimUnit, { groupBy: ['区域', '月份'] }),
+        withScope(
+          { ...twoDimUnit, dataSourceId: 'month-region-gmv' },
+          { groupBy: ['月份', '区域'] }
+        )
+      ],
+      sectionTitle: '问数结果',
+      container: 'panel'
+    });
+    expect(document.sections).toHaveLength(1);
+  });
+
+  it('口径组文案是完整口径:分区标题与问数回复共用这一份', () => {
+    const groups = scopeGroupsOfUnits([
+      withScope(gmvSummaryUnit, { groupBy: [] }),
+      withScope(regionGmvUnit, { groupBy: ['区域'] }),
+      withScope(
+        { ...noInitialRegionUnit, initial: regionGmvUnit.initial },
+        { groupBy: ['区域'], filters: [{ dimension: '渠道', values: ['直销', '分销'] }] }
+      )
+    ]);
+    expect(groups?.map((group) => group.label)).toEqual([
+      '销售分析 · 总量 · 2026-01-01 ~ 2026-06-30(月)',
+      '销售分析 · 按区域 · 2026-01-01 ~ 2026-06-30(月)',
+      '销售分析 · 按区域 · 2026-01-01 ~ 2026-06-30(月) · 渠道=直销、分销'
+    ]);
+    expect(groups?.map((group) => group.dataSourceIds)).toEqual([
+      ['gmv-summary'],
+      ['region-gmv'],
+      ['region-gmv-live']
+    ]);
+    // 任一单元缺口径时不产生分组:调用方据此退回单分区。
+    expect(scopeGroupsOfUnits([regionGmvUnit])).toBeNull();
+  });
+
+  it('任一单元未声明口径时整体退回单分区', () => {
+    const document = assembled({
+      pageId: 'ask-transient-scope-partial',
+      units: [withScope(gmvSummaryUnit, { groupBy: [] }), regionGmvUnit],
+      sectionTitle: '问数结果',
+      container: 'panel'
+    });
+    expect(document.sections).toHaveLength(1);
+    expect(document.sections[0]!.components).toHaveLength(2);
   });
 });
 

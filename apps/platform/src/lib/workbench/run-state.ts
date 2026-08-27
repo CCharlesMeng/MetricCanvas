@@ -3,7 +3,6 @@ import type { AgentRunOutcomeStatus } from '../server/agent/stream';
 import type {
   AdHocDefinition,
   AgentRunStreamEvent,
-  AnalysisIntent,
   ComponentChoice,
   DimensionFilter,
   ExecutionResultSummary,
@@ -25,10 +24,10 @@ import type { AgentRunOutcomeFrame } from './stream-consumer';
  * - tool_call_started/finished → 时间线工具调用条目:进行中 → 成功/失败(附错误码)
  * - domain_routed / candidates_retrieved / execution_started / rows_ready /
  *   document_ready           → 追加对应编排步骤(ADR-0037 顺序)
- * - scope_card_presented     → 追加口径卡;blockedOnConfirmation 标记阻塞
+ * - scope_card_presented     → 追加取数核对;blockedOnConfirmation 标记阻塞
  * - metric_gap_recorded      → 追加缺口登记步骤(#67 指标需求条目)
  * - step_failed              → 追加失败步骤(发现/生成/执行/呈现四段分类)
- * - run_interaction_required → 记录待人工交互;若最近口径卡处于阻塞且尚未
+ * - run_interaction_required → 记录待人工交互;若最近取数核对处于阻塞且尚未
  *                              执行,标记该卡等待确认
  * - run_completed / run_failed / run_cancelled → 运行终态
  * - outcome 帧               → 终态、续跑基线消息、页面文档、交互与错误的最终真源
@@ -38,11 +37,13 @@ export type WorkbenchRunStatus = 'running' | AgentRunOutcomeStatus;
 
 export type ToolCallStepStatus = 'running' | 'succeeded' | 'failed';
 
-/** 口径卡视图:完整生效范围 + 阻塞确认状态(ADR-0037)。 */
+/** 取数核对视图:完整生效范围 + 阻塞确认状态(ADR-0037)。 */
 export interface ScopeCardView {
   businessDomain: string;
   metricName: string | null;
   adHocDefinition: AdHocDefinition | null;
+  /** 分组维度:同一指标按不同维度切分时,这是几张卡之间唯一的差别。 */
+  groupBy: readonly string[];
   timeRange: string;
   granularity: string;
   filters: readonly DimensionFilter[];
@@ -69,7 +70,7 @@ export type RunStep =
   | { kind: 'rows_ready'; summary: ExecutionResultSummary }
   | {
       kind: 'document_ready';
-      intent: AnalysisIntent;
+      /** 意图按单元携带在 components 上(ADR-0055):跨口径页面没有页面级意图。 */
       components: readonly ComponentChoice[];
       transientPageId: string;
     }
@@ -171,6 +172,7 @@ export function applyStreamEvent(
           businessDomain: event.businessDomain,
           metricName: event.metricName,
           adHocDefinition: event.adHocDefinition,
+          groupBy: event.groupBy ?? [],
           timeRange: event.timeRange,
           granularity: event.granularity,
           filters: event.filters,
@@ -185,7 +187,6 @@ export function applyStreamEvent(
     case 'document_ready':
       return appendStep(view, {
         kind: 'document_ready',
-        intent: event.intent,
         components: event.components,
         transientPageId: event.transientPageId
       });
@@ -264,14 +265,14 @@ export function applyTransportFailure(
   };
 }
 
-/** 运行是否停在口径卡阻塞确认上(候选歧义 / 自由生成表达式等,ADR-0037)。 */
+/** 运行是否停在取数核对阻塞确认上(候选歧义 / 自由生成表达式等,ADR-0037)。 */
 export function awaitingScopeConfirmation(view: WorkbenchRunView): boolean {
   return view.steps.some(
     (step) => step.kind === 'scope_card' && step.card.awaitingConfirmation
   );
 }
 
-/** 时间线里的口径卡步骤,按呈现顺序。 */
+/** 时间线里的取数核对步骤,按呈现顺序。 */
 export function scopeCards(view: WorkbenchRunView): ScopeCardView[] {
   return view.steps.flatMap((step) =>
     step.kind === 'scope_card' ? [step.card] : []
@@ -309,7 +310,7 @@ function finishToolCall(
 }
 
 /**
- * 运行停在人工交互时,若最近一张口径卡带阻塞标记且其后没有真实执行,
+ * 运行停在人工交互时,若最近一张取数核对带阻塞标记且其后没有真实执行,
  * 该卡即为阻塞源:标记等待确认,由界面在卡上呈现"确认执行"。
  */
 function markBlockedScopeCardAwaiting(view: WorkbenchRunView): WorkbenchRunView {

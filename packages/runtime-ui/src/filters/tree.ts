@@ -15,26 +15,39 @@ export interface FilterTreeNode {
   leaves: string[];
 }
 
-export function buildFilterTree(options: string[]): FilterTreeNode[] {
+export function buildFilterTree(
+  options: readonly (string | DimensionValueCandidate)[]
+): FilterTreeNode[] {
   const roots: FilterTreeNode[] = [];
   const byPath = new Map<string, FilterTreeNode>();
-  for (const option of options) {
-    const segments = option.split('/');
+  for (const rawOption of options) {
+    const option =
+      typeof rawOption === 'string'
+        ? { value: rawOption, label: rawOption }
+        : rawOption;
+    const valueSegments = option.value.split('/');
+    const labelSegments = option.label.split('/');
     let path = '';
     let siblings = roots;
     let node: FilterTreeNode | undefined;
-    for (const segment of segments) {
+    for (const [index, segment] of valueSegments.entries()) {
       path = path ? `${path}/${segment}` : segment;
       node = byPath.get(path);
       if (!node) {
-        node = { label: segment, value: null, path, children: [], leaves: [] };
+        const label =
+          labelSegments.length === valueSegments.length
+            ? labelSegments[index]!
+            : index === valueSegments.length - 1
+              ? option.label
+              : segment;
+        node = { label, value: null, path, children: [], leaves: [] };
         byPath.set(path, node);
         siblings.push(node);
       }
-      node.leaves.push(option);
+      node.leaves.push(option.value);
       siblings = node.children;
     }
-    node!.value = option;
+    node!.value = option.value;
   }
   return roots;
 }
@@ -60,3 +73,4 @@ export function toggleNodeValues(
   }
   return [...new Set([...value, ...node.leaves])];
 }
+import type { DimensionValueCandidate } from '@metriccanvas/runtime';

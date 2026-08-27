@@ -12,7 +12,7 @@
 | 单页文档 | `parsePage` / `validate_page` | 版本、必填项、未定义属性、枚举、id 格式与重复、行契约、`queryField` 覆盖与角色、筛选绑定、数据槽和字段引用、组件能力、action、查询分页、静态/动态约束 | 文件名、目标页存在性、数据上下文合法性、DQE 真实可执行性、业务口径、页面是否好用 |
 | 页面目录 | `pnpm validate` 或诊断脚本的目录模式 | 文件名与 `Page.id`、导航目标、目标筛选器存在性和类型 | 页面仓储之外的目标、真实权限、查询结果 |
 | Schema 元数据结构 | `parseDataContextSnapshot` + `data-context-contract.test.ts` | 快照形状、闭集枚举、必填项、额外字段、与 JSON Schema 的结构等价 | id 作用域唯一、relationship 引用完整性、敏感信息文本检测、指标口径真实性 |
-| 取数单元清单 | `validateUnitManifest` / `execute_data_request_unit` | 指标、维度、维度取值和时间粒度是否来自数据上下文；临时口径是否留痕 | 用户是否选了正确指标，formula 计算是否符合业务口径 |
+| 取数单元清单 | `validateUnitManifest` / `execute_data_request_unit` | 指标、维度、维度取值和时间粒度是否来自数据上下文；临时指标是否留痕 | 用户是否选了正确指标，formula 计算是否符合业务口径 |
 | DQE 执行与结果 | 取数单元真实执行、数据网关和结果归一化 | 协议、执行、查询字段映射、结果字段契约和行形状 | 结果是否完整回答了用户问题，数据源本身是否正确 |
 | 统一运行时 | 精确页面修订预览和相关 runtime 测试 | 查询编排、ready / empty / error、筛选、分页、action 传播 | 视觉层级和业务可读性 |
 | 呈现与业务验收 | 浏览器场景 + 需求/黄金问题 | 布局、截断、格式、交互可用性和问题到答案的对齐 | 无法以通用静态算法证明全部业务正确性 |

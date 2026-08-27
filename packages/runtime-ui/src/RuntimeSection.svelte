@@ -19,12 +19,15 @@
     type SafeAreaRect
   } from './backdrop-safe-area';
   import type { AuthoringComponentLocator, AuthoringOptions } from './types';
+  import { sectionGridColumnCount, sectionGridTemplate } from './section-grid';
 
   /**
-   * 内容分区 Module:拥有 12 列 Grid(统一运行时不变量)、组件单元格、
+   * 内容分区 Module:拥有缺省 12 列、可选受控权重轨 Grid、组件单元格、
    * `connectPrevious` 与行对齐安装点。外观唯一由 `section.container` 决定,
    * 不读取子组件的类型组合或 `props.variant` 推断父级布局(ADR-0021)。
    */
+  /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
+     数字是验收事实，运行时仍只消费页面声明的权重。 */
   interface Props {
     section: PageSection;
     authoring?: AuthoringOptions;
@@ -36,8 +39,12 @@
   let activeDropIndex = $state<number | null>(null);
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(section.container);
+  const columnCount = $derived(sectionGridColumnCount(section.columnTracks));
   const dropSlots = $derived(authoringDropSlots(section.components.length));
   const backdropId = $derived(sectionBackdrop(section)?.id);
+  const backdropOnly = $derived(
+    backdropId !== undefined && section.components.every((component) => component.id === backdropId)
+  );
 
   $effect(() => {
     if (!sectionGrid) return;
@@ -55,18 +62,8 @@
    */
   let safeArea = $state<SafeAreaRect | null>(null);
 
-  /**
-   * 叠放容器的「分区可用高度」:分区顶边到视口底边之间还剩多少。
-   * 冻结基线 R6-2 要求容器高度取它而不是一个固定下限——RED 相实测坐实,固定
-   * 下限下容器由浮层内容撑成 608,在 1280×800 / 1366×768 两档分别有 38 / 70px
-   * 落到视口折叠线以下,那一段里的散点看不见也点不到。
-   * CSS 侧算不出这个数(它取决于分区自己的 top 偏移),所以在这里量,以自定义
-   * 属性交给样式块消费。
-   */
-  let availableHeight = $state<number | null>(null);
-
   const gridStyle = $derived(
-    availableHeight === null ? '' : `--mc-backdrop-available-h:${availableHeight}px;`
+    `--mc-section-grid-columns:${sectionGridTemplate(section.columnTracks)};`
   );
 
   const safeAreaStyle = $derived(
@@ -80,20 +77,11 @@
     safeArea ? `${safeArea.x},${safeArea.y},${safeArea.width},${safeArea.height}` : undefined
   );
 
-  /** 返回 true 表示高度刚被改写,需要在下一帧用新几何再量一次安全区。 */
-  function measureSafeArea(grid: HTMLElement): boolean {
+  function measureSafeArea(grid: HTMLElement): void {
     const backdrop = grid.querySelector<HTMLElement>(':scope > .cell.backdrop-cell');
     if (!backdrop) {
       safeArea = null;
-      availableHeight = null;
-      return false;
-    }
-    // 先定高:容器高度变了浮层落位随之变,安全区必须用定高之后的几何算
-    const gridTop = grid.getBoundingClientRect().top;
-    const nextAvailable = Math.max(0, Math.round(window.innerHeight - gridTop));
-    if (nextAvailable !== availableHeight) {
-      availableHeight = nextAvailable;
-      return true;
+      return;
     }
     const frame = backdrop.getBoundingClientRect();
     const overlays = Array.from(
@@ -112,7 +100,6 @@
       { x: 0, y: 0, width: frame.width, height: frame.height },
       overlays
     );
-    return false;
   }
 
   $effect(() => {
@@ -132,8 +119,7 @@
       if (frame !== undefined) cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         frame = undefined;
-        // 高度刚改写时再排一帧:用生效后的几何量安全区,不用旧几何
-        if (measureSafeArea(grid)) schedule();
+        measureSafeArea(grid);
       });
     };
 
@@ -285,7 +271,7 @@
     authoring?.onintent({
       type: 'edit_component',
       locator: locator(component.id),
-      edit: { span: Math.min(12, Math.max(1, component.layout.span + delta)) }
+      edit: { span: Math.min(columnCount, Math.max(1, component.layout.span + delta)) }
     });
   }
 </script>
@@ -314,6 +300,7 @@
   <div
     bind:this={sectionGrid}
     class:has-backdrop={backdropId !== undefined}
+    class:backdrop-only={backdropOnly}
     class="section-grid"
     style={gridStyle}
   >
@@ -403,7 +390,7 @@
                 onchange={(event) => editTitle(event, component)}
               />
             </label>
-            <span class="authoring-span">{component.layout.span}/12</span>
+            <span class="authoring-span">{component.layout.span}/{columnCount}</span>
             <button type="button" aria-label="缩小组件" onclick={() => resize(component, -1)}>−</button>
             <button type="button" aria-label="加宽组件" onclick={() => resize(component, 1)}>＋</button>
           </div>
@@ -447,7 +434,7 @@
 
     display: grid;
     align-items: stretch;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
+    grid-template-columns: var(--mc-section-grid-columns, repeat(12, minmax(0, 1fr)));
     gap: var(--section-grid-gap);
   }
   .cell {
@@ -530,7 +517,7 @@
     pointer-events: none;
   }
 
-  /* ==== 叠放层:一个组件铺满分区,其余组件按 12 列网格叠在它之上 ====
+  /* ==== 叠放层:一个组件铺满分区,其余组件按当前列轨叠在它之上 ====
      backdrop 用 auto 网格定位换取「包含块是网格容器的 padding box」,
      因此它铺满的是整个分区而不是自己那几列。窄屏退化见文件末尾。 */
   .section-grid.has-backdrop {
@@ -538,30 +525,26 @@
     /* 建立层叠上下文:backdrop 单元格内部的定位后代(图例、面包屑)否则能越过
        浮层单元格——`position: relative` 不带 `z-index` 并不建立层叠上下文。 */
     isolation: isolate;
-    /* 下限取「分区可用高度」(分区顶边到视口底边),由脚本量出后以自定义属性
-       下发,取不到时回落到原来的固定值。
-       **只写 min-height,不写 height**:容器一旦定高,网格的隐式行会被压到
-       「容器高度减去下一行的最小高度」——实测在 1280×800 下浮层指标卡从 272
-       被压到 30。浮层要保持自然高度,所以容器只设下限、允许被内容撑高;
-       真正需要收在折叠线以内的是底图那一层,见 .backdrop-cell。 */
-    min-height: var(--mc-backdrop-available-h, 560px);
-    /* 容器比内容高时,行按内容起排,余下的空间露出底图,而不是把卡片抽长。 */
+    /* 有浮层时由浮层的自然行高定义叠放区高度,底图随之铺满:这样右侧地图
+       与左侧最后一张卡共享同一条底边,短表也由 Tab 自己的固定高度预留空白。
+       没有浮层的纯 backdrop 场景另保留下限,避免绝对定位层把网格压成零高。 */
     align-content: start;
+  }
+  .section-grid.has-backdrop.backdrop-only {
+    min-height: 560px;
   }
   .section-grid.has-backdrop > .cell {
     position: relative;
     z-index: 1;
   }
-  /* 底图层收在「分区可用高度」以内:容器可以被浮层内容撑到折叠线以下,底图
-     不能——落到折叠线以下的那一段里,散点看不见也点不到(RED 相实测 1280 有
-     38px、1366 有 70px 落在线下)。取不到可用高度时退回铺满容器。 */
+  /* 底图严格铺满由浮层自然高度定义的叠放区。 */
   .section-grid.has-backdrop > .cell.backdrop-cell {
     position: absolute;
     top: 0;
     right: 0;
     left: 0;
     z-index: 0;
-    height: var(--mc-backdrop-available-h, 100%);
+    height: 100%;
     grid-column: auto !important;
   }
   /* 叠放分区里的 Tab 卡纵向档位(冻结基线 R3-1,用户 2026-08-24 决定的 524):

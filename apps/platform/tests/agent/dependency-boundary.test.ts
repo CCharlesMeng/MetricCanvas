@@ -44,7 +44,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './runner',
     './types'
   ],
-  // 推送端点:HTTP/SSE 传输层;口径卡确认类型来自问数编排(#66)。
+  // 推送端点:HTTP/SSE 传输层;取数核对确认类型来自问数编排(#66)。
   'stream-endpoint.ts': [
     '@metriccanvas/page-lifecycle',
     '../ask/orchestrator',
@@ -55,7 +55,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './types',
     './workbench-request'
   ],
-  // 请求契约:确认种类含口径卡与业务域改写,问数会话状态消息原样保留(#66);
+  // 请求契约:确认种类含取数核对与业务域改写,问数会话状态消息原样保留(#66);
   // 会话状态契约是双端共享模块($lib/ask,#68),不在 server/ 内。
   'workbench-request.ts': [
     '@metriccanvas/mcp',

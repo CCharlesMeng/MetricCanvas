@@ -18,7 +18,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   'ports.ts': ['@metriccanvas/mcp', '../session/step-event'],
   // 快照检索实现:语义面投影的唯一来源在 mcp(#80)。
   'retrieval.ts': ['@metriccanvas/mcp', './ports'],
-  // 取数单元 → 可执行派生物:页面协议类型 + 口径卡形状。
+  // 取数单元 → 可执行派生物:页面协议类型 + 取数核对形状。
   'unit-derivation.ts': ['@metriccanvas/page', '@metriccanvas/mcp', '../session/step-event', './ports'],
   // 编排状态机:组件目录守卫 + Agent 运行设施 + 事件契约 + 本模块各件;
   // 会话状态往返契约是双端共享模块($lib/ask/conversation,#68);

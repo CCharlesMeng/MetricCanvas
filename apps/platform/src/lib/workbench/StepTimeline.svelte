@@ -4,7 +4,7 @@
 
   /**
    * 步骤时间线:按到达顺序展开一次运行的编排步骤(ADR-0037:路由 →
-   * 候选 → 口径卡 → 真实执行 → 结果就绪 → 文档就绪)与工具调用进度。
+   * 候选 → 取数核对 → 真实执行 → 结果就绪 → 文档就绪)与工具调用进度。
    * 工具调用呈现名称与进行中 / 成功 / 失败状态,失败附稳定错误码。
    */
   let { steps }: { steps: RunStep[] } = $props();
@@ -88,13 +88,13 @@
               无候选命中
             {/if}
             {#if step.adHocDefinition}
-              · 临时口径 <code>{step.adHocDefinition.formula}</code>
+              · 临时指标 <code>{step.adHocDefinition.formula}</code>
             {/if}
           </small>
         </span>
       {:else if step.kind === 'scope_card'}
         <span class="t">
-          <b>口径卡</b>
+          <b>取数核对</b>
           <small>
             {step.card.blockedOnConfirmation
               ? '命中阻塞条件,执行前等待确认'
@@ -116,11 +116,14 @@
         <span class="t">
           <b>页面文档就绪</b>
           <small>
-            意图={INTENT_LABELS[step.intent] ?? step.intent} ·
             {step.components
               .map(
                 (choice) =>
-                  `${choice.componentType}${choice.pinnedByUser ? '(已钉住)' : ''}`
+                  `${choice.componentType}${
+                    choice.intent === undefined
+                      ? ''
+                      : `(${INTENT_LABELS[choice.intent] ?? choice.intent})`
+                  }${choice.pinnedByUser ? '(已钉住)' : ''}`
               )
               .join(' + ')}
             · <code>{step.transientPageId}</code>
@@ -143,7 +146,7 @@
           <small>
             {step.gap.businessDomain} ·
             {step.gap.adHocDefinition
-              ? `临时口径 ${step.gap.adHocDefinition.formula}`
+              ? `临时指标 ${step.gap.adHocDefinition.formula}`
               : step.gap.searchTerms.join('、') || step.gap.question}
             · 同一缺口重复出现将累加次数
           </small>

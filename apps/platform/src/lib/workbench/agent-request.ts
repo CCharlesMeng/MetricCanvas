@@ -18,7 +18,7 @@ export interface PinnedComponentChoice {
   componentType: string;
 }
 
-/** 口径卡确认(confirm_scope_card 交互的产物);歧义候选须携带用户选择。 */
+/** 取数核对确认(confirm_scope_card 交互的产物);歧义候选须携带用户选择。 */
 export interface ScopeCardConfirmationChoice {
   interactionId: string;
   selectedMetric?: { businessDomain: string; metricName: string };
@@ -32,7 +32,7 @@ export interface WorkbenchStreamRequestInput {
   messages: readonly AgentMessage[];
   /** 已确认的页面 id(confirm_page_id 交互的产物)。 */
   confirmedPageIds: readonly string[];
-  /** 口径卡确认(可选):结构化记录随下一轮请求传回。 */
+  /** 取数核对确认(可选):结构化记录随下一轮请求传回。 */
   scopeConfirmations?: readonly ScopeCardConfirmationChoice[];
   /** 用户改写的业务域(可选):优先于模型路由(ADR-0037 的一键改)。 */
   domainOverride?: readonly string[];

@@ -49,6 +49,7 @@
       <div class="metric-row">
         <span class="row-label">{row.label}</span>
         <span class="value-line">
+          {#if row.context}<span class="row-context">{row.context}</span>{/if}
           <span class="row-value">{fieldText(row.valueField)}</span>
           {#if row.unit}<span class="unit">{row.unit}</span>{/if}
         </span>
@@ -173,7 +174,7 @@
     container-type: inline-size;
   }
   .compact-strip {
-    --mc-compact-summary-flow: column;
+    --mc-compact-summary-flow: row;
     --mc-compact-summary-row-columns: minmax(0, 1fr);
     --mc-metric-panel-min-height: 0;
   }
@@ -181,6 +182,10 @@
     --mc-compact-summary-flow: row;
     --mc-compact-summary-row-columns: minmax(0, 1fr);
     --mc-metric-panel-min-height: 0;
+  }
+  .compact-strip,
+  .compact-stack {
+    text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
   }
   .dual-summary.two-column-panels {
     display: grid;
@@ -232,6 +237,81 @@
     align-content: start;
     gap: 2px;
   }
+  .compact-strip .metric-panel .metric-values {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .compact-strip .metric-panel .metric-row,
+  .compact-stack .metric-panel .metric-row {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .compact-strip .metric-panel .metric-row {
+    position: relative;
+    flex: 0 1 auto;
+  }
+  .compact-strip .metric-panel .metric-row + .metric-row::before {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -10px;
+    border-left: 1px dashed #dcdbdb;
+    content: '';
+  }
+  .compact-strip .metric-panel .row-label,
+  .compact-stack .metric-panel .row-label {
+    font-size: 14px;
+    line-height: 20px;
+  }
+  .compact-strip .metric-panel .value-line,
+  .compact-stack .metric-panel .value-line {
+    margin-top: 4px;
+  }
+  .compact-strip .metric-panel .row-value,
+  .compact-stack .metric-panel .row-value {
+    font-size: 28px;
+    font-weight: 400;
+    line-height: 34px;
+  }
+  .compact-strip .metric-panel .unit,
+  .compact-stack .metric-panel .unit {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  .compact-strip .metric-panel .changes {
+    margin-top: 12px;
+  }
+  .compact-strip .metric-panel .row-context {
+    margin-right: 4px;
+    color: #595959;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+  .compact-stack .metric-panel .changes {
+    margin-top: 12px;
+  }
+  .compact-stack .change {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+  }
+  .compact-stack .change-label {
+    margin: 0;
+    color: #595959;
+    font-size: 12px;
+    line-height: 22px;
+  }
   @media (max-width: 760px) {
     .compact-strip {
       --mc-compact-summary-flow: row;
@@ -281,16 +361,35 @@
     font-weight: 400;
   }
   .compact-strip .change {
-    align-items: baseline;
+    align-items: center;
     flex-direction: row;
     gap: 2px;
     font-size: 12px;
-    line-height: 18px;
+    line-height: 22px;
     white-space: nowrap;
   }
   .compact-strip .change-label {
-    font-size: 11px;
-    line-height: 18px;
+    color: #595959;
+    font-size: 12px;
+    line-height: 22px;
+  }
+  .compact-strip .change-value {
+    display: inline-flex;
+    min-width: 48px;
+    height: 22px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: center;
+    padding: 0 9px 0 5px;
+    border-radius: 4px;
+  }
+  .compact-strip .change.positive .change-value {
+    color: #3cc6c1;
+    background: rgb(60 198 193 / 0.1);
+  }
+  .compact-strip .change.negative .change-value {
+    color: #f23030;
+    background: rgb(242 48 48 / 0.08);
   }
   .metric-panel .placeholder-values .row-value,
   .metric-panel .placeholder-values .change {
@@ -323,6 +422,17 @@
     }
     .metric-panel .change-label {
       margin-right: 0;
+    }
+  }
+  @container (max-width: 230px) {
+    .compact-stack .metric-panel .row-label {
+      font-size: 14px;
+    }
+    .compact-stack .metric-panel .row-value {
+      font-size: 28px;
+    }
+    .compact-stack .metric-panel .unit {
+      font-size: 14px;
     }
   }
   @media (max-width: 760px) {

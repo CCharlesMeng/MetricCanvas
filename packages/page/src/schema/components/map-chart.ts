@@ -41,6 +41,16 @@ const mapTooltipFieldZ = z
   .strict()
   .meta({ id: 'mapTooltipField' });
 
+const mapPinnedSummaryZ = z
+  .object({
+    matchField: fieldBindingZ,
+    matchValue: z.union([z.string(), z.number()]),
+    titleField: fieldBindingZ,
+    fields: z.array(mapTooltipFieldZ).min(1).max(4)
+  })
+  .strict()
+  .meta({ id: 'mapPinnedSummary' });
+
 export const mapChartComponentZ = z
   .object({
     id: componentIdZ,
@@ -50,6 +60,7 @@ export const mapChartComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
+        variant: z.literal('regionalOverview').optional(),
         nameField: fieldBindingZ,
         valueField: fieldBindingZ,
         map: z.enum(['china', 'world']),
@@ -72,6 +83,8 @@ export const mapChartComponentZ = z
         legend: mapLegendZ.optional(),
         /** tooltip 在地域名与 valueField 之外追加的字段;每项一个标签与一个字段绑定。 */
         tooltipFields: z.array(mapTooltipFieldZ).min(1).optional(),
+        /** 按稳定字段值固定展示一条地域摘要，不按显示名称或页面 id 分支。 */
+        pinnedSummary: mapPinnedSummaryZ.optional(),
         actions: actionsZ.optional()
       })
       .strict()

@@ -3,7 +3,7 @@ import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
-import { findDimension, semanticSurface } from './semantic-surface';
+import { dimensionValuesFor } from './dimension-value-surface';
 import { runSemanticSurface } from './semantic-surface-execute';
 
 type JsonRecord = Record<string, unknown>;
@@ -199,6 +199,8 @@ function executeExactScenarios(item: unknown): DqeSimItemResult {
  * `output_metrics` 为空。候选值从语义面声明的维度取值域(闭集)确定性
  * 合成:同名维度跨业务域时取并集去重,声明顺序即输出顺序。候选值是
  * 维度取值域而非某时间窗内的出现值,因此不要求 filter.time。
+ * 每行以维度字段承载稳定值,`${dimension}__label` 承载显示名;没有独立
+ * 显示名的语义维度仍返回与稳定值相同的显示名。
  * 面外维度返回 undefined,保留既有拒答(适配器据此判定能力不可用)。
  */
 function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undefined {
@@ -208,8 +210,8 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
     return undefined;
   }
   const name = dimensions[0]!;
-  const domains = semanticSurface.filter((domain) => findDimension(domain, name));
-  if (domains.length === 0) return undefined;
+  const values = dimensionValuesFor(name);
+  if (!values) return undefined;
   if (item.filter !== undefined) {
     if (!isRecord(item.filter)) {
       return unsupported('候选值查询的 filter 必须是对象');
@@ -227,15 +229,21 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
   if (item.order !== undefined && !validOrder(item.order)) {
     return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
-  const values = [
-    ...new Set(domains.flatMap((domain) => findDimension(domain, name)!.values))
-  ];
   return successResult(
     item,
-    values.map((value) => ({ [name]: value })),
+    values.map((candidate) => ({
+      [name]: candidate.value,
+      [`${name}__label`]: candidate.label
+    })),
     {
       columns: [
-        { id: `dqe-sim.${name}`, caption: name, data_type: 'STRING', type: 'dimension' }
+        { id: `dqe-sim.${name}`, caption: name, data_type: 'STRING', type: 'dimension' },
+        {
+          id: `dqe-sim.${name}__label`,
+          caption: `${name}显示名`,
+          data_type: 'STRING',
+          type: 'dimension'
+        }
       ],
       orders: [],
       limit: -1,

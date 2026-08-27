@@ -15,6 +15,7 @@ export interface EditableComponent {
   detail: string;
   detailLabel: string | null;
   span: number;
+  columnCount: number;
   position: number;
   count: number;
 }
@@ -77,6 +78,7 @@ export function listEditableComponents(document: PageDocument): EditableComponen
       detail: componentDetail(component),
       detailLabel: componentDetailLabel(component),
       span: component.layout.span,
+      columnCount: section.columnTracks?.length ?? 12,
       position: index,
       count: section.components.length
     }))
@@ -89,11 +91,15 @@ export function editComponent(
   edit: ComponentEdit
 ): PageDocument {
   const next = clonePage(document);
-  const component = locateComponent(next, locator);
-  if (!component) return document;
+  const section = next.sections.find((candidate) => candidate.id === locator.sectionId);
+  const component = section?.components.find(
+    (candidate) => candidate.id === locator.componentId
+  );
+  if (!section || !component) return document;
 
   if (edit.span !== undefined) {
-    component.layout.span = Math.min(12, Math.max(1, Math.round(edit.span)));
+    const columnCount = section.columnTracks?.length ?? 12;
+    component.layout.span = Math.min(columnCount, Math.max(1, Math.round(edit.span)));
   }
   if (edit.title !== undefined) setComponentTitle(component, edit.title);
   if (edit.detail !== undefined) setComponentDetail(component, edit.detail);
@@ -117,14 +123,6 @@ export function moveComponent(
   if (!component) return document;
   section.components.splice(target, 0, component);
   return next;
-}
-
-function locateComponent(
-  document: PageDocument,
-  locator: ComponentLocator
-): Component | null {
-  const section = document.sections.find((candidate) => candidate.id === locator.sectionId);
-  return section?.components.find((component) => component.id === locator.componentId) ?? null;
 }
 
 function componentTitle(component: Component): string {

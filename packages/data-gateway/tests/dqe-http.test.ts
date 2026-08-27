@@ -151,12 +151,55 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
     // 语义面声明的维度取值域(闭集)确定性返回,声明顺序即输出顺序。
     await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual({
       kind: 'values',
-      values: ['卓越', '战略', '核心', '成长']
+      candidates: ['卓越', '战略', '核心', '成长'].map((value) => ({
+        value,
+        label: value
+      }))
     });
     await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual({
       kind: 'values',
-      values: ['华东', '华南', '华北', '西南', '华中', '东北', '西北']
+      candidates: ['华东', '华南', '华北', '西南', '华中', '东北', '西北'].map(
+        (value) => ({ value, label: value })
+      )
     });
+    const iocDimensions = {
+      'cloud-class': [{ value: '公有云', label: '公有云' }],
+      'project-initiation-level': ['L1', 'L2', 'L3', 'L4'].map((value) => ({
+        value,
+        label: value
+      })),
+      'geo-pc-code': [
+        { value: 'R05', label: '欧洲' },
+        { value: 'TBD-APAC', label: '亚太' },
+        { value: 'TBD-NAF', label: '北部非洲' },
+        { value: 'TBD-MECA', label: '中东中亚' },
+        { value: 'R99', label: '中国' },
+        { value: 'TBD-LATAM', label: '拉美' },
+        { value: 'TBD-SAF', label: '南部非洲' },
+        { value: 'TBD-RU', label: '俄罗斯' }
+      ],
+      'region-dept-code': [
+        { value: 'CN-BJ', label: '北京' },
+        { value: 'CN-SH', label: '上海' },
+        { value: 'CN-GD', label: '广东' }
+      ],
+      'rep-office-code': [
+        { value: 'SH-01', label: '上海代表处' },
+        { value: 'BJ-01', label: '北京代表处' },
+        { value: 'GD-01', label: '广东代表处' },
+        { value: 'SZ-01', label: '深圳代表处' },
+        { value: 'HZ-01', label: '杭州代表处' },
+        { value: 'CD-01', label: '成都代表处' },
+        { value: 'SG-01', label: '新加坡代表处' },
+        { value: 'TJ-01', label: '天津代表处' }
+      ]
+    } as const;
+    for (const [dimension, candidates] of Object.entries(iocDimensions)) {
+      await expect(gateway.fetchDimensionValues(dimension)).resolves.toEqual({
+        kind: 'values',
+        candidates
+      });
+    }
     // 语义面外维度得到拒答信封 → 该维度候选值能力不可用,而不是空结果。
     await expect(gateway.fetchDimensionValues('仿真面外维度')).resolves.toEqual({
       kind: 'unavailable'

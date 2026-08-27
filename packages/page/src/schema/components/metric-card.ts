@@ -22,6 +22,8 @@ const metricCardChangeZ = z
 const metricCardRowZ = z
   .object({
     label: nonEmptyTextValueZ,
+    /** 与主值同排的短上下文，例如统计窗口“近60天”。 */
+    context: textValueZ.optional(),
     valueField: fieldBindingZ,
     unit: textValueZ.optional(),
     changes: z.array(metricCardChangeZ).optional()

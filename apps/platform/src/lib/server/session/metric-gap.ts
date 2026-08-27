@@ -8,7 +8,7 @@ import type { AnalysisSessionStore } from './store';
  * 采集通道只有一条:缺口出现以 metric_gap_recorded 步骤事件随会话事件流
  * 落库(./step-event.ts 是出现形状的唯一真源)。本模块在其上做三件事:
  *
- * 1. 幂等键派生:临时口径缺口按「业务域 + 表达式形状」,面外缺口按
+ * 1. 幂等键派生:临时指标缺口按「业务域 + 表达式形状」,面外缺口按
  *    「业务域 + 归一化检索对象」。高频缺口与高频 formula 形状因此指向
  *    同一批条目,一份排行即可合并查看,不建两套(ADR-0036)。
  * 2. 聚合:同一幂等键的多次出现折叠为一个条目并累加出现次数,不产生
@@ -45,7 +45,7 @@ export function normalizeExpressionShape(expression: string): string {
     .replaceAll(/\s+/gu, '');
 }
 
-/** 临时口径缺口的幂等键:业务域 + 表达式形状。 */
+/** 临时指标缺口的幂等键:业务域 + 表达式形状。 */
 export function adHocGapKey(businessDomain: string, expression: string): string {
   return `adhoc:${businessDomain}:${normalizeExpressionShape(expression)}`;
 }

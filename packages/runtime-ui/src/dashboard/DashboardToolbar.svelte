@@ -56,8 +56,10 @@
 
 <style>
   .dashboard-toolbar {
+    /* 1920px Canvas 参考宿主下主区宽 1679px；真实宽度仍始终取 100%。 */
     --mc-filter-bar-flex: 1;
-    --mc-filter-bar-justify-content: flex-end;
+    --mc-filter-bar-justify-content: flex-start;
+    --mc-filter-bar-gap: 16px;
     --mc-filter-bar-padding: 0;
     --mc-filter-bar-margin: 0;
     --mc-filter-bar-background: transparent;
@@ -68,12 +70,12 @@
     display: grid;
     min-width: 0;
     min-height: 80px;
-    grid-template-columns: max-content minmax(0, 1fr);
+    grid-template-columns: minmax(204px, max-content) minmax(0, 1fr);
     align-items: center;
-    gap: 32px;
+    gap: 40px;
     padding: 22px 32px;
     background: var(--mc-color-surface, #fff);
-    border-radius: var(--mc-radius-section, 16px);
+    border-radius: 0;
   }
   h1 {
     margin: 0;

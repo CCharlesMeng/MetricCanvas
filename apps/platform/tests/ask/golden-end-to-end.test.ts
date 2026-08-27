@@ -378,7 +378,7 @@ describe('黄金问题集·需澄清:近义指标阻塞消歧', () => {
       });
       const steps = stepEvents(resumed);
       const scopeCard = steps.find((step) => step.type === 'scope_card_presented');
-      if (scopeCard?.type !== 'scope_card_presented') throw new Error('缺少口径卡');
+      if (scopeCard?.type !== 'scope_card_presented') throw new Error('缺少取数核对');
       expect(scopeCard.businessDomain).toBe('客户经营');
       expect(scopeCard.metricName).toBe('客户数');
       expect(scopeCard.blockedOnConfirmation).toBe(false);

@@ -127,7 +127,9 @@ export const tableComponentZ = z
       .object({
         title: textValueZ.optional(),
         subtitle: textValueZ.optional(),
-        variant: z.literal('reportCompact').optional(),
+        variant: z.enum(['reportCompact', 'embedded']).optional(),
+        /** 容器底部的渐隐提示；只表示有更多纵向内容，不改变数据。 */
+        bottomFade: z.boolean().optional(),
         compoundCellLayout: z.literal('inline').optional(),
         rowKey: fieldNameZ.optional(),
         /**

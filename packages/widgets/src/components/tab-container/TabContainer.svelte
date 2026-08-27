@@ -8,17 +8,18 @@
    */
   interface Props {
     title?: string;
+    variant?: 'compact';
     tabs: readonly TabLabel[];
     defaultTab?: string;
     children: Snippet<[string]>;
   }
 
-  let { title, tabs, defaultTab, children }: Props = $props();
+  let { title, variant, tabs, defaultTab, children }: Props = $props();
   let selected = $state<string | undefined>(undefined);
   const activeId = $derived(resolveActiveTab(tabs, selected, defaultTab));
 </script>
 
-<div class="tab-container">
+<div class:compact={variant === 'compact'} class="tab-container">
   {#if title}<h3>{title}</h3>{/if}
   <div class="tab-list" role="tablist">
     {#each tabs as tab (tab.id)}
@@ -50,6 +51,11 @@
     background: var(--mc-color-surface, #fff);
     border-radius: 16px;
   }
+  .tab-container.compact {
+    height: 524px;
+    min-height: 524px;
+    flex: none;
+  }
   h3 {
     margin: 0;
     padding: 12px 16px 0;
@@ -69,6 +75,16 @@
     padding: 10px 12px 0;
     border-bottom: 1px solid var(--mc-tab-track-color, #e4e4e7);
   }
+  .compact .tab-list {
+    box-sizing: border-box;
+    width: 516px;
+    height: 28px;
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 4px;
+    padding: 0;
+    margin: 14px 0 0 18px;
+  }
   button {
     padding: 6px 12px;
     color: #595959;
@@ -78,6 +94,11 @@
     cursor: pointer;
     font: inherit;
     font-size: var(--mc-tab-font-size, 13px);
+  }
+  .compact button {
+    height: 28px;
+    padding: 0 12px;
+    line-height: 22px;
   }
   button.active {
     color: var(--mc-tab-active-color, #08359e);
@@ -94,5 +115,12 @@
     flex: 1;
     flex-direction: column;
     padding: 8px 0 0;
+  }
+  .compact .tab-panel {
+    box-sizing: border-box;
+    width: 550px;
+    height: 464px;
+    flex: none;
+    padding: 16px 0 0 18px;
   }
 </style>

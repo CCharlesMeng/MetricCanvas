@@ -39,7 +39,11 @@ describe('DQE 适配器的维度候选值查询(issue #54)', () => {
 
     await expect(gateway.fetchDimensionValues('客户级别')).resolves.toEqual({
       kind: 'values',
-      values: ['卓越', '战略', '42']
+      candidates: [
+        { value: '卓越', label: '卓越' },
+        { value: '战略', label: '战略' },
+        { value: '42', label: '42' }
+      ]
     });
     expect(bodies).toEqual([{ dsl_list: [dimensionValuesDqeItem('客户级别')] }]);
   });
@@ -70,7 +74,32 @@ describe('DQE 适配器的维度候选值查询(issue #54)', () => {
 
     await expect(gateway.fetchDimensionValues('区域')).resolves.toEqual({
       kind: 'values',
-      values: []
+      candidates: []
+    });
+  });
+
+  it('伴随显示名与稳定值成对返回，重复值按首个候选去重', async () => {
+    const gateway = createDqeGateway({
+      fetchImpl: (async () =>
+        envelope([
+          {
+            code: 'SUCCESS',
+            data: [
+              { 'geo-pc-code': 'R99', 'geo-pc-code__label': '中国' },
+              { 'geo-pc-code': 'R99', 'geo-pc-code__label': '重复中国' },
+              { 'geo-pc-code': 'R05', 'geo-pc-code__label': '欧洲' }
+            ],
+            total_count: 3
+          }
+        ])) as typeof fetch
+    });
+
+    await expect(gateway.fetchDimensionValues('geo-pc-code')).resolves.toEqual({
+      kind: 'values',
+      candidates: [
+        { value: 'R99', label: '中国' },
+        { value: 'R05', label: '欧洲' }
+      ]
     });
   });
 
@@ -146,6 +175,18 @@ describe('DQE 适配器的维度候选值查询(issue #54)', () => {
           {
             code: 'SUCCESS',
             data: [{ 客户级别: { nested: VALUE_SENTINEL } }],
+            total_count: 1
+          }
+        ])) as typeof fetch
+    },
+    {
+      name: '候选显示名不是字符串 → 上游失败(查询项)',
+      code: 'DQE_ITEM_ERROR',
+      fetchImpl: (async () =>
+        envelope([
+          {
+            code: 'SUCCESS',
+            data: [{ 客户级别: '卓越', 客户级别__label: 42 }],
             total_count: 1
           }
         ])) as typeof fetch

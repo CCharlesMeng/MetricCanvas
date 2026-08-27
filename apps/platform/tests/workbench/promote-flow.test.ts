@@ -135,7 +135,7 @@ describe('正式页面 id 的平台侧命名闸', () => {
   });
 });
 
-describe('临时口径留痕提取(ask 会话状态消息,#66)', () => {
+describe('临时指标留痕提取(ask 会话状态消息,#66)', () => {
   it('从会话基线的状态消息读取 formulaTraces', () => {
     const messages = [
       { role: 'user' as const, content: '平均每单成交多少钱?' },

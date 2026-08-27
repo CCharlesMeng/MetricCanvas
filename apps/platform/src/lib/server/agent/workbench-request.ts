@@ -21,7 +21,7 @@ export const AUTHORING_CONTEXT_PREFIX = 'METRICCANVAS_AUTHORING_CONTEXT:';
 const IDENTIFIER_PATTERN = /^[a-zA-Z0-9-]{1,100}$/u;
 
 /**
- * 人工确认的结构化记录(#65 接线点):页面 id 确认之外,口径卡确认与
+ * 人工确认的结构化记录(#65 接线点):页面 id 确认之外,取数核对确认与
  * 业务域改写同样以 confirmations 随下一轮请求传回,不以自由文本表达。
  */
 export type WorkbenchConfirmation =
@@ -159,7 +159,7 @@ export function confirmedPageIdsOf(request: WorkbenchAgentRequest): string[] {
   );
 }
 
-/** 口径卡确认(问数编排消费,#66)。 */
+/** 取数核对确认(问数编排消费,#66)。 */
 export function scopeConfirmationsOf(request: WorkbenchAgentRequest): AskScopeConfirmation[] {
   return (request.confirmations ?? []).flatMap((confirmation) =>
     confirmation.kind === 'scope_card'
