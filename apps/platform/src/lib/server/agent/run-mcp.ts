@@ -19,11 +19,6 @@ import type {
 } from '@metriccanvas/page-lifecycle';
 import type { DataGateway } from '@metriccanvas/runtime';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
-import {
-  createServerDataGateway,
-  type ServerEnvironment
-} from '../data-gateway.server';
-import { anySignal } from './abort';
 import type { AgentRunner } from './types';
 
 /**
@@ -81,10 +76,9 @@ export function createRunScopedMcpConnector(
 }
 
 /**
- * 创作期查询执行端口的运行感知实现:携带运行取消信号时,以并入该信号的
- * fetch 执行生效查询——取消运行即在 HTTP 层中止进行中的真实执行,而不是
- * 等它自然返回;无信号时复用进程级数据网关。端点、凭据仍只存在于服务端
- * 数据网关一层。
+ * 创作期查询执行端口的运行感知实现:只接受 bindIdentity 已构造的
+ * 请求级 gateway，取消信号经 DataGateway Interface 原样传递到 adapter。
+ * 这条 seam 不自行重建 gateway，因而不会在 Agent signal 路径丢掉 actor。
  *
  * 行键空间(#69 修正):数据网关按查询字段映射把行归一化为稳定页面字段 id,
  * 而创作期端口的契约是 DQE 原始输出字段名——验真回传的样例行会成为
@@ -93,24 +87,10 @@ export function createRunScopedMcpConnector(
  * 契约匹配)仍由数据网关执行,不重写第二份。
  */
 export function createRunAwareUnitQueryExecutor(options: {
-  environment: ServerEnvironment;
-  fallbackGateway: DataGateway;
-  /** 测试注入;缺省用全局 fetch。 */
-  fetchImpl?: typeof fetch;
+  gateway: DataGateway;
 }): RunScopedMcpDependencies['executeDataRequestUnitQuery'] {
-  const baseFetch = options.fetchImpl ?? fetch;
   return async (query, signal) => {
-    const gateway = signal
-      ? createServerDataGateway({
-          environment: options.environment,
-          fetchImpl: (input, init) =>
-            baseFetch(input, {
-              ...init,
-              signal: anySignal([init?.signal ?? undefined, signal])
-            })
-        })
-      : options.fallbackGateway;
-    const result = await gateway.fetchData(query);
+    const result = await options.gateway.fetchData(query, undefined, signal);
     return {
       ...result,
       rows: result.rows.map((row) => rawRowFromNormalized(row, query.fieldMappings))

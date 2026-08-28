@@ -97,11 +97,11 @@ function simExecutor(): { execute: ExecuteDataRequestUnitQuery; executions: () =
   let executions = 0;
   const gateway = createServerDataGateway({
     environment: { DQE_ENDPOINT: dqeEndpoint },
+    actor: { actorId: 'golden-eval', clientId: 'workbench', roles: [] },
     diagnosticsSink: () => {}
   });
   const execute = createRunAwareUnitQueryExecutor({
-    environment: { DQE_ENDPOINT: dqeEndpoint },
-    fallbackGateway: gateway
+    gateway
   });
   return {
     executions: () => executions,

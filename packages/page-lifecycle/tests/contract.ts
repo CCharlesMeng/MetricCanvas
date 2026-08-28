@@ -3,9 +3,8 @@ import type { Page, PageDocument } from '@metriccanvas/page';
 import type { DataContextVersionProvider, LifecycleContext, PageLifecycle } from '../src/types';
 
 /**
- * memory 与 postgres 两份实现共用的行为契约。同一批用例分别喂给两份
- * 实现（见 memory.contract.test.ts / postgres.contract.test.ts），任何
- * 一处断言在某一实现下失败，都说明两份实现出现了行为漂移。
+ * memory、postgres 与 mysql 实现共用的行为契约。同一批用例分别喂给
+ * 三份实现，任何一处断言在某一实现下失败，都说明实现出现了行为漂移。
  *
  * 注意：不覆盖 `SaveRevisionCommand.pageIdConfirmed` /
  * `PAGE_ID_CONFIRMATION_REQUIRED` 本身的语义——那是另一项独立变更
@@ -72,7 +71,7 @@ export function runPageLifecycleContract(harness: ContractHarness): void {
     return harness.create(defaultOptions(overrides));
   }
 
-  describe('page-lifecycle 共享契约（memory 与 postgres 必须一致）', () => {
+  describe('page-lifecycle 共享契约（memory、postgres 与 mysql 必须一致）', () => {
     it('保存与发布申请的幂等重放返回同一结果', async () => {
       const lifecycle = await create();
       const pageId = 'contract-idempotency';

@@ -88,6 +88,7 @@ export function resolveMockActor(sources: MockActorSources): MockActorResolution
 
 /** 各路由/客户端在发布生命周期里承担的角色,由这里统一决定,不再由路由各自编。 */
 export type PlatformClientId =
+  | 'reader'
   | 'workbench'
   | 'management-console'
   | 'page-editor'
@@ -95,6 +96,8 @@ export type PlatformClientId =
   | 'template-publish-confirmation';
 
 const CLIENT_ROLES: Record<PlatformClientId, readonly LifecycleRole[]> = {
+  // 内网门户只读实例的请求来源：不默认授予发布或管理权限。
+  reader: [],
   // Agent(MCP)工具调用面。此前 services.server.ts 里固化的 context() thunk
   // 传 roles: [],导致 Agent 永远无法确认/拒绝/取消发布——这里补齐 publisher。
   workbench: ['publisher'],
@@ -105,6 +108,23 @@ const CLIENT_ROLES: Record<PlatformClientId, readonly LifecycleRole[]> = {
   'publish-confirmation': ['publisher'],
   'template-publish-confirmation': ['admin']
 };
+
+export type MetricCanvasRole = 'reader' | 'authoring';
+
+/** 部署角色的默认客户端：保留 authoring 开发行为，reader 失败关闭权限。 */
+export function defaultClientIdForRole(role: MetricCanvasRole): PlatformClientId {
+  return role === 'reader' ? 'reader' : 'workbench';
+}
+
+/** 解析部署角色；未配置时保持当前 authoring 开发行为。 */
+export function resolveMetricCanvasRole(
+  environment: Record<string, string | undefined>
+): MetricCanvasRole {
+  const configured = environment.METRICCANVAS_ROLE?.trim();
+  if (!configured) return 'authoring';
+  if (configured === 'reader' || configured === 'authoring') return configured;
+  throw new Error('METRICCANVAS_ROLE 必须是 reader 或 authoring');
+}
 
 /**
  * 请求级身份工厂。`hooks.server.ts` 用它填充 `event.locals.identity`;
@@ -147,6 +167,9 @@ function mergedRoles(
   clientId: PlatformClientId,
   userRoles: readonly LifecycleRole[]
 ): readonly LifecycleRole[] {
+  // reader 部署的默认身份不继承 mock 用户的管理角色；只读实例上的
+  // 请求上下文必须始终是零角色，不能因切换到 admin-1 静默扩权。
+  if (clientId === 'reader') return [];
   return [...new Set([...CLIENT_ROLES[clientId], ...userRoles])];
 }
 

@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { pageListEntry } from '@metriccanvas/page';
-import { getPlatformServices } from '$lib/server/services.server';
+import { getRuntimePlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 const PUBLIC_HEADERS = {
@@ -8,7 +8,7 @@ const PUBLIC_HEADERS = {
 };
 
 export const GET: RequestHandler = async () => {
-  const { lifecycle } = await getPlatformServices();
+  const { lifecycle } = await getRuntimePlatformServices();
   const listed = await lifecycle.listPages({ limit: 100 });
   const published = await Promise.all(
     listed.pages

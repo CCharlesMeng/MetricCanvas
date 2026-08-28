@@ -1,5 +1,5 @@
 import { handleAgentStreamRequest } from '$lib/server/agent/stream-endpoint';
-import { getPlatformServices } from '$lib/server/services.server';
+import { bindIdentity, getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 /**
@@ -8,6 +8,6 @@ import type { RequestHandler } from './$types';
  * 既有非流式端点(../+server.ts)保留,供确定性测试使用。
  */
 export const POST: RequestHandler = async ({ request, locals }) => {
-  const services = await getPlatformServices();
+  const services = bindIdentity(await getPlatformServices(), locals.identity);
   return handleAgentStreamRequest({ request, identity: locals.identity, services });
 };

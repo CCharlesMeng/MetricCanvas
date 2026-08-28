@@ -1,5 +1,15 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "types": ["node", "vite/client"],
+    "paths": {
+      "$env/dynamic/private": ["tests/support/private-env.ts"],
+      "$fixtures/*": ["../../docs/examples/*"],
+      "$pages/*": ["../../pages/*"],
+      "$templates/*": ["../../templates/*"]
+    }
+  },
   "include": [
     "src/lib/workbench-state.ts",
     "src/lib/management-state.ts",

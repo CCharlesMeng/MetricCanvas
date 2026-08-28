@@ -1,10 +1,13 @@
 import type { Handle } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import {
   MOCK_ACTOR_COOKIE,
   MOCK_ACTOR_HEADER,
   MOCK_ACTOR_QUERY_PARAM,
   MOCK_USERS,
   createIdentity,
+  defaultClientIdForRole,
+  resolveMetricCanvasRole,
   resolveMockActor
 } from '$lib/server/identity.server';
 
@@ -13,7 +16,8 @@ import {
  * identity.server.ts 的 resolveMockActor(优先级 header > query > cookie >
  * 默认;查询参数切换时写 cookie 使切换在后续导航保持;显式清单外拒绝,
  * cookie 残值宽松清除),这里只做 SvelteKit 事件的粘合。默认身份对应
- * workbench 客户端;需要不同 clientId 的路由用 `withClient` 派生。
+ * 客户端由部署角色决定:authoring 保留 workbench 开发行为,
+ * reader 使用零角色 reader clientId;需要其他 clientId 的路由用 `withClient` 派生。
  */
 export const handle: Handle = async ({ event, resolve }) => {
   const resolution = resolveMockActor({
@@ -38,6 +42,9 @@ export const handle: Handle = async ({ event, resolve }) => {
   if (resolution.clearCookie) {
     event.cookies.delete(MOCK_ACTOR_COOKIE, { path: '/' });
   }
-  event.locals.identity = createIdentity('workbench', resolution.user);
+  event.locals.identity = createIdentity(
+    defaultClientIdForRole(resolveMetricCanvasRole(env)),
+    resolution.user
+  );
   return resolve(event);
 };

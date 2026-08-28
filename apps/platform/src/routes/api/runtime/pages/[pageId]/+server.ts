@@ -1,9 +1,9 @@
 import { json } from '@sveltejs/kit';
-import { getPlatformServices } from '$lib/server/services.server';
+import { getRuntimePlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
-  const { lifecycle } = await getPlatformServices();
+  const { lifecycle } = await getRuntimePlatformServices();
   const result = await lifecycle.getPublished({ pageId: params.pageId });
   if (!result.ok) {
     return json(

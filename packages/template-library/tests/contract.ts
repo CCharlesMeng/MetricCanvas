@@ -9,9 +9,8 @@ import type { TemplateContext, TemplateLibrary } from '../src/index';
 
 /**
  * memory 与 postgres 两份模板库实现共用的行为契约,结构照
- * `page-lifecycle/tests/contract.ts`:同一批用例分别喂给两份实现
- * (memory.contract.test.ts / postgres.contract.test.ts),任何一处断言
- * 在某一实现下失败,都说明两份实现出现了行为漂移。
+ * `page-lifecycle/tests/contract.ts`:同一批用例分别喂给 memory、postgres
+ * 与 mysql 实现,任何一处断言在某一实现下失败,都说明实现出现了行为漂移。
  *
  * 来源页面修订统一由进程内页面生命周期提供:模板库只经 `PageLifecycle`
  * 端口消费来源,契约不关心其存储形态。
@@ -118,7 +117,7 @@ export function runTemplateLibraryContract(harness: TemplateContractHarness): vo
     };
   }
 
-  describe('template-library 共享契约（memory 与 postgres 必须一致）', () => {
+  describe('template-library 共享契约（memory、postgres 与 mysql 必须一致）', () => {
     it('保存与发布申请的幂等重放返回同一结果', async () => {
       const { pageLifecycle, library } = await setup();
       const source = await publishPage(
@@ -130,6 +129,15 @@ export function runTemplateLibraryContract(harness: TemplateContractHarness): vo
       const replay = await library.saveRevision(command, admin);
       expect(replay).toEqual(first);
       if (!first.ok) throw new Error(first.error.message);
+      const malformedReplay = await library.saveRevision(
+        {
+          ...command,
+          title: '',
+          viewerSubjectIds: []
+        },
+        admin
+      );
+      expect(malformedReplay).toEqual(first);
 
       const publishCommand = {
         templateId: 'tpl-contract-idem',

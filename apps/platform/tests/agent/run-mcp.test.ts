@@ -220,27 +220,16 @@ describe('按 run 隔离的 MCP 接线:身份随运行传递', () => {
   });
 });
 
-describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () => {
-  it('携带运行信号时,取消让进行中的 fetch 立刻中止', async () => {
-    const fetchSignals: Array<AbortSignal | undefined> = [];
-    let fetchStarted!: () => void;
-    const started = new Promise<void>((resolve) => (fetchStarted = resolve));
-    const hangingFetch: typeof fetch = (_input, init) =>
-      new Promise((_, reject) => {
-        fetchSignals.push(init?.signal ?? undefined);
-        fetchStarted();
-        init?.signal?.addEventListener(
-          'abort',
-          () => reject(new DOMException('查询已中止', 'AbortError')),
-          { once: true }
-        );
-      });
+describe('运行感知的查询执行:取消经请求级 gateway 传递', () => {
+  it('携带运行信号时仍复用已绑定身份的 gateway,并原样下传 signal', async () => {
+    const gatewaySignals: Array<AbortSignal | undefined> = [];
     const execute = createRunAwareUnitQueryExecutor({
-      environment: { DQE_ENDPOINT: 'http://dqe.test/query' },
-      fallbackGateway: {
-        fetchData: async () => ({ rows: [] })
-      },
-      fetchImpl: hangingFetch
+      gateway: {
+        fetchData: async (_query, _diagnostics, signal) => {
+          gatewaySignals.push(signal);
+          return { rows: [] };
+        }
+      }
     });
     const controller = new AbortController();
 
@@ -252,27 +241,19 @@ describe('运行感知的查询执行:取消在 HTTP 层中止真实执行', () 
       },
       filterValues: []
     } as unknown as EffectiveQuery;
-    const pending = execute(effectiveQuery, controller.signal);
-    await started;
-    controller.abort();
-
-    await expect(pending).rejects.toThrowError();
-    expect(fetchSignals[0]?.aborted).toBe(true);
+    await expect(execute(effectiveQuery, controller.signal)).resolves.toEqual({ rows: [] });
+    expect(gatewaySignals).toEqual([controller.signal]);
   });
 
-  it('无运行信号时复用进程级数据网关,行映射回 DQE 原始输出字段名', async () => {
+  it('无运行信号时复用请求级数据网关,行映射回 DQE 原始输出字段名', async () => {
     let fallbackCalls = 0;
     const execute = createRunAwareUnitQueryExecutor({
-      environment: {},
-      fallbackGateway: {
+      gateway: {
         // 数据网关返回按查询字段映射归一化的行(稳定页面字段 id 键)。
         fetchData: async () => {
           fallbackCalls += 1;
           return { rows: [{ 'field-1': '华东', 'field-2': 1200 }], totalCount: 1 };
         }
-      },
-      fetchImpl: () => {
-        throw new Error('无信号路径不应发起新 fetch');
       }
     });
 

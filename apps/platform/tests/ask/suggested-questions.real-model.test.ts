@@ -63,8 +63,11 @@ afterAll(async () => {
 function simExecutor(): ExecuteDataRequestUnitQuery {
   const environment = { DQE_ENDPOINT: dqeEndpoint };
   const execute = createRunAwareUnitQueryExecutor({
-    environment,
-    fallbackGateway: createServerDataGateway({ environment, diagnosticsSink: () => {} })
+    gateway: createServerDataGateway({
+      environment,
+      actor: { actorId: 'real-model-eval', clientId: 'workbench', roles: [] },
+      diagnosticsSink: () => {}
+    })
   });
   return (query) => execute(query, undefined);
 }

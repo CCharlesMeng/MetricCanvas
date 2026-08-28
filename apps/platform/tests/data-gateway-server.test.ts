@@ -7,13 +7,24 @@ import {
 } from '@metriccanvas/data-gateway';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
 import {
-  createServerDataGateway,
+  createServerDataGateway as createServerDataGatewayAdapter,
   dataQueryHttpStatus,
   dimensionValuesHttpStatus,
   executeDataQuery,
   executeDimensionValues,
-  resolveDqeEndpoint
+  resolveDqeEndpoint,
+  type ServerDataGatewayConfig
 } from '../src/lib/server/data-gateway.server';
+
+const TEST_ACTOR = {
+  actorId: 'data-gateway-test',
+  clientId: 'workbench',
+  roles: []
+} as const;
+
+function createServerDataGateway(config: Omit<ServerDataGatewayConfig, 'actor'>) {
+  return createServerDataGatewayAdapter({ ...config, actor: TEST_ACTOR });
+}
 
 const dslItem: JsonObject = {
   output_metrics: ['NA客户数'],

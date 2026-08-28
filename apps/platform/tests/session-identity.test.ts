@@ -3,8 +3,10 @@ import {
   DEFAULT_MOCK_ACTOR_ID,
   MOCK_USERS,
   createIdentity,
+  defaultClientIdForRole,
   resolveMockActor,
   resolveMockUser,
+  resolveMetricCanvasRole,
   toTemplateContext,
   withClient,
   type MockUser
@@ -89,6 +91,31 @@ describe('mock 多用户身份', () => {
       clientId: 'workbench',
       roles: ['publisher']
     });
+  });
+
+  it('部署角色决定默认客户端:authoring 保留发布权,reader 零角色', () => {
+    expect(createIdentity(defaultClientIdForRole('authoring'))).toEqual({
+      actorId: 'developer-1',
+      clientId: 'workbench',
+      roles: ['publisher']
+    });
+    expect(createIdentity(defaultClientIdForRole('reader'))).toEqual({
+      actorId: 'developer-1',
+      clientId: 'reader',
+      roles: []
+    });
+    expect(
+      createIdentity(defaultClientIdForRole('reader'), mustFind('admin-1')).roles
+    ).toEqual([]);
+  });
+
+  it('部署角色未配置时保持 authoring,非法值失败关闭', () => {
+    expect(resolveMetricCanvasRole({})).toBe('authoring');
+    expect(resolveMetricCanvasRole({ METRICCANVAS_ROLE: 'reader' })).toBe('reader');
+    expect(resolveMetricCanvasRole({ METRICCANVAS_ROLE: 'authoring' })).toBe('authoring');
+    expect(() => resolveMetricCanvasRole({ METRICCANVAS_ROLE: 'Reader' })).toThrowError(
+      'METRICCANVAS_ROLE 必须是 reader 或 authoring'
+    );
   });
 
   it('身份角色是客户端角色与用户级角色的并集', () => {

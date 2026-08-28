@@ -42,7 +42,6 @@ export interface AgentStreamServices {
     confirmedPageIds: string[];
     runId: string;
     mode?: 'authoring' | 'lifecycle' | 'ask';
-    identity: LifecycleContext;
     /** 问数编排(mode=ask)的人工确认与钉住状态;其余模式忽略。 */
     scopeConfirmations?: AskScopeConfirmation[];
     userDomains?: string[];
@@ -100,7 +99,6 @@ export async function handleAgentStreamRequest(
     confirmedPageIds: confirmedPageIdsOf(body),
     runId: body.runId,
     mode: 'ask',
-    identity,
     scopeConfirmations: scopeConfirmationsOf(body),
     ...(userDomains === undefined ? {} : { userDomains }),
     ...(body.pinnedComponents === undefined

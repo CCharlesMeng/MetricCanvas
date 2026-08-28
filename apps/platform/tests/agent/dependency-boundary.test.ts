@@ -37,8 +37,6 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     '@metriccanvas/page-lifecycle',
     '@metriccanvas/runtime',
     '@metriccanvas/template-library',
-    '../data-gateway.server',
-    './abort',
     './types'
   ],
   'run-registry.ts': ['@metriccanvas/page-lifecycle'],

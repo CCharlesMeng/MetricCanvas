@@ -22,7 +22,7 @@ import {
   createPostgresPageLifecycle,
   createPostgresTemplateLibrary
 } from '@metriccanvas/persistence-postgres';
-import type { DataGateway } from '@metriccanvas/runtime';
+import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/runtime';
 import { createAgentRunner } from './agent/runner';
 import {
   createRunAwareUnitQueryExecutor,
@@ -34,21 +34,25 @@ import { createAskOrchestrationRunner, type AskScopeConfirmation } from './ask/o
 import { createSnapshotAskRetrieval } from './ask/retrieval';
 import { createModelBackedAskModel } from './ask/model-port';
 import { createLexicalAskModel } from './ask/lexical-model';
-import { getServerDataGateway } from './data-gateway.server';
+import { getServerDataGateway, type ServerEnvironment } from './data-gateway.server';
 import { createDeepSeekModelProvider } from './agent/deepseek.server';
 import { createOpenAICompatibleModelProvider } from './agent/openai-compatible.server';
-import type { AgentRunner } from './agent/types';
+import type { AgentRunner, ModelProvider } from './agent/types';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
 import {
   agentModelDescriptor,
   resolveAgentModelConfig,
+  type AgentModelConfig,
   type AgentModelDescriptor
 } from './agent-model-config.server';
 import {
+  resolveMetricCanvasRole,
+  type MetricCanvasRole
+} from './identity.server';
+import {
   seedPublishedPages,
-  seedPublishedTemplates,
-  type OfflineTemplateSeed
+  seedPublishedTemplates
 } from './offline-services';
 import { createMemoryAnalysisSessionStore } from './session/memory';
 import {
@@ -56,15 +60,11 @@ import {
   type MetricGapLedger
 } from './session/metric-gap';
 import type { AnalysisSessionStore } from './session/store';
-import bundledDataContext from '$fixtures/schema-metadata.example.json';
-
-const bundledPageModules = import.meta.glob<{ default: unknown }>('$pages/*.json', {
-  eager: true
-});
-const bundledTemplateModules = import.meta.glob<{ default: OfflineTemplateSeed }>(
-  '$templates/*.json',
-  { eager: true }
-);
+import {
+  bundledDataContext,
+  bundledPageModules,
+  bundledTemplateModules
+} from './bundled-assets.server';
 const bundledPageSeeds = Object.values(bundledPageModules).map((module) => module.default);
 const bundledTemplateSeeds = Object.values(bundledTemplateModules).map(
   (module) => module.default
@@ -76,22 +76,46 @@ const seedSignature = JSON.stringify([bundledPageSeeds, bundledTemplateSeeds]);
 const AGENT_RUN_TIMEOUT_MS = 120_000;
 const AGENT_RUN_MAX_TOTAL_TOKENS = 200_000;
 
-export interface PlatformServices {
+/** reader 部署唯一可见的页面生命周期 Interface。 */
+type ReaderPageLifecycle = Pick<
+  PageLifecycle,
+  'listPages' | 'getPublished' | 'getPublishedRevision'
+>;
+
+interface CommonPlatformServices {
+  runtimeOrigin: string;
+}
+
+export interface ReaderPlatformServices extends CommonPlatformServices {
+  role: 'reader';
+  lifecycle: ReaderPageLifecycle;
+}
+
+export interface AuthoringPlatformServices extends CommonPlatformServices {
+  role: 'authoring';
   lifecycle: PageLifecycle;
   templates: TemplateLibrary;
   dataContext: DataContextSearch;
-  dataGateway: DataGateway;
   sessions: AnalysisSessionStore;
   /** 指标需求条目台账(#67):从会话事件流聚合,合并排行 + 状态流转。 */
   metricGaps: MetricGapLedger;
   /** 进行中 Agent 运行的注册表:取消端点经由它中止运行。 */
   agentRuns: AgentRunRegistry;
   agentModel: AgentModelDescriptor;
+}
+
+type PlatformServices = ReaderPlatformServices | AuthoringPlatformServices;
+
+interface BoundReaderPlatformServices extends ReaderPlatformServices {
+  dataGateway: DataGateway & DimensionValuesGateway;
+}
+
+interface BoundAuthoringPlatformServices extends AuthoringPlatformServices {
+  dataGateway: DataGateway & DimensionValuesGateway;
   createRunner(input: {
     confirmedPageIds: string[];
     runId: string;
     mode?: 'authoring' | 'lifecycle' | 'ask';
-    identity: LifecycleContext;
     /** 问数编排(mode=ask,#66)的人工确认与钉住状态;其余模式忽略。 */
     scopeConfirmations?: AskScopeConfirmation[];
     userDomains?: string[];
@@ -100,8 +124,41 @@ export interface PlatformServices {
     draft?: Record<string, unknown>;
     target?: { sectionId: string; componentId: string };
   }): AgentRunner;
-  runtimeOrigin: string;
 }
+
+type BoundPlatformServices =
+  | BoundReaderPlatformServices
+  | BoundAuthoringPlatformServices;
+
+interface PlatformServiceFactories {
+  /** 请求级数据网关 adapter factory seam；actor 必须原样到达。 */
+  createDataGateway?(input: {
+    environment: ServerEnvironment;
+    actor: LifecycleContext;
+  }): DataGateway & DimensionValuesGateway;
+  createAgentRunner: typeof createAgentRunner;
+  createMcpConnector: typeof createRunScopedMcpConnector;
+  createModelProvider(config: AgentModelConfig): ModelProvider | null;
+  createRunRegistry: typeof createAgentRunRegistry;
+}
+
+const defaultFactories: PlatformServiceFactories = {
+  createAgentRunner,
+  createMcpConnector: createRunScopedMcpConnector,
+  createModelProvider: createConfiguredModelProvider,
+  createRunRegistry: createAgentRunRegistry
+};
+
+interface IdentityBinding {
+  environment: ServerEnvironment;
+  createDataGateway?: PlatformServiceFactories['createDataGateway'];
+  bind(
+    identity: LifecycleContext,
+    gateway: DataGateway & DimensionValuesGateway
+  ): BoundPlatformServices;
+}
+
+const identityBindings = new WeakMap<PlatformServices, IdentityBinding>();
 
 const serviceCache = globalThis as typeof globalThis & {
   __metricCanvasPlatformServicesPromise?: Promise<PlatformServices>;
@@ -116,13 +173,58 @@ const serviceCache = globalThis as typeof globalThis & {
  */
 const moduleEpoch = Date.now();
 
-export function getPlatformServices(): Promise<PlatformServices> {
+function getConfiguredPlatformServices(): Promise<PlatformServices> {
   discardStaleServices();
-  serviceCache.__metricCanvasPlatformServicesPromise ??= createServices().catch((cause) => {
+  serviceCache.__metricCanvasPlatformServicesPromise ??= createPlatformServices(env).catch((cause) => {
     serviceCache.__metricCanvasPlatformServicesPromise = undefined;
     throw cause;
   });
   return serviceCache.__metricCanvasPlatformServicesPromise;
+}
+
+/**
+ * 保留既有零参 authoring 组合根形状。reader 部署上调用创作期入口
+ * 失败关闭，无需把类型窄化扩散到所有既有 authoring 路由。
+ */
+export async function getPlatformServices(): Promise<AuthoringPlatformServices> {
+  const services = await getConfiguredPlatformServices();
+  if (services.role !== 'authoring') {
+    throw new Error('reader 部署不提供创作期能力');
+  }
+  return services;
+}
+
+/** reader / authoring 共用的受控读取组合根，仅 runtime 与 data 入口使用。 */
+export function getRuntimePlatformServices(): Promise<PlatformServices> {
+  return getConfiguredPlatformServices();
+}
+
+export function bindIdentity(
+  services: ReaderPlatformServices,
+  identity: LifecycleContext
+): BoundReaderPlatformServices;
+export function bindIdentity(
+  services: AuthoringPlatformServices,
+  identity: LifecycleContext
+): BoundAuthoringPlatformServices;
+export function bindIdentity(
+  services: PlatformServices,
+  identity: LifecycleContext
+): BoundPlatformServices;
+/**
+ * 请求级身份绑定的唯一入口。身份在这里烘焙进 gateway 与
+ * authoring runner，DataGateway / DataContextProvider 的方法 Interface 保持不变。
+ */
+export function bindIdentity(
+  services: PlatformServices,
+  identity: LifecycleContext
+): BoundPlatformServices {
+  const binding = identityBindings.get(services);
+  if (!binding) throw new Error('平台服务不是由 createPlatformServices 构造');
+  const gateway = binding.createDataGateway
+    ? binding.createDataGateway({ environment: binding.environment, actor: identity })
+    : getServerDataGateway(binding.environment, identity);
+  return binding.bind(identity, gateway);
 }
 
 /**
@@ -150,13 +252,31 @@ function discardStaleServices(): void {
   serviceCache.__metricCanvasPlatformServicesPromise = undefined;
 }
 
-async function createServices(): Promise<PlatformServices> {
-  const runtimeOrigin = env.RUNTIME_ORIGIN ?? 'http://localhost:5173';
-  const platformOrigin = env.PLATFORM_ORIGIN ?? 'http://localhost:5174';
-  const offline = env.METRICCANVAS_OFFLINE === '1';
-  const databaseUrl =
-    env.DATABASE_URL ??
+export function resolvePlatformDatabaseUrl(
+  environment: ServerEnvironment,
+  role: MetricCanvasRole
+): string {
+  const authoring =
+    environment.DATABASE_URL?.trim() ||
     'postgres://metriccanvas:metriccanvas@localhost:5432/metriccanvas';
+  if (role === 'authoring') return authoring;
+  const reader = environment.METRICCANVAS_READER_DATABASE_URL?.trim();
+  if (!reader) {
+    throw new Error('reader 部署必须配置 METRICCANVAS_READER_DATABASE_URL 只读账号');
+  }
+  return reader;
+}
+
+export async function createPlatformServices(
+  environment: ServerEnvironment,
+  overrides: Partial<PlatformServiceFactories> = {}
+): Promise<PlatformServices> {
+  const factories: PlatformServiceFactories = { ...defaultFactories, ...overrides };
+  const role = resolveMetricCanvasRole(environment);
+  const runtimeOrigin = environment.RUNTIME_ORIGIN ?? 'http://localhost:5173';
+  const platformOrigin = environment.PLATFORM_ORIGIN ?? 'http://localhost:5174';
+  const offline = environment.METRICCANVAS_OFFLINE === '1';
+  const databaseUrl = resolvePlatformDatabaseUrl(environment, role);
   // 内置快照经唯一校验入口进入类型世界(#80),不以双重 cast 硬闯。
   const parsedSnapshot = parseDataContextSnapshot(bundledDataContext);
   if (!parsedSnapshot.ok) {
@@ -182,6 +302,21 @@ async function createServices(): Promise<PlatformServices> {
   const lifecycle = offline
     ? await createOfflinePageLifecycle(lifecycleOptions)
     : await createPostgresPageLifecycle({ ...lifecycleOptions, databaseUrl });
+
+  if (role === 'reader') {
+    const services: ReaderPlatformServices = {
+      role,
+      lifecycle,
+      runtimeOrigin
+    };
+    identityBindings.set(services, {
+      environment,
+      createDataGateway: factories.createDataGateway,
+      bind: (_identity, dataGateway) => ({ ...services, dataGateway })
+    });
+    return services;
+  }
+
   const templateOptions = {
     pageLifecycle: lifecycle,
     urls: {
@@ -217,44 +352,9 @@ async function createServices(): Promise<PlatformServices> {
     );
   }
 
-  const dataGateway = getServerDataGateway(env);
-
-  // 创作期查询执行端口(#64):复用服务端数据网关的归一化能力(ADR-0032);
-  // 携带运行取消信号时以并入信号的 fetch 执行,取消即中止进行中的真实查询。
-  // 页面搭建工具循环与问数编排共用同一端口,查询正确性标准只有一份。
-  const executeUnitQuery = createRunAwareUnitQueryExecutor({
-    environment: env,
-    fallbackGateway: dataGateway
-  });
-
-  // 按 run 隔离的 MCP 接线(#32):每次 Agent 运行创建自己的 MCP server 与
-  // 进程内连接,身份与取消信号是该次运行的构造参数。此前的模块级可变引用
-  // currentMcpIdentity(同进程并发运行互相覆盖)随之删除;取数单元验真的
-  // 单次运行执行上限(#64)也因此真正按 run 计数,不再跨运行累计。
-  const connectRunScopedMcp = createRunScopedMcpConnector({
-    dataContext,
-    lifecycle,
-    templates,
-    previewUrl: ({ pageId, revisionId }) =>
-      `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`,
-    executeDataRequestUnitQuery: executeUnitQuery
-  });
-  const agentRuns = createAgentRunRegistry();
-  const agentModelConfig = resolveAgentModelConfig(env);
-  const configuredModel =
-    agentModelConfig.provider === 'deepseek'
-      ? createDeepSeekModelProvider({
-          apiKey: agentModelConfig.apiKey,
-          model: agentModelConfig.model,
-          baseUrl: agentModelConfig.baseUrl
-        })
-      : agentModelConfig.provider === 'openai-compatible'
-        ? createOpenAICompatibleModelProvider({
-            apiKey: agentModelConfig.apiKey,
-            model: agentModelConfig.model,
-            baseUrl: agentModelConfig.baseUrl
-          })
-      : null;
+  const agentRuns = factories.createRunRegistry();
+  const agentModelConfig = resolveAgentModelConfig(environment);
+  const configuredModel = factories.createModelProvider(agentModelConfig);
 
   // 问数编排(#66)的注入端口:结构化决策走非流式模型,无 Key 时用字面
   // 命中的确定性回退;检索与语义面投影来自同一份内置快照(#80)。
@@ -263,81 +363,121 @@ async function createServices(): Promise<PlatformServices> {
     : createLexicalAskModel();
   const askRetrieval = createSnapshotAskRetrieval({ current: async () => snapshot });
 
-  return {
+  const services: AuthoringPlatformServices = {
+    role,
     lifecycle,
     templates,
     dataContext,
-    dataGateway,
     sessions,
     metricGaps,
     agentRuns,
     agentModel: agentModelDescriptor(agentModelConfig),
-    createRunner({
-      confirmedPageIds,
-      runId,
-      mode = 'lifecycle',
-      identity,
-      scopeConfirmations,
-      userDomains,
-      pinnedComponents,
-      draft,
-      target
-    }) {
-      if (mode === 'ask') {
-        // 问数编排(#66):确定性阶段状态机,不走工具循环。验真能力按 run
-        // 构造,执行上限(#64)按 run 计数;运行取消信号并入真实执行。
-        return {
-          run: (input) =>
-            createAskOrchestrationRunner(
-              {
-                model: askModel,
-                retrieval: askRetrieval,
-                verifyUnit: createDataRequestUnitVerification({
-                  dataContext: { current: async () => snapshot },
-                  executeDataRequestUnitQuery: (query) =>
-                    executeUnitQuery(query, input.signal)
-                }),
-                assemblePage: assembleTransientPage
-              },
-              {
-                runId,
-                timeoutMs: AGENT_RUN_TIMEOUT_MS,
-                ...(scopeConfirmations === undefined ? {} : { scopeConfirmations }),
-                ...(userDomains === undefined ? {} : { userDomains }),
-                ...(pinnedComponents === undefined ? {} : { pinnedComponents }),
-                ...(draft === undefined ? {} : { draft }),
-                ...(target === undefined ? {} : { target })
-              }
-            ).run(input)
-        };
-      }
-      return createRunScopedAgentRunner({
-        connect: (signal) => connectRunScopedMcp({ identity, signal }),
-        createRunner: (runClient) => {
-          const client =
-            mode === 'authoring' ? createAuthoringMcpClient(runClient) : runClient;
-          return createAgentRunner({
-            model: configuredModel ?? createComponentSelectingScriptedProvider(runId),
-            mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
-            maxModelTurns: 12,
-            timeoutMs: AGENT_RUN_TIMEOUT_MS,
-            maxTotalTokens: AGENT_RUN_MAX_TOTAL_TOKENS,
-            toolCallLimits:
-              mode === 'authoring'
-                ? {
-                    search_data_context: 4,
-                    search_templates: 2,
-                    list_pages: 2,
-                    get_page: 3,
-                    validate_page: 4
-                  }
-                : undefined
-          });
-        }
-      });
-    },
     runtimeOrigin
   };
+
+  identityBindings.set(services, {
+    environment,
+    createDataGateway: factories.createDataGateway,
+    bind(identity, dataGateway) {
+      // 创作期查询执行使用已绑定 actor 的同一请求级 gateway。
+      // signal 继续经 DataGateway Interface 传递，不再旁路重建丢身份的 adapter。
+      const executeUnitQuery = createRunAwareUnitQueryExecutor({ gateway: dataGateway });
+      const connectRunScopedMcp = factories.createMcpConnector({
+        dataContext,
+        lifecycle,
+        templates,
+        previewUrl: ({ pageId, revisionId }) =>
+          `${runtimeOrigin}/pages/${pageId}?revision=${encodeURIComponent(revisionId)}`,
+        executeDataRequestUnitQuery: executeUnitQuery
+      });
+
+      const bound: BoundAuthoringPlatformServices = {
+        ...services,
+        dataGateway,
+        createRunner({
+          confirmedPageIds,
+          runId,
+          mode = 'lifecycle',
+          scopeConfirmations,
+          userDomains,
+          pinnedComponents,
+          draft,
+          target
+        }) {
+          if (mode === 'ask') {
+            // 问数编排(#66):确定性阶段状态机,不走工具循环。验真能力按 run
+            // 构造,执行上限(#64)按 run 计数;运行取消信号并入真实执行。
+            return {
+              run: (input) =>
+                createAskOrchestrationRunner(
+                  {
+                    model: askModel,
+                    retrieval: askRetrieval,
+                    verifyUnit: createDataRequestUnitVerification({
+                      dataContext: { current: async () => snapshot },
+                      executeDataRequestUnitQuery: (query) =>
+                        executeUnitQuery(query, input.signal)
+                    }),
+                    assemblePage: assembleTransientPage
+                  },
+                  {
+                    runId,
+                    timeoutMs: AGENT_RUN_TIMEOUT_MS,
+                    ...(scopeConfirmations === undefined ? {} : { scopeConfirmations }),
+                    ...(userDomains === undefined ? {} : { userDomains }),
+                    ...(pinnedComponents === undefined ? {} : { pinnedComponents }),
+                    ...(draft === undefined ? {} : { draft }),
+                    ...(target === undefined ? {} : { target })
+                  }
+                ).run(input)
+            };
+          }
+          return createRunScopedAgentRunner({
+            connect: (signal) => connectRunScopedMcp({ identity, signal }),
+            createRunner: (runClient) => {
+              const client =
+                mode === 'authoring' ? createAuthoringMcpClient(runClient) : runClient;
+              return factories.createAgentRunner({
+                model: configuredModel ?? createComponentSelectingScriptedProvider(runId),
+                mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
+                maxModelTurns: 12,
+                timeoutMs: AGENT_RUN_TIMEOUT_MS,
+                maxTotalTokens: AGENT_RUN_MAX_TOTAL_TOKENS,
+                toolCallLimits:
+                  mode === 'authoring'
+                    ? {
+                        search_data_context: 4,
+                        search_templates: 2,
+                        list_pages: 2,
+                        get_page: 3,
+                        validate_page: 4
+                      }
+                    : undefined
+              });
+            }
+          });
+        }
+      };
+      return bound;
+    }
+  });
+  return services;
+}
+
+function createConfiguredModelProvider(config: AgentModelConfig): ModelProvider | null {
+  return config.provider === 'deepseek'
+    ? createDeepSeekModelProvider({
+        apiKey: config.apiKey,
+        model: config.model,
+        baseUrl: config.baseUrl
+      })
+    : config.provider === 'openai-compatible'
+      ? createOpenAICompatibleModelProvider({
+          apiKey: config.apiKey,
+          model: config.model,
+          baseUrl: config.baseUrl
+        })
+      : null;
 }
 
 async function createOfflinePageLifecycle(

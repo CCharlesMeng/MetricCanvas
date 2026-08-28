@@ -8,7 +8,7 @@ import {
   workbenchMessages
 } from '$lib/server/agent/workbench-request';
 import { validatedAgentDocument } from '$lib/server/agent-events.server';
-import { getPlatformServices } from '$lib/server/services.server';
+import { bindIdentity, getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 /**
@@ -40,12 +40,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
   }
 
   const messages: AgentMessage[] = workbenchMessages(body);
-  const { createRunner, runtimeOrigin, agentModel } = await getPlatformServices();
+  const { createRunner, runtimeOrigin, agentModel } = bindIdentity(
+    await getPlatformServices(),
+    locals.identity
+  );
   const runner = createRunner({
     confirmedPageIds: confirmedPageIdsOf(body),
     runId: body.runId,
-    mode: 'authoring',
-    identity: locals.identity
+    mode: 'authoring'
   });
   const events: AgentEvent[] = [];
 

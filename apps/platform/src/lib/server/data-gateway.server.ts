@@ -9,6 +9,7 @@ import {
   type DqeDiagnosticRecord
 } from '@metriccanvas/data-gateway';
 import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page';
+import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type {
   DataGateway,
   DimensionValuesGateway,
@@ -31,6 +32,11 @@ export function resolveDqeEndpoint(environment: ServerEnvironment): string {
 
 export interface ServerDataGatewayConfig {
   environment: ServerEnvironment;
+  /**
+   * 请求 actor 预留位。上游 header/JWT 协议尚未裁决，此处只保证身份
+   * 真实到达 adapter 构造点，不提前发明传输形式。
+   */
+  actor: LifecycleContext;
   headers?: Record<string, string>;
   fetchImpl?: typeof fetch;
   /** 查询诊断记录去向;缺省写结构化 console 日志。测试注入。 */
@@ -87,14 +93,12 @@ function resolveDevDetail(
   });
 }
 
-let serverDataGateway: (DataGateway & DimensionValuesGateway) | undefined;
-
-/** 平台进程内的数据网关单例;首次调用按当时环境构造。 */
+/** 请求级数据网关 factory；不缓存 actor，不在请求间共享身份化实例。 */
 export function getServerDataGateway(
-  environment: ServerEnvironment
+  environment: ServerEnvironment,
+  actor: LifecycleContext
 ): DataGateway & DimensionValuesGateway {
-  serverDataGateway ??= createServerDataGateway({ environment });
-  return serverDataGateway;
+  return createServerDataGateway({ environment, actor });
 }
 
 /**
