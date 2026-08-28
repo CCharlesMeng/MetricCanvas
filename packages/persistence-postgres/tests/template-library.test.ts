@@ -4,8 +4,10 @@ import {
   type StartedPostgreSqlContainer
 } from '@testcontainers/postgresql';
 import type { Page } from '@metriccanvas/page';
-import { createPostgresPageLifecycle } from '@metriccanvas/page-lifecycle';
-import { createPostgresTemplateLibrary } from '@metriccanvas/template-library';
+import {
+  createPostgresPageLifecycle,
+  createPostgresTemplateLibrary
+} from '../src/index';
 
 const page: Page = {
   schemaVersion: '5.0',

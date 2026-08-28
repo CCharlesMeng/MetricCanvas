@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DeepSeekProviderError } from '../../src/lib/server/agent/deepseek.server';
+import { OpenAICompatibleProviderError } from '../../src/lib/server/agent/openai-compatible.server';
 import { normalizeAgentRunError } from '../../src/lib/server/agent/errors';
 import { AgentRunnerError } from '../../src/lib/server/agent/runner';
 
@@ -21,6 +22,24 @@ describe('Agent 运行错误归一化为稳定分类', () => {
       retryable: true
     },
     {
+      name: 'OpenAI 兼容模型限流(HTTP 429)',
+      cause: runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('HTTP_ERROR', 'x', { status: 429 })
+      ),
+      category: 'MODEL_RATE_LIMITED',
+      retryable: true
+    },
+    {
+      name: 'OpenAI 兼容模型协议错误(HTTP 500)',
+      cause: runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('HTTP_ERROR', 'x', { status: 500 })
+      ),
+      category: 'MODEL_PROTOCOL_ERROR',
+      retryable: true
+    },
+    {
       name: '模型协议错误(HTTP 500)',
       cause: runnerError('MODEL_FAILED', new DeepSeekProviderError('HTTP_ERROR', 'x', { status: 500 })),
       category: 'MODEL_PROTOCOL_ERROR',
@@ -33,8 +52,26 @@ describe('Agent 运行错误归一化为稳定分类', () => {
       retryable: true
     },
     {
+      name: 'OpenAI 兼容模型响应形状非法',
+      cause: runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('INVALID_RESPONSE', 'x')
+      ),
+      category: 'MODEL_PROTOCOL_ERROR',
+      retryable: true
+    },
+    {
       name: '模型提供方不可达',
       cause: runnerError('MODEL_FAILED', new DeepSeekProviderError('NETWORK_ERROR', 'x')),
+      category: 'MODEL_PROTOCOL_ERROR',
+      retryable: true
+    },
+    {
+      name: 'OpenAI 兼容模型提供方不可达',
+      cause: runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('NETWORK_ERROR', 'x')
+      ),
       category: 'MODEL_PROTOCOL_ERROR',
       retryable: true
     },
@@ -43,6 +80,17 @@ describe('Agent 运行错误归一化为稳定分类', () => {
       cause: runnerError(
         'MODEL_FAILED',
         new DeepSeekProviderError('INVALID_TOOL_ARGUMENTS', 'x', { toolName: 'validate_page' })
+      ),
+      category: 'INVALID_TOOL_CALL',
+      retryable: true
+    },
+    {
+      name: 'OpenAI 兼容模型非法工具调用',
+      cause: runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('INVALID_TOOL_ARGUMENTS', 'x', {
+          toolName: 'validate_page'
+        })
       ),
       category: 'INVALID_TOOL_CALL',
       retryable: true
@@ -92,6 +140,10 @@ describe('Agent 运行错误归一化为稳定分类', () => {
       runnerError(
         'MODEL_FAILED',
         new DeepSeekProviderError('INVALID_RESPONSE', `raw body: ${SECRET}`)
+      ),
+      runnerError(
+        'MODEL_FAILED',
+        new OpenAICompatibleProviderError('INVALID_RESPONSE', `raw body: ${SECRET}`)
       )
     ];
     for (const cause of leakyCauses) {
@@ -101,9 +153,13 @@ describe('Agent 运行错误归一化为稳定分类', () => {
   });
 
   it('HTTP 状态码作为安全结构化字段进入文案,便于排障', () => {
-    const normalized = normalizeAgentRunError(
-      runnerError('MODEL_FAILED', new DeepSeekProviderError('HTTP_ERROR', 'x', { status: 503 }))
-    );
-    expect(normalized.message).toContain('503');
+    const failures = [
+      new DeepSeekProviderError('HTTP_ERROR', 'x', { status: 503 }),
+      new OpenAICompatibleProviderError('HTTP_ERROR', 'x', { status: 503 })
+    ];
+    for (const failure of failures) {
+      const normalized = normalizeAgentRunError(runnerError('MODEL_FAILED', failure));
+      expect(normalized.message).toContain('503');
+    }
   });
 });

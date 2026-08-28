@@ -75,6 +75,9 @@ importers:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../../packages/page-lifecycle
+      '@metriccanvas/persistence-postgres':
+        specifier: workspace:*
+        version: link:../../packages/persistence-postgres
       '@metriccanvas/runtime':
         specifier: workspace:*
         version: link:../../packages/runtime
@@ -190,6 +193,20 @@ importers:
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page
+
+  packages/persistence-mysql: {}
+
+  packages/persistence-postgres:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
+      '@metriccanvas/page-lifecycle':
+        specifier: workspace:*
+        version: link:../page-lifecycle
+      '@metriccanvas/template-library':
+        specifier: workspace:*
+        version: link:../template-library
       postgres:
         specifier: ^3.4.9
         version: 3.4.9
@@ -231,19 +248,13 @@ importers:
 
   packages/template-library:
     dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
-      postgres:
-        specifier: ^3.4.9
-        version: 3.4.9
     devDependencies:
-      '@testcontainers/postgresql':
-        specifier: ^12.0.4
-        version: 12.0.4
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
 
   packages/widgets:
     dependencies:

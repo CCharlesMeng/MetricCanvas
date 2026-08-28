@@ -19,7 +19,6 @@ export const GET: RequestHandler = async ({ params }) => {
 
 function runtimeHeaders(): Record<string, string> {
   return {
-    'access-control-allow-origin': '*',
     'cache-control': 'no-store'
   };
 }

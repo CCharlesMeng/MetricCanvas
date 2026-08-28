@@ -8,6 +8,12 @@ export type AgentModelConfig =
       model: string;
       apiKey: string;
       baseUrl: string;
+    }
+  | {
+      provider: 'openai-compatible';
+      model: string;
+      apiKey: string;
+      baseUrl: string;
     };
 
 export interface AgentModelDescriptor {
@@ -23,6 +29,26 @@ export function resolveAgentModelConfig(
     return {
       provider,
       model: 'component-selecting-scripted'
+    };
+  }
+  if (provider === 'openai-compatible') {
+    const baseUrl = environment.OPENAI_COMPATIBLE_BASE_URL?.trim();
+    if (!baseUrl) {
+      throw new Error('OPENAI_COMPATIBLE_BASE_URL 未在服务端环境配置');
+    }
+    const apiKey = environment.OPENAI_COMPATIBLE_API_KEY?.trim();
+    if (!apiKey) {
+      throw new Error('OPENAI_COMPATIBLE_API_KEY 未在服务端环境配置');
+    }
+    const model = environment.OPENAI_COMPATIBLE_MODEL?.trim();
+    if (!model) {
+      throw new Error('OPENAI_COMPATIBLE_MODEL 未在服务端环境配置');
+    }
+    return {
+      provider,
+      apiKey,
+      model,
+      baseUrl
     };
   }
   if (provider !== 'deepseek') {

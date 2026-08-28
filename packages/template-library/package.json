@@ -7,14 +7,14 @@
     "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./invariants": "./src/invariants.ts",
+    "./testing": "./tests/contract.ts"
   },
   "dependencies": {
-    "@metriccanvas/page": "workspace:*",
-    "@metriccanvas/page-lifecycle": "workspace:*",
-    "postgres": "^3.4.9"
+    "@metriccanvas/page-lifecycle": "workspace:*"
   },
   "devDependencies": {
-    "@testcontainers/postgresql": "^12.0.4"
+    "@metriccanvas/page": "workspace:*"
   }
 }

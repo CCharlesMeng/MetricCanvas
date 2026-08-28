@@ -4,7 +4,6 @@ import { getPlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 const PUBLIC_HEADERS = {
-  'access-control-allow-origin': '*',
   'cache-control': 'no-store'
 };
 

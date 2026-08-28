@@ -10,16 +10,18 @@ import {
 } from '@metriccanvas/mcp';
 import {
   createMemoryPageLifecycle,
-  createPostgresPageLifecycle,
   type DataContextVersionProvider,
   type LifecycleContext,
   type PageLifecycle
 } from '@metriccanvas/page-lifecycle';
 import {
   createMemoryTemplateLibrary,
-  createPostgresTemplateLibrary,
   type TemplateLibrary
 } from '@metriccanvas/template-library';
+import {
+  createPostgresPageLifecycle,
+  createPostgresTemplateLibrary
+} from '@metriccanvas/persistence-postgres';
 import type { DataGateway } from '@metriccanvas/runtime';
 import { createAgentRunner } from './agent/runner';
 import {
@@ -34,6 +36,7 @@ import { createModelBackedAskModel } from './ask/model-port';
 import { createLexicalAskModel } from './ask/lexical-model';
 import { getServerDataGateway } from './data-gateway.server';
 import { createDeepSeekModelProvider } from './agent/deepseek.server';
+import { createOpenAICompatibleModelProvider } from './agent/openai-compatible.server';
 import type { AgentRunner } from './agent/types';
 import { createComponentSelectingScriptedProvider } from './scripted-model.server';
 import { createAuthoringMcpClient } from './authoring-mcp.server';
@@ -238,19 +241,25 @@ async function createServices(): Promise<PlatformServices> {
   });
   const agentRuns = createAgentRunRegistry();
   const agentModelConfig = resolveAgentModelConfig(env);
-  const deepSeekModel =
+  const configuredModel =
     agentModelConfig.provider === 'deepseek'
       ? createDeepSeekModelProvider({
           apiKey: agentModelConfig.apiKey,
           model: agentModelConfig.model,
           baseUrl: agentModelConfig.baseUrl
         })
+      : agentModelConfig.provider === 'openai-compatible'
+        ? createOpenAICompatibleModelProvider({
+            apiKey: agentModelConfig.apiKey,
+            model: agentModelConfig.model,
+            baseUrl: agentModelConfig.baseUrl
+          })
       : null;
 
   // 问数编排(#66)的注入端口:结构化决策走非流式模型,无 Key 时用字面
   // 命中的确定性回退;检索与语义面投影来自同一份内置快照(#80)。
-  const askModel = deepSeekModel
-    ? createModelBackedAskModel(deepSeekModel)
+  const askModel = configuredModel
+    ? createModelBackedAskModel(configuredModel)
     : createLexicalAskModel();
   const askRetrieval = createSnapshotAskRetrieval({ current: async () => snapshot });
 
@@ -308,7 +317,7 @@ async function createServices(): Promise<PlatformServices> {
           const client =
             mode === 'authoring' ? createAuthoringMcpClient(runClient) : runClient;
           return createAgentRunner({
-            model: deepSeekModel ?? createComponentSelectingScriptedProvider(runId),
+            model: configuredModel ?? createComponentSelectingScriptedProvider(runId),
             mcp: createPageIdConfirmationMcpClient({ client, confirmedPageIds }),
             maxModelTurns: 12,
             timeoutMs: AGENT_RUN_TIMEOUT_MS,

@@ -22,8 +22,14 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   'abort.ts': [],
   // 模型提供方 adapter:只依赖协议类型与信号判别。
   'deepseek.server.ts': ['./abort', './types'],
-  // 错误归一化:唯一分类声明,消费四段分类契约与两类错误来源。
-  'errors.ts': ['../session/step-event', './deepseek.server', './runner'],
+  'openai-compatible.server.ts': ['./abort', './types'],
+  // 错误归一化:唯一分类声明,消费四段分类契约与模型/运行错误来源。
+  'errors.ts': [
+    '../session/step-event',
+    './deepseek.server',
+    './openai-compatible.server',
+    './runner'
+  ],
   // 按 run 的 MCP 接线与查询执行:平台侧组合根的一部分。
   'run-mcp.ts': [
     '@metriccanvas/mcp',
