@@ -5,7 +5,7 @@ import type {
   TemplateErrorCode,
   TemplateRevision,
   TemplateRevisionResult
-} from './types';
+} from './contracts';
 
 export function validateCommand(
   command: SaveTemplateRevisionCommand

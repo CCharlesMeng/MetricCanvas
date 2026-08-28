@@ -73,60 +73,37 @@ export function normalizeAgentRunError(cause: unknown): NormalizedAgentError {
 
 function normalizeModelFailure(cause: unknown): NormalizedAgentError {
   if (
-    cause instanceof OpenAICompatibleProviderError &&
-    cause.code === 'HTTP_ERROR'
+    cause instanceof OpenAICompatibleProviderError ||
+    cause instanceof DeepSeekProviderError
   ) {
-    return cause.status === 429
-      ? normalized('MODEL_RATE_LIMITED', '模型提供方限流(HTTP 429)')
-      : normalized(
-          'MODEL_PROTOCOL_ERROR',
-          `模型提供方请求失败${cause.status !== undefined ? `(HTTP ${cause.status})` : ''}`
-        );
-  }
-  if (
-    cause instanceof OpenAICompatibleProviderError &&
-    cause.code === 'NETWORK_ERROR'
-  ) {
-    return normalized('MODEL_PROTOCOL_ERROR', '模型提供方不可达');
-  }
-  if (
-    cause instanceof OpenAICompatibleProviderError &&
-    cause.code === 'INVALID_RESPONSE'
-  ) {
-    return normalized('MODEL_PROTOCOL_ERROR', '模型提供方响应形状非法');
-  }
-  if (
-    cause instanceof OpenAICompatibleProviderError &&
-    cause.code === 'INVALID_TOOL_ARGUMENTS'
-  ) {
-    return normalized(
-      'INVALID_TOOL_CALL',
-      `模型产出非法工具调用${cause.toolName ? `:${cause.toolName}` : ''}`
-    );
-  }
-  if (cause instanceof DeepSeekProviderError) {
-    switch (cause.code) {
-      case 'HTTP_ERROR':
-        return cause.status === 429
-          ? normalized('MODEL_RATE_LIMITED', '模型提供方限流(HTTP 429)')
-          : normalized(
-              'MODEL_PROTOCOL_ERROR',
-              `模型提供方请求失败${cause.status !== undefined ? `(HTTP ${cause.status})` : ''}`
-            );
-      case 'NETWORK_ERROR':
-        return normalized('MODEL_PROTOCOL_ERROR', '模型提供方不可达');
-      case 'INVALID_RESPONSE':
-        return normalized('MODEL_PROTOCOL_ERROR', '模型提供方响应形状非法');
-      case 'INVALID_TOOL_ARGUMENTS':
-        return normalized(
-          'INVALID_TOOL_CALL',
-          `模型产出非法工具调用${cause.toolName ? `:${cause.toolName}` : ''}`
-        );
-      case 'MISSING_API_KEY':
-        return normalized('MODEL_PROTOCOL_ERROR', '模型提供方凭据未配置');
-    }
+    return normalizeProviderFailure(cause);
   }
   return normalized('AGENT_INTERNAL_ERROR', '模型调用发生未识别错误');
+}
+
+function normalizeProviderFailure(
+  cause: OpenAICompatibleProviderError | DeepSeekProviderError
+): NormalizedAgentError {
+  switch (cause.code) {
+    case 'HTTP_ERROR':
+      return cause.status === 429
+        ? normalized('MODEL_RATE_LIMITED', '模型提供方限流(HTTP 429)')
+        : normalized(
+            'MODEL_PROTOCOL_ERROR',
+            `模型提供方请求失败${cause.status !== undefined ? `(HTTP ${cause.status})` : ''}`
+          );
+    case 'NETWORK_ERROR':
+      return normalized('MODEL_PROTOCOL_ERROR', '模型提供方不可达');
+    case 'INVALID_RESPONSE':
+      return normalized('MODEL_PROTOCOL_ERROR', '模型提供方响应形状非法');
+    case 'INVALID_TOOL_ARGUMENTS':
+      return normalized(
+        'INVALID_TOOL_CALL',
+        `模型产出非法工具调用${cause.toolName ? `:${cause.toolName}` : ''}`
+      );
+    case 'MISSING_API_KEY':
+      return normalized('MODEL_PROTOCOL_ERROR', '模型提供方凭据未配置');
+  }
 }
 
 function normalized(category: AgentErrorCategory, message: string): NormalizedAgentError {

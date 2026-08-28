@@ -17,7 +17,7 @@ import type {
   TemplatePublishRequestResult,
   TemplateRevision,
   TemplateRevisionResult
-} from './types';
+} from './contracts';
 
 export interface MemoryTemplateLibraryOptions {
   pageLifecycle: PageLifecycle;
