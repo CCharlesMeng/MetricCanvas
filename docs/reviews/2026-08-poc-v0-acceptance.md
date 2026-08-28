@@ -30,7 +30,7 @@
 | `apps/platform/tests/ask/golden-end-to-end.test.ts` | 黄金问题集端到端:scripted 结构化决策 + **进程内 DQE 仿真真实取数**(生产数据网关与生产执行端口),覆盖直答 6 条全阶段出文档、同面换组合与全新组合取数(非回放)、消歧阻塞与确认续跑、面外四段降级零执行零文档、跨域硬闸拒绝 |
 | `apps/platform/tests/ask/retrieval.test.ts` | 检索最长命中词规则回归(见第 5 节缺陷 2) |
 | `apps/platform/tests/session-replay-endpoint.test.ts` | 会话回放端点:归属者 200、他人 404(与不存在同响应)、管理员 200 |
-| `apps/platform/tests/workbench/session-replay.test.ts` | 落库事件流经 run-state 同一状态机物化只读时间线 |
+| `apps/platform/tests/workbench/session-replay.test.ts` | 当时的落库事件流经 run-state 同一状态机物化只读时间线;ADR-0058 后叠加最新会话检查点恢复 |
 
 **功能补齐(会话回放,验收标准 8 的缺口)**
 
@@ -137,7 +137,7 @@ admin-1(平台管理员): 200
 
 1. **生效查询没有业务域承载位**:DQE 请求体只有指标名/维度名/取值/时间,业务域靠名称组合在仿真侧反推。跨域同名指标(两域「客户数」)在取数单元不含任何域内维度或筛选时,即使用户已在口径卡上完成消歧,协议层仍无法定位业务域,执行按 `DQE_QUERY_REJECTED` 如实降级(联机 E、CI clarify 用例)。域如何进入查询协议,关联 ADR 基线未决事项「英文 `metric_code` 与 DQE 中文指标名的关系」,应在接入真实数据源时一并裁决。
 2. **lexical 回退模型的路由收窄会掩盖歧义**:scripted 模式下按字面把「客户数」路由到单域,消歧路径需借助域改写演示(联机 E);真实模型把两域都路由进来时不受影响。这是回退实现的已知边界,不是编排缺陷。
-3. **会话回放是只读时间线**:outcome 帧(续跑基线消息、页面文档)按 ADR-0030 刻意不落库,刷新后可复看全部步骤,但不能从回放直接续跑对话或复现文档。
+3. **当时的会话回放只有只读时间线**:outcome 帧(续跑基线消息、页面文档)未落库,刷新后可复看全部步骤,但不能从回放直接续跑对话或复现文档。**该限制后续已由 ADR-0058 以最新会话检查点解除**;本段保留的是 POC V0 验收时点的事实。
 4. **黄金问题集 V0 只有 10 条**:ADR-0037 首版目标 30–50 条;当前语义面是 DQE 仿真的两域小语义面,扩容有效性取决于业务输入(第 8 节),扩容时须递增资产版本,否则准确率历史不可比较。
 5. **真实模型评测本轮未运行**:worktree 无 `apps/platform/.env`(DEEPSEEK key 在主检出,不随 git)。运行方式已具备且不进 CI:`pnpm exec tsx --env-file=apps/platform/.env apps/platform/scripts/probe-nl-to-unit.ts --fixture golden-questions.json`,逐条判定与命中率汇总打印,JSON 报告(含 fixture 版本)写入 `.learnings/`;无 key 时优雅跳过。
 

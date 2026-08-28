@@ -12,7 +12,8 @@ import {
   scopeGroupsOfUnits,
   type AssembleTransientPageInput,
   type DataRequestUnitScope,
-  type ExecutedDataRequestUnit
+  type ExecutedDataRequestUnit,
+  type TransientPageDocument
 } from '../src';
 
 function dqeQuery(
@@ -142,6 +143,22 @@ function assembled(input: AssembleTransientPageInput) {
   return result.document;
 }
 
+/** 分区里绑定了页面数据源的组件;页头不绑数据源,不参与数据源断言。 */
+function boundDataSources(
+  section: TransientPageDocument['sections'][number]
+): string[] {
+  return section.components.flatMap((component) =>
+    'data' in component ? [component.data.main] : []
+  );
+}
+
+/** 承载取数单元的内容分区;页面级页头分区不在其中。 */
+function contentSections(
+  document: TransientPageDocument
+): TransientPageDocument['sections'] {
+  return document.sections.filter((section) => section.id !== 'header');
+}
+
 describe('临时页面态装配:结果形状推导', () => {
   it('由结果字段契约与内嵌初始行推导,不读样例值语义', () => {
     expect(resultShapeOfUnit(monthlyGmvUnit)).toEqual({
@@ -159,7 +176,7 @@ describe('临时页面态装配:结果形状推导', () => {
 });
 
 describe('临时页面态装配:产出 5.0 页面文档并通过 validate', () => {
-  it('多取数单元装配:组件按意图选择,宽度取目录 defaultSpan,分区用 container 表达外观', () => {
+  it('多取数单元装配:组件按意图选择,宽度按分区装箱铺满,分区用 container 表达外观', () => {
     const document = assembled({
       pageId: 'ask-transient-demo',
       description: '问数产生的临时页面态',
@@ -177,6 +194,7 @@ describe('临时页面态装配:产出 5.0 页面文档并通过 validate', () =
       'region-gmv'
     ]);
 
+    // 单元未声明口径,页头无从派生,页面只有内容分区。
     const section = document.sections[0]!;
     expect(section.container).toBe('panel');
     expect('variant' in section).toBe(false);
@@ -188,16 +206,85 @@ describe('临时页面态装配:产出 5.0 页面文档并通过 validate', () =
       'lineChart',
       'barChart'
     ]);
-    for (const component of components) {
-      expect(component.layout.span).toBe(
-        componentCatalogEntry(component.type).defaultSpan
-      );
-    }
-    expect(components.map((component) => component.data.main)).toEqual([
+    // 比例基线 3 + 8 一行装得下、缩放到 3 + 9;柱状图换行后独占整行。
+    expect(components.map((component) => component.layout.span)).toEqual([3, 9, 12]);
+    expect(boundDataSources(section)).toEqual([
       'gmv-summary',
       'monthly-gmv',
       'region-gmv'
     ]);
+  });
+
+  it('页头由口径派生:业务域作标题,全页共用的时间窗口作数据窗口', () => {
+    const document = assembled({
+      pageId: 'ask-transient-header',
+      description: '2026 年上半年销售分析月报',
+      units: [
+        withScope(gmvSummaryUnit, { groupBy: [] }),
+        withScope(regionGmvUnit, { groupBy: ['区域'] })
+      ],
+      container: 'panel'
+    });
+    expect(validate(document)).toEqual([]);
+    expect(document.sections[0]).toEqual({
+      id: 'header',
+      container: 'plain',
+      components: [
+        {
+          id: 'page-header',
+          type: 'reportHeader',
+          layout: { span: 12 },
+          props: {
+            title: '销售分析',
+            asOf: { label: '数据窗口', value: '2026-01-01 ~ 2026-06-30(月)' }
+          }
+        }
+      ]
+    });
+    expect(document.sections.slice(1).map((section) => section.title)).toEqual([
+      '总量',
+      '按区域'
+    ]);
+  });
+
+  /**
+   * 页头不用问题原文:部分可答时问句里含缺口指标(ADR-0036),拿它作标题
+   * 等于让页面承诺自己没有的数字。
+   */
+  it('页头不重复页面说明,页面说明只进 meta.description', () => {
+    const document = assembled({
+      pageId: 'ask-transient-header-not-question',
+      description: '最近半年的成交总额和 NPS 走势?',
+      units: [withScope(regionGmvUnit, { groupBy: ['区域'] })],
+      container: 'panel'
+    });
+    expect(JSON.stringify(document.sections)).not.toContain('NPS');
+    expect(document.meta?.description).toBe('最近半年的成交总额和 NPS 走势?');
+  });
+
+  it('任一单元未声明口径时不产出页头:页头内容全部由口径派生', () => {
+    const document = assembled({
+      pageId: 'ask-transient-no-header',
+      description: '问数产生的临时页面态',
+      units: [regionGmvUnit],
+      container: 'panel'
+    });
+    expect(document.sections.map((section) => section.id)).toEqual(['main']);
+  });
+
+  it('各口径组时间窗口不同时页头不写数据窗口', () => {
+    const document = assembled({
+      pageId: 'ask-transient-header-mixed-time',
+      units: [
+        withScope(regionGmvUnit, { groupBy: ['区域'] }),
+        withScope(
+          { ...noInitialRegionUnit, initial: regionGmvUnit.initial },
+          { groupBy: ['区域'], timeRange: '2025-01-01 ~ 2025-06-30' }
+        )
+      ],
+      container: 'panel'
+    });
+    expect(document.sections[0]!.components[0]!.props).toEqual({ title: '销售分析' });
   });
 
   const validCases: Array<{ name: string; input: AssembleTransientPageInput }> = [
@@ -317,9 +404,10 @@ describe('临时页面态装配:口径组作为分区边界(ADR-0055)', () => {
       sectionTitle: '问数结果',
       container: 'panel'
     });
-    expect(document.sections).toHaveLength(1);
-    expect(document.sections[0]).toMatchObject({ id: 'main', title: '问数结果' });
-    expect(document.sections[0]!.components).toHaveLength(2);
+    const sections = contentSections(document);
+    expect(sections).toHaveLength(1);
+    expect(sections[0]).toMatchObject({ id: 'main', title: '问数结果' });
+    expect(sections[0]!.components).toHaveLength(2);
   });
 
   it('跨口径的页面一组一个分区,标题只写各组之间真正不同的口径要素', () => {
@@ -334,17 +422,26 @@ describe('临时页面态装配:口径组作为分区边界(ADR-0055)', () => {
       container: 'panel'
     });
     expect(validate(document)).toEqual([]);
+    const sections = contentSections(document);
     // 三组共用同一业务域、同一时间窗口,标题因此只落在分组维度上。
-    expect(document.sections.map((section) => [section.id, section.title])).toEqual([
+    expect(sections.map((section) => [section.id, section.title])).toEqual([
       ['scope-1', '总量'],
       ['scope-2', '按月份'],
       ['scope-3', '按区域']
     ]);
+    expect(sections.map(boundDataSources)).toEqual([
+      ['gmv-summary'],
+      ['monthly-gmv'],
+      ['region-gmv']
+    ]);
+    // 每个口径组只有一个组件,装箱把它铺满整行。
     expect(
-      document.sections.map((section) => section.components.map((component) => component.data.main))
-    ).toEqual([['gmv-summary'], ['monthly-gmv'], ['region-gmv']]);
+      sections.flatMap((section) =>
+        section.components.map((component) => component.layout.span)
+      )
+    ).toEqual([12, 12, 12]);
     // 分区外观仍由 container 单一声明,逐分区一致(ADR-0038)。
-    expect(document.sections.every((section) => section.container === 'panel')).toBe(true);
+    expect(sections.every((section) => section.container === 'panel')).toBe(true);
   });
 
   it('只有时间窗口不同时,标题写到时间与粒度上', () => {
@@ -359,7 +456,7 @@ describe('临时页面态装配:口径组作为分区边界(ADR-0055)', () => {
       ],
       container: 'panel'
     });
-    expect(document.sections.map((section) => section.title)).toEqual([
+    expect(contentSections(document).map((section) => section.title)).toEqual([
       '按区域 · 2026-01-01 ~ 2026-06-30(月)',
       '按区域 · 2025-01-01 ~ 2025-06-30(月)'
     ]);
@@ -389,7 +486,7 @@ describe('临时页面态装配:口径组作为分区边界(ADR-0055)', () => {
       sectionTitle: '问数结果',
       container: 'panel'
     });
-    expect(document.sections).toHaveLength(1);
+    expect(contentSections(document)).toHaveLength(1);
   });
 
   it('口径组文案是完整口径:分区标题与问数回复共用这一份', () => {

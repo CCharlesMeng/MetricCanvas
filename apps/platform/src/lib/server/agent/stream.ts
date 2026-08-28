@@ -78,6 +78,11 @@ export interface AgentRunStreamOptions {
   /** 关联的分析会话:提供时,通道产生的步骤事件经 persistStepEvent 落库。 */
   sessionId?: string | null;
   persistStepEvent?: (sessionId: string, event: AnalysisStepEvent) => Promise<void>;
+  /**
+   * 运行终态的会话检查点写入。与步骤事件一样,写入失败不得
+   * 掩盖 Agent 本身的终态或中断推送。
+   */
+  persistOutcome?: (sessionId: string, outcome: AgentRunOutcome) => Promise<void>;
   /** 运行结束(任何终态)时回调一次:推送端点用它拼装结果帧。 */
   onOutcome?: (outcome: AgentRunOutcome) => void;
   auditSink?: (audit: AgentRunAudit) => void;
@@ -232,6 +237,13 @@ export async function* streamAgentRun(
         interaction: null,
         failure: null
       };
+    if (sessionId && options.persistOutcome) {
+      try {
+        await options.persistOutcome(sessionId, finalOutcome);
+      } catch {
+        // 检查点持久化是恢复能力,不改写已完成运行的业务结果。
+      }
+    }
     options.onOutcome?.(finalOutcome);
     options.auditSink?.({
       runId: options.runId,

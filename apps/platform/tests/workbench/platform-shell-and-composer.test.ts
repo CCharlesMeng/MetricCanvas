@@ -109,3 +109,22 @@ describe('新建会话的异步边界', () => {
     );
   });
 });
+
+describe('会话检查点恢复与本地编辑', () => {
+  it('回放同时恢复续跑基线、钉住状态和临时页面态', () => {
+    expect(workbenchSource).toContain(
+      'conversationBaseline = replay.baselineMessages ?? []'
+    );
+    expect(workbenchSource).toContain('pins = checkpoint?.pinnedComponents ?? []');
+    expect(workbenchSource).toContain(
+      'if (checkpoint?.document) replaceCurrentDocument(checkpoint.document)'
+    );
+  });
+
+  it('本地有效编辑防抖写检查点,并带期望版本防静默覆盖', () => {
+    expect(workbenchSource).toContain('scheduleCheckpointSave(result.draft.pageDocument)');
+    expect(workbenchSource).toContain('expectedVersion');
+    expect(workbenchSource).toContain('/checkpoint`');
+    expect(workbenchSource).toContain('response.status === 409');
+  });
+});

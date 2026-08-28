@@ -52,6 +52,10 @@ describe('pieOption · compactRing', () => {
       labelLine: { show: true }
     });
   });
+
+  it('普通饼图省略 center，由 ECharts 使用默认中心坐标', () => {
+    expect(series(pieOption(data, props))).not.toHaveProperty('center');
+  });
 });
 
 describe('pieOption · 形态类别色板', () => {

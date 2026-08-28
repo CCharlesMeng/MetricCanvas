@@ -83,12 +83,19 @@ export interface DomainRoutedEvent {
   overriddenByUser: boolean;
 }
 
-/** 指标与维度检索完成:排序候选、选中指标与可能的临时指标。 */
+/** 指标与维度检索完成:排序候选、选用指标与可能的临时指标。 */
 export interface CandidatesRetrievedEvent {
   type: 'candidates_retrieved';
   candidates: readonly MetricCandidate[];
-  /** 选中指标名;检索未命中、改走临时指标时为 null。 */
+  /** 首个选用指标名;检索未命中、改走临时指标时为 null。多单元轮次取 selectedMetrics[0]。 */
   selectedMetric: string | null;
+  /**
+   * 本轮实际选用的全部指标名。一句问题点到多个指标时会成形多个取数单元
+   * (ADR-0055),选用的是各单元指标的并集而不只是主单元的第一个;单值的
+   * selectedMetric 表达不了这件事,候选卡因此会把已被查询的指标显示成未
+   * 选中。消歧未决或检索未命中时为空数组。多单元之前的历史事件缺省。
+   */
+  selectedMetrics?: readonly string[];
   adHocDefinition: AdHocDefinition | null;
 }
 

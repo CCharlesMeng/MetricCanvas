@@ -44,10 +44,13 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     './runner',
     './types'
   ],
-  // 推送端点:HTTP/SSE 传输层;取数核对确认类型来自问数编排(#66)。
+  // 推送端点:HTTP/SSE 传输层;取数核对确认类型来自问数编排(#66),
+  // 终态还会提取结构化问数状态并经页面复验写会话检查点(ADR-0058)。
   'stream-endpoint.ts': [
     '@metriccanvas/page-lifecycle',
+    '../../ask/conversation',
     '../ask/orchestrator',
+    '../session/checkpoint-document',
     '../session/store',
     './abort',
     './run-registry',

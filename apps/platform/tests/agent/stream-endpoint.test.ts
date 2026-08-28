@@ -1,14 +1,21 @@
 import { describe, expect, it } from 'vitest';
 import type { McpClient } from '@metriccanvas/mcp';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+import inlineReport from '../../../../packages/page/fixtures/contract-valid/inline-report.json';
+import { askStateMessage, initialAskState } from '../../src/lib/ask/conversation';
 import { createAgentRunner } from '../../src/lib/server/agent/runner';
 import { createAgentRunRegistry } from '../../src/lib/server/agent/run-registry';
 import {
+  checkpointPageDocument,
   encodeSseFrame,
   handleAgentStreamRequest,
   type AgentStreamServices
 } from '../../src/lib/server/agent/stream-endpoint';
-import type { ModelProvider, ModelResponse } from '../../src/lib/server/agent/types';
+import type {
+  AgentRunner,
+  ModelProvider,
+  ModelResponse
+} from '../../src/lib/server/agent/types';
 import { createMemoryAnalysisSessionStore } from '../../src/lib/server/session/memory';
 import type { AnalysisSessionStore } from '../../src/lib/server/session/store';
 import { createScriptedModelProvider } from '../support/scripted-model-provider';
@@ -111,6 +118,15 @@ function validateThenReply(): ModelResponse[] {
 }
 
 describe('服务端推送端点:SSE 按步骤下发', () => {
+  it('检查点文档区分本轮无新文档与结构化清空', () => {
+    const draft = { id: 'ask-transient-old' };
+    expect(checkpointPageDocument({ id: 'new' }, draft, 'ask-transient-new')).toEqual({
+      id: 'new'
+    });
+    expect(checkpointPageDocument(null, draft, 'ask-transient-old')).toBe(draft);
+    expect(checkpointPageDocument(null, draft, null)).toBeNull();
+  });
+
   it('事件帧按序号下发,结束前追加 outcome 帧(消息、文档与模型描述)', async () => {
     const services = buildServices({
       models: { 'run-1': createScriptedModelProvider(validateThenReply()) },
@@ -156,6 +172,70 @@ describe('服务端推送端点:SSE 按步骤下发', () => {
     });
     const messages = (outcome?.data as { messages: Array<{ role: string }> }).messages;
     expect(messages.at(-1)).toMatchObject({ role: 'assistant' });
+  });
+
+  it('有会话的问数运行在 outcome 前保存最新检查点并回传版本', async () => {
+    const sessions = createMemoryAnalysisSessionStore();
+    const document = {
+      ...structuredClone(inlineReport),
+      id: 'ask-transient-checkpoint'
+    } as Record<string, unknown>;
+    const state = {
+      ...initialAskState(),
+      transientPageId: 'ask-transient-checkpoint'
+    };
+    const runner: AgentRunner = {
+      async *run({ messages }) {
+        yield {
+          type: 'step',
+          event: {
+            type: 'domain_routed',
+            question: '成交总额是多少?',
+            routedDomains: ['运营分析'],
+            overriddenByUser: false
+          }
+        };
+        yield {
+          type: 'completed',
+          messages: [...messages, askStateMessage(state)],
+          document
+        };
+      }
+    };
+    const services: AgentStreamServices = {
+      createRunner: () => runner,
+      sessions,
+      agentRuns: createAgentRunRegistry(),
+      runtimeOrigin: 'http://runtime.local',
+      agentModel: { provider: 'scripted', model: 'ask-scripted' }
+    };
+    const response = await handleAgentStreamRequest({
+      request: agentRequest({
+        runId: 'run-checkpoint',
+        sessionId: 'session-checkpoint',
+        messages: [{ role: 'user', content: '成交总额是多少?' }],
+        pinnedComponents: [{ dataSourceId: 'result', componentType: 'metricCard' }]
+      }),
+      identity: IDENTITY,
+      services,
+      auditSink: () => {}
+    });
+    const frames = parseFrames(await response.text());
+    expect(frames.at(-1)?.data).toMatchObject({
+      status: 'completed',
+      checkpointVersion: 1,
+      document: { id: 'ask-transient-checkpoint' }
+    });
+
+    const stored = await sessions.getSession({ sessionId: 'session-checkpoint' }, IDENTITY);
+    if (!stored.ok) throw new Error(stored.error.message);
+    expect(stored.session.checkpoint).toMatchObject({
+      version: 1,
+      basedOnEventSequence: 1,
+      document: { id: 'ask-transient-checkpoint' },
+      askState: { transientPageId: 'ask-transient-checkpoint' },
+      pinnedComponents: [{ dataSourceId: 'result', componentType: 'metricCard' }]
+    });
   });
 
   it('失败运行:step_failed 按会话落库,outcome 携带归一化错误供重试', async () => {

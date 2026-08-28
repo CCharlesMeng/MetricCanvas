@@ -1,6 +1,8 @@
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+import { parseAskConversation } from '../../ask/conversation';
 import type { AskScopeConfirmation } from '../ask/orchestrator';
 import type { AnalysisSessionStore } from '../session/store';
+import { checkpointDocument } from '../session/checkpoint-document';
 import { anySignal } from './abort';
 import type { AgentRunRegistry } from './run-registry';
 import {
@@ -49,7 +51,7 @@ export interface AgentStreamServices {
     draft?: Record<string, unknown>;
     target?: { sectionId: string; componentId: string };
   }): AgentRunner;
-  sessions: Pick<AnalysisSessionStore, 'appendEvent'>;
+  sessions: Pick<AnalysisSessionStore, 'appendEvent' | 'saveCheckpoint'>;
   agentRuns: AgentRunRegistry;
   runtimeOrigin: string;
   agentModel: { provider: string; model: string };
@@ -109,6 +111,8 @@ export async function handleAgentStreamRequest(
   });
 
   let outcome: AgentRunOutcome | null = null;
+  let latestPersistedEventSequence = 0;
+  let checkpointVersion: number | null = null;
   // 消费方放弃流(ReadableStream cancel)时先中止运行再收尾:否则收尾会
   // 等一个已无人消费、也无人中止的执行。请求断开与取消端点共用同一语义。
   const disconnect = new AbortController();
@@ -119,10 +123,51 @@ export async function handleAgentStreamRequest(
     signal: anySignal([request.signal, registration.signal, disconnect.signal]),
     sessionId,
     persistStepEvent: async (targetSessionId, event) => {
-      await services.sessions.appendEvent(
+      const persisted = await services.sessions.appendEvent(
         { sessionId: targetSessionId, event },
         identity
       );
+      if (persisted.ok) latestPersistedEventSequence = persisted.event.sequence;
+    },
+    persistOutcome: async (targetSessionId, finalOutcome) => {
+      const askState = parseAskConversation(finalOutcome.messages).state;
+      // outcome.document 为 null 时保留请求带入的当前文档:确认续跑、
+      // 失败或只登记缺口的轮次不应把已有临时页面态清空;但状态已显式
+      // 清掉 transientPageId(如删除全部单元)时必须存 null,不能复活旧 draft。
+      const document = checkpointPageDocument(
+        finalOutcome.document,
+        body.draft ?? null,
+        askState.transientPageId
+      );
+      const checked = checkpointDocument(document);
+      if (!checked.ok) return;
+      const saved = await services.sessions.saveCheckpoint(
+        {
+          sessionId: targetSessionId,
+          basedOnEventSequence: latestPersistedEventSequence,
+          runId: body.runId,
+          status: finalOutcome.status,
+          document: checked.document,
+          contentHash: checked.contentHash,
+          askState,
+          pinnedComponents: structuredClone(body.pinnedComponents ?? []),
+          interaction:
+            finalOutcome.interaction === null
+              ? null
+              : structuredClone(finalOutcome.interaction),
+          failure:
+            finalOutcome.failure === null
+              ? null
+              : {
+                  code: finalOutcome.failure.category,
+                  message: finalOutcome.failure.message,
+                  stage: finalOutcome.failure.stage,
+                  retryable: finalOutcome.failure.retryable
+                }
+        },
+        identity
+      );
+      if (saved.ok) checkpointVersion = saved.checkpoint.version;
     },
     onOutcome: (finalOutcome) => {
       outcome = finalOutcome;
@@ -162,7 +207,7 @@ export async function handleAgentStreamRequest(
           encoder.encode(
             encodeSseFrame({
               event: 'outcome',
-              data: JSON.stringify(outcomePayload(outcome, services))
+              data: JSON.stringify(outcomePayload(outcome, services, checkpointVersion))
             })
           )
         );
@@ -188,10 +233,20 @@ export async function handleAgentStreamRequest(
   });
 }
 
+/** 区分“本轮没有新文档”与“结构化状态已清空页面”。 */
+export function checkpointPageDocument(
+  outcomeDocument: Record<string, unknown> | null,
+  requestDraft: Record<string, unknown> | null,
+  transientPageId: string | null
+): Record<string, unknown> | null {
+  return outcomeDocument ?? (transientPageId === null ? null : requestDraft);
+}
+
 /** outcome 帧载荷:与非流式端点的响应同构,供重试、续跑与交互继续。 */
 function outcomePayload(
   outcome: AgentRunOutcome,
-  services: Pick<AgentStreamServices, 'runtimeOrigin' | 'agentModel'>
+  services: Pick<AgentStreamServices, 'runtimeOrigin' | 'agentModel'>,
+  checkpointVersion: number | null = null
 ): Record<string, unknown> {
   return {
     status: outcome.status,
@@ -208,6 +263,7 @@ function outcomePayload(
           }
         }
       : {}),
+    ...(checkpointVersion === null ? {} : { checkpointVersion }),
     runtimeOrigin: services.runtimeOrigin,
     agentModel: services.agentModel
   };

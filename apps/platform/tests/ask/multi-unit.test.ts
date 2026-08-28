@@ -92,14 +92,24 @@ async function runRound(input: {
   return { harness, events, document: document!, baseline: messages };
 }
 
+/** 绑定了页面数据源的组件;页面级页头不承载取数单元,不在这里出现。 */
 function componentsOf(document: Record<string, unknown>): Array<{
   id: string;
   type: string;
   data: { main: string };
   props: Record<string, unknown>;
 }> {
-  const sections = document.sections as Array<{ components: never[] }>;
-  return sections.flatMap((section) => section.components);
+  const sections = document.sections as Array<{
+    components: Array<{ data?: { main: string } }>;
+  }>;
+  return sections.flatMap((section) =>
+    section.components.filter((component) => component.data !== undefined)
+  ) as Array<{
+    id: string;
+    type: string;
+    data: { main: string };
+    props: Record<string, unknown>;
+  }>;
 }
 
 function dataSourceOf(document: Record<string, unknown>, id: string): unknown {
@@ -291,6 +301,46 @@ describe('首轮多单元:一句问题直接铺开多个组件', () => {
     expect(page.harness.executions()).toBe(3);
   });
 
+  it('候选事件报出本轮选用的全部指标:多单元轮次不止主单元那一个', async () => {
+    const untitled = (name: string): AskDataRequestUnitState => ({
+      businessDomain: '客户经营',
+      metrics: [{ kind: 'metric', name }],
+      groupBy: ['统计周期'],
+      filters: [],
+      time: { granularity: 'month', start: '2026-01', end: '2026-06', providedBy: 'user' }
+    });
+    const page = await runRound({
+      runId: 'multi-metric-candidates',
+      question: '2026年上半年每个月的新增客户数、流失客户数和客户留存率走势如何?',
+      route: [{ businessDomains: ['客户经营'] }],
+      unit: [
+        {
+          outcome: 'operations',
+          operations: [
+            { op: 'add', unit: untitled('新增客户数') },
+            { op: 'add', unit: untitled('流失客户数') },
+            { op: 'add', unit: untitled('客户留存率') }
+          ]
+        }
+      ],
+      intent: [{ intent: 'trend' }, { intent: 'trend' }, { intent: 'trend' }]
+    });
+
+    const candidates = stepEvents(page.events).find(
+      (event) => event.type === 'candidates_retrieved'
+    );
+    if (candidates?.type !== 'candidates_retrieved') throw new Error('缺少候选步骤');
+    // 三个指标都真的取了数:只报主单元的第一个会让候选卡把已查过的指标
+    // 显示成未选中。
+    expect(candidates.selectedMetrics).toEqual([
+      '新增客户数',
+      '流失客户数',
+      '客户留存率'
+    ]);
+    // 单值字段是历史兼容读法,取首个选用指标。
+    expect(candidates.selectedMetric).toBe('新增客户数');
+  });
+
   it('单单元轮的缺省标题仍是整句问题(多单元规则不外溢)', async () => {
     const page = await runRound({
       runId: 'first-round-single',
@@ -364,21 +414,33 @@ describe('跨口径页面:口径组作为分区边界(ADR-0055)', () => {
     });
   }
 
-  it('一个口径组一个内容分区,分区标题写出各组的分组维度', async () => {
+  it('页首是页面级页头,其后一个口径组一个内容分区,分区标题写出各组的分组维度', async () => {
     const page = await crossScopeRound();
     const sections = page.document.sections as Array<{
       id: string;
-      title: string;
-      components: Array<{ data: { main: string } }>;
+      title?: string;
+      components: Array<{ type: string; layout: { span: number }; data?: { main: string } }>;
     }>;
     expect(sections.map((section) => [section.id, section.title])).toEqual([
+      ['header', undefined],
       ['scope-1', '总量'],
       ['scope-2', '按统计周期'],
       ['scope-3', '按行业']
     ]);
+    expect(sections[0]!.components.map((component) => component.type)).toEqual([
+      'reportHeader'
+    ]);
     expect(
-      sections.map((section) => section.components.map((component) => component.data.main))
+      sections
+        .slice(1)
+        .map((section) => section.components.map((component) => component.data!.main))
     ).toEqual([['result'], ['result-2'], ['result-3']]);
+    // 每个口径组只有一个组件,分区装箱把它铺满整行,右边缘不再参差。
+    expect(
+      sections.flatMap((section) =>
+        section.components.map((component) => component.layout.span)
+      )
+    ).toEqual([12, 12, 12, 12]);
   });
 
   it('取数核对带上分组维度:否则三张卡除数据源名外逐字相同', async () => {
@@ -429,8 +491,19 @@ describe('跨口径页面:口径组作为分区边界(ADR-0055)', () => {
       ],
       intent: [{ intent: 'comparison' }, { intent: 'comparison' }]
     });
-    const sections = page.document.sections as Array<{ id: string; title: string }>;
-    expect(sections.map((section) => [section.id, section.title])).toEqual([['main', '问数结果']]);
+    const sections = page.document.sections as Array<{
+      id: string;
+      title?: string;
+      components: Array<{ layout: { span: number } }>;
+    }>;
+    expect(sections.map((section) => [section.id, section.title])).toEqual([
+      ['header', undefined],
+      ['main', '问数结果']
+    ]);
+    // 同一分区两张柱状图,比例基线各 6,装箱后各占半栏。
+    expect(sections[1]!.components.map((component) => component.layout.span)).toEqual([
+      6, 6
+    ]);
     const reply = page.events
       .flatMap((event) => (event.type === 'assistant_message' ? [event.message.content] : []))
       .join('\n');

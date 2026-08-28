@@ -81,6 +81,8 @@
       .candidates b { font-size: 12.5px; }
       .candidates small { color: var(--muted); font-size: 11.5px; line-height: 1.5; }
       .candidates input:checked + span b { color: var(--accent); }
+      /* 只读回显的勾是状态标记而非可操作控件：不因 disabled 而灰掉。 */
+      .candidates input[type="checkbox"]:disabled { opacity: 1; accent-color: var(--accent); }
       .scope { padding: 11px 12px; background: #fafafa; border: 1px solid var(--line); border-radius: 11px; }
       .scope.temporary { background: var(--warn-bg); border-color: var(--warn-line); }
       .scope-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; color: #52525b; font-size: 11px; font-weight: 700; letter-spacing: .06em; }
@@ -639,19 +641,24 @@
           <div class="thread">
             ${turns.map((t, i) => `
               <div class="ask-bubble">${esc(t.q)}</div>
-              ${t.candidates.length ? `<div class="candidates"><p>命中 ${t.candidates.length} 个近义指标，口径不同：</p>
-                ${t.candidates.map((c) => `<label><input type="radio" name="cand-${i}" ${c.chosen ? "checked" : ""} />
+              <!--
+                只读回显用 checkbox：一句问题可以点到多个指标，它们各成一个取数单元，
+                选用的可以是多个。radio 的互斥语义只用在真正的消歧（近义指标三选一）上。
+              -->
+              ${t.candidates.length ? `<div class="candidates"><p>命中 ${t.candidates.length} 个候选，勾选为本轮选用：</p>
+                ${t.candidates.map((c) => `<label><input type="checkbox" ${c.chosen ? "checked" : ""} disabled />
                   <span><b>${esc(c.name)}</b><small>${esc(c.note)}</small></span></label>`).join("")}</div>` : ""}
               <div class="reply">
-                <p>${esc(t.a)}</p>
-                <div style="margin-top:10px">${scopeCard(t)}</div>
-                ${t.gap ? `<div style="margin-top:10px">${gapCard(t.gap)}</div>` : ""}
-                <button class="linkish" data-action="toggle-steps" data-idx="${i}" style="margin-top:8px">
+                <!-- 执行过程在答案之上（AI 聊天通行范式：过程在上、答案在下）。 -->
+                <button class="linkish" data-action="toggle-steps" data-idx="${i}">
                   ${ui.openSteps === i ? "收起" : "展开"}执行过程（${t.steps.length} 步）</button>
                 ${ui.openSteps === i ? `<div style="margin-top:8px;padding-top:8px;border-top:1px dashed var(--line)">
                   <ol class="steps">${t.steps.map((s) => `<li><span class="ico">${STEP_ICON[s.k]}</span>
                     <span class="t"><b>${esc(s.label)}</b><small>${esc(s.detail)}</small></span>
                     <span class="ms">${s.ms ? s.ms + "ms" : "—"}</span></li>`).join("")}</ol></div>` : ""}
+                <p style="margin-top:10px">${esc(t.a)}</p>
+                <div style="margin-top:10px">${scopeCard(t)}</div>
+                ${t.gap ? `<div style="margin-top:10px">${gapCard(t.gap)}</div>` : ""}
               </div>`).join("")}
           </div>
           <form class="composer" data-action="ask">

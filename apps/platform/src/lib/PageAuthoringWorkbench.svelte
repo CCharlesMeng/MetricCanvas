@@ -3,6 +3,7 @@
   import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
   import { RuntimeView, type AuthoringIntent } from '@metriccanvas/runtime-ui';
+  import { parseAskConversation } from './ask/conversation';
   import type { AgentMessage } from './server/agent/types';
   import { createPlatformDataGateway } from './platform-data-gateway';
   import type { MetricCandidate } from './server/session/step-event';
@@ -51,6 +52,7 @@
   import PromotePanel from './workbench/PromotePanel.svelte';
   import ScopeCard from './workbench/ScopeCard.svelte';
   import StepTimeline from './workbench/StepTimeline.svelte';
+  import { collapseSteps } from './workbench/step-timeline';
 
   /**
    * 页面搭建工作台(#65):对话轨 + 步骤时间线 + 页面视图。
@@ -81,6 +83,8 @@
   let sessionId = $state<string | null>(null);
   /** 新建会话后使已在途中的旧会话回放结果失效。 */
   let sessionGeneration = 0;
+  /** 最新会话检查点版本;本地编辑以它做乐观并发控制。 */
+  let checkpointVersion = $state(0);
   let runs = $state<WorkbenchRunView[]>([]);
   let conversationBaseline = $state<AgentMessage[]>([]);
   let confirmedPageIds = $state<string[]>([]);
@@ -105,6 +109,15 @@
   let candidateChoices = $state<Record<string, MetricCandidate>>({});
   /** 执行过程展开状态(runId → 是否展开);缺省运行中展开、结束后收起。 */
   let stepsOpen = $state<Record<string, boolean>>({});
+  let checkpointSaveTimer: ReturnType<typeof setTimeout> | null = null;
+  let checkpointSavePromise: Promise<void> | null = null;
+  let pendingCheckpointSave:
+    | {
+        sessionId: string;
+        document: Record<string, unknown>;
+        pinnedComponents: PinnedComponentChoice[];
+      }
+    | null = null;
 
   const dataGateway = createPlatformDataGateway();
 
@@ -193,7 +206,7 @@
     return (
       last !== undefined &&
       last.kind === 'candidates_retrieved' &&
-      last.selectedMetric === null &&
+      last.selectedMetrics.length === 0 &&
       last.candidates.length > 1
     );
   }
@@ -212,13 +225,18 @@
   });
 
   // 刷新后按会话 id 回放全部步骤(#69):URL 携带 session 参数时读取
-  // 落库事件流并物化为只读时间线;他人会话按存储可见性过滤返回 404,
+  // 落库事件流物化时间线,最新检查点恢复临时页面态与续跑基线;
+  // 他人会话按存储可见性过滤返回 404,
   // 静默跳过(不可见与不存在同响应,不提示存在性)。
   onMount(() => {
+    const handlePageHide = () => void flushPendingCheckpointSave(true);
+    window.addEventListener('pagehide', handlePageHide);
     const fromUrl = new URLSearchParams(window.location.search).get('session');
-    if (!fromUrl) return;
-    sessionId = fromUrl;
-    void replayRecordedSession(fromUrl, sessionGeneration);
+    if (fromUrl) {
+      sessionId = fromUrl;
+      void replayRecordedSession(fromUrl, sessionGeneration);
+    }
+    return () => window.removeEventListener('pagehide', handlePageHide);
   });
 
   async function replayRecordedSession(id: string, generation: number) {
@@ -228,7 +246,13 @@
       const payload = (await response.json()) as { session?: RecordedSessionPayload };
       if (!payload.session || payload.session.events.length === 0) return;
       if (generation !== sessionGeneration || sessionId !== id) return;
-      runs = [...runs, sessionReplayView(payload.session)];
+      const replay = sessionReplayView(payload.session);
+      runs = [...runs, replay];
+      conversationBaseline = replay.baselineMessages ?? [];
+      const checkpoint = payload.session.checkpoint ?? null;
+      checkpointVersion = checkpoint?.version ?? 0;
+      pins = checkpoint?.pinnedComponents ?? [];
+      if (checkpoint?.document) replaceCurrentDocument(checkpoint.document);
     } catch {
       // 回放不可用(如会话过保留期)不阻塞新提问。
     }
@@ -274,7 +298,9 @@
   function startNewSession() {
     if (running || savePending) return;
     sessionGeneration += 1;
+    cancelPendingCheckpointSave();
     sessionId = null;
+    checkpointVersion = 0;
     runs = [];
     conversationBaseline = [];
     confirmedPageIds = [];
@@ -307,6 +333,9 @@
     scopeConfirmations?: readonly ScopeCardConfirmationChoice[]
   ) {
     if (running) return;
+    // 先落下本地有效编辑,再让 Agent 以同一份 draft 续跑;避免
+    // 尚在防抖窗口的旧乐观写与运行终态竞态。
+    await flushPendingCheckpointSave();
     saveNotice = '';
     saveError = '';
     cancelRequested = false;
@@ -351,7 +380,20 @@
         } else {
           commit(applyOutcome(view, frame.outcome));
           conversationBaseline = frame.outcome.messages;
-          if (frame.outcome.document) replaceCurrentDocument(frame.outcome.document);
+          if (frame.outcome.checkpointVersion !== null) {
+            checkpointVersion = Math.max(
+              checkpointVersion,
+              frame.outcome.checkpointVersion
+            );
+          }
+          if (frame.outcome.document) {
+            replaceCurrentDocument(frame.outcome.document);
+          } else if (
+            parseAskConversation(frame.outcome.messages).state.transientPageId === null
+          ) {
+            currentDraft = null;
+            selectedComponent = null;
+          }
         }
       }
       if (view.status === 'running') {
@@ -470,9 +512,103 @@
         );
       }
       editError = '';
+      scheduleCheckpointSave(result.draft.pageDocument);
     } else {
       editError = result.message;
     }
+  }
+
+  /** 本地编辑只更新会话检查点,绝不产生页面修订。 */
+  function scheduleCheckpointSave(document: Record<string, unknown>) {
+    if (
+      sessionId === null ||
+      checkpointVersion < 1 ||
+      !workbenchPageViewModel(document).transient
+    ) {
+      return;
+    }
+    pendingCheckpointSave = {
+      sessionId,
+      document: structuredClone(document),
+      pinnedComponents: pins.map((pin) => ({ ...pin }))
+    };
+    if (checkpointSaveTimer !== null) clearTimeout(checkpointSaveTimer);
+    checkpointSaveTimer = setTimeout(() => {
+      checkpointSaveTimer = null;
+      void flushPendingCheckpointSave();
+    }, 600);
+  }
+
+  async function flushPendingCheckpointSave(useKeepalive = false): Promise<void> {
+    if (checkpointSaveTimer !== null) {
+      clearTimeout(checkpointSaveTimer);
+      checkpointSaveTimer = null;
+    }
+    if (checkpointSavePromise !== null) {
+      await checkpointSavePromise;
+      if (pendingCheckpointSave !== null) await flushPendingCheckpointSave(useKeepalive);
+      return;
+    }
+    const pending = pendingCheckpointSave;
+    pendingCheckpointSave = null;
+    if (
+      pending === null ||
+      pending.sessionId !== sessionId ||
+      checkpointVersion < 1
+    ) {
+      return;
+    }
+    const expectedVersion = checkpointVersion;
+    const requestBody = JSON.stringify({
+      expectedVersion,
+      document: pending.document,
+      pinnedComponents: pending.pinnedComponents
+    });
+    checkpointSavePromise = (async () => {
+      try {
+        const response = await fetch(
+          `/api/sessions/${encodeURIComponent(pending.sessionId)}/checkpoint`,
+          {
+            method: 'PUT',
+            headers: { 'content-type': 'application/json' },
+            // Fetch keepalive 有约 64 KiB 的请求体上限;大页面在正常
+            // 编辑时仍能保存,只对卸载时的小请求启用它。
+            keepalive: useKeepalive && new Blob([requestBody]).size <= 60_000,
+            body: requestBody
+          }
+        );
+        const payload = (await response.json()) as {
+          checkpoint?: { version?: number };
+          error?: { code?: string; message?: string; currentCheckpointVersion?: number };
+        };
+        if (!response.ok || typeof payload.checkpoint?.version !== 'number') {
+          if (response.status === 409) {
+            editError =
+              '这个会话已在另一个标签页中更新;当前改动未覆盖对方,请刷新后再编辑。';
+            return;
+          }
+          throw new Error(payload.error?.message ?? `临时页面态保存失败:${response.status}`);
+        }
+        if (pending.sessionId === sessionId) {
+          checkpointVersion = Math.max(checkpointVersion, payload.checkpoint.version);
+        }
+      } catch (cause) {
+        // 不阻断当前编辑;文档仍在浏览器内,下一次编辑或运行可重试。
+        editError = cause instanceof Error ? cause.message : String(cause);
+      }
+    })();
+    try {
+      await checkpointSavePromise;
+    } finally {
+      checkpointSavePromise = null;
+    }
+    if (pendingCheckpointSave !== null) await flushPendingCheckpointSave(useKeepalive);
+  }
+
+  function cancelPendingCheckpointSave() {
+    if (checkpointSaveTimer !== null) clearTimeout(checkpointSaveTimer);
+    checkpointSaveTimer = null;
+    pendingCheckpointSave = null;
   }
 
   /** 画布创作意图分发:选中进检查器,重排与标题/宽度编辑走本地文档改写。 */
@@ -638,8 +774,12 @@
           </p>
           <div class="suggestions">
             {#each SUGGESTED_QUESTIONS as suggestion (suggestion.question)}
-              <button type="button" onclick={() => askSuggestion(suggestion.question)}>
-                {suggestion.question}
+              <button
+                type="button"
+                title={suggestion.question}
+                onclick={() => askSuggestion(suggestion.question)}
+              >
+                {suggestion.label ?? suggestion.question}
               </button>
             {/each}
           </div>
@@ -654,6 +794,25 @@
         {/if}
 
         <div class="reply">
+          <!--
+            执行过程紧贴在提问之后:AI 聊天的通行范式是「过程在上、答案在下」,
+            运行中自动展开供人看着推进,结束后自动收起把版面还给答案
+            (stepsExpanded 的缺省即此)。过程排在答案之后会让人先读到结论、
+            再回头找它是怎么来的,顺序与阅读顺序相反。
+          -->
+          {#if run.steps.length > 0}
+            <div class="timeline">
+              <button type="button" class="linkish" onclick={() => toggleSteps(run)}>
+                {stepsExpanded(run) ? '收起' : '展开'}执行过程({collapseSteps(run.steps).length} 步)
+              </button>
+              {#if stepsExpanded(run)}
+                <div class="steps-wrap" in:fade={{ duration: 160 }}>
+                  <StepTimeline steps={run.steps} />
+                </div>
+              {/if}
+            </div>
+          {/if}
+
           {#each candidateSteps(run) as candidateStep, candidateIndex (candidateIndex)}
             {#if candidateStep.kind === 'candidates_retrieved' && candidateStep.candidates.length > 0}
               {@const selectable =
@@ -664,7 +823,7 @@
               <div in:fly={{ y: 8, duration: 240 }}>
                 <CandidatesCard
                   candidates={candidateStep.candidates}
-                  selectedMetric={candidateStep.selectedMetric}
+                  selectedMetrics={candidateStep.selectedMetrics}
                   {selectable}
                   chosen={candidateChoices[run.runId] ?? null}
                   onselect={(candidate) =>
@@ -689,19 +848,6 @@
                 : undefined}
             />
           {/each}
-
-          {#if run.steps.length > 0}
-            <div class="timeline">
-              <button type="button" class="linkish" onclick={() => toggleSteps(run)}>
-                {stepsExpanded(run) ? '收起' : '展开'}执行过程({run.steps.length} 步)
-              </button>
-              {#if stepsExpanded(run)}
-                <div class="steps-wrap" in:fade={{ duration: 160 }}>
-                  <StepTimeline steps={run.steps} />
-                </div>
-              {/if}
-            </div>
-          {/if}
 
           {#if run.status === 'running'}
             <p class="run-state running-state" in:fade={{ duration: 180 }}>

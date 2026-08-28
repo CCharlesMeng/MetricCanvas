@@ -199,6 +199,43 @@ describe('工作台运行状态机:编排步骤时间线', () => {
     ]);
   });
 
+  it('候选步骤读出本轮选用的全部指标;历史单值事件按单元素集合兼容', () => {
+    const candidates = [
+      { metricName: 'Tokens消耗量', businessDomain: '运营分析', definitionDifference: null },
+      { metricName: '计费Tokens量', businessDomain: '运营分析', definitionDifference: null },
+      { metricName: 'Tokens请求量', businessDomain: '运营分析', definitionDifference: null }
+    ];
+    const multi = applyStreamEvent(createRunView({ runId: 'run-1', question: '三个指标走势' }), {
+      type: 'candidates_retrieved',
+      candidates,
+      selectedMetric: 'Tokens消耗量',
+      selectedMetrics: ['Tokens消耗量', '计费Tokens量', 'Tokens请求量'],
+      adHocDefinition: null
+    });
+    expect(multi.steps[0]).toMatchObject({
+      kind: 'candidates_retrieved',
+      selectedMetrics: ['Tokens消耗量', '计费Tokens量', 'Tokens请求量']
+    });
+
+    // 多单元之前落库的事件只有单值字段。
+    const legacy = applyStreamEvent(createRunView({ runId: 'run-2', question: '单指标走势' }), {
+      type: 'candidates_retrieved',
+      candidates,
+      selectedMetric: 'Tokens消耗量',
+      adHocDefinition: null
+    });
+    expect(legacy.steps[0]).toMatchObject({ selectedMetrics: ['Tokens消耗量'] });
+
+    // 消歧未决:不替用户选,选用集合为空。
+    const ambiguous = applyStreamEvent(createRunView({ runId: 'run-3', question: '客户数' }), {
+      type: 'candidates_retrieved',
+      candidates,
+      selectedMetric: null,
+      adHocDefinition: null
+    });
+    expect(ambiguous.steps[0]).toMatchObject({ selectedMetrics: [] });
+  });
+
   it('assistant_replied 追加为对话回复', () => {
     const view = replay(createRunView({ runId: 'run-1', question: null }), [
       { type: 'assistant_replied', content: '已生成页面。' },
@@ -291,7 +328,8 @@ describe('工作台运行状态机:取数核对与阻塞确认', () => {
       messages: [],
       document: null,
       interaction: { id: 'confirm-scope:1', kind: 'confirm_scope', payload: {} },
-      error: null
+      error: null,
+      checkpointVersion: null
     });
     expect(awaitingScopeConfirmation(view)).toBe(true);
   });
@@ -337,7 +375,8 @@ describe('工作台运行状态机:终态', () => {
       ],
       document: { schemaVersion: '5.0', id: 'sales-overview' },
       interaction: null,
-      error: null
+      error: null,
+      checkpointVersion: null
     };
     view = applyOutcome(view, outcome);
     expect(view.status).toBe('completed');
@@ -352,6 +391,7 @@ describe('工作台运行状态机:终态', () => {
       messages: [],
       document: null,
       interaction: null,
+      checkpointVersion: null,
       error: {
         code: 'USAGE_LIMIT_EXCEEDED',
         message: '用量超限',

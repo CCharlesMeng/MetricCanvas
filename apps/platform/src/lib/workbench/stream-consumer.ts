@@ -34,6 +34,8 @@ export interface AgentRunOutcomeFrame {
   document: Record<string, unknown> | null;
   interaction: AgentInteraction | null;
   error: AgentRunOutcomeError | null;
+  /** 服务端已保存的会话检查点版本;未开启会话或写入失败时为 null。 */
+  checkpointVersion: number | null;
 }
 
 export type AgentStreamFrame =
@@ -212,7 +214,11 @@ function parseOutcome(data: unknown): AgentRunOutcomeFrame {
     messages: data.messages as AgentMessage[],
     document: isRecord(data.document) ? data.document : null,
     interaction: parseInteraction(data.interaction),
-    error: parseOutcomeError(data.error)
+    error: parseOutcomeError(data.error),
+    checkpointVersion:
+      Number.isInteger(data.checkpointVersion) && (data.checkpointVersion as number) >= 1
+        ? (data.checkpointVersion as number)
+        : null
   };
 }
 

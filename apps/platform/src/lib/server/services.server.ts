@@ -103,10 +103,18 @@ export interface PlatformServices {
 const serviceCache = globalThis as typeof globalThis & {
   __metricCanvasPlatformServicesPromise?: Promise<PlatformServices>;
   __metricCanvasPlatformSeedSignature?: string;
+  __metricCanvasPlatformModuleEpoch?: number;
 };
 
+/**
+ * 本次模块执行的纪元号。dev 下改了任何服务端代码,Vite 会重新执行本模块与
+ * 它的依赖,于是这个常量拿到一个新值——比对 globalThis 上记的值即可判出
+ * 「缓存实例来自上一份代码」。生产只执行一次,恒等。
+ */
+const moduleEpoch = Date.now();
+
 export function getPlatformServices(): Promise<PlatformServices> {
-  discardServicesOnSeedChange();
+  discardStaleServices();
   serviceCache.__metricCanvasPlatformServicesPromise ??= createServices().catch((cause) => {
     serviceCache.__metricCanvasPlatformServicesPromise = undefined;
     throw cause;
@@ -115,15 +123,27 @@ export function getPlatformServices(): Promise<PlatformServices> {
 }
 
 /**
- * offline 播种只发生在服务实例创建的那一刻,而实例缓存挂在 globalThis 上,
- * 模块被 dev 重新执行也活着。种子指纹变了就丢弃实例重新播种,否则改了页面
- * JSON 仍然只能读到进程启动那一刻的快照。代价是内存态(会话、草稿、进行中
- * 的 Agent 运行)随之清空,只在 dev 的 offline 档位付这个代价。
+ * 实例缓存挂在 globalThis 上,模块被 dev 重新执行也活着——这保住了内存态,
+ * 但也让缓存实例的闭包一直指着旧代码。两种情形必须丢弃重建:
+ *
+ * - **服务端代码改动**(dev):模块重新执行即纪元号变化。缓存实例是在上一份
+ *   代码里构造的,它闭包里的编排、端口与模型全是旧的;不丢弃就会出现「改完
+ *   代码、页面刷新过、行为却没变」——排查时几乎无从下手,因为源码是新的。
+ * - **offline 种子变化**(dev + offline):播种只发生在实例创建那一刻,种子
+ *   指纹变了不重建就只能读到进程启动那一刻的页面快照。
+ *
+ * 两者的代价相同:内存态(会话、草稿、进行中的 Agent 运行)随之清空。这个
+ * 代价只在 dev 付,且比跑着旧代码便宜。
  */
-function discardServicesOnSeedChange(): void {
-  if (!import.meta.env.DEV || env.METRICCANVAS_OFFLINE !== '1') return;
-  if (serviceCache.__metricCanvasPlatformSeedSignature === seedSignature) return;
+function discardStaleServices(): void {
+  if (!import.meta.env.DEV) return;
+  const seedChanged =
+    env.METRICCANVAS_OFFLINE === '1' &&
+    serviceCache.__metricCanvasPlatformSeedSignature !== seedSignature;
+  const codeChanged = serviceCache.__metricCanvasPlatformModuleEpoch !== moduleEpoch;
+  if (!seedChanged && !codeChanged) return;
   serviceCache.__metricCanvasPlatformSeedSignature = seedSignature;
+  serviceCache.__metricCanvasPlatformModuleEpoch = moduleEpoch;
   serviceCache.__metricCanvasPlatformServicesPromise = undefined;
 }
 
@@ -169,7 +189,8 @@ async function createServices(): Promise<PlatformServices> {
   const templates = offline
     ? createMemoryTemplateLibrary(templateOptions)
     : await createPostgresTemplateLibrary({ ...templateOptions, databaseUrl });
-  // 分析会话轻量落库(ADR-0030)。本轮只有内存实现,offline 与 postgres 两种
+  // 分析会话事件 + 最新检查点(ADR-0030/0058)。本轮只有内存实现,
+  // offline 与 postgres 两种
   // 模式都用它;PostgreSQL 实现等 #52 的版本化迁移接入(不引入启动期建表),
   // 届时按 databaseUrl 分支并复用同一份契约测试。
   const sessions = createMemoryAnalysisSessionStore();

@@ -15,6 +15,7 @@ import {
   type ComponentCandidate,
   type ResultShape
 } from './auto-visualize';
+import { packSectionSpans } from './section-layout';
 
 /**
  * 临时页面态装配（创作期）：由若干经真实执行的取数单元与组件选择产出
@@ -95,6 +96,14 @@ export interface TransientPageComponent {
   props: Record<string, unknown>;
 }
 
+/** 页面级页头：不承载任何取数单元，因此没有数据槽。 */
+export interface TransientPageHeader {
+  id: string;
+  type: 'reportHeader';
+  layout: { span: number };
+  props: { title: string; asOf?: { label: string; value: string } };
+}
+
 /**
  * 临时页面态：Schema 5.0 文档态页面，内嵌初始行保持 DQE 原始输出字段名，
  * 由统一运行时直接解析渲染。装配出口已整体通过 validate()。
@@ -109,7 +118,7 @@ export interface TransientPageDocument {
     id: string;
     title?: string;
     container?: SectionContainer;
-    components: TransientPageComponent[];
+    components: Array<TransientPageComponent | TransientPageHeader>;
   }>;
 }
 
@@ -237,11 +246,19 @@ export function scopeGroupsOfUnits(
 }
 
 /**
- * 按口径组划分内容分区（ADR-0055）。页面收敛为单个口径组时仍是单个分区、
- * 标题用调用方给的 sectionTitle，不给口径一致的页面引入多余结构；任一单元
- * 未声明口径时整体退回这条路径。
+ * 按口径组划分内容分区（ADR-0055），并在页首产出页面级页头。页面收敛为
+ * 单个口径组时内容仍是单个分区、标题用调用方给的 sectionTitle，不给口径
+ * 一致的页面引入多余结构；任一单元未声明口径时整体退回这条路径。
  */
 function sectionsOf(
+  units: readonly ExecutedDataRequestUnit[],
+  components: readonly TransientPageComponent[],
+  input: AssembleTransientPageInput
+): TransientPageDocument['sections'] {
+  return [...headerSectionsOf(units), ...contentSectionsOf(units, components, input)];
+}
+
+function contentSectionsOf(
   units: readonly ExecutedDataRequestUnit[],
   components: readonly TransientPageComponent[],
   input: AssembleTransientPageInput
@@ -254,7 +271,7 @@ function sectionsOf(
         id: 'main',
         ...(input.sectionTitle === undefined ? {} : { title: input.sectionTitle }),
         ...container,
-        components: [...components]
+        components: laidOut(components)
       }
     ];
   }
@@ -263,10 +280,72 @@ function sectionsOf(
     id: `scope-${index + 1}`,
     title: titles[index]!,
     ...container,
-    components: group.dataSourceIds.flatMap((dataSourceId) =>
-      components.filter((component) => component.data.main === dataSourceId)
+    components: laidOut(
+      group.dataSourceIds.flatMap((dataSourceId) =>
+        components.filter((component) => component.data.main === dataSourceId)
+      )
     )
   }));
+}
+
+/**
+ * 分区内的宽度装箱。组件构造时写下的 span 只是目录 defaultSpan，在这里被
+ * 当作比例基线换算成实际宽度，让每个视觉行占满整行（见 section-layout）。
+ */
+function laidOut(
+  components: readonly TransientPageComponent[]
+): TransientPageComponent[] {
+  const spans = packSectionSpans(components.map((component) => component.layout.span));
+  return components.map((component, index) => ({
+    ...component,
+    layout: { span: spans[index]! }
+  }));
+}
+
+/**
+ * 页面级页头：这一页覆盖哪个业务域、哪个时间窗口，此前这两件事在页面文档
+ * 里一个字都没有——时间窗口被分区标题按「全页共用即为噪声」剔掉，只留在
+ * 取数核对与助手回复里。判据与 ADR-0055 让口径差异落进页面文档自己的那条
+ * 相同：页面会被沉淀、被分享、在别的宿主里打开，只有写在文档里的事实才
+ * 跟着走。
+ *
+ * 页头内容全部由口径派生，因此任一单元缺口径时不产出页头。**不用问题原文
+ * 当标题**：部分可答时问句里含缺口指标（ADR-0036），拿它作页面标题等于让
+ * 页面承诺自己没有的数字。
+ *
+ * 页头不承载任何取数单元，因此不经组件推荐的硬闸——硬闸回答的是「哪个组件
+ * 能承载这个单元的结果」，页头不是任何单元的呈现。
+ */
+function headerSectionsOf(
+  units: readonly ExecutedDataRequestUnit[]
+): TransientPageDocument['sections'] {
+  const scopes: DataRequestUnitScope[] = [];
+  for (const unit of units) {
+    if (unit.scope === undefined) return [];
+    scopes.push(unit.scope);
+  }
+  if (scopes.length === 0) return [];
+  const title = [...new Set(scopes.map((scope) => scope.businessDomain))].join('、');
+  const windows = new Set(scopes.map(timeLabel));
+  return [
+    {
+      id: 'header',
+      container: 'plain',
+      components: [
+        {
+          id: 'page-header',
+          type: 'reportHeader',
+          layout: { span: componentCatalogEntry('reportHeader').defaultSpan },
+          props: {
+            title,
+            ...(windows.size === 1
+              ? { asOf: { label: '数据窗口', value: [...windows][0]! } }
+              : {})
+          }
+        }
+      ]
+    }
+  ];
 }
 
 /** 口径判等：分组维度与筛选按组合判等，声明顺序不同不构成两个口径组。 */
@@ -415,7 +494,8 @@ function labelOf(field: NamedField): string {
 
 /**
  * 按组件选择构造组件声明。字段绑定按结果字段契约的声明顺序确定，
- * 默认宽度取组件能力目录的 defaultSpan，可见标题统一走 props.title。
+ * 宽度先写下组件能力目录的 defaultSpan 作为比例基线（实际宽度由分区装箱
+ * 换算，见 laidOut），可见标题统一走 props.title。
  * 这里只覆盖硬闸机器判读放行的组件类型；判读收紧过的可选语义
  * （变化值、徽标、说明等）一律不自动绑定，避免猜测字段语义。
  */

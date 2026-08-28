@@ -476,7 +476,7 @@ async function* orchestrate(
         '拆分 = modify 原单元只保留部分指标 + add 新单元承载其余;增加 = add;删除 = remove。'
     ]);
     if (isEmptyStructuralResponse(decision)) {
-      yield step(candidatesEvent(candidates, null, null));
+      yield step(candidatesEvent(candidates, [], null));
       yield step({
         type: 'step_failed',
         stage: 'generation',
@@ -492,7 +492,7 @@ async function* orchestrate(
     }
   }
   if (decision.outcome === 'out_of_scope') {
-    yield step(candidatesEvent(candidates, null, null));
+    yield step(candidatesEvent(candidates, [], null));
     yield step({
       type: 'step_failed',
       stage: 'discovery',
@@ -578,7 +578,7 @@ async function* orchestrate(
 
   if (entries.length === 0) {
     // 操作集删光了全部单元:如实收束,没有可呈现的内容。
-    yield step(candidatesEvent(candidates, null, null));
+    yield step(candidatesEvent(candidates, [], null));
     yield assistant('已按要求删除全部取数单元;当前没有可呈现的内容,请提出新的问题。');
     yield completed({ ...nextState, units: [], transientPageId: null }, null);
     return;
@@ -593,16 +593,21 @@ async function* orchestrate(
   const primaryEntry =
     entries.find((entry) => entry.dataSourceId === touched[0]) ?? entries[0]!;
   const adHocOfPrimary = adHocDefinitionOf(primaryEntry.unit);
+  const touchedEntries = entries.filter((entry) => touched.includes(entry.dataSourceId));
+  // 选用指标是被触及单元指标的并集:一句问题点到多个指标时它们各成一个
+  // 单元(ADR-0055),只报主单元的第一个会让候选卡把已查过的指标显示成未
+  // 选中。消歧未决时不报选用——系统不替用户选(ADR-0037)。
   yield step(
     candidatesEvent(
       candidates,
-      ambiguousTerms.length > 0 ? null : firstMetricName(primaryEntry.unit),
+      ambiguousTerms.length > 0
+        ? []
+        : dedupe(touchedEntries.flatMap((entry) => metricNamesOf(entry.unit))),
       adHocOfPrimary
     )
   );
 
   /* ---------- 取数核对:触发条件阻塞,其余直接执行(ADR-0037) ---------- */
-  const touchedEntries = entries.filter((entry) => touched.includes(entry.dataSourceId));
   const reasons: ScopeBlockReason[] = [];
   if (ambiguousTerms.length > 0) reasons.push('ambiguous_metric');
   if (touchedEntries.some((entry) => adHocDefinitionOf(entry.unit) !== null)) {
@@ -946,18 +951,20 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
 
   const entryOf = (dataSourceId: string): AskUnitEntryState | undefined =>
     entries.find((entry) => entry.dataSourceId === dataSourceId);
+  // 页面级页头不承载取数单元、不绑数据源,不进 DocumentReadyEvent 的组件清单。
   const components = assembly.document.sections.flatMap((section) =>
-    section.components.map((component) => {
+    section.components.flatMap((component) => {
+      if (!('data' in component)) return [];
       const owner = entryOf(component.data.main);
       const pinned = owner === undefined ? undefined : pinnedTypeOf(owner);
-      return {
+      return [{
         componentType: component.type,
         pinnedByUser: pinned !== undefined && component.type === pinned,
         dataSourceId: component.data.main,
         ...(owner === undefined
           ? {}
           : { intent: owner.intent ?? defaultIntent(owner.unit) })
-      };
+      }];
     })
   );
   const primaryEntry =
@@ -1325,13 +1332,14 @@ function targetUnitIdOf(
 
 function candidatesEvent(
   candidates: readonly RankedMetricCandidate[],
-  selectedMetric: string | null,
+  selectedMetrics: readonly string[],
   adHocDefinition: { formula: string; description: string | null } | null
 ): AnalysisStepEvent {
   return {
     type: 'candidates_retrieved',
     candidates: candidates.map(toMetricCandidate),
-    selectedMetric,
+    selectedMetric: selectedMetrics[0] ?? null,
+    selectedMetrics,
     adHocDefinition
   };
 }
@@ -1464,6 +1472,11 @@ function firstMetricName(unit: AskDataRequestUnitState): string | null {
     (entry): entry is Extract<typeof entry, { kind: 'metric' }> => entry.kind === 'metric'
   );
   return metric?.name ?? null;
+}
+
+/** 单元引用的已定义指标名(临时指标以 adHocDefinition 单独承载,不在此列)。 */
+function metricNamesOf(unit: AskDataRequestUnitState): string[] {
+  return unit.metrics.flatMap((entry) => (entry.kind === 'metric' ? [entry.name] : []));
 }
 
 /**

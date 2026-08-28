@@ -62,7 +62,8 @@ export type RunStep =
   | {
       kind: 'candidates_retrieved';
       candidates: readonly MetricCandidate[];
-      selectedMetric: string | null;
+      /** 本轮选用的全部指标名(多单元轮次是各单元指标的并集);消歧未决时为空。 */
+      selectedMetrics: readonly string[];
       adHocDefinition: AdHocDefinition | null;
     }
   | { kind: 'scope_card'; card: ScopeCardView }
@@ -162,7 +163,10 @@ export function applyStreamEvent(
       return appendStep(view, {
         kind: 'candidates_retrieved',
         candidates: event.candidates,
-        selectedMetric: event.selectedMetric,
+        // 多单元之前的历史事件只有单值 selectedMetric,按单元素集合读取。
+        selectedMetrics:
+          event.selectedMetrics ??
+          (event.selectedMetric === null ? [] : [event.selectedMetric]),
         adHocDefinition: event.adHocDefinition
       });
     case 'scope_card_presented':

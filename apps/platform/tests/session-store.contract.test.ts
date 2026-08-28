@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+import { initialAskState } from '../src/lib/ask/conversation';
 import { createMemoryAnalysisSessionStore } from '../src/lib/server/session/memory';
 import {
   SESSION_RETENTION_MS,
@@ -54,6 +55,26 @@ function routed(question: string): AnalysisStepEvent {
     question,
     routedDomains: ['运营分析'],
     overriddenByUser: false
+  };
+}
+
+function checkpointCommand(input: {
+  sessionId: string;
+  runId: string;
+  basedOnEventSequence: number;
+  document?: Record<string, unknown> | null;
+}) {
+  return {
+    sessionId: input.sessionId,
+    runId: input.runId,
+    basedOnEventSequence: input.basedOnEventSequence,
+    status: 'completed' as const,
+    document: input.document ?? { id: 'ask-transient-test' },
+    contentHash: `hash:${input.runId}`,
+    askState: { ...initialAskState(), transientPageId: 'ask-transient-test' },
+    pinnedComponents: [{ dataSourceId: 'result', componentType: 'barChart' }],
+    interaction: null,
+    failure: null
   };
 }
 
@@ -163,6 +184,140 @@ export function runAnalysisSessionStoreContract(harness: AnalysisSessionStoreHar
           entry.event.type === 'step_failed' ? entry.event.stage : null
         )
       ).toEqual([...FAILURE_STAGES]);
+    });
+
+    it('最新检查点恢复文档、结构化续跑状态与钉住结果', async () => {
+      const clock = testClock('2026-08-01T00:00:00Z');
+      const store = await harness.create({ clock });
+      await store.appendEvent({ sessionId: 'checkpoint', event: routed('q1') }, developerOne);
+      const input = checkpointCommand({
+        sessionId: 'checkpoint',
+        runId: 'run-1',
+        basedOnEventSequence: 1
+      });
+      const saved = await store.saveCheckpoint(input, developerOne);
+      expect(saved.ok).toBe(true);
+      if (!saved.ok) throw new Error(saved.error.message);
+      expect(saved.checkpoint.version).toBe(1);
+
+      // 入库与读取均返回隔离副本。
+      input.document!.id = 'mutated-outside';
+      saved.checkpoint.document!.id = 'mutated-result';
+      const restored = await store.getSession({ sessionId: 'checkpoint' }, developerOne);
+      if (!restored.ok) throw new Error(restored.error.message);
+      expect(restored.session.checkpoint).toMatchObject({
+        version: 1,
+        basedOnEventSequence: 1,
+        runId: 'run-1',
+        document: { id: 'ask-transient-test' },
+        askState: { transientPageId: 'ask-transient-test' },
+        pinnedComponents: [{ dataSourceId: 'result', componentType: 'barChart' }]
+      });
+    });
+
+    it('检查点终态写幂等,慢运行不得覆盖已观察到更新事件的结果', async () => {
+      const clock = testClock('2026-08-01T00:00:00Z');
+      const store = await harness.create({ clock });
+      await store.appendEvent({ sessionId: 'ordered', event: routed('q1') }, developerOne);
+      const firstCommand = checkpointCommand({
+        sessionId: 'ordered',
+        runId: 'run-1',
+        basedOnEventSequence: 1
+      });
+      const first = await store.saveCheckpoint(firstCommand, developerOne);
+      const replayed = await store.saveCheckpoint(firstCommand, developerOne);
+      expect(first.ok && replayed.ok && replayed.checkpoint.version).toBe(1);
+
+      await store.appendEvent(
+        {
+          sessionId: 'ordered',
+          event: { type: 'step_failed', stage: 'execution', code: 'E', message: 'newer' }
+        },
+        developerOne
+      );
+      const newer = await store.saveCheckpoint(
+        checkpointCommand({
+          sessionId: 'ordered',
+          runId: 'run-2',
+          basedOnEventSequence: 2,
+          document: { id: 'newer' }
+        }),
+        developerOne
+      );
+      expect(newer.ok && newer.checkpoint.version).toBe(2);
+
+      const stale = await store.saveCheckpoint(
+        checkpointCommand({
+          sessionId: 'ordered',
+          runId: 'slow-run',
+          basedOnEventSequence: 1,
+          document: { id: 'stale' }
+        }),
+        developerOne
+      );
+      expect(stale).toEqual({
+        ok: false,
+        error: {
+          code: 'SESSION_CHECKPOINT_STALE',
+          message: expect.any(String),
+          currentCheckpointVersion: 2
+        }
+      });
+    });
+
+    it('本地文档编辑使用检查点版本 CAS,他人和过期版本都不能覆盖', async () => {
+      const clock = testClock('2026-08-01T00:00:00Z');
+      const store = await harness.create({ clock });
+      await store.appendEvent({ sessionId: 'editable', event: routed('q1') }, developerOne);
+      await store.saveCheckpoint(
+        checkpointCommand({ sessionId: 'editable', runId: 'run-1', basedOnEventSequence: 1 }),
+        developerOne
+      );
+      const updated = await store.updateCheckpoint(
+        {
+          sessionId: 'editable',
+          expectedVersion: 1,
+          document: { id: 'edited' },
+          contentHash: 'hash:edited',
+          pinnedComponents: [{ dataSourceId: 'result', componentType: 'lineChart' }]
+        },
+        developerOne
+      );
+      expect(updated.ok && updated.checkpoint).toMatchObject({
+        version: 2,
+        document: { id: 'edited' },
+        pinnedComponents: [{ dataSourceId: 'result', componentType: 'lineChart' }]
+      });
+
+      const stale = await store.updateCheckpoint(
+        {
+          sessionId: 'editable',
+          expectedVersion: 1,
+          document: { id: 'overwritten' },
+          contentHash: 'hash:overwritten',
+          pinnedComponents: []
+        },
+        developerOne
+      );
+      expect(stale.ok).toBe(false);
+      if (stale.ok) throw new Error('expected stale checkpoint');
+      expect(stale.error).toMatchObject({
+        code: 'SESSION_CHECKPOINT_STALE',
+        currentCheckpointVersion: 2
+      });
+      const other = await store.updateCheckpoint(
+        {
+          sessionId: 'editable',
+          expectedVersion: 2,
+          document: { id: 'other-user' },
+          contentHash: 'hash:other-user',
+          pinnedComponents: []
+        },
+        developerTwo
+      );
+      expect(other.ok).toBe(false);
+      if (other.ok) throw new Error('expected actor mismatch');
+      expect(other.error.code).toBe('SESSION_ACTOR_MISMATCH');
     });
 
     it('换用户读不到他人会话:不可见与不存在同响应', async () => {
@@ -277,6 +432,26 @@ export function runAnalysisSessionStoreContract(harness: AnalysisSessionStoreHar
       clock.advanceMs(sixtyDaysMs);
       const result = await store.getSession({ sessionId: 'active' }, developerOne);
       expect(result.ok).toBe(true);
+    });
+
+    it('有效检查点写入也会延长会话活跃期,单纯读取不会', async () => {
+      const clock = testClock('2026-08-01T00:00:00Z');
+      const store = await harness.create({ clock });
+      const sixtyDaysMs = 60 * 24 * 60 * 60 * 1000;
+      await store.appendEvent({ sessionId: 'draft-active', event: routed('q1') }, developerOne);
+      clock.advanceMs(sixtyDaysMs);
+      await store.saveCheckpoint(
+        checkpointCommand({
+          sessionId: 'draft-active',
+          runId: 'run-1',
+          basedOnEventSequence: 1
+        }),
+        developerOne
+      );
+      clock.advanceMs(sixtyDaysMs);
+      expect((await store.getSession({ sessionId: 'draft-active' }, developerOne)).ok).toBe(true);
+      clock.advanceMs(30 * 24 * 60 * 60 * 1000 + 1);
+      expect((await store.getSession({ sessionId: 'draft-active' }, developerOne)).ok).toBe(false);
     });
 
     it('过期清理按注入时钟可复现,并返回删除数量', async () => {

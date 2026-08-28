@@ -1,13 +1,19 @@
 <script lang="ts">
   import { fly } from 'svelte/transition';
   import type { RunStep } from './run-state';
+  import { collapseSteps } from './step-timeline';
 
   /**
    * 步骤时间线:按到达顺序展开一次运行的编排步骤(ADR-0037:路由 →
    * 候选 → 取数核对 → 真实执行 → 结果就绪 → 文档就绪)与工具调用进度。
    * 工具调用呈现名称与进行中 / 成功 / 失败状态,失败附稳定错误码。
+   *
+   * 多单元轮次里按单元重复的三类步骤折成一条呈现(./step-timeline.ts),
+   * 折叠后的条目在标题上标出单元数。
    */
   let { steps }: { steps: RunStep[] } = $props();
+
+  const entries = $derived(collapseSteps(steps));
 
   const INTENT_LABELS: Record<string, string> = {
     comparison: '对比',
@@ -52,7 +58,8 @@
 </script>
 
 <ol class="steps">
-  {#each steps as step, index (index)}
+  {#each entries as entry, index (index)}
+    {@const step = entry.head}
     <li
       in:fly={{ y: 6, duration: 220 }}
       class:failed={step.kind === 'step_failed' || (step.kind === 'tool_call' && step.status === 'failed')}
@@ -81,8 +88,8 @@
           <small>
             {#if step.candidates.length > 0}
               命中 {step.candidates.length} 个候选
-              {#if step.selectedMetric}
-                · 选中「{step.selectedMetric}」
+              {#if step.selectedMetrics.length > 0}
+                · 选用 {step.selectedMetrics.map((name) => `「${name}」`).join('')}
               {/if}
             {:else}
               无候选命中
@@ -93,25 +100,11 @@
           </small>
         </span>
       {:else if step.kind === 'scope_card'}
-        <span class="t">
-          <b>取数核对</b>
-          <small>
-            {step.card.blockedOnConfirmation
-              ? '命中阻塞条件,执行前等待确认'
-              : '完整生效范围已回显,直接执行'}
-          </small>
-        </span>
+        <span class="t"><b>取数核对</b><small>{entry.detail}</small></span>
       {:else if step.kind === 'execution_started'}
-        <span class="t"><b>真实执行</b><small>生效查询已提交服务端取数入口</small></span>
+        <span class="t"><b>真实执行</b><small>{entry.detail}</small></span>
       {:else if step.kind === 'rows_ready'}
-        <span class="t">
-          <b>结果就绪</b>
-          <small>
-            {step.summary.rowCount} 行{step.summary.totalCount !== null
-              ? ` · 总数 ${step.summary.totalCount}`
-              : ''} · 输出字段 {step.summary.outputFields.join('、')}
-          </small>
-        </span>
+        <span class="t"><b>结果就绪</b><small>{entry.detail}</small></span>
       {:else if step.kind === 'document_ready'}
         <span class="t">
           <b>页面文档就绪</b>

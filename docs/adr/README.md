@@ -1,8 +1,8 @@
-# ADR 基线:56 份决策记录的当前生效结论
+# ADR 基线:58 份决策记录的当前生效结论
 
-`docs/adr/` 现有 56 份 ADR(0001–0056)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 58 份 ADR(0001–0058)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0057-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0059-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -43,7 +43,7 @@
 | [0027](./0027-default-summary-to-text-unless-sse-explicit.md) | 摘要默认由页面文档返回，SSE 必须明确声明 | 现行 |
 | [0028](./0028-controlled-semantic-html-detail-fields.md) | DQE 明细支持受控语义 HTML，样式仍由前端拥有 | 现行 |
 | [0029](./0029-share-controlled-semantic-html-rendering.md) | 摘要与排行详情共用受控语义 HTML 渲染 Module | 现行 |
-| [0030](./0030-transient-page-state-for-ask-and-explore.md) | 问数与探索用临时页面态与轻量会话,沉淀才产生页面修订 | 现行 |
+| [0030](./0030-transient-page-state-for-ask-and-explore.md) | 问数与探索用临时页面态与轻量会话,沉淀才产生页面修订 | 现行(会话从只存事件扩展为最新检查点已由 0058 部分修订) |
 | [0031](./0031-metrics-as-data-context-discovery-anchor.md) | 指标作为数据上下文发现锚点,不回页面协议 | 现行 |
 | [0032](./0032-authoring-time-query-verification.md) | 创作期查询必须经清单校验与真实执行验真 | 现行(名称层闭集,formula 为有意保留的开放面) |
 | [0033](./0033-suspend-dataset-runtime.md) | 挂起服务端计算数据集,派生计算交给 DQE formula | 提议中,未实现,恢复条件见原文 |
@@ -68,8 +68,10 @@
 | [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行(协议与运行时安全区通道已实现) |
 | [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行(协议、widget 与统一运行时已实现;同批附带叶子组件「分类明细」) |
 | [0054](./0054-section-weighted-column-tracks.md) | 内容分区可声明受控权重列轨 | 现行(Schema 5.3，部分修订 0038 的恒定等权列前提) |
-| [0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md) | 口径组作为问数答案的分区边界 | 现行(首轮多单元、口径组分区、三处可见、按单元意图与单元数上限均已实现) |
+| [0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md) | 口径组作为问数答案的分区边界 | 现行(首轮多单元、口径组分区、三处可见、按单元意图与单元数上限均已实现;2026-08-27 补记对话轨呈现:选用指标改集合、按单元重复的步骤折叠;跨口径月报改作空态默认入口) |
 | [0056](./0056-metric-centric-terminology.md) | 术语围绕指标谱系规整:临时指标、派生指标模板、取数核对 | 现行(词汇表已切换,代码与 UI 文案批量替换进行中) |
+| [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行(装箱纯函数与页头均已实现;`defaultSpan` 重新表述为比例基线) |
+| [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点,恢复临时页面态 | 现行(部分修订 0030 的会话内容边界;不产生页面修订) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -112,6 +114,8 @@
 页面 `id` 只用于文件命名、页面仓储加载、路由和修订归属,统一运行时不得按某个正式页面 `id` 选择样式、组件或交互;两份除 `id` 外相同的页面元数据必须产生相同的 DOM 结构和计算样式。正式页面 `id` 不得以字面量出现在产品源码中,由自动化门禁校验。
 
 内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](./0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
+
+**组件能力目录的 `defaultSpan` 是相对比例,不是绝对宽度([ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md))。** 依据是人工搭的看板对它的用法:33 个分区里 14 个覆盖了 `defaultSpan`,但覆盖后的宽度几乎都保持了默认值之间的比例(指标卡 3 配柱状图 6 写成 4 + 8,三张指标卡各 3 写成 4 + 4 + 4)。创作期装配据此在**每个分区内**按比例贪心分行、每行缩放到恰好占满整行,因此视觉行的 span 之和恒等于分区列数;装箱不跨分区搬动组件,ADR-0055 的一组一分区不动。装箱是装配期的确定性纯函数(`packages/mcp/src/authoring/section-layout.ts`),模型不参与 span 决策——span 是纯几何,模型只会带来方差。分行判断只在比例空间里做,受控权重列轨只改变最终整数分配。手写页面继续显式声明 `span`,不受影响;目录没有「宽度上限」概念,装配因此会把独占分区的饼图与排行卡拉到通栏,该现象留待有真实产物证据后单独裁决。
 
 **页面外框与分区内层次([ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)):** 顶层可选 `layoutForm` 封闭两档 `report`(缺省)/`dashboard`,是页面外框几何与画布外观的唯一真源,`dashboard` 要求宿主交出全部宽度(见 [`docs/host-contract.md`](../host-contract.md));组件 `layout.layer: "backdrop"` 让组件铺满分区并置于同分区其余组件之下,其余组件仍走该分区当前列轨的自动流(缺省为 12 列),页面不写坐标、宽高或 z-index。三个声明各管一层:`layoutForm` 管页面外框、`container` 管分区外壳、`layer` 管分区内层次,唯一硬冲突是 `backdrop` 要求 `container: "plain"`。铺底组件的未遮挡矩形(**安全区**)由 `RuntimeSection` 计算并经 CSS 自定义属性下发,**明确不进页面 schema**——那会把布局结果写进页面元数据；该通道已经实现并覆盖加载、字体变化、窗口缩放与窄屏回流。`dashboard` + `panel` 与 `report` + `backdrop` 两个组合合法但没有设计过观感,决定不禁、以测试钉住现状。同一份 ADR 把聚合根改称**页面**,「看板」与「报表」降为布局形态。
 
@@ -163,9 +167,9 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 沉淀分两个方向,时间语义相反:沉淀为 App 走 `saveRevision`,页面时间必须是结构化相对时间(ADR-0035)才会随周期滚动,且若含临时指标需过 ADR-0036 的门槛;沉淀为 Report 则**保留查询定义与内嵌初始行、不声明筛选绑定**——按 ADR-0020,默认状态下存在内嵌初始行且无筛选变化时统一运行时不重新查询,报告因此天然冻结在采集时点,同时保住口径溯源。Report 不新增数据源类型或渲染路径。
 
-问数的 NL2DQE 发生在 Platform 创作期,统一运行时收到的始终是已经确定的页面文档,因此"统一运行时不执行 NL2DQE"这条不变式原样成立,并未因新增形态而放宽。**分析会话已裁决为服务端一等概念,但取最轻形态:** 保存 `sessionId` 与步骤事件流(问题原文、路由域、候选与选中指标、formula、生效查询、执行结果摘要、意图与组件选择、失败分类),不保存完整对话文本与模型 prompt。改变原"会话不落库"结论的触发信号是缺口条目与四段失败分类本身就要求落库同样的内容,此时差别只剩一个 `sessionId`。会话按 90 天保留,仅平台管理员与本人可见;身份当前允许 mock,但 mock 必须提供多个可切换用户且按 `actorId` 的可见性过滤必须真实执行,接入真实身份是上生产的前置条件。Monitor 当前不建设,其依赖(调度、基线、稳定指标口径)已记录,其中稳定口径由 ADR-0031 承载、每期重算由 ADR-0035 承载。
+问数的 NL2DQE 发生在 Platform 创作期,统一运行时收到的始终是已经确定的页面文档,因此"统一运行时不执行 NL2DQE"这条不变式原样成立,并未因新增形态而放宽。**分析会话已裁决为服务端一等概念:** 保存 `sessionId`、追加式步骤事件流与一份最新**会话检查点**;步骤事件解释过程,检查点恢复已校验临时页面态、结构化续跑状态、组件钉住结果与待确认交互。它不是页面修订,不进页面仓储或发布治理;不保存完整对话文本、模型 prompt 或原始 `outcome.messages`。会话按 90 天保留,仅平台管理员与本人可见;身份当前允许 mock,但 mock 必须提供多个可切换用户且按 `actorId` 的可见性过滤必须真实执行,接入真实身份是上生产的前置条件。Monitor 当前不建设,其依赖(调度、基线、稳定指标口径)已记录,其中稳定口径由 ADR-0031 承载、每期重算由 ADR-0035 承载。
 
-来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)。
+来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0058](./0058-latest-session-checkpoint-restores-transient-page-state.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)。
 
 ## 问数编排与口径治理
 
@@ -177,9 +181,11 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 **一句问题铺开整页,跨口径也允许,但差异必须一直可见。** ADR-0037 的「Answer 允许由多个组件组成」此前被首轮提示词收窄为单个取数单元,现已放开:首轮识别出多个视角时口径成形直接输出多个新增操作,一个视角一个单元、一个单元一个组件(实测一句「Tokens 运营月报」得 6 个单元 6 个组件),多单元缺省标题按各单元指标派生。这些单元的口径往往并不相同(分组维度分别是无、统计周期、区域、模型),这不是模型跑偏而是报表的本来形状。[ADR-0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md)裁决:**允许跨口径页面且不为它新增阻塞**——跨口径不是会算出错数的口径风险,而是数都对但比不了的**对照风险**,按 ADR-0036 处理临时指标的同一套办法处理(不阻塞、但必须一直可见);差异靠**口径组**(取数单元按域 + 分组维度 + 时间窗口与粒度 + 维度筛选取的等价类)一组一个内容分区来承载,分区标题只写各组之间真正不同的那几项,并同时在取数核对(补分组维度)与助手回复(按组汇总并明说不能横向对照)上可见。装配出口形状改变但页面协议不动,**不触发 ADR-0051 的版本递增**。同批两条配套约束:分析意图按单元判定且输入收窄到该单元自己的口径(否则整句里的「走势」会把按行业切分的单元也判成趋势),一轮至多 6 个取数单元且由编排侧确定性拒绝超出部分(成本与延迟随单元数线性增长,而成本预估能力至今不存在)。该 ADR 同时给尚未建设的「问数结果页交互式筛选条」预设了硬约束:筛选器只能作用于共享该维度的口径组。
 
+**同一条判据接着推出两笔布局与页头决策([ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md))。** 组件形态多样之后产物仍摆不成一页,因为装配无条件取目录 `defaultSpan` 当绝对宽度,而多数口径组只有一个组件,于是每个分区各留一段空白、右边缘参差。修法是按比例装箱铺满行宽(见「页面元数据与布局」段)。同时,装配开始产出**页面级页头**:独立首个分区、`container: "plain"`,标题取各单元业务域的去重拼接,全页共用同一时间窗口时以 `asOf` 写出该窗口,任一单元缺口径时不产页头。理由正是 ADR-0055 自己那条——页面会被沉淀、被分享、在别的宿主里打开,只有写在文档里的事实才跟着走;而此前「这一页覆盖哪个业务域与时间窗口」在页面文档里一个字都没有(问题原文进了 `meta.description` 却没有页面内渲染消费者,时间窗口被分区标题按「全页共用即为噪声」剔掉)。**页头不用问题原文当标题**:部分可答时问句里含缺口指标,拿它作标题等于让页面承诺自己没有的数字,与 ADR-0036 的边界冲突。页头不承载取数单元,因此不经 `auto-visualize` 的硬闸、也不放宽硬闸对 `bindsData: false` 的拒绝;`text` 与 `aiSummary` 不产出(前者内容无可信来源,后者在手写看板里出现 0 次)。出口形状变化同样不触发 ADR-0051 的版本递增,但消费装配产物的代码从此不能假定每个组件都有 `data.main`。
+
 **归因诊断([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed)不改变上述编排,而是与它并列。** 本节描述的固定顺序状态机回答"是多少";"为什么变了"是结果驱动的多阶段过程,由 `AgentRunner` 的第二个实现承担,与问数共享步骤事件落库、SSE、临时页面态与页面校验准入,**不共享编排状态机**。归因逻辑只面向分析证据 Port 编程,生产侧适配器复用 ADR-0032 的验真链路,因此 0032 与 0037 的全部约束原样适用于归因取到的每一份证据。该 ADR 目前是设计基线,未实现;读本节时不要把它当作已生效的编排分支。
 
-来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)、[ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md)、[ADR-0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md)。
+来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)、[ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md)、[ADR-0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md)、[ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md)。
 
 ## 页面生命周期与发布治理
 

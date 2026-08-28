@@ -74,6 +74,7 @@ const RUN_TEXT =
       status: 'completed',
       messages: [{ role: 'user', content: '创建销售概览' }],
       document: { schemaVersion: '5.0', id: 'sales-overview' },
+      checkpointVersion: 4,
       runtimeOrigin: 'http://localhost:5173',
       agentModel: { provider: 'scripted', model: 'component-selecting-scripted' }
     })
@@ -102,6 +103,7 @@ describe('Agent 运行推送流的分帧解析', () => {
     });
     expect(outcome.outcome.interaction).toBeNull();
     expect(outcome.outcome.error).toBeNull();
+    expect(outcome.outcome.checkpointVersion).toBe(4);
   });
 
   it('帧被任意字节边界切开(含多字节中文)仍完整还原', async () => {
@@ -159,6 +161,7 @@ describe('Agent 运行推送流的分帧解析', () => {
       stage: 'generation',
       retryable: true
     });
+    expect(frame.outcome.checkpointVersion).toBeNull();
   });
 
   it('data 不是合法 JSON 时抛协议错误', async () => {

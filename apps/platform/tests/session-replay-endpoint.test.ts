@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
+import { initialAskState } from '../src/lib/ask/conversation';
 import { createMemoryAnalysisSessionStore } from '../src/lib/server/session/memory';
 import { handleSessionReplayRequest } from '../src/lib/server/session/replay-endpoint';
 import type { AnalysisStepEvent } from '../src/lib/server/session/step-event';
@@ -36,6 +37,24 @@ async function storeWithSession() {
   for (const event of EVENTS) {
     await sessions.appendEvent({ sessionId: 'session-1', event }, OWNER);
   }
+  await sessions.saveCheckpoint(
+    {
+      sessionId: 'session-1',
+      basedOnEventSequence: EVENTS.length,
+      runId: 'run-1',
+      status: 'completed',
+      document: { schemaVersion: '5.3', id: 'ask-transient-session-1' },
+      contentHash: 'hash',
+      askState: {
+        ...initialAskState(),
+        transientPageId: 'ask-transient-session-1'
+      },
+      pinnedComponents: [{ dataSourceId: 'result', componentType: 'barChart' }],
+      interaction: null,
+      failure: null
+    },
+    OWNER
+  );
   return sessions;
 }
 
@@ -53,6 +72,7 @@ describe('会话回放端点', () => {
         sessionId: string;
         question: string | null;
         events: Array<{ sequence: number; event: AnalysisStepEvent }>;
+        checkpoint: { version: number; document: Record<string, unknown> } | null;
       };
     };
     expect(payload.ok).toBe(true);
@@ -63,6 +83,10 @@ describe('会话回放端点', () => {
       'domain_routed',
       'rows_ready'
     ]);
+    expect(payload.session.checkpoint).toMatchObject({
+      version: 1,
+      document: { id: 'ask-transient-session-1' }
+    });
   });
 
   it('换 mock 用户看不到他人会话:不可见与不存在同为 404', async () => {

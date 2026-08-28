@@ -47,7 +47,7 @@ export function pieOption(
           : props.ring
             ? [props.ring, '72%']
             : '72%',
-        center: compactRing ? ['50%', '50%'] : undefined,
+        ...(compactRing ? { center: ['50%', '50%'] as [string, string] } : {}),
         label: { show: compactRing ? false : showLabelLine, formatter: '{b}: {d}%' },
         labelLine: { show: compactRing ? false : showLabelLine },
         data: rows.map((row, index) => {
