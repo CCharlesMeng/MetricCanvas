@@ -32,6 +32,7 @@ import {
 import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
 import { writeFilterActionZ, navigateActionZ } from './schema/actions';
 import {
+  dashboardToolbarZ,
   pageLayoutFormZ,
   pageMetaZ,
   sectionContainerZ,
@@ -182,6 +183,7 @@ export type ComponentAction = WriteFilterAction | NavigateAction;
 
 export type PageMeta = z.infer<typeof pageMetaZ>;
 export type PageLayoutForm = z.infer<typeof pageLayoutFormZ>;
+export type DashboardToolbar = z.infer<typeof dashboardToolbarZ>;
 export type SectionContainer = z.infer<typeof sectionContainerZ>;
 export type PageSection = Omit<z.infer<typeof sectionZ>, 'components'> & {
   components: Component[];
@@ -193,6 +195,8 @@ export interface Page {
   meta?: PageMeta;
   /** 页面布局形态；缺省等价于 `report`。 */
   layoutForm?: PageLayoutForm;
+  /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
+  dashboardToolbar?: DashboardToolbar;
   /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */
   params?: PageParamDeclaration[];
   dataSources: DataSources;

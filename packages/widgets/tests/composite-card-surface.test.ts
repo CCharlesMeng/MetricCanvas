@@ -159,4 +159,78 @@ describe('组合卡的卡内表面压平', () => {
       /@container \(max-width: 230px\)[\s\S]*?\.metric-panel \.metric-values\s*\{[^}]*grid-auto-flow:\s*row;/
     );
   });
+
+  it('详情页还原只靠有限 variant，不把页面 id 写进共享 Widget', () => {
+    const files = [
+      'report-header/ReportHeader.svelte',
+      'key-value-panel/KeyValuePanel.svelte',
+      'composite-card/CompositeCard.svelte',
+      'table/Table.svelte',
+      'field-text/FieldText.svelte'
+    ];
+    const combined = files.map(source).join('\n');
+
+    expect(combined).not.toContain('ioc-project-detail');
+    expect(source('report-header/ReportHeader.svelte')).toContain('project-detail');
+    expect(source('key-value-panel/KeyValuePanel.svelte')).toContain('detail-summary');
+    expect(source('key-value-panel/KeyValuePanel.svelte')).toContain('detail-norm-matrix');
+    expect(source('composite-card/CompositeCard.svelte')).toContain('project-norms');
+    expect(source('table/Table.svelte')).toContain('forecast-matrix');
+    expect(source('field-text/FieldText.svelte')).toContain('narrative-short');
+    expect(source('field-text/FieldText.svelte')).toContain('narrative-long');
+  });
+
+  it('详情页指标矩阵把四条边框都收在 90px 容器内', () => {
+    const css = source('key-value-panel/KeyValuePanel.svelte');
+    const matrixList = /\.detail-norm-matrix dl\s*\{([^}]*)\}/.exec(css)?.[1] ?? '';
+    const matrixHeader = /\.detail-norm-matrix dt\s*\{([^}]*)\}/.exec(css)?.[1] ?? '';
+    const matrixValue = [...css.matchAll(/\.detail-norm-matrix dd\s*\{([^}]*)\}/g)]
+      .map((match) => match[1] ?? '')
+      .find((block) => block.includes('height: 58px;')) ?? '';
+
+    expect(matrixList).toContain('height: 90px;');
+    expect(matrixList).toContain('overflow: hidden;');
+    expect(matrixList).not.toContain('border-top:');
+    expect(matrixHeader).toContain('height: 32px;');
+    expect(matrixHeader).toContain('border-top: 1px solid rgb(0 0 0 / 0.15);');
+    expect(matrixValue).toContain('height: 58px;');
+  });
+
+  it('详情页头使用可操作的返回箭头，两个标签按 12px 紧凑排列', () => {
+    const header = source('report-header/ReportHeader.svelte');
+    const tags = /\.project-detail \.tags\s*\{([^}]*)\}/.exec(header)?.[1] ?? '';
+    const tag = /\.project-detail \.tags span\s*\{([^}]*)\}/.exec(header)?.[1] ?? '';
+
+    expect(header).toContain('<button');
+    expect(header).toContain('aria-label="返回上一页"');
+    expect(header).toContain('onclick={onback}');
+    expect(tags).toContain('display: flex;');
+    expect(tags).toContain('gap: 12px;');
+    expect(tag).toContain('position: static;');
+    expect(header).not.toContain('left: 390px;');
+  });
+
+  it('详情页有限 variant 在小于桌面基准时释放固定宽度', () => {
+    const header = source('report-header/ReportHeader.svelte');
+    const summary = source('key-value-panel/KeyValuePanel.svelte');
+    const norms = source('composite-card/CompositeCard.svelte');
+    const table = source('table/Table.svelte');
+    const narrative = source('field-text/FieldText.svelte');
+
+    expect(header).toMatch(
+      /@media \(max-width: 1678px\)[\s\S]*?\.report-header\.project-detail\s*\{[^}]*width:\s*calc\(100% \+ 47px\);/
+    );
+    expect(summary).toMatch(
+      /@media \(max-width: 1200px\)[\s\S]*?\.detail-summary\s*\{[^}]*width:\s*100%;/
+    );
+    expect(norms).toMatch(
+      /@media \(max-width: 1200px\)[\s\S]*?\.project-norms\s*\{[^}]*width:\s*100%;/
+    );
+    expect(table).toMatch(
+      /@media \(max-width: 1678px\)[\s\S]*?\.forecast-matrix > \.scroll\s*\{[^}]*overflow-x:\s*auto;/
+    );
+    expect(narrative).toMatch(
+      /@media \(max-width: 1678px\)[\s\S]*?\.field-text\.narrative\s*\{[^}]*width:\s*100%;[^}]*height:\s*auto;/
+    );
+  });
 });

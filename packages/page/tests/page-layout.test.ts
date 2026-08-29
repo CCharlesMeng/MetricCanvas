@@ -85,6 +85,27 @@ describe('页面布局形态', () => {
       expect.objectContaining({ path: '/sections/0/components/0/layout/layer' })
     );
   });
+
+  it('DashboardToolbar 缺省显示，5.3 可显式隐藏且 5.2 会报能力下限', () => {
+    const visible = dashboardPage();
+    const parsedVisible = parsePage(visible);
+    expect(parsedVisible.ok).toBe(true);
+    if (parsedVisible.ok) expect(parsedVisible.page.dashboardToolbar).toBeUndefined();
+
+    const hidden = dashboardPage();
+    hidden.schemaVersion = '5.3';
+    hidden.dashboardToolbar = 'hidden';
+    expect(validate(hidden)).toEqual([]);
+    expect(requiredMinorVersion(hidden)).toBe(3);
+    const parsedHidden = parsePage(hidden);
+    expect(parsedHidden.ok).toBe(true);
+    if (parsedHidden.ok) expect(parsedHidden.page.dashboardToolbar).toBe('hidden');
+
+    hidden.schemaVersion = '5.2';
+    expect(validate(hidden)).toContainEqual(
+      expect.objectContaining({ path: '/dashboardToolbar' })
+    );
+  });
 });
 
 describe('分区叠放层', () => {

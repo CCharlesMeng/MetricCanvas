@@ -24,6 +24,7 @@ export const reportHeaderComponentZ = z
           .strict()
           .optional(),
         tags: z.array(nonEmptyTextValueZ).optional(),
+        variant: z.literal('projectDetail').optional(),
         decoration: z.literal('shortBar').optional()
       })
       .strict()

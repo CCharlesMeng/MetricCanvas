@@ -483,6 +483,7 @@
   .composite-cell {
     min-height: 0;
     padding: 0;
+    overflow: visible;
     background: transparent;
     border: 0;
     box-shadow: none;
@@ -821,6 +822,18 @@
   }
 
   /* ==== 响应式 ==== */
+  @media (max-width: 1200px) {
+    /* 项目详情的「档案 + 指标」在中屏已无法维持 450/1168 的双列宽度，
+       按有限 variant 选中这类组合后改为单列，不把页面 id 写进共享运行时。 */
+    .section-grid:has(> .cell[data-component-variant='detailSummary']),
+    .section-grid:has(> .cell[data-component-variant='projectNorms']) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .section-grid:has(> .cell[data-component-variant='detailSummary']) > .cell,
+    .section-grid:has(> .cell[data-component-variant='projectNorms']) > .cell {
+      grid-column: 1 / -1 !important;
+    }
+  }
   @media (max-width: 1050px) {
     .page-section.container-panel {
       padding-right: 20px;

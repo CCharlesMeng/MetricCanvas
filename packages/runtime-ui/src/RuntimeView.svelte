@@ -964,12 +964,17 @@
   {:else}
     {@const readyPage = pageState.page}
     {@const layoutForm = readyPage.layoutForm ?? 'report'}
+    {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
+      class:dashboard-toolbar-hidden={
+        layoutForm === 'dashboard' && dashboardToolbar === 'hidden'
+      }
       class="page-content"
       data-page-layout-form={layoutForm}
+      data-dashboard-toolbar={dashboardToolbar}
     >
-    {#if layoutForm === 'dashboard'}
+    {#if layoutForm === 'dashboard' && dashboardToolbar !== 'hidden'}
       <DashboardToolbar
         title={pageListEntry(readyPage).title}
         {declarations}
@@ -1011,6 +1016,7 @@
                 ? (component.props.links ?? []).map(textLink)
                 : []}
               onchartclick={chartClickHandler(component)}
+              onback={navigation?.back}
               table={tableBinding(readyPage, component, slots)}
               map={mapOverride(component)}
               nested={nestedRender(readyPage)}
@@ -1224,6 +1230,9 @@
       var(--mc-page-content-padding-inline);
     color: var(--mc-color-report-text);
     background: var(--mc-color-dashboard-canvas);
+  }
+  .page-content.layout-dashboard.dashboard-toolbar-hidden {
+    --mc-page-sections-margin-top: 0;
   }
   .page-sections {
     display: flex;

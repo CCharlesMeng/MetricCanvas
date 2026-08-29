@@ -66,6 +66,17 @@ export const pageLayoutFormZ = z
   });
 
 /**
+ * Dashboard 统一工具栏的页面级显隐声明。缺省 visible 保持存量页面行为；
+ * hidden 仅供页面已经显式声明自有页头时使用，避免运行时工具栏与页面组件重复。
+ */
+export const dashboardToolbarZ = z
+  .enum(['visible', 'hidden'])
+  .meta({
+    id: 'dashboardToolbar',
+    description: 'dashboard 页面统一工具栏显隐；缺省 visible'
+  });
+
+/**
  * 文档态的完整页面根 Schema，唯一职责是喂给 `z.toJSONSchema` 生成
  * `schema.ts` 的 `pageSchema`（ajv 结构校验的单一真源）。它的
  * `dataSources` 允许 query 页面数据源使用按角色分组的局部显式字段
@@ -82,6 +93,7 @@ export const pageDocumentSchemaZ = z
     id: idZ,
     meta: pageMetaZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
+    dashboardToolbar: dashboardToolbarZ.optional(),
     params: z.array(pageParamZ).min(1).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),

@@ -136,7 +136,9 @@
    * `--mc-table-header-row-height` 缺席即变体缺省档(报表形态的既有取值)。
    */
   let root = $state<HTMLElement | null>(null);
-  const variantHeaderRowHeight = $derived(props.variant === 'reportCompact' ? 33 : 42);
+  const variantHeaderRowHeight = $derived(
+    props.variant === 'forecastMatrix' ? 32 : props.variant === 'reportCompact' ? 33 : 42
+  );
   const headerRowHeight = $derived(
     readPixelLength(root, '--mc-table-header-row-height') ?? variantHeaderRowHeight
   );
@@ -277,6 +279,7 @@
   class:wrap-headers={wrapHeaders}
   class:report-compact={props.variant === 'reportCompact'}
   class:embedded={props.variant === 'embedded'}
+  class:forecast-matrix={props.variant === 'forecastMatrix'}
   class:compound-inline={props.compoundCellLayout === 'inline'}
   class="table-widget"
   data-table-title={props.title}
@@ -1286,6 +1289,98 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  .table-widget.forecast-matrix {
+    --mc-table-header-row-height: 32px;
+
+    box-sizing: border-box;
+    width: 1632px;
+    height: 770px;
+    flex: none;
+    gap: 4px;
+    padding: 22px 22px 17px 26px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 16px;
+    font-size: 14px;
+  }
+  .forecast-matrix .table-heading {
+    min-height: 24px;
+    flex: 0 0 24px;
+    margin: 0;
+  }
+  .forecast-matrix .table-heading h3 {
+    color: #191919;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .forecast-matrix > .scroll {
+    box-sizing: border-box;
+    width: 1584px;
+    height: 703px;
+    min-height: 703px;
+    flex: 0 0 703px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+  }
+  .forecast-matrix table {
+    box-sizing: border-box;
+    width: 100%;
+    height: 702px;
+    table-layout: fixed;
+    border-top: 1px solid rgb(0 0 0 / 0.15);
+    border-left: 1px solid rgb(0 0 0 / 0.15);
+  }
+  .forecast-matrix thead th,
+  .forecast-matrix thead th.group-header {
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0 4px;
+    color: #595959;
+    background: rgb(0 0 0 / 0.05);
+    border-right: 1px solid rgb(0 0 0 / 0.15);
+    border-bottom: 1px solid rgb(0 0 0 / 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .forecast-matrix tbody td,
+  .forecast-matrix.fit-container tbody td {
+    box-sizing: border-box;
+    height: 58px;
+    padding: 0 4px;
+    overflow: hidden;
+    color: #191919;
+    background: #fff;
+    border-right: 1px solid rgb(0 0 0 / 0.15);
+    border-bottom: 1px solid rgb(0 0 0 / 0.15);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    text-align: center;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
+  .forecast-matrix tbody tr.subtotal-row td,
+  .forecast-matrix tbody tr.total-row td,
+  .forecast-matrix tbody tr.subtotal-row td.fixed,
+  .forecast-matrix tbody tr.total-row td.fixed {
+    background: rgb(20 118 255 / 0.05);
+    font-weight: 500;
+  }
+  .forecast-matrix tbody .cell-stack,
+  .forecast-matrix tbody .cell-primary-value {
+    display: block;
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+    line-height: 20px;
+    text-overflow: clip;
+    white-space: nowrap;
+  }
   .fit-container .cell-stack,
   .fit-container .rate-cell {
     min-width: 0;
@@ -1293,5 +1388,27 @@
   }
   .fit-container .rate-cell {
     width: 100%;
+  }
+  @media (max-width: 1678px) {
+    .table-widget.forecast-matrix {
+      width: 100%;
+    }
+    .forecast-matrix > .scroll {
+      width: 100%;
+      overflow-x: auto;
+      overflow-y: hidden;
+      overscroll-behavior-inline: contain;
+      -webkit-overflow-scrolling: touch;
+    }
+    .forecast-matrix table {
+      width: 1584px;
+      min-width: 1584px;
+    }
+  }
+  @media (max-width: 760px) {
+    .table-widget.forecast-matrix {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
   }
 </style>

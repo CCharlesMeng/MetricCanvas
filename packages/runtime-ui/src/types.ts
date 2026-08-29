@@ -110,6 +110,8 @@ export interface RuntimeNavigation {
   href(pageId: string, search: string): string;
   replaceSearch(search: string): void;
   navigate(target: RuntimeNavigationTarget): void;
+  /** 返回宿主记录的来源页；深链由宿主决定是否回退浏览器历史。 */
+  back?(): void;
 }
 
 export type RuntimeConfigurationErrorCode =

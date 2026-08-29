@@ -57,6 +57,8 @@
     textLinks?: TextBlockLink[];
     /** 图表点击回调;组件不具备 actions 能力时缺席。 */
     onchartclick?: (row: Row) => void;
+    /** 项目详情页头的宿主回退接缝。 */
+    onback?: () => void;
     table?: TableRenderBinding;
     /** 地图层级下钻后的底图覆盖。 */
     map?: 'china' | 'world';
@@ -71,6 +73,7 @@
     aiSummary,
     textLinks = [],
     onchartclick,
+    onback,
     table,
     map,
     nested
@@ -96,6 +99,7 @@
       snapshot={nested.snapshot(nestedComponent)}
       {pageSnapshots}
       {aiSummary}
+      {onback}
       table={nested.table(nestedComponent)}
       onchartclick={nested.onchartclick(nestedComponent)}
       map={nested.map?.(nestedComponent)}
@@ -106,7 +110,7 @@
 
 {#if rendersWithoutWidgetHost(component)}
   {#if component.type === 'reportHeader'}
-    <ReportHeader props={component.props} />
+    <ReportHeader props={component.props} {onback} />
   {:else if component.type === 'text'}
     <TextBlock props={component.props} links={textLinks} />
   {:else if component.type === 'aiSummary'}

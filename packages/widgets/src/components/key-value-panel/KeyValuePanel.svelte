@@ -30,11 +30,7 @@
   const columns = $derived(props.columns ?? 3);
 </script>
 
-<div class:counter-strip={props.variant === 'counterStrip'} class="key-value-panel">
-  {#if props.title}<h3>
-    {#if props.titleIcon}<img src={titleIcons[props.titleIcon]} alt="" aria-hidden="true" />{/if}
-    <span>{props.title}</span>
-  </h3>{/if}
+{#snippet entries()}
   <dl style:--key-value-columns={columns}>
     {#each props.items as item (item.label)}
       {@const resolved = resolveField(item.field, data)}
@@ -63,6 +59,23 @@
       </div>
     {/each}
   </dl>
+{/snippet}
+
+<div
+  class:counter-strip={props.variant === 'counterStrip'}
+  class:detail-summary={props.variant === 'detailSummary'}
+  class:detail-norm-matrix={props.variant === 'detailNormMatrix'}
+  class="key-value-panel"
+>
+  {#if props.title}<h3>
+    {#if props.titleIcon}<img src={titleIcons[props.titleIcon]} alt="" aria-hidden="true" />{/if}
+    <span>{props.title}</span>
+  </h3>{/if}
+  {#if props.variant === 'detailSummary'}
+    <div class="summary-body">{@render entries()}</div>
+  {:else}
+    {@render entries()}
+  {/if}
 </div>
 
 <style>
@@ -169,9 +182,191 @@
     font-size: 14px;
     line-height: 20px;
   }
+  .detail-summary {
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    width: 450px;
+    height: 360px;
+    flex: none;
+    flex-direction: column;
+    gap: 21px;
+    padding: 16px 129px 43px 21px;
+    overflow: visible;
+    background: #fff;
+    border-radius: 16px;
+  }
+  .detail-summary > h3 {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    margin: 0;
+    color: #191919;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .summary-body {
+    position: absolute;
+    top: 50px;
+    left: 22px;
+    box-sizing: border-box;
+    width: 404px;
+    height: 284px;
+    padding: 11px 0 17px 15px;
+    overflow: hidden;
+    color: #595959;
+    background: rgb(0 0 0 / 0.03);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 32px;
+  }
+  .summary-body dl {
+    display: block;
+    width: 284px;
+    margin: 0;
+  }
+  .summary-body .entry {
+    display: flex;
+    height: 32px;
+    align-items: baseline;
+    gap: 0;
+    white-space: nowrap;
+  }
+  .summary-body dt,
+  .summary-body dd {
+    color: #595959;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 32px;
+  }
+  .summary-body dt {
+    gap: 0;
+  }
+  .summary-body dt::after {
+    content: '：';
+  }
+  .detail-norm-matrix {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 0;
+    flex: none;
+    padding: 0;
+    background: transparent;
+    border-radius: 0;
+  }
+  .detail-norm-matrix > h3 {
+    margin: 0 0 12px 2px;
+    color: #191919;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .detail-norm-matrix dl {
+    box-sizing: border-box;
+    width: 100%;
+    height: 90px;
+    gap: 0;
+    overflow: hidden;
+    border-left: 1px solid rgb(0 0 0 / 0.15);
+  }
+  .detail-norm-matrix .entry {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+  }
+  .detail-norm-matrix dt,
+  .detail-norm-matrix dd {
+    box-sizing: border-box;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    border-right: 1px solid rgb(0 0 0 / 0.15);
+    border-bottom: 1px solid rgb(0 0 0 / 0.15);
+    text-align: center;
+  }
+  .detail-norm-matrix dt {
+    height: 32px;
+    flex: 0 0 32px;
+    border-top: 1px solid rgb(0 0 0 / 0.15);
+    color: #595959;
+    background: rgb(0 0 0 / 0.05);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+  .detail-norm-matrix dt::after {
+    content: none;
+  }
+  .detail-norm-matrix dd {
+    height: 58px;
+    flex: 0 0 58px;
+    gap: 8px;
+    color: #191919;
+    background: #fff;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+  .detail-norm-matrix dd::before {
+    width: 8px;
+    height: 8px;
+    flex: 0 0 8px;
+    background: #fe9902;
+    border-radius: 50%;
+    content: '';
+  }
+  @media (max-width: 1200px) {
+    .detail-summary {
+      width: 100%;
+      padding-right: 21px;
+    }
+    .summary-body {
+      width: calc(100% - 46px);
+    }
+    .summary-body dl {
+      width: 100%;
+    }
+  }
+  @media (max-width: 900px) {
+    .detail-norm-matrix dl {
+      height: auto;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      overflow: visible;
+    }
+    .detail-norm-matrix .entry {
+      height: 90px;
+    }
+    .detail-norm-matrix .entry:nth-child(n + 4) dt {
+      border-top: 0;
+    }
+    .detail-norm-matrix dt,
+    .detail-norm-matrix dd {
+      padding-right: 4px;
+      padding-left: 4px;
+      overflow: hidden;
+    }
+    .detail-norm-matrix dt > span,
+    .detail-norm-matrix dd {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
   @media (max-width: 760px) {
     dl {
       grid-template-columns: minmax(0, 1fr);
+    }
+  }
+  @media (max-width: 520px) {
+    .detail-norm-matrix dl {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .detail-norm-matrix .entry:nth-child(n + 3) dt {
+      border-top: 0;
     }
   }
 </style>

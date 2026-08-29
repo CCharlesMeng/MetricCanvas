@@ -18,7 +18,16 @@ export const fieldTextComponentZ = z
       .object({
         title: textValueZ.optional(),
         field: fieldBindingZ,
-        variant: z.enum(['plain', 'quote']).optional()
+        variant: z
+          .enum([
+            'plain',
+            'quote',
+            'narrativeShort',
+            'narrativeMeeting',
+            'narrativeRisk',
+            'narrativeProgress'
+          ])
+          .optional()
       })
       .strict()
   })

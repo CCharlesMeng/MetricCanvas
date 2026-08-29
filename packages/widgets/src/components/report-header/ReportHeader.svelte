@@ -8,13 +8,40 @@
   /** 可见页头组合组件：只展示 props，不读取页面 meta、数据或全局状态。 */
   interface Props {
     props: ReportHeaderProps;
+    onback?: () => void;
   }
 
-  let { props }: Props = $props();
+  let { props, onback }: Props = $props();
 </script>
 
-<header class:short-bar={props.decoration === 'shortBar'} class="report-header">
-  {#if props.decoration === 'shortBar'}
+<header
+  class:project-detail={props.variant === 'projectDetail'}
+  class:short-bar={props.decoration === 'shortBar'}
+  class="report-header"
+>
+  {#if props.variant === 'projectDetail'}
+    <div class="heading project-detail-heading">
+      <button
+        class="report-icon"
+        type="button"
+        aria-label="返回上一页"
+        disabled={!onback}
+        onclick={onback}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M15 4 7 12l8 8" />
+        </svg>
+      </button>
+      <h1>{props.title}</h1>
+      {#if props.tags?.length}
+        <div class="tags" aria-label="项目标签">
+          {#each props.tags.slice(0, 2) as tag, index (`${tag}:${index}`)}
+            <span>{tag}</span>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  {:else if props.decoration === 'shortBar'}
     <div class="heading">
       <div class="report-cover">
         <img
@@ -110,6 +137,91 @@
     display: block;
     min-height: 248px;
     padding: 0;
+  }
+  .report-header.project-detail {
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+    width: 1679px;
+    height: 80px;
+    min-height: 80px;
+    flex: none;
+    margin-left: -23px;
+    padding: 0;
+    overflow: visible;
+    background: #fff;
+  }
+  .project-detail-heading {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .project-detail .report-icon {
+    position: absolute;
+    top: 30px;
+    left: 32px;
+    display: grid;
+    width: 20px;
+    height: 20px;
+    place-items: center;
+    padding: 0;
+    color: #595959;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .project-detail .report-icon:disabled {
+    cursor: default;
+  }
+  .project-detail .report-icon svg {
+    display: block;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentcolor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.8;
+  }
+  .project-detail h1 {
+    position: absolute;
+    top: 22px;
+    left: 56px;
+    margin: 0;
+    color: #191919;
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 36px;
+    letter-spacing: 0;
+    white-space: nowrap;
+  }
+  .project-detail .tags {
+    position: absolute;
+    top: 26px;
+    left: 264px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+  }
+  .project-detail .tags span {
+    position: static;
+    padding: 3px 3px 3px 6px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    white-space: nowrap;
+  }
+  .project-detail .tags span:nth-child(1) {
+    color: #3cc6c1;
+    background: rgb(60 198 193 / 0.1);
+  }
+  .project-detail .tags span:nth-child(2) {
+    color: #ffb30f;
+    background: rgb(255 174 0 / 0.1);
   }
   .report-cover {
     position: relative;
@@ -394,6 +506,11 @@
     --mc-semantic-title-color: var(--mc-color-report-text, #191919);
     --mc-semantic-description-color: var(--mc-color-report-text, #191919);
   }
+  @media (max-width: 1678px) {
+    .report-header.project-detail {
+      width: calc(100% + 47px);
+    }
+  }
   @media (max-width: 760px) {
     .report-header {
       align-items: flex-start;
@@ -410,6 +527,34 @@
     }
     .header-flow-background {
       object-position: 62% center;
+    }
+    .report-header.project-detail {
+      height: 112px;
+      min-height: 112px;
+    }
+    .project-detail .report-icon {
+      top: 21px;
+      left: 20px;
+    }
+    .project-detail h1 {
+      top: 16px;
+      right: 20px;
+      left: 52px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .project-detail .tags {
+      top: 58px;
+      right: 20px;
+      left: 52px;
+      gap: 8px;
+      max-width: none;
+      overflow: hidden;
+    }
+    .project-detail .tags span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 </style>

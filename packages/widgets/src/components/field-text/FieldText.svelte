@@ -22,7 +22,25 @@
   const semantic = $derived(semanticHtmlFieldPresentation(resolved, value));
 </script>
 
-<section class="field-text" class:quote={props.variant === 'quote'}>
+<section
+  class="field-text"
+  class:quote={props.variant === 'quote'}
+  class:narrative={
+    props.variant === 'narrativeShort' ||
+    props.variant === 'narrativeMeeting' ||
+    props.variant === 'narrativeRisk' ||
+    props.variant === 'narrativeProgress'
+  }
+  class:narrative-short={props.variant === 'narrativeShort'}
+  class:narrative-long={
+    props.variant === 'narrativeMeeting' ||
+    props.variant === 'narrativeRisk' ||
+    props.variant === 'narrativeProgress'
+  }
+  class:narrative-meeting={props.variant === 'narrativeMeeting'}
+  class:narrative-risk={props.variant === 'narrativeRisk'}
+  class:narrative-progress={props.variant === 'narrativeProgress'}
+>
   {#if props.title}<h3>{props.title}</h3>{/if}
   {#if semantic}
     <SemanticHtml source={semantic.source} format={semantic.format} />
@@ -66,5 +84,86 @@
     line-height: var(--mc-field-text-body-line-height, 24px);
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+  }
+  .field-text.narrative {
+    box-sizing: border-box;
+    display: flex;
+    width: 1632px;
+    flex: none;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+    background: #fff;
+    border-radius: 16px;
+  }
+  .narrative-short {
+    height: 180px;
+    padding: 16px 24px 20px 21px;
+  }
+  .narrative-long {
+    height: 204px;
+    padding: 16px 24px 18px 21px;
+  }
+  .narrative > h3 {
+    flex: 0 0 24px;
+    margin: 0;
+    color: #191919;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .narrative > p {
+    box-sizing: border-box;
+    width: 1587px;
+    min-height: 0;
+    flex: 1;
+    margin: 0;
+    overflow: hidden;
+    color: #191919;
+    background: rgb(0 0 0 / 0.03);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 28px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .narrative-short > p {
+    padding: 14px 370px 10px 17px;
+  }
+  .narrative-meeting > p {
+    padding: 14px 175px 8px 17px;
+  }
+  .narrative-risk > p {
+    padding: 14px 1180px 8px 17px;
+  }
+  .narrative-progress > p {
+    padding: 14px 2px 8px 17px;
+  }
+  @media (max-width: 1678px) {
+    .field-text.narrative {
+      width: 100%;
+      height: auto;
+      min-height: 180px;
+    }
+    .narrative-long {
+      min-height: 204px;
+    }
+    .narrative > p {
+      width: 100%;
+      min-height: 128px;
+      flex: none;
+      padding: 14px 17px 10px;
+      overflow: visible;
+    }
+    .narrative-long > p {
+      min-height: 152px;
+    }
+  }
+  @media (max-width: 760px) {
+    .field-text.narrative {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
   }
 </style>

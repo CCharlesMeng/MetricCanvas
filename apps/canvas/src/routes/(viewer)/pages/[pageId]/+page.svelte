@@ -50,6 +50,13 @@
     navigate({ href, pageId, sourcePageId, sourceSearch }) {
       rememberPageReturn(pageId, { pageId: sourcePageId, search: sourceSearch });
       void goto(href);
+    },
+    back() {
+      if (returnTarget) {
+        void goto(pageHref(returnTarget.pageId, returnTarget.search));
+        return;
+      }
+      history.back();
     }
   };
 

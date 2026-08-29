@@ -19,7 +19,7 @@
   interface Props {
     title?: string;
     titleIcon?: keyof typeof titleIcons;
-    variant?: 'compact';
+    variant?: 'compact' | 'projectNorms';
     /** 子组件声明的 `layout.span`,数组顺序即自动流顺序。 */
     spans: readonly number[];
     /** 相邻子组件之间是否分隔;位置由自动流落位派生,不由声明给出。 */
@@ -33,7 +33,11 @@
   const slots = $derived(compositeCardFlow(spans));
 </script>
 
-<div class:compact={variant === 'compact'} class="composite-card">
+<div
+  class:compact={variant === 'compact'}
+  class:project-norms={variant === 'projectNorms'}
+  class="composite-card"
+>
   {#if title}<h3>
     {#if titleIcon}<img src={titleIcons[titleIcon]} alt="" aria-hidden="true" />{/if}
     <span>{title}</span>
@@ -93,6 +97,34 @@
   }
   .compact > h3 {
     text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
+  }
+  .project-norms {
+    --composite-card-gap: 26px;
+
+    box-sizing: border-box;
+    width: 1168px;
+    height: 360px;
+    min-height: 360px;
+    flex: none;
+    gap: 16px;
+    padding: 16px 19px 26px;
+    overflow: visible;
+    background: #fff;
+    border-radius: 16px;
+  }
+  .project-norms > h3 {
+    margin-left: 2px;
+    color: #191919;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .project-norms > .composite-grid {
+    min-height: 278px;
+    flex: 0 0 278px;
+    grid-auto-rows: 126px;
+    column-gap: 0;
+    row-gap: 26px;
   }
   h3 {
     display: flex;
@@ -165,6 +197,24 @@
 
   /* 窄屏退化成单列:此时「同一行的邻居」不再存在,竖线无从分隔,横线改由
      DOM 相邻关系派生——分隔的语义仍是「相邻子组件之间」,只是行的定义变了。 */
+  @media (max-width: 1200px) {
+    .project-norms {
+      width: 100%;
+    }
+  }
+  @media (max-width: 900px) {
+    .project-norms {
+      height: auto;
+      min-height: 0;
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+    .project-norms > .composite-grid {
+      min-height: 0;
+      flex: none;
+      grid-auto-rows: auto;
+    }
+  }
   @media (max-width: 760px) {
     .composite-grid {
       grid-template-columns: minmax(0, 1fr);

@@ -506,6 +506,65 @@ describe('能力下限推算', () => {
     ]);
   });
 
+  it('5.3 的项目详情还原呈现档与六列面板均受能力下限约束', () => {
+    const page = basePage({
+      schemaVersion: '5.2',
+      sections: [
+        {
+          id: 'body',
+          components: [
+            {
+              id: 'header', type: 'reportHeader', layout: { span: 12 },
+              props: { title: '项目详情', variant: 'projectDetail' }
+            },
+            {
+              id: 'summary', type: 'keyValuePanel', layout: { span: 3 }, data: { main: 'a' },
+              props: { columns: 2, items: [], variant: 'detailSummary' }
+            },
+            {
+              id: 'matrix', type: 'keyValuePanel', layout: { span: 3 }, data: { main: 'a' },
+              props: { columns: 6, items: [], variant: 'detailNormMatrix' }
+            },
+            {
+              id: 'norms', type: 'compositeCard', layout: { span: 6 },
+              props: { components: [], variant: 'projectNorms' }
+            },
+            {
+              id: 'forecast', type: 'table', layout: { span: 12 }, data: { main: 'a' },
+              props: { columns: [], variant: 'forecastMatrix' }
+            },
+            ...['narrativeShort', 'narrativeMeeting', 'narrativeRisk', 'narrativeProgress'].map(
+              (variant, index) => ({
+                id: `narrative-${index}`,
+                type: 'fieldText',
+                layout: { span: 12 },
+                data: { main: 'a' },
+                props: { field: 'text', variant }
+              })
+            )
+          ]
+        }
+      ]
+    });
+
+    expect(requiredMinorVersion(page)).toBe(3);
+    expect(capabilityFloorErrors(page).map((error) => error.path).sort()).toEqual([
+      '/sections/0/components/0/props/variant',
+      '/sections/0/components/1/props/variant',
+      '/sections/0/components/2/props/columns',
+      '/sections/0/components/2/props/variant',
+      '/sections/0/components/3/props/variant',
+      '/sections/0/components/4/props/variant',
+      '/sections/0/components/5/props/variant',
+      '/sections/0/components/6/props/variant',
+      '/sections/0/components/7/props/variant',
+      '/sections/0/components/8/props/variant'
+    ]);
+
+    (page as { schemaVersion: string }).schemaVersion = '5.3';
+    expect(capabilityFloorErrors(page)).toEqual([]);
+  });
+
   it('声明 5.1 后不再报能力下限错误', () => {
     const page = basePage({
       schemaVersion: '5.1',

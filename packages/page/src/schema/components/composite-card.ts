@@ -55,7 +55,7 @@ export const compositeCardComponentZ = z
         /** 卡标题的受控业务图标；不按标题文案或页面 id 推断。 */
         titleIcon: z.enum(['opportunity', 'tieredManagement', 'review']).optional(),
         /** 外部设计还原用的紧凑卡壳；子组件拓扑仍由 components 决定。 */
-        variant: z.literal('compact').optional(),
+        variant: z.enum(['compact', 'projectNorms']).optional(),
         /**
          * 相邻子组件之间是否分隔。位置由结构派生,不写索引、坐标与线型:
          * 线画在 12 列自动流已经形成的单元格边界上——行与行之间是横线,

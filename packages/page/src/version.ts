@@ -44,6 +44,42 @@ export const pageCapabilities = {
     usedAt: (document) =>
       typeof record(document)?.layoutForm === 'string' ? ['/layoutForm'] : []
   },
+  'dashboard-toolbar-visibility': {
+    minor: 3,
+    description: '顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏',
+    usedAt: (document) =>
+      typeof record(document)?.dashboardToolbar === 'string' ? ['/dashboardToolbar'] : []
+  },
+  'project-detail-restoration-variants': {
+    minor: 3,
+    description: '项目详情页还原专用的组件呈现档',
+    usedAt: (document) =>
+      componentPaths(document, (component) => {
+        const variant = props(component)?.variant;
+        return (
+          (component.type === 'reportHeader' && variant === 'projectDetail') ||
+          (component.type === 'keyValuePanel' &&
+            (variant === 'detailSummary' || variant === 'detailNormMatrix')) ||
+          (component.type === 'compositeCard' && variant === 'projectNorms') ||
+          (component.type === 'table' && variant === 'forecastMatrix') ||
+          (component.type === 'fieldText' &&
+            (variant === 'narrativeShort' ||
+              variant === 'narrativeMeeting' ||
+              variant === 'narrativeRisk' ||
+              variant === 'narrativeProgress'))
+        );
+      }).map((path) => `${path}/props/variant`)
+  },
+  'key-value-panel-six-columns': {
+    minor: 3,
+    description: 'key-value 信息面板的六列排布',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) =>
+          component.type === 'keyValuePanel' && props(component)?.columns === 6
+      ).map((path) => `${path}/props/columns`)
+  },
   'component-backdrop-layer': {
     minor: 1,
     description: '组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下',

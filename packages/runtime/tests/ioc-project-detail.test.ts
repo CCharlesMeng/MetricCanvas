@@ -49,11 +49,12 @@ function readyRows(snapshots: PageDataSnapshots, sourceId: string) {
 }
 
 describe('ioc-project-detail 骨架', () => {
-  it('声明 5.2 看板形态，基本信息与项目规范性按 3:9 并排', () => {
+  it('声明 5.3 看板形态并关闭统一工具栏，基本信息与项目规范性按冻结轨道并排', () => {
     const page = loadPage('');
-    expect(page.schemaVersion).toBe('5.2');
-    expect(requiredMinorVersion(document)).toBe(2);
+    expect(page.schemaVersion).toBe('5.3');
+    expect(requiredMinorVersion(document)).toBe(3);
     expect(page.layoutForm).toBe('dashboard');
+    expect(page.dashboardToolbar).toBe('hidden');
     expect(page.sections.map((section) => section.id)).toEqual([
       'page-header',
       'project-profile',
@@ -62,8 +63,9 @@ describe('ioc-project-detail 骨架', () => {
     ]);
 
     const profile = page.sections.find((section) => section.id === 'project-profile');
-    expect(profile?.container).toBeUndefined();
+    expect(profile?.container).toBe('plain');
     expect(profile?.title).toBeUndefined();
+    expect(profile?.columnTracks).toEqual([225, 583]);
     expect(
       profile?.components.map((component) => [
         component.id,
@@ -71,12 +73,33 @@ describe('ioc-project-detail 骨架', () => {
         component.props.title
       ])
     ).toEqual([
-      ['basics-panel', 3, '项目基本信息'],
-      ['project-norms', 9, '项目规范性']
+      ['basics-panel', 1, '项目基本信息'],
+      ['project-norms', 1, '项目规范性']
     ]);
 
     const norms = profile?.components.find((component) => component.id === 'project-norms');
     expect(norms?.type).toBe('compositeCard');
+    expect(norms?.type === 'compositeCard' ? norms.props.variant : undefined).toBe(
+      'projectNorms'
+    );
+    const basics = profile?.components.find((component) => component.id === 'basics-panel');
+    expect(basics?.type === 'keyValuePanel' ? basics.props.variant : undefined).toBe(
+      'detailSummary'
+    );
+    expect(
+      basics?.type === 'keyValuePanel'
+        ? basics.props.items.map((item) => item.label)
+        : undefined
+    ).toEqual([
+      '地区部/代表处',
+      '最终客户',
+      'Owner/BD',
+      '主要竞争对手',
+      '预签日期',
+      '销售状态',
+      '销售伙伴',
+      '解决方案伙伴'
+    ]);
     expect(
       norms?.type === 'compositeCard'
         ? norms.props.components.map((component) => [
@@ -89,6 +112,7 @@ describe('ioc-project-detail 骨架', () => {
     ]);
 
     const narrative = page.sections.find((section) => section.id === 'project-narrative');
+    expect(narrative?.container).toBe('plain');
     expect(narrative?.components.map((component) => component.id)).toEqual([
       'project-background',
       'project-objectives',
@@ -100,15 +124,43 @@ describe('ioc-project-detail 骨架', () => {
     expect(narrative?.components.every((component) => component.layout.span === 12)).toBe(
       true
     );
+    expect(
+      narrative?.components.map((component) =>
+        component.type === 'fieldText' ? component.props.variant : undefined
+      )
+    ).toEqual([
+      'narrativeShort',
+      'narrativeShort',
+      'narrativeShort',
+      'narrativeMeeting',
+      'narrativeRisk',
+      'narrativeProgress'
+    ]);
+
+    const forecast = page.sections
+      .find((section) => section.id === 'sales-forecast')
+      ?.components[0];
+    expect(forecast?.type).toBe('table');
+    if (forecast?.type === 'table') {
+      expect(forecast.props).toMatchObject({
+        title: '销售预测',
+        variant: 'forecastMatrix',
+        fit: 'container',
+        rowKindField: 'row-kind',
+        mergeBy: 'business-type'
+      });
+      expect(forecast.props.columns).toHaveLength(9);
+    }
   });
 
   it('页面参数默认值让页面独立可渲染，URL 取值覆盖默认值', () => {
     const header = loadPage('').sections[0]!.components[0]!;
     expect(header.props).toMatchObject({
       title: 'XX 云迁移项目',
+      variant: 'projectDetail',
       badge: 'OPP202604001',
       asOf: { label: '数据月份', value: '202604' },
-      tags: ['已立项', 'L1', '战略客户', '运营商']
+      tags: ['运营商', 'L1', '已立项', '战略客户']
     });
 
     const overridden = loadPage('page-title=p%3A%E8%BF%81%E7%A7%BB%E4%B8%80%E6%9C%9F')
@@ -120,12 +172,16 @@ describe('ioc-project-detail 骨架', () => {
     const rows = readyRows(snapshotsOf(loadPage('')), 'sales-forecast');
 
     expect(rows.map((row) => [row['business-type'], row['row-kind']])).toEqual([
-      ['弹性云服务 ECS', null],
-      ['弹性云服务 ECS', null],
-      ['弹性云服务 ECS合计', 'subtotal'],
-      ['云数据库 GaussDB', null],
-      ['云数据库 GaussDB', null],
-      ['云数据库 GaussDB合计', 'subtotal'],
+      ['CORE', null],
+      ['CORE', null],
+      ['CORE', null],
+      ['CORE', null],
+      ['CORE', null],
+      ['CORE', null],
+      ['CORE合计', 'subtotal'],
+      ['云通信', null],
+      ['云通信', null],
+      ['云通信合计', 'subtotal'],
       ['合计', 'total']
     ]);
 
@@ -155,6 +211,8 @@ describe('ioc-project-detail 骨架', () => {
 
     expect(rows).toHaveLength(1);
     expect(rows[0]!['party-company-name']).toBe('XX 科技有限公司');
+    expect(rows[0]!['region-office-display']).toBe('欧洲地区部 / 德国代表处');
+    expect(rows[0]!['owner-bd-display']).toBe('张三 / 李四');
     expect(String(rows[0]!['project-risks'])).toContain('迁移窗口审批');
     for (const field of [
       'project-background',
