@@ -83,6 +83,9 @@
 
 <style>
   .text-block {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
     flex: 1;
     display: flex;
     flex-direction: column;

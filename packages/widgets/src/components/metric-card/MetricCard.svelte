@@ -1,7 +1,7 @@
 <script lang="ts">
-  import type { FieldBinding, MetricCardProps } from '@metriccanvas/page';
+  import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page';
   import type { MetricDataSlots } from '../../shared/component-data';
-  import { fieldValue, resolveField } from '../../shared/component-data';
+  import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { formatValue, valuePolarity } from '../../shared/value-format';
   import ProgressRing from './ProgressRing.svelte';
 
@@ -9,9 +9,11 @@
     /** 已解析的 main/compare/target 命名槽。 */
     data: MetricDataSlots;
     props: MetricCardProps;
+    /** 只由声明了 link 的非空值触发。 */
+    onlink?: (row: Row) => void;
   }
 
-  let { data, props }: Props = $props();
+  let { data, props, onlink }: Props = $props();
 
   function fieldText(field: FieldBinding): string {
     const resolved = resolveField(field, data);
@@ -31,6 +33,11 @@
     props.progress ? Number(fieldValue(props.progress.valueField, data) ?? 0) : 0
   );
 
+  function activateLink(field: FieldBinding) {
+    const row = fieldRow(field, data);
+    if (row) onlink?.(row);
+  }
+
   function toneClass(
     tone: 'auto' | 'neutral' | 'positive' | 'danger' | undefined,
     raw: ReturnType<typeof fieldValue>
@@ -43,16 +50,31 @@
   }
 </script>
 
+{#snippet metricValue(row: MetricCardProps['rows'][number])}
+  {#if row.context}<span class="row-context">{row.context}</span>{/if}
+  <span class="row-value">{fieldText(row.valueField)}</span>
+  {#if row.unit}<span class="unit">{row.unit}</span>{/if}
+{/snippet}
+
 {#snippet metricRows(rows: MetricCardProps['rows'])}
   <div class="metric-values">
     {#each rows as row, index (`${row.label}:${index}`)}
+      {@const rawValue = fieldValue(row.valueField, data)}
       <div class="metric-row">
         <span class="row-label">{row.label}</span>
-        <span class="value-line">
-          {#if row.context}<span class="row-context">{row.context}</span>{/if}
-          <span class="row-value">{fieldText(row.valueField)}</span>
-          {#if row.unit}<span class="unit">{row.unit}</span>{/if}
-        </span>
+        {#if row.link === true && rawValue != null && onlink}
+          <button
+            type="button"
+            class="value-line value-link"
+            data-metric-row-link
+            aria-label={`${row.label} ${fieldText(row.valueField)}`}
+            onclick={() => activateLink(row.valueField)}
+          >
+            {@render metricValue(row)}
+          </button>
+        {:else}
+          <span class="value-line">{@render metricValue(row)}</span>
+        {/if}
         {#if row.changes?.length}
           <div class="changes">
             {#each row.changes as change, changeIndex (`${change.label}:${changeIndex}`)}
@@ -134,7 +156,10 @@
 
 <style>
   .metric-card {
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
+    min-width: 0;
     align-items: stretch;
     justify-content: center;
     flex-direction: column;
@@ -189,7 +214,7 @@
   }
   .dual-summary.two-column-panels {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
     gap: 12px;
     margin-top: 6px;
   }
@@ -254,7 +279,9 @@
   }
   .compact-strip .metric-panel .metric-row {
     position: relative;
-    flex: 0 1 auto;
+    /* 两个指标始终等分可用宽度，分隔线才会稳定落在中轴，
+       不随两侧文案和数值宽度漂移。 */
+    flex: 1 1 0;
   }
   .compact-strip .metric-panel .metric-row + .metric-row::before {
     position: absolute;
@@ -263,6 +290,9 @@
     left: -10px;
     border-left: 1px dashed #dcdbdb;
     content: '';
+  }
+  .compact-stack .metric-panel .metric-row + .metric-row {
+    margin-top: 20px;
   }
   .compact-strip .metric-panel .row-label,
   .compact-stack .metric-panel .row-label {
@@ -311,11 +341,6 @@
     color: #595959;
     font-size: 12px;
     line-height: 22px;
-  }
-  @media (max-width: 760px) {
-    .compact-strip {
-      --mc-compact-summary-flow: row;
-    }
   }
   /* 指标行的三个排版量(标签 / 大数字 / 单位)两档形态取值不同,
      经 --mc-metric-* 下发;缺省值即报表形态的既有观感。 */
@@ -395,6 +420,7 @@
   .metric-panel .placeholder-values .change {
     color: var(--mc-color-muted, #71717a);
   }
+  /* responsive-contract: metric-panel-local-compact */
   @container (max-width: 230px) {
     .metric-panel {
       padding-right: 7px;
@@ -424,6 +450,7 @@
       margin-right: 0;
     }
   }
+  /* responsive-contract: metric-compact-stack-local-type */
   @container (max-width: 230px) {
     .compact-stack .metric-panel .row-label {
       font-size: 14px;
@@ -433,11 +460,6 @@
     }
     .compact-stack .metric-panel .unit {
       font-size: 14px;
-    }
-  }
-  @media (max-width: 760px) {
-    .dual-summary.two-column-panels {
-      grid-template-columns: minmax(0, 1fr);
     }
   }
   .metric-row {
@@ -452,14 +474,13 @@
     container-type: inline-size;
     justify-content: flex-start;
     gap: 0;
-    height: 164px;
+    min-height: 164px;
     padding: 17px 0 38px 17px;
     background: var(--mc-color-surface, #fff);
     border-radius: 12px;
   }
   .summary {
     min-height: 200px;
-    height: auto;
     justify-content: flex-start;
     gap: 0;
     padding: 11px 17px 16px;
@@ -533,6 +554,7 @@
     font-weight: 500;
     line-height: 43px;
   }
+  /* responsive-contract: metric-summary-local-comfortable */
   @container (max-width: 275px) {
     .summary .metric-content {
       padding-left: 7px;
@@ -566,6 +588,7 @@
       white-space: normal;
     }
   }
+  /* responsive-contract: metric-summary-local-tight */
   @container (max-width: 235px) {
     .summary .metric-content {
       padding-right: 4px;
@@ -648,6 +671,7 @@
     margin-right: 4px;
     color: #0f1a4d;
   }
+  /* responsive-contract: metric-activity-progress-local-tight */
   @container (max-width: 260px) {
     .activity-progress .metric-content {
       padding-right: 4px;
@@ -678,11 +702,6 @@
       --progress-ring-label-line-height: 17px;
     }
   }
-  @media (max-width: 760px) {
-    .activity-progress {
-      height: 174px;
-    }
-  }
   .change-unit {
     margin-left: 2px;
     color: inherit;
@@ -691,6 +710,21 @@
     display: inline-flex;
     align-items: baseline;
     gap: 4px;
+  }
+  .value-link {
+    width: fit-content;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+  }
+  .value-link:focus-visible {
+    outline: 2px solid var(--mc-color-primary, #08359e);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
   .row-label {
     color: #595959;

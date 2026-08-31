@@ -126,9 +126,12 @@
 
 <style>
   .report-header {
+    box-sizing: border-box;
     display: flex;
+    min-width: 0;
     align-items: flex-end;
     justify-content: space-between;
+    flex-wrap: wrap;
     gap: 32px;
     width: 100%;
     padding: 10px 4px 24px;
@@ -142,11 +145,11 @@
     position: relative;
     box-sizing: border-box;
     display: block;
-    width: 1679px;
+    width: 100%;
+    min-width: 0;
     height: 80px;
     min-height: 80px;
     flex: none;
-    margin-left: -23px;
     padding: 0;
     overflow: visible;
     background: #fff;
@@ -336,7 +339,7 @@
     -webkit-text-fill-color: transparent;
     font-family: 'PingFang SC', sans-serif;
     font-style: normal;
-    font-size: 60px;
+    font-size: clamp(42px, 5cqi, 60px);
     font-weight: 400;
     line-height: 72px;
     letter-spacing: 0;
@@ -345,7 +348,7 @@
   }
   .short-bar h1::after {
     position: absolute;
-    top: calc(100% - 6px);
+    top: calc(100% - (72px - 1em) / 2);
     right: 0;
     left: 0;
     height: 9px;
@@ -506,28 +509,8 @@
     --mc-semantic-title-color: var(--mc-color-report-text, #191919);
     --mc-semantic-description-color: var(--mc-color-report-text, #191919);
   }
-  @media (max-width: 1678px) {
-    .report-header.project-detail {
-      width: calc(100% + 47px);
-    }
-  }
-  @media (max-width: 760px) {
-    .report-header {
-      align-items: flex-start;
-      flex-direction: column;
-      gap: 18px;
-    }
-    .report-header.short-bar {
-      display: block;
-      min-height: auto;
-    }
-    .short-bar h1 {
-      font-size: 42px;
-      line-height: 1.2;
-    }
-    .header-flow-background {
-      object-position: 62% center;
-    }
+  /* responsive-contract: report-header-project-detail-flow */
+  @container mc-component-box (max-width: 760px) {
     .report-header.project-detail {
       height: 112px;
       min-height: 112px;

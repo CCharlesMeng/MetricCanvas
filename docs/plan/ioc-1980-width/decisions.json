@@ -1,0 +1,14 @@
+[
+  {
+    "item": "NC-1",
+    "answer": "采纳：Page Metadata 保持 Section → Component；mc-component-box 仅表示 RuntimeSection 为 Component 生成的 DOM 布局盒，不新增元数据实体。",
+    "decided_at": "2026-08-31",
+    "rationale": "中间层的 Grid 落位、创作态安装点、卡面和容器查询都是运行时职责，不构成独立领域概念。"
+  },
+  {
+    "item": "NC-2",
+    "answer": "采纳：columnTracks 负责跨组件比例，Widget 根不保存页面派生宽度；宽表的内容下限由自身列声明汇总得出。",
+    "decided_at": "2026-08-31",
+    "rationale": "组件只应依赖自身输入与所在容器，不应复制 450px、1168px、1632px 等特定页面的设计结果。"
+  }
+]

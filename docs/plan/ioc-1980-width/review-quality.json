@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "role": "review-quality",
+  "evidence_epoch": "review-4",
+  "code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+  "judged_files": [
+    "packages/runtime-ui/src/RuntimeView.svelte",
+    "packages/runtime-ui/src/RuntimeSection.svelte",
+    "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+    "packages/runtime-ui/tests/project-detail-responsive.test.ts",
+    "packages/widgets/src/components/report-header/ReportHeader.svelte",
+    "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+    "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+    "packages/widgets/src/components/table/Table.svelte",
+    "packages/widgets/src/components/field-text/FieldText.svelte",
+    "packages/widgets/src/components/metric-card/MetricCard.svelte",
+    "packages/widgets/src/components/map-chart/MapChart.svelte",
+    "packages/widgets/tests/composite-card-surface.test.ts",
+    "packages/embed/tests/browser/embed.spec.ts"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "Q2",
+      "scope": "RuntimeSection 组件布局盒、嵌套组件布局盒、Table 列声明派生最小内容宽度及 Widget 内容驱动实现",
+      "evidence_ids": [
+        "packages/runtime-ui/src/RuntimeSection.svelte:L323-L355",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L442-L458",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte:L193-L199",
+        "packages/widgets/src/components/table/Table.svelte:L80-L128",
+        "packages/widgets/src/components/table/Table.svelte:L276-L288",
+        "packages/widgets/src/components/table/Table.svelte:L1319-L1339",
+        "packages/widgets/src/components/field-text/FieldText.svelte:L88-L142",
+        "packages/widgets/tests/composite-card-surface.test.ts:L222-L270",
+        "workspace-check"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "Q7",
+      "scope": "四个 IOC Page 最终宽度解耦 diff 的固定宽度、viewport/page-variant 分支、裁切与临时代码遗留",
+      "evidence_ids": [
+        "packages/runtime-ui/tests/project-detail-responsive.test.ts:L17-L44",
+        "packages/widgets/tests/composite-card-surface.test.ts:L222-L270",
+        "packages/embed/tests/browser/embed.spec.ts:L219-L296",
+        "BE-1",
+        "BE-2",
+        "unit-regression",
+        "embed-browser-regression"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": ["BE-1", "BE-2", "workspace-check", "unit-regression", "embed-browser-regression"],
+  "evidence_added": [],
+  "known_gaps": []
+}

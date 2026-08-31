@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.3",
+  "schemaVersion": "5.4",
   "id": "ioc-project-overview",
   "layoutForm": "dashboard",
   "meta": {
@@ -1032,10 +1032,11 @@
                   "unit": "个",
                       "valueField": {
                         "data": "main",
-                        "field": "opportunity-cnt",
-                        "format": "number-grouped"
-                      },
-                      "changes": [
+                      "field": "opportunity-cnt",
+                      "format": "number-grouped"
+                    },
+                    "link": true,
+                    "changes": [
                   {
                     "label": "较上月",
                     "tone": "positive",
@@ -1074,9 +1075,17 @@
                     "field": "yearly-fee",
                     "format": "cny-adaptive"
                   }
+                  }
+                ],
+                "actions": [
+                  {
+                    "on": "click",
+                    "navigate": {
+                      "page": "ioc-opportunity-analysis"
+                    }
+                  }
+                ]
               }
-            ]
-          }
         },
         {
           "id": "opportunity-tier-ring",

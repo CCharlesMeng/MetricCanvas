@@ -51,6 +51,8 @@
 
 <style>
   .field-text {
+    box-sizing: border-box;
+    width: 100%;
     flex: 1;
     min-width: 0;
     padding: 15px 19px;
@@ -88,7 +90,9 @@
   .field-text.narrative {
     box-sizing: border-box;
     display: flex;
-    width: 1632px;
+    width: 100%;
+    min-width: 0;
+    min-height: 180px;
     flex: none;
     flex-direction: column;
     gap: 12px;
@@ -97,12 +101,12 @@
     border-radius: 16px;
   }
   .narrative-short {
-    height: 180px;
-    padding: 16px 24px 20px 21px;
+    min-height: 180px;
+    padding: 16px clamp(16px, 3cqi, 24px) 20px clamp(16px, 2.7cqi, 21px);
   }
   .narrative-long {
-    height: 204px;
-    padding: 16px 24px 18px 21px;
+    min-height: 204px;
+    padding: 16px clamp(16px, 3cqi, 24px) 18px clamp(16px, 2.7cqi, 21px);
   }
   .narrative > h3 {
     flex: 0 0 24px;
@@ -114,11 +118,12 @@
   }
   .narrative > p {
     box-sizing: border-box;
-    width: 1587px;
-    min-height: 0;
-    flex: 1;
+    width: 100%;
+    min-height: 128px;
+    flex: none;
     margin: 0;
-    overflow: hidden;
+    padding: 14px 17px 10px;
+    overflow: visible;
     color: #191919;
     background: rgb(0 0 0 / 0.03);
     border-radius: 8px;
@@ -128,42 +133,7 @@
     white-space: pre-wrap;
     overflow-wrap: anywhere;
   }
-  .narrative-short > p {
-    padding: 14px 370px 10px 17px;
-  }
-  .narrative-meeting > p {
-    padding: 14px 175px 8px 17px;
-  }
-  .narrative-risk > p {
-    padding: 14px 1180px 8px 17px;
-  }
-  .narrative-progress > p {
-    padding: 14px 2px 8px 17px;
-  }
-  @media (max-width: 1678px) {
-    .field-text.narrative {
-      width: 100%;
-      height: auto;
-      min-height: 180px;
-    }
-    .narrative-long {
-      min-height: 204px;
-    }
-    .narrative > p {
-      width: 100%;
-      min-height: 128px;
-      flex: none;
-      padding: 14px 17px 10px;
-      overflow: visible;
-    }
-    .narrative-long > p {
-      min-height: 152px;
-    }
-  }
-  @media (max-width: 760px) {
-    .field-text.narrative {
-      padding-right: 16px;
-      padding-left: 16px;
-    }
+  .narrative-long > p {
+    min-height: 152px;
   }
 </style>

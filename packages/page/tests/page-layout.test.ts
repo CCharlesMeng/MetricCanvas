@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  documentUsesRuntimeBackToolbar,
   documentLayoutForm,
   parsePage,
   requiredMinorVersion,
@@ -59,6 +60,29 @@ describe('页面布局形态', () => {
     expect(documentLayoutForm({ layoutForm: 'fullscreen' })).toBe('report');
     expect(documentLayoutForm(null)).toBe('report');
     expect(documentLayoutForm('not a document')).toBe('report');
+  });
+
+  it('dashboard 的可见工具栏由运行时接管返回入口，report 与 hidden 保留宿主所有权', () => {
+    expect(documentUsesRuntimeBackToolbar({
+      layoutForm: 'dashboard',
+      dashboardToolbar: { variant: 'compact' }
+    })).toBe(true);
+    expect(documentUsesRuntimeBackToolbar({
+      layoutForm: 'report',
+      dashboardToolbar: { variant: 'compact' }
+    })).toBe(false);
+    expect(documentUsesRuntimeBackToolbar({
+      layoutForm: 'dashboard',
+      dashboardToolbar: 'visible'
+    })).toBe(true);
+    expect(documentUsesRuntimeBackToolbar({
+      layoutForm: 'dashboard'
+    })).toBe(true);
+    expect(documentUsesRuntimeBackToolbar({
+      layoutForm: 'dashboard',
+      dashboardToolbar: 'hidden'
+    })).toBe(false);
+    expect(documentUsesRuntimeBackToolbar(null)).toBe(false);
   });
 
   it('形态是封闭闭集，闭集外的取值被结构校验拒绝', () => {

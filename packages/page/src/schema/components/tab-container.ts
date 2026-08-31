@@ -4,16 +4,26 @@ import { componentCatalogRegistry } from '../registry';
 import { tableComponentZ } from './table';
 
 const tabItemZ = z
-  .object({
-    id: idZ,
-    label: nonEmptyTextValueZ,
-    component: tableComponentZ
-  })
-  .strict()
+  .union([
+    z
+      .object({
+        id: idZ,
+        label: nonEmptyTextValueZ,
+        component: tableComponentZ
+      })
+      .strict(),
+    z
+      .object({
+        id: idZ,
+        label: nonEmptyTextValueZ,
+        components: z.array(tableComponentZ).min(1)
+      })
+      .strict()
+  ])
   .meta({ id: 'tabItem' });
 
 /**
- * Tab 容器:卡内切换,每个 Tab 当前只允许一张表。
+ * Tab 容器:卡内切换,每个 Tab 向后兼容一张表或非空表格列表。
  * 子组件不参加内容分区 12 列栅格,宽度跟随容器。
  */
 export const tabContainerComponentZ = z
@@ -24,7 +34,7 @@ export const tabContainerComponentZ = z
     props: z
       .object({
         title: textValueZ.optional(),
-        variant: z.literal('compact').optional(),
+        variant: z.enum(['compact', 'analysisStack']).optional(),
         defaultTab: idZ.optional(),
         tabs: z.array(tabItemZ).min(1)
       })

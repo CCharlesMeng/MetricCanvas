@@ -38,6 +38,9 @@
     onboolean: (filterId: string, checked: boolean) => void;
     onnumberrange: (filterId: string, range: NumberRangeValue | null) => void;
     onsearch: (filterId: string, query: string) => void;
+    /** 保留筛选信息架构但不建立可变状态。 */
+    readOnly?: boolean;
+    note?: string;
   }
 
   let {
@@ -49,7 +52,9 @@
     ontimepoint,
     onboolean,
     onnumberrange,
-    onsearch
+    onsearch,
+    readOnly = false,
+    note
   }: Props = $props();
 
   const visible = $derived(visibleFilterDeclarations(declarations));
@@ -88,11 +93,38 @@
     }
     return declaration.dimension;
   }
+
+  function dimensionDisplay(declaration: DimensionDeclaration): string {
+    return dimensionValueOf(values, declaration.id).values[0] ?? declaration.emptyLabel ?? declaration.label ?? '全部';
+  }
 </script>
 
-<div class="filter-bar">
+<div class:read-only={readOnly} class="filter-bar">
   {#each visible as declaration (declaration.id)}
-    {#if declaration.type === 'dimension' && declaration.hierarchy}
+    <div data-filter-control class="filter-control">
+    {#if readOnly && declaration.type === 'boolean'}
+      <label class="readonly-boolean">
+        <input type="checkbox" checked={booleanValue(declaration.id)} disabled />
+        <span data-filter-display>{declaration.label ?? '布尔筛选'}</span>
+      </label>
+    {:else if readOnly && declaration.type === 'timePoint'}
+      <input
+        class="readonly-date"
+        type={declaration.granularity === 'month' ? 'month' : 'date'}
+        value={timePointValue(declaration.id) ?? ''}
+        aria-label={declaration.label ?? '日期'}
+        disabled
+      />
+    {:else if readOnly && declaration.type === 'dimension'}
+      <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
+        <span data-filter-display>{dimensionDisplay(declaration)}</span>
+        <span aria-hidden="true" class="readonly-arrow">▾</span>
+      </button>
+    {:else if readOnly}
+      <button type="button" class="readonly-select" aria-label={declaration.label} disabled>
+        <span data-filter-display>{declaration.label ?? '筛选'}</span>
+      </button>
+    {:else if declaration.type === 'dimension' && declaration.hierarchy}
       {@const current = dimensionValueOf(values, declaration.id)}
       <HierarchyFilter
         label={declaration.label}
@@ -149,14 +181,16 @@
         onchange={(query) => onsearch(declaration.id, query)}
       />
     {/if}
+    </div>
   {/each}
+  {#if note}<p class="filter-note">{note}</p>{/if}
 </div>
 
 <style>
   .filter-bar {
     display: flex;
     flex: var(--mc-filter-bar-flex, 0 1 auto);
-    flex-wrap: wrap;
+    flex-wrap: var(--mc-filter-bar-wrap, wrap);
     align-items: center;
     justify-content: var(--mc-filter-bar-justify-content, normal);
     gap: var(--mc-filter-bar-gap, 20px);
@@ -165,5 +199,52 @@
     background: var(--mc-filter-bar-background, var(--mc-color-surface));
     border: var(--mc-filter-bar-border, 1px solid var(--mc-color-border));
     border-radius: var(--mc-filter-bar-radius, var(--mc-radius-cell));
+  }
+  .filter-control {
+    flex: none;
+  }
+  .readonly-boolean {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #191919;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  .readonly-date,
+  .readonly-select {
+    box-sizing: border-box;
+    height: 32px;
+    padding: 0 10px;
+    color: #595959;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font: inherit;
+    font-size: 14px;
+  }
+  .readonly-select {
+    display: inline-flex;
+    min-width: 112px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .readonly-date:disabled,
+  .readonly-select:disabled,
+  .readonly-boolean input:disabled {
+    cursor: not-allowed;
+    opacity: 1;
+  }
+  .readonly-arrow {
+    color: #8c8c8c;
+  }
+  .filter-note {
+    flex: var(--mc-filter-note-flex, 1 0 100%);
+    margin: 0;
+    color: #8c8c8c;
+    font-size: 12px;
+    line-height: 18px;
+    white-space: var(--mc-filter-note-white-space, normal);
   }
 </style>

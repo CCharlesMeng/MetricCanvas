@@ -57,6 +57,8 @@
     textLinks?: TextBlockLink[];
     /** 图表点击回调;组件不具备 actions 能力时缺席。 */
     onchartclick?: (row: Row) => void;
+    /** MetricCard 显式值级链接回调;未声明时缺席。 */
+    onmetriclink?: (row: Row) => void;
     /** 项目详情页头的宿主回退接缝。 */
     onback?: () => void;
     table?: TableRenderBinding;
@@ -73,6 +75,7 @@
     aiSummary,
     textLinks = [],
     onchartclick,
+    onmetriclink,
     onback,
     table,
     map,
@@ -102,6 +105,7 @@
       {onback}
       table={nested.table(nestedComponent)}
       onchartclick={nested.onchartclick(nestedComponent)}
+      onmetriclink={nested.onmetriclink(nestedComponent)}
       map={nested.map?.(nestedComponent)}
       {nested}
     />
@@ -128,7 +132,11 @@
     >
       {#snippet children(activeId)}
         {@const tab = component.props.tabs.find((candidate) => candidate.id === activeId)}
-        {#if tab}{@render child(tab.component)}{/if}
+        {#if tab}
+          {#each 'components' in tab ? tab.components : [tab.component] as tabChild (tabChild.id)}
+            {@render child(tabChild)}
+          {/each}
+        {/if}
       {/snippet}
     </TabContainer>
   {:else if component.type === 'compositeCard'}
@@ -149,7 +157,7 @@
   <WidgetHost {snapshot}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
-        <MetricCard data={metricData} props={component.props} />
+        <MetricCard data={metricData} props={component.props} onlink={onmetriclink} />
       {:else if component.type === 'barChart'}
         <BarChart
           data={mainData}

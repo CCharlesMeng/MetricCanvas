@@ -31,6 +31,7 @@ export interface NestedComponentRender {
   snapshot(component: Component): DataSnapshot;
   table(component: Component): TableRenderBinding | undefined;
   onchartclick(component: Component): ((row: Row) => void) | undefined;
+  onmetriclink(component: Component): ((row: Row) => void) | undefined;
   map?(component: Component): 'china' | 'world' | undefined;
 }
 

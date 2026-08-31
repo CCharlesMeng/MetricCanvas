@@ -1,0 +1,27 @@
+[
+  {
+    "id": "NC-1",
+    "kind": "new-pattern",
+    "claim": "Page Metadata 保持 Section → Component，不新增中间实体。运行时根以 mc-runtime 承载页面壳与工具栏响应；RuntimeSection 为每个 Component 生成的 DOM 布局盒以 mc-component-box 承载 Widget 容器响应。该布局盒是运行时实现细节，共享运行时与 Widget 不读取全局 viewport。",
+    "samples": [
+      "packages/runtime-ui/src/RuntimeView.svelte",
+      "packages/runtime-ui/src/RuntimeSection.svelte",
+      "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+      "packages/widgets/src/components/metric-card/MetricCard.svelte",
+      "packages/widgets/src/components/map-chart/MapChart.svelte"
+    ]
+  },
+  {
+    "id": "NC-2",
+    "kind": "broken",
+    "target_id": "COMP-5",
+    "claim": "columnTracks 是跨组件比例的 Page Metadata 真源；组件根恒占满 RuntimeSection 依据 component.layout 生成的组件布局盒，不复制页面列宽、页面 id 或布局形态。Widget 内部若有固有内容宽度，应由自身内容声明派生，不得复制页面设计结果。",
+    "samples": [
+      "pages/ioc-project-detail.json",
+      "packages/runtime-ui/src/RuntimeSection.svelte",
+      "packages/widgets/src/components/report-header/ReportHeader.svelte",
+      "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+      "packages/widgets/src/components/composite-card/CompositeCard.svelte"
+    ]
+  }
+]

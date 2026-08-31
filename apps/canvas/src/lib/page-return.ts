@@ -61,3 +61,9 @@ export function pageReturnOf(pageId: string): PageReturnTarget | undefined {
 export function pageHref(pageId: string, search = ''): string {
   return `/pages/${pageId}${search ? `?${search}` : ''}`;
 }
+
+/** 深链缺少真实来源时缺席，宿主不得使用无关浏览器历史伪造返回。 */
+export function pageReturnHref(pageId: string): string | undefined {
+  const target = pageReturnOf(pageId);
+  return target ? pageHref(target.pageId, target.search) : undefined;
+}

@@ -17,7 +17,9 @@ MetricCanvas 统一运行时不路由、也不决定自己有多宽。应用外�
 
 运行时**不能**检测到宿主违反了这一条：它只看到一个较窄的容器，并按该宽度正常渲染。因此这是宿主侧的实现义务，没有运行时兜底。
 
-`apps/canvas` 的参考做法：正式路由的页面外框按 `layoutForm` 切换，报表沿用定宽居中，看板去掉内边距并模拟门户交付的 1679px 内容槽。顶栏、侧栏与菜单树仍归生产门户，不进入 Canvas 页面、`RuntimeView` 或 `packages/embed`。
+`apps/canvas` 的参考做法：正式路由的页面外框按 `layoutForm` 切换，报表沿用定宽居中，看板去掉内边距并使用宿主实际交付的全部可用宽度。1980px 是 IOC Page 的回归视口，不是宿主固定槽宽，也不会进入组件契约。顶栏、侧栏与菜单树仍归生产门户，不进入 Canvas Page、`RuntimeView` 或 `packages/embed`。
+
+Page Metadata 的结构仍然是 `Section → Component`，不存在中间业务实体。运行时仅为每个 Component 生成一个组件布局盒（`mc-component-box`），用来承接 `component.layout`、Grid 落位、创作态安装点和容器查询边界；它是 DOM / CSS 实现细节，不是 Page Metadata 层级。组件根节点只占满这个布局盒；跨组件比例只属于 Page Metadata 的 `columnTracks`，组件不得反向读取 Page id、布局形态或全局视口来推断自身宽度。
 
 ## 导航：运行时发出什么
 

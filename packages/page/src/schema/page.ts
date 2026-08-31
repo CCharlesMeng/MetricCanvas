@@ -70,10 +70,19 @@ export const pageLayoutFormZ = z
  * hidden 仅供页面已经显式声明自有页头时使用，避免运行时工具栏与页面组件重复。
  */
 export const dashboardToolbarZ = z
-  .enum(['visible', 'hidden'])
+  .union([
+    z.enum(['visible', 'hidden']),
+    z
+      .object({
+        variant: z.literal('compact'),
+        readOnly: z.boolean().optional(),
+        note: z.string().min(1).optional()
+      })
+      .strict()
+  ])
   .meta({
     id: 'dashboardToolbar',
-    description: 'dashboard 页面统一工具栏显隐；缺省 visible'
+    description: 'dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible'
   });
 
 /**

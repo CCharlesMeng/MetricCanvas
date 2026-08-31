@@ -8,7 +8,7 @@
    */
   interface Props {
     title?: string;
-    variant?: 'compact';
+    variant?: 'compact' | 'analysisStack';
     tabs: readonly TabLabel[];
     defaultTab?: string;
     children: Snippet<[string]>;
@@ -19,7 +19,11 @@
   const activeId = $derived(resolveActiveTab(tabs, selected, defaultTab));
 </script>
 
-<div class:compact={variant === 'compact'} class="tab-container">
+<div
+  class:compact={variant === 'compact'}
+  class:analysis-stack={variant === 'analysisStack'}
+  class="tab-container"
+>
   {#if title}<h3>{title}</h3>{/if}
   <div class="tab-list" role="tablist">
     {#each tabs as tab (tab.id)}
@@ -43,7 +47,9 @@
 
 <style>
   .tab-container {
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
     min-width: 0;
     min-height: 320px;
     flex: 1;
@@ -55,6 +61,15 @@
     height: 524px;
     min-height: 524px;
     flex: none;
+  }
+  .tab-container.analysis-stack {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 0;
+    flex: none;
+    padding: 14px 24px;
+    background: #fff;
+    border-radius: 16px;
   }
   h3 {
     margin: 0;
@@ -77,13 +92,21 @@
   }
   .compact .tab-list {
     box-sizing: border-box;
-    width: 516px;
+    width: auto;
     height: 28px;
     flex: none;
     flex-wrap: nowrap;
     gap: 4px;
     padding: 0;
-    margin: 14px 0 0 18px;
+    margin: 14px 18px 0;
+  }
+  .analysis-stack .tab-list {
+    flex: none;
+    flex-wrap: nowrap;
+    gap: 0;
+    padding: 0;
+    margin: 0 0 16px;
+    border-bottom: 2px solid #f0f0f0;
   }
   button {
     padding: 6px 12px;
@@ -100,6 +123,13 @@
     padding: 0 12px;
     line-height: 22px;
   }
+  .analysis-stack button {
+    padding: 10px 24px;
+    margin-bottom: -2px;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+  }
   button.active {
     color: var(--mc-tab-active-color, #08359e);
     border-bottom-color: var(--mc-tab-active-underline-color, #08359e);
@@ -109,18 +139,65 @@
     background: var(--mc-tab-indicator, transparent);
   }
   .tab-panel {
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
     min-width: 0;
     min-height: 0;
+    container: mc-component-box / inline-size;
     flex: 1;
     flex-direction: column;
     padding: 8px 0 0;
   }
   .compact .tab-panel {
-    box-sizing: border-box;
-    width: 550px;
     height: 464px;
     flex: none;
-    padding: 16px 0 0 18px;
+    padding: 16px 18px 0;
+  }
+  .analysis-stack .tab-panel {
+    display: flex;
+    flex: none;
+    gap: 0;
+    padding: 0;
+  }
+  .analysis-stack :global(.table-widget) {
+    width: 100%;
+    min-width: 0;
+    flex: none;
+    padding: 0 0 8px;
+    background: transparent;
+    border-radius: 0;
+  }
+  .analysis-stack :global(.table-widget + .table-widget) {
+    padding-top: 12px;
+    border-top: 1px dashed #dcdbdb;
+    margin-top: 20px;
+  }
+  .analysis-stack :global(.table-heading) {
+    margin-bottom: 12px;
+  }
+  .analysis-stack :global(.table-heading h3) {
+    color: #191919;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+  .analysis-stack :global(.scroll) {
+    max-height: 610px;
+    flex: none;
+    overflow: auto;
+  }
+  .analysis-stack :global(.table-widget:nth-child(3) .scroll) {
+    max-height: 710px;
+  }
+  .analysis-stack :global(table) {
+    min-width: 1200px;
+    table-layout: fixed;
+  }
+  .analysis-stack :global(.pager) {
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 12px 0;
+    margin-top: 0;
   }
 </style>

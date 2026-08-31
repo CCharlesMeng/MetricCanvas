@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import {
   clearPageReturns,
   pageHref,
+  pageReturnHref,
   pageReturnOf,
   rememberPageReturn
 } from '../src/lib/page-return';
@@ -24,5 +25,11 @@ describe('Canvas 回跳记录', () => {
     rememberPageReturn('detail', {});
     expect(pageReturnOf('detail')).toBeUndefined();
     expect(pageHref('list', 'd:region:east')).toBe('/pages/list?d:region:east');
+    expect(pageReturnHref('detail')).toBeUndefined();
+  });
+
+  it('只有真实来源记录才产生返回 href', () => {
+    rememberPageReturn('detail', { pageId: 'list', search: 'keyword=s%3Acloud' });
+    expect(pageReturnHref('detail')).toBe('/pages/list?keyword=s%3Acloud');
   });
 });

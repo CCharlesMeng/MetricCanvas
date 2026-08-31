@@ -1,6 +1,6 @@
 /**
  * 页面组件树遍历:内容分区顶层组件,以及两种容器内的子组件——Tab 容器的
- * `props.tabs[].component` 与组合卡的 `props.components[]`。校验、能力探测、
+ * `props.tabs[].component/components[]` 与组合卡的 `props.components[]`。校验、能力探测、
  * 编排与导航都走这一处,避免各层各写一遍漏掉嵌套。
  *
  * 页面树深度有界:组合卡内禁止再出现容器(ADR-0053),Tab 内只有表。
@@ -46,10 +46,17 @@ function visitTree<T extends { type: string }>(
 ): void {
   visit(component, path);
   if (component.type === 'tabContainer') {
-    const tabs = (component as { props?: { tabs?: Array<{ component?: T }> } }).props?.tabs ?? [];
+    const tabs = (
+      component as { props?: { tabs?: Array<{ component?: T; components?: T[] }> } }
+    ).props?.tabs ?? [];
     tabs.forEach((tab, tabIndex) => {
-      if (!tab.component) return;
-      visitTree(tab.component, `${path}/props/tabs/${tabIndex}/component`, visit);
+      if (tab.component) {
+        visitTree(tab.component, `${path}/props/tabs/${tabIndex}/component`, visit);
+        return;
+      }
+      (tab.components ?? []).forEach((child, childIndex) => {
+        visitTree(child, `${path}/props/tabs/${tabIndex}/components/${childIndex}`, visit);
+      });
     });
     return;
   }
@@ -103,11 +110,15 @@ function visitDocumentTree(
     const tabs = record(component.props)?.tabs;
     if (!Array.isArray(tabs)) return;
     tabs.forEach((tabCandidate, tabIndex) => {
-      visitDocumentTree(
-        record(tabCandidate)?.component,
-        `${path}/props/tabs/${tabIndex}/component`,
-        visit
-      );
+      const tab = record(tabCandidate);
+      if (tab?.component) {
+        visitDocumentTree(tab.component, `${path}/props/tabs/${tabIndex}/component`, visit);
+        return;
+      }
+      if (!Array.isArray(tab?.components)) return;
+      tab.components.forEach((child, childIndex) => {
+        visitDocumentTree(child, `${path}/props/tabs/${tabIndex}/components/${childIndex}`, visit);
+      });
     });
     return;
   }

@@ -1,0 +1,358 @@
+{
+  "baseline_sha256": "619767a80ad72e99c5c8d27218f35ade6e57ddb6a3eeb3a244241158d7c73501",
+  "contract_sha256": "78162def2cb560d7ea821504c344f41ab9a12bd5b5f417f13fb8859cb4e35c90",
+  "entries": [
+    {
+      "actual": {
+        "render": {
+          "actual": {
+            "overflow-x": "hidden"
+          },
+          "comparison": {
+            "actual": {
+              "overflow-x": "hidden"
+            },
+            "expected": {
+              "overflow-x": "auto"
+            }
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R5-1",
+      "block": "项目详情 / 预测表",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R5-1",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "6,8",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R5",
+      "expected": {
+        "render": {
+          "overflow-x": "auto"
+        }
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix > .scroll",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R5-1",
+      "status": "red",
+      "subject": "预测表横向溢出由内部滚动层承载"
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 0,
+          "comparison": {
+            "actual_max_css_px": 0.0,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-1",
+      "block": "四个 IOC Page 外框",
+      "check_mode": "overflow",
+      "contract_source": {
+        "baseline_id": "R6-1",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "5,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": "[data-page-layout-form='dashboard']",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-1",
+      "status": "green",
+      "subject": "Page 内容盒没有横向溢出",
+      "verified_layers": [
+        "render"
+      ]
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": [
+              {
+                "file": "packages/runtime-ui/src/RuntimeSection.svelte",
+                "value": ":has(> .cell[data-component-variant='detailSummary'])"
+              },
+              {
+                "file": "packages/runtime-ui/src/RuntimeSection.svelte",
+                "value": ":has(> .cell[data-component-variant='projectNorms'])"
+              }
+            ]
+          },
+          "status": "fail"
+        }
+      },
+      "baseline_id": "R6-2",
+      "block": "项目详情 / 内容单元契约",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-2",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "1,4,7",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".section-grid",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "静态预检不通过"
+      ],
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-2",
+      "status": "red",
+      "subject": "父网格不读取项目详情子 variant"
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": [
+              {
+                "file": "packages/widgets/src/components/report-header/ReportHeader.svelte",
+                "value": "width: 1679px"
+              },
+              {
+                "file": "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+                "value": "width: 450px"
+              },
+              {
+                "file": "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+                "value": "width: 1168px"
+              }
+            ]
+          },
+          "status": "fail"
+        }
+      },
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-3",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,3",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "静态预检不通过"
+      ],
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-3-fixed",
+      "status": "red",
+      "subject": "组件根不编码页面派生宽度"
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 216.94,
+          "comparison": {
+            "actual_max_css_px": 216.94,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "clip",
+      "contract_source": {
+        "baseline_id": "R6-3",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,3",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-3-clip",
+      "status": "red",
+      "subject": "组件根不被内容单元裁断"
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": [
+              {
+                "file": "packages/widgets/src/components/table/Table.svelte",
+                "value": "width: 1632px"
+              },
+              {
+                "file": "packages/widgets/src/components/field-text/FieldText.svelte",
+                "value": "width: 1632px"
+              }
+            ]
+          },
+          "status": "fail"
+        }
+      },
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-4",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix, .field-text.narrative",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "静态预检不通过"
+      ],
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-4-fixed",
+      "status": "red",
+      "subject": "组件根不编码页面派生宽度"
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 779,
+          "comparison": {
+            "actual_max_css_px": 779.0,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "clip",
+      "contract_source": {
+        "baseline_id": "R6-4",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix, .field-text.narrative",
+            "strategy": "css"
+          }
+        ]
+      },
+      "reasons": [
+        "结构化渲染实际值不符合冻结契约"
+      ],
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-4-clip",
+      "status": "red",
+      "subject": "组件根不被内容单元裁断"
+    }
+  ],
+  "overall": "red",
+  "phase": "red",
+  "report_sha256": "d7769bead57ae7da54d1fed389315345f4ce2952d3eb19e243f8ee12ac406c1f",
+  "schema_version": 2,
+  "summary": {
+    "green": 1,
+    "red": 6,
+    "total": 7,
+    "yellow": 0
+  },
+  "tool_equivalence_suspects": []
+}

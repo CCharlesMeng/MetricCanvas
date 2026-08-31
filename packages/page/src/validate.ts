@@ -1054,6 +1054,31 @@ function componentErrors(
       break;
     }
     case 'metricCard':
+      {
+        const hasNavigateAction = component.props.actions?.some(
+          (action) => 'navigate' in action
+        ) ?? false;
+        component.props.rows.forEach((row, rowIndex) => {
+          if (row.link === true && !hasNavigateAction) {
+            errors.push(
+              schemaError(
+                `${componentPath}/props/rows/${rowIndex}/link`,
+                '指标值链接必须至少声明一个 navigate 动作'
+              )
+            );
+          }
+        });
+        component.props.secondaryRows?.forEach((row, rowIndex) => {
+          if (row.link === true && !hasNavigateAction) {
+            errors.push(
+              schemaError(
+                `${componentPath}/props/secondaryRows/${rowIndex}/link`,
+                '指标值链接必须至少声明一个 navigate 动作'
+              )
+            );
+          }
+        });
+      }
       component.props.rows.forEach((row, rowIndex) => {
         check(row.valueField, `${componentPath}/props/rows/${rowIndex}/valueField`, 'measure');
         (row.changes ?? []).forEach((change, changeIndex) =>

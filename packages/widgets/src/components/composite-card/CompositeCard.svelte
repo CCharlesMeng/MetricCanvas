@@ -19,7 +19,7 @@
   interface Props {
     title?: string;
     titleIcon?: keyof typeof titleIcons;
-    variant?: 'compact' | 'projectNorms';
+    variant?: 'compact' | 'projectNorms' | 'metricGrid';
     /** 子组件声明的 `layout.span`,数组顺序即自动流顺序。 */
     spans: readonly number[];
     /** 相邻子组件之间是否分隔;位置由自动流落位派生,不由声明给出。 */
@@ -36,6 +36,7 @@
 <div
   class:compact={variant === 'compact'}
   class:project-norms={variant === 'projectNorms'}
+  class:metric-grid={variant === 'metricGrid'}
   class="composite-card"
 >
   {#if title}<h3>
@@ -66,6 +67,7 @@
 
     box-sizing: border-box;
     display: flex;
+    width: 100%;
     min-width: 0;
     min-height: 280px;
     flex: 1;
@@ -98,11 +100,39 @@
   .compact > h3 {
     text-shadow: 0 1px 5px rgb(0 0 0 / 0.05);
   }
+  .metric-grid {
+    --composite-card-gap: 20px;
+    --mc-metric-panel-min-height: 0;
+    --mc-metric-label-color: #191919;
+    --mc-metric-label-font-size: 14px;
+    --mc-metric-label-line-height: 20px;
+    --mc-metric-value-color: #191919;
+    --mc-metric-value-font-size: 28px;
+    --mc-metric-value-font-weight: 400;
+    --mc-metric-value-line-height: 34px;
+    --mc-metric-unit-color: #191919;
+    --mc-metric-unit-font-size: 14px;
+    --mc-metric-unit-font-weight: 400;
+    --mc-metric-unit-line-height: 20px;
+
+    min-height: 0;
+    padding: 20px;
+    background: #fff;
+    border-radius: 16px;
+  }
+  .metric-grid > .composite-grid {
+    --mc-compact-summary-flow: row;
+
+    flex: none;
+    grid-auto-rows: auto;
+    gap: 20px;
+  }
   .project-norms {
     --composite-card-gap: 26px;
 
     box-sizing: border-box;
-    width: 1168px;
+    width: 100%;
+    min-width: 0;
     height: 360px;
     min-height: 360px;
     flex: none;
@@ -165,6 +195,7 @@
     position: relative;
     display: flex;
     min-width: 0;
+    container: mc-component-box / inline-size;
     flex-direction: column;
   }
   /* 横线画在行边界上,即上一行与本行之间那道间距的中线。行内有邻居时向那一侧
@@ -195,14 +226,11 @@
     pointer-events: none;
   }
 
-  /* 窄屏退化成单列:此时「同一行的邻居」不再存在,竖线无从分隔,横线改由
-     DOM 相邻关系派生——分隔的语义仍是「相邻子组件之间」,只是行的定义变了。 */
-  @media (max-width: 1200px) {
-    .project-norms {
-      width: 100%;
-    }
-  }
-  @media (max-width: 900px) {
+  /* projectNorms 的高度只由自身布局盒决定；卡内 12 列结构始终服从子组件
+     声明的 span。组合卡无法从统一宽度阈值推断任意子组件的内容下限，因而
+     不在这里把所有 variant 强制改成单列。 */
+  /* responsive-contract: composite-project-norms-height */
+  @container mc-component-box (max-width: 900px) {
     .project-norms {
       height: auto;
       min-height: 0;
@@ -213,26 +241,6 @@
       min-height: 0;
       flex: none;
       grid-auto-rows: auto;
-    }
-  }
-  @media (max-width: 760px) {
-    .composite-grid {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .composite-slot {
-      grid-column: 1 / -1 !important;
-    }
-    .composite-slot.divider-before::after {
-      display: none;
-    }
-    .composite-grid.with-dividers > .composite-slot:not(:first-child)::before {
-      position: absolute;
-      top: calc(-1 * var(--composite-card-gap) / 2);
-      right: 0;
-      left: 0;
-      border-top: 1px dashed var(--mc-cell-divider-color, #dcdbdb);
-      content: '';
-      pointer-events: none;
     }
   }
 </style>

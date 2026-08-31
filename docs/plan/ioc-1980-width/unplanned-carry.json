@@ -1,0 +1,32 @@
+[
+  {
+    "file": "packages/runtime-ui/src/RuntimeView.svelte",
+    "task": "Task 2",
+    "reason": "质量复审证明 Section 需要稳定的宿主级 inline-size 容器，必须由运行时根建立 mc-runtime 边界。"
+  },
+  {
+    "file": "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+    "task": "Task 2",
+    "reason": "IOC compact 工具栏仍读取全局 viewport；同一宿主宽度下会产生隐性联动，需随宿主容器规则一并迁移。"
+  },
+  {
+    "file": "packages/widgets/src/components/metric-card/MetricCard.svelte",
+    "task": "Task 2",
+    "reason": "IOC 概览与机会分析复用该 Widget，其窄宽规则必须统一读取运行时组件布局盒 mc-component-box。"
+  },
+  {
+    "file": "packages/widgets/src/components/map-chart/MapChart.svelte",
+    "task": "Task 2",
+    "reason": "IOC 项目概览复用该 Widget，图例回流必须由运行时组件布局盒而非外部 viewport 决定。"
+  },
+  {
+    "file": "packages/runtime-ui/tests/project-detail-responsive.test.ts",
+    "task": "Task 2",
+    "reason": "原测试冻结了父网格读取子 variant 的旧契约，需改写为两级命名容器与禁止 viewport 媒体查询的静态契约。"
+  },
+  {
+    "file": "packages/widgets/tests/composite-card-surface.test.ts",
+    "task": "Task 2、Task 3、Task 4",
+    "reason": "原测试冻结了固定宽度与页面派生媒体查询，需改写为 Widget 只读取组件布局盒的回归契约。"
+  }
+]

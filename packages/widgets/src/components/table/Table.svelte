@@ -284,6 +284,7 @@
   class="table-widget"
   data-table-title={props.title}
   style:--table-header-row-height={`${headerRowHeight}px`}
+  style:--table-content-min-width={`${columnWidthTotal}px`}
 >
   {#if props.title || props.subtitle}
     <div class="table-heading">
@@ -591,7 +592,10 @@
 <style>
   .table-widget {
     position: relative;
+    box-sizing: border-box;
     flex: 1;
+    width: 100%;
+    min-width: 0;
     min-height: 0;
     display: flex;
     flex-direction: column;
@@ -607,7 +611,7 @@
   }
   .embedded {
     box-sizing: border-box;
-    width: 532px;
+    width: 100%;
     height: 448px;
     flex: none;
     padding: 0;
@@ -617,10 +621,10 @@
   }
   .embedded .scroll {
     box-sizing: border-box;
-    width: 532px;
+    width: 100%;
     height: 448px;
     flex: none;
-    overflow: hidden;
+    overflow: auto;
     border: 0;
   }
   .table-heading {
@@ -758,10 +762,10 @@
   .bottom-fade {
     position: absolute;
     z-index: 5;
-    right: auto;
+    right: 0;
     bottom: -18px;
-    left: -18px;
-    width: 518px;
+    left: 0;
+    width: auto;
     height: 25px;
     border-radius: 0 0 16px 16px;
     background: linear-gradient(180deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.32));
@@ -1293,11 +1297,12 @@
     --mc-table-header-row-height: 32px;
 
     box-sizing: border-box;
-    width: 1632px;
+    width: 100%;
+    min-width: 0;
     height: 770px;
     flex: none;
     gap: 4px;
-    padding: 22px 22px 17px 26px;
+    padding: 22px clamp(16px, 2cqi, 22px) 17px clamp(16px, 2.4cqi, 26px);
     overflow: hidden;
     background: #fff;
     border-radius: 16px;
@@ -1316,17 +1321,21 @@
   }
   .forecast-matrix > .scroll {
     box-sizing: border-box;
-    width: 1584px;
+    width: 100%;
     height: 703px;
     min-height: 703px;
     flex: 0 0 703px;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-inline: contain;
+    -webkit-overflow-scrolling: touch;
     border: 0;
     border-radius: 0;
   }
   .forecast-matrix table {
     box-sizing: border-box;
     width: 100%;
+    min-width: var(--table-content-min-width);
     height: 702px;
     table-layout: fixed;
     border-top: 1px solid rgb(0 0 0 / 0.15);
@@ -1388,27 +1397,5 @@
   }
   .fit-container .rate-cell {
     width: 100%;
-  }
-  @media (max-width: 1678px) {
-    .table-widget.forecast-matrix {
-      width: 100%;
-    }
-    .forecast-matrix > .scroll {
-      width: 100%;
-      overflow-x: auto;
-      overflow-y: hidden;
-      overscroll-behavior-inline: contain;
-      -webkit-overflow-scrolling: touch;
-    }
-    .forecast-matrix table {
-      width: 1584px;
-      min-width: 1584px;
-    }
-  }
-  @media (max-width: 760px) {
-    .table-widget.forecast-matrix {
-      padding-right: 16px;
-      padding-left: 16px;
-    }
   }
 </style>

@@ -1,0 +1,622 @@
+{
+  "schemaVersion": "5.4",
+  "id": "ioc-opportunity-analysis",
+  "meta": {
+    "title": "机会点数",
+    "description": "合成演示数据，非生产口径；首版筛选尚未接入查询。"
+  },
+  "layoutForm": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact",
+    "readOnly": true,
+    "note": "合成演示数据，非生产口径，筛选尚未接入"
+  },
+  "filters": [
+    { "id": "key-office", "type": "boolean", "label": "仅看重点国代" },
+    { "id": "as-of-date", "type": "timePoint", "granularity": "date", "label": "日期", "default": "2026-03-26" },
+    { "id": "industry", "type": "dimension", "dimension": "industry-code", "label": "产业", "emptyLabel": "请选择产业" },
+    { "id": "region", "type": "dimension", "dimension": "region-code", "label": "区域", "emptyLabel": "全球" },
+    { "id": "customer-category", "type": "dimension", "dimension": "customer-category", "label": "客户分类", "emptyLabel": "请选择客户分类" },
+    { "id": "trade", "type": "dimension", "dimension": "trade-code", "label": "行业", "emptyLabel": "请选择行业" },
+    { "id": "pre-sign-amount", "type": "dimension", "dimension": "pre-sign-band", "label": "预签金额", "emptyLabel": "请选择预签金额" }
+  ],
+  "dataSources": {
+    "opportunity-metrics": {
+      "fields": {
+        "opportunity-count": { "type": "number", "role": "measure", "label": "机会点个数", "defaultFormat": "number-grouped" },
+        "pipeline-support-rate": { "type": "number", "role": "measure", "label": "管道支撑率", "defaultFormat": "number-1" },
+        "pre-sign-amount": { "type": "number", "role": "measure", "label": "预签金额", "defaultFormat": "number-1" },
+        "annual-sales-forecast": { "type": "number", "role": "measure", "label": "本年度销售预测", "defaultFormat": "number-1" },
+        "public-cloud-count": { "type": "number", "role": "measure", "label": "公有云机会点数", "defaultFormat": "number-grouped" },
+        "public-cloud-rate": { "type": "number", "role": "measure", "label": "公有云管道支撑率", "defaultFormat": "number-1" },
+        "hybrid-cloud-count": { "type": "number", "role": "measure", "label": "混合云机会点数", "defaultFormat": "number-grouped" },
+        "hybrid-cloud-rate": { "type": "number", "role": "measure", "label": "混合云管道支撑率", "defaultFormat": "number-1" },
+        "huawei-cloud-count": { "type": "number", "role": "measure", "label": "华为云机会点", "defaultFormat": "number-grouped" },
+        "huawei-cloud-rate": { "type": "number", "role": "measure", "label": "华为云管道支撑率", "defaultFormat": "number-1" },
+        "enterprise-count": { "type": "number", "role": "measure", "label": "政企机会点", "defaultFormat": "number-grouped" },
+        "enterprise-rate": { "type": "number", "role": "measure", "label": "政企管道支撑率", "defaultFormat": "number-2" },
+        "carrier-count": { "type": "number", "role": "measure", "label": "运营商机会点", "defaultFormat": "number-grouped" },
+        "carrier-rate": { "type": "number", "role": "measure", "label": "运营商管道支撑率", "defaultFormat": "number-1" },
+        "near-overdue-count": { "type": "number", "role": "measure", "label": "即将超期机会点", "defaultFormat": "number-grouped" },
+        "near-overdue-amount": { "type": "number", "role": "measure", "label": "即将超期预签金额", "defaultFormat": "number-grouped" },
+        "overdue-count": { "type": "number", "role": "measure", "label": "超期机会点", "defaultFormat": "number-grouped" },
+        "overdue-amount": { "type": "number", "role": "measure", "label": "超期预签金额", "defaultFormat": "number-1" },
+        "stale-count": { "type": "number", "role": "measure", "label": "未更新机会点", "defaultFormat": "number-grouped" },
+        "stale-amount": { "type": "number", "role": "measure", "label": "未更新预签金额", "defaultFormat": "number-grouped" }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [{
+          "opportunity-count": 12860,
+          "pipeline-support-rate": 92.6,
+          "pre-sign-amount": 8236.5,
+          "annual-sales-forecast": 986.4,
+          "public-cloud-count": 8120,
+          "public-cloud-rate": 96.8,
+          "hybrid-cloud-count": 4740,
+          "hybrid-cloud-rate": 103.5,
+          "huawei-cloud-count": 5680,
+          "huawei-cloud-rate": 98.2,
+          "enterprise-count": 865,
+          "enterprise-rate": 9.86,
+          "carrier-count": 4315,
+          "carrier-rate": 101.7,
+          "near-overdue-count": 286,
+          "near-overdue-amount": 74,
+          "overdue-count": 1260,
+          "overdue-amount": 82.6,
+          "stale-count": 918,
+          "stale-amount": 63
+        }]
+      }
+    },
+    "region-analysis": {
+      "fields": {
+        "serial": { "type": "number", "role": "dimension", "label": "序号" },
+        "scope": { "type": "string", "role": "dimension", "label": "地区部" },
+        "industry-code": { "type": "string", "role": "dimension", "label": "产业" },
+        "region-code": { "type": "string", "role": "dimension", "label": "区域" },
+        "customer-category": { "type": "string", "role": "dimension", "label": "客户分类" },
+        "trade-code": { "type": "string", "role": "dimension", "label": "行业" },
+        "pre-sign-band": { "type": "string", "role": "dimension", "label": "预签金额档" },
+        "pipeline-rate": { "type": "number", "role": "measure", "label": "管道支撑率", "defaultFormat": "number-1" },
+        "overdue-count": { "type": "number", "role": "measure", "label": "超期机会点", "defaultFormat": "number-grouped" },
+        "css1": { "type": "number", "role": "measure", "label": "CSS1", "defaultFormat": "number-grouped" },
+        "css2": { "type": "number", "role": "measure", "label": "CSS2", "defaultFormat": "number-grouped" },
+        "css3": { "type": "number", "role": "measure", "label": "CSS3", "defaultFormat": "number-grouped" },
+        "css4": { "type": "number", "role": "measure", "label": "CSS4", "defaultFormat": "number-grouped" },
+        "css5": { "type": "number", "role": "measure", "label": "CSS5", "defaultFormat": "number-grouped" },
+        "cssa": { "type": "number", "role": "measure", "label": "CSSA", "defaultFormat": "number-grouped" },
+        "cssb": { "type": "number", "role": "measure", "label": "CSSB", "defaultFormat": "number-grouped" },
+        "cssc": { "type": "number", "role": "measure", "label": "CSSC", "defaultFormat": "number-grouped" },
+        "total-pre-sign": { "type": "number", "role": "measure", "label": "总预签金额", "defaultFormat": "number-1" },
+        "opportunity-count": { "type": "number", "role": "measure", "label": "机会点个数", "defaultFormat": "number-grouped" },
+        "bg": { "type": "string", "role": "dimension", "label": "BG归属" },
+        "new-count": { "type": "number", "role": "measure", "label": "新建机会点", "defaultFormat": "number-grouped" },
+        "effective-count": { "type": "number", "role": "measure", "label": "有效机会点", "defaultFormat": "number-grouped" },
+        "overdue-rate": { "type": "number", "role": "measure", "label": "机会点超期率", "defaultFormat": "number-1" },
+        "refresh-rate": { "type": "number", "role": "measure", "label": "机会点刷新率", "defaultFormat": "number-1" },
+        "previous-change": { "type": "number", "role": "measure", "label": "较上期", "defaultFormat": "number-1" },
+        "monthly-count": { "type": "number", "role": "measure", "label": "当月个数", "defaultFormat": "number-grouped" },
+        "count": { "type": "number", "role": "measure", "label": "个数", "defaultFormat": "number-grouped" },
+        "na-rate": { "type": "number", "role": "measure", "label": "NA占比", "defaultFormat": "number-1" },
+        "commercial-rate": { "type": "number", "role": "measure", "label": "商业市场占比", "defaultFormat": "number-1" },
+        "annual-forecast": { "type": "number", "role": "measure", "label": "本年预测", "defaultFormat": "number-1" },
+        "forecast-01": { "type": "number", "role": "measure", "label": "1月预测", "defaultFormat": "number-1" },
+        "forecast-02": { "type": "number", "role": "measure", "label": "2月预测", "defaultFormat": "number-1" },
+        "forecast-03": { "type": "number", "role": "measure", "label": "3月预测", "defaultFormat": "number-1" },
+        "forecast-04": { "type": "number", "role": "measure", "label": "4月预测", "defaultFormat": "number-1" },
+        "forecast-05": { "type": "number", "role": "measure", "label": "5月预测", "defaultFormat": "number-1" },
+        "forecast-06": { "type": "number", "role": "measure", "label": "6月预测", "defaultFormat": "number-1" },
+        "forecast-07": { "type": "number", "role": "measure", "label": "7月预测", "defaultFormat": "number-1" },
+        "forecast-08": { "type": "number", "role": "measure", "label": "8月预测", "defaultFormat": "number-1" },
+        "forecast-09": { "type": "number", "role": "measure", "label": "9月预测", "defaultFormat": "number-1" },
+        "forecast-10": { "type": "number", "role": "measure", "label": "10月预测", "defaultFormat": "number-1" },
+        "forecast-11": { "type": "number", "role": "measure", "label": "11月预测", "defaultFormat": "number-1" },
+        "forecast-12": { "type": "number", "role": "measure", "label": "12月预测", "defaultFormat": "number-1" }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [{
+          "serial": 1,
+          "scope": "中国区",
+          "industry-code": "云服务",
+          "region-code": "GLOBAL",
+          "customer-category": "NA客户",
+          "trade-code": "金融",
+          "pre-sign-band": "100万-1000万",
+          "pipeline-rate": 96.8,
+          "overdue-count": 126,
+          "css1": 186,
+          "css2": 245,
+          "css3": 318,
+          "css4": 274,
+          "css5": 198,
+          "cssa": 88,
+          "cssb": 76,
+          "cssc": 63,
+          "total-pre-sign": 128.6,
+          "opportunity-count": 1548,
+          "bg": "云核心BG",
+          "new-count": 216,
+          "effective-count": 1328,
+          "overdue-rate": 8.1,
+          "refresh-rate": 91.3,
+          "previous-change": 3.6,
+          "monthly-count": 168,
+          "count": 1548,
+          "na-rate": 61.2,
+          "commercial-rate": 38.8,
+          "annual-forecast": 168.2,
+          "forecast-01": 12.4,
+          "forecast-02": 13.1,
+          "forecast-03": 14.8,
+          "forecast-04": 15.2,
+          "forecast-05": 16.4,
+          "forecast-06": 14.1,
+          "forecast-07": 13.8,
+          "forecast-08": 12.9,
+          "forecast-09": 13.6,
+          "forecast-10": 14.7,
+          "forecast-11": 13.2,
+          "forecast-12": 13.9
+        }]
+      }
+    },
+    "office-analysis": {
+      "fields": {
+        "serial": { "type": "number", "role": "dimension", "label": "序号" },
+        "scope": { "type": "string", "role": "dimension", "label": "代表处" },
+        "pipeline-rate": { "type": "number", "role": "measure", "label": "管道支撑率", "defaultFormat": "number-1" },
+        "overdue-count": { "type": "number", "role": "measure", "label": "超期机会点", "defaultFormat": "number-grouped" },
+        "css1": { "type": "number", "role": "measure", "label": "CSS1", "defaultFormat": "number-grouped" },
+        "css2": { "type": "number", "role": "measure", "label": "CSS2", "defaultFormat": "number-grouped" },
+        "css3": { "type": "number", "role": "measure", "label": "CSS3", "defaultFormat": "number-grouped" },
+        "css4": { "type": "number", "role": "measure", "label": "CSS4", "defaultFormat": "number-grouped" },
+        "css5": { "type": "number", "role": "measure", "label": "CSS5", "defaultFormat": "number-grouped" },
+        "cssa": { "type": "number", "role": "measure", "label": "CSSA", "defaultFormat": "number-grouped" },
+        "cssb": { "type": "number", "role": "measure", "label": "CSSB", "defaultFormat": "number-grouped" },
+        "cssc": { "type": "number", "role": "measure", "label": "CSSC", "defaultFormat": "number-grouped" },
+        "total-pre-sign": { "type": "number", "role": "measure", "label": "总预签金额", "defaultFormat": "number-1" },
+        "opportunity-count": { "type": "number", "role": "measure", "label": "机会点个数", "defaultFormat": "number-grouped" },
+        "bg": { "type": "string", "role": "dimension", "label": "BG归属" },
+        "new-count": { "type": "number", "role": "measure", "label": "新建机会点", "defaultFormat": "number-grouped" },
+        "effective-count": { "type": "number", "role": "measure", "label": "有效机会点", "defaultFormat": "number-grouped" },
+        "overdue-rate": { "type": "number", "role": "measure", "label": "机会点超期率", "defaultFormat": "number-1" },
+        "refresh-rate": { "type": "number", "role": "measure", "label": "机会点刷新率", "defaultFormat": "number-1" },
+        "previous-change": { "type": "number", "role": "measure", "label": "较上期", "defaultFormat": "number-1" },
+        "monthly-count": { "type": "number", "role": "measure", "label": "当月个数", "defaultFormat": "number-grouped" },
+        "count": { "type": "number", "role": "measure", "label": "个数", "defaultFormat": "number-grouped" },
+        "na-rate": { "type": "number", "role": "measure", "label": "NA占比", "defaultFormat": "number-1" },
+        "commercial-rate": { "type": "number", "role": "measure", "label": "商业市场占比", "defaultFormat": "number-1" },
+        "annual-forecast": { "type": "number", "role": "measure", "label": "本年预测", "defaultFormat": "number-1" },
+        "forecast-01": { "type": "number", "role": "measure", "label": "1月预测", "defaultFormat": "number-1" },
+        "forecast-02": { "type": "number", "role": "measure", "label": "2月预测", "defaultFormat": "number-1" },
+        "forecast-03": { "type": "number", "role": "measure", "label": "3月预测", "defaultFormat": "number-1" },
+        "forecast-04": { "type": "number", "role": "measure", "label": "4月预测", "defaultFormat": "number-1" },
+        "forecast-05": { "type": "number", "role": "measure", "label": "5月预测", "defaultFormat": "number-1" },
+        "forecast-06": { "type": "number", "role": "measure", "label": "6月预测", "defaultFormat": "number-1" },
+        "forecast-07": { "type": "number", "role": "measure", "label": "7月预测", "defaultFormat": "number-1" },
+        "forecast-08": { "type": "number", "role": "measure", "label": "8月预测", "defaultFormat": "number-1" },
+        "forecast-09": { "type": "number", "role": "measure", "label": "9月预测", "defaultFormat": "number-1" },
+        "forecast-10": { "type": "number", "role": "measure", "label": "10月预测", "defaultFormat": "number-1" },
+        "forecast-11": { "type": "number", "role": "measure", "label": "11月预测", "defaultFormat": "number-1" },
+        "forecast-12": { "type": "number", "role": "measure", "label": "12月预测", "defaultFormat": "number-1" }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [{
+          "serial": 1,
+          "scope": "德国代表处",
+          "pipeline-rate": 101.4,
+          "overdue-count": 36,
+          "css1": 42,
+          "css2": 58,
+          "css3": 71,
+          "css4": 66,
+          "css5": 49,
+          "cssa": 24,
+          "cssb": 18,
+          "cssc": 16,
+          "total-pre-sign": 36.8,
+          "opportunity-count": 412,
+          "bg": "云核心BG",
+          "new-count": 68,
+          "effective-count": 376,
+          "overdue-rate": 8.7,
+          "refresh-rate": 93.2,
+          "previous-change": 4.1,
+          "monthly-count": 57,
+          "count": 412,
+          "na-rate": 54.6,
+          "commercial-rate": 45.4,
+          "annual-forecast": 52.7,
+          "forecast-01": 4.1,
+          "forecast-02": 4.3,
+          "forecast-03": 4.6,
+          "forecast-04": 4.8,
+          "forecast-05": 5.1,
+          "forecast-06": 4.4,
+          "forecast-07": 4.2,
+          "forecast-08": 4.0,
+          "forecast-09": 4.3,
+          "forecast-10": 4.6,
+          "forecast-11": 4.0,
+          "forecast-12": 4.3
+        }]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "opportunity-metrics",
+      "container": "plain",
+      "columnTracks": [2, 2, 3, 3],
+      "components": [
+        {
+          "id": "opportunity-card-overview",
+          "type": "compositeCard",
+          "layout": { "span": 1 },
+          "props": {
+            "variant": "metricGrid",
+            "dividers": true,
+            "components": [
+              {
+                "id": "opportunity-overview-count-rate",
+                "type": "metricCard",
+                "layout": { "span": 12 },
+                "data": { "main": "opportunity-metrics" },
+                "props": {
+                  "variant": "compactStrip",
+                  "rows": [
+                    { "label": "机会点个数", "valueField": "opportunity-count", "unit": "个" },
+                    { "label": "管道支撑率", "valueField": "pipeline-support-rate", "unit": "%" }
+                  ]
+                }
+              },
+              {
+                "id": "opportunity-overview-amount-forecast",
+                "type": "metricCard",
+                "layout": { "span": 12 },
+                "data": { "main": "opportunity-metrics" },
+                "props": {
+                  "variant": "compactStrip",
+                  "rows": [
+                    { "label": "预签金额", "valueField": "pre-sign-amount", "unit": "亿" },
+                    { "label": "本年度销售预测", "valueField": "annual-sales-forecast", "unit": "亿" }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "opportunity-card-cloud",
+          "type": "compositeCard",
+          "layout": { "span": 1 },
+          "props": {
+            "variant": "metricGrid",
+            "dividers": true,
+            "components": [
+              {
+                "id": "opportunity-public-cloud",
+                "type": "metricCard",
+                "layout": { "span": 12 },
+                "data": { "main": "opportunity-metrics" },
+                "props": {
+                  "variant": "compactStrip",
+                  "rows": [
+                    { "label": "公有云机会点数", "valueField": "public-cloud-count", "unit": "个" },
+                    { "label": "公有云管道支撑率", "valueField": "public-cloud-rate", "unit": "%" }
+                  ]
+                }
+              },
+              {
+                "id": "opportunity-hybrid-cloud",
+                "type": "metricCard",
+                "layout": { "span": 12 },
+                "data": { "main": "opportunity-metrics" },
+                "props": {
+                  "variant": "compactStrip",
+                  "rows": [
+                    { "label": "混合云机会点数", "valueField": "hybrid-cloud-count", "unit": "个" },
+                    { "label": "混合云管道支撑率", "valueField": "hybrid-cloud-rate", "unit": "%" }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "opportunity-card-business",
+          "type": "compositeCard",
+          "layout": { "span": 1 },
+          "props": {
+            "variant": "metricGrid",
+            "dividers": true,
+            "components": [
+              {
+                "id": "opportunity-huawei-cloud",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "华为云机会点", "valueField": "huawei-cloud-count", "unit": "个" },
+                  { "label": "管道支撑率", "valueField": "huawei-cloud-rate", "unit": "%" }
+                ] }
+              },
+              {
+                "id": "opportunity-enterprise",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "政企机会点", "valueField": "enterprise-count", "unit": "个" },
+                  { "label": "管道支撑率", "valueField": "enterprise-rate", "unit": "%" }
+                ] }
+              },
+              {
+                "id": "opportunity-carrier",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "运营商机会点", "valueField": "carrier-count", "unit": "个" },
+                  { "label": "管道支撑率", "valueField": "carrier-rate", "unit": "%" }
+                ] }
+              }
+            ]
+          }
+        },
+        {
+          "id": "opportunity-card-aging",
+          "type": "compositeCard",
+          "layout": { "span": 1 },
+          "props": {
+            "variant": "metricGrid",
+            "dividers": true,
+            "components": [
+              {
+                "id": "opportunity-near-overdue",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "即将超期机会点", "valueField": "near-overdue-count", "unit": "个" },
+                  { "label": "预签金额", "valueField": "near-overdue-amount", "unit": "亿" }
+                ] }
+              },
+              {
+                "id": "opportunity-overdue",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "超期机会点", "valueField": "overdue-count", "unit": "个" },
+                  { "label": "预签金额", "valueField": "overdue-amount", "unit": "亿" }
+                ] }
+              },
+              {
+                "id": "opportunity-stale",
+                "type": "metricCard",
+                "layout": { "span": 4 },
+                "data": { "main": "opportunity-metrics" },
+                "props": { "variant": "compactStack", "rows": [
+                  { "label": "未更新机会点", "valueField": "stale-count", "unit": "个" },
+                  { "label": "预签金额", "valueField": "stale-amount", "unit": "亿" }
+                ] }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "opportunity-regions",
+      "container": "plain",
+      "components": [
+        {
+          "id": "opportunity-region-tabs",
+          "type": "tabContainer",
+          "layout": { "span": 12 },
+          "props": {
+            "variant": "analysisStack",
+            "defaultTab": "region",
+            "tabs": [
+              {
+                "id": "region",
+                "label": "地区部",
+                "components": [
+                  {
+                    "id": "region-opportunity-overview",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "region-analysis" },
+                    "props": {
+                      "title": "机会点总览",
+                      "fit": "content",
+                      "columns": [
+                        { "kind": "group", "id": "region-basic", "title": "基本信息", "children": [
+                          { "field": "serial", "title": "序号", "fixed": "left", "width": 72 },
+                          { "field": "scope", "title": "地区部", "fixed": "left", "width": 140 },
+                          { "field": "pipeline-rate", "title": "管道支撑率", "sortable": true, "align": "right", "width": 120 }
+                        ] },
+                        { "kind": "group", "id": "region-css", "title": "超期机会点分布", "children": [
+                          { "field": "overdue-count", "title": "超期机会点", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "css1", "title": "CSS1", "align": "right", "width": 82 },
+                          { "field": "css2", "title": "CSS2", "align": "right", "width": 82 },
+                          { "field": "css3", "title": "CSS3", "align": "right", "width": 82 },
+                          { "field": "css4", "title": "CSS4", "align": "right", "width": 82 },
+                          { "field": "css5", "title": "CSS5", "align": "right", "width": 82 },
+                          { "field": "cssa", "title": "CSSA", "align": "right", "width": 82 },
+                          { "field": "cssb", "title": "CSSB", "align": "right", "width": 82 },
+                          { "field": "cssc", "title": "CSSC", "align": "right", "width": 82 }
+                        ] },
+                        { "kind": "group", "id": "region-total", "title": "规模", "children": [
+                          { "field": "total-pre-sign", "title": "总预签金额", "align": "right", "width": 120 },
+                          { "field": "opportunity-count", "title": "机会点个数", "align": "right", "width": 110 }
+                        ] }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  },
+                  {
+                    "id": "region-bg-opportunities",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "region-analysis" },
+                    "props": {
+                      "title": "按BG类型看机会点",
+                      "fit": "content",
+                      "columns": [
+                        { "kind": "group", "id": "region-bg-key", "title": "BG类型", "children": [
+                          { "field": "serial", "title": "序号", "fixed": "left", "width": 72 },
+                          { "field": "scope", "title": "地区部", "fixed": "left", "width": 140 },
+                          { "field": "bg", "title": "BG归属", "width": 120 }
+                        ] },
+                        { "kind": "group", "id": "region-bg-health", "title": "机会点健康度", "children": [
+                          { "field": "new-count", "title": "新建机会点", "align": "right", "width": 110 },
+                          { "field": "effective-count", "title": "有效机会点", "align": "right", "width": 110 },
+                          { "field": "overdue-rate", "title": "机会点超期率", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "refresh-rate", "title": "机会点刷新率", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "previous-change", "title": "较上期", "align": "right", "width": 96 },
+                          { "field": "monthly-count", "title": "当月个数", "align": "right", "width": 96 },
+                          { "field": "count", "title": "个数", "align": "right", "width": 82 },
+                          { "field": "na-rate", "title": "NA占比", "align": "right", "width": 96 },
+                          { "field": "commercial-rate", "title": "商业市场占比", "align": "right", "width": 120 }
+                        ] }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  },
+                  {
+                    "id": "region-opportunity-forecast",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "region-analysis" },
+                    "props": {
+                      "title": "机会点销售预测",
+                      "fit": "content",
+                      "columns": [
+                        { "field": "scope", "title": "地区部", "fixed": "left", "width": 140 },
+                        { "field": "annual-forecast", "title": "本年预测", "sortable": true, "align": "right", "width": 110 },
+                        { "field": "forecast-01", "title": "1月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-02", "title": "2月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-03", "title": "3月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-04", "title": "4月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-05", "title": "5月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-06", "title": "6月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-07", "title": "7月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-08", "title": "8月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-09", "title": "9月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-10", "title": "10月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-11", "title": "11月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-12", "title": "12月预测", "align": "right", "width": 96 }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "office",
+                "label": "代表处",
+                "components": [
+                  {
+                    "id": "office-opportunity-overview",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "office-analysis" },
+                    "props": {
+                      "title": "机会点总览",
+                      "fit": "content",
+                      "columns": [
+                        { "kind": "group", "id": "office-basic", "title": "基本信息", "children": [
+                          { "field": "serial", "title": "序号", "fixed": "left", "width": 72 },
+                          { "field": "scope", "title": "代表处", "fixed": "left", "width": 140 },
+                          { "field": "pipeline-rate", "title": "管道支撑率", "sortable": true, "align": "right", "width": 120 }
+                        ] },
+                        { "kind": "group", "id": "office-css", "title": "超期机会点分布", "children": [
+                          { "field": "overdue-count", "title": "超期机会点", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "css1", "title": "CSS1", "align": "right", "width": 82 },
+                          { "field": "css2", "title": "CSS2", "align": "right", "width": 82 },
+                          { "field": "css3", "title": "CSS3", "align": "right", "width": 82 },
+                          { "field": "css4", "title": "CSS4", "align": "right", "width": 82 },
+                          { "field": "css5", "title": "CSS5", "align": "right", "width": 82 },
+                          { "field": "cssa", "title": "CSSA", "align": "right", "width": 82 },
+                          { "field": "cssb", "title": "CSSB", "align": "right", "width": 82 },
+                          { "field": "cssc", "title": "CSSC", "align": "right", "width": 82 }
+                        ] },
+                        { "kind": "group", "id": "office-total", "title": "规模", "children": [
+                          { "field": "total-pre-sign", "title": "总预签金额", "align": "right", "width": 120 },
+                          { "field": "opportunity-count", "title": "机会点个数", "align": "right", "width": 110 }
+                        ] }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  },
+                  {
+                    "id": "office-bg-opportunities",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "office-analysis" },
+                    "props": {
+                      "title": "按BG类型看机会点",
+                      "fit": "content",
+                      "columns": [
+                        { "kind": "group", "id": "office-bg-key", "title": "BG类型", "children": [
+                          { "field": "serial", "title": "序号", "fixed": "left", "width": 72 },
+                          { "field": "scope", "title": "代表处", "fixed": "left", "width": 140 },
+                          { "field": "bg", "title": "BG归属", "width": 120 }
+                        ] },
+                        { "kind": "group", "id": "office-bg-health", "title": "机会点健康度", "children": [
+                          { "field": "new-count", "title": "新建机会点", "align": "right", "width": 110 },
+                          { "field": "effective-count", "title": "有效机会点", "align": "right", "width": 110 },
+                          { "field": "overdue-rate", "title": "机会点超期率", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "refresh-rate", "title": "机会点刷新率", "sortable": true, "align": "right", "width": 120 },
+                          { "field": "previous-change", "title": "较上期", "align": "right", "width": 96 },
+                          { "field": "monthly-count", "title": "当月个数", "align": "right", "width": 96 },
+                          { "field": "count", "title": "个数", "align": "right", "width": 82 },
+                          { "field": "na-rate", "title": "NA占比", "align": "right", "width": 96 },
+                          { "field": "commercial-rate", "title": "商业市场占比", "align": "right", "width": 120 }
+                        ] }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  },
+                  {
+                    "id": "office-opportunity-forecast",
+                    "type": "table",
+                    "layout": { "span": 12 },
+                    "data": { "main": "office-analysis" },
+                    "props": {
+                      "title": "机会点销售预测",
+                      "fit": "content",
+                      "columns": [
+                        { "field": "scope", "title": "代表处", "fixed": "left", "width": 140 },
+                        { "field": "annual-forecast", "title": "本年预测", "sortable": true, "align": "right", "width": 110 },
+                        { "field": "forecast-01", "title": "1月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-02", "title": "2月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-03", "title": "3月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-04", "title": "4月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-05", "title": "5月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-06", "title": "6月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-07", "title": "7月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-08", "title": "8月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-09", "title": "9月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-10", "title": "10月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-11", "title": "11月预测", "align": "right", "width": 96 },
+                        { "field": "forecast-12", "title": "12月预测", "align": "right", "width": 96 }
+                      ],
+                      "pagination": { "mode": "local", "pageSize": 10, "numbered": true }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

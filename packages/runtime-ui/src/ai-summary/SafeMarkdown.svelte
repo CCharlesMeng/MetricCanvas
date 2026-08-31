@@ -39,7 +39,7 @@
 </div>
 
 <style>
-  .safe-markdown { display: grid; gap: 6px; }
+  .safe-markdown { display: grid; min-width: 0; gap: 6px; overflow-wrap: anywhere; }
   p, blockquote, ol, ul, pre { margin: 0; }
   .heading { color: inherit; font-weight: 850; line-height: 1.35; }
   .h1 { font-size: 1.15em; }

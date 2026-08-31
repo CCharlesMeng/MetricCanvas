@@ -1,0 +1,212 @@
+{
+  "baseline": {
+    "path": "dev-baseline.md",
+    "sha256": "619767a80ad72e99c5c8d27218f35ade6e57ddb6a3eeb3a244241158d7c73501"
+  },
+  "contract_sha256": "78162def2cb560d7ea821504c344f41ab9a12bd5b5f417f13fb8859cb4e35c90",
+  "rules": [
+    {
+      "baseline_id": "R5-1",
+      "block": "项目详情 / 预测表",
+      "check_mode": "exact",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "6,8",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R5",
+      "expected": {
+        "render": {
+          "overflow-x": "auto"
+        }
+      },
+      "id": "R5-1",
+      "required_layers": [
+        "render"
+      ],
+      "state_scenario": {
+        "name": "narrow-content-unit"
+      },
+      "subject": "预测表横向溢出由内部滚动层承载",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-1",
+      "block": "四个 IOC Page 外框",
+      "check_mode": "overflow",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "5,6",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "id": "R6-1",
+      "required_layers": [
+        "render"
+      ],
+      "state_scenario": {
+        "name": "ioc-1980",
+        "viewport": {
+          "height": 1080,
+          "width": 1980
+        }
+      },
+      "subject": "Page 内容盒没有横向溢出",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R6-2",
+      "block": "项目详情 / 内容单元契约",
+      "check_mode": "exact",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "1,4,7",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "id": "R6-2",
+      "required_layers": [
+        "static"
+      ],
+      "state_scenario": {
+        "name": "same-container-cross-viewport"
+      },
+      "static_check": {
+        "kind": "forbidden_literals",
+        "values": [
+          ":has(> .cell[data-component-variant='detailSummary'])",
+          ":has(> .cell[data-component-variant='projectNorms'])"
+        ]
+      },
+      "subject": "父网格不读取项目详情子 variant",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "exact",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "2,3",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "id": "R6-3-fixed",
+      "required_layers": [
+        "static"
+      ],
+      "state_scenario": {
+        "name": "project-profile-900"
+      },
+      "static_check": {
+        "kind": "forbidden_literals",
+        "values": [
+          "width: 1679px",
+          "width: 450px",
+          "width: 1168px"
+        ]
+      },
+      "subject": "组件根不编码页面派生宽度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "clip",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "2,3",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "id": "R6-3-clip",
+      "required_layers": [
+        "render"
+      ],
+      "state_scenario": {
+        "name": "project-profile-900"
+      },
+      "subject": "组件根不被内容单元裁断",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    },
+    {
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "exact",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "2,6",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "id": "R6-4-fixed",
+      "required_layers": [
+        "static"
+      ],
+      "state_scenario": {
+        "name": "project-body-900"
+      },
+      "static_check": {
+        "kind": "forbidden_literals",
+        "values": [
+          "width: 1632px"
+        ]
+      },
+      "subject": "组件根不编码页面派生宽度",
+      "tolerance": {
+        "css_px": 0.0
+      }
+    },
+    {
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "clip",
+      "design_fact_source": {
+        "anchor": "文字规格",
+        "key": "2,6",
+        "path": "story-delta-frontend-design.md"
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "id": "R6-4-clip",
+      "required_layers": [
+        "render"
+      ],
+      "state_scenario": {
+        "name": "project-body-900"
+      },
+      "subject": "组件根不被内容单元裁断",
+      "tolerance": {
+        "css_px": 1.0
+      }
+    }
+  ],
+  "schema_version": 2
+}

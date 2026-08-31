@@ -74,10 +74,13 @@
 <style>
   .category-breakdown {
     display: flex;
+    width: 100%;
     min-width: 0;
+    max-width: 100%;
     flex: 1;
     flex-direction: column;
     gap: 8px;
+    overflow-x: auto;
   }
   h3 {
     margin: 0;

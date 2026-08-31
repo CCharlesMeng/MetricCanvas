@@ -3,6 +3,7 @@ import {
   type DataSnapshot,
   type FieldBinding,
   type ResolvedFieldDefinition,
+  type Row,
   type ValueFormatPreset,
   type FieldValue
 } from '@metriccanvas/page';
@@ -86,15 +87,32 @@ export function fieldValue(
   rowIndex = 0
 ): FieldValue | undefined {
   const resolved = resolveField(binding, data);
+  return resolvedRow(binding, data, rowIndex)?.[resolved.field] as
+    | FieldValue
+    | undefined;
+}
+
+function resolvedRow(
+  binding: FieldBinding,
+  data: NamedDataSlots,
+  rowIndex: number
+): Row | undefined {
+  const resolved = resolveField(binding, data);
   const rows = data[resolved.data]?.snapshot.rows;
   const selectedIndex =
     typeof binding !== 'string' && binding.match !== undefined
       ? (rows?.findIndex((row) => row[binding.match!.field] === binding.match!.equals) ?? -1)
       : rowIndex;
-  if (selectedIndex < 0) return undefined;
-  return rows?.[selectedIndex]?.[resolved.field] as
-    | FieldValue
-    | undefined;
+  return selectedIndex < 0 ? undefined : rows?.[selectedIndex];
+}
+
+/** 返回字段绑定实际命中的数据行，供值级交互携带行上下文。 */
+export function fieldRow(
+  binding: FieldBinding,
+  data: NamedDataSlots,
+  rowIndex = 0
+): Row | undefined {
+  return resolvedRow(binding, data, rowIndex);
 }
 
 export function fieldLabel(binding: FieldBinding, data: NamedDataSlots): string {

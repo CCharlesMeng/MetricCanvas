@@ -101,9 +101,14 @@ export type GaugeProps = z.infer<typeof gaugeComponentZ>['props'];
 export type GaugeComponent = z.infer<typeof gaugeComponentZ>;
 
 export type TabContainerProps = z.infer<typeof tabContainerComponentZ>['props'];
-export type TabItem = Omit<TabContainerProps['tabs'][number], 'component'> & {
-  component: TableComponent;
-};
+type InferredTabItem = TabContainerProps['tabs'][number];
+export type TabItem =
+  | (Omit<Extract<InferredTabItem, { component: unknown }>, 'component'> & {
+      component: TableComponent;
+    })
+  | (Omit<Extract<InferredTabItem, { components: unknown }>, 'components'> & {
+      components: TableComponent[];
+    });
 export type TabContainerComponent = Omit<
   z.infer<typeof tabContainerComponentZ>,
   'props'
@@ -212,6 +217,23 @@ export interface Page {
 export function documentLayoutForm(document: unknown): PageLayoutForm {
   const declared = (document as { layoutForm?: unknown } | null)?.layoutForm;
   return declared === 'dashboard' ? 'dashboard' : 'report';
+}
+
+/**
+ * 宿主是否应把返回入口交给运行时工具栏。对象形态工具栏本身不足以接管：
+ * RuntimeView 只会在 dashboard 形态渲染它，report 仍须保留宿主 breadcrumb。
+ */
+export function documentUsesRuntimeBackToolbar(document: unknown): boolean {
+  if (documentLayoutForm(document) !== 'dashboard') return false;
+  if (typeof document !== 'object' || document === null || Array.isArray(document)) return false;
+  const toolbar = (document as { dashboardToolbar?: unknown }).dashboardToolbar;
+  if (toolbar === undefined || toolbar === 'visible') return true;
+  return (
+    typeof toolbar === 'object' &&
+    toolbar !== null &&
+    !Array.isArray(toolbar) &&
+    (toolbar as { variant?: unknown }).variant === 'compact'
+  );
 }
 
 /** 内容分区声明的 backdrop 组件；分区最多一个，由页面校验保证。 */

@@ -37,16 +37,18 @@
 <style>
   .pie-chart {
     display: flex;
+    width: 100%;
     min-width: 0;
     min-height: 0;
     flex: 1;
     flex-direction: column;
   }
   .compact-ring {
-    width: 108px;
-    height: 108px;
-    min-width: 108px;
-    min-height: 108px;
+    width: min(100%, 108px);
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
     flex: none;
     margin: auto;
   }

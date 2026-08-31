@@ -1,0 +1,123 @@
+{
+  "schema_version": 1,
+  "role": "review-convention",
+  "evidence_epoch": "review-4",
+  "code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+  "judged_files": [
+    "apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+    "apps/canvas/tests/dashboard-frame.test.ts",
+    "packages/embed/tests/browser/embed.spec.ts",
+    "packages/runtime-ui/src/RuntimeSection.svelte",
+    "packages/runtime-ui/src/RuntimeView.svelte",
+    "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+    "packages/runtime-ui/tests/project-detail-responsive.test.ts",
+    "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+    "packages/widgets/src/components/field-text/FieldText.svelte",
+    "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+    "packages/widgets/src/components/map-chart/MapChart.svelte",
+    "packages/widgets/src/components/metric-card/MetricCard.svelte",
+    "packages/widgets/src/components/report-header/ReportHeader.svelte",
+    "packages/widgets/src/components/table/Table.svelte",
+    "packages/widgets/tests/composite-card-surface.test.ts",
+    "pages/ioc-project-overview.json",
+    "pages/ioc-opportunity-analysis.json",
+    "pages/ioc-opportunity-list.json",
+    "pages/ioc-project-detail.json"
+  ],
+  "status": "executed",
+  "coverage": [
+    {
+      "dimension": "C1",
+      "scope": "新增 Canvas Vitest 文件、测试目录与 Story 浏览器入口",
+      "evidence_ids": [
+        "apps/canvas/tests/dashboard-frame.test.ts:L1-L18",
+        "packages/embed/tests/browser/embed.spec.ts:L175-L296",
+        "PATTERN-TEST-1",
+        "PATTERN-TEST-2"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C2",
+      "scope": "Section→Component 运行时组件布局盒、宿主容器及嵌套组件布局盒的 Svelte 范式",
+      "evidence_ids": [
+        "packages/runtime-ui/src/RuntimeSection.svelte:L25-L45",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L302-L355",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L442-L458",
+        "packages/runtime-ui/src/RuntimeView.svelte:L1063-L1068",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte:L193-L199",
+        "packages/runtime-ui/tests/project-detail-responsive.test.ts:L17-L45",
+        "PATTERN-STYLE-1",
+        "PATTERN-STYLE-2"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C3",
+      "scope": "dashboard 宿主外框、mc-runtime、mc-component-box、Widget 根宽与预测表最小内容宽度样式",
+      "evidence_ids": [
+        "packages/runtime-ui/src/RuntimeView.svelte:L1063-L1068",
+        "packages/runtime-ui/src/RuntimeView.svelte:L1284-L1291",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L442-L458",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L825-L847",
+        "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte:L154-L163",
+        "packages/widgets/src/components/report-header/ReportHeader.svelte:L141-L153",
+        "packages/widgets/src/components/report-header/ReportHeader.svelte:L509-L554",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte:L185-L233",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte:L324-L360",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte:L129-L143",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte:L193-L248",
+        "packages/widgets/src/components/table/Table.svelte:L276-L288",
+        "packages/widgets/src/components/table/Table.svelte:L1293-L1339",
+        "packages/widgets/src/components/table/Table.svelte:L1398-L1403",
+        "packages/widgets/src/components/field-text/FieldText.svelte:L88-L142",
+        "packages/widgets/src/components/metric-card/MetricCard.svelte:L342-L346",
+        "packages/widgets/src/components/metric-card/MetricCard.svelte:L465-L469",
+        "packages/widgets/src/components/metric-card/MetricCard.svelte:L708-L712",
+        "packages/widgets/src/components/map-chart/MapChart.svelte:L416-L425",
+        "PATTERN-STYLE-1",
+        "PATTERN-STYLE-2",
+        "PATTERN-STYLE-5"
+      ],
+      "result": "clear"
+    },
+    {
+      "dimension": "C5",
+      "scope": "四页 Page Metadata 的 Section→Component 所有权、columnTracks 复用、组件布局盒公共边界及 Table 列声明宽度派生",
+      "evidence_ids": [
+        "pages/ioc-project-overview.json:L894-L899",
+        "pages/ioc-opportunity-analysis.json:L250-L255",
+        "pages/ioc-opportunity-list.json:L842-L862",
+        "pages/ioc-project-detail.json:L1145-L1198",
+        "pages/ioc-project-detail.json:L1192-L1256",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L25-L45",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L67-L69",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L302-L355",
+        "packages/runtime-ui/src/RuntimeSection.svelte:L442-L458",
+        "packages/widgets/src/components/table/Table.svelte:L80-L90",
+        "packages/widgets/src/components/table/Table.svelte:L122-L127",
+        "packages/widgets/src/components/table/Table.svelte:L276-L288",
+        "packages/widgets/src/components/table/Table.svelte:L1319-L1339",
+        "packages/runtime-ui/tests/project-detail-responsive.test.ts:L17-L45",
+        "packages/widgets/tests/composite-card-surface.test.ts:L222-L270",
+        "packages/embed/tests/browser/embed.spec.ts:L175-L296",
+        "PATTERN-STYLE-1",
+        "PATTERN-STYLE-2",
+        "PATTERN-STYLE-5",
+        "PATTERN-TEST-1",
+        "PATTERN-TEST-2",
+        "PATTERN-TEST-4",
+        "PATTERN-RUN-1",
+        "workspace-check"
+      ],
+      "result": "clear"
+    }
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": ["workspace-check"],
+  "evidence_added": [],
+  "known_gaps": []
+}

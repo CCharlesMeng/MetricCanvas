@@ -1,7 +1,10 @@
 <script lang="ts">
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
-  import { documentLayoutForm } from '@metriccanvas/page';
+  import {
+    documentLayoutForm,
+    documentUsesRuntimeBackToolbar
+  } from '@metriccanvas/page';
   import type { DataGateway } from '@metriccanvas/runtime';
   import {
     RuntimeView,
@@ -9,9 +12,8 @@
   } from '@metriccanvas/runtime-ui';
   import {
     pageHref,
-    pageReturnOf,
-    rememberPageReturn,
-    type PageReturnTarget
+    pageReturnHref,
+    rememberPageReturn
   } from '$lib/page-return';
   import {
     aiSummary,
@@ -34,31 +36,31 @@
   let pageRevisionId = $state<string | undefined>(undefined);
   let activePageId = '';
   let loadSession = 0;
-  let returnTarget = $state<PageReturnTarget | undefined>(undefined);
+  let returnHref = $state<string | undefined>(undefined);
   /** 页面外框在校验之前就要定下来,因此按原始文档结构读布局形态。 */
   const layoutForm = $derived(
     pageState.phase === 'ready' ? documentLayoutForm(pageState.document) : 'report'
   );
+  const compactRuntimeToolbar = $derived(
+    pageState.phase === 'ready' && documentUsesRuntimeBackToolbar(pageState.document)
+  );
 
-  const navigation: RuntimeNavigation = {
-    href(pageId, search) {
-      return pageHref(pageId, search);
-    },
-    replaceSearch(search) {
-      replaceState(`${location.pathname}${search ? `?${search}` : ''}`, {});
-    },
-    navigate({ href, pageId, sourcePageId, sourceSearch }) {
-      rememberPageReturn(pageId, { pageId: sourcePageId, search: sourceSearch });
-      void goto(href);
-    },
-    back() {
-      if (returnTarget) {
-        void goto(pageHref(returnTarget.pageId, returnTarget.search));
-        return;
+  const navigation = $derived.by<RuntimeNavigation>(() => {
+    const base: RuntimeNavigation = {
+      href(pageId, search) {
+        return pageHref(pageId, search);
+      },
+      replaceSearch(search) {
+        replaceState(`${location.pathname}${search ? `?${search}` : ''}`, {});
+      },
+      navigate({ href, pageId, sourcePageId, sourceSearch }) {
+        rememberPageReturn(pageId, { pageId: sourcePageId, search: sourceSearch });
+        void goto(href);
       }
-      history.back();
-    }
-  };
+    };
+    const href = returnHref;
+    return href ? { ...base, back: () => void goto(href) } : base;
+  });
 
   $effect(() => {
     const pageId = page.params.pageId!;
@@ -66,7 +68,7 @@
     activePageId = pageId;
     initialSearch = page.url.searchParams.toString();
     pageRevisionId = page.url.searchParams.get('revision') ?? undefined;
-    returnTarget = pageReturnOf(pageId);
+    returnHref = pageReturnHref(pageId);
     void loadPage(pageId);
   });
 
@@ -92,9 +94,9 @@
 </script>
 
 <div class="page-frame" class:frame-dashboard={layoutForm === 'dashboard'}>
-  {#if returnTarget}
+  {#if returnHref && !compactRuntimeToolbar}
     <nav class="page-breadcrumb" aria-label="页面回退">
-      <a href={pageHref(returnTarget.pageId, returnTarget.search)}>返回</a>
+      <a href={returnHref}>返回</a>
     </nav>
   {/if}
 
@@ -118,9 +120,8 @@
 </div>
 
 <style>
-  /* 报表形态沿用宿主此前的定宽居中外框;看板形态交出全部宽度,页面画布
-     与内边距由统一运行时按页面布局形态决定。
-     宽度是内容盒基准:1440 指主区内容宽,左右各 24 的内边距加在它之外。 */
+  /* 报表形态沿用宿主的定宽居中外框;看板形态始终使用宿主的
+     全部可用宽度,页面画布与内边距由统一运行时决定。 */
   .page-frame {
     max-width: 1440px;
     box-sizing: content-box;
@@ -128,15 +129,10 @@
     margin: 0 auto;
   }
   .page-frame.frame-dashboard {
-    width: 1679px;
+    width: 100%;
     max-width: none;
     padding: 0;
     margin: 0;
-  }
-  @media (max-width: 1679px) {
-    .page-frame.frame-dashboard {
-      width: 100%;
-    }
   }
   .muted {
     color: #71717a;

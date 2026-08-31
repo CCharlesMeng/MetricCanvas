@@ -13,11 +13,12 @@ const doc = (schemaVersion: unknown): unknown => ({ schemaVersion });
 
 describe('MAJOR.MINOR 版本判定', () => {
   it('接受当前主版本内不高于 current 的任意次版本', () => {
-    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3']);
+    expect(supportedVersions()).toEqual(['5.0', '5.1', '5.2', '5.3', '5.4']);
     expect(versionErrors(doc('5.0'))).toEqual([]);
     expect(versionErrors(doc('5.1'))).toEqual([]);
     expect(versionErrors(doc('5.2'))).toEqual([]);
     expect(versionErrors(doc('5.3'))).toEqual([]);
+    expect(versionErrors(doc('5.4'))).toEqual([]);
   });
 
   it('拒绝更高的次版本并说明原因', () => {
@@ -562,6 +563,54 @@ describe('能力下限推算', () => {
     ]);
 
     (page as { schemaVersion: string }).schemaVersion = '5.3';
+    expect(capabilityFloorErrors(page)).toEqual([]);
+  });
+
+  it('5.4 的值级链接、多表 Tab、紧凑页头与 metricGrid 各自定位', () => {
+    const table = (id: string) => ({
+      id, type: 'table', layout: { span: 12 }, data: { main: 'a' },
+      props: { columns: [{ field: 'name' }] }
+    });
+    const page = basePage({
+      schemaVersion: '5.3',
+      dashboardToolbar: { variant: 'compact', readOnly: true, note: '演示' },
+      sections: [{
+        id: 'body',
+        components: [
+          {
+            id: 'card', type: 'compositeCard', layout: { span: 4 },
+            props: {
+              variant: 'metricGrid',
+              components: [{
+                id: 'metric', type: 'metricCard', layout: { span: 12 }, data: { main: 'a' },
+                props: {
+                  rows: [{ label: '机会点数', valueField: 'value', link: true }],
+                  actions: [{ on: 'click', navigate: { page: 'detail' } }]
+                }
+              }]
+            }
+          },
+          {
+            id: 'tabs', type: 'tabContainer', layout: { span: 8 },
+            props: {
+              variant: 'analysisStack',
+              tabs: [{ id: 'one', label: '概览', components: [table('a'), table('b')] }]
+            }
+          }
+        ]
+      }]
+    });
+
+    expect(requiredMinorVersion(page)).toBe(4);
+    expect(capabilityFloorErrors(page).map((error) => error.path).sort()).toEqual([
+      '/dashboardToolbar',
+      '/sections/0/components/0/props/components/0/props/rows/0/link',
+      '/sections/0/components/0/props/variant',
+      '/sections/0/components/1/props/tabs/0/components',
+      '/sections/0/components/1/props/variant'
+    ]);
+
+    (page as { schemaVersion: string }).schemaVersion = '5.4';
     expect(capabilityFloorErrors(page)).toEqual([]);
   });
 

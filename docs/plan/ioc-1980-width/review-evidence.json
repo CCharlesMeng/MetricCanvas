@@ -1,0 +1,363 @@
+{
+  "code": {
+    "base_ref": "d6c87cd16e198da281f3540cb7d96ed03aeba853",
+    "code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+    "files": [
+      {
+        "path": "apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+        "sha256": "71caf62cdc6097aaccc8bdce93eb65b1fe04044d7fed8540a15f06cb7d40cfac"
+      },
+      {
+        "path": "apps/canvas/tests/dashboard-frame.test.ts",
+        "sha256": "8e13e4262ea152ba2f68e7f567e6eee6a4e0924c846e830cc29a608b7aca3ef3"
+      },
+      {
+        "path": "docs/host-contract.md",
+        "sha256": "26dfb64f96c76bfd495f405478d456960569965cd76189944bfdeef559b52554"
+      },
+      {
+        "path": "packages/runtime-ui/src/RuntimeSection.svelte",
+        "sha256": "9b804b03dbdfdc24598cfa85b889d93bcff9cb9798c1125986bbdf15cce19a66"
+      },
+      {
+        "path": "packages/runtime-ui/tests/project-detail-responsive.test.ts",
+        "sha256": "66c3cb679b26aaa51195993037dc059e7e6a0b3d9d9ce732b6da2a7f930db831"
+      },
+      {
+        "path": "packages/widgets/src/components/report-header/ReportHeader.svelte",
+        "sha256": "7c60805d219e96b3350816aa9a57a77214cf40df6b6a7bcffc9fe7ebec33bc1f"
+      },
+      {
+        "path": "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "sha256": "30a36c3dafde6e98cc0a6162e347365a6eaa1f4b80785e3ed7387bd26a739444"
+      },
+      {
+        "path": "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+        "sha256": "08a734ca9d1c7f0fd9654160f011ded33cf707bbed34b3fc533b304090b3aff4"
+      },
+      {
+        "path": "packages/widgets/src/components/table/Table.svelte",
+        "sha256": "a870353488997e41202ffa220ea16de2d35fc4b2507da2732f50480b6a0759fb"
+      },
+      {
+        "path": "packages/widgets/src/components/field-text/FieldText.svelte",
+        "sha256": "36e0224bd35a0922f6d3f4755188fa8669ea435fd1fabaffcce45704b4676cbe"
+      },
+      {
+        "path": "packages/widgets/src/components/metric-card/MetricCard.svelte",
+        "sha256": "2a3ee8f5e8edf52bcdf7d07852426d124348aa5b67d9b105bd59e889a9d935bb"
+      },
+      {
+        "path": "packages/widgets/src/components/map-chart/MapChart.svelte",
+        "sha256": "9cc4cfcb3e85e27606dfd0e6ee4a7bdbfc990dec06e6b40e928342c98a3144c5"
+      },
+      {
+        "path": "packages/widgets/tests/composite-card-surface.test.ts",
+        "sha256": "fa75a5c4e6b61e20990417b1a57678384272b8d24ff818e8c1cd1d98d524d1e3"
+      },
+      {
+        "path": "packages/embed/tests/browser/embed.spec.ts",
+        "sha256": "bf7c8867e7dd3fc48742d83722e8e248357a5d6335ef46f1bbaa3195edaffb80"
+      },
+      {
+        "path": "packages/runtime-ui/src/RuntimeView.svelte",
+        "sha256": "adc18a30264f706fe016ee61090c775bc7b65ab529cad96306babc0c61d7efdf"
+      },
+      {
+        "path": "packages/runtime-ui/src/ComponentRenderer.svelte",
+        "sha256": "699e97a73b40e34ef61e2bfc7acdc4b88757f25e1cf0f3b203226b491194e4a7"
+      },
+      {
+        "path": "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+        "sha256": "eea61007726ac191c7a239af523ad2b9b752169235980775bce3335017f11adf"
+      },
+      {
+        "path": "pages/ioc-project-overview.json",
+        "sha256": "4f585ad0587546e96528c952c925be88be3b2358ce22f2a39e8db2835c06ce83"
+      },
+      {
+        "path": "pages/ioc-opportunity-analysis.json",
+        "sha256": "ab7dce5f8d14138ec52a1e5555d28de68411d134bf84cf3ffe48f8664ec72e52"
+      },
+      {
+        "path": "pages/ioc-opportunity-list.json",
+        "sha256": "95514598835c6dc0b2530bc28dd4c9feab2a958f4c6e921f8bd5067e4041f71f"
+      },
+      {
+        "path": "pages/ioc-project-detail.json",
+        "sha256": "8586211c90c965610a7d01e9fe70c6d232048a377f2f7752048607d3bf1dddc9"
+      }
+    ],
+    "head": "d6c87cd16e198da281f3540cb7d96ed03aeba853"
+  },
+  "evidence_epoch": "review-4",
+  "quality_gate": {
+    "code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+    "commands": [
+      {
+        "command": "pnpm test",
+        "duration_ms": 4500,
+        "exit_code": 0,
+        "failures": [],
+        "name": "unit-regression"
+      },
+      {
+        "command": "pnpm test:embed",
+        "duration_ms": 16000,
+        "exit_code": 0,
+        "failures": [],
+        "name": "embed-browser-regression"
+      },
+      {
+        "command": "pnpm check",
+        "duration_ms": 13000,
+        "exit_code": 0,
+        "failures": [],
+        "name": "workspace-check"
+      },
+      {
+        "command": "pnpm validate",
+        "duration_ms": 300,
+        "exit_code": 0,
+        "failures": [],
+        "name": "page-metadata"
+      }
+    ]
+  },
+  "runtime": {
+    "account": "none",
+    "api_mode": "Page Metadata inline fixture",
+    "browser": "Chrome via Playwright",
+    "dpr": 1,
+    "driver": "仓内 Playwright（@metriccanvas/embed，channel=chrome，headless）",
+    "font_fingerprint": "system-default（无 visual 盲区规则）",
+    "role": "anonymous",
+    "tenant": "none",
+    "url": "http://127.0.0.1:4175/examples/query.html"
+  },
+  "scenarios": [
+    {
+      "artifacts": [
+        "packages/embed/tests/browser/embed.spec.ts:175"
+      ],
+      "captured_at_code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+      "captured_dependency_hashes": {
+        "packages/runtime-ui/src/ComponentRenderer.svelte": "699e97a73b40e34ef61e2bfc7acdc4b88757f25e1cf0f3b203226b491194e4a7",
+        "packages/runtime-ui/src/RuntimeSection.svelte": "9b804b03dbdfdc24598cfa85b889d93bcff9cb9798c1125986bbdf15cce19a66",
+        "packages/runtime-ui/src/RuntimeView.svelte": "adc18a30264f706fe016ee61090c775bc7b65ab529cad96306babc0c61d7efdf",
+        "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte": "eea61007726ac191c7a239af523ad2b9b752169235980775bce3335017f11adf",
+        "packages/widgets/src/components/map-chart/MapChart.svelte": "9cc4cfcb3e85e27606dfd0e6ee4a7bdbfc990dec06e6b40e928342c98a3144c5",
+        "packages/widgets/src/components/metric-card/MetricCard.svelte": "2a3ee8f5e8edf52bcdf7d07852426d124348aa5b67d9b105bd59e889a9d935bb",
+        "pages/ioc-opportunity-analysis.json": "ab7dce5f8d14138ec52a1e5555d28de68411d134bf84cf3ffe48f8664ec72e52",
+        "pages/ioc-opportunity-list.json": "95514598835c6dc0b2530bc28dd4c9feab2a958f4c6e921f8bd5067e4041f71f",
+        "pages/ioc-project-detail.json": "8586211c90c965610a7d01e9fe70c6d232048a377f2f7752048607d3bf1dddc9",
+        "pages/ioc-project-overview.json": "4f585ad0587546e96528c952c925be88be3b2358ce22f2a39e8db2835c06ce83"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "Page Metadata inline fixture",
+        "browser": "Chrome via Playwright",
+        "dpr": 1,
+        "driver": "仓内 Playwright（@metriccanvas/embed，channel=chrome，headless）",
+        "font_fingerprint": "system-default（无 visual 盲区规则）",
+        "role": "anonymous",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/query.html"
+      },
+      "consumers": [
+        "review-layout"
+      ],
+      "depends_on": [
+        "packages/runtime-ui/src/RuntimeView.svelte",
+        "packages/runtime-ui/src/RuntimeSection.svelte",
+        "packages/runtime-ui/src/ComponentRenderer.svelte",
+        "packages/runtime-ui/src/dashboard/DashboardToolbar.svelte",
+        "packages/widgets/src/components/metric-card/MetricCard.svelte",
+        "packages/widgets/src/components/map-chart/MapChart.svelte",
+        "pages/ioc-project-overview.json",
+        "pages/ioc-opportunity-analysis.json",
+        "pages/ioc-opportunity-list.json",
+        "pages/ioc-project-detail.json"
+      ],
+      "fixture": {
+        "name": "four-ioc-page-metadata",
+        "sha256": "d1cdd00e09655a73d333ede75cb5598ef34158a7a1fd86808dd507dbd3a7267d"
+      },
+      "id": "BE-1",
+      "observations": [
+        "四个 Page 的 dashboard 宿主宽与布局盒宽差值均不超过 1 CSS px",
+        "四个 Page 的 documentElement.scrollWidth - innerWidth 均不超过 1 CSS px"
+      ],
+      "page": "ioc-project-overview / ioc-opportunity-analysis / ioc-opportunity-list / ioc-project-detail",
+      "source": "phase-c",
+      "steps": [
+        "依次 update 四份真实 Page Metadata",
+        "测量 dashboard 宿主、Page 布局盒与 documentElement"
+      ],
+      "viewport": {
+        "height": 1080,
+        "width": 1980
+      }
+    },
+    {
+      "artifacts": [
+        "packages/embed/tests/browser/embed.spec.ts:219"
+      ],
+      "captured_at_code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+      "captured_dependency_hashes": {
+        "packages/runtime-ui/src/RuntimeSection.svelte": "9b804b03dbdfdc24598cfa85b889d93bcff9cb9798c1125986bbdf15cce19a66",
+        "packages/runtime-ui/src/RuntimeView.svelte": "adc18a30264f706fe016ee61090c775bc7b65ab529cad96306babc0c61d7efdf",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte": "08a734ca9d1c7f0fd9654160f011ded33cf707bbed34b3fc533b304090b3aff4",
+        "packages/widgets/src/components/field-text/FieldText.svelte": "36e0224bd35a0922f6d3f4755188fa8669ea435fd1fabaffcce45704b4676cbe",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte": "30a36c3dafde6e98cc0a6162e347365a6eaa1f4b80785e3ed7387bd26a739444",
+        "packages/widgets/src/components/report-header/ReportHeader.svelte": "7c60805d219e96b3350816aa9a57a77214cf40df6b6a7bcffc9fe7ebec33bc1f",
+        "packages/widgets/src/components/table/Table.svelte": "a870353488997e41202ffa220ea16de2d35fc4b2507da2732f50480b6a0759fb",
+        "pages/ioc-project-detail.json": "8586211c90c965610a7d01e9fe70c6d232048a377f2f7752048607d3bf1dddc9"
+      },
+      "captured_runtime": {
+        "account": "none",
+        "api_mode": "Page Metadata inline fixture",
+        "browser": "Chrome via Playwright",
+        "dpr": 1,
+        "driver": "仓内 Playwright（@metriccanvas/embed，channel=chrome，headless）",
+        "font_fingerprint": "system-default（无 visual 盲区规则）",
+        "role": "anonymous",
+        "tenant": "none",
+        "url": "http://127.0.0.1:4175/examples/query.html"
+      },
+      "consumers": [
+        "review-layout"
+      ],
+      "depends_on": [
+        "packages/runtime-ui/src/RuntimeView.svelte",
+        "packages/runtime-ui/src/RuntimeSection.svelte",
+        "packages/widgets/src/components/report-header/ReportHeader.svelte",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+        "packages/widgets/src/components/table/Table.svelte",
+        "packages/widgets/src/components/field-text/FieldText.svelte",
+        "pages/ioc-project-detail.json"
+      ],
+      "fixture": {
+        "name": "ioc-project-detail host-900",
+        "sha256": "8586211c90c965610a7d01e9fe70c6d232048a377f2f7752048607d3bf1dddc9"
+      },
+      "id": "BE-2",
+      "observations": [
+        "三次采集的 project-profile 列轨、五类组件根宽、projectNorms 内部列轨、预测表滚动事实和叙事正文布局事实逐项相同",
+        "三次采集中五类组件根宽与所属运行时组件布局盒宽的差值均不超过 1 CSS px",
+        "预测表的内容最小宽度由列声明汇总得出，短叙事卡 clientHeight 与 scrollHeight 均为 200 CSS px",
+        "预测表滚动层 overflow-x 为 auto，scrollWidth 大于 clientWidth"
+      ],
+      "page": "ioc-project-detail",
+      "source": "phase-c",
+      "steps": [
+        "把宿主固定为 900px 并在 1980px 视口采集",
+        "保持宿主 900px、在冻结的 1200px 视口再次采集",
+        "继续保持宿主 900px、把视口改为 700px（跨过旧 760px viewport 阈值）第三次采集"
+      ],
+      "viewport": {
+        "height": 1080,
+        "width": 1980
+      }
+    }
+  ],
+  "schema_version": 1,
+  "validation_portfolio": {
+    "claims": [
+      {
+        "id": "AC-1",
+        "modules": [
+          "causal",
+          "render",
+          "regression",
+          "review-layout",
+          "review-convention"
+        ],
+        "status": "PROVEN"
+      },
+      {
+        "id": "AC-2",
+        "modules": [
+          "causal",
+          "render",
+          "targeted-quality",
+          "review-layout"
+        ],
+        "status": "PROVEN"
+      },
+      {
+        "id": "AC-3",
+        "modules": [
+          "causal",
+          "render",
+          "regression",
+          "review-restore",
+          "review-layout"
+        ],
+        "status": "PROVEN"
+      },
+      {
+        "id": "AC-4",
+        "modules": [
+          "causal",
+          "render",
+          "regression",
+          "review-restore",
+          "review-layout"
+        ],
+        "status": "PROVEN"
+      }
+    ],
+    "modules": [
+      "causal",
+      "render",
+      "targeted-quality",
+      "regression",
+      "review-restore",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "portfolio_narrowed": [
+      {
+        "reason": "classify_diff 命中的导航文件包含开工前既有未提交改动；本 Story 在 Canvas 路由中的所有权仅限 dashboard 外框宽度样式，未改变路由、入口或查询参数。",
+        "trigger": "navigation"
+      }
+    ],
+    "review_dimensions": {
+      "review-convention": [
+        "C1",
+        "C2",
+        "C3",
+        "C5"
+      ],
+      "review-layout": [
+        "L1",
+        "L2",
+        "L3",
+        "L4",
+        "L6"
+      ],
+      "review-quality": [
+        "Q2",
+        "Q7"
+      ],
+      "review-restore": [
+        "R5",
+        "R6"
+      ]
+    },
+    "review_roles": [
+      "review-restore",
+      "review-layout",
+      "review-convention",
+      "review-quality"
+    ],
+    "risk_triggers": [
+      "visual",
+      "shared-boundary",
+      "new-pattern"
+    ]
+  }
+}

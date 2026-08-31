@@ -22,9 +22,11 @@
   import { sectionGridColumnCount, sectionGridTemplate } from './section-grid';
 
   /**
-   * 内容分区 Module:拥有缺省 12 列、可选受控权重轨 Grid、组件单元格、
-   * `connectPrevious` 与行对齐安装点。外观唯一由 `section.container` 决定,
-   * 不读取子组件的类型组合或 `props.variant` 推断父级布局(ADR-0021)。
+   * 内容分区 Module:Page Metadata 仍是 Section → Component 直接包含；这里为每个
+   * Component 生成的 `.cell` 只是运行时布局盒，承接 Grid 落位、创作态安装点、
+   * 卡面与 containing block，不是新的元数据实体。外观唯一由
+   * `section.container` 决定，不读取子组件的类型组合或 `props.variant`
+   * 推断父级布局(ADR-0021)。
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
@@ -442,6 +444,7 @@
     display: flex;
     min-width: 0;
     min-height: 112px;
+    container: mc-component-box / inline-size;
     flex-direction: column;
     gap: 6px;
     padding: var(--mc-cell-padding, 14px 16px);
@@ -822,19 +825,7 @@
   }
 
   /* ==== 响应式 ==== */
-  @media (max-width: 1200px) {
-    /* 项目详情的「档案 + 指标」在中屏已无法维持 450/1168 的双列宽度，
-       按有限 variant 选中这类组合后改为单列，不把页面 id 写进共享运行时。 */
-    .section-grid:has(> .cell[data-component-variant='detailSummary']),
-    .section-grid:has(> .cell[data-component-variant='projectNorms']) {
-      grid-template-columns: minmax(0, 1fr);
-    }
-    .section-grid:has(> .cell[data-component-variant='detailSummary']) > .cell,
-    .section-grid:has(> .cell[data-component-variant='projectNorms']) > .cell {
-      grid-column: 1 / -1 !important;
-    }
-  }
-  @media (max-width: 1050px) {
+  @container mc-runtime (max-width: 1050px) {
     .page-section.container-panel {
       padding-right: 20px;
       padding-left: 20px;
@@ -848,7 +839,7 @@
       column-gap: 16px;
     }
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .page-section {
       padding: 16px;
     }

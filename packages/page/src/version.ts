@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 5;
-const CURRENT_MINOR = 3;
+const CURRENT_MINOR = 4;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -335,6 +335,42 @@ export const pageCapabilities = {
         (component) => component.type === 'mapChart' && has(props(component), 'pinnedSummary')
       ).map((path) => `${path}/props/pinnedSummary`)
     ]
+  },
+  'metric-row-link': {
+    minor: 4,
+    description: '指标行的显式非空值导航入口',
+    usedAt: (document) => metricRowLinkPaths(document)
+  },
+  'tab-container-multi-table': {
+    minor: 4,
+    description: 'Tab item 按顺序承载非空表格列表',
+    usedAt: (document) => tabMultiTablePaths(document)
+  },
+  'tab-container-analysis-stack': {
+    minor: 4,
+    description: 'Tab 容器的分析表格堆叠呈现档',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'tabContainer' && props(component)?.variant === 'analysisStack'
+      ).map((path) => `${path}/props/variant`)
+  },
+  'dashboard-toolbar-compact-read-only': {
+    minor: 4,
+    description: 'dashboard 紧凑页头与只读筛选说明',
+    usedAt: (document) =>
+      record(document)?.dashboardToolbar && typeof record(document)?.dashboardToolbar === 'object'
+        ? ['/dashboardToolbar']
+        : []
+  },
+  'composite-card-metric-grid': {
+    minor: 4,
+    description: '组合卡的紧凑指标网格呈现档',
+    usedAt: (document) =>
+      componentPaths(
+        document,
+        (component) => component.type === 'compositeCard' && props(component)?.variant === 'metricGrid'
+      ).map((path) => `${path}/props/variant`)
   }
 } satisfies Record<string, PageCapabilityDefinition>;
 
@@ -606,6 +642,38 @@ function metricRowContextPaths(document: unknown): string[] {
         }
       });
     }
+  });
+  return paths;
+}
+
+function metricRowLinkPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'metricCard') return;
+    for (const rowsKey of ['rows', 'secondaryRows'] as const) {
+      const rows = record(component.props)?.[rowsKey];
+      if (!Array.isArray(rows)) continue;
+      rows.forEach((candidate, index) => {
+        if (has(record(candidate), 'link')) {
+          paths.push(`${path}/props/${rowsKey}/${index}/link`);
+        }
+      });
+    }
+  });
+  return paths;
+}
+
+function tabMultiTablePaths(document: unknown): string[] {
+  const paths: string[] = [];
+  walkDocumentComponents(document, (component, path) => {
+    if (component.type !== 'tabContainer') return;
+    const tabs = record(component.props)?.tabs;
+    if (!Array.isArray(tabs)) return;
+    tabs.forEach((candidate, index) => {
+      if (Array.isArray(record(candidate)?.components)) {
+        paths.push(`${path}/props/tabs/${index}/components`);
+      }
+    });
   });
   return paths;
 }

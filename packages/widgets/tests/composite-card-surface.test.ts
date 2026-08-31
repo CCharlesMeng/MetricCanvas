@@ -180,6 +180,15 @@ describe('组合卡的卡内表面压平', () => {
     expect(source('field-text/FieldText.svelte')).toContain('narrative-long');
   });
 
+  it('指标网格是受控呈现档，不依赖机会点页 id 或文案', () => {
+    const card = source('composite-card/CompositeCard.svelte');
+    expect(card).toContain("variant?: 'compact' | 'projectNorms' | 'metricGrid'");
+    expect(card).toContain("class:metric-grid={variant === 'metricGrid'}");
+    expect(card).toMatch(/\.metric-grid\s*\{[^}]*padding:\s*20px;/s);
+    expect(card).not.toContain('ioc-opportunity-analysis');
+    expect(card).not.toContain('机会点');
+  });
+
   it('详情页指标矩阵把四条边框都收在 90px 容器内', () => {
     const css = source('key-value-panel/KeyValuePanel.svelte');
     const matrixList = /\.detail-norm-matrix dl\s*\{([^}]*)\}/.exec(css)?.[1] ?? '';
@@ -210,27 +219,58 @@ describe('组合卡的卡内表面压平', () => {
     expect(header).not.toContain('left: 390px;');
   });
 
-  it('详情页有限 variant 在小于桌面基准时释放固定宽度', () => {
+  it('详情页有限 variant 恒占满组件布局盒并只按容器宽度回流', () => {
     const header = source('report-header/ReportHeader.svelte');
     const summary = source('key-value-panel/KeyValuePanel.svelte');
     const norms = source('composite-card/CompositeCard.svelte');
     const table = source('table/Table.svelte');
     const narrative = source('field-text/FieldText.svelte');
 
-    expect(header).toMatch(
-      /@media \(max-width: 1678px\)[\s\S]*?\.report-header\.project-detail\s*\{[^}]*width:\s*calc\(100% \+ 47px\);/
+    expect(header).toMatch(/\.report-header\.project-detail\s*\{[^}]*width:\s*100%;/s);
+    expect(summary).toMatch(/\.detail-summary\s*\{[^}]*width:\s*100%;/s);
+    expect(norms).toMatch(/\.project-norms\s*\{[^}]*width:\s*100%;/s);
+    expect(table).toMatch(/\.table-widget\.forecast-matrix\s*\{[^}]*width:\s*100%;/s);
+    expect(narrative).toMatch(/\.field-text\.narrative\s*\{[^}]*width:\s*100%;/s);
+
+    for (const component of [header, summary, norms, table, narrative]) {
+      expect(component).not.toContain('@media (max-width');
+    }
+    for (const component of [header, summary, norms]) {
+      expect(component).toContain('@container mc-component-box');
+    }
+    expect(table).not.toContain('@container mc-component-box');
+    expect(narrative).not.toContain('@container mc-component-box');
+    expect(table).toMatch(
+      /\.forecast-matrix > \.scroll\s*\{[^}]*width:\s*100%;[^}]*overflow-x:\s*auto;/s
     );
-    expect(summary).toMatch(
-      /@media \(max-width: 1200px\)[\s\S]*?\.detail-summary\s*\{[^}]*width:\s*100%;/
-    );
-    expect(norms).toMatch(
-      /@media \(max-width: 1200px\)[\s\S]*?\.project-norms\s*\{[^}]*width:\s*100%;/
+    expect(table).toContain(
+      'style:--table-content-min-width={`${columnWidthTotal}px`}'
     );
     expect(table).toMatch(
-      /@media \(max-width: 1678px\)[\s\S]*?\.forecast-matrix > \.scroll\s*\{[^}]*overflow-x:\s*auto;/
+      /\.forecast-matrix table\s*\{[^}]*width:\s*100%;[^}]*min-width:\s*var\(--table-content-min-width\);/s
     );
-    expect(narrative).toMatch(
-      /@media \(max-width: 1678px\)[\s\S]*?\.field-text\.narrative\s*\{[^}]*width:\s*100%;[^}]*height:\s*auto;/
+    expect(table).not.toContain('1584px');
+    expect(narrative).not.toContain('(max-width: 1678px)');
+    expect(narrative).not.toMatch(/padding:\s*14px\s+(?:370|175|1180)px/);
+    const shortNarrative = /\.narrative-short\s*\{([^}]*)\}/.exec(narrative)?.[1] ?? '';
+    expect(shortNarrative).toContain('min-height: 180px;');
+    expect(shortNarrative).not.toMatch(/(?:^|[;\n])\s*height:/);
+  });
+
+  it('纯渲染 Widget 不读取 viewport，离散响应只读取组件或自身局部布局盒', () => {
+    const widgetSources = sourceFiles(componentsDir)
+      .filter((file) => file.endsWith('.svelte'))
+      .map((file) => readFileSync(file, 'utf8'));
+
+    for (const component of widgetSources) {
+      expect(component).not.toContain('@media (max-width');
+    }
+    expect(source('metric-card/MetricCard.svelte')).not.toContain(
+      '@container mc-component-box'
+    );
+    expect(source('metric-card/MetricCard.svelte')).toContain('@container (max-width: 230px)');
+    expect(source('map-chart/MapChart.svelte')).toContain(
+      '@container mc-component-box (max-width: 960px)'
     );
   });
 });

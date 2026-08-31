@@ -38,7 +38,10 @@
      与 TextBlock(insight) 共用同一组数值,这里只引用不重写。 */
   .ai-summary {
     position: relative;
+    box-sizing: border-box;
     display: grid;
+    width: 100%;
+    min-width: 0;
     gap: 0;
     min-height: 0;
     grid-template-rows: auto auto;

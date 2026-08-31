@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { readFile } from 'node:fs/promises';
 import type { DataGatewayResult } from '@metriccanvas/runtime';
 import type { RuntimeHandle } from '../../src/types';
 
@@ -58,6 +59,13 @@ async function runtimeShellSnapshot(page: Page) {
       };
     })
   };
+}
+
+async function iocPageDocument(pageId: string) {
+  return JSON.parse(await readFile(
+    new URL(`../../../../pages/${pageId}.json`, import.meta.url),
+    'utf8'
+  ));
 }
 
 test('经典脚本在 Shadow DOM 中渲染 inline 页面并隔离宿主样式', async ({
@@ -162,6 +170,546 @@ test('页面 id 不影响统一运行时的 DOM 与计算样式', async ({ page 
   await expect(page.locator('[data-metriccanvas-runtime] .runtime-view')).toBeVisible();
 
   expect(await runtimeShellSnapshot(page)).toEqual(before);
+});
+
+test('四个 IOC 页面在 1980px 视口占满宿主且没有页面级横向溢出', async ({ page }) => {
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+    dashboard.style.width = '100%';
+    dashboard.style.maxWidth = 'none';
+    dashboard.style.margin = '0';
+  });
+
+  const pageIds = [
+    'ioc-project-overview',
+    'ioc-opportunity-analysis',
+    'ioc-opportunity-list',
+    'ioc-project-detail'
+  ];
+  for (const pageId of pageIds) {
+    const pageDocument = await iocPageDocument(pageId);
+    await page.evaluate((pageDocument) => {
+      window.queryRuntime.update({ document: pageDocument });
+    }, pageDocument);
+
+    const host = page.locator('[data-metriccanvas-runtime]');
+    const layout = host.locator('[data-page-layout-form="dashboard"]');
+    await expect(layout).toBeVisible();
+    const facts = await page.evaluate(() => {
+      const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+      const runtime = dashboard.querySelector<HTMLElement>('[data-metriccanvas-runtime]')!;
+      const layout = runtime.shadowRoot!.querySelector<HTMLElement>(
+        '[data-page-layout-form="dashboard"]'
+      )!;
+      return {
+        dashboardWidth: dashboard.getBoundingClientRect().width,
+        layoutWidth: layout.getBoundingClientRect().width,
+        pageOverflow: document.documentElement.scrollWidth - window.innerWidth
+      };
+    });
+    expect(Math.abs(facts.layoutWidth - facts.dashboardWidth), pageId).toBeLessThanOrEqual(1);
+    expect(facts.pageOverflow, pageId).toBeLessThanOrEqual(1);
+  }
+});
+
+test('1980px 下 IOC 组合卡保持页面列轨与卡内 span 声明', async ({ page }) => {
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+    dashboard.style.width = '100%';
+    dashboard.style.maxWidth = 'none';
+    dashboard.style.margin = '0';
+  });
+
+  const captureTopOffsets = async (pageId: string, selectors: readonly string[]) => {
+    const pageDocument = await iocPageDocument(pageId);
+    await page.evaluate((document) => window.queryRuntime.update({ document }), pageDocument);
+    await expect(page.locator('[data-page-layout-form="dashboard"]')).toBeVisible();
+    return page.evaluate((selectors) => {
+      const runtime = document
+        .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
+        .shadowRoot!;
+      return selectors.map((selector) => [...runtime.querySelectorAll<HTMLElement>(selector)]
+        .map((element) => Math.round(element.getBoundingClientRect().top * 100) / 100));
+    }, selectors);
+  };
+
+  const opportunity = await captureTopOffsets('ioc-opportunity-analysis', [
+    '[data-section-id="opportunity-metrics"] > .section-grid > .cell',
+    '[data-component="opportunity-metrics/opportunity-card-business"] .composite-slot',
+    '[data-component="opportunity-metrics/opportunity-card-aging"] .composite-slot'
+  ]);
+  expect(opportunity[0]).toHaveLength(4);
+  expect(Math.max(...opportunity[0]!) - Math.min(...opportunity[0]!)).toBeLessThanOrEqual(1);
+  expect(opportunity[1]).toHaveLength(3);
+  expect(Math.max(...opportunity[1]!) - Math.min(...opportunity[1]!)).toBeLessThanOrEqual(1);
+  expect(opportunity[2]).toHaveLength(3);
+  expect(Math.max(...opportunity[2]!) - Math.min(...opportunity[2]!)).toBeLessThanOrEqual(1);
+
+  const overview = await captureTopOffsets('ioc-project-overview', [
+    '[data-component="map-board/kpi-opportunity-outline"] .composite-slot',
+    '[data-component="map-board/kpi-initiation-management"] .composite-slot'
+  ]);
+  expect(overview[0]).toHaveLength(4);
+  expect(overview[0]![1]).toBeCloseTo(overview[0]![2]!, 0);
+  expect(overview[0]![2]).toBeCloseTo(overview[0]![3]!, 0);
+  expect(overview[0]![0]).toBeLessThan(overview[0]![1]!);
+  expect(overview[1]).toHaveLength(4);
+  expect(overview[1]![0]).toBeCloseTo(overview[1]![1]!, 0);
+  expect(overview[1]![1]).toBeCloseTo(overview[1]![2]!, 0);
+  expect(overview[1]![2]).toBeLessThan(overview[1]![3]!);
+});
+
+test('Tab 活动面板提供直接组件布局盒且自身不保存页面派生宽度', async ({ page }) => {
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+    dashboard.style.width = '100%';
+    dashboard.style.maxWidth = 'none';
+    dashboard.style.margin = '0';
+  });
+
+  const overviewDocument = await iocPageDocument('ioc-project-overview');
+  await page.evaluate((document) => window.queryRuntime.update({ document }), overviewDocument);
+  const compact = await page.evaluate(() => {
+    const runtime = document
+      .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
+      .shadowRoot!;
+    const root = runtime.querySelector<HTMLElement>(
+      '[data-component="map-board/overview-tabs"] .tab-container'
+    )!;
+    const list = root.querySelector<HTMLElement>('.tab-list')!;
+    const panel = root.querySelector<HTMLElement>('.tab-panel')!;
+    const rootRect = root.getBoundingClientRect();
+    return {
+      rootRight: rootRect.right,
+      listRight: list.getBoundingClientRect().right,
+      panelRight: panel.getBoundingClientRect().right,
+      panelContainerName: getComputedStyle(panel).containerName
+    };
+  });
+  expect(compact.listRight).toBeLessThanOrEqual(compact.rootRight + 1);
+  expect(compact.panelRight).toBeLessThanOrEqual(compact.rootRight + 1);
+  expect(compact.panelContainerName.split(' ')).toContain('mc-component-box');
+
+  const analysisDocument = await iocPageDocument('ioc-opportunity-analysis');
+  await page.evaluate((pageDocument) => {
+    document.querySelector<HTMLElement>('#dashboard')!.style.width = '900px';
+    window.queryRuntime.update({ document: pageDocument });
+  }, analysisDocument);
+  const analysis = await page.evaluate(() => {
+    const runtime = document
+      .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
+      .shadowRoot!;
+    const panel = runtime.querySelector<HTMLElement>(
+      '[data-component="opportunity-regions/opportunity-region-tabs"] .tab-panel'
+    )!;
+    const tables = [...panel.querySelectorAll<HTMLElement>('.table-widget')];
+    return {
+      panelContainerName: getComputedStyle(panel).containerName,
+      tableWidths: tables.map((table) => table.getBoundingClientRect().width),
+      panelWidth: panel.getBoundingClientRect().width,
+      scrollOwners: tables.map((table) => {
+        const scroll = table.querySelector<HTMLElement>('.scroll')!;
+        return {
+          overflowX: getComputedStyle(scroll).overflowX,
+          clientWidth: scroll.clientWidth,
+          scrollWidth: scroll.scrollWidth
+        };
+      })
+    };
+  });
+  expect(analysis.panelContainerName.split(' ')).toContain('mc-component-box');
+  expect(analysis.tableWidths.every((width) => width <= analysis.panelWidth + 1)).toBe(true);
+  expect(analysis.scrollOwners.every(({ overflowX }) => overflowX === 'auto')).toBe(true);
+  expect(analysis.scrollOwners.some(({ clientWidth, scrollWidth }) => scrollWidth > clientWidth)).toBe(true);
+});
+
+test('项目详情组件只按内容单元响应，不受外部视口宽度影响', async ({ page }) => {
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  await page.goto('/examples/query.html');
+  const pageDocument = await iocPageDocument('ioc-project-detail');
+  await page.evaluate((pageDocument) => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+    dashboard.style.width = '900px';
+    dashboard.style.maxWidth = 'none';
+    dashboard.style.margin = '0';
+    window.queryRuntime.update({ document: pageDocument });
+  }, pageDocument);
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  await expect(host.locator('[data-component="project-profile/project-norms"]')).toBeVisible();
+
+  const capture = () => page.evaluate(() => {
+    const runtime = document
+      .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
+      .shadowRoot!;
+    const targets = [
+      ['page-header/header', '.report-header.project-detail'],
+      ['project-profile/basics-panel', '.key-value-panel.detail-summary'],
+      ['project-profile/project-norms', '.composite-card.project-norms'],
+      ['sales-forecast/sales-forecast-table', '.table-widget.forecast-matrix'],
+      ['project-narrative/project-background', '.field-text.narrative']
+    ] as const;
+    const components = targets.map(([id, selector]) => {
+      const cell = runtime.querySelector<HTMLElement>(`[data-component="${id}"]`)!;
+      const root = cell.querySelector<HTMLElement>(selector)!;
+      return {
+        id,
+        cellWidth: Math.round(cell.getBoundingClientRect().width * 100) / 100,
+        rootWidth: Math.round(root.getBoundingClientRect().width * 100) / 100
+      };
+    });
+    const profile = runtime.querySelector<HTMLElement>(
+      '[data-section-id="project-profile"] > .section-grid'
+    )!;
+    const normsGrid = runtime.querySelector<HTMLElement>(
+      '.composite-card.project-norms > .composite-grid'
+    )!;
+    const forecastScroll = runtime.querySelector<HTMLElement>(
+      '.table-widget.forecast-matrix > .scroll'
+    )!;
+    const narrativeBody = runtime.querySelector<HTMLElement>('.field-text.narrative > p')!;
+    return {
+      profileColumns: getComputedStyle(profile).gridTemplateColumns,
+      components,
+      normsColumns: getComputedStyle(normsGrid).gridTemplateColumns,
+      forecast: {
+        overflowX: getComputedStyle(forecastScroll).overflowX,
+        clientWidth: forecastScroll.clientWidth,
+        scrollWidth: forecastScroll.scrollWidth
+      },
+      narrative: {
+        width: Math.round(narrativeBody.getBoundingClientRect().width * 100) / 100,
+        padding: getComputedStyle(narrativeBody).padding,
+        overflow: getComputedStyle(narrativeBody).overflow
+      }
+    };
+  });
+
+  const wideViewport = await capture();
+  await page.setViewportSize({ width: 1200, height: 1080 });
+  const baselineNarrowViewport = await capture();
+  await page.setViewportSize({ width: 700, height: 1080 });
+  const thresholdCrossingViewport = await capture();
+
+  expect(baselineNarrowViewport).toEqual(wideViewport);
+  expect(thresholdCrossingViewport).toEqual(wideViewport);
+  expect(wideViewport.components.every(
+    ({ cellWidth, rootWidth }) => Math.abs(cellWidth - rootWidth) <= 1
+  )).toBe(true);
+  expect(wideViewport.forecast.overflowX).toBe('auto');
+  expect(wideViewport.forecast.scrollWidth).toBeGreaterThan(wideViewport.forecast.clientWidth);
+});
+
+test('指标卡只从显式声明且非空的值发出导航', async ({ page }) => {
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    window.queryRuntime.destroy();
+    window.queryEvents = [];
+    window.queryRuntime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '5.4',
+        id: 'metric-row-link-example',
+        dataSources: {
+          overview: {
+            fields: {
+              target: { type: 'number', role: 'measure', label: '机会点数' },
+              other: { type: 'number', role: 'measure', label: '总预签金额' },
+              empty: { type: 'number', role: 'measure', label: '空机会点' }
+            },
+            source: { type: 'inline', rows: [{ target: 12, other: 30, empty: null }] }
+          }
+        },
+        sections: [{
+          id: 'main',
+          components: [{
+            id: 'opportunity-summary',
+            type: 'metricCard',
+            layout: { span: 12 },
+            data: { main: 'overview' },
+            props: {
+              rows: [
+                { label: '机会点数', valueField: 'target', link: true },
+                { label: '总预签金额', valueField: 'other' },
+                { label: '空机会点', valueField: 'empty', link: true }
+              ],
+              actions: [{ on: 'click', navigate: { page: 'ioc-opportunity-analysis' } }]
+            }
+          }]
+        }]
+      },
+      onEvent(event) {
+        window.queryEvents.push(event);
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const target = host.locator('[data-metric-row-link]');
+  await expect(target).toHaveCount(1);
+  await expect(target).toHaveText('12');
+  await target.click();
+
+  await expect.poll(() => page.evaluate(() =>
+    window.queryEvents.filter((event) => event.type === 'navigate')
+  )).toEqual([expect.objectContaining({
+    type: 'navigate',
+    pageId: 'ioc-opportunity-analysis',
+    search: ''
+  })]);
+  await expect(host.getByText('30', { exact: true })).not.toHaveAttribute('data-metric-row-link');
+  await expect(host.getByText('—', { exact: true })).not.toHaveAttribute('data-metric-row-link');
+});
+
+test('analysisStack 页签每个选中面板顺序渲染三张表', async ({ page }) => {
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    window.queryRuntime.destroy();
+    window.queryEvents = [];
+    const table = (id: string, title: string, source: string) => ({
+      id,
+      type: 'table',
+      layout: { span: 12 },
+      data: { main: source },
+      props: { title, columns: [{ field: 'name' }] }
+    });
+    window.queryRuntime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '5.4',
+        id: 'tab-stack-example',
+        dataSources: {
+          region: {
+            fields: { name: { type: 'string', role: 'dimension', label: '地区部' } },
+            source: { type: 'inline', rows: [{ name: '地区部示例' }] }
+          },
+          office: {
+            fields: { name: { type: 'string', role: 'dimension', label: '代表处' } },
+            source: { type: 'inline', rows: [{ name: '代表处示例' }] }
+          }
+        },
+        sections: [{
+          id: 'main',
+          components: [{
+            id: 'region-tabs',
+            type: 'tabContainer',
+            layout: { span: 12 },
+            props: {
+              variant: 'analysisStack',
+              defaultTab: 'region',
+              tabs: [
+                {
+                  id: 'region', label: '地区部',
+                  components: [
+                    table('region-overview', '机会点总览', 'region'),
+                    table('region-bg', '按BG类型看机会点', 'region'),
+                    table('region-forecast', '机会点销售预测', 'region')
+                  ]
+                },
+                {
+                  id: 'office', label: '代表处',
+                  components: [
+                    table('office-overview', '机会点总览', 'office'),
+                    table('office-bg', '按BG类型看机会点', 'office'),
+                    table('office-forecast', '机会点销售预测', 'office')
+                  ]
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  await expect(host.getByRole('table')).toHaveCount(3);
+  await expect(host.locator('.table-heading h3')).toHaveText([
+    '机会点总览', '按BG类型看机会点', '机会点销售预测'
+  ]);
+  await expect(host.getByText('地区部示例', { exact: true })).toHaveCount(3);
+
+  await host.getByRole('tab', { name: '代表处' }).click();
+  await expect(host.getByRole('table')).toHaveCount(3);
+  await expect(host.getByText('代表处示例', { exact: true })).toHaveCount(3);
+  await expect(host.getByRole('tab', { name: '代表处' })).toHaveAttribute('aria-selected', 'true');
+});
+
+test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ page }) => {
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    window.queryRuntime.destroy();
+    window.queryRuntime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '5.4',
+        id: 'compact-toolbar-example',
+        meta: { title: '机会点数' },
+        layoutForm: 'dashboard',
+        dashboardToolbar: {
+          variant: 'compact',
+          readOnly: true,
+          note: '合成演示数据，非生产口径，筛选尚未接入'
+        },
+        filters: [
+          { id: 'key-office', type: 'boolean', label: '仅看重点国代' },
+          { id: 'date', type: 'timePoint', granularity: 'date', label: '日期', default: '2026-03-26' },
+          { id: 'industry', type: 'dimension', dimension: 'industry', label: '产业', emptyLabel: '请选择产业' },
+          { id: 'region', type: 'dimension', dimension: 'region', label: '区域', emptyLabel: '全球' },
+          { id: 'customer', type: 'dimension', dimension: 'customer', label: '客户分类', emptyLabel: '请选择客户分类' },
+          { id: 'trade', type: 'dimension', dimension: 'trade', label: '行业', emptyLabel: '请选择行业' },
+          { id: 'amount', type: 'dimension', dimension: 'amount', label: '预签金额', emptyLabel: '请选择预签金额' }
+        ],
+        dataSources: {
+          demo: {
+            fields: { value: { type: 'number', role: 'measure', label: '数值' } },
+            source: { type: 'inline', rows: [{ value: 1 }] }
+          }
+        },
+        sections: [{
+          id: 'main',
+          components: [{
+            id: 'value', type: 'metricCard', layout: { span: 12 }, data: { main: 'demo' },
+            props: { rows: [{ label: '数值', valueField: 'value' }] }
+          }]
+        }]
+      }
+    });
+  });
+
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const toolbar = host.locator('[data-dashboard-toolbar].compact');
+  await expect(toolbar.getByRole('heading', { name: '机会点数' })).toBeVisible();
+  await expect(toolbar.locator('[data-filter-control]')).toHaveCount(7);
+  await expect(toolbar.locator('[data-filter-control] :is(input, button)')).toHaveCount(7);
+  expect(await toolbar.locator('[data-filter-control] :is(input, button)').evaluateAll(
+    (controls) => controls.every((control) => (control as HTMLInputElement | HTMLButtonElement).disabled)
+  )).toBe(true);
+  await expect(toolbar.getByText('合成演示数据，非生产口径，筛选尚未接入')).toBeVisible();
+  await expect(toolbar.locator('[data-dashboard-back]')).toHaveCount(0);
+  const toolbarLayout = await toolbar.evaluate((element) => {
+    const style = getComputedStyle(element);
+    const rect = element.getBoundingClientRect();
+    const controls = [...element.querySelectorAll('[data-filter-control]')]
+      .map((control) => control.getBoundingClientRect());
+    const note = element.querySelector('.filter-note')?.getBoundingClientRect();
+    return {
+      height: rect.height,
+      position: style.position,
+      borderBottomWidth: style.borderBottomWidth,
+      singleLine: [...controls, ...(note ? [note] : [])]
+        .every((item) => item.top >= rect.top && item.bottom <= rect.bottom)
+    };
+  });
+  expect(toolbarLayout).toEqual({
+    height: 56,
+    position: 'sticky',
+    borderBottomWidth: '1px',
+    singleLine: true
+  });
+});
+
+test('metricGrid 横排双指标在窄视口保持等分且上下分隔线同轴', async ({ page }) => {
+  await page.setViewportSize({ width: 755, height: 738 });
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    window.queryRuntime.destroy();
+    window.queryRuntime = MetricCanvas.mount('#dashboard', {
+      document: {
+        schemaVersion: '5.4',
+        id: 'metric-grid-divider-example',
+        meta: { title: '指标分隔线' },
+        layoutForm: 'dashboard',
+        dashboardToolbar: 'hidden',
+        dataSources: {
+          demo: {
+            fields: {
+              count: { type: 'number', role: 'measure', label: '机会点个数' },
+              rate: { type: 'number', role: 'measure', label: '管道支撑率' },
+              amount: { type: 'number', role: 'measure', label: '预签金额' },
+              forecast: { type: 'number', role: 'measure', label: '本年度销售预测' }
+            },
+            source: {
+              type: 'inline',
+              rows: [{ count: 12860, rate: 92.6, amount: 8236.5, forecast: 986.4 }]
+            }
+          }
+        },
+        sections: [{
+          id: 'metrics',
+          container: 'plain',
+          components: [{
+            id: 'overview',
+            type: 'compositeCard',
+            layout: { span: 12 },
+            props: {
+              variant: 'metricGrid',
+              dividers: true,
+              components: [
+                {
+                  id: 'count-rate',
+                  type: 'metricCard',
+                  layout: { span: 12 },
+                  data: { main: 'demo' },
+                  props: {
+                    variant: 'compactStrip',
+                    rows: [
+                      { label: '机会点个数', valueField: 'count', unit: '个' },
+                      { label: '管道支撑率', valueField: 'rate', unit: '%' }
+                    ]
+                  }
+                },
+                {
+                  id: 'amount-forecast',
+                  type: 'metricCard',
+                  layout: { span: 12 },
+                  data: { main: 'demo' },
+                  props: {
+                    variant: 'compactStrip',
+                    rows: [
+                      { label: '预签金额', valueField: 'amount', unit: '亿' },
+                      { label: '本年度销售预测', valueField: 'forecast', unit: '亿' }
+                    ]
+                  }
+                }
+              ]
+            }
+          }]
+        }]
+      }
+    });
+  });
+
+  const strips = page.locator('[data-component-variant="metricGrid"] .compact-strip .metric-values');
+  await expect(strips).toHaveCount(2);
+  const dividerFacts = await strips.evaluateAll((elements) => elements.map((element) => {
+    const values = element.getBoundingClientRect();
+    const rows = [...element.querySelectorAll('.metric-row')]
+      .map((row) => row.getBoundingClientRect());
+    const separatorLeft = Number.parseFloat(
+      getComputedStyle(element.querySelectorAll('.metric-row')[1]!, '::before').left
+    );
+    return {
+      rowWidthDelta: Math.abs(rows[0]!.width - rows[1]!.width),
+      separatorFromCenter: Math.abs(
+        rows[1]!.left + separatorLeft - (values.left + values.width / 2)
+      )
+    };
+  }));
+  expect(dividerFacts.every((fact) => fact.rowWidthDelta <= 1)).toBe(true);
+  expect(dividerFacts.every((fact) => fact.separatorFromCenter <= 1)).toBe(true);
 });
 
 test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page }) => {

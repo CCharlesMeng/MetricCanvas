@@ -1,8 +1,8 @@
-# ADR 基线:58 份决策记录的当前生效结论
+# ADR 基线:59 份决策记录的当前生效结论
 
-`docs/adr/` 现有 58 份 ADR(0001–0058)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 59 份 ADR(0001–0059)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0059-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0060-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -72,6 +72,7 @@
 | [0056](./0056-metric-centric-terminology.md) | 术语围绕指标谱系规整:临时指标、派生指标模板、取数核对 | 现行(词汇表已切换,代码与 UI 文案批量替换进行中) |
 | [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行(装箱纯函数与页头均已实现;`defaultSpan` 重新表述为比例基线) |
 | [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点,恢复临时页面态 | 现行(部分修订 0030 的会话内容边界;不产生页面修订) |
+| [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行(不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -115,6 +116,8 @@
 
 内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](./0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
 
+**响应式宽度所有权([ADR-0059](./0059-direct-component-box-responsive-ownership.md)):** `RuntimeView` 的 `mc-runtime` 只负责页面级与跨组件排布；`RuntimeSection` 顶层单元、组合卡 slot 与 Tab 活动面板以 `mc-component-box` 给直接 Page Component 提供可用 inline-size；组件内部只使用最近的直接布局盒或匿名 self container。旧 viewport 数值不得机械迁移为容器阈值，优先用流式 CSS；组件根填满直接盒，固有内容尺寸必须有收缩或内部 overflow owner。该边界不进入 Page Metadata，不新增响应字段或生产态断点注册表。
+
 **组件能力目录的 `defaultSpan` 是相对比例,不是绝对宽度([ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md))。** 依据是人工搭的看板对它的用法:33 个分区里 14 个覆盖了 `defaultSpan`,但覆盖后的宽度几乎都保持了默认值之间的比例(指标卡 3 配柱状图 6 写成 4 + 8,三张指标卡各 3 写成 4 + 4 + 4)。创作期装配据此在**每个分区内**按比例贪心分行、每行缩放到恰好占满整行,因此视觉行的 span 之和恒等于分区列数;装箱不跨分区搬动组件,ADR-0055 的一组一分区不动。装箱是装配期的确定性纯函数(`packages/mcp/src/authoring/section-layout.ts`),模型不参与 span 决策——span 是纯几何,模型只会带来方差。分行判断只在比例空间里做,受控权重列轨只改变最终整数分配。手写页面继续显式声明 `span`,不受影响;目录没有「宽度上限」概念,装配因此会把独占分区的饼图与排行卡拉到通栏,该现象留待有真实产物证据后单独裁决。
 
 **页面外框与分区内层次([ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)):** 顶层可选 `layoutForm` 封闭两档 `report`(缺省)/`dashboard`,是页面外框几何与画布外观的唯一真源,`dashboard` 要求宿主交出全部宽度(见 [`docs/host-contract.md`](../host-contract.md));组件 `layout.layer: "backdrop"` 让组件铺满分区并置于同分区其余组件之下,其余组件仍走该分区当前列轨的自动流(缺省为 12 列),页面不写坐标、宽高或 z-index。三个声明各管一层:`layoutForm` 管页面外框、`container` 管分区外壳、`layer` 管分区内层次,唯一硬冲突是 `backdrop` 要求 `container: "plain"`。铺底组件的未遮挡矩形(**安全区**)由 `RuntimeSection` 计算并经 CSS 自定义属性下发,**明确不进页面 schema**——那会把布局结果写进页面元数据；该通道已经实现并覆盖加载、字体变化、窗口缩放与窄屏回流。`dashboard` + `panel` 与 `report` + `backdrop` 两个组合合法但没有设计过观感,决定不禁、以测试钉住现状。同一份 ADR 把聚合根改称**页面**,「看板」与「报表」降为布局形态。
@@ -127,7 +130,7 @@
 
 ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方式是**限制间接的形态而不是限制它出现的位置**:页面参数引用只允许整值替换、不允许模板插值,取值只能是标量,格式复用 ADR-0013 的既有闭集;计算产出字段必须就地声明在结果字段契约里;层级到谓词字段的映射写在查询里而不是网关配置里。按组件类型限制参数消费面的方案已被 ADR-0047 否决——那会让页面为了显示一个值而被迫引入某个组件。
 
-来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)、[ADR-0042](./0042-money-fields-and-semantic-embedded-values.md)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)、[ADR-0053](./0053-composite-card-component-level-grouping-container.md)。
+来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)、[ADR-0042](./0042-money-fields-and-semantic-embedded-values.md)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)、[ADR-0053](./0053-composite-card-component-level-grouping-container.md)、[ADR-0054](./0054-section-weighted-column-tracks.md)、[ADR-0059](./0059-direct-component-box-responsive-ownership.md)。
 
 ## 数据获取与查询模型
 

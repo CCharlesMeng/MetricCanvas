@@ -84,6 +84,8 @@
      因此这三个量不进布局形态定义点。走 token 是为了「卡里不套卡」:放进组合卡
      时由卡内作用域压平,组件本身不认识自己被谁装着。 */
   .key-value-panel {
+    box-sizing: border-box;
+    width: 100%;
     flex: 1;
     min-width: 0;
     padding: var(--mc-key-value-panel-padding, 19px);
@@ -151,12 +153,13 @@
   .counter-strip dl {
     width: 390px;
     max-width: 100%;
-    grid-template-columns: repeat(4, 69px);
+    grid-template-columns: repeat(4, minmax(0, 69px));
     justify-content: space-between;
     gap: 0;
   }
   .counter-strip .entry {
-    width: 69px;
+    width: 100%;
+    max-width: 69px;
     align-items: center;
     flex-direction: column;
     gap: 2px;
@@ -186,12 +189,13 @@
     position: relative;
     box-sizing: border-box;
     display: flex;
-    width: 450px;
+    width: 100%;
+    min-width: 0;
     height: 360px;
     flex: none;
     flex-direction: column;
     gap: 21px;
-    padding: 16px 129px 43px 21px;
+    padding: 16px 21px 43px;
     overflow: visible;
     background: #fff;
     border-radius: 16px;
@@ -211,7 +215,7 @@
     top: 50px;
     left: 22px;
     box-sizing: border-box;
-    width: 404px;
+    width: calc(100% - 46px);
     height: 284px;
     padding: 11px 0 17px 15px;
     overflow: hidden;
@@ -224,7 +228,7 @@
   }
   .summary-body dl {
     display: block;
-    width: 284px;
+    width: 100%;
     margin: 0;
   }
   .summary-body .entry {
@@ -320,19 +324,8 @@
     border-radius: 50%;
     content: '';
   }
-  @media (max-width: 1200px) {
-    .detail-summary {
-      width: 100%;
-      padding-right: 21px;
-    }
-    .summary-body {
-      width: calc(100% - 46px);
-    }
-    .summary-body dl {
-      width: 100%;
-    }
-  }
-  @media (max-width: 900px) {
+  /* responsive-contract: key-value-detail-norm-three-columns */
+  @container mc-component-box (max-width: 900px) {
     .detail-norm-matrix dl {
       height: auto;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -356,12 +349,8 @@
       white-space: nowrap;
     }
   }
-  @media (max-width: 760px) {
-    dl {
-      grid-template-columns: minmax(0, 1fr);
-    }
-  }
-  @media (max-width: 520px) {
+  /* responsive-contract: key-value-detail-norm-two-columns */
+  @container mc-component-box (max-width: 520px) {
     .detail-norm-matrix dl {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

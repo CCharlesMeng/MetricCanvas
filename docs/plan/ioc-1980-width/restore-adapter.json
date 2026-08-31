@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "rules": {
+    "R5-1": {
+      "locators": [{"strategy": "css", "selector": ".table-widget.forecast-matrix > .scroll"}],
+      "source_files": ["packages/widgets/src/components/table/Table.svelte"],
+      "collect": {"kind": "style", "single": true, "properties": ["overflow-x"]}
+    },
+    "R6-1": {
+      "locators": [{"strategy": "css", "selector": "[data-page-layout-form='dashboard']"}],
+      "source_files": ["apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte"],
+      "collect": {"kind": "overflow", "single": true}
+    },
+    "R6-2": {
+      "locators": [{"strategy": "css", "selector": ".section-grid"}],
+      "source_files": ["packages/runtime-ui/src/RuntimeSection.svelte"],
+      "collect": {"kind": "count"}
+    },
+    "R6-3-fixed": {
+      "locators": [{"strategy": "css", "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms"}],
+      "source_files": [
+        "packages/widgets/src/components/report-header/ReportHeader.svelte",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte"
+      ],
+      "collect": {"kind": "count"}
+    },
+    "R6-3-clip": {
+      "locators": [{"strategy": "css", "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms"}],
+      "source_files": [
+        "packages/widgets/src/components/report-header/ReportHeader.svelte",
+        "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+        "packages/widgets/src/components/composite-card/CompositeCard.svelte"
+      ],
+      "collect": {"kind": "clip"}
+    },
+    "R6-4-fixed": {
+      "locators": [{"strategy": "css", "selector": ".table-widget.forecast-matrix, .field-text.narrative"}],
+      "source_files": [
+        "packages/widgets/src/components/table/Table.svelte",
+        "packages/widgets/src/components/field-text/FieldText.svelte"
+      ],
+      "collect": {"kind": "count"}
+    },
+    "R6-4-clip": {
+      "locators": [{"strategy": "css", "selector": ".table-widget.forecast-matrix, .field-text.narrative"}],
+      "source_files": [
+        "packages/widgets/src/components/table/Table.svelte",
+        "packages/widgets/src/components/field-text/FieldText.svelte"
+      ],
+      "collect": {"kind": "clip"}
+    }
+  }
+}

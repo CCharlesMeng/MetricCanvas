@@ -303,6 +303,8 @@
   .map-frame {
     position: relative;
     display: flex;
+    width: 100%;
+    min-width: 0;
     min-height: 0;
     flex: 1;
     flex-direction: column;
@@ -413,7 +415,9 @@
     opacity: 0.9;
     white-space: nowrap;
   }
-  @media (max-width: 760px) {
+  /* 273px 左偏移 + 650px 注释带 + 安全余量决定切换点。 */
+  /* responsive-contract: map-regional-annotations-flow */
+  @container mc-component-box (max-width: 960px) {
     .legend-frame {
       position: static;
       inset: auto !important;

@@ -59,6 +59,8 @@
     font-weight: 500;
   }
   .ranking-card {
+    width: 100%;
+    min-width: 0;
     flex: 1;
     min-height: 0;
     margin: 0;

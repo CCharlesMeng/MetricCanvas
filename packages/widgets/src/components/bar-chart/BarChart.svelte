@@ -63,6 +63,8 @@
 <style>
   .bar-chart {
     display: flex;
+    width: 100%;
+    min-width: 0;
     min-height: 0;
     flex: 1;
     flex-direction: column;

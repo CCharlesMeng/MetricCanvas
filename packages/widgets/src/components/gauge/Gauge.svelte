@@ -60,7 +60,9 @@
   /* 表面经 --mc-gauge-* 可被页面布局形态覆写:报表形态里仪表借用所在
      组件单元格的外观(缺省无表面),看板形态需要它自己就是一张白卡。 */
   .gauge {
+    box-sizing: border-box;
     display: flex;
+    width: 100%;
     min-width: 0;
     flex: 1;
     flex-direction: column;
@@ -132,9 +134,10 @@
 
     position: relative;
     box-sizing: border-box;
-    width: 120px;
+    width: 100%;
+    max-width: 120px;
     height: 128px;
-    min-width: 120px;
+    min-width: 0;
     flex: none;
     justify-content: flex-start;
     gap: 0;
@@ -145,6 +148,14 @@
     position: absolute;
     top: 0;
     left: 4px;
+    width: calc(100% - 8px);
+    max-width: 112px;
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .mini .dial svg {
+    width: 100%;
+    height: 100%;
   }
   .mini .reading {
     top: 48px;

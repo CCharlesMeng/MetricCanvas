@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "role": "review-restore",
+  "evidence_epoch": "review-4",
+  "code_fingerprint": "33d1b50cd1b38434b9c2b07aa5700fc7334274533ab39e6efaebbe3cbf6d0e93",
+  "judged_files": [
+    "apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte",
+    "packages/runtime-ui/src/RuntimeSection.svelte",
+    "packages/widgets/src/components/report-header/ReportHeader.svelte",
+    "packages/widgets/src/components/key-value-panel/KeyValuePanel.svelte",
+    "packages/widgets/src/components/composite-card/CompositeCard.svelte",
+    "packages/widgets/src/components/table/Table.svelte",
+    "packages/widgets/src/components/field-text/FieldText.svelte"
+  ],
+  "status": "executed",
+  "coverage": [
+    {"dimension": "R5", "scope": "项目详情预测表；内容最小宽度由列声明派生；横向溢出仅由内部滚动层承载；R5-1", "evidence_ids": ["BE-2"], "result": "clear"},
+    {"dimension": "R6", "scope": "四个 IOC Page @1980×1080；项目详情固定 900px 宿主 @1980×1080、1200×1080 与 700×1080；mc-component-box 运行时组件布局盒、页头/档案、预测表及短叙事卡；R6-1～R6-4", "evidence_ids": ["BE-1", "BE-2"], "result": "clear"}
+  ],
+  "findings": [],
+  "skipped": [],
+  "open_questions": [],
+  "deferred_candidates": [],
+  "evidence_reused": [],
+  "evidence_added": [],
+  "known_gaps": []
+}

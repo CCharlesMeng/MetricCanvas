@@ -1,0 +1,327 @@
+{
+  "baseline_sha256": "619767a80ad72e99c5c8d27218f35ade6e57ddb6a3eeb3a244241158d7c73501",
+  "contract_sha256": "78162def2cb560d7ea821504c344f41ab9a12bd5b5f417f13fb8859cb4e35c90",
+  "entries": [
+    {
+      "actual": {
+        "render": {
+          "actual": {
+            "overflow-x": "auto"
+          },
+          "comparison": {
+            "actual": {
+              "overflow-x": "auto"
+            },
+            "expected": {
+              "overflow-x": "auto"
+            }
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R5-1",
+      "block": "项目详情 / 预测表",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R5-1",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "6,8",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R5",
+      "expected": {
+        "render": {
+          "overflow-x": "auto"
+        }
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix > .scroll",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R5-1",
+      "status": "green",
+      "subject": "预测表横向溢出由内部滚动层承载",
+      "verified_layers": [
+        "render"
+      ]
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 0,
+          "comparison": {
+            "actual_max_css_px": 0.0,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-1",
+      "block": "四个 IOC Page 外框",
+      "check_mode": "overflow",
+      "contract_source": {
+        "baseline_id": "R6-1",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "5,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": "[data-page-layout-form='dashboard']",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-1",
+      "status": "green",
+      "subject": "Page 内容盒没有横向溢出",
+      "verified_layers": [
+        "render"
+      ]
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": []
+          },
+          "status": "pass"
+        }
+      },
+      "baseline_id": "R6-2",
+      "block": "项目详情 / 内容单元契约",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-2",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "1,4,7",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".section-grid",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-2",
+      "status": "green",
+      "subject": "父网格不读取项目详情子 variant",
+      "verified_layers": [
+        "static"
+      ]
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": []
+          },
+          "status": "pass"
+        }
+      },
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-3",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,3",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-3-fixed",
+      "status": "green",
+      "subject": "组件根不编码页面派生宽度",
+      "verified_layers": [
+        "static"
+      ]
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 0,
+          "comparison": {
+            "actual_max_css_px": 0.0,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-3",
+      "block": "项目详情 / 页头与档案区",
+      "check_mode": "clip",
+      "contract_source": {
+        "baseline_id": "R6-3",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,3",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".report-header.project-detail, .key-value-panel.detail-summary, .composite-card.project-norms",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-3-clip",
+      "status": "green",
+      "subject": "组件根不被内容单元裁断",
+      "verified_layers": [
+        "render"
+      ]
+    },
+    {
+      "actual": {
+        "static": {
+          "actual": {
+            "forbidden_hits": []
+          },
+          "status": "pass"
+        }
+      },
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "exact",
+      "contract_source": {
+        "baseline_id": "R6-4",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "static": true
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix, .field-text.narrative",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "static"
+      ],
+      "rule_id": "R6-4-fixed",
+      "status": "green",
+      "subject": "组件根不编码页面派生宽度",
+      "verified_layers": [
+        "static"
+      ]
+    },
+    {
+      "actual": {
+        "render": {
+          "actual": 0,
+          "comparison": {
+            "actual_max_css_px": 0.0,
+            "threshold_css_px": 1.0
+          },
+          "status": "ok"
+        }
+      },
+      "baseline_id": "R6-4",
+      "block": "项目详情 / 预测表与叙事区",
+      "check_mode": "clip",
+      "contract_source": {
+        "baseline_id": "R6-4",
+        "design_fact_source": {
+          "anchor": "文字规格",
+          "key": "2,6",
+          "path": "story-delta-frontend-design.md"
+        }
+      },
+      "dimension": "R6",
+      "expected": {
+        "render": 0
+      },
+      "implementation_locator": {
+        "locators": [
+          {
+            "selector": ".table-widget.forecast-matrix, .field-text.narrative",
+            "strategy": "css"
+          }
+        ]
+      },
+      "required_layers": [
+        "render"
+      ],
+      "rule_id": "R6-4-clip",
+      "status": "green",
+      "subject": "组件根不被内容单元裁断",
+      "verified_layers": [
+        "render"
+      ]
+    }
+  ],
+  "overall": "green",
+  "phase": "green",
+  "report_sha256": "4141d5d65ff5d13c2081d38917e2e7662438e41ecfd49dc2a18495e9dc305e8d",
+  "schema_version": 2,
+  "summary": {
+    "green": 7,
+    "red": 0,
+    "total": 7,
+    "yellow": 0
+  },
+  "tool_equivalence_suspects": []
+}

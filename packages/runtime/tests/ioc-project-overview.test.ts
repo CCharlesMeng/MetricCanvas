@@ -29,10 +29,10 @@ function loadPage(): Page {
 }
 
 describe('ioc-project-overview 骨架', () => {
-  it('声明 5.3，能力下限覆盖分区列轨与筛选空态文案', () => {
+  it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('5.3');
-    expect(requiredMinorVersion(document)).toBe(3);
+    expect(page.schemaVersion).toBe('5.4');
+    expect(requiredMinorVersion(document)).toBe(4);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {
@@ -150,6 +150,12 @@ describe('ioc-project-overview 骨架', () => {
         ['总预签金额', undefined, 1],
         ['年度销售预测', undefined, 0]
       ]);
+    expect(opportunityMetrics.props.rows.map((row) => row.link)).toEqual([
+      true, undefined, undefined
+    ]);
+    expect(opportunityMetrics.props.actions).toEqual([
+      { on: 'click', navigate: { page: 'ioc-opportunity-analysis' } }
+    ]);
     expect(opportunityMetrics.props.rows[0]?.changes?.[0]).toMatchObject({
       label: '较上月', unit: '个', field: { field: 'opportunity-cnt-mom', format: 'number' }
     });
@@ -329,7 +335,10 @@ describe('ioc-project-overview 骨架', () => {
     expect(tabs.props.tabs.map((tab) => tab.label)).toEqual([
       '概览', 'TOP预签项目', '丢单项目'
     ]);
-    const overview = tabs.props.tabs[0]?.component;
+    const overviewTab = tabs.props.tabs[0];
+    const overview = overviewTab && 'component' in overviewTab
+      ? overviewTab.component
+      : undefined;
     if (!overview || overview.type !== 'table') throw new Error('缺少概览表');
     expect(overview.props).toMatchObject({ variant: 'embedded', bottomFade: true });
     expect(overview.props.fit).toBe('container');
@@ -403,7 +412,10 @@ describe('ioc-project-overview 骨架', () => {
       .flatMap((section) => section.components)
       .find((component) => component.type === 'tabContainer');
     if (!tabs || tabs.type !== 'tabContainer') throw new Error('缺少 Tab 容器');
-    const initiated = tabs.props.tabs.find((tab) => tab.id === 'pre-approval-project')?.component;
+    const initiatedTab = tabs.props.tabs.find((tab) => tab.id === 'pre-approval-project');
+    const initiated = initiatedTab && 'component' in initiatedTab
+      ? initiatedTab.component
+      : undefined;
     if (!initiated || initiated.type !== 'table') throw new Error('缺少 TOP 表');
     const action = initiated.props.actions?.[0];
     if (!action || !('navigate' in action)) throw new Error('缺少 TOP navigate');

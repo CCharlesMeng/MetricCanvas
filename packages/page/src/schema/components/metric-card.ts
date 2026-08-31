@@ -25,6 +25,8 @@ const metricCardRowZ = z
     /** 与主值同排的短上下文，例如统计窗口“近60天”。 */
     context: textValueZ.optional(),
     valueField: fieldBindingZ,
+    /** 显式将该行的非空主值声明为组件 actions 的触发入口。 */
+    link: z.boolean().optional(),
     unit: textValueZ.optional(),
     changes: z.array(metricCardChangeZ).optional()
   })

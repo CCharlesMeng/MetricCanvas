@@ -23,6 +23,10 @@
     onboolean: (filterId: string, checked: boolean) => void;
     onnumberrange: (filterId: string, range: NumberRangeValue | null) => void;
     onsearch: (filterId: string, query: string) => void;
+    variant?: 'compact';
+    readOnly?: boolean;
+    note?: string;
+    onback?: () => void;
   }
 
   let {
@@ -35,11 +39,28 @@
     ontimepoint,
     onboolean,
     onnumberrange,
-    onsearch
+    onsearch,
+    variant,
+    readOnly = false,
+    note,
+    onback
   }: Props = $props();
 </script>
 
-<header data-dashboard-toolbar class="dashboard-toolbar">
+<header
+  data-dashboard-toolbar
+  class:compact={variant === 'compact'}
+  class="dashboard-toolbar"
+>
+  {#if onback}
+    <button
+      type="button"
+      data-dashboard-back
+      class="dashboard-back"
+      aria-label="返回"
+      onclick={onback}
+    >&lt;</button>
+  {/if}
   <h1>{title}</h1>
   <FilterBar
     {declarations}
@@ -51,12 +72,14 @@
     {onboolean}
     {onnumberrange}
     {onsearch}
+    {readOnly}
+    {note}
   />
 </header>
 
 <style>
   .dashboard-toolbar {
-    /* 1920px Canvas 参考宿主下主区宽 1679px；真实宽度仍始终取 100%。 */
+    /* 工具栏始终跟随 Dashboard 宿主的可用宽度。 */
     --mc-filter-bar-flex: 1;
     --mc-filter-bar-justify-content: flex-start;
     --mc-filter-bar-gap: 16px;
@@ -85,7 +108,50 @@
     line-height: 36px;
     white-space: nowrap;
   }
-  @media (max-width: 1050px) {
+  .dashboard-back {
+    padding: 0;
+    margin: 0 8px 0 0;
+    color: #191919;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    font-size: 20px;
+    line-height: 1;
+  }
+  .dashboard-back:focus-visible {
+    outline: 2px solid var(--mc-color-primary, #08359e);
+    outline-offset: 2px;
+  }
+  .dashboard-toolbar.compact {
+    --mc-filter-bar-flex: 1;
+    --mc-filter-bar-gap: 12px;
+    --mc-filter-bar-wrap: nowrap;
+    --mc-filter-note-flex: 0 1 auto;
+    --mc-filter-note-white-space: nowrap;
+
+    position: sticky;
+    z-index: 66;
+    top: 0;
+    display: flex;
+    box-sizing: border-box;
+    width: 100%;
+    height: 56px;
+    min-height: 56px;
+    align-items: center;
+    gap: 0;
+    padding: 0 24px;
+    background: #fff;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  .compact h1 {
+    flex: none;
+    margin-right: 24px;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 24px;
+  }
+  @container mc-runtime (max-width: 1050px) {
     .dashboard-toolbar {
       grid-template-columns: minmax(0, 1fr);
       gap: 12px;

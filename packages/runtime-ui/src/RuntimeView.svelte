@@ -624,6 +624,16 @@
     }
   }
 
+  function handleMetricLink(component: Component, row: Row) {
+    if (component.type !== 'metricCard' || !componentCapability(component)?.actions) return;
+    for (const action of component.props.actions ?? []) {
+      if (!('navigate' in action)) continue;
+      const search = drillThroughSearch(action.navigate, filterValues, row);
+      navigate(action.navigate.page, search);
+      return;
+    }
+  }
+
   function handleChartClick(component: ChartComponent, row: Row) {
     if (!componentCapability(component)?.actions) return;
     if (component.type === 'mapChart' && component.props.hierarchyFilter) {
@@ -903,6 +913,17 @@
     return (row: Row) => handleChartClick(chart, row);
   }
 
+  function metricLinkHandler(component: Component): ((row: Row) => void) | undefined {
+    if (
+      component.type !== 'metricCard' ||
+      !componentCapability(component)?.actions ||
+      !component.props.actions?.some((action) => 'navigate' in action)
+    ) {
+      return undefined;
+    }
+    return (row: Row) => handleMetricLink(component, row);
+  }
+
   function mapOverride(component: Component): 'china' | 'world' | undefined {
     if (component.type !== 'mapChart' || !component.props.hierarchyFilter) return undefined;
     const declaration = declarations.find((item) => item.id === component.props.hierarchyFilter);
@@ -920,6 +941,7 @@
       snapshot: (child) => hostRenderSnapshot(child, componentSnapshots(child)),
       table: (child) => tableBinding(loaded, child, componentSnapshots(child)),
       onchartclick: chartClickHandler,
+      onmetriclink: metricLinkHandler,
       map: mapOverride
     };
   }
@@ -965,6 +987,8 @@
     {@const readyPage = pageState.page}
     {@const layoutForm = readyPage.layoutForm ?? 'report'}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
+    {@const dashboardToolbarConfig =
+      typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:dashboard-toolbar-hidden={
@@ -972,7 +996,9 @@
       }
       class="page-content"
       data-page-layout-form={layoutForm}
-      data-dashboard-toolbar={dashboardToolbar}
+      data-dashboard-toolbar={typeof dashboardToolbar === 'string'
+        ? dashboardToolbar
+        : dashboardToolbar.variant}
     >
     {#if layoutForm === 'dashboard' && dashboardToolbar !== 'hidden'}
       <DashboardToolbar
@@ -986,6 +1012,10 @@
         onboolean={writeBoolean}
         onnumberrange={writeNumberRange}
         onsearch={writeSearch}
+        variant={dashboardToolbarConfig?.variant}
+        readOnly={dashboardToolbarConfig?.readOnly}
+        note={dashboardToolbarConfig?.note}
+        onback={navigation?.back}
       />
     {:else if pageState.capabilities.filters && hasVisibleFilters(declarations)}
       <FilterBar
@@ -1016,6 +1046,7 @@
                 ? (component.props.links ?? []).map(textLink)
                 : []}
               onchartclick={chartClickHandler(component)}
+              onmetriclink={metricLinkHandler(component)}
               onback={navigation?.back}
               table={tableBinding(readyPage, component, slots)}
               map={mapOverride(component)}
@@ -1031,6 +1062,8 @@
 
 <style>
   .runtime-view {
+    container: mc-runtime / inline-size;
+
     --mc-color-canvas: #daeaff;
     /* 看板形态画布:中性灰,让白色分区自己成为模块边界。 */
     --mc-color-dashboard-canvas: #f8f8f8;
@@ -1241,11 +1274,17 @@
     margin-top: var(--mc-page-sections-margin-top, 0);
   }
   .page-content.layout-dashboard > .page-sections {
-    /* 1920 参考宿主的非对称内距是 23/24px，内容轨因此恰为 1632px。 */
+    /* 看板内容轨只保留 23/24px 非对称页面内距；实际宽度始终由宿主容器决定。 */
     padding-right: 24px;
     padding-left: 23px;
   }
-  @media (max-width: 1050px) {
+  .page-content.layout-dashboard[data-dashboard-toolbar='compact'] {
+    --mc-page-sections-margin-top: 0;
+  }
+  .page-content.layout-dashboard[data-dashboard-toolbar='compact'] > .page-sections {
+    padding: 16px 24px 24px;
+  }
+  @container mc-runtime (max-width: 1050px) {
     .page-content {
       --mc-page-content-padding-inline: 12px;
     }
