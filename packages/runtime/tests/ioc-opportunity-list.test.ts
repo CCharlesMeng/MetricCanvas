@@ -18,15 +18,21 @@ function loadPage(): Page {
 }
 
 describe('ioc-opportunity-list 骨架', () => {
-  it('声明看板布局形态，页头与明细表各自成模块，没有报表渐变面板', () => {
+  it('声明标准看板工具栏标题，内容区只保留明细卡片', () => {
     const page = loadPage();
     expect(page.layoutForm).toBe('dashboard');
-    expect(page.sections.map((section) => section.container)).toEqual(['plain', 'card']);
-    expect(page.sections.map((section) => section.id)).toEqual(['header', 'list']);
+    expect(page.meta?.title).toBe('机会点清单');
+    expect(page.sections.map((section) => section.container)).toEqual(['card']);
+    expect(page.sections.map((section) => section.id)).toEqual(['list']);
+    expect(
+      page.sections
+        .flatMap((section) => section.components)
+        .some((component) => component.type === 'reportHeader')
+    ).toBe(false);
   });
 
-  // 规格 002 §2 的结构图里 `list` 分区没有分区标题，页面标题由 §2.1 的
-  // `headerOpt.title`（reportHeader）承担；聚合口径属另一个屏，不在本页。
+  // 规格 002 §2 的结构图里 `list` 分区没有分区标题；dashboard 页面标题由
+  // 标准工具栏读取 meta.title，聚合口径属另一个屏，不在本页。
   it('明细分区不带分区标题，只有一个明细数据源', () => {
     const page = loadPage();
     const list = page.sections.find((section) => section.id === 'list');

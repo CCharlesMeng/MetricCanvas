@@ -216,6 +216,94 @@ test('四个 IOC 页面在 1980px 视口占满宿主且没有页面级横向溢�
   }
 });
 
+test('机会点清单使用单一标准页头并把密集筛选收纳到更多筛选', async ({ page }) => {
+  await page.goto('/examples/query.html');
+  await page.evaluate(() => {
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    const dashboard = document.querySelector<HTMLElement>('#dashboard')!;
+    dashboard.style.width = '100%';
+    dashboard.style.maxWidth = 'none';
+    dashboard.style.margin = '0';
+  });
+
+  const opportunityList = await iocPageDocument('ioc-opportunity-list');
+  for (const viewport of [
+    { width: 1980, height: 1080 },
+    { width: 1280, height: 800 },
+    { width: 760, height: 1200 }
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.evaluate((document) => {
+      window.queryRuntime.update({ document });
+    }, opportunityList);
+
+    const host = page.locator('[data-metriccanvas-runtime]');
+    const toolbar = host.locator('header[data-dashboard-toolbar]');
+    await expect(toolbar).toBeVisible();
+    await expect(host.getByRole('heading', { name: '机会点清单', level: 1 })).toHaveCount(1);
+    await expect(host.locator('[data-component-type="reportHeader"]')).toHaveCount(0);
+    await expect(toolbar.locator('[data-dashboard-primary-filters] [data-filter-control]'))
+      .toHaveCount(4);
+
+    const overflow = toolbar.locator('[data-dashboard-filter-overflow]');
+    await expect(overflow).toBeVisible();
+    await expect(overflow.getByText('更多筛选', { exact: true })).toBeVisible();
+    await expect(overflow.locator('[data-dashboard-filter-count]')).toHaveText('6');
+
+    const contentFilters = host.locator('[data-dashboard-content-filters]');
+    await expect(contentFilters.locator('[data-filter-control]')).toHaveCount(1);
+    await expect(contentFilters.locator('input[type="search"]')).toHaveAttribute(
+      'placeholder',
+      '搜索机会点 / 客户'
+    );
+
+    if (viewport.width === 1980) {
+      expect(await toolbar.evaluate((element) => element.getBoundingClientRect().height))
+        .toBeCloseTo(80, 0);
+    }
+
+    await overflow.locator(':scope > summary').click();
+    const panel = overflow.locator('[data-dashboard-overflow-panel]');
+    await expect(panel).toBeVisible();
+    await expect(panel.locator('[data-filter-control]')).toHaveCount(6);
+
+    const geometry = await page.evaluate(() => {
+      const runtime = document
+        .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
+        .shadowRoot!;
+      const root = runtime.querySelector<HTMLElement>('.runtime-view')!.getBoundingClientRect();
+      const panel = runtime
+        .querySelector<HTMLElement>('[data-dashboard-overflow-panel]')!
+        .getBoundingClientRect();
+      return {
+        panelInsideRuntime: panel.left >= root.left - 1 && panel.right <= root.right + 1,
+        panelWidth: panel.width,
+        pageOverflow: document.documentElement.scrollWidth - window.innerWidth
+      };
+    });
+    expect(geometry.panelInsideRuntime, `${viewport.width}px`).toBe(true);
+    expect(geometry.pageOverflow, `${viewport.width}px`).toBeLessThanOrEqual(1);
+    if (viewport.width === 1980) {
+      expect(geometry.panelWidth).toBeCloseTo(760, 0);
+    }
+  }
+
+  await page.setViewportSize({ width: 1980, height: 1080 });
+  const overview = await iocPageDocument('ioc-project-overview');
+  await page.evaluate((document) => {
+    window.queryRuntime.update({ document });
+  }, overview);
+  const overviewToolbar = page.locator(
+    '[data-metriccanvas-runtime] header[data-dashboard-toolbar]'
+  );
+  await expect(overviewToolbar.locator('[data-dashboard-primary-filters] [data-filter-control]'))
+    .toHaveCount(5);
+  await expect(overviewToolbar.locator('[data-dashboard-filter-overflow]')).toHaveCount(0);
+  await expect(page.locator('[data-metriccanvas-runtime] [data-dashboard-content-filters]'))
+    .toHaveCount(0);
+});
+
 test('1980px 下 IOC 组合卡保持页面列轨与卡内 span 声明', async ({ page }) => {
   await page.setViewportSize({ width: 1980, height: 1080 });
   await page.goto('/examples/query.html');

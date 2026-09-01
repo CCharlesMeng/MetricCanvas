@@ -9,6 +9,7 @@
     FilterValues
   } from '@metriccanvas/runtime';
   import FilterBar from '../filters/FilterBar.svelte';
+  import { dashboardFilterGroups } from './filter-groups';
 
   type DimensionDeclaration = Extract<FilterDeclaration, { type: 'dimension' }>;
 
@@ -45,6 +46,8 @@
     note,
     onback
   }: Props = $props();
+
+  const filterGroups = $derived(dashboardFilterGroups(declarations, variant));
 </script>
 
 <header
@@ -52,29 +55,59 @@
   class:compact={variant === 'compact'}
   class="dashboard-toolbar"
 >
-  {#if onback}
-    <button
-      type="button"
-      data-dashboard-back
-      class="dashboard-back"
-      aria-label="返回"
-      onclick={onback}
-    >&lt;</button>
-  {/if}
-  <h1>{title}</h1>
-  <FilterBar
-    {declarations}
-    {values}
-    {candidates}
-    {ondimension}
-    {ontimerange}
-    {ontimepoint}
-    {onboolean}
-    {onnumberrange}
-    {onsearch}
-    {readOnly}
-    {note}
-  />
+  <div class="dashboard-heading">
+    {#if onback}
+      <button
+        type="button"
+        data-dashboard-back
+        class="dashboard-back"
+        aria-label="返回"
+        onclick={onback}
+      >&lt;</button>
+    {/if}
+    <h1>{title}</h1>
+  </div>
+  <div class="dashboard-filter-area">
+    <div data-dashboard-primary-filters class="primary-filters">
+      <FilterBar
+        declarations={filterGroups.primary}
+        {values}
+        {candidates}
+        {ondimension}
+        {ontimerange}
+        {ontimepoint}
+        {onboolean}
+        {onnumberrange}
+        {onsearch}
+        {readOnly}
+        {note}
+      />
+    </div>
+    {#if filterGroups.overflow.length > 0}
+      <details data-dashboard-filter-overflow class="filter-overflow">
+        <summary>
+          <span>更多筛选</span>
+          <span data-dashboard-filter-count class="filter-count">
+            {filterGroups.overflow.length}
+          </span>
+          <span aria-hidden="true" class="filter-overflow-arrow">▾</span>
+        </summary>
+        <div data-dashboard-overflow-panel class="overflow-panel">
+          <FilterBar
+            declarations={filterGroups.overflow}
+            {values}
+            {candidates}
+            {ondimension}
+            {ontimerange}
+            {ontimepoint}
+            {onboolean}
+            {onnumberrange}
+            {onsearch}
+          />
+        </div>
+      </details>
+    {/if}
+  </div>
 </header>
 
 <style>
@@ -100,6 +133,23 @@
     background: var(--mc-color-surface, #fff);
     border-radius: 0;
   }
+  .dashboard-heading,
+  .dashboard-filter-area,
+  .primary-filters {
+    min-width: 0;
+  }
+  .dashboard-heading,
+  .dashboard-filter-area {
+    display: flex;
+    align-items: center;
+  }
+  .dashboard-filter-area {
+    gap: 16px;
+  }
+  .primary-filters {
+    display: flex;
+    flex: 1;
+  }
   h1 {
     margin: 0;
     color: var(--mc-page-title-color, #191919);
@@ -123,6 +173,75 @@
     outline: 2px solid var(--mc-color-primary, #08359e);
     outline-offset: 2px;
   }
+  .filter-overflow {
+    position: relative;
+    z-index: 70;
+    flex: none;
+  }
+  .filter-overflow summary {
+    display: inline-flex;
+    box-sizing: border-box;
+    height: var(--mc-filter-control-height, 34px);
+    align-items: center;
+    gap: 6px;
+    padding: 0 12px;
+    color: #191919;
+    background: #fff;
+    border: 1px solid var(--mc-filter-control-border-color, #c2c2c2);
+    border-radius: var(--mc-filter-control-radius, 6px);
+    cursor: pointer;
+    font-size: var(--mc-filter-font-size, 14px);
+    list-style: none;
+    white-space: nowrap;
+  }
+  .filter-overflow summary::-webkit-details-marker {
+    display: none;
+  }
+  .filter-overflow summary:focus-visible {
+    outline: 2px solid var(--mc-color-primary, #08359e);
+    outline-offset: 2px;
+  }
+  .filter-count {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 4px;
+    color: var(--mc-color-primary, #08359e);
+    background: #eef3ff;
+    border-radius: 9px;
+    font-size: 12px;
+    line-height: 18px;
+  }
+  .filter-overflow-arrow {
+    color: #8c8c8c;
+    transition: transform 160ms ease;
+  }
+  .filter-overflow[open] .filter-overflow-arrow {
+    transform: rotate(180deg);
+  }
+  .overflow-panel {
+    --mc-filter-bar-flex: 0 1 auto;
+    --mc-filter-bar-wrap: wrap;
+    --mc-filter-bar-gap: 16px;
+    --mc-filter-bar-padding: 16px;
+    --mc-filter-bar-margin: 0;
+    --mc-filter-bar-background: #fff;
+    --mc-filter-bar-border: 0;
+    --mc-filter-bar-radius: 0;
+
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    box-sizing: border-box;
+    width: min(760px, calc(100cqi - 48px));
+    max-width: calc(100cqi - 48px);
+    background: #fff;
+    border: 1px solid var(--mc-color-border, #e4e4e7);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgb(15 23 42 / 0.16);
+  }
   .dashboard-toolbar.compact {
     --mc-filter-bar-flex: 1;
     --mc-filter-bar-gap: 12px;
@@ -144,9 +263,14 @@
     background: #fff;
     border-bottom: 1px solid #e8e8e8;
   }
-  .compact h1 {
+  .compact .dashboard-heading {
     flex: none;
     margin-right: 24px;
+  }
+  .compact .dashboard-filter-area {
+    flex: 1;
+  }
+  .compact h1 {
     font-size: 18px;
     font-weight: 600;
     line-height: 24px;
@@ -156,6 +280,9 @@
       grid-template-columns: minmax(0, 1fr);
       gap: 12px;
       padding: 18px 20px;
+    }
+    .dashboard-filter-area {
+      align-items: flex-start;
     }
     h1 {
       white-space: normal;

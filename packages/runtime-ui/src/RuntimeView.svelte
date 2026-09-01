@@ -60,6 +60,7 @@
   import { collectDataErrors } from './data-error-events';
   import FilterBar from './filters/FilterBar.svelte';
   import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
+  import { dashboardFilterGroups } from './dashboard/filter-groups';
   import {
     cascadeConstraints,
     clearDependentUpdates,
@@ -989,6 +990,10 @@
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
+    {@const groupedDashboardFilters = dashboardFilterGroups(
+      declarations,
+      dashboardToolbarConfig?.variant
+    )}
     <div
       class:layout-dashboard={layoutForm === 'dashboard'}
       class:dashboard-toolbar-hidden={
@@ -1029,6 +1034,24 @@
         onnumberrange={writeNumberRange}
         onsearch={writeSearch}
       />
+    {/if}
+
+    {#if layoutForm === 'dashboard' &&
+      dashboardToolbar !== 'hidden' &&
+      groupedDashboardFilters.content.length > 0}
+      <div data-dashboard-content-filters class="dashboard-content-filters">
+        <FilterBar
+          declarations={groupedDashboardFilters.content}
+          values={filterValues}
+          candidates={dimensionCandidates}
+          ondimension={writeDimension}
+          ontimerange={writeTimeRange}
+          ontimepoint={writeTimePoint}
+          onboolean={writeBoolean}
+          onnumberrange={writeNumberRange}
+          onsearch={writeSearch}
+        />
+      </div>
     {/if}
 
     <div class="page-sections">
@@ -1266,6 +1289,17 @@
   }
   .page-content.layout-dashboard.dashboard-toolbar-hidden {
     --mc-page-sections-margin-top: 0;
+  }
+  .dashboard-content-filters {
+    --mc-filter-bar-flex: 1;
+    --mc-filter-bar-padding: 0;
+    --mc-filter-bar-margin: 0;
+    --mc-filter-bar-background: transparent;
+    --mc-filter-bar-border: 0;
+    --mc-filter-bar-radius: 0;
+
+    display: flex;
+    padding: 16px 24px 0 23px;
   }
   .page-sections {
     display: flex;
