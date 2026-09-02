@@ -28,14 +28,14 @@ jobs:
         with:
           python-version: '3.12'
           cache: pip
-          cache-dependency-path: metriccanvas-authoring/requirements.lock
+          cache-dependency-path: metriccanvas-authoring/tool/requirements.lock
 
       # allowBuilds(esbuild)已在 pnpm-workspace.yaml 声明,frozen-lockfile 下自动生效
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
 
       - name: 安装创作 Bundle 依赖
-        run: python -m pip install --require-hashes -r metriccanvas-authoring/requirements.lock
+        run: python -m pip install --require-hashes -r metriccanvas-authoring/tool/requirements.lock
 
       # 校验页面文档(结构 + 语义 + 文件名)。失败时按错误分型汇总到 job summary:
       # v3 页面文档只做结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。

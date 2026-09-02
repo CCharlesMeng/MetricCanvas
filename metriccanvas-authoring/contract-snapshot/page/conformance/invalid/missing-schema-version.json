@@ -1,0 +1,20 @@
+{
+  "case": "missing-schema-version",
+  "input": {
+    "id": "missing-schema-version",
+    "dataSources": {},
+    "sections": []
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/schemaVersion",
+      "message": "缺少必填字段 schemaVersion"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections",
+      "message": "must NOT have fewer than 1 items"
+    }
+  ]
+}

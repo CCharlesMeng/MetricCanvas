@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/page-build-spec/0.1.0",
+  "title": "MetricCanvas Page Build Spec",
+  "description": "模型与确定性创作核心之间的业务语义契约；不得携带 DQE 查询、结果字段、组件 JSON、布局或页面协议版本。",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["question", "units"],
+  "properties": {
+    "question": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "baseRevision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pageId", "revisionId", "revisionNumber"],
+      "properties": {
+        "pageId": { "type": "string", "minLength": 1 },
+        "revisionId": { "type": "string", "minLength": 1 },
+        "revisionNumber": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 6,
+      "items": { "$ref": "#/$defs/unit" }
+    }
+  },
+  "$defs": {
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "businessDomain",
+        "metrics",
+        "groupBy",
+        "filters",
+        "time",
+        "intent"
+      ],
+      "properties": {
+        "businessDomain": { "type": "string", "minLength": 1 },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 6,
+          "items": { "$ref": "#/$defs/metric" }
+        },
+        "groupBy": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filter" }
+        },
+        "time": {
+          "oneOf": [{ "type": "null" }, { "$ref": "#/$defs/time" }]
+        },
+        "title": { "type": "string", "minLength": 1 },
+        "intent": {
+          "type": "string",
+          "x-metriccanvas-closed-set": "../exported/analysis-intents.json#/intents"
+        },
+        "pinnedComponent": {
+          "type": "string",
+          "x-metriccanvas-closed-set": "metriccanvas-product://page/component-catalog.json#/*.type"
+        }
+      }
+    },
+    "metric": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": { "const": "metric" },
+            "name": { "type": "string", "minLength": 1 }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "expression", "label"],
+          "properties": {
+            "kind": { "const": "formula" },
+            "expression": { "type": "string", "minLength": 1 },
+            "label": { "type": "string", "minLength": 1 },
+            "unit": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "values"],
+      "properties": {
+        "dimension": { "type": "string", "minLength": 1 },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "time": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["granularity", "start", "end", "providedBy"],
+      "properties": {
+        "granularity": { "type": "string", "minLength": 1 },
+        "start": { "type": "string", "minLength": 1 },
+        "end": { "type": "string", "minLength": 1 },
+        "providedBy": { "enum": ["user", "model"] }
+      }
+    }
+  }
+}

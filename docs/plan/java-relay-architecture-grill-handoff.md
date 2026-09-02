@@ -194,7 +194,7 @@ ADR-0060 只改变目标架构，不意味着这些实现已经迁移。迁移�
 
 ### 已冻结并开工：独立创作 Bundle
 
-决策见 [ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)，分期实施与验收见 [`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)。该维度同时冻结了页面构建规格的抽象层、中立契约单向导出、FastMCP 只作为 Adapter、假 Port、差分迁移、单 Bundle 版本与当前页面协议生成策略。
+决策见 [ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)，分期实施与验收见 [`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)。Bundle 是原子发布容器，Skill 与 Python Tool 是两个平级 Module，只经 MCP Tool Interface 协作；仓根拥有产品中立契约，Bundle 自有 Authoring contracts 并携带锁定快照，Fake 与 fixture 只属于 Test Harness。该维度同时冻结了 Page Build Spec 的抽象层、FastMCP 只作为 Adapter、差分迁移、单 Bundle 版本与当前页面协议生成策略。
 
 ### 尚待后续 grill
 

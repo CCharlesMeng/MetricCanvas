@@ -1,9 +1,18 @@
 {
   "bundleVersion": "0.1.0",
   "status": "s2-in-progress",
-  "python": ">=3.12",
-  "transport": "stdio",
-  "entrypoint": "server.py",
-  "skill": "SKILL.md",
-  "contracts": "contracts/generated/manifest.json"
+  "skill": {
+    "entrypoint": "skill/metriccanvas-page-builder/SKILL.md"
+  },
+  "tool": {
+    "runtime": "python",
+    "python": ">=3.12",
+    "transport": "stdio",
+    "entrypoint": "tool/server.py",
+    "requirements": "tool/requirements.lock"
+  },
+  "contracts": {
+    "authoring": "contracts/manifest.json",
+    "productLock": "contract-lock.json"
+  }
 }

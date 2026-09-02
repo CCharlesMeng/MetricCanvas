@@ -18,7 +18,7 @@
     "design:facts:check": "tsx tools/design-facts/src/cli.ts --check",
     "authoring:contracts": "tsx tools/scripts/export-authoring-contracts.ts",
     "authoring:contracts:check": "tsx tools/scripts/export-authoring-contracts.ts --check",
-    "authoring:test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/tests -p 'test_*.py'",
+    "authoring:test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'",
     "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "check": "pnpm -r check"
