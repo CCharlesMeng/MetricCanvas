@@ -22,7 +22,8 @@ contracts 锁步使用一个 Bundle SemVer。Bundle 不发布 wheel，但锁定 
 **模型只产出 Page Build Spec。** 它表达业务域、指标、维度、时间、筛选、分析意图
 和用户钉住项，不携带 DQE 查询体、结果字段契约、组件 JSON、布局或 `schemaVersion`。
 Python 确定性派生这些内容，并在一个粗粒度构建用例中完成验真、执行、装配、完整页面
-校验和保存。Python 不持久化 Relay Run。
+校验和保存。`pageId` 与幂等键属于粗粒度构建命令的保存控制信息，不污染 Page Build
+Spec 的业务语义；精确基线修订仍是修订场景本身的一部分。Python 不持久化 Relay Run。
 
 **MCP 是入站 Adapter，不是领域边界。** Python domain/application 不导入 FastMCP。
 模型可见 Interface 最终只暴露数据上下文发现和页面构建两个粗粒度能力；内部算法步骤

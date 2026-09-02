@@ -9,8 +9,9 @@
 - `test-harness/`：从外部调用 Tool 的测试宿主、fixture 与 Fake Adapter；不进入生产运行时。
 
 Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter；Python 内部的
-查询派生、验真、组件选择、装配和页面校验不会逐步暴露成模型工具。当前 S2 已落盘
-Page Build Spec、产品契约消费层和三个语义 Port，后续按
+查询派生、验真、组件选择、装配和页面校验不会逐步暴露成模型工具。S2 已完成
+Page Build Spec 经 application seam 调用三个语义 Port 的完整 Harness 路径；S3 已开始迁移
+数据上下文规范名归一、DQE/结果字段契约派生与首个页面装配垂直切片，后续按
 [`docs/plan/metriccanvas-authoring-bundle.md`](../docs/plan/metriccanvas-authoring-bundle.md)
 继续迁移确定性算法。
 

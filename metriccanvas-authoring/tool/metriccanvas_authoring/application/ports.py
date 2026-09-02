@@ -1,16 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Protocol, Sequence
+from typing import Any, Mapping, Protocol
+
+from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
 
 JsonObject = Mapping[str, Any]
-
-
-@dataclass(frozen=True, slots=True)
-class DqeExecutionResult:
-    rows: Sequence[JsonObject]
-    total_count: int | None = None
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,6 +1,6 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：架构边界已落盘，S2 继续实施
+> 状态：S2 已完成，S3 迁移中
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
 > 交付根：`metriccanvas-authoring/`
@@ -19,6 +19,8 @@ Tool、Interface contracts 和锁定产品契约快照的原子发布容器，�
 - Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是 Adapter，内部算法不是 tools。
 - Page Build Spec 是模型与确定性算法的边界，不含 DQE 查询体、字段契约、组件 JSON、
   布局或页面协议版本。
+- `pageId` 与幂等键属于 `build_page` command envelope，不进入 Page Build Spec；精确基线修订
+  仍随修订场景放在 Page Build Spec 中。
 - Python 不持久化 Relay Run，不直连 MySQL，不复制 Java 页面资产事务或 DQE 内部逻辑。
 - Bundle 使用 Python 3.12+ 脚本目录交付，不构建 wheel；依赖版本锁定。
 - 产品规则由仓根中立契约导出物承载，Bundle 只消费锁定快照，不手抄第二份规则清单。
@@ -89,8 +91,10 @@ contracts、Bundle/contract locks。跨引用和能力不变式不能只靠 JSON
 
 ## 实施切片
 
-当前进度（2026-09-02）：S0、S1 已完成并接入 CI；目录边界已按 ADR-0061 重构。
-S2 已落盘 Page Build Spec、产品契约消费层和三个语义 Port/Fake，完整规格提交路径待继续实现。
+当前进度（2026-09-02）：S0、S1 已完成并接入 CI，目录边界已按 ADR-0061 重构；
+S2 已完成，Harness 可从 Page Build Spec 经粗粒度 application seam 调用数据上下文、DQE、
+Java 页面资产三个 Port，并验证结构化调用、稳定错误 `code/path` 和当前页面协议产物。
+S3 已开始迁移别名归一、DQE/结果字段契约派生、formula 与首个柱状图页面装配垂直切片。
 
 ### S0：自包含骨架
 
