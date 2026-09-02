@@ -13,6 +13,7 @@ JAVA_OPTS="${JAVA_OPTS:-} -server -XX:+UseG1GC -XX:MaxGCPauseMillis=200"
 JAVA_OPTS="${JAVA_OPTS} -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=${LOG_DIR}/log"
 JAVA_OPTS="${JAVA_OPTS} -Duser.timezone=UTC -Dfile.encoding=UTF-8 -Dlog4j2.formatMsgNoLookups=true"
 JAVA_OPTS="${JAVA_OPTS} -Dlog.dir=${LOG_DIR} -Dspring.config.additional-location=file:${APP_ROOT}/conf/"
-JAVA_OPTS="${JAVA_OPTS} -classpath ${APP_ROOT}/lib/*"
 
-exec ${JAVA_EXEC} ${JAVA_OPTS} com.huawei.cdi.pageassets.StartUp "$@"
+# 通配 classpath 必须交给 JVM 展开（引号防止 shell 先做 glob）。
+# shellcheck disable=SC2086
+exec ${JAVA_EXEC} ${JAVA_OPTS} -classpath "${APP_ROOT}/lib/*" com.huawei.cdi.pageassets.StartUp "$@"

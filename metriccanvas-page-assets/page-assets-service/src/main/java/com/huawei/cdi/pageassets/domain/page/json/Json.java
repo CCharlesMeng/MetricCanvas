@@ -171,6 +171,47 @@ public final class Json {
         return out.toString();
     }
 
+    /**
+     * 基线 `canonicalizeJson`：对象键按 UTF-16 码元升序（JS 默认 sort），其余与 {@link #stringify} 相同。
+     * 是 contentHash 与幂等指纹的唯一序列化形式，两边必须逐字节相同。
+     */
+    public static String canonical(JsonNode node) {
+        StringBuilder out = new StringBuilder();
+        canonical(node, out);
+        return out.toString();
+    }
+
+    private static void canonical(JsonNode node, StringBuilder out) {
+        if (node != null && node.isObject()) {
+            List<String> sorted = new ArrayList<>();
+            node.fieldNames().forEachRemaining(sorted::add);
+            sorted.sort(String::compareTo);
+            out.append('{');
+            boolean first = true;
+            for (String key : sorted) {
+                if (!first) {
+                    out.append(',');
+                }
+                first = false;
+                quote(key, out);
+                out.append(':');
+                canonical(node.get(key), out);
+            }
+            out.append('}');
+        } else if (node != null && node.isArray()) {
+            out.append('[');
+            for (int i = 0; i < node.size(); i++) {
+                if (i > 0) {
+                    out.append(',');
+                }
+                canonical(node.get(i), out);
+            }
+            out.append(']');
+        } else {
+            stringify(node, out);
+        }
+    }
+
     private static void stringify(JsonNode node, StringBuilder out) {
         if (node == null || node.isNull() || node.isMissingNode()) {
             out.append("null");

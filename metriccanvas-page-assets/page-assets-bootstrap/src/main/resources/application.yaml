@@ -4,9 +4,17 @@ spring:
   main:
     banner-mode: off
 
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
 # {service} 前缀由配置注入；并入宿主后只改 consumer 的 base URL（ADR-0062）。
+# base-path 是 rest-services-page-assets.yaml 的 basePath，独立部署缺省 /rest/cdi/pageassets/v1。
 pageassets:
   service-name: ${PAGE_ASSETS_SERVICE_NAME:pageassets}
+  base-path: /rest/cdi/${pageassets.service-name}/v1
+  # memory：进程内仓储（J2，重启即空）；mysql：MyBatis + Flyway（J3 落地）。
+  store: ${PAGE_ASSETS_STORE:memory}
 
 logging:
   config: classpath:log4j2.xml

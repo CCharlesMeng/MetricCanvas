@@ -2,8 +2,8 @@
 
 > 日期：2026-09-02
 >
-> 状态：J1 已完成（2026-09-02），J2–J4 与 A1–A3 可继续并行；J1 落地记录见
-> [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md) J1 节
+> 状态：J1、J2 已完成（2026-09-02），J3–J4 与 A1–A3 可继续并行；J1 / J2 落地记录见
+> [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md) 对应切片节
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
 > [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
@@ -32,14 +32,36 @@
   `coverage.json`），Java `PageConformanceTest` 与 TS 同跑。
 - 独立 CI job `java-page-assets` 在 `.github/workflows/ci.yml`。
 
+## J2 已交付什么（新会话直接用）
+
+- Interface 作者文件 `page-assets-model/src/main/resources/rest-services-page-assets.yaml`（Swagger 2.0），
+  副本由 `pnpm authoring:contracts` 导出到 `contracts/metriccanvas/page-assets/`（`--check` 查漂移）。
+  `{service}` 前缀经 `pageassets.base-path` 注入；`X-Operator-Id` = actorId。
+- `page-assets-model/src/main/java` 是**手写**的、与 `dfs-codegen`（spring / delegatePattern）同形的
+  `PagesApi` / `PagesApiDelegate` / `PagesApiController` 与 POJO；用户已裁决此策略。业务只实现 delegate
+  （`adapter/inbound/rest/PagesDelegate`），不碰 model。`-Pcodegen` + `scripts/check-codegen-drift.sh`
+  留给公司 CI 校验漂移，尚未在公司 CI 跑过。
+- 领域：`domain/revision`（`SaveRevisionPolicy`、`RevisionFactory`、`ContentHash`）、`domain/idempotency`
+  （作用域、指纹）、`domain/catalog`（码点序游标）、`domain/error`（闭集 + `PageAssetException`）。
+  用例编排在 `application/PageAssetService`，经三个 Port：`PageRepository`、`IdempotencyRepository`、
+  `PageWriteTransaction`（幂等锁 → 页面锁 → 事务）。
+- `adapter/outbound/memory/InMemoryPageStore` 实现全部三个 Port，是 J3 MyBatis 适配器的行为基线；
+  `ConcurrentSaveTest` 与 `PageAssetServiceTest` 是 J3 集成测试要在真实 MySQL 上复跑的清单。
+- 契约测试 `PagesApiContractTest` 用 MockMvc 对齐 YAML 的路径、响应属性、错误码枚举与状态语义。
+- 错误信封在 ADR-0062 闭集之外多了两个传输层码 `INVALID_REQUEST` / `INTERNAL_ERROR`（Spring MVC
+  绑定 / 校验 / 路由错误与 500），已在 YAML、README 与 plan 登记为补充，未改 ADR。
+
 ## 先做什么
 
-两条轨道互不依赖，可以并行。J1 已完成，Java 轨下一步是 **J2**。
+两条轨道互不依赖，可以并行。J1、J2 已完成，Java 轨下一步是 **J3**。
 
-**J2 第一步**：先写 `rest-services-page-assets.yaml`（Swagger 2.0）定四个 Interface 的信封。
-注意公司的 `dfs-codegen-maven-plugin`（`com.huaweicloud.dfs`）在内部 Artifactory，本机拿不到——
-开工前先与用户确认本地策略（用户提供插件 / 本地手写与 codegen 同形的 delegate 并在 CI 校验漂移），
-不要自行引入外网 codegen 替代。J2 的修订与幂等逻辑放 `domain/`，遵守 ArchUnit 分层。
+**J3 第一步**：探针，不是建表——在公司 CloudBuild 上验证 Testcontainers（Docker socket、Artifactory
+是否代理 Testcontainers 与内部 MySQL 镜像）；失败则集成测试退到环境变量指定的公司测试库。本机可以先用
+Docker 起 MySQL 8 / MariaDB 跑 Testcontainers。随后：Flyway `V1.0.0.1__pa_init.sql`（三张 `t_pa_*` 表，
+列型按 ADR-0062，`t_pa_idempotency` 五列见 plan J2 落地记录）、MyBatis XML Mapper 实现三个 Port
+（`PageWriteTransaction` 用 `GET_LOCK` 会话锁：先幂等锁名 `IdempotencyScope.lockName()` 再页面锁）、
+7 天清理任务、Druid + MariaDB 驱动 + `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`（`TitanCipherEnum`
+解密在内部依赖里，本机拿不到时留接缝）。`pageassets.store=mysql` 切换，`memory` 保留。
 
 **A1 第一步**：给 `metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md` 加
 frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 校验 sdist
@@ -53,6 +75,13 @@ frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 
   并把 `contracts/metriccanvas/page/conformance/` 从 6 个反例扩到逐条覆盖。TypeScript
   导出脚本随之更新，两边同跑。
 - **Testcontainers 在公司 CI 上可能不可用**：J3 第一件事是探针，不是建表。
+- **J2 的 codegen 同形是手写的**：`page-assets-model` 里的 delegate / model 没有经过真实 `dfs-codegen`
+  校验，插件 goal 名与 `configOptions` 是按 swagger-codegen 常规写的；第一次在公司 CI 跑
+  `scripts/check-codegen-drift.sh` 前先对照宿主 `model/pom.xml:43-101` 修正 pom，再按 diff 改手写源码。
+- **`start.sh` 的 classpath 通配符要加引号**：J1 版本被 shell 先 glob 导致 tar.gz 起不来，J2 已修；
+  改启动脚本后一定用打包产物冒烟一次。
+- **幂等键跨页面共享**：作用域是 `(operation, actorId, key)`，不含 pageId。同一 actor 用同一 key 保存
+  不同页面会得到 `IDEMPOTENCY_CONFLICT`；测试与 J4 的 Python 派生键都要带 pageId（ADR-0063 已如此）。
 - **幂等键不再由模型给**：A1 把 `build_page` 的幂等键改为
   `hash(pageId, baseRevisionId, canonical(spec))`；J2 的 Java 指纹幂等以此为前提。
 - **身份是服务态**：A2 的 `IdentityPort` 第一个 Adapter 读 MCP config `env`。任何文档、

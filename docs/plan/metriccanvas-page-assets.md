@@ -1,8 +1,8 @@
 # MetricCanvas 第一方 Java 页面资产实施计划
 
-> 状态：J1 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过，165 个 conformance
-> 向量与 TypeScript 逐条相同）；J2 可开工。J1 实现说明见
-> [`metriccanvas-page-assets/README.md`](../../metriccanvas-page-assets/README.md)
+> 状态：J1、J2 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过：165 个 conformance
+> 向量与 TypeScript 逐条相同，四个 Interface 在内存仓储下通过全部领域与契约测试）；J3 可开工。
+> 实现说明见 [`metriccanvas-page-assets/README.md`](../../metriccanvas-page-assets/README.md)
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
 > [ADR-0060](../adr/0060-static-svelte-java-page-governance-relay-python-authoring.md)
@@ -99,6 +99,27 @@ J1 落地记录：
 - 领域测试以内存仓储覆盖并发、幂等、冲突与不变量；契约测试对齐真实 delegate。
 
 完成条件：四个 Interface 在内存仓储下通过全部领域与契约测试；信封与 YAML 一致。
+
+J2 落地记录：
+
+- `dfs-codegen-maven-plugin` 本机拿不到，用户裁决**本地手写与 codegen 同形的 delegate / model**：
+  `page-assets-model/src/main/java` 按 `language=spring` / `delegatePattern=true` 输出形状手写，
+  `-Pcodegen` 只在 CI 生成到 `target/`（不编译），`scripts/check-codegen-drift.sh` 归一化 diff。
+  插件 goal 与 `configOptions` 尚未在公司 CI 验证，首次跑通时以宿主 `model/pom.xml:43-101` 修正。
+- Swagger 2.0 的 basePath 不能带变量：YAML 写独立部署缺省 `/rest/cdi/pageassets/v1`，Controller 以
+  `@RequestMapping("${pageassets.base-path:...}")` 注入，契约测试用非缺省 base-path 证明可配置。
+- 错误码闭集之外新增两个**传输层码** `INVALID_REQUEST`（400/404/405 等 Spring MVC 绑定、校验、路由错误）
+  与 `INTERNAL_ERROR`（500），YAML 与 README 已标注它们不属于 ADR-0062 业务闭集。ADR-0062 未预见
+  Bean Validation / 非法 JSON 这一层，这是补充而非改决策；若要收进 ADR 另行登记。
+- `X-Auth-Token` / `X-Workspace-Id` 在 YAML 里声明为可选（只接受不解释），`X-Operator-Id` 必填。
+- 健康检查 `GET {base}/healthcheck` 随 YAML 一并落地（ADR-0062 决定的自定义端点，非 Actuator）。
+- 幂等只记成功且不另存响应体，重放按 `(pageId, revisionId)` 取回不可变修订；`t_pa_idempotency` 因此只需
+  作用域、指纹、pageId、revisionId、createdAt 五列，J3 建表按此。
+- `listPages` 响应字段定名 `pages` + `nextAfter`（与查询参数 `after` 配对）；`latestRevision` 投影
+  `{ revisionId, revisionNumber, createdAt }`。
+- 顺带修正 J1 的 `start.sh`：`-classpath lib/*` 未加引号被 shell 先 glob，导致 tar.gz 包无法启动。
+  现已用打包产物完成本地 HTTP 冒烟（healthcheck / 保存 / 目录 / 404）。
+- 内存仓储放在 `src/main`（`pageassets.store=memory` 缺省），使 bootstrap 在 J3 前可运行；J3 加 `mysql`。
 
 ### J3：MySQL Schema、锁序与集成测试
 

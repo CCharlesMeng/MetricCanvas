@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Interface 契约 module：Swagger 2.0 作者文件 rest-services-page-assets.yaml 与
-  dfs-codegen 生成的 delegate / model（ADR-0062）。J1 只立骨架；YAML 与 codegen 配置在 J2 落地，
-  生成物不入库。dfs-codegen-maven-plugin 只在内部 Artifactory 可得，本机构建时以 profile 关闭。
+  Interface 契约 module：Swagger 2.0 作者文件 rest-services-page-assets.yaml 与公司 dfs-codegen
+  形状的 delegate / model（ADR-0062）。
+
+  dfs-codegen-maven-plugin（com.huaweicloud.dfs）只在内部 Artifactory 可得。本机拿不到，因此
+  src/main/java 下是按 codegen（language=spring, library=spring-mvc, delegatePattern=true）输出形状
+  手写的 Api / ApiDelegate / ApiController / model；`-Pcodegen` 在能访问 Artifactory 的 CI 上把插件
+  产物生成到 target/generated-sources/codegen（不加入编译），scripts/check-codegen-drift.sh 再与手写
+  源码做归一化 diff。插件配置以宿主 CDINL2DataBuilderService 的 model/pom.xml 为准。
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -18,10 +23,69 @@
   <artifactId>page-assets-model</artifactId>
   <name>Page Assets :: Model</name>
 
+  <properties>
+    <dfs-codegen.version>1.0.5.4.3</dfs-codegen.version>
+    <codegen.output>${project.build.directory}/generated-sources/codegen</codegen.output>
+  </properties>
+
   <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
   </dependencies>
+
+  <profiles>
+    <profile>
+      <id>codegen</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.huaweicloud.dfs</groupId>
+            <artifactId>dfs-codegen-maven-plugin</artifactId>
+            <version>${dfs-codegen.version}</version>
+            <executions>
+              <execution>
+                <id>page-assets</id>
+                <phase>generate-sources</phase>
+                <goals>
+                  <goal>generate</goal>
+                </goals>
+                <configuration>
+                  <inputSpec>${project.basedir}/src/main/resources/rest-services-page-assets.yaml</inputSpec>
+                  <language>spring</language>
+                  <library>spring-mvc</library>
+                  <output>${codegen.output}</output>
+                  <apiPackage>com.huawei.cdi.pageassets.delegate</apiPackage>
+                  <modelPackage>com.huawei.cdi.pageassets.model</modelPackage>
+                  <generateSupportingFiles>false</generateSupportingFiles>
+                  <addCompileSourceRoot>false</addCompileSourceRoot>
+                  <configOptions>
+                    <delegatePattern>true</delegatePattern>
+                    <jakarta>true</jakarta>
+                    <dateLibrary>java17</dateLibrary>
+                    <useBeanValidation>true</useBeanValidation>
+                    <interfaceOnly>false</interfaceOnly>
+                    <additionalModelTypeAnnotations>@com.fasterxml.jackson.annotation.JsonAutoDetect(fieldVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY, getterVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE, setterVisibility = com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE)</additionalModelTypeAnnotations>
+                  </configOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

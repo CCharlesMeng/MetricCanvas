@@ -1,0 +1,442 @@
+# MetricCanvas 页面资产 Interface（ADR-0062）。Swagger 2.0，公司 dfs-codegen 的输入；
+# 这是唯一的作者文件，contracts/metriccanvas/page-assets/ 下的同名文件是 CI 单向导出的只读副本。
+#
+# basePath 里的 `pageassets` 是 `{service}` 的独立部署缺省值，运行时由配置 `pageassets.base-path`
+# 注入（并入 CDINL2DataBuilderService 后只改 consumer 的 base URL）。Swagger 2.0 的 basePath
+# 不能带变量，所以此处写缺省值。
+swagger: '2.0'
+info:
+  title: MetricCanvas Page Assets
+  description: |
+    页面资产的单份资源式 API：保存不可变页面修订、读取最新 / 精确修订、列出页面目录。
+    每个写入口的下限是完整页面复验、线性修订、基线并发、指纹幂等与来源审计。
+
+    错误信封为 HTTP 状态语义 + `{ code, message, details }`。稳定码闭集见 `ErrorResponse.code`；
+    `NOT_SUPPORTED` 由 consumer 侧 Adapter 对首批未开放能力返回，本 Interface 不产生。
+    `INVALID_REQUEST`（400）与 `INTERNAL_ERROR`（500）是传输层码，不属于 ADR-0062 的业务闭集。
+  version: v1
+basePath: /rest/cdi/pageassets/v1
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+
+parameters:
+  XAuthToken:
+    name: X-Auth-Token
+    in: header
+    type: string
+    required: false
+    description: 公司网关校验的用户 token；本 Interface 只接受不解释。
+  XOperatorId:
+    name: X-Operator-Id
+    in: header
+    type: string
+    required: true
+    minLength: 1
+    maxLength: 128
+    description: 操作者标识，作为修订 `createdBy` 与幂等键作用域中的 actorId。
+  XWorkspaceId:
+    name: X-Workspace-Id
+    in: header
+    type: string
+    required: false
+    description: 按网关要求接受；首批不用于数据隔离。
+  PageId:
+    name: pageId
+    in: path
+    type: string
+    required: true
+    pattern: '^[a-z0-9][a-z0-9-]*$'
+    maxLength: 128
+    description: 页面 id，由调用方提供，与页面文档 `id` 一致。
+  RevisionId:
+    name: revisionId
+    in: path
+    type: string
+    required: true
+    pattern: '^[0-9a-f]{32}$'
+    description: 修订 id，UUIDv4 的 32 位无横线十六进制形式。
+
+paths:
+  /pages/{pageId}/revisions:
+    post:
+      tags:
+        - pages
+      operationId: savePageRevision
+      summary: 保存页面修订
+      description: |
+        在 `baseRevisionId` 之上追加一个不可变修订。首次保存须 `pageIdConfirmed = true` 且
+        `baseRevisionId = null`；后续保存的 `baseRevisionId` 必须等于当前最新修订。
+        幂等键作用域为 `(savePageRevision, X-Operator-Id, idempotencyKey)` 并校验请求指纹：
+        同键同指纹原样重放（同样返回 201），同键异指纹返回 `IDEMPOTENCY_CONFLICT`。
+      parameters:
+        - $ref: '#/parameters/XAuthToken'
+        - $ref: '#/parameters/XOperatorId'
+        - $ref: '#/parameters/XWorkspaceId'
+        - $ref: '#/parameters/PageId'
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/SavePageRevisionRequest'
+      responses:
+        '201':
+          description: 修订已保存（或同键同指纹重放）。
+          schema:
+            $ref: '#/definitions/PageRevision'
+        '400':
+          description: 请求体或请求头不合法（`INVALID_REQUEST`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '409':
+          description: '`PAGE_ID_CONFIRMATION_REQUIRED` / `REVISION_CONFLICT`（details 为 RevisionConflictDetails）/ `IDEMPOTENCY_CONFLICT`。'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '422':
+          description: '`INVALID_PAGE`（details 为 InvalidPageDetails）/ `PAGE_ID_MISMATCH`。'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: 未预期错误（`INTERNAL_ERROR`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /pages/{pageId}:
+    get:
+      tags:
+        - pages
+      operationId: getLatestPage
+      summary: 读取页面当前最新修订
+      parameters:
+        - $ref: '#/parameters/XAuthToken'
+        - $ref: '#/parameters/XOperatorId'
+        - $ref: '#/parameters/XWorkspaceId'
+        - $ref: '#/parameters/PageId'
+      responses:
+        '200':
+          description: 当前最新修订。
+          schema:
+            $ref: '#/definitions/PageRevision'
+        '400':
+          description: 请求不合法（`INVALID_REQUEST`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: '`PAGE_NOT_FOUND`。'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: 未预期错误（`INTERNAL_ERROR`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /pages/{pageId}/revisions/{revisionId}:
+    get:
+      tags:
+        - pages
+      operationId: getPageRevision
+      summary: 读取页面精确修订
+      description: 先判页面再判修订：页面不存在返回 `PAGE_NOT_FOUND`，页面存在而修订不属于它返回 `REVISION_NOT_FOUND`。
+      parameters:
+        - $ref: '#/parameters/XAuthToken'
+        - $ref: '#/parameters/XOperatorId'
+        - $ref: '#/parameters/XWorkspaceId'
+        - $ref: '#/parameters/PageId'
+        - $ref: '#/parameters/RevisionId'
+      responses:
+        '200':
+          description: 精确修订。
+          schema:
+            $ref: '#/definitions/PageRevision'
+        '400':
+          description: 请求不合法（`INVALID_REQUEST`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '404':
+          description: '`PAGE_NOT_FOUND` / `REVISION_NOT_FOUND`。'
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: 未预期错误（`INTERNAL_ERROR`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /pages:
+    get:
+      tags:
+        - pages
+      operationId: listPages
+      summary: 列出页面目录
+      description: 按 `pageId` 码点序升序，游标 `after` 严格大于；`limit` 缺省 50、上限 100，非法值按缺省处理。
+      parameters:
+        - $ref: '#/parameters/XAuthToken'
+        - $ref: '#/parameters/XOperatorId'
+        - $ref: '#/parameters/XWorkspaceId'
+        - name: after
+          in: query
+          type: string
+          required: false
+          description: 上一页最后一个 `pageId`；返回的页面 id 都严格大于它。
+        - name: limit
+          in: query
+          type: integer
+          format: int32
+          required: false
+          description: 每页条数，缺省 50，上限 100。
+      responses:
+        '200':
+          description: 页面目录的一页。
+          schema:
+            $ref: '#/definitions/PageList'
+        '400':
+          description: 请求不合法（`INVALID_REQUEST`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+        '500':
+          description: 未预期错误（`INTERNAL_ERROR`）。
+          schema:
+            $ref: '#/definitions/ErrorResponse'
+
+  /healthcheck:
+    get:
+      tags:
+        - healthcheck
+      operationId: healthcheck
+      summary: 健康检查
+      description: 跟随公司约定的自定义健康检查端点，不用 Actuator。
+      responses:
+        '200':
+          description: 服务存活。
+          schema:
+            $ref: '#/definitions/HealthcheckResponse'
+
+definitions:
+  SavePageRevisionRequest:
+    type: object
+    required:
+      - document
+      - idempotencyKey
+      - source
+    properties:
+      baseRevisionId:
+        type: string
+        x-nullable: true
+        pattern: '^[0-9a-f]{32}$'
+        description: 保存基线；首次保存为 null，之后必须等于当前最新修订 id。
+      document:
+        type: object
+        description: 页面文档（Page Schema）。Java 完整复验：结构 + 全部跨引用不变式；接受当前主版本内全部受支持 minor。
+      idempotencyKey:
+        type: string
+        minLength: 1
+        maxLength: 200
+        description: 调用方确定性派生的幂等键（ADR-0063：`hash(pageId, baseRevisionId, canonical(spec))`）。
+      pageIdConfirmed:
+        type: boolean
+        default: false
+        description: 首次保存前必须显式确认页面 id 为 true；后续保存忽略。
+      source:
+        $ref: '#/definitions/RevisionSource'
+      dataContextVersion:
+        type: string
+        x-nullable: true
+        maxLength: 128
+        description: 创作依据的 Data Context 版本，由调用方提供；Java 不反查 Relay 或 DQE。
+
+  RevisionSource:
+    type: object
+    description: |
+      修订来源，判别字段 `type`：`relay` 须带 `skillVersion`，`sessionId` / `runId` 可得时记录；
+      `manual` 不带其它字段。
+    required:
+      - type
+    properties:
+      type:
+        type: string
+        enum:
+          - relay
+          - manual
+      sessionId:
+        type: string
+        maxLength: 128
+      runId:
+        type: string
+        maxLength: 128
+      skillVersion:
+        type: string
+        maxLength: 64
+
+  PageRevision:
+    type: object
+    required:
+      - revisionId
+      - revisionNumber
+      - pageId
+      - baseRevisionId
+      - document
+      - contentHash
+      - dataContextVersion
+      - source
+      - createdBy
+      - createdAt
+    properties:
+      revisionId:
+        type: string
+        description: UUIDv4，32 位无横线十六进制。
+      revisionNumber:
+        type: integer
+        format: int64
+        description: 页面内线性递增，从 1 开始。
+      pageId:
+        type: string
+      baseRevisionId:
+        type: string
+        x-nullable: true
+      document:
+        type: object
+        description: 保存时提交的页面文档原样。
+      contentHash:
+        type: string
+        description: 文档规范化 JSON（键排序、紧凑）的 sha256 十六进制。
+      dataContextVersion:
+        type: string
+        x-nullable: true
+      source:
+        $ref: '#/definitions/RevisionSource'
+      createdBy:
+        type: string
+        description: 保存时的 `X-Operator-Id`。
+      createdAt:
+        type: string
+        format: date-time
+        description: UTC，毫秒精度，形如 `2026-09-02T10:00:00.000Z`。
+
+  PageList:
+    type: object
+    required:
+      - pages
+      - nextAfter
+    properties:
+      pages:
+        type: array
+        items:
+          $ref: '#/definitions/PageListItem'
+      nextAfter:
+        type: string
+        x-nullable: true
+        description: 还有下一页时为本页最后一个 `pageId`，否则为 null。
+
+  PageListItem:
+    type: object
+    required:
+      - pageId
+      - latestRevision
+    properties:
+      pageId:
+        type: string
+      latestRevision:
+        $ref: '#/definitions/RevisionSummary'
+
+  RevisionSummary:
+    type: object
+    required:
+      - revisionId
+      - revisionNumber
+      - createdAt
+    properties:
+      revisionId:
+        type: string
+      revisionNumber:
+        type: integer
+        format: int64
+      createdAt:
+        type: string
+        format: date-time
+
+  ErrorResponse:
+    type: object
+    required:
+      - code
+      - message
+    properties:
+      code:
+        type: string
+        description: 业务闭集来自 ADR-0062；`INVALID_REQUEST` 与 `INTERNAL_ERROR` 为传输层码。
+        enum:
+          - INVALID_PAGE
+          - PAGE_ID_MISMATCH
+          - PAGE_ID_CONFIRMATION_REQUIRED
+          - PAGE_NOT_FOUND
+          - REVISION_NOT_FOUND
+          - REVISION_CONFLICT
+          - IDEMPOTENCY_CONFLICT
+          - NOT_SUPPORTED
+          - INVALID_REQUEST
+          - INTERNAL_ERROR
+      message:
+        type: string
+      details:
+        type: object
+        x-nullable: true
+        description: '按 code 取形：`INVALID_PAGE` 为 InvalidPageDetails，`REVISION_CONFLICT` 为 RevisionConflictDetails，其余为 null。'
+
+  InvalidPageDetails:
+    type: object
+    required:
+      - errors
+    properties:
+      errors:
+        type: array
+        items:
+          $ref: '#/definitions/ValidationError'
+
+  ValidationError:
+    type: object
+    description: 契约 contracts/metriccanvas/page/error-types.json 定义的 `type/path/message`。
+    required:
+      - type
+      - path
+      - message
+    properties:
+      type:
+        type: string
+      path:
+        type: string
+        description: 定位到文档的 JSON Pointer。
+      message:
+        type: string
+
+  RevisionConflictDetails:
+    type: object
+    required:
+      - currentLatest
+    properties:
+      currentLatest:
+        $ref: '#/definitions/LatestRevisionRef'
+
+  LatestRevisionRef:
+    type: object
+    x-nullable: true
+    description: 当前最新修订的标识；页面尚无修订时为 null。
+    required:
+      - revisionId
+      - revisionNumber
+    properties:
+      revisionId:
+        type: string
+      revisionNumber:
+        type: integer
+        format: int64
+
+  HealthcheckResponse:
+    type: object
+    required:
+      - status
+    properties:
+      status:
+        type: string
+        enum:
+          - UP
