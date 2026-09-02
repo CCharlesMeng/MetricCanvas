@@ -89,7 +89,9 @@ jobs:
 
   # Java 页面资产 module 组（ADR-0062）：独立 job，先跑 GitHub Actions，CloudBuild 接入随宿主流程。
   # 这里用本地占位 parent 与 Maven Central；公司 CI 上先执行 scripts/use-company-parent.sh。
-  # 嵌入 JAR 的契约快照是否与 contracts/metriccanvas 一致，由上面 job 的 authoring:contracts:check 守。
+  # 嵌入 JAR 的契约快照是否与 contracts/metriccanvas 一致、Interface YAML 副本是否漂移，由上面 job 的
+  # authoring:contracts:check 守。手写 delegate/model 与 dfs-codegen 的漂移检查（scripts/check-codegen-drift.sh）
+  # 需要内部 Artifactory，只在公司 CI 跑。
   java-page-assets:
     runs-on: ubuntu-latest
     defaults:

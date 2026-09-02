@@ -4,7 +4,8 @@
 承载 `savePageRevision` / `getLatestPage` / `getPageRevision` / `listPages` 四个 Interface，
 目标宿主是 `CDINL2DataBuilderService`。实施切片见 [`docs/plan/metriccanvas-page-assets.md`](../docs/plan/metriccanvas-page-assets.md)。
 
-当前状态：**J1 完成**（工程、契约嵌入、页面校验器、conformance 向量），J2–J4 未开始。
+当前状态：**J1、J2 完成**（工程、契约嵌入、页面校验器、conformance 向量；四个 Interface、稳定错误信封、
+指纹幂等、内存仓储与领域 / 契约测试），J3（MySQL）、J4（接线）未开始。
 
 ## 目录
 
@@ -14,10 +15,12 @@ metriccanvas-page-assets/
 ├── build-parent/pom.xml         # 本地占位 parent：只声明 Spring Boot BOM 与插件版本，永不发布
 ├── contract-snapshot/           # contracts/metriccanvas 只读快照（由根导出脚本生成，勿手改）
 ├── contract-lock.json           # 快照 manifest 的 sha256（同上生成）
-├── page-assets-model/           # Swagger 2.0 作者文件 + dfs-codegen（J2 落地，J1 仅骨架）
+├── page-assets-model/           # Swagger 2.0 作者文件 + 与 dfs-codegen 同形的 delegate / model
+│   └── src/main/resources/rest-services-page-assets.yaml   # 唯一作者文件；仓根 contracts/ 下是导出副本
 ├── page-assets-service/         # domain / application / adapter；ArchUnit 守边界
 ├── page-assets-bootstrap/       # StartUp、Dockerfile、start.sh、assembly（并入宿主时丢弃）
 ├── scripts/use-company-parent.sh
+├── scripts/check-codegen-drift.sh   # CI（能访问 Artifactory）上比对手写 delegate/model 与 codegen 产物
 └── spotbugs-exclude.xml
 ```
 
@@ -89,6 +92,71 @@ TypeScript 校验器产出 `expected`；`coverage.json` 是机读覆盖清单：
   JS 不会——带尾随换行的 id 在两边判定不同，契约里的模式不接受换行，实际不可达。
 - 数字转字符串（能力下限文案、`String(value)` 占位）按 JS 规则输出；JDK 17 `Double.toString` 在极少数
   非最短表示的浮点数上与 V8 有差，页面参数默认值与图例下界都不会命中。
+
+## Interface（J2）
+
+作者文件是 `page-assets-model/src/main/resources/rest-services-page-assets.yaml`（Swagger 2.0，公司
+`dfs-codegen` 的输入）。`pnpm authoring:contracts` 把它逐字节复制到
+`contracts/metriccanvas/page-assets/rest-services-page-assets.yaml`，`--check` 查漂移；Python 与 TypeScript
+consumer 据副本校验各自 client，不要改副本。
+
+```text
+POST {base}/pages/{pageId}/revisions                savePageRevision   201 / 400 / 409 / 422
+GET  {base}/pages/{pageId}                          getLatestPage      200 / 404
+GET  {base}/pages/{pageId}/revisions/{revisionId}   getPageRevision    200 / 404（先判页面再判修订）
+GET  {base}/pages?after=&limit=                     listPages          200
+GET  {base}/healthcheck                             healthcheck        200（自定义，不用 Actuator）
+```
+
+- `{base}` = `/rest/cdi/{service}/v1`。Swagger 2.0 的 basePath 不能带变量，YAML 里写独立部署缺省值
+  `/rest/cdi/pageassets/v1`；运行时由 `pageassets.base-path` 注入（`application.yaml` 默认
+  `/rest/cdi/${pageassets.service-name}/v1`），并入宿主后只改这一项与 consumer 的 base URL。
+- 请求头：`X-Operator-Id` 必填，即 actorId（`createdBy` 与幂等作用域）；`X-Auth-Token` 由网关校验、
+  `X-Workspace-Id` 按网关要求接受，两者首批只接受不解释、不用于数据隔离。
+- 错误信封 `{ code, message, details }`，HTTP 状态语义：`INVALID_PAGE` / `PAGE_ID_MISMATCH` → 422；
+  `PAGE_ID_CONFIRMATION_REQUIRED` / `REVISION_CONFLICT` / `IDEMPOTENCY_CONFLICT` → 409；
+  `PAGE_NOT_FOUND` / `REVISION_NOT_FOUND` → 404。`details` 只有两种取形：`INVALID_PAGE` 为
+  `{ errors: [{ type, path, message }] }`，`REVISION_CONFLICT` 为 `{ currentLatest: { revisionId, revisionNumber } | null }`。
+  Spring MVC 自己的绑定 / 校验 / 路由错误统一为传输层码 `INVALID_REQUEST`（4xx）与 `INTERNAL_ERROR`（500），
+  它们不在 ADR-0062 的业务闭集内，YAML 已如此声明。
+- 幂等：作用域 `(savePageRevision, actorId, idempotencyKey)`，指纹是请求体全部业务字段（含 `source` 与
+  `dataContextVersion`）的规范化 JSON sha256。同键同指纹原样重放（仍 201），同键异指纹 409。只记成功；
+  重放按 `(pageId, revisionId)` 取回不可变修订，不另存响应体。
+- `contentHash` = sha256(canonical(document))，与 TypeScript 基线 `canonicalizeJson` 逐字节相同（键按
+  UTF-16 码元排序、JS 数字文案）；修订存保存时提交的原样文档，不存解析产物。
+- `createdAt` 固定 `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`（UTC 毫秒），`revisionId` 是 UUIDv4 的 32 位无横线形式。
+
+### 与 dfs-codegen 的关系
+
+`dfs-codegen-maven-plugin`（`com.huaweicloud.dfs`）只在内部 Artifactory 可得。`page-assets-model/src/main/java`
+是按其 `language=spring` / `library=spring-mvc` / `delegatePattern=true` 输出形状**手写**的 `PagesApi` /
+`PagesApiDelegate` / `PagesApiController` 与 POJO model（`@JsonAutoDetect` 字段级序列化、fluent setter、
+Bean Validation 在 getter 上），业务实现只在 `adapter/inbound/rest` 实现 delegate，不碰 model module。
+`-Pcodegen` 把插件产物生成到 `target/generated-sources/codegen`（不加入编译），
+`scripts/check-codegen-drift.sh` 做归一化 diff（去注释、空白与 `@Api*` / `@Generated`）。第一次在公司 CI
+上跑通前，插件 goal 与 `configOptions` 以宿主 `CDINL2DataBuilderService/model/pom.xml:43-101` 为准修正。
+
+### 分层落点
+
+- `domain/revision`：`PageRevision`、`RevisionSource`（`relay | manual`）、`SaveRevisionPolicy`（首保确认、
+  基线冲突、完整复验、id 一致）、`RevisionFactory`、`ContentHash`；`domain/idempotency`：作用域、指纹、记录；
+  `domain/catalog`：码点序、严格游标、limit 50/100；`domain/error`：闭集与 `PageAssetException`。
+- `application/PageAssetService`：四个用例；保存的锁序固定为幂等锁 → 页面锁 → 前置检查 → 复验 → 插入修订 →
+  更新 latest → 存幂等结果，经 `PageWriteTransaction` / `PageRepository` / `IdempotencyRepository` 三个 Port。
+- `adapter/outbound/memory/InMemoryPageStore`：三个 Port 的进程内实现（`pageassets.store=memory`，缺省），
+  锁序与 MySQL 侧一致，是 J3 MyBatis 适配器的行为基线；`adapter/inbound/rest`：delegate 实现、模型映射、
+  错误信封；`adapter/config/PageAssetsConfiguration`：组合根。
+
+### 本地起服务
+
+```bash
+mvn -B -DskipTests package
+tar -xzf page-assets-bootstrap/target/page-assets-bootstrap-*.tar.gz -C /tmp/pa
+LOG_DIR=/tmp/pa/logs SERVER_PORT=18080 PAGE_ASSETS_SERVICE_NAME=pageassets /tmp/pa/script/start.sh
+curl -s localhost:18080/rest/cdi/pageassets/v1/healthcheck
+```
+
+内存仓储重启即空；J3 之后 `PAGE_ASSETS_STORE=mysql` 走 MyBatis + Flyway。
 
 ## 分层与门禁
 

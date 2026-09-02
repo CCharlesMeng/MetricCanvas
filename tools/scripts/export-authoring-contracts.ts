@@ -44,6 +44,13 @@ const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
 // Java 页面资产 module 组的只读快照（ADR-0062）：同一份产品契约，构建时嵌入 JAR。
 const javaRoot = path.join(repoRoot, 'metriccanvas-page-assets');
 const javaSnapshotRoot = path.join(javaRoot, 'contract-snapshot');
+// 反向单向导出：Java 是 Interface 作者（Swagger 2.0，公司 codegen 输入），仓根只放副本供 Python /
+// TypeScript consumer 校验各自 client；不进产品 manifest（那是 TypeScript 导出的产品契约）。
+const interfaceAuthorFile = path.join(
+  javaRoot,
+  'page-assets-model/src/main/resources/rest-services-page-assets.yaml'
+);
+const interfaceCopyRelative = 'page-assets/rest-services-page-assets.yaml';
 const checkOnly = process.argv.includes('--check');
 
 type OutputMap = Map<string, string>;
@@ -493,11 +500,23 @@ function buildJavaContractLock(productOutputs: OutputMap): string {
   });
 }
 
+async function buildInterfaceOutputs(): Promise<OutputMap> {
+  const outputs: OutputMap = new Map();
+  outputs.set(interfaceCopyRelative, await readFile(interfaceAuthorFile, 'utf8'));
+  return outputs;
+}
+
 async function writeOutputs(
   productOutputs: OutputMap,
-  authoringOutputs: OutputMap
+  authoringOutputs: OutputMap,
+  interfaceOutputs: OutputMap
 ): Promise<void> {
   await writeTree(productContractRoot, productOutputs);
+  for (const [relativePath, content] of interfaceOutputs) {
+    const target = path.join(productContractRoot, relativePath);
+    await mkdir(path.dirname(target), { recursive: true });
+    await writeFile(target, content, 'utf8');
+  }
   await writeTree(snapshotRoot, productOutputs);
   await writeTree(javaSnapshotRoot, productOutputs);
   await writeFile(
@@ -555,10 +574,16 @@ async function buildBundleLock(): Promise<string> {
 
 async function assertCurrent(
   productOutputs: OutputMap,
-  authoringOutputs: OutputMap
+  authoringOutputs: OutputMap,
+  interfaceOutputs: OutputMap
 ): Promise<void> {
   const drift: string[] = [];
-  await collectTreeDrift(productContractRoot, productOutputs, 'contracts/metriccanvas', drift);
+  await collectTreeDrift(
+    productContractRoot,
+    new Map([...productOutputs, ...interfaceOutputs]),
+    'contracts/metriccanvas',
+    drift
+  );
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
   await collectTreeDrift(
     javaSnapshotRoot,
@@ -683,13 +708,14 @@ async function listFiles(root: string, prefix = ''): Promise<string[]> {
 
 const productOutputs = await buildProductOutputs();
 const authoringOutputs = await buildAuthoringOutputs();
-if (checkOnly) await assertCurrent(productOutputs, authoringOutputs);
-else await writeOutputs(productOutputs, authoringOutputs);
+const interfaceOutputs = await buildInterfaceOutputs();
+if (checkOnly) await assertCurrent(productOutputs, authoringOutputs, interfaceOutputs);
+else await writeOutputs(productOutputs, authoringOutputs, interfaceOutputs);
 
 console.log(
   checkOnly
     ? `authoring contract export current (${productOutputs.size} product, ` +
-        `${authoringOutputs.size} authoring files)`
+        `${authoringOutputs.size} authoring, ${interfaceOutputs.size} interface files)`
     : `exported authoring contracts (${productOutputs.size} product, ` +
-        `${authoringOutputs.size} authoring files)`
+        `${authoringOutputs.size} authoring, ${interfaceOutputs.size} interface files)`
 );
