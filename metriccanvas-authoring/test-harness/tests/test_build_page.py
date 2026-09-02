@@ -24,12 +24,20 @@ from metriccanvas_authoring.application.ports import (  # noqa: E402
     DqeExecutionResult,
     SavedRevision,
 )
-from metriccanvas_authoring.domain.page_validation import validate_page_schema  # noqa: E402
+from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
 
 
 def fixture(name: str) -> dict[str, object]:
     return json.loads(
         (BUNDLE_ROOT / "test-harness" / "fixtures" / name).read_text(
+            encoding="utf-8"
+        )
+    )
+
+
+def exported_contract(name: str) -> dict[str, object]:
+    return json.loads(
+        (BUNDLE_ROOT / "contracts" / "exported" / name).read_text(
             encoding="utf-8"
         )
     )
@@ -50,6 +58,116 @@ class RuntimeQueryError(Exception):
 
 
 class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
+    async def test_matches_typescript_build_page_conformance_vector(self) -> None:
+        vector = exported_contract("build-page-conformance.json")
+        vector_input = vector["input"]
+        execution = vector_input["executions"][0]
+        data_context = FakeDataContextPort(vector_input["dataContext"])
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=execution["rows"],
+                total_count=execution.get("totalCount"),
+                captured_at=execution.get("capturedAt"),
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+        command = vector_input["command"]
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id=command["pageId"],
+                idempotency_key=command["idempotencyKey"],
+                page_id_confirmed=command["pageIdConfirmed"],
+                spec=vector_input["spec"],
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        self.assertEqual(dqe.calls, vector["expected"]["effectiveQueries"])
+        self.assertEqual(pages.calls[0]["document"], vector["expected"]["document"])
+
+    async def test_matches_typescript_manifest_error_conformance_vectors(self) -> None:
+        vector = exported_contract("build-page-conformance.json")
+        for case in vector["errorCases"]:
+            with self.subTest(case=case["case"]):
+                data_context = FakeDataContextPort(case["input"]["dataContext"])
+                dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+                build_page = create_build_page(
+                    BuildPageDependencies(
+                        data_context=data_context,
+                        dqe=dqe,
+                        page_assets=pages,
+                    )
+                )
+
+                result = await build_page(
+                    BuildPageCommand(
+                        page_id="error-conformance",
+                        idempotency_key=f'error:{case["case"]}',
+                        spec=case["input"]["spec"],
+                    )
+                )
+
+                self.assertFalse(result.ok)
+                self.assertEqual(
+                    [(issue.code, issue.path) for issue in result.issues],
+                    [
+                        (issue["code"], issue["path"])
+                        for issue in case["expectedIssues"]
+                    ],
+                )
+                self.assertEqual(dqe.calls, [])
+                self.assertEqual(pages.calls, [])
+
+    async def test_matches_typescript_page_validation_error_vectors(self) -> None:
+        vector = exported_contract("build-page-conformance.json")
+        vector_input = vector["input"]
+        for case in vector["pageValidationErrorCases"]:
+            with self.subTest(case=case["case"]):
+                execution = case["execution"]
+                dqe = FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=execution["rows"],
+                        total_count=execution.get("totalCount"),
+                        captured_at=execution.get("capturedAt"),
+                    )
+                )
+                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+                build_page = create_build_page(
+                    BuildPageDependencies(
+                        data_context=FakeDataContextPort(vector_input["dataContext"]),
+                        dqe=dqe,
+                        page_assets=pages,
+                    )
+                )
+
+                result = await build_page(
+                    BuildPageCommand(
+                        page_id="error-conformance",
+                        idempotency_key=f'error:{case["case"]}',
+                        spec=vector_input["spec"],
+                    )
+                )
+
+                self.assertFalse(result.ok)
+                self.assertEqual(
+                    [(issue.code, issue.path, issue.stage) for issue in result.issues],
+                    [
+                        (issue["type"], issue["path"], "presentation")
+                        for issue in case["expectedIssues"]
+                    ],
+                )
+                self.assertEqual(len(dqe.calls), 1)
+                self.assertEqual(pages.calls, [])
+
     async def test_valid_spec_builds_and_saves_a_current_page_revision(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(
@@ -138,7 +256,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(save_command["pageIdConfirmed"])
 
         document = save_command["document"]
-        self.assertEqual(validate_page_schema(document), [])
+        self.assertEqual(validate_page_document(document), [])
         self.assertEqual(document["schemaVersion"], "5.4")
         self.assertEqual(document["id"], "tokens-by-region")
         self.assertEqual(
@@ -617,7 +735,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.ok)
         self.assertEqual(
             [(issue.code, issue.path) for issue in result.issues],
-            [("DATA_CONTEXT_NAME_NOT_FOUND", "/units/0/metrics/0/name")],
+            [("METRIC_NOT_IN_DATA_CONTEXT", "/units/0/metrics/0/name")],
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
@@ -648,7 +766,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.ok)
         self.assertEqual(
             [(issue.code, issue.path) for issue in result.issues],
-            [("DATA_CONTEXT_NAME_NOT_FOUND", "/units/0/groupBy/0")],
+            [("DIMENSION_NOT_IN_DATA_CONTEXT", "/units/0/groupBy/0")],
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
@@ -823,7 +941,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.ok)
         self.assertEqual(
             [(issue.code, issue.path) for issue in result.issues],
-            [("DATA_CONTEXT_NAME_NOT_FOUND", "/units/0/filters/0/dimension")],
+            [("DIMENSION_NOT_IN_DATA_CONTEXT", "/units/0/filters/0/dimension")],
         )
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])

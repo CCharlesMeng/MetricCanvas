@@ -11,13 +11,16 @@ BUNDLE_ROOT = Path(__file__).resolve().parents[3]
 COMPONENT_CATALOG = (
     BUNDLE_ROOT / "contract-snapshot" / "page" / "component-catalog.json"
 )
+ANALYSIS_INTENTS_CONTRACT = (
+    BUNDLE_ROOT / "contracts" / "exported" / "analysis-intents.json"
+)
 INTENT_KEYWORDS: Mapping[str, tuple[str, ...]] = {
     "trend": ("趋势",),
     "comparison": ("对比",),
-    "composition": ("占比",),
+    "proportion": ("占比",),
     "ranking": ("排行",),
     "detail": ("明细",),
-    "single_value": ("核心指标", "KPI"),
+    "summary": ("核心指标", "KPI"),
 }
 
 
@@ -203,10 +206,14 @@ def _candidate_score(
 ) -> int:
     score = 100 if candidate.pinned else 0
     if intent is not None:
+        visualization_intent = _visualization_intent(intent)
         catalog_text = "；".join(
             [str(entry["purpose"]), *[str(value) for value in entry["chooseWhen"]]]
         )
-        if any(keyword in catalog_text for keyword in INTENT_KEYWORDS.get(intent, ())):
+        if any(
+            keyword in catalog_text
+            for keyword in INTENT_KEYWORDS.get(visualization_intent, ())
+        ):
             score += 10
     if shape.has_time_dimension and "date" in str(entry["dataShape"]).lower():
         score += 1
@@ -217,6 +224,17 @@ def _candidate_score(
 def _component_catalog() -> tuple[Mapping[str, Any], ...]:
     raw = json.loads(COMPONENT_CATALOG.read_text(encoding="utf-8"))
     return tuple(_mapping(entry) for entry in _sequence(raw))
+
+
+@lru_cache(maxsize=1)
+def _analysis_intent_mapping() -> Mapping[str, str]:
+    raw = json.loads(ANALYSIS_INTENTS_CONTRACT.read_text(encoding="utf-8"))
+    mapping = _mapping(raw["visualizationIntentByAnalysisIntent"])
+    return {str(key): str(value) for key, value in mapping.items()}
+
+
+def _visualization_intent(analysis_intent: str) -> str:
+    return _analysis_intent_mapping().get(analysis_intent, analysis_intent)
 
 
 def _mapping(value: object) -> Mapping[str, Any]:

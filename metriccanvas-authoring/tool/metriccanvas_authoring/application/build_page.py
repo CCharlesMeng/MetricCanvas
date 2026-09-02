@@ -22,7 +22,7 @@ from metriccanvas_authoring.domain.page_building import (
     assemble_page_document,
     derive_executable_units,
 )
-from metriccanvas_authoring.domain.page_validation import validate_page_schema
+from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 
 @dataclass(frozen=True, slots=True)
@@ -137,7 +137,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                     ),
                 ),
             )
-        page_issues = validate_page_schema(document)
+        page_issues = validate_page_document(document)
         if page_issues:
             return BuildPageResult(
                 ok=False,

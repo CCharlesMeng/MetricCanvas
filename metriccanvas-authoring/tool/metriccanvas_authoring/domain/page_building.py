@@ -140,7 +140,7 @@ def _field_contracts(
         declaration = surface.dimension(name)
         if declaration is None:
             raise PageBuildingIssue(
-                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                code="DIMENSION_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/groupBy/{dimension_index}",
                 message=f"dimension is not in data context: {name}",
             )
@@ -186,7 +186,7 @@ def _field_contracts(
         declaration = surface.metric(name)
         if declaration is None:
             raise PageBuildingIssue(
-                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                code="METRIC_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/metrics/{metric_index}/name",
                 message=f"metric is not in data context: {name}",
             )
@@ -236,13 +236,13 @@ def _query_body(
         declaration = surface.dimension(name)
         if declaration is None:
             raise PageBuildingIssue(
-                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                code="DIMENSION_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/filters/{filter_index}/dimension",
                 message=f"filter dimension is not in data context: {name}",
             )
         if declaration.is_time:
             raise PageBuildingIssue(
-                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                code="DIMENSION_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/filters/{filter_index}/dimension",
                 message=f"time dimension must be expressed by unit time: {name}",
             )

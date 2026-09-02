@@ -7,9 +7,29 @@ import {
   pageSchema,
   QUERY_ERROR_CODES,
   validate,
-  versionPolicy
+  versionPolicy,
+  type DataRow
 } from '../../packages/page/src/index.ts';
-import { ANALYSIS_INTENTS } from '../../apps/platform/src/lib/server/session/step-event.ts';
+import {
+  parseDataContextSnapshot,
+  semanticSurfaceOf
+} from '../../packages/mcp/src/data-context.ts';
+import {
+  assembleTransientPage,
+  type ExecutedDataRequestUnit
+} from '../../packages/mcp/src/authoring/assemble-page.ts';
+import type { ComponentCandidate } from '../../packages/mcp/src/authoring/auto-visualize.ts';
+import { validateUnitManifest } from '../../packages/mcp/src/authoring/unit-verification.ts';
+import {
+  ANALYSIS_INTENTS,
+  type AnalysisIntent
+} from '../../apps/platform/src/lib/server/session/step-event.ts';
+import type { AskDataRequestUnitState } from '../../apps/platform/src/lib/server/ask/ports.ts';
+import {
+  canonicalizeUnit,
+  deriveExecutableUnit
+} from '../../apps/platform/src/lib/server/ask/unit-derivation.ts';
+import { ANALYSIS_INTENT_TO_VISUALIZE } from '../../apps/platform/src/lib/server/ask/visualization-intent.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
 const productContractRoot = path.join(repoRoot, 'contracts/metriccanvas');
@@ -72,6 +92,16 @@ async function buildProductOutputs(): Promise<OutputMap> {
     })
   );
 
+  const queryDashboard = JSON.parse(
+    await readFile(path.join(validFixtureRoot, 'query-dashboard.json'), 'utf8')
+  ) as QueryDashboardFixture;
+  for (const vector of buildPageSemanticConformanceVectors(queryDashboard)) {
+    outputs.set(
+      `page/conformance/invalid/${vector.case}.json`,
+      json(vector)
+    );
+  }
+
   outputs.set(
     'manifest.json',
     json({
@@ -84,11 +114,94 @@ async function buildProductOutputs(): Promise<OutputMap> {
   return outputs;
 }
 
+interface QueryDashboardFixture {
+  dataSources: {
+    sales: {
+      fields: Record<string, { queryField: string; role: string }>;
+      source: {
+        query: {
+          filterBindings: Record<string, unknown>;
+        };
+      };
+    };
+  };
+  sections: Array<{
+    id: string;
+    components: Array<Record<string, unknown>>;
+  }>;
+  [key: string]: unknown;
+}
+
+function buildPageSemanticConformanceVectors(
+  valid: QueryDashboardFixture
+): Array<{ case: string; input: unknown; expected: unknown }> {
+  const definitions: Array<{
+    case: string;
+    mutate(document: QueryDashboardFixture): void;
+  }> = [
+    {
+      case: 'duplicate-component-id',
+      mutate: (document) => {
+        document.sections[0]!.components.push({
+          id: 'sales-table',
+          type: 'reportHeader',
+          layout: { span: 12 },
+          props: { title: 'Duplicate' }
+        });
+      }
+    },
+    {
+      case: 'query-field-not-output',
+      mutate: (document) => {
+        document.dataSources.sales.fields.gmv!.queryField = 'unknown';
+      }
+    },
+    {
+      case: 'query-role-mismatch',
+      mutate: (document) => {
+        document.dataSources.sales.fields.gmv!.role = 'dimension';
+      }
+    },
+    {
+      case: 'unknown-component-field',
+      mutate: (document) => {
+        const table = document.sections[0]!.components[0] as {
+          props: { columns: Array<{ field: string }> };
+        };
+        table.props.columns[1]!.field = 'unknown';
+      }
+    },
+    {
+      case: 'unknown-filter-binding',
+      mutate: (document) => {
+        document.dataSources.sales.source.query.filterBindings.unknown = {
+          target: 'dimension',
+          queryField: 'region'
+        };
+      }
+    }
+  ];
+  return definitions.map((definition) => {
+    const input = structuredClone(valid);
+    definition.mutate(input);
+    const expected = validate(input);
+    if (expected.length === 0) {
+      throw new Error(`expected ${definition.case} semantic validation to fail`);
+    }
+    return { case: definition.case, input, expected };
+  });
+}
+
 async function buildAuthoringOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   const authoredSchema = await readFile(authoredPageBuildSpec, 'utf8');
-  const analysisIntents = json({ intents: ANALYSIS_INTENTS });
+  const analysisIntents = json({
+    intents: ANALYSIS_INTENTS,
+    visualizationIntentByAnalysisIntent: ANALYSIS_INTENT_TO_VISUALIZE
+  });
+  const buildPageConformance = json(await buildPageConformanceVector());
   outputs.set('exported/analysis-intents.json', analysisIntents);
+  outputs.set('exported/build-page-conformance.json', buildPageConformance);
   outputs.set(
     'manifest.json',
     json({
@@ -101,11 +214,257 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
         {
           file: 'exported/analysis-intents.json',
           sha256: sha256(analysisIntents)
+        },
+        {
+          file: 'exported/build-page-conformance.json',
+          sha256: sha256(buildPageConformance)
         }
       ]
     })
   );
   return outputs;
+}
+
+type ConformanceUnit = AskDataRequestUnitState & {
+  intent: AnalysisIntent;
+  pinnedComponent?: ComponentCandidate['type'];
+};
+
+interface ConformanceSpec {
+  question: string;
+  description?: string;
+  units: ConformanceUnit[];
+}
+
+interface ConformanceExecution {
+  rows: DataRow[];
+  totalCount?: number;
+  capturedAt: string;
+}
+
+async function buildPageConformanceVector(): Promise<unknown> {
+  const fixtureRoot = path.join(bundleRoot, 'test-harness/fixtures');
+  const spec = JSON.parse(
+    await readFile(path.join(fixtureRoot, 'page-build-spec.json'), 'utf8')
+  ) as ConformanceSpec;
+  const dataContext = JSON.parse(
+    await readFile(path.join(fixtureRoot, 'data-context.json'), 'utf8')
+  ) as unknown;
+  const execution = JSON.parse(
+    await readFile(path.join(fixtureRoot, 'page-build-execution.json'), 'utf8')
+  ) as ConformanceExecution;
+  const parsed = parseDataContextSnapshot(dataContext);
+  if (!parsed.ok) {
+    throw new Error(`conformance Data Context is invalid: ${JSON.stringify(parsed.errors)}`);
+  }
+  const surfaces = semanticSurfaceOf(parsed.snapshot);
+  const effectiveQueries: unknown[] = [];
+  const units: ExecutedDataRequestUnit[] = spec.units.map((rawUnit, index) => {
+    const unit = canonicalizeUnit(rawUnit, surfaces);
+    const derived = deriveExecutableUnit(unit, surfaces);
+    effectiveQueries.push({
+      language: 'dqe',
+      body: derived.body,
+      fieldMappings: derived.fields,
+      filterValues: []
+    });
+    return {
+      dataSourceId: `unit-${index + 1}`,
+      ...(unit.title === undefined ? {} : { title: unit.title }),
+      fields: derived.fields,
+      query: { language: 'dqe', body: derived.body },
+      initial: {
+        capturedAt: execution.capturedAt,
+        rows: execution.rows,
+        ...(execution.totalCount === undefined
+          ? {}
+          : { totalCount: execution.totalCount })
+      },
+      intent: ANALYSIS_INTENT_TO_VISUALIZE[rawUnit.intent],
+      ...(rawUnit.pinnedComponent === undefined
+        ? {}
+        : { pinnedComponent: rawUnit.pinnedComponent }),
+      scope: {
+        businessDomain: unit.businessDomain,
+        ...derived.scope
+      }
+    };
+  });
+  const command = {
+    pageId: 'tokens-by-region',
+    idempotencyKey: 'build:tokens-by-region:conformance',
+    pageIdConfirmed: true
+  };
+  const assembled = assembleTransientPage({
+    pageId: command.pageId,
+    ...(spec.description === undefined ? {} : { description: spec.description }),
+    units
+  });
+  if (!assembled.ok) {
+    throw new Error(`conformance page assembly failed: ${JSON.stringify(assembled.issues)}`);
+  }
+  const errorCases = buildManifestErrorCases(spec, dataContext, parsed.snapshot, surfaces);
+  const pageValidationErrorCases = buildPageValidationErrorCases(
+    spec,
+    execution,
+    units,
+    command
+  );
+  return {
+    case: 'single-bar-page',
+    input: {
+      command,
+      spec,
+      dataContext,
+      executions: [execution]
+    },
+    expected: {
+      effectiveQueries,
+      document: assembled.document
+    },
+    errorCases,
+    pageValidationErrorCases
+  };
+}
+
+function buildPageValidationErrorCases(
+  spec: ConformanceSpec,
+  validExecution: ConformanceExecution,
+  validUnits: ExecutedDataRequestUnit[],
+  command: { pageId: string }
+): unknown[] {
+  const definitions: Array<{
+    case: string;
+    mutate(execution: ConformanceExecution): void;
+  }> = [
+    {
+      case: 'result-row-missing-field',
+      mutate: (execution) => {
+        delete execution.rows[0]!.Tokens请求量;
+      }
+    },
+    {
+      case: 'result-row-null-not-allowed',
+      mutate: (execution) => {
+        execution.rows[0]!.Tokens请求量 = null;
+      }
+    },
+    {
+      case: 'result-row-type-mismatch',
+      mutate: (execution) => {
+        execution.rows[0]!.Tokens请求量 = '18';
+      }
+    }
+  ];
+  return definitions.map((definition) => {
+    const execution = structuredClone(validExecution);
+    definition.mutate(execution);
+    const units = structuredClone(validUnits);
+    units[0]!.initial = {
+      capturedAt: execution.capturedAt,
+      rows: execution.rows,
+      ...(execution.totalCount === undefined
+        ? {}
+        : { totalCount: execution.totalCount })
+    };
+    const assembled = assembleTransientPage({
+      pageId: command.pageId,
+      ...(spec.description === undefined ? {} : { description: spec.description }),
+      units
+    });
+    if (assembled.ok) {
+      throw new Error(`expected ${definition.case} page validation to fail`);
+    }
+    const validationIssue = assembled.issues.find(
+      (issue) => issue.code === 'PAGE_VALIDATION_FAILED'
+    );
+    if (validationIssue?.errors === undefined || validationIssue.errors.length === 0) {
+      throw new Error(
+        `expected ${definition.case} page validation errors, got ${JSON.stringify(assembled.issues)}`
+      );
+    }
+    return {
+      case: definition.case,
+      execution,
+      expectedIssues: validationIssue.errors
+    };
+  });
+}
+
+function buildManifestErrorCases(
+  validSpec: ConformanceSpec,
+  dataContext: unknown,
+  snapshot: Parameters<typeof validateUnitManifest>[0],
+  surfaces: ReturnType<typeof semanticSurfaceOf>
+): unknown[] {
+  const definitions: Array<{
+    case: string;
+    path: string;
+    mutate(spec: ConformanceSpec): void;
+  }> = [
+    {
+      case: 'unknown-metric',
+      path: '/units/0/metrics/0/name',
+      mutate: (spec) => {
+        const metric = spec.units[0]!.metrics[0];
+        if (metric?.kind === 'metric') metric.name = '不存在的指标';
+      }
+    },
+    {
+      case: 'unknown-group-by-dimension',
+      path: '/units/0/groupBy/0',
+      mutate: (spec) => {
+        spec.units[0]!.groupBy[0] = '不存在的维度';
+      }
+    },
+    {
+      case: 'unknown-filter-dimension',
+      path: '/units/0/filters/0/dimension',
+      mutate: (spec) => {
+        spec.units[0]!.filters = [{ dimension: '不存在的筛选维度', values: ['华东'] }];
+      }
+    },
+    {
+      case: 'unknown-filter-value',
+      path: '/units/0/filters/0/values/0',
+      mutate: (spec) => {
+        spec.units[0]!.filters = [{ dimension: '区域', values: ['东北'] }];
+      }
+    },
+    {
+      case: 'unknown-time-granularity',
+      path: '/units/0/time/granularity',
+      mutate: (spec) => {
+        const time = spec.units[0]!.time;
+        if (time !== null) time.granularity = 'quarter';
+      }
+    }
+  ];
+  return definitions.map((definition) => {
+    const spec = structuredClone(validSpec);
+    definition.mutate(spec);
+    const unit = canonicalizeUnit(spec.units[0]!, surfaces);
+    const derived = deriveExecutableUnit(unit, surfaces);
+    const manifest = validateUnitManifest(snapshot, {
+      dataSourceId: 'unit-1',
+      fields: derived.fields,
+      query: { language: 'dqe', body: derived.body },
+      question: spec.question
+    });
+    if (manifest.violations.length !== 1) {
+      throw new Error(
+        `expected one ${definition.case} violation, got ${JSON.stringify(manifest.violations)}`
+      );
+    }
+    return {
+      case: definition.case,
+      input: { spec, dataContext },
+      expectedIssues: manifest.violations.map((violation) => ({
+        code: violation.code,
+        path: definition.path
+      }))
+    };
+  });
 }
 
 function buildContractLock(productOutputs: OutputMap, authoringOutputs: OutputMap): string {

@@ -4,8 +4,7 @@ import type {
   DataRequestUnitScope,
   DomainSemanticSurface,
   ExecutedDataRequestUnit,
-  FormulaTrace,
-  AnalysisIntent as VisualizeIntent
+  FormulaTrace
 } from '@metriccanvas/mcp';
 import type { JSONValue } from '@metriccanvas/page-lifecycle';
 import { anySignal, isAbortError } from '../agent/abort';
@@ -32,6 +31,7 @@ import {
 } from '../../ask/conversation';
 import { disambiguateCandidates } from './retrieval';
 import { canonicalizeUnit, deriveExecutableUnit } from './unit-derivation';
+import { ANALYSIS_INTENT_TO_VISUALIZE } from './visualization-intent';
 import type {
   AskDataRequestUnitState,
   AskOrchestrationPorts,
@@ -108,16 +108,6 @@ export interface AskRunnerOptions {
  * 多单元模型下每个单元的数据源名由 askUnitDataSourceId 按序号派生。
  */
 export { ASK_DATA_SOURCE_ID } from '../../ask/conversation';
-
-/** 步骤事件里的意图词汇 → 组件推荐(auto-visualize)意图词汇的唯一映射。 */
-const INTENT_TO_VISUALIZE: Record<AnalysisIntent, VisualizeIntent> = {
-  comparison: 'comparison',
-  trend: 'trend',
-  composition: 'proportion',
-  ranking: 'ranking',
-  detail: 'detail',
-  single_value: 'summary'
-};
 
 export function createAskOrchestrationRunner(
   ports: AskOrchestrationPorts,
@@ -905,7 +895,7 @@ async function* executeAndPresent(context: ExecutionContext): AsyncGenerator<Age
       fields: presentation.fields,
       query: presentation.query,
       initial: presentation.initial,
-      intent: INTENT_TO_VISUALIZE[entry.intent ?? defaultIntent(entry.unit)],
+      intent: ANALYSIS_INTENT_TO_VISUALIZE[entry.intent ?? defaultIntent(entry.unit)],
       ...(pinnedType === undefined ? {} : { pinnedComponent: pinnedType })
     };
   });

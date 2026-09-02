@@ -1,6 +1,6 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：S2 已完成，S3 迁移中
+> 状态：S3 已完成，下一步 S4
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
 > 交付根：`metriccanvas-authoring/`
@@ -49,7 +49,7 @@ metriccanvas-authoring/                   # 一个原子发布 Bundle
 │       └── SKILL.md                      # Relay/Agent Module
 ├── contracts/
 │   ├── authored/page-build-spec.schema.json
-│   ├── exported/analysis-intents.json
+│   ├── exported/{analysis-intents,build-page-conformance}.json
 │   └── manifest.json                     # Skill↔Tool Interface contracts
 ├── contract-snapshot/                    # contracts/metriccanvas 的只读生成快照
 ├── tool/
@@ -82,7 +82,8 @@ contracts/metriccanvas ──完全复制──▶ metriccanvas-authoring/contra
         └──────── manifest digest ───────────┘ contract-lock.json
 
 Page Build Spec 作者文件 ───────▶ metriccanvas-authoring/contracts/manifest.json
-分析意图 TS 闭集 ──单向导出─────┘
+分析意图及映射 TS 闭集 ──单向导出──┘
+TS 装配与校验真源 ──生成───────▶ 跨语言正反例向量
 ```
 
 根 CI 以 `--check` 只读重算并检查四层漂移：产品导出、Bundle 快照、Authoring
@@ -94,13 +95,21 @@ contracts、Bundle/contract locks。跨引用和能力不变式不能只靠 JSON
 当前进度（2026-09-02）：S0、S1 已完成并接入 CI，目录边界已按 ADR-0061 重构；
 S2 已完成，Harness 可从 Page Build Spec 经粗粒度 application seam 调用数据上下文、DQE、
 Java 页面资产三个 Port，并验证结构化调用、稳定错误 `code/path` 和当前页面协议产物。
-S3 已迁移 Data Context 结构校验、语义面投影/检索/敏感取值隐去、
+S3 已完成 Data Context 结构校验、语义面投影/检索/敏感取值隐去、
 名称/取值/时间粒度闭集、
 DQE/结果字段契约派生、formula、运行期错误四段归因，以及柱状图/折线图组件硬闸
 与装配垂直切片。当前 TS 装配支持的指标卡、柱、线、饼、表、排行组件已对齐，
 口径组分区、报告页头和 12 列比例装箱已迁移。组件数据形状矩阵已上收为
 产品组件目录的 `authoringShape`，
-TypeScript 与 Python 共用单向导出的中立事实。
+TypeScript 与 Python 共用单向导出的中立事实。分析意图映射同样由 TS
+单向导出，Python 不再维护第二份转换表。
+
+S3 的等价证据由生成向量锁定：一条完整构建向量同时比较实际 DQE
+请求与 canonical Page JSON；5 条取数单元反例比较稳定 `code/path`；3 条 DQE
+结果行反例确保错误在保存前归于 presentation 阶段。产品契约另导出 5 条
+跨语言页面语义反例，覆盖查询映射、字段角色、组件字段绑定、筛选绑定和
+全页组件 id 唯一性。Python 对其生成的完整页面执行 Page Schema、DQE 初始行字段
+契约和上述跨引用不变式校验；Java 保存入口仍按 ADR-0060 对完整 Page 协议复验。
 
 ### S0：自包含骨架
 
@@ -133,6 +142,8 @@ TypeScript 与 Python 共用单向导出的中立事实。
 
 完成条件：冻结输入下，Python 与 TypeScript 的 canonical Page JSON 和稳定错误
 `code/path` 等价。
+
+状态：已完成。
 
 ### S4：Skill 与粗粒度工具
 

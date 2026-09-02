@@ -10,7 +10,7 @@ BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.page_validation import validate_page_schema  # noqa: E402
+from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
 
 
 class PageContractConformanceTest(unittest.TestCase):
@@ -19,25 +19,23 @@ class PageContractConformanceTest(unittest.TestCase):
         for fixture_path in sorted(fixture_root.glob("*.json")):
             with self.subTest(fixture=fixture_path.name):
                 value = json.loads(fixture_path.read_text(encoding="utf-8"))
-                self.assertEqual(validate_page_schema(value), [])
+                self.assertEqual(validate_page_document(value), [])
 
-    def test_matches_exported_structural_error_type_and_path(self) -> None:
-        vector = json.loads(
-            (
-                CONTRACT_ROOT
-                / "page"
-                / "conformance"
-                / "invalid"
-                / "missing-schema-version.json"
-            ).read_text(encoding="utf-8")
-        )
+    def test_matches_every_exported_error_type_and_path(self) -> None:
+        fixture_root = CONTRACT_ROOT / "page" / "conformance" / "invalid"
+        for fixture_path in sorted(fixture_root.glob("*.json")):
+            with self.subTest(fixture=fixture_path.name):
+                vector = json.loads(fixture_path.read_text(encoding="utf-8"))
 
-        actual = validate_page_schema(vector["input"])
+                actual = validate_page_document(vector["input"])
 
-        self.assertEqual(
-            {(issue.type, issue.path) for issue in actual},
-            {(issue["type"], issue["path"]) for issue in vector["expected"]},
-        )
+                self.assertEqual(
+                    {(issue.type, issue.path) for issue in actual},
+                    {
+                        (issue["type"], issue["path"])
+                        for issue in vector["expected"]
+                    },
+                )
 
 
 if __name__ == "__main__":

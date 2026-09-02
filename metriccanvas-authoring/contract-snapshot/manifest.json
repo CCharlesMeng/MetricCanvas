@@ -12,8 +12,28 @@
       "sha256": "1911020912bf38fc22e78e3d9ddb4e4f89e66d3f2f1c2dd08e3c1cc7e7d78e86"
     },
     {
+      "file": "page/conformance/invalid/duplicate-component-id.json",
+      "sha256": "205777459e54850e509a595cee6f5804780e2ed2a80ecfca713f280b22657bd5"
+    },
+    {
       "file": "page/conformance/invalid/missing-schema-version.json",
       "sha256": "81379a22875e0213dbabc91e66cc9733497f9cbfeeb5ba032c78ebfdf77024b3"
+    },
+    {
+      "file": "page/conformance/invalid/query-field-not-output.json",
+      "sha256": "fec82baba359cc612df59b8fc9a4f16d2c5ac828ba6f9b3b3d0b3f42f487b6fc"
+    },
+    {
+      "file": "page/conformance/invalid/query-role-mismatch.json",
+      "sha256": "df0519ae39c1368a68b6a529e67568a12300c7fbbbef7e86c8f2f94e80189ed1"
+    },
+    {
+      "file": "page/conformance/invalid/unknown-component-field.json",
+      "sha256": "fd7a5e0cfda84a89b2c2542388fbca71bc2571014563042f44125db9bf267efb"
+    },
+    {
+      "file": "page/conformance/invalid/unknown-filter-binding.json",
+      "sha256": "0c2cf070763326372b9e69ae5f64d0d3ae86d6175472b27e76b7e8f4635f7a80"
     },
     {
       "file": "page/conformance/valid/inline-report.json",

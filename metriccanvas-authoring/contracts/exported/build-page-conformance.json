@@ -1,0 +1,1048 @@
+{
+  "case": "single-bar-page",
+  "input": {
+    "command": {
+      "pageId": "tokens-by-region",
+      "idempotencyKey": "build:tokens-by-region:conformance",
+      "pageIdConfirmed": true
+    },
+    "spec": {
+      "question": "上个月各区域的 Tokens 请求量是多少？",
+      "description": "区域 Tokens 请求量对比",
+      "units": [
+        {
+          "businessDomain": "运营分析",
+          "metrics": [
+            {
+              "kind": "metric",
+              "name": "Tokens请求量"
+            }
+          ],
+          "groupBy": [
+            "区域"
+          ],
+          "filters": [],
+          "time": {
+            "granularity": "month",
+            "start": "2026-08",
+            "end": "2026-08",
+            "providedBy": "user"
+          },
+          "title": "各区域 Tokens 请求量",
+          "intent": "comparison",
+          "pinnedComponent": "barChart"
+        }
+      ]
+    },
+    "dataContext": {
+      "formatVersion": "1.1",
+      "id": "authoring-harness-context",
+      "version": "2026-09-02.1",
+      "generatedAt": "2026-09-02T00:00:00.000Z",
+      "source": "authoring-harness",
+      "executionEnvironments": [
+        {
+          "id": "dqe-primary",
+          "name": "Harness DQE",
+          "language": "dqe",
+          "endpointRef": "dqe-primary",
+          "schemas": [
+            {
+              "id": "operations-analytics",
+              "name": "运营分析",
+              "description": "Tokens 服务运营分析",
+              "metrics": [
+                {
+                  "name": "Tokens请求量",
+                  "type": "number",
+                  "description": "统计期内的模型调用请求次数",
+                  "aliases": [
+                    "调用次数"
+                  ],
+                  "unit": "次",
+                  "additivity": "可加",
+                  "timeAggregation": "求和",
+                  "isRatio": false,
+                  "dimensions": [
+                    "区域"
+                  ],
+                  "nullable": false,
+                  "sensitive": false
+                }
+              ],
+              "objects": [
+                {
+                  "id": "operations-surface",
+                  "name": "运营分析语义面",
+                  "kind": "dataset",
+                  "description": "Tokens 请求量与区域维度",
+                  "fields": [
+                    {
+                      "name": "区域",
+                      "type": "string",
+                      "description": "业务归属区域。取值域:华东、华南。",
+                      "aliases": [
+                        "大区"
+                      ],
+                      "roleHints": [
+                        "dimension"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    },
+                    {
+                      "name": "统计周期",
+                      "type": "date",
+                      "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                      "aliases": [
+                        "统计时间"
+                      ],
+                      "roleHints": [
+                        "dimension",
+                        "time"
+                      ],
+                      "granularity": "month",
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ]
+                }
+              ],
+              "relationships": [],
+              "verifiedQueries": []
+            }
+          ],
+          "constraints": {
+            "readOnly": true,
+            "maxRows": 1000,
+            "maxColumns": 20,
+            "maxQueriesPerBatch": 6,
+            "timeoutMs": 30000
+          },
+          "security": {
+            "scope": "authoring-harness"
+          }
+        }
+      ]
+    },
+    "executions": [
+      {
+        "rows": [
+          {
+            "区域": "华东",
+            "Tokens请求量": 18
+          },
+          {
+            "区域": "华南",
+            "Tokens请求量": 12
+          }
+        ],
+        "totalCount": 2,
+        "capturedAt": "2026-09-02T00:00:01.000Z"
+      }
+    ]
+  },
+  "expected": {
+    "effectiveQueries": [
+      {
+        "language": "dqe",
+        "body": {
+          "dsl_list": [
+            {
+              "output_dims": [
+                "区域"
+              ],
+              "output_metrics": [
+                "Tokens请求量"
+              ],
+              "filter": {
+                "time": {
+                  "period": "month",
+                  "start": "2026-08",
+                  "end": "2026-08"
+                },
+                "dims": [],
+                "metrics": []
+              },
+              "order": {}
+            }
+          ]
+        },
+        "fieldMappings": {
+          "field-1": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "field-2": {
+            "queryField": "Tokens请求量",
+            "type": "number",
+            "role": "measure",
+            "label": "Tokens请求量",
+            "unit": "次",
+            "nullable": false
+          }
+        },
+        "filterValues": []
+      }
+    ],
+    "document": {
+      "schemaVersion": "5.4",
+      "id": "tokens-by-region",
+      "meta": {
+        "description": "区域 Tokens 请求量对比"
+      },
+      "dataSources": {
+        "unit-1": {
+          "fields": {
+            "field-1": {
+              "queryField": "区域",
+              "type": "string",
+              "role": "dimension",
+              "label": "区域",
+              "nullable": false
+            },
+            "field-2": {
+              "queryField": "Tokens请求量",
+              "type": "number",
+              "role": "measure",
+              "label": "Tokens请求量",
+              "unit": "次",
+              "nullable": false
+            }
+          },
+          "source": {
+            "type": "query",
+            "initial": {
+              "capturedAt": "2026-09-02T00:00:01.000Z",
+              "rows": [
+                {
+                  "区域": "华东",
+                  "Tokens请求量": 18
+                },
+                {
+                  "区域": "华南",
+                  "Tokens请求量": 12
+                }
+              ],
+              "totalCount": 2
+            },
+            "query": {
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "区域"
+                    ],
+                    "output_metrics": [
+                      "Tokens请求量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-08",
+                        "end": "2026-08"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              }
+            }
+          }
+        }
+      },
+      "sections": [
+        {
+          "id": "header",
+          "container": "plain",
+          "components": [
+            {
+              "id": "page-header",
+              "type": "reportHeader",
+              "layout": {
+                "span": 12
+              },
+              "props": {
+                "title": "运营分析",
+                "asOf": {
+                  "label": "数据窗口",
+                  "value": "2026-08 ~ 2026-08(月)"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "main",
+          "components": [
+            {
+              "id": "unit-1-bar-chart",
+              "type": "barChart",
+              "layout": {
+                "span": 12
+              },
+              "data": {
+                "main": "unit-1"
+              },
+              "props": {
+                "title": "各区域 Tokens 请求量",
+                "categoryField": "field-1",
+                "series": [
+                  {
+                    "field": "field-2",
+                    "label": "Tokens请求量"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "errorCases": [
+    {
+      "case": "unknown-metric",
+      "input": {
+        "spec": {
+          "question": "上个月各区域的 Tokens 请求量是多少？",
+          "description": "区域 Tokens 请求量对比",
+          "units": [
+            {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "不存在的指标"
+                }
+              ],
+              "groupBy": [
+                "区域"
+              ],
+              "filters": [],
+              "time": {
+                "granularity": "month",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "各区域 Tokens 请求量",
+              "intent": "comparison",
+              "pinnedComponent": "barChart"
+            }
+          ]
+        },
+        "dataContext": {
+          "formatVersion": "1.1",
+          "id": "authoring-harness-context",
+          "version": "2026-09-02.1",
+          "generatedAt": "2026-09-02T00:00:00.000Z",
+          "source": "authoring-harness",
+          "executionEnvironments": [
+            {
+              "id": "dqe-primary",
+              "name": "Harness DQE",
+              "language": "dqe",
+              "endpointRef": "dqe-primary",
+              "schemas": [
+                {
+                  "id": "operations-analytics",
+                  "name": "运营分析",
+                  "description": "Tokens 服务运营分析",
+                  "metrics": [
+                    {
+                      "name": "Tokens请求量",
+                      "type": "number",
+                      "description": "统计期内的模型调用请求次数",
+                      "aliases": [
+                        "调用次数"
+                      ],
+                      "unit": "次",
+                      "additivity": "可加",
+                      "timeAggregation": "求和",
+                      "isRatio": false,
+                      "dimensions": [
+                        "区域"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ],
+                  "objects": [
+                    {
+                      "id": "operations-surface",
+                      "name": "运营分析语义面",
+                      "kind": "dataset",
+                      "description": "Tokens 请求量与区域维度",
+                      "fields": [
+                        {
+                          "name": "区域",
+                          "type": "string",
+                          "description": "业务归属区域。取值域:华东、华南。",
+                          "aliases": [
+                            "大区"
+                          ],
+                          "roleHints": [
+                            "dimension"
+                          ],
+                          "nullable": false,
+                          "sensitive": false
+                        },
+                        {
+                          "name": "统计周期",
+                          "type": "date",
+                          "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                          "aliases": [
+                            "统计时间"
+                          ],
+                          "roleHints": [
+                            "dimension",
+                            "time"
+                          ],
+                          "granularity": "month",
+                          "nullable": false,
+                          "sensitive": false
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [],
+                  "verifiedQueries": []
+                }
+              ],
+              "constraints": {
+                "readOnly": true,
+                "maxRows": 1000,
+                "maxColumns": 20,
+                "maxQueriesPerBatch": 6,
+                "timeoutMs": 30000
+              },
+              "security": {
+                "scope": "authoring-harness"
+              }
+            }
+          ]
+        }
+      },
+      "expectedIssues": [
+        {
+          "code": "METRIC_NOT_IN_DATA_CONTEXT",
+          "path": "/units/0/metrics/0/name"
+        }
+      ]
+    },
+    {
+      "case": "unknown-group-by-dimension",
+      "input": {
+        "spec": {
+          "question": "上个月各区域的 Tokens 请求量是多少？",
+          "description": "区域 Tokens 请求量对比",
+          "units": [
+            {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "Tokens请求量"
+                }
+              ],
+              "groupBy": [
+                "不存在的维度"
+              ],
+              "filters": [],
+              "time": {
+                "granularity": "month",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "各区域 Tokens 请求量",
+              "intent": "comparison",
+              "pinnedComponent": "barChart"
+            }
+          ]
+        },
+        "dataContext": {
+          "formatVersion": "1.1",
+          "id": "authoring-harness-context",
+          "version": "2026-09-02.1",
+          "generatedAt": "2026-09-02T00:00:00.000Z",
+          "source": "authoring-harness",
+          "executionEnvironments": [
+            {
+              "id": "dqe-primary",
+              "name": "Harness DQE",
+              "language": "dqe",
+              "endpointRef": "dqe-primary",
+              "schemas": [
+                {
+                  "id": "operations-analytics",
+                  "name": "运营分析",
+                  "description": "Tokens 服务运营分析",
+                  "metrics": [
+                    {
+                      "name": "Tokens请求量",
+                      "type": "number",
+                      "description": "统计期内的模型调用请求次数",
+                      "aliases": [
+                        "调用次数"
+                      ],
+                      "unit": "次",
+                      "additivity": "可加",
+                      "timeAggregation": "求和",
+                      "isRatio": false,
+                      "dimensions": [
+                        "区域"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ],
+                  "objects": [
+                    {
+                      "id": "operations-surface",
+                      "name": "运营分析语义面",
+                      "kind": "dataset",
+                      "description": "Tokens 请求量与区域维度",
+                      "fields": [
+                        {
+                          "name": "区域",
+                          "type": "string",
+                          "description": "业务归属区域。取值域:华东、华南。",
+                          "aliases": [
+                            "大区"
+                          ],
+                          "roleHints": [
+                            "dimension"
+                          ],
+                          "nullable": false,
+                          "sensitive": false
+                        },
+                        {
+                          "name": "统计周期",
+                          "type": "date",
+                          "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                          "aliases": [
+                            "统计时间"
+                          ],
+                          "roleHints": [
+                            "dimension",
+                            "time"
+                          ],
+                          "granularity": "month",
+                          "nullable": false,
+                          "sensitive": false
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [],
+                  "verifiedQueries": []
+                }
+              ],
+              "constraints": {
+                "readOnly": true,
+                "maxRows": 1000,
+                "maxColumns": 20,
+                "maxQueriesPerBatch": 6,
+                "timeoutMs": 30000
+              },
+              "security": {
+                "scope": "authoring-harness"
+              }
+            }
+          ]
+        }
+      },
+      "expectedIssues": [
+        {
+          "code": "DIMENSION_NOT_IN_DATA_CONTEXT",
+          "path": "/units/0/groupBy/0"
+        }
+      ]
+    },
+    {
+      "case": "unknown-filter-dimension",
+      "input": {
+        "spec": {
+          "question": "上个月各区域的 Tokens 请求量是多少？",
+          "description": "区域 Tokens 请求量对比",
+          "units": [
+            {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "Tokens请求量"
+                }
+              ],
+              "groupBy": [
+                "区域"
+              ],
+              "filters": [
+                {
+                  "dimension": "不存在的筛选维度",
+                  "values": [
+                    "华东"
+                  ]
+                }
+              ],
+              "time": {
+                "granularity": "month",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "各区域 Tokens 请求量",
+              "intent": "comparison",
+              "pinnedComponent": "barChart"
+            }
+          ]
+        },
+        "dataContext": {
+          "formatVersion": "1.1",
+          "id": "authoring-harness-context",
+          "version": "2026-09-02.1",
+          "generatedAt": "2026-09-02T00:00:00.000Z",
+          "source": "authoring-harness",
+          "executionEnvironments": [
+            {
+              "id": "dqe-primary",
+              "name": "Harness DQE",
+              "language": "dqe",
+              "endpointRef": "dqe-primary",
+              "schemas": [
+                {
+                  "id": "operations-analytics",
+                  "name": "运营分析",
+                  "description": "Tokens 服务运营分析",
+                  "metrics": [
+                    {
+                      "name": "Tokens请求量",
+                      "type": "number",
+                      "description": "统计期内的模型调用请求次数",
+                      "aliases": [
+                        "调用次数"
+                      ],
+                      "unit": "次",
+                      "additivity": "可加",
+                      "timeAggregation": "求和",
+                      "isRatio": false,
+                      "dimensions": [
+                        "区域"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ],
+                  "objects": [
+                    {
+                      "id": "operations-surface",
+                      "name": "运营分析语义面",
+                      "kind": "dataset",
+                      "description": "Tokens 请求量与区域维度",
+                      "fields": [
+                        {
+                          "name": "区域",
+                          "type": "string",
+                          "description": "业务归属区域。取值域:华东、华南。",
+                          "aliases": [
+                            "大区"
+                          ],
+                          "roleHints": [
+                            "dimension"
+                          ],
+                          "nullable": false,
+                          "sensitive": false
+                        },
+                        {
+                          "name": "统计周期",
+                          "type": "date",
+                          "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                          "aliases": [
+                            "统计时间"
+                          ],
+                          "roleHints": [
+                            "dimension",
+                            "time"
+                          ],
+                          "granularity": "month",
+                          "nullable": false,
+                          "sensitive": false
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [],
+                  "verifiedQueries": []
+                }
+              ],
+              "constraints": {
+                "readOnly": true,
+                "maxRows": 1000,
+                "maxColumns": 20,
+                "maxQueriesPerBatch": 6,
+                "timeoutMs": 30000
+              },
+              "security": {
+                "scope": "authoring-harness"
+              }
+            }
+          ]
+        }
+      },
+      "expectedIssues": [
+        {
+          "code": "DIMENSION_NOT_IN_DATA_CONTEXT",
+          "path": "/units/0/filters/0/dimension"
+        }
+      ]
+    },
+    {
+      "case": "unknown-filter-value",
+      "input": {
+        "spec": {
+          "question": "上个月各区域的 Tokens 请求量是多少？",
+          "description": "区域 Tokens 请求量对比",
+          "units": [
+            {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "Tokens请求量"
+                }
+              ],
+              "groupBy": [
+                "区域"
+              ],
+              "filters": [
+                {
+                  "dimension": "区域",
+                  "values": [
+                    "东北"
+                  ]
+                }
+              ],
+              "time": {
+                "granularity": "month",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "各区域 Tokens 请求量",
+              "intent": "comparison",
+              "pinnedComponent": "barChart"
+            }
+          ]
+        },
+        "dataContext": {
+          "formatVersion": "1.1",
+          "id": "authoring-harness-context",
+          "version": "2026-09-02.1",
+          "generatedAt": "2026-09-02T00:00:00.000Z",
+          "source": "authoring-harness",
+          "executionEnvironments": [
+            {
+              "id": "dqe-primary",
+              "name": "Harness DQE",
+              "language": "dqe",
+              "endpointRef": "dqe-primary",
+              "schemas": [
+                {
+                  "id": "operations-analytics",
+                  "name": "运营分析",
+                  "description": "Tokens 服务运营分析",
+                  "metrics": [
+                    {
+                      "name": "Tokens请求量",
+                      "type": "number",
+                      "description": "统计期内的模型调用请求次数",
+                      "aliases": [
+                        "调用次数"
+                      ],
+                      "unit": "次",
+                      "additivity": "可加",
+                      "timeAggregation": "求和",
+                      "isRatio": false,
+                      "dimensions": [
+                        "区域"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ],
+                  "objects": [
+                    {
+                      "id": "operations-surface",
+                      "name": "运营分析语义面",
+                      "kind": "dataset",
+                      "description": "Tokens 请求量与区域维度",
+                      "fields": [
+                        {
+                          "name": "区域",
+                          "type": "string",
+                          "description": "业务归属区域。取值域:华东、华南。",
+                          "aliases": [
+                            "大区"
+                          ],
+                          "roleHints": [
+                            "dimension"
+                          ],
+                          "nullable": false,
+                          "sensitive": false
+                        },
+                        {
+                          "name": "统计周期",
+                          "type": "date",
+                          "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                          "aliases": [
+                            "统计时间"
+                          ],
+                          "roleHints": [
+                            "dimension",
+                            "time"
+                          ],
+                          "granularity": "month",
+                          "nullable": false,
+                          "sensitive": false
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [],
+                  "verifiedQueries": []
+                }
+              ],
+              "constraints": {
+                "readOnly": true,
+                "maxRows": 1000,
+                "maxColumns": 20,
+                "maxQueriesPerBatch": 6,
+                "timeoutMs": 30000
+              },
+              "security": {
+                "scope": "authoring-harness"
+              }
+            }
+          ]
+        }
+      },
+      "expectedIssues": [
+        {
+          "code": "DIMENSION_VALUE_NOT_IN_DATA_CONTEXT",
+          "path": "/units/0/filters/0/values/0"
+        }
+      ]
+    },
+    {
+      "case": "unknown-time-granularity",
+      "input": {
+        "spec": {
+          "question": "上个月各区域的 Tokens 请求量是多少？",
+          "description": "区域 Tokens 请求量对比",
+          "units": [
+            {
+              "businessDomain": "运营分析",
+              "metrics": [
+                {
+                  "kind": "metric",
+                  "name": "Tokens请求量"
+                }
+              ],
+              "groupBy": [
+                "区域"
+              ],
+              "filters": [],
+              "time": {
+                "granularity": "quarter",
+                "start": "2026-08",
+                "end": "2026-08",
+                "providedBy": "user"
+              },
+              "title": "各区域 Tokens 请求量",
+              "intent": "comparison",
+              "pinnedComponent": "barChart"
+            }
+          ]
+        },
+        "dataContext": {
+          "formatVersion": "1.1",
+          "id": "authoring-harness-context",
+          "version": "2026-09-02.1",
+          "generatedAt": "2026-09-02T00:00:00.000Z",
+          "source": "authoring-harness",
+          "executionEnvironments": [
+            {
+              "id": "dqe-primary",
+              "name": "Harness DQE",
+              "language": "dqe",
+              "endpointRef": "dqe-primary",
+              "schemas": [
+                {
+                  "id": "operations-analytics",
+                  "name": "运营分析",
+                  "description": "Tokens 服务运营分析",
+                  "metrics": [
+                    {
+                      "name": "Tokens请求量",
+                      "type": "number",
+                      "description": "统计期内的模型调用请求次数",
+                      "aliases": [
+                        "调用次数"
+                      ],
+                      "unit": "次",
+                      "additivity": "可加",
+                      "timeAggregation": "求和",
+                      "isRatio": false,
+                      "dimensions": [
+                        "区域"
+                      ],
+                      "nullable": false,
+                      "sensitive": false
+                    }
+                  ],
+                  "objects": [
+                    {
+                      "id": "operations-surface",
+                      "name": "运营分析语义面",
+                      "kind": "dataset",
+                      "description": "Tokens 请求量与区域维度",
+                      "fields": [
+                        {
+                          "name": "区域",
+                          "type": "string",
+                          "description": "业务归属区域。取值域:华东、华南。",
+                          "aliases": [
+                            "大区"
+                          ],
+                          "roleHints": [
+                            "dimension"
+                          ],
+                          "nullable": false,
+                          "sensitive": false
+                        },
+                        {
+                          "name": "统计周期",
+                          "type": "date",
+                          "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                          "aliases": [
+                            "统计时间"
+                          ],
+                          "roleHints": [
+                            "dimension",
+                            "time"
+                          ],
+                          "granularity": "month",
+                          "nullable": false,
+                          "sensitive": false
+                        }
+                      ]
+                    }
+                  ],
+                  "relationships": [],
+                  "verifiedQueries": []
+                }
+              ],
+              "constraints": {
+                "readOnly": true,
+                "maxRows": 1000,
+                "maxColumns": 20,
+                "maxQueriesPerBatch": 6,
+                "timeoutMs": 30000
+              },
+              "security": {
+                "scope": "authoring-harness"
+              }
+            }
+          ]
+        }
+      },
+      "expectedIssues": [
+        {
+          "code": "TIME_GRANULARITY_NOT_IN_DATA_CONTEXT",
+          "path": "/units/0/time/granularity"
+        }
+      ]
+    }
+  ],
+  "pageValidationErrorCases": [
+    {
+      "case": "result-row-missing-field",
+      "execution": {
+        "rows": [
+          {
+            "区域": "华东"
+          },
+          {
+            "区域": "华南",
+            "Tokens请求量": 12
+          }
+        ],
+        "totalCount": 2,
+        "capturedAt": "2026-09-02T00:00:01.000Z"
+      },
+      "expectedIssues": [
+        {
+          "type": "SCHEMA_ERROR",
+          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "message": "DQE 内嵌初始行缺少映射字段:Tokens请求量"
+        }
+      ]
+    },
+    {
+      "case": "result-row-null-not-allowed",
+      "execution": {
+        "rows": [
+          {
+            "区域": "华东",
+            "Tokens请求量": null
+          },
+          {
+            "区域": "华南",
+            "Tokens请求量": 12
+          }
+        ],
+        "totalCount": 2,
+        "capturedAt": "2026-09-02T00:00:01.000Z"
+      },
+      "expectedIssues": [
+        {
+          "type": "SCHEMA_ERROR",
+          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "message": "DQE 字段 Tokens请求量 为 null，页面字段 field-2 声明 nullable=false"
+        }
+      ]
+    },
+    {
+      "case": "result-row-type-mismatch",
+      "execution": {
+        "rows": [
+          {
+            "区域": "华东",
+            "Tokens请求量": "18"
+          },
+          {
+            "区域": "华南",
+            "Tokens请求量": 12
+          }
+        ],
+        "totalCount": 2,
+        "capturedAt": "2026-09-02T00:00:01.000Z"
+      },
+      "expectedIssues": [
+        {
+          "type": "SCHEMA_ERROR",
+          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "message": "DQE 字段 Tokens请求量 不符合页面字段 field-2 的类型 number"
+        }
+      ]
+    }
+  ]
+}

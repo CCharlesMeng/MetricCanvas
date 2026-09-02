@@ -35,8 +35,11 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     '../session/step-event',
     './retrieval',
     './unit-derivation',
+    './visualization-intent',
     './ports'
   ],
+  // 会话分析意图 → 组件推荐意图的单一映射真源。
+  'visualization-intent.ts': ['@metriccanvas/mcp', '../session/step-event'],
   // 模型端口适配:ModelProvider(deepseek/scripted)→ 结构化决策。
   'model-port.ts': ['@metriccanvas/mcp', '../agent/types', '../session/step-event', './ports'],
   // 无外部模型时的确定性回退。
