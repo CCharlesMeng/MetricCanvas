@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.cdi.pageassets.adapter.outbound.persistence.mapper.PageMapper">
+
+  <resultMap id="page" type="com.huawei.cdi.pageassets.adapter.outbound.persistence.po.PagePo">
+    <constructor>
+      <idArg column="page_id" javaType="String" name="pageId"/>
+      <arg column="latest_revision_id" javaType="String" name="latestRevisionId"/>
+      <arg column="latest_revision_number" javaType="_long" name="latestRevisionNumber"/>
+      <arg column="latest_created_at" javaType="java.time.Instant" name="latestCreatedAt"/>
+      <arg column="create_time" javaType="java.time.Instant" name="createTime"/>
+      <arg column="update_time" javaType="java.time.Instant" name="updateTime"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="columns">
+    page_id, latest_revision_id, latest_revision_number, latest_created_at, create_time, update_time
+  </sql>
+
+  <select id="selectByPageId" resultMap="page">
+    SELECT <include refid="columns"/>
+    FROM t_pa_page
+    WHERE page_id = #{pageId}
+  </select>
+
+  <!-- 列是 utf8mb4_bin：`>` 与 ORDER BY 按 UTF-8 字节序 = 码点序，与 PageCatalogPolicy 一致。 -->
+  <select id="selectAfter" resultMap="page">
+    SELECT <include refid="columns"/>
+    FROM t_pa_page
+    <where>
+      <if test="after != null">
+        page_id &gt; #{after}
+      </if>
+    </where>
+    ORDER BY page_id ASC
+    LIMIT #{limit}
+  </select>
+
+  <insert id="upsertLatest">
+    INSERT INTO t_pa_page (page_id, latest_revision_id, latest_revision_number, latest_created_at, create_time, update_time)
+    VALUES (#{pageId}, #{latestRevisionId}, #{latestRevisionNumber}, #{latestCreatedAt}, #{createTime}, #{updateTime})
+    ON DUPLICATE KEY UPDATE
+      latest_revision_id = #{latestRevisionId},
+      latest_revision_number = #{latestRevisionNumber},
+      latest_created_at = #{latestCreatedAt},
+      update_time = #{updateTime}
+  </insert>
+</mapper>

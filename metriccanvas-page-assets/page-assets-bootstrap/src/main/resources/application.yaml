@@ -3,6 +3,10 @@ spring:
     name: pageassets
   main:
     banner-mode: off
+  # 数据源 / Flyway / MyBatis 全部由 MySqlStoreConfiguration 显式装配（独立历史表与 locations），
+  # 不让 Spring Boot 的 Flyway 自动配置再跑一遍缺省的 db/migration。
+  flyway:
+    enabled: false
 
 server:
   port: ${SERVER_PORT:8080}
@@ -13,8 +17,20 @@ server:
 pageassets:
   service-name: ${PAGE_ASSETS_SERVICE_NAME:pageassets}
   base-path: /rest/cdi/${pageassets.service-name}/v1
-  # memory：进程内仓储（J2，重启即空）；mysql：MyBatis + Flyway（J3 落地）。
+  # memory：进程内仓储（重启即空，本地体验与领域测试）；mysql：Druid + MyBatis + Flyway（J3）。
   store: ${PAGE_ASSETS_STORE:memory}
+  # 只在 store=mysql 时读取。三个环境变量名与公司 DataSourceConfig 一致；DB_PASSWORD 经 SecretDecryptor 解密
+  # （公司环境为 TitanCipherEnum，本仓库缺省原文透传）。示例：
+  # DB_URL=jdbc:mariadb://127.0.0.1:3306/pageassets?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+  db:
+    url: ${DB_URL:}
+    username: ${DB_USERNAME:}
+    password: ${DB_PASSWORD:}
+    lock-timeout-seconds: ${PAGE_ASSETS_LOCK_TIMEOUT_SECONDS:10}
+  idempotency:
+    # 幂等记录保留 7 天（领域常量），清理任务按此间隔分批删除过期行。
+    purge-interval: ${PAGE_ASSETS_IDEMPOTENCY_PURGE_INTERVAL:PT1H}
+    purge-initial-delay: PT1M
 
 logging:
   config: classpath:log4j2.xml

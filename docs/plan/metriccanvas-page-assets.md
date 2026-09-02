@@ -1,7 +1,8 @@
 # MetricCanvas 第一方 Java 页面资产实施计划
 
-> 状态：J1、J2 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过：165 个 conformance
-> 向量与 TypeScript 逐条相同，四个 Interface 在内存仓储下通过全部领域与契约测试）；J3 可开工。
+> 状态：J1、J2、J3 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过：165 个 conformance
+> 向量与 TypeScript 逐条相同，四个 Interface 在内存仓储与真实 MySQL 8 上通过全部领域、契约与集成测试）；
+> J4 可开工。CloudBuild 探针尚未执行（本仓库 CI 在 GitHub runner 上以 Testcontainers 跑集成测试）。
 > 实现说明见 [`metriccanvas-page-assets/README.md`](../../metriccanvas-page-assets/README.md)
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
@@ -133,6 +134,44 @@ J2 落地记录：
 - 集成测试覆盖并发保存、幂等重放、冲突、游标与 `utf8mb4_bin` 排序。
 
 完成条件：真实 MySQL 上集成测试通过；重复启动只 `validate` 不改表。
+
+J3 落地记录：
+
+- **探针的本仓库侧结论**：GitHub Actions runner 自带 Docker，`java-page-assets` job 直接以 Testcontainers 起
+  `mysql:8.0` 跑 `MySqlPageStoreIntegrationTest`（15 个用例）。CloudBuild 侧探针仍待用户在公司 CI 上执行：
+  测试支撑 `MySqlTestDatabase` 已实现三级退路——`PAGE_ASSETS_TEST_DB_URL`（+ `_USERNAME` / `_PASSWORD`）
+  指向公司测试库 → 有 Docker 则 Testcontainers → 都没有则整类**跳过而非失败**（探针要观察的就是这一项）。
+  用 `GenericContainer` 而不是 `MySQLContainer`，后者要求 MySQL Connector/J 在 classpath，而生产只带 MariaDB 驱动。
+- Flyway `V1.0.0.1__pa_init.sql` 在 `page-assets-service/src/main/resources/db/migration/pageassets/`：三张表
+  全部 `utf8mb4` / `utf8mb4_bin`，标识列 `char(32)` / `varchar(128)`，时间列 `datetime(3)`，文档 `mediumtext`，
+  `(page_id, revision_number)` 唯一，`t_pa_idempotency` 主键 `(operation, actor_id, idempotency_key)` +
+  `created_at` 索引；列宽与 YAML 的 `maxLength` 一致（幂等键 200、skillVersion 64）。Flyway 由
+  `MySqlStoreConfiguration` 编程式装配：历史表 `flyway_page_assets_history`、locations 独立、
+  `baselineOnMigrate=true` + `baselineVersion=0`（并入宿主非空库时仍从 V1.0.0.1 跑起），`validateOnMigrate`；
+  Spring Boot 的 Flyway 自动配置关闭（`spring.flyway.enabled=false`）。集成测试证明二次 `migrate()` 执行 0 条。
+- 装配**不用** starter：`mybatis-spring` + `spring-jdbc` + `druid` + `mariadb-java-client` + `flyway-mysql`，
+  全部 Bean 带 `pageAssets` 前缀名并显式 `@Qualifier`，`@MapperScan` 限定到本 Module 的 mapper 包，
+  以便并入宿主后与其 DataSource / SqlSessionFactory / Flyway 并存。`pageassets.store=memory` 时这些 Bean
+  一个都不建（starter 会把 HikariCP 与 DataSource 自动配置带进来，这是不用它的原因）。
+- `MySqlPageWriteTransaction` 用**两条连接**：一条只做 `GET_LOCK` / `RELEASE_LOCK`（先 `IdempotencyScope.lockName()`
+  再 `PageLock.lockName(pageId)`，都是 sha256 前缀以满足 64 字符上限），另一条由 `TransactionTemplate` 管。
+  原因：锁必须在**提交之后**释放，否则下一位持锁者读到旧 latest、走完判定后撞唯一键得 500 而不是 409；
+  而 Spring 提交后已把事务连接还池，没有时机在它上面 RELEASE。`GET_LOCK` 超时（缺省 10s，
+  `pageassets.db.lock-timeout-seconds`）抛 `IllegalStateException` → 500，不映射业务码。
+- **会话锁跟连接走**：池连接 `close()` 只是归还，锁会留在连接上被下一位借用者继承，表现为 MySQL 8 报
+  "Deadlock found when trying to get user-level lock"。生产侧 RELEASE 失败即 `DruidPooledConnection.abandond()`
+  废弃该连接；测试里持锁的"外部会话"必须用裸 `DriverManager` 连接。这条是集成测试实跑出来的。
+- MySQL 8 缺省 `caching_sha2_password` 下 MariaDB 驱动非 SSL 连接需要 `allowPublicKeyRetrieval=true`，
+  否则握手即失败；测试 URL 已加，公司库若同样是 MySQL 8 且不走 SSL，`DB_URL` 也要带。
+- 幂等记录清理：`application/IdempotencyRetention.purgeExpired()` 定义"过期 = createdAt < now − 7d"，
+  `IdempotencyPurgeTask` 以 `@Scheduled(fixedDelay)` 调用（缺省每小时，首跑延迟 1 分钟），MyBatis 侧
+  按 `created_at` 索引每批 1000 行 `DELETE ... LIMIT` 循环，多副本同时跑只是重复删空，不加分布式锁。
+- `DB_PASSWORD` 经 `adapter/config/SecretDecryptor` 接缝解密，缺省原文透传；公司环境注册一个调用
+  `TitanCipherEnum.TITAN_SCC_PRIVATE` 的实现 Bean 即覆盖，本仓库不引入外网替代。用户名按宿主代码证据不解密。
+- 列的 `utf8mb4_bin` 使 `page_id > ?` 与 `ORDER BY page_id` 即码点序：集成测试用
+  `10 < 9 < B < Z < a < a-1 < a1 < b < z < ä < 😀` 与 `PageCatalogPolicy.PAGE_ID_ORDER` 逐项对齐，
+  `utf8mb4_general_ci` 会把 `a`/`B`/`ä` 归到一起而失败。
+- 已用打包产物以 `PAGE_ASSETS_STORE=mysql` 对本地 MySQL 8 容器完成 HTTP 冒烟（迁移、保存、目录、重启只 validate）。
 
 ### J4：Python 与 platform 接线，真实本地纵切
 

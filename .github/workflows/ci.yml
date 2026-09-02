@@ -108,7 +108,9 @@ jobs:
           cache-dependency-path: metriccanvas-page-assets/**/pom.xml
 
       # 不用 Maven Wrapper（内网禁直连）；runner 自带系统 Maven。
-      - name: 构建、单测、conformance、ArchUnit、SpotBugs
+      # runner 自带 Docker，MySqlPageStoreIntegrationTest 以 Testcontainers 起 mysql:8.0 实跑；
+      # 没有 Docker 的环境（公司 CloudBuild 探针）该类会 skip，或用 PAGE_ASSETS_TEST_DB_URL 指向测试库。
+      - name: 构建、单测、conformance、ArchUnit、MySQL 集成测试、SpotBugs
         run: mvn -B -ntp -Pgates verify
 
       - name: 上传交付包

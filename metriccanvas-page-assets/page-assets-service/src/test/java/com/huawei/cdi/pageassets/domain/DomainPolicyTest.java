@@ -7,6 +7,7 @@ import com.huawei.cdi.pageassets.domain.idempotency.IdempotencyScope;
 import com.huawei.cdi.pageassets.domain.idempotency.RequestFingerprint;
 import com.huawei.cdi.pageassets.domain.page.json.Json;
 import com.huawei.cdi.pageassets.domain.revision.ContentHash;
+import com.huawei.cdi.pageassets.domain.revision.PageLock;
 import com.huawei.cdi.pageassets.domain.revision.RevisionIdGenerator;
 import com.huawei.cdi.pageassets.domain.revision.RevisionSource;
 import com.huawei.cdi.pageassets.domain.revision.SaveRevisionCommand;
@@ -89,6 +90,15 @@ class DomainPolicyTest {
         assertThat(name.length()).isLessThanOrEqualTo(64);
         assertThat(IdempotencyScope.savePageRevision("a", "k").lockName())
                 .isNotEqualTo(IdempotencyScope.savePageRevision("a", "k2").lockName());
+    }
+
+    @Test
+    void pageLockNameFitsMysqlLimitAndNeverCollidesWithIdempotencyLock() {
+        String name = PageLock.lockName("p".repeat(128));
+        assertThat(name.length()).isLessThanOrEqualTo(64);
+        assertThat(name).startsWith("pa:page:");
+        assertThat(PageLock.lockName("a")).isNotEqualTo(PageLock.lockName("b"));
+        assertThat(IdempotencyScope.savePageRevision("a", "k").lockName()).startsWith("pa:idem:");
     }
 
     @Test

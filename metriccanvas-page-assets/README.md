@@ -4,8 +4,9 @@
 承载 `savePageRevision` / `getLatestPage` / `getPageRevision` / `listPages` 四个 Interface，
 目标宿主是 `CDINL2DataBuilderService`。实施切片见 [`docs/plan/metriccanvas-page-assets.md`](../docs/plan/metriccanvas-page-assets.md)。
 
-当前状态：**J1、J2 完成**（工程、契约嵌入、页面校验器、conformance 向量；四个 Interface、稳定错误信封、
-指纹幂等、内存仓储与领域 / 契约测试），J3（MySQL）、J4（接线）未开始。
+当前状态：**J1、J2、J3 完成**（工程、契约嵌入、页面校验器、conformance 向量；四个 Interface、稳定错误信封、
+指纹幂等、内存仓储与领域 / 契约测试；MySQL Schema、MyBatis 仓储、`GET_LOCK` 锁序与真实 MySQL 集成测试），
+J4（接线）未开始。
 
 ## 目录
 
@@ -18,6 +19,7 @@ metriccanvas-page-assets/
 ├── page-assets-model/           # Swagger 2.0 作者文件 + 与 dfs-codegen 同形的 delegate / model
 │   └── src/main/resources/rest-services-page-assets.yaml   # 唯一作者文件；仓根 contracts/ 下是导出副本
 ├── page-assets-service/         # domain / application / adapter；ArchUnit 守边界
+│   └── src/main/resources/db/migration/pageassets/   # Flyway V{大}.{小}.{补丁}.{序号}__pa_*.sql（独立历史表）
 ├── page-assets-bootstrap/       # StartUp、Dockerfile、start.sh、assembly（并入宿主时丢弃）
 ├── scripts/use-company-parent.sh
 ├── scripts/check-codegen-drift.sh   # CI（能访问 Artifactory）上比对手写 delegate/model 与 codegen 产物
@@ -31,9 +33,14 @@ metriccanvas-page-assets/
 ```bash
 export JAVA_HOME=$(/usr/libexec/java_home -v 17 2>/dev/null || echo /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home)
 cd metriccanvas-page-assets
-mvn -B verify            # 编译 + 单测 + conformance + ArchUnit
+mvn -B verify            # 编译 + 单测 + conformance + ArchUnit + MySQL 集成测试（有 Docker 时）
 mvn -B -Pgates verify    # 追加 SpotBugs（公司门禁之一）
 ```
+
+MySQL 集成测试 `MySqlPageStoreIntegrationTest` 的数据库三选一（见 `testing/MySqlTestDatabase`）：环境变量
+`PAGE_ASSETS_TEST_DB_URL`（+ `PAGE_ASSETS_TEST_DB_USERNAME` / `_PASSWORD`）指定的库 → 本机 Docker 上的
+Testcontainers `mysql:8.0`（`PAGE_ASSETS_TEST_MYSQL_IMAGE` 可换）→ 都没有则整类跳过（不算失败）。
+公司 CloudBuild 若没有 Docker socket，就设前者指向公司测试库；测试会清空其中的 `t_pa_*` 表。
 
 本机没有内部 Artifactory，因此根 `pom.xml` 的 parent 版本是 `local`，经 `<relativePath>` 解析到
 `build-parent/pom.xml`——一个与公司 parent **同坐标**（`com.huawei.hwclouds.cbc:cbcbi-parent`）的最小占位，
@@ -144,8 +151,33 @@ Bean Validation 在 getter 上），业务实现只在 `adapter/inbound/rest` �
 - `application/PageAssetService`：四个用例；保存的锁序固定为幂等锁 → 页面锁 → 前置检查 → 复验 → 插入修订 →
   更新 latest → 存幂等结果，经 `PageWriteTransaction` / `PageRepository` / `IdempotencyRepository` 三个 Port。
 - `adapter/outbound/memory/InMemoryPageStore`：三个 Port 的进程内实现（`pageassets.store=memory`，缺省），
-  锁序与 MySQL 侧一致，是 J3 MyBatis 适配器的行为基线；`adapter/inbound/rest`：delegate 实现、模型映射、
-  错误信封；`adapter/config/PageAssetsConfiguration`：组合根。
+  锁序与 MySQL 侧一致，是 MyBatis 适配器的行为基线；`adapter/outbound/persistence`：MySQL 实现（下节）；
+  `adapter/inbound/rest`：delegate 实现、模型映射、错误信封；`adapter/config/PageAssetsConfiguration`：组合根，
+  `adapter/config/MySqlStoreConfiguration`：`store=mysql` 时的数据源 / Flyway / MyBatis 装配。
+
+## MySQL 仓储（J3）
+
+`PAGE_ASSETS_STORE=mysql` 时按 ADR-0062 跟随公司栈：Druid + MariaDB 驱动 + MyBatis XML Mapper + Flyway 启动迁移。
+
+- **配置**：`DB_URL` / `DB_USERNAME` / `DB_PASSWORD`（与公司 `DataSourceConfig` 同名；`application.yaml` 映射到
+  `pageassets.db.*`）。`DB_PASSWORD` 经 `adapter/config/SecretDecryptor` 解密，缺省原文透传；公司环境注册一个调用
+  `TitanCipherEnum.TITAN_SCC_PRIVATE` 的 Bean 即覆盖。连接池参数缺省 initialSize 5 / minIdle 10 / maxActive 100 /
+  maxWait 60s。MySQL 8 缺省 `caching_sha2_password` 且不走 SSL 时，URL 要带 `allowPublicKeyRetrieval=true`。
+- **Schema**：`page-assets-service/src/main/resources/db/migration/pageassets/V1.0.0.1__pa_init.sql`，三张
+  `t_pa_page` / `t_pa_page_revision` / `t_pa_idempotency`，`utf8mb4_bin`、`datetime(3)` UTC、文档 `mediumtext`，
+  `(page_id, revision_number)` 唯一。Flyway 编程式装配：历史表 `flyway_page_assets_history`、独立 locations、
+  `baselineOnMigrate` + `baselineVersion=0`、`validateOnMigrate`；重复启动只 validate。Spring Boot 的 Flyway
+  自动配置关闭。启动日志里 MariaDB 驱动对 `performance_schema.user_variables_by_thread` 的 `SELECT command denied`
+  WARN 来自 Flyway 探测，无害。
+- **仓储与锁**：`MyBatisPageStore` 实现 `PageRepository` / `IdempotencyRepository`（Mapper XML 在
+  `mybatis/pageassets/`）；`MySqlPageWriteTransaction` 实现 `PageWriteTransaction`——一条连接只做
+  `GET_LOCK`（幂等锁 `pa:idem:…` → 页面锁 `pa:page:…`，都是 sha256 前缀）/ `RELEASE_LOCK`，另一条连接由
+  `TransactionTemplate` 跑事务，锁在提交之后才释放；`GET_LOCK` 超时（`pageassets.db.lock-timeout-seconds`，
+  缺省 10）抛 500。RELEASE 失败即废弃该池连接，避免会话锁随连接留在池里被下一位借用者继承。
+- **清理任务**：`IdempotencyPurgeTask` 每小时（`pageassets.idempotency.purge-interval`）调用
+  `application/IdempotencyRetention.purgeExpired()`，按 `created_at` 索引每批 1000 行删除 7 天前的幂等记录。
+- **并入宿主**：所有 Bean 以 `pageAssets*` 命名并显式 `@Qualifier`，`@MapperScan` 只扫本 Module 的 mapper 包，
+  Mapper XML 在 `mybatis/pageassets/` 而不是宿主的 `mybatis/*Mapper.xml` 通配范围内。
 
 ### 本地起服务
 
@@ -156,7 +188,15 @@ LOG_DIR=/tmp/pa/logs SERVER_PORT=18080 PAGE_ASSETS_SERVICE_NAME=pageassets /tmp/
 curl -s localhost:18080/rest/cdi/pageassets/v1/healthcheck
 ```
 
-内存仓储重启即空；J3 之后 `PAGE_ASSETS_STORE=mysql` 走 MyBatis + Flyway。
+内存仓储重启即空。走 MySQL：
+
+```bash
+docker run -d --name pa-mysql -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=pageassets \
+  -e MYSQL_USER=pa -e MYSQL_PASSWORD=pa -p 13306:3306 mysql:8.0
+LOG_DIR=/tmp/pa/logs SERVER_PORT=18080 PAGE_ASSETS_STORE=mysql \
+  DB_URL='jdbc:mariadb://127.0.0.1:13306/pageassets?allowPublicKeyRetrieval=true' DB_USERNAME=pa DB_PASSWORD=pa \
+  /tmp/pa/script/start.sh
+```
 
 ## 分层与门禁
 
