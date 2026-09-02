@@ -2,20 +2,30 @@
 
 > 日期：2026-09-02
 >
-> 状态：所有权已冻结，详细架构未裁决；下一会话继续批量 grill，确认前不实现
+> 状态：J0 已于 2026-09-02 裁决并写入 [ADR-0062](../adr/0062-first-party-java-page-assets-module.md)；
+> 实施切片见 [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md)。本文保留为裁决
+> 前的问题记录；下文"未决决策前沿"与"下一轮依赖问题"均已关闭，结论以 ADR-0062 为准。
 >
 > 上游决策：[ADR-0060](../adr/0060-static-svelte-java-page-governance-relay-python-authoring.md)
 
+## 裁决结果摘要
+
+- 未决前沿 13 项与下一轮 7 项全部裁决，见 ADR-0062。
+- 公司 Java 约定已由 `调查报告/java-service.md` 回填（`cbcbi-parent`、MyBatis、Swagger 2.0 +
+  `dfs-codegen`、Flyway 启动迁移、tar.gz + Docker、`X-Operator-Id`）；仍未确定的是 parent
+  锁定的 Spring Boot 版本、生产 DDL 工单流程与 CI Docker socket。
+- 与上轮推荐不同的裁决：J4 只接 `apps/platform`，`apps/canvas` 定位为示例与参考宿主；
+  Java Adapter 实现完整 `PageLifecycle` 而非拆出子 Interface，未支持方法返回 `NOT_SUPPORTED`；
+  工程按"可被 `CDINL2DataBuilderService` 整体吸收"的三 module 形状建设。
+- 新登记欠账："platform 去 Node 服务端"是必经后续轨道，需另开 grill。
+- Relay/DQE 事实对创作期的修正见 ADR-0063，不在本 handoff 范围。
+
 ## 下一会话怎么继续
 
-1. 先读本文、[`java-relay-architecture-grill-handoff.md`](./java-relay-architecture-grill-handoff.md)、
-   [ADR-0060](../adr/0060-static-svelte-java-page-governance-relay-python-authoring.md)、
-   [ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、
-   [`CONTEXT.md`](../../CONTEXT.md) 和 [`docs/adr/README.md`](../adr/README.md)。
-2. 保持鉴权在本次设计与排期之外。
-3. 从“未决决策前沿”一次批量提问；用户可回复“都按推荐”或逐项改选。
-4. 根据回答展开下一层 DTO、错误信封、列表语义、锁序和迁移验收问题。
-5. 只有决策树前沿为空并经用户确认后，才更新 ADR、建立 Java 实施计划和 Issue，再开始代码。
+1. 读 ADR-0062、ADR-0063 与实施计划，从 J1 开工。
+2. 保持鉴权在设计与排期之外；`X-Operator-Id` 只是网关约定的调用者标识，不是身份设计。
+3. J3 首项是 CloudBuild 上的 Testcontainers 探针；parent 的 Spring Boot 版本以读到的
+   `cbcbi-parent` POM 为准。
 
 完成标准：没有把推荐项、旧 TypeScript 行为或外部系统猜测写成已决规格。
 
@@ -85,9 +95,9 @@ J0–J4 是候选实施分解，不是已批准实现规格；J0 裁决后应重
   revisionId 传给保存，尚未校验基线 pageId 与命令 pageId 一致。
 - Svelte 当前有管理 API 与 runtime API 两套响应形状；Java 首批不能不加裁决地复制两套。
 
-## 未决决策前沿
+## 未决决策前沿（已关闭，结论见 ADR-0062）
 
-以下选项都还没有得到用户确认；括号内是上轮推荐答案，不代表决策：
+以下是裁决前的选项记录；括号内是当时的推荐答案：
 
 1. 物理目录：仓根 `metriccanvas-page-assets/`、`services/page-assets/` 或 `apps/page-assets/`（推荐仓根）。
 2. 构建强度：Maven Wrapper 单 build module + package/ArchUnit，或 Maven/Gradle 多 module（推荐前者）。
@@ -103,9 +113,9 @@ J0–J4 是候选实施分解，不是已批准实现规格；J0 裁决后应重
 12. 保存版本：接受当前主版本内全部受支持 minor，或只接受 current/任意 schema（推荐受支持 minor，Python只产 current）。
 13. 本地纵切：真实 Python FastMCP→Java HTTP→Testcontainers MySQL→Svelte Adapter，外部 Relay/DQE 才用 Harness 替身；或继续全 Fake/等待外部（推荐真实第一方链路）。
 
-## 下一轮依赖问题
+## 下一轮依赖问题（已关闭，结论见 ADR-0062）
 
-上述前沿确认后，再批量裁决：
+当时预计前沿确认后再批量裁决的问题：
 
 - 四个 Interface 的路径、请求/响应 DTO 与 OpenAPI 所有权；
 - `getPageRevision` 如何区分页面不存在和修订不存在；

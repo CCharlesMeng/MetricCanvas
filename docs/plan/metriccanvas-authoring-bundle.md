@@ -1,8 +1,10 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：S4 已完成；S5 等待第一方 Java 页面资产轨及外部 Relay、DQE Interface
+> 状态：S4 已完成；Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
+> S5 等待 Java J4 与 A1–A3
 >
-> 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
+> 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、
+> [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
 > 交付根：`metriccanvas-authoring/`
 
 ## 目标
@@ -170,14 +172,50 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
 
-状态：等价向量已冻结；切换等待第一方 Java 页面资产轨交付，以及真实 Relay 注册方式与
-DQE Interface 可见。Java Interface 由本仓 Java Module 拥有，不再作为外部输入等待。
+状态：等价向量已冻结；切换等待 Java J4 与下列接线切片 A1–A3 完成。
 
-## 不阻塞开工的后续输入
+## 接线切片（依据 ADR-0063）
 
-- 真实 Relay 的项目结构、Skill 注册、进度事件和取消能力。
-- DQE 真实数据上下文与执行接口。
+Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待外部输入；外部前置只剩
+测试环境地址、账号与 LiteLLM key 的线下获取。
 
-第一方 Java 页面资产的详细决策与后续切片见
-[`java-page-assets-grill-handoff.md`](./java-page-assets-grill-handoff.md)。外部输入只解锁对应
-Adapter 与集成验收，不改变 Skill↔Tool Interface、确定性核心或产品契约责任。
+### A1：Relay 适配
+
+- `SKILL.md` 增加 frontmatter：`name`、`description`、`allowed-tools`、`metadata.mcp_servers`。
+- `tool/` 增加 `pyproject.toml`，Bundle 发布产物包含 sdist tar.gz；提供 Relay stdio
+  MCP config 样例（`uvx --from <tar.gz>`）。
+- `build_page` 幂等键改为 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))`；
+  `source.relay.skillVersion` 取自 `bundle.json`，`sessionId` / `runId` 可选。
+- 在本地 Relay 环境用真实 LiteLLM/GLM 跑一次黄金场景，验证 inputSchema 深度可接受、
+  `build_page` 响应 ≤ 30s。
+
+完成条件：本地 Relay 以 `role_name` 唤起 Skill，真实模型经 MCP 调到 Tool 并拿到修订标识。
+
+### A2：身份与 DQE Adapter
+
+- `IdentityPort`：第一个 Adapter 从 MCP config `env` 读取服务态 `X-Auth-Token` /
+  `X-Operator-Id`；ADR-0063 明确这不是生产形态。
+- `DqeExecutionPort` 生产 Adapter：`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
+  错误码按 ADR-0063 映射，多取数单元并发执行；永不直连 Lab。
+- 无权限时的可行动提示由配置文案承载。
+
+完成条件：Harness 与真实测试环境各有一条 DQE 执行验收；错误分类与产品契约一致。
+
+### A3：Data Context Adapter
+
+- `DataContextPort` 生产 Adapter：Lab 数据集列表/详情 → Schema 1.1；`isAgg` / `aggregator`
+  映射可加性，"是否比率"与"时间聚合方式"记为缺失；维度取值域走指标/维度中心；
+  `dataContextVersion` 为数据集 `updateDate` 摘要；已验证查询为空。
+- 发现全量、执行按身份，按 ADR-0063 登记。
+
+完成条件：真实元数据经 Adapter 产出通过 Schema 1.1 校验的数据上下文快照。
+
+### 生产门禁（不在 A1–A3 内）
+
+- 按用户身份到达 Tool：首选 Relay Plugin `on_tool_execute_before` 注入，次选 Relay
+  `MCPToolProxy` 改造；完成前不得宣称创作期已按用户鉴权。
+
+第一方 Java 页面资产的决策见 [ADR-0062](../adr/0062-first-party-java-page-assets-module.md)，
+切片见 [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md)；其 J4 会补齐本 Bundle
+的 Java HTTP Adapter、保存命令的 `source` 与 `dataContextVersion`，并把
+`PAGE_REVISION_CONFLICT` 改名为 `REVISION_CONFLICT`。

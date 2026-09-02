@@ -20,6 +20,9 @@ __pycache__/
 deliverables/
 参考/
 
+# 公司内部系统调查报告,含内网地址,只在本机保留
+调查报告/
+
 # 由 moon-skills 维护的 skill,以本机软链接接入,不随本仓交付
 .agents/skills/sdd-*
 .agents/skills/session-optimize

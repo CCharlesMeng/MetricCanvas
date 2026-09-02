@@ -2,7 +2,7 @@
 
 > 日期：2026-09-02
 >
-> 状态：架构访谈进行中；独立创作 Bundle S0–S4 已完成，Java 页面资产已确认由本仓建设，详细决策待续。
+> 状态：Java 页面资产（ADR-0062）与 Relay/DQE 接线事实（ADR-0063）已裁决；独立创作 Bundle S0–S4 已完成；余下维度见第 12 节。
 > 用途：新会话先读本文、`CONTEXT.md`、`docs/adr/README.md`、ADR-0060 与 ADR-0061，再从尚未裁决的下一维度继续。
 
 ## 1. 为什么重新设计
@@ -196,17 +196,37 @@ ADR-0060 只改变目标架构，不意味着这些实现已经迁移。迁移�
 
 决策见 [ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)，分期实施与验收见 [`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)。Bundle 是原子发布容器，Skill 与 Python Tool 是两个平级 Module，只经 MCP Tool Interface 协作；仓根拥有产品中立契约，Bundle 自有 Authoring contracts 并携带锁定快照，Fake 与 fixture 只属于 Test Harness。该维度同时冻结了 Page Build Spec 的抽象层、FastMCP 只作为 Adapter、差分迁移、单 Bundle 版本与当前页面协议生成策略。
 
-### 已冻结所有权、待续详细 grill：Java 页面资产
+### 已裁决：Java 页面资产
 
-Java 页面资产由当前仓库建设为第一方独立 Module，不等待外部团队提供实现。Authoring
-Bundle 中的 `PageAssetPort` 只是 Python consumer Port，不是 Java server Interface。
-下一会话从 [`java-page-assets-grill-handoff.md`](./java-page-assets-grill-handoff.md)
-继续批量裁决目录、构建、Interface、持久化与纵切验收，再形成 Java 实施计划。
+Java 页面资产由当前仓库建设为第一方独立 Module，决策见
+[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)，切片与验收见
+[`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md)。目录、构建、spec-first
+OpenAPI、完整复验深度、指纹幂等、锁序、列类型与只接 `apps/platform` 的前端接线均已
+冻结；公司 Java 约定已由 `调查报告/java-service.md` 回填，工程按可被
+`CDINL2DataBuilderService` 吸收的三 module 形状建设。该维度同时把 `apps/canvas` 定位为
+示例与参考宿主，并登记"platform 去 Node 服务端"为必经后续轨道。
+
+### 已裁决：Relay 与 DQE 接线事实
+
+`调查报告/relay.md` 与 `调查报告/dqe.md` 带回真实接口，决策见
+[ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)，接线切片 A1–A3 见
+[`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)。第 9 节列出的
+"文档没有证明"的五项现已有答案：Run 不持久化为一等实体（事件按 session 落库）、
+无断点续跑（按 `session_id + version_id` 增量重放）、取消不终止 MCP 子进程、无结构化
+页面 artifact 事件但 `result_summary` 可承载结构化对象、MCP 路径不注入请求级身份。
+第 6 节的"至少一次"已由 Planner/模型重试证实，幂等键由 Tool 派生。第 8 节的
+`skillKey` 示例修正为 Relay 的 WebSocket + `role_name`。第 7 节"以当前身份执行 DQE"在
+创作期第一阶段以服务态身份偏离，生产门禁是 Relay Plugin 注入。
 
 ### 尚待后续 grill
 
-1. **Run 可靠性**：持久化、至少一次、工具幂等、断线重连、重启恢复、取消、超时和重复模型费用。
-2. **跨语言运行契约**：工具错误、页面 artifact 事件、进度事件和真实 Adapter 版本兼容。Page Schema、组件能力目录和页面构建规格的真源方向已由 ADR-0061 冻结。
+0. **platform 去 Node 服务端**：ADR-0062 把"唯一产品界面"落到 `apps/platform`，其
+   `adapter-node` 服务端职责如何分别交给 Relay（问数/Agent）与 Java（页面资产）并静态化，
+   需单独裁决。
+1. **Chat 接线与 Run 可靠性**：platform 以 WebSocket 接 Relay、`role_name` 唤起 Skill、
+   `config.agent_context` 传业务参数、`result_summary` 透出修订标识、`interrupt` 与增量重放
+   的前端处理；Relay 无 Run 持久化与续跑，取消对 MCP 尽力而为，这些事实限制该维度的目标。
+2. **跨语言运行契约**：工具错误、进度事件和真实 Adapter 版本兼容。Page Schema、组件能力目录和页面构建规格的真源方向已由 ADR-0061 冻结；Relay 侧无结构化 artifact 事件，页面结果只能经 `result_summary`。
 3. **发布工作流**：固定状态机、审批、定时发布、下线、业务回滚与发布可见性。
 4. **运维与恢复**：部署拓扑、可观测性、审计保留、备份、RPO/RTO 和恢复演练。
 
@@ -214,7 +234,9 @@ Bundle 中的 `PageAssetPort` 只是 Python consumer Port，不是 Java server I
 
 - [ADR-0060：静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台](../adr/0060-static-svelte-java-page-governance-relay-python-authoring.md)
 - [ADR-0061：自包含创作 Bundle 与中立契约单向导出](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
+- [ADR-0062：第一方 Java 页面资产 Module 的工程、Interface 与持久化边界](../adr/0062-first-party-java-page-assets-module.md)
+- [ADR-0063：Relay 与 DQE 真实接口对创作期边界的修正](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
 - [ADR-0009](../adr/0009-node-postgres-platform-beside-runtime.md) 已标记为被 ADR-0060 取代。
 
-独立创作 Bundle 已完成 S0–S4；S5 切换依赖第一方 Java 轨完成以及真实 Relay、DQE
-接口可见。下一会话优先继续 Java 页面资产 handoff，不把其中未决推荐项当作实现规格。
+独立创作 Bundle 已完成 S0–S4；接线切片 A1–A3 与 Java J1–J4 可并行开工；S5 切换依赖
+二者完成。外部前置只剩测试环境地址、账号与 LiteLLM key 的线下获取。

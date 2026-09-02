@@ -1,8 +1,8 @@
-# ADR 基线:61 份决策记录的当前生效结论
+# ADR 基线:63 份决策记录的当前生效结论
 
-`docs/adr/` 现有 61 份 ADR(0001–0061)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 63 份 ADR(0001–0063)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0062-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0064-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -75,6 +75,8 @@
 | [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行(不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁) |
 | [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte + Java 页面治理 + Relay/Python 创作期 | 现行目标架构(尚未完成迁移) |
 | [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle + 中立契约单向导出 | 现行(迁移实施基线) |
+| [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行(J0 已裁决并回填公司约定,J1 未开工;目标宿主 `CDINL2DataBuilderService`) |
+| [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行(部分修订 0060 的 sourceRunId、身份与元数据过滤前提,0061 的交付形态;接线切片 A1–A3 未开工) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -104,11 +106,15 @@
 
 ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 是锁步发布容器,内部的 Skill 与 Python Tool 是两个平级 Module,只通过 MCP Tool Interface 协作;Authoring contracts 只拥有 Page Build Spec 等 Skill↔Tool 接口,产品中立契约则由仓根 `contracts/metriccanvas` 承载,Bundle 携带摘要锁定的只读快照。FastMCP 只作为入站 Adapter,Fake 与 fixture 只属于 Test Harness。TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成 Page Build Spec,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。
 
+ADR-0062 把 Java 页面资产落为仓根 `metriccanvas-page-assets/` 的第一方 Maven module 组(`model` / `service` / `bootstrap`),形状按"可被 `CDINL2DataBuilderService` 整体吸收"设计:挂 `cbcbi-parent`,包根 `com.huawei.cdi.pageassets`,MyBatis XML + Druid + MariaDB 驱动,Swagger 2.0 + `dfs-codegen` spec-first(作者文件在 Java,副本导出到 `contracts/metriccanvas/page-assets/`),Flyway 启动迁移且独立历史表,`/rest/cdi/{service}/v1/` 路径与 `X-Operator-Id` 作为 actorId,tar.gz + Docker 交付。有意分歧:JUnit 5、无 Redis(`GET_LOCK`)、`utf8mb4`、HTTP 状态语义信封。Java 完整复验页面(JSON Schema + 全部跨引用不变式,共享向量为门禁),`(operation, actorId, idempotencyKey)` 指纹幂等,固定锁序,首批不建发布/租约/审计表。**前端接线只接 `apps/platform`**:一个 Java HTTP Adapter 实现完整 `PageLifecycle`,四接口真实调用,其余返回 `NOT_SUPPORTED`;`apps/canvas` 定位为示例与参考宿主,只读 `pages/`。由此,ADR-0060 的"唯一产品界面、生产不运行 Node"指向的是 platform,"platform 去 Node 服务端"成为已登记、待单独裁决的必经轨道。
+
+ADR-0063 用 Relay 与 DQE 的真实接口修正了创作期的四个前提:Relay 无 Run 概念,`source.relay` 改为 `{ sessionId?, runId?, skillVersion }` 且 `skillVersion` 由 Tool 从 `bundle.json` 提供;`build_page` 幂等键由 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))` 以吸收模型与 Planner 重试;Tool 以 sdist 交付供 Relay `uvx` stdio 拉起(修正 0061 "不发布 wheel");Relay 的 MCP 路径不传用户身份,第一阶段以 MCP config `env` 的服务态身份调 DQE——**这是对 0060 "不以后台身份替用户验真"的明确偏离**,收敛在 `IdentityPort` 后面,生产门禁是经 Relay Plugin `on_tool_execute_before` 注入按用户身份。DQE 只经 `CDINL2DataBuilderService` 的 `dsl/execute`,永不直连 Lab;元数据发现接受全量、执行按身份(放宽 0060 的按身份过滤);`metric_code` 只用于鉴权、DQE 用中文名的关系至此确认。Chat 入口按 Relay 现状是 WebSocket + `role_name`,`skillKey` 只是示意。
+
 包边界方面,治理对象从"预定义指标"整体转为"可执行查询"后(见下节),配套的指标履约与目录发现包已确认为空壳并物理删除;当前 TypeScript 创作期一侧(`agent-runner`、`data-context`)按同一套 DDD 标准做了进一步收敛,`agent-runner` 解散进 `apps/platform`,`data-context` 并入 `packages/mcp`,并修正了一处因两个包各自定义同名 `DataContextProvider` 而产生的真元归一违规。该结构仍是迁移前代码的行为基线;目标形态不在 Java 或 Node 重建 Agent Runner,而由 Relay 承担 Agent 运行、Python Tool 承担页面装配、Java 承担页面资产治理。
 
 表现层一侧随后按同一套判据做了包内收敛:`widgets` 的职责收紧为"页面组件的纯渲染实现",三组在包内零消费者、只服务包外的文件迁入 `runtime-ui`——快照态外壳 `WidgetHost`、筛选控件(职责表本就把"筛选控件"判给 `runtime-ui`,此前是实现与文档漂移)、以及只服务 AI 总结正文的 `SafeMarkdown`(迁入后 ADR-0019 的垂直组件目录首次完整)。`widgets/src` 同时从平铺改为按组件类型分目录,与 `page/src/schema/components/` 对齐;受控语义 HTML 在 `rankingDetailCard` 与 `text` 出现两个真实消费者后提升为共享 Module,Interface 只接收原始字符串,安全解析、失败关闭、节点渲染和颜色映射全部由其 Implementation 独占。**`aiSummary` 刻意不进 `widgets`**:它是生成型垂直组件,搬入会给纯渲染包引入 `runtime` 依赖与网络代码,`components/` 的完整性由"纯渲染"而非"schema 组件类型全集"定义。
 
-来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)。
+来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、[ADR-0062](./0062-first-party-java-page-assets-module.md)、[ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)。
 
 ## 页面文档结构与书写原则
 
@@ -218,7 +224,8 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 - **计算数据集的恢复条件**([ADR-0033](./0033-suspend-dataset-runtime.md),proposed):需同时满足指标条目的可加性与时间聚合方式在目标域真实可用、ADR-0015 的五项级联语义有确定答案、且 formula 的口径复制成本已实际发生(同一口径在多个页面各持副本并已漂移)。第一条的**契约侧已由 [ADR-0044](./0044-first-class-metric-entries.md) 打通,数据侧未补齐**,因此该条件仍未满足;后两条未动。在此之前不得以任何名义在服务端或页面协议中引入 Transform/Compute 层,也不得提供通用 `arithmetic`。三个条件与外部 Dataset Runtime 提案的逐条对账见 [`docs/dataset-reconciliation.md`](../dataset-reconciliation.md)。
 - **Explore 是否需要独立于 Ask 的构造能力**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):当前 Explore 被视为 Ask 的多轮延续,共用同一份临时页面态与同一套编排。若出现并排对比、分叉比较或跨会话拼装这类 Ask 编排无法表达的需求,才需单独裁决;在此之前不要为 Explore 建立第二套状态模型。
 - **首个落地域与黄金问题集的业务输入**([ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):黄金问题集需要域清单与一句话描述、每域高频指标 top 20 与常见口头说法、时间口径的默认约定("本月"是否到昨天、"同比"比同月还是同期累计)、以及哪些指标是存量哪些是流量。后两项无法从数据推断,必须由业务侧给出;在拿到之前,问数的准确率数字不具备可比较的基线。
-- **英文 `metric_code` 与 DQE 中文指标名的关系**([ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) Consequences):`packages/data-gateway/fixtures/metric-base-info.json` 记录的是英文指标 code,而两个存量页面的 DQE 查询体使用中文指标名,二者是否指向同一实体尚未确认。指标条目允许同时携带两者,但不得假设映射,也不得据此推断名称转换规则。
+- **英文 `metric_code` 与 DQE 中文指标名的关系——已关闭**([ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)):调查确认 DQE 查询体使用中文 `name`,`metric_code` 只用于权限中心鉴权,对应关系由 NL2SQL 服务内部维护。指标条目同时携带两者,本仓仍不推断名称转换规则。
+- **创作期按用户身份到达 Tool**([ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)):Relay 的 MCP 路径不传用户身份,第一阶段以服务态身份调 DQE,偏离 ADR-0060。生产前必须经 Relay Plugin `on_tool_execute_before` 注入或 Relay `MCPToolProxy` 改造替换为按用户身份;在此之前不得宣称创作期已按用户鉴权,也不得把服务态阶段的取数核对结果用于跨用户评测或分享。
 - **Monitor 的调度与通知归属**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):主动洞察需要调度、基线与通知,当前都在系统边界之外,且尚未确定由本平台承担还是由数据侧承担。在这一点被裁决前,不要为此在统一运行时或平台内引入定时任务、订阅或消息通道。
 - **指标条目的可加性仍需数据侧逐个声明**([ADR-0044](./0044-first-class-metric-entries.md) Consequences):Schema 元数据 `1.1` 与一等指标条目的**工程欠账已偿还**(指标迁出字段、`roleHints` 收窄为 `dimension | time`、可加性与时间聚合方式成为结构化闭集),但 0044 只让这些语义变得**可表达**,没有让它们变得**可用**——真实业务域里每个指标取什么可加性,是必须由数据侧给出的业务输入。在目标域真实补齐之前,不得认为 ADR-0033 的恢复条件一已满足。另需注意 0044 只交付了承载结构:ADR-0039 的派生指标模板、ADR-0035 的相对时间词表与 ADR-0043 的指标归因定义仍未挂上去,它们各自的字段形状尚未设计,落地时仍需继续递增 `formatVersion`(但届时是往指标条目上追加字段,而不是重建概念)。
 - **归因诊断的受控业务规则与第一期落地输入**([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed):承载归因规则的概念已定名为**指标归因定义**并进入 `CONTEXT.md`,但它的字段集、与派生指标模板的关系,以及是否需要独立版本化仍未定,留给后续 ADR;它挂载的位置已由 [ADR-0044](./0044-first-class-metric-entries.md) 的指标条目提供。首个真实切片为公有云流水,阻塞于两项必须由数据侧给出的输入——指标条目所需的可加性与**维度层级关系**(当前快照里每个业务域只有 2 个非时间维度、零层级,下钻深度在数据里表达不出来),以及一个业务认可的黄金案例。此外分析会话当前是进程内存储(Postgres 等 #52),不足以支撑 0043 要求的诊断复跑与事后审计。
