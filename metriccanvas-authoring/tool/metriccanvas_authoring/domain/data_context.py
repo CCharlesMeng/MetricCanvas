@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Mapping, Sequence
@@ -56,11 +57,33 @@ class SemanticSurface:
 
 
 @dataclass(frozen=True, slots=True)
+class SearchCandidate:
+    match: Mapping[str, Any]
+    text: str
+
+
+@dataclass(frozen=True, slots=True)
 class DataContext:
+    version: str
     surfaces_by_domain: Mapping[str, SemanticSurface]
+    search_candidates: tuple[SearchCandidate, ...]
 
     def surface(self, business_domain: str) -> SemanticSurface | None:
         return self.surfaces_by_domain.get(business_domain)
+
+    def search(self, query: str, limit: int = 10) -> tuple[Mapping[str, Any], ...]:
+        needle = query.strip().casefold()
+        if not needle or limit <= 0:
+            return ()
+        ranked = [
+            (score, index, candidate)
+            for index, candidate in enumerate(self.search_candidates)
+            if (score := _match_score(needle, candidate.text)) is not None
+        ]
+        ranked.sort(key=lambda item: (item[0], item[1]))
+        return tuple(
+            deepcopy(candidate.match) for _, _, candidate in ranked[:limit]
+        )
 
 
 def parse_data_context(
@@ -79,13 +102,44 @@ def parse_data_context(
 
     snapshot = _mapping(value)
     surfaces: dict[str, SemanticSurface] = {}
+    search_candidates: list[SearchCandidate] = []
     for raw_environment in _sequence(snapshot["executionEnvironments"]):
         environment = _mapping(raw_environment)
+        environment_id = str(environment["id"])
+        search_candidates.append(
+            SearchCandidate(
+                match={
+                    "kind": "environment",
+                    "environmentId": environment_id,
+                    "name": environment["name"],
+                    **(
+                        {}
+                        if environment.get("description") is None
+                        else {"description": environment["description"]}
+                    ),
+                },
+                text=_join_text(
+                    environment["id"],
+                    environment["name"],
+                    environment.get("description"),
+                ),
+            )
+        )
         for raw_schema in _sequence(environment["schemas"]):
             data_schema = _mapping(raw_schema)
             surface = _project_surface(data_schema)
             surfaces.setdefault(surface.business_domain, surface)
-    return DataContext(surfaces_by_domain=surfaces), ()
+            search_candidates.extend(
+                _search_candidates_for_schema(environment_id, data_schema)
+            )
+    return (
+        DataContext(
+            version=str(snapshot["version"]),
+            surfaces_by_domain=surfaces,
+            search_candidates=tuple(search_candidates),
+        ),
+        (),
+    )
 
 
 def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
@@ -156,6 +210,119 @@ def _parse_value_domain(description: str) -> tuple[str, ...] | None:
         return None
     values = tuple(value.strip() for value in match.group(1).split("、") if value.strip())
     return values or None
+
+
+def _search_candidates_for_schema(
+    environment_id: str, schema: Mapping[str, Any]
+) -> list[SearchCandidate]:
+    schema_id = str(schema["id"])
+    candidates = [
+        SearchCandidate(
+            match={
+                "kind": "schema",
+                "environmentId": environment_id,
+                "schemaId": schema_id,
+                "name": schema["name"],
+                "description": schema["description"],
+            },
+            text=_join_text(schema["id"], schema["name"], schema["description"]),
+        )
+    ]
+    for raw_metric in _sequence(schema["metrics"]):
+        metric = _mapping(raw_metric)
+        candidates.append(
+            SearchCandidate(
+                match={
+                    "kind": "metric",
+                    "environmentId": environment_id,
+                    "schemaId": schema_id,
+                    "metric": deepcopy(dict(metric)),
+                },
+                text=_join_text(
+                    metric["name"],
+                    metric["description"],
+                    *_sequence(metric.get("aliases", [])),
+                ),
+            )
+        )
+    for raw_object in _sequence(schema["objects"]):
+        data_object = _mapping(raw_object)
+        object_id = str(data_object["id"])
+        candidates.append(
+            SearchCandidate(
+                match={
+                    "kind": "object",
+                    "environmentId": environment_id,
+                    "schemaId": schema_id,
+                    "objectId": object_id,
+                    "name": data_object["name"],
+                    "description": data_object["description"],
+                },
+                text=_join_text(
+                    data_object["id"],
+                    data_object["name"],
+                    data_object["description"],
+                ),
+            )
+        )
+        for raw_field in _sequence(data_object["fields"]):
+            field = _redacted_field(_mapping(raw_field))
+            candidates.append(
+                SearchCandidate(
+                    match={
+                        "kind": "field",
+                        "environmentId": environment_id,
+                        "schemaId": schema_id,
+                        "objectId": object_id,
+                        "field": field,
+                    },
+                    text=_join_text(
+                        field["name"],
+                        field["description"],
+                        *_sequence(field.get("aliases", [])),
+                    ),
+                )
+            )
+    for raw_query in _sequence(schema["verifiedQueries"]):
+        query = _mapping(raw_query)
+        candidates.append(
+            SearchCandidate(
+                match={
+                    "kind": "verifiedQuery",
+                    "environmentId": environment_id,
+                    "schemaId": schema_id,
+                    "query": deepcopy(dict(query)),
+                },
+                text=_join_text(
+                    query["id"], query["question"], query["description"]
+                ),
+            )
+        )
+    return candidates
+
+
+def _redacted_field(field: Mapping[str, Any]) -> dict[str, Any]:
+    result = deepcopy(dict(field))
+    if bool(result["sensitive"]):
+        result["description"] = VALUE_DOMAIN_PATTERN.sub(
+            "取值域:(敏感,已隐去)", str(result["description"])
+        )
+    return result
+
+
+def _match_score(needle: str, text: str) -> int | None:
+    normalized = text.casefold()
+    if normalized == needle:
+        return 0
+    if normalized.startswith(needle):
+        return 1
+    if needle in normalized:
+        return 2
+    return None
+
+
+def _join_text(*values: object) -> str:
+    return " ".join("" if value is None else str(value) for value in values)
 
 
 def _error_paths(error: ValidationError) -> list[str]:

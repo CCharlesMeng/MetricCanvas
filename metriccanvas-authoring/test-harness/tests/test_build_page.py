@@ -35,6 +35,14 @@ def fixture(name: str) -> dict[str, object]:
     )
 
 
+def first_bound_component(document: dict[str, object]) -> dict[str, object]:
+    for section in document["sections"]:
+        for component in section["components"]:
+            if "data" in component:
+                return component
+    raise AssertionError("document has no data-bound component")
+
+
 class RuntimeQueryError(Exception):
     def __init__(self, code: str, message: str) -> None:
         super().__init__(message)
@@ -145,7 +153,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             },
         )
         self.assertEqual(
-            document["sections"][0]["components"][0],
+            first_bound_component(document),
             {
                 "id": "unit-1-bar-chart",
                 "type": "barChart",
@@ -217,8 +225,8 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             )
         )
 
-        self.assertTrue(result.ok)
-        component = pages.calls[0]["document"]["sections"][0]["components"][0]
+        self.assertTrue(result.ok, result.issues)
+        component = first_bound_component(pages.calls[0]["document"])
         self.assertEqual(component["type"], "barChart")
 
     async def test_incompatible_pinned_component_stops_before_save(self) -> None:
@@ -296,10 +304,257 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(result.ok)
         document = pages.calls[0]["document"]
-        component = document["sections"][0]["components"][0]
+        component = first_bound_component(document)
         self.assertEqual(component["type"], "lineChart")
         self.assertEqual(component["props"]["xField"], "field-1")
         self.assertEqual(document["dataSources"]["unit-1"]["fields"]["field-1"]["type"], "string")
+
+    async def test_unpinned_summary_selects_metric_card(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["groupBy"] = []
+        spec["units"][0]["intent"] = "single_value"
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[{"Tokens请求量": 30}],
+                captured_at="2026-09-02T00:00:01.000Z",
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-summary", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-summary",
+                idempotency_key="build:tokens-summary:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        component = first_bound_component(pages.calls[0]["document"])
+        self.assertEqual(component["type"], "metricCard")
+        self.assertEqual(
+            component["props"]["rows"],
+            [{"label": "Tokens请求量", "valueField": "field-1"}],
+        )
+
+    async def test_unpinned_composition_selects_pie_chart(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["intent"] = "composition"
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[
+                    {"区域": "华东", "Tokens请求量": 18},
+                    {"区域": "华南", "Tokens请求量": 12},
+                ]
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-share", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-share",
+                idempotency_key="build:tokens-share:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        component = first_bound_component(pages.calls[0]["document"])
+        self.assertEqual(component["type"], "pieChart")
+        self.assertEqual(component["props"]["categoryField"], "field-1")
+        self.assertEqual(component["props"]["valueField"], "field-2")
+
+    async def test_unpinned_ranking_selects_ranking_card(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["intent"] = "ranking"
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-ranking", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-ranking",
+                idempotency_key="build:tokens-ranking:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        component = first_bound_component(pages.calls[0]["document"])
+        self.assertEqual(component["type"], "rankingCard")
+        self.assertEqual(component["props"]["nameField"], "field-1")
+        self.assertEqual(component["props"]["valueField"], "field-2")
+
+    async def test_unpinned_detail_selects_table(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["intent"] = "detail"
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[
+                    {"区域": f"区域-{index}", "Tokens请求量": index}
+                    for index in range(4)
+                ]
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-detail", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-detail",
+                idempotency_key="build:tokens-detail:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        component = first_bound_component(pages.calls[0]["document"])
+        self.assertEqual(component["type"], "table")
+        self.assertEqual(
+            component["props"]["columns"],
+            [
+                {"field": "field-1", "title": "区域"},
+                {"field": "field-2", "title": "Tokens请求量"},
+            ],
+        )
+
+    async def test_page_header_and_content_sections_are_derived_from_scope(self) -> None:
+        spec = fixture("page-build-spec.json")
+        summary_unit = json.loads(json.dumps(spec["units"][0]))
+        summary_unit["groupBy"] = []
+        summary_unit["intent"] = "single_value"
+        summary_unit.pop("pinnedComponent")
+        spec["units"].append(summary_unit)
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[
+                    {"区域": "华东", "Tokens请求量": 18},
+                    {"区域": "华南", "Tokens请求量": 12},
+                ],
+                captured_at="2026-09-02T00:00:01.000Z",
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-scopes", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-scopes",
+                idempotency_key="build:tokens-scopes:1",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        sections = pages.calls[0]["document"]["sections"]
+        self.assertEqual(
+            sections[0],
+            {
+                "id": "header",
+                "container": "plain",
+                "components": [
+                    {
+                        "id": "page-header",
+                        "type": "reportHeader",
+                        "layout": {"span": 12},
+                        "props": {
+                            "title": "运营分析",
+                            "asOf": {
+                                "label": "数据窗口",
+                                "value": "2026-08 ~ 2026-08(月)",
+                            },
+                        },
+                    }
+                ],
+            },
+        )
+        self.assertEqual(
+            [
+                (section["id"], section["title"], section["components"][0]["type"])
+                for section in sections[1:]
+            ],
+            [
+                ("scope-1", "按区域", "barChart"),
+                ("scope-2", "总量", "metricCard"),
+            ],
+        )
+
+    async def test_same_scope_components_share_one_fully_packed_row(self) -> None:
+        spec = fixture("page-build-spec.json")
+        second_unit = json.loads(json.dumps(spec["units"][0]))
+        second_unit["title"] = "同口径对比二"
+        spec["units"].append(second_unit)
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-packed", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-packed",
+                idempotency_key="build:tokens-packed:1",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        sections = pages.calls[0]["document"]["sections"]
+        self.assertEqual([section["id"] for section in sections], ["header", "main"])
+        self.assertEqual(
+            [component["layout"]["span"] for component in sections[1]["components"]],
+            [6, 6],
+        )
 
     async def test_unknown_business_domain_stops_before_execution_and_save(self) -> None:
         spec = fixture("page-build-spec.json")

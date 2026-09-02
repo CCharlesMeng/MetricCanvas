@@ -94,9 +94,12 @@ contracts、Bundle/contract locks。跨引用和能力不变式不能只靠 JSON
 当前进度（2026-09-02）：S0、S1 已完成并接入 CI，目录边界已按 ADR-0061 重构；
 S2 已完成，Harness 可从 Page Build Spec 经粗粒度 application seam 调用数据上下文、DQE、
 Java 页面资产三个 Port，并验证结构化调用、稳定错误 `code/path` 和当前页面协议产物。
-S3 已迁移 Data Context 结构校验与语义面投影、名称/取值/时间粒度闭集、
+S3 已迁移 Data Context 结构校验、语义面投影/检索/敏感取值隐去、
+名称/取值/时间粒度闭集、
 DQE/结果字段契约派生、formula、运行期错误四段归因，以及柱状图/折线图组件硬闸
-垂直切片。组件数据形状矩阵已上收为产品组件目录的 `authoringShape`，
+与装配垂直切片。当前 TS 装配支持的指标卡、柱、线、饼、表、排行组件已对齐，
+口径组分区、报告页头和 12 列比例装箱已迁移。组件数据形状矩阵已上收为
+产品组件目录的 `authoringShape`，
 TypeScript 与 Python 共用单向导出的中立事实。
 
 ### S0：自包含骨架

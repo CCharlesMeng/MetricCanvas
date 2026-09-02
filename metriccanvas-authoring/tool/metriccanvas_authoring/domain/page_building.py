@@ -3,9 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
-from metriccanvas_authoring.domain.component_selection import recommend_components
+from metriccanvas_authoring.domain.component_selection import (
+    component_default_span,
+    recommend_components,
+)
 from metriccanvas_authoring.domain.data_context import DataContext, SemanticSurface
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.domain.section_layout import pack_section_spans
 
 
 @dataclass(frozen=True, slots=True)
@@ -16,6 +20,21 @@ class PageBuildingIssue(Exception):
 
 
 @dataclass(frozen=True, slots=True)
+class ScopeFilter:
+    dimension: str
+    values: tuple[str, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class UnitScope:
+    business_domain: str
+    group_by: tuple[str, ...]
+    time_range: str
+    granularity: str
+    filters: tuple[ScopeFilter, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class ExecutableUnit:
     data_source_id: str
     title: str | None
@@ -23,6 +42,7 @@ class ExecutableUnit:
     query_body: dict[str, Any]
     intent: str
     pinned_component: str | None
+    scope: UnitScope
 
     def effective_query(self) -> dict[str, Any]:
         return {
@@ -50,14 +70,16 @@ def derive_executable_units(
                 message=f"business domain is not in data context: {business_domain}",
             )
         fields = _field_contracts(unit, surface, index)
+        query_body = _query_body(unit, surface, index)
         units.append(
             ExecutableUnit(
                 data_source_id=f"unit-{index + 1}",
                 title=_optional_string(unit.get("title")),
                 fields=fields,
-                query_body=_query_body(unit, surface, index),
+                query_body=query_body,
                 intent=str(unit["intent"]),
                 pinned_component=_optional_string(unit.get("pinnedComponent")),
+                scope=_scope_of(unit, surface),
             )
         )
     return units
@@ -102,7 +124,7 @@ def assemble_page_document(
         "id": page_id,
         **({} if description is None else {"meta": {"description": description}}),
         "dataSources": data_sources,
-        "sections": [{"id": "results", "components": components}],
+        "sections": _sections_of(units, components),
     }
 
 
@@ -329,33 +351,48 @@ def _component_for(
                 path=f"/units/{unit_index}",
                 message="no component passed the capability gate",
             )
-    if selected.component_type not in {"barChart", "lineChart"}:
+    if selected.component_type not in {
+        "metricCard",
+        "barChart",
+        "lineChart",
+        "pieChart",
+        "table",
+        "rankingCard",
+        "rankingDetailCard",
+    }:
         raise PageBuildingIssue(
             code="COMPONENT_ASSEMBLY_UNSUPPORTED",
             path=f"/units/{unit_index}/pinnedComponent",
             message=f"component assembly is not migrated: {selected.component_type}",
         )
-    dimensions = [
+    scalars = [
         (field_id, field)
         for field_id, field in unit.fields.items()
-        if field["role"] == "dimension"
+        if field["role"] != "detail"
     ]
+    dimensions = [field for field in scalars if field[1]["role"] == "dimension"]
     measures = [
-        (field_id, field)
-        for field_id, field in unit.fields.items()
-        if field["role"] == "measure"
+        field for field in scalars if field[1]["role"] == "measure"
     ]
     series = [
         {"field": field_id, "label": field.get("label", field_id)}
         for field_id, field in measures
     ]
-    if selected.component_type == "barChart":
+    if selected.component_type == "metricCard":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "rows": [
+                {"label": field.get("label", field_id), "valueField": field_id}
+                for field_id, field in measures
+            ],
+        }
+    elif selected.component_type == "barChart":
         props = {
             **({} if unit.title is None else {"title": unit.title}),
             "categoryField": dimensions[0][0],
             "series": series,
         }
-    else:
+    elif selected.component_type == "lineChart":
         time_dimension = next(
             (
                 field
@@ -369,10 +406,30 @@ def _component_for(
             "xField": time_dimension[0],
             "series": series,
         }
+    elif selected.component_type == "table":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "columns": [
+                {"field": field_id, "title": field.get("label", field_id)}
+                for field_id, field in scalars
+            ],
+        }
+    elif selected.component_type == "pieChart":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "categoryField": dimensions[0][0],
+            "valueField": measures[0][0],
+        }
+    else:
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "nameField": dimensions[0][0],
+            "valueField": measures[0][0],
+        }
     return {
         "id": f"{unit.data_source_id}-{_kebab_case(selected.component_type)}",
         "type": selected.component_type,
-        "layout": {"span": 12},
+        "layout": {"span": selected.default_span},
         "data": {"main": unit.data_source_id},
         "props": props,
     }
@@ -383,6 +440,177 @@ def _kebab_case(value: str) -> str:
     for character in value:
         result += f"-{character.lower()}" if character.isupper() else character
     return result
+
+
+def _scope_of(unit: Mapping[str, Any], surface: SemanticSurface) -> UnitScope:
+    time = unit.get("time")
+    if time is None:
+        time_range = "不限定时间范围"
+        granularity = "未指定"
+    else:
+        time_mapping = _mapping(time)
+        time_range = f'{time_mapping["start"]} ~ {time_mapping["end"]}'
+        granularity = str(time_mapping["granularity"])
+    return UnitScope(
+        business_domain=surface.business_domain,
+        group_by=tuple(
+            _required_dimension(surface, str(name)).name
+            for name in _sequence(unit["groupBy"])
+        ),
+        time_range=time_range,
+        granularity=granularity,
+        filters=tuple(
+            ScopeFilter(
+                dimension=_required_dimension(
+                    surface, str(_mapping(raw_filter)["dimension"])
+                ).name,
+                values=tuple(
+                    str(value)
+                    for value in _sequence(_mapping(raw_filter)["values"])
+                ),
+            )
+            for raw_filter in _sequence(unit["filters"])
+        ),
+    )
+
+
+def _sections_of(
+    units: Sequence[ExecutableUnit], components: Sequence[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    header = {
+        "id": "header",
+        "container": "plain",
+        "components": [
+            {
+                "id": "page-header",
+                "type": "reportHeader",
+                "layout": {"span": component_default_span("reportHeader")},
+                "props": _header_props(units),
+            }
+        ],
+    }
+    groups = _scope_groups(units)
+    if len(groups) == 1:
+        return [
+            header,
+            {
+                "id": "main",
+                "components": _laid_out(list(components)),
+            },
+        ]
+    titles = _scope_group_titles([group[0] for group in groups])
+    content_sections = [
+        {
+            "id": f"scope-{index + 1}",
+            "title": titles[index],
+            "components": _laid_out(
+                [
+                    component
+                    for component in components
+                    if component["data"]["main"] in data_source_ids
+                ]
+            ),
+        }
+        for index, (_, data_source_ids) in enumerate(groups)
+    ]
+    return [header, *content_sections]
+
+
+def _header_props(units: Sequence[ExecutableUnit]) -> dict[str, Any]:
+    title = "、".join(dict.fromkeys(unit.scope.business_domain for unit in units))
+    windows = list(dict.fromkeys(_time_label(unit.scope) for unit in units))
+    return {
+        "title": title,
+        **(
+            {"asOf": {"label": "数据窗口", "value": windows[0]}}
+            if len(windows) == 1
+            else {}
+        ),
+    }
+
+
+def _scope_groups(
+    units: Sequence[ExecutableUnit],
+) -> list[tuple[UnitScope, list[str]]]:
+    groups: list[tuple[UnitScope, list[str]]] = []
+    keys: list[tuple[object, ...]] = []
+    for unit in units:
+        key = _scope_key(unit.scope)
+        if key in keys:
+            groups[keys.index(key)][1].append(unit.data_source_id)
+        else:
+            keys.append(key)
+            groups.append((unit.scope, [unit.data_source_id]))
+    return groups
+
+
+def _scope_key(scope: UnitScope) -> tuple[object, ...]:
+    return (
+        scope.business_domain,
+        tuple(sorted(scope.group_by)),
+        scope.time_range,
+        scope.granularity,
+        tuple(
+            sorted(
+                (entry.dimension, tuple(sorted(entry.values)))
+                for entry in scope.filters
+            )
+        ),
+    )
+
+
+def _scope_group_titles(scopes: Sequence[UnitScope]) -> list[str]:
+    show_domain = len({scope.business_domain for scope in scopes}) > 1
+    show_time = len(
+        {(scope.time_range, scope.granularity) for scope in scopes}
+    ) > 1
+    show_filters = len({_filters_label(scope) for scope in scopes}) > 1
+    titles: list[str] = []
+    for scope in scopes:
+        parts = [
+            *([scope.business_domain] if show_domain else []),
+            _dimensions_label(scope),
+            *([_time_label(scope)] if show_time else []),
+            *(
+                [_filters_label(scope) or "不限筛选"]
+                if show_filters
+                else []
+            ),
+        ]
+        titles.append(" · ".join(parts))
+    return titles
+
+
+def _laid_out(components: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    spans = pack_section_spans(
+        [int(component["layout"]["span"]) for component in components]
+    )
+    return [
+        {**component, "layout": {"span": spans[index]}}
+        for index, component in enumerate(components)
+    ]
+
+
+def _dimensions_label(scope: UnitScope) -> str:
+    return "总量" if not scope.group_by else f'按{"、".join(scope.group_by)}'
+
+
+def _time_label(scope: UnitScope) -> str:
+    labels = {
+        "day": "日",
+        "week": "周",
+        "month": "月",
+        "quarter": "季",
+        "year": "年",
+    }
+    label = labels.get(scope.granularity)
+    return scope.time_range if label is None else f"{scope.time_range}({label})"
+
+
+def _filters_label(scope: UnitScope) -> str:
+    return "、".join(
+        f'{entry.dimension}={"、".join(entry.values)}' for entry in scope.filters
+    )
 
 
 def _required_dimension(surface: SemanticSurface, name: str):

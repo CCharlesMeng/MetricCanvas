@@ -14,10 +14,10 @@ COMPONENT_CATALOG = (
 INTENT_KEYWORDS: Mapping[str, tuple[str, ...]] = {
     "trend": ("趋势",),
     "comparison": ("对比",),
-    "proportion": ("占比",),
+    "composition": ("占比",),
     "ranking": ("排行",),
     "detail": ("明细",),
-    "summary": ("核心指标", "KPI"),
+    "single_value": ("核心指标", "KPI"),
 }
 
 
@@ -91,6 +91,20 @@ def recommend_components(
         )
         for candidate in [*allowed, *rejected]
     )
+
+
+def component_default_span(component_type: str) -> int:
+    entry = next(
+        (
+            entry
+            for entry in _component_catalog()
+            if entry["type"] == component_type
+        ),
+        None,
+    )
+    if entry is None:
+        raise ValueError(f"unknown component type: {component_type}")
+    return int(entry["defaultSpan"])
 
 
 def _result_shape(
