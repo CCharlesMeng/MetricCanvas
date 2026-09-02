@@ -200,6 +200,10 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(result.ok)
         self.assertEqual(
+            result.completed_stages,
+            ("discovery", "generation", "execution", "presentation", "save"),
+        )
+        self.assertEqual(
             result.saved_revision,
             SavedRevision("tokens-by-region", "revision-1", 1),
         )
@@ -284,6 +288,45 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 },
             },
         )
+
+    async def test_save_failure_preserves_code_and_completed_stages(self) -> None:
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[{"区域": "华东", "Tokens请求量": 18}],
+                total_count=1,
+                captured_at="2026-09-02T00:00:01.000Z",
+            )
+        )
+        pages = FakePageAssetPort(
+            error=RuntimeQueryError("PAGE_REVISION_CONFLICT", "revision conflict")
+        )
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:conflict",
+                spec=fixture("page-build-spec.json"),
+            )
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path, issue.stage) for issue in result.issues],
+            [("PAGE_REVISION_CONFLICT", "/", "save")],
+        )
+        self.assertEqual(
+            result.completed_stages,
+            ("discovery", "generation", "execution", "presentation"),
+        )
+        self.assertEqual(len(pages.calls), 1)
 
     async def test_invalid_data_context_stops_before_execution_and_save(self) -> None:
         snapshot = fixture("data-context.json")

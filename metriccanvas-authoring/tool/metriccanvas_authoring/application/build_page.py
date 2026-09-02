@@ -55,6 +55,7 @@ class BuildPageResult:
     ok: bool
     saved_revision: SavedRevision | None = None
     issues: tuple[BuildPageIssue, ...] = ()
+    completed_stages: tuple[FailureStage, ...] = ()
 
 
 BuildPage = Callable[[BuildPageCommand], Awaitable[BuildPageResult]]
@@ -96,6 +97,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
             return BuildPageResult(
                 ok=False,
                 issues=(BuildPageIssue(issue.code, issue.path, issue.message),),
+                completed_stages=("discovery",),
             )
         executions = []
         for unit_index, unit in enumerate(units):
@@ -115,6 +117,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                             stage=failure.stage,
                         ),
                     ),
+                    completed_stages=("discovery", "generation"),
                 )
         page_schema_version = str(load_bundle_info()["pageSchemaVersion"])
         try:
@@ -136,6 +139,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                         stage="presentation",
                     ),
                 ),
+                completed_stages=("discovery", "generation", "execution"),
             )
         page_issues = validate_page_document(document)
         if page_issues:
@@ -150,6 +154,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                     )
                     for issue in page_issues
                 ),
+                completed_stages=("discovery", "generation", "execution"),
             )
 
         base_revision = command.spec.get("baseRevision")
@@ -158,16 +163,47 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
             if not isinstance(base_revision, Mapping)
             else _optional_string(base_revision.get("revisionId"))
         )
-        saved = await dependencies.page_assets.save_revision(
-            {
-                "pageId": command.page_id,
-                "baseRevisionId": base_revision_id,
-                "document": document,
-                "idempotencyKey": command.idempotency_key,
-                "pageIdConfirmed": command.page_id_confirmed,
-            }
+        try:
+            saved = await dependencies.page_assets.save_revision(
+                {
+                    "pageId": command.page_id,
+                    "baseRevisionId": base_revision_id,
+                    "document": document,
+                    "idempotencyKey": command.idempotency_key,
+                    "pageIdConfirmed": command.page_id_confirmed,
+                }
+            )
+        except Exception as cause:
+            raw_code = getattr(cause, "code", None)
+            code = raw_code if isinstance(raw_code, str) else "PAGE_SAVE_FAILED"
+            return BuildPageResult(
+                ok=False,
+                issues=(
+                    BuildPageIssue(
+                        code=code,
+                        path="/",
+                        message=str(cause),
+                        stage="save",
+                    ),
+                ),
+                completed_stages=(
+                    "discovery",
+                    "generation",
+                    "execution",
+                    "presentation",
+                ),
+            )
+        return BuildPageResult(
+            ok=True,
+            saved_revision=saved,
+            completed_stages=(
+                "discovery",
+                "generation",
+                "execution",
+                "presentation",
+                "save",
+            ),
         )
-        return BuildPageResult(ok=True, saved_revision=saved)
 
     return build_page
 

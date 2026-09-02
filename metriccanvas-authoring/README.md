@@ -15,9 +15,15 @@ Data Context 校验/语义投影/检索/敏感隐去、取数单元闭集验真�
 执行错误归因，以及当前 TS 装配支持的七类组件、口径组分区、报告页头和比例装箱。
 Python 直接消费产品组件目录中生成的 `authoringShape` 与导出的分析意图映射，
 不另存规则表。S3 已用 TS 生成、Python 消费的向量锁定完整 Page JSON、
-实际 DQE 请求、稳定错误 `code/path` 和页面语义准入。后续按
+实际 DQE 请求、稳定错误 `code/path` 和页面语义准入。S4 已将
+`discover_data_context` 与 `build_page` 作为仅有的两个模型可见工具，并用真实
+FastMCP stdio 子进程 + Fake Ports 走通发现、构建与保存。后续按
 [`docs/plan/metriccanvas-authoring-bundle.md`](../docs/plan/metriccanvas-authoring-bundle.md)
-进入 S4 粗粒度 FastMCP 工具与 Skill 流程验收。
+在外部 Interface 可见后进入 S5 迁移切换。
+
+`tool/server.py` 是生产组合根，当前对未接入的 Data Context、DQE 和 Java 页面资产
+Adapter 显式失败。`test-harness/stdio_server.py` 是仅测试使用的组合根，不是生产
+fallback。
 
 ## 独立验收
 

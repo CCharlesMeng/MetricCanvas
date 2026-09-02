@@ -1,6 +1,6 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：S3 已完成，下一步 S4
+> 状态：S4 已完成，等待外部 Interface 后进入 S5
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
 > 交付根：`metriccanvas-authoring/`
@@ -63,6 +63,7 @@ metriccanvas-authoring/                   # 一个原子发布 Bundle
 ├── test-harness/
 │   ├── adapters/                         # 仅测试使用的 Fake
 │   ├── fixtures/
+│   ├── stdio_server.py                   # Fake Ports 的子进程组合根
 │   └── tests/                            # 进程内 + 真实 stdio 黑盒
 └── scripts/check_bundle.py
 ```
@@ -154,6 +155,13 @@ S3 的等价证据由生成向量锁定：一条完整构建向量同时比较�
 
 完成条件：真实 MCP 子进程能用 Fake Port 走通黄金场景，产生已保存修订标识和通过契约的页面。
 
+状态：已完成。FastMCP 模型可见面仅有 `discover_data_context` 与
+`build_page`；Page Build Spec 完整结构直接由 authored contract 注入 Tool Schema，
+运行时仍由 application 校验器产生稳定 `code/path`。`build_page` 返回已完成
+阶段、仅含单元数的脱敏摘要和精确修订标识；失败作为结构化结果返回，不伪装成
+MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未接入的三个
+出站 Adapter 显式失败；`test-harness/stdio_server.py` 仅为黑盒验收组合 Fake。
+
 ### S5：迁移切换
 
 - 冻结等价向量和差分报告。
@@ -161,6 +169,8 @@ S3 的等价证据由生成向量锁定：一条完整构建向量同时比较�
 - 删除双实现，保留产品中立契约导出和跨语言验收。
 
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
+
+状态：等待真实 Relay 注册方式、Java 页面资产 Interface 与 DQE Interface 可见。
 
 ## 不阻塞开工的后续输入
 

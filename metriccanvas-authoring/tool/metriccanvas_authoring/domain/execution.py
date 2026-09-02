@@ -5,7 +5,9 @@ from typing import Any, Literal, Mapping, Sequence
 
 
 JsonObject = Mapping[str, Any]
-FailureStage = Literal["discovery", "generation", "execution", "presentation"]
+FailureStage = Literal[
+    "discovery", "generation", "execution", "presentation", "save"
+]
 
 RUNTIME_QUERY_ERROR_STAGES: Mapping[str, FailureStage] = {
     "DQE_CONFIG_ERROR": "generation",

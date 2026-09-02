@@ -42,10 +42,21 @@ class FakeDqeExecutionPort:
 
 
 class FakePageAssetPort:
-    def __init__(self, result: SavedRevision) -> None:
+    def __init__(
+        self,
+        result: SavedRevision | None = None,
+        *,
+        error: Exception | None = None,
+    ) -> None:
+        if result is None and error is None:
+            raise ValueError("result or error is required")
         self.result = result
+        self.error = error
         self.calls: list[dict[str, Any]] = []
 
     async def save_revision(self, command: JsonObject) -> SavedRevision:
         self.calls.append(deepcopy(dict(command)))
+        if self.error is not None:
+            raise self.error
+        assert self.result is not None
         return self.result
