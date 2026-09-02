@@ -10,6 +10,8 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@v4
 
@@ -22,9 +24,18 @@ jobs:
           node-version: 24
           cache: pnpm
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: metriccanvas-authoring/requirements.lock
+
       # allowBuilds(esbuild)已在 pnpm-workspace.yaml 声明,frozen-lockfile 下自动生效
       - name: 安装依赖
         run: pnpm install --frozen-lockfile
+
+      - name: 安装创作 Bundle 依赖
+        run: python -m pip install --require-hashes -r metriccanvas-authoring/requirements.lock
 
       # 校验页面文档(结构 + 语义 + 文件名)。失败时按错误分型汇总到 job summary:
       # v3 页面文档只做结构与绑定契约校验；DQE 查询错误在预览/运行阶段返回。
@@ -42,6 +53,12 @@ jobs:
             } >> "$GITHUB_STEP_SUMMARY"
           fi
           exit "$code"
+
+      - name: 检查创作 Bundle 中立契约
+        run: pnpm authoring:contracts:check
+
+      - name: 验证创作 Bundle
+        run: pnpm authoring:check
 
       - name: 单元测试
         run: pnpm test
@@ -62,3 +79,10 @@ jobs:
         with:
           name: canvas-static
           path: apps/canvas/build
+
+      - name: 上传创作 Bundle
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-authoring-${{ github.sha }}
+          path: metriccanvas-authoring

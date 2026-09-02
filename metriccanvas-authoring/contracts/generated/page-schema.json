@@ -1,0 +1,4293 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "enum": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4"
+      ],
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "meta": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            }
+          ]
+        },
+        "description": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "layoutForm": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/pageLayoutForm"
+        }
+      ]
+    },
+    "dashboardToolbar": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/dashboardToolbar"
+        }
+      ]
+    },
+    "params": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/pageParam"
+      }
+    },
+    "dataSources": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/dataSource"
+      }
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/definitions/dimensionFilter"
+          },
+          {
+            "$ref": "#/definitions/timeRangeFilter"
+          },
+          {
+            "$ref": "#/definitions/timePointFilter"
+          },
+          {
+            "$ref": "#/definitions/booleanFilter"
+          },
+          {
+            "$ref": "#/definitions/numberRangeFilter"
+          },
+          {
+            "$ref": "#/definitions/searchFilter"
+          }
+        ]
+      }
+    },
+    "sections": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/section"
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "id",
+    "dataSources",
+    "sections"
+  ],
+  "additionalProperties": false,
+  "title": "页面",
+  "definitions": {
+    "nonEmptyTextValue": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "$ref": "#/definitions/textValueReference"
+        }
+      ]
+    },
+    "textValueReference": {
+      "type": "object",
+      "properties": {
+        "param": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "format": {
+          "description": "引用处的展示格式；复用组件字段绑定的同一套封闭闭集",
+          "type": "string",
+          "enum": [
+            "text",
+            "number",
+            "number-1",
+            "number-2",
+            "number-grouped",
+            "compact-wan-0",
+            "compact-wan-1",
+            "compact-yi-1",
+            "cny-adaptive",
+            "percent-0",
+            "percent-1",
+            "percent-2",
+            "percent-2-signed",
+            "date",
+            "date-month-day"
+          ]
+        }
+      },
+      "required": [
+        "param"
+      ],
+      "additionalProperties": false,
+      "description": "对一个页面参数的整值引用；不是模板插值，不参与拼接"
+    },
+    "pageLayoutForm": {
+      "type": "string",
+      "enum": [
+        "report",
+        "dashboard"
+      ],
+      "description": "report 定宽居中报表外框（缺省）；dashboard 满宽看板外框，中性画布、无外层留白"
+    },
+    "dashboardToolbar": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "visible",
+            "hidden"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "variant": {
+              "type": "string",
+              "const": "compact"
+            },
+            "readOnly": {
+              "type": "boolean"
+            },
+            "note": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "variant"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "description": "dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible"
+    },
+    "pageParam": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "number",
+            "boolean"
+          ]
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "default": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "required"
+      ],
+      "additionalProperties": false,
+      "description": "页面参数：打开页面时由 URL 确定、此后不可改变的具名输入"
+    },
+    "dataSource": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/inlineDataSource"
+        },
+        {
+          "$ref": "#/definitions/queryDataSource"
+        }
+      ]
+    },
+    "inlineDataSource": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "$ref": "#/definitions/fields"
+        },
+        "compute": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/compute"
+            }
+          ]
+        },
+        "source": {
+          "$ref": "#/definitions/inlineSource"
+        }
+      },
+      "required": [
+        "fields",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "fields": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/field"
+      },
+      "minProperties": 1
+    },
+    "field": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/scalarField"
+        },
+        {
+          "$ref": "#/definitions/recordListField"
+        },
+        {
+          "$ref": "#/definitions/semanticHtmlField"
+        }
+      ]
+    },
+    "scalarField": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "string",
+                "number",
+                "boolean",
+                "date",
+                "datetime"
+              ]
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "dimension",
+                "measure"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nullable": {
+              "type": "boolean"
+            },
+            "collapsible": {
+              "type": "boolean"
+            },
+            "defaultFormat": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-yi-1",
+                "cny-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "role"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "money"
+            },
+            "role": {
+              "type": "string",
+              "const": "measure"
+            },
+            "currency": {
+              "type": "string",
+              "const": "CNY"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nullable": {
+              "type": "boolean"
+            },
+            "collapsible": {
+              "type": "boolean"
+            },
+            "defaultFormat": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-yi-1",
+                "cny-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day"
+              ]
+            }
+          },
+          "required": [
+            "type",
+            "role",
+            "currency"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "recordListField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "recordList"
+        },
+        "role": {
+          "type": "string",
+          "const": "detail"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/scalarField"
+              },
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "fields"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "type",
+        "role",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "semanticHtmlField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "semanticHtml"
+        },
+        "role": {
+          "type": "string",
+          "const": "detail"
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "role"
+      ],
+      "additionalProperties": false,
+      "description": "受控语义 HTML 字符串，最长 64000 字符"
+    },
+    "compute": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/computeOperator"
+      },
+      "description": "页面数据源的受控计算阶段；算子按声明顺序作用于已归一化的行集"
+    },
+    "computeOperator": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "ratio"
+            },
+            "numerator": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "denominator": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "output": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "onZeroDenominator": {
+              "type": "string",
+              "enum": [
+                "null",
+                "zero"
+              ],
+              "description": "分母为零或缺失时取空还是取零；必须显式声明，默认值会静默改数"
+            },
+            "scale": {
+              "description": "输出刻度；缺省产出 0–1 分数，100 产出 0–100。闭集只有 100，开放数值等于在算子里引入乘法表达式",
+              "type": "number",
+              "const": 100
+            }
+          },
+          "required": [
+            "op",
+            "numerator",
+            "denominator",
+            "output",
+            "onZeroDenominator"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "delta"
+            },
+            "minuend": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "subtrahend": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "output": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            }
+          },
+          "required": [
+            "op",
+            "minuend",
+            "subtrahend",
+            "output"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "groupSubtotal"
+            },
+            "groupBy": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "measures": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            },
+            "rowKind": {
+              "$ref": "#/definitions/rowKindMark"
+            },
+            "labelSuffix": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "op",
+            "groupBy",
+            "measures",
+            "rowKind"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "grandTotal"
+            },
+            "measures": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            },
+            "rowKind": {
+              "$ref": "#/definitions/rowKindMark"
+            },
+            "label": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "value": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "field",
+                "value"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "op",
+            "measures",
+            "rowKind",
+            "label"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "op": {
+              "type": "string",
+              "const": "pivot"
+            },
+            "categoryField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "valueField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "columns": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "output": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                  },
+                  "categories": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "uniqueItems": true,
+                    "description": "有序类别取值，取第一个命中的"
+                  }
+                },
+                "required": [
+                  "output",
+                  "categories"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "keyFields": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "op",
+            "categoryField",
+            "valueField",
+            "columns"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "rowKindMark": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        "value": {
+          "type": "string",
+          "enum": [
+            "subtotal",
+            "total"
+          ]
+        }
+      },
+      "required": [
+        "field",
+        "value"
+      ],
+      "additionalProperties": false,
+      "description": "折叠行写入的行类别字段与取值；表格按同一闭集识别呈现档位"
+    },
+    "inlineSource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "inline"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/definitions/fieldValue"
+            }
+          }
+        }
+      },
+      "required": [
+        "type",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "fieldValue": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/scalar"
+        },
+        {
+          "$ref": "#/definitions/detailRecordList"
+        }
+      ]
+    },
+    "scalar": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "detailRecordList": {
+      "maxItems": 100,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/detailRecord"
+      }
+    },
+    "detailRecord": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/scalar"
+      }
+    },
+    "queryDataSource": {
+      "type": "object",
+      "properties": {
+        "fields": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/queryFields"
+            },
+            {
+              "$ref": "#/definitions/groupedQueryFields"
+            }
+          ]
+        },
+        "compute": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/compute"
+            }
+          ]
+        },
+        "source": {
+          "$ref": "#/definitions/querySource"
+        }
+      },
+      "required": [
+        "fields",
+        "source"
+      ],
+      "additionalProperties": false
+    },
+    "queryFields": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "$ref": "#/definitions/queryField"
+      },
+      "minProperties": 1
+    },
+    "queryField": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/queryScalarField"
+        },
+        {
+          "$ref": "#/definitions/queryRecordListField"
+        },
+        {
+          "$ref": "#/definitions/querySemanticHtmlField"
+        },
+        {
+          "$ref": "#/definitions/scalarField"
+        }
+      ]
+    },
+    "queryScalarField": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": [
+                "string",
+                "number",
+                "boolean",
+                "date",
+                "datetime"
+              ]
+            },
+            "role": {
+              "type": "string",
+              "enum": [
+                "dimension",
+                "measure"
+              ]
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nullable": {
+              "type": "boolean"
+            },
+            "collapsible": {
+              "type": "boolean"
+            },
+            "defaultFormat": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-yi-1",
+                "cny-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day"
+              ]
+            },
+            "queryField": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "role",
+            "queryField"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "money"
+            },
+            "role": {
+              "type": "string",
+              "const": "measure"
+            },
+            "currency": {
+              "type": "string",
+              "const": "CNY"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            },
+            "nullable": {
+              "type": "boolean"
+            },
+            "collapsible": {
+              "type": "boolean"
+            },
+            "defaultFormat": {
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-yi-1",
+                "cny-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day"
+              ]
+            },
+            "queryField": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "type",
+            "role",
+            "currency",
+            "queryField"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "queryRecordListField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "recordList"
+        },
+        "role": {
+          "type": "string",
+          "const": "detail"
+        },
+        "queryField": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean"
+        },
+        "items": {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/queryScalarField"
+              },
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "fields"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "type",
+        "role",
+        "queryField",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "querySemanticHtmlField": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "semanticHtml"
+        },
+        "role": {
+          "type": "string",
+          "const": "detail"
+        },
+        "queryField": {
+          "type": "string",
+          "minLength": 1
+        },
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "nullable": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "type",
+        "role",
+        "queryField"
+      ],
+      "additionalProperties": false,
+      "description": "DQE 返回的受控语义 HTML 字符串，最长 64000 字符"
+    },
+    "groupedQueryFields": {
+      "type": "object",
+      "properties": {
+        "dimensions": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/groupedDimensionQueryFieldGroup"
+            }
+          ]
+        },
+        "measures": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/groupedMeasureQueryFieldGroup"
+            }
+          ]
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "dimensions"
+          ]
+        },
+        {
+          "required": [
+            "measures"
+          ]
+        }
+      ]
+    },
+    "groupedDimensionQueryFieldGroup": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "queryField": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "boolean",
+              "date",
+              "datetime"
+            ]
+          },
+          "label": {
+            "type": "string",
+            "minLength": 1
+          },
+          "unit": {
+            "type": "string",
+            "minLength": 1
+          },
+          "nullable": {
+            "type": "boolean"
+          },
+          "collapsible": {
+            "type": "boolean"
+          },
+          "defaultFormat": {
+            "type": "string",
+            "enum": [
+              "text",
+              "number",
+              "number-1",
+              "number-2",
+              "number-grouped",
+              "compact-wan-0",
+              "compact-wan-1",
+              "compact-yi-1",
+              "cny-adaptive",
+              "percent-0",
+              "percent-1",
+              "percent-2",
+              "percent-2-signed",
+              "date",
+              "date-month-day"
+            ]
+          }
+        },
+        "required": [
+          "queryField",
+          "type"
+        ],
+        "additionalProperties": false
+      },
+      "minProperties": 1
+    },
+    "groupedMeasureQueryFieldGroup": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+      },
+      "additionalProperties": {
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "queryField": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "string",
+                  "number",
+                  "boolean",
+                  "date",
+                  "datetime"
+                ]
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "nullable": {
+                "type": "boolean"
+              },
+              "collapsible": {
+                "type": "boolean"
+              },
+              "defaultFormat": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "number",
+                  "number-1",
+                  "number-2",
+                  "number-grouped",
+                  "compact-wan-0",
+                  "compact-wan-1",
+                  "compact-yi-1",
+                  "cny-adaptive",
+                  "percent-0",
+                  "percent-1",
+                  "percent-2",
+                  "percent-2-signed",
+                  "date",
+                  "date-month-day"
+                ]
+              }
+            },
+            "required": [
+              "queryField",
+              "type"
+            ],
+            "additionalProperties": false
+          },
+          {
+            "type": "object",
+            "properties": {
+              "queryField": {
+                "type": "string",
+                "minLength": 1
+              },
+              "type": {
+                "type": "string",
+                "const": "money"
+              },
+              "currency": {
+                "type": "string",
+                "const": "CNY"
+              },
+              "label": {
+                "type": "string",
+                "minLength": 1
+              },
+              "unit": {
+                "type": "string",
+                "minLength": 1
+              },
+              "nullable": {
+                "type": "boolean"
+              },
+              "collapsible": {
+                "type": "boolean"
+              },
+              "defaultFormat": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "number",
+                  "number-1",
+                  "number-2",
+                  "number-grouped",
+                  "compact-wan-0",
+                  "compact-wan-1",
+                  "compact-yi-1",
+                  "cny-adaptive",
+                  "percent-0",
+                  "percent-1",
+                  "percent-2",
+                  "percent-2-signed",
+                  "date",
+                  "date-month-day"
+                ]
+              }
+            },
+            "required": [
+              "queryField",
+              "type",
+              "currency"
+            ],
+            "additionalProperties": false
+          }
+        ]
+      },
+      "minProperties": 1
+    },
+    "querySource": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "query"
+        },
+        "initial": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/embeddedInitialRows"
+            }
+          ]
+        },
+        "query": {
+          "$ref": "#/definitions/pageQuery"
+        }
+      },
+      "required": [
+        "type",
+        "query"
+      ],
+      "additionalProperties": false
+    },
+    "embeddedInitialRows": {
+      "type": "object",
+      "properties": {
+        "capturedAt": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(?:\\.\\d{1,3})?(?:Z|[+-]\\d{2}:\\d{2})$"
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "$ref": "#/definitions/fieldValue"
+            }
+          }
+        },
+        "totalCount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "capturedAt",
+        "rows"
+      ],
+      "additionalProperties": false
+    },
+    "pageQuery": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/dqeQuery"
+        }
+      ]
+    },
+    "dqeQuery": {
+      "type": "object",
+      "properties": {
+        "language": {
+          "type": "string",
+          "const": "dqe"
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "dsl_list": {
+              "minItems": 1,
+              "maxItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "dsl_list"
+          ],
+          "additionalProperties": false
+        },
+        "filterBindings": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "const": "dimension"
+                  },
+                  "queryField": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "target",
+                  "queryField"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "const": "time"
+                  }
+                },
+                "required": [
+                  "target"
+                ],
+                "additionalProperties": false
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "language",
+        "body"
+      ],
+      "additionalProperties": false
+    },
+    "dimensionFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "dimension"
+        },
+        "dimension": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        "label": {
+          "type": "string"
+        },
+        "emptyLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "hierarchyPicker": {
+          "type": "string",
+          "enum": [
+            "tabs",
+            "hidden"
+          ]
+        },
+        "display": {
+          "type": "string",
+          "enum": [
+            "select",
+            "tabs",
+            "tree",
+            "search"
+          ]
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hierarchy": {
+          "minItems": 2,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "dimension": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+              },
+              "label": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "dimension"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "defaultLevel": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "dependsOn": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "dimension"
+      ],
+      "additionalProperties": false
+    },
+    "timeRangeFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "timeRange"
+        },
+        "label": {
+          "type": "string"
+        },
+        "precision": {
+          "type": "string",
+          "enum": [
+            "date",
+            "datetime"
+          ]
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "default": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "today",
+                "last7d",
+                "last30d",
+                "last90d"
+              ]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "from": {
+                  "type": "string"
+                },
+                "to": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "from",
+                "to"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "$ref": "#/definitions/relativeTimeExpression"
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "relativeTimeExpression": {
+      "type": "object",
+      "properties": {
+        "unit": {
+          "type": "string",
+          "enum": [
+            "day",
+            "week",
+            "month",
+            "quarter",
+            "year"
+          ]
+        },
+        "range": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "lastN"
+                },
+                "n": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "kind",
+                "n"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "previousComplete"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "currentToDate"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            }
+          ]
+        },
+        "includeCurrent": {
+          "type": "boolean"
+        },
+        "anchor": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit",
+        "range",
+        "includeCurrent"
+      ],
+      "additionalProperties": false
+    },
+    "timePointFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "timePoint"
+        },
+        "label": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "granularity": {
+          "type": "string",
+          "enum": [
+            "month",
+            "date"
+          ]
+        },
+        "default": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "granularity"
+      ],
+      "additionalProperties": false
+    },
+    "booleanFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "boolean"
+        },
+        "label": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "numberRangeFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "numberRange"
+        },
+        "label": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": "object",
+          "properties": {
+            "from": {
+              "type": "number"
+            },
+            "to": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "searchFilter": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "type": {
+          "type": "string",
+          "const": "search"
+        },
+        "label": {
+          "type": "string"
+        },
+        "visible": {
+          "type": "boolean"
+        },
+        "default": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "section": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "title": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            }
+          ]
+        },
+        "container": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/sectionContainer"
+            }
+          ]
+        },
+        "columnTracks": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/sectionColumnTracks"
+            }
+          ]
+        },
+        "components": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "oneOf": [
+              {
+                "$ref": "#/definitions/reportHeaderComponent"
+              },
+              {
+                "$ref": "#/definitions/metricCardComponent"
+              },
+              {
+                "$ref": "#/definitions/barChartComponent"
+              },
+              {
+                "$ref": "#/definitions/lineChartComponent"
+              },
+              {
+                "$ref": "#/definitions/pieChartComponent"
+              },
+              {
+                "$ref": "#/definitions/tableComponent"
+              },
+              {
+                "$ref": "#/definitions/mapChartComponent"
+              },
+              {
+                "$ref": "#/definitions/gaugeComponent"
+              },
+              {
+                "$ref": "#/definitions/tabContainerComponent"
+              },
+              {
+                "$ref": "#/definitions/compositeCardComponent"
+              },
+              {
+                "$ref": "#/definitions/rankingCardComponent"
+              },
+              {
+                "$ref": "#/definitions/rankingDetailCardComponent"
+              },
+              {
+                "$ref": "#/definitions/keyValuePanelComponent"
+              },
+              {
+                "$ref": "#/definitions/categoryBreakdownComponent"
+              },
+              {
+                "$ref": "#/definitions/fieldTextComponent"
+              },
+              {
+                "$ref": "#/definitions/textComponent"
+              },
+              {
+                "$ref": "#/definitions/aiSummaryComponent"
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "id",
+        "components"
+      ],
+      "additionalProperties": false
+    },
+    "sectionContainer": {
+      "type": "string",
+      "enum": [
+        "plain",
+        "panel",
+        "card"
+      ],
+      "description": "plain 无容器组件自带外观；panel 渐变章节面板+居中图标标题+内层白底；card 白色小节卡片+左对齐小标题"
+    },
+    "sectionColumnTracks": {
+      "minItems": 1,
+      "maxItems": 12,
+      "type": "array",
+      "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 1000
+      },
+      "description": "内容分区的受控列轨权重；缺省为 12 条等权列"
+    },
+    "reportHeaderComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "reportHeader"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "subtitle": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "subtitleFormat": {
+              "type": "string",
+              "const": "semanticHtml"
+            },
+            "generatedBy": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "badge": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "asOf": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                "value": {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              },
+              "required": [
+                "label",
+                "value"
+              ],
+              "additionalProperties": false
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/nonEmptyTextValue"
+              }
+            },
+            "variant": {
+              "type": "string",
+              "const": "projectDetail"
+            },
+            "decoration": {
+              "type": "string",
+              "const": "shortBar"
+            }
+          },
+          "required": [
+            "title"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "componentId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "componentLayout": {
+      "type": "object",
+      "properties": {
+        "span": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "connectPrevious": {
+          "type": "boolean"
+        },
+        "layer": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/componentLayer"
+            }
+          ]
+        }
+      },
+      "required": [
+        "span"
+      ],
+      "additionalProperties": false
+    },
+    "componentLayer": {
+      "type": "string",
+      "enum": [
+        "backdrop"
+      ],
+      "description": "backdrop 铺满分区并置于同分区其余组件之下；省略为普通流"
+    },
+    "textValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "$ref": "#/definitions/textValueReference"
+        }
+      ]
+    },
+    "metricCardComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "metricCard"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/metricData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "summary",
+                "activityProgress",
+                "compactSummary",
+                "dualSummary",
+                "compactStrip",
+                "compactStack"
+              ]
+            },
+            "secondaryTitle": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              ]
+            },
+            "rows": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "context": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textValue"
+                      }
+                    ]
+                  },
+                  "valueField": {
+                    "$ref": "#/definitions/fieldBinding"
+                  },
+                  "link": {
+                    "type": "boolean"
+                  },
+                  "unit": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textValue"
+                      }
+                    ]
+                  },
+                  "changes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "$ref": "#/definitions/nonEmptyTextValue"
+                        },
+                        "field": {
+                          "$ref": "#/definitions/fieldBinding"
+                        },
+                        "unit": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/textValue"
+                            }
+                          ]
+                        },
+                        "tone": {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "neutral",
+                            "positive",
+                            "danger"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "field"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "label",
+                  "valueField"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "secondaryRows": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "context": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textValue"
+                      }
+                    ]
+                  },
+                  "valueField": {
+                    "$ref": "#/definitions/fieldBinding"
+                  },
+                  "link": {
+                    "type": "boolean"
+                  },
+                  "unit": {
+                    "allOf": [
+                      {
+                        "$ref": "#/definitions/textValue"
+                      }
+                    ]
+                  },
+                  "changes": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "$ref": "#/definitions/nonEmptyTextValue"
+                        },
+                        "field": {
+                          "$ref": "#/definitions/fieldBinding"
+                        },
+                        "unit": {
+                          "allOf": [
+                            {
+                              "$ref": "#/definitions/textValue"
+                            }
+                          ]
+                        },
+                        "tone": {
+                          "type": "string",
+                          "enum": [
+                            "auto",
+                            "neutral",
+                            "positive",
+                            "danger"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "field"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "label",
+                  "valueField"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "panelLayout": {
+              "type": "string",
+              "enum": [
+                "stacked",
+                "twoColumn"
+              ]
+            },
+            "showTrendArrows": {
+              "type": "boolean"
+            },
+            "progress": {
+              "type": "object",
+              "properties": {
+                "valueField": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "label": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/textValue"
+                    }
+                  ]
+                },
+                "ringPercent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                }
+              },
+              "required": [
+                "valueField"
+              ],
+              "additionalProperties": false
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "rows"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "metricData": {
+      "type": "object",
+      "properties": {
+        "main": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "compare": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "target": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      },
+      "required": [
+        "main"
+      ],
+      "additionalProperties": false
+    },
+    "fieldBinding": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "format": {
+              "description": "只控制当前组件中这一次字段绑定的展示格式",
+              "type": "string",
+              "enum": [
+                "text",
+                "number",
+                "number-1",
+                "number-2",
+                "number-grouped",
+                "compact-wan-0",
+                "compact-wan-1",
+                "compact-yi-1",
+                "cny-adaptive",
+                "percent-0",
+                "percent-1",
+                "percent-2",
+                "percent-2-signed",
+                "date",
+                "date-month-day"
+              ]
+            },
+            "match": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "equals": {
+                  "$ref": "#/definitions/scalar"
+                }
+              },
+              "required": [
+                "field",
+                "equals"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "data",
+            "field"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "actions": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/componentAction"
+      }
+    },
+    "componentAction": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "on": {
+              "type": "string",
+              "const": "click"
+            },
+            "writeFilter": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "field": {
+              "$ref": "#/definitions/fieldReference"
+            }
+          },
+          "required": [
+            "on",
+            "writeFilter",
+            "field"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "on": {
+              "type": "string",
+              "const": "click"
+            },
+            "navigate": {
+              "type": "object",
+              "properties": {
+                "page": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "carryFilters": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "uniqueItems": true
+                },
+                "setFilters": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/definitions/fieldReference"
+                  }
+                },
+                "setParams": {
+                  "type": "object",
+                  "propertyNames": {
+                    "type": "string"
+                  },
+                  "additionalProperties": {
+                    "$ref": "#/definitions/fieldReference"
+                  }
+                }
+              },
+              "required": [
+                "page"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "on",
+            "navigate"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "fieldReference": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "field": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            }
+          },
+          "required": [
+            "data",
+            "field"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "barChartComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "barChart"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "reportForecast"
+            },
+            "categoryField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "series": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/barChartSeries"
+              }
+            },
+            "stacked": {
+              "type": "boolean"
+            },
+            "rounded": {
+              "type": "boolean"
+            },
+            "showSegmentLabels": {
+              "type": "boolean"
+            },
+            "showStackTotalLabels": {
+              "type": "boolean"
+            },
+            "horizontal": {
+              "type": "boolean"
+            },
+            "dualAxis": {
+              "type": "boolean"
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "categoryField",
+            "series"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "mainData": {
+      "type": "object",
+      "properties": {
+        "main": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        }
+      },
+      "required": [
+        "main"
+      ],
+      "additionalProperties": false
+    },
+    "barChartSeries": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "label": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "actual",
+            "forecast"
+          ]
+        },
+        "stackOrder": {
+          "type": "integer",
+          "minimum": -9007199254740991,
+          "maximum": 9007199254740991
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "lineChartComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "lineChart"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "xField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "series": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/chartSeries"
+              }
+            },
+            "smooth": {
+              "type": "boolean"
+            },
+            "areaGradient": {
+              "type": "boolean"
+            },
+            "stacked": {
+              "type": "boolean"
+            },
+            "dualAxis": {
+              "type": "boolean"
+            },
+            "showPointLabels": {
+              "type": "boolean"
+            },
+            "hideYAxis": {
+              "type": "boolean"
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "xField",
+            "series"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "chartSeries": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "label": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "pieChartComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "pieChart"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "compactRing"
+            },
+            "categoryField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "valueField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "ring": {
+              "type": "string",
+              "pattern": "^\\d{1,2}%$"
+            },
+            "labelLine": {
+              "type": "boolean"
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "categoryField",
+            "valueField"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "tableComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "table"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/tableData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "subtitle": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "reportCompact",
+                "embedded",
+                "forecastMatrix"
+              ]
+            },
+            "bottomFade": {
+              "type": "boolean"
+            },
+            "compoundCellLayout": {
+              "type": "string",
+              "const": "inline"
+            },
+            "rowKey": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "rowKindField": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "mergeBy": {
+              "type": "string",
+              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+            },
+            "fit": {
+              "type": "string",
+              "enum": [
+                "content",
+                "container"
+              ]
+            },
+            "columns": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/tableColumnNode"
+              }
+            },
+            "pagination": {
+              "oneOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "none"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "local"
+                    },
+                    "pageSize": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 9007199254740991
+                    },
+                    "numbered": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "mode",
+                    "pageSize"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "mode": {
+                      "type": "string",
+                      "const": "query"
+                    }
+                  },
+                  "required": [
+                    "mode"
+                  ],
+                  "additionalProperties": false
+                }
+              ]
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "columns"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "tableData": {
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[a-z0-9][a-z0-9-]*$"
+      },
+      "minProperties": 1,
+      "required": [
+        "main"
+      ]
+    },
+    "tableColumnNode": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/tableColumn"
+        },
+        {
+          "allOf": [
+            {
+              "$ref": "#/definitions/tableColumnGroup"
+            }
+          ]
+        }
+      ]
+    },
+    "tableColumn": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "field"
+        },
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "secondaryField": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/fieldBinding"
+            }
+          ]
+        },
+        "badgeField": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/fieldBinding"
+            }
+          ]
+        },
+        "dangerValues": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "selection": {
+          "type": "object",
+          "properties": {
+            "writes": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "$ref": "#/definitions/fieldReference"
+                      }
+                    },
+                    "required": [
+                      "field"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "value"
+                    ],
+                    "additionalProperties": false
+                  }
+                ]
+              },
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "writes"
+          ],
+          "additionalProperties": false
+        },
+        "title": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "width": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9007199254740991
+        },
+        "fixed": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ]
+        },
+        "sortable": {
+          "type": "boolean"
+        },
+        "filterable": {
+          "type": "object",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "select",
+                "dateRange"
+              ]
+            }
+          },
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false
+        },
+        "link": {
+          "type": "boolean"
+        },
+        "align": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ]
+        },
+        "emphasis": {
+          "type": "string",
+          "const": "strong"
+        },
+        "visual": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "rateBar",
+            "signed"
+          ]
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "tableColumnGroup": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "const": "group"
+        },
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "title": {
+          "$ref": "#/definitions/nonEmptyTextValue"
+        },
+        "children": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/tableColumnNode"
+          }
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "title",
+        "children"
+      ],
+      "additionalProperties": false
+    },
+    "mapChartComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "mapChart"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "regionalOverview"
+            },
+            "nameField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "valueField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "map": {
+              "type": "string",
+              "enum": [
+                "china",
+                "world"
+              ]
+            },
+            "scatter": {
+              "type": "string",
+              "enum": [
+                "point",
+                "effect"
+              ]
+            },
+            "nameMap": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "hierarchyFilter": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "levelField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "parentField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "codeField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "levelMaps": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string"
+              },
+              "additionalProperties": {
+                "type": "string",
+                "enum": [
+                  "china",
+                  "world"
+                ]
+              }
+            },
+            "legend": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/mapLegend"
+                }
+              ]
+            },
+            "tooltipFields": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/mapTooltipField"
+              }
+            },
+            "pinnedSummary": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/mapPinnedSummary"
+                }
+              ]
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "nameField",
+            "valueField",
+            "map"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "mapLegend": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "bands": {
+          "minItems": 2,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mapLegendBand"
+          }
+        }
+      },
+      "required": [
+        "bands"
+      ],
+      "additionalProperties": false
+    },
+    "mapLegendBand": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/nonEmptyTextValue"
+        },
+        "from": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "label",
+        "from"
+      ],
+      "additionalProperties": false
+    },
+    "mapTooltipField": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/nonEmptyTextValue"
+        },
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        }
+      },
+      "required": [
+        "label",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "mapPinnedSummary": {
+      "type": "object",
+      "properties": {
+        "matchField": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "matchValue": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            }
+          ]
+        },
+        "titleField": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "fields": {
+          "minItems": 1,
+          "maxItems": 4,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mapTooltipField"
+          }
+        }
+      },
+      "required": [
+        "matchField",
+        "matchValue",
+        "titleField",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "gaugeComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "gauge"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "mini"
+            },
+            "valueField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "unit": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "label": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "valueField"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "tabContainerComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "tabContainer"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "compact",
+                "analysisStack"
+              ]
+            },
+            "defaultTab": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "tabs": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/tabItem"
+              }
+            }
+          },
+          "required": [
+            "tabs"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "tabItem": {
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "label": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "component": {
+              "$ref": "#/definitions/tableComponent"
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "component"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "label": {
+              "$ref": "#/definitions/nonEmptyTextValue"
+            },
+            "components": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/tableComponent"
+              }
+            }
+          },
+          "required": [
+            "id",
+            "label",
+            "components"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "compositeCardComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "compositeCard"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "titleIcon": {
+              "type": "string",
+              "enum": [
+                "opportunity",
+                "tieredManagement",
+                "review"
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "compact",
+                "projectNorms",
+                "metricGrid"
+              ]
+            },
+            "dividers": {
+              "type": "boolean"
+            },
+            "components": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/compositeCardChild"
+              }
+            }
+          },
+          "required": [
+            "components"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "compositeCardChild": {
+      "oneOf": [
+        {
+          "$ref": "#/definitions/metricCardComponent"
+        },
+        {
+          "$ref": "#/definitions/pieChartComponent"
+        },
+        {
+          "$ref": "#/definitions/gaugeComponent"
+        },
+        {
+          "$ref": "#/definitions/keyValuePanelComponent"
+        },
+        {
+          "$ref": "#/definitions/categoryBreakdownComponent"
+        }
+      ]
+    },
+    "keyValuePanelComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "keyValuePanel"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "titleIcon": {
+              "type": "string",
+              "const": "reward"
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "counterStrip",
+                "detailSummary",
+                "detailNormMatrix"
+              ]
+            },
+            "columns": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "const": 1
+                },
+                {
+                  "type": "number",
+                  "const": 2
+                },
+                {
+                  "type": "number",
+                  "const": 3
+                },
+                {
+                  "type": "number",
+                  "const": 4
+                },
+                {
+                  "type": "number",
+                  "const": 6
+                }
+              ]
+            },
+            "items": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/keyValueItem"
+              }
+            }
+          },
+          "required": [
+            "items"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "keyValueItem": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/nonEmptyTextValue"
+        },
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        },
+        "unit": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/textValue"
+            }
+          ]
+        },
+        "icon": {
+          "type": "string",
+          "enum": [
+            "goldMedal",
+            "silverMedal",
+            "redCard",
+            "yellowCard"
+          ]
+        }
+      },
+      "required": [
+        "label",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "categoryBreakdownComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "categoryBreakdown"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "compactList"
+            },
+            "categoryField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "categoryLabel": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                },
+                {
+                  "type": "boolean",
+                  "const": false
+                }
+              ]
+            },
+            "columns": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/categoryBreakdownColumn"
+              }
+            },
+            "swatches": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "categoryField",
+            "columns"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "categoryBreakdownColumn": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "$ref": "#/definitions/nonEmptyTextValue"
+        },
+        "field": {
+          "$ref": "#/definitions/fieldBinding"
+        }
+      },
+      "required": [
+        "label",
+        "field"
+      ],
+      "additionalProperties": false
+    },
+    "rankingCardComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "rankingCard"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "nameField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "valueField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "changeField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "actions": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/actions"
+                }
+              ]
+            }
+          },
+          "required": [
+            "nameField",
+            "valueField"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "rankingDetailCardComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "rankingDetailCard"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "report"
+            },
+            "metricLabel": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/nonEmptyTextValue"
+                }
+              ]
+            },
+            "tone": {
+              "type": "string",
+              "enum": [
+                "positive",
+                "negative",
+                "neutral"
+              ]
+            },
+            "nameField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "valueField": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "changeField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "badgeFields": {
+              "maxItems": 2,
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/fieldBinding"
+              }
+            },
+            "descriptionField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "semanticDescriptionField": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/fieldBinding"
+                }
+              ]
+            },
+            "details": {
+              "type": "object",
+              "properties": {
+                "field": {
+                  "$ref": "#/definitions/fieldBinding"
+                },
+                "titleField": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "valueField": {
+                  "type": "object",
+                  "properties": {
+                    "field": {
+                      "type": "string",
+                      "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "text",
+                        "number",
+                        "number-1",
+                        "number-2",
+                        "number-grouped",
+                        "compact-wan-0",
+                        "compact-wan-1",
+                        "compact-yi-1",
+                        "cny-adaptive",
+                        "percent-0",
+                        "percent-1",
+                        "percent-2",
+                        "percent-2-signed",
+                        "date",
+                        "date-month-day"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "field"
+                  ],
+                  "additionalProperties": false
+                },
+                "descriptionField": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                },
+                "defaultExpanded": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "field",
+                "titleField"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "nameField",
+            "valueField"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "fieldTextComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "fieldText"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "data": {
+          "$ref": "#/definitions/mainData"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "field": {
+              "$ref": "#/definitions/fieldBinding"
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "plain",
+                "quote",
+                "narrativeShort",
+                "narrativeMeeting",
+                "narrativeRisk",
+                "narrativeProgress"
+              ]
+            }
+          },
+          "required": [
+            "field"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "data",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "textComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "text"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "body": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "bodyFormat": {
+              "type": "string",
+              "const": "semanticHtml"
+            },
+            "variant": {
+              "type": "string",
+              "enum": [
+                "plain",
+                "heading",
+                "insight",
+                "reportInline",
+                "riskNotice"
+              ]
+            },
+            "maxWidth": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 9007199254740991
+            },
+            "links": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "label": {
+                    "$ref": "#/definitions/nonEmptyTextValue"
+                  },
+                  "page": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "carryFilters": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "uniqueItems": true
+                  }
+                },
+                "required": [
+                  "label",
+                  "page"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "aiSummaryComponent": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/componentId"
+        },
+        "type": {
+          "type": "string",
+          "const": "aiSummary"
+        },
+        "layout": {
+          "$ref": "#/definitions/componentLayout"
+        },
+        "props": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "allOf": [
+                {
+                  "$ref": "#/definitions/textValue"
+                }
+              ]
+            },
+            "variant": {
+              "type": "string",
+              "const": "reportInline"
+            },
+            "promptTemplate": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "\\S"
+            },
+            "relatedData": {
+              "type": "object",
+              "propertyNames": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9-]*$"
+              },
+              "additionalProperties": {
+                "$ref": "#/definitions/aiSummaryRelatedDataDefinition"
+              },
+              "minProperties": 1
+            }
+          },
+          "required": [
+            "promptTemplate",
+            "relatedData"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "layout",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "aiSummaryRelatedDataDefinition": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        },
+        "fields": {
+          "minItems": 1,
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/aiSummaryRelatedField"
+          }
+        }
+      },
+      "required": [
+        "source",
+        "description",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "aiSummaryRelatedField": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+        },
+        "term": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "field",
+        "term"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$id": "https://metriccanvas/page/v5.4"
+}

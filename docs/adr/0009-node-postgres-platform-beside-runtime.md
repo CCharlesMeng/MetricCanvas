@@ -1,3 +1,7 @@
+---
+status: superseded by ADR-0060
+---
+
 # 平台采用独立 SvelteKit Node + PostgreSQL,统一运行时保持独立
 
 二期新增独立的 SvelteKit Node 全栈平台应用,承载页面搭建工作台、Agent Runner、MCP、发布确认和管理入口,以 PostgreSQL 持久化看板页面、页面修订与发布状态。现有统一运行时继续独立构建和部署,正式通道与预览通道分别通过平台 `PageRepository` 适配器读取当前发布修订和指定页面修订,运行时不感知 PostgreSQL、修订或 Agent。

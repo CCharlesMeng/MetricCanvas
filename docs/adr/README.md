@@ -1,8 +1,8 @@
-# ADR 基线:59 份决策记录的当前生效结论
+# ADR 基线:61 份决策记录的当前生效结论
 
-`docs/adr/` 现有 59 份 ADR(0001–0059)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 61 份 ADR(0001–0061)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0060-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0062-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -22,7 +22,7 @@
 | [0006](./0006-metadomain-layering-and-naming.md) | 包按 DDD 分层围绕聚合根“看板页面”命名 | 现行(取数边界已由 0014 修订;第 3 条“包名 `widgets` 取自规格字段”的前提已被 0017 推翻,欠账记于 0025 待决) |
 | [0007](./0007-demote-spec-to-document-form.md) | 领域词汇只保留聚合根“看板页面”,“规格”降级为文档形态 | 现行 |
 | [0008](./0008-immutable-page-revisions-and-publish-leases.md) | 不可变线性修订 + 15 分钟发布租约 | 现行 |
-| [0009](./0009-node-postgres-platform-beside-runtime.md) | 平台用独立 SvelteKit Node + PostgreSQL,运行时保持独立 | 现行(Agent Runner 的落地位置已由 0024 细化) |
+| [0009](./0009-node-postgres-platform-beside-runtime.md) | 平台用独立 SvelteKit Node + PostgreSQL,运行时保持独立 | 已被 0060 取代(仍描述当前待迁移实现) |
 | [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布修订,不复制文档 | 现行 |
 | [0011](./0011-derive-query-fields-from-catalog.md) | query 字段由结构化查询与元数据快照解析 | 已被 0014 取代 |
 | [0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md) | 指标履约查 DP 并向数据服务验真 | 已被 0014 取代 |
@@ -73,6 +73,8 @@
 | [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行(装箱纯函数与页头均已实现;`defaultSpan` 重新表述为比例基线) |
 | [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点,恢复临时页面态 | 现行(部分修订 0030 的会话内容边界;不产生页面修订) |
 | [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行(不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁) |
+| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte + Java 页面治理 + Relay/Python 创作期 | 现行目标架构(尚未完成迁移) |
+| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle + 中立契约单向导出 | 现行(迁移实施基线) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -98,13 +100,15 @@
 
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
-部署形态上,一期把页面文档存 Git、经 `PageRepository` 端口加载,统一运行时对存储方式无感知;二期新增独立的 SvelteKit Node + PostgreSQL 平台应用,承载页面搭建工作台、Agent Runner、MCP、发布确认和管理入口,通过同一个 `PageRepository` 端口向统一运行时提供已发布/精确修订两条读取通道。这两份决策并非替代关系:`apps/canvas` 当前同时保留基于 `pages/` 目录的静态文件实现(离线/开发场景)和基于平台 API 的实现(生产场景),二者是同一端口的两个适配器。
+部署目标已由 ADR-0060 改为静态 Svelte SPA + 独立 Java 17/Spring Boot 3.5.15 模块化单体 + Relay Skill-Play + Python FastMCP Tool:Java/MySQL 拥有页面资产,Python 拥有确定性页面装配算法,Relay 拥有内网模型、Skill、对话与 Agent Run,生产不运行 Node 服务端。统一运行时继续通过 `PageRepository` 端口对存储无感知,基于 `pages/` 目录的离线/开发 Adapter 仍可保留。当前 `apps/platform` 的 SvelteKit Node、TypeScript Agent/MCP 与持久化代码尚未迁移,因此 ADR-0009 与 ADR-0024 仍解释当前实现,但不再定义目标生产形态。
 
-包边界方面,治理对象从"预定义指标"整体转为"可执行查询"后(见下节),配套的指标履约与目录发现包已确认为空壳并物理删除;创作期一侧(`agent-runner`、`data-context`)按同一套 DDD 标准做了进一步收敛,`agent-runner` 解散进 `apps/platform`,`data-context` 并入 `packages/mcp`,并修正了一处因两个包各自定义同名 `DataContextProvider` 而产生的真元归一违规。`agent-runner` 解散不改变 ADR-0009 "Agent Runner 只依赖模型提供方与 MCP 客户端接口"的约束,只是把实现这份约束的边界从独立包收窄为平台内的模块边界。
+ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 锁步交付唯一 Skill、Python 脚本、FastMCP Adapter、确定性核心、假 Port、Harness 和中立契约;TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成页面构建规格,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。
+
+包边界方面,治理对象从"预定义指标"整体转为"可执行查询"后(见下节),配套的指标履约与目录发现包已确认为空壳并物理删除;当前 TypeScript 创作期一侧(`agent-runner`、`data-context`)按同一套 DDD 标准做了进一步收敛,`agent-runner` 解散进 `apps/platform`,`data-context` 并入 `packages/mcp`,并修正了一处因两个包各自定义同名 `DataContextProvider` 而产生的真元归一违规。该结构仍是迁移前代码的行为基线;目标形态不在 Java 或 Node 重建 Agent Runner,而由 Relay 承担 Agent 运行、Python Tool 承担页面装配、Java 承担页面资产治理。
 
 表现层一侧随后按同一套判据做了包内收敛:`widgets` 的职责收紧为"页面组件的纯渲染实现",三组在包内零消费者、只服务包外的文件迁入 `runtime-ui`——快照态外壳 `WidgetHost`、筛选控件(职责表本就把"筛选控件"判给 `runtime-ui`,此前是实现与文档漂移)、以及只服务 AI 总结正文的 `SafeMarkdown`(迁入后 ADR-0019 的垂直组件目录首次完整)。`widgets/src` 同时从平铺改为按组件类型分目录,与 `page/src/schema/components/` 对齐;受控语义 HTML 在 `rankingDetailCard` 与 `text` 出现两个真实消费者后提升为共享 Module,Interface 只接收原始字符串,安全解析、失败关闭、节点渲染和颜色映射全部由其 Implementation 独占。**`aiSummary` 刻意不进 `widgets`**:它是生成型垂直组件,搬入会给纯渲染包引入 `runtime` 依赖与网络代码,`components/` 的完整性由"纯渲染"而非"schema 组件类型全集"定义。
 
-来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)。
+来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)。
 
 ## 页面文档结构与书写原则
 
@@ -158,9 +162,9 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 **仍为提议的扩展:** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 落地 ADR-0034 留白的 GraphQL 分支,筛选条件以结构化谓词(封闭算子 + 绑定筛选器或页面参数 + 空值省略)表达,排序以排序绑定表达,总条数由计数声明复用主查询谓词。**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`。**
 
-当前 `versionPolicy.current` 是 `5.3`(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.3 已发布**(`supportedVersions()` 返回 5.0 / 5.1 / 5.2 / 5.3):[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是 5.2 能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`;[ADR-0054](./0054-section-weighted-column-tracks.md) 的受控权重列轨，以及同批的筛选 `emptyLabel`、紧凑/嵌入式呈现闭集、指标短上下文、键值单位与地域固定摘要是 5.3 增量能力。存量页面继续声明满足其能力下限的已发布版本,不做强制迁移。
+当前 `versionPolicy.current` 是 `5.4`(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.4 已发布**(`supportedVersions()` 返回 5.0 / 5.1 / 5.2 / 5.3 / 5.4):[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是 5.2 能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`;[ADR-0054](./0054-section-weighted-column-tracks.md) 的受控权重列轨，以及同批的筛选 `emptyLabel`、紧凑/嵌入式呈现闭集、指标短上下文、键值单位与地域固定摘要是 5.3 增量能力；指标行值级导航、多表 Tab、`analysisStack`、紧凑只读页头与 `compositeCard.metricGrid` 是 5.4 增量能力。存量页面继续声明满足其能力下限的已发布版本,不做强制迁移。
 
-**已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 已按此策略承载主版本、次版本与能力表,接受 5.0、5.1、5.2 与 5.3。
+**已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 已按此策略承载主版本、次版本与能力表,接受 5.0、5.1、5.2、5.3 与 5.4。
 
 该策略有**一条例外**(2026-08-25 补入 ADR-0051):**从未被任何存量文档行使的开放面,可以按次版本收紧。** 判据是零使用、可证(测试或脚本随收紧一并落地)、并承认形式超集让位于真实文档集合上的超集。它被刻意限定得很死——"很少使用"不是判据,只有"零使用且可证"才是——否则它就是绕过版本策略的后门。第一个适用对象是组件 `layout` 对象补 `.strict()`(每个组件的 `props` 都是 strict,`layout` 不是,写错键名会静默通过),该收紧已随 5.2 行使,零使用证明是 `packages/page/tests/layout-strict-zero-usage.test.ts`。
 
@@ -170,13 +174,13 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 沉淀分两个方向,时间语义相反:沉淀为 App 走 `saveRevision`,页面时间必须是结构化相对时间(ADR-0035)才会随周期滚动,且若含临时指标需过 ADR-0036 的门槛;沉淀为 Report 则**保留查询定义与内嵌初始行、不声明筛选绑定**——按 ADR-0020,默认状态下存在内嵌初始行且无筛选变化时统一运行时不重新查询,报告因此天然冻结在采集时点,同时保住口径溯源。Report 不新增数据源类型或渲染路径。
 
-问数的 NL2DQE 发生在 Platform 创作期,统一运行时收到的始终是已经确定的页面文档,因此"统一运行时不执行 NL2DQE"这条不变式原样成立,并未因新增形态而放宽。**分析会话已裁决为服务端一等概念:** 保存 `sessionId`、追加式步骤事件流与一份最新**会话检查点**;步骤事件解释过程,检查点恢复已校验临时页面态、结构化续跑状态、组件钉住结果与待确认交互。它不是页面修订,不进页面仓储或发布治理;不保存完整对话文本、模型 prompt 或原始 `outcome.messages`。会话按 90 天保留,仅平台管理员与本人可见;身份当前允许 mock,但 mock 必须提供多个可切换用户且按 `actorId` 的可见性过滤必须真实执行,接入真实身份是上生产的前置条件。Monitor 当前不建设,其依赖(调度、基线、稳定指标口径)已记录,其中稳定口径由 ADR-0031 承载、每期重算由 ADR-0035 承载。
+问数的 NL2DQE 发生在创作期,统一运行时收到的始终是已经确定的页面文档,因此"统一运行时不执行 NL2DQE"这条不变式原样成立,并未因新增形态而放宽。当前实现由 Platform 承载,ADR-0060 的目标形态改由 Relay/Skill 与 Python Tool 承载,但创作期/运行期分界不变。**分析会话已裁决为服务端一等概念:** 保存 `sessionId`、追加式步骤事件流与一份最新**会话检查点**;步骤事件解释过程,检查点恢复已校验临时页面态、结构化续跑状态、组件钉住结果与待确认交互。它不是页面修订,不进页面仓储或发布治理;不保存完整对话文本、模型 prompt 或原始 `outcome.messages`。会话按 90 天保留,仅平台管理员与本人可见;身份当前允许 mock,但 mock 必须提供多个可切换用户且按 `actorId` 的可见性过滤必须真实执行,接入真实身份是上生产的前置条件。Relay Run 与分析会话/会话检查点如何映射仍待目标集成裁决。Monitor 当前不建设,其依赖(调度、基线、稳定指标口径)已记录,其中稳定口径由 ADR-0031 承载、每期重算由 ADR-0035 承载。
 
-来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0058](./0058-latest-session-checkpoint-restores-transient-page-state.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)。
+来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0058](./0058-latest-session-checkpoint-restores-transient-page-state.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)。
 
 ## 问数编排与口径治理
 
-**现行结论:** 编排顺序固定为域路由 → 指标与维度检索 → 候选消歧 → 口径成形 → 清单校验 → 真实执行 → 意图判定与组件选择 → 呈现,全部发生在 Platform 创作期。域路由由模型分类但**结果必须可见且可改**(静默路由错域会产出看起来完全正常的错数);检索返回排序候选与口径差异说明,取数核对是一次**消歧**而不是一次确认;执行前展示完整生效范围卡,但只在候选歧义、使用自由 formula、命中临时指标、时间口径由模型补全或预估成本超阈值时阻塞等待确认;每步中间结果分步流式呈现,既处理延迟也充当纠错锚点。Answer 允许由多个组件组成,就是一份完整的临时页面文档。组件选择以能力目录、字段角色、维度基数与时间粒度为**硬闸**,在允许范围内按分析意图排序,意图回显且用户可钉住,不把可视化决策外包给提问者。多轮修改是定向增量 patch,允许一轮同时改多层,原则是**用户未提及的显式设置保持不变**。
+**现行结论:** 编排顺序固定为域路由 → 指标与维度检索 → 候选消歧 → 口径成形 → 清单校验 → 真实执行 → 意图判定与组件选择 → 呈现,全部发生在创作期;当前由 Platform 实现,目标由 Relay/Skill 调度与 Python 确定性页面装配 Module 协作实现。域路由由模型分类但**结果必须可见且可改**(静默路由错域会产出看起来完全正常的错数);检索返回排序候选与口径差异说明,取数核对是一次**消歧**而不是一次确认;执行前展示完整生效范围卡,但只在候选歧义、使用自由 formula、命中临时指标、时间口径由模型补全或预估成本超阈值时阻塞等待确认;每步中间结果分步流式呈现,既处理延迟也充当纠错锚点。Answer 允许由多个组件组成,就是一份完整的临时页面文档。组件选择以能力目录、字段角色、维度基数与时间粒度为**硬闸**,在允许范围内按分析意图排序,意图回显且用户可钉住,不把可视化决策外包给提问者。多轮修改是定向增量 patch,允许一轮同时改多层,原则是**用户未提及的显式设置保持不变**。
 
 口径治理承认一处开放面:指标检索不到时**尽力回答而不阻塞**(不恢复 0012 的 `METRIC_GAP` 状态),但临时指标必须在界面上与公司口径视觉可区分、缺口落库为带出现次数的指标需求条目、且沉淀为长期 App 时必须显式接受"本页面含无人负责的口径"并把该事实**持久化在页面上**。冷启动依赖人工构造的 30–50 条黄金问题集(存量页面可反向抽取的真实 DQE 查询体只有 4 个),配额为直答 60%、需澄清 20%、无指标缺口 10%、跨域近义易混 10%,且 few-shot 样本与评测样本必须切开。
 
@@ -209,7 +213,7 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 - **多页应用是否需要成为一等概念**([ADR-0048](./0048-navigation-intent-and-host-routing.md) Considered Options):IOC 作战地图的应用外壳归已有门户,因此本批只定义了导航意图与宿主路由契约,没有引入导航树、页面成员或面包屑规则。第二个多页应用出现时需要重新裁决;届时要注意,面包屑的真正难点(回跳要恢复来源页的筛选、搜索、分页与排序状态)本就不是静态导航树能表达的。
 - **级联页面数据源输入语义**([ADR-0015](./0015-defer-cascading-data-source-input-semantics.md),proposed):恢复设计前需要依次确定空集与失败传播、输入集合上限、循环依赖校验、缓存键和取消语义;在明确 SQL 与 DQE 共同支持的受控参数模型之前,不得向页面 schema 加入临时 `inputs`、表达式或任意结果转换能力。
 - **模板发布的治理强度**([ADR-0024](./0024-converge-authoring-time-packages.md) 待决节):`template-library` 当前的发布流程没有租约过期、审计事件或拒绝/取消/强制释放,治理强度明显弱于页面发布(ADR-0008 的 7 态 + 全量审计),但没有 ADR 说明这是刻意的产品裁决还是实现漂移。在这一点被显式裁决(写新 ADR)之前,不应该以此为由抽取页面/模板共享的发布内核。
-- **真实身份接入是上生产的前置条件**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):会话内容含问题原文(客户名、代表处、业务黑话),按身份可见性过滤是首版能力,但当前身份仍是 mock。mock 阶段的隐私承诺结构上成立、来源不可信,因此在接入真实身份之前不得把会话数据用于跨用户的推荐、评测或对外分享。**数据权限本身(行级与指标级过滤由 DQE 承担还是由本平台承担)尚未裁决**,这一点未定之前,`actorId` 过滤只保证会话可见性,不保证数据行可见性。**归因诊断(ADR-0043)把这条未决事项的代价放大:** 自动下钻会主动查询用户未提及的维度,因此在权限归属裁决前,0043 把下钻候选集限制为"用户已明确出现在筛选条件里的维度及其声明过的下级",不做自主探索;这是一条显式的、待裁决后可放开的约束,不要当作实现不完整。
+- **真实身份接入是外部生产前置输入，不纳入当前规划**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)):会话内容含问题原文(客户名、代表处、业务黑话),但当前身份仍是 mock；在接入真实身份之前不得把会话数据用于跨用户的推荐、评测或对外分享。后续内网对接方式由外部方案提供,当前架构讨论、规划与独立创作 Bundle 不设计鉴权机制,也不以本仓 mock 身份宣称生产链路已完成。归因诊断的自动下钻限制在真实内网对接落实前继续有效。
 - **查询成本、配额与成本预估**([ADR-0032](./0032-authoring-time-query-verification.md) Consequences、[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):创作期真实执行与每轮问数都产生真实数仓成本,按身份的次数与资源限制策略尚未确定;ADR-0037 取数核对的"预估成本超阈值才阻塞确认"依赖尚不存在的成本预估能力,在其具备之前该条件退化为按域或按粒度的粗略阈值。
 - **计算数据集的恢复条件**([ADR-0033](./0033-suspend-dataset-runtime.md),proposed):需同时满足指标条目的可加性与时间聚合方式在目标域真实可用、ADR-0015 的五项级联语义有确定答案、且 formula 的口径复制成本已实际发生(同一口径在多个页面各持副本并已漂移)。第一条的**契约侧已由 [ADR-0044](./0044-first-class-metric-entries.md) 打通,数据侧未补齐**,因此该条件仍未满足;后两条未动。在此之前不得以任何名义在服务端或页面协议中引入 Transform/Compute 层,也不得提供通用 `arithmetic`。三个条件与外部 Dataset Runtime 提案的逐条对账见 [`docs/dataset-reconciliation.md`](../dataset-reconciliation.md)。
 - **Explore 是否需要独立于 Ask 的构造能力**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):当前 Explore 被视为 Ask 的多轮延续,共用同一份临时页面态与同一套编排。若出现并排对比、分叉比较或跨会话拼装这类 Ask 编排无法表达的需求,才需单独裁决;在此之前不要为 Explore 建立第二套状态模型。

@@ -1,0 +1,21 @@
+{
+  "question": "上个月各区域的 Tokens 请求量是多少？",
+  "description": "区域 Tokens 请求量对比",
+  "units": [
+    {
+      "businessDomain": "运营分析",
+      "metrics": [{ "kind": "metric", "name": "Tokens请求量" }],
+      "groupBy": ["区域"],
+      "filters": [],
+      "time": {
+        "granularity": "month",
+        "start": "2026-08",
+        "end": "2026-08",
+        "providedBy": "user"
+      },
+      "title": "各区域 Tokens 请求量",
+      "intent": "comparison",
+      "pinnedComponent": "barChart"
+    }
+  ]
+}

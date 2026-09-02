@@ -1,0 +1,9 @@
+{
+  "bundleVersion": "0.1.0",
+  "status": "s2-in-progress",
+  "python": ">=3.12",
+  "transport": "stdio",
+  "entrypoint": "server.py",
+  "skill": "SKILL.md",
+  "contracts": "contracts/generated/manifest.json"
+}

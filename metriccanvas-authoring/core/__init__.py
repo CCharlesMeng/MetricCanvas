@@ -1,0 +1,1 @@
+"""Deterministic MetricCanvas authoring core."""
