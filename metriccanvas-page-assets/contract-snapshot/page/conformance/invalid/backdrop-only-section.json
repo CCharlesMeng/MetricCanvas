@@ -1,0 +1,203 @@
+{
+  "case": "backdrop-only-section",
+  "invariant": "backdrop-needs-siblings",
+  "input": {
+    "schemaVersion": "5.4",
+    "id": "composite-page",
+    "layoutForm": "dashboard",
+    "dashboardToolbar": {
+      "variant": "compact",
+      "readOnly": true,
+      "note": "只读"
+    },
+    "meta": {
+      "description": "组合卡、Tab 容器、叠放层、列轨与 5.4 呈现档的契约样例"
+    },
+    "dataSources": {
+      "summary": {
+        "fields": {
+          "channel": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure"
+          },
+          "share": {
+            "type": "number",
+            "role": "measure"
+          },
+          "score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "owner": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "channel": "线上",
+              "amount": 60,
+              "share": 60,
+              "score": 88,
+              "owner": "张三"
+            },
+            {
+              "channel": "线下",
+              "amount": 40,
+              "share": 40,
+              "score": 70,
+              "owner": "李四"
+            }
+          ]
+        }
+      },
+      "top": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "queryField": "value",
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name"
+                  ],
+                  "output_metrics": [
+                    "value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 10
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "container": "plain",
+        "components": [
+          {
+            "id": "backdrop",
+            "type": "text",
+            "layout": {
+              "span": 12,
+              "layer": "backdrop"
+            },
+            "props": {
+              "variant": "plain",
+              "body": "背景"
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs",
+        "components": [
+          {
+            "id": "tab-container",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "analysisStack",
+              "defaultTab": "top",
+              "tabs": [
+                {
+                  "id": "top",
+                  "label": "TOP",
+                  "component": {
+                    "id": "top-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "top"
+                    },
+                    "props": {
+                      "variant": "embedded",
+                      "bottomFade": true,
+                      "columns": [
+                        {
+                          "field": "name"
+                        },
+                        {
+                          "field": "value"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "all",
+                  "label": "全部",
+                  "components": [
+                    {
+                      "id": "all-table",
+                      "type": "table",
+                      "layout": {
+                        "span": 12
+                      },
+                      "data": {
+                        "main": "summary"
+                      },
+                      "props": {
+                        "columns": [
+                          {
+                            "field": "channel"
+                          },
+                          {
+                            "field": "amount"
+                          }
+                        ],
+                        "pagination": {
+                          "mode": "local",
+                          "pageSize": 10
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components",
+      "message": "内容分区 overview 只有 backdrop 组件，没有可叠放其上的组件"
+    }
+  ]
+}

@@ -1,0 +1,451 @@
+[
+  {
+    "type": "reportHeader",
+    "label": "报告页头",
+    "aliases": [],
+    "purpose": "表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML",
+    "chooseWhen": [
+      "任何完整页面的开头"
+    ],
+    "dataShape": "不绑定页面数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "title"
+    ],
+    "title": "required",
+    "defaultSpan": 12
+  },
+  {
+    "type": "metricCard",
+    "label": "指标卡",
+    "aliases": [
+      "KPI卡",
+      "数字卡"
+    ],
+    "purpose": "突出一个或少量核心指标的当前值、变化值与可选完成率",
+    "chooseWhen": [
+      "总额、数量、完成率、KPI、核心指标、年度活动进展"
+    ],
+    "dataShape": "单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 0,
+        "max": 0
+      },
+      "measures": {
+        "min": 1
+      },
+      "maxRows": 3
+    },
+    "requiredProps": [
+      "rows[].label",
+      "rows[].valueField"
+    ],
+    "title": "optional",
+    "defaultSpan": 3
+  },
+  {
+    "type": "barChart",
+    "label": "柱状图",
+    "aliases": [
+      "条形图",
+      "柱图"
+    ],
+    "purpose": "比较离散类别之间的大小或展示分类分布",
+    "chooseWhen": [
+      "区域/渠道/产品对比",
+      "分类分布",
+      "多指标类别比较"
+    ],
+    "dataShape": "一个 dimension 类别字段 + 一个或多个 metric 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      }
+    },
+    "requiredProps": [
+      "categoryField",
+      "series[].field"
+    ],
+    "title": "optional",
+    "defaultSpan": 6
+  },
+  {
+    "type": "lineChart",
+    "label": "折线图",
+    "aliases": [
+      "线图",
+      "趋势图"
+    ],
+    "purpose": "展示指标随时间或有序维度的变化趋势",
+    "chooseWhen": [
+      "趋势、走势、按日/月变化、时间序列"
+    ],
+    "dataShape": "一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      }
+    },
+    "requiredProps": [
+      "xField",
+      "series[].field"
+    ],
+    "title": "optional",
+    "defaultSpan": 8
+  },
+  {
+    "type": "pieChart",
+    "label": "饼图",
+    "aliases": [
+      "圆饼图",
+      "环形图"
+    ],
+    "purpose": "展示少量类别对整体的占比或构成",
+    "chooseWhen": [
+      "占比、构成、份额，且类别数量较少"
+    ],
+    "dataShape": "一个 dimension 类别字段 + 一个 metric 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "requiredProps": [
+      "categoryField",
+      "valueField"
+    ],
+    "title": "optional",
+    "defaultSpan": 4
+  },
+  {
+    "type": "table",
+    "label": "明细表",
+    "aliases": [
+      "表格",
+      "列表"
+    ],
+    "purpose": "展示需要逐行核对、排序、筛选或通过单元格选择联动明细的记录",
+    "chooseWhen": [
+      "明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细"
+    ],
+    "dataShape": "一个或多个 dimension/metric 字段组成的多行记录",
+    "authoringShape": {
+      "bindsData": true,
+      "minScalarFields": 1
+    },
+    "requiredProps": [
+      "columns[].field"
+    ],
+    "title": "optional",
+    "defaultSpan": 12
+  },
+  {
+    "type": "mapChart",
+    "label": "地图",
+    "aliases": [],
+    "purpose": "展示国家或省级地域分布，可按层级维度筛选器做三级下钻",
+    "chooseWhen": [
+      "明确要求中国/世界地图，且地域名称能映射到地图"
+    ],
+    "dataShape": "地域名称 dimension 字段 + 一个 metric 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      },
+      "requiresFieldSemantics": [
+        "地域名称"
+      ]
+    },
+    "requiredProps": [
+      "nameField",
+      "valueField",
+      "map"
+    ],
+    "title": "optional",
+    "defaultSpan": 8
+  },
+  {
+    "type": "gauge",
+    "label": "仪表",
+    "aliases": [
+      "gauge",
+      "仪表盘",
+      "完成率环"
+    ],
+    "purpose": "用环形刻度突出一个比率或完成度类 KPI",
+    "chooseWhen": [
+      "管道支撑率、完成率、达标率这类单值百分比 KPI"
+    ],
+    "dataShape": "单行记录；一个 measure 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 0,
+        "max": 0
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      },
+      "maxRows": 1
+    },
+    "requiredProps": [
+      "valueField"
+    ],
+    "title": "optional",
+    "defaultSpan": 2
+  },
+  {
+    "type": "tabContainer",
+    "label": "Tab 容器",
+    "aliases": [
+      "页签",
+      "选项卡"
+    ],
+    "purpose": "在同一卡位切换多张表格,不占用额外栅格行",
+    "chooseWhen": [
+      "概览 / TOP / 丢单这类互斥表格需要共用一块区域"
+    ],
+    "dataShape": "不绑定页面数据源；每个 Tab 内的表格自己声明数据槽",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "tabs[].id",
+      "tabs[].label",
+      "tabs[].component"
+    ],
+    "title": "optional",
+    "defaultSpan": 4
+  },
+  {
+    "type": "compositeCard",
+    "label": "组合卡",
+    "aliases": [
+      "复合卡",
+      "组合卡片"
+    ],
+    "purpose": "把若干组件框进一张卡,并让这张卡作为一个组件进 12 列栅格横向并排",
+    "chooseWhen": [
+      "需要若干张白卡横向并排,每张卡自带卡壳、可选标题与卡内分隔",
+      "要装的这组组件本身就是一个内容分区时改用 section.container: \"card\"",
+      "卡内是多张表格互斥切换时改用 Tab 容器"
+    ],
+    "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽与字段绑定",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "components[].id",
+      "components[].type",
+      "components[].layout",
+      "components[].data",
+      "components[].props"
+    ],
+    "title": "optional",
+    "defaultSpan": 4
+  },
+  {
+    "type": "rankingCard",
+    "label": "排行卡",
+    "aliases": [],
+    "purpose": "突出 Top N 或按指标排序的类别",
+    "chooseWhen": [
+      "排行、排名、Top N、领先/落后对象"
+    ],
+    "dataShape": "名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "requiredProps": [
+      "nameField",
+      "valueField"
+    ],
+    "title": "optional",
+    "defaultSpan": 4
+  },
+  {
+    "type": "rankingDetailCard",
+    "label": "详细排行卡",
+    "aliases": [],
+    "purpose": "按查询结果顺序展示对象、指标、变化、徽标与原因说明",
+    "chooseWhen": [
+      "需要保留查询排序的增长/下降排行",
+      "排行项需要展示标签与原因说明"
+    ],
+    "dataShape": "名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
+    "requiredProps": [
+      "nameField",
+      "valueField"
+    ],
+    "title": "optional",
+    "defaultSpan": 6
+  },
+  {
+    "type": "keyValuePanel",
+    "label": "信息面板",
+    "aliases": [
+      "键值面板",
+      "基本信息"
+    ],
+    "purpose": "把一条记录的若干字段按「标签：取值」逐项列出",
+    "chooseWhen": [
+      "详情页的基本信息区：字段各不相同、每个字段只有一个取值、不需要逐行核对",
+      "需要逐行核对或排序时改用明细表"
+    ],
+    "dataShape": "单行记录；每项绑定一个 dimension 或 measure 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "minScalarFields": 1,
+      "maxRows": 1
+    },
+    "requiredProps": [
+      "items[].label",
+      "items[].field"
+    ],
+    "title": "optional",
+    "defaultSpan": 12
+  },
+  {
+    "type": "categoryBreakdown",
+    "label": "分类明细",
+    "aliases": [
+      "类别明细",
+      "分类清单"
+    ],
+    "purpose": "按类别逐行、按度量逐列列出少数几行带列头的紧凑明细",
+    "chooseWhen": [
+      "环形图旁边那份「类别 + 两三个度量」的小表,或卡内的分档明细",
+      "行数与列数都很少、不需要分页排序表头筛选时;需要那些能力改用明细表",
+      "每个类别只有一个取值、结构是键值对时改用信息面板"
+    ],
+    "dataShape": "每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      },
+      "maxRows": 3
+    },
+    "requiredProps": [
+      "categoryField",
+      "columns[].label",
+      "columns[].field"
+    ],
+    "title": "optional",
+    "defaultSpan": 6
+  },
+  {
+    "type": "fieldText",
+    "label": "字段长文本",
+    "aliases": [],
+    "purpose": "把数据源里的一段长文本按段落呈现，标题写在组件上",
+    "chooseWhen": [
+      "项目背景、项目风险、会议结论这类整段来自数据字段的文本",
+      "正文是页面文档里写死的静态说明时改用 text 组件"
+    ],
+    "dataShape": "单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1
+      },
+      "maxRows": 1,
+      "requiresFieldSemantics": [
+        "整段长文本"
+      ]
+    },
+    "requiredProps": [
+      "field"
+    ],
+    "title": "optional",
+    "defaultSpan": 12
+  },
+  {
+    "type": "text",
+    "label": "文本",
+    "aliases": [],
+    "purpose": "承载说明、口径提示或由后端返回的人工/AI 已确认分析结论；可显式使用受控语义 HTML 正文",
+    "chooseWhen": [
+      "摘要默认使用 text；说明、提示、后端返回或已确认结论均选择本组件",
+      "页面内分隔章节的大标题使用 variant: heading，标题写在 props.title，通常放在 container: plain 的分区里",
+      "摘要需要分色富文本时声明 bodyFormat: semanticHtml，并在 body 中只使用受控标签和语义类",
+      "分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文"
+    ],
+    "dataShape": "不绑定页面数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [],
+    "title": "optional",
+    "defaultSpan": 12
+  },
+  {
+    "type": "aiSummary",
+    "label": "AI 总结",
+    "aliases": [],
+    "purpose": "仅在需求明确声明时，基于关联数据通过 SSE 流式生成 AI 总结",
+    "chooseWhen": [
+      "需求明确声明运行时 SSE 动态生成；仅有摘要标题、数据或 AI 文案不得推断为 aiSummary"
+    ],
+    "dataShape": "不声明数据槽；relatedData 显式引用页面数据源字段",
+    "authoringShape": {
+      "bindsData": false
+    },
+    "requiredProps": [
+      "promptTemplate",
+      "relatedData"
+    ],
+    "title": "optional",
+    "defaultSpan": 12
+  }
+]

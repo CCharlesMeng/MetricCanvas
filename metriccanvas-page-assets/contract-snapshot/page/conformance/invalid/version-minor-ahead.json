@@ -1,0 +1,109 @@
+{
+  "case": "version-minor-ahead",
+  "invariant": "schema-version-supported",
+  "input": {
+    "schemaVersion": "5.9",
+    "id": "query-dashboard",
+    "dataSources": {
+      "sales": {
+        "fields": {
+          "region": {
+            "queryField": "region",
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "gmv",
+            "type": "number",
+            "role": "measure",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "region"
+                  ],
+                  "output_metrics": [
+                    "gmv"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 20
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region-filter": {
+                "target": "dimension",
+                "queryField": "region"
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "region-filter",
+        "type": "dimension",
+        "dimension": "region"
+      }
+    ],
+    "sections": [
+      {
+        "id": "details",
+        "components": [
+          {
+            "id": "sales-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sales"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": "gmv"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "writeFilter": "region-filter",
+                  "field": "region"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/schemaVersion",
+      "message": "文档格式版本 5.9 高于运行时当前次版本 5.4"
+    }
+  ]
+}

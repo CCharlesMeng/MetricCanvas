@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: pageassets
+  main:
+    banner-mode: off
+
+# {service} 前缀由配置注入；并入宿主后只改 consumer 的 base URL（ADR-0062）。
+pageassets:
+  service-name: ${PAGE_ASSETS_SERVICE_NAME:pageassets}
+
+logging:
+  config: classpath:log4j2.xml

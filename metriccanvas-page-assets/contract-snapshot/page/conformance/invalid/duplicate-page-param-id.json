@@ -1,0 +1,145 @@
+{
+  "case": "duplicate-page-param-id",
+  "invariant": "page-param-id-unique",
+  "input": {
+    "schemaVersion": "5.1",
+    "id": "params-page",
+    "layoutForm": "report",
+    "meta": {
+      "title": {
+        "param": "customer"
+      },
+      "description": "页面参数与文本取值引用的契约样例"
+    },
+    "params": [
+      {
+        "id": "customer",
+        "type": "string",
+        "required": true,
+        "label": "客户"
+      },
+      {
+        "id": "year",
+        "type": "number",
+        "required": true,
+        "default": 2026
+      },
+      {
+        "id": "note",
+        "type": "string",
+        "required": false
+      },
+      {
+        "id": "customer",
+        "type": "string",
+        "required": true
+      }
+    ],
+    "dataSources": {
+      "kpi": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure"
+          },
+          "target": {
+            "type": "number",
+            "role": "measure"
+          },
+          "region": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 10,
+              "target": 20,
+              "region": "华东"
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": {
+                "param": "customer"
+              },
+              "subtitle": {
+                "param": "note"
+              },
+              "tags": [
+                {
+                  "param": "year",
+                  "format": "number"
+                },
+                "固定标签"
+              ]
+            }
+          },
+          {
+            "id": "card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "kpi"
+            },
+            "props": {
+              "rows": [
+                {
+                  "label": "GMV",
+                  "valueField": "gmv",
+                  "changes": [
+                    {
+                      "label": "目标",
+                      "field": "target"
+                    }
+                  ]
+                }
+              ],
+              "progress": {
+                "valueField": "gmv",
+                "label": {
+                  "param": "year",
+                  "format": "number-grouped"
+                }
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "navigate": {
+                    "page": "params-page",
+                    "setParams": {
+                      "customer": "region"
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/params/3/id",
+      "message": "页面参数 id 重复:customer"
+    }
+  ]
+}

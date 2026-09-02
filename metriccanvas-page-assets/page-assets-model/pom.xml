@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Interface 契约 module：Swagger 2.0 作者文件 rest-services-page-assets.yaml 与
+  dfs-codegen 生成的 delegate / model（ADR-0062）。J1 只立骨架；YAML 与 codegen 配置在 J2 落地，
+  生成物不入库。dfs-codegen-maven-plugin 只在内部 Artifactory 可得，本机构建时以 profile 关闭。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.huawei.cdi</groupId>
+    <artifactId>metriccanvas-page-assets</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>page-assets-model</artifactId>
+  <name>Page Assets :: Model</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+    </dependency>
+  </dependencies>
+</project>

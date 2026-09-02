@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs 排除项。EI_EXPOSE_REP / EI_EXPOSE_REP2 针对 record 与 Jackson 树节点的载体误报：
+  record 的集合字段在紧凑构造器里已做 List.copyOf，JsonNode 是按值传递的解析树，
+  两者都不构成可被外部篡改的内部状态。其余规则全部生效。
+-->
+<FindBugsFilter>
+  <Match>
+    <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+  </Match>
+</FindBugsFilter>

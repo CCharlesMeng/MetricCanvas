@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  领域 / 应用 / 适配器 module（ADR-0062）。分层边界由 ArchUnit 守（见 src/test/.../ArchitectureTest）。
+  contracts/metriccanvas 的只读快照在构建时从 ../contract-snapshot 嵌入 JAR，
+  运行时不挂载、不远程拉取；快照与 contract-lock.json 的一致性由 ContractSnapshotTest 守。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.huawei.cdi</groupId>
+    <artifactId>metriccanvas-page-assets</artifactId>
+    <version>0.0.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>page-assets-service</artifactId>
+  <name>Page Assets :: Service</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.tngtech.archunit</groupId>
+      <artifactId>archunit-junit5</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/../contract-snapshot</directory>
+        <targetPath>contracts/metriccanvas</targetPath>
+      </resource>
+      <resource>
+        <directory>${project.basedir}/..</directory>
+        <includes>
+          <include>contract-lock.json</include>
+        </includes>
+        <targetPath>contracts</targetPath>
+      </resource>
+    </resources>
+  </build>
+</project>

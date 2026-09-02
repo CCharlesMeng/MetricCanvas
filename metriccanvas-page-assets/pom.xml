@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  MetricCanvas 第一方 Java 页面资产 Module 组（ADR-0062）。
+  三个 module 可被 CDINL2DataBuilderService 整体吸收：并入时丢弃 page-assets-bootstrap，
+  把 page-assets-model 与 page-assets-service 拖进宿主 reactor。
+
+  parent 是公司统一 parent cbcbi-parent。本机拿不到内部 Artifactory，因此 parent 版本为
+  `local`，经 <relativePath> 解析到 build-parent/ 下的最小占位；CI 用 `cbcbi.parent.version`
+  切到真实版本（Maven 不允许在 <parent> 坐标里直接写属性，切换由 scripts/use-company-parent.sh
+  完成，见 README「切换到公司 parent」）。
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.huawei.hwclouds.cbc</groupId>
+    <artifactId>cbcbi-parent</artifactId>
+    <version>local</version>
+    <relativePath>build-parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>com.huawei.cdi</groupId>
+  <artifactId>metriccanvas-page-assets</artifactId>
+  <!-- 交付版本由 Fuxi release_version 经 `mvn versions:set` 注入，不另设 SemVer（ADR-0062）。 -->
+  <version>0.0.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>MetricCanvas Page Assets</name>
+
+  <modules>
+    <module>page-assets-model</module>
+    <module>page-assets-service</module>
+    <module>page-assets-bootstrap</module>
+  </modules>
+
+  <properties>
+    <!-- 公司 parent 的真实版本，scripts/use-company-parent.sh 读取此值改写上方 <parent>。 -->
+    <cbcbi.parent.version>26.08.101-m3-RELEASE</cbcbi.parent.version>
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <archunit.version>1.5.0</archunit.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.huawei.cdi</groupId>
+        <artifactId>page-assets-model</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.huawei.cdi</groupId>
+        <artifactId>page-assets-service</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.tngtech.archunit</groupId>
+        <artifactId>archunit-junit5</artifactId>
+        <version>${archunit.version}</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <release>17</release>
+          <parameters>true</parameters>
+          <compilerArgs>
+            <arg>-Xlint:all,-processing,-serial</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>-Dfile.encoding=UTF-8 -Duser.timezone=UTC</argLine>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <profiles>
+    <!-- 公司门禁之一；本机按需 `mvn -Pgates verify`，CI 常开。 -->
+    <profile>
+      <id>gates</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-maven-plugin</artifactId>
+            <configuration>
+              <effort>Max</effort>
+              <threshold>Medium</threshold>
+              <failOnError>true</failOnError>
+              <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>

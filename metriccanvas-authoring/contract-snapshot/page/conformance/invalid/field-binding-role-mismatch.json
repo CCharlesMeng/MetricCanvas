@@ -1,0 +1,126 @@
+{
+  "case": "field-binding-role-mismatch",
+  "invariant": "field-binding-role",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "mixed-page",
+    "dataSources": {
+      "fixed-target": {
+        "fields": {
+          "target": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "target": 1000000
+            }
+          ]
+        }
+      },
+      "live-sales": {
+        "fields": {
+          "stat-date": {
+            "queryField": "stat-date",
+            "type": "date",
+            "role": "dimension",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "gmv",
+            "type": "number",
+            "role": "measure",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "stat-date"
+                  ],
+                  "output_metrics": [
+                    "gmv"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "target-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "fixed-target"
+            },
+            "props": {
+              "rows": [
+                {
+                  "label": "目标",
+                  "valueField": {
+                    "data": "main",
+                    "field": "target",
+                    "format": "number-grouped"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "sales-trend",
+            "type": "lineChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "live-sales"
+            },
+            "props": {
+              "xField": {
+                "data": "main",
+                "field": "gmv"
+              },
+              "series": [
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/xField",
+      "message": "字段 gmv 的 role 为 measure，此处要求 dimension"
+    }
+  ]
+}

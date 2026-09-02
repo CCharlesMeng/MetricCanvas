@@ -1,0 +1,1531 @@
+{
+  "case": "initial-row-detail-list-too-large",
+  "invariant": "detail-list-max-items",
+  "input": {
+    "schemaVersion": "5.2",
+    "id": "compute-page",
+    "meta": {
+      "description": "受控计算阶段、分组查询字段、嵌套明细与语义 HTML 字段的契约样例"
+    },
+    "dataSources": {
+      "targets": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "target": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "rate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "gap": {
+            "type": "number",
+            "role": "measure"
+          },
+          "row-kind": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          }
+        },
+        "compute": [
+          {
+            "op": "ratio",
+            "numerator": "actual",
+            "denominator": "target",
+            "output": "rate",
+            "onZeroDenominator": "null",
+            "scale": 100
+          },
+          {
+            "op": "delta",
+            "minuend": "actual",
+            "subtrahend": "target",
+            "output": "gap"
+          },
+          {
+            "op": "groupSubtotal",
+            "groupBy": "region",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "subtotal"
+            },
+            "labelSuffix": "小计"
+          },
+          {
+            "op": "grandTotal",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "total"
+            },
+            "label": {
+              "field": "region",
+              "value": "合计"
+            }
+          }
+        ],
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "region": "华东",
+              "actual": 120,
+              "target": 100
+            },
+            {
+              "region": "华北",
+              "actual": 80,
+              "target": 100
+            }
+          ]
+        }
+      },
+      "pivoted": {
+        "fields": {
+          "quarter": {
+            "queryField": "quarter",
+            "type": "string",
+            "role": "dimension"
+          },
+          "category": {
+            "queryField": "category",
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "queryField": "value",
+            "type": "number",
+            "role": "measure"
+          },
+          "online": {
+            "type": "number",
+            "role": "measure"
+          },
+          "offline": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "compute": [
+          {
+            "op": "pivot",
+            "categoryField": "category",
+            "valueField": "value",
+            "keyFields": [
+              "quarter"
+            ],
+            "columns": [
+              {
+                "output": "online",
+                "categories": [
+                  "线上"
+                ]
+              },
+              {
+                "output": "offline",
+                "categories": [
+                  "线下",
+                  "门店"
+                ]
+              }
+            ]
+          }
+        ],
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T08:00:00+08:00",
+            "rows": [
+              {
+                "quarter": "Q1",
+                "category": "线上",
+                "value": 10
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "quarter",
+                    "category"
+                  ],
+                  "output_metrics": [
+                    "value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "customers": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension"
+          },
+          "score": {
+            "queryField": "score",
+            "type": "number",
+            "role": "measure"
+          },
+          "change": {
+            "queryField": "change",
+            "type": "number",
+            "role": "measure"
+          },
+          "tier": {
+            "queryField": "tier",
+            "type": "string",
+            "role": "dimension"
+          },
+          "note": {
+            "queryField": "note",
+            "type": "string",
+            "role": "dimension"
+          },
+          "reason": {
+            "queryField": "reason",
+            "type": "semanticHtml",
+            "role": "detail"
+          },
+          "events": {
+            "queryField": "events",
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "title": {
+                  "queryField": "event_title",
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "impact": {
+                  "queryField": "event_impact",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                },
+                "desc": {
+                  "queryField": "event_desc",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "name": "客户A",
+                "score": 90,
+                "change": 5,
+                "tier": "金",
+                "note": "稳定",
+                "reason": "<p class=\"positive\">增长</p>",
+                "events": [
+                  {
+                    "event_title": "e0",
+                    "event_impact": 0,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e1",
+                    "event_impact": 1,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e2",
+                    "event_impact": 2,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e3",
+                    "event_impact": 3,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e4",
+                    "event_impact": 4,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e5",
+                    "event_impact": 5,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e6",
+                    "event_impact": 6,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e7",
+                    "event_impact": 7,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e8",
+                    "event_impact": 8,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e9",
+                    "event_impact": 9,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e10",
+                    "event_impact": 10,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e11",
+                    "event_impact": 11,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e12",
+                    "event_impact": 12,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e13",
+                    "event_impact": 13,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e14",
+                    "event_impact": 14,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e15",
+                    "event_impact": 15,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e16",
+                    "event_impact": 16,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e17",
+                    "event_impact": 17,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e18",
+                    "event_impact": 18,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e19",
+                    "event_impact": 19,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e20",
+                    "event_impact": 20,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e21",
+                    "event_impact": 21,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e22",
+                    "event_impact": 22,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e23",
+                    "event_impact": 23,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e24",
+                    "event_impact": 24,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e25",
+                    "event_impact": 25,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e26",
+                    "event_impact": 26,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e27",
+                    "event_impact": 27,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e28",
+                    "event_impact": 28,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e29",
+                    "event_impact": 29,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e30",
+                    "event_impact": 30,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e31",
+                    "event_impact": 31,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e32",
+                    "event_impact": 32,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e33",
+                    "event_impact": 33,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e34",
+                    "event_impact": 34,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e35",
+                    "event_impact": 35,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e36",
+                    "event_impact": 36,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e37",
+                    "event_impact": 37,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e38",
+                    "event_impact": 38,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e39",
+                    "event_impact": 39,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e40",
+                    "event_impact": 40,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e41",
+                    "event_impact": 41,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e42",
+                    "event_impact": 42,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e43",
+                    "event_impact": 43,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e44",
+                    "event_impact": 44,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e45",
+                    "event_impact": 45,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e46",
+                    "event_impact": 46,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e47",
+                    "event_impact": 47,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e48",
+                    "event_impact": 48,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e49",
+                    "event_impact": 49,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e50",
+                    "event_impact": 50,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e51",
+                    "event_impact": 51,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e52",
+                    "event_impact": 52,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e53",
+                    "event_impact": 53,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e54",
+                    "event_impact": 54,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e55",
+                    "event_impact": 55,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e56",
+                    "event_impact": 56,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e57",
+                    "event_impact": 57,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e58",
+                    "event_impact": 58,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e59",
+                    "event_impact": 59,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e60",
+                    "event_impact": 60,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e61",
+                    "event_impact": 61,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e62",
+                    "event_impact": 62,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e63",
+                    "event_impact": 63,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e64",
+                    "event_impact": 64,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e65",
+                    "event_impact": 65,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e66",
+                    "event_impact": 66,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e67",
+                    "event_impact": 67,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e68",
+                    "event_impact": 68,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e69",
+                    "event_impact": 69,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e70",
+                    "event_impact": 70,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e71",
+                    "event_impact": 71,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e72",
+                    "event_impact": 72,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e73",
+                    "event_impact": 73,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e74",
+                    "event_impact": 74,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e75",
+                    "event_impact": 75,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e76",
+                    "event_impact": 76,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e77",
+                    "event_impact": 77,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e78",
+                    "event_impact": 78,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e79",
+                    "event_impact": 79,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e80",
+                    "event_impact": 80,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e81",
+                    "event_impact": 81,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e82",
+                    "event_impact": 82,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e83",
+                    "event_impact": 83,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e84",
+                    "event_impact": 84,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e85",
+                    "event_impact": 85,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e86",
+                    "event_impact": 86,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e87",
+                    "event_impact": 87,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e88",
+                    "event_impact": 88,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e89",
+                    "event_impact": 89,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e90",
+                    "event_impact": 90,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e91",
+                    "event_impact": 91,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e92",
+                    "event_impact": 92,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e93",
+                    "event_impact": 93,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e94",
+                    "event_impact": 94,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e95",
+                    "event_impact": 95,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e96",
+                    "event_impact": 96,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e97",
+                    "event_impact": 97,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e98",
+                    "event_impact": 98,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e99",
+                    "event_impact": 99,
+                    "event_desc": null
+                  },
+                  {
+                    "event_title": "e100",
+                    "event_impact": 100,
+                    "event_desc": null
+                  }
+                ]
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name",
+                    "tier",
+                    "note",
+                    "reason",
+                    "events"
+                  ],
+                  "output_metrics": [
+                    "score",
+                    "change"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "targets-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "targets"
+            },
+            "props": {
+              "rowKindField": "row-kind",
+              "mergeBy": "region",
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": "actual"
+                },
+                {
+                  "field": "target"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "rate",
+                    "format": "percent-1"
+                  }
+                },
+                {
+                  "field": "gap"
+                }
+              ]
+            }
+          },
+          {
+            "id": "pivot-table",
+            "type": "table",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "pivoted"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "quarter"
+                },
+                {
+                  "field": "online"
+                },
+                {
+                  "field": "offline"
+                }
+              ]
+            }
+          },
+          {
+            "id": "ranking",
+            "type": "rankingDetailCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "nameField": "name",
+              "valueField": "score",
+              "changeField": "change",
+              "badgeFields": [
+                "tier"
+              ],
+              "descriptionField": "note",
+              "semanticDescriptionField": "reason",
+              "details": {
+                "field": "events",
+                "titleField": "title",
+                "valueField": {
+                  "field": "impact"
+                },
+                "descriptionField": "desc"
+              }
+            }
+          },
+          {
+            "id": "reason-text",
+            "type": "fieldText",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "field": "reason"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial",
+      "message": "存在未定义字段 initial(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/query",
+      "message": "存在未定义字段 query(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be boolean"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be null"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must NOT have more than 100 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers",
+      "message": "must match a schema in anyOf"
+    }
+  ]
+}

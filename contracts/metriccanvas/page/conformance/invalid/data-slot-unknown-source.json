@@ -1,0 +1,87 @@
+{
+  "case": "data-slot-unknown-source",
+  "invariant": "data-slot-known-source",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "inline-report",
+    "meta": {
+      "description": "内联报告契约样例"
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营简报",
+              "asOf": {
+                "label": "数据截至",
+                "value": "2026-07-21"
+              }
+            }
+          },
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "nope"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                {
+                  "label": "当日",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data/main",
+      "message": "数据槽 main 引用了未知数据源:nope"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/rows/0/valueField",
+      "message": "字段绑定的数据槽 main 指向未知数据源:nope"
+    }
+  ]
+}

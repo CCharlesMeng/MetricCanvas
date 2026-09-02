@@ -179,6 +179,11 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待外部输入；外部前置只剩
 测试环境地址、账号与 LiteLLM key 的线下获取。
 
+已知欠账（J1 扩充 conformance 向量后暴露）：Python `validate_page_document` 只对齐 21/154 个
+反例，且误拒含 detail 角色字段或分组查询字段的合法页面；未对齐项见
+`test-harness/fixtures/page-conformance-pending.json`。它只是创作期预检（Java 保存时完整复验），
+补齐还是随 S5 删除双实现一起处理，另行裁决；A2/A3 真实验收若被它拦下合法页面，先查这份清单。
+
 ### A1：Relay 适配
 
 - `SKILL.md` 增加 frontmatter：`name`、`description`、`allowed-tools`、`metadata.mcp_servers`。

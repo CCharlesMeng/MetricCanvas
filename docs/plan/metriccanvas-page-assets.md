@@ -1,6 +1,8 @@
 # MetricCanvas 第一方 Java 页面资产实施计划
 
-> 状态：J0 已裁决并完成公司约定回填（2026-09-02）；J1 可开工
+> 状态：J1 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过，165 个 conformance
+> 向量与 TypeScript 逐条相同）；J2 可开工。J1 实现说明见
+> [`metriccanvas-page-assets/README.md`](../../metriccanvas-page-assets/README.md)
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
 > [ADR-0060](../adr/0060-static-svelte-java-page-governance-relay-python-authoring.md)
@@ -70,6 +72,21 @@ contracts/metriccanvas/page-assets/rest-services-page-assets.yaml   # CI 导出�
 - 接受 `supportedVersions` 内全部 minor。
 
 完成条件：Java 校验器在共享向量上与 TypeScript 逐条相同；向量覆盖率清单可机读。
+
+J1 落地记录：
+
+- Maven 不允许在 `<parent>` 坐标里写属性，"property 切换 parent" 落为：parent 版本 `local` +
+  `relativePath` 指向 `build-parent/`（与公司 parent 同坐标的占位），CI 用
+  `scripts/use-company-parent.sh` 改写版本；`cbcbi.parent.version` 属性只作脚本输入。
+- 结构校验未引第三方 JSON Schema 库：向量里的结构错误由 ajv 产出且要求逐条相同，Java
+  `Draft7Evaluator` 按 ajv v8 的关键字顺序与文案复现，只支持 Page Schema 用到的关键字子集。
+- 向量从 6 个扩到 154 个反例 + 10 个合法样例 + `coverage.json`，反例带 `invariant` 字段与自检
+  正则。三条语义判定在结构层就被拒绝（明细项非对象、明细超 100 项、timeRange 两端精度不一致），
+  已在向量定义里登记为不可达。
+- **跨轨发现**：Python `validate_page_document` 只对齐 21 个反例，且误拒两个合法样例
+  （`output_dims` 含 detail 角色字段、按角色分组的查询字段）。J1 没有改 Python 校验器，而是把
+  未对齐项登记到 `metriccanvas-authoring/test-harness/fixtures/page-conformance-pending.json`
+  并在 Python 测试里断言"仍不对齐"，补齐后必须移出。是否补齐由 A 轨 / S5 裁决。
 
 ### J2：四个 Interface、稳定错误与领域测试
 

@@ -1,0 +1,109 @@
+{
+  "case": "pagination-limit-not-positive",
+  "invariant": "pagination-query-order",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "query-dashboard",
+    "dataSources": {
+      "sales": {
+        "fields": {
+          "region": {
+            "queryField": "region",
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "gmv",
+            "type": "number",
+            "role": "measure",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "region"
+                  ],
+                  "output_metrics": [
+                    "gmv"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 0
+                  }
+                }
+              ]
+            },
+            "filterBindings": {
+              "region-filter": {
+                "target": "dimension",
+                "queryField": "region"
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "region-filter",
+        "type": "dimension",
+        "dimension": "region"
+      }
+    ],
+    "sections": [
+      {
+        "id": "details",
+        "components": [
+          {
+            "id": "sales-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "sales"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": "gmv"
+                }
+              ],
+              "pagination": {
+                "mode": "query"
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "writeFilter": "region-filter",
+                  "field": "region"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/sales/source/query/body/dsl_list/0/order/limit",
+      "message": "查询分页要求 DQE order.limit 为正整数"
+    }
+  ]
+}

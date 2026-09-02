@@ -1,0 +1,111 @@
+{
+  "case": "grouped-field-duplicate",
+  "invariant": "grouped-query-fields-unique",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "grouped-fields-page",
+    "meta": {
+      "description": "query 数据源按角色分组的局部显式字段与 DQE 内嵌初始行归一化的契约样例"
+    },
+    "dataSources": {
+      "grouped": {
+        "fields": {
+          "dimensions": {
+            "customer": {
+              "queryField": "customer_name",
+              "type": "string",
+              "label": "客户"
+            }
+          },
+          "measures": {
+            "revenue": {
+              "queryField": "revenue",
+              "type": "money",
+              "currency": "CNY"
+            },
+            "growth": {
+              "queryField": "growth",
+              "type": "number",
+              "nullable": true
+            },
+            "customer": {
+              "queryField": "customer_dup",
+              "type": "number"
+            }
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "customer_name": "A",
+                "revenue": 100,
+                "growth": null
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "customer_name"
+                  ],
+                  "output_metrics": [
+                    "revenue",
+                    "growth"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "grouped-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "grouped"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "customer"
+                },
+                {
+                  "field": "revenue"
+                },
+                {
+                  "field": "growth"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/grouped/fields/measures/customer",
+      "message": "页面字段重复声明:customer"
+    }
+  ]
+}

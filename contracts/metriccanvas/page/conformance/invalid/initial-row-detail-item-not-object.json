@@ -1,0 +1,1027 @@
+{
+  "case": "initial-row-detail-item-not-object",
+  "invariant": "detail-item-object",
+  "input": {
+    "schemaVersion": "5.2",
+    "id": "compute-page",
+    "meta": {
+      "description": "受控计算阶段、分组查询字段、嵌套明细与语义 HTML 字段的契约样例"
+    },
+    "dataSources": {
+      "targets": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "target": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "rate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "gap": {
+            "type": "number",
+            "role": "measure"
+          },
+          "row-kind": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          }
+        },
+        "compute": [
+          {
+            "op": "ratio",
+            "numerator": "actual",
+            "denominator": "target",
+            "output": "rate",
+            "onZeroDenominator": "null",
+            "scale": 100
+          },
+          {
+            "op": "delta",
+            "minuend": "actual",
+            "subtrahend": "target",
+            "output": "gap"
+          },
+          {
+            "op": "groupSubtotal",
+            "groupBy": "region",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "subtotal"
+            },
+            "labelSuffix": "小计"
+          },
+          {
+            "op": "grandTotal",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "total"
+            },
+            "label": {
+              "field": "region",
+              "value": "合计"
+            }
+          }
+        ],
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "region": "华东",
+              "actual": 120,
+              "target": 100
+            },
+            {
+              "region": "华北",
+              "actual": 80,
+              "target": 100
+            }
+          ]
+        }
+      },
+      "pivoted": {
+        "fields": {
+          "quarter": {
+            "queryField": "quarter",
+            "type": "string",
+            "role": "dimension"
+          },
+          "category": {
+            "queryField": "category",
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "queryField": "value",
+            "type": "number",
+            "role": "measure"
+          },
+          "online": {
+            "type": "number",
+            "role": "measure"
+          },
+          "offline": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "compute": [
+          {
+            "op": "pivot",
+            "categoryField": "category",
+            "valueField": "value",
+            "keyFields": [
+              "quarter"
+            ],
+            "columns": [
+              {
+                "output": "online",
+                "categories": [
+                  "线上"
+                ]
+              },
+              {
+                "output": "offline",
+                "categories": [
+                  "线下",
+                  "门店"
+                ]
+              }
+            ]
+          }
+        ],
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T08:00:00+08:00",
+            "rows": [
+              {
+                "quarter": "Q1",
+                "category": "线上",
+                "value": 10
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "quarter",
+                    "category"
+                  ],
+                  "output_metrics": [
+                    "value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "customers": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension"
+          },
+          "score": {
+            "queryField": "score",
+            "type": "number",
+            "role": "measure"
+          },
+          "change": {
+            "queryField": "change",
+            "type": "number",
+            "role": "measure"
+          },
+          "tier": {
+            "queryField": "tier",
+            "type": "string",
+            "role": "dimension"
+          },
+          "note": {
+            "queryField": "note",
+            "type": "string",
+            "role": "dimension"
+          },
+          "reason": {
+            "queryField": "reason",
+            "type": "semanticHtml",
+            "role": "detail"
+          },
+          "events": {
+            "queryField": "events",
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "title": {
+                  "queryField": "event_title",
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "impact": {
+                  "queryField": "event_impact",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                },
+                "desc": {
+                  "queryField": "event_desc",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "name": "客户A",
+                "score": 90,
+                "change": 5,
+                "tier": "金",
+                "note": "稳定",
+                "reason": "<p class=\"positive\">增长</p>",
+                "events": [
+                  "续约"
+                ]
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name",
+                    "tier",
+                    "note",
+                    "reason",
+                    "events"
+                  ],
+                  "output_metrics": [
+                    "score",
+                    "change"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "targets-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "targets"
+            },
+            "props": {
+              "rowKindField": "row-kind",
+              "mergeBy": "region",
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": "actual"
+                },
+                {
+                  "field": "target"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "rate",
+                    "format": "percent-1"
+                  }
+                },
+                {
+                  "field": "gap"
+                }
+              ]
+            }
+          },
+          {
+            "id": "pivot-table",
+            "type": "table",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "pivoted"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "quarter"
+                },
+                {
+                  "field": "online"
+                },
+                {
+                  "field": "offline"
+                }
+              ]
+            }
+          },
+          {
+            "id": "ranking",
+            "type": "rankingDetailCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "nameField": "name",
+              "valueField": "score",
+              "changeField": "change",
+              "badgeFields": [
+                "tier"
+              ],
+              "descriptionField": "note",
+              "semanticDescriptionField": "reason",
+              "details": {
+                "field": "events",
+                "titleField": "title",
+                "valueField": {
+                  "field": "impact"
+                },
+                "descriptionField": "desc"
+              }
+            }
+          },
+          {
+            "id": "reason-text",
+            "type": "fieldText",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "field": "reason"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/name",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/score",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/change",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/tier",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/note",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/reason",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/title",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/impact",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items/fields/desc",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/queryField",
+      "message": "存在未定义字段 queryField(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/fields/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial",
+      "message": "存在未定义字段 initial(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/query",
+      "message": "存在未定义字段 query(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be boolean"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must be null"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events/0",
+      "message": "must be object"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers/source/initial/rows/0/events",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/customers",
+      "message": "must match a schema in anyOf"
+    }
+  ]
+}

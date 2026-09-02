@@ -86,3 +86,32 @@ jobs:
         with:
           name: metriccanvas-authoring-${{ github.sha }}
           path: metriccanvas-authoring
+
+  # Java 页面资产 module 组（ADR-0062）：独立 job，先跑 GitHub Actions，CloudBuild 接入随宿主流程。
+  # 这里用本地占位 parent 与 Maven Central；公司 CI 上先执行 scripts/use-company-parent.sh。
+  # 嵌入 JAR 的契约快照是否与 contracts/metriccanvas 一致，由上面 job 的 authoring:contracts:check 守。
+  java-page-assets:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: metriccanvas-page-assets
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+          cache-dependency-path: metriccanvas-page-assets/**/pom.xml
+
+      # 不用 Maven Wrapper（内网禁直连）；runner 自带系统 Maven。
+      - name: 构建、单测、conformance、ArchUnit、SpotBugs
+        run: mvn -B -ntp -Pgates verify
+
+      - name: 上传交付包
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: page-assets-bootstrap-${{ github.sha }}
+          path: metriccanvas-page-assets/page-assets-bootstrap/target/*.tar.gz

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 跟随公司约定：Log4j2、消息 JSON 编码、APM traceId 从 MDC 取；日志目录由 -Dlog.dir 注入。 -->
+<Configuration status="WARN">
+  <Properties>
+    <Property name="pattern">%d %p [%t] [%c] [%X{wiseTraceId}][%X{apm-traceid}][%X{apm-gtraceid}] %enc{%m}{JSON}%n</Property>
+    <Property name="logDir">${sys:log.dir:-./logs}</Property>
+  </Properties>
+  <Appenders>
+    <Console name="Console" target="SYSTEM_OUT">
+      <PatternLayout pattern="${pattern}"/>
+    </Console>
+    <RollingFile name="Root" fileName="${logDir}/log/root.log"
+                 filePattern="${logDir}/log/root-%i.log.gz">
+      <PatternLayout pattern="${pattern}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="100"/>
+    </RollingFile>
+    <RollingFile name="Error" fileName="${logDir}/log/error.log"
+                 filePattern="${logDir}/log/error-%i.log.gz">
+      <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+      <PatternLayout pattern="${pattern}"/>
+      <Policies>
+        <SizeBasedTriggeringPolicy size="100 MB"/>
+      </Policies>
+      <DefaultRolloverStrategy max="20"/>
+    </RollingFile>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="Console"/>
+      <AppenderRef ref="Root"/>
+      <AppenderRef ref="Error"/>
+    </Root>
+  </Loggers>
+</Configuration>

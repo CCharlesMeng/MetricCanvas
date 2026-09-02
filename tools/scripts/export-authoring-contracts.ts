@@ -30,6 +30,7 @@ import {
   deriveExecutableUnit
 } from '../../apps/platform/src/lib/server/ask/unit-derivation.ts';
 import { ANALYSIS_INTENT_TO_VISUALIZE } from '../../apps/platform/src/lib/server/ask/visualization-intent.ts';
+import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
 const productContractRoot = path.join(repoRoot, 'contracts/metriccanvas');
@@ -40,6 +41,9 @@ const authoredPageBuildSpec = path.join(
   'authored/page-build-spec.schema.json'
 );
 const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
+// Java 页面资产 module 组的只读快照（ADR-0062）：同一份产品契约，构建时嵌入 JAR。
+const javaRoot = path.join(repoRoot, 'metriccanvas-page-assets');
+const javaSnapshotRoot = path.join(javaRoot, 'contract-snapshot');
 const checkOnly = process.argv.includes('--check');
 
 type OutputMap = Map<string, string>;
@@ -70,37 +74,24 @@ async function buildProductOutputs(): Promise<OutputMap> {
   );
 
   const validFixtureRoot = path.join(repoRoot, 'packages/page/fixtures/contract-valid');
+  const fixtures = new Map<string, unknown>();
   for (const fileName of (await readdir(validFixtureRoot)).sort()) {
     if (!fileName.endsWith('.json')) continue;
-    outputs.set(
-      `page/conformance/valid/${fileName}`,
-      await readFile(path.join(validFixtureRoot, fileName), 'utf8')
-    );
+    const content = await readFile(path.join(validFixtureRoot, fileName), 'utf8');
+    const document = JSON.parse(content) as unknown;
+    const errors = validate(document);
+    if (errors.length > 0) {
+      throw new Error(`合法样例 ${fileName} 未通过校验:\n${JSON.stringify(errors, null, 2)}`);
+    }
+    fixtures.set(fileName.slice(0, -'.json'.length), document);
+    outputs.set(`page/conformance/valid/${fileName}`, content);
   }
 
-  const missingSchemaVersion = {
-    id: 'missing-schema-version',
-    dataSources: {},
-    sections: []
-  };
-  outputs.set(
-    'page/conformance/invalid/missing-schema-version.json',
-    json({
-      case: 'missing-schema-version',
-      input: missingSchemaVersion,
-      expected: validate(missingSchemaVersion)
-    })
-  );
-
-  const queryDashboard = JSON.parse(
-    await readFile(path.join(validFixtureRoot, 'query-dashboard.json'), 'utf8')
-  ) as QueryDashboardFixture;
-  for (const vector of buildPageSemanticConformanceVectors(queryDashboard)) {
-    outputs.set(
-      `page/conformance/invalid/${vector.case}.json`,
-      json(vector)
-    );
+  const conformance = buildPageConformance(fixtures, invariants);
+  for (const vector of conformance.vectors) {
+    outputs.set(`page/conformance/invalid/${vector.case}.json`, json(vector));
   }
+  outputs.set('page/conformance/coverage.json', json(conformance.coverage));
 
   outputs.set(
     'manifest.json',
@@ -114,82 +105,92 @@ async function buildProductOutputs(): Promise<OutputMap> {
   return outputs;
 }
 
-interface QueryDashboardFixture {
-  dataSources: {
-    sales: {
-      fields: Record<string, { queryField: string; role: string }>;
-      source: {
-        query: {
-          filterBindings: Record<string, unknown>;
-        };
-      };
-    };
-  };
-  sections: Array<{
-    id: string;
-    components: Array<Record<string, unknown>>;
-  }>;
-  [key: string]: unknown;
+interface PageConformanceVector {
+  case: string;
+  invariant: string;
+  input: unknown;
+  expected: unknown;
 }
 
-function buildPageSemanticConformanceVectors(
-  valid: QueryDashboardFixture
-): Array<{ case: string; input: unknown; expected: unknown }> {
-  const definitions: Array<{
-    case: string;
-    mutate(document: QueryDashboardFixture): void;
-  }> = [
-    {
-      case: 'duplicate-component-id',
-      mutate: (document) => {
-        document.sections[0]!.components.push({
-          id: 'sales-table',
-          type: 'reportHeader',
-          layout: { span: 12 },
-          props: { title: 'Duplicate' }
-        });
-      }
-    },
-    {
-      case: 'query-field-not-output',
-      mutate: (document) => {
-        document.dataSources.sales.fields.gmv!.queryField = 'unknown';
-      }
-    },
-    {
-      case: 'query-role-mismatch',
-      mutate: (document) => {
-        document.dataSources.sales.fields.gmv!.role = 'dimension';
-      }
-    },
-    {
-      case: 'unknown-component-field',
-      mutate: (document) => {
-        const table = document.sections[0]!.components[0] as {
-          props: { columns: Array<{ field: string }> };
-        };
-        table.props.columns[1]!.field = 'unknown';
-      }
-    },
-    {
-      case: 'unknown-filter-binding',
-      mutate: (document) => {
-        document.dataSources.sales.source.query.filterBindings.unknown = {
-          target: 'dimension',
-          queryField: 'region'
-        };
+interface PageConformanceCoverage {
+  invariants: Array<{
+    id: string;
+    description: string;
+    valid: string[];
+    invalid: string[];
+  }>;
+}
+
+/**
+ * 页面校验 conformance：逐条不变式各有正例（行使它的合法样例）与反例（单点破坏）。
+ * 反例的 expected 由 TypeScript 校验器产出，Java 在同一输入上必须逐条相同；
+ * 每个反例还要命中自己声明的 expect，防止因别的原因失败而被误记为覆盖。
+ */
+function buildPageConformance(
+  fixtures: ReadonlyMap<string, unknown>,
+  definitions: readonly InvariantDefinition[]
+): { vectors: PageConformanceVector[]; coverage: PageConformanceCoverage } {
+  const vectors: PageConformanceVector[] = [];
+  const seenCases = new Set<string>();
+  const seenInvariants = new Set<string>();
+  const coverage: PageConformanceCoverage = { invariants: [] };
+
+  for (const definition of definitions) {
+    if (seenInvariants.has(definition.id)) {
+      throw new Error(`不变式 id 重复:${definition.id}`);
+    }
+    seenInvariants.add(definition.id);
+    if (definition.valid.length === 0 || definition.cases.length === 0) {
+      throw new Error(`不变式 ${definition.id} 必须同时有正例与反例`);
+    }
+    for (const fixture of definition.valid) {
+      if (!fixtures.has(fixture)) {
+        throw new Error(`不变式 ${definition.id} 引用了不存在的合法样例:${fixture}`);
       }
     }
-  ];
-  return definitions.map((definition) => {
-    const input = structuredClone(valid);
-    definition.mutate(input);
-    const expected = validate(input);
-    if (expected.length === 0) {
-      throw new Error(`expected ${definition.case} semantic validation to fail`);
+    for (const vectorCase of definition.cases) {
+      if (seenCases.has(vectorCase.case)) {
+        throw new Error(`反例名重复:${vectorCase.case}`);
+      }
+      seenCases.add(vectorCase.case);
+      const input = conformanceInput(fixtures, vectorCase.base, vectorCase.mutate);
+      const expected = validate(input);
+      if (expected.length === 0) {
+        throw new Error(`反例 ${vectorCase.case} 未产生任何错误`);
+      }
+      if (!expected.some((error) => vectorCase.expect.test(error.message))) {
+        throw new Error(
+          `反例 ${vectorCase.case} 没有命中 ${vectorCase.expect}:\n${JSON.stringify(expected, null, 2)}`
+        );
+      }
+      vectors.push({ case: vectorCase.case, invariant: definition.id, input, expected });
     }
-    return { case: definition.case, input, expected };
-  });
+    coverage.invariants.push({
+      id: definition.id,
+      description: definition.description,
+      valid: [...definition.valid],
+      invalid: definition.cases.map((vectorCase) => vectorCase.case)
+    });
+  }
+  return { vectors, coverage };
+}
+
+function conformanceInput(
+  fixtures: ReadonlyMap<string, unknown>,
+  base: string,
+  mutate: (document: unknown) => void
+): unknown {
+  // 唯一一个没有合法基底的反例：连 schemaVersion 都没有的裸文档。
+  if (base === '__missing-schema-version__') {
+    return { id: 'missing-schema-version', dataSources: {}, sections: [] };
+  }
+  const fixture = fixtures.get(base);
+  if (fixture === undefined) {
+    throw new Error(`反例引用了不存在的合法样例:${base}`);
+  }
+  const input = structuredClone(fixture);
+  mutate(input);
+  return input;
 }
 
 async function buildAuthoringOutputs(): Promise<OutputMap> {
@@ -481,12 +482,29 @@ function buildContractLock(productOutputs: OutputMap, authoringOutputs: OutputMa
   });
 }
 
+/** Java module 组只消费产品契约；JAR 内的 ContractSnapshot 以此核对嵌入快照的摘要。 */
+function buildJavaContractLock(productOutputs: OutputMap): string {
+  const productManifest = requiredOutput(productOutputs, 'manifest.json');
+  return json({
+    productContractVersion: '0.1.0',
+    productManifest: 'contract-snapshot/manifest.json',
+    productManifestSha256: sha256(productManifest),
+    pageSchemaVersion: versionPolicy.current
+  });
+}
+
 async function writeOutputs(
   productOutputs: OutputMap,
   authoringOutputs: OutputMap
 ): Promise<void> {
   await writeTree(productContractRoot, productOutputs);
   await writeTree(snapshotRoot, productOutputs);
+  await writeTree(javaSnapshotRoot, productOutputs);
+  await writeFile(
+    path.join(javaRoot, 'contract-lock.json'),
+    buildJavaContractLock(productOutputs),
+    'utf8'
+  );
 
   await rm(path.join(authoringContractRoot, 'exported'), { recursive: true, force: true });
   for (const [relativePath, content] of authoringOutputs) {
@@ -542,6 +560,18 @@ async function assertCurrent(
   const drift: string[] = [];
   await collectTreeDrift(productContractRoot, productOutputs, 'contracts/metriccanvas', drift);
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
+  await collectTreeDrift(
+    javaSnapshotRoot,
+    productOutputs,
+    'metriccanvas-page-assets/contract-snapshot',
+    drift
+  );
+  await collectFileDrift(
+    path.join(javaRoot, 'contract-lock.json'),
+    buildJavaContractLock(productOutputs),
+    'metriccanvas-page-assets/contract-lock.json',
+    drift
+  );
 
   const generatedAuthoringOutputs = new Map(
     [...authoringOutputs].filter(

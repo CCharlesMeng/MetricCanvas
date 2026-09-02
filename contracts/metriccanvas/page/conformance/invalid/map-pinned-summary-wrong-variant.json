@@ -1,0 +1,203 @@
+{
+  "case": "map-pinned-summary-wrong-variant",
+  "invariant": "map-pinned-summary",
+  "input": {
+    "schemaVersion": "5.3",
+    "id": "map-page",
+    "layoutForm": "dashboard",
+    "meta": {
+      "description": "地域概览地图、层级下钻、分档图例与固定摘要的契约样例"
+    },
+    "dataSources": {
+      "regions": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "code": {
+            "queryField": "code",
+            "type": "string",
+            "role": "dimension"
+          },
+          "level": {
+            "queryField": "level",
+            "type": "string",
+            "role": "dimension"
+          },
+          "parent": {
+            "queryField": "parent",
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          },
+          "gmv": {
+            "queryField": "gmv",
+            "type": "number",
+            "role": "measure"
+          },
+          "growth": {
+            "queryField": "growth",
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "name": "上海",
+                "code": "310000",
+                "level": "province",
+                "parent": null,
+                "gmv": 120,
+                "growth": 0.1
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name",
+                    "code",
+                    "level",
+                    "parent"
+                  ],
+                  "output_metrics": [
+                    "gmv",
+                    "growth"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "area": {
+                "target": "dimension",
+                "queryField": "code"
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "area",
+        "type": "dimension",
+        "dimension": "code",
+        "hierarchyPicker": "hidden",
+        "hierarchy": [
+          {
+            "id": "province",
+            "dimension": "code"
+          },
+          {
+            "id": "city",
+            "dimension": "city_code"
+          }
+        ]
+      },
+      {
+        "id": "keyword",
+        "type": "search"
+      }
+    ],
+    "sections": [
+      {
+        "id": "map",
+        "components": [
+          {
+            "id": "china-map",
+            "type": "mapChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "regions"
+            },
+            "props": {
+              "nameField": "name",
+              "valueField": "gmv",
+              "map": "china",
+              "hierarchyFilter": "area",
+              "levelField": "level",
+              "parentField": "parent",
+              "codeField": "code",
+              "levelMaps": {
+                "province": "china"
+              },
+              "legend": {
+                "title": "GMV",
+                "bands": [
+                  {
+                    "label": "低",
+                    "from": 0
+                  },
+                  {
+                    "label": "高",
+                    "from": 100
+                  }
+                ]
+              },
+              "tooltipFields": [
+                {
+                  "label": "增长",
+                  "field": {
+                    "data": "main",
+                    "field": "growth",
+                    "format": "percent-1"
+                  }
+                }
+              ],
+              "pinnedSummary": {
+                "matchField": "code",
+                "matchValue": "310000",
+                "titleField": "name",
+                "fields": [
+                  {
+                    "label": "GMV",
+                    "field": "gmv"
+                  },
+                  {
+                    "label": "增长",
+                    "field": "growth"
+                  }
+                ]
+              },
+              "actions": [
+                {
+                  "on": "click",
+                  "navigate": {
+                    "page": "map-page",
+                    "carryFilters": [
+                      "area"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/pinnedSummary",
+      "message": "pinnedSummary 只能用于 variant: regionalOverview 的地图"
+    }
+  ]
+}

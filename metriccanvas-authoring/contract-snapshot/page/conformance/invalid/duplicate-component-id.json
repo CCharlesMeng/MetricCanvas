@@ -1,5 +1,6 @@
 {
   "case": "duplicate-component-id",
+  "invariant": "component-id-unique",
   "input": {
     "schemaVersion": "5.0",
     "id": "query-dashboard",

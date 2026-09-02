@@ -1,0 +1,237 @@
+{
+  "schemaVersion": "5.3",
+  "id": "filters-page",
+  "meta": {
+    "description": "六类筛选器、层级与级联、筛选绑定、查询分页与表格选择写回的契约样例"
+  },
+  "dataSources": {
+    "orders": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "city": {
+          "queryField": "city",
+          "type": "string",
+          "role": "dimension"
+        },
+        "stat-date": {
+          "queryField": "stat_date",
+          "type": "date",
+          "role": "dimension",
+          "nullable": false
+        },
+        "amount": {
+          "queryField": "amount",
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "nullable": false
+        },
+        "orders": {
+          "queryField": "order_cnt",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-01T00:00:00Z",
+          "rows": [
+            {
+              "region": "华东",
+              "city": "上海",
+              "stat_date": "2026-07-31",
+              "amount": 120.5,
+              "order_cnt": 3
+            },
+            {
+              "region": "华北",
+              "city": "北京",
+              "stat_date": "2026-07-30",
+              "amount": 80,
+              "order_cnt": null
+            }
+          ]
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["region", "city", "stat_date"],
+                "output_metrics": ["amount", { "name": "订单数", "alias": "order_cnt" }],
+                "filter": { "dims": [], "metrics": [] },
+                "order": { "offset": 0, "limit": 20 }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region": { "target": "dimension", "queryField": "region" },
+            "period": { "target": "time" }
+          }
+        }
+      }
+    },
+    "paged": {
+      "fields": {
+        "sku": {
+          "queryField": "sku",
+          "type": "string",
+          "role": "dimension"
+        },
+        "qty": {
+          "queryField": "qty",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-01T00:00:00Z",
+          "totalCount": 2,
+          "rows": [
+            { "sku": "A", "qty": 1 },
+            { "sku": "B", "qty": 2 }
+          ]
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": ["sku"],
+                "output_metrics": ["qty"],
+                "filter": { "dims": [], "metrics": [] },
+                "order": { "offset": 0, "limit": 20 }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "dimension": "region",
+      "label": "区域",
+      "emptyLabel": "全部区域",
+      "hierarchyPicker": "tabs",
+      "display": "tabs",
+      "default": ["华东"],
+      "hierarchy": [
+        { "id": "region-level", "dimension": "region", "label": "区域" },
+        { "id": "city-level", "dimension": "city", "label": "城市" }
+      ],
+      "defaultLevel": "city-level"
+    },
+    {
+      "id": "city",
+      "type": "dimension",
+      "dimension": "city",
+      "dependsOn": "region"
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "precision": "date",
+      "default": { "from": "2026-07-01", "to": "2026-07-31" }
+    },
+    {
+      "id": "window",
+      "type": "timeRange",
+      "default": {
+        "unit": "month",
+        "range": { "kind": "lastN", "n": 3 },
+        "includeCurrent": false,
+        "anchor": "2026-07-31"
+      }
+    },
+    {
+      "id": "month",
+      "type": "timePoint",
+      "granularity": "month",
+      "default": "2026-07"
+    },
+    {
+      "id": "day",
+      "type": "timePoint",
+      "granularity": "date",
+      "default": "2026-07-31"
+    },
+    {
+      "id": "amount-range",
+      "type": "numberRange",
+      "default": { "from": 10, "to": 1000 }
+    },
+    {
+      "id": "only-active",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "keyword",
+      "type": "search",
+      "default": "华"
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "orders-table",
+          "type": "table",
+          "layout": { "span": 12 },
+          "data": { "main": "orders" },
+          "props": {
+            "columns": [
+              {
+                "field": "region",
+                "filterable": { "mode": "select" },
+                "selection": {
+                  "writes": {
+                    "region": { "field": "region" },
+                    "city": { "value": "上海" }
+                  }
+                }
+              },
+              { "field": "city", "secondaryField": "region", "badgeField": "region" },
+              { "field": "stat-date", "sortable": true },
+              { "field": { "data": "main", "field": "amount", "format": "cny-adaptive" } },
+              { "field": "orders" }
+            ],
+            "actions": [
+              { "on": "click", "writeFilter": "region", "field": "region" },
+              {
+                "on": "click",
+                "navigate": {
+                  "page": "filters-page",
+                  "carryFilters": ["region", "period"],
+                  "setFilters": { "city": "city" }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "paged-table",
+          "type": "table",
+          "layout": { "span": 12 },
+          "data": { "main": "paged" },
+          "props": {
+            "columns": [{ "field": "sku" }, { "field": "qty" }],
+            "pagination": { "mode": "query" }
+          }
+        }
+      ]
+    }
+  ]
+}

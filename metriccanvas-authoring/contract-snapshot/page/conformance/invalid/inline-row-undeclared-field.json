@@ -1,0 +1,83 @@
+{
+  "case": "inline-row-undeclared-field",
+  "invariant": "inline-rows-contract",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "inline-report",
+    "meta": {
+      "description": "内联报告契约样例"
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000,
+              "extra": 1
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营简报",
+              "asOf": {
+                "label": "数据截至",
+                "value": "2026-07-21"
+              }
+            }
+          },
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                {
+                  "label": "当日",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/source/rows/0/extra",
+      "message": "行包含未声明字段:extra"
+    }
+  ]
+}

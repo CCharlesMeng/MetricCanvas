@@ -1,0 +1,39 @@
+{
+  "case": "sections-empty",
+  "invariant": "schema-structure",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "inline-report",
+    "meta": {
+      "description": "内联报告契约样例"
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000
+            }
+          ]
+        }
+      }
+    },
+    "sections": []
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections",
+      "message": "must NOT have fewer than 1 items"
+    }
+  ]
+}

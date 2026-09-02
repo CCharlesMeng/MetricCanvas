@@ -1,0 +1,334 @@
+{
+  "case": "inline-row-missing-field",
+  "invariant": "inline-rows-contract",
+  "input": {
+    "schemaVersion": "5.1",
+    "id": "forecast-page",
+    "meta": {
+      "description": "实际/预测柱、多数据槽指标卡与表格、AI 总结、inline 明细字段的契约样例"
+    },
+    "dataSources": {
+      "monthly": {
+        "fields": {
+          "month": {
+            "queryField": "month",
+            "type": "string",
+            "role": "dimension"
+          },
+          "actual": {
+            "queryField": "actual",
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "forecast": {
+            "queryField": "forecast",
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-06-15T00:00:00Z",
+            "rows": [
+              {
+                "month": "5月",
+                "actual": 10,
+                "forecast": null
+              },
+              {
+                "month": "6月",
+                "actual": 12,
+                "forecast": null
+              },
+              {
+                "month": "7月",
+                "actual": null,
+                "forecast": 15
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "month"
+                  ],
+                  "output_metrics": [
+                    "actual",
+                    "forecast"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure"
+          },
+          "done": {
+            "type": "number",
+            "role": "measure"
+          },
+          "key": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 100,
+              "done": 80,
+              "key": "gmv"
+            }
+          ]
+        }
+      },
+      "previous": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure"
+          },
+          "key": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 90,
+              "key": "gmv"
+            }
+          ]
+        }
+      },
+      "notes": {
+        "fields": {
+          "title": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "day": {
+            "type": "date",
+            "role": "dimension"
+          },
+          "at": {
+            "type": "datetime",
+            "role": "dimension",
+            "nullable": true
+          },
+          "flag": {
+            "type": "boolean",
+            "role": "dimension"
+          },
+          "body": {
+            "type": "semanticHtml",
+            "role": "detail"
+          },
+          "items": {
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "name": {
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "value": {
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "title": "月度说明",
+              "day": "2026-06-15",
+              "at": null,
+              "flag": true,
+              "body": "<p>本月<strong>达成</strong></p>",
+              "items": [
+                {
+                  "name": "续约",
+                  "value": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "trend",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "monthly"
+            },
+            "props": {
+              "variant": "reportForecast",
+              "categoryField": "month",
+              "series": [
+                {
+                  "field": "actual",
+                  "role": "actual"
+                },
+                {
+                  "field": "forecast",
+                  "role": "forecast"
+                }
+              ]
+            }
+          },
+          {
+            "id": "kpi",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "current",
+              "compare": "previous"
+            },
+            "props": {
+              "rows": [
+                {
+                  "label": "GMV",
+                  "valueField": "gmv",
+                  "changes": [
+                    {
+                      "label": "同比",
+                      "field": "yoy",
+                      "tone": "auto"
+                    }
+                  ]
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "上期",
+                  "valueField": {
+                    "data": "compare",
+                    "field": "gmv"
+                  }
+                }
+              ],
+              "progress": {
+                "valueField": "done",
+                "ringPercent": 80
+              }
+            }
+          },
+          {
+            "id": "compare-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "current",
+              "compare": "previous"
+            },
+            "props": {
+              "rowKey": "key",
+              "columns": [
+                {
+                  "field": "key"
+                },
+                {
+                  "field": "gmv"
+                },
+                {
+                  "field": {
+                    "data": "compare",
+                    "field": "gmv"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "note-text",
+            "type": "fieldText",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "notes"
+            },
+            "props": {
+              "field": "body",
+              "variant": "quote"
+            }
+          },
+          {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "current",
+                  "description": "当期指标",
+                  "fields": [
+                    {
+                      "field": "gmv",
+                      "term": "成交额"
+                    },
+                    {
+                      "field": "yoy",
+                      "term": "同比"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/current/source/rows/0/yoy",
+      "message": "行缺少字段:yoy"
+    }
+  ]
+}

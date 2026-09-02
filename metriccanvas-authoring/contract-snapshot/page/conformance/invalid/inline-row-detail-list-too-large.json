@@ -1,0 +1,1100 @@
+{
+  "case": "inline-row-detail-list-too-large",
+  "invariant": "detail-list-max-items",
+  "input": {
+    "schemaVersion": "5.1",
+    "id": "forecast-page",
+    "meta": {
+      "description": "实际/预测柱、多数据槽指标卡与表格、AI 总结、inline 明细字段的契约样例"
+    },
+    "dataSources": {
+      "monthly": {
+        "fields": {
+          "month": {
+            "queryField": "month",
+            "type": "string",
+            "role": "dimension"
+          },
+          "actual": {
+            "queryField": "actual",
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          },
+          "forecast": {
+            "queryField": "forecast",
+            "type": "number",
+            "role": "measure",
+            "nullable": true
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-06-15T00:00:00Z",
+            "rows": [
+              {
+                "month": "5月",
+                "actual": 10,
+                "forecast": null
+              },
+              {
+                "month": "6月",
+                "actual": 12,
+                "forecast": null
+              },
+              {
+                "month": "7月",
+                "actual": null,
+                "forecast": 15
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "month"
+                  ],
+                  "output_metrics": [
+                    "actual",
+                    "forecast"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "current": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure"
+          },
+          "yoy": {
+            "type": "number",
+            "role": "measure"
+          },
+          "done": {
+            "type": "number",
+            "role": "measure"
+          },
+          "key": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 100,
+              "yoy": 0.2,
+              "done": 80,
+              "key": "gmv"
+            }
+          ]
+        }
+      },
+      "previous": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure"
+          },
+          "key": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 90,
+              "key": "gmv"
+            }
+          ]
+        }
+      },
+      "notes": {
+        "fields": {
+          "title": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "day": {
+            "type": "date",
+            "role": "dimension"
+          },
+          "at": {
+            "type": "datetime",
+            "role": "dimension",
+            "nullable": true
+          },
+          "flag": {
+            "type": "boolean",
+            "role": "dimension"
+          },
+          "body": {
+            "type": "semanticHtml",
+            "role": "detail"
+          },
+          "items": {
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "name": {
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "value": {
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "title": "月度说明",
+              "day": "2026-06-15",
+              "at": null,
+              "flag": true,
+              "body": "<p>本月<strong>达成</strong></p>",
+              "items": [
+                {
+                  "name": "n0",
+                  "value": 0
+                },
+                {
+                  "name": "n1",
+                  "value": 1
+                },
+                {
+                  "name": "n2",
+                  "value": 2
+                },
+                {
+                  "name": "n3",
+                  "value": 3
+                },
+                {
+                  "name": "n4",
+                  "value": 4
+                },
+                {
+                  "name": "n5",
+                  "value": 5
+                },
+                {
+                  "name": "n6",
+                  "value": 6
+                },
+                {
+                  "name": "n7",
+                  "value": 7
+                },
+                {
+                  "name": "n8",
+                  "value": 8
+                },
+                {
+                  "name": "n9",
+                  "value": 9
+                },
+                {
+                  "name": "n10",
+                  "value": 10
+                },
+                {
+                  "name": "n11",
+                  "value": 11
+                },
+                {
+                  "name": "n12",
+                  "value": 12
+                },
+                {
+                  "name": "n13",
+                  "value": 13
+                },
+                {
+                  "name": "n14",
+                  "value": 14
+                },
+                {
+                  "name": "n15",
+                  "value": 15
+                },
+                {
+                  "name": "n16",
+                  "value": 16
+                },
+                {
+                  "name": "n17",
+                  "value": 17
+                },
+                {
+                  "name": "n18",
+                  "value": 18
+                },
+                {
+                  "name": "n19",
+                  "value": 19
+                },
+                {
+                  "name": "n20",
+                  "value": 20
+                },
+                {
+                  "name": "n21",
+                  "value": 21
+                },
+                {
+                  "name": "n22",
+                  "value": 22
+                },
+                {
+                  "name": "n23",
+                  "value": 23
+                },
+                {
+                  "name": "n24",
+                  "value": 24
+                },
+                {
+                  "name": "n25",
+                  "value": 25
+                },
+                {
+                  "name": "n26",
+                  "value": 26
+                },
+                {
+                  "name": "n27",
+                  "value": 27
+                },
+                {
+                  "name": "n28",
+                  "value": 28
+                },
+                {
+                  "name": "n29",
+                  "value": 29
+                },
+                {
+                  "name": "n30",
+                  "value": 30
+                },
+                {
+                  "name": "n31",
+                  "value": 31
+                },
+                {
+                  "name": "n32",
+                  "value": 32
+                },
+                {
+                  "name": "n33",
+                  "value": 33
+                },
+                {
+                  "name": "n34",
+                  "value": 34
+                },
+                {
+                  "name": "n35",
+                  "value": 35
+                },
+                {
+                  "name": "n36",
+                  "value": 36
+                },
+                {
+                  "name": "n37",
+                  "value": 37
+                },
+                {
+                  "name": "n38",
+                  "value": 38
+                },
+                {
+                  "name": "n39",
+                  "value": 39
+                },
+                {
+                  "name": "n40",
+                  "value": 40
+                },
+                {
+                  "name": "n41",
+                  "value": 41
+                },
+                {
+                  "name": "n42",
+                  "value": 42
+                },
+                {
+                  "name": "n43",
+                  "value": 43
+                },
+                {
+                  "name": "n44",
+                  "value": 44
+                },
+                {
+                  "name": "n45",
+                  "value": 45
+                },
+                {
+                  "name": "n46",
+                  "value": 46
+                },
+                {
+                  "name": "n47",
+                  "value": 47
+                },
+                {
+                  "name": "n48",
+                  "value": 48
+                },
+                {
+                  "name": "n49",
+                  "value": 49
+                },
+                {
+                  "name": "n50",
+                  "value": 50
+                },
+                {
+                  "name": "n51",
+                  "value": 51
+                },
+                {
+                  "name": "n52",
+                  "value": 52
+                },
+                {
+                  "name": "n53",
+                  "value": 53
+                },
+                {
+                  "name": "n54",
+                  "value": 54
+                },
+                {
+                  "name": "n55",
+                  "value": 55
+                },
+                {
+                  "name": "n56",
+                  "value": 56
+                },
+                {
+                  "name": "n57",
+                  "value": 57
+                },
+                {
+                  "name": "n58",
+                  "value": 58
+                },
+                {
+                  "name": "n59",
+                  "value": 59
+                },
+                {
+                  "name": "n60",
+                  "value": 60
+                },
+                {
+                  "name": "n61",
+                  "value": 61
+                },
+                {
+                  "name": "n62",
+                  "value": 62
+                },
+                {
+                  "name": "n63",
+                  "value": 63
+                },
+                {
+                  "name": "n64",
+                  "value": 64
+                },
+                {
+                  "name": "n65",
+                  "value": 65
+                },
+                {
+                  "name": "n66",
+                  "value": 66
+                },
+                {
+                  "name": "n67",
+                  "value": 67
+                },
+                {
+                  "name": "n68",
+                  "value": 68
+                },
+                {
+                  "name": "n69",
+                  "value": 69
+                },
+                {
+                  "name": "n70",
+                  "value": 70
+                },
+                {
+                  "name": "n71",
+                  "value": 71
+                },
+                {
+                  "name": "n72",
+                  "value": 72
+                },
+                {
+                  "name": "n73",
+                  "value": 73
+                },
+                {
+                  "name": "n74",
+                  "value": 74
+                },
+                {
+                  "name": "n75",
+                  "value": 75
+                },
+                {
+                  "name": "n76",
+                  "value": 76
+                },
+                {
+                  "name": "n77",
+                  "value": 77
+                },
+                {
+                  "name": "n78",
+                  "value": 78
+                },
+                {
+                  "name": "n79",
+                  "value": 79
+                },
+                {
+                  "name": "n80",
+                  "value": 80
+                },
+                {
+                  "name": "n81",
+                  "value": 81
+                },
+                {
+                  "name": "n82",
+                  "value": 82
+                },
+                {
+                  "name": "n83",
+                  "value": 83
+                },
+                {
+                  "name": "n84",
+                  "value": 84
+                },
+                {
+                  "name": "n85",
+                  "value": 85
+                },
+                {
+                  "name": "n86",
+                  "value": 86
+                },
+                {
+                  "name": "n87",
+                  "value": 87
+                },
+                {
+                  "name": "n88",
+                  "value": 88
+                },
+                {
+                  "name": "n89",
+                  "value": 89
+                },
+                {
+                  "name": "n90",
+                  "value": 90
+                },
+                {
+                  "name": "n91",
+                  "value": 91
+                },
+                {
+                  "name": "n92",
+                  "value": 92
+                },
+                {
+                  "name": "n93",
+                  "value": 93
+                },
+                {
+                  "name": "n94",
+                  "value": 94
+                },
+                {
+                  "name": "n95",
+                  "value": 95
+                },
+                {
+                  "name": "n96",
+                  "value": 96
+                },
+                {
+                  "name": "n97",
+                  "value": 97
+                },
+                {
+                  "name": "n98",
+                  "value": 98
+                },
+                {
+                  "name": "n99",
+                  "value": 99
+                },
+                {
+                  "name": "n100",
+                  "value": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "trend",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "monthly"
+            },
+            "props": {
+              "variant": "reportForecast",
+              "categoryField": "month",
+              "series": [
+                {
+                  "field": "actual",
+                  "role": "actual"
+                },
+                {
+                  "field": "forecast",
+                  "role": "forecast"
+                }
+              ]
+            }
+          },
+          {
+            "id": "kpi",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "current",
+              "compare": "previous"
+            },
+            "props": {
+              "rows": [
+                {
+                  "label": "GMV",
+                  "valueField": "gmv",
+                  "changes": [
+                    {
+                      "label": "同比",
+                      "field": "yoy",
+                      "tone": "auto"
+                    }
+                  ]
+                }
+              ],
+              "secondaryRows": [
+                {
+                  "label": "上期",
+                  "valueField": {
+                    "data": "compare",
+                    "field": "gmv"
+                  }
+                }
+              ],
+              "progress": {
+                "valueField": "done",
+                "ringPercent": 80
+              }
+            }
+          },
+          {
+            "id": "compare-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "current",
+              "compare": "previous"
+            },
+            "props": {
+              "rowKey": "key",
+              "columns": [
+                {
+                  "field": "key"
+                },
+                {
+                  "field": "gmv"
+                },
+                {
+                  "field": {
+                    "data": "compare",
+                    "field": "gmv"
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "note-text",
+            "type": "fieldText",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "notes"
+            },
+            "props": {
+              "field": "body",
+              "variant": "quote"
+            }
+          },
+          {
+            "id": "summary",
+            "type": "aiSummary",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "promptTemplate": "总结 GMV 表现",
+              "relatedData": {
+                "kpi": {
+                  "source": "current",
+                  "description": "当期指标",
+                  "fields": [
+                    {
+                      "field": "gmv",
+                      "term": "成交额"
+                    },
+                    {
+                      "field": "yoy",
+                      "term": "同比"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must be string"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must be number"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must be boolean"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must be null"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must NOT have more than 100 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows/0/items",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/name",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/value/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/value/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/value/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/value/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items/fields/value",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/queryField",
+      "message": "缺少必填字段 queryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/type",
+      "message": "取值不在允许范围:[\"string\",\"number\",\"boolean\",\"date\",\"datetime\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/role",
+      "message": "取值不在允许范围:[\"dimension\",\"measure\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/currency",
+      "message": "缺少必填字段 currency"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items/role",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items",
+      "message": "must match exactly one schema in oneOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/dimensions",
+      "message": "缺少必填字段 dimensions"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/measures",
+      "message": "缺少必填字段 measures"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/title",
+      "message": "存在未定义字段 title(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/day",
+      "message": "存在未定义字段 day(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/at",
+      "message": "存在未定义字段 at(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/flag",
+      "message": "存在未定义字段 flag(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/body",
+      "message": "存在未定义字段 body(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields/items",
+      "message": "存在未定义字段 items(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/fields",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/query",
+      "message": "缺少必填字段 query"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes/source/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/notes",
+      "message": "must match a schema in anyOf"
+    }
+  ]
+}

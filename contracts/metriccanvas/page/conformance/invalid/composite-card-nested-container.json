@@ -1,0 +1,924 @@
+{
+  "case": "composite-card-nested-container",
+  "invariant": "composite-card-pure-container",
+  "input": {
+    "schemaVersion": "5.4",
+    "id": "composite-page",
+    "layoutForm": "dashboard",
+    "dashboardToolbar": {
+      "variant": "compact",
+      "readOnly": true,
+      "note": "只读"
+    },
+    "meta": {
+      "description": "组合卡、Tab 容器、叠放层、列轨与 5.4 呈现档的契约样例"
+    },
+    "dataSources": {
+      "summary": {
+        "fields": {
+          "channel": {
+            "type": "string",
+            "role": "dimension"
+          },
+          "amount": {
+            "type": "number",
+            "role": "measure"
+          },
+          "share": {
+            "type": "number",
+            "role": "measure"
+          },
+          "score": {
+            "type": "number",
+            "role": "measure"
+          },
+          "owner": {
+            "type": "string",
+            "role": "dimension"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "channel": "线上",
+              "amount": 60,
+              "share": 60,
+              "score": 88,
+              "owner": "张三"
+            },
+            {
+              "channel": "线下",
+              "amount": 40,
+              "share": 40,
+              "score": 70,
+              "owner": "李四"
+            }
+          ]
+        }
+      },
+      "top": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "queryField": "value",
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name"
+                  ],
+                  "output_metrics": [
+                    "value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {
+                    "offset": 0,
+                    "limit": 10
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "container": "plain",
+        "columnTracks": [
+          2,
+          1
+        ],
+        "components": [
+          {
+            "id": "backdrop",
+            "type": "text",
+            "layout": {
+              "span": 12,
+              "layer": "backdrop"
+            },
+            "props": {
+              "variant": "plain",
+              "body": "背景"
+            }
+          },
+          {
+            "id": "card",
+            "type": "compositeCard",
+            "layout": {
+              "span": 2
+            },
+            "props": {
+              "title": "渠道概览",
+              "titleIcon": "opportunity",
+              "variant": "metricGrid",
+              "components": [
+                {
+                  "id": "amount-card",
+                  "type": "metricCard",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "summary"
+                  },
+                  "props": {
+                    "rows": [
+                      {
+                        "label": "线上金额",
+                        "context": "近60天",
+                        "valueField": {
+                          "data": "main",
+                          "field": "amount",
+                          "match": {
+                            "field": "channel",
+                            "equals": "线上"
+                          }
+                        },
+                        "link": true
+                      }
+                    ],
+                    "secondaryRows": [
+                      {
+                        "label": "评分",
+                        "valueField": "score"
+                      }
+                    ],
+                    "actions": [
+                      {
+                        "on": "click",
+                        "navigate": {
+                          "page": "inline-report"
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "share-pie",
+                  "type": "pieChart",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "summary"
+                  },
+                  "props": {
+                    "categoryField": "channel",
+                    "valueField": "share"
+                  }
+                },
+                {
+                  "id": "score-gauge",
+                  "type": "gauge",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "summary"
+                  },
+                  "props": {
+                    "valueField": "score",
+                    "max": 100
+                  }
+                },
+                {
+                  "id": "owner-panel",
+                  "type": "keyValuePanel",
+                  "layout": {
+                    "span": 6
+                  },
+                  "data": {
+                    "main": "summary"
+                  },
+                  "props": {
+                    "titleIcon": "reward",
+                    "columns": 6,
+                    "items": [
+                      {
+                        "label": "负责人",
+                        "field": "owner",
+                        "icon": "goldMedal"
+                      },
+                      {
+                        "label": "金额",
+                        "field": "amount",
+                        "unit": "万元"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "channel-breakdown",
+                  "type": "categoryBreakdown",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "summary"
+                  },
+                  "props": {
+                    "categoryField": "channel",
+                    "columns": [
+                      {
+                        "label": "金额",
+                        "field": "amount"
+                      }
+                    ],
+                    "swatches": true
+                  }
+                },
+                {
+                  "id": "tab-container",
+                  "type": "tabContainer",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "variant": "analysisStack",
+                    "defaultTab": "top",
+                    "tabs": [
+                      {
+                        "id": "top",
+                        "label": "TOP",
+                        "component": {
+                          "id": "top-table",
+                          "type": "table",
+                          "layout": {
+                            "span": 12
+                          },
+                          "data": {
+                            "main": "top"
+                          },
+                          "props": {
+                            "variant": "embedded",
+                            "bottomFade": true,
+                            "columns": [
+                              {
+                                "field": "name"
+                              },
+                              {
+                                "field": "value"
+                              }
+                            ]
+                          }
+                        }
+                      },
+                      {
+                        "id": "all",
+                        "label": "全部",
+                        "components": [
+                          {
+                            "id": "all-table",
+                            "type": "table",
+                            "layout": {
+                              "span": 12
+                            },
+                            "data": {
+                              "main": "summary"
+                            },
+                            "props": {
+                              "columns": [
+                                {
+                                  "field": "channel"
+                                },
+                                {
+                                  "field": "amount"
+                                }
+                              ],
+                              "pagination": {
+                                "mode": "local",
+                                "pageSize": 10
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "single-panel",
+            "type": "keyValuePanel",
+            "layout": {
+              "span": 1
+            },
+            "data": {
+              "main": "summary"
+            },
+            "props": {
+              "columns": 1,
+              "items": [
+                {
+                  "label": "负责人",
+                  "field": "owner"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "id": "tabs",
+        "components": [
+          {
+            "id": "tab-container",
+            "type": "tabContainer",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "variant": "analysisStack",
+              "defaultTab": "top",
+              "tabs": [
+                {
+                  "id": "top",
+                  "label": "TOP",
+                  "component": {
+                    "id": "top-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "top"
+                    },
+                    "props": {
+                      "variant": "embedded",
+                      "bottomFade": true,
+                      "columns": [
+                        {
+                          "field": "name"
+                        },
+                        {
+                          "field": "value"
+                        }
+                      ]
+                    }
+                  }
+                },
+                {
+                  "id": "all",
+                  "label": "全部",
+                  "components": [
+                    {
+                      "id": "all-table",
+                      "type": "table",
+                      "layout": {
+                        "span": 12
+                      },
+                      "data": {
+                        "main": "summary"
+                      },
+                      "props": {
+                        "columns": [
+                          {
+                            "field": "channel"
+                          },
+                          {
+                            "field": "amount"
+                          }
+                        ],
+                        "pagination": {
+                          "mode": "local",
+                          "pageSize": 10
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components/5",
+      "message": "组合卡内不得再嵌套容器组件:tabContainer；页面树最深到「分区 → 组合卡 → 组件」三层"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/rows",
+      "message": "缺少必填字段 rows"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"summary\",\"activityProgress\",\"compactSummary\",\"dualSummary\",\"compactStrip\",\"compactStack\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/xField",
+      "message": "缺少必填字段 xField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/series",
+      "message": "缺少必填字段 series"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"reportCompact\",\"embedded\",\"forecastMatrix\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/map",
+      "message": "缺少必填字段 map"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/tabs",
+      "message": "缺少必填字段 tabs"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"compact\",\"analysisStack\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "存在未定义字段 variant(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/nameField",
+      "message": "缺少必填字段 nameField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/valueField",
+      "message": "缺少必填字段 valueField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/items",
+      "message": "缺少必填字段 items"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"counterStrip\",\"detailSummary\",\"detailNormMatrix\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/categoryField",
+      "message": "缺少必填字段 categoryField"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/columns",
+      "message": "缺少必填字段 columns"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/data",
+      "message": "缺少必填字段 data"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/field",
+      "message": "缺少必填字段 field"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"plain\",\"quote\",\"narrativeShort\",\"narrativeMeeting\",\"narrativeRisk\",\"narrativeProgress\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "取值不在允许范围:[\"plain\",\"heading\",\"insight\",\"reportInline\",\"riskNotice\"]"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/promptTemplate",
+      "message": "缺少必填字段 promptTemplate"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/relatedData",
+      "message": "缺少必填字段 relatedData"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/titleIcon",
+      "message": "存在未定义字段 titleIcon(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/components",
+      "message": "存在未定义字段 components(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1/props/variant",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/1",
+      "message": "must match exactly one schema in oneOf"
+    }
+  ]
+}

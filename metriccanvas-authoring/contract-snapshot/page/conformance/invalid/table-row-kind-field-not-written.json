@@ -1,0 +1,412 @@
+{
+  "case": "table-row-kind-field-not-written",
+  "invariant": "table-row-kind-field",
+  "input": {
+    "schemaVersion": "5.2",
+    "id": "compute-page",
+    "meta": {
+      "description": "受控计算阶段、分组查询字段、嵌套明细与语义 HTML 字段的契约样例"
+    },
+    "dataSources": {
+      "targets": {
+        "fields": {
+          "region": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": false
+          },
+          "actual": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "target": {
+            "type": "number",
+            "role": "measure",
+            "collapsible": true
+          },
+          "rate": {
+            "type": "number",
+            "role": "measure"
+          },
+          "gap": {
+            "type": "number",
+            "role": "measure"
+          },
+          "row-kind": {
+            "type": "string",
+            "role": "dimension",
+            "nullable": true
+          }
+        },
+        "compute": [
+          {
+            "op": "ratio",
+            "numerator": "actual",
+            "denominator": "target",
+            "output": "rate",
+            "onZeroDenominator": "null",
+            "scale": 100
+          },
+          {
+            "op": "delta",
+            "minuend": "actual",
+            "subtrahend": "target",
+            "output": "gap"
+          },
+          {
+            "op": "groupSubtotal",
+            "groupBy": "region",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "subtotal"
+            },
+            "labelSuffix": "小计"
+          },
+          {
+            "op": "grandTotal",
+            "measures": [
+              "actual",
+              "target"
+            ],
+            "rowKind": {
+              "field": "row-kind",
+              "value": "total"
+            },
+            "label": {
+              "field": "region",
+              "value": "合计"
+            }
+          }
+        ],
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "region": "华东",
+              "actual": 120,
+              "target": 100
+            },
+            {
+              "region": "华北",
+              "actual": 80,
+              "target": 100
+            }
+          ]
+        }
+      },
+      "pivoted": {
+        "fields": {
+          "quarter": {
+            "queryField": "quarter",
+            "type": "string",
+            "role": "dimension"
+          },
+          "category": {
+            "queryField": "category",
+            "type": "string",
+            "role": "dimension"
+          },
+          "value": {
+            "queryField": "value",
+            "type": "number",
+            "role": "measure"
+          },
+          "online": {
+            "type": "number",
+            "role": "measure"
+          },
+          "offline": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "compute": [
+          {
+            "op": "pivot",
+            "categoryField": "category",
+            "valueField": "value",
+            "keyFields": [
+              "quarter"
+            ],
+            "columns": [
+              {
+                "output": "online",
+                "categories": [
+                  "线上"
+                ]
+              },
+              {
+                "output": "offline",
+                "categories": [
+                  "线下",
+                  "门店"
+                ]
+              }
+            ]
+          }
+        ],
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T08:00:00+08:00",
+            "rows": [
+              {
+                "quarter": "Q1",
+                "category": "线上",
+                "value": 10
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "quarter",
+                    "category"
+                  ],
+                  "output_metrics": [
+                    "value"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "customers": {
+        "fields": {
+          "name": {
+            "queryField": "name",
+            "type": "string",
+            "role": "dimension"
+          },
+          "score": {
+            "queryField": "score",
+            "type": "number",
+            "role": "measure"
+          },
+          "change": {
+            "queryField": "change",
+            "type": "number",
+            "role": "measure"
+          },
+          "tier": {
+            "queryField": "tier",
+            "type": "string",
+            "role": "dimension"
+          },
+          "note": {
+            "queryField": "note",
+            "type": "string",
+            "role": "dimension"
+          },
+          "reason": {
+            "queryField": "reason",
+            "type": "semanticHtml",
+            "role": "detail"
+          },
+          "events": {
+            "queryField": "events",
+            "type": "recordList",
+            "role": "detail",
+            "items": {
+              "fields": {
+                "title": {
+                  "queryField": "event_title",
+                  "type": "string",
+                  "role": "dimension"
+                },
+                "impact": {
+                  "queryField": "event_impact",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                },
+                "desc": {
+                  "queryField": "event_desc",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": true
+                }
+              }
+            }
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-01T00:00:00Z",
+            "rows": [
+              {
+                "name": "客户A",
+                "score": 90,
+                "change": 5,
+                "tier": "金",
+                "note": "稳定",
+                "reason": "<p class=\"positive\">增长</p>",
+                "events": [
+                  {
+                    "event_title": "续约",
+                    "event_impact": 3,
+                    "event_desc": null,
+                    "extra": "dropped"
+                  }
+                ]
+              }
+            ]
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "name",
+                    "tier",
+                    "note",
+                    "reason",
+                    "events"
+                  ],
+                  "output_metrics": [
+                    "score",
+                    "change"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "targets-table",
+            "type": "table",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "targets"
+            },
+            "props": {
+              "rowKindField": "region",
+              "mergeBy": "region",
+              "columns": [
+                {
+                  "field": "region"
+                },
+                {
+                  "field": "actual"
+                },
+                {
+                  "field": "target"
+                },
+                {
+                  "field": {
+                    "data": "main",
+                    "field": "rate",
+                    "format": "percent-1"
+                  }
+                },
+                {
+                  "field": "gap"
+                }
+              ]
+            }
+          },
+          {
+            "id": "pivot-table",
+            "type": "table",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "pivoted"
+            },
+            "props": {
+              "columns": [
+                {
+                  "field": "quarter"
+                },
+                {
+                  "field": "online"
+                },
+                {
+                  "field": "offline"
+                }
+              ]
+            }
+          },
+          {
+            "id": "ranking",
+            "type": "rankingDetailCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "nameField": "name",
+              "valueField": "score",
+              "changeField": "change",
+              "badgeFields": [
+                "tier"
+              ],
+              "descriptionField": "note",
+              "semanticDescriptionField": "reason",
+              "details": {
+                "field": "events",
+                "titleField": "title",
+                "valueField": {
+                  "field": "impact"
+                },
+                "descriptionField": "desc"
+              }
+            }
+          },
+          {
+            "id": "reason-text",
+            "type": "fieldText",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "customers"
+            },
+            "props": {
+              "field": "reason"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/sections/0/components/0/props/rowKindField",
+      "message": "行类别字段 region 没有任何折叠算子写入；小计与合计由计算阶段产出，表格只识别不计算"
+    }
+  ]
+}

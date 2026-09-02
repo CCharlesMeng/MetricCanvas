@@ -1,0 +1,152 @@
+{
+  "case": "field-id-pattern",
+  "invariant": "schema-structure",
+  "input": {
+    "schemaVersion": "5.0",
+    "id": "inline-report",
+    "meta": {
+      "description": "内联报告契约样例"
+    },
+    "dataSources": {
+      "overview": {
+        "fields": {
+          "gmv": {
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "nullable": false
+          },
+          "1-bad": {
+            "type": "number",
+            "role": "measure"
+          }
+        },
+        "source": {
+          "type": "inline",
+          "rows": [
+            {
+              "gmv": 632300000000,
+              "1-bad": 1
+            }
+          ]
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "overview",
+        "components": [
+          {
+            "id": "report-header",
+            "type": "reportHeader",
+            "layout": {
+              "span": 12
+            },
+            "props": {
+              "title": "经营简报",
+              "asOf": {
+                "label": "数据截至",
+                "value": "2026-07-21"
+              }
+            }
+          },
+          {
+            "id": "gmv-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "overview"
+            },
+            "props": {
+              "title": "GMV",
+              "rows": [
+                {
+                  "label": "当日",
+                  "valueField": {
+                    "data": "main",
+                    "field": "gmv",
+                    "format": "compact-yi-1"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "must match pattern \"^[A-Za-z_][A-Za-z0-9_-]*$\""
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "property name must be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "must match pattern \"^[A-Za-z_][A-Za-z0-9_-]*$\""
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "property name must be valid"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields/dimensions",
+      "message": "缺少必填字段 dimensions"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields/measures",
+      "message": "缺少必填字段 measures"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields/gmv",
+      "message": "存在未定义字段 gmv(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields/1-bad",
+      "message": "存在未定义字段 1-bad(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/fields",
+      "message": "must match a schema in anyOf"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/source/query",
+      "message": "缺少必填字段 query"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/source/rows",
+      "message": "存在未定义字段 rows(拼写错误?)"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview/source/type",
+      "message": "must be equal to constant"
+    },
+    {
+      "type": "SCHEMA_ERROR",
+      "path": "/dataSources/overview",
+      "message": "must match a schema in anyOf"
+    }
+  ]
+}

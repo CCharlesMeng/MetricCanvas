@@ -2,6 +2,8 @@ node_modules/
 .svelte-kit/
 build/
 dist/
+# Maven 构建产物（metriccanvas-page-assets）
+metriccanvas-page-assets/**/target/
 test-results/
 playwright-report/
 *.log
