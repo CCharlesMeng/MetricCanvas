@@ -2,7 +2,7 @@
 
 > 日期：2026-09-02
 >
-> 状态：架构访谈进行中；独立创作 Bundle 维度已冻结并进入实施，见 ADR-0061。
+> 状态：架构访谈进行中；独立创作 Bundle S0–S4 已完成，Java 页面资产已确认由本仓建设，详细决策待续。
 > 用途：新会话先读本文、`CONTEXT.md`、`docs/adr/README.md`、ADR-0060 与 ADR-0061，再从尚未裁决的下一维度继续。
 
 ## 1. 为什么重新设计
@@ -192,17 +192,23 @@ ADR-0060 只改变目标架构，不意味着这些实现已经迁移。迁移�
 
 后续内网对接方案作为外部输入，当前不再拆解或排期。
 
-### 已冻结并开工：独立创作 Bundle
+### 已冻结并完成到 S4：独立创作 Bundle
 
 决策见 [ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)，分期实施与验收见 [`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)。Bundle 是原子发布容器，Skill 与 Python Tool 是两个平级 Module，只经 MCP Tool Interface 协作；仓根拥有产品中立契约，Bundle 自有 Authoring contracts 并携带锁定快照，Fake 与 fixture 只属于 Test Harness。该维度同时冻结了 Page Build Spec 的抽象层、FastMCP 只作为 Adapter、差分迁移、单 Bundle 版本与当前页面协议生成策略。
+
+### 已冻结所有权、待续详细 grill：Java 页面资产
+
+Java 页面资产由当前仓库建设为第一方独立 Module，不等待外部团队提供实现。Authoring
+Bundle 中的 `PageAssetPort` 只是 Python consumer Port，不是 Java server Interface。
+下一会话从 [`java-page-assets-grill-handoff.md`](./java-page-assets-grill-handoff.md)
+继续批量裁决目录、构建、Interface、持久化与纵切验收，再形成 Java 实施计划。
 
 ### 尚待后续 grill
 
 1. **Run 可靠性**：持久化、至少一次、工具幂等、断线重连、重启恢复、取消、超时和重复模型费用。
 2. **跨语言运行契约**：工具错误、页面 artifact 事件、进度事件和真实 Adapter 版本兼容。Page Schema、组件能力目录和页面构建规格的真源方向已由 ADR-0061 冻结。
-3. **Java 页面资产**：表结构、事务锁序、Interface、列表与归档；暂不进入发布。
-4. **发布工作流**：固定状态机、审批、定时发布、下线、业务回滚与发布可见性。
-5. **运维与恢复**：部署拓扑、可观测性、审计保留、备份、RPO/RTO 和恢复演练。
+3. **发布工作流**：固定状态机、审批、定时发布、下线、业务回滚与发布可见性。
+4. **运维与恢复**：部署拓扑、可观测性、审计保留、备份、RPO/RTO 和恢复演练。
 
 ## 13. 已形成的 ADR
 
@@ -210,4 +216,5 @@ ADR-0060 只改变目标架构，不意味着这些实现已经迁移。迁移�
 - [ADR-0061：自包含创作 Bundle 与中立契约单向导出](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
 - [ADR-0009](../adr/0009-node-postgres-platform-beside-runtime.md) 已标记为被 ADR-0060 取代。
 
-独立创作 Bundle 可按实施计划继续推进；其他目标架构改动先从第 12 节尚待 grill 的对应维度继续，不把未决事项当作实现规格。
+独立创作 Bundle 已完成 S0–S4；S5 切换依赖第一方 Java 轨完成以及真实 Relay、DQE
+接口可见。下一会话优先继续 Java 页面资产 handoff，不把其中未决推荐项当作实现规格。

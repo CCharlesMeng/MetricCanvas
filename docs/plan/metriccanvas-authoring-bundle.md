@@ -1,6 +1,6 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：S4 已完成，等待外部 Interface 后进入 S5
+> 状态：S4 已完成；S5 等待第一方 Java 页面资产轨及外部 Relay、DQE Interface
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)
 > 交付根：`metriccanvas-authoring/`
@@ -170,14 +170,14 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
 
-状态：等待真实 Relay 注册方式、Java 页面资产 Interface 与 DQE Interface 可见。
+状态：等价向量已冻结；切换等待第一方 Java 页面资产轨交付，以及真实 Relay 注册方式与
+DQE Interface 可见。Java Interface 由本仓 Java Module 拥有，不再作为外部输入等待。
 
 ## 不阻塞开工的后续输入
 
 - 真实 Relay 的项目结构、Skill 注册、进度事件和取消能力。
-- Java 页面资产 Interface 的线上传输契约。
 - DQE 真实数据上下文与执行接口。
-- 内网鉴权与身份接入方案。
 
-这些输入只解锁对应 Adapter 与集成验收，不改变 Skill↔Tool Interface、确定性核心或产品
-契约责任。
+第一方 Java 页面资产的详细决策与后续切片见
+[`java-page-assets-grill-handoff.md`](./java-page-assets-grill-handoff.md)。外部输入只解锁对应
+Adapter 与集成验收，不改变 Skill↔Tool Interface、确定性核心或产品契约责任。
