@@ -37,6 +37,7 @@ componentCatalogRegistry.add(reportHeaderComponentZ, {
   purpose: '表达页面标题、说明、时间点与标签；副标题可显式使用受控语义 HTML',
   chooseWhen: ['任何完整页面的开头'],
   dataShape: '不绑定页面数据源',
+  authoringShape: { bindsData: false },
   title: 'required',
   defaultSpan: 12
 });

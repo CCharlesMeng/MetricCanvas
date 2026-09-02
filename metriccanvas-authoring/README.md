@@ -10,8 +10,10 @@
 
 Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter；Python 内部的
 查询派生、验真、组件选择、装配和页面校验不会逐步暴露成模型工具。S2 已完成
-Page Build Spec 经 application seam 调用三个语义 Port 的完整 Harness 路径；S3 已开始迁移
-数据上下文规范名归一、DQE/结果字段契约派生与首个页面装配垂直切片，后续按
+Page Build Spec 经 application seam 调用三个语义 Port 的完整 Harness 路径；S3 已迁移
+Data Context 校验/语义投影、取数单元闭集验真、DQE/结果字段契约派生、执行错误
+归因与柱状图/折线图硬闸切片。Python 直接消费产品组件目录中生成的
+`authoringShape`，不另存一份组件规则表。后续按
 [`docs/plan/metriccanvas-authoring-bundle.md`](../docs/plan/metriccanvas-authoring-bundle.md)
 继续迁移确定性算法。
 

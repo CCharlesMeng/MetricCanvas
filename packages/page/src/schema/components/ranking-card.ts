@@ -33,6 +33,11 @@ componentCatalogRegistry.add(rankingCardComponentZ, {
   purpose: '突出 Top N 或按指标排序的类别',
   chooseWhen: ['排行、排名、Top N、领先/落后对象'],
   dataShape: '名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1, max: 1 }
+  },
   title: 'optional',
   defaultSpan: 4
 });

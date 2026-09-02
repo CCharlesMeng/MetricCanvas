@@ -78,6 +78,12 @@ componentCatalogRegistry.add(metricCardComponentZ, {
   purpose: '突出一个或少量核心指标的当前值、变化值与可选完成率',
   chooseWhen: ['总额、数量、完成率、KPI、核心指标、年度活动进展'],
   dataShape: '单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 0, max: 0 },
+    measures: { min: 1 },
+    maxRows: 3
+  },
   title: 'optional',
   defaultSpan: 3
 });

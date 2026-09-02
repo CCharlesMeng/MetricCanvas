@@ -11,6 +11,11 @@ from metriccanvas_authoring.application.ports import (
     PageAssetPort,
     SavedRevision,
 )
+from metriccanvas_authoring.domain.data_context import parse_data_context
+from metriccanvas_authoring.domain.execution import (
+    FailureStage,
+    failure_from_execution_error,
+)
 from metriccanvas_authoring.domain.page_build_spec import validate_page_build_spec
 from metriccanvas_authoring.domain.page_building import (
     PageBuildingIssue,
@@ -42,6 +47,7 @@ class BuildPageIssue:
     code: str
     path: str
     message: str
+    stage: FailureStage = "generation"
 
 
 @dataclass(frozen=True, slots=True)
@@ -68,7 +74,22 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                 ),
             )
 
-        data_context = await dependencies.data_context.current()
+        data_context_snapshot = await dependencies.data_context.current()
+        data_context, data_context_issues = parse_data_context(data_context_snapshot)
+        if data_context_issues:
+            return BuildPageResult(
+                ok=False,
+                issues=tuple(
+                    BuildPageIssue(
+                        issue.code,
+                        issue.path,
+                        issue.message,
+                        stage="discovery",
+                    )
+                    for issue in data_context_issues
+                ),
+            )
+        assert data_context is not None
         try:
             units = derive_executable_units(command.spec, data_context)
         except PageBuildingIssue as issue:
@@ -76,23 +97,57 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                 ok=False,
                 issues=(BuildPageIssue(issue.code, issue.path, issue.message),),
             )
-        executions = [
-            await dependencies.dqe.execute(unit.effective_query()) for unit in units
-        ]
+        executions = []
+        for unit_index, unit in enumerate(units):
+            try:
+                executions.append(
+                    await dependencies.dqe.execute(unit.effective_query())
+                )
+            except Exception as cause:
+                failure = failure_from_execution_error(cause)
+                return BuildPageResult(
+                    ok=False,
+                    issues=(
+                        BuildPageIssue(
+                            code=failure.code,
+                            path=f"/units/{unit_index}",
+                            message=failure.message,
+                            stage=failure.stage,
+                        ),
+                    ),
+                )
         page_schema_version = str(load_bundle_info()["pageSchemaVersion"])
-        document = assemble_page_document(
-            page_id=command.page_id,
-            description=_optional_string(command.spec.get("description")),
-            schema_version=page_schema_version,
-            units=units,
-            executions=executions,
-        )
+        try:
+            document = assemble_page_document(
+                page_id=command.page_id,
+                description=_optional_string(command.spec.get("description")),
+                schema_version=page_schema_version,
+                units=units,
+                executions=executions,
+            )
+        except PageBuildingIssue as issue:
+            return BuildPageResult(
+                ok=False,
+                issues=(
+                    BuildPageIssue(
+                        issue.code,
+                        issue.path,
+                        issue.message,
+                        stage="presentation",
+                    ),
+                ),
+            )
         page_issues = validate_page_schema(document)
         if page_issues:
             return BuildPageResult(
                 ok=False,
                 issues=tuple(
-                    BuildPageIssue(issue.type, issue.path, issue.message)
+                    BuildPageIssue(
+                        issue.type,
+                        issue.path,
+                        issue.message,
+                        stage="presentation",
+                    )
                     for issue in page_issues
                 ),
             )

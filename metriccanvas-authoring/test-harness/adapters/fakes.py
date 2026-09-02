@@ -21,12 +21,23 @@ class FakeDataContextPort:
 
 
 class FakeDqeExecutionPort:
-    def __init__(self, result: DqeExecutionResult) -> None:
+    def __init__(
+        self,
+        result: DqeExecutionResult | None = None,
+        *,
+        error: Exception | None = None,
+    ) -> None:
+        if result is None and error is None:
+            raise ValueError("result or error is required")
         self.result = result
+        self.error = error
         self.calls: list[dict[str, Any]] = []
 
     async def execute(self, effective_query: JsonObject) -> DqeExecutionResult:
         self.calls.append(deepcopy(dict(effective_query)))
+        if self.error is not None:
+            raise self.error
+        assert self.result is not None
         return deepcopy(self.result)
 
 

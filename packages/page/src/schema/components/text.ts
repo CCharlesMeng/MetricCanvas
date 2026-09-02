@@ -47,6 +47,7 @@ componentCatalogRegistry.add(textComponentZ, {
     '分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文'
   ],
   dataShape: '不绑定页面数据源',
+  authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 12
 });

@@ -16,9 +16,26 @@ export interface ComponentCatalogMeta {
   purpose: string;
   chooseWhen: string[];
   dataShape: string;
+  /**
+   * 创作期可视化硬闸的可机读数据形状。运行时不消费这些字段；
+   * 它们随组件目录导出，供所有创作运行时共用。
+   */
+  authoringShape: ComponentAuthoringShape;
   /** 该组件在页面中是否必须出现。 */
   title: 'required' | 'optional' | 'unsupported';
   defaultSpan: number;
+}
+
+export interface ComponentAuthoringShape {
+  /** 该组件是否能直接承载一个取数单元的结果。 */
+  bindsData: boolean;
+  dimensions?: { min: number; max?: number };
+  measures?: { min: number; max?: number };
+  minScalarFields?: number;
+  /** 经真实执行证明的最大行数。 */
+  maxRows?: number;
+  /** 当前结果形状不能证明、因而必须失败关闭的字段语义。 */
+  requiresFieldSemantics?: string[];
 }
 
 export const componentCatalogRegistry = z.registry<ComponentCatalogMeta>();

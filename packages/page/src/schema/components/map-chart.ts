@@ -97,6 +97,12 @@ componentCatalogRegistry.add(mapChartComponentZ, {
   purpose: '展示国家或省级地域分布，可按层级维度筛选器做三级下钻',
   chooseWhen: ['明确要求中国/世界地图，且地域名称能映射到地图'],
   dataShape: '地域名称 dimension 字段 + 一个 metric 数值字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1, max: 1 },
+    requiresFieldSemantics: ['地域名称']
+  },
   title: 'optional',
   defaultSpan: 8
 });

@@ -79,6 +79,7 @@ componentCatalogRegistry.add(compositeCardComponentZ, {
     '卡内是多张表格互斥切换时改用 Tab 容器'
   ],
   dataShape: '不绑定页面数据源；每个子组件自己声明数据槽与字段绑定',
+  authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 4
 });

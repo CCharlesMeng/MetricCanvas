@@ -47,6 +47,7 @@ componentCatalogRegistry.add(aiSummaryComponentZ, {
     '需求明确声明运行时 SSE 动态生成；仅有摘要标题、数据或 AI 文案不得推断为 aiSummary'
   ],
   dataShape: '不声明数据槽；relatedData 显式引用页面数据源字段',
+  authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 12
 });

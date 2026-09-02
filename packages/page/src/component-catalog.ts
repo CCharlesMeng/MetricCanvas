@@ -2,6 +2,7 @@ import { z } from 'zod';
 import type { Component } from './page';
 import { componentSchemas } from './schema/component';
 import { componentCatalogRegistry } from './schema/registry';
+import type { ComponentAuthoringShape } from './schema/registry';
 
 export interface ComponentCatalogEntry {
   type: Component['type'];
@@ -11,6 +12,7 @@ export interface ComponentCatalogEntry {
   purpose: string;
   chooseWhen: string[];
   dataShape: string;
+  authoringShape: ComponentAuthoringShape;
   requiredProps: string[];
   title: 'required' | 'optional' | 'unsupported';
   defaultSpan: number;
@@ -20,8 +22,8 @@ export interface ComponentCatalogEntry {
  * 领域 DSL 的组件能力目录。它描述“何时选、需要什么数据”，供 Agent 组合页面；
  * 不是运行时组件注册表，也不允许 Agent 越过 Page Schema 发明新组件。
  *
- * 机械字段（type/requiredProps/defaultSpan 中的前两者由此处从 Zod 定义派生；
- * defaultSpan 与 label/purpose/chooseWhen/dataShape/title 是产品/领域决策，
+ * 机械字段 type/requiredProps 由此处从 Zod 定义派生；defaultSpan、
+ * authoringShape 与 label/purpose/chooseWhen/dataShape/title 是产品/领域决策，
  * 人写在 `./schema/registry.ts` 的 catalog registry 里，与对应组件的 Zod
  * 定义放在同一文件（`./schema/components/*.ts`）维护。
  */
@@ -39,6 +41,7 @@ export const componentCatalog: readonly ComponentCatalogEntry[] = componentSchem
       purpose: meta.purpose,
       chooseWhen: meta.chooseWhen,
       dataShape: meta.dataShape,
+      authoringShape: meta.authoringShape,
       requiredProps: requiredPropsOf(shape.props),
       title: meta.title,
       defaultSpan: meta.defaultSpan

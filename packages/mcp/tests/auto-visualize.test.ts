@@ -40,10 +40,9 @@ describe('自动可视化:候选集与组件能力目录同面', () => {
     }
   });
 
-  it('当前目录每个条目都有数据形状机器判读(守卫:目录新增组件必须补判读)', () => {
-    const candidates = recommendComponents(shapeOf());
-    for (const candidate of candidates) {
-      expect(candidate.reasons.join('')).not.toContain('缺少数据形状机器判读');
+  it('当前目录每个条目都自带可机读的创作数据形状', () => {
+    for (const entry of componentCatalog) {
+      expect(entry.authoringShape).toEqual(expect.objectContaining({ bindsData: expect.any(Boolean) }));
     }
   });
 

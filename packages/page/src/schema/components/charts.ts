@@ -60,6 +60,11 @@ componentCatalogRegistry.add(barChartComponentZ, {
   purpose: '比较离散类别之间的大小或展示分类分布',
   chooseWhen: ['区域/渠道/产品对比', '分类分布', '多指标类别比较'],
   dataShape: '一个 dimension 类别字段 + 一个或多个 metric 字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1 }
+  },
   title: 'optional',
   defaultSpan: 6
 });
@@ -94,6 +99,11 @@ componentCatalogRegistry.add(lineChartComponentZ, {
   purpose: '展示指标随时间或有序维度的变化趋势',
   chooseWhen: ['趋势、走势、按日/月变化、时间序列'],
   dataShape: '一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1 }
+  },
   title: 'optional',
   defaultSpan: 8
 });
@@ -125,6 +135,11 @@ componentCatalogRegistry.add(pieChartComponentZ, {
   purpose: '展示少量类别对整体的占比或构成',
   chooseWhen: ['占比、构成、份额，且类别数量较少'],
   dataShape: '一个 dimension 类别字段 + 一个 metric 数值字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1, max: 1 }
+  },
   title: 'optional',
   defaultSpan: 4
 });

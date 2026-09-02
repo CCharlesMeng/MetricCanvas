@@ -45,6 +45,16 @@
                   "roleHints": ["dimension"],
                   "nullable": false,
                   "sensitive": false
+                },
+                {
+                  "name": "统计周期",
+                  "type": "date",
+                  "description": "按查询时间粒度展开的统计周期。支持的时间粒度:month。",
+                  "aliases": ["统计时间"],
+                  "roleHints": ["dimension", "time"],
+                  "granularity": "month",
+                  "nullable": false,
+                  "sensitive": false
                 }
               ]
             }

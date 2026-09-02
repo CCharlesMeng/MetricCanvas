@@ -65,107 +65,6 @@ export interface ComponentCandidate {
 }
 
 /**
- * 目录条目 dataShape 的机器判读。dataShape 是人写的领域决策文本，
- * 这里为每个条目声明它的结构化读法；组件清单本身始终来自
- * componentCatalog，本表不新增、不遗漏成员——没有判读的条目按
- * 失败关闭处理（ok: false），守卫测试保证当前目录全部有判读。
- */
-interface DataShapeReading {
-  /** 是否消费页面数据源（「不绑定页面数据源」「不声明数据槽」为 false） */
-  bindsData: boolean;
-  dimensions?: { min: number; max?: number };
-  measures?: { min: number; max?: number };
-  /** 至少需要的标量字段总数（dimension + measure） */
-  minScalarFields?: number;
-  /** 行数上限；要求行数已被真实执行证明（未知行数按失败关闭处理） */
-  maxRows?: number;
-  /** 结果形状无法证明的字段语义要求（如「地域名称」），存在即失败关闭 */
-  unprovableSemantics?: string;
-}
-
-/** dataShape「单行或少量行」的机器判读上限。 */
-const FEW_ROWS_LIMIT = 3;
-
-const dataShapeReadings: Record<string, DataShapeReading> = {
-  // 「不绑定页面数据源」
-  reportHeader: { bindsData: false },
-  // 「单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric」
-  // 变化值/完成率语义无法由结果形状证明，装配把每个 measure 各作一行呈现。
-  metricCard: {
-    bindsData: true,
-    dimensions: { min: 0, max: 0 },
-    measures: { min: 1 },
-    maxRows: FEW_ROWS_LIMIT
-  },
-  // 「一个 dimension 类别字段 + 一个或多个 metric 字段」
-  barChart: { bindsData: true, dimensions: { min: 1, max: 1 }, measures: { min: 1 } },
-  // 「一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段」
-  lineChart: { bindsData: true, dimensions: { min: 1, max: 1 }, measures: { min: 1 } },
-  // 「一个 dimension 类别字段 + 一个 metric 数值字段」
-  pieChart: {
-    bindsData: true,
-    dimensions: { min: 1, max: 1 },
-    measures: { min: 1, max: 1 }
-  },
-  // 「一个或多个 dimension/metric 字段组成的多行记录」
-  table: { bindsData: true, minScalarFields: 1 },
-  // 「地域名称 dimension 字段 + 一个 metric 数值字段」：
-  // 结果形状不携带字段语义，无法证明维度是地域名称。
-  mapChart: {
-    bindsData: true,
-    dimensions: { min: 1, max: 1 },
-    measures: { min: 1, max: 1 },
-    unprovableSemantics: '地域名称'
-  },
-  gauge: {
-    bindsData: true,
-    dimensions: { min: 0, max: 0 },
-    measures: { min: 1, max: 1 },
-    maxRows: 1
-  },
-  tabContainer: { bindsData: false },
-  // 「不绑定页面数据源；每个子组件自己声明数据槽与字段绑定」
-  compositeCard: { bindsData: false },
-  // 「每行一个类别；一个 dimension 类别字段 + 一到多个 measure 字段」：
-  // 它是少数几行的紧凑明细，行数上限与「单行或少量行」同一档。
-  categoryBreakdown: {
-    bindsData: true,
-    dimensions: { min: 1, max: 1 },
-    measures: { min: 1 },
-    maxRows: FEW_ROWS_LIMIT
-  },
-  // 「名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制」
-  rankingCard: {
-    bindsData: true,
-    dimensions: { min: 1, max: 1 },
-    measures: { min: 1, max: 1 }
-  },
-  // 「名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、
-  // 普通说明 dimension、语义 HTML 说明、可展开 recordList/detail」：可选部分
-  // （变化/徽标/说明）语义无法由结果形状证明，机器判读只承诺名称 + 数值。
-  rankingDetailCard: {
-    bindsData: true,
-    dimensions: { min: 1, max: 1 },
-    measures: { min: 1, max: 1 }
-  },
-  // 「单行记录；每项绑定一个 dimension 或 measure 字段」：
-  // 逐项的标签由作者给定，必填 props「items」无法由结果字段契约自动补齐。
-  keyValuePanel: { bindsData: true, minScalarFields: 1, maxRows: 1 },
-  // 「单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段」：
-  // 结果形状证明不了某个 string 字段承载的是整段长文本。
-  fieldText: {
-    bindsData: true,
-    dimensions: { min: 1 },
-    maxRows: 1,
-    unprovableSemantics: '整段长文本'
-  },
-  // 「不绑定页面数据源」
-  text: { bindsData: false },
-  // 「不声明数据槽；relatedData 显式引用页面数据源字段」
-  aiSummary: { bindsData: false }
-};
-
-/**
  * 意图与目录 chooseWhen/purpose 文本的对应关键词。亲和度由目录文本命中
  * 关键词得出，不在这里手写「意图 → 组件」的第二份清单。
  */
@@ -239,19 +138,15 @@ function evaluateCandidate(
 
 /** 硬闸：目录条目的 dataShape 机器判读 + 必填 props 可自动补齐性。 */
 function hardGateReasons(entry: ComponentCatalogEntry, shape: ResultShape): string[] {
-  const reading = dataShapeReadings[entry.type];
-  if (reading === undefined) {
-    // 目录新增组件而机器判读缺失时失败关闭，不猜测其数据形状。
-    return [`组件能力目录条目「${entry.type}」缺少数据形状机器判读，按不可用处理`];
-  }
+  const reading = entry.authoringShape;
   if (!reading.bindsData) {
     return [`数据形状「${entry.dataShape}」不消费页面数据源，不能承载取数单元结果`];
   }
 
   const reasons: string[] = [];
-  if (reading.unprovableSemantics !== undefined) {
+  for (const semantic of reading.requiresFieldSemantics ?? []) {
     reasons.push(
-      `数据形状「${entry.dataShape}」要求「${reading.unprovableSemantics}」语义，` +
+      `数据形状「${entry.dataShape}」要求「${semantic}」语义，` +
         '结果形状不携带字段语义，且不得从样例值推断'
     );
   }

@@ -42,6 +42,12 @@ componentCatalogRegistry.add(fieldTextComponentZ, {
     '正文是页面文档里写死的静态说明时改用 text 组件'
   ],
   dataShape: '单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1 },
+    maxRows: 1,
+    requiresFieldSemantics: ['整段长文本']
+  },
   title: 'optional',
   defaultSpan: 12
 });

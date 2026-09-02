@@ -74,6 +74,12 @@ componentCatalogRegistry.add(categoryBreakdownComponentZ, {
     '每个类别只有一个取值、结构是键值对时改用信息面板'
   ],
   dataShape: '每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1 },
+    maxRows: 3
+  },
   title: 'optional',
   defaultSpan: 6
 });

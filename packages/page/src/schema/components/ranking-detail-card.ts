@@ -58,6 +58,11 @@ componentCatalogRegistry.add(rankingDetailCardComponentZ, {
   purpose: '按查询结果顺序展示对象、指标、变化、徽标与原因说明',
   chooseWhen: ['需要保留查询排序的增长/下降排行', '排行项需要展示标签与原因说明'],
   dataShape: '名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail',
+  authoringShape: {
+    bindsData: true,
+    dimensions: { min: 1, max: 1 },
+    measures: { min: 1, max: 1 }
+  },
   title: 'optional',
   defaultSpan: 6
 });

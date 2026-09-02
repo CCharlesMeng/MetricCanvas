@@ -57,6 +57,7 @@ componentCatalogRegistry.add(keyValuePanelComponentZ, {
     '需要逐行核对或排序时改用明细表'
   ],
   dataShape: '单行记录；每项绑定一个 dimension 或 measure 字段',
+  authoringShape: { bindsData: true, minScalarFields: 1, maxRows: 1 },
   title: 'optional',
   defaultSpan: 12
 });

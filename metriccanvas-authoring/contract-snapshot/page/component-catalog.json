@@ -8,6 +8,9 @@
       "任何完整页面的开头"
     ],
     "dataShape": "不绑定页面数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
     "requiredProps": [
       "title"
     ],
@@ -26,6 +29,17 @@
       "总额、数量、完成率、KPI、核心指标、年度活动进展"
     ],
     "dataShape": "单行或少量行；至少一个 metric 字段，可选变化值和完成率 metric",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 0,
+        "max": 0
+      },
+      "measures": {
+        "min": 1
+      },
+      "maxRows": 3
+    },
     "requiredProps": [
       "rows[].label",
       "rows[].valueField"
@@ -47,6 +61,16 @@
       "多指标类别比较"
     ],
     "dataShape": "一个 dimension 类别字段 + 一个或多个 metric 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      }
+    },
     "requiredProps": [
       "categoryField",
       "series[].field"
@@ -66,6 +90,16 @@
       "趋势、走势、按日/月变化、时间序列"
     ],
     "dataShape": "一个 date/datetime/dimension 横轴字段 + 一个或多个 metric 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      }
+    },
     "requiredProps": [
       "xField",
       "series[].field"
@@ -85,6 +119,17 @@
       "占比、构成、份额，且类别数量较少"
     ],
     "dataShape": "一个 dimension 类别字段 + 一个 metric 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
     "requiredProps": [
       "categoryField",
       "valueField"
@@ -104,6 +149,10 @@
       "明细、列表、字段较多、需要精确值、多级表头、选择一行联动下方明细"
     ],
     "dataShape": "一个或多个 dimension/metric 字段组成的多行记录",
+    "authoringShape": {
+      "bindsData": true,
+      "minScalarFields": 1
+    },
     "requiredProps": [
       "columns[].field"
     ],
@@ -119,6 +168,20 @@
       "明确要求中国/世界地图，且地域名称能映射到地图"
     ],
     "dataShape": "地域名称 dimension 字段 + 一个 metric 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      },
+      "requiresFieldSemantics": [
+        "地域名称"
+      ]
+    },
     "requiredProps": [
       "nameField",
       "valueField",
@@ -140,6 +203,18 @@
       "管道支撑率、完成率、达标率这类单值百分比 KPI"
     ],
     "dataShape": "单行记录；一个 measure 数值字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 0,
+        "max": 0
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      },
+      "maxRows": 1
+    },
     "requiredProps": [
       "valueField"
     ],
@@ -158,6 +233,9 @@
       "概览 / TOP / 丢单这类互斥表格需要共用一块区域"
     ],
     "dataShape": "不绑定页面数据源；每个 Tab 内的表格自己声明数据槽",
+    "authoringShape": {
+      "bindsData": false
+    },
     "requiredProps": [
       "tabs[].id",
       "tabs[].label",
@@ -180,6 +258,9 @@
       "卡内是多张表格互斥切换时改用 Tab 容器"
     ],
     "dataShape": "不绑定页面数据源；每个子组件自己声明数据槽与字段绑定",
+    "authoringShape": {
+      "bindsData": false
+    },
     "requiredProps": [
       "components[].id",
       "components[].type",
@@ -199,6 +280,17 @@
       "排行、排名、Top N、领先/落后对象"
     ],
     "dataShape": "名称 dimension 字段 + 一个 metric 数值字段，查询应声明排序和限制",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
     "requiredProps": [
       "nameField",
       "valueField"
@@ -216,6 +308,17 @@
       "排行项需要展示标签与原因说明"
     ],
     "dataShape": "名称 dimension + 数值 measure，可选变化 measure、最多两个徽标 dimension、普通说明 dimension、语义 HTML 说明 semanticHtml/detail，以及可展开 recordList/detail",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1,
+        "max": 1
+      }
+    },
     "requiredProps": [
       "nameField",
       "valueField"
@@ -236,6 +339,11 @@
       "需要逐行核对或排序时改用明细表"
     ],
     "dataShape": "单行记录；每项绑定一个 dimension 或 measure 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "minScalarFields": 1,
+      "maxRows": 1
+    },
     "requiredProps": [
       "items[].label",
       "items[].field"
@@ -257,6 +365,17 @@
       "每个类别只有一个取值、结构是键值对时改用信息面板"
     ],
     "dataShape": "每行一个类别;一个 dimension 类别字段 + 一到多个 measure 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1,
+        "max": 1
+      },
+      "measures": {
+        "min": 1
+      },
+      "maxRows": 3
+    },
     "requiredProps": [
       "categoryField",
       "columns[].label",
@@ -275,6 +394,16 @@
       "正文是页面文档里写死的静态说明时改用 text 组件"
     ],
     "dataShape": "单行记录；绑定一个 string 字段，或一个 semanticHtml/detail 字段",
+    "authoringShape": {
+      "bindsData": true,
+      "dimensions": {
+        "min": 1
+      },
+      "maxRows": 1,
+      "requiresFieldSemantics": [
+        "整段长文本"
+      ]
+    },
     "requiredProps": [
       "field"
     ],
@@ -293,6 +422,9 @@
       "分析报告摘要使用 variant: reportInline；它会默认显示图标和“AI 总结：”，metadata 只需声明正文"
     ],
     "dataShape": "不绑定页面数据源",
+    "authoringShape": {
+      "bindsData": false
+    },
     "requiredProps": [],
     "title": "optional",
     "defaultSpan": 12
@@ -306,6 +438,9 @@
       "需求明确声明运行时 SSE 动态生成；仅有摘要标题、数据或 AI 文案不得推断为 aiSummary"
     ],
     "dataShape": "不声明数据槽；relatedData 显式引用页面数据源字段",
+    "authoringShape": {
+      "bindsData": false
+    },
     "requiredProps": [
       "promptTemplate",
       "relatedData"

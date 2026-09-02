@@ -42,6 +42,8 @@ Authoring contracts 和摘要无漂移。JSON Schema 无法表达的跨引用不
 稳定错误 `code/path` 向量承载。固定结构化输入下比较 canonical Page JSON 与错误分类，
 不比较模型轨迹、日志或内部代码形状。等价冻结后 Python 成为页面装配真源，TypeScript
 双实现退出。创作工具始终产出当前页面协议版本。
+组件能力目录的 `authoringShape` 在每个组件 Schema 的目录元数据旁一次声明，
+TypeScript 创作算法和 Python Tool 都消费同一份导出，不再各自维护组件形状矩阵。
 
 **Test Harness 是 Bundle 的外部测试宿主。** `test-harness/` 保存 fixture、Fake Adapter、
 进程内验收和真实 stdio 子进程黑盒，不进入生产运行时，不复制 Agent Runner/模型循环，
@@ -54,6 +56,8 @@ Authoring contracts 和摘要无漂移。JSON Schema 无法表达的跨引用不
   同时仍以一个不可变 Bundle 交付。
 - 产品规则修改只在作者真源发生；导出、manifest、snapshot 和跨语言向量让 Python
   消费者显式升级，不会悄然形成第二份规则清单。
+- 新增或修改组件时，必须同时给出可机读创作形状；契约漂移检查会阻止
+  Python 继续消费旧快照。
 - 本地 Harness 必须同时保留纯核心验收和一条真实 MCP stdio 黑盒；Harness 通过只证明
   Bundle 自洽，不证明真实 Relay、Java 或 DQE 已接通。
 - 真实 Relay 接线、Java/DQE 传输 Adapter、发布治理与运维恢复仍需外部契约可见后处理。

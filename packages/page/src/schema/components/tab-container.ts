@@ -49,6 +49,7 @@ componentCatalogRegistry.add(tabContainerComponentZ, {
   purpose: '在同一卡位切换多张表格,不占用额外栅格行',
   chooseWhen: ['概览 / TOP / 丢单这类互斥表格需要共用一块区域'],
   dataShape: '不绑定页面数据源；每个 Tab 内的表格自己声明数据槽',
+  authoringShape: { bindsData: false },
   title: 'optional',
   defaultSpan: 4
 });

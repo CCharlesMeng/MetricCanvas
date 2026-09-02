@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
+from metriccanvas_authoring.domain.component_selection import recommend_components
+from metriccanvas_authoring.domain.data_context import DataContext, SemanticSurface
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
 
@@ -19,6 +21,7 @@ class ExecutableUnit:
     title: str | None
     fields: dict[str, dict[str, Any]]
     query_body: dict[str, Any]
+    intent: str
     pinned_component: str | None
 
     def effective_query(self) -> dict[str, Any]:
@@ -32,24 +35,28 @@ class ExecutableUnit:
 
 def derive_executable_units(
     spec: Mapping[str, Any],
-    data_context: Mapping[str, Any],
+    data_context: DataContext,
 ) -> list[ExecutableUnit]:
     """Derive DQE requests and field contracts from business-semantic units."""
     units: list[ExecutableUnit] = []
     for index, raw_unit in enumerate(_sequence(spec["units"])):
         unit = _mapping(raw_unit)
-        schema = _schema_for(
-            data_context,
-            str(unit["businessDomain"]),
-            f"/units/{index}/businessDomain",
-        )
-        fields = _field_contracts(unit, schema, index)
+        business_domain = str(unit["businessDomain"])
+        surface = data_context.surface(business_domain)
+        if surface is None:
+            raise PageBuildingIssue(
+                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                path=f"/units/{index}/businessDomain",
+                message=f"business domain is not in data context: {business_domain}",
+            )
+        fields = _field_contracts(unit, surface, index)
         units.append(
             ExecutableUnit(
                 data_source_id=f"unit-{index + 1}",
                 title=_optional_string(unit.get("title")),
                 fields=fields,
-                query_body=_query_body(unit, schema, index),
+                query_body=_query_body(unit, surface, index),
+                intent=str(unit["intent"]),
                 pinned_component=_optional_string(unit.get("pinnedComponent")),
             )
         )
@@ -67,7 +74,9 @@ def assemble_page_document(
     """Assemble executed units into a current-version Page Metadata document."""
     data_sources: dict[str, Any] = {}
     components: list[dict[str, Any]] = []
-    for unit, execution in zip(units, executions, strict=True):
+    for unit_index, (unit, execution) in enumerate(
+        zip(units, executions, strict=True)
+    ):
         source: dict[str, Any] = {
             "type": "query",
             "query": {"language": "dqe", "body": unit.query_body},
@@ -86,7 +95,7 @@ def assemble_page_document(
             "fields": unit.fields,
             "source": source,
         }
-        components.append(_component_for(unit))
+        components.append(_component_for(unit, execution, unit_index))
 
     return {
         "schemaVersion": schema_version,
@@ -99,31 +108,38 @@ def assemble_page_document(
 
 def _field_contracts(
     unit: Mapping[str, Any],
-    schema: Mapping[str, Any],
+    surface: SemanticSurface,
     unit_index: int,
 ) -> dict[str, dict[str, Any]]:
     fields: dict[str, dict[str, Any]] = {}
     field_number = 0
-    dimensions = _dimension_index(schema)
-    metrics = _named_index(_sequence(schema["metrics"]))
-
     for dimension_index, raw_name in enumerate(_sequence(unit["groupBy"])):
         name = str(raw_name)
-        declaration = dimensions.get(name)
+        declaration = surface.dimension(name)
         if declaration is None:
             raise PageBuildingIssue(
                 code="DATA_CONTEXT_NAME_NOT_FOUND",
                 path=f"/units/{unit_index}/groupBy/{dimension_index}",
                 message=f"dimension is not in data context: {name}",
             )
-        canonical_name = str(declaration["name"])
+        canonical_name = declaration.name
+        time = unit.get("time")
+        granularity = (
+            None if time is None else str(_mapping(time)["granularity"])
+        )
         field_number += 1
         fields[f"field-{field_number}"] = {
             "queryField": canonical_name,
-            "type": declaration.get("type", "string"),
+            "type": (
+                "date"
+                if declaration.is_time and granularity == "day"
+                else "string"
+                if declaration.is_time
+                else declaration.field_type
+            ),
             "role": "dimension",
             "label": canonical_name,
-            "nullable": bool(declaration.get("nullable", False)),
+            "nullable": declaration.nullable,
         }
 
     for metric_index, raw_metric in enumerate(_sequence(unit["metrics"])):
@@ -145,64 +161,99 @@ def _field_contracts(
             }
             continue
         name = str(metric["name"])
-        declaration = metrics.get(name)
+        declaration = surface.metric(name)
         if declaration is None:
             raise PageBuildingIssue(
                 code="DATA_CONTEXT_NAME_NOT_FOUND",
                 path=f"/units/{unit_index}/metrics/{metric_index}/name",
                 message=f"metric is not in data context: {name}",
             )
-        canonical_name = str(declaration["name"])
+        canonical_name = declaration.name
         field_number += 1
         fields[f"field-{field_number}"] = {
             "queryField": canonical_name,
-            "type": declaration.get("type", "number"),
+            "type": declaration.field_type,
             "role": "measure",
             "label": canonical_name,
             **(
                 {}
-                if declaration.get("unit") is None
-                else {"unit": declaration["unit"]}
+                if declaration.unit is None
+                else {"unit": declaration.unit}
             ),
-            "nullable": bool(declaration.get("nullable", False)),
+            "nullable": declaration.nullable,
         }
     return fields
 
 
 def _query_body(
     unit: Mapping[str, Any],
-    schema: Mapping[str, Any],
+    surface: SemanticSurface,
     unit_index: int,
 ) -> dict[str, Any]:
     time = unit.get("time")
-    dimensions = _dimension_index(schema)
-    metrics = _named_index(_sequence(schema["metrics"]))
+    if time is not None:
+        granularity = str(_mapping(time)["granularity"])
+        allowed_granularities = {
+            granularity
+            for dimension in surface.dimensions_by_name.values()
+            if dimension.is_time
+            for granularity in dimension.granularities
+        }
+        if granularity not in allowed_granularities:
+            raise PageBuildingIssue(
+                code="TIME_GRANULARITY_NOT_IN_DATA_CONTEXT",
+                path=f"/units/{unit_index}/time/granularity",
+                message=(
+                    f"time granularity is not in data context: {granularity}"
+                ),
+            )
     dimension_filters: list[dict[str, Any]] = []
     for filter_index, raw_filter in enumerate(_sequence(unit["filters"])):
         dimension_filter = _mapping(raw_filter)
         name = str(dimension_filter["dimension"])
-        declaration = dimensions.get(name)
+        declaration = surface.dimension(name)
         if declaration is None:
             raise PageBuildingIssue(
                 code="DATA_CONTEXT_NAME_NOT_FOUND",
                 path=f"/units/{unit_index}/filters/{filter_index}/dimension",
                 message=f"filter dimension is not in data context: {name}",
             )
+        if declaration.is_time:
+            raise PageBuildingIssue(
+                code="DATA_CONTEXT_NAME_NOT_FOUND",
+                path=f"/units/{unit_index}/filters/{filter_index}/dimension",
+                message=f"time dimension must be expressed by unit time: {name}",
+            )
+        values = list(_sequence(dimension_filter["values"]))
+        if declaration.values is not None:
+            for value_index, value in enumerate(values):
+                if str(value) not in declaration.values:
+                    raise PageBuildingIssue(
+                        code="DIMENSION_VALUE_NOT_IN_DATA_CONTEXT",
+                        path=(
+                            f"/units/{unit_index}/filters/{filter_index}"
+                            f"/values/{value_index}"
+                        ),
+                        message=(
+                            f"dimension value is not in data context: "
+                            f"{declaration.name}={value}"
+                        ),
+                    )
         dimension_filters.append(
             {
-                "dim_name": declaration["name"],
-                "dim_value_list": list(_sequence(dimension_filter["values"])),
+                "dim_name": declaration.name,
+                "dim_value_list": values,
             }
         )
     return {
         "dsl_list": [
             {
                 "output_dims": [
-                    str(dimensions[str(name)]["name"])
+                    _required_dimension(surface, str(name)).name
                     for name in _sequence(unit["groupBy"])
                 ],
                 "output_metrics": [
-                    _output_metric(_mapping(metric), metrics)
+                    _output_metric(_mapping(metric), surface)
                     for metric in _sequence(unit["metrics"])
                 ],
                 "filter": {
@@ -228,16 +279,62 @@ def _query_body(
 
 def _output_metric(
     metric: Mapping[str, Any],
-    metrics: Mapping[str, Mapping[str, Any]],
+    surface: SemanticSurface,
 ) -> str | dict[str, str]:
     if metric["kind"] == "metric":
-        return str(metrics[str(metric["name"])]["name"])
+        declaration = surface.metric(str(metric["name"]))
+        if declaration is None:
+            raise AssertionError("metric names are checked before query derivation")
+        return declaration.name
     return {"formula": str(metric["expression"]), "alias": str(metric["label"])}
 
 
-def _component_for(unit: ExecutableUnit) -> dict[str, Any]:
-    if unit.pinned_component != "barChart":
-        raise ValueError("the first build slice requires pinnedComponent=barChart")
+def _component_for(
+    unit: ExecutableUnit,
+    execution: DqeExecutionResult,
+    unit_index: int,
+) -> dict[str, Any]:
+    row_count = (
+        execution.total_count
+        if execution.total_count is not None
+        else len(execution.rows)
+    )
+    candidates = recommend_components(
+        unit.fields,
+        row_count=row_count,
+        intent=unit.intent,
+        pinned=unit.pinned_component,
+    )
+    if unit.pinned_component is not None:
+        selected = next(
+            (candidate for candidate in candidates if candidate.pinned), None
+        )
+        if selected is None or not selected.ok:
+            reasons = () if selected is None else selected.reasons
+            raise PageBuildingIssue(
+                code="PINNED_COMPONENT_REJECTED",
+                path=f"/units/{unit_index}/pinnedComponent",
+                message=(
+                    f"pinned component {unit.pinned_component} failed the capability gate: "
+                    + "; ".join(reasons)
+                ),
+            )
+    else:
+        selected = next(
+            (candidate for candidate in candidates if candidate.recommended), None
+        )
+        if selected is None:
+            raise PageBuildingIssue(
+                code="COMPONENT_GATE_REJECTED",
+                path=f"/units/{unit_index}",
+                message="no component passed the capability gate",
+            )
+    if selected.component_type not in {"barChart", "lineChart"}:
+        raise PageBuildingIssue(
+            code="COMPONENT_ASSEMBLY_UNSUPPORTED",
+            path=f"/units/{unit_index}/pinnedComponent",
+            message=f"component assembly is not migrated: {selected.component_type}",
+        )
     dimensions = [
         (field_id, field)
         for field_id, field in unit.fields.items()
@@ -248,61 +345,51 @@ def _component_for(unit: ExecutableUnit) -> dict[str, Any]:
         for field_id, field in unit.fields.items()
         if field["role"] == "measure"
     ]
-    return {
-        "id": f"{unit.data_source_id}-bar-chart",
-        "type": "barChart",
-        "layout": {"span": 12},
-        "data": {"main": unit.data_source_id},
-        "props": {
+    series = [
+        {"field": field_id, "label": field.get("label", field_id)}
+        for field_id, field in measures
+    ]
+    if selected.component_type == "barChart":
+        props = {
             **({} if unit.title is None else {"title": unit.title}),
             "categoryField": dimensions[0][0],
-            "series": [
-                {"field": field_id, "label": field.get("label", field_id)}
-                for field_id, field in measures
-            ],
-        },
+            "series": series,
+        }
+    else:
+        time_dimension = next(
+            (
+                field
+                for field in dimensions
+                if field[1]["type"] in {"date", "datetime"}
+            ),
+            dimensions[0],
+        )
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "xField": time_dimension[0],
+            "series": series,
+        }
+    return {
+        "id": f"{unit.data_source_id}-{_kebab_case(selected.component_type)}",
+        "type": selected.component_type,
+        "layout": {"span": 12},
+        "data": {"main": unit.data_source_id},
+        "props": props,
     }
 
 
-def _schema_for(
-    data_context: Mapping[str, Any],
-    business_domain: str,
-    path: str,
-) -> Mapping[str, Any]:
-    for raw_environment in _sequence(data_context["executionEnvironments"]):
-        environment = _mapping(raw_environment)
-        for raw_schema in _sequence(environment["schemas"]):
-            schema = _mapping(raw_schema)
-            if schema.get("name") == business_domain:
-                return schema
-    raise PageBuildingIssue(
-        code="DATA_CONTEXT_NAME_NOT_FOUND",
-        path=path,
-        message=f"business domain is not in data context: {business_domain}",
-    )
-
-
-def _dimension_index(schema: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
-    result: dict[str, Mapping[str, Any]] = {}
-    for raw_object in _sequence(schema["objects"]):
-        for raw_field in _sequence(_mapping(raw_object)["fields"]):
-            field = _mapping(raw_field)
-            name = str(field["name"])
-            result[name] = field
-            for alias in _sequence(field.get("aliases", [])):
-                result.setdefault(str(alias), field)
+def _kebab_case(value: str) -> str:
+    result = ""
+    for character in value:
+        result += f"-{character.lower()}" if character.isupper() else character
     return result
 
 
-def _named_index(values: Sequence[object]) -> dict[str, Mapping[str, Any]]:
-    result: dict[str, Mapping[str, Any]] = {}
-    for raw_value in values:
-        value = _mapping(raw_value)
-        name = str(value["name"])
-        result[name] = value
-        for alias in _sequence(value.get("aliases", [])):
-            result.setdefault(str(alias), value)
-    return result
+def _required_dimension(surface: SemanticSurface, name: str):
+    declaration = surface.dimension(name)
+    if declaration is None:
+        raise AssertionError("dimension names are checked before query derivation")
+    return declaration
 
 
 def _mapping(value: object) -> Mapping[str, Any]:

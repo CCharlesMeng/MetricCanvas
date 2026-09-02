@@ -35,6 +35,12 @@ def fixture(name: str) -> dict[str, object]:
     )
 
 
+class RuntimeQueryError(Exception):
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
     async def test_valid_spec_builds_and_saves_a_current_page_revision(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
@@ -152,6 +158,148 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 },
             },
         )
+
+    async def test_invalid_data_context_stops_before_execution_and_save(self) -> None:
+        snapshot = fixture("data-context.json")
+        snapshot.pop("formatVersion")
+        data_context = FakeDataContextPort(snapshot)
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:invalid-context",
+                spec=fixture("page-build-spec.json"),
+            )
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path) for issue in result.issues],
+            [("DATA_CONTEXT_SCHEMA_ERROR", "/formatVersion")],
+        )
+        self.assertEqual(data_context.calls, 1)
+        self.assertEqual(dqe.calls, [])
+        self.assertEqual(pages.calls, [])
+
+    async def test_unpinned_comparison_selects_bar_chart(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[{"区域": "华东", "Tokens请求量": 18}],
+                captured_at="2026-09-02T00:00:01.000Z",
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok)
+        component = pages.calls[0]["document"]["sections"][0]["components"][0]
+        self.assertEqual(component["type"], "barChart")
+
+    async def test_incompatible_pinned_component_stops_before_save(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["pinnedComponent"] = "metricCard"
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[
+                    {"区域": "华东", "Tokens请求量": 18},
+                    {"区域": "华南", "Tokens请求量": 12},
+                ]
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:blocked-component",
+                spec=spec,
+            )
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.stage, issue.code, issue.path) for issue in result.issues],
+            [
+                (
+                    "presentation",
+                    "PINNED_COMPONENT_REJECTED",
+                    "/units/0/pinnedComponent",
+                )
+            ],
+        )
+        self.assertEqual(data_context.calls, 1)
+        self.assertEqual(len(dqe.calls), 1)
+        self.assertEqual(pages.calls, [])
+
+    async def test_unpinned_trend_selects_line_chart(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["groupBy"] = ["统计周期"]
+        spec["units"][0]["intent"] = "trend"
+        spec["units"][0].pop("pinnedComponent")
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(
+            DqeExecutionResult(
+                rows=[{"统计周期": "2026-08", "Tokens请求量": 18}],
+                captured_at="2026-09-02T00:00:01.000Z",
+            )
+        )
+        pages = FakePageAssetPort(SavedRevision("tokens-trend", "revision-1", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-trend",
+                idempotency_key="build:tokens-trend:auto-component",
+                spec=spec,
+            )
+        )
+
+        self.assertTrue(result.ok)
+        document = pages.calls[0]["document"]
+        component = document["sections"][0]["components"][0]
+        self.assertEqual(component["type"], "lineChart")
+        self.assertEqual(component["props"]["xField"], "field-1")
+        self.assertEqual(document["dataSources"]["unit-1"]["fields"]["field-1"]["type"], "string")
 
     async def test_unknown_business_domain_stops_before_execution_and_save(self) -> None:
         spec = fixture("page-build-spec.json")
@@ -425,6 +573,110 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
         self.assertEqual(pages.calls, [])
+
+    async def test_unknown_filter_value_stops_before_execution_and_save(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["filters"] = [{"dimension": "区域", "values": ["东北"]}]
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:unknown-filter-value",
+                spec=spec,
+            )
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path) for issue in result.issues],
+            [("DIMENSION_VALUE_NOT_IN_DATA_CONTEXT", "/units/0/filters/0/values/0")],
+        )
+        self.assertEqual(data_context.calls, 1)
+        self.assertEqual(dqe.calls, [])
+        self.assertEqual(pages.calls, [])
+
+    async def test_unknown_time_granularity_stops_before_execution_and_save(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["time"]["granularity"] = "quarter"
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=data_context,
+                dqe=dqe,
+                page_assets=pages,
+            )
+        )
+
+        result = await build_page(
+            BuildPageCommand(
+                page_id="tokens-by-region",
+                idempotency_key="build:tokens-by-region:unknown-time-granularity",
+                spec=spec,
+            )
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path) for issue in result.issues],
+            [("TIME_GRANULARITY_NOT_IN_DATA_CONTEXT", "/units/0/time/granularity")],
+        )
+        self.assertEqual(data_context.calls, 1)
+        self.assertEqual(dqe.calls, [])
+        self.assertEqual(pages.calls, [])
+
+    async def test_runtime_query_errors_keep_their_code_and_authoring_stage(self) -> None:
+        cases = [
+            ("DQE_CONFIG_ERROR", "generation"),
+            ("DQE_TIMEOUT", "execution"),
+            ("DQE_ROW_CONTRACT_ERROR", "presentation"),
+            ("UNCLASSIFIED_DQE_ERROR", "execution"),
+        ]
+        for error_code, expected_stage in cases:
+            with self.subTest(error_code=error_code):
+                data_context = FakeDataContextPort(fixture("data-context.json"))
+                dqe = FakeDqeExecutionPort(
+                    error=RuntimeQueryError(error_code, "query failed")
+                )
+                pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+                build_page = create_build_page(
+                    BuildPageDependencies(
+                        data_context=data_context,
+                        dqe=dqe,
+                        page_assets=pages,
+                    )
+                )
+
+                result = await build_page(
+                    BuildPageCommand(
+                        page_id="tokens-by-region",
+                        idempotency_key=f"build:tokens-by-region:{error_code}",
+                        spec=fixture("page-build-spec.json"),
+                    )
+                )
+
+                self.assertFalse(result.ok)
+                self.assertEqual(
+                    [
+                        (issue.stage, issue.code, issue.path)
+                        for issue in result.issues
+                    ],
+                    [(expected_stage, error_code, "/units/0")],
+                )
+                self.assertEqual(data_context.calls, 1)
+                self.assertEqual(len(dqe.calls), 1)
+                self.assertEqual(pages.calls, [])
 
 
 if __name__ == "__main__":
