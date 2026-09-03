@@ -21,6 +21,7 @@
     "authoring:test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'",
     "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
+    "slice:page-assets": "tsx tools/scripts/slice-page-assets.ts",
     "check": "pnpm -r check"
   },
   "devDependencies": {

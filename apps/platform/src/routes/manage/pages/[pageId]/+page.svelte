@@ -32,6 +32,8 @@
   let publishMessage = $state('');
   let confirmationUrl = $state('');
   let requestingPublish = $state(false);
+  /** 后端如实声明"未开放"(HTTP 501,NOT_SUPPORTED)时的说明;与加载失败区分显示。 */
+  let historyUnavailable = $state('');
 
   const pageId = $derived(page.params.pageId ?? '');
   const comparison = $derived(selectRevisionComparison(revisions, selectedRevisionId));
@@ -49,14 +51,21 @@
         fetch(`/api/pages/${encodeURIComponent(pageId)}/revisions`)
       ]);
       if (!pageResponse.ok) throw new Error(await responseMessage(pageResponse));
-      if (!historyResponse.ok) throw new Error(await responseMessage(historyResponse));
 
       const pageData = (await pageResponse.json()) as {
         revision: Revision;
         runtimeOrigin: string;
       };
-      const history = (await historyResponse.json()) as { revisions: Revision[] };
-      revisions = history.revisions;
+      if (historyResponse.status === 501) {
+        // 首批 Java 页面资产没有修订历史(ADR-0062):只展示当前最新修订,不把它当成失败。
+        historyUnavailable = await responseMessage(historyResponse);
+        revisions = [pageData.revision];
+      } else {
+        if (!historyResponse.ok) throw new Error(await responseMessage(historyResponse));
+        historyUnavailable = '';
+        const history = (await historyResponse.json()) as { revisions: Revision[] };
+        revisions = history.revisions;
+      }
       runtimeOrigin = pageData.runtimeOrigin;
       selectedRevisionId = pageData.revision.revisionId;
       await loadDiff(pageData.revision.revisionId);
@@ -190,6 +199,9 @@
     <div class="layout">
       <aside class="history">
         <h2>修订历史</h2>
+        {#if historyUnavailable}
+          <p class="muted">未开放:{historyUnavailable}</p>
+        {/if}
         <ol>
           {#each revisions as revision (revision.revisionId)}
             <li class:active={revision.revisionId === selectedRevisionId}>

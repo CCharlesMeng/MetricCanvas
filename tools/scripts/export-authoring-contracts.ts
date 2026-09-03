@@ -553,11 +553,14 @@ async function buildBundleLock(): Promise<string> {
   const bundle = JSON.parse(await readFile(path.join(bundleRoot, 'bundle.json'), 'utf8')) as {
     bundleVersion: string;
   };
+  // 本机工具产物不是 Bundle 的一部分:虚拟环境、缓存目录只在开发机存在,进锁文件会让 CI 判定漂移。
+  const localOnlyDirectories = new Set(['.venv', 'venv', '.pytest_cache', '.mypy_cache', '.ruff_cache']);
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&
       !file.includes('__pycache__') &&
-      !file.endsWith('.pyc')
+      !file.endsWith('.pyc') &&
+      !file.split('/').some((segment) => localOnlyDirectories.has(segment))
   );
   const artifacts = await Promise.all(
     artifactPaths.map(async (file) => {

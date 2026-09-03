@@ -4,9 +4,19 @@
 承载 `savePageRevision` / `getLatestPage` / `getPageRevision` / `listPages` 四个 Interface，
 目标宿主是 `CDINL2DataBuilderService`。实施切片见 [`docs/plan/metriccanvas-page-assets.md`](../docs/plan/metriccanvas-page-assets.md)。
 
-当前状态：**J1、J2、J3 完成**（工程、契约嵌入、页面校验器、conformance 向量；四个 Interface、稳定错误信封、
-指纹幂等、内存仓储与领域 / 契约测试；MySQL Schema、MyBatis 仓储、`GET_LOCK` 锁序与真实 MySQL 集成测试），
-J4（接线）未开始。
+当前状态：**J1–J4 全部完成**（工程、契约嵌入、页面校验器、conformance 向量；四个 Interface、稳定错误信封、
+指纹幂等、内存仓储与领域 / 契约测试；MySQL Schema、MyBatis 仓储、`GET_LOCK` 锁序与真实 MySQL 集成测试；
+Python 与 platform 两个 consumer 的 HTTP Adapter 与一键纵切 `pnpm slice:page-assets`）。
+
+## Consumer
+
+- Python 创作 Tool：`metriccanvas-authoring/tool/metriccanvas_authoring/adapters/outbound/java_page_assets.py`，
+  由 `METRICCANVAS_PAGE_ASSETS_BASE_URL` 配置，`X-Operator-Id` 来自服务态 `IdentityPort`。
+- platform：`packages/page-assets-java`（`createJavaPageLifecycle`），`METRICCANVAS_PAGE_ASSETS=java` 切换；
+  四个接口真实调用，其余 `PageLifecycle` 方法返回 `NOT_SUPPORTED`（HTTP 501）。
+- 两者都只读 `contracts/metriccanvas/page-assets/rest-services-page-assets.yaml` 这份导出副本；改 Interface 先改
+  作者文件再 `pnpm authoring:contracts`。仓根 `pnpm slice:page-assets` 一条命令起 MySQL + Java + Python stdio
+  子进程走通保存 → 落库 → platform Adapter 读精确修订，接线改动先跑它。
 
 ## 目录
 
@@ -126,9 +136,10 @@ GET  {base}/healthcheck                             healthcheck        200（自
   `{ errors: [{ type, path, message }] }`，`REVISION_CONFLICT` 为 `{ currentLatest: { revisionId, revisionNumber } | null }`。
   Spring MVC 自己的绑定 / 校验 / 路由错误统一为传输层码 `INVALID_REQUEST`（4xx）与 `INTERNAL_ERROR`（500），
   它们不在 ADR-0062 的业务闭集内，YAML 已如此声明。
-- 幂等：作用域 `(savePageRevision, actorId, idempotencyKey)`，指纹是请求体全部业务字段（含 `source` 与
-  `dataContextVersion`）的规范化 JSON sha256。同键同指纹原样重放（仍 201），同键异指纹 409。只记成功；
-  重放按 `(pageId, revisionId)` 取回不可变修订，不另存响应体。
+- 幂等：作用域 `(savePageRevision, actorId, idempotencyKey)`，指纹是请求**意图与内容**（`pageId`、
+  `baseRevisionId`、`document`）的规范化 JSON sha256；`source` / `dataContextVersion` / `pageIdConfirmed` 是
+  留痕与控制位不进指纹（Relay 一次性子进程重试时 sessionId 必然不同，J4 纵切据此修正 J2）。同键同指纹原样
+  重放（仍 201），同键异指纹 409。只记成功；重放按 `(pageId, revisionId)` 取回不可变修订，不另存响应体。
 - `contentHash` = sha256(canonical(document))，与 TypeScript 基线 `canonicalizeJson` 逐字节相同（键按
   UTF-16 码元排序、JS 数字文案）；修订存保存时提交的原样文档，不存解析产物。
 - `createdAt` 固定 `yyyy-MM-dd'T'HH:mm:ss.SSS'Z'`（UTC 毫秒），`revisionId` 是 UUIDv4 的 32 位无横线形式。

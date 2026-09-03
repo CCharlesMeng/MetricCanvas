@@ -1,9 +1,10 @@
 # Java 页面资产与 Authoring 接线实施 handoff
 
-> 日期：2026-09-02
+> 日期：2026-09-03
 >
-> 状态：J1、J2、J3 已完成（2026-09-02），J4 与 A1–A3 可继续并行；J1 / J2 / J3 落地记录见
-> [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md) 对应切片节
+> 状态：Java 轨 J1–J4 全部完成（2026-09-03）；A 轨 A1–A3 可开工，其中 A1 的幂等键派生 / `skillVersion`
+> 与 A2 的 `IdentityPort` 首个 Adapter 已由 J4 顺带落地。各切片落地记录见
+> [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md) 对应节
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
 > [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
@@ -68,19 +69,34 @@
 - **CloudBuild 探针尚未执行**：在公司 CI 上跑 `mvn verify`，看 `MySqlPageStoreIntegrationTest` 是跑了还是
   以"没有 Docker 也没有 PAGE_ASSETS_TEST_DB_URL"跳过；后者就设该变量指向公司测试库。这是 J3 留给公司 CI 的唯一动作。
 
+## J4 已交付什么（新会话直接用）
+
+- **一条命令复现整条链**：`pnpm slice:page-assets`（`tools/scripts/slice-page-assets.ts`）——Docker MySQL 8 →
+  tar.gz 起 Java（没有产物会自动 `mvn package`）→ Python 真实 stdio MCP 子进程调 `build_page` → Java 落库 →
+  platform Java Adapter 读精确修订并核对哈希 / 重放 / 冲突。要改任何一段接线，先跑它。CI `java-page-assets`
+  job 也跑它。Python 优先用 `metriccanvas-authoring/tool/.venv/bin/python`（`uv venv -p 3.12 .venv` +
+  `uv pip install -r tool/requirements.lock`），或 `METRICCANVAS_PYTHON` 指定。
+- **Python**：`adapters/outbound/java_page_assets.py`（`PageAssetPort`，stdlib `urllib`）、
+  `adapters/outbound/env_identity.py`（`IdentityPort`）、`domain/idempotency.py`（键派生）。`server.py` 读
+  `METRICCANVAS_PAGE_ASSETS_BASE_URL` / `METRICCANVAS_OPERATOR_ID` / `METRICCANVAS_AUTH_TOKEN`。`build_page`
+  MCP 签名是 `(page_id, spec, page_id_confirmed)`，没有 `idempotency_key`。Java 错误码原样进 `save` 阶段 issue。
+- **TS**：`packages/page-assets-java` → `createJavaPageLifecycle({ baseUrl, readOperatorId, dataContext })`；
+  `LifecycleErrorCode` 新增 `NOT_SUPPORTED`、`IDEMPOTENCY_CONFLICT`。platform 用
+  `METRICCANVAS_PAGE_ASSETS=java` + `METRICCANVAS_PAGE_ASSETS_BASE_URL` 切换（`.env.example`），
+  `lib/server/lifecycle-http.ts` 把 `NOT_SUPPORTED` 映射 501，管理页对历史 501 只显示最新修订并标注未开放。
+- **Java 侧的 J4 修正**：请求指纹只覆盖 `pageId` / `baseRevisionId` / `document`（原因见下方坑）。
+
 ## 先做什么
 
-两条轨道互不依赖，可以并行。J1–J3 已完成，Java 轨下一步是 **J4**。
+Java 轨已收口。下一步是 **A 轨**（`metriccanvas-authoring-bundle.md` 接线切片节，先读其"J4 交叉登记"，
+不要重做已落的项）与 **S5**。并入 `CDINL2DataBuilderService` 的时机与 CloudBuild 探针由用户决定。
 
-**J4 第一步**：Python `PageAssetPort` 的 HTTP Adapter（base URL 可配），对着
-`contracts/metriccanvas/page-assets/rest-services-page-assets.yaml` 副本写；保存命令补 `source` 与
-`dataContextVersion`，幂等键按 ADR-0063 派生并带 pageId；`PAGE_REVISION_CONFLICT` 改名 `REVISION_CONFLICT`。
-本地验收用 README「本地起服务」的 MySQL 方式起 Java（`PAGE_ASSETS_STORE=mysql` + Docker MySQL 8）。
-随后 platform 的 Java HTTP Adapter（完整 `PageLifecycle`，未支持方法返回 `NOT_SUPPORTED`）与 `pnpm slice:page-assets`。
+**A1 第一步**：给 `metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md` 加完整
+frontmatter（`allowed-tools`、`metadata.mcp_servers`），给 `tool/` 加 `pyproject.toml` 并让
+`scripts/check_bundle.py` 校验 sdist 可构建。这两项不需要任何外部环境。幂等键与 `skillVersion` 已完成。
 
-**A1 第一步**：给 `metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md` 加
-frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 校验 sdist
-可构建。这两项不需要任何外部环境。
+**A2 第一步**：`DqeExecutionPort` 生产 Adapter 复用 `EnvIdentityPort`（同一对服务态头），
+`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，错误映射按 ADR-0063。
 
 ## 开工前必须知道的坑
 
@@ -102,15 +118,23 @@ frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 
 - **`start.sh` 的 classpath 通配符要加引号**：J1 版本被 shell 先 glob 导致 tar.gz 起不来，J2 已修；
   改启动脚本后一定用打包产物冒烟一次。
 - **幂等键跨页面共享**：作用域是 `(operation, actorId, key)`，不含 pageId。同一 actor 用同一 key 保存
-  不同页面会得到 `IDEMPOTENCY_CONFLICT`；测试与 J4 的 Python 派生键都要带 pageId（ADR-0063 已如此）。
-- **幂等键不再由模型给**：A1 把 `build_page` 的幂等键改为
-  `hash(pageId, baseRevisionId, canonical(spec))`；J2 的 Java 指纹幂等以此为前提。
-- **身份是服务态**：A2 的 `IdentityPort` 第一个 Adapter 读 MCP config `env`。任何文档、
-  `SKILL.md` 或 UI 文案都不得说"已按用户权限"。生产门禁见 ADR-0063。
+  不同页面会得到 `IDEMPOTENCY_CONFLICT`；Python 派生键已带 pageId，测试键也要带。
+- **幂等键不再由模型给**（J4 已落）：`build_page` 的幂等键为 `hash(pageId, baseRevisionId, canonical(spec))`，
+  MCP 签名里没有 `idempotency_key`；不要再把它加回工具参数。
+- **Java 指纹不含来源留痕**：Relay 每次工具调用可能是一次性 `uvx` 子进程，重试时 `source.sessionId` 必然不同。
+  J2 曾把 `source` / `dataContextVersion` 放进指纹，J4 纵切第一次跑就把"同 Spec 重放"跑成了
+  `IDEMPOTENCY_CONFLICT`；现指纹只含 `pageId` / `baseRevisionId` / `document`。往指纹里加字段前先问
+  "重试时它会不会变"。
+- **身份是服务态**（J4 已落 `EnvIdentityPort`）：读 MCP config `env` 的 `METRICCANVAS_OPERATOR_ID` /
+  `METRICCANVAS_AUTH_TOKEN`。任何文档、`SKILL.md` 或 UI 文案都不得说"已按用户权限"。生产门禁见 ADR-0063。
 - **DQE 只走 NL2SQL 服务的 `dsl/execute`**，永不直连 Lab。
-- **`apps/canvas` 不接 Java**；J4 的 platform Adapter 实现完整 `PageLifecycle`，未支持方法
-  返回 `NOT_SUPPORTED`，platform 发布/模板界面要处理它。
-- **错误码改名**：Python 侧 `PAGE_REVISION_CONFLICT` → `REVISION_CONFLICT`（J4）。
+- **`apps/canvas` 不接 Java**；platform 的 Java Adapter 已实现完整 `PageLifecycle`，未支持方法返回
+  `NOT_SUPPORTED` → HTTP 501。给管理界面加新的生命周期调用时要处理 501，不要把它显示成失败。
+- **Java 模式下模板库是内存的**：`METRICCANVAS_PAGE_ASSETS=java` 不建 PostgreSQL 连接，模板重启即空；
+  `/api/runtime/pages` 已标记废弃且在 Java 模式恒为空（首批无"已发布"）。
+- **Docker MySQL 就绪探测走 TCP**：镜像初始化期的临时实例只开 socket，socket ping 会提前成功，
+  Java 随即启动失败；`slice-page-assets.ts` 用 `mysqladmin ping --protocol=tcp`。
+- **错误码改名**（J4 已落）：Python 侧 `PAGE_REVISION_CONFLICT` → `REVISION_CONFLICT`。
 - **Python 页面校验只是预检且有假阳性**：J1 扩充向量后发现 Python `validate_page_document`
   只对齐 21/154 个反例，并误拒含 detail 角色字段或分组查询字段的合法页面。未对齐项登记在
   `metriccanvas-authoring/test-harness/fixtures/page-conformance-pending.json`（测试断言其"仍不对齐"，

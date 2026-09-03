@@ -1,3 +1,4 @@
+import { createServer } from 'node:http';
 import { describe, expect, it, vi } from 'vitest';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type { EffectiveQuery } from '@metriccanvas/page';
@@ -18,6 +19,7 @@ vi.mock('../src/lib/server/bundled-assets.server', async () => {
 import {
   bindIdentity,
   createPlatformServices,
+  resolvePageAssetsBackend,
   resolvePlatformDatabaseUrl
 } from '../src/lib/server/services.server';
 import {
@@ -85,6 +87,63 @@ describe('平台部署角色组合根', () => {
     expect(() =>
       resolvePlatformDatabaseUrl({ DATABASE_URL: 'postgres://authoring' }, 'reader')
     ).toThrowError('reader 部署必须配置 METRICCANVAS_READER_DATABASE_URL 只读账号');
+  });
+
+  it('METRICCANVAS_PAGE_ASSETS=java 以 Java HTTP Adapter 承载页面生命周期,其余能力如实 NOT_SUPPORTED', async () => {
+    const seen: Array<{ method: string; url: string; operator: string | undefined }> = [];
+    const server = createServer((request, response) => {
+      seen.push({
+        method: request.method ?? '',
+        url: request.url ?? '',
+        operator: request.headers['x-operator-id'] as string | undefined
+      });
+      response.writeHead(200, { 'content-type': 'application/json' });
+      response.end(JSON.stringify({ pages: [], nextAfter: null }));
+    });
+    await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+    const address = server.address();
+    if (!address || typeof address === 'string') throw new Error('no port');
+    try {
+      const services = await createPlatformServices(
+        {
+          METRICCANVAS_ROLE: 'authoring',
+          METRICCANVAS_PAGE_ASSETS: 'java',
+          METRICCANVAS_PAGE_ASSETS_BASE_URL: `http://127.0.0.1:${address.port}/rest/cdi/pageassets/v1`
+        },
+        { createDataGateway: () => gateway, createModelProvider: () => null }
+      );
+      if (services.role !== 'authoring') throw new Error('测试需要 authoring 组合根');
+
+      expect(await services.lifecycle.listPages({ limit: 5 })).toEqual({ pages: [], nextPageId: null });
+      expect(seen).toEqual([
+        { method: 'GET', url: '/rest/cdi/pageassets/v1/pages?limit=5', operator: 'platform' }
+      ]);
+      const publish = await services.lifecycle.requestPublish(
+        { pageId: 'p', revisionId: 'r', idempotencyKey: 'k' },
+        READER_IDENTITY
+      );
+      expect(!publish.ok && publish.error.code).toBe('NOT_SUPPORTED');
+      // 模板库退到内存实现,不需要 PostgreSQL。
+      expect(
+        await services.templates.list({ actorId: 'developer-1', clientId: 'management-console' })
+      ).toEqual({ templates: [] });
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
+  });
+
+  it('页面资产后端只接受 postgres | java,java 必须给 base URL', async () => {
+    expect(resolvePageAssetsBackend({})).toBe('postgres');
+    expect(resolvePageAssetsBackend({ METRICCANVAS_PAGE_ASSETS: 'Java' })).toBe('java');
+    expect(() => resolvePageAssetsBackend({ METRICCANVAS_PAGE_ASSETS: 'mysql' })).toThrowError(
+      /只接受 postgres \| java/
+    );
+    await expect(
+      createPlatformServices(
+        { METRICCANVAS_ROLE: 'authoring', METRICCANVAS_PAGE_ASSETS: 'java' },
+        { createDataGateway: () => gateway, createModelProvider: () => null }
+      )
+    ).rejects.toThrowError(/METRICCANVAS_PAGE_ASSETS_BASE_URL/);
   });
 
   it('同一 actor 身份化 gateway 同时承载普通取数、候选值与 Agent signal 验真', async () => {

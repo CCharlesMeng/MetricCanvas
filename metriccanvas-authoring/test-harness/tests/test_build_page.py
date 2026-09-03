@@ -24,6 +24,8 @@ from metriccanvas_authoring.application.ports import (  # noqa: E402
     DqeExecutionResult,
     SavedRevision,
 )
+from metriccanvas_authoring.application.bundle_info import load_bundle_info  # noqa: E402
+from metriccanvas_authoring.domain.idempotency import derive_idempotency_key  # noqa: E402
 from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
 
 
@@ -83,7 +85,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id=command["pageId"],
-                idempotency_key=command["idempotencyKey"],
                 page_id_confirmed=command["pageIdConfirmed"],
                 spec=vector_input["spec"],
             )
@@ -111,7 +112,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 result = await build_page(
                     BuildPageCommand(
                         page_id="error-conformance",
-                        idempotency_key=f'error:{case["case"]}',
                         spec=case["input"]["spec"],
                     )
                 )
@@ -152,7 +152,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 result = await build_page(
                     BuildPageCommand(
                         page_id="error-conformance",
-                        idempotency_key=f'error:{case["case"]}',
                         spec=vector_input["spec"],
                     )
                 )
@@ -192,7 +191,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:1",
                 page_id_confirmed=True,
                 spec=fixture("page-build-spec.json"),
             )
@@ -256,8 +254,16 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         save_command = pages.calls[0]
         self.assertEqual(save_command["pageId"], "tokens-by-region")
         self.assertIsNone(save_command["baseRevisionId"])
-        self.assertEqual(save_command["idempotencyKey"], "build:tokens-by-region:1")
+        self.assertEqual(
+            save_command["idempotencyKey"],
+            derive_idempotency_key("tokens-by-region", None, fixture("page-build-spec.json")),
+        )
         self.assertTrue(save_command["pageIdConfirmed"])
+        self.assertEqual(
+            save_command["source"],
+            {"type": "relay", "skillVersion": load_bundle_info()["bundleVersion"]},
+        )
+        self.assertEqual(save_command["dataContextVersion"], "2026-09-02.1")
 
         document = save_command["document"]
         self.assertEqual(validate_page_document(document), [])
@@ -289,6 +295,84 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             },
         )
 
+    async def test_idempotency_key_is_derived_from_page_base_and_spec(self) -> None:
+        spec = fixture("page-build-spec.json")
+        base = {"pageId": "tokens-by-region", "revisionId": "a" * 32, "revisionNumber": 1}
+        same = derive_idempotency_key("tokens-by-region", "a" * 32, {**spec, "baseRevision": base})
+        reordered = derive_idempotency_key(
+            "tokens-by-region",
+            "a" * 32,
+            dict(reversed(list({**spec, "baseRevision": base}.items()))),
+        )
+        self.assertEqual(same, reordered)
+        self.assertEqual(len(same), 64)
+        self.assertNotEqual(same, derive_idempotency_key("other-page", "a" * 32, spec))
+        self.assertNotEqual(same, derive_idempotency_key("tokens-by-region", None, spec))
+        changed = json.loads(json.dumps(spec))
+        changed["units"][0]["title"] = "另一个标题"
+        self.assertNotEqual(same, derive_idempotency_key("tokens-by-region", "a" * 32, changed))
+
+    async def test_same_intent_twice_sends_the_same_key_and_base_revision(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["baseRevision"] = {
+            "pageId": "tokens-by-region",
+            "revisionId": "b" * 32,
+            "revisionNumber": 3,
+        }
+        pages = FakePageAssetPort(SavedRevision("tokens-by-region", "revision-4", 4))
+        build_page = create_build_page(
+            BuildPageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(rows=[{"区域": "华东", "Tokens请求量": 18}])
+                ),
+                page_assets=pages,
+            )
+        )
+        command = BuildPageCommand(
+            page_id="tokens-by-region",
+            spec=spec,
+            session_id="relay-session-9",
+            run_id="run-42",
+        )
+
+        first = await build_page(command)
+        second = await build_page(command)
+
+        self.assertTrue(first.ok and second.ok)
+        self.assertEqual(pages.calls[0]["idempotencyKey"], pages.calls[1]["idempotencyKey"])
+        self.assertEqual(pages.calls[0]["baseRevisionId"], "b" * 32)
+        self.assertEqual(
+            pages.calls[0]["source"],
+            {
+                "type": "relay",
+                "skillVersion": load_bundle_info()["bundleVersion"],
+                "sessionId": "relay-session-9",
+                "runId": "run-42",
+            },
+        )
+
+    async def test_base_revision_of_another_page_stops_before_discovery(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["baseRevision"] = {"pageId": "some-other-page", "revisionId": "c" * 32, "revisionNumber": 1}
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        pages = FakePageAssetPort(SavedRevision("unused", "unused", 1))
+        build_page = create_build_page(
+            BuildPageDependencies(data_context=data_context, dqe=dqe, page_assets=pages)
+        )
+
+        result = await build_page(BuildPageCommand(page_id="tokens-by-region", spec=spec))
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path, issue.stage) for issue in result.issues],
+            [("BASE_REVISION_PAGE_ID_MISMATCH", "/baseRevision/pageId", "generation")],
+        )
+        self.assertEqual(data_context.calls, 0)
+        self.assertEqual(dqe.calls, [])
+        self.assertEqual(pages.calls, [])
+
     async def test_save_failure_preserves_code_and_completed_stages(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
         dqe = FakeDqeExecutionPort(
@@ -299,7 +383,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             )
         )
         pages = FakePageAssetPort(
-            error=RuntimeQueryError("PAGE_REVISION_CONFLICT", "revision conflict")
+            error=RuntimeQueryError("REVISION_CONFLICT", "revision conflict")
         )
         build_page = create_build_page(
             BuildPageDependencies(
@@ -312,7 +396,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:conflict",
                 spec=fixture("page-build-spec.json"),
             )
         )
@@ -320,7 +403,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(result.ok)
         self.assertEqual(
             [(issue.code, issue.path, issue.stage) for issue in result.issues],
-            [("PAGE_REVISION_CONFLICT", "/", "save")],
+            [("REVISION_CONFLICT", "/", "save")],
         )
         self.assertEqual(
             result.completed_stages,
@@ -345,7 +428,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:invalid-context",
                 spec=fixture("page-build-spec.json"),
             )
         )
@@ -381,7 +463,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:auto-component",
                 spec=spec,
             )
         )
@@ -414,7 +495,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:blocked-component",
                 spec=spec,
             )
         )
@@ -458,7 +538,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-trend",
-                idempotency_key="build:tokens-trend:auto-component",
                 spec=spec,
             )
         )
@@ -494,7 +573,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-summary",
-                idempotency_key="build:tokens-summary:auto-component",
                 spec=spec,
             )
         )
@@ -532,7 +610,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-share",
-                idempotency_key="build:tokens-share:auto-component",
                 spec=spec,
             )
         )
@@ -563,7 +640,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-ranking",
-                idempotency_key="build:tokens-ranking:auto-component",
                 spec=spec,
             )
         )
@@ -599,7 +675,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-detail",
-                idempotency_key="build:tokens-detail:auto-component",
                 spec=spec,
             )
         )
@@ -644,7 +719,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-scopes",
-                idempotency_key="build:tokens-scopes:1",
                 spec=spec,
             )
         )
@@ -704,7 +778,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-packed",
-                idempotency_key="build:tokens-packed:1",
                 spec=spec,
             )
         )
@@ -739,7 +812,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-domain",
                 spec=spec,
             )
         )
@@ -770,7 +842,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-metric",
                 spec=spec,
             )
         )
@@ -801,7 +872,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-dimension",
                 spec=spec,
             )
         )
@@ -838,7 +908,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:aliases",
                 page_id_confirmed=True,
                 spec=spec,
             )
@@ -899,7 +968,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:formula",
                 page_id_confirmed=True,
                 spec=spec,
             )
@@ -945,7 +1013,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:filter-alias",
                 page_id_confirmed=True,
                 spec=spec,
             )
@@ -976,7 +1043,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-filter",
                 spec=spec,
             )
         )
@@ -1007,7 +1073,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-filter-value",
                 spec=spec,
             )
         )
@@ -1038,7 +1103,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await build_page(
             BuildPageCommand(
                 page_id="tokens-by-region",
-                idempotency_key="build:tokens-by-region:unknown-time-granularity",
                 spec=spec,
             )
         )
@@ -1077,7 +1141,6 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
                 result = await build_page(
                     BuildPageCommand(
                         page_id="tokens-by-region",
-                        idempotency_key=f"build:tokens-by-region:{error_code}",
                         spec=fixture("page-build-spec.json"),
                     )
                 )

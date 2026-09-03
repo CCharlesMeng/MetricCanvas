@@ -16,6 +16,7 @@ from metriccanvas_authoring.domain.execution import (
     FailureStage,
     failure_from_execution_error,
 )
+from metriccanvas_authoring.domain.idempotency import derive_idempotency_key
 from metriccanvas_authoring.domain.page_build_spec import validate_page_build_spec
 from metriccanvas_authoring.domain.page_building import (
     PageBuildingIssue,
@@ -27,12 +28,18 @@ from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 @dataclass(frozen=True, slots=True)
 class BuildPageCommand:
-    """Application command; save controls remain outside Page Build Spec."""
+    """Application command; save controls remain outside Page Build Spec.
+
+    There is no idempotency key here: ADR-0063 makes the Tool derive it from
+    ``(pageId, baseRevisionId, canonical(spec))``. ``session_id`` / ``run_id``
+    are the Relay identifiers recorded on the revision source when known.
+    """
 
     page_id: str
-    idempotency_key: str
     spec: Mapping[str, Any]
     page_id_confirmed: bool = False
+    session_id: str | None = None
+    run_id: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -72,6 +79,24 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                 issues=tuple(
                     BuildPageIssue(issue.code, issue.path, issue.message)
                     for issue in spec_issues
+                ),
+            )
+        base_revision = command.spec.get("baseRevision")
+        base_revision_id = (
+            None
+            if not isinstance(base_revision, Mapping)
+            else _optional_string(base_revision.get("revisionId"))
+        )
+        if isinstance(base_revision, Mapping) and base_revision.get("pageId") != command.page_id:
+            return BuildPageResult(
+                ok=False,
+                issues=(
+                    BuildPageIssue(
+                        "BASE_REVISION_PAGE_ID_MISMATCH",
+                        "/baseRevision/pageId",
+                        "baseRevision.pageId must equal the page being built "
+                        f"({command.page_id!r})",
+                    ),
                 ),
             )
 
@@ -119,7 +144,8 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                     ),
                     completed_stages=("discovery", "generation"),
                 )
-        page_schema_version = str(load_bundle_info()["pageSchemaVersion"])
+        bundle_info = load_bundle_info()
+        page_schema_version = str(bundle_info["pageSchemaVersion"])
         try:
             document = assemble_page_document(
                 page_id=command.page_id,
@@ -157,20 +183,26 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                 completed_stages=("discovery", "generation", "execution"),
             )
 
-        base_revision = command.spec.get("baseRevision")
-        base_revision_id = (
-            None
-            if not isinstance(base_revision, Mapping)
-            else _optional_string(base_revision.get("revisionId"))
-        )
+        source: dict[str, Any] = {
+            "type": "relay",
+            "skillVersion": str(bundle_info["bundleVersion"]),
+        }
+        if command.session_id:
+            source["sessionId"] = command.session_id
+        if command.run_id:
+            source["runId"] = command.run_id
         try:
             saved = await dependencies.page_assets.save_revision(
                 {
                     "pageId": command.page_id,
                     "baseRevisionId": base_revision_id,
                     "document": document,
-                    "idempotencyKey": command.idempotency_key,
+                    "idempotencyKey": derive_idempotency_key(
+                        command.page_id, base_revision_id, command.spec
+                    ),
                     "pageIdConfirmed": command.page_id_confirmed,
+                    "source": source,
+                    "dataContextVersion": data_context.version,
                 }
             )
         except Exception as cause:

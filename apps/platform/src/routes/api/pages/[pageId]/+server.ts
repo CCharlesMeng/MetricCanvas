@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { PageRevisionSelector } from '@metriccanvas/page-lifecycle';
 import type { RequestHandler } from './$types';
 
@@ -18,7 +19,10 @@ export const GET: RequestHandler = async ({ params, url }) => {
     return json(
       { error: result.error },
       {
-        status: result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409,
+        status: lifecycleErrorStatus(
+          result.error.code,
+          result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409
+        ),
         headers: { 'cache-control': 'no-store' }
       }
     );

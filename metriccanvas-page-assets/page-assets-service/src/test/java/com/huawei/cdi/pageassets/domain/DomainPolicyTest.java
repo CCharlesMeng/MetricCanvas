@@ -44,7 +44,7 @@ class DomainPolicyTest {
     }
 
     @Test
-    void fingerprintCoversEveryBusinessFieldButNotActor() throws Exception {
+    void fingerprintCoversIntentAndContentButNotProvenance() throws Exception {
         JsonNode document = json("{\"id\":\"p\"}");
         SaveRevisionCommand base = new SaveRevisionCommand("p", null, document, "k", true,
                 RevisionSource.relay("s", null, "1.0"), "dcv");
@@ -58,14 +58,16 @@ class DomainPolicyTest {
                 RevisionSource.relay("s", null, "1.0"), "dcv"))).isNotEqualTo(fingerprint);
         assertThat(RequestFingerprint.of(new SaveRevisionCommand("p", null, json("{\"id\":\"p\",\"x\":1}"), "k", true,
                 RevisionSource.relay("s", null, "1.0"), "dcv"))).isNotEqualTo(fingerprint);
+
+        // 留痕与控制位不进指纹：Relay 一次性子进程重试时 sessionId 必然不同，重放仍要命中（ADR-0063）。
         assertThat(RequestFingerprint.of(new SaveRevisionCommand("p", null, document, "k", false,
-                RevisionSource.relay("s", null, "1.0"), "dcv"))).isNotEqualTo(fingerprint);
+                RevisionSource.relay("s", null, "1.0"), "dcv"))).as("pageIdConfirmed").isEqualTo(fingerprint);
         assertThat(RequestFingerprint.of(new SaveRevisionCommand("p", null, document, "k", true,
-                RevisionSource.manual(), "dcv"))).isNotEqualTo(fingerprint);
+                RevisionSource.relay("s2", "run", "1.1"), "dcv"))).as("source 变化").isEqualTo(fingerprint);
         assertThat(RequestFingerprint.of(new SaveRevisionCommand("p", null, document, "k", true,
-                RevisionSource.relay("s", "run", "1.0"), "dcv"))).isNotEqualTo(fingerprint);
+                RevisionSource.manual(), "dcv"))).as("来源类型").isEqualTo(fingerprint);
         assertThat(RequestFingerprint.of(new SaveRevisionCommand("p", null, document, "k", true,
-                RevisionSource.relay("s", null, "1.0"), null))).isNotEqualTo(fingerprint);
+                RevisionSource.relay("s", null, "1.0"), null))).as("dataContextVersion").isEqualTo(fingerprint);
     }
 
     @Test

@@ -72,6 +72,9 @@ importers:
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../../packages/page
+      '@metriccanvas/page-assets-java':
+        specifier: workspace:*
+        version: link:../../packages/page-assets-java
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../../packages/page-lifecycle
@@ -187,6 +190,15 @@ importers:
       zod:
         specifier: ^4.4.3
         version: 4.4.3
+
+  packages/page-assets-java:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../page
+      '@metriccanvas/page-lifecycle':
+        specifier: workspace:*
+        version: link:../page-lifecycle
 
   packages/page-lifecycle:
     dependencies:
