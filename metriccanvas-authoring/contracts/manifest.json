@@ -1,6 +1,26 @@
 {
-  "authoringContractVersion": "0.1.0",
+  "authoringContractVersion": "0.2.0",
   "files": [
+    {
+      "file": "authored/agent-conformance.schema.json",
+      "sha256": "caf0c6d789589e2e7883a2b2e86bdf30b0c78159de67df1d929363f204b780e4"
+    },
+    {
+      "file": "authored/agent-model-decision.schema.json",
+      "sha256": "a418155df2dd3fdeb92893d8cbe87f754aa9bf64ab9ea2908e7366d15ac7abf0"
+    },
+    {
+      "file": "authored/agent-step-event.schema.json",
+      "sha256": "acbeea07801a6764ca356997190a87b66499ee64326b430b2b132abc012aa2ee"
+    },
+    {
+      "file": "authored/business-term-resolution.schema.json",
+      "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
+    },
+    {
+      "file": "authored/page-build-artifact.schema.json",
+      "sha256": "fd27aa46e346d7097fae261f042c51293c295132e85fb3edc51459d38df55e92"
+    },
     {
       "file": "authored/page-build-spec.schema.json",
       "sha256": "8ae88d86c0edc86729c1a9357ca61d3fd9e224dd1eda728f71992cace3edbfb2"
@@ -8,6 +28,10 @@
     {
       "file": "exported/analysis-intents.json",
       "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
+    },
+    {
+      "file": "exported/agent-conformance.json",
+      "sha256": "899ee38d4b3849d573a75e16132fffa192977df6fe71c9e6e03504836e514903"
     },
     {
       "file": "exported/build-page-conformance.json",

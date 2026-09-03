@@ -1,0 +1,270 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/agent-model-decision/0.1.0",
+  "title": "MetricCanvas Agent Model Decision",
+  "description": "Closed structured outputs for the only three model decision points in the target Ask/Explore workflow.",
+  "oneOf": [
+    { "$ref": "#/$defs/routeDecision" },
+    { "$ref": "#/$defs/unitDecision" },
+    { "$ref": "#/$defs/intentDecision" }
+  ],
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "stringArray": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/nonEmptyString" }
+    },
+    "metricItem": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "name"],
+          "properties": {
+            "kind": { "const": "metric" },
+            "name": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["kind", "expression", "label"],
+          "properties": {
+            "kind": { "const": "formula" },
+            "expression": { "$ref": "#/$defs/nonEmptyString" },
+            "label": { "$ref": "#/$defs/nonEmptyString" },
+            "unit": { "type": "string" },
+            "description": { "type": "string" }
+          }
+        }
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "values"],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/nonEmptyString" },
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "time": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["granularity", "start", "end", "providedBy"],
+          "properties": {
+            "granularity": { "$ref": "#/$defs/nonEmptyString" },
+            "start": { "$ref": "#/$defs/nonEmptyString" },
+            "end": { "$ref": "#/$defs/nonEmptyString" },
+            "providedBy": { "enum": ["user", "model"] }
+          }
+        }
+      ]
+    },
+    "unitFields": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/metricItem" }
+        },
+        "groupBy": { "$ref": "#/$defs/stringArray" },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filter" }
+        },
+        "time": { "$ref": "#/$defs/time" },
+        "title": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "unit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["businessDomain", "metrics", "groupBy", "filters", "time"],
+      "properties": {
+        "businessDomain": { "$ref": "#/$defs/nonEmptyString" },
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/metricItem" }
+        },
+        "groupBy": { "$ref": "#/$defs/stringArray" },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filter" }
+        },
+        "time": { "$ref": "#/$defs/time" },
+        "title": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "patch": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "metrics": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/metricItem" }
+        },
+        "groupBy": { "$ref": "#/$defs/stringArray" },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filter" }
+        },
+        "time": { "$ref": "#/$defs/time" },
+        "title": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["aspect", "reason"],
+      "properties": {
+        "aspect": { "$ref": "#/$defs/nonEmptyString" },
+        "reason": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/gap" }
+    },
+    "operation": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "unit"],
+          "properties": {
+            "op": { "const": "add" },
+            "unit": { "$ref": "#/$defs/unit" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "dataSourceId", "unit"],
+          "properties": {
+            "op": { "const": "replace" },
+            "dataSourceId": { "$ref": "#/$defs/nonEmptyString" },
+            "unit": { "$ref": "#/$defs/unit" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "dataSourceId", "patch"],
+          "properties": {
+            "op": { "const": "modify" },
+            "dataSourceId": { "$ref": "#/$defs/nonEmptyString" },
+            "patch": { "$ref": "#/$defs/patch" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "dataSourceId"],
+          "properties": {
+            "op": { "const": "remove" },
+            "dataSourceId": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        }
+      ]
+    },
+    "routeDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionType", "businessDomains"],
+      "properties": {
+        "decisionType": { "const": "route_business_domains" },
+        "businessDomains": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        }
+      }
+    },
+    "unitDecision": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decisionType", "outcome", "unit"],
+          "properties": {
+            "decisionType": { "const": "submit_data_request_units" },
+            "outcome": { "const": "unit" },
+            "unit": { "$ref": "#/$defs/unit" },
+            "gaps": { "$ref": "#/$defs/gaps" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decisionType", "outcome", "patch"],
+          "properties": {
+            "decisionType": { "const": "submit_data_request_units" },
+            "outcome": { "const": "patch" },
+            "patch": { "$ref": "#/$defs/patch" },
+            "gaps": { "$ref": "#/$defs/gaps" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decisionType", "outcome", "operations"],
+          "properties": {
+            "decisionType": { "const": "submit_data_request_units" },
+            "outcome": { "const": "operations" },
+            "operations": {
+              "type": "array",
+              "maxItems": 12,
+              "items": { "$ref": "#/$defs/operation" }
+            },
+            "gaps": { "$ref": "#/$defs/gaps" }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["decisionType", "outcome", "reason"],
+          "properties": {
+            "decisionType": { "const": "submit_data_request_units" },
+            "outcome": { "const": "out_of_scope" },
+            "reason": { "$ref": "#/$defs/nonEmptyString" }
+          }
+        }
+      ]
+    },
+    "intentDecision": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decisionType", "intent"],
+      "properties": {
+        "decisionType": { "const": "submit_analysis_intent" },
+        "intent": {
+          "enum": [
+            "comparison",
+            "trend",
+            "composition",
+            "ranking",
+            "detail",
+            "single_value"
+          ]
+        }
+      }
+    }
+  }
+}

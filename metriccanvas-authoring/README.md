@@ -16,10 +16,25 @@ Data Context 校验/语义投影/检索/敏感隐去、取数单元闭集验真�
 Python 直接消费产品组件目录中生成的 `authoringShape` 与导出的分析意图映射，
 不另存规则表。S3 已用 TS 生成、Python 消费的向量锁定完整 Page JSON、
 实际 DQE 请求、稳定错误 `code/path` 和页面语义准入。S4 已将
-`discover_data_context` 与 `build_page` 作为仅有的两个模型可见工具，并用真实
-FastMCP stdio 子进程 + Fake Ports 走通发现、构建与保存。后续按
+`discover_data_context` 与 `build_page` 作为当前仅有的两个模型可见工具，并用真实
+FastMCP stdio 子进程 + Fake Ports 走通发现、构建与保存。0.2.0 已从保存用例中提取
+无保存副作用的 `compose(PageBuildSpec) -> PageBuildArtifact` application Interface；
+Core 对最多 6 个取数单元有序并发调用 DQE，并按单元序号稳定装配或报告首个失败；
+`build_page` 目前只是调用该 Core 后继续保存到 Java 的迁移兼容包装。后续按
 [`docs/plan/metriccanvas-authoring-bundle.md`](../docs/plan/metriccanvas-authoring-bundle.md)
-在外部 Interface 可见后进入 S5 迁移切换。
+和 [ADR-0064](../docs/adr/0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)
+推进 S5 迁移切换。
+
+目标模型可见面仍只有两个深工具，但会改为 `discover_data_context` 与 `compose_page`。
+完整 `PageBuildArtifact` 含页面文档和 DQE 初始数据行，不能作为普通 MCP 返回值重新进入模型上下文；
+Relay Page Artifact Adapter 完成“完整产物写会话检查点、仅脱敏摘要回模型”的双通道前，
+生产 FastMCP 不开放 `compose_page`。这也是当前 `SKILL.md` 暂时保留 `build_page` 兼容流程的原因。
+
+M1 首个 Agent 契约切片已加入业务词解析、三类模型决策、持久化步骤事件和 conformance
+四份 Schema。`exported/agent-conformance.json` 从 TypeScript `ask/retrieval` 与 `ask/model-port`
+真源实时导出 5 条指标检索向量和 5 条模型决策向量；Python 已对齐指标规范名、别名、最长命中、稳定排序与并列歧义，
+并把结果投影为 `business-term-resolution` 契约。维度、维度取值、相对时间词、分析意图词和
+结构操作词仍是后续切片，不得把当前指标解析描述成完整业务词解析。
 
 `tool/server.py` 是生产组合根：Java 页面资产 Adapter（J4，ADR-0062）由 MCP config `env` 配置，
 Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harness/stdio_server.py` 是仅测试
@@ -42,13 +57,16 @@ Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harne
 }
 ```
 
-身份走 `IdentityPort`，第一个 Adapter（`adapters/outbound/env_identity.py`）读上面两个 env：这是 ADR-0063
+当前兼容包装的身份走 `IdentityPort`，第一个 Adapter（`adapters/outbound/env_identity.py`）读上面两个 env：这是 ADR-0063
 登记的服务态形态，所有创作者以同一 operator 保存，任何文案不得说"已按用户身份"。`build_page` 不再接受
 `idempotency_key`：幂等键由 Tool 按 `hash(pageId, baseRevisionId, canonical(spec))` 派生，重试同一
 Spec 命中 Java 指纹幂等原样返回；保存命令携带 `source.relay { sessionId?, skillVersion }` 与
 `dataContextVersion`；`baseRevision.pageId` 与 `page_id` 不一致在发现前即以
 `BASE_REVISION_PAGE_ID_MISMATCH` 拒绝。Java 错误码（`REVISION_CONFLICT`、`INVALID_PAGE`…）原样进入
 `save` 阶段 issue，Java 不可达为 `PAGE_ASSETS_UNAVAILABLE`。
+
+最终架构中 Agent/Python 不保存临时页面、会话检查点或正式页面修订。Relay Session 保存步骤事件和
+最新临时页面检查点；用户显式沉淀时，Svelte/平台以当前用户身份调用 Java 页面资产 Interface。
 
 ## 独立验收
 

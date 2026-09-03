@@ -29,6 +29,12 @@ import {
   canonicalizeUnit,
   deriveExecutableUnit
 } from '../../apps/platform/src/lib/server/ask/unit-derivation.ts';
+import {
+  createSnapshotAskRetrieval,
+  disambiguateCandidates
+} from '../../apps/platform/src/lib/server/ask/retrieval.ts';
+import { createModelBackedAskModel } from '../../apps/platform/src/lib/server/ask/model-port.ts';
+import type { ModelProvider } from '../../apps/platform/src/lib/server/agent/types.ts';
 import { ANALYSIS_INTENT_TO_VISUALIZE } from '../../apps/platform/src/lib/server/ask/visualization-intent.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
@@ -40,6 +46,27 @@ const authoredPageBuildSpec = path.join(
   authoringContractRoot,
   'authored/page-build-spec.schema.json'
 );
+const authoredPageBuildArtifact = path.join(
+  authoringContractRoot,
+  'authored/page-build-artifact.schema.json'
+);
+const authoredBusinessTermResolution = path.join(
+  authoringContractRoot,
+  'authored/business-term-resolution.schema.json'
+);
+const authoredAgentModelDecision = path.join(
+  authoringContractRoot,
+  'authored/agent-model-decision.schema.json'
+);
+const authoredAgentStepEvent = path.join(
+  authoringContractRoot,
+  'authored/agent-step-event.schema.json'
+);
+const authoredAgentConformance = path.join(
+  authoringContractRoot,
+  'authored/agent-conformance.schema.json'
+);
+const authoringContractVersion = '0.2.0';
 const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
 // Java 页面资产 module 组的只读快照（ADR-0062）：同一份产品契约，构建时嵌入 JAR。
 const javaRoot = path.join(repoRoot, 'metriccanvas-page-assets');
@@ -203,18 +230,45 @@ function conformanceInput(
 async function buildAuthoringOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   const authoredSchema = await readFile(authoredPageBuildSpec, 'utf8');
+  const authoredArtifactSchema = await readFile(authoredPageBuildArtifact, 'utf8');
+  const authoredBusinessTermSchema = await readFile(authoredBusinessTermResolution, 'utf8');
+  const authoredModelDecisionSchema = await readFile(authoredAgentModelDecision, 'utf8');
+  const authoredStepEventSchema = await readFile(authoredAgentStepEvent, 'utf8');
+  const authoredConformanceSchema = await readFile(authoredAgentConformance, 'utf8');
   const analysisIntents = json({
     intents: ANALYSIS_INTENTS,
     visualizationIntentByAnalysisIntent: ANALYSIS_INTENT_TO_VISUALIZE
   });
   const buildPageConformance = json(await buildPageConformanceVector());
+  const agentConformance = json(await buildAgentConformanceVector());
   outputs.set('exported/analysis-intents.json', analysisIntents);
+  outputs.set('exported/agent-conformance.json', agentConformance);
   outputs.set('exported/build-page-conformance.json', buildPageConformance);
   outputs.set(
     'manifest.json',
     json({
-      authoringContractVersion: '0.1.0',
+      authoringContractVersion,
       files: [
+        {
+          file: 'authored/agent-conformance.schema.json',
+          sha256: sha256(authoredConformanceSchema)
+        },
+        {
+          file: 'authored/agent-model-decision.schema.json',
+          sha256: sha256(authoredModelDecisionSchema)
+        },
+        {
+          file: 'authored/agent-step-event.schema.json',
+          sha256: sha256(authoredStepEventSchema)
+        },
+        {
+          file: 'authored/business-term-resolution.schema.json',
+          sha256: sha256(authoredBusinessTermSchema)
+        },
+        {
+          file: 'authored/page-build-artifact.schema.json',
+          sha256: sha256(authoredArtifactSchema)
+        },
         {
           file: 'authored/page-build-spec.schema.json',
           sha256: sha256(authoredSchema)
@@ -224,6 +278,10 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
           sha256: sha256(analysisIntents)
         },
         {
+          file: 'exported/agent-conformance.json',
+          sha256: sha256(agentConformance)
+        },
+        {
           file: 'exported/build-page-conformance.json',
           sha256: sha256(buildPageConformance)
         }
@@ -231,6 +289,202 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     })
   );
   return outputs;
+}
+
+async function buildAgentConformanceVector(): Promise<unknown> {
+  const dataContextRelative = 'docs/examples/schema-metadata.example.json';
+  const rawSnapshot = JSON.parse(
+    await readFile(path.join(repoRoot, dataContextRelative), 'utf8')
+  ) as unknown;
+  const parsed = parseDataContextSnapshot(rawSnapshot);
+  if (!parsed.ok) {
+    throw new Error(`agent conformance Data Context is invalid: ${JSON.stringify(parsed.errors)}`);
+  }
+  const retrieval = createSnapshotAskRetrieval({
+    current: async () => parsed.snapshot
+  });
+  const definitions = [
+    {
+      case: 'canonical-name-hit',
+      question: '上个月的 Tokens消耗量是多少?',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'alias-hit',
+      question: '上个月的调用次数是多少?',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'longest-name-hit',
+      question: '各模型的新增客户数是多少?',
+      businessDomains: ['运营分析', '客户经营']
+    },
+    {
+      case: 'ambiguous-canonical-name',
+      question: '6 月份的客户数是多少?',
+      businessDomains: ['运营分析', '客户经营']
+    },
+    {
+      case: 'longest-alias-hit',
+      question: '上个月各区域的在用客户数是多少?',
+      businessDomains: ['运营分析', '客户经营']
+    }
+  ];
+  const cases = await Promise.all(
+    definitions.map(async (definition) => {
+      const input = {
+        question: definition.question,
+        businessDomains: definition.businessDomains,
+        limit: 5
+      };
+      const candidates = await retrieval.searchMetricCandidates(input);
+      const disambiguated = disambiguateCandidates(candidates);
+      return {
+        case: definition.case,
+        kind: 'business_term_resolution',
+        input,
+        expected: {
+          candidates,
+          selected: disambiguated.selected,
+          ambiguousTerms: disambiguated.ambiguousTerms
+        }
+      };
+    })
+  );
+  const modelDecisionCases = await buildModelDecisionConformanceCases(
+    semanticSurfaceOf(parsed.snapshot)
+  );
+  return {
+    formatVersion: '1.0',
+    source: {
+      implementation: 'typescript',
+      module: 'ask/retrieval+ask/model-port',
+      dataContext: dataContextRelative
+    },
+    dataContext: rawSnapshot,
+    cases: [...cases, ...modelDecisionCases]
+  };
+}
+
+async function buildModelDecisionConformanceCases(
+  surfaces: ReturnType<typeof semanticSurfaceOf>
+): Promise<unknown[]> {
+  const unit: AskDataRequestUnitState = {
+    businessDomain: '运营分析',
+    metrics: [{ kind: 'metric', name: 'Tokens请求量' }],
+    groupBy: ['区域'],
+    filters: [],
+    time: {
+      granularity: 'month',
+      start: '2026-08',
+      end: '2026-08',
+      providedBy: 'user'
+    },
+    title: '按区域查看 Tokens 请求量'
+  };
+  const invoke = async (
+    caseName: string,
+    stage: 'route_business_domains' | 'submit_data_request_units' | 'submit_analysis_intent',
+    currentToolName: string,
+    rawOutput: Record<string, unknown>,
+    hasPreviousUnits: boolean,
+    run: (model: ReturnType<typeof createModelBackedAskModel>) => Promise<unknown>
+  ): Promise<unknown> => {
+    const provider: ModelProvider = {
+      async complete(request) {
+        if (!request.tools.some((tool) => tool.name === currentToolName)) {
+          throw new Error(`${caseName} did not advertise ${currentToolName}`);
+        }
+        return {
+          content: '',
+          toolCalls: [
+            {
+              id: `conformance-${caseName}`,
+              name: currentToolName,
+              input: rawOutput
+            }
+          ]
+        };
+      }
+    };
+    const decision = await run(createModelBackedAskModel(provider));
+    return {
+      case: caseName,
+      kind: 'model_decision',
+      input: {
+        stage,
+        rawOutput,
+        ...(stage === 'submit_data_request_units' ? { hasPreviousUnits } : {})
+      },
+      expected: { decisionType: stage, ...(decision as object) }
+    };
+  };
+
+  const domains = surfaces.map((surface) => ({
+    name: surface.businessDomain,
+    description: surface.description
+  }));
+  const targetSurface = surfaces.filter((surface) => surface.businessDomain === '运营分析');
+  const formInput = {
+    question: '上个月按区域看 Tokens 请求量',
+    surfaces: targetSurface,
+    candidates: [],
+    selectedMetrics: [{ businessDomain: '运营分析', metricName: 'Tokens请求量' }],
+    previousUnits: [],
+    targetDataSourceId: null
+  };
+  return Promise.all([
+    invoke(
+      'model-route-one-domain',
+      'route_business_domains',
+      'route_business_domains',
+      { businessDomains: ['运营分析'] },
+      false,
+      (model) => model.routeDomains({ question: 'Tokens 请求量', domains })
+    ),
+    invoke(
+      'model-form-one-unit',
+      'submit_data_request_units',
+      'submit_data_request_unit',
+      { outcome: 'unit', unit },
+      false,
+      (model) => model.formUnit(formInput)
+    ),
+    invoke(
+      'model-add-unit-operation',
+      'submit_data_request_units',
+      'submit_data_request_unit',
+      { outcome: 'operations', operations: [{ op: 'add', unit }] },
+      false,
+      (model) => model.formUnit(formInput)
+    ),
+    invoke(
+      'model-modify-unit-operation',
+      'submit_data_request_units',
+      'submit_data_request_unit',
+      {
+        outcome: 'operations',
+        operations: [
+          { op: 'modify', dataSourceId: 'unit-1', patch: { groupBy: ['统计周期'] } }
+        ]
+      },
+      true,
+      (model) =>
+        model.formUnit({
+          ...formInput,
+          previousUnits: [{ dataSourceId: 'unit-1', unit }],
+          targetDataSourceId: 'unit-1'
+        })
+    ),
+    invoke(
+      'model-analysis-intent',
+      'submit_analysis_intent',
+      'submit_analysis_intent',
+      { intent: 'trend' },
+      false,
+      (model) => model.decideIntent({ question: unit.title ?? '', unit, previousIntent: null })
+    )
+  ]);
 }
 
 type ConformanceUnit = AskDataRequestUnitState & {
@@ -482,7 +736,7 @@ function buildContractLock(productOutputs: OutputMap, authoringOutputs: OutputMa
     productContractVersion: '0.1.0',
     productManifest: 'contract-snapshot/manifest.json',
     productManifestSha256: sha256(productManifest),
-    authoringContractVersion: '0.1.0',
+    authoringContractVersion,
     authoringManifest: 'contracts/manifest.json',
     authoringManifestSha256: sha256(authoringManifest),
     pageSchemaVersion: versionPolicy.current

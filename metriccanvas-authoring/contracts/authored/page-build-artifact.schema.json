@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/page-build-artifact/0.1.0",
+  "title": "MetricCanvas Page Build Artifact",
+  "description": "Save-free output of deterministic authoring. The document must also satisfy the Page Schema version locked by the Bundle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "document",
+    "documentSha256",
+    "dataContextVersion",
+    "bundleVersion"
+  ],
+  "properties": {
+    "formatVersion": {
+      "const": "1.0"
+    },
+    "document": {
+      "type": "object"
+    },
+    "documentSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "dataContextVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "bundleVersion": {
+      "type": "string",
+      "minLength": 1
+    }
+  }
+}

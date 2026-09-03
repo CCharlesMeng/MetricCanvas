@@ -15,10 +15,10 @@ class BundleInfoTest(unittest.TestCase):
     def test_reports_locked_bundle_and_page_contract(self) -> None:
         info = load_bundle_info()
 
-        self.assertEqual(info["bundleVersion"], "0.1.0")
+        self.assertEqual(info["bundleVersion"], "0.2.0")
         self.assertRegex(str(info["pageSchemaVersion"]), r"^\d+\.\d+$")
         self.assertEqual(info["productContractVersion"], "0.1.0")
-        self.assertEqual(info["authoringContractVersion"], "0.1.0")
+        self.assertEqual(info["authoringContractVersion"], "0.2.0")
         self.assertEqual(info["transport"], "stdio")
 
 

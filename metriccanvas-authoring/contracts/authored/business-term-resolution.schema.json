@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/business-term-resolution/0.1.0",
+  "title": "MetricCanvas Business Term Resolution",
+  "description": "Deterministic resolution of business terms against the governed Data Context. This is not a model tokenizer contract.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "question", "matches", "ambiguities"],
+  "properties": {
+    "formatVersion": { "const": "1.0" },
+    "question": { "type": "string", "minLength": 1 },
+    "matches": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/match" }
+    },
+    "ambiguities": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/ambiguity" }
+    }
+  },
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "termKind": {
+      "enum": [
+        "business_domain",
+        "metric",
+        "dimension",
+        "dimension_value",
+        "relative_time",
+        "analysis_intent",
+        "structure_operation"
+      ]
+    },
+    "source": {
+      "enum": [
+        "canonical_name",
+        "alias",
+        "value_domain",
+        "relative_time_lexicon",
+        "analysis_intent_lexicon",
+        "structure_operation_lexicon"
+      ]
+    },
+    "match": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "matchedTerm",
+        "canonicalName",
+        "businessDomain",
+        "source",
+        "score"
+      ],
+      "properties": {
+        "kind": { "$ref": "#/$defs/termKind" },
+        "matchedTerm": { "$ref": "#/$defs/nonEmptyString" },
+        "canonicalName": { "$ref": "#/$defs/nonEmptyString" },
+        "businessDomain": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "source": { "$ref": "#/$defs/source" },
+        "score": { "type": "number" },
+        "definition": { "type": "string" },
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "ambiguityCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "canonicalName", "businessDomain", "score"],
+      "properties": {
+        "kind": { "$ref": "#/$defs/termKind" },
+        "canonicalName": { "$ref": "#/$defs/nonEmptyString" },
+        "businessDomain": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "score": { "type": "number" },
+        "definition": { "type": "string" }
+      }
+    },
+    "ambiguity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchedTerm", "candidates"],
+      "properties": {
+        "matchedTerm": { "$ref": "#/$defs/nonEmptyString" },
+        "candidates": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "$ref": "#/$defs/ambiguityCandidate" }
+        }
+      }
+    }
+  }
+}

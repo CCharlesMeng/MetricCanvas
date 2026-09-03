@@ -1,0 +1,264 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/agent-step-event/0.1.0",
+  "title": "MetricCanvas Persisted Agent Step Event",
+  "description": "Persisted structured Ask/Explore steps. Raw model prompts, full dialogue history and DQE result rows are forbidden.",
+  "oneOf": [
+    { "$ref": "#/$defs/domainRouted" },
+    { "$ref": "#/$defs/candidatesRetrieved" },
+    { "$ref": "#/$defs/scopeCardPresented" },
+    { "$ref": "#/$defs/executionStarted" },
+    { "$ref": "#/$defs/rowsReady" },
+    { "$ref": "#/$defs/documentReady" },
+    { "$ref": "#/$defs/metricGapRecorded" },
+    { "$ref": "#/$defs/stepFailed" }
+  ],
+  "$defs": {
+    "nonEmptyString": { "type": "string", "minLength": 1 },
+    "stringArray": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "analysisIntent": {
+      "enum": [
+        "comparison",
+        "trend",
+        "composition",
+        "ranking",
+        "detail",
+        "single_value"
+      ]
+    },
+    "metricCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["metricName", "businessDomain", "definitionDifference"],
+      "properties": {
+        "metricName": { "$ref": "#/$defs/nonEmptyString" },
+        "businessDomain": { "$ref": "#/$defs/nonEmptyString" },
+        "definitionDifference": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        }
+      }
+    },
+    "adHocDefinition": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["formula", "description"],
+          "properties": {
+            "formula": { "$ref": "#/$defs/nonEmptyString" },
+            "description": {
+              "oneOf": [{ "type": "string" }, { "type": "null" }]
+            }
+          }
+        }
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dimension", "values"],
+      "properties": {
+        "dimension": { "$ref": "#/$defs/nonEmptyString" },
+        "values": { "$ref": "#/$defs/stringArray" }
+      }
+    },
+    "componentChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["componentType", "pinnedByUser"],
+      "properties": {
+        "componentType": { "$ref": "#/$defs/nonEmptyString" },
+        "pinnedByUser": { "type": "boolean" },
+        "dataSourceId": { "$ref": "#/$defs/nonEmptyString" },
+        "intent": { "$ref": "#/$defs/analysisIntent" }
+      }
+    },
+    "domainRouted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "question", "routedDomains", "overriddenByUser"],
+      "properties": {
+        "type": { "const": "domain_routed" },
+        "question": { "$ref": "#/$defs/nonEmptyString" },
+        "routedDomains": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/nonEmptyString" }
+        },
+        "overriddenByUser": { "type": "boolean" }
+      }
+    },
+    "candidatesRetrieved": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "candidates", "selectedMetric", "adHocDefinition"],
+      "properties": {
+        "type": { "const": "candidates_retrieved" },
+        "candidates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metricCandidate" }
+        },
+        "selectedMetric": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "selectedMetrics": { "$ref": "#/$defs/stringArray" },
+        "adHocDefinition": { "$ref": "#/$defs/adHocDefinition" }
+      }
+    },
+    "scopeCardPresented": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type",
+        "businessDomain",
+        "metricName",
+        "adHocDefinition",
+        "timeRange",
+        "granularity",
+        "filters",
+        "blockedOnConfirmation"
+      ],
+      "properties": {
+        "type": { "const": "scope_card_presented" },
+        "businessDomain": { "$ref": "#/$defs/nonEmptyString" },
+        "metricName": {
+          "oneOf": [{ "$ref": "#/$defs/nonEmptyString" }, { "type": "null" }]
+        },
+        "adHocDefinition": { "$ref": "#/$defs/adHocDefinition" },
+        "groupBy": { "$ref": "#/$defs/stringArray" },
+        "timeRange": { "type": "string" },
+        "granularity": { "type": "string" },
+        "filters": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/filter" }
+        },
+        "blockedOnConfirmation": { "type": "boolean" },
+        "dataSourceId": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "executionStarted": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "effectiveQuery"],
+      "properties": {
+        "type": { "const": "execution_started" },
+        "effectiveQuery": { "$ref": "#/$defs/jsonValue" },
+        "dataSourceId": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "rowsReady": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "summary"],
+      "properties": {
+        "type": { "const": "rows_ready" },
+        "summary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["rowCount", "totalCount", "outputFields"],
+          "properties": {
+            "rowCount": { "type": "integer", "minimum": 0 },
+            "totalCount": {
+              "oneOf": [{ "type": "integer", "minimum": 0 }, { "type": "null" }]
+            },
+            "outputFields": { "$ref": "#/$defs/stringArray" }
+          }
+        },
+        "dataSourceId": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "documentReady": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "components", "transientPageId"],
+      "properties": {
+        "type": { "const": "document_ready" },
+        "intent": { "$ref": "#/$defs/analysisIntent" },
+        "components": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/componentChoice" }
+        },
+        "transientPageId": { "$ref": "#/$defs/nonEmptyString" },
+        "artifactId": { "$ref": "#/$defs/nonEmptyString" },
+        "documentSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "checkpointVersion": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "metricGapOccurrence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idempotencyKey",
+        "question",
+        "searchTerms",
+        "closestCandidates",
+        "adHocDefinition",
+        "expectedDimensions",
+        "expectedGranularity",
+        "businessDomain"
+      ],
+      "properties": {
+        "idempotencyKey": { "$ref": "#/$defs/nonEmptyString" },
+        "question": { "$ref": "#/$defs/nonEmptyString" },
+        "searchTerms": { "$ref": "#/$defs/stringArray" },
+        "closestCandidates": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/metricCandidate" }
+        },
+        "adHocDefinition": { "$ref": "#/$defs/adHocDefinition" },
+        "expectedDimensions": { "$ref": "#/$defs/stringArray" },
+        "expectedGranularity": {
+          "oneOf": [{ "type": "string" }, { "type": "null" }]
+        },
+        "businessDomain": { "$ref": "#/$defs/nonEmptyString" }
+      }
+    },
+    "metricGapRecorded": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "gap"],
+      "properties": {
+        "type": { "const": "metric_gap_recorded" },
+        "gap": { "$ref": "#/$defs/metricGapOccurrence" }
+      }
+    },
+    "stepFailed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "stage", "code", "message"],
+      "properties": {
+        "type": { "const": "step_failed" },
+        "stage": {
+          "enum": ["discovery", "generation", "execution", "presentation"]
+        },
+        "code": { "$ref": "#/$defs/nonEmptyString" },
+        "message": { "type": "string" }
+      }
+    },
+    "jsonValue": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "number" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": { "$ref": "#/$defs/jsonValue" }
+        },
+        {
+          "type": "object",
+          "additionalProperties": { "$ref": "#/$defs/jsonValue" }
+        }
+      ]
+    }
+  }
+}

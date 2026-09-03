@@ -1,11 +1,15 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
-> 状态：S4 已完成；Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
+> 状态：S4 已完成；S5 首个无保存 `compose` Core/有序并发切片与 M1 首批 Agent 契约、
+> Python 指标词解析切片已落地（2026-09-03）；
+> Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
 > Java J4 已完成（2026-09-03）并顺带落了 A1 的幂等键派生 / `skillVersion` 与 A2 的 `IdentityPort`
-> 首个 Adapter（见下方接线切片节的 J4 交叉登记）；S5 等待 A1–A3
+> 首个 Adapter（见下方接线切片节的 J4 交叉登记）；`build_page` 暂作兼容包装，
+> `compose_page` 等待 Relay artifact 双通道后才对真实模型开放
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、
-> [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
+> [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)、
+> [ADR-0064](../adr/0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)
 > 交付根：`metriccanvas-authoring/`
 
 ## 目标
@@ -17,14 +21,16 @@ Tool、Interface contracts 和锁定产品契约快照的原子发布容器，�
 ## 冻结边界
 
 - Skill 负责自然语言理解、消歧、用户确认和结果呈现；不导入 Python。
-- Python Tool 负责 Page Build Spec 校验、查询与字段派生、验真、执行、组件选择、装配、
-  当前 Page Schema 校验与通过 Java Port 保存；不读取 Skill。
+- Python Tool 负责 Page Build Spec 校验、查询与字段派生、验真、执行、组件选择、装配和
+  当前 Page Schema 校验，并返回 `PageBuildArtifact`；不读取 Skill，不拥有持久化。
+- 当前 `build_page` 仍在 `compose` 成功后通过 Java Port 保存，属于迁移兼容包装；目标架构删除
+  `PageAssetPort`，由平台在用户显式沉淀时调用 Java。
 - Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是 Adapter，内部算法不是 tools。
 - Page Build Spec 是模型与确定性算法的边界，不含 DQE 查询体、字段契约、组件 JSON、
   布局或页面协议版本。
 - `pageId` 与幂等键属于 `build_page` command envelope，不进入 Page Build Spec；精确基线修订
   仍随修订场景放在 Page Build Spec 中。
-- Python 不持久化 Relay Run，不直连 MySQL，不复制 Java 页面资产事务或 DQE 内部逻辑。
+- Python 不持久化 Relay Session/Run 或临时页面检查点，不直连 MySQL，不复制 Java 页面资产事务或 DQE 内部逻辑。
 - Bundle 使用 Python 3.12+ 脚本目录交付，不构建 wheel；依赖版本锁定。
 - 产品规则由仓根中立契约导出物承载，Bundle 只消费锁定快照，不手抄第二份规则清单。
 - 内网鉴权与身份接入由后续内网对接方案承担，不进入本 Bundle 的设计与排期。
@@ -167,6 +173,9 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 ### S5：迁移切换
 
+- 完整 Agent 前半链、两速生命周期、Relay/Chat/会话、差分、灰度与删除门禁见
+  [`metriccanvas-agent-full-migration.md`](./metriccanvas-agent-full-migration.md)。本节只保留 Bundle 视角的切换摘要，
+  不再把「页面 JSON 等价」误当成「Agent 功能全等价」。
 - 冻结等价向量和差分报告。
 - 宣布 Python 为页面装配真源，停止 TypeScript 装配实现演进。
 - 删除双实现，保留产品中立契约导出和跨语言验收。
@@ -174,6 +183,14 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
 
 状态：等价向量已冻结；Java J4 已完成，切换等待下列接线切片 A1–A3 完成。
+
+首个实现切片（2026-09-03）：新增 `application.compose_page` 与
+`page-build-artifact.schema.json`，成功结果包含已校验页面文档、文档 SHA-256、
+`dataContextVersion` 和 Bundle 版本；其依赖只有 Data Context 与 DQE 两个 Port。
+多个取数单元已改为最多 6 个有序并发执行：并发完成顺序不改变产物顺序，多个失败按最低单元序号稳定归因。
+原 `build_page` 改为薄兼容包装，在 compose 成功后才执行旧 Java 保存路径。
+生产 MCP/Skill 尚未改名：Relay 必须先提供完整 artifact 写检查点、脱敏摘要回模型的双通道，
+否则当前 Relay 会把完整页面与初始数据行重新送入模型上下文。
 
 ## 接线切片（依据 ADR-0063）
 

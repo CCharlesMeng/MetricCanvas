@@ -44,6 +44,15 @@ class SemanticDimension:
 
 
 @dataclass(frozen=True, slots=True)
+class MetricEntry:
+    business_domain: str
+    name: str
+    definition: str
+    aliases: tuple[str, ...]
+    unit: str | None
+
+
+@dataclass(frozen=True, slots=True)
 class SemanticSurface:
     business_domain: str
     metrics_by_name: Mapping[str, SemanticMetric]
@@ -66,6 +75,7 @@ class SearchCandidate:
 class DataContext:
     version: str
     surfaces_by_domain: Mapping[str, SemanticSurface]
+    metric_entries: tuple[MetricEntry, ...]
     search_candidates: tuple[SearchCandidate, ...]
 
     def surface(self, business_domain: str) -> SemanticSurface | None:
@@ -102,6 +112,7 @@ def parse_data_context(
 
     snapshot = _mapping(value)
     surfaces: dict[str, SemanticSurface] = {}
+    metric_entries: list[MetricEntry] = []
     search_candidates: list[SearchCandidate] = []
     for raw_environment in _sequence(snapshot["executionEnvironments"]):
         environment = _mapping(raw_environment)
@@ -129,6 +140,7 @@ def parse_data_context(
             data_schema = _mapping(raw_schema)
             surface = _project_surface(data_schema)
             surfaces.setdefault(surface.business_domain, surface)
+            metric_entries.extend(_metric_entries_for_schema(data_schema))
             search_candidates.extend(
                 _search_candidates_for_schema(environment_id, data_schema)
             )
@@ -136,10 +148,26 @@ def parse_data_context(
         DataContext(
             version=str(snapshot["version"]),
             surfaces_by_domain=surfaces,
+            metric_entries=tuple(metric_entries),
             search_candidates=tuple(search_candidates),
         ),
         (),
     )
+
+
+def _metric_entries_for_schema(schema: Mapping[str, Any]) -> list[MetricEntry]:
+    business_domain = str(schema["name"])
+    return [
+        MetricEntry(
+            business_domain=business_domain,
+            name=str(metric["name"]),
+            definition=str(metric["description"]),
+            aliases=tuple(str(alias) for alias in _sequence(metric.get("aliases", []))),
+            unit=_optional_string(metric.get("unit")),
+        )
+        for raw_metric in _sequence(schema["metrics"])
+        for metric in [_mapping(raw_metric)]
+    ]
 
 
 def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
