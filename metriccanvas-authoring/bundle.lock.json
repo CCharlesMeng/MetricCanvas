@@ -3,6 +3,10 @@
   "pageSchemaVersion": "5.4",
   "artifacts": [
     {
+      "file": "ARCHITECTURE.md",
+      "sha256": "5a3751bdd4a7e5c5850a5d1472e7ad00e1b3e282c30e0246ff4067889376494f"
+    },
+    {
       "file": "bundle.json",
       "sha256": "171517e0c9a4d8d8c690a80f5856b17b1b2ff4cc0424483b589d42d06d317c26"
     },
@@ -740,7 +744,7 @@
     },
     {
       "file": "README.md",
-      "sha256": "5171755e36b9410a79e5843a436466bb2010c9189ddb9158b246174b4ef1219b"
+      "sha256": "4fa9e9ce881f136a2f764fa5e434b63a22c0338a1c14100d57c173766375785d"
     },
     {
       "file": "relay/data-context-projection.example.json",

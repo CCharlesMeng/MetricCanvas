@@ -1,5 +1,8 @@
 # MetricCanvas Authoring Bundle
 
+维护者先读：[`ARCHITECTURE.md`](./ARCHITECTURE.md)。该文档按
+入口、执行链、Port/Adapter、契约、完成度和常见改动给出代码定位；本文只保留 Bundle 的交付与验收说明。
+
 这是一个可整体复制和锁步发布的创作期 Bundle，但内部不是一个混合模块：
 
 - `skill/`：Relay/Agent 读取的流程与交互说明；不导入 Python。

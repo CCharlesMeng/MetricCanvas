@@ -180,6 +180,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | [数据上下文 Schema 元数据](./docs/schema-metadata.md) | 创作期 Schema 元数据规则 |
 | [整体解决方案](./docs/solution.md) | 当前架构和模块职责 |
 | [页面构建流程](./docs/page-building-process.md) | 从需求到发布的业务工作流 |
+| [创作 Agent 架构](./metriccanvas-authoring/ARCHITECTURE.md) | Relay、Skill、Python Tool、外部 Adapter 与维护定位 |
 | [运行态架构](./docs/runtime-architecture.md) | 页面加载、查询和渲染 |
 | [嵌入运行时](./packages/embed/README.md) | 浏览器接入契约 |
-| [架构决策记录](./docs/adr/README.md) | 24 份 ADR 按主题聚合的当前生效结论(基线);原始决策记录见 `docs/adr/000N-*.md` |
+| [架构决策记录](./docs/adr/README.md) | 64 份 ADR 按主题聚合的当前生效结论(基线);原始决策记录见 `docs/adr/000N-*.md` |
