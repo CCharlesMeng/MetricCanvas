@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
 import { withClient } from '$lib/server/identity.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
@@ -34,7 +35,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
     withClient(locals.identity, 'management-console')
   );
   return json(result, {
-    status: result.ok ? 200 : result.error.code === 'REVISION_CONFLICT' ? 409 : 400,
+    status: result.ok
+      ? 200
+      : lifecycleErrorStatus(result.error.code, result.error.code === 'REVISION_CONFLICT' ? 409 : 400),
     headers: { 'cache-control': 'no-store' }
   });
 };

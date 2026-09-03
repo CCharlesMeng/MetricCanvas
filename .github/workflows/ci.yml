@@ -113,6 +113,31 @@ jobs:
       - name: 构建、单测、conformance、ArchUnit、MySQL 集成测试、SpotBugs
         run: mvn -B -ntp -Pgates verify
 
+      # J4 真实纵切（ADR-0062）：Docker MySQL → 上一步的 tar.gz → Python Tool 真实 stdio MCP → Java 落库
+      # → platform Java Adapter 读精确修订。Relay / DQE 用 Harness 替身，页面资产链路全部真实。
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: metriccanvas-authoring/tool/requirements.lock
+      - name: 纵切依赖（pnpm + 创作 Bundle）
+        working-directory: .
+        run: |
+          pnpm install --frozen-lockfile
+          python -m pip install --require-hashes -r metriccanvas-authoring/tool/requirements.lock
+      - name: 本地真实纵切 pnpm slice:page-assets
+        working-directory: .
+        env:
+          METRICCANVAS_PYTHON: python
+        run: pnpm slice:page-assets
+
       - name: 上传交付包
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4

@@ -1,8 +1,9 @@
 # MetricCanvas 第一方 Java 页面资产实施计划
 
-> 状态：J1、J2、J3 完成（2026-09-02，本地占位 parent 下 `mvn -Pgates verify` 通过：165 个 conformance
-> 向量与 TypeScript 逐条相同，四个 Interface 在内存仓储与真实 MySQL 8 上通过全部领域、契约与集成测试）；
-> J4 可开工。CloudBuild 探针尚未执行（本仓库 CI 在 GitHub runner 上以 Testcontainers 跑集成测试）。
+> 状态：J1–J4 全部完成（2026-09-03）。`mvn -Pgates verify` 249 测试（含真实 MySQL 8 集成测试）通过；
+> `pnpm slice:page-assets` 在新 checkout 上一条命令走通 Python stdio MCP → Java → MySQL → platform
+> Java Adapter 精确修订，并在 GitHub Actions `java-page-assets` job 常跑。CloudBuild 探针尚未执行。
+> 后续：并入 `CDINL2DataBuilderService` 时机、A 轨 A1–A3 与 S5、platform 去 Node 服务端（另开 grill）。
 > 实现说明见 [`metriccanvas-page-assets/README.md`](../../metriccanvas-page-assets/README.md)
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
@@ -187,11 +188,48 @@ J3 落地记录：
 完成条件：本地纵切在新 checkout 上一条命令复现；platform 在 Java 模式下管理页面与
 预览精确修订，未开放能力如实显示。
 
+J4 落地记录：
+
+- **Python**：`adapters/outbound/java_page_assets.py` 用 stdlib `urllib`（不新增依赖）实现 `PageAssetPort`，
+  按 YAML 副本发 `POST {base}/pages/{pageId}/revisions`，Java 信封 → `PageAssetError(code, message, details)`，
+  `build_page` 的 `save` 阶段 issue 原样带 Java 码；Java 不可达 / 非信封响应为 `PAGE_ASSETS_UNAVAILABLE`。
+  `server.py` 按 `METRICCANVAS_PAGE_ASSETS_BASE_URL` 装配。身份经 `IdentityPort`，首个 Adapter
+  `env_identity.py` 读 `METRICCANVAS_OPERATOR_ID` / `METRICCANVAS_AUTH_TOKEN`——这是 A2 的第一项，J4 顺带落了，
+  已在 `metriccanvas-authoring-bundle.md` 交叉登记。
+- `build_page` 幂等键由 Tool 派生 `sha256(pageId \0 baseRevisionId \0 canonical(spec))`（A1 项，J4 落地），
+  MCP 工具签名去掉 `idempotency_key`（SKILL.md 同步）；保存命令补 `source.relay { sessionId?, skillVersion }`
+  （`sessionId` 取 FastMCP `Context.session_id`，`skillVersion` 取 `bundle.json`）与 `dataContextVersion`
+  （Data Context 快照 `version`）；`baseRevision.pageId ≠ page_id` 在发现前以 `BASE_REVISION_PAGE_ID_MISMATCH`
+  拒绝；测试里的 `PAGE_REVISION_CONFLICT` 改名 `REVISION_CONFLICT`。
+- **TS**：新包 `packages/page-assets-java`（`@metriccanvas/page-assets-java`）`createJavaPageLifecycle`
+  实现完整 `PageLifecycle`：`saveRevision` / `getRevision` / `getPage(latest|exact)` / `listPages` 真实调用，
+  `getPage(published)`、历史、差异、发布族、回滚、已发布读取一律 `NOT_SUPPORTED`（新增到 `LifecycleErrorCode`，
+  连同 `IDEMPOTENCY_CONFLICT`）。读接口以 `readOperatorId`（缺省 `platform`）作 `X-Operator-Id`；
+  `REVISION_CONFLICT` 时补一次读取把 Java 的 `currentLatest` 引用还原为契约要求的完整修订；传输层失败抛
+  `JavaPageAssetsError`，与 postgres 实现遇库故障一致。契约测试用 node `http` 替身 Java（9 例）。
+- **platform**：`METRICCANVAS_PAGE_ASSETS=java` + `METRICCANVAS_PAGE_ASSETS_BASE_URL`（`.env.example` 已登记）
+  切到 Java；此时模板库退到内存实现、不再要求 `DATABASE_URL`。`lib/server/lifecycle-http.ts` 把
+  `NOT_SUPPORTED` 映射为 HTTP 501（其余状态语义不变），全部生命周期 API 路由接入；页面修订管理页对历史 501
+  只显示当前最新修订并标注"未开放"，发布 / 回滚按钮点击后如实显示 501 文案。`/api/runtime/pages` 标记
+  `@deprecated` 并加 `Deprecation` 响应头（Java 模式下恒为空：首批无"已发布"概念）；`apps/canvas` 未动。
+- **纵切** `pnpm slice:page-assets`（`tools/scripts/slice-page-assets.ts`）：Docker MySQL 8 → 解包 tar.gz 起
+  Java（`PAGE_ASSETS_STORE=mysql`，Flyway 建表）→ `test-harness/slice_client.py` 以 fastmcp `Client` 起真实
+  stdio 子进程 `slice_server.py`（Relay / DQE 替身 + 真实 Java Adapter）调 `build_page` → platform Java
+  Adapter `getRevision` 精确修订，核对 `contentHash`（TS `canonicalizeJson` sha256 与 Java 一致）、
+  `createdBy` = `X-Operator-Id`、`dataContextVersion`；再证明同 Spec 重放命中 R1、基线 R1 之上得 R2、
+  过期基线得 `REVISION_CONFLICT`。已接入 CI `java-page-assets` job。
+- **纵切实跑出的修正**：J2 的请求指纹曾覆盖 `source` 与 `dataContextVersion`，而 Relay 每次工具调用可能是
+  一次性子进程，重试时 `sessionId` 必然不同 → 本应"命中幂等原样返回"的重放变成 `IDEMPOTENCY_CONFLICT`。
+  指纹改为只覆盖意图与内容（`pageId`、`baseRevisionId`、`document`），`source` / `dataContextVersion` /
+  `pageIdConfirmed` 作为留痕与控制位以首次成功保存为准；YAML、README、`DomainPolicyTest` 同步。
+- MySQL 容器就绪探测必须走 TCP：镜像初始化阶段的临时实例只开 socket，socket `mysqladmin ping` 会在真实实例
+  监听前成功，Java 随即因 Druid 连不上而启动失败。
+
 ## 与其他轨道的关系
 
 - Authoring 接线切片（Relay/DQE 真实 Adapter）见 [`metriccanvas-authoring-bundle.md`](./metriccanvas-authoring-bundle.md)，
   依据 [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)。
-- Authoring S5（宣布 Python 真源、删除 TS 双实现）在 J4 与接线切片完成后进行。
+- Authoring S5（宣布 Python 真源、删除 TS 双实现）在接线切片完成后进行（J4 已完成）。
 - "platform 去 Node 服务端"是 ADR-0062 登记的必经后续轨道，另开 grill。
 - 并入 `CDINL2DataBuilderService` 的时机另行决定；并入时只丢弃 bootstrap、改 consumer
   base URL。

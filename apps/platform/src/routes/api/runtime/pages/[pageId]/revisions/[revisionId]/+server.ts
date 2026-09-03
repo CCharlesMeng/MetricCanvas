@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { readRuntimeRevision } from '$lib/server/runtime-revision.server';
 import { getRuntimePlatformServices } from '$lib/server/services.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -13,7 +14,7 @@ export const GET: RequestHandler = async ({ params }) => {
   if (!result.ok) {
     return json(
       { error: result.error },
-      { status: 404, headers: runtimeHeaders() }
+      { status: lifecycleErrorStatus(result.error.code, 404), headers: runtimeHeaders() }
     );
   }
   return json(result.revision.document, { headers: runtimeHeaders() });

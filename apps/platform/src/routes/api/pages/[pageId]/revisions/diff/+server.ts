@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, url }) => {
@@ -26,7 +27,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
   if (!result.ok) {
     return json(
       { error: result.error },
-      { status: 404, headers: { 'cache-control': 'no-store' } }
+      { status: lifecycleErrorStatus(result.error.code, 404), headers: { 'cache-control': 'no-store' } }
     );
   }
 

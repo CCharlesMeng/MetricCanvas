@@ -112,7 +112,6 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
                 "build_page",
                 {
                     "page_id": "tokens-by-region",
-                    "idempotency_key": "stdio:tokens-by-region:1",
                     "page_id_confirmed": True,
                     "spec": fixture("page-build-spec.json"),
                 },
@@ -146,7 +145,6 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
                 "build_page",
                 {
                     "page_id": "invalid",
-                    "idempotency_key": "stdio:invalid:1",
                     "spec": {"question": "invalid", "units": []},
                 },
             )

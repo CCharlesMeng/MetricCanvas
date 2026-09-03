@@ -1,6 +1,8 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
 import { withClient } from '$lib/server/identity.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
+import type { LifecycleErrorCode } from '@metriccanvas/page-lifecycle';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -9,7 +11,7 @@ export const GET: RequestHandler = async ({ params }) => {
   if (!result.ok) {
     return json(
       { error: result.error },
-      { status: 404, headers: { 'cache-control': 'no-store' } }
+      { status: lifecycleErrorStatus(result.error.code, 404), headers: { 'cache-control': 'no-store' } }
     );
   }
 
@@ -72,8 +74,9 @@ function commandError(message: string) {
   );
 }
 
-function saveFailureStatus(code: string): number {
+function saveFailureStatus(code: LifecycleErrorCode): number {
   if (code === 'PAGE_NOT_FOUND') return 404;
+  if (code === 'NOT_SUPPORTED') return 501;
   if (
     code === 'INVALID_PAGE' ||
     code === 'PAGE_ID_MISMATCH'

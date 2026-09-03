@@ -72,6 +72,8 @@ paths:
         `baseRevisionId = null`；后续保存的 `baseRevisionId` 必须等于当前最新修订。
         幂等键作用域为 `(savePageRevision, X-Operator-Id, idempotencyKey)` 并校验请求指纹：
         同键同指纹原样重放（同样返回 201），同键异指纹返回 `IDEMPOTENCY_CONFLICT`。
+        指纹只覆盖意图与内容（`pageId`、`baseRevisionId`、`document`）；`source`、`dataContextVersion`、
+        `pageIdConfirmed` 是留痕 / 控制位，重放时允许不同，以首次成功保存记录的为准。
       parameters:
         - $ref: '#/parameters/XAuthToken'
         - $ref: '#/parameters/XOperatorId'

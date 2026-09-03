@@ -227,7 +227,15 @@ export type LifecycleErrorCode =
   | 'PUBLISH_REQUEST_EXPIRED'
   | 'PUBLISH_REQUEST_CLOSED'
   | 'INVALID_CONFIRMATION_TOKEN'
-  | 'PUBLISH_FORBIDDEN';
+  | 'PUBLISH_FORBIDDEN'
+  /** 同幂等键、不同请求指纹(ADR-0062):基线 memory 实现按键原样重放,Java 实现拒绝。 */
+  | 'IDEMPOTENCY_CONFLICT'
+  /**
+   * 该实现首批未开放此能力(ADR-0062):Java 页面资产只承载保存 / 读 latest /
+   * 读精确修订 / 目录四个接口,发布、回滚、历史、差异由后续切片提供。
+   * 界面据此如实显示"未开放",而不是把它当成一次失败。
+   */
+  | 'NOT_SUPPORTED';
 
 export interface LifecycleError {
   code: LifecycleErrorCode;

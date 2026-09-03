@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastmcp import FastMCP
+from fastmcp import Context, FastMCP
 from pydantic import Field, WithJsonSchema
 from typing_extensions import TypedDict
 
@@ -138,17 +138,21 @@ def create_mcp_server(dependencies: BuildPageDependencies) -> FastMCP:
     @mcp.tool
     async def build_page(
         page_id: str,
-        idempotency_key: str,
         spec: PageBuildSpec,
+        ctx: Context,
         page_id_confirmed: bool = False,
     ) -> BuildPageOutput:
-        """Validate, execute, assemble, and save one complete Page Build Spec."""
+        """Validate, execute, assemble, and save one complete Page Build Spec.
+
+        Retrying the same page and spec is safe: the Tool derives the save
+        idempotency key itself, so a repeated call returns the same revision.
+        """
         result = await build(
             BuildPageCommand(
                 page_id=page_id,
-                idempotency_key=idempotency_key,
                 spec=spec,
                 page_id_confirmed=page_id_confirmed,
+                session_id=_relay_session_id(ctx),
             )
         )
         units = spec.get("units")
@@ -179,3 +183,12 @@ def create_mcp_server(dependencies: BuildPageDependencies) -> FastMCP:
         }
 
     return mcp
+
+
+def _relay_session_id(ctx: Context) -> str | None:
+    """MCP session id when the transport has one; recorded as `source.sessionId`."""
+    try:
+        session_id = ctx.session_id
+    except Exception:  # noqa: BLE001 - absence of a session is not a build failure
+        return None
+    return session_id if isinstance(session_id, str) and session_id else None

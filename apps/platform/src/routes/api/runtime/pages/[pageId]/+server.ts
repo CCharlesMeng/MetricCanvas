@@ -1,5 +1,6 @@
 import { json } from '@sveltejs/kit';
 import { getRuntimePlatformServices } from '$lib/server/services.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
@@ -9,7 +10,10 @@ export const GET: RequestHandler = async ({ params }) => {
     return json(
       { error: result.error },
       {
-        status: result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409,
+        status: lifecycleErrorStatus(
+          result.error.code,
+          result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409
+        ),
         headers: runtimeHeaders()
       }
     );

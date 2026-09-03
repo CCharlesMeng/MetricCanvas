@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
 import { withClient } from '$lib/server/identity.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ params, request, locals }) => {
@@ -35,7 +36,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
     withClient(locals.identity, 'management-console')
   );
   return json(result, {
-    status: result.ok ? 200 : result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409,
+    status: result.ok
+      ? 200
+      : lifecycleErrorStatus(result.error.code, result.error.code === 'PAGE_NOT_FOUND' ? 404 : 409),
     headers: { 'cache-control': 'no-store' }
   });
 };

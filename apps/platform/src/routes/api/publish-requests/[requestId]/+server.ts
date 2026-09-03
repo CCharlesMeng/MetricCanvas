@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { getPlatformServices } from '$lib/server/services.server';
 import { withClient } from '$lib/server/identity.server';
+import { lifecycleErrorStatus } from '$lib/server/lifecycle-http';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
@@ -12,12 +13,14 @@ export const GET: RequestHandler = async ({ params, locals }) => {
   );
 
   if (!result.ok) {
-    const status =
+    const status = lifecycleErrorStatus(
+      result.error.code,
       result.error.code === 'PUBLISH_REQUEST_NOT_FOUND'
         ? 404
         : result.error.code === 'PUBLISH_FORBIDDEN'
           ? 403
-          : 409;
+          : 409
+    );
     return json(
       { error: result.error },
       { status, headers: { 'cache-control': 'no-store' } }
@@ -54,7 +57,9 @@ export const POST: RequestHandler = async ({ params, request, locals }) => {
     );
   }
   return json(result, {
-    status: result.ok ? 200 : result.error.code === 'PUBLISH_FORBIDDEN' ? 403 : 409,
+    status: result.ok
+      ? 200
+      : lifecycleErrorStatus(result.error.code, result.error.code === 'PUBLISH_FORBIDDEN' ? 403 : 409),
     headers: { 'cache-control': 'no-store' }
   });
 };

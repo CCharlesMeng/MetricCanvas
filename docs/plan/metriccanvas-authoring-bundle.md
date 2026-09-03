@@ -1,7 +1,8 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
 > 状态：S4 已完成；Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
-> S5 等待 Java J4 与 A1–A3
+> Java J4 已完成（2026-09-03）并顺带落了 A1 的幂等键派生 / `skillVersion` 与 A2 的 `IdentityPort`
+> 首个 Adapter（见下方接线切片节的 J4 交叉登记）；S5 等待 A1–A3
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、
 > [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)
@@ -172,9 +173,24 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
 
-状态：等价向量已冻结；切换等待 Java J4 与下列接线切片 A1–A3 完成。
+状态：等价向量已冻结；Java J4 已完成，切换等待下列接线切片 A1–A3 完成。
 
 ## 接线切片（依据 ADR-0063）
+
+**J4 交叉登记（2026-09-03，PR 见 `metriccanvas-page-assets.md` J4 节）**：Java 轨 J4 为了让 `build_page`
+真实落库，已在本 Bundle 内完成以下原属 A1 / A2 的项，A 轨开工时直接复用、不要重做：
+
+- `build_page` 幂等键由 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))`（`domain/idempotency.py`），
+  MCP 工具签名已去掉 `idempotency_key`；`source.relay.skillVersion` 取 `bundle.json` 的 `bundleVersion`，
+  `sessionId` 取 FastMCP `Context.session_id`，`runId` 留空待 Relay 提供（A1）。
+- `IdentityPort` + 首个 Adapter `adapters/outbound/env_identity.py`（读 `METRICCANVAS_OPERATOR_ID` /
+  `METRICCANVAS_AUTH_TOKEN`），只被 Java Adapter 使用；A2 的 DQE Adapter 复用同一 Port，不再另起身份来源。
+- `PageAssetPort` 的 HTTP Adapter `adapters/outbound/java_page_assets.py`（stdlib `urllib`，不新增依赖）；
+  `server.py` 按 `METRICCANVAS_PAGE_ASSETS_BASE_URL` 装配它。
+- 保存命令补 `source` 与 `dataContextVersion`；`baseRevision.pageId` 校验；`PAGE_REVISION_CONFLICT`
+  已改名 `REVISION_CONFLICT`。
+- Java 侧指纹据纵切修正为只覆盖 `pageId` / `baseRevisionId` / `document`：Relay 一次性子进程重试时
+  `sessionId` 必然不同，若进指纹会让 ADR-0063 预期的"重试命中幂等"变成 `IDEMPOTENCY_CONFLICT`。
 
 Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待外部输入；外部前置只剩
 测试环境地址、账号与 LiteLLM key 的线下获取。
@@ -189,8 +205,9 @@ Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待
 - `SKILL.md` 增加 frontmatter：`name`、`description`、`allowed-tools`、`metadata.mcp_servers`。
 - `tool/` 增加 `pyproject.toml`，Bundle 发布产物包含 sdist tar.gz；提供 Relay stdio
   MCP config 样例（`uvx --from <tar.gz>`）。
-- `build_page` 幂等键改为 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))`；
-  `source.relay.skillVersion` 取自 `bundle.json`，`sessionId` / `runId` 可选。
+- ~~`build_page` 幂等键改为 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))`；
+  `source.relay.skillVersion` 取自 `bundle.json`，`sessionId` / `runId` 可选。~~ 已由 J4 完成（见上）；
+  A1 只剩确认 Relay 是否能把 `runId` 递到工具调用。
 - 在本地 Relay 环境用真实 LiteLLM/GLM 跑一次黄金场景，验证 inputSchema 深度可接受、
   `build_page` 响应 ≤ 30s。
 
@@ -198,8 +215,8 @@ Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待
 
 ### A2：身份与 DQE Adapter
 
-- `IdentityPort`：第一个 Adapter 从 MCP config `env` 读取服务态 `X-Auth-Token` /
-  `X-Operator-Id`；ADR-0063 明确这不是生产形态。
+- ~~`IdentityPort`：第一个 Adapter 从 MCP config `env` 读取服务态 `X-Auth-Token` /
+  `X-Operator-Id`；ADR-0063 明确这不是生产形态。~~ 已由 J4 完成（`env_identity.py`），DQE Adapter 复用。
 - `DqeExecutionPort` 生产 Adapter：`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
   错误码按 ADR-0063 映射，多取数单元并发执行；永不直连 Lab。
 - 无权限时的可行动提示由配置文案承载。
@@ -221,6 +238,6 @@ Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待
   `MCPToolProxy` 改造；完成前不得宣称创作期已按用户鉴权。
 
 第一方 Java 页面资产的决策见 [ADR-0062](../adr/0062-first-party-java-page-assets-module.md)，
-切片见 [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md)；其 J4 会补齐本 Bundle
+切片见 [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md)；其 J4 已补齐本 Bundle
 的 Java HTTP Adapter、保存命令的 `source` 与 `dataContextVersion`，并把
-`PAGE_REVISION_CONFLICT` 改名为 `REVISION_CONFLICT`。
+`PAGE_REVISION_CONFLICT` 改名为 `REVISION_CONFLICT`（见上方 J4 交叉登记）。

@@ -21,9 +21,34 @@ FastMCP stdio 子进程 + Fake Ports 走通发现、构建与保存。后续按
 [`docs/plan/metriccanvas-authoring-bundle.md`](../docs/plan/metriccanvas-authoring-bundle.md)
 在外部 Interface 可见后进入 S5 迁移切换。
 
-`tool/server.py` 是生产组合根，当前对未接入的 Data Context、DQE 和 Java 页面资产
-Adapter 显式失败。`test-harness/stdio_server.py` 是仅测试使用的组合根，不是生产
-fallback。
+`tool/server.py` 是生产组合根：Java 页面资产 Adapter（J4，ADR-0062）由 MCP config `env` 配置，
+Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harness/stdio_server.py` 是仅测试
+使用的组合根，不是生产 fallback；`test-harness/slice_server.py` 是本地纵切用的组合根（Relay / DQE
+替身 + 真实 Java Adapter），由根仓 `pnpm slice:page-assets` 驱动。
+
+```json
+{
+  "mcpServers": {
+    "metriccanvas-authoring": {
+      "command": "python",
+      "args": ["tool/server.py"],
+      "env": {
+        "METRICCANVAS_PAGE_ASSETS_BASE_URL": "http://host:8080/rest/cdi/pageassets/v1",
+        "METRICCANVAS_OPERATOR_ID": "<服务态 X-Operator-Id>",
+        "METRICCANVAS_AUTH_TOKEN": "<服务态 X-Auth-Token，可选>"
+      }
+    }
+  }
+}
+```
+
+身份走 `IdentityPort`，第一个 Adapter（`adapters/outbound/env_identity.py`）读上面两个 env：这是 ADR-0063
+登记的服务态形态，所有创作者以同一 operator 保存，任何文案不得说"已按用户身份"。`build_page` 不再接受
+`idempotency_key`：幂等键由 Tool 按 `hash(pageId, baseRevisionId, canonical(spec))` 派生，重试同一
+Spec 命中 Java 指纹幂等原样返回；保存命令携带 `source.relay { sessionId?, skillVersion }` 与
+`dataContextVersion`；`baseRevision.pageId` 与 `page_id` 不一致在发现前即以
+`BASE_REVISION_PAGE_ID_MISMATCH` 拒绝。Java 错误码（`REVISION_CONFLICT`、`INVALID_PAGE`…）原样进入
+`save` 阶段 issue，Java 不可达为 `PAGE_ASSETS_UNAVAILABLE`。
 
 ## 独立验收
 

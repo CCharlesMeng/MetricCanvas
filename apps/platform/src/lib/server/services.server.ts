@@ -22,6 +22,7 @@ import {
   createPostgresPageLifecycle,
   createPostgresTemplateLibrary
 } from '@metriccanvas/persistence-postgres';
+import { createJavaPageLifecycle } from '@metriccanvas/page-assets-java';
 import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/runtime';
 import { createAgentRunner } from './agent/runner';
 import {
@@ -267,6 +268,28 @@ export function resolvePlatformDatabaseUrl(
   return reader;
 }
 
+/**
+ * 页面资产后端(ADR-0062 J4):`postgres`(缺省,既有实现)或 `java`(第一方 Java 页面资产,
+ * 只开放四个接口,其余能力返回 `NOT_SUPPORTED`)。`METRICCANVAS_OFFLINE=1` 优先于两者。
+ */
+export type PageAssetsBackend = 'postgres' | 'java';
+
+export function resolvePageAssetsBackend(environment: ServerEnvironment): PageAssetsBackend {
+  const value = environment.METRICCANVAS_PAGE_ASSETS?.trim().toLowerCase() || 'postgres';
+  if (value === 'postgres' || value === 'java') return value;
+  throw new Error(`METRICCANVAS_PAGE_ASSETS 只接受 postgres | java,收到 ${value}`);
+}
+
+export function resolveJavaPageAssetsBaseUrl(environment: ServerEnvironment): string {
+  const baseUrl = environment.METRICCANVAS_PAGE_ASSETS_BASE_URL?.trim();
+  if (!baseUrl) {
+    throw new Error(
+      'METRICCANVAS_PAGE_ASSETS=java 必须配置 METRICCANVAS_PAGE_ASSETS_BASE_URL,如 http://host:8080/rest/cdi/pageassets/v1'
+    );
+  }
+  return baseUrl;
+}
+
 export async function createPlatformServices(
   environment: ServerEnvironment,
   overrides: Partial<PlatformServiceFactories> = {}
@@ -276,7 +299,10 @@ export async function createPlatformServices(
   const runtimeOrigin = environment.RUNTIME_ORIGIN ?? 'http://localhost:5173';
   const platformOrigin = environment.PLATFORM_ORIGIN ?? 'http://localhost:5174';
   const offline = environment.METRICCANVAS_OFFLINE === '1';
-  const databaseUrl = resolvePlatformDatabaseUrl(environment, role);
+  const pageAssets = resolvePageAssetsBackend(environment);
+  // Java 后端不用 PostgreSQL:模板库退到内存实现,不再要求 DATABASE_URL。
+  const databaseUrl =
+    offline || pageAssets === 'java' ? null : resolvePlatformDatabaseUrl(environment, role);
   // 内置快照经唯一校验入口进入类型世界(#80),不以双重 cast 硬闯。
   const parsedSnapshot = parseDataContextSnapshot(bundledDataContext);
   if (!parsedSnapshot.ok) {
@@ -301,7 +327,16 @@ export async function createPlatformServices(
   };
   const lifecycle = offline
     ? await createOfflinePageLifecycle(lifecycleOptions)
-    : await createPostgresPageLifecycle({ ...lifecycleOptions, databaseUrl });
+    : pageAssets === 'java'
+      ? createJavaPageLifecycle({
+          baseUrl: resolveJavaPageAssetsBaseUrl(environment),
+          dataContext: dataContextVersion,
+          readOperatorId: environment.METRICCANVAS_PAGE_ASSETS_READ_OPERATOR?.trim() || 'platform'
+        })
+      : await createPostgresPageLifecycle({
+          ...lifecycleOptions,
+          databaseUrl: databaseUrl as string
+        });
 
   if (role === 'reader') {
     const services: ReaderPlatformServices = {
@@ -324,9 +359,10 @@ export async function createPlatformServices(
         `${platformOrigin}/templates/publish/${requestId}?token=${encodeURIComponent(token)}`
     }
   };
-  const templates = offline
-    ? createMemoryTemplateLibrary(templateOptions)
-    : await createPostgresTemplateLibrary({ ...templateOptions, databaseUrl });
+  const templates =
+    databaseUrl === null
+      ? createMemoryTemplateLibrary(templateOptions)
+      : await createPostgresTemplateLibrary({ ...templateOptions, databaseUrl });
   // 分析会话事件 + 最新检查点(ADR-0030/0058)。本轮只有内存实现,
   // offline 与 postgres 两种
   // 模式都用它;PostgreSQL 实现等 #52 的版本化迁移接入(不引入启动期建表),
