@@ -40,6 +40,10 @@
     <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <archunit.version>1.5.0</archunit.version>
+    <!-- 不在 Spring Boot BOM 里的两项，公司 parent 若已管理则以 parent 为准（切换后删掉这里的版本即可）。 -->
+    <mybatis-spring.version>3.0.4</mybatis-spring.version>
+    <mybatis.version>3.5.19</mybatis.version>
+    <druid.version>1.2.25</druid.version>
   </properties>
 
   <dependencyManagement>
@@ -59,6 +63,21 @@
         <artifactId>archunit-junit5</artifactId>
         <version>${archunit.version}</version>
         <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis</artifactId>
+        <version>${mybatis.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mybatis</groupId>
+        <artifactId>mybatis-spring</artifactId>
+        <version>${mybatis-spring.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid</artifactId>
+        <version>${druid.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

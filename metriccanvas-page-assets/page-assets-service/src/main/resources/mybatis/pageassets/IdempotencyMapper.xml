@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.cdi.pageassets.adapter.outbound.persistence.mapper.IdempotencyMapper">
+
+  <resultMap id="record" type="com.huawei.cdi.pageassets.adapter.outbound.persistence.po.IdempotencyPo">
+    <constructor>
+      <idArg column="operation" javaType="String" name="operation"/>
+      <idArg column="actor_id" javaType="String" name="actorId"/>
+      <idArg column="idempotency_key" javaType="String" name="idempotencyKey"/>
+      <arg column="fingerprint" javaType="String" name="fingerprint"/>
+      <arg column="page_id" javaType="String" name="pageId"/>
+      <arg column="revision_id" javaType="String" name="revisionId"/>
+      <arg column="created_at" javaType="java.time.Instant" name="createdAt"/>
+    </constructor>
+  </resultMap>
+
+  <select id="select" resultMap="record">
+    SELECT operation, actor_id, idempotency_key, fingerprint, page_id, revision_id, created_at
+    FROM t_pa_idempotency
+    WHERE operation = #{operation} AND actor_id = #{actorId} AND idempotency_key = #{idempotencyKey}
+  </select>
+
+  <insert id="insert">
+    INSERT INTO t_pa_idempotency (operation, actor_id, idempotency_key, fingerprint, page_id, revision_id, created_at)
+    VALUES (#{operation}, #{actorId}, #{idempotencyKey}, #{fingerprint}, #{pageId}, #{revisionId}, #{createdAt})
+  </insert>
+
+  <delete id="deleteCreatedBefore">
+    DELETE FROM t_pa_idempotency
+    WHERE created_at &lt; #{cutoff}
+    LIMIT #{batchSize}
+  </delete>
+</mapper>

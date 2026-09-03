@@ -7,6 +7,7 @@ import com.huawei.cdi.pageassets.domain.catalog.PageCatalogPolicy;
 import com.huawei.cdi.pageassets.domain.idempotency.IdempotencyRecord;
 import com.huawei.cdi.pageassets.domain.idempotency.IdempotencyScope;
 import com.huawei.cdi.pageassets.domain.revision.PageHead;
+import com.huawei.cdi.pageassets.domain.revision.PageLock;
 import com.huawei.cdi.pageassets.domain.revision.PageRevision;
 
 import java.time.Instant;
@@ -41,7 +42,7 @@ public final class InMemoryPageStore implements PageRepository, IdempotencyRepos
         ReentrantLock idempotencyLock = idempotencyLocks.computeIfAbsent(scope.lockName(), k -> new ReentrantLock());
         idempotencyLock.lock();
         try {
-            ReentrantLock pageLock = pageLocks.computeIfAbsent(pageId, k -> new ReentrantLock());
+            ReentrantLock pageLock = pageLocks.computeIfAbsent(PageLock.lockName(pageId), k -> new ReentrantLock());
             pageLock.lock();
             try {
                 return body.get();

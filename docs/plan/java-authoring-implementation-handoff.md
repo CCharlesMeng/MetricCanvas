@@ -2,7 +2,7 @@
 
 > 日期：2026-09-02
 >
-> 状态：J1、J2 已完成（2026-09-02），J3–J4 与 A1–A3 可继续并行；J1 / J2 落地记录见
+> 状态：J1、J2、J3 已完成（2026-09-02），J4 与 A1–A3 可继续并行；J1 / J2 / J3 落地记录见
 > [`metriccanvas-page-assets.md`](./metriccanvas-page-assets.md) 对应切片节
 >
 > 决策：[ADR-0062](../adr/0062-first-party-java-page-assets-module.md)、
@@ -51,17 +51,32 @@
 - 错误信封在 ADR-0062 闭集之外多了两个传输层码 `INVALID_REQUEST` / `INTERNAL_ERROR`（Spring MVC
   绑定 / 校验 / 路由错误与 500），已在 YAML、README 与 plan 登记为补充，未改 ADR。
 
+## J3 已交付什么（新会话直接用）
+
+- `PAGE_ASSETS_STORE=mysql` 走 `adapter/config/MySqlStoreConfiguration`：Druid + MariaDB 驱动 + 编程式 Flyway
+  （历史表 `flyway_page_assets_history`，locations `db/migration/pageassets/`）+ `mybatis-spring`（不用 starter）。
+  环境变量 `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`，口令经 `SecretDecryptor` 接缝（缺省透传，公司环境注册
+  TitanCipher 实现）。全部 Bean 名带 `pageAssets` 前缀，`@MapperScan` 限定本 Module，为并入宿主并存留位。
+- Schema `V1.0.0.1__pa_init.sql`：`t_pa_page` / `t_pa_page_revision` / `t_pa_idempotency`，`utf8mb4_bin`、
+  `datetime(3)`、`mediumtext`；列宽与 YAML `maxLength` 一致。加表 / 加列走 `V1.0.0.{n}__pa_*.sql`，别改已应用脚本。
+- `adapter/outbound/persistence`：`MyBatisPageStore`（两个仓储 Port）、`MySqlPageWriteTransaction`
+  （`GET_LOCK` 幂等锁 → 页面锁 → `TransactionTemplate`，锁连接与事务连接分开，提交后释放）、
+  `IdempotencyPurgeTask`（每小时分批删 7 天前记录，逻辑在 `application/IdempotencyRetention`）。
+- 集成测试 `MySqlPageStoreIntegrationTest`（15 例：Flyway 二次启动只 validate、utf8mb4_bin 排序与游标、
+  并发 / 幂等 / 冲突、锁超时、清理、REST 通路）。数据库来源 `testing/MySqlTestDatabase` 三级退路：
+  `PAGE_ASSETS_TEST_DB_URL` → Testcontainers `mysql:8.0` → 跳过。GitHub Actions 有 Docker，CI 实跑。
+- **CloudBuild 探针尚未执行**：在公司 CI 上跑 `mvn verify`，看 `MySqlPageStoreIntegrationTest` 是跑了还是
+  以"没有 Docker 也没有 PAGE_ASSETS_TEST_DB_URL"跳过；后者就设该变量指向公司测试库。这是 J3 留给公司 CI 的唯一动作。
+
 ## 先做什么
 
-两条轨道互不依赖，可以并行。J1、J2 已完成，Java 轨下一步是 **J3**。
+两条轨道互不依赖，可以并行。J1–J3 已完成，Java 轨下一步是 **J4**。
 
-**J3 第一步**：探针，不是建表——在公司 CloudBuild 上验证 Testcontainers（Docker socket、Artifactory
-是否代理 Testcontainers 与内部 MySQL 镜像）；失败则集成测试退到环境变量指定的公司测试库。本机可以先用
-Docker 起 MySQL 8 / MariaDB 跑 Testcontainers。随后：Flyway `V1.0.0.1__pa_init.sql`（三张 `t_pa_*` 表，
-列型按 ADR-0062，`t_pa_idempotency` 五列见 plan J2 落地记录）、MyBatis XML Mapper 实现三个 Port
-（`PageWriteTransaction` 用 `GET_LOCK` 会话锁：先幂等锁名 `IdempotencyScope.lockName()` 再页面锁）、
-7 天清理任务、Druid + MariaDB 驱动 + `DB_URL` / `DB_USERNAME` / `DB_PASSWORD`（`TitanCipherEnum`
-解密在内部依赖里，本机拿不到时留接缝）。`pageassets.store=mysql` 切换，`memory` 保留。
+**J4 第一步**：Python `PageAssetPort` 的 HTTP Adapter（base URL 可配），对着
+`contracts/metriccanvas/page-assets/rest-services-page-assets.yaml` 副本写；保存命令补 `source` 与
+`dataContextVersion`，幂等键按 ADR-0063 派生并带 pageId；`PAGE_REVISION_CONFLICT` 改名 `REVISION_CONFLICT`。
+本地验收用 README「本地起服务」的 MySQL 方式起 Java（`PAGE_ASSETS_STORE=mysql` + Docker MySQL 8）。
+随后 platform 的 Java HTTP Adapter（完整 `PageLifecycle`，未支持方法返回 `NOT_SUPPORTED`）与 `pnpm slice:page-assets`。
 
 **A1 第一步**：给 `metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md` 加
 frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 校验 sdist
@@ -74,7 +89,13 @@ frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 
   结构；`packages/page` 的 `validate()` 还做跨引用不变式。J1 要把这些不变式逐条移植，
   并把 `contracts/metriccanvas/page/conformance/` 从 6 个反例扩到逐条覆盖。TypeScript
   导出脚本随之更新，两边同跑。
-- **Testcontainers 在公司 CI 上可能不可用**：J3 第一件事是探针，不是建表。
+- **Testcontainers 在公司 CI 上可能不可用**：集成测试已按"跳过而非失败"设计，探针只需看 CI 报告里该类是否被 skip。
+- **MySQL 会话锁跟连接走**：池连接 `close()` 只是归还，未 RELEASE 的 `GET_LOCK` 会被下一位借用者继承，MySQL 8
+  会报 "Deadlock found when trying to get user-level lock"。生产侧 RELEASE 失败即废弃连接；测试里要持锁的
+  "外部会话"必须用裸 `DriverManager` 连接，不要从 Druid 借。
+- **MySQL 8 + MariaDB 驱动**：`caching_sha2_password` 下非 SSL 连接必须 `allowPublicKeyRetrieval=true`，否则
+  握手失败且错误信息不直观（表现为"60s 内未能接受 JDBC 连接"）。
+- **锁超时别设太小**：同键并发重放在幂等锁上串行排队，16 路 × 一次完整校验就超过 2s；缺省 10s。
 - **J2 的 codegen 同形是手写的**：`page-assets-model` 里的 delegate / model 没有经过真实 `dfs-codegen`
   校验，插件 goal 名与 `configOptions` 是按 swagger-codegen 常规写的；第一次在公司 CI 跑
   `scripts/check-codegen-drift.sh` 前先对照宿主 `model/pom.xml:43-101` 修正 pom，再按 diff 改手写源码。
@@ -100,7 +121,7 @@ frontmatter，给 `tool/` 加 `pyproject.toml` 并让 `scripts/check_bundle.py` 
 | 需要 | 用于 | 谁提供 |
 |---|---|---|
 | `cbcbi-parent` 实际 POM（Spring Boot 版本） | J1 确认 parent 兼容 | 用户从内部 Artifactory 取 |
-| CloudBuild 是否有 Docker socket | J3 探针 | 用户或 CI 团队 |
+| CloudBuild 是否有 Docker socket（否则给 `PAGE_ASSETS_TEST_DB_URL` 测试库） | J3 探针（代码已就位，只差在公司 CI 跑一次） | 用户或 CI 团队 |
 | DQE/NL2SQL 测试环境地址 + 有权限/无权限两个账号 | A2、A3 真实验收 | 用户线下获取 |
 | Relay 本地环境的 LiteLLM key | A1 真实模型验收 | 用户"绿区加群获取" |
 | 生产 DDL 是否需 DBA 工单 | J3 执行入口（不改脚本） | 用户 |

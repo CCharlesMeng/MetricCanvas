@@ -75,7 +75,7 @@
 | [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行(不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁) |
 | [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte + Java 页面治理 + Relay/Python 创作期 | 现行目标架构(尚未完成迁移) |
 | [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle + 中立契约单向导出 | 现行(迁移实施基线) |
-| [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行(J1、J2 已完成:校验器、四个 Interface 与内存仓储;J3 MySQL、J4 接线未开工;目标宿主 `CDINL2DataBuilderService`) |
+| [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行(J1–J3 已完成:校验器、四个 Interface、内存与 MySQL 仓储;J4 接线未开工;CloudBuild Testcontainers 探针待公司 CI 执行;目标宿主 `CDINL2DataBuilderService`) |
 | [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行(部分修订 0060 的 sourceRunId、身份与元数据过滤前提,0061 的交付形态;接线切片 A1–A3 未开工) |
 
 ## IOC 作战地图批次(0045–0051)

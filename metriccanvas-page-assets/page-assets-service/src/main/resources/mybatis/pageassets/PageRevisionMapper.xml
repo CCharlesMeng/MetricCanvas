@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.huawei.cdi.pageassets.adapter.outbound.persistence.mapper.PageRevisionMapper">
+
+  <resultMap id="revision" type="com.huawei.cdi.pageassets.adapter.outbound.persistence.po.PageRevisionPo">
+    <constructor>
+      <idArg column="revision_id" javaType="String" name="revisionId"/>
+      <arg column="page_id" javaType="String" name="pageId"/>
+      <arg column="revision_number" javaType="_long" name="revisionNumber"/>
+      <arg column="base_revision_id" javaType="String" name="baseRevisionId"/>
+      <arg column="document" javaType="String" name="document"/>
+      <arg column="content_hash" javaType="String" name="contentHash"/>
+      <arg column="data_context_version" javaType="String" name="dataContextVersion"/>
+      <arg column="source_type" javaType="String" name="sourceType"/>
+      <arg column="source_session_id" javaType="String" name="sourceSessionId"/>
+      <arg column="source_run_id" javaType="String" name="sourceRunId"/>
+      <arg column="source_skill_version" javaType="String" name="sourceSkillVersion"/>
+      <arg column="created_by" javaType="String" name="createdBy"/>
+      <arg column="created_at" javaType="java.time.Instant" name="createdAt"/>
+    </constructor>
+  </resultMap>
+
+  <sql id="columns">
+    r.revision_id, r.page_id, r.revision_number, r.base_revision_id, r.document, r.content_hash,
+    r.data_context_version, r.source_type, r.source_session_id, r.source_run_id, r.source_skill_version,
+    r.created_by, r.created_at
+  </sql>
+
+  <select id="selectByPageAndRevision" resultMap="revision">
+    SELECT <include refid="columns"/>
+    FROM t_pa_page_revision r
+    WHERE r.revision_id = #{revisionId} AND r.page_id = #{pageId}
+  </select>
+
+  <select id="selectLatest" resultMap="revision">
+    SELECT <include refid="columns"/>
+    FROM t_pa_page p
+    JOIN t_pa_page_revision r ON r.revision_id = p.latest_revision_id
+    WHERE p.page_id = #{pageId}
+  </select>
+
+  <insert id="insert">
+    INSERT INTO t_pa_page_revision (
+      revision_id, page_id, revision_number, base_revision_id, document, content_hash,
+      data_context_version, source_type, source_session_id, source_run_id, source_skill_version,
+      created_by, created_at
+    ) VALUES (
+      #{revisionId}, #{pageId}, #{revisionNumber}, #{baseRevisionId}, #{document}, #{contentHash},
+      #{dataContextVersion}, #{sourceType}, #{sourceSessionId}, #{sourceRunId}, #{sourceSkillVersion},
+      #{createdBy}, #{createdAt}
+    )
+  </insert>
+</mapper>

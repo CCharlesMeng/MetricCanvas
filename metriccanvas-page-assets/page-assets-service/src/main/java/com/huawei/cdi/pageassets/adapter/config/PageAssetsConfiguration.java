@@ -24,7 +24,7 @@ import java.time.OffsetDateTime;
 
 /**
  * 组合根。契约快照在启动时加载并核对摘要（漂移即拒绝启动）；
- * 仓储按 `pageassets.store` 选择：`memory`（缺省，J2）或 `mysql`（J3 落地）。
+ * 仓储按 `pageassets.store` 选择：`memory`（缺省，本类装配）或 `mysql`（{@link MySqlStoreConfiguration}）。
  */
 @Configuration
 public class PageAssetsConfiguration {
