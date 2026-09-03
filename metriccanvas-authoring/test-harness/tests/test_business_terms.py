@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
+from datetime import datetime
 from pathlib import Path
 
 from jsonschema import Draft202012Validator
@@ -12,6 +13,7 @@ BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
 from metriccanvas_authoring.domain.business_terms import (  # noqa: E402
+    resolve_business_terms,
     resolve_metric_terms,
 )
 from metriccanvas_authoring.domain.data_context import parse_data_context  # noqa: E402
@@ -68,6 +70,51 @@ class BusinessTermResolutionTest(unittest.TestCase):
                             result.to_payload(case["input"]["question"])
                         )
                     ),
+                    [],
+                )
+
+    def test_matches_typescript_deterministic_business_term_vectors(self) -> None:
+        vector = json.loads(
+            (
+                BUNDLE_ROOT
+                / "contracts"
+                / "exported"
+                / "agent-conformance.json"
+            ).read_text(encoding="utf-8")
+        )
+        data_context, issues = parse_data_context(vector["dataContext"])
+        self.assertEqual(issues, ())
+        assert data_context is not None
+        schema = json.loads(
+            (
+                BUNDLE_ROOT
+                / "contracts"
+                / "authored"
+                / "business-term-resolution.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        cases = [
+            case
+            for case in vector["cases"]
+            if case["kind"] == "deterministic_business_terms"
+        ]
+        self.assertEqual(len(cases), 10)
+
+        for case in cases:
+            with self.subTest(case=case["case"]):
+                result = resolve_business_terms(
+                    question=case["input"]["question"],
+                    business_domains=case["input"]["businessDomains"],
+                    dimension_entries=data_context.dimension_entries,
+                    now=datetime.fromisoformat(
+                        case["input"]["now"].replace("Z", "+00:00")
+                    ),
+                )
+                payload = result.to_payload()
+                self.assertEqual(payload, case["expected"])
+                self.assertEqual(
+                    list(validator.iter_errors(payload["resolution"])),
                     [],
                 )
 

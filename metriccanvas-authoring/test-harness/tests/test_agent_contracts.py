@@ -49,7 +49,7 @@ class AgentContractTest(unittest.TestCase):
         )
         self.assertEqual(errors, [])
         cases = self.conformance["cases"]
-        self.assertGreaterEqual(len(cases), 10)
+        self.assertGreaterEqual(len(cases), 13)
 
         longest = next(case for case in cases if case["case"] == "longest-name-hit")
         self.assertEqual(
@@ -71,6 +71,61 @@ class AgentContractTest(unittest.TestCase):
                     list(decision_validator.iter_errors(case["expected"])),
                     [],
                 )
+
+    def test_typescript_step_event_sequences_match_persisted_event_contract(self) -> None:
+        cases = [
+            case
+            for case in self.conformance["cases"]
+            if case["kind"] == "step_event_sequence"
+        ]
+        self.assertEqual(len(cases), 3)
+        validator = Draft202012Validator(self.step_event)
+        by_name = {case["case"]: case for case in cases}
+
+        for case in cases:
+            with self.subTest(step_event_case=case["case"]):
+                for index, event in enumerate(case["expected"]["events"]):
+                    self.assertEqual(
+                        list(validator.iter_errors(event)),
+                        [],
+                        f"event {index} does not match agent-step-event.schema.json",
+                    )
+
+        success = by_name["step-events-success"]["expected"]
+        self.assertEqual(
+            [event["type"] for event in success["events"]],
+            [
+                "domain_routed",
+                "candidates_retrieved",
+                "scope_card_presented",
+                "execution_started",
+                "rows_ready",
+                "document_ready",
+            ],
+        )
+        self.assertEqual(success["terminal"], "completed")
+        self.assertTrue(success["documentPresent"])
+        self.assertEqual(success["executionAttempts"], 1)
+
+        out_of_scope = by_name["step-events-out-of-scope"]["expected"]
+        self.assertEqual(
+            [event["type"] for event in out_of_scope["events"]],
+            ["domain_routed", "candidates_retrieved", "step_failed"],
+        )
+        self.assertEqual(out_of_scope["events"][-1]["stage"], "discovery")
+        self.assertEqual(out_of_scope["terminal"], "interaction_required")
+        self.assertFalse(out_of_scope["documentPresent"])
+        self.assertEqual(out_of_scope["executionAttempts"], 0)
+
+        failed = by_name["step-events-execution-retry-failed"]["expected"]
+        self.assertEqual(failed["events"][-1]["type"], "step_failed")
+        self.assertEqual(failed["events"][-1]["stage"], "execution")
+        self.assertEqual(failed["events"][-1]["code"], "DQE_TRANSPORT_ERROR")
+        self.assertEqual(failed["executionAttempts"], 2)
+        self.assertEqual(
+            failed["portCalls"].count("verification.verifyUnit"), 2
+        )
+        self.assertEqual(failed["portCalls"].count("dqe.execute"), 2)
 
     def test_model_decision_schema_enforces_closed_operations(self) -> None:
         valid = {

@@ -6,6 +6,12 @@ import type {
   AskUnitMetric,
   AskUnitTime
 } from './ports';
+import {
+  resolveAnalysisIntentKeyword,
+  resolveBusinessTerms,
+  resolveStructureOperation,
+  type DeterministicBusinessTermMatch
+} from './business-terms';
 
 /**
  * 无外部模型时的确定性回退(与 scripted-model.server.ts 同一定位):
@@ -92,15 +98,27 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
         }
       }
 
+      const terms = resolveBusinessTerms({ question, surfaces: [domain], clock });
       const groupBy: string[] = [];
       for (const dimension of domain.dimensions) {
-        if (hitTerm(question, dimension.name, dimension.aliases)) {
-          const filtered = dimension.values?.some((value) => question.includes(value)) ?? false;
+        if (
+          terms.resolution.matches.some(
+            (match) =>
+              match.kind === 'dimension' && match.canonicalName === dimension.name
+          )
+        ) {
+          const filtered = terms.resolution.matches.some(
+            (match) =>
+              match.kind === 'dimension_value' && match.definition === dimension.name
+          );
           if (!filtered) groupBy.push(dimension.name);
         }
       }
       const timeDimension = domain.timeDimensions[0];
-      if (timeDimension && /趋势|走势|每月|每天|每日|按月|按日/u.test(question)) {
+      if (
+        timeDimension &&
+        (terms.intent === 'trend' || /每月|每天|每日|按月|按日/u.test(question))
+      ) {
         groupBy.push(timeDimension.name);
       }
 
@@ -108,8 +126,8 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
         businessDomain: domain.businessDomain,
         metrics,
         groupBy,
-        filters: filterPatch(question, domain).filters ?? [],
-        time: timePatch(question, domain, clock).time ?? null,
+        filters: filtersFromTerms(terms.resolution.matches, domain),
+        time: terms.time,
         title: question
       };
       if (previousUnits.length === 0 && metrics.length > 1) {
@@ -127,7 +145,10 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
           }))
         };
       }
-      if (previousUnits.length > 0 && /增加|新增一个|再加|添加|加一个/u.test(question)) {
+      if (
+        previousUnits.length > 0 &&
+        resolveStructureOperation(question)?.operation === 'add'
+      ) {
         // 「增加一个……」的字面即新增单元:不把新指标塞进既有单元。
         // 问题没给分组/时间时沿用基线单元的口径(同轴对照是常见诉求)。
         const inherited: AskDataRequestUnitState = {
@@ -142,10 +163,8 @@ export function createLexicalAskModel(options: LexicalAskModelOptions = {}): Ask
     },
 
     async decideIntent({ question, unit, previousIntent }) {
-      if (/趋势|走势|变化/u.test(question)) return { intent: 'trend' };
-      if (/排名|排行|top|前十|前 ?\d+/iu.test(question)) return { intent: 'ranking' };
-      if (/占比|构成|分布/u.test(question)) return { intent: 'composition' };
-      if (/明细|清单|列表/u.test(question)) return { intent: 'detail' };
+      const matched = resolveAnalysisIntentKeyword(question);
+      if (matched !== null) return { intent: matched.intent };
       if (previousIntent !== null) return { intent: previousIntent };
       if (unit.groupBy.length === 0) return { intent: 'single_value' };
       return { intent: 'comparison' };
@@ -171,12 +190,28 @@ function filterPatch(
   question: string,
   domain: DomainSemanticSurface
 ): { filters?: AskUnitFilter[] } {
+  const terms = resolveBusinessTerms({ question, surfaces: [domain] });
+  const filters = filtersFromTerms(terms.resolution.matches, domain);
+  return filters.length > 0 ? { filters } : {};
+}
+
+function filtersFromTerms(
+  matches: readonly DeterministicBusinessTermMatch[],
+  domain: DomainSemanticSurface
+): AskUnitFilter[] {
   const filters: AskUnitFilter[] = [];
   for (const dimension of domain.dimensions) {
-    const values = (dimension.values ?? []).filter((value) => question.includes(value));
+    const values = (dimension.values ?? []).filter((value) =>
+      matches.some(
+        (match) =>
+          match.kind === 'dimension_value' &&
+          match.definition === dimension.name &&
+          match.canonicalName === value
+      )
+    );
     if (values.length > 0) filters.push({ dimension: dimension.name, values });
   }
-  return filters.length > 0 ? { filters } : {};
+  return filters;
 }
 
 /** 少量常用相对时间说法的确定性求值;识别不出时不设时间过滤。 */
@@ -185,51 +220,6 @@ function timePatch(
   domain: DomainSemanticSurface,
   clock: () => Date
 ): { time?: AskUnitTime } {
-  const granularities = domain.timeDimensions[0]?.granularities ?? [];
-  if (!granularities.includes('month')) return {};
-  const now = clock();
-  const month = (offset: number): string => {
-    const date = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + offset, 1));
-    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
-  };
-  if (question.includes('上个月')) {
-    return {
-      time: { granularity: 'month', start: month(-1), end: month(-1), providedBy: 'user' }
-    };
-  }
-  const halfYear = /(?:(\d{4})\s*年)?(上|下)半年/u.exec(question);
-  if (halfYear) {
-    const year = halfYear[1] === undefined ? now.getUTCFullYear() : Number(halfYear[1]);
-    return {
-      time:
-        halfYear[2] === '上'
-          ? { granularity: 'month', start: `${year}-01`, end: `${year}-06`, providedBy: 'user' }
-          : { granularity: 'month', start: `${year}-07`, end: `${year}-12`, providedBy: 'user' }
-    };
-  }
-  const recent = /最近\s*(\d+)\s*个月|近\s*(\d+)\s*个月/u.exec(question);
-  if (recent) {
-    const count = Number(recent[1] ?? recent[2]);
-    if (Number.isFinite(count) && count > 0) {
-      return {
-        time: {
-          granularity: 'month',
-          start: month(-(count - 1)),
-          end: month(0),
-          providedBy: 'user'
-        }
-      };
-    }
-  }
-  if (/今年以来|今年/u.test(question)) {
-    return {
-      time: {
-        granularity: 'month',
-        start: `${now.getUTCFullYear()}-01`,
-        end: month(0),
-        providedBy: 'user'
-      }
-    };
-  }
-  return {};
+  const time = resolveBusinessTerms({ question, surfaces: [domain], clock }).time;
+  return time === null ? {} : { time };
 }

@@ -2,7 +2,7 @@
   "formatVersion": "1.0",
   "source": {
     "implementation": "typescript",
-    "module": "ask/retrieval+ask/model-port",
+    "module": "ask/retrieval+ask/model-port+ask/orchestrator",
     "dataContext": "docs/examples/schema-metadata.example.json"
   },
   "dataContext": {
@@ -695,6 +695,461 @@
       }
     },
     {
+      "case": "terms-dimension-alias-recent-time-trend",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "最近6个月按大区看Tokens消耗量趋势",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "最近6个月按大区看Tokens消耗量趋势",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "最近6个月",
+              "canonicalName": "recent_months",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 35,
+              "start": 0,
+              "end": 5
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "大区",
+              "canonicalName": "区域",
+              "businessDomain": "运营分析",
+              "source": "alias",
+              "score": 52,
+              "definition": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+              "start": 6,
+              "end": 8
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "趋势",
+              "canonicalName": "trend",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 18,
+              "end": 20
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-03",
+          "end": "2026-08",
+          "providedBy": "user"
+        },
+        "intent": "trend",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-value-previous-month",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "上个月华东的Tokens请求量是多少",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "上个月华东的Tokens请求量是多少",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "上个月",
+              "canonicalName": "previous_month",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 33,
+              "start": 0,
+              "end": 3
+            },
+            {
+              "kind": "dimension_value",
+              "matchedTerm": "华东",
+              "canonicalName": "华东",
+              "businessDomain": "运营分析",
+              "source": "value_domain",
+              "score": 82,
+              "definition": "区域",
+              "start": 3,
+              "end": 5
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-07",
+          "end": "2026-07",
+          "providedBy": "user"
+        },
+        "intent": null,
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-dimension-half-year-ranking",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "2025年下半年各模型系列调用次数排行前10",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "2025年下半年各模型系列调用次数排行前10",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "2025年下半年",
+              "canonicalName": "second_half_year",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 38,
+              "start": 0,
+              "end": 8
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "模型系列",
+              "canonicalName": "模型",
+              "businessDomain": "运营分析",
+              "source": "alias",
+              "score": 54,
+              "definition": "提供服务的模型系列。取值域:通用大模型、代码大模型、多模态大模型。",
+              "start": 9,
+              "end": 13
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "排行",
+              "canonicalName": "ranking",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 17,
+              "end": 19
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2025-07",
+          "end": "2025-12",
+          "providedBy": "user"
+        },
+        "intent": "ranking",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-current-year-composition",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "今年各区域客户数占比",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "今年各区域客户数占比",
+          "matches": [
+            {
+              "kind": "relative_time",
+              "matchedTerm": "今年",
+              "canonicalName": "current_year",
+              "businessDomain": null,
+              "source": "relative_time_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            },
+            {
+              "kind": "dimension",
+              "matchedTerm": "区域",
+              "canonicalName": "区域",
+              "businessDomain": "运营分析",
+              "source": "canonical_name",
+              "score": 102,
+              "definition": "业务归属区域。取值域:华东、华南、华北、西南、华中、东北、西北。",
+              "start": 3,
+              "end": 5
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "占比",
+              "canonicalName": "composition",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 8,
+              "end": 10
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": {
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-08",
+          "providedBy": "user"
+        },
+        "intent": "composition",
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-cross-domain-dimension-ambiguity",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "按统计周期看客户数",
+        "businessDomains": [
+          "运营分析",
+          "客户经营"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "按统计周期看客户数",
+          "matches": [],
+          "ambiguities": [
+            {
+              "matchedTerm": "统计周期",
+              "candidates": [
+                {
+                  "kind": "dimension",
+                  "canonicalName": "统计周期",
+                  "businessDomain": "客户经营",
+                  "score": 104,
+                  "definition": "按查询时间粒度展开的统计周期。支持的时间粒度:month。"
+                },
+                {
+                  "kind": "dimension",
+                  "canonicalName": "统计周期",
+                  "businessDomain": "运营分析",
+                  "score": 104,
+                  "definition": "按查询时间粒度展开的统计周期。支持的时间粒度:month、day。"
+                }
+              ]
+            }
+          ]
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": null
+      }
+    },
+    {
+      "case": "terms-add-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "新增一个华南的Tokens请求量图表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "新增一个华南的Tokens请求量图表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "新增一个",
+              "canonicalName": "add",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 34,
+              "start": 0,
+              "end": 4
+            },
+            {
+              "kind": "dimension_value",
+              "matchedTerm": "华南",
+              "canonicalName": "华南",
+              "businessDomain": "运营分析",
+              "source": "value_domain",
+              "score": 82,
+              "definition": "区域",
+              "start": 4,
+              "end": 6
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "add"
+      }
+    },
+    {
+      "case": "terms-remove-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "删除这个图表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "删除这个图表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "删除",
+              "canonicalName": "remove",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "remove"
+      }
+    },
+    {
+      "case": "terms-replace-detail",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "换成明细列表",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "换成明细列表",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "换成",
+              "canonicalName": "replace",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            },
+            {
+              "kind": "analysis_intent",
+              "matchedTerm": "明细",
+              "canonicalName": "detail",
+              "businessDomain": null,
+              "source": "analysis_intent_lexicon",
+              "score": 32,
+              "start": 2,
+              "end": 4
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": "detail",
+        "structureOperation": "replace"
+      }
+    },
+    {
+      "case": "terms-split-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "拆成两个图表分别展示",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "拆成两个图表分别展示",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "拆成",
+              "canonicalName": "split",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "split"
+      }
+    },
+    {
+      "case": "terms-merge-operation",
+      "kind": "deterministic_business_terms",
+      "input": {
+        "question": "合并放到一张图",
+        "businessDomains": [
+          "运营分析"
+        ],
+        "now": "2026-08-13T08:00:00.000Z"
+      },
+      "expected": {
+        "resolution": {
+          "formatVersion": "1.0",
+          "question": "合并放到一张图",
+          "matches": [
+            {
+              "kind": "structure_operation",
+              "matchedTerm": "合并",
+              "canonicalName": "merge",
+              "businessDomain": null,
+              "source": "structure_operation_lexicon",
+              "score": 32,
+              "start": 0,
+              "end": 2
+            }
+          ],
+          "ambiguities": []
+        },
+        "time": null,
+        "intent": null,
+        "structureOperation": "merge"
+      }
+    },
+    {
       "case": "model-route-one-domain",
       "kind": "model_decision",
       "input": {
@@ -881,6 +1336,391 @@
       "expected": {
         "decisionType": "submit_analysis_intent",
         "intent": "trend"
+      }
+    },
+    {
+      "case": "step-events-success",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-success",
+        "question": "最近6个月Tokens消耗量的月度趋势如何?",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "unit",
+              "unit": {
+                "businessDomain": "运营分析",
+                "metrics": [
+                  {
+                    "kind": "metric",
+                    "name": "Tokens消耗量"
+                  }
+                ],
+                "groupBy": [
+                  "统计周期"
+                ],
+                "filters": [],
+                "time": {
+                  "granularity": "month",
+                  "start": "2026-03",
+                  "end": "2026-08",
+                  "providedBy": "user"
+                },
+                "title": "最近 6 个月 Tokens 消耗趋势"
+              }
+            }
+          ],
+          "intent": [
+            {
+              "intent": "trend"
+            }
+          ]
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "最近6个月Tokens消耗量的月度趋势如何?",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [
+              {
+                "metricName": "Tokens消耗量",
+                "businessDomain": "运营分析",
+                "definitionDifference": "统计期内推理与训练消耗的 Token 总量"
+              }
+            ],
+            "selectedMetric": "Tokens消耗量",
+            "selectedMetrics": [
+              "Tokens消耗量"
+            ],
+            "adHocDefinition": null
+          },
+          {
+            "type": "scope_card_presented",
+            "businessDomain": "运营分析",
+            "metricName": "Tokens消耗量",
+            "adHocDefinition": null,
+            "groupBy": [
+              "统计周期"
+            ],
+            "timeRange": "2026-03 ~ 2026-08",
+            "granularity": "month",
+            "filters": [],
+            "blockedOnConfirmation": false,
+            "dataSourceId": "result"
+          },
+          {
+            "type": "execution_started",
+            "effectiveQuery": {
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "统计周期"
+                    ],
+                    "output_metrics": [
+                      "Tokens消耗量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-03",
+                        "end": "2026-08"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "fieldMappings": {
+                "field-1": {
+                  "queryField": "统计周期",
+                  "type": "string",
+                  "role": "dimension",
+                  "label": "统计周期",
+                  "nullable": false
+                },
+                "field-2": {
+                  "queryField": "Tokens消耗量",
+                  "type": "number",
+                  "role": "measure",
+                  "label": "Tokens消耗量",
+                  "unit": "Token",
+                  "nullable": false
+                }
+              }
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "rows_ready",
+            "summary": {
+              "rowCount": 3,
+              "totalCount": 3,
+              "outputFields": [
+                "统计周期",
+                "Tokens消耗量"
+              ]
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "document_ready",
+            "components": [
+              {
+                "componentType": "lineChart",
+                "pinnedByUser": false,
+                "dataSourceId": "result",
+                "intent": "trend"
+              }
+            ],
+            "transientPageId": "ask-transient-c8e6eea8"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit",
+          "verification.verifyUnit",
+          "dqe.execute",
+          "model.decideIntent",
+          "page.assemble"
+        ],
+        "terminal": "completed",
+        "documentPresent": true,
+        "executionAttempts": 1
+      }
+    },
+    {
+      "case": "step-events-out-of-scope",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-out-of-scope",
+        "question": "上季度员工离职率是多少?",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "out_of_scope",
+              "reason": "语义面内没有员工离职率相关指标"
+            }
+          ],
+          "intent": []
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "上季度员工离职率是多少?",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [],
+            "selectedMetric": null,
+            "selectedMetrics": [],
+            "adHocDefinition": null
+          },
+          {
+            "type": "step_failed",
+            "stage": "discovery",
+            "code": "OUT_OF_SEMANTIC_SURFACE",
+            "message": "语义面内没有员工离职率相关指标"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit"
+        ],
+        "terminal": "interaction_required",
+        "documentPresent": false,
+        "executionAttempts": 0
+      }
+    },
+    {
+      "case": "step-events-execution-retry-failed",
+      "kind": "step_event_sequence",
+      "input": {
+        "runId": "conformance-execution-failed",
+        "question": "Tokens消耗量趋势",
+        "scriptedDecisions": {
+          "route": [
+            {
+              "businessDomains": [
+                "运营分析"
+              ]
+            }
+          ],
+          "unit": [
+            {
+              "outcome": "unit",
+              "unit": {
+                "businessDomain": "运营分析",
+                "metrics": [
+                  {
+                    "kind": "metric",
+                    "name": "Tokens消耗量"
+                  }
+                ],
+                "groupBy": [
+                  "统计周期"
+                ],
+                "filters": [],
+                "time": {
+                  "granularity": "month",
+                  "start": "2026-03",
+                  "end": "2026-08",
+                  "providedBy": "user"
+                },
+                "title": "最近 6 个月 Tokens 消耗趋势"
+              }
+            }
+          ],
+          "intent": []
+        },
+        "executionFailure": {
+          "code": "DQE_TRANSPORT_ERROR",
+          "message": "DQE 服务不可达"
+        }
+      },
+      "expected": {
+        "events": [
+          {
+            "type": "domain_routed",
+            "question": "Tokens消耗量趋势",
+            "routedDomains": [
+              "运营分析"
+            ],
+            "overriddenByUser": false
+          },
+          {
+            "type": "candidates_retrieved",
+            "candidates": [
+              {
+                "metricName": "Tokens消耗量",
+                "businessDomain": "运营分析",
+                "definitionDifference": "统计期内推理与训练消耗的 Token 总量"
+              }
+            ],
+            "selectedMetric": "Tokens消耗量",
+            "selectedMetrics": [
+              "Tokens消耗量"
+            ],
+            "adHocDefinition": null
+          },
+          {
+            "type": "scope_card_presented",
+            "businessDomain": "运营分析",
+            "metricName": "Tokens消耗量",
+            "adHocDefinition": null,
+            "groupBy": [
+              "统计周期"
+            ],
+            "timeRange": "2026-03 ~ 2026-08",
+            "granularity": "month",
+            "filters": [],
+            "blockedOnConfirmation": false,
+            "dataSourceId": "result"
+          },
+          {
+            "type": "execution_started",
+            "effectiveQuery": {
+              "language": "dqe",
+              "body": {
+                "dsl_list": [
+                  {
+                    "output_dims": [
+                      "统计周期"
+                    ],
+                    "output_metrics": [
+                      "Tokens消耗量"
+                    ],
+                    "filter": {
+                      "time": {
+                        "period": "month",
+                        "start": "2026-03",
+                        "end": "2026-08"
+                      },
+                      "dims": [],
+                      "metrics": []
+                    },
+                    "order": {}
+                  }
+                ]
+              },
+              "fieldMappings": {
+                "field-1": {
+                  "queryField": "统计周期",
+                  "type": "string",
+                  "role": "dimension",
+                  "label": "统计周期",
+                  "nullable": false
+                },
+                "field-2": {
+                  "queryField": "Tokens消耗量",
+                  "type": "number",
+                  "role": "measure",
+                  "label": "Tokens消耗量",
+                  "unit": "Token",
+                  "nullable": false
+                }
+              }
+            },
+            "dataSourceId": "result"
+          },
+          {
+            "type": "step_failed",
+            "stage": "execution",
+            "code": "DQE_TRANSPORT_ERROR",
+            "message": "DQE 服务不可达"
+          }
+        ],
+        "portCalls": [
+          "retrieval.domainInventory",
+          "model.routeDomains",
+          "retrieval.searchMetricCandidates",
+          "retrieval.domainSurfaces",
+          "model.formUnit",
+          "verification.verifyUnit",
+          "dqe.execute",
+          "verification.verifyUnit",
+          "dqe.execute"
+        ],
+        "terminal": "completed",
+        "documentPresent": false,
+        "executionAttempts": 2
       }
     }
   ]

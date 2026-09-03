@@ -14,7 +14,7 @@
       "required": ["implementation", "module", "dataContext"],
       "properties": {
         "implementation": { "const": "typescript" },
-        "module": { "const": "ask/retrieval+ask/model-port" },
+        "module": { "const": "ask/retrieval+ask/model-port+ask/orchestrator" },
         "dataContext": { "type": "string", "minLength": 1 }
       }
     },
@@ -28,7 +28,9 @@
       "items": {
         "oneOf": [
           { "$ref": "#/$defs/businessTermCase" },
-          { "$ref": "#/$defs/modelDecisionCase" }
+          { "$ref": "#/$defs/deterministicBusinessTermCase" },
+          { "$ref": "#/$defs/modelDecisionCase" },
+          { "$ref": "#/$defs/stepEventSequenceCase" }
         ]
       }
     }
@@ -96,6 +98,67 @@
         }
       }
     },
+    "deterministicBusinessTermCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case", "kind", "input", "expected"],
+      "properties": {
+        "case": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": { "const": "deterministic_business_terms" },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["question", "businessDomains", "now"],
+          "properties": {
+            "question": { "$ref": "#/$defs/nonEmptyString" },
+            "businessDomains": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/nonEmptyString" }
+            },
+            "now": { "type": "string", "format": "date-time" }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["resolution", "time", "intent", "structureOperation"],
+          "properties": {
+            "resolution": { "type": "object" },
+            "time": {
+              "oneOf": [
+                { "type": "null" },
+                {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["granularity", "start", "end", "providedBy"],
+                  "properties": {
+                    "granularity": { "$ref": "#/$defs/nonEmptyString" },
+                    "start": { "$ref": "#/$defs/nonEmptyString" },
+                    "end": { "$ref": "#/$defs/nonEmptyString" },
+                    "providedBy": { "const": "user" }
+                  }
+                }
+              ]
+            },
+            "intent": {
+              "oneOf": [
+                {
+                  "enum": ["comparison", "trend", "composition", "ranking", "detail", "single_value"]
+                },
+                { "type": "null" }
+              ]
+            },
+            "structureOperation": {
+              "oneOf": [
+                { "enum": ["add", "remove", "replace", "split", "merge"] },
+                { "type": "null" }
+              ]
+            }
+          }
+        }
+      }
+    },
     "modelDecisionCase": {
       "type": "object",
       "additionalProperties": false,
@@ -116,6 +179,72 @@
           }
         },
         "expected": { "type": "object" }
+      }
+    },
+    "stepEventSequenceCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["case", "kind", "input", "expected"],
+      "properties": {
+        "case": { "$ref": "#/$defs/nonEmptyString" },
+        "kind": { "const": "step_event_sequence" },
+        "input": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["runId", "question", "scriptedDecisions"],
+          "properties": {
+            "runId": { "$ref": "#/$defs/nonEmptyString" },
+            "question": { "$ref": "#/$defs/nonEmptyString" },
+            "scriptedDecisions": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["route", "unit", "intent"],
+              "properties": {
+                "route": { "type": "array", "items": { "type": "object" } },
+                "unit": { "type": "array", "items": { "type": "object" } },
+                "intent": { "type": "array", "items": { "type": "object" } }
+              }
+            },
+            "executionFailure": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["code", "message"],
+              "properties": {
+                "code": { "$ref": "#/$defs/nonEmptyString" },
+                "message": { "$ref": "#/$defs/nonEmptyString" }
+              }
+            }
+          }
+        },
+        "expected": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "events",
+            "portCalls",
+            "terminal",
+            "documentPresent",
+            "executionAttempts"
+          ],
+          "properties": {
+            "events": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["type"]
+              }
+            },
+            "portCalls": {
+              "type": "array",
+              "minItems": 1,
+              "items": { "$ref": "#/$defs/nonEmptyString" }
+            },
+            "terminal": { "enum": ["completed", "interaction_required"] },
+            "documentPresent": { "type": "boolean" },
+            "executionAttempts": { "type": "integer", "minimum": 0 }
+          }
+        }
       }
     }
   }

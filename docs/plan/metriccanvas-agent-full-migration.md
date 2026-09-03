@@ -1,7 +1,7 @@
 # MetricCanvas Agent 创作链完整迁移方案
 
-> 状态：Accepted for implementation；M0 已完成，M1 首批契约/基线与 M2 compose、指标词解析、
-> 有序并发切片已完成
+> 状态：Accepted for implementation；M0 已完成，M1 契约/基线已覆盖首批事件序列，M2 compose、
+> 指标/维度/枚举值/相对时间/意图/结构操作解析与有序并发切片已完成
 >
 > 基线日期：2026-09-03
 >
@@ -73,7 +73,7 @@
 | 缺口 | 当前事实 | 完成判据 |
 |---|---|---|
 | Agent 前半链 | Skill 没有完整状态、业务词解析、固定模型决策点、多轮 patch 和事件契约 | F01–F06 通过跨实现验收 |
-| 业务词解析 | Python 已对齐指标规范名/别名/最长命中/稳定排序/歧义；维度、取值、相对时间和操作词未完成 | 完成全部业务词类型并通过跨实现向量 |
+| 业务词解析 | Python 已对齐指标规范名/别名/最长命中/稳定排序/歧义，以及维度、封闭取值域、相对时间、分析意图和结构操作首批语法；业务域仍由结构化模型路由 | 扩充黄金问题并覆盖全部业务词反例 |
 | 临时态/资产态 | 旧 Ask 成功产出临时页面态；现 `build_page` 必然保存修订 | 按 ADR-0030 恢复两速生命周期 |
 | DQE 执行 | Core 已完成最多 6 个单元有序并发与稳定失败归因；生产 Adapter、超时/取消闭环未完成 | 真实 Adapter + 超时/取消/迟到结果验收 |
 | Data Context | 生产 Adapter 未完成 | 真实 Schema 1.1 快照并通过数据上下文契约 |
@@ -180,14 +180,16 @@ Relay Session Module 读取最新会话检查点
 
 退出条件：选定的 30–50 条黄金问题和所有 F01–F14 反例可在不调真实模型的情况下重放。
 
-状态：首批 4 份 Agent Schema、5 条 TypeScript 指标检索/消歧向量和 5 条三类模型决策向量已落地；完整 30–50 条
-黄金问题、模型决策和步骤事件序列向量仍待补齐，M1 尚未退出。
+状态：首批 4 份 Agent Schema、5 条 TypeScript 指标检索/消歧向量、10 条确定性业务词向量、5 条三类模型决策向量，
+以及由生产 TypeScript 编排器执行导出的 3 条步骤事件/Port 调用向量已落地；完整 30–50 条黄金问题和 F01–F14
+反例仍待补齐，M1 尚未退出。
 
 ### M2：Python 确定性核心补齐
 
 交付：
 
-- 迁移规范名/别名/最长命中/候选排序/歧义判定（指标部分已完成，其余业务词类型待补）。
+- 迁移规范名/别名/最长命中/候选排序/歧义判定；指标、维度、封闭取值域、相对时间、分析意图和
+  `add/remove/replace/split/merge` 结构操作的首批跨实现向量已完成，后续随黄金集补反例。
 - 补齐指标条目的可加性、时间聚合、比率、可用维度、派生指标模板和 formula 轨迹。
 - 从现在的 `build_page` 提取只返回已校验页面产物的 `compose` Interface；临时页面、会话检查点
   和资产修订的持久化不属于 Agent Core。现有 Python `PageAssetPort` 退出目标架构。
@@ -305,9 +307,11 @@ pnpm authoring:e2e:relay
 |---|---|---|
 | 无保存 compose Interface | `test_compose_page.py` | 5/5 通过；依赖仅有 Data Context 与 DQE，成功产物通过 Artifact Schema，失败在远程调用前停止；多单元有序并发且失败按最低单元序号稳定归因 |
 | 旧保存路径兼容 | `test_build_page.py` | 28/28 通过；`build_page` 已变为 compose 后保存的兼容包装 |
-| Agent 中立契约 | `test_agent_contracts.py` | 4/4 通过；业务词、三类模型决策、步骤事件和 conformance Schema 合法，事件拒绝 DQE 结果行；5 条 TS 模型决策输出通过目标闭集 Schema |
-| TS→Python 指标词解析差分 | `agent-conformance.json` + `test_business_terms.py` | 5/5 场景通过；规范名、别名、最长命中、稳定排序和并列歧义精确一致 |
-| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 57/57 通过 |
+| Agent 中立契约 | `test_agent_contracts.py` | 5/5 通过；业务词、三类模型决策、步骤事件和 conformance Schema 合法，事件拒绝 DQE 结果行；5 条 TS 模型决策输出通过目标闭集 Schema |
+| TS→Python 业务词解析差分 | `agent-conformance.json` + `test_business_terms.py` | 15 条向量逐字段一致：5 条指标规范名/别名/最长命中/排序/歧义，10 条维度/取值/相对时间/分析意图/结构操作（含跨域维度歧义） |
+| TS 生产事件序列差分基线 | `agent-conformance.json` + `test_agent_contracts.py` | 3 条生产编排实跑向量通过：成功 6 事件，面外 discovery 降级，DQE 执行失败重试 1 次；事件顺序、终态、Port 顺序与执行次数均冻结 |
+| TS 类型与旧行为回归 | `pnpm --filter platform check`；定向 Vitest | 0 error / 0 warning；检索、模型端口、编排 3 文件 25/25 通过 |
+| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 59/59 通过 |
 | Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，411 项 digest 校验通过 |
 | 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 9 项 |
 

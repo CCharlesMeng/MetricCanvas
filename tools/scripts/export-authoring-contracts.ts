@@ -4,6 +4,7 @@ import path from 'node:path';
 import {
   componentCatalog,
   ERROR_TYPES,
+  hasQueryFieldMapping,
   pageSchema,
   QUERY_ERROR_CODES,
   validate,
@@ -12,19 +13,30 @@ import {
 } from '../../packages/page/src/index.ts';
 import {
   parseDataContextSnapshot,
-  semanticSurfaceOf
+  semanticSurfaceOf,
+  type DataContextSnapshot
 } from '../../packages/mcp/src/data-context.ts';
 import {
   assembleTransientPage,
   type ExecutedDataRequestUnit
 } from '../../packages/mcp/src/authoring/assemble-page.ts';
 import type { ComponentCandidate } from '../../packages/mcp/src/authoring/auto-visualize.ts';
-import { validateUnitManifest } from '../../packages/mcp/src/authoring/unit-verification.ts';
+import {
+  createDataRequestUnitVerification,
+  validateUnitManifest
+} from '../../packages/mcp/src/authoring/unit-verification.ts';
 import {
   ANALYSIS_INTENTS,
-  type AnalysisIntent
+  type AnalysisIntent,
+  type AnalysisStepEvent
 } from '../../apps/platform/src/lib/server/session/step-event.ts';
-import type { AskDataRequestUnitState } from '../../apps/platform/src/lib/server/ask/ports.ts';
+import type {
+  AskDataRequestUnitState,
+  AskDomainRoutingDecision,
+  AskIntentDecision,
+  AskOrchestrationPorts,
+  AskUnitFormingDecision
+} from '../../apps/platform/src/lib/server/ask/ports.ts';
 import {
   canonicalizeUnit,
   deriveExecutableUnit
@@ -34,7 +46,13 @@ import {
   disambiguateCandidates
 } from '../../apps/platform/src/lib/server/ask/retrieval.ts';
 import { createModelBackedAskModel } from '../../apps/platform/src/lib/server/ask/model-port.ts';
-import type { ModelProvider } from '../../apps/platform/src/lib/server/agent/types.ts';
+import { createAskOrchestrationRunner } from '../../apps/platform/src/lib/server/ask/orchestrator.ts';
+import { resolveBusinessTerms } from '../../apps/platform/src/lib/server/ask/business-terms.ts';
+import type {
+  AgentEvent,
+  AgentMessage,
+  ModelProvider
+} from '../../apps/platform/src/lib/server/agent/types.ts';
 import { ANALYSIS_INTENT_TO_VISUALIZE } from '../../apps/platform/src/lib/server/ask/visualization-intent.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
@@ -351,19 +369,102 @@ async function buildAgentConformanceVector(): Promise<unknown> {
       };
     })
   );
-  const modelDecisionCases = await buildModelDecisionConformanceCases(
-    semanticSurfaceOf(parsed.snapshot)
-  );
+  const surfaces = semanticSurfaceOf(parsed.snapshot);
+  const deterministicBusinessTermCases = buildDeterministicBusinessTermCases(surfaces);
+  const modelDecisionCases = await buildModelDecisionConformanceCases(surfaces);
+  const stepEventCases = await buildStepEventConformanceCases(parsed.snapshot);
   return {
     formatVersion: '1.0',
     source: {
       implementation: 'typescript',
-      module: 'ask/retrieval+ask/model-port',
+      module: 'ask/retrieval+ask/model-port+ask/orchestrator',
       dataContext: dataContextRelative
     },
     dataContext: rawSnapshot,
-    cases: [...cases, ...modelDecisionCases]
+    cases: [
+      ...cases,
+      ...deterministicBusinessTermCases,
+      ...modelDecisionCases,
+      ...stepEventCases
+    ]
   };
+}
+
+function buildDeterministicBusinessTermCases(
+  surfaces: ReturnType<typeof semanticSurfaceOf>
+): unknown[] {
+  const definitions = [
+    {
+      case: 'terms-dimension-alias-recent-time-trend',
+      question: '最近6个月按大区看Tokens消耗量趋势',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-value-previous-month',
+      question: '上个月华东的Tokens请求量是多少',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-dimension-half-year-ranking',
+      question: '2025年下半年各模型系列调用次数排行前10',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-current-year-composition',
+      question: '今年各区域客户数占比',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-cross-domain-dimension-ambiguity',
+      question: '按统计周期看客户数',
+      businessDomains: ['运营分析', '客户经营']
+    },
+    {
+      case: 'terms-add-operation',
+      question: '新增一个华南的Tokens请求量图表',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-remove-operation',
+      question: '删除这个图表',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-replace-detail',
+      question: '换成明细列表',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-split-operation',
+      question: '拆成两个图表分别展示',
+      businessDomains: ['运营分析']
+    },
+    {
+      case: 'terms-merge-operation',
+      question: '合并放到一张图',
+      businessDomains: ['运营分析']
+    }
+  ];
+  const now = '2026-08-13T08:00:00.000Z';
+  return definitions.map((definition) => {
+    const selectedSurfaces = surfaces.filter((surface) =>
+      definition.businessDomains.includes(surface.businessDomain)
+    );
+    return {
+      case: definition.case,
+      kind: 'deterministic_business_terms',
+      input: {
+        question: definition.question,
+        businessDomains: definition.businessDomains,
+        now
+      },
+      expected: resolveBusinessTerms({
+        question: definition.question,
+        surfaces: selectedSurfaces,
+        clock: () => new Date(now)
+      })
+    };
+  });
 }
 
 async function buildModelDecisionConformanceCases(
@@ -485,6 +586,203 @@ async function buildModelDecisionConformanceCases(
       (model) => model.decideIntent({ question: unit.title ?? '', unit, previousIntent: null })
     )
   ]);
+}
+
+interface StepEventScenario {
+  case: string;
+  runId: string;
+  question: string;
+  route: AskDomainRoutingDecision[];
+  unit: AskUnitFormingDecision[];
+  intent?: AskIntentDecision[];
+  executionFailure?: { code: string; message: string };
+}
+
+/**
+ * Persisted step-event vectors are executed through the production TypeScript
+ * orchestrator.  The exported sequence therefore freezes observable ordering,
+ * failure classification, retries and Port-call order without copying those
+ * rules into the exporter.
+ */
+async function buildStepEventConformanceCases(
+  snapshot: DataContextSnapshot
+): Promise<unknown[]> {
+  const trendUnit: AskDataRequestUnitState = {
+    businessDomain: '运营分析',
+    metrics: [{ kind: 'metric', name: 'Tokens消耗量' }],
+    groupBy: ['统计周期'],
+    filters: [],
+    time: {
+      granularity: 'month',
+      start: '2026-03',
+      end: '2026-08',
+      providedBy: 'user'
+    },
+    title: '最近 6 个月 Tokens 消耗趋势'
+  };
+  const scenarios: StepEventScenario[] = [
+    {
+      case: 'step-events-success',
+      runId: 'conformance-success',
+      question: '最近6个月Tokens消耗量的月度趋势如何?',
+      route: [{ businessDomains: ['运营分析'] }],
+      unit: [{ outcome: 'unit', unit: trendUnit }],
+      intent: [{ intent: 'trend' }]
+    },
+    {
+      case: 'step-events-out-of-scope',
+      runId: 'conformance-out-of-scope',
+      question: '上季度员工离职率是多少?',
+      route: [{ businessDomains: ['运营分析'] }],
+      unit: [
+        {
+          outcome: 'out_of_scope',
+          reason: '语义面内没有员工离职率相关指标'
+        }
+      ]
+    },
+    {
+      case: 'step-events-execution-retry-failed',
+      runId: 'conformance-execution-failed',
+      question: 'Tokens消耗量趋势',
+      route: [{ businessDomains: ['运营分析'] }],
+      unit: [{ outcome: 'unit', unit: trendUnit }],
+      executionFailure: {
+        code: 'DQE_TRANSPORT_ERROR',
+        message: 'DQE 服务不可达'
+      }
+    }
+  ];
+  return Promise.all(
+    scenarios.map(async (scenario) => {
+      const output = await runStepEventScenario(snapshot, scenario);
+      return {
+        case: scenario.case,
+        kind: 'step_event_sequence',
+        input: {
+          runId: scenario.runId,
+          question: scenario.question,
+          scriptedDecisions: {
+            route: scenario.route,
+            unit: scenario.unit,
+            intent: scenario.intent ?? []
+          },
+          ...(scenario.executionFailure === undefined
+            ? {}
+            : { executionFailure: scenario.executionFailure })
+        },
+        expected: output
+      };
+    })
+  );
+}
+
+async function runStepEventScenario(
+  snapshot: DataContextSnapshot,
+  scenario: StepEventScenario
+): Promise<{
+  events: AnalysisStepEvent[];
+  portCalls: string[];
+  terminal: 'completed' | 'interaction_required';
+  documentPresent: boolean;
+  executionAttempts: number;
+}> {
+  const trace: string[] = [];
+  const route = [...scenario.route];
+  const unit = [...scenario.unit];
+  const intent = [...(scenario.intent ?? [])];
+  const take = <T>(queue: T[], stage: string): T => {
+    const decision = queue.shift();
+    if (decision === undefined) {
+      throw new Error(`${scenario.case}:${stage} scripted decision exhausted`);
+    }
+    return decision;
+  };
+  const baseRetrieval = createSnapshotAskRetrieval({ current: async () => snapshot });
+  const dataContext = { current: async () => snapshot };
+  let executionAttempts = 0;
+  const verifyUnit = createDataRequestUnitVerification({
+    dataContext,
+    executeDataRequestUnitQuery: async (query) => {
+      trace.push('dqe.execute');
+      executionAttempts += 1;
+      if (scenario.executionFailure !== undefined) {
+        throw Object.assign(new Error(scenario.executionFailure.message), {
+          code: scenario.executionFailure.code
+        });
+      }
+      const rows: DataRow[] = Array.from({ length: 3 }, (_, index) => {
+        const row: DataRow = {};
+        for (const definition of Object.values(query.fieldMappings)) {
+          if (definition.role === 'detail' || !hasQueryFieldMapping(definition)) continue;
+          row[definition.queryField] =
+            definition.role === 'measure'
+              ? (index + 1) * 10
+              : definition.type === 'date'
+                ? `2026-0${index + 3}-01`
+                : `${definition.queryField}-${index + 1}`;
+        }
+        return row;
+      });
+      return { rows, totalCount: rows.length };
+    }
+  });
+  const ports: AskOrchestrationPorts = {
+    model: {
+      async routeDomains() {
+        trace.push('model.routeDomains');
+        return take(route, 'routeDomains');
+      },
+      async formUnit() {
+        trace.push('model.formUnit');
+        return take(unit, 'formUnit');
+      },
+      async decideIntent() {
+        trace.push('model.decideIntent');
+        return take(intent, 'decideIntent');
+      }
+    },
+    retrieval: {
+      async domainInventory() {
+        trace.push('retrieval.domainInventory');
+        return baseRetrieval.domainInventory();
+      },
+      async domainSurfaces(businessDomains) {
+        trace.push('retrieval.domainSurfaces');
+        return baseRetrieval.domainSurfaces(businessDomains);
+      },
+      async searchMetricCandidates(input) {
+        trace.push('retrieval.searchMetricCandidates');
+        return baseRetrieval.searchMetricCandidates(input);
+      }
+    },
+    async verifyUnit(input) {
+      trace.push('verification.verifyUnit');
+      return verifyUnit(input);
+    },
+    assemblePage(input) {
+      trace.push('page.assemble');
+      return assembleTransientPage(input);
+    },
+    clock: () => new Date('2026-08-13T08:00:00.000Z')
+  };
+  const runner = createAskOrchestrationRunner(ports, { runId: scenario.runId });
+  const messages: AgentMessage[] = [{ role: 'user', content: scenario.question }];
+  const emitted: AgentEvent[] = [];
+  for await (const event of runner.run({ messages })) emitted.push(event);
+  const events = emitted.flatMap((event) => (event.type === 'step' ? [event.event] : []));
+  const interaction = emitted.find((event) => event.type === 'interaction_required');
+  const completed = [...emitted].reverse().find((event) => event.type === 'completed');
+  if (interaction === undefined && completed === undefined) {
+    throw new Error(`${scenario.case}:orchestrator produced no terminal event`);
+  }
+  return {
+    events,
+    portCalls: trace,
+    terminal: interaction === undefined ? 'completed' : 'interaction_required',
+    documentPresent: completed?.type === 'completed' && completed.document != null,
+    executionAttempts
+  };
 }
 
 type ConformanceUnit = AskDataRequestUnitState & {

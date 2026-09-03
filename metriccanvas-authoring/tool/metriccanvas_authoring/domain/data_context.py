@@ -53,6 +53,17 @@ class MetricEntry:
 
 
 @dataclass(frozen=True, slots=True)
+class DimensionEntry:
+    business_domain: str
+    name: str
+    definition: str
+    aliases: tuple[str, ...]
+    values: tuple[str, ...] | None
+    granularities: tuple[str, ...]
+    is_time: bool
+
+
+@dataclass(frozen=True, slots=True)
 class SemanticSurface:
     business_domain: str
     metrics_by_name: Mapping[str, SemanticMetric]
@@ -76,6 +87,7 @@ class DataContext:
     version: str
     surfaces_by_domain: Mapping[str, SemanticSurface]
     metric_entries: tuple[MetricEntry, ...]
+    dimension_entries: tuple[DimensionEntry, ...]
     search_candidates: tuple[SearchCandidate, ...]
 
     def surface(self, business_domain: str) -> SemanticSurface | None:
@@ -113,6 +125,7 @@ def parse_data_context(
     snapshot = _mapping(value)
     surfaces: dict[str, SemanticSurface] = {}
     metric_entries: list[MetricEntry] = []
+    dimension_entries: list[DimensionEntry] = []
     search_candidates: list[SearchCandidate] = []
     for raw_environment in _sequence(snapshot["executionEnvironments"]):
         environment = _mapping(raw_environment)
@@ -141,6 +154,7 @@ def parse_data_context(
             surface = _project_surface(data_schema)
             surfaces.setdefault(surface.business_domain, surface)
             metric_entries.extend(_metric_entries_for_schema(data_schema))
+            dimension_entries.extend(_dimension_entries_for_schema(data_schema))
             search_candidates.extend(
                 _search_candidates_for_schema(environment_id, data_schema)
             )
@@ -149,6 +163,7 @@ def parse_data_context(
             version=str(snapshot["version"]),
             surfaces_by_domain=surfaces,
             metric_entries=tuple(metric_entries),
+            dimension_entries=tuple(dimension_entries),
             search_candidates=tuple(search_candidates),
         ),
         (),
@@ -168,6 +183,47 @@ def _metric_entries_for_schema(schema: Mapping[str, Any]) -> list[MetricEntry]:
         for raw_metric in _sequence(schema["metrics"])
         for metric in [_mapping(raw_metric)]
     ]
+
+
+def _dimension_entries_for_schema(
+    schema: Mapping[str, Any],
+) -> list[DimensionEntry]:
+    business_domain = str(schema["name"])
+    entries: list[DimensionEntry] = []
+    for raw_object in _sequence(schema["objects"]):
+        data_object = _mapping(raw_object)
+        for raw_field in _sequence(data_object["fields"]):
+            field = _mapping(raw_field)
+            role_hints = {str(value) for value in _sequence(field["roleHints"])}
+            is_time = "time" in role_hints
+            if not is_time and "dimension" not in role_hints:
+                continue
+            entries.append(
+                DimensionEntry(
+                    business_domain=business_domain,
+                    name=str(field["name"]),
+                    definition=str(field["description"]),
+                    aliases=tuple(
+                        str(alias) for alias in _sequence(field.get("aliases", []))
+                    ),
+                    values=(
+                        None
+                        if bool(field["sensitive"]) or is_time
+                        else _parse_value_domain(str(field["description"]))
+                    ),
+                    granularities=(
+                        tuple(
+                            part.strip()
+                            for part in str(field.get("granularity", "")).split(",")
+                            if part.strip()
+                        )
+                        if is_time
+                        else ()
+                    ),
+                    is_time=is_time,
+                )
+            )
+    return entries
 
 
 def _project_surface(schema: Mapping[str, Any]) -> SemanticSurface:
