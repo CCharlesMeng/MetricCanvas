@@ -4,8 +4,8 @@
 > Python 指标词解析切片已落地（2026-09-03）；
 > Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
 > Java J4 已完成（2026-09-03）并顺带落了 A1 的幂等键派生 / `skillVersion` 与 A2 的 `IdentityPort`
-> 首个 Adapter（见下方接线切片节的 J4 交叉登记）；`build_page` 暂作兼容包装，
-> `compose_page` 等待 Relay artifact 双通道后才对真实模型开放
+> 首个 Adapter（见下方接线切片节的 J4 交叉登记）；`build_page` 暂作兼容包装；
+> `compose_page` 已在显式 Relay 工具面注册，但仍等待 Relay artifact 双通道后才可对真实模型开放
 >
 > 决策：[ADR-0061](../adr/0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、
 > [ADR-0063](../adr/0063-relay-dqe-facts-revise-authoring-boundaries.md)、
@@ -189,8 +189,10 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 `dataContextVersion` 和 Bundle 版本；其依赖只有 Data Context 与 DQE 两个 Port。
 多个取数单元已改为最多 6 个有序并发执行：并发完成顺序不改变产物顺序，多个失败按最低单元序号稳定归因。
 原 `build_page` 改为薄兼容包装，在 compose 成功后才执行旧 Java 保存路径。
-生产 MCP/Skill 尚未改名：Relay 必须先提供完整 artifact 写检查点、脱敏摘要回模型的双通道，
-否则当前 Relay 会把完整页面与初始数据行重新送入模型上下文。
+FastMCP 已提供互斥的 compatibility 与 Relay 工具面，目标 Skill 已改用 `compose_page`，并写明
+MCP 注册、精确调用契约、九阶段状态机和安全失败条件。Relay 必须先提供完整 artifact 写检查点、
+脱敏摘要回模型的双通道，才可把 Relay 工具面对真实模型开放；否则当前 Relay 会把完整页面与初始
+数据行重新送入模型上下文。
 
 ## 接线切片（依据 ADR-0063）
 

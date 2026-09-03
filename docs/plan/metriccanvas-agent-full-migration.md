@@ -63,8 +63,9 @@
   → 意图判定与组件选择 → 呈现。
 - 只有三类结构化模型决策：`routeDomains`、`formUnit`、`decideIntent`；检索、
   消歧、清单校验、DQE 执行、组件硬闸和页面装配是确定性行为。
-- Python Bundle S0–S4 已有 `discover_data_context` 和 `build_page` 两个模型可见工具，
-  但当前 Skill 只是 6 步建议流程，并未强制 TypeScript 状态机的全部约束。
+- Python Bundle 的 compatibility 工具面保留 `discover_data_context` 和 `build_page`；Relay 目标工具面已改为
+  `discover_data_context` 和 `compose_page`。目标 Skill 已写明注册前提、工具调用契约、九阶段状态机与多轮语义，
+  但当前 Relay 仍未用固定工作流执行器强制这些步骤。
 - Python `compose` 已能从 Page Build Spec 派生查询、对最多 6 个单元有序并发执行 DQE、
   装配并校验页面文档；当前 `build_page` 兼容包装在 compose 成功后继续调用 Java 保存页面修订。
 
@@ -72,7 +73,7 @@
 
 | 缺口 | 当前事实 | 完成判据 |
 |---|---|---|
-| Agent 前半链 | Skill 没有完整状态、业务词解析、固定模型决策点、多轮 patch 和事件契约 | F01–F06 通过跨实现验收 |
+| Agent 前半链 | Skill 已描述业务词拆分、三类模型决策、九阶段状态与多轮 patch；Relay 仍缺固定工作流强制和步骤事件持久化 | F01–F06 通过跨实现验收 |
 | 业务词解析 | Python 已对齐指标规范名/别名/最长命中/稳定排序/歧义，以及维度、封闭取值域、相对时间、分析意图和结构操作首批语法；业务域仍由结构化模型路由 | 扩充黄金问题并覆盖全部业务词反例 |
 | 临时态/资产态 | 旧 Ask 成功产出临时页面态；现 `build_page` 必然保存修订 | 按 ADR-0030 恢复两速生命周期 |
 | DQE 执行 | Core 已完成最多 6 个单元有序并发与稳定失败归因；生产 Adapter、超时/取消闭环未完成 | 真实 Adapter + 超时/取消/迟到结果验收 |
@@ -329,8 +330,8 @@ pnpm authoring:e2e:relay
 | TS 生产事件序列差分基线 | `agent-conformance.json` + `test_agent_contracts.py` | 3 条生产编排实跑向量通过：成功 6 事件，面外 discovery 降级，DQE 执行失败重试 1 次；事件顺序、终态、Port 顺序与执行次数均冻结 |
 | TS 类型与旧行为回归 | `pnpm --filter platform check`；定向 Vitest | 0 error / 0 warning；检索、模型端口、编排 3 文件 25/25 通过 |
 | Relay 双工具面与 Artifact 信封 | `test_stdio.py` | compatibility 面仍为 discover/build；Relay 面严格为 discover/compose；成功信封通过 Schema，摘要递归拒绝 document/rows/initial，失败不带 Artifact |
-| Relay 目标 Skill | `quick_validate.py` + `test_skill_contract.py` | frontmatter 合法；工具白名单、三类模型决策、临时页完成条件与显式沉淀边界被测试锁定 |
-| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 64/64 通过 |
+| Relay 目标 Skill | `quick_validate.py` + `test_skill_contract.py` | frontmatter 合法；Relay MCP 注册前提、两个工具的调用契约、三类模型决策与工具的区分、九阶段状态机、临时页完成条件和显式沉淀边界被测试锁定 |
+| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 67/67 通过 |
 | Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，415 项 digest 校验通过 |
 | 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 10 项 |
 
