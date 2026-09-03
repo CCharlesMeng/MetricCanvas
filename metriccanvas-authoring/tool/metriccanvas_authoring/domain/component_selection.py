@@ -3,11 +3,12 @@ from __future__ import annotations
 import json
 from dataclasses import dataclass
 from functools import lru_cache
-from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from metriccanvas_authoring.runtime_assets import bundle_root
 
-BUNDLE_ROOT = Path(__file__).resolve().parents[3]
+
+BUNDLE_ROOT = bundle_root()
 COMPONENT_CATALOG = (
     BUNDLE_ROOT / "contract-snapshot" / "page" / "component-catalog.json"
 )

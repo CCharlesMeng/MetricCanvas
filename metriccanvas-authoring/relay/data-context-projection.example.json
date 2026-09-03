@@ -1,0 +1,41 @@
+{
+  "environment": {
+    "id": "dqe-primary",
+    "name": "MetricCanvas DQE",
+    "endpointRef": "dqe-primary",
+    "description": "MetricCanvas 创作期 DQE 执行环境",
+    "constraints": {
+      "readOnly": true,
+      "maxRows": 1000,
+      "maxColumns": 20,
+      "maxQueriesPerBatch": 6,
+      "timeoutMs": 20000
+    },
+    "security": {
+      "scope": "authoring-service-state",
+      "notes": ["生产上线前必须替换为 Relay 注入的按用户身份"]
+    }
+  },
+  "defaults": {
+    "nullable": false,
+    "sensitive": false
+  },
+  "metricGovernance": {
+    "<dataset-id>": {
+      "<metric-name>": {
+        "additivity": "不可加",
+        "timeAggregation": "期末值",
+        "isRatio": false
+      }
+    }
+  },
+  "fieldGovernance": {
+    "<dataset-id>": {
+      "<dimension-name>": {
+        "type": "string",
+        "nullable": false,
+        "sensitive": false
+      }
+    }
+  }
+}

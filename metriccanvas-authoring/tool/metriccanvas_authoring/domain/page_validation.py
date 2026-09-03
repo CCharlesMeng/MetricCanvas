@@ -4,14 +4,15 @@ import json
 import re
 from dataclasses import asdict, dataclass
 from datetime import date
-from pathlib import Path
 from typing import Any, Mapping
 
 from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
+from metriccanvas_authoring.runtime_assets import bundle_root
 
-BUNDLE_ROOT = Path(__file__).resolve().parents[3]
+
+BUNDLE_ROOT = bundle_root()
 PRODUCT_CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 DATETIME_PATTERN = re.compile(
     r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}"

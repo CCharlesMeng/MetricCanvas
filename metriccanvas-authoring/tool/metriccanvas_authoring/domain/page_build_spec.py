@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 from dataclasses import asdict, dataclass
-from pathlib import Path
 from typing import Any
 
 from jsonschema import Draft202012Validator
 
+from metriccanvas_authoring.runtime_assets import bundle_root
 
-BUNDLE_ROOT = Path(__file__).resolve().parents[3]
+
+BUNDLE_ROOT = bundle_root()
 AUTHORING_CONTRACT_ROOT = BUNDLE_ROOT / "contracts"
 PRODUCT_CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 

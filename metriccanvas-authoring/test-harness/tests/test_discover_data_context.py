@@ -83,6 +83,28 @@ class DiscoverDataContextHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(secret_result.matches, ())
         self.assertEqual(data_context.calls, 2)
 
+    async def test_full_question_falls_back_to_deterministic_term_resolution(self) -> None:
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        discover = create_discover_data_context(
+            DiscoverDataContextDependencies(data_context=data_context)
+        )
+
+        result = await discover(
+            DiscoverDataContextCommand(
+                query="上个月各区域 Tokens请求量趋势",
+                limit=10,
+            )
+        )
+
+        self.assertTrue(result.ok)
+        self.assertEqual(
+            [match["kind"] for match in result.matches],
+            ["metric", "field", "field"],
+        )
+        self.assertEqual(result.matches[0]["metric"]["name"], "Tokens请求量")
+        self.assertEqual(result.matches[1]["field"]["name"], "区域")
+        self.assertEqual(result.matches[2]["field"]["name"], "统计周期")
+
 
 if __name__ == "__main__":
     unittest.main()

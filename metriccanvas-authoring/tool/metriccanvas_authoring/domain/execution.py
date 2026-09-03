@@ -25,6 +25,14 @@ RUNTIME_QUERY_ERROR_STAGES: Mapping[str, FailureStage] = {
 }
 
 
+class DqeExecutionError(Exception):
+    """Stable DQE failure surfaced through the authoring application boundary."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 @dataclass(frozen=True, slots=True)
 class DqeExecutionResult:
     """Normalized DQE rows plus the capture facts needed by Page assembly."""

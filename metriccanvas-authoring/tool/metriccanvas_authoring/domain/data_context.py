@@ -4,14 +4,15 @@ import json
 import re
 from copy import deepcopy
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Mapping, Sequence
 
 from jsonschema import Draft202012Validator, FormatChecker
 from jsonschema.exceptions import ValidationError
 
+from metriccanvas_authoring.runtime_assets import bundle_root
 
-BUNDLE_ROOT = Path(__file__).resolve().parents[3]
+
+BUNDLE_ROOT = bundle_root()
 DATA_CONTEXT_SCHEMA = BUNDLE_ROOT / "contract-snapshot" / "data-context" / "schema.json"
 VALUE_DOMAIN_PATTERN = re.compile(r"取值域[:：]([^。]+)")
 

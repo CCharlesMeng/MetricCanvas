@@ -243,6 +243,12 @@ Relay Page Artifact Adapter 的最小实现顺序固定为：
 
 退出条件：真实数据上下文、真实 DQE、Java 保存和多用户权限测试全部通过。
 
+当前状态（2026-09-03）：Bundle 侧的 `pyproject.toml`、自包含契约的 sdist、
+`uvx` stdio 启动、Relay MCP 配置、DQE HTTP Adapter 和 Lab Data Context HTTP
+Adapter 已完成并经 Harness 验证。维度取值中心已保留 `DimensionValuePort`，
+但仓内没有真实 MetricService URL/DTO，因此没有伪造 HTTP Adapter。M4 仍未退出：
+需真实元数据/DQE 环境、Relay 按用户身份注入和多用户权限实证。
+
 ### M5：Chat、事件、Relay 会话与恢复
 
 交付：
@@ -331,11 +337,17 @@ pnpm authoring:e2e:relay
 | TS 类型与旧行为回归 | `pnpm --filter platform check`；定向 Vitest | 0 error / 0 warning；检索、模型端口、编排 3 文件 25/25 通过 |
 | Relay 双工具面与 Artifact 信封 | `test_stdio.py` | compatibility 面仍为 discover/build；Relay 面严格为 discover/compose；成功信封通过 Schema，摘要递归拒绝 document/rows/initial，失败不带 Artifact |
 | Relay 目标 Skill | `quick_validate.py` + `test_skill_contract.py` | frontmatter 合法；Relay MCP 注册前提、两个工具的调用契约、三类模型决策与工具的区分、九阶段状态机、临时页完成条件和显式沉淀边界被测试锁定 |
-| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 67/67 通过 |
-| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，415 项 digest 校验通过 |
+| 整句业务词兜底 | `test_discover_data_context.py` | 模型未按 Skill 拆词而传入整句时，Tool 调用已迁移的确定性指标/维度/时间词解析，再返回受治理候选；逐词调用行为不变 |
+| DQE 生产 Adapter | `test_dqe_http.py` | 10 项验证请求体/三身份头、成功归一化、HTTP/条目错误映射、超时/网络分类、字段与行契约、权限提示 |
+| Data Context 生产 Adapter | `test_data_context_http.py` | 5 项验证 Lab 列表/详情请求、Schema 1.1 投影、`update_date` 摘要、失败关闭、超时/网络分类和 `DimensionValuePort` 富化 |
+| 生产组合根失败契约 | `test_server_config.py` | 3 项验证缺少 Data Context/DQE 配置和无效投影文件不会阻止 MCP 启动，调用时返回稳定结构化错误 |
+| sdist / Relay 启动 | `uv build --sdist` + `METRICCANVAS_TOOL_SURFACE=relay uvx --from <local.tar.gz> metriccanvas-authoring` | sdist 二次构建 wheel 成功；内含运行时契约、DQE/Data Context Adapter；FastMCP 3.4.7 stdio 启动成功 |
+| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 89/89 通过 |
+| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，426 项 digest 校验通过 |
 | 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 10 项 |
 
-这组证据只证明 M1/M2 首批切片和 M3 的 Bundle 侧 Relay 接缝，不代表 M1、M2、M3 或整体迁移完成；
+这组证据证明 M1/M2 首批切片、M3 的 Bundle 侧 Relay 接缝和 M4 的
+Bundle 侧 Adapter/分发包；不代表 M1、M2、M3、M4 或整体迁移完成；
 compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `discover_data_context` 与 `compose_page`。
 真正切换前仍需 Relay Page Artifact Adapter 在 Relay 进程内隔离完整页面产物与模型摘要。
 

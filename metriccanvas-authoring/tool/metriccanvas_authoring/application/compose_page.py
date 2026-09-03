@@ -7,7 +7,11 @@ from dataclasses import dataclass
 from typing import Any, Mapping
 
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.application.ports import DataContextPort, DqeExecutionPort
+from metriccanvas_authoring.application.ports import (
+    DataContextError,
+    DataContextPort,
+    DqeExecutionPort,
+)
 from metriccanvas_authoring.domain.data_context import parse_data_context
 from metriccanvas_authoring.domain.execution import (
     FailureStage,
@@ -102,7 +106,20 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                 ),
             )
 
-        data_context_snapshot = await dependencies.data_context.current()
+        try:
+            data_context_snapshot = await dependencies.data_context.current()
+        except DataContextError as error:
+            return ComposePageResult(
+                ok=False,
+                issues=(
+                    ComposePageIssue(
+                        error.code,
+                        "",
+                        str(error),
+                        stage="discovery",
+                    ),
+                ),
+            )
         data_context, data_context_issues = parse_data_context(data_context_snapshot)
         if data_context_issues:
             return ComposePageResult(

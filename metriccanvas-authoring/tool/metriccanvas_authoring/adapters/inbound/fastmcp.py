@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Annotated, Any, Literal
 
 from fastmcp import Context, FastMCP
@@ -24,9 +23,10 @@ from metriccanvas_authoring.application.discover_data_context import (
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
+from metriccanvas_authoring.runtime_assets import bundle_root
 
 
-BUNDLE_ROOT = Path(__file__).resolve().parents[4]
+BUNDLE_ROOT = bundle_root()
 PAGE_BUILD_SPEC_SCHEMA = json.loads(
     (
         BUNDLE_ROOT

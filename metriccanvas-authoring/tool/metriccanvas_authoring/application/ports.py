@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Mapping, Protocol
+from typing import Any, Mapping, Protocol, Sequence
 
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
@@ -45,8 +45,24 @@ class PageAssetError(Exception):
         self.status = status
 
 
+class DataContextError(Exception):
+    """Stable failure while loading or normalizing governed metadata."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 class DataContextPort(Protocol):
     async def current(self) -> JsonObject: ...
+
+
+class DimensionValuePort(Protocol):
+    """Optional MetricService seam; Lab does not provide dimension values."""
+
+    async def values_for(
+        self, dataset_id: str, dimensions: Sequence[str]
+    ) -> Mapping[str, Sequence[str]]: ...
 
 
 class DqeExecutionPort(Protocol):

@@ -2,7 +2,8 @@
 
 > 状态：S4 已完成；S5 首个无保存 `compose` Core/有序并发切片与 M1 首批 Agent 契约、
 > Python 指标词解析切片已落地（2026-09-03）；
-> Relay 与 DQE 事实已到（2026-09-02），接线切片 A1–A3 可开工；
+> Bundle 侧 A1–A3 可独立实现部分已落地（2026-09-03）：sdist/uvx、Relay MCP
+> 配置、DQE HTTP Adapter、Lab Data Context HTTP Adapter 和投影治理闸；
 > Java J4 已完成（2026-09-03）并顺带落了 A1 的幂等键派生 / `skillVersion` 与 A2 的 `IdentityPort`
 > 首个 Adapter（见下方接线切片节的 J4 交叉登记）；`build_page` 暂作兼容包装；
 > `compose_page` 已在显式 Relay 工具面注册，但仍等待 Relay artifact 双通道后才可对真实模型开放
@@ -31,7 +32,8 @@ Tool、Interface contracts 和锁定产品契约快照的原子发布容器，�
 - `pageId` 与幂等键属于 `build_page` command envelope，不进入 Page Build Spec；精确基线修订
   仍随修订场景放在 Page Build Spec 中。
 - Python 不持久化 Relay Session/Run 或临时页面检查点，不直连 MySQL，不复制 Java 页面资产事务或 DQE 内部逻辑。
-- Bundle 使用 Python 3.12+ 脚本目录交付，不构建 wheel；依赖版本锁定。
+- Bundle 使用 Python 3.12+ sdist 交付，不发布到公共索引；Relay 以
+  `uvx --from <tar.gz>` 构建临时 wheel 并启动，依赖版本锁定。
 - 产品规则由仓根中立契约导出物承载，Bundle 只消费锁定快照，不手抄第二份规则清单。
 - 内网鉴权与身份接入由后续内网对接方案承担，不进入本 Bundle 的设计与排期。
 
@@ -182,7 +184,8 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 完成条件：目标创作链不执行 TypeScript/Node 服务端代码，冻结向量仍能在 CI 复现。
 
-状态：等价向量已冻结；Java J4 已完成，切换等待下列接线切片 A1–A3 完成。
+状态：等价向量已冻结；Java J4 已完成；A1–A3 的 Bundle 代码与
+Harness 已完成，切换等待真实 Relay/模型/元数据/DQE 环境验收与按用户身份。
 
 首个实现切片（2026-09-03）：新增 `application.compose_page` 与
 `page-build-artifact.schema.json`，成功结果包含已校验页面文档、文档 SHA-256、
@@ -211,8 +214,9 @@ MCP 注册、精确调用契约、九阶段状态机和安全失败条件。Rela
 - Java 侧指纹据纵切修正为只覆盖 `pageId` / `baseRevisionId` / `document`：Relay 一次性子进程重试时
   `sessionId` 必然不同，若进指纹会让 ADR-0063 预期的"重试命中幂等"变成 `IDEMPOTENCY_CONFLICT`。
 
-Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待外部输入；外部前置只剩
-测试环境地址、账号与 LiteLLM key 的线下获取。
+Relay 与 DQE 的真实接口已由调查报告确认。外部前置仍有：测试环境地址、
+账号与 LiteLLM key，Relay 仓内 Artifact Adapter/固定编排，以及 MetricService
+维度取值的真实 URL/DTO 契约；Bundle 内可独立完成的部分见下方勾选项。
 
 已知欠账（J1 扩充 conformance 向量后暴露）：Python `validate_page_document` 只对齐 21/154 个
 反例，且误拒含 detail 角色字段或分组查询字段的合法页面；未对齐项见
@@ -221,33 +225,46 @@ Relay 与 DQE 的真实接口已由调查报告确认，以下切片不再等待
 
 ### A1：Relay 适配
 
-- `SKILL.md` 增加 frontmatter：`name`、`description`、`allowed-tools`、`metadata.mcp_servers`。
-- `tool/` 增加 `pyproject.toml`，Bundle 发布产物包含 sdist tar.gz；提供 Relay stdio
-  MCP config 样例（`uvx --from <tar.gz>`）。
+- [x] `SKILL.md` 含 `name`、`description`、`allowed-tools`、`metadata.mcp_servers`，
+  并写明 sdist 注册、两个工具的精确调用和外部 Adapter 前提。
+- [x] `tool/pyproject.toml` 构建自包含运行时契约的 sdist；
+  `relay/mcp_configs/metriccanvas-authoring.json` 以 `uvx --from <tar.gz>` 启动。
 - ~~`build_page` 幂等键改为 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))`；
   `source.relay.skillVersion` 取自 `bundle.json`，`sessionId` / `runId` 可选。~~ 已由 J4 完成（见上）；
-  A1 只剩确认 Relay 是否能把 `runId` 递到工具调用。
-- 在本地 Relay 环境用真实 LiteLLM/GLM 跑一次黄金场景，验证 inputSchema 深度可接受、
-  `build_page` 响应 ≤ 30s。
+  `runId` 的 Relay 透传仍是外部验收项。
+- [ ] 确认 Relay 是否能把 `runId` 递到工具调用。
+- [ ] 在本地 Relay 环境用真实 LiteLLM/GLM 跑一次黄金场景，验证 inputSchema 深度可接受、
+  `compose_page` 响应 ≤ 30s。
 
-完成条件：本地 Relay 以 `role_name` 唤起 Skill，真实模型经 MCP 调到 Tool 并拿到修订标识。
+本仓证据：`uv build --sdist` 成功，并以
+`METRICCANVAS_TOOL_SURFACE=relay uvx --from <local.tar.gz> metriccanvas-authoring`
+完成安装与 stdio 启动。
+
+完成条件：本地 Relay 以 `role_name` 唤起 Skill，真实模型经 MCP 调到 Tool，
+Page Artifact Adapter 写入会话检查点并只向模型返回安全摘要。
 
 ### A2：身份与 DQE Adapter
 
 - ~~`IdentityPort`：第一个 Adapter 从 MCP config `env` 读取服务态 `X-Auth-Token` /
   `X-Operator-Id`；ADR-0063 明确这不是生产形态。~~ 已由 J4 完成（`env_identity.py`），DQE Adapter 复用。
-- `DqeExecutionPort` 生产 Adapter：`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
+- [x] `DqeExecutionPort` 生产 Adapter：`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`，
   错误码按 ADR-0063 映射，多取数单元并发执行；永不直连 Lab。
-- 无权限时的可行动提示由配置文案承载。
+- [x] 无权限时的可行动提示由
+  `METRICCANVAS_DQE_FORBIDDEN_HINT` 部署配置承载，不改变 `DQE_FORBIDDEN` 错误分类。
 
 完成条件：Harness 与真实测试环境各有一条 DQE 执行验收；错误分类与产品契约一致。
 
 ### A3：Data Context Adapter
 
-- `DataContextPort` 生产 Adapter：Lab 数据集列表/详情 → Schema 1.1；`isAgg` / `aggregator`
-  映射可加性，"是否比率"与"时间聚合方式"记为缺失；维度取值域走指标/维度中心；
-  `dataContextVersion` 为数据集 `updateDate` 摘要；已验证查询为空。
-- 发现全量、执行按身份，按 ADR-0063 登记。
+- [x] `DataContextPort` 生产 Adapter：Lab 数据集列表/详情 → Schema 1.1；
+  `isAgg` / `aggregator` 映射可加性与可证时间聚合；`dataContextVersion` 为
+  数据集 `update_date` 摘要；已验证查询为空。
+- [x] Lab 没有明示而 Schema 1.1 必填的 `isRatio` / `nullable` / `sensitive`
+  通过外部投影治理配置补足；缺失时返回
+  `DATA_CONTEXT_GOVERNANCE_REQUIRED`，不猜测。
+- [x] 维度取值域保留 `DimensionValuePort` 并有 Harness 验证。
+- [ ] MetricService 的真实 URL/DTO 契约到位后补 HTTP Adapter。
+- [x] 发现全量、执行按身份，按 ADR-0063 登记。
 
 完成条件：真实元数据经 Adapter 产出通过 Schema 1.1 校验的数据上下文快照。
 

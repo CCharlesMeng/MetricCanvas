@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "metriccanvas-authoring": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "<metriccanvas-authoring-sdist.tar.gz>",
+        "metriccanvas-authoring"
+      ],
+      "env": {
+        "METRICCANVAS_TOOL_SURFACE": "relay",
+        "METRICCANVAS_OPERATOR_ID": "<service-operator-id>",
+        "METRICCANVAS_AUTH_TOKEN": "<service-auth-token>",
+        "METRICCANVAS_DQE_BASE_URL": "<dqe-v1-base-url>",
+        "METRICCANVAS_DQE_WORKSPACE_ID": "<workspace-id>",
+        "METRICCANVAS_DQE_FORBIDDEN_HINT": "<permission-request-guidance>",
+        "METRICCANVAS_DATA_CONTEXT_DATASETS_URL_TEMPLATE": "<lab-datasets-url-with-{subjectId}>",
+        "METRICCANVAS_DATA_CONTEXT_DETAIL_URL_TEMPLATE": "<lab-detail-url-with-{datasetId}>",
+        "METRICCANVAS_DATA_CONTEXT_SUBJECT_ID": "<subject-id>",
+        "METRICCANVAS_DATA_CONTEXT_WORKSPACE_ID": "<workspace-id>",
+        "METRICCANVAS_DATA_CONTEXT_APP_CODE": "<api-gateway-app-code>",
+        "METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG": "<absolute-projection-config-path>"
+      }
+    }
+  }
+}

@@ -19,28 +19,51 @@ metadata:
 运行本 Skill 前，由 Relay 部署侧完成以下注册；这些动作不是 Agent 的运行步骤：
 
 1. 将本 Skill 放入 `.skills/metriccanvas-page-builder/SKILL.md`，由 Relay `SkillLoader` 注册。
-2. 在 `.relay/mcp_configs/` 注册名为 `metriccanvas-authoring` 的 stdio MCP Server，并以 `METRICCANVAS_TOOL_SURFACE=relay` 启动 `tool/server.py`。
+2. 将 Bundle 内 `relay/mcp_configs/metriccanvas-authoring.json` 复制到 Relay 的 `.relay/mcp_configs/`，替换 sdist 路径和环境占位符。
 3. 安装 Relay Page Artifact Adapter，使其截获 `compose_page` 的完整页面构建产物、写入最新会话检查点，并仅向模型返回安全摘要。
 4. 接通真实 Data Context 与 DQE Adapter。未接通时工具会返回结构化失败，不得使用测试夹具或模型补造数据继续执行。
 
-当前源码 Bundle 的 Relay stdio 注册形态如下；将 `<bundle-absolute-path>` 替换为 `metriccanvas-authoring` 的绝对路径：
+发布时先在 `tool/` 构建 `metriccanvas_authoring-0.2.0.tar.gz`。Relay 通过 `uvx`
+从该 sdist 临时安装并启动可执行入口；将所有 `<...>` 替换为部署值：
 
 ```json
 {
   "mcpServers": {
     "metriccanvas-authoring": {
-      "command": "python",
-      "args": ["tool/server.py"],
-      "cwd": "<bundle-absolute-path>",
+      "command": "uvx",
+      "args": [
+        "--from",
+        "<metriccanvas-authoring-sdist.tar.gz>",
+        "metriccanvas-authoring"
+      ],
       "env": {
-        "METRICCANVAS_TOOL_SURFACE": "relay"
+        "METRICCANVAS_TOOL_SURFACE": "relay",
+        "METRICCANVAS_OPERATOR_ID": "<service-operator-id>",
+        "METRICCANVAS_AUTH_TOKEN": "<service-auth-token>",
+        "METRICCANVAS_DQE_BASE_URL": "<dqe-v1-base-url>",
+        "METRICCANVAS_DQE_WORKSPACE_ID": "<workspace-id>",
+        "METRICCANVAS_DQE_FORBIDDEN_HINT": "<permission-request-guidance>",
+        "METRICCANVAS_DATA_CONTEXT_DATASETS_URL_TEMPLATE": "<lab-datasets-url-with-{subjectId}>",
+        "METRICCANVAS_DATA_CONTEXT_DETAIL_URL_TEMPLATE": "<lab-detail-url-with-{datasetId}>",
+        "METRICCANVAS_DATA_CONTEXT_SUBJECT_ID": "<subject-id>",
+        "METRICCANVAS_DATA_CONTEXT_WORKSPACE_ID": "<workspace-id>",
+        "METRICCANVAS_DATA_CONTEXT_APP_CODE": "<api-gateway-app-code>",
+        "METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG": "<absolute-projection-config-path>"
       }
     }
   }
 }
 ```
 
-`tool/server.py` 通过 FastMCP 注册工具，Relay 启动后以 `list_tools` 发现它们，无需在 Skill 正文再次声明工具实现。正式发布切换为 `uvx --from <sdist.tar.gz>` 后，工具名称与调用契约保持不变。
+`metriccanvas-authoring` 命令通过 FastMCP 注册工具，Relay 启动后以 `list_tools`
+发现它们。sdist 已内嵌 Bundle 身份、Page Build Spec、Data Context Schema、
+组件目录和 Page Schema，不依赖 Relay 宿主的源码目录。
+
+`METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG` 指向一份按
+`relay/data-context-projection.example.json` 填写的配置。Lab 未显式提供的
+`isRatio`、可空性和敏感性不得由模型猜测；缺少显式治理值时工具以
+`DATA_CONTEXT_GOVERNANCE_REQUIRED` 停止。维度取值中心保留为
+`DimensionValuePort`；真实 MetricService URL 和 DTO 契约未提供前，不注册伪造的 HTTP Adapter。
 
 frontmatter 中的 `metadata.mcp_servers` 只授权 MCP Server，`allowed-tools` 只限制模型可调用的工具；二者都不代替 Relay MCP 配置。开始执行前确认模型可见工具恰好为：
 
@@ -52,6 +75,26 @@ frontmatter 中的 `metadata.mcp_servers` 只授权 MCP Server，`allowed-tools`
 `route_business_domains`、`submit_data_request_units` 和 `submit_analysis_intent` 是三类模型决策名称，不是 MCP 工具。Relay 完成分词与模型调用；模型从用户问题提取待检索业务词并形成这些结构化决策。DQE 调用、查询生成、结果字段验真和页面装配全部封装在 `compose_page` 内，不向模型注册独立工具。
 
 当前 M3A 由 Skill ReAct 驱动以下状态机，Relay 尚未提供固定工作流执行器；三类模型决策 Schema 用于迁移差分和结构约束，运行时硬闸集中在最终 Page Build Spec、数据上下文、DQE 结果和页面校验。M3B 完成前，不得把“遵循了 Markdown 步骤”当作固定编排已经兑现。
+
+## 调用边界
+
+Relay 使用原生 Skill ReAct 调用模型，不由 Python Tool 再次调用模型。
+每个模型决策按 Bundle 内 `contracts/authored/agent-model-decision.schema.json` 的对应
+`$defs` 输出：
+
+| 阶段 | 调用方 | 输出契约 | 后续调用 |
+|---|---|---|---|
+| 业务域路由 | Relay 模型 | `routeDecision` / `route_business_domains` | 拆分业务词 |
+| 受治理发现 | MCP Tool | `discover_data_context(query, limit)` | 候选消歧 |
+| 取数单元 | Relay 模型 | `unitDecision` / `submit_data_request_units` | 取数核对 |
+| 分析意图 | Relay 模型 | `intentDecision` / `submit_analysis_intent` | 形成 Page Build Spec |
+| 执行与装配 | MCP Tool | `compose_page(page_id, spec)` | Relay Artifact 检查点 |
+
+`compose_page` 内部固定执行：获取 Data Context 快照 → 校验规范名 → 派生
+DQE DSL 与字段契约 → 最多 6 个取数单元并发调用 DQE Interface → 验证结果行
+→ 选择组件与布局 → 校验 Page Schema → 返回 Artifact 信封。对外 HTTP 只由
+Adapter 发起：Lab 数据集列表/详情为 GET，DQE 为
+`POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute`。
 
 ## 工具调用契约
 
@@ -79,6 +122,8 @@ frontmatter 中的 `metadata.mcp_servers` 只授权 MCP Server，`allowed-tools`
 - `issues[]`：失败的 `code`、`path`、`stage` 和 `message`。
 
 同一轮所有发现结果必须使用一致的 `dataContextVersion`；版本变化时废弃旧候选并重新发现。
+如果误将整句问题传入，Tool 会使用确定性指标/维度/时间词解析做一次兜底拆解；
+该兜底只返回受治理候选，不代替上述三个模型决策。
 
 ### `compose_page`
 

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "metriccanvas-authoring"
+version = "0.2.0"
+description = "Deterministic MetricCanvas authoring MCP tool"
+requires-python = ">=3.12"
+dependencies = [
+  "fastmcp==3.4.7",
+  "jsonschema==4.26.0",
+  "pydantic==2.13.5",
+  "typing-extensions==4.16.0",
+]
+
+[project.scripts]
+metriccanvas-authoring = "metriccanvas_authoring.server:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["metriccanvas_authoring"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/metriccanvas_authoring",
+  "/pyproject.toml",
+]
+
+[tool.hatch.build.targets.sdist.force-include]
+"../bundle.json" = "metriccanvas_authoring/_bundle/bundle.json"
+"../contract-lock.json" = "metriccanvas_authoring/_bundle/contract-lock.json"
+"../contracts/authored/page-build-spec.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json"
+"../contracts/exported/analysis-intents.json" = "metriccanvas_authoring/_bundle/contracts/exported/analysis-intents.json"
+"../contract-snapshot/data-context/schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/data-context/schema.json"
+"../contract-snapshot/page/component-catalog.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/component-catalog.json"
+"../contract-snapshot/page/schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/schema.json"

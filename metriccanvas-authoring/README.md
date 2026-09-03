@@ -7,6 +7,7 @@
 - `contracts/`：Skill 与 Tool 之间的 Authoring Interface 契约。
 - `contract-snapshot/`：仓根产品契约的只读生成快照，不是第二份真源。
 - `test-harness/`：从外部调用 Tool 的测试宿主、fixture 与 Fake Adapter；不进入生产运行时。
+- `relay/`：Relay stdio MCP 注册样例与 Data Context 投影配置样例。
 
 Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter；Python 内部的
 查询派生、验真、组件选择、装配和页面校验不会逐步暴露成模型工具。S2 已完成
@@ -43,33 +44,29 @@ M1 首个 Agent 契约切片已加入业务词解析、三类模型决策、持�
 TypeScript 真源实时导出 5 条指标检索、10 条确定性业务词、5 条模型决策和 3 条步骤事件/Port
 调用向量；Python 已逐字段对齐指标、维度、封闭取值域、相对时间、分析意图与结构操作的首批语法。
 
-`tool/server.py` 是生产组合根：Java 页面资产 Adapter（J4，ADR-0062）由 MCP config `env` 配置，
-Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harness/stdio_server.py` 是仅测试
+`metriccanvas_authoring.server` 是可安装分发包的生产组合根，`tool/server.py` 只是源码
+检出的兼容入口。它按 `env` 组装 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和
+Java 页面资产 Adapter。Data Context 经数据集列表/详情两段 GET 投影为 Schema 1.1；
+Lab 未提供的比率、可空性和敏感性必须由投影治理配置显式补足，否则失败关闭。
+DQE Adapter 只调用 `POST .../v1/dsl/execute`，不直连 Lab 执行数据查询。
+`test-harness/stdio_server.py` 是仅测试
 使用的组合根，不是生产 fallback；`test-harness/slice_server.py` 是本地纵切用的组合根（Relay / DQE
 替身 + 真实 Java Adapter），由根仓 `pnpm slice:page-assets` 驱动。
 
-```json
-{
-  "mcpServers": {
-    "metriccanvas-authoring": {
-      "command": "python",
-      "args": ["tool/server.py"],
-      "env": {
-        "METRICCANVAS_TOOL_SURFACE": "compatibility",
-        "METRICCANVAS_PAGE_ASSETS_BASE_URL": "http://host:8080/rest/cdi/pageassets/v1",
-        "METRICCANVAS_OPERATOR_ID": "<服务态 X-Operator-Id>",
-        "METRICCANVAS_AUTH_TOKEN": "<服务态 X-Auth-Token，可选>"
-      }
-    }
-  }
-}
-```
+Relay 配置见
+[`relay/mcp_configs/metriccanvas-authoring.json`](./relay/mcp_configs/metriccanvas-authoring.json)：
+`uvx --from <metriccanvas-authoring-sdist.tar.gz> metriccanvas-authoring`。sdist 内嵌所需运行时契约，
+不依赖宿主上的 Bundle 源码目录。Data Context 治理配置见
+[`relay/data-context-projection.example.json`](./relay/data-context-projection.example.json)。
 
-Relay Adapter 就绪后的 MCP 配置把 `METRICCANVAS_TOOL_SURFACE` 改为 `relay`；该模式不调用 Java
+Relay 样例固定 `METRICCANVAS_TOOL_SURFACE=relay`；该模式不调用 Java
 页面资产 Adapter。用户显式沉淀时仍由 Svelte/平台以当前用户身份调用 Java。
 
-当前兼容包装的身份走 `IdentityPort`，第一个 Adapter（`adapters/outbound/env_identity.py`）读上面两个 env：这是 ADR-0063
-登记的服务态形态，所有创作者以同一 operator 保存，任何文案不得说"已按用户身份"。`build_page` 不再接受
+当前 Data Context、DQE 和 Java Adapter 共用 `IdentityPort`，第一个 Adapter
+（`adapters/outbound/env_identity.py`）从 Relay MCP config 读
+`METRICCANVAS_OPERATOR_ID` / `METRICCANVAS_AUTH_TOKEN`。这是 ADR-0063 登记的服务态
+形态，所有创作者暂时共用同一 operator，任何文案不得说“已按用户身份”。
+`build_page` 不再接受
 `idempotency_key`：幂等键由 Tool 按 `hash(pageId, baseRevisionId, canonical(spec))` 派生，重试同一
 Spec 命中 Java 指纹幂等原样返回；保存命令携带 `source.relay { sessionId?, skillVersion }` 与
 `dataContextVersion`；`baseRevision.pageId` 与 `page_id` 不一致在发现前即以
@@ -88,5 +85,13 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s test-harness/tests -p 
 ```
 
 根仓另提供 `pnpm authoring:contracts:check`，检查产品契约、Bundle 快照、Authoring
-契约 manifest 与锁文件是否漂移。复制后的 Bundle 自身运行不依赖 Node、pnpm
+契约 manifest 与锁文件是否漂移。复制后的 Bundle 自身回归不依赖 Node、pnpm
 workspace 包或真实 Relay/Java/DQE。
+
+构建和验证 Relay 可安装包：
+
+```bash
+uv build --sdist --out-dir dist tool
+METRICCANVAS_TOOL_SURFACE=relay \
+  uvx --from dist/metriccanvas_authoring-0.2.0.tar.gz metriccanvas-authoring
+```

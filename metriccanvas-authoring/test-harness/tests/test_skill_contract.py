@@ -56,12 +56,14 @@ class RelaySkillContractTest(unittest.TestCase):
         for registration_fact in (
             ".skills/metriccanvas-page-builder/SKILL.md",
             ".relay/mcp_configs/",
-            "METRICCANVAS_TOOL_SURFACE=relay",
+            '"METRICCANVAS_TOOL_SURFACE": "relay"',
             "Page Artifact Adapter",
             '"mcpServers"',
-            '"command": "python"',
-            '"args": ["tool/server.py"]',
-            '"cwd": "<bundle-absolute-path>"',
+            '"command": "uvx"',
+            '"--from"',
+            '"metriccanvas-authoring"',
+            "METRICCANVAS_DQE_BASE_URL",
+            "METRICCANVAS_DATA_CONTEXT_PROJECTION_CONFIG",
             "list_tools",
         ):
             self.assertIn(registration_fact, body)
@@ -70,12 +72,20 @@ class RelaySkillContractTest(unittest.TestCase):
         self.assertIn("三类模型决策名称，不是 MCP 工具", body)
         self.assertIn("封装在 `compose_page` 内", body)
         self.assertIn("Relay 尚未提供固定工作流执行器", body)
+        for execution_fact in (
+            "contracts/authored/agent-model-decision.schema.json",
+            "Relay 使用原生 Skill ReAct 调用模型",
+            "最多 6 个取数单元并发调用 DQE Interface",
+            "POST /rest/cdi/cdinl2databuilderservice/v1/dsl/execute",
+            "确定性指标/维度/时间词解析做一次兜底拆解",
+        ):
+            self.assertIn(execution_fact, body)
 
     def test_skill_json_examples_match_registration_and_tool_contracts(self) -> None:
         registration, discovery_call, compose_call = self._json_examples()
         server = registration["mcpServers"]["metriccanvas-authoring"]
-        self.assertEqual(server["command"], "python")
-        self.assertEqual(server["args"], ["tool/server.py"])
+        self.assertEqual(server["command"], "uvx")
+        self.assertEqual(server["args"][-1], "metriccanvas-authoring")
         self.assertEqual(
             server["env"]["METRICCANVAS_TOOL_SURFACE"], "relay"
         )
