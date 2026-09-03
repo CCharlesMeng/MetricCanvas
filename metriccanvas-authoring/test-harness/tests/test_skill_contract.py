@@ -42,10 +42,10 @@ class RelaySkillContractTest(unittest.TestCase):
 
     def test_skill_keeps_persistence_outside_the_agent(self) -> None:
         body = SKILL_PATH.read_text(encoding="utf-8")
-        self.assertIn("formal page persistence", body)
-        self.assertIn("explicit user action", body)
-        self.assertIn("returns only its `modelSummary`", body)
-        self.assertIn("Never call Java page-save Interfaces", body)
+        self.assertIn("正式页面持久化", body)
+        self.assertIn("用户显式发起的沉淀", body)
+        self.assertIn("仅将 `modelSummary` 返回模型", body)
+        self.assertIn("禁止调用 Java 页面保存 Interface", body)
 
 
 if __name__ == "__main__":
