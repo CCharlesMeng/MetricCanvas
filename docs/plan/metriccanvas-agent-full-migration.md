@@ -213,6 +213,23 @@ Relay Session Module 读取最新会话检查点
 
 退出条件：注入 scripted model 时，F01–F12 的事件、交互和结果可重放。
 
+当前状态：Bundle 侧 Relay-ready Interface 已完成：目标 Skill 只允许
+`discover_data_context + compose_page`，FastMCP 以 `METRICCANVAS_TOOL_SURFACE=relay` 显式启用同一
+工具面，`compose_page` 成功结果使用 `metriccanvas.page-build-artifact` 判别信封，并以 Schema 锁定
+完整 `artifact` 与无数据行 `modelSummary`。默认工具面仍是 compatibility，避免 Relay Adapter 缺失时
+误把完整页面文档送入模型。M3 尚未退出；Relay 仓内的 Artifact Adapter、Session checkpoint、
+WebSocket E2E 与可执行编排仍未实现。
+
+Relay Page Artifact Adapter 的最小实现顺序固定为：
+
+1. 只拦截 `metriccanvas-authoring.compose_page` 的成功响应，并验证 Artifact 信封 Schema。
+2. 校验当前 `session_id`、预期 checkpoint version 和运行未取消；缺一项即不保存。
+3. 将 `artifact` 写为该会话最新 MetricCanvas checkpoint，完整页面文档不进入追加事件正文。
+4. 生成 `artifactId` 和递增 `checkpointVersion`，提交采用预期版本的乐观并发。
+5. 向前端事件发送 `artifactId + checkpointVersion + documentSha256 + modelSummary`。
+6. 用 `modelSummary + artifactId + checkpointVersion` 替换 MCP 工具结果后再交给模型；冲突、取消或
+   保存失败返回结构化错误，不允许原始 Artifact 回退透传。
+
 ### M4：真实 Adapter、打包与身份
 
 交付：
@@ -311,12 +328,15 @@ pnpm authoring:e2e:relay
 | TS→Python 业务词解析差分 | `agent-conformance.json` + `test_business_terms.py` | 15 条向量逐字段一致：5 条指标规范名/别名/最长命中/排序/歧义，10 条维度/取值/相对时间/分析意图/结构操作（含跨域维度歧义） |
 | TS 生产事件序列差分基线 | `agent-conformance.json` + `test_agent_contracts.py` | 3 条生产编排实跑向量通过：成功 6 事件，面外 discovery 降级，DQE 执行失败重试 1 次；事件顺序、终态、Port 顺序与执行次数均冻结 |
 | TS 类型与旧行为回归 | `pnpm --filter platform check`；定向 Vitest | 0 error / 0 warning；检索、模型端口、编排 3 文件 25/25 通过 |
-| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 59/59 通过 |
-| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，411 项 digest 校验通过 |
-| 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 9 项 |
+| Relay 双工具面与 Artifact 信封 | `test_stdio.py` | compatibility 面仍为 discover/build；Relay 面严格为 discover/compose；成功信封通过 Schema，摘要递归拒绝 document/rows/initial，失败不带 Artifact |
+| Relay 目标 Skill | `quick_validate.py` + `test_skill_contract.py` | frontmatter 合法；工具白名单、三类模型决策、临时页完成条件与显式沉淀边界被测试锁定 |
+| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 64/64 通过 |
+| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，415 项 digest 校验通过 |
+| 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 10 项 |
 
-这组证据只证明 M1/M2 的首批切片，不代表 M1、M2、M3 或整体迁移完成；生产 MCP 仍保留
-`build_page`，直到 Relay Page Artifact Adapter 能隔离完整页面产物与模型摘要。
+这组证据只证明 M1/M2 首批切片和 M3 的 Bundle 侧 Relay 接缝，不代表 M1、M2、M3 或整体迁移完成；
+compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `discover_data_context` 与 `compose_page`。
+真正切换前仍需 Relay Page Artifact Adapter 在 Relay 进程内隔离完整页面产物与模型摘要。
 
 8.2 表是迁移前基线，8.3 表是第一个实现切片；两者都不是切换证明。尚未被证明的包括：真实 Relay、真实 LiteLLM/GLM、真实 Data Context、
 真实 DQE、每用户身份、页面校验全对齐和 Agent 前半链跨实现差分。

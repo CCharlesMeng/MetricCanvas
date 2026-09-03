@@ -16,7 +16,7 @@ Data Context 校验/语义投影/检索/敏感隐去、取数单元闭集验真�
 Python 直接消费产品组件目录中生成的 `authoringShape` 与导出的分析意图映射，
 不另存规则表。S3 已用 TS 生成、Python 消费的向量锁定完整 Page JSON、
 实际 DQE 请求、稳定错误 `code/path` 和页面语义准入。S4 已将
-`discover_data_context` 与 `build_page` 作为当前仅有的两个模型可见工具，并用真实
+`discover_data_context` 与 `build_page` 作为兼容面的两个模型可见工具，并用真实
 FastMCP stdio 子进程 + Fake Ports 走通发现、构建与保存。0.2.0 已从保存用例中提取
 无保存副作用的 `compose(PageBuildSpec) -> PageBuildArtifact` application Interface；
 Core 对最多 6 个取数单元有序并发调用 DQE，并按单元序号稳定装配或报告首个失败；
@@ -25,16 +25,23 @@ Core 对最多 6 个取数单元有序并发调用 DQE，并按单元序号稳�
 和 [ADR-0064](../docs/adr/0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)
 推进 S5 迁移切换。
 
-目标模型可见面仍只有两个深工具，但会改为 `discover_data_context` 与 `compose_page`。
+FastMCP 现在提供两个互斥的工具面，避免迁移期间出现三个模型可见工具：默认
+`METRICCANVAS_TOOL_SURFACE=compatibility` 公开 `discover_data_context + build_page`；仅在 Relay
+Page Artifact Adapter 已安装时设置 `METRICCANVAS_TOOL_SURFACE=relay`，公开
+`discover_data_context + compose_page`。Relay 面成功返回带
+`kind=metriccanvas.page-build-artifact` 判别符的信封；Adapter 必须保存完整 `artifact`，只把
+不含页面文档和数据行的 `modelSummary` 放回模型上下文。
+
+目标模型可见面保持两个深工具：`discover_data_context` 与 `compose_page`。
 完整 `PageBuildArtifact` 含页面文档和 DQE 初始数据行，不能作为普通 MCP 返回值重新进入模型上下文；
 Relay Page Artifact Adapter 完成“完整产物写会话检查点、仅脱敏摘要回模型”的双通道前，
-生产 FastMCP 不开放 `compose_page`。这也是当前 `SKILL.md` 暂时保留 `build_page` 兼容流程的原因。
+生产配置不得启用 Relay 工具面。默认兼容面继续阻止误开放；目标 `SKILL.md` 已锁定
+`allowed-tools: [discover_data_context, compose_page]`，只随 Relay 工具面部署。
 
 M1 首个 Agent 契约切片已加入业务词解析、三类模型决策、持久化步骤事件和 conformance
-四份 Schema。`exported/agent-conformance.json` 从 TypeScript `ask/retrieval` 与 `ask/model-port`
-真源实时导出 5 条指标检索向量和 5 条模型决策向量；Python 已对齐指标规范名、别名、最长命中、稳定排序与并列歧义，
-并把结果投影为 `business-term-resolution` 契约。维度、维度取值、相对时间词、分析意图词和
-结构操作词仍是后续切片，不得把当前指标解析描述成完整业务词解析。
+四份 Agent Schema，并新增 Relay Artifact 信封 Schema。`exported/agent-conformance.json` 从生产
+TypeScript 真源实时导出 5 条指标检索、10 条确定性业务词、5 条模型决策和 3 条步骤事件/Port
+调用向量；Python 已逐字段对齐指标、维度、封闭取值域、相对时间、分析意图与结构操作的首批语法。
 
 `tool/server.py` 是生产组合根：Java 页面资产 Adapter（J4，ADR-0062）由 MCP config `env` 配置，
 Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harness/stdio_server.py` 是仅测试
@@ -48,6 +55,7 @@ Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harne
       "command": "python",
       "args": ["tool/server.py"],
       "env": {
+        "METRICCANVAS_TOOL_SURFACE": "compatibility",
         "METRICCANVAS_PAGE_ASSETS_BASE_URL": "http://host:8080/rest/cdi/pageassets/v1",
         "METRICCANVAS_OPERATOR_ID": "<服务态 X-Operator-Id>",
         "METRICCANVAS_AUTH_TOKEN": "<服务态 X-Auth-Token，可选>"
@@ -56,6 +64,9 @@ Data Context 与 DQE Adapter 未接入时显式失败（A2 / A3）。`test-harne
   }
 }
 ```
+
+Relay Adapter 就绪后的 MCP 配置把 `METRICCANVAS_TOOL_SURFACE` 改为 `relay`；该模式不调用 Java
+页面资产 Adapter。用户显式沉淀时仍由 Svelte/平台以当前用户身份调用 Java。
 
 当前兼容包装的身份走 `IdentityPort`，第一个 Adapter（`adapters/outbound/env_identity.py`）读上面两个 env：这是 ADR-0063
 登记的服务态形态，所有创作者以同一 operator 保存，任何文案不得说"已按用户身份"。`build_page` 不再接受

@@ -1,23 +1,37 @@
 ---
 name: metriccanvas-page-builder
-description: Build or revise a MetricCanvas page from a business question through governed data discovery, deterministic assembly, validation, saving, and exact-revision handoff.
+description: Create or revise a transient MetricCanvas report or data app from a business question through governed discovery, controlled data requests, DQE execution, and validated page composition. Use for MetricCanvas ask, explore, page-building, and follow-up revision requests after the Relay Page Artifact Adapter is enabled.
+allowed-tools:
+  - discover_data_context
+  - compose_page
+metadata:
+  max_tokens: 30000
+  mcp_servers:
+    - metriccanvas-authoring
 ---
 
 # MetricCanvas Page Builder
 
-Turn the user's business question into a governed MetricCanvas page. Produce business semantics; let the deterministic Tool produce the DQE query and Page document.
+Produce a validated transient page. Let deterministic tools derive DQE queries, field bindings, components, layout, and Page Metadata.
+
+## State
+
+Use the question plus the latest structured checkpoint from `config.agent_context`. Preserve every untouched Data Request Unit, explicit filter, time range, presentation pin, and target binding. Keep at most six units.
 
 ## Workflow
 
-1. Call `discover_data_context` for the requested business terms. Resolve every metric, dimension, time capability, and filter value from returned matches. Complete this step when each requested concept has one governed name or one explicit unresolved ambiguity.
-2. For each ambiguity, show the definition differences and wait for the user's choice. Keep unresolved user wording visible; do not silently choose a near match.
-3. Form one Page Build Spec from the resolved business domain, metrics, dimensions, time range, filters, analysis intent, and explicit presentation pins. Complete it when every requested view is represented by one unambiguous Data Request Unit.
-4. Present the effective Data Request Review when the workflow requires confirmation. Apply corrections to the Page Build Spec.
-5. Call `build_page` once with `page_id`, the complete spec, and `page_id_confirmed` when the page is new. Retrying with the same page and spec is safe: the Tool derives the save idempotency key itself and returns the same revision.
-6. Finish only when `completedStages` includes `save` and `savedRevision` contains `pageId`, `revisionId`, and `revisionNumber`. Return those exact identifiers for exact-revision preview.
+1. Decide `route_business_domains`: honor a user override first; otherwise reuse checkpoint domains for a follow-up or choose at most two supplied business domains. Complete when every selected domain is governed and visible to the user.
+2. Call `discover_data_context` for each unresolved metric, dimension, filter value, or time capability. Use only returned canonical names and definitions. Complete when every requested concept is resolved or represented by an explicit ambiguity.
+3. Present tied candidates with their definition differences and wait for the user. Resume only with the selected governed candidate; carry all other checkpoint state unchanged.
+4. Decide `submit_data_request_units`: create the initial unit set or emit targeted `add`, `modify`, `replace`, and `remove` changes. Keep unmentioned fields structurally unchanged. Separate partially answerable and unavailable concepts; never blend an unavailable metric into an executable unit.
+5. Present a Data Request Review and wait only for ambiguity, an ad-hoc formula, model-supplied time, or a platform-declared cost threshold. Apply the confirmation to the exact unit and preserve the rest.
+6. Decide `submit_analysis_intent` independently for each touched unit using one of `comparison`, `trend`, `composition`, `ranking`, `detail`, or `single_value`. Preserve the prior intent for untouched units.
+7. Call `compose_page` once with the complete Page Build Spec. Correct a rejected closed-set name once using returned candidates; otherwise surface the structured issue and stop.
+8. Accept completion only when Relay returns `status: page_composed` with `pageId`, `documentSha256`, `dataContextVersion`, and `bundleVersion`. Report that the transient page is ready.
 
-## Failure handling
+## Persistence and safety
 
-- When discovery cannot resolve a requested concept, report the returned issue and keep the unresolved business term visible.
-- When building fails, report each structured issue with its stage and the last `completedStages` entry. Retry only after correcting the business input or when the returned classification declares retry safe.
-- When a user asks to revise an existing page, carry its precise base revision in the Page Build Spec with the same `pageId` as the page being built; the saved result is a new revision using the current page protocol version. `REVISION_CONFLICT` means another revision was saved first: re-read the page's latest revision before rebuilding.
+- Treat `compose_page` as a Relay-only Interface. The Page Artifact Adapter stores the complete artifact as the latest session checkpoint and returns only its `modelSummary` to this conversation.
+- Leave formal page persistence to the platform's explicit user action. Never call Java page-save Interfaces and never claim that a page revision was created.
+- Stop after cancellation or interaction wait. A late result may be discarded or marked cancelled; it cannot replace a newer checkpoint.
+- Report structured `code`, `path`, `stage`, and message on failure. Preserve unresolved wording and never fabricate data, governed names, execution results, or Page Metadata.

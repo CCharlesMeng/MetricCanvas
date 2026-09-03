@@ -68,6 +68,10 @@ const authoredPageBuildArtifact = path.join(
   authoringContractRoot,
   'authored/page-build-artifact.schema.json'
 );
+const authoredRelayPageArtifactEnvelope = path.join(
+  authoringContractRoot,
+  'authored/relay-page-artifact-envelope.schema.json'
+);
 const authoredBusinessTermResolution = path.join(
   authoringContractRoot,
   'authored/business-term-resolution.schema.json'
@@ -249,6 +253,10 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   const authoredSchema = await readFile(authoredPageBuildSpec, 'utf8');
   const authoredArtifactSchema = await readFile(authoredPageBuildArtifact, 'utf8');
+  const authoredRelayArtifactEnvelopeSchema = await readFile(
+    authoredRelayPageArtifactEnvelope,
+    'utf8'
+  );
   const authoredBusinessTermSchema = await readFile(authoredBusinessTermResolution, 'utf8');
   const authoredModelDecisionSchema = await readFile(authoredAgentModelDecision, 'utf8');
   const authoredStepEventSchema = await readFile(authoredAgentStepEvent, 'utf8');
@@ -286,6 +294,10 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
         {
           file: 'authored/page-build-artifact.schema.json',
           sha256: sha256(authoredArtifactSchema)
+        },
+        {
+          file: 'authored/relay-page-artifact-envelope.schema.json',
+          sha256: sha256(authoredRelayArtifactEnvelopeSchema)
         },
         {
           file: 'authored/page-build-spec.schema.json',
