@@ -241,7 +241,16 @@
           "enum": ["discovery", "generation", "execution", "presentation"]
         },
         "code": { "$ref": "#/$defs/nonEmptyString" },
-        "message": { "type": "string" }
+        "message": { "type": "string" },
+        "path": { "type": "string" },
+        "retrySafe": { "type": "boolean" },
+        "candidates": { "$ref": "#/$defs/stringArray" },
+        "completedStages": {
+          "type": "array",
+          "items": {
+            "enum": ["discovery", "generation", "execution", "presentation"]
+          }
+        }
       }
     },
     "jsonValue": {

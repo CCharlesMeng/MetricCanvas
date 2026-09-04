@@ -1,7 +1,7 @@
 # MetricCanvas Agent 创作链完整迁移方案
 
-> 状态：Accepted for implementation；M0 已完成，M1 契约/基线已覆盖首批事件序列，M2 compose、
-> 指标/维度/枚举值/相对时间/意图/结构操作解析与有序并发切片已完成
+> 状态：Accepted for implementation；M0 已完成，M1 契约/基线已覆盖首批事件序列；M2 的
+> 发现、Agent Core、compose、有序并发、formula/样例行/呈现细节与页面预检已落地。M1 全量黄金集、M3–M8 仍未退出。
 >
 > 基线日期：2026-09-03
 >
@@ -68,18 +68,20 @@
   但当前 Relay 仍未用固定工作流执行器强制这些步骤。
 - Python `compose` 已能从 Page Build Spec 派生查询、对最多 6 个单元有序并发执行 DQE、
   装配并校验页面文档；当前 `build_page` 兼容包装在 compose 成功后继续调用 Java 保存页面修订。
+- Python `discover_data_context` 已返回全量规范业务域闭集 `businessDomains` 与 `resolution/time/intent/structureOperation`；[`agent_core.py`](../../metriccanvas-authoring/tool/metriccanvas_authoring/domain/agent_core.py) 已实现稳定单元 ID、多轮 reducer、target、直接消费 `structureOperation` 的结构 guard、组件话语、用户覆盖/模型路由闭集验真、零命中重路由/消歧、部分可答和 Metric Gap 确认等纯确定性函数。Metric Gap 投影会过滤 resolution 中的非 metric 候选。
+- Page Build Spec 已把 `dataContextVersion` 与稳定 `dataSourceId` 设为必填，compose 会在 DQE 前校验发现版本；产物已带 formula 轨迹和临时指标可见标识，只内嵌前 20 行并保留完整 `totalCount`。
 
 ### 3.2 已知缺口
 
 | 缺口 | 当前事实 | 完成判据 |
 |---|---|---|
-| Agent 前半链 | Skill 已描述业务词拆分、三类模型决策、九阶段状态与多轮 patch；Relay 仍缺固定工作流强制和步骤事件持久化 | F01–F06 通过跨实现验收 |
-| 业务词解析 | Python 已对齐指标规范名/别名/最长命中/稳定排序/歧义，以及维度、封闭取值域、相对时间、分析意图和结构操作首批语法；业务域仍由结构化模型路由 | 扩充黄金问题并覆盖全部业务词反例 |
-| 临时态/资产态 | 旧 Ask 成功产出临时页面态；现 `build_page` 必然保存修订 | 按 ADR-0030 恢复两速生命周期 |
-| DQE 执行 | Core 已完成最多 6 个单元有序并发与稳定失败归因；生产 Adapter、超时/取消闭环未完成 | 真实 Adapter + 超时/取消/迟到结果验收 |
-| Data Context | 生产 Adapter 未完成 | 真实 Schema 1.1 快照并通过数据上下文契约 |
+| Agent 前半链 | Skill 和 Python Agent Core 已落地规则；Relay 仍缺固定 Workflow 去调用 Agent Core、强制三类模型决策/预算并持久化步骤事件 | F01–F06 通过跨实现和真实 Relay 验收 |
+| 业务词解析 | 完整问题已能一次返回 `businessDomains` 闭集和指标/维度/封闭取值/相对时间/意图/结构操作的候选、选中项与歧义；业务域仍由结构化模型决策，但只能从该闭集选 | 扩充 40 条黄金问题并覆盖全部业务词反例 |
+| 临时态/资产态 | 无保存副作用的 `compose_page` 已有；Relay Artifact/Session 和 UI 尚未把产物作为临时页面态交付。`build_page` 仅是兼容保存链 | Relay 双通道检查点 + UI 呈现 + 平台显式沉淀 E2E |
+| DQE 执行 | Core 已完成最多 6 个单元有序并发与稳定失败归因；生产 DQE Adapter 已实现为可取消 `httpx` async 请求 | 真实 DQE 环境 + Relay 取消后迟到产物不保存的 E2E |
+| Data Context | Lab 列表/详情投影 Adapter 已完成，默认传输为可取消 `httpx` async；`DimensionValuePort` 只保留 seam | 真实 Schema 1.1 快照、MetricService URL/DTO 与环境契约验收 |
 | 身份 | 当前 env Adapter 是共享服务态身份 | Relay 服务端注入每用户身份，模型不可见也不可改 |
-| 页面校验 | Python 接受 10/10 合法向量中的 8 条，154 条反例仅 21 条 `code/path` 对齐 | 10/10 合法、154/154 反例全对齐，pending 清单为空 |
+| 页面校验 | Python 创作期预检已接受 10/10 合法向量，并精确对齐 154/154 条反例的 `type/path`；pending 为 0 | 已达 M2 的 Page conformance 门禁；后续新向量禁止用 pending 豁免 |
 | Relay 集成 | 没有真实 Relay/LiteLLM/GLM 闭环证据 | 真实黄金问题、工具调用、事件、取消与结果透出验收 |
 | 会话恢复 | Relay 只有 `session_id + version_id` 增量重放，无 Run 断点续跑 | 明确 Relay 会话与 MetricCanvas 会话检查点映射 |
 
@@ -89,8 +91,9 @@
 |---|---|---|---|
 | Svelte SPA | Chat 输入、步骤事件、交互回复、临时页面、精确修订预览 | Relay 协议细节、页面组件渲染 | Relay WebSocket Adapter、Java HTTP Adapter |
 | Relay Agent Workflow | `execute(command) -> ordered events + outcome` | 状态机、三类模型决策、重试、确认等待、取消与恢复 | M3A Skill-Play；M3B Relay 可执行扩展或等价强制层 |
-| Data Discovery | `resolve(question, domains?, limit) -> governed matches + ambiguities` | 业务词识别、别名、候选排序、消歧、敏感取值隐去 | DataContextPort + 真实/Fake Adapter |
-| Python Authoring Core | `compose(spec, context) -> PageBuildArtifact` | 清单、查询/字段派生、DQE、组件硬闸、装配和校验 | DqeExecutionPort + 真实/Fake Adapter；不含页面保存 Port |
+| Data Discovery | `resolve(question, limit) -> businessDomains + matches + resolution + time/intent/structureOperation` | 规范域闭集、业务词识别、别名、候选排序、消歧、敏感取值隐去 | DataContextPort + 真实/Fake Adapter |
+| Python Agent Core | 纯函数：路由/消歧、单元 reducer、target/结构 guard/组件话语、部分可答/Metric Gap | 稳定 ID、未触及状态保持、六单元诚实截断和确认后记录 | 待 Relay Workflow 组合；不调模型或远程服务 |
+| Python Authoring Core | `compose(spec, context) -> PageBuildArtifact` | 版本冻结、清单、查询/字段派生、DQE、组件硬闸、装配和校验 | DqeExecutionPort + 真实/Fake Adapter；不含页面保存 Port |
 | Relay Session | `appendEvent` / `loadCheckpoint` / `saveCheckpoint` | 90 天保留、可见性、乐观并发、artifact 双通道与过期清理 | Relay durable-state Adapter |
 | Java Page Assets | `savePageRevision`、`getLatestPage`、`getPageRevision`、`listPages` | 完整复验、不可变修订、幂等、基线冲突、审计 | HTTP Adapter + 本地纵切 |
 
@@ -104,15 +107,20 @@ Adapter，契约测试使用内存 Adapter。
 Relay Session Module 读取最新会话检查点
   → Svelte 提交问题/追问 + session + 结构化续跑状态 + target + 用户覆盖项
   → Relay 加载 Skill
-  → 模型决策 1：业务域路由（用户已指定/追问沿用时跳过）
-  → Python 确定性解析业务词，检索指标/维度/取值/相对时间词
+  → discover_data_context 先处理完整问题，返回 businessDomains/matches/resolution/time/intent/structureOperation/dataContextVersion
+  → 模型决策 1：从 businessDomains 闭集做业务域路由（用户指定也须先验真；追问沿用时可跳过）
+  → validate_route_decision 拒绝空路由、超过 2 个域或任何面外域
+  → 只对仍未解析的业务词补充发现调用
   → 确定性消歧；并列最高分时停下等待用户
   → 模型决策 2：形成取数单元或定向操作集
+  → Python Agent Core 归一化操作，维持稳定 dataSourceId/nextOrdinal，执行 target、消费 structureOperation 的结构 guard 和六单元上限
   → Python 清单校验；可修复违规最多回给模型一次
   → 条件式取数核对；歧义/formula/临时指标/模型补时间/超阈值才阻塞
   → Python 派生 DQE 和预期结果字段契约
   → 最多 6 个取数单元有序并发真实执行，并校验实际结果
   → 模型决策 3：按每个取数单元判定分析意图
+  → Python Agent Core 按单元降级意图并处理组件话语；部分可答与 Metric Gap 分离
+  → Page Build Spec 必须携带发现版本和稳定 dataSourceId，compose 拒绝版本混用
   → Python 组件硬闸、用户钉住项、口径组、页头、12 列布局与完整页面校验
   → Agent 输出结构化步骤事件与已校验临时页面文档
   → Relay Session Module 经 artifact 双通道保存步骤事件和最新会话检查点
@@ -132,7 +140,7 @@ Relay Session Module 读取最新会话检查点
 
 | 决策 | 最小输入 | 结构化输出 | 纪律 |
 |---|---|---|---|
-| `route_business_domains` | 问题 + 业务域名/简介 | 最多 2 个规范业务域 | 用户覆盖优先；结果可见可改；失败重试 1 次 |
+| `route_business_domains` | 问题 + discovery `businessDomains` 规范域闭集/简介 | 最多 2 个规范业务域 | 先 discovery 再路由；用户覆盖优先但也必须在闭集内；结果可见可改；失败重试 1 次 |
 | `submit_data_request_units` | 问题 + 命中域语义面 + top-N 候选 + 上轮单元 + target | 首轮单元集或 `add/modify/replace/remove` | 只能用闭集名；未提及显式设置不变；最多 6 个单元 |
 | `submit_analysis_intent` | 当前单元口径 + 上轮意图 | 六类意图之一 | 按单元调用；不注入其他单元的问句词；失败重试 1 次 |
 
@@ -179,11 +187,11 @@ Relay Session Module 读取最新会话检查点
   Port 调用、Page Build Spec、Page 文档和结果。
 - TypeScript 基线导出器与只读漂移检查。
 
-退出条件：选定的 30–50 条黄金问题和所有 F01–F14 反例可在不调真实模型的情况下重放。
+退出条件：选定的 40 条黄金问题和所有 F01–F14 反例可在不调真实模型的情况下重放。
 
 状态：首批 4 份 Agent Schema、5 条 TypeScript 指标检索/消歧向量、10 条确定性业务词向量、5 条三类模型决策向量，
-以及由生产 TypeScript 编排器执行导出的 3 条步骤事件/Port 调用向量已落地；完整 30–50 条黄金问题和 F01–F14
-反例仍待补齐，M1 尚未退出。
+以及由生产 TypeScript 编排器执行导出的 3 条步骤事件/Port 调用向量已落地；完整 40 条黄金问题和 F01–F14
+反例仍待补齐，M1 尚未退出。`test_agent_core.py` 已覆盖 Metric Gap 确认事件的 Schema 与纯函数行为，但它不替代“TypeScript 基线 → Relay Workflow → Python”的完整跨实现流程向量。
 
 ### M2：Python 确定性核心补齐
 
@@ -198,6 +206,8 @@ Relay Session Module 读取最新会话检查点
 - 补齐页面校验，删除 `page-conformance-pending.json` 中已对齐的白名单逻辑。
 
 退出条件：10/10 合法向量被接受，154/154 反例 `code/path` 对齐，确定性输出无未解释差异。
+
+当前状态：Bundle 内的 discovery、Agent Core 与 compose 已经是可执行实现。具体包括全量规范域闭集与结构化解析、稳定 `dataSourceId`、多轮 reducer、target、结构 guard、组件话语、路由/消歧、部分可答/Metric Gap、`dataContextVersion` 冻结、formula 轨迹/临时指标标识、20 行样例与完整计数、问数分区元数据、含 `gauge/keyValuePanel/categoryBreakdown` 的组件装配、组件问题聚合/修正候选和 `retrySafe`。`step_failed` 契约已可承载 `path/retrySafe/candidates/completedStages`。Page conformance 门禁已达成：10/10 合法向量和 154/154 反例精确对齐，pending 为 0。M2 中需与 40 条黄金问题联动的“无未解释差异”仍归 M1/M6 全量差分收口，不以此虚假宣布整体迁移完成。
 
 ### M3：Relay 工作流与 Skill
 
@@ -218,8 +228,7 @@ Relay Session Module 读取最新会话检查点
 `discover_data_context + compose_page`，FastMCP 以 `METRICCANVAS_TOOL_SURFACE=relay` 显式启用同一
 工具面，`compose_page` 成功结果使用 `metriccanvas.page-build-artifact` 判别信封，并以 Schema 锁定
 完整 `artifact` 与无数据行 `modelSummary`。默认工具面仍是 compatibility，避免 Relay Adapter 缺失时
-误把完整页面文档送入模型。M3 尚未退出；Relay 仓内的 Artifact Adapter、Session checkpoint、
-WebSocket E2E 与可执行编排仍未实现。
+误把完整页面文档送入模型。Python Agent Core 已落地三类模型决策之间的 reducer、guard、target、路由/消歧、组件话语与 Metric Gap 规则，但 Relay 尚未调用它们。M3 尚未退出；Relay 仓内的固定 Workflow、Artifact Adapter、Session checkpoint、WebSocket/UI E2E 仍未实现。
 
 Relay Page Artifact Adapter 的最小实现顺序固定为：
 
@@ -245,9 +254,11 @@ Relay Page Artifact Adapter 的最小实现顺序固定为：
 
 当前状态（2026-09-03）：Bundle 侧的 `pyproject.toml`、自包含契约的 sdist、
 `uvx` stdio 启动、Relay MCP 配置、DQE HTTP Adapter 和 Lab Data Context HTTP
-Adapter 已完成并经 Harness 验证。维度取值中心已保留 `DimensionValuePort`，
+Adapter 已完成并经 Harness 验证；两者默认生产传输均为可取消的 `httpx.AsyncClient`，不再用线程包装生产 HTTP 请求。维度取值中心已保留 `DimensionValuePort`，
 但仓内没有真实 MetricService URL/DTO，因此没有伪造 HTTP Adapter。M4 仍未退出：
 需真实元数据/DQE 环境、Relay 按用户身份注入和多用户权限实证。
+
+Data Context `version` 已从“数据集 id/更新时间摘要”收紧为完整规范化投影摘要，覆盖 environment、schemas、治理属性、维度取值和 `generatedAt`。因此治理或枚举值变化会发生换版，相同投影仍产生稳定版本，与 compose 的 `dataContextVersion` 冻结共同阻止混用。
 
 ### M5：Chat、事件、Relay 会话与恢复
 
@@ -276,7 +287,7 @@ pnpm authoring:e2e:relay
 验收分两轨：
 
 1. scripted model：三类模型决策固定，要求所有确定性结果、Port 调用和事件完全一致。
-2. 真实 LiteLLM/GLM：30–50 条黄金问题，few-shot 与评测样本分开，每条至少重复 5 次；
+2. 真实 LiteLLM/GLM：40 条黄金问题，few-shot 与评测样本分开，每条至少重复 5 次；
    严格安全不变式必须 100% 通过，语义质量用「可接受替代答案」和统计不退化判定。
 
 退出条件：无未解释 scripted diff；真实模型的安全门禁全过且质量指标达到 M0 冻结阈值。
@@ -315,44 +326,41 @@ pnpm authoring:e2e:relay
 | E5 非功能与安全 | p95、并发、取消、权限、幂等和冲突满足门禁 | 用户业务满意度 |
 | E6 影子/灰度 | 在真实流量和分布下不退化 | 未来变更永远不回归 |
 
-### 8.2 已有证据（2026-09-03）
+### 8.2 迁移起点的历史证据（基线提交）
+
+下表只记录本文页首基线提交的历史起点，不得用其测试数量代表当前工作树。
 
 | 证据 | 命令 | 结果 |
 |---|---|---|
-| Python Bundle 自洽 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 47/47 通过 |
-| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | 394 项 digest 校验通过 |
+| Python Bundle 自洽 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 基线命令通过；当前用例集已扩展，不沿用旧计数 |
+| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | 基线 digest 校验通过；当前文件数以最新生成和检查结果为准 |
 | 中立契约 | `pnpm authoring:contracts:check` | 171 个产品文件、3 个 Authoring 文件、1 个 Interface 文件无漂移 |
 | TS Ask/装配基线 | 定向 Vitest（Ask orchestrator、multi-unit、gap、model ports、retrieval、E2E、golden、MCP assembly） | 11 个文件、173/173 通过 |
 | TS Agent/事件/UI 基线 | 定向 Vitest（agent、agent-events、authoring-mcp、workbench） | 18 个文件通过、1 个跳过；134 通过、3 跳过 |
 
-### 8.3 目标架构首批切片证据（2026-09-03）
+### 8.3 当前 Bundle 可执行证据（2026-09-03）
 
 | 证据 | 命令/位置 | 结果 |
 |---|---|---|
-| 无保存 compose Interface | `test_compose_page.py` | 5/5 通过；依赖仅有 Data Context 与 DQE，成功产物通过 Artifact Schema，失败在远程调用前停止；多单元有序并发且失败按最低单元序号稳定归因 |
-| 旧保存路径兼容 | `test_build_page.py` | 28/28 通过；`build_page` 已变为 compose 后保存的兼容包装 |
-| Agent 中立契约 | `test_agent_contracts.py` | 5/5 通过；业务词、三类模型决策、步骤事件和 conformance Schema 合法，事件拒绝 DQE 结果行；5 条 TS 模型决策输出通过目标闭集 Schema |
-| TS→Python 业务词解析差分 | `agent-conformance.json` + `test_business_terms.py` | 15 条向量逐字段一致：5 条指标规范名/别名/最长命中/排序/歧义，10 条维度/取值/相对时间/分析意图/结构操作（含跨域维度歧义） |
-| TS 生产事件序列差分基线 | `agent-conformance.json` + `test_agent_contracts.py` | 3 条生产编排实跑向量通过：成功 6 事件，面外 discovery 降级，DQE 执行失败重试 1 次；事件顺序、终态、Port 顺序与执行次数均冻结 |
-| TS 类型与旧行为回归 | `pnpm --filter platform check`；定向 Vitest | 0 error / 0 warning；检索、模型端口、编排 3 文件 25/25 通过 |
-| Relay 双工具面与 Artifact 信封 | `test_stdio.py` | compatibility 面仍为 discover/build；Relay 面严格为 discover/compose；成功信封通过 Schema，摘要递归拒绝 document/rows/initial，失败不带 Artifact |
-| Relay 目标 Skill | `quick_validate.py` + `test_skill_contract.py` | frontmatter 合法；Relay MCP 注册前提、两个工具的调用契约、三类模型决策与工具的区分、九阶段状态机、临时页完成条件和显式沉淀边界被测试锁定 |
-| 整句业务词兜底 | `test_discover_data_context.py` | 模型未按 Skill 拆词而传入整句时，Tool 调用已迁移的确定性指标/维度/时间词解析，再返回受治理候选；逐词调用行为不变 |
-| DQE 生产 Adapter | `test_dqe_http.py` | 10 项验证请求体/三身份头、成功归一化、HTTP/条目错误映射、超时/网络分类、字段与行契约、权限提示 |
-| Data Context 生产 Adapter | `test_data_context_http.py` | 5 项验证 Lab 列表/详情请求、Schema 1.1 投影、`update_date` 摘要、失败关闭、超时/网络分类和 `DimensionValuePort` 富化 |
-| 生产组合根失败契约 | `test_server_config.py` | 3 项验证缺少 Data Context/DQE 配置和无效投影文件不会阻止 MCP 启动，调用时返回稳定结构化错误 |
-| sdist / Relay 启动 | `uv build --sdist` + `METRICCANVAS_TOOL_SURFACE=relay uvx --from <local.tar.gz> metriccanvas-authoring` | sdist 二次构建 wheel 成功；内含运行时契约、DQE/Data Context Adapter；FastMCP 3.4.7 stdio 启动成功 |
-| Bundle 当前完整回归 | `PYTHONDONTWRITEBYTECODE=1 metriccanvas-authoring/tool/.venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'` | 89/89 通过 |
-| Bundle 完整性 | `python3 metriccanvas-authoring/scripts/check_bundle.py` | Bundle 0.2.0，426 项 digest 校验通过 |
-| 契约生成 | `pnpm authoring:contracts` | 171 个产品文件、4 个生成 Authoring 文件、1 个 Interface 文件已生成；Authoring manifest 共 10 项 |
+| 发现输出契约 | [`test_discover_data_context.py`](../../metriccanvas-authoring/test-harness/tests/test_discover_data_context.py) + [`test_stdio.py`](../../metriccanvas-authoring/test-harness/tests/test_stdio.py) | 完整问题返回 `businessDomains`、`matches`、`resolution {candidates, selected, ambiguities}`、`time`、`intent`、`structureOperation`；敏感取值仍隐去，跨域并列候选不暗自选择 |
+| Agent Core 确定性规则 | [`test_agent_core.py`](../../metriccanvas-authoring/test-harness/tests/test_agent_core.py) | 稳定 ID/单调序号、四操作 reducer、未触及状态保持、target、直接消费 `structureOperation` 的结构 guard、组件话语、用户覆盖/模型路由闭集验真、重路由/消歧、意图降级、非 metric 候选过滤、部分可答与确认后 Metric Gap 事件均有正反例 |
+| Page Build Spec 与版本冻结 | [`test_page_build_spec.py`](../../metriccanvas-authoring/test-harness/tests/test_page_build_spec.py) + [`test_compose_page.py`](../../metriccanvas-authoring/test-harness/tests/test_compose_page.py) | 重复 `dataSourceId` 被拒绝；Spec 中 `dataContextVersion` 与当前快照不同时，在 DQE 之前返回 `DATA_CONTEXT_VERSION_CHANGED` |
+| compose 与呈现细节 | [`test_compose_page.py`](../../metriccanvas-authoring/test-harness/tests/test_compose_page.py) + [`test_build_page.py`](../../metriccanvas-authoring/test-harness/tests/test_build_page.py) | 稳定 ID 下的有序并发/失败归因、formula 轨迹与唯一临时指标标识、20 行样例 + 完整 `totalCount`、“问数结果” panel、组件问题聚合/修正候选已被锁定；`gauge/keyValuePanel/categoryBreakdown` 有逐类 props 定向 subtest，与既有 7 类合计 10 类可装配组件 |
+| 目录级组件选型 | [`test_component_selection.py`](../../metriccanvas-authoring/test-harness/tests/test_component_selection.py) | `recommend_components` 候选集合与产品 `component-catalog.json` 全量一致，目录 `defaultSpan`、TypeScript 行为表中的硬闸反例、意图排序和用户钉住均有直接证据；被钉住组件仍不能绕过硬闸 |
+| 12 列布局性质 | [`test_section_layout.py`](../../metriccanvas-authoring/test-harness/tests/test_section_layout.py) | 枚举 10 类可装配组件长度 1–4 的全部序列，验证每个视觉行恰好填满 12 列、每个 span 在 1–12 内；典型 Dashboard 比例和受控列数也有精确断言 |
+| 页面预检全量差分 | [`test_page_validation.py`](../../metriccanvas-authoring/test-harness/tests/test_page_validation.py) + [`page-conformance-pending.json`](../../metriccanvas-authoring/test-harness/fixtures/page-conformance-pending.json) | 10/10 合法向量全部接受；154/154 反例的 `type/path` 精确一致；`pendingValid=[]`、`pending=[]` |
+| 稳定失败与修正输入 | [`test_stdio.py`](../../metriccanvas-authoring/test-harness/tests/test_stdio.py) + [`test_compose_page.py`](../../metriccanvas-authoring/test-harness/tests/test_compose_page.py) + [`test_agent_contracts.py`](../../metriccanvas-authoring/test-harness/tests/test_agent_contracts.py) | 每个 Tool issue 都带 `retrySafe`；只有 `DQE_TRANSPORT_ERROR`/`DQE_TIMEOUT` 为 true；Page Build Spec 与组装阶段的闭集问题可带 `candidates`；`step_failed` 可承载 `path/retrySafe/candidates/completedStages` |
+| 生产 HTTP Adapter 与快照版本 | [`test_data_context_http.py`](../../metriccanvas-authoring/test-harness/tests/test_data_context_http.py) + [`test_dqe_http.py`](../../metriccanvas-authoring/test-harness/tests/test_dqe_http.py) | Lab Data Context 与 DQE 默认走 `httpx.AsyncClient`，async 传输取消可向下传播；同步 transport 仅作测试兼容。Data Context 完整投影摘要在内容相同时稳定，治理/维度取值改变时换版 |
+| Relay 双工具面与 Artifact 信封 | [`test_stdio.py`](../../metriccanvas-authoring/test-harness/tests/test_stdio.py) | compatibility 面为 discover/build，Relay 面严格为 discover/compose；成功产物含 `formulaTraces`，摘要递归拒绝 document/rows/initial，失败不带 Artifact |
+| Agent 中立契约与 TS 基线 | [`agent-conformance.json`](../../metriccanvas-authoring/contracts/exported/agent-conformance.json) + [`test_agent_contracts.py`](../../metriccanvas-authoring/test-harness/tests/test_agent_contracts.py) + [`test_business_terms.py`](../../metriccanvas-authoring/test-harness/tests/test_business_terms.py) | 三类模型决策和步骤事件 Schema 合法；5 条指标检索/消歧、10 条业务词和 3 条生产事件/Port 调用向量保留迁移基线 |
+| Bundle 回归 | `unittest discover`；隔离沙箱排除 `test_java_page_assets.py` | 非端口型用例当前 144/144 通过；另有 8 个依赖环回端口监听的 Java 页面资产 Adapter 用例须在允许监听的环境执行，不把沙箱 `PermissionError` 记作产品失败，也不沿用旧计数 |
+| Bundle 完整性与契约漂移 | `python3 metriccanvas-authoring/scripts/check_bundle.py` + `pnpm authoring:contracts:check` | 要求 Bundle digest、产品快照、Authoring manifest 和锁文件与当前生成结果一致；当前 digest 数以本次检查输出为准 |
 
-这组证据证明 M1/M2 首批切片、M3 的 Bundle 侧 Relay 接缝和 M4 的
-Bundle 侧 Adapter/分发包；不代表 M1、M2、M3、M4 或整体迁移完成；
+这组证据证明 M2 的 Bundle 内确定性实现与 Page conformance 门禁、M3 的 Bundle 侧 Relay 接缝和 M4 的 Bundle 侧 Adapter/分发包；不等于 M1/M2 全量黄金集差分、M3、M4 或整体迁移完成；
 compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `discover_data_context` 与 `compose_page`。
 真正切换前仍需 Relay Page Artifact Adapter 在 Relay 进程内隔离完整页面产物与模型摘要。
 
-8.2 表是迁移前基线，8.3 表是第一个实现切片；两者都不是切换证明。尚未被证明的包括：真实 Relay、真实 LiteLLM/GLM、真实 Data Context、
-真实 DQE、每用户身份、页面校验全对齐和 Agent 前半链跨实现差分。
+8.2 表是迁移前基线，8.3 表是当前 Bundle 证据；两者都不是生产切换证明。尚未被证明的包括：真实 Relay 固定 Workflow 调用 Agent Core、真实 LiteLLM/GLM、Relay Page Artifact/Session/UI 双通道、真实 Data Context/DQE、每用户身份和 Agent 前半链全量跨实现差分。
 
 ## 9. 硬切换门禁
 
@@ -402,7 +410,7 @@ compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `dis
 - D8（2026-09-03）：Relay Session 是分析会话、步骤事件和最新检查点的持久化所有者；
   Java 与浏览器不复制第二份会话库。
 - D9（2026-09-03）：页面校验欠账不阻塞早期 Relay 接线，但 M8 前必须达到 10/10 合法页面和
-  154/154 反例 `code/path` 对齐。
+  154/154 反例 `code/path` 对齐。该数值门禁已于当前 Bundle 达成，pending 为 0；真实 Relay/Java E2E 仍是独立门禁。
 - D10（2026-09-03）：真实模型使用 40 条黄金问题、每条 5 次；安全与闭集不变式 100%，
   整体可接受答案率不低于 90% 且不比旧链低超过 5 个百分点，任何问题不得 0/5。
 

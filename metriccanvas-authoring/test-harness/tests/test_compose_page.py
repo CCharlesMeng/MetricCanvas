@@ -111,7 +111,8 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(result.artifact)
         assert result.artifact is not None
         self.assertEqual(result.artifact.format_version, "1.0")
-        self.assertEqual(result.artifact.document, vector["expected"]["document"])
+        expected_document = vector["expected"]["document"]
+        self.assertEqual(result.artifact.document, expected_document)
         self.assertEqual(
             result.artifact.data_context_version,
             vector_input["dataContext"]["version"],
@@ -124,7 +125,7 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
             result.artifact.document_sha256,
             hashlib.sha256(
                 json.dumps(
-                    vector["expected"]["document"],
+                    expected_document,
                     sort_keys=True,
                     separators=(",", ":"),
                     ensure_ascii=False,
@@ -151,7 +152,9 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_executes_units_concurrently_but_keeps_artifact_order(self) -> None:
         spec = fixture("page-build-spec.json")
+        spec["units"][0]["dataSourceId"] = "result-4"
         second_unit = json.loads(json.dumps(spec["units"][0]))
+        second_unit["dataSourceId"] = "result-9"
         second_unit["title"] = "第二个取数单元"
         spec["units"].append(second_unit)
         dqe = ConcurrentDqePort()
@@ -173,15 +176,165 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
         sources = result.artifact.document["dataSources"]
         self.assertEqual(
             [
-                sources["unit-1"]["source"]["initial"]["rows"][0]["Tokens请求量"],
-                sources["unit-2"]["source"]["initial"]["rows"][0]["Tokens请求量"],
+                sources["result-4"]["source"]["initial"]["rows"][0]["Tokens请求量"],
+                sources["result-9"]["source"]["initial"]["rows"][0]["Tokens请求量"],
             ],
             [1, 2],
         )
 
+    async def test_embeds_at_most_twenty_rows_and_keeps_the_returned_count(self) -> None:
+        rows = [
+            {"区域": f"区域-{index}", "Tokens请求量": index}
+            for index in range(25)
+        ]
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=rows,
+                        captured_at="2026-09-03T00:00:00.000Z",
+                    )
+                ),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(
+                page_id="sample-row-limit",
+                spec=fixture("page-build-spec.json"),
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        assert result.artifact is not None
+        initial = result.artifact.document["dataSources"]["result"]["source"][
+            "initial"
+        ]
+        self.assertEqual(initial["rows"], rows[:20])
+        self.assertEqual(initial["totalCount"], 25)
+
+    async def test_formula_trace_and_visible_marker_are_part_of_the_artifact(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["metrics"] = [
+            {
+                "kind": "formula",
+                "expression": "Tokens请求量 / 1000",
+                "label": "千次请求量",
+                "unit": "千次",
+            }
+        ]
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=[{"区域": "华东", "千次请求量": 0.018}],
+                        captured_at="2026-09-03T00:00:00.000Z",
+                    )
+                ),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(page_id="formula-page", spec=spec)
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        assert result.artifact is not None
+        self.assertEqual(
+            result.artifact.to_payload()["formulaTraces"],
+            [
+                {
+                    "question": spec["question"],
+                    "expression": "Tokens请求量 / 1000",
+                    "referencedMetrics": ["Tokens请求量"],
+                }
+            ],
+        )
+        artifact_schema = json.loads(
+            (
+                BUNDLE_ROOT
+                / "contracts"
+                / "authored"
+                / "page-build-artifact.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            list(
+                Draft202012Validator(artifact_schema).iter_errors(
+                    result.artifact.to_payload()
+                )
+            ),
+            [],
+        )
+        component = result.artifact.document["sections"][1]["components"][0]
+        self.assertEqual(
+            component["props"]["title"],
+            "各区域 Tokens 请求量(临时指标)",
+        )
+
+    async def test_formula_marker_is_not_duplicated_in_an_explicit_title(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["title"] = "千次请求量(临时指标)"
+        spec["units"][0]["metrics"] = [
+            {
+                "kind": "formula",
+                "expression": "Tokens请求量 / 1000",
+                "label": "千次请求量",
+            }
+        ]
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=[{"区域": "华东", "千次请求量": 0.018}]
+                    )
+                ),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(page_id="formula-title", spec=spec)
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        assert result.artifact is not None
+        component = result.artifact.document["sections"][1]["components"][0]
+        self.assertEqual(component["props"]["title"].count("(临时指标)"), 1)
+
+    async def test_ask_content_section_keeps_title_and_panel_container(self) -> None:
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=[{"区域": "华东", "Tokens请求量": 18}]
+                    )
+                ),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(
+                page_id="ask-section-defaults",
+                spec=fixture("page-build-spec.json"),
+            )
+        )
+
+        self.assertTrue(result.ok, result.issues)
+        assert result.artifact is not None
+        header, content = result.artifact.document["sections"]
+        self.assertEqual(header["container"], "plain")
+        self.assertEqual(content["id"], "main")
+        self.assertEqual(content["title"], "问数结果")
+        self.assertEqual(content["container"], "panel")
+
     async def test_concurrent_failures_are_reported_by_lowest_unit_index(self) -> None:
         spec = fixture("page-build-spec.json")
         second_unit = json.loads(json.dumps(spec["units"][0]))
+        second_unit["dataSourceId"] = "result-2"
         second_unit["title"] = "第二个取数单元"
         spec["units"].append(second_unit)
         dqe = ConcurrentDqePort(
@@ -207,6 +360,155 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
             [(issue.code, issue.path, issue.stage) for issue in result.issues],
             [("DQE_TIMEOUT", "/units/0", "execution")],
         )
+        self.assertTrue(result.issues[0].retry_safe)
+
+    async def test_retry_safety_is_explicit_without_retrying_inside_compose(
+        self,
+    ) -> None:
+        for code, expected_retry_safe in (
+            ("DQE_TRANSPORT_ERROR", True),
+            ("DQE_FORBIDDEN", False),
+        ):
+            with self.subTest(code=code):
+                dqe = FakeDqeExecutionPort(error=DqeTestError(code))
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
+                        data_context=FakeDataContextPort(
+                            fixture("data-context.json")
+                        ),
+                        dqe=dqe,
+                    )
+                )
+
+                result = await compose_page(
+                    ComposePageCommand(
+                        page_id=f"retry-safe-{code.lower()}",
+                        spec=fixture("page-build-spec.json"),
+                    )
+                )
+
+                self.assertFalse(result.ok)
+                self.assertEqual(result.issues[0].code, code)
+                self.assertEqual(
+                    result.issues[0].retry_safe,
+                    expected_retry_safe,
+                )
+                self.assertEqual(len(dqe.calls), 1)
+
+    async def test_component_gate_reports_every_rejected_unit(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["pinnedComponent"] = "metricCard"
+        second_unit = json.loads(json.dumps(spec["units"][0]))
+        second_unit["dataSourceId"] = "result-2"
+        second_unit["title"] = "第二个不适配单元"
+        spec["units"].append(second_unit)
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(
+                    DqeExecutionResult(
+                        rows=[
+                            {"区域": "华东", "Tokens请求量": 18},
+                            {"区域": "华南", "Tokens请求量": 12},
+                        ]
+                    )
+                ),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(page_id="gate-issues", spec=spec)
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path, issue.stage) for issue in result.issues],
+            [
+                (
+                    "PINNED_COMPONENT_REJECTED",
+                    "/units/0/pinnedComponent",
+                    "presentation",
+                ),
+                (
+                    "PINNED_COMPONENT_REJECTED",
+                    "/units/1/pinnedComponent",
+                    "presentation",
+                ),
+            ],
+        )
+
+    async def test_manifest_name_failure_keeps_structured_candidates(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["units"][0]["metrics"][0]["name"] = "不存在的指标"
+        compose_page = create_compose_page(
+            ComposePageDependencies(
+                data_context=FakeDataContextPort(fixture("data-context.json")),
+                dqe=FakeDqeExecutionPort(DqeExecutionResult(rows=[])),
+            )
+        )
+
+        result = await compose_page(
+            ComposePageCommand(page_id="manifest-candidates", spec=spec)
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(result.issues[0].code, "METRIC_NOT_IN_DATA_CONTEXT")
+        self.assertEqual(result.issues[0].candidates, ("Tokens请求量",))
+        self.assertFalse(result.issues[0].retry_safe)
+
+    async def test_manifest_candidates_match_the_rejected_closed_set(self) -> None:
+        cases = (
+            (
+                "business-domain",
+                lambda spec: spec["units"][0].__setitem__(
+                    "businessDomain", "不存在的业务域"
+                ),
+                ("运营分析",),
+            ),
+            (
+                "dimension",
+                lambda spec: spec["units"][0]["groupBy"].__setitem__(
+                    0, "不存在的维度"
+                ),
+                ("区域", "统计周期"),
+            ),
+            (
+                "filter-value",
+                lambda spec: spec["units"][0].__setitem__(
+                    "filters", [{"dimension": "区域", "values": ["东北"]}]
+                ),
+                ("华东", "华南"),
+            ),
+            (
+                "time-granularity",
+                lambda spec: spec["units"][0]["time"].__setitem__(
+                    "granularity", "quarter"
+                ),
+                ("month",),
+            ),
+        )
+        for case, mutate, expected_candidates in cases:
+            with self.subTest(case=case):
+                spec = fixture("page-build-spec.json")
+                mutate(spec)
+                compose_page = create_compose_page(
+                    ComposePageDependencies(
+                        data_context=FakeDataContextPort(
+                            fixture("data-context.json")
+                        ),
+                        dqe=FakeDqeExecutionPort(DqeExecutionResult(rows=[])),
+                    )
+                )
+
+                result = await compose_page(
+                    ComposePageCommand(page_id=f"candidates-{case}", spec=spec)
+                )
+
+                self.assertFalse(result.ok)
+                self.assertEqual(
+                    result.issues[0].candidates,
+                    expected_candidates,
+                )
 
     async def test_invalid_spec_stops_before_discovery_and_execution(self) -> None:
         data_context = FakeDataContextPort(fixture("data-context.json"))
@@ -218,7 +520,11 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
         result = await compose_page(
             ComposePageCommand(
                 page_id="invalid",
-                spec={"question": "invalid", "units": []},
+                spec={
+                    "question": "invalid",
+                    "dataContextVersion": "2026-09-02.1",
+                    "units": [],
+                },
             )
         )
 
@@ -261,6 +567,33 @@ class ComposePageHarnessTest(unittest.IsolatedAsyncioTestCase):
             ],
         )
         self.assertEqual(data_context.calls, 0)
+        self.assertEqual(dqe.calls, [])
+
+    async def test_rejects_a_data_context_version_changed_after_discovery(self) -> None:
+        spec = fixture("page-build-spec.json")
+        spec["dataContextVersion"] = "stale-version"
+        data_context = FakeDataContextPort(fixture("data-context.json"))
+        dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[]))
+        compose_page = create_compose_page(
+            ComposePageDependencies(data_context=data_context, dqe=dqe)
+        )
+
+        result = await compose_page(
+            ComposePageCommand(page_id="version-frozen", spec=spec)
+        )
+
+        self.assertFalse(result.ok)
+        self.assertEqual(
+            [(issue.code, issue.path, issue.stage) for issue in result.issues],
+            [
+                (
+                    "DATA_CONTEXT_VERSION_CHANGED",
+                    "/dataContextVersion",
+                    "discovery",
+                )
+            ],
+        )
+        self.assertEqual(data_context.calls, 1)
         self.assertEqual(dqe.calls, [])
 
 

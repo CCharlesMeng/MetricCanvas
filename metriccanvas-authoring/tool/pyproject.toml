@@ -9,6 +9,7 @@ description = "Deterministic MetricCanvas authoring MCP tool"
 requires-python = ">=3.12"
 dependencies = [
   "fastmcp==3.4.7",
+  "httpx==0.28.1",
   "jsonschema==4.26.0",
   "pydantic==2.13.5",
   "typing-extensions==4.16.0",

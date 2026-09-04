@@ -9,8 +9,10 @@
     "spec": {
       "question": "上个月各区域的 Tokens 请求量是多少？",
       "description": "区域 Tokens 请求量对比",
+      "dataContextVersion": "2026-09-02.1",
       "units": [
         {
+          "dataSourceId": "result",
           "businessDomain": "运营分析",
           "metrics": [
             {
@@ -195,7 +197,7 @@
         "description": "区域 Tokens 请求量对比"
       },
       "dataSources": {
-        "unit-1": {
+        "result": {
           "fields": {
             "field-1": {
               "queryField": "区域",
@@ -280,15 +282,17 @@
         },
         {
           "id": "main",
+          "title": "问数结果",
+          "container": "panel",
           "components": [
             {
-              "id": "unit-1-bar-chart",
+              "id": "result-bar-chart",
               "type": "barChart",
               "layout": {
                 "span": 12
               },
               "data": {
-                "main": "unit-1"
+                "main": "result"
               },
               "props": {
                 "title": "各区域 Tokens 请求量",
@@ -313,8 +317,10 @@
         "spec": {
           "question": "上个月各区域的 Tokens 请求量是多少？",
           "description": "区域 Tokens 请求量对比",
+          "dataContextVersion": "2026-09-02.1",
           "units": [
             {
+              "dataSourceId": "result",
               "businessDomain": "运营分析",
               "metrics": [
                 {
@@ -443,8 +449,10 @@
         "spec": {
           "question": "上个月各区域的 Tokens 请求量是多少？",
           "description": "区域 Tokens 请求量对比",
+          "dataContextVersion": "2026-09-02.1",
           "units": [
             {
+              "dataSourceId": "result",
               "businessDomain": "运营分析",
               "metrics": [
                 {
@@ -573,8 +581,10 @@
         "spec": {
           "question": "上个月各区域的 Tokens 请求量是多少？",
           "description": "区域 Tokens 请求量对比",
+          "dataContextVersion": "2026-09-02.1",
           "units": [
             {
+              "dataSourceId": "result",
               "businessDomain": "运营分析",
               "metrics": [
                 {
@@ -710,8 +720,10 @@
         "spec": {
           "question": "上个月各区域的 Tokens 请求量是多少？",
           "description": "区域 Tokens 请求量对比",
+          "dataContextVersion": "2026-09-02.1",
           "units": [
             {
+              "dataSourceId": "result",
               "businessDomain": "运营分析",
               "metrics": [
                 {
@@ -847,8 +859,10 @@
         "spec": {
           "question": "上个月各区域的 Tokens 请求量是多少？",
           "description": "区域 Tokens 请求量对比",
+          "dataContextVersion": "2026-09-02.1",
           "units": [
             {
+              "dataSourceId": "result",
               "businessDomain": "运营分析",
               "metrics": [
                 {
@@ -991,7 +1005,7 @@
       "expectedIssues": [
         {
           "type": "SCHEMA_ERROR",
-          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "path": "/dataSources/result/source/initial/rows/0/Tokens请求量",
           "message": "DQE 内嵌初始行缺少映射字段:Tokens请求量"
         }
       ]
@@ -1015,7 +1029,7 @@
       "expectedIssues": [
         {
           "type": "SCHEMA_ERROR",
-          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "path": "/dataSources/result/source/initial/rows/0/Tokens请求量",
           "message": "DQE 字段 Tokens请求量 为 null，页面字段 field-2 声明 nullable=false"
         }
       ]
@@ -1039,7 +1053,7 @@
       "expectedIssues": [
         {
           "type": "SCHEMA_ERROR",
-          "path": "/dataSources/unit-1/source/initial/rows/0/Tokens请求量",
+          "path": "/dataSources/result/source/initial/rows/0/Tokens请求量",
           "message": "DQE 字段 Tokens请求量 不符合页面字段 field-2 的类型 number"
         }
       ]

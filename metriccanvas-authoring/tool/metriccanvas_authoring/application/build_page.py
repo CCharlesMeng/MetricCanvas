@@ -43,6 +43,7 @@ class BuildPageIssue:
     path: str
     message: str
     stage: FailureStage = "generation"
+    candidates: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True, slots=True)
@@ -79,6 +80,7 @@ def create_build_page(dependencies: BuildPageDependencies) -> BuildPage:
                         path=issue.path,
                         message=issue.message,
                         stage=issue.stage,
+                        candidates=issue.candidates,
                     )
                     for issue in composed.issues
                 ),

@@ -15,12 +15,14 @@ from metriccanvas_authoring.application.ports import (
 from metriccanvas_authoring.domain.data_context import parse_data_context
 from metriccanvas_authoring.domain.execution import (
     FailureStage,
+    FormulaTrace,
     failure_from_execution_error,
 )
 from metriccanvas_authoring.domain.idempotency import canonical_json
 from metriccanvas_authoring.domain.page_build_spec import validate_page_build_spec
 from metriccanvas_authoring.domain.page_building import (
     PageBuildingIssue,
+    PageBuildingIssues,
     assemble_page_document,
     derive_executable_units,
 )
@@ -45,6 +47,8 @@ class ComposePageIssue:
     path: str
     message: str
     stage: FailureStage = "generation"
+    candidates: tuple[str, ...] = ()
+    retry_safe: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -54,6 +58,7 @@ class PageBuildArtifact:
     document_sha256: str
     data_context_version: str
     bundle_version: str
+    formula_traces: tuple[FormulaTrace, ...]
 
     def to_payload(self) -> dict[str, Any]:
         return {
@@ -62,6 +67,7 @@ class PageBuildArtifact:
             "documentSha256": self.document_sha256,
             "dataContextVersion": self.data_context_version,
             "bundleVersion": self.bundle_version,
+            "formulaTraces": [trace.to_payload() for trace in self.formula_traces],
         }
 
 
@@ -85,7 +91,12 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
             return ComposePageResult(
                 ok=False,
                 issues=tuple(
-                    ComposePageIssue(issue.code, issue.path, issue.message)
+                    ComposePageIssue(
+                        issue.code,
+                        issue.path,
+                        issue.message,
+                        candidates=issue.candidates,
+                    )
                     for issue in spec_issues
                 ),
             )
@@ -136,12 +147,38 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
             )
         assert data_context is not None
 
+        expected_data_context_version = command.spec.get("dataContextVersion")
+        if (
+            isinstance(expected_data_context_version, str)
+            and expected_data_context_version != data_context.version
+        ):
+            return ComposePageResult(
+                ok=False,
+                issues=(
+                    ComposePageIssue(
+                        "DATA_CONTEXT_VERSION_CHANGED",
+                        "/dataContextVersion",
+                        "discovery data context version "
+                        f"{expected_data_context_version!r} does not match current "
+                        f"version {data_context.version!r}",
+                        stage="discovery",
+                    ),
+                ),
+            )
+
         try:
             units = derive_executable_units(command.spec, data_context)
         except PageBuildingIssue as issue:
             return ComposePageResult(
                 ok=False,
-                issues=(ComposePageIssue(issue.code, issue.path, issue.message),),
+                issues=(
+                    ComposePageIssue(
+                        issue.code,
+                        issue.path,
+                        issue.message,
+                        candidates=issue.candidates,
+                    ),
+                ),
                 completed_stages=("discovery",),
             )
 
@@ -164,6 +201,7 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                             path=f"/units/{unit_index}",
                             message=failure.message,
                             stage=failure.stage,
+                            retry_safe=failure.retry_safe,
                         ),
                     ),
                     completed_stages=("discovery", "generation"),
@@ -181,6 +219,21 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                 units=units,
                 executions=executions,
             )
+        except PageBuildingIssues as issue_group:
+            return ComposePageResult(
+                ok=False,
+                issues=tuple(
+                    ComposePageIssue(
+                        issue.code,
+                        issue.path,
+                        issue.message,
+                        stage="presentation",
+                        candidates=issue.candidates,
+                    )
+                    for issue in issue_group.issues
+                ),
+                completed_stages=("discovery", "generation", "execution"),
+            )
         except PageBuildingIssue as issue:
             return ComposePageResult(
                 ok=False,
@@ -190,6 +243,7 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                         issue.path,
                         issue.message,
                         stage="presentation",
+                        candidates=issue.candidates,
                     ),
                 ),
                 completed_stages=("discovery", "generation", "execution"),
@@ -221,6 +275,9 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                 ).hexdigest(),
                 data_context_version=data_context.version,
                 bundle_version=str(bundle_info["bundleVersion"]),
+                formula_traces=tuple(
+                    trace for unit in units for trace in unit.formula_traces
+                ),
             ),
             completed_stages=(
                 "discovery",

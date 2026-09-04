@@ -1,6 +1,7 @@
 # FastMCP 4.0 刚发布，真实 Relay 兼容性未可证；首个 stdio Harness 锁定在稳定 3.x 线。
 fastmcp==3.4.7
 # 生产源码直接导入的依赖显式声明，不依赖 FastMCP 的传递依赖偶然存在。
+httpx==0.28.1
 jsonschema==4.26.0
 pydantic==2.13.5
 typing-extensions==4.16.0

@@ -798,6 +798,7 @@ async function runStepEventScenario(
 }
 
 type ConformanceUnit = AskDataRequestUnitState & {
+  dataSourceId?: string;
   intent: AnalysisIntent;
   pinnedComponent?: ComponentCandidate['type'];
 };
@@ -805,6 +806,7 @@ type ConformanceUnit = AskDataRequestUnitState & {
 interface ConformanceSpec {
   question: string;
   description?: string;
+  dataContextVersion: string;
   units: ConformanceUnit[];
 }
 
@@ -841,16 +843,14 @@ async function buildPageConformanceVector(): Promise<unknown> {
       filterValues: []
     });
     return {
-      dataSourceId: `unit-${index + 1}`,
+      dataSourceId: rawUnit.dataSourceId ?? `unit-${index + 1}`,
       ...(unit.title === undefined ? {} : { title: unit.title }),
       fields: derived.fields,
       query: { language: 'dqe', body: derived.body },
       initial: {
         capturedAt: execution.capturedAt,
-        rows: execution.rows,
-        ...(execution.totalCount === undefined
-          ? {}
-          : { totalCount: execution.totalCount })
+        rows: execution.rows.slice(0, 20),
+        totalCount: execution.totalCount ?? execution.rows.length
       },
       intent: ANALYSIS_INTENT_TO_VISUALIZE[rawUnit.intent],
       ...(rawUnit.pinnedComponent === undefined
@@ -870,6 +870,8 @@ async function buildPageConformanceVector(): Promise<unknown> {
   const assembled = assembleTransientPage({
     pageId: command.pageId,
     ...(spec.description === undefined ? {} : { description: spec.description }),
+    sectionTitle: '问数结果',
+    container: 'panel',
     units
   });
   if (!assembled.ok) {
@@ -934,14 +936,14 @@ function buildPageValidationErrorCases(
     const units = structuredClone(validUnits);
     units[0]!.initial = {
       capturedAt: execution.capturedAt,
-      rows: execution.rows,
-      ...(execution.totalCount === undefined
-        ? {}
-        : { totalCount: execution.totalCount })
+      rows: execution.rows.slice(0, 20),
+      totalCount: execution.totalCount ?? execution.rows.length
     };
     const assembled = assembleTransientPage({
       pageId: command.pageId,
       ...(spec.description === undefined ? {} : { description: spec.description }),
+      sectionTitle: '问数结果',
+      container: 'panel',
       units
     });
     if (assembled.ok) {

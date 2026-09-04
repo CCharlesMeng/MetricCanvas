@@ -91,6 +91,11 @@ class RelaySkillContractTest(unittest.TestCase):
         )
         self.assertEqual(set(discovery_call), {"query", "limit"})
         self.assertEqual(set(compose_call), {"page_id", "spec"})
+        self.assertIn("dataContextVersion", compose_call["spec"])
+        self.assertEqual(
+            compose_call["spec"]["units"][0]["dataSourceId"],
+            "result",
+        )
 
         page_build_spec_schema = json.loads(
             (
@@ -124,7 +129,32 @@ class RelaySkillContractTest(unittest.TestCase):
         ):
             self.assertIn(f"`{state}`", body)
         self.assertIn("DQE_TRANSPORT_ERROR", body)
+        self.assertIn("DQE_TIMEOUT", body)
+        self.assertIn("retrySafe: true", body)
+        self.assertIn("retrySafe: false", body)
         self.assertIn("completedStages", body)
+
+    def test_skill_documents_executable_agent_core_and_rich_tool_contracts(self) -> None:
+        body = SKILL_PATH.read_text(encoding="utf-8")
+        for fact in (
+            "domain/agent_core.py",
+            "resolution.candidates[]",
+            "resolution.selected[]",
+            "resolution.ambiguities[]",
+            "businessDomains",
+            "time`、`intent`、`structureOperation",
+            "dataContextVersion",
+            "dataSourceId",
+            "droppedAdds",
+            "STRUCTURAL_INTENT_NOT_APPLIED",
+            "SCOPE_SELECTION_INVALID",
+            "metric_gap_recorded",
+            "formulaTraces",
+            "(临时指标)",
+            "前 20 行样例",
+            "candidates",
+        ):
+            self.assertIn(fact, body)
 
     def test_skill_keeps_persistence_outside_the_agent(self) -> None:
         body = SKILL_PATH.read_text(encoding="utf-8")

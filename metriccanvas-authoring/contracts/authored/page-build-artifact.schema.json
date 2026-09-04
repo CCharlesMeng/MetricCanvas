@@ -10,7 +10,8 @@
     "document",
     "documentSha256",
     "dataContextVersion",
-    "bundleVersion"
+    "bundleVersion",
+    "formulaTraces"
   ],
   "properties": {
     "formatVersion": {
@@ -30,6 +31,23 @@
     "bundleVersion": {
       "type": "string",
       "minLength": 1
+    },
+    "formulaTraces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["question", "expression", "referencedMetrics"],
+        "properties": {
+          "question": { "type": "string", "minLength": 1 },
+          "expression": { "type": "string", "minLength": 1 },
+          "referencedMetrics": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
     }
   }
 }

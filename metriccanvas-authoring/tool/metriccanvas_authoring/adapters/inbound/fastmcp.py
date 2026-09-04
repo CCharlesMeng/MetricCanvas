@@ -23,6 +23,7 @@ from metriccanvas_authoring.application.discover_data_context import (
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
+from metriccanvas_authoring.domain.execution import retry_safe_for_code
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 
@@ -66,17 +67,102 @@ PageBuildSpec = Annotated[
 ]
 
 
-class ToolIssue(TypedDict):
+class _ToolIssueRequired(TypedDict):
     code: str
     path: str
     message: str
     stage: str
+    retrySafe: bool
+
+
+class ToolIssue(_ToolIssueRequired, total=False):
+    candidates: list[str]
+
+
+TermKind = Literal[
+    "metric",
+    "dimension",
+    "dimension_value",
+    "relative_time",
+    "analysis_intent",
+    "structure_operation",
+]
+TermSource = Literal[
+    "canonical_name",
+    "alias",
+    "value_domain",
+    "relative_time_lexicon",
+    "analysis_intent_lexicon",
+    "structure_operation_lexicon",
+]
+
+
+class _DiscoveryTermRequired(TypedDict):
+    kind: TermKind
+    matchedTerm: str
+    canonicalName: str
+    businessDomain: str | None
+    source: TermSource
+    score: int
+
+
+class DiscoveryTerm(_DiscoveryTermRequired, total=False):
+    definition: str
+    start: int
+    end: int
+
+
+class _DiscoveryAmbiguityCandidateRequired(TypedDict):
+    kind: TermKind
+    canonicalName: str
+    businessDomain: str | None
+    score: int
+
+
+class DiscoveryAmbiguityCandidate(
+    _DiscoveryAmbiguityCandidateRequired, total=False
+):
+    definition: str
+
+
+class DiscoveryAmbiguity(TypedDict):
+    matchedTerm: str
+    candidates: list[DiscoveryAmbiguityCandidate]
+
+
+class DiscoveryResolution(TypedDict):
+    formatVersion: Literal["1.0"]
+    question: str
+    candidates: list[DiscoveryTerm]
+    selected: list[DiscoveryTerm]
+    ambiguities: list[DiscoveryAmbiguity]
+
+
+class DiscoveryTime(TypedDict):
+    granularity: str
+    start: str
+    end: str
+    providedBy: Literal["user"]
 
 
 class DiscoverDataContextOutput(TypedDict):
     ok: bool
     dataContextVersion: str | None
+    businessDomains: list[str]
     matches: list[dict[str, Any]]
+    resolution: DiscoveryResolution | None
+    time: DiscoveryTime | None
+    intent: Literal[
+        "comparison",
+        "trend",
+        "composition",
+        "ranking",
+        "detail",
+        "single_value",
+    ] | None
+    structureOperation: (
+        Literal["add", "remove", "replace", "split", "merge"] | None
+    )
     issues: list[ToolIssue]
 
 
@@ -98,12 +184,19 @@ class BuildPageOutput(TypedDict):
     issues: list[ToolIssue]
 
 
+class FormulaTraceOutput(TypedDict):
+    question: str
+    expression: str
+    referencedMetrics: list[str]
+
+
 class PageBuildArtifactOutput(TypedDict):
-    formatVersion: str
+    formatVersion: Literal["1.0"]
     document: dict[str, Any]
     documentSha256: str
     dataContextVersion: str
     bundleVersion: str
+    formulaTraces: list[FormulaTraceOutput]
 
 
 class RelayModelSummary(TypedDict):
@@ -174,18 +267,24 @@ def create_mcp_server(
         query: str,
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
     ) -> DiscoverDataContextOutput:
-        """Find governed MetricCanvas metrics and dimensions for a business term."""
+        """Return governed details and deterministic term disambiguation."""
         result = await discover(DiscoverDataContextCommand(query=query, limit=limit))
         return {
             "ok": result.ok,
             "dataContextVersion": result.data_context_version,
+            "businessDomains": list(result.business_domains),
             "matches": list(result.matches),
+            "resolution": result.resolution,
+            "time": result.time,
+            "intent": result.intent,
+            "structureOperation": result.structure_operation,
             "issues": [
                 {
                     "code": issue.code,
                     "path": issue.path,
                     "message": issue.message,
                     "stage": issue.stage,
+                    "retrySafe": retry_safe_for_code(issue.code),
                 }
                 for issue in result.issues
             ],
@@ -233,6 +332,12 @@ def create_mcp_server(
                         "path": issue.path,
                         "message": issue.message,
                         "stage": issue.stage,
+                        "retrySafe": issue.retry_safe,
+                        **(
+                            {}
+                            if not issue.candidates
+                            else {"candidates": list(issue.candidates)}
+                        ),
                     }
                     for issue in result.issues
                 ],
@@ -282,6 +387,12 @@ def create_mcp_server(
                         "path": issue.path,
                         "message": issue.message,
                         "stage": issue.stage,
+                        "retrySafe": retry_safe_for_code(issue.code),
+                        **(
+                            {}
+                            if not issue.candidates
+                            else {"candidates": list(issue.candidates)}
+                        ),
                     }
                     for issue in result.issues
                 ],

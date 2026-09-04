@@ -6,12 +6,13 @@ import json
 import socket
 import urllib.error
 import urllib.parse
-import urllib.request
 from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Mapping, Sequence
+
+import httpx
 
 from metriccanvas_authoring.application.ports import (
     DataContextError,
@@ -88,6 +89,7 @@ class LabDataContextHttpPort:
         dimension_values: DimensionValuePort | None = None,
         timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
         transport: HttpTransport | None = None,
+        async_transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:
         required = {
             "datasets_url_template": datasets_url_template,
@@ -103,6 +105,8 @@ class LabDataContextHttpPort:
             raise ValueError("datasets_url_template must contain {subjectId}")
         if "{datasetId}" not in detail_url_template:
             raise ValueError("detail_url_template must contain {datasetId}")
+        if transport is not None and async_transport is not None:
+            raise ValueError("transport and async_transport are mutually exclusive")
         self._datasets_url_template = datasets_url_template
         self._detail_url_template = detail_url_template
         self._subject_id = subject_id.strip()
@@ -112,7 +116,8 @@ class LabDataContextHttpPort:
         self._projection = projection
         self._dimension_values = dimension_values
         self._timeout_seconds = timeout_seconds
-        self._transport = transport or self._urllib_transport
+        self._transport = transport
+        self._async_transport = async_transport
         self._snapshot: dict[str, Any] | None = None
 
     async def current(self) -> JsonObject:
@@ -222,15 +227,18 @@ class LabDataContextHttpPort:
         self, url: str, headers: dict[str, str]
     ) -> Mapping[str, Any]:
         try:
-            status, raw = await asyncio.to_thread(
-                self._transport, "GET", url, headers, None
-            )
+            status, raw = await self._request("GET", url, headers, None)
         except DataContextError:
             raise
-        except (TimeoutError, socket.timeout) as error:
+        except (TimeoutError, socket.timeout, httpx.TimeoutException) as error:
             raise DataContextError(
                 "DATA_CONTEXT_TIMEOUT",
                 f"Lab metadata timed out after {self._timeout_seconds:g}s",
+            ) from error
+        except httpx.RequestError as error:
+            raise DataContextError(
+                "DATA_CONTEXT_TRANSPORT_ERROR",
+                f"Lab metadata is unreachable: {error}",
             ) from error
         except urllib.error.URLError as error:
             if isinstance(error.reason, (TimeoutError, socket.timeout)):
@@ -273,21 +281,29 @@ class LabDataContextHttpPort:
             )
         return decoded
 
-    def _urllib_transport(
+    async def _request(
         self,
         method: str,
         url: str,
         headers: dict[str, str],
         payload: bytes | None,
     ) -> HttpResponse:
-        request = urllib.request.Request(url, data=payload, method=method, headers=headers)
-        try:
-            with urllib.request.urlopen(
-                request, timeout=self._timeout_seconds
-            ) as response:
-                return response.status, response.read()
-        except urllib.error.HTTPError as error:
-            return error.code, error.read()
+        if self._transport is not None:
+            return await asyncio.to_thread(
+                self._transport, method, url, headers, payload
+            )
+        async with httpx.AsyncClient(
+            timeout=self._timeout_seconds,
+            transport=self._async_transport,
+            follow_redirects=True,
+        ) as client:
+            response = await client.request(
+                method,
+                url,
+                headers=headers,
+                content=payload,
+            )
+            return response.status_code, response.content
 
 
 def _project_snapshot(
@@ -300,10 +316,6 @@ def _project_snapshot(
     environment = projection.environment
     updates = [(_required_string(detail, "id"), _update_value(detail)) for detail in details]
     generated_at = _latest_update_timestamp(updates)
-    version_input = json.dumps(
-        sorted(updates), ensure_ascii=False, separators=(",", ":")
-    )
-    version = hashlib.sha256(version_input.encode("utf-8")).hexdigest()
     schemas = [
         _project_schema(
             detail,
@@ -312,10 +324,9 @@ def _project_snapshot(
         )
         for detail in details
     ]
-    return {
+    versioned_content = {
         "formatVersion": "1.1",
         "id": f"lab-subject:{subject_id}",
-        "version": version,
         "generatedAt": generated_at,
         "source": "lab-nl2sql2",
         "executionEnvironments": [
@@ -330,6 +341,16 @@ def _project_snapshot(
                 "security": _required_mapping(environment, "security"),
             }
         ],
+    }
+    version_input = json.dumps(
+        versioned_content,
+        ensure_ascii=False,
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return {
+        **versioned_content,
+        "version": hashlib.sha256(version_input.encode("utf-8")).hexdigest(),
     }
 
 

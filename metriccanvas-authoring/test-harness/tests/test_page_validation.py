@@ -26,13 +26,17 @@ def _issue_keys(issues) -> set[tuple[str, str]]:
 class PageContractConformanceTest(unittest.TestCase):
     """
     共享 conformance 向量由 TypeScript 单向导出，Java 与 TypeScript 同跑全部向量（ADR-0062）。
-    Python 侧的页面校验只是创作期预检，尚未对齐全部不变式：已对齐的向量必须逐条命中，
-    尚未对齐的登记在 page-conformance-pending.json 并被断言为仍不对齐——补齐后必须移出清单，
-    新增向量若两边都不在则测试失败，避免静默漏检。
+    Python 侧的页面校验是创作期预检，必须对齐全部导出不变式。
+    pending 注册表现在为空；新向量必须直接命中，不得通过扩大清单静默豁免。
     """
 
     def test_accepts_every_exported_valid_page(self) -> None:
         pending_valid, _pending = _load_pending()
+        self.assertEqual(
+            pending_valid,
+            frozenset(),
+            "page conformance pendingValid 已封闭，不得重新引入豁免",
+        )
         fixture_root = CONTRACT_ROOT / "page" / "conformance" / "valid"
         seen: set[str] = set()
         for fixture_path in sorted(fixture_root.glob("*.json")):
@@ -55,6 +59,11 @@ class PageContractConformanceTest(unittest.TestCase):
 
     def test_matches_every_covered_error_type_and_path(self) -> None:
         _pending_valid, pending = _load_pending()
+        self.assertEqual(
+            pending,
+            frozenset(),
+            "page conformance pending 已封闭，不得重新引入豁免",
+        )
         fixture_root = CONTRACT_ROOT / "page" / "conformance" / "invalid"
         seen: set[str] = set()
         for fixture_path in sorted(fixture_root.glob("*.json")):

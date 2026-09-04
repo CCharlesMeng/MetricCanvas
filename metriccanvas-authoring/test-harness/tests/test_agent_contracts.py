@@ -170,6 +170,59 @@ class AgentContractTest(unittest.TestCase):
             [],
         )
 
+    def test_model_decision_never_accepts_more_metrics_than_page_build_spec(self) -> None:
+        validator = Draft202012Validator(self.model_decision)
+        metrics = [
+            {"kind": "metric", "name": f"指标{index}"}
+            for index in range(1, 8)
+        ]
+        decisions = (
+            {
+                "decisionType": "submit_data_request_units",
+                "outcome": "units",
+                "units": [
+                    {
+                        "businessDomain": "运营分析",
+                        "metrics": metrics,
+                        "groupBy": [],
+                        "filters": [],
+                        "time": None,
+                    }
+                ],
+            },
+            {
+                "decisionType": "submit_data_request_units",
+                "outcome": "operations",
+                "operations": [
+                    {
+                        "op": "add",
+                        "unit": {
+                            "businessDomain": "运营分析",
+                            "metrics": metrics,
+                            "groupBy": [],
+                            "filters": [],
+                            "time": None,
+                        },
+                    }
+                ],
+            },
+            {
+                "decisionType": "submit_data_request_units",
+                "outcome": "operations",
+                "operations": [
+                    {
+                        "op": "modify",
+                        "dataSourceId": "result",
+                        "patch": {"metrics": metrics},
+                    }
+                ],
+            },
+        )
+
+        for decision in decisions:
+            with self.subTest(outcome=decision["outcome"]):
+                self.assertNotEqual(list(validator.iter_errors(decision)), [])
+
     def test_step_event_never_accepts_result_rows(self) -> None:
         safe_summary = {
             "type": "rows_ready",
@@ -188,6 +241,23 @@ class AgentContractTest(unittest.TestCase):
             "rows": [{"区域": "华东", "Tokens请求量": 18}],
         }
         self.assertNotEqual(list(validator.iter_errors(leaking_rows)), [])
+
+    def test_step_failure_can_persist_structured_tool_diagnostics(self) -> None:
+        event = {
+            "type": "step_failed",
+            "stage": "generation",
+            "code": "METRIC_NOT_IN_DATA_CONTEXT",
+            "message": "metric is not in data context",
+            "path": "/units/0/metrics/0/name",
+            "retrySafe": False,
+            "candidates": ["Tokens请求量"],
+            "completedStages": ["discovery"],
+        }
+
+        self.assertEqual(
+            list(Draft202012Validator(self.step_event).iter_errors(event)),
+            [],
+        )
 
 
 if __name__ == "__main__":

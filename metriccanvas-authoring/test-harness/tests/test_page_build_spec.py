@@ -54,6 +54,46 @@ class PageBuildSpecTest(unittest.TestCase):
                 ("PAGE_BUILD_SPEC_CLOSED_SET_ERROR", "/units/0/pinnedComponent"),
             },
         )
+        by_path = {issue.path: issue for issue in issues}
+        self.assertIn("comparison", by_path["/units/0/intent"].candidates)
+        self.assertIn(
+            "barChart",
+            by_path["/units/0/pinnedComponent"].candidates,
+        )
+
+    def test_requires_discovery_version_and_page_safe_stable_unit_id(self) -> None:
+        fixture = json.loads(
+            (BUNDLE_ROOT / "test-harness" / "fixtures" / "page-build-spec.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        del fixture["dataContextVersion"]
+        fixture["units"][0]["dataSourceId"] = "Result_1"
+
+        issues = validate_page_build_spec(fixture)
+
+        self.assertEqual(
+            {issue.path for issue in issues},
+            {"", "/units/0/dataSourceId"},
+        )
+
+    def test_accepts_stable_unit_ids_and_rejects_duplicates(self) -> None:
+        fixture = json.loads(
+            (BUNDLE_ROOT / "test-harness" / "fixtures" / "page-build-spec.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        second = json.loads(json.dumps(fixture["units"][0]))
+        fixture["units"][0]["dataSourceId"] = "result-4"
+        second["dataSourceId"] = "result-4"
+        fixture["units"].append(second)
+
+        issues = validate_page_build_spec(fixture)
+
+        self.assertEqual(
+            {(issue.code, issue.path) for issue in issues},
+            {("PAGE_BUILD_SPEC_DUPLICATE_UNIT_ID", "/units/1/dataSourceId")},
+        )
 
 
 if __name__ == "__main__":

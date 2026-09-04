@@ -33,6 +33,10 @@ class RankedMetricCandidate:
             "score": self.score,
         }
 
+    def to_term_match_payload(self) -> dict[str, Any]:
+        """Project the ranked metric into the shared term-resolution shape."""
+        return _match_payload(self)
+
 
 @dataclass(frozen=True, slots=True)
 class MetricTermResolution:
@@ -61,6 +65,7 @@ class MetricTermResolution:
 
 @dataclass(frozen=True, slots=True)
 class ResolvedBusinessTerms:
+    candidates: tuple[dict[str, Any], ...]
     resolution: dict[str, Any]
     time: dict[str, str] | None
     intent: str | None
@@ -217,6 +222,7 @@ def resolve_business_terms(
     matches.sort(key=_term_sort_key)
     selected, ambiguities = _disambiguate_terms(matches)
     return ResolvedBusinessTerms(
+        candidates=tuple(matches),
         resolution={
             "formatVersion": "1.0",
             "question": question,

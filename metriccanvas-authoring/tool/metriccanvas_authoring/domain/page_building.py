@@ -8,7 +8,7 @@ from metriccanvas_authoring.domain.component_selection import (
     recommend_components,
 )
 from metriccanvas_authoring.domain.data_context import DataContext, SemanticSurface
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.domain.execution import DqeExecutionResult, FormulaTrace
 from metriccanvas_authoring.domain.section_layout import pack_section_spans
 
 
@@ -17,6 +17,12 @@ class PageBuildingIssue(Exception):
     code: str
     path: str
     message: str
+    candidates: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True, slots=True)
+class PageBuildingIssues(Exception):
+    issues: tuple[PageBuildingIssue, ...]
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,6 +49,7 @@ class ExecutableUnit:
     intent: str
     pinned_component: str | None
     scope: UnitScope
+    formula_traces: tuple[FormulaTrace, ...]
 
     def effective_query(self) -> dict[str, Any]:
         return {
@@ -59,8 +66,18 @@ def derive_executable_units(
 ) -> list[ExecutableUnit]:
     """Derive DQE requests and field contracts from business-semantic units."""
     units: list[ExecutableUnit] = []
+    question = str(spec["question"]).strip()
+    seen_data_source_ids: set[str] = set()
     for index, raw_unit in enumerate(_sequence(spec["units"])):
         unit = _mapping(raw_unit)
+        data_source_id = _optional_string(unit.get("dataSourceId")) or f"unit-{index + 1}"
+        if data_source_id in seen_data_source_ids:
+            raise PageBuildingIssue(
+                code="PAGE_BUILD_SPEC_DUPLICATE_UNIT_ID",
+                path=f"/units/{index}/dataSourceId",
+                message=f"duplicate data request unit id: {data_source_id}",
+            )
+        seen_data_source_ids.add(data_source_id)
         business_domain = str(unit["businessDomain"])
         surface = data_context.surface(business_domain)
         if surface is None:
@@ -68,21 +85,70 @@ def derive_executable_units(
                 code="DATA_CONTEXT_NAME_NOT_FOUND",
                 path=f"/units/{index}/businessDomain",
                 message=f"business domain is not in data context: {business_domain}",
+                candidates=_candidate_names(
+                    business_domain,
+                    tuple(data_context.surfaces_by_domain),
+                ),
             )
+        formula_traces = _formula_traces(unit, data_context, question, index)
         fields = _field_contracts(unit, surface, index)
         query_body = _query_body(unit, surface, index)
         units.append(
             ExecutableUnit(
-                data_source_id=f"unit-{index + 1}",
-                title=_optional_string(unit.get("title")),
+                data_source_id=data_source_id,
+                title=_component_title(unit, question, bool(formula_traces)),
                 fields=fields,
                 query_body=query_body,
                 intent=str(unit["intent"]),
                 pinned_component=_optional_string(unit.get("pinnedComponent")),
                 scope=_scope_of(unit, surface),
+                formula_traces=formula_traces,
             )
         )
     return units
+
+
+def _formula_traces(
+    unit: Mapping[str, Any],
+    data_context: DataContext,
+    question: str,
+    unit_index: int,
+) -> tuple[FormulaTrace, ...]:
+    formulas = [
+        _mapping(raw_metric)
+        for raw_metric in _sequence(unit["metrics"])
+        if _mapping(raw_metric)["kind"] == "formula"
+    ]
+    if formulas and not question:
+        raise PageBuildingIssue(
+            code="FORMULA_QUESTION_MISSING",
+            path=f"/units/{unit_index}/metrics",
+            message="formula must retain the originating question",
+        )
+    metric_names = tuple(
+        dict.fromkeys(entry.name for entry in data_context.metric_entries)
+    )
+    return tuple(
+        FormulaTrace(
+            question=question,
+            expression=str(metric["expression"]),
+            referenced_metrics=tuple(
+                name for name in metric_names if name in str(metric["expression"])
+            ),
+        )
+        for metric in formulas
+    )
+
+
+def _component_title(
+    unit: Mapping[str, Any], question: str, has_formula: bool
+) -> str | None:
+    title = _optional_string(unit.get("title"))
+    if not has_formula:
+        return title
+    visible_title = title or question
+    marker = "(临时指标)"
+    return visible_title if marker in visible_title else f"{visible_title}{marker}"
 
 
 def assemble_page_document(
@@ -96,6 +162,7 @@ def assemble_page_document(
     """Assemble executed units into a current-version Page Metadata document."""
     data_sources: dict[str, Any] = {}
     components: list[dict[str, Any]] = []
+    issues: list[PageBuildingIssue] = []
     for unit_index, (unit, execution) in enumerate(
         zip(units, executions, strict=True)
     ):
@@ -106,18 +173,20 @@ def assemble_page_document(
         if execution.captured_at is not None:
             source["initial"] = {
                 "capturedAt": execution.captured_at,
-                "rows": [dict(row) for row in execution.rows],
-                **(
-                    {}
-                    if execution.total_count is None
-                    else {"totalCount": execution.total_count}
-                ),
+                "rows": [dict(row) for row in execution.sample_rows],
+                "totalCount": execution.effective_total_count,
             }
         data_sources[unit.data_source_id] = {
             "fields": unit.fields,
             "source": source,
         }
-        components.append(_component_for(unit, execution, unit_index))
+        try:
+            components.append(_component_for(unit, execution, unit_index))
+        except PageBuildingIssue as issue:
+            issues.append(issue)
+
+    if issues:
+        raise PageBuildingIssues(tuple(issues))
 
     return {
         "schemaVersion": schema_version,
@@ -143,6 +212,9 @@ def _field_contracts(
                 code="DIMENSION_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/groupBy/{dimension_index}",
                 message=f"dimension is not in data context: {name}",
+                candidates=_candidate_names(
+                    name, _canonical_dimension_names(surface)
+                ),
             )
         canonical_name = declaration.name
         time = unit.get("time")
@@ -189,6 +261,15 @@ def _field_contracts(
                 code="METRIC_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/metrics/{metric_index}/name",
                 message=f"metric is not in data context: {name}",
+                candidates=_candidate_names(
+                    name,
+                    tuple(
+                        dict.fromkeys(
+                            metric.name
+                            for metric in surface.metrics_by_name.values()
+                        )
+                    ),
+                ),
             )
         canonical_name = declaration.name
         field_number += 1
@@ -215,12 +296,7 @@ def _query_body(
     time = unit.get("time")
     if time is not None:
         granularity = str(_mapping(time)["granularity"])
-        allowed_granularities = {
-            granularity
-            for dimension in surface.dimensions_by_name.values()
-            if dimension.is_time
-            for granularity in dimension.granularities
-        }
+        allowed_granularities = _allowed_granularities(surface)
         if granularity not in allowed_granularities:
             raise PageBuildingIssue(
                 code="TIME_GRANULARITY_NOT_IN_DATA_CONTEXT",
@@ -228,6 +304,7 @@ def _query_body(
                 message=(
                     f"time granularity is not in data context: {granularity}"
                 ),
+                candidates=allowed_granularities,
             )
     dimension_filters: list[dict[str, Any]] = []
     for filter_index, raw_filter in enumerate(_sequence(unit["filters"])):
@@ -239,6 +316,9 @@ def _query_body(
                 code="DIMENSION_NOT_IN_DATA_CONTEXT",
                 path=f"/units/{unit_index}/filters/{filter_index}/dimension",
                 message=f"filter dimension is not in data context: {name}",
+                candidates=_candidate_names(
+                    name, _filter_dimension_names(surface)
+                ),
             )
         if declaration.is_time:
             raise PageBuildingIssue(
@@ -260,6 +340,7 @@ def _query_body(
                             f"dimension value is not in data context: "
                             f"{declaration.name}={value}"
                         ),
+                        candidates=declaration.values,
                     )
         dimension_filters.append(
             {
@@ -357,6 +438,9 @@ def _component_for(
         "lineChart",
         "pieChart",
         "table",
+        "gauge",
+        "keyValuePanel",
+        "categoryBreakdown",
         "rankingCard",
         "rankingDetailCard",
     }:
@@ -419,6 +503,28 @@ def _component_for(
             **({} if unit.title is None else {"title": unit.title}),
             "categoryField": dimensions[0][0],
             "valueField": measures[0][0],
+        }
+    elif selected.component_type == "gauge":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "valueField": measures[0][0],
+        }
+    elif selected.component_type == "keyValuePanel":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "items": [
+                {"label": field.get("label", field_id), "field": field_id}
+                for field_id, field in scalars
+            ],
+        }
+    elif selected.component_type == "categoryBreakdown":
+        props = {
+            **({} if unit.title is None else {"title": unit.title}),
+            "categoryField": dimensions[0][0],
+            "columns": [
+                {"label": field.get("label", field_id), "field": field_id}
+                for field_id, field in measures
+            ],
         }
     else:
         props = {
@@ -495,6 +601,8 @@ def _sections_of(
             header,
             {
                 "id": "main",
+                "title": "问数结果",
+                "container": "panel",
                 "components": _laid_out(list(components)),
             },
         ]
@@ -503,6 +611,7 @@ def _sections_of(
         {
             "id": f"scope-{index + 1}",
             "title": titles[index],
+            "container": "panel",
             "components": _laid_out(
                 [
                     component
@@ -634,3 +743,39 @@ def _sequence(value: object) -> Sequence[object]:
 
 def _optional_string(value: object) -> str | None:
     return value if isinstance(value, str) else None
+
+
+def _candidate_names(
+    unknown: str, names: tuple[str, ...], limit: int = 5
+) -> tuple[str, ...]:
+    partial = tuple(
+        name for name in names if name in unknown or unknown in name
+    )
+    return (partial or names)[:limit]
+
+
+def _canonical_dimension_names(surface: SemanticSurface) -> tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(
+            dimension.name for dimension in surface.dimensions_by_name.values()
+        )
+    )
+
+
+def _filter_dimension_names(surface: SemanticSurface) -> tuple[str, ...]:
+    return tuple(
+        name
+        for name in _canonical_dimension_names(surface)
+        if not _required_dimension(surface, name).is_time
+    )
+
+
+def _allowed_granularities(surface: SemanticSurface) -> tuple[str, ...]:
+    return tuple(
+        dict.fromkeys(
+            granularity
+            for dimension in surface.dimensions_by_name.values()
+            if dimension.is_time
+            for granularity in dimension.granularities
+        )
+    )

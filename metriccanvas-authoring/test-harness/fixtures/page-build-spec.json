@@ -1,8 +1,10 @@
 {
   "question": "上个月各区域的 Tokens 请求量是多少？",
   "description": "区域 Tokens 请求量对比",
+  "dataContextVersion": "2026-09-02.1",
   "units": [
     {
+      "dataSourceId": "result",
       "businessDomain": "运营分析",
       "metrics": [{ "kind": "metric", "name": "Tokens请求量" }],
       "groupBy": ["区域"],

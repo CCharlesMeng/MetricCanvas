@@ -8,6 +8,8 @@ from typing import Any, Mapping
 
 from metriccanvas_authoring.application.ports import DataContextError, DataContextPort
 from metriccanvas_authoring.domain.business_terms import (
+    MetricTermResolution,
+    ResolvedBusinessTerms,
     resolve_business_terms,
     resolve_metric_terms,
 )
@@ -42,7 +44,12 @@ class DiscoverDataContextIssue:
 class DiscoverDataContextResult:
     ok: bool
     data_context_version: str | None = None
+    business_domains: tuple[str, ...] = ()
     matches: tuple[Mapping[str, Any], ...] = ()
+    resolution: Mapping[str, Any] | None = None
+    time: Mapping[str, str] | None = None
+    intent: str | None = None
+    structure_operation: str | None = None
     issues: tuple[DiscoverDataContextIssue, ...] = ()
 
 
@@ -76,18 +83,49 @@ def create_discover_data_context(
                 ),
             )
         assert data_context is not None
+        business_domains = tuple(data_context.surfaces_by_domain)
+        metric_resolution = resolve_metric_terms(
+            question=command.query,
+            business_domains=business_domains,
+            metric_entries=data_context.metric_entries,
+            limit=command.limit,
+        )
+        business_resolution = resolve_business_terms(
+            question=command.query,
+            business_domains=business_domains,
+            dimension_entries=data_context.dimension_entries,
+            now=dependencies.now(),
+        )
         matches = data_context.search(command.query, command.limit)
         if not matches:
             matches = _fallback_sentence_search(
                 data_context,
-                command.query,
                 command.limit,
-                dependencies.now(),
+                metric_resolution,
+                business_resolution,
             )
+        metric_payload = metric_resolution.to_payload(command.query)
         return DiscoverDataContextResult(
             ok=True,
             data_context_version=data_context.version,
+            business_domains=business_domains,
             matches=matches,
+            resolution={
+                "formatVersion": "1.0",
+                "question": command.query,
+                "candidates": [
+                    candidate.to_term_match_payload()
+                    for candidate in metric_resolution.candidates
+                ]
+                + list(business_resolution.candidates),
+                "selected": list(metric_payload["matches"])
+                + list(business_resolution.resolution["matches"]),
+                "ambiguities": list(metric_payload["ambiguities"])
+                + list(business_resolution.resolution["ambiguities"]),
+            },
+            time=business_resolution.time,
+            intent=business_resolution.intent,
+            structure_operation=business_resolution.structure_operation,
         )
 
     return discover
@@ -95,24 +133,11 @@ def create_discover_data_context(
 
 def _fallback_sentence_search(
     data_context: DataContext,
-    question: str,
     limit: int,
-    now: datetime,
+    metric_resolution: MetricTermResolution,
+    business_resolution: ResolvedBusinessTerms,
 ) -> tuple[Mapping[str, Any], ...]:
     """Recover governed terms when a model sends a sentence instead of one term."""
-    business_domains = tuple(data_context.surfaces_by_domain)
-    metric_resolution = resolve_metric_terms(
-        question=question,
-        business_domains=business_domains,
-        metric_entries=data_context.metric_entries,
-        limit=limit,
-    )
-    business_resolution = resolve_business_terms(
-        question=question,
-        business_domains=business_domains,
-        dimension_entries=data_context.dimension_entries,
-        now=now,
-    )
     terms = [
         (candidate.metric_name, "metric")
         for candidate in metric_resolution.candidates

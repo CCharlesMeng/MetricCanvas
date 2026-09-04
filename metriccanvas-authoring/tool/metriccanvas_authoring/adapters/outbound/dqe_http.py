@@ -4,10 +4,11 @@ import asyncio
 import json
 import socket
 import urllib.error
-import urllib.request
 from collections.abc import Callable
 from datetime import date, datetime, timezone
 from typing import Any, Mapping
+
+import httpx
 
 from metriccanvas_authoring.application.ports import IdentityPort, JsonObject
 from metriccanvas_authoring.domain.execution import (
@@ -38,6 +39,7 @@ class DqeHttpExecutionPort:
         *,
         timeout_seconds: float = DEFAULT_TIMEOUT_SECONDS,
         transport: HttpTransport | None = None,
+        async_transport: httpx.AsyncBaseTransport | None = None,
         timestamp: TimestampFactory | None = None,
         forbidden_hint: str | None = None,
     ) -> None:
@@ -45,11 +47,14 @@ class DqeHttpExecutionPort:
             raise ValueError("base_url is required")
         if not workspace_id or not workspace_id.strip():
             raise ValueError("workspace_id is required")
+        if transport is not None and async_transport is not None:
+            raise ValueError("transport and async_transport are mutually exclusive")
         self._base_url = base_url.strip().rstrip("/")
         self._workspace_id = workspace_id.strip()
         self._identity = identity
         self._timeout_seconds = timeout_seconds
-        self._transport = transport or self._urllib_transport
+        self._transport = transport
+        self._async_transport = async_transport
         self._timestamp = timestamp or _utc_timestamp
         self._forbidden_hint = (forbidden_hint or "").strip() or None
 
@@ -75,14 +80,17 @@ class DqeHttpExecutionPort:
         payload = json.dumps(body, ensure_ascii=False).encode("utf-8")
         url = f"{self._base_url}/dsl/execute"
         try:
-            status, raw = await asyncio.to_thread(
-                self._transport, "POST", url, headers, payload
-            )
+            status, raw = await self._request("POST", url, headers, payload)
         except DqeExecutionError:
             raise
-        except (TimeoutError, socket.timeout) as error:
+        except (TimeoutError, socket.timeout, httpx.TimeoutException) as error:
             raise DqeExecutionError(
                 "DQE_TIMEOUT", f"DQE timed out after {self._timeout_seconds:g}s"
+            ) from error
+        except httpx.RequestError as error:
+            raise DqeExecutionError(
+                "DQE_TRANSPORT_ERROR",
+                f"DQE is unreachable at {self._base_url}: {error}",
             ) from error
         except urllib.error.URLError as error:
             if isinstance(error.reason, (TimeoutError, socket.timeout)):
@@ -129,21 +137,29 @@ class DqeHttpExecutionPort:
             captured_at=self._timestamp(),
         )
 
-    def _urllib_transport(
+    async def _request(
         self,
         method: str,
         url: str,
         headers: dict[str, str],
         payload: bytes | None,
     ) -> HttpResponse:
-        request = urllib.request.Request(url, data=payload, method=method, headers=headers)
-        try:
-            with urllib.request.urlopen(
-                request, timeout=self._timeout_seconds
-            ) as response:
-                return response.status, response.read()
-        except urllib.error.HTTPError as error:
-            return error.code, error.read()
+        if self._transport is not None:
+            return await asyncio.to_thread(
+                self._transport, method, url, headers, payload
+            )
+        async with httpx.AsyncClient(
+            timeout=self._timeout_seconds,
+            transport=self._async_transport,
+            follow_redirects=True,
+        ) as client:
+            response = await client.request(
+                method,
+                url,
+                headers=headers,
+                content=payload,
+            )
+            return response.status_code, response.content
 
 
 def _validate_effective_query(

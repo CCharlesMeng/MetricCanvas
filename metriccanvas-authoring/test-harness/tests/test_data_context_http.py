@@ -1,10 +1,13 @@
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import json
 import sys
 import unittest
 from pathlib import Path
+
+import httpx
 
 
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
@@ -171,8 +174,13 @@ class LabDataContextHttpPortTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(snapshot["id"], "lab-subject:subject one")
         expected_version = hashlib.sha256(
             json.dumps(
-                [["operations-dataset", "1788400000000"]],
+                {
+                    key: value
+                    for key, value in snapshot.items()
+                    if key != "version"
+                },
                 ensure_ascii=False,
+                sort_keys=True,
                 separators=(",", ":"),
             ).encode("utf-8")
         ).hexdigest()
@@ -218,6 +226,83 @@ class LabDataContextHttpPortTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(second, snapshot)
         self.assertIsNot(second, snapshot)
         self.assertEqual(len(transport.calls), 2)
+
+    async def test_version_covers_governance_and_projected_dimension_values(
+        self,
+    ) -> None:
+        ratio_projection = DataContextProjection.from_mapping(
+            {
+                "environment": PROJECTION.environment,
+                "defaults": {"nullable": False, "sensitive": False},
+                "metricGovernance": {
+                    "operations-dataset": {
+                        "Tokens请求量": {"isRatio": True}
+                    }
+                },
+            }
+        )
+
+        base = await create_port(RoutingTransport()).current()
+        same = await create_port(RoutingTransport()).current()
+        governed = await create_port(
+            RoutingTransport(), ratio_projection
+        ).current()
+        enriched = await create_port(
+            RoutingTransport(), dimension_values=StaticDimensionValues()
+        ).current()
+
+        self.assertEqual(base["version"], same["version"])
+        self.assertNotEqual(base["version"], governed["version"])
+        self.assertNotEqual(base["version"], enriched["version"])
+
+    async def test_default_async_discovery_cancels_in_flight_http_and_can_retry(
+        self,
+    ) -> None:
+        started = asyncio.Event()
+        cancelled = asyncio.Event()
+        attempts = 0
+
+        async def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                started.set()
+                try:
+                    await asyncio.Future()
+                except asyncio.CancelledError:
+                    cancelled.set()
+                    raise
+            body = (
+                {"datasets": [{"id": "operations-dataset"}]}
+                if "/subjects/" in request.url.path
+                else DATASET_DETAIL
+            )
+            return httpx.Response(200, json=body)
+
+        port = LabDataContextHttpPort(
+            datasets_url_template=(
+                "http://lab.local/subjects/{subjectId}/datasets"
+            ),
+            detail_url_template="http://lab.local/datasets/{datasetId}",
+            subject_id="subject one",
+            workspace_id="workspace-1",
+            app_code="metriccanvas",
+            identity=StaticIdentity(),
+            projection=PROJECTION,
+            transport=None,
+            async_transport=httpx.MockTransport(handler),
+        )
+
+        pending = asyncio.create_task(port.current())
+        await asyncio.wait_for(started.wait(), timeout=0.2)
+        pending.cancel()
+        with self.assertRaises(asyncio.CancelledError):
+            await pending
+        await asyncio.wait_for(cancelled.wait(), timeout=0.2)
+
+        snapshot = await asyncio.wait_for(port.current(), timeout=0.2)
+        self.assertEqual(snapshot["id"], "lab-subject:subject one")
+        self.assertEqual(attempts, 3)
 
     async def test_missing_ratio_governance_fails_closed(self) -> None:
         projection = DataContextProjection.from_mapping(

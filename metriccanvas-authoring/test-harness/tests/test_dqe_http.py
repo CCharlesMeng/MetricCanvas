@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import sys
 import unittest
 from pathlib import Path
+
+import httpx
 
 
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
@@ -133,6 +136,45 @@ class DqeHttpExecutionPortTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(headers["X-Operator-Id"], "operator-1")
         self.assertEqual(headers["X-Workspace-Id"], "workspace-1")
         self.assertEqual(json.loads(payload), EFFECTIVE_QUERY["body"])
+
+    async def test_default_async_request_is_cancelled_without_a_late_result(
+        self,
+    ) -> None:
+        started = asyncio.Event()
+        cancelled = asyncio.Event()
+        attempts = 0
+
+        async def handler(request: httpx.Request) -> httpx.Response:
+            nonlocal attempts
+            attempts += 1
+            if attempts == 1:
+                started.set()
+                try:
+                    await asyncio.Future()
+                except asyncio.CancelledError:
+                    cancelled.set()
+                    raise
+            return httpx.Response(200, json=envelope(total_count=3))
+
+        port = DqeHttpExecutionPort(
+            "http://dqe.local/rest/cdi/cdinl2databuilderservice/v1/",
+            "workspace-1",
+            StaticIdentity("operator-1", "token-1"),
+            transport=None,
+            async_transport=httpx.MockTransport(handler),
+            timestamp=lambda: "2026-09-03T08:00:00.000Z",
+        )
+
+        pending = asyncio.create_task(port.execute(EFFECTIVE_QUERY))
+        await asyncio.wait_for(started.wait(), timeout=0.2)
+        pending.cancel()
+        with self.assertRaises(asyncio.CancelledError):
+            await pending
+        await asyncio.wait_for(cancelled.wait(), timeout=0.2)
+
+        result = await asyncio.wait_for(port.execute(EFFECTIVE_QUERY), timeout=0.2)
+        self.assertEqual(result.total_count, 3)
+        self.assertEqual(attempts, 2)
 
     async def test_item_codes_map_to_stable_authoring_codes(self) -> None:
         mappings = {

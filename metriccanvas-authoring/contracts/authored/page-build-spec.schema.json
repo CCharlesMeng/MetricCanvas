@@ -5,10 +5,15 @@
   "description": "模型与确定性创作核心之间的业务语义契约；不得携带 DQE 查询、结果字段、组件 JSON、布局或页面协议版本。",
   "type": "object",
   "additionalProperties": false,
-  "required": ["question", "units"],
+  "required": ["question", "dataContextVersion", "units"],
   "properties": {
     "question": { "type": "string", "minLength": 1 },
     "description": { "type": "string" },
+    "dataContextVersion": {
+      "type": "string",
+      "minLength": 1,
+      "description": "发现阶段锁定的 Data Context 版本；组装时不一致则拒绝混用。"
+    },
     "baseRevision": {
       "type": "object",
       "additionalProperties": false,
@@ -32,6 +37,7 @@
       "additionalProperties": false,
       "required": [
         "businessDomain",
+        "dataSourceId",
         "metrics",
         "groupBy",
         "filters",
@@ -39,6 +45,11 @@
         "intent"
       ],
       "properties": {
+        "dataSourceId": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "由 Agent Core 分配并在多轮中保持不变的取数单元标识。"
+        },
         "businessDomain": { "type": "string", "minLength": 1 },
         "metrics": {
           "type": "array",

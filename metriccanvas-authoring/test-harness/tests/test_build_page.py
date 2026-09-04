@@ -92,7 +92,9 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
 
         self.assertTrue(result.ok, result.issues)
         self.assertEqual(dqe.calls, vector["expected"]["effectiveQueries"])
-        self.assertEqual(pages.calls[0]["document"], vector["expected"]["document"])
+        self.assertEqual(
+            pages.calls[0]["document"], vector["expected"]["document"]
+        )
 
     async def test_matches_typescript_manifest_error_conformance_vectors(self) -> None:
         vector = exported_contract("build-page-conformance.json")
@@ -270,7 +272,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(document["schemaVersion"], "5.4")
         self.assertEqual(document["id"], "tokens-by-region")
         self.assertEqual(
-            document["dataSources"]["unit-1"]["source"]["initial"],
+            document["dataSources"]["result"]["source"]["initial"],
             {
                 "capturedAt": "2026-09-02T00:00:01.000Z",
                 "rows": [
@@ -283,10 +285,10 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(
             first_bound_component(document),
             {
-                "id": "unit-1-bar-chart",
+                "id": "result-bar-chart",
                 "type": "barChart",
                 "layout": {"span": 12},
-                "data": {"main": "unit-1"},
+                "data": {"main": "result"},
                 "props": {
                     "title": "各区域 Tokens 请求量",
                     "categoryField": "field-1",
@@ -547,7 +549,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         component = first_bound_component(document)
         self.assertEqual(component["type"], "lineChart")
         self.assertEqual(component["props"]["xField"], "field-1")
-        self.assertEqual(document["dataSources"]["unit-1"]["fields"]["field-1"]["type"], "string")
+        self.assertEqual(document["dataSources"]["result"]["fields"]["field-1"]["type"], "string")
 
     async def test_unpinned_summary_selects_metric_card(self) -> None:
         spec = fixture("page-build-spec.json")
@@ -690,9 +692,71 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
             ],
         )
 
+    async def test_every_data_component_that_passes_the_gate_can_be_assembled(
+        self,
+    ) -> None:
+        cases = (
+            (
+                "gauge",
+                [],
+                {"Tokens请求量": 30},
+                {"valueField": "field-1"},
+            ),
+            (
+                "keyValuePanel",
+                ["区域"],
+                {"区域": "华东", "Tokens请求量": 18},
+                {
+                    "items": [
+                        {"label": "区域", "field": "field-1"},
+                        {"label": "Tokens请求量", "field": "field-2"},
+                    ]
+                },
+            ),
+            (
+                "categoryBreakdown",
+                ["区域"],
+                {"区域": "华东", "Tokens请求量": 18},
+                {
+                    "categoryField": "field-1",
+                    "columns": [
+                        {"label": "Tokens请求量", "field": "field-2"}
+                    ],
+                },
+            ),
+        )
+        for component_type, group_by, row, expected_props in cases:
+            with self.subTest(component_type=component_type):
+                spec = fixture("page-build-spec.json")
+                spec["units"][0]["groupBy"] = group_by
+                spec["units"][0]["pinnedComponent"] = component_type
+                data_context = FakeDataContextPort(fixture("data-context.json"))
+                dqe = FakeDqeExecutionPort(DqeExecutionResult(rows=[row]))
+                pages = FakePageAssetPort(
+                    SavedRevision("component-page", "revision-1", 1)
+                )
+                build_page = create_build_page(
+                    BuildPageDependencies(
+                        data_context=data_context,
+                        dqe=dqe,
+                        page_assets=pages,
+                    )
+                )
+
+                result = await build_page(
+                    BuildPageCommand(page_id="component-page", spec=spec)
+                )
+
+                self.assertTrue(result.ok, result.issues)
+                component = first_bound_component(pages.calls[0]["document"])
+                self.assertEqual(component["type"], component_type)
+                for key, expected in expected_props.items():
+                    self.assertEqual(component["props"][key], expected)
+
     async def test_page_header_and_content_sections_are_derived_from_scope(self) -> None:
         spec = fixture("page-build-spec.json")
         summary_unit = json.loads(json.dumps(spec["units"][0]))
+        summary_unit["dataSourceId"] = "result-2"
         summary_unit["groupBy"] = []
         summary_unit["intent"] = "single_value"
         summary_unit.pop("pinnedComponent")
@@ -748,18 +812,24 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
         )
         self.assertEqual(
             [
-                (section["id"], section["title"], section["components"][0]["type"])
+                (
+                    section["id"],
+                    section["title"],
+                    section["container"],
+                    section["components"][0]["type"],
+                )
                 for section in sections[1:]
             ],
             [
-                ("scope-1", "按区域", "barChart"),
-                ("scope-2", "总量", "metricCard"),
+                ("scope-1", "按区域", "panel", "barChart"),
+                ("scope-2", "总量", "panel", "metricCard"),
             ],
         )
 
     async def test_same_scope_components_share_one_fully_packed_row(self) -> None:
         spec = fixture("page-build-spec.json")
         second_unit = json.loads(json.dumps(spec["units"][0]))
+        second_unit["dataSourceId"] = "result-2"
         second_unit["title"] = "同口径对比二"
         spec["units"].append(second_unit)
         data_context = FakeDataContextPort(fixture("data-context.json"))

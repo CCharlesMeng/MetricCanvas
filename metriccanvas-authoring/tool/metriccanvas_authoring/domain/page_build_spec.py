@@ -19,8 +19,9 @@ class PageBuildSpecIssue:
     code: str
     path: str
     message: str
+    candidates: tuple[str, ...] = ()
 
-    def as_dict(self) -> dict[str, str]:
+    def as_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -44,7 +45,19 @@ def validate_page_build_spec(value: Any) -> list[PageBuildSpecIssue]:
         entry["type"]
         for entry in _read_product_json("page/component-catalog.json")
     }
+    data_source_ids: set[str] = set()
     for index, unit in enumerate(value["units"]):
+        data_source_id = unit.get("dataSourceId")
+        if data_source_id is not None:
+            if data_source_id in data_source_ids:
+                issues.append(
+                    PageBuildSpecIssue(
+                        code="PAGE_BUILD_SPEC_DUPLICATE_UNIT_ID",
+                        path=f"/units/{index}/dataSourceId",
+                        message=f"duplicate data request unit id: {data_source_id}",
+                    )
+                )
+            data_source_ids.add(data_source_id)
         intent = unit["intent"]
         if intent not in intents:
             issues.append(
@@ -52,6 +65,7 @@ def validate_page_build_spec(value: Any) -> list[PageBuildSpecIssue]:
                     code="PAGE_BUILD_SPEC_CLOSED_SET_ERROR",
                     path=f"/units/{index}/intent",
                     message=f"unknown analysis intent: {intent}",
+                    candidates=tuple(sorted(intents)),
                 )
             )
         pinned = unit.get("pinnedComponent")
@@ -61,6 +75,7 @@ def validate_page_build_spec(value: Any) -> list[PageBuildSpecIssue]:
                     code="PAGE_BUILD_SPEC_CLOSED_SET_ERROR",
                     path=f"/units/{index}/pinnedComponent",
                     message=f"unknown component type: {pinned}",
+                    candidates=tuple(sorted(component_types)),
                 )
             )
     return issues
