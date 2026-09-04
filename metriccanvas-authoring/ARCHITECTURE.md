@@ -3,6 +3,7 @@
 > 文档定位：当前创作 Agent 的维护者入口。需要修改执行逻辑、工具、契约、外部对接或测试时，先从本文定位，再进入实现文件。
 >
 > 当前基线：Authoring Bundle `0.2.0`，状态 `s5-in-progress`。目标架构以 [ADR-0064](../docs/adr/0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 为准。
+> Relay 实施顺序、伪代码与上线门禁见 [`RELAY-HANDOFF.md`](./RELAY-HANDOFF.md)。
 
 ## 1. 先明确“这个 Agent”包含什么
 
@@ -112,7 +113,7 @@ sequenceDiagram
     end
     Relay->>Relay: submit_data_request_units
     Relay->>Relay: Agent Core 归一化/稳定 ID/reducer/结构 guard/Metric Gap
-    Relay->>Relay: submit_analysis_intent + Agent Core 按单元降级
+    Relay->>Relay: 仅对新增/缺意图/明确改意图的单元 submit_analysis_intent + 降级
     Relay->>Compose: page_id + Page Build Spec（含发现版本与稳定 dataSourceId）
     Compose->>DQE: 最多 6 个取数单元有序并发执行
     DQE-->>Compose: 结果行 / 结构化错误
@@ -126,6 +127,9 @@ sequenceDiagram
 `received → discovering → routing → awaiting_user? → planning → composing → page_composed`
 
 失败或取消进入 `failed` / `cancelled`。上图中 Agent Core 的确定性规则已在本仓成为可执行 Python Module，但 Relay 还没有固定 Workflow 将其与三类模型决策串成生产状态机。因此可以单测这些规则，但 Skill 文案和未接线的 Domain API 仍不是真实 Relay 行为等价证据。
+图中意图在 compose 前是 Bundle 0.2.0 的必要物理顺序；它与
+ADR-0037 的执行后意图判定尚有待裁决的差异，见
+[`RELAY-HANDOFF.md`](./RELAY-HANDOFF.md#61-bundle-020-的可执行调用顺序)。
 
 ### 4.3 “分词”和模型调用到底在哪里
 
@@ -140,7 +144,7 @@ sequenceDiagram
 |---|---|---|
 | `route_business_domains` | 从 discovery `businessDomains` 闭集选择最多两个业务域 | [`agent-model-decision.schema.json`](./contracts/authored/agent-model-decision.schema.json) 的 `routeDecision` |
 | `submit_data_request_units` | 首次形成取数单元，或对已有单元执行 `add/modify/replace/remove` | 同文件 `unitDecision` |
-| `submit_analysis_intent` | 为每个被触及取数单元选择分析意图 | 同文件 `intentDecision` |
+| `submit_analysis_intent` | 仅为新增、缺意图或用户明确改意图的单元选择分析意图 | 同文件 `intentDecision` |
 
 ### 4.4 Agent Core 的可执行规则
 

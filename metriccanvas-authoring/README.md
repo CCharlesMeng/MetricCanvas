@@ -1,6 +1,6 @@
 # MetricCanvas Authoring Bundle
 
-维护者先读 [`ARCHITECTURE.md`](./ARCHITECTURE.md)：它按入口、执行链、Agent Core、Port/Adapter、契约和验收证据给出代码定位。本文只说明 Bundle 的交付形态和当前边界。
+维护者先读 [`ARCHITECTURE.md`](./ARCHITECTURE.md)：它按入口、执行链、Agent Core、Port/Adapter、契约和验收证据给出代码定位。将 Bundle 对接到 Relay 时直接执行 [`RELAY-HANDOFF.md`](./RELAY-HANDOFF.md)。本文只说明 Bundle 的交付形态和当前边界。
 
 ## Bundle 边界
 

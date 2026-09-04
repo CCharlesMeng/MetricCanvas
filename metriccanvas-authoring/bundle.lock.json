@@ -4,7 +4,7 @@
   "artifacts": [
     {
       "file": "ARCHITECTURE.md",
-      "sha256": "4d535c3dc88773dd98c1b069b8cc5af385ef337d6304e503b89e6fb47f752a9e"
+      "sha256": "bb351e8ad40536e4ada62a3b4b54caa45995dec317989349ff101eb3b34974f3"
     },
     {
       "file": "bundle.json",
@@ -744,7 +744,11 @@
     },
     {
       "file": "README.md",
-      "sha256": "5cf6e531701ef154bea6a5b81037aa82aebcb100347821e19df5e716b0f786cf"
+      "sha256": "4400b65f00a0bee0234d129815ebe70c220131f9782dc8e8a4e222da9370da46"
+    },
+    {
+      "file": "RELAY-HANDOFF.md",
+      "sha256": "0b0cdde0b4703ec41c89105f0bbe38c29b749a7a88ebe9832366d79a34842b37"
     },
     {
       "file": "relay/data-context-projection.example.json",
@@ -760,7 +764,7 @@
     },
     {
       "file": "skill/metriccanvas-page-builder/SKILL.md",
-      "sha256": "c5b5af924a9220e05284cfe4e4b2b9af112fa5b2e9aba1ad4b14bbd58cdd1b8e"
+      "sha256": "37541b334c702526b28275cba308dc0cc46642d36db11ce6b6a25b83ab3078b1"
     },
     {
       "file": "test-harness/adapters/__init__.py",

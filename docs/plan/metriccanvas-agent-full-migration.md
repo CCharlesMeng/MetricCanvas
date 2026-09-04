@@ -114,19 +114,23 @@ Relay Session Module 读取最新会话检查点
   → 确定性消歧；并列最高分时停下等待用户
   → 模型决策 2：形成取数单元或定向操作集
   → Python Agent Core 归一化操作，维持稳定 dataSourceId/nextOrdinal，执行 target、消费 structureOperation 的结构 guard 和六单元上限
-  → Python 清单校验；可修复违规最多回给模型一次
   → 条件式取数核对；歧义/formula/临时指标/模型补时间/超阈值才阻塞
-  → Python 派生 DQE 和预期结果字段契约
-  → 最多 6 个取数单元有序并发真实执行，并校验实际结果
-  → 模型决策 3：按每个取数单元判定分析意图
+  → 模型决策 3：只为新增、缺意图或用户明确要改意图的取数单元判定分析意图
   → Python Agent Core 按单元降级意图并处理组件话语；部分可答与 Metric Gap 分离
-  → Page Build Spec 必须携带发现版本和稳定 dataSourceId，compose 拒绝版本混用
-  → Python 组件硬闸、用户钉住项、口径组、页头、12 列布局与完整页面校验
+  → Page Build Spec 携带发现版本、稳定 dataSourceId 和分析意图后调用 compose_page
+  → compose_page 内部执行清单校验、DQE/预期字段派生、最多 6 单元有序并发真实执行和实际结果校验
+  → compose_page 内部执行组件硬闸、用户钉住项、口径组、页头、12 列布局与完整页面校验
   → Agent 输出结构化步骤事件与已校验临时页面文档
   → Relay Session Module 经 artifact 双通道保存步骤事件和最新会话检查点
   → 返回临时页面态给 Svelte 统一运行时渲染
   → 用户显式沉淀时，由平台能力调用 Java savePageRevision 创建资产态修订
 ```
+
+上述是 Bundle 0.2.0 的可执行物理调用顺序：Page Build Spec 要求
+`intent`，而 DQE 已封装在原子 `compose_page` 内，因此意图决策必须在
+compose 前完成。它与 ADR-0037 的“真实执行 → 意图判定”尚有冲突；
+M3A 按当前顺序接通，M3B 前必须用 ADR 在“执行前基于声明形状判定”
+与“将 compose 拆分为 plan/execute 以保留执行后判定”之间作出决策。
 
 ### 5.1 「分词」的精确位置
 
@@ -142,7 +146,7 @@ Relay Session Module 读取最新会话检查点
 |---|---|---|---|
 | `route_business_domains` | 问题 + discovery `businessDomains` 规范域闭集/简介 | 最多 2 个规范业务域 | 先 discovery 再路由；用户覆盖优先但也必须在闭集内；结果可见可改；失败重试 1 次 |
 | `submit_data_request_units` | 问题 + 命中域语义面 + top-N 候选 + 上轮单元 + target | 首轮单元集或 `add/modify/replace/remove` | 只能用闭集名；未提及显式设置不变；最多 6 个单元 |
-| `submit_analysis_intent` | 当前单元口径 + 上轮意图 | 六类意图之一 | 按单元调用；不注入其他单元的问句词；失败重试 1 次 |
+| `submit_analysis_intent` | 当前单元口径 + 上轮意图 | 六类意图之一 | 仅对新增、缺意图或明确改意图的单元调用；不注入其他单元的问句词；失败重试 1 次 |
 
 模型只提交上述决策；DQE 查询体、结果字段契约、组件 JSON、布局和页面协议版本不允许由模型填写。
 
@@ -400,7 +404,7 @@ compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `dis
 - D4（2026-09-03）：Agent 只产出通过校验的临时页面文档；临时页面的步骤事件与会话检查点保存
   属于 Platform Session Module，用户显式沉淀才进入 Java 页面资产 Module。
 - D5（2026-09-03）：冻结三类结构化模型决策及调用预算，不允许通用 Planner 自由循环：
-  域路由按需调用，口径成形允许一次失败重试和一次清单修复，分析意图按被触及单元调用并允许一次重试。
+  域路由按需调用，口径成形允许一次失败重试和一次清单修复，分析意图仅在被触及集合中对新增、缺值或明确改意图的单元调用，并允许一次重试。
 - D3（2026-09-03）：纯 Skill ReAct 只用于 M3A 过渡接线；最终 M8 前必须补可执行状态机或等价强制约束，
   否则不能宣称固定编排行为等价。
 - D7a（2026-09-03）：Agent/Python 只返回已校验 `PageBuildArtifact`，不保存临时页面、会话检查点或
