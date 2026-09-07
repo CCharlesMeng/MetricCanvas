@@ -1,8 +1,8 @@
-# ADR 基线:67 份决策记录的当前生效结论
+# ADR 基线:68 份已提交决策记录的当前生效结论
 
-`docs/adr/` 现有 67 份 ADR(0001–0067)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+本提交含 68 份 ADR（0001–0067、0069）；0068 已由并行 #109 工作预留，待其交付后合并索引。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0068-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(0068 已由 #109 预留，下一编号至少为 `0070`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -81,6 +81,7 @@
 | [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行边界(#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决) |
 | [0066](./0066-self-contained-rendering-engine-host-boundary.md) | 渲染引擎提供固定呈现与 JS 挂载入口，应用集成归宿主 | 已裁决宿主边界；#100 发布门禁、#103 真实集成、#101 身份接线分别落实 |
 | [0067](./0067-url-navigation-with-explicit-parameter-bindings.md) | 页面声明 URL 与显式参数绑定，跨页链接无需宿主地址解析 | 现行目标，尚未实现；#109 承接协议/运行时迁移，部分取代 0048 |
+| [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版采用真实 Java 与内存存储、DQE HTTP 仿真，请求凭据归宿主 | #99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -133,6 +134,8 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 **宿主与嵌入交付([ADR-0066](./0066-self-contained-rendering-engine-host-boundary.md))：** 引擎固定提供视觉呈现，宿主不指定字体、主题或其他样式。宿主获取并传入页面文档，提供数据网关并负责端点、凭据、登录恢复与重试；不新增页面仓储/身份端口。Svelte 使用 npm 入口，异构/普通 HTML 使用 JS 地址 + `mount`，`embed` 是包而非应用，不新增自定义元素、iframe 或引擎微前端协议。IOC 子应用与 platform 自行承担应用集成。`update` 为完整输入替换，运行依赖变化按原语义初始化；`filter-change` 只通知宿主，URL 同步可选且不得原样回灌重启会话。
 
 **导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，待 #109 实施)：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是当前待迁移实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
+
+**本地首版的替代边界([ADR-0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md)，#99)：** 使用真实 Java HTTP 服务与已有内存存储，接受重启清空；页面校验、修订与幂等逻辑保持真实，不以 Node offline lifecycle 绕过 Java。DQE 沿用 HTTP 仿真，只承诺有依据的协议和明确测试场景，未知能力明确失败，不代表真实 DQE/MySQL 验收。所有宿主数据请求的头和相关 Cookie 由宿主决定，本仓不新增身份适配器或用户切换器，也不补默认用户；服务端既有必填项与权限校验保留。旧 scripted/lexical 模型仅作测试与迁移对照，公共 Chat 未接通时显示不可用，其删除时机由 #102 与 #107/#108 对账；不可用状态不能满足 #95/#104 的完整终点线。
 
 ## 页面文档结构与书写原则
 
