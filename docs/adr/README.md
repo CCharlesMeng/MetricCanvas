@@ -1,8 +1,8 @@
-# ADR 基线:65 份决策记录的当前生效结论
+# ADR 基线:67 份决策记录的当前生效结论
 
-`docs/adr/` 现有 65 份 ADR(0001–0065)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 67 份 ADR(0001–0067)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0066-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0068-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -15,7 +15,7 @@
 | 编号 | 标题 | 现状 |
 |---|---|---|
 | [0001](./0001-domain-dsl-over-a2ui.md) | 自研领域 DSL,不用 A2UI | 现行 |
-| [0002](./0002-svelte-runtime.md) | 统一运行时用 Svelte + shadcn-svelte | 现行 |
+| [0002](./0002-svelte-runtime.md) | 统一运行时用 Svelte + shadcn-svelte | Svelte 现行；shadcn-svelte 未落地，宿主消费边界见 0066 |
 | [0003](./0003-strict-declarative-spec.md) | 页面规格严格声明式,禁表达式与脚本 | 现行(数据语义前提已由 0014 修订) |
 | [0004](./0004-git-storage-first-platform-later.md) | 一期规格存 Git,`PageRepository` 端口先行 | 现行(作为二期平台之外的离线/静态实现,与 0009 并存) |
 | [0005](./0005-build-over-open-source-bi.md) | 自研运行时,不魔改开源 BI | 现行(“数据服务唯一入口”前提已由 0014 修订,其余理由不变) |
@@ -61,7 +61,7 @@
 | [0045](./0045-graphql-query-branch-with-structured-predicates.md) | GraphQL 查询分支以结构化谓词表达,不透传 WHERE 模板 | 提议中(5.1 批次,未落地) |
 | [0046](./0046-controlled-computation-with-named-operators.md) | 受控计算以封闭具名算子分两批进入页面数据源 | 现行(第一批算子;第二批 `joinAggregate` 形状未定) |
 | [0047](./0047-first-class-page-parameters.md) | 页面参数一等化,与筛选器按可变性分界 | 现行 |
-| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由,运行时只上抛导航意图 | 现行 |
+| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由,运行时只上抛导航意图 | 导航目标/强制宿主接管已由 0067 裁决取代，待 #109 迁移；导航栈与回跳所有权仍有效 |
 | [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格服务端能力按数据源模式整体下推 | 提议中(呈现已落地,服务端排序筛选未解除) |
 | [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展,层级维度承载地图下钻 | 现行 |
 | [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进,主版本递增须论证 | 现行(2026-08-25 补了"零使用开放面可按次版本收紧"的例外) |
@@ -79,6 +79,8 @@
 | [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行(身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已被 0064 取代) |
 | [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行目标(Agent 不保存页面；Relay 需新增模型摘要/完整 artifact 双通道) |
 | [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行边界(#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决) |
+| [0066](./0066-self-contained-rendering-engine-host-boundary.md) | 渲染引擎提供固定呈现与 JS 挂载入口，应用集成归宿主 | 已裁决宿主边界；#100 发布门禁、#103 真实集成、#101 身份接线分别落实 |
+| [0067](./0067-url-navigation-with-explicit-parameter-bindings.md) | 页面声明 URL 与显式参数绑定，跨页链接无需宿主地址解析 | 现行目标，尚未实现；#109 承接协议/运行时迁移，部分取代 0048 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -92,7 +94,7 @@
 
 ## 技术栈与建设策略
 
-**现行结论:** 页面协议是自研的封闭领域 DSL,不采用 A2UI 或其他通用 agent→UI 协议;统一运行时基于 Svelte + shadcn-svelte 自建,不采用或魔改 Grafana/Superset/Rill 等开源 BI;页面规格保持严格声明式,禁止表达式、脚本和自定义样式,复杂计算不进入页面层。
+**现行结论:** 页面协议是自研的封闭领域 DSL,不采用 A2UI 或其他通用 agent→UI 协议;统一运行时基于 Svelte 自建,不采用或魔改 Grafana/Superset/Rill 等开源 BI;页面规格保持严格声明式,禁止表达式、脚本和自定义样式,复杂计算不进入页面层。ADR-0002 中 shadcn-svelte 的选型未落地，当前自建组件是实现事实；ADR-0066 明确它不是宿主消费前置，也不为文档对账引入该依赖。
 
 这四份决策的共同前提是"页面协议的可控性是核心诉求":只有封闭、紧凑、可被 JSON Schema 完整校验的领域 DSL,才能让 AI 生成结果可控、可自动修复。0005 论证自建运行时的理由中,"数据服务是唯一数据入口"这一条已被 0014 的查询产物模型修订(现在的数据入口是数据网关,按查询产物分发到 SQL/DQE/组合执行适配器),但"规格可控性""避免长期跟随开源上游演进""内网部署与身份整合成本"等其余理由不变。
 
@@ -127,6 +129,10 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、[ADR-0062](./0062-first-party-java-page-assets-module.md)、[ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)、[ADR-0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)。
 
 **创作与正式渲染的交付切口([ADR-0065](./0065-separate-metric-canvas-authoring-package.md))：** 创作覆盖层拆为独立包，对外组件名为 `MetricCanvas`，正式渲染使用 `RuntimeView`；创作包依赖渲染包，纯渲染的安装依赖与产物均不含创作专用代码。两种入口共用布局与渲染，文档、属性面板、保存和撤销历史仍由宿主管理。platform 一次性迁移并删除旧 `authoring` 参数与创作专用导出，不设兼容入口。该边界已由 #56 实现并完成专项回归，不再以 #55 的运行时会话提取为硬前置；包名、版本策略和跨包导出的公开契约由 #100 对账。本决策不重开 ADR-0060～0064 的目标架构。
+
+**宿主与嵌入交付([ADR-0066](./0066-self-contained-rendering-engine-host-boundary.md))：** 引擎固定提供视觉呈现，宿主不指定字体、主题或其他样式。宿主获取并传入页面文档，提供数据网关并负责端点、凭据、登录恢复与重试；不新增页面仓储/身份端口。Svelte 使用 npm 入口，异构/普通 HTML 使用 JS 地址 + `mount`，`embed` 是包而非应用，不新增自定义元素、iframe 或引擎微前端协议。IOC 子应用与 platform 自行承担应用集成。`update` 为完整输入替换，运行依赖变化按原语义初始化；`filter-change` 只通知宿主，URL 同步可选且不得原样回灌重启会话。
+
+**导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，待 #109 实施)：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是当前待迁移实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
 
 ## 页面文档结构与书写原则
 

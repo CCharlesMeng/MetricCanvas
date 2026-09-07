@@ -334,10 +334,13 @@ AI 总结组件是一个垂直组件 Module。Host 读取关联数据快照；�
 |---|---|
 | Canvas | 页面目录、页面渲染、预览、创作画布 |
 | Platform | 页面搭建、修订、模板和发布管理 |
-| Embed | 普通 HTML 或第三方应用中的统一运行时 |
 | DQE Sim | 本地 DQE 协议仿真 |
 
 Canvas 从 Platform API 或静态页面仓储加载页面。数据网关端点由应用环境配置注入。
+
+`packages/embed` 是渲染引擎的 JS 挂载入口，不是应用：普通 HTML 或异构宿主通过 JS 地址加载后调用 `mount`，Svelte/创作宿主使用 npm 入口。IOC 的独立微前端子应用与 platform 自行承担应用集成，引擎不实现微前端协议；不开放宿主字体、主题或其他视觉配置。页面文档由宿主加载，数据网关与身份恢复由宿主提供（[ADR-0066](adr/0066-self-contained-rendering-engine-host-boundary.md)）。
+
+导航的新目标是页面声明绝对/相对 URL 与显式参数绑定，默认按浏览器链接语义跳转，宿主无需解析目标 pageId；页面资产身份仍保留。该目标由 [#109](https://github.com/CCharlesMeng/MetricCanvas/issues/109) 实施，当前仍使用原 pageId 导航接口，不应将决策当作已实现能力（[ADR-0067](adr/0067-url-navigation-with-explicit-parameter-bindings.md)）。
 
 ## 15. 系统不变式
 

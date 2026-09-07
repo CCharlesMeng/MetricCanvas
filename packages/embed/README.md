@@ -2,6 +2,10 @@
 
 `@metriccanvas/embed` 把 MetricCanvas 统一运行时挂载到普通 HTML 页面或第三方浏览器应用中。
 
+这是渲染引擎的 JS 挂载入口，不是独立应用或自定义元素。宿主通过 JS 地址加载并调用 `mount`；视觉呈现由引擎统一提供，宿主不配置字体/主题。文档获取、数据网关与登录恢复等边界见[宿主契约](../../docs/host-contract.md)。
+
+**导航迁移提示：** [ADR-0067](../../docs/adr/0067-url-navigation-with-explicit-parameter-bindings.md) 已裁决改为页面声明普通 URL，但 [#109](https://github.com/CCharlesMeng/MetricCanvas/issues/109) 尚未实施。以下代码示例描述当前 API，不代表 URL 新协议已可用。
+
 构建产物：
 
 | 文件 | 用途 |
