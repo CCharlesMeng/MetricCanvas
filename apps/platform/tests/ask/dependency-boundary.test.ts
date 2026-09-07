@@ -42,8 +42,10 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   'visualization-intent.ts': ['@metriccanvas/mcp', '../session/step-event'],
   // 模型端口适配:ModelProvider(deepseek/scripted)→ 结构化决策。
   'model-port.ts': ['@metriccanvas/mcp', '../agent/types', '../session/step-event', './ports'],
-  // 无外部模型时的确定性回退。
-  'lexical-model.ts': ['@metriccanvas/mcp', './ports']
+  // 业务词项的确定性匹配:语义面词表 + 意图闭集 + 取数单元时间形状。
+  'business-terms.ts': ['@metriccanvas/mcp', '../session/step-event', './ports'],
+  // 无外部模型时的确定性回退,词项匹配复用 business-terms 而不自带一份词表。
+  'lexical-model.ts': ['@metriccanvas/mcp', './business-terms', './ports']
 };
 
 function importsOf(source: string): string[] {
