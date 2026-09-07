@@ -1,16 +1,35 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { build } from 'vite';
 
+interface WorkspacePackage {
+  path: string;
+  manifest: {
+    name: string;
+    dependencies?: Record<string, string>;
+    optionalDependencies?: Record<string, string>;
+    peerDependencies?: Record<string, string>;
+  };
+}
+
 const root = fileURLToPath(new URL('../../..', import.meta.url));
+
+/** packages/ 下既有包，也有按交付物分组的目录(ADR-0071)，分组目录自身没有 manifest。 */
+function discoverPackages(directory: string, depth = 0): WorkspacePackage[] {
+  const manifestPath = resolve(directory, 'package.json');
+  if (existsSync(manifestPath)) {
+    return [{ path: directory, manifest: JSON.parse(readFileSync(manifestPath, 'utf8')) }];
+  }
+  if (depth > 1) return [];
+  return readdirSync(directory, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .flatMap((entry) => discoverPackages(resolve(directory, entry.name), depth + 1));
+}
+
 const packages = new Map(
-  readdirSync(resolve(root, 'packages')).map((directory) => {
-    const path = resolve(root, 'packages', directory);
-    const manifest = JSON.parse(readFileSync(resolve(path, 'package.json'), 'utf8'));
-    return [manifest.name, { path, manifest }];
-  })
+  discoverPackages(resolve(root, 'packages')).map((pkg) => [pkg.manifest.name, pkg])
 );
 
 function installedWorkspaceDependencies(name: string, found = new Set<string>()): Set<string> {

@@ -5,10 +5,10 @@ import {
   type Page,
   type Row
 } from '@metriccanvas/page';
-import inlineReportDocument from '../../page/fixtures/contract-valid/inline-report.json';
-import mixedPageDocument from '../../page/fixtures/contract-valid/mixed-page.json';
-import queryDashboardDocument from '../../page/fixtures/contract-valid/query-dashboard.json';
-import tokensReportDocument from '../../../pages/tokens-report.json';
+import inlineReportDocument from '../../../page/fixtures/contract-valid/inline-report.json';
+import mixedPageDocument from '../../../page/fixtures/contract-valid/mixed-page.json';
+import queryDashboardDocument from '../../../page/fixtures/contract-valid/query-dashboard.json';
+import tokensReportDocument from '../../../../pages/tokens-report.json';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import type { DataGateway } from '../src/ports';
 

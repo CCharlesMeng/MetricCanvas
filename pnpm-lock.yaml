@@ -25,19 +25,19 @@ importers:
     dependencies:
       '@metriccanvas/data-gateway':
         specifier: workspace:*
-        version: link:../../packages/data-gateway
+        version: link:../../packages/engine/data-gateway
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../../packages/page
       '@metriccanvas/runtime':
         specifier: workspace:*
-        version: link:../../packages/runtime
+        version: link:../../packages/engine/runtime
       '@metriccanvas/runtime-ui':
         specifier: workspace:*
-        version: link:../../packages/runtime-ui
+        version: link:../../packages/engine/runtime-ui
       '@metriccanvas/widgets':
         specifier: workspace:*
-        version: link:../../packages/widgets
+        version: link:../../packages/engine/widgets
     devDependencies:
       '@sveltejs/adapter-static':
         specifier: ^3.0.10
@@ -65,7 +65,7 @@ importers:
     dependencies:
       '@metriccanvas/data-gateway':
         specifier: workspace:*
-        version: link:../../packages/data-gateway
+        version: link:../../packages/engine/data-gateway
       '@metriccanvas/mcp':
         specifier: workspace:*
         version: link:../../packages/mcp
@@ -86,10 +86,10 @@ importers:
         version: link:../../packages/persistence-postgres
       '@metriccanvas/runtime':
         specifier: workspace:*
-        version: link:../../packages/runtime
+        version: link:../../packages/engine/runtime
       '@metriccanvas/runtime-ui':
         specifier: workspace:*
-        version: link:../../packages/runtime-ui
+        version: link:../../packages/engine/runtime-ui
       '@metriccanvas/template-library':
         specifier: workspace:*
         version: link:../../packages/template-library
@@ -113,33 +113,20 @@ importers:
         specifier: ^8.1.5
         version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(tsx@4.23.1)(yaml@2.9.0)
 
-  packages/data-gateway:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      '@metriccanvas/runtime':
-        specifier: workspace:*
-        version: link:../runtime
-    devDependencies:
-      '@metriccanvas/dqe-sim':
-        specifier: workspace:*
-        version: link:../../tools/dqe-sim
-
   packages/embed:
     dependencies:
       '@metriccanvas/data-gateway':
         specifier: workspace:*
-        version: link:../data-gateway
+        version: link:../engine/data-gateway
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page
       '@metriccanvas/runtime':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../engine/runtime
       '@metriccanvas/runtime-ui':
         specifier: workspace:*
-        version: link:../runtime-ui
+        version: link:../engine/runtime-ui
       svelte:
         specifier: ^5.56.6
         version: 5.56.6
@@ -159,6 +146,69 @@ importers:
       vite:
         specifier: ^8.1.5
         version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(tsx@4.23.1)(yaml@2.9.0)
+
+  packages/engine/data-gateway:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../page
+      '@metriccanvas/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+    devDependencies:
+      '@metriccanvas/dqe-sim':
+        specifier: workspace:*
+        version: link:../../../tools/dqe-sim
+
+  packages/engine/runtime:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../page
+      svelte:
+        specifier: ^5.0.0
+        version: 5.56.6
+
+  packages/engine/runtime-ui:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../page
+      '@metriccanvas/runtime':
+        specifier: workspace:*
+        version: link:../runtime
+      '@metriccanvas/widgets':
+        specifier: workspace:*
+        version: link:../widgets
+    devDependencies:
+      svelte:
+        specifier: ^5.56.6
+        version: 5.56.6
+      svelte-check:
+        specifier: ^4.7.3
+        version: 4.7.3(picomatch@4.0.5)(svelte@5.56.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/engine/widgets:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../page
+      echarts:
+        specifier: ^6.1.0
+        version: 6.1.0
+    devDependencies:
+      svelte:
+        specifier: ^5.56.6
+        version: 5.56.6
+      svelte-check:
+        specifier: ^4.7.3
+        version: 4.7.3(picomatch@4.0.5)(svelte@5.56.6)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
 
   packages/mcp:
     dependencies:
@@ -192,11 +242,11 @@ importers:
         version: link:../page
       '@metriccanvas/runtime-ui':
         specifier: workspace:*
-        version: link:../runtime-ui
+        version: link:../engine/runtime-ui
     devDependencies:
       '@metriccanvas/runtime':
         specifier: workspace:*
-        version: link:../runtime
+        version: link:../engine/runtime
       '@playwright/test':
         specifier: ^1.62.0
         version: 1.62.0
@@ -278,37 +328,6 @@ importers:
         specifier: ^12.0.4
         version: 12.0.4
 
-  packages/runtime:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      svelte:
-        specifier: ^5.0.0
-        version: 5.56.6
-
-  packages/runtime-ui:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      '@metriccanvas/runtime':
-        specifier: workspace:*
-        version: link:../runtime
-      '@metriccanvas/widgets':
-        specifier: workspace:*
-        version: link:../widgets
-    devDependencies:
-      svelte:
-        specifier: ^5.56.6
-        version: 5.56.6
-      svelte-check:
-        specifier: ^4.7.3
-        version: 4.7.3(picomatch@4.0.5)(svelte@5.56.6)(typescript@5.9.3)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
   packages/template-library:
     dependencies:
       '@metriccanvas/page-lifecycle':
@@ -318,25 +337,6 @@ importers:
       '@metriccanvas/page':
         specifier: workspace:*
         version: link:../page
-
-  packages/widgets:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      echarts:
-        specifier: ^6.1.0
-        version: 6.1.0
-    devDependencies:
-      svelte:
-        specifier: ^5.56.6
-        version: 5.56.6
-      svelte-check:
-        specifier: ^4.7.3
-        version: 4.7.3(picomatch@4.0.5)(svelte@5.56.6)(typescript@5.9.3)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
 
   tools/design-facts: {}
 

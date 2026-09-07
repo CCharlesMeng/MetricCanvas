@@ -8,7 +8,7 @@
   "include": [
     "src/**/*.ts",
     "src/**/*.svelte",
-    "../widgets/src/assets.d.ts",
+    "../engine/widgets/src/assets.d.ts",
     "tests/browser/harness/**/*.svelte"
   ]
 }

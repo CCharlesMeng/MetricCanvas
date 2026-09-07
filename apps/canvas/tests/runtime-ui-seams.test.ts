@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
 const repoRoot = fileURLToPath(new URL('../../..', import.meta.url));
-const runtimeUiRoot = resolve(repoRoot, 'packages/runtime-ui/src');
+const runtimeUiRoot = resolve(repoRoot, 'packages/engine/runtime-ui/src');
 
 function sourceFiles(root: string): string[] {
   return readdirSync(root, { withFileTypes: true }).flatMap((entry) => {

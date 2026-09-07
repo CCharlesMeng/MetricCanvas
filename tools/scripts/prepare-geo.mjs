@@ -1,6 +1,6 @@
 /**
  * geojson 底图资产制备脚本(一次性,产物入库;资产更新时重跑):
- * 原始数据 → 精简后写入 packages/widgets/src/components/map-chart/maps/。
+ * 原始数据 → 精简后写入 packages/engine/widgets/src/components/map-chart/maps/。
  *
  * 原始数据来源与许可(选 Natural Earth 的理由:公有领域,无许可风险;
  * 此前用过的 DataV 边界数据无开放许可承诺、johan/world.geo.json 无 LICENSE,均弃用):
@@ -27,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 const outDir = join(
   dirname(fileURLToPath(import.meta.url)),
-  '../../packages/widgets/src/components/map-chart/maps'
+  '../../packages/engine/widgets/src/components/map-chart/maps'
 );
 const [admin1Raw, countriesRaw] = process.argv.slice(2);
 if (!admin1Raw || !countriesRaw) {

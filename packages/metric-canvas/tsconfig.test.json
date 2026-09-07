@@ -5,6 +5,6 @@
     "tests/**/*.ts",
     "playwright.config.ts",
     "vite.config.ts",
-    "../widgets/src/assets.d.ts"
+    "../engine/widgets/src/assets.d.ts"
   ]
 }

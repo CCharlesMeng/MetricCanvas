@@ -13,9 +13,9 @@ const sourceExtensions = new Set(['.css', '.js', '.json', '.svelte', '.ts']);
  * 页面参数把它们开起来(issue #47)。
  */
 const renderChannelRoots = [
-  'packages/runtime/src',
-  'packages/runtime-ui/src',
-  'packages/widgets/src',
+  'packages/engine/runtime/src',
+  'packages/engine/runtime-ui/src',
+  'packages/engine/widgets/src',
   'packages/embed/src',
   'apps/canvas/src'
 ].map((root) => resolve(repoRoot, root));

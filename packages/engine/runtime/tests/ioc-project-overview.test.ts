@@ -17,7 +17,7 @@ import {
 
 const document = JSON.parse(
   readFileSync(
-    fileURLToPath(new URL('../../../pages/ioc-project-overview.json', import.meta.url)),
+    fileURLToPath(new URL('../../../../pages/ioc-project-overview.json', import.meta.url)),
     'utf8'
   )
 ) as Record<string, unknown>;
