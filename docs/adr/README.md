@@ -1,8 +1,8 @@
-# ADR 基线:70 份决策记录的当前生效结论
+# ADR 基线:73 份决策记录的当前生效结论
 
-`docs/adr/` 现有 72 份 ADR(0001–0072)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 73 份 ADR(0001–0073)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0073`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0074`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -146,6 +146,8 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 **领域语言的一次改名与一次澄清([ADR-0072](./0072-integrating-application-rename-and-authoring-render-time-split.md)，#95 同批)：** 「宿主」在本仓重载了三个意思，**只有「装载渲染引擎的应用」改称集成应用，英文保留 `Host`**；Java 宿主服务 `CDINL2DataBuilderService` 与包内技术容器(`WidgetHost`、「ECharts 宿主」)不在改名范围，代码标识符与 ADR 文件名零改动。改名范围限词汇表加七份活文档共 72 处，**ADR 正文与 `docs/plan/` 保留原措辞**，靠词条 `_Avoid_: 宿主（旧称）` 导航。**创作期与渲染期是一对对立时段，创作期同时容纳 AI 装配与人工页面搭建**——ADR-0043 的下钻对立与 ADR-0032 的「人机分工」是依据，因此 ADR-0065 的「创作包」「创作画布」用词全部成立。**问数不拆形态**：「一次性看数」与「用 AI 起页面」是同一次问数的两种结局，系统在沉淀之前分不出来，platform 收窄的是入口语义而非能力，问数留在 platform。「画布」一词归搭建画布，页面外框视觉面改称外观／底色。新增词条：创作期、渲染期、页面搭建、搭建画布、页面搭建工作台、平台、集成应用；「改版」立词条但进提议段——**该能力当前不存在**，建成前不得在设计中假定它已存在。
 
 **Java 接入责任的新裁决([ADR-0070](./0070-consume-host-java-page-assets-api.md)，#105)：** Java 服务由外部宿主提供，本仓只负责接口消费与前端验证，不设计或实现 Java 服务。上文 ADR-0062 的第一方 Module 建设是历史背景；现有 Java 代码/旧 Swagger 不再自动充当宿主接口真源。POST/PUT/DELETE、资源身份、响应形状与 SLA 按提供方资料对接；本轮未确认的四项后端方案作废。接口资料缺口作为待确认事实，不猜能力，也不删除现有 Java 代码。
+
+**静态平台的数据与身份通路([ADR-0073](./0073-static-platform-direct-access-with-injected-runtime-config.md)，#101)：** 平台以纯前端静态产物部署，浏览器直连 DQE 与 Java 页面资产两条通路。**推翻两条前提**：一、DQE 认的是**用户态 header token**(`X-Auth-Token` + `X-Operator-Id`，见 ADR-0063 的实地调查)，不是 SSO Cookie，地图 #95 的「CORS + 内网 SSO」按此更正；二、现有取数通路从未按该契约接过线(`createServerDataGateway` 丢弃 `actor`，`createDqeGateway` 默认空 `headers` + `same-origin`)，浏览器直连是这三个身份头的第一次真实接线。**平台只认「挂在集成门户里」一种真形态**，凭据由门户给；独立 URL 只是开发与演示形态且不接真实 DQE——否则本仓要自建换 token 逻辑，违反 ADR-0069。**平台不实现微前端协议**，是自包含静态 SPA，装载方式属部署期决定。**运行配置由集成应用注入**：一个本仓定义的全局对象，五个扁平字段(`dqeEndpoint` / `pageAssetsBaseUrl` / `authToken` / `operatorId` / `workspaceId`)，**全应用只有一个模块碰注入源，每次请求现读不快照**——散读会让将来改从 qiankun `props` 取值变成散弹式修改。缺配置照常启动、取数时失败且明说是未注入配置。`dqeEndpoint` 填相对路径即同源反代、填绝对地址即 CORS 直连，地图「不走反代」收窄为「**不由本仓提供反代**」。`X-Operator-Id` 是声明值不是验证值，**前端不做任何校验**，可信性由 token 承担，服务端应在二者不一致时拒绝(归 #105)；重登不归平台。**一并删除** `/api/data/*`、`createPlatformDataGateway` 与 mock 用户切换器；`apps/canvas` 数据网关改用同一注入面。**为 qiankun 预留四条接缝**(配置读取点、路由 base、视口尺寸与固定定位、`:root` 全局样式)，生命周期导出/public path/卸载清理三条不预留。已知未验证风险：SvelteKit 的 `paths.base` 是构建期常量而 qiankun 前缀由宿主运行时分配，且静态产物不是 UMD 库入口。注入契约见 [`docs/host-contract.md`](../host-contract.md)「平台的运行配置注入」段。
 
 ## 页面文档结构与书写原则
 
