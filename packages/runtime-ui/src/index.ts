@@ -4,9 +4,6 @@ export {
   isDataGateway
 } from './types';
 export type {
-  AuthoringComponentLocator,
-  AuthoringIntent,
-  AuthoringOptions,
   AiSummaryConfig,
   RuntimeConfigurationError,
   RuntimeConfigurationErrorCode,

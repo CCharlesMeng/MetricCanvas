@@ -2,7 +2,7 @@
   import { onMount, tick } from 'svelte';
   import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
-  import { RuntimeView, type AuthoringIntent } from '@metriccanvas/runtime-ui';
+  import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { parseAskConversation } from './ask/conversation';
   import type { AgentMessage } from './server/agent/types';
   import { createPlatformDataGateway } from './platform-data-gateway';
@@ -60,7 +60,7 @@
    * - 对话消费 POST /api/agent/stream 的 AgentRunStreamEvent 序列,按步骤
    *   展开时间线;运行可取消(POST /api/agent/runs/{runId}/cancel)。
    * - 页面视图把 outcome 帧带回的已校验页面文档直接交给统一运行时的
-   *   RuntimeView 渲染,数据经 createPlatformDataGateway() 走服务端取数
+   *   MetricCanvas 创作画布复用统一运行时渲染,数据经 createPlatformDataGateway() 走服务端取数
    *   入口——不再有 iframe,也不依赖已保存修订(ADR-0030:临时页面态)。
    * - 渲染入口只接受文档对象,不写入页面生命周期;保存修订仍是用户显式
    *   动作,且只对非临时页面 id 开放(临时 id 不承载修订归属)。
@@ -954,19 +954,14 @@
 
     <div class="page-scroll">
       {#if currentDocument}
-        <RuntimeView
+        <MetricCanvas
           document={currentDocument}
           {dataGateway}
-          authoring={running
-            ? undefined
-            : {
-                ...(selectedComponent === null ? {} : { selected: selectedComponent }),
-                ...(currentDraft === null
-                  ? {}
-                  : { draftSections: currentDraft.authoringSections }),
-                inlineControls: false,
-                onintent: handleAuthoringIntent
-              }}
+          enabled={!running}
+          selected={selectedComponent ?? undefined}
+          draftSections={currentDraft?.authoringSections}
+          inlineControls={false}
+          onintent={handleAuthoringIntent}
         />
       {:else if running}
         <div class="skeleton" aria-label="页面文档生成中">

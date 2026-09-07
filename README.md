@@ -157,7 +157,8 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/data-gateway/` | DQE 数据网关 |
 | `packages/runtime/` | 页面数据编排和筛选状态 |
 | `packages/widgets/` | 纯渲染组件 |
-| `packages/runtime-ui/` | 统一运行时 UI |
+| `packages/runtime-ui/` | 正式渲染入口 `RuntimeView`、共享渲染主体与布局 |
+| [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | 独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
 | `packages/runtime-ui/src/ai-summary/` | AI 总结垂直组件 Module 与私有 SSE Adapter |
 | `packages/embed/` | 浏览器嵌入产物 |
 | `packages/page-lifecycle/` | 页面修订与发布 |

@@ -1,12 +1,14 @@
 # styles.md — 样式值从哪来,允许怎么写?
 
+> 2026-09-07（#56）定位更新：`RuntimeView` 保留正式渲染入口，渲染主体、状态与 token 已移至 `RuntimeSurface.svelte`；创作交互位于独立的 `packages/metric-canvas`。下文路径按本次拆分更新，首扫统计仍保留原采样时点。
+
 ## 样式值的来源
 
 <!-- 覆盖:packages/runtime-ui/src/(含 filters/、ai-summary/)、packages/widgets/src/、apps/canvas/src/routes/,以及全仓构建配置(2026-08-24);2026-08-25 追加 packages/runtime-ui/src/backdrop-safe-area.ts 与仓外参考稿 参考/项目地图/设计稿/(见 STRUCT-9,已列入 .gitignore,不随仓交付);2026-08-25 对 packages/runtime-ui/src/ 与 packages/widgets/src/ 全部 30 个 <style> 块做了声明级全量统计(STYLE-9~11 与 PATTERN-STYLE-1、PATTERN-STYLE-5 由此得出),这两个目录的 token/字面量落点已属「查不到即仓里没有」。apps/platform 的工作台样式未纳入首扫 -->
 
 | ID | 指路 | 是什么、何时用 | 被引用 |
 | --- | --- | --- | --- |
-| `STYLE-1` | CSS 自定义属性,统一前缀 `--mc-`;主定义在 `packages/runtime-ui/src/RuntimeView.svelte` 的 `.runtime-view` 与 `.page-content` 两条规则里 | **token 集的真源**,约 80 个档位:颜色、字号、圆角、间距、分区渐变。要用某个档位就在这个文件里检索前缀,**不要凭记忆写数值**。<br>**它是 token 的真源,但不是样式值的真源**——构件内的多数视觉量根本不走 token(见 `PATTERN-STYLE-1`),另有 3 个文件零 `var(--mc-`(`STYLE-10`)、第二套非 `--mc-` 前缀在干同样的事(`STYLE-11`)。在这里检索不到某个档位,**先看 `STYLE-9`**:可能它作为空头名字只存在于回退位 | 页面、分区与多数叶子构件消费 `var(--mc-…)` |
+| `STYLE-1` | CSS 自定义属性,统一前缀 `--mc-`;主定义在 `packages/runtime-ui/src/RuntimeSurface.svelte` 的 `.runtime-view` 与 `.page-content` 两条规则里 | **token 集的真源**,约 80 个档位:颜色、字号、圆角、间距、分区渐变。要用某个档位就在这个文件里检索前缀,**不要凭记忆写数值**。<br>**它是 token 的真源,但不是样式值的真源**——构件内的多数视觉量根本不走 token(见 `PATTERN-STYLE-1`),另有 3 个文件零 `var(--mc-`(`STYLE-10`)、第二套非 `--mc-` 前缀在干同样的事(`STYLE-11`)。在这里检索不到某个档位,**先看 `STYLE-9`**:可能它作为空头名字只存在于回退位 | 页面、分区与多数叶子构件消费 `var(--mc-…)` |
 | `STYLE-2` | `packages/runtime-ui/src/RuntimeSection.svelte` 与 `packages/widgets/src/components/report-header/ReportHeader.svelte`、`.../text/TextBlock.svelte` 内的 `--mc-` 定义 | 就地补充的局部档位(分区、报表页头、文本块各自的专属外观量)。同一前缀、不同定义点——**改一个档位前先确认它属于 `STYLE-1` 还是这里** | 各自组件内部 |
 | `STYLE-3` | 成组的命名序列(可在 `STYLE-1` / `STYLE-2` 内按前缀检索):`--mc-color-*`、`--mc-color-report-*`、`--mc-font-size-report-*`、`--mc-radius-*`、`--mc-section-*`、`--mc-section-title-*`、`--mc-insight-*`、`--mc-metric-panel-*`、`--mc-gauge-*`、`--mc-cell-*`、`--mc-field-text-body-*` | scale 档位的分组。命名的第二段就是它管的东西,按段检索比按值找快。<br>**按前缀检索得到的名字不等于都是真档位**:`--mc-field-text-body-*` 与 `--mc-text-heading-*` 两族里都混着 `STYLE-9` 的空头名字(前者四个名字里三真一空)。按前缀取到一批名字后,**逐个确认它有定义点**,不要整族当成可覆写档位 | 同 `STYLE-1` |
 | `STYLE-4` | Svelte 单文件组件的 `<style>` 块 | **唯一的样式写法**。全仓没有独立 `.css` / `.scss` / `.less` 文件,没有预处理器,没有 Tailwind / PostCSS 配置,没有工具类方案。样式默认按组件作用域隔离,跨界要 `:global()` | 全部构件 |
@@ -26,16 +28,16 @@
 | --- | --- |
 | 规则 | **`--mc-` 不是通用设计档位,本仓不要求构件内的样式数值走 token。** token 强制只在两种场合成立:<br>**① 两档页面布局形态取值不同的量。** 必须落在 `STYLE-1` 的 `.page-content` / `.page-content.layout-dashboard` 这一对规则上。`PATTERN-STYLE-2` 管「差异只落一处」,本条管「那一处的载体必须是 CSS 自定义属性」——两条是同一机制的两面。<br>**② 跨文件下发的量。** 父组件要给另一个文件里的子组件定值,自定义属性是唯一通道(Svelte 作用域样式到不了,样式不走 props)。**但前缀无统一做法**:`--mc-*` 与构件私有前缀(`STYLE-11`)并存且各占相当分量,检视**不得**判「跨界下发没用 `--mc-` 前缀」。<br>**③ 其余一律允许字面量,而且字面量就是本仓常态。** 构件 `<style>` 里的字号、行高、字重、内边距、宽高按字面量直写是**正确**的,不是技术债。`--mc-color-*` 调色板可用但**不强制**——调色板 24 个值里 14 个同时以字面量形式出现在别处。<br>**本条推翻 2026-08-24 那版**「`runtime-ui` 与 `widgets` 的样式值必须取 `var(--mc-…)`」。那版按其规则文本在本仓命中 30 个 `<style>` 块里的 29 个、非平凡字面量 914 处;一条规则与代码相差到这个量级,失真的是规则而不是代码,它已经无法充当任何判据 |
 | 依据清单 | `STYLE-1`、`STYLE-2`、`STYLE-9`、`STYLE-10`、`STYLE-11` |
-| 依据样本 | 2026-08-25 对 `packages/runtime-ui/src` 与 `packages/widgets/src` 全部 30 个 `<style>` 块做**声明级**统计(按 `;` / `{` / `}` 切声明而非按行,剥掉 `var()` 回退位与 `--mc-` 定义行,`font-weight` 等无单位量一并计入):2009 条声明里字面量 945 条、token 231 条,**token 占比 20%**;去掉 `0` / `100%` / `auto` 等平凡值后字面量 914 条,涉 29 个文件。<br>**分量看,落点是分裂的**:内边距/外边距/间距走 token 12%、字号 12%、字重 6%、宽高定位 17%、行高 19%;而色值/背景 36%、阴影 35%、圆角 31%、边框 22%。**token 管的是「表面长什么样」,字面量管的是「字和盒子多大」**——因为两档布局形态差的正是表面。<br>**正面(收窄后的规则仍有牙)**:①的机制 100% 干净——`layoutForm` 全仓只出现在 `RuntimeView.svelte` 的 4 行里且只用于切类名,没有任何构件按布局形态分支;`SemanticHtml.svelte`(15 处 `--mc-` 对 3 处字面量)与 `ProgressRing.svelte`(16 处自定义属性对 7 处字面量)明显在刻意走变量。<br>**反面**:某个正文色档位在 5 个文件里被直写 16 次,而它同时是一个 `--mc-color-*` 档位;`STYLE-10` 那 13 个文件零 `var(--mc-` |
+| 依据样本 | 2026-08-25 对 `packages/runtime-ui/src` 与 `packages/widgets/src` 全部 30 个 `<style>` 块做**声明级**统计(按 `;` / `{` / `}` 切声明而非按行,剥掉 `var()` 回退位与 `--mc-` 定义行,`font-weight` 等无单位量一并计入):2009 条声明里字面量 945 条、token 231 条,**token 占比 20%**;去掉 `0` / `100%` / `auto` 等平凡值后字面量 914 条,涉 29 个文件。<br>**分量看,落点是分裂的**:内边距/外边距/间距走 token 12%、字号 12%、字重 6%、宽高定位 17%、行高 19%;而色值/背景 36%、阴影 35%、圆角 31%、边框 22%。**token 管的是「表面长什么样」,字面量管的是「字和盒子多大」**——因为两档布局形态差的正是表面。<br>**正面(收窄后的规则仍有牙)**:①的机制 100% 干净——`layoutForm` 全仓只出现在 `RuntimeSurface.svelte` 的 4 行里且只用于切类名,没有任何构件按布局形态分支;`SemanticHtml.svelte`(15 处 `--mc-` 对 3 处字面量)与 `ProgressRing.svelte`(16 处自定义属性对 7 处字面量)明显在刻意走变量。<br>**反面**:某个正文色档位在 5 个文件里被直写 16 次,而它同时是一个 `--mc-color-*` 档位;`STYLE-10` 那 13 个文件零 `var(--mc-` |
 | 违例判定 | ① 某个量在两档布局形态下取值不同,却没走 `.page-content` / `.layout-dashboard` 这对规则——表现为构件内出现布局形态分支,或第二处定义两档差异。与 `PATTERN-STYLE-2` 同一判据。<br>② 父组件要给别文件的子组件定值却没用自定义属性(改成传 props 控样式、加类名开关、或复制一份样式过去)。<br>**③ 反向违例,这是本次修订的主要目的**:把构件 `<style>` 里的十六进制色值、`px` 字号、行高、字重、内边距判成「硬编码违规」,并据此要求改成 token——**违例**。本仓 914 处非平凡字面量、29 个文件是既定惯例;要不要收敛成档位是产品决策,不是检视 Finding。<br>**旧判定作废**:「出现十六进制或 `rgb(` 且不在 `var()` 回退位、也不在 `--mc-` 定义行」在本仓命中 **230 处**(十六进制 201 + `rgb(` 29)、遍布 **26 个文件**,信噪比为零,**不得再用**。<br>注意旧条目**自身不自洽**:规则文本管「样式值」全体(实测 914 处非平凡字面量、29 个文件),判定却只查色值(230 处、26 个文件)。按判定读会漏掉字号行高间距这批最大的偏离,按规则读则 29 个文件全违例。两种读法都不可用,这也是必须整条重写而不是改判定的原因 |
 
 #### `PATTERN-STYLE-2` · 两档页面布局形态的差异集中在一处
 
 | 项 | 内容 |
 | --- | --- |
-| 规则 | 报表形态与看板形态的**宿主外框几何**由 Canvas viewer 正式路由根据 `documentLayoutForm` 切换;**统一运行时内部视觉档位**则集中在 `RuntimeView.svelte` 的 `.page-content` / `.page-content.layout-dashboard` 一对规则上覆盖 token。叶子构件和分区均不得自行读取 `layoutForm` 或按页面 id 分支 |
+| 规则 | 报表形态与看板形态的**宿主外框几何**由 Canvas viewer 正式路由根据 `documentLayoutForm` 切换;**统一运行时内部视觉档位**则集中在 `RuntimeSurface.svelte` 的 `.page-content` / `.page-content.layout-dashboard` 一对规则上覆盖 token。叶子构件和分区均不得自行读取 `layoutForm` 或按页面 id 分支 |
 | 依据清单 | `STYLE-1`、`COMP-5` |
-| 依据样本 | `apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte` 根据 `documentLayoutForm` 切宿主 frame;`RuntimeView.svelte` 的 `.page-content.layout-dashboard` 集中覆盖内部视觉档位;`RuntimeSection.svelte` 和 Widgets 不读布局形态。 |
+| 依据样本 | `apps/canvas/src/routes/(viewer)/pages/[pageId]/+page.svelte` 根据 `documentLayoutForm` 切宿主 frame;`RuntimeSurface.svelte` 的 `.page-content.layout-dashboard` 集中覆盖内部视觉档位;`RuntimeSection.svelte` 和 Widgets 不读布局形态。 |
 | 违例判定 | 叶子构件或分区内出现 `layoutForm === 'dashboard'`、正式页面 id 分支，或统一运行时内部又建第二处布局形态档位。宿主路由对外框的切换不算第二处内部档位。`STYLE-11` 的视口 / 相邻状态 / 运行时数据轴不受本条约束 |
 
 #### `PATTERN-STYLE-3` · 无主题机制

@@ -3,7 +3,7 @@ import {
   type Component,
   type PageDocument
 } from '@metriccanvas/page';
-import type { AuthoringComponentLocator } from '@metriccanvas/runtime-ui/types';
+import type { AuthoringComponentLocator } from '@metriccanvas/metric-canvas/types';
 
 export type ComponentLocator = AuthoringComponentLocator;
 

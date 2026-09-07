@@ -1,8 +1,8 @@
-# ADR 基线:64 份决策记录的当前生效结论
+# ADR 基线:65 份决策记录的当前生效结论
 
-`docs/adr/` 现有 64 份 ADR(0001–0064)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 65 份 ADR(0001–0065)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0065-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前应为 `0066-*.md`),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -78,6 +78,7 @@
 | [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行(J1–J4 已完成:校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 `pnpm slice:page-assets`;CloudBuild Testcontainers 探针与并入宿主时机待用户;目标宿主 `CDINL2DataBuilderService`) |
 | [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行(身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已被 0064 取代) |
 | [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行目标(Agent 不保存页面；Relay 需新增模型摘要/完整 artifact 双通道) |
+| [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行边界(#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决) |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -124,6 +125,8 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 表现层一侧随后按同一套判据做了包内收敛:`widgets` 的职责收紧为"页面组件的纯渲染实现",三组在包内零消费者、只服务包外的文件迁入 `runtime-ui`——快照态外壳 `WidgetHost`、筛选控件(职责表本就把"筛选控件"判给 `runtime-ui`,此前是实现与文档漂移)、以及只服务 AI 总结正文的 `SafeMarkdown`(迁入后 ADR-0019 的垂直组件目录首次完整)。`widgets/src` 同时从平铺改为按组件类型分目录,与 `page/src/schema/components/` 对齐;受控语义 HTML 在 `rankingDetailCard` 与 `text` 出现两个真实消费者后提升为共享 Module,Interface 只接收原始字符串,安全解析、失败关闭、节点渲染和颜色映射全部由其 Implementation 独占。**`aiSummary` 刻意不进 `widgets`**:它是生成型垂直组件,搬入会给纯渲染包引入 `runtime` 依赖与网络代码,`components/` 的完整性由"纯渲染"而非"schema 组件类型全集"定义。
 
 来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、[ADR-0062](./0062-first-party-java-page-assets-module.md)、[ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)、[ADR-0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)。
+
+**创作与正式渲染的交付切口([ADR-0065](./0065-separate-metric-canvas-authoring-package.md))：** 创作覆盖层拆为独立包，对外组件名为 `MetricCanvas`，正式渲染使用 `RuntimeView`；创作包依赖渲染包，纯渲染的安装依赖与产物均不含创作专用代码。两种入口共用布局与渲染，文档、属性面板、保存和撤销历史仍由宿主管理。platform 一次性迁移并删除旧 `authoring` 参数与创作专用导出，不设兼容入口。该边界已由 #56 实现并完成专项回归，不再以 #55 的运行时会话提取为硬前置；包名、版本策略和跨包导出的公开契约由 #100 对账。本决策不重开 ADR-0060～0064 的目标架构。
 
 ## 页面文档结构与书写原则
 

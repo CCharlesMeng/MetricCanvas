@@ -1,5 +1,7 @@
 # components.md — 拼界面时有哪些现成构件可用?
 
+> 2026-09-07（#56）定位更新：`RuntimeView` 保留正式渲染入口，渲染主体、状态与 token 已移至 `RuntimeSurface.svelte`；创作交互位于独立的 `packages/metric-canvas`。下文路径按本次拆分更新，首扫统计仍保留原采样时点。
+
 **先读这条,否则下面的表会被误读:本仓「拼界面」不发生在源码里。** 页面由 `pages/*.json` 的组件声明拼成,源码侧只有一个分发点(`COMP-3`)。所以分层判据按 `structure.md` 记的第二种消费单元——页面文档——来数;按源码引用数会把全部 17 个组件类型判成「只被一处引用」,得出「本仓没有通用构件」这个错误结论。
 
 ## 通用构件
@@ -10,10 +12,10 @@
 | --- | --- | --- | --- |
 | `COMP-1` | `@metriccanvas/widgets` 的导出面(`packages/widgets/src/index.ts`) | 全部 16 个纯渲染构件的唯一出口。**要知道有哪些构件、各自何时选,查 `COMP-2`,不要读这个文件的导出列表来猜** ——出口是按真实消费面收敛的,内核(字段解析、格式化、ECharts 宿主)刻意不导出 | `packages/runtime-ui` 内 5 个文件 |
 | `COMP-2` | `componentCatalog` / `componentCatalogEntry`(`packages/page/src/component-catalog.ts`),条目数据在 `schema/components/<type>.ts` 的 `registry.add(...)` | **组件能力目录:选构件时唯一该查的地方。** 每个类型带 label、别名、用途、何时选、需要什么数据形状、必填 props、是否必须有标题、默认栅格跨度。写页面文档或让 Agent 组页面前查它;它不是运行时注册表,不能据此发明新类型 | 17 个组件类型;`packages/mcp` 的组页面工具 |
-| `COMP-3` | `ComponentRenderer.svelte`(`packages/runtime-ui/src/`) | 组件类型 → 构件的**唯一**分发点,含 `tabContainer` 的自递归。新增组件类型只改这一个文件加一个构件实现 | `RuntimeView.svelte`、自身递归 |
+| `COMP-3` | `ComponentRenderer.svelte`(`packages/runtime-ui/src/`) | 组件类型 → 构件的**唯一**分发点,含 `tabContainer` 的自递归。新增组件类型只改这一个文件加一个构件实现 | `RuntimeSurface.svelte`、自身递归 |
 | `COMP-4` | `WidgetHost.svelte`(`packages/runtime-ui/src/`) | 加载态(骨架)、错误态(按错误分类选标题)、空态(投影为空行让构件保留标题与容器)的**统一呈现宿主**。构件自己不写这三态 | `COMP-3`;`data.md` 的 `PATTERN-DATA-1` |
-| `COMP-5` | `RuntimeSection.svelte`(`packages/runtime-ui/src/`) | 内容分区容器:持有 12 列 Grid(统一运行时不变量)、组件单元格、`connectPrevious` 与行对齐安装点。外观只由 `section.container` 决定,**不要让它去读子组件类型或 `props.variant` 反推布局** | `RuntimeView.svelte`;10 份页面文档的全部分区 |
-| `COMP-6` | `FilterBar.svelte` + `packages/runtime-ui/src/filters/` 下 7 个控件 | 筛选栏与各类型筛选控件(维度、层级、时间范围、时间点、布尔、数值区间、搜索)。控件按 `FilterDeclaration.type` 选,不要在页面里手搭输入框 | `RuntimeView.svelte`;6 份页面文档声明了 filters |
+| `COMP-5` | `RuntimeSection.svelte`(`packages/runtime-ui/src/`) | 内容分区容器:持有 12 列 Grid(统一运行时不变量)、组件单元格、`connectPrevious` 与行对齐安装点。外观只由 `section.container` 决定,**不要让它去读子组件类型或 `props.variant` 反推布局** | `RuntimeSurface.svelte`;10 份页面文档的全部分区 |
+| `COMP-6` | `FilterBar.svelte` + `packages/runtime-ui/src/filters/` 下 7 个控件 | 筛选栏与各类型筛选控件(维度、层级、时间范围、时间点、布尔、数值区间、搜索)。控件按 `FilterDeclaration.type` 选,不要在页面里手搭输入框 | `RuntimeSurface.svelte`;6 份页面文档声明了 filters |
 | `COMP-7` | `AiSummaryHost.svelte` + `packages/runtime-ui/src/ai-summary/` | AI 总结组件的宿主与流式呈现。它是**唯一**不经 `COMP-4` 又要处理自身加载态的构件——它的数据来自 SSE 而不是数据槽 | `COMP-3` |
 | `COMP-8` | `apps/canvas/src/routes/(viewer)/preview/+page.svelte` 内的编辑器区块 | 页面文档即时预览:粘贴 JSON → 严格校验 → 渲染。改 Schema 或组件后自测最快的入口 | 1 处(路由页面,见 `ROUTE-2`) |
 
@@ -27,8 +29,8 @@
 | --- | --- | --- | --- |
 | `COMP-9` | `formatValue`(`packages/widgets/src/shared/value-format.ts`,经 `COMP-1` 导出) | 展示格式化预设的**唯一**实现。页面参数替换进文本取值时也用它,所以它必须共享而不是各写一遍。新增消费方前先确认没有第二种格式化语义 | 构件内部 + `packages/runtime-ui` 的参数替换 |
 | `COMP-10` | `resolveField` / `fieldValue` / `fieldLabel` / `semanticHtmlFieldPresentation`(`packages/widgets/src/shared/component-data.ts`) | 字段绑定 → 实际取值与标签的解析。构件从数据槽取值一律经它,不要直接索引 `snapshot.rows` | 多数构件 |
-| `COMP-11` | `buildTableColumnLayout`(`table/columns.ts`)、`mergeSpans` / `tableRowTier`(`table/presentation.ts`)、`initialTableSort` / `shouldApplyTableHeaderFilter`(`table/view-state.ts`) | 表格列布局(含分组表头与叶子列展开)、行层级与合并、排序与表头筛选的判定。表格相关的任何计算都在这三个文件里,`Table.svelte` 只渲染 | `Table.svelte`、`RuntimeView.svelte` |
-| `COMP-12` | `renderableDataSnapshot` / `hostRenderSnapshot` / `queryErrorView`(`packages/runtime-ui/src/widget-host-state.ts`) | 多数据槽快照 → 单一宿主态的投影,以及错误分类 → 可读标题的映射。**错误标题按分类的处理语义选,不解析错误字符串** | `COMP-3`、`COMP-4`、`RuntimeView.svelte` |
+| `COMP-11` | `buildTableColumnLayout`(`table/columns.ts`)、`mergeSpans` / `tableRowTier`(`table/presentation.ts`)、`initialTableSort` / `shouldApplyTableHeaderFilter`(`table/view-state.ts`) | 表格列布局(含分组表头与叶子列展开)、行层级与合并、排序与表头筛选的判定。表格相关的任何计算都在这三个文件里,`Table.svelte` 只渲染 | `Table.svelte`、`RuntimeSurface.svelte` |
+| `COMP-12` | `renderableDataSnapshot` / `hostRenderSnapshot` / `queryErrorView`(`packages/runtime-ui/src/widget-host-state.ts`) | 多数据槽快照 → 单一宿主态的投影,以及错误分类 → 可读标题的映射。**错误标题按分类的处理语义选,不解析错误字符串** | `COMP-3`、`COMP-4`、`RuntimeSurface.svelte` |
 | `COMP-13` | `publishRowAlignment` / `subscribeRowAlignment` / `rowAlignmentParticipants`(`packages/widgets/src/shared/row-alignment.ts`,安装点在 `packages/runtime-ui/src/row-alignment.ts`) | 并排构件按同一行同步行高。跨构件的视觉对齐走它,不要在构件里量 DOM | `COMP-5` 的安装点、排行卡类构件 |
 | `COMP-14` | `SemanticHtml.svelte` + `semantic-html.ts`(`packages/widgets/src/shared/`,**不经 `COMP-1` 导出**) | 上游返回的语义 HTML 的安全渲染。包内共享内核,新构件要用它得在包内引用,不要把它提到导出面 | 排行卡类构件 |
 

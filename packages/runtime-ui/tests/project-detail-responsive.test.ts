@@ -6,7 +6,7 @@ const runtimeSectionSource = readFileSync(
   'utf8'
 );
 const runtimeViewSource = readFileSync(
-  new URL('../src/RuntimeView.svelte', import.meta.url),
+  new URL('../src/RuntimeSurface.svelte', import.meta.url),
   'utf8'
 );
 const dashboardToolbarSource = readFileSync(

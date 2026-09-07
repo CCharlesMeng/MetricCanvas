@@ -255,7 +255,7 @@ force_released
 | Widgets | 纯渲染组件 |
 | AI Summary 垂直组件 Module | 关联数据解析、请求组装、生成会话、私有 SSE 适配与纯渲染 View |
 
-Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格、页面搭建覆盖层和 `connectPrevious`。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
+Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 是正式渲染入口，共享的 `RuntimeSurface` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格和 `connectPrevious`。独立创作包 `@metriccanvas/metric-canvas` 通过 `MetricCanvas` 提供选中、拖拽、编辑触发和意图回传，复用同一渲染主体与布局；文档、属性面板、保存和撤销历史仍归宿主。渲染包的 `./composition` 提供内容分区片段与单元格装饰接缝，渲染包不依赖创作包，正式渲染不加载创作专用代码（ADR-0065；包名和发布兼容策略仍需 #100 对账）。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
 
 查询数据源执行行为：
 

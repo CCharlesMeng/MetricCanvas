@@ -10,7 +10,7 @@ import {
   normalizeAuthoringDropTarget,
   type AuthoringDraftSection,
   type AuthoringDropTarget
-} from '@metriccanvas/runtime-ui/types';
+} from '@metriccanvas/metric-canvas/types';
 
 /**
  * 画布与配置面板的本地文档改写(#65 检查器):全部为纯函数,输入输出都是

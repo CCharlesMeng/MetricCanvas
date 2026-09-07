@@ -1,0 +1,34 @@
+{
+  "name": "@metriccanvas/metric-canvas",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "svelte": "./src/index.ts",
+  "exports": {
+    ".": {
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "@metriccanvas/page": "workspace:*",
+    "@metriccanvas/runtime-ui": "workspace:*"
+  },
+  "peerDependencies": {
+    "svelte": "^5.29.0"
+  },
+  "devDependencies": {
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "typescript": "^5.9.3",
+    "@playwright/test": "^1.62.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
+    "vite": "^8.1.5",
+    "@metriccanvas/runtime": "workspace:*"
+  }
+}

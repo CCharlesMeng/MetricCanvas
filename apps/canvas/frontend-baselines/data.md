@@ -1,19 +1,21 @@
 # data.md — 拿到的数据在前端怎么持有、怎么流到界面?
 
+> 2026-09-07（#56）定位更新：`RuntimeView` 保留正式渲染入口，渲染主体、状态与 token 已移至 `RuntimeSurface.svelte`；创作交互位于独立的 `packages/metric-canvas`。下文路径按本次拆分更新，首扫统计仍保留原采样时点。
+
 ## 持有与流动
 
 <!-- 覆盖:packages/runtime/src/、packages/runtime-ui/src/、packages/page/src/snapshot.ts、apps/canvas/src/lib/、apps/canvas/src/routes/(2026-08-24)。apps/platform 的创作会话状态未纳入首扫 -->
 
 | ID | 指路 | 是什么、何时用 | 被引用 |
 | --- | --- | --- | --- |
-| `DATA-1` | `orchestrate` → `PageSnapshotStream`(`packages/runtime/src/orchestrator.ts`) | **页面取数编排的唯一入口**,也是数据流的起点:只执行被组件数据槽或 AI 总结引用到的数据源,按生效查询去重、缓存、限并发,产出「数据源 id → 快照」的订阅流。要改「什么时候发查询」改这里 | `RuntimeView.svelte`;`packages/runtime/tests/` 内 9 个文件 |
+| `DATA-1` | `orchestrate` → `PageSnapshotStream`(`packages/runtime/src/orchestrator.ts`) | **页面取数编排的唯一入口**,也是数据流的起点:只执行被组件数据槽或 AI 总结引用到的数据源,按生效查询去重、缓存、限并发,产出「数据源 id → 快照」的订阅流。要改「什么时候发查询」改这里 | `RuntimeSurface.svelte`;`packages/runtime/tests/` 内 9 个文件 |
 | `DATA-2` | `DataSnapshot`(`packages/page/src/snapshot.ts`,经 `STRUCT-1` 导出) | **三态(实为四态)的类型级定义**:加载 / 就绪 / 空 / 错误。这是全仓状态语义的锚点——空态与「就绪但零行」是两回事,错误态携带结构化查询错误。任何自定义状态枚举都是重复定义 | 编排器、`COMP-4`、`COMP-12`、全部构件 |
-| `DATA-3` | `createFilterState` / `initialFilterValues`(`packages/runtime/src/filter-state.ts`) | **全仓唯一的可写共享状态容器**(筛选状态)。值自带类型与维度信息,所以生效查询合成与 URL 序列化只依赖值本身;它同时是跨页传参的编解码器(`fromURL` / `toURL`) | `DATA-1`、`RuntimeView.svelte`、`drillThroughSearch`;`packages/runtime/tests/` 内 8 个文件 |
-| `DATA-4` | `resolvePageParams` / `pageParamSearch` / `PAGE_PARAM_PREFIX`(`packages/runtime/src/page-params.ts`) | 页面参数:**不可变**,一次打开解析一次,因此不进筛选状态、没有写入口。必需参数缺失时页面进 `params-incomplete` 态而不是查询错误态 | `RuntimeView.svelte`、`drillThroughSearch` |
-| `DATA-5` | `createDimensionValuesLoader` / `dimensionValuesSnapshot`(`packages/runtime/src/dimension-values.ts`) | 筛选候选值的加载与显式状态发布(含级联约束、在途取消、过期结果丢弃)。筛选控件与表格表头筛选共用一份候选值快照 | `RuntimeView.svelte`、`COMP-6` |
+| `DATA-3` | `createFilterState` / `initialFilterValues`(`packages/runtime/src/filter-state.ts`) | **全仓唯一的可写共享状态容器**(筛选状态)。值自带类型与维度信息,所以生效查询合成与 URL 序列化只依赖值本身;它同时是跨页传参的编解码器(`fromURL` / `toURL`) | `DATA-1`、`RuntimeSurface.svelte`、`drillThroughSearch`;`packages/runtime/tests/` 内 8 个文件 |
+| `DATA-4` | `resolvePageParams` / `pageParamSearch` / `PAGE_PARAM_PREFIX`(`packages/runtime/src/page-params.ts`) | 页面参数:**不可变**,一次打开解析一次,因此不进筛选状态、没有写入口。必需参数缺失时页面进 `params-incomplete` 态而不是查询错误态 | `RuntimeSurface.svelte`、`drillThroughSearch` |
+| `DATA-5` | `createDimensionValuesLoader` / `dimensionValuesSnapshot`(`packages/runtime/src/dimension-values.ts`) | 筛选候选值的加载与显式状态发布(含级联约束、在途取消、过期结果丢弃)。筛选控件与表格表头筛选共用一份候选值快照 | `RuntimeSurface.svelte`、`COMP-6` |
 | `DATA-6` | `applyComputation`(`packages/runtime/src/compute/`) | 受控计算:页面声明的具名算子在编排后作用于数据行。**新的派生值优先声明成算子,不要在构件里算** | `DATA-1`;`packages/runtime/tests/compute*.test.ts` |
-| `DATA-7` | `RuntimeView.svelte` 内的 `tableViews` / `tablePageSizes` / `appliedTableHeaderFilters`,状态形状在 `packages/widgets/src/components/table/view-state.ts` | 表格的**本地界面状态**(排序、页码、页大小、已应用的表头筛选),持在统一运行时而不是构件里。`pagination.mode` 决定它是本地裁剪还是回抛给 `DATA-1` 重查 | `COMP-3` 的表格绑定、`COMP-11` |
-| `DATA-8` | `RuntimeView.svelte` 的 `pageState`(`loading` / `invalid` / `configuration-error` / `params-incomplete` / `ready`) | **页面级**状态机,与 `DATA-2` 的**数据源级**状态是两层,别混:页面文档没通过校验、接入配置不全、必需参数缺失,都在数据还没发出去之前就定了 | `RuntimeView.svelte`;`apps/canvas` 查看器路由另有自己的一层(`loading` / `missing` / `ready`) |
+| `DATA-7` | `RuntimeSurface.svelte` 内的 `tableViews` / `tablePageSizes` / `appliedTableHeaderFilters`,状态形状在 `packages/widgets/src/components/table/view-state.ts` | 表格的**本地界面状态**(排序、页码、页大小、已应用的表头筛选),持在统一运行时而不是构件里。`pagination.mode` 决定它是本地裁剪还是回抛给 `DATA-1` 重查 | `COMP-3` 的表格绑定、`COMP-11` |
+| `DATA-8` | `RuntimeSurface.svelte` 的 `pageState`(`loading` / `invalid` / `configuration-error` / `params-incomplete` / `ready`) | **页面级**状态机,与 `DATA-2` 的**数据源级**状态是两层,别混:页面文档没通过校验、接入配置不全、必需参数缺失,都在数据还没发出去之前就定了 | `RuntimeSurface.svelte`;`apps/canvas` 查看器路由另有自己的一层(`loading` / `missing` / `ready`) |
 | `DATA-9` | `Subscribable<T>`(`packages/runtime/src/orchestrator.ts`) | 手写的最小订阅契约(兼容 Svelte store 形状:`subscribe` 返回取消函数、订阅时立即推当前值)。跨层传状态就用它,**不要引入 store 库** | `DATA-1`、`DATA-3`、`DATA-5` |
 
 ## 规范
@@ -33,7 +35,7 @@
 | --- | --- |
 | 规则 | 服务端数据只以 `DATA-2` 的快照形态存在,由 `DATA-1` 单向推送,消费方**只读**;界面状态(`DATA-7`)另存一份,永不写回快照。需要「筛过 / 排过 / 裁过」的行时做投影,不改原快照 |
 | 依据清单 | `DATA-1`、`DATA-2`、`DATA-7` |
-| 依据样本 | `RuntimeView.svelte` 的 `snapshots` 只在流回调里整体替换;`tableSnapshot()` 每次从原快照现算投影;`PageDataSnapshots` 是 `ReadonlyMap` |
+| 依据样本 | `RuntimeSurface.svelte` 的 `snapshots` 只在流回调里整体替换;`tableSnapshot()` 每次从原快照现算投影;`PageDataSnapshots` 是 `ReadonlyMap` |
 | 违例判定 | 出现对快照行的原地修改(`rows.push` / `rows[i] = `),或把排序、页码写进快照结构 |
 
 #### `PATTERN-DATA-3` · 无取数缓存库、无状态管理库
@@ -51,7 +53,7 @@
 | --- | --- |
 | 规则 | 筛选值只经 `DATA-3` 的 `write` / `writeMany` 改;组件交互(图表点击、表格单元格选择、地图下钻)都要落到这两个方法上,不得旁路改 `filterValues`。跨页传值的物理载体只有 URL,编解码只有 `DATA-3` 与 `DATA-4` 两处实现 |
 | 依据清单 | `DATA-3`、`DATA-4`、`ROUTE-7` |
-| 依据样本 | `RuntimeView.svelte` 的 `writeDimension` / `writeTimeRange` / `writeTimePoint` / `writeBoolean` / `writeNumberRange` / `writeSearch` / `handleChartClick` / `handleTableCellSelect` 全部收口到 `filterState.write*`;`navigate.ts` 的 `drillThroughSearch` 复用 `toURL` 编码 |
+| 依据样本 | `RuntimeSurface.svelte` 的 `writeDimension` / `writeTimeRange` / `writeTimePoint` / `writeBoolean` / `writeNumberRange` / `writeSearch` / `handleChartClick` / `handleTableCellSelect` 全部收口到 `filterState.write*`;`navigate.ts` 的 `drillThroughSearch` 复用 `toURL` 编码 |
 | 违例判定 | 直接给 `filterValues` 赋值;或出现第三处筛选值 URL 编解码实现 |
 
 #### `PATTERN-DATA-5` · 无表单机制

@@ -2,47 +2,30 @@
   import {
     isChartComponent,
     sectionBackdrop,
-    type Component,
-    type PageSection
+    type Component
   } from '@metriccanvas/page';
   import { sectionTitleLeftUrl, sectionTitleRightUrl } from '@metriccanvas/widgets';
-  import type { Snippet } from 'svelte';
-  import {
-    authoringComponentDropIndex,
-    authoringDropSlots,
-    decodeAuthoringComponentLocator
-  } from './authoring-layout';
   import { installRowAlignment } from './row-alignment';
   import {
     backdropSafeArea,
     safeAreaCustomProperties,
     type SafeAreaRect
   } from './backdrop-safe-area';
-  import type { AuthoringComponentLocator, AuthoringOptions } from './types';
-  import { sectionGridColumnCount, sectionGridTemplate } from './section-grid';
+  import type { RuntimeSectionProps } from './composition-types';
+  import { sectionGridTemplate } from './section-grid';
 
   /**
    * 内容分区 Module:Page Metadata 仍是 Section → Component 直接包含；这里为每个
-   * Component 生成的 `.cell` 只是运行时布局盒，承接 Grid 落位、创作态安装点、
+   * Component 生成的 `.cell` 只是运行时布局盒，承接 Grid 落位、受控组合接缝、
    * 卡面与 containing block，不是新的元数据实体。外观唯一由
    * `section.container` 决定，不读取子组件的类型组合或 `props.variant`
    * 推断父级布局(ADR-0021)。
    */
   /* IOC 参考视口的 [29,29,22] 三轨在通用 gap 下产出 580px / 580px / 440px；
      数字是验收事实，运行时仍只消费页面声明的权重。 */
-  interface Props {
-    section: PageSection;
-    authoring?: AuthoringOptions;
-    componentContent: Snippet<[Component]>;
-  }
-
-  let { section, authoring, componentContent }: Props = $props();
-  let dragged = $state<AuthoringComponentLocator | null>(null);
-  let activeDropIndex = $state<number | null>(null);
+  let { section, componentContent, cellAttachment, cellOverlay, emptyContent }: RuntimeSectionProps = $props();
   let sectionGrid = $state<HTMLElement | null>(null);
   const container = $derived(section.container);
-  const columnCount = $derived(sectionGridColumnCount(section.columnTracks));
-  const dropSlots = $derived(authoringDropSlots(section.components.length));
   const backdropId = $derived(sectionBackdrop(section)?.id);
   const backdropOnly = $derived(
     backdropId !== undefined && section.components.every((component) => component.id === backdropId)
@@ -153,132 +136,7 @@
     return variant;
   }
 
-  function locator(componentId: string): AuthoringComponentLocator {
-    return { sectionId: section.id, componentId };
-  }
-
-  function selected(componentId: string): boolean {
-    return (
-      authoring?.selected?.sectionId === section.id &&
-      authoring.selected.componentId === componentId
-    );
-  }
-
-  function select(event: MouseEvent, componentId: string) {
-    if (!authoring || (event.target as HTMLElement).closest('.authoring-controls')) return;
-    event.preventDefault();
-    event.stopPropagation();
-    authoring.onintent({
-      type: 'select_component',
-      locator: locator(componentId)
-    });
-  }
-
-  function dragStart(event: DragEvent, componentId: string) {
-    if (!authoring) return;
-    dragged = locator(componentId);
-    event.dataTransfer?.setData(
-      'application/x-metriccanvas-component',
-      JSON.stringify(dragged)
-    );
-    if (event.dataTransfer) event.dataTransfer.effectAllowed = 'move';
-  }
-
-  function dragOverSlot(event: DragEvent, index: number) {
-    if (!authoring) return;
-    event.preventDefault();
-    event.stopPropagation();
-    if (event.dataTransfer) event.dataTransfer.dropEffect = 'move';
-    activeDropIndex = index;
-  }
-
-  function componentDropIndex(event: DragEvent, componentIndex: number): number {
-    const element = event.currentTarget as HTMLElement;
-    const bounds = element.getBoundingClientRect();
-    return authoringComponentDropIndex(
-      componentIndex,
-      event.clientX,
-      bounds.left,
-      bounds.width
-    );
-  }
-
-  function dragOverComponent(event: DragEvent, componentIndex: number) {
-    dragOverSlot(event, componentDropIndex(event, componentIndex));
-  }
-
-  function dragLeaveComponent(event: DragEvent) {
-    const current = event.currentTarget;
-    if (
-      current instanceof HTMLElement &&
-      event.relatedTarget instanceof Node &&
-      current.contains(event.relatedTarget)
-    ) {
-      return;
-    }
-    activeDropIndex = null;
-  }
-
-  function dropOnComponent(event: DragEvent, componentIndex: number) {
-    dropAt(event, componentDropIndex(event, componentIndex));
-  }
-
-  function dragLeaveSlot(event: DragEvent, index: number) {
-    const current = event.currentTarget;
-    if (
-      current instanceof HTMLElement &&
-      event.relatedTarget instanceof Node &&
-      current.contains(event.relatedTarget)
-    ) {
-      return;
-    }
-    if (activeDropIndex === index) activeDropIndex = null;
-  }
-
-  function dropAt(event: DragEvent, index: number) {
-    if (!authoring) return;
-    event.preventDefault();
-    event.stopPropagation();
-    const encoded = event.dataTransfer?.getData(
-      'application/x-metriccanvas-component'
-    ) ?? '';
-    const source = decodeAuthoringComponentLocator(encoded) ?? dragged;
-    if (source) {
-      authoring.onintent({
-        type: 'move_component',
-        locator: source,
-        destination: { sectionId: section.id, index }
-      });
-    }
-    clearDragState();
-  }
-
-  function clearDragState() {
-    dragged = null;
-    activeDropIndex = null;
-  }
-
-  function editTitle(event: Event, component: Component) {
-    if (!authoring) return;
-    const title = (event.currentTarget as HTMLInputElement).value;
-    if (title === (component.props.title ?? '')) return;
-    authoring.onintent({
-      type: 'edit_component',
-      locator: locator(component.id),
-      edit: { title }
-    });
-  }
-
-  function resize(component: Component, delta: number) {
-    authoring?.onintent({
-      type: 'edit_component',
-      locator: locator(component.id),
-      edit: { span: Math.min(columnCount, Math.max(1, component.layout.span + delta)) }
-    });
-  }
 </script>
-
-<svelte:window ondragend={clearDragState} />
 
 <section
   class:container-plain={container === 'plain'}
@@ -306,19 +164,8 @@
     class="section-grid"
     style={gridStyle}
   >
-    {#if authoring && section.components.length === 0}
-      <div
-        role="presentation"
-        class:authoring-drop-active={activeDropIndex === dropSlots[0]}
-        class="authoring-empty-drop-slot"
-        data-drop-slot
-        data-drop-index={dropSlots[0]}
-        data-drop-active={activeDropIndex === dropSlots[0]}
-        ondragenter={(event) => dragOverSlot(event, dropSlots[0] ?? 0)}
-        ondragover={(event) => dragOverSlot(event, dropSlots[0] ?? 0)}
-        ondragleave={(event) => dragLeaveSlot(event, dropSlots[0] ?? 0)}
-        ondrop={(event) => dropAt(event, dropSlots[0] ?? 0)}
-      ></div>
+    {#if section.components.length === 0}
+      {@render emptyContent?.()}
     {/if}
     {#each section.components as component, componentIndex (component.id)}
       <article
@@ -333,8 +180,6 @@
           .connectPrevious === true}
         class:connect-previous={componentIndex > 0 &&
           component.layout.connectPrevious === true}
-        class:authoring-cell={Boolean(authoring)}
-        class:authoring-selected={selected(component.id)}
         class:backdrop-cell={component.id === backdropId}
         class="cell"
         data-component={`${section.id}/${component.id}`}
@@ -344,59 +189,9 @@
         style={`grid-column: span ${component.layout.span};${
           component.id === backdropId ? safeAreaStyle : ''
         }`}
-        draggable={Boolean(authoring)}
-        onclickcapture={(event) => select(event, component.id)}
-        ondragstart={(event) => dragStart(event, component.id)}
-        ondragenter={(event) => dragOverComponent(event, componentIndex)}
-        ondragover={(event) => dragOverComponent(event, componentIndex)}
-        ondragleave={dragLeaveComponent}
-        ondrop={(event) => dropOnComponent(event, componentIndex)}
-        ondragend={clearDragState}
+        {@attach cellAttachment?.(component, componentIndex)}
       >
-        {#if authoring}
-          <div
-            role="presentation"
-            class:authoring-drop-active={activeDropIndex === componentIndex}
-            class="authoring-drop-slot authoring-drop-slot-before"
-            data-drop-slot
-            data-drop-index={componentIndex}
-            data-drop-active={activeDropIndex === componentIndex}
-            ondragenter={(event) => dragOverSlot(event, componentIndex)}
-            ondragover={(event) => dragOverSlot(event, componentIndex)}
-            ondragleave={(event) => dragLeaveSlot(event, componentIndex)}
-            ondrop={(event) => dropAt(event, componentIndex)}
-          ></div>
-          {#if componentIndex === section.components.length - 1}
-            <div
-              role="presentation"
-              class:authoring-drop-active={activeDropIndex === dropSlots.at(-1)}
-              class="authoring-drop-slot authoring-drop-slot-after"
-              data-drop-slot
-              data-drop-index={dropSlots.at(-1)}
-              data-drop-active={activeDropIndex === dropSlots.at(-1)}
-              ondragenter={(event) => dragOverSlot(event, dropSlots.at(-1) ?? 0)}
-              ondragover={(event) => dragOverSlot(event, dropSlots.at(-1) ?? 0)}
-              ondragleave={(event) => dragLeaveSlot(event, dropSlots.at(-1) ?? 0)}
-              ondrop={(event) => dropAt(event, dropSlots.at(-1) ?? 0)}
-            ></div>
-          {/if}
-        {/if}
-        {#if authoring && (authoring.inlineControls ?? true) && selected(component.id)}
-          <div class="authoring-controls">
-            <span class="authoring-drag" title="拖动组件">⠿</span>
-            <label>
-              <span>画布内标题</span>
-              <input
-                aria-label={`${component.id} 画布内标题`}
-                value={component.props.title ?? ''}
-                onchange={(event) => editTitle(event, component)}
-              />
-            </label>
-            <span class="authoring-span">{component.layout.span}/{columnCount}</span>
-            <button type="button" aria-label="缩小组件" onclick={() => resize(component, -1)}>−</button>
-            <button type="button" aria-label="加宽组件" onclick={() => resize(component, 1)}>＋</button>
-          </div>
-        {/if}
+        {@render cellOverlay?.(component, componentIndex)}
         {@render componentContent(component)}
       </article>
     {/each}
@@ -558,129 +353,6 @@
     min-height: 524px;
   }
 
-  /* ==== 创作态控件 ==== */
-  .authoring-cell {
-    cursor: grab;
-    transition: border-color 120ms ease, box-shadow 120ms ease;
-  }
-  .authoring-cell:active {
-    cursor: grabbing;
-  }
-  .authoring-cell:hover:not(.authoring-selected) {
-    border-color: var(--mc-color-accent);
-  }
-  .authoring-selected {
-    z-index: 2;
-    overflow: visible;
-    border-color: var(--mc-color-accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc-color-accent) 18%, transparent);
-  }
-  .authoring-drop-slot {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    z-index: 12;
-    width: 24px;
-  }
-  .authoring-drop-slot-before {
-    left: 0;
-  }
-  .authoring-drop-slot-after {
-    right: 0;
-  }
-  .authoring-drop-slot::after {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 2px;
-    background: transparent;
-    border-radius: 999px;
-    content: '';
-    pointer-events: none;
-  }
-  .authoring-drop-slot-after::after {
-    right: 0;
-    left: auto;
-  }
-  .authoring-drop-slot.authoring-drop-active::after {
-    background: var(--mc-color-accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc-color-accent) 18%, transparent);
-  }
-  .authoring-empty-drop-slot {
-    display: grid;
-    min-height: 96px;
-    grid-column: 1 / -1;
-    place-items: center;
-    border: 1px dashed var(--mc-color-accent);
-    border-radius: var(--mc-radius-cell);
-  }
-  .authoring-empty-drop-slot.authoring-drop-active {
-    border-color: var(--mc-color-accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc-color-accent) 18%, transparent);
-  }
-  .authoring-controls {
-    position: absolute;
-    top: -38px;
-    right: -1px;
-    left: -1px;
-    z-index: 20;
-    display: flex;
-    height: 34px;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 6px;
-    color: #fff;
-    background: #3730a3;
-    border-radius: 7px;
-    box-shadow: 0 8px 20px rgb(49 46 129 / 0.2);
-    cursor: default;
-  }
-  .authoring-drag {
-    padding: 0 4px;
-    cursor: grab;
-  }
-  .authoring-controls label {
-    display: flex;
-    min-width: 0;
-    flex: 1;
-    align-items: center;
-    gap: 6px;
-    font-size: 10px;
-    font-weight: 700;
-  }
-  .authoring-controls label span {
-    flex: none;
-  }
-  .authoring-controls input {
-    min-width: 80px;
-    height: 24px;
-    flex: 1;
-    padding: 3px 7px;
-    color: #27272a;
-    background: var(--mc-color-surface);
-    border: 0;
-    border-radius: 4px;
-    outline: 0;
-    font: inherit;
-  }
-  .authoring-span {
-    flex: none;
-    font-size: 10px;
-  }
-  .authoring-controls button {
-    display: grid;
-    width: 24px;
-    height: 24px;
-    place-items: center;
-    padding: 0;
-    color: #3730a3;
-    background: var(--mc-color-surface);
-    border: 0;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
   /* ==== 三档分区容器:单元格一律无镶边,组件自带表面 ==== */
   .container-plain .cell,
   .container-panel .cell,
@@ -801,27 +473,6 @@
 
     gap: var(--mc-section-card-grid-gap, 10px)
       var(--mc-section-card-grid-column-gap, 25px);
-  }
-
-  /* 创作态边界放在容器去镶边规则之后，确保三种内容分区都清晰可见。 */
-  .container-plain .cell.authoring-cell,
-  .container-panel .cell.authoring-cell,
-  .container-card .cell.authoring-cell {
-    border: 1px solid transparent;
-    border-radius: var(--mc-radius-cell);
-  }
-  .container-plain .cell.authoring-cell:hover:not(.authoring-selected),
-  .container-panel .cell.authoring-cell:hover:not(.authoring-selected),
-  .container-card .cell.authoring-cell:hover:not(.authoring-selected) {
-    border-color: var(--mc-color-accent);
-  }
-  .container-plain .cell.authoring-cell.authoring-selected,
-  .container-panel .cell.authoring-cell.authoring-selected,
-  .container-card .cell.authoring-cell.authoring-selected {
-    z-index: 2;
-    overflow: visible;
-    border-color: var(--mc-color-accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mc-color-accent) 18%, transparent);
   }
 
   /* ==== 响应式 ==== */

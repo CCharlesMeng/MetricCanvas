@@ -16,7 +16,7 @@ const workbenchSource = readFileSync(
 );
 const runtimeViewSource = readFileSync(
   fileURLToPath(
-    new URL('../../../../packages/runtime-ui/src/RuntimeView.svelte', import.meta.url)
+    new URL('../../../../packages/runtime-ui/src/RuntimeSurface.svelte', import.meta.url)
   ),
   'utf8'
 );
