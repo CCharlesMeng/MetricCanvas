@@ -1,13 +1,13 @@
 # MetricCanvas 创作组件
 
-`MetricCanvas` 为 Svelte 创作宿主提供选中、拖拽、行内编辑与意图回传。它复用 `runtime-ui` 的渲染主体和内容分区布局，不复制查询、筛选或组件渲染实现。正式渲染宿主继续使用 `RuntimeView`，无需安装本包。
+`MetricCanvas` 为 Svelte 集成应用提供选中、拖拽、行内编辑与意图回传。它复用 `runtime-ui` 的渲染主体和内容分区布局，不复制查询、筛选或组件渲染实现。只做正式渲染的集成应用继续使用 `RuntimeView`，无需安装本包。
 
 ```svelte
 <script lang="ts">
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
-  // document、dataGateway、selected、running 由宿主提供。
+  // document、dataGateway、selected、running 由集成应用提供。
   function handleIntent(intent: AuthoringIntent) {
-    // 宿主处理选中与编辑意图，并回传新的 selected 或页面文档。
+    // 集成应用处理选中与编辑意图，并回传新的 selected 或页面文档。
   }
 </script>
 
@@ -25,7 +25,7 @@
 
 - `enabled` 只切换创作行为，保留同一个渲染会话；关闭时页面原有点击交互恢复。选中、控件开关不重启查询、不清空筛选和分页。替换 `document` 沿用统一运行时的初始化语义。
 - `draftSections` 只调整已校验组件的分区与顺序，允许保留草稿空分区；重复、遗漏或未知组件会使草稿布局整体回退为正式布局。它不进入页面校验与取数输入。
-- `onintent` 回传选中、移动与编辑。移动的 destination 是移除源组件之前的插槽，宿主可用 `normalizeAuthoringDropTarget` 换算；页面文档、属性面板、保存与撤销历史仍归宿主。
+- `onintent` 回传选中、移动与编辑。移动的 destination 是移除源组件之前的插槽，集成应用可用 `normalizeAuthoringDropTarget` 换算；页面文档、属性面板、保存与撤销历史仍归集成应用。
 
 ## 交付与组合接缝
 

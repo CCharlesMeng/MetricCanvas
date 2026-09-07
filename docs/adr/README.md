@@ -1,8 +1,8 @@
 # ADR 基线:70 份决策记录的当前生效结论
 
-`docs/adr/` 现有 70 份 ADR(0001–0070)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 72 份 ADR(0001–0072)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0071`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0073`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -84,6 +84,8 @@
 | [0068](./0068-plain-url-navigation-protocol.md) | URL 导航使用普通查询参数，页面协议切到 6.0 | #109 的后续裁决；实现与验收状态由 #109 记录 |
 | [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版采用真实 Java 与内存存储、DQE HTTP 仿真，请求凭据归宿主 | #99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
 | [0070](./0070-consume-host-java-page-assets-api.md) | Java 页面资产由宿主提供，本仓负责接口消费 | 用户修正 #105 范围；部分取代 0062 的第一方 Java 建设前提 |
+| [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | #100 已裁决；发布门禁与目录重组待执行票 |
+| [0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) | 「宿主」改称集成应用，创作期与渲染期确立为对立时段 | 词汇表已补齐；ADR 正文与 `docs/plan/` 保留「宿主」原措辞 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -138,6 +140,10 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 **导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，由 #109 / ADR-0068 实施）：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是已替换的历史实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
 
 **本地首版的替代边界([ADR-0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md)，#99)：** 使用真实 Java HTTP 服务与已有内存存储，接受重启清空；页面校验、修订与幂等逻辑保持真实，不以 Node offline lifecycle 绕过 Java。DQE 沿用 HTTP 仿真，只承诺有依据的协议和明确测试场景，未知能力明确失败，不代表真实 DQE/MySQL 验收。所有宿主数据请求的头和相关 Cookie 由宿主决定，本仓不新增身份适配器或用户切换器，也不补默认用户；服务端既有必填项与权限校验保留。旧 scripted/lexical 模型仅作测试与迁移对照，公共 Chat 未接通时显示不可用，其删除时机由 #102 与 #107/#108 对账；不可用状态不能满足 #95/#104 的完整终点线。
+
+**发布形态与公开面门禁([ADR-0071](./0071-four-release-artifacts-with-standalone-page-protocol.md)，#100)：** 渲染引擎按四个交付物锁步同版发布——`@metriccanvas/page`(协议/校验，无 Svelte) + `@metriccanvas/engine`(`runtime`+`widgets`+`runtime-ui`+`data-gateway` 收入一个包，另给 `./widgets`/`./ui`/`./dqe` 子路径) + `@metriccanvas/metric-canvas`(创作) + `@metriccanvas/embed`(JS 挂载，ESM+IIFE 自包含)。**页面协议必须独立成包**：服务端六包依赖 `page` 且不依赖任何渲染包，并入会让持久化与 MCP 包装上 ECharts 与 Svelte。`page` 主入口收窄为协议契约面并上快照门禁，组件属性类型移入 `./internal`；**组件属性类型不得迁往 `widgets`**——它们是 Zod schema 投影即协议本身，迁移会造成依赖成环并让三语言共享契约需 Svelte 包参与生成。`schemaVersion` 超区间不进 `ERROR_TYPES`(跨语言闭集无「引擎版本」概念)，走独立引擎级失败关闭通道。开发期查询明细实现移入 platform，不得随包发出。Svelte 区间统一 `>=5.29.0 <6` 且须以最低版本真实验证；`runtime` 的虚假 Svelte peer 删除但不因此拆包。目录按交付物分组；`engine` 一名为词汇表已有词条「统一运行时(Runtime，又称渲染引擎)」的缩写，命名依据在裁决时即已就位(该 ADR 原先声称词条缺失并把补齐列为发包前置，已按 [ADR-0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) 更正)。
+
+**领域语言的一次改名与一次澄清([ADR-0072](./0072-integrating-application-rename-and-authoring-render-time-split.md)，#95 同批)：** 「宿主」在本仓重载了三个意思，**只有「装载渲染引擎的应用」改称集成应用，英文保留 `Host`**；Java 宿主服务 `CDINL2DataBuilderService` 与包内技术容器(`WidgetHost`、「ECharts 宿主」)不在改名范围，代码标识符与 ADR 文件名零改动。改名范围限词汇表加七份活文档共 72 处，**ADR 正文与 `docs/plan/` 保留原措辞**，靠词条 `_Avoid_: 宿主（旧称）` 导航。**创作期与渲染期是一对对立时段，创作期同时容纳 AI 装配与人工页面搭建**——ADR-0043 的下钻对立与 ADR-0032 的「人机分工」是依据，因此 ADR-0065 的「创作包」「创作画布」用词全部成立。**问数不拆形态**：「一次性看数」与「用 AI 起页面」是同一次问数的两种结局，系统在沉淀之前分不出来，platform 收窄的是入口语义而非能力，问数留在 platform。「画布」一词归搭建画布，页面外框视觉面改称外观／底色。新增词条：创作期、渲染期、页面搭建、搭建画布、页面搭建工作台、平台、集成应用；「改版」立词条但进提议段——**该能力当前不存在**，建成前不得在设计中假定它已存在。
 
 **Java 接入责任的新裁决([ADR-0070](./0070-consume-host-java-page-assets-api.md)，#105)：** Java 服务由外部宿主提供，本仓只负责接口消费与前端验证，不设计或实现 Java 服务。上文 ADR-0062 的第一方 Module 建设是历史背景；现有 Java 代码/旧 Swagger 不再自动充当宿主接口真源。POST/PUT/DELETE、资源身份、响应形状与 SLA 按提供方资料对接；本轮未确认的四项后端方案作废。接口资料缺口作为待确认事实，不猜能力，也不删除现有 Java 代码。
 

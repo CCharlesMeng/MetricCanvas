@@ -2,9 +2,9 @@
 
 `@metriccanvas/embed` 把 MetricCanvas 统一运行时挂载到普通 HTML 页面或第三方浏览器应用中。
 
-这是渲染引擎的 JS 挂载入口，不是独立应用或自定义元素。宿主通过 JS 地址加载并调用 `mount`；视觉呈现由引擎统一提供，宿主不配置字体/主题。文档获取、数据网关与登录恢复等边界见[宿主契约](../../docs/host-contract.md)。
+这是渲染引擎的 JS 挂载入口，不是独立应用或自定义元素。集成应用通过 JS 地址加载并调用 `mount`；视觉呈现由引擎统一提供，集成应用不配置字体/主题。文档获取、数据网关与登录恢复等边界见[集成应用契约](../../docs/host-contract.md)。
 
-当前页面协议为 **6.0**：页面声明普通 URL 与显式动态参数，默认浏览器导航；宿主可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
+当前页面协议为 **6.0**：页面声明普通 URL 与显式动态参数，默认浏览器导航；集成应用可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
 
 构建产物：
 
@@ -71,11 +71,11 @@ pnpm --filter @metriccanvas/embed build
 
 `query` 和包含查询数据源的 `mixed` 页面要求 `dataGateway`。
 
-DQE 端点和鉴权由宿主应用配置。端点、令牌和长期凭据不写入页面文档或静态 HTML。
+DQE 端点和鉴权由集成应用配置。端点、令牌和长期凭据不写入页面文档或静态 HTML。
 
 Schema 元数据只用于页面创作，不传入 Embed。
 
-包含 `aiSummary` 的页面由宿主提供固定的 AI 总结连接配置。页面文档本身不保存端点或协议参数：
+包含 `aiSummary` 的页面由集成应用提供固定的 AI 总结连接配置。页面文档本身不保存端点或协议参数：
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {
@@ -128,9 +128,9 @@ interface RuntimeInput {
 | `initialSearch` | 不含前导 `?` 的页面参数与筛选查询串 |
 | `navigation` | 可选接管；`navigate(target)` 返回 `true` 时阻止默认跳转 |
 
-Embed 在 Shadow DOM 中渲染页面，以隔离宿主样式。
+Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
-**宿主必须交出宽度。** 页面外框几何由页面文档的 `layoutForm` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，宿主不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。完整宿主义务见 [宿主契约](../../docs/host-contract.md)。
+**集成应用必须交出宽度。** 页面外框几何由页面文档的 `layoutForm` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，集成应用不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。集成应用的完整义务见 [集成应用契约](../../docs/host-contract.md)。
 
 ## 事件
 
@@ -151,9 +151,9 @@ const runtime = MetricCanvas.mount('#dashboard', {
 });
 ```
 
-Embed 通过事件通知筛选变化和导航。链接默认跳转；若要接管，使用 `navigation.navigate` 返回 `true`（见[宿主契约](../../docs/host-contract.md)），不要在观察事件中重复跳转。筛选变化不会自动写入地址栏，宿主可选择同步。查询串使用普通值，由接收页声明解释；没有私有类型前缀。
+Embed 通过事件通知筛选变化和导航。链接默认跳转；若要接管，使用 `navigation.navigate` 返回 `true`（见[集成应用契约](../../docs/host-contract.md)），不要在观察事件中重复跳转。筛选变化不会自动写入地址栏，集成应用可选择同步。查询串使用普通值，由接收页声明解释；没有私有类型前缀。
 
-`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`@metriccanvas/page` 的 `QueryErrorCode`，未携带分类的异常为 `UNKNOWN`)与脱值消息。宿主按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
+`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`@metriccanvas/page` 的 `QueryErrorCode`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
 
 ## 生命周期
 

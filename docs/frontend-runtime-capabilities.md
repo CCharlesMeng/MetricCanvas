@@ -11,7 +11,7 @@
 | 渲染能力 | 固定 12 列布局，内置 10 类组件，统一处理加载、空和错误状态 |
 | 交互能力 | 页面级筛选、URL 同步、页内下钻、跨页下钻、本地/查询分页 |
 | 运行原则 | 组件不取数；数据快照按页面数据源 id 唯一存储；多个消费者共享数据 |
-| 主要扩展方式 | 替换页面仓储、数据网关、导航和宿主接入适配器 |
+| 主要扩展方式 | 替换页面仓储、数据网关、导航和集成应用接入适配器 |
 
 ## 1. 范围与设计原则
 
@@ -171,7 +171,7 @@ flowchart TB
 | `@metriccanvas/runtime-ui` | 页面状态、筛选控件、12 列布局、组件分发和 action | 业务查询生成 |
 | `@metriccanvas/widgets` | 根据就绪数据和 props 绘制内容，上报交互事件 | 数据获取、筛选状态和页面导航 |
 | Canvas | 页面目录、路由、页面加载和即时预览 | Platform 管理能力 |
-| Embed | Shadow DOM 挂载、`mount/update/destroy` 生命周期与宿主事件 | 修改宿主 URL 或路由 |
+| Embed | Shadow DOM 挂载、`mount/update/destroy` 生命周期与面向集成应用的事件 | 修改集成应用的 URL 或路由 |
 
 ## 4. 运行逻辑
 
@@ -223,7 +223,7 @@ flowchart TD
 | DQE 批量 | 同一微任务窗口的查询合并为 `dsl_list`，按位置拆分 `results` |
 | 查询分页 | 修改克隆查询项的 `order.offset/limit`，使用 `total_count` 派生页码 |
 | 错误隔离 | 数据源失败只影响引用它的组件 |
-| 结构化查询错误 | 数据快照错误态保留稳定查询错误分类与脱值消息（`QueryErrorCode`，单点声明于 `@metriccanvas/page`）；`WidgetHost` 按分类的处理语义呈现，统一运行时视图向宿主上抛 `data-error` 事件，消费方不解析错误字符串 |
+| 结构化查询错误 | 数据快照错误态保留稳定查询错误分类与脱值消息（`QueryErrorCode`，单点声明于 `@metriccanvas/page`）；`WidgetHost` 按分类的处理语义呈现，统一运行时视图向集成应用上抛 `data-error` 事件，消费方不解析错误字符串 |
 | 查询诊断 | 每次执行落一条封闭形状的诊断记录（标识、耗时、行数、状态、错误分类），默认不保留业务数据行；字段与安全约束见 `docs/runtime-architecture.md` 第 16 节 |
 
 ### 4.3 页内下钻时序
@@ -261,10 +261,10 @@ sequenceDiagram
 |---|---|---|---|
 | 页面仓储 | `PageRepository` | 静态文件、其他 API 或存储实现 | 加载后仍使用统一页面校验器 |
 | 数据网关 | `DataGateway` | DQE 环境、鉴权、HTTP 适配和维度候选值服务 | 组件仍只消费标准化数据快照 |
-| 导航 | `RuntimeNavigation` | 宿主路由、URL 写入和跨页导航策略 | action 的页内/跨页语义 |
-| Embed 接入 | `mount/update/destroy` + 运行时事件 | 宿主页面和框架集成方式 | Shadow DOM 内仍复用同一 Runtime UI |
-| AI 总结 | 宿主注入的连接配置 | 连接地址与环境参数 | 端点和协议参数不进入页面文档 |
-| 画布交互 | 版本化 authoring 协议 | 宿主对选中、移动、标题和跨度修改意图的处理 | 画布不直接依赖管理端实现 |
+| 导航 | `RuntimeNavigation` | 集成应用的路由、URL 写入和跨页导航策略 | action 的页内/跨页语义 |
+| Embed 接入 | `mount/update/destroy` + 运行时事件 | 集成应用的页面和框架集成方式 | Shadow DOM 内仍复用同一 Runtime UI |
+| AI 总结 | 集成应用注入的连接配置 | 连接地址与环境参数 | 端点和协议参数不进入页面文档 |
+| 搭建画布交互 | 版本化 authoring 协议 | 集成应用对选中、移动、标题和跨度修改意图的处理 | 搭建画布不直接依赖管理端实现 |
 
 ### 新增组件
 

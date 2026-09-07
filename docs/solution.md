@@ -255,7 +255,7 @@ force_released
 | Widgets | 纯渲染组件 |
 | AI Summary 垂直组件 Module | 关联数据解析、请求组装、生成会话、私有 SSE 适配与纯渲染 View |
 
-Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 是正式渲染入口，共享的 `RuntimeSurface` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格和 `connectPrevious`。独立创作包 `@metriccanvas/metric-canvas` 通过 `MetricCanvas` 提供选中、拖拽、编辑触发和意图回传，复用同一渲染主体与布局；文档、属性面板、保存和撤销历史仍归宿主。渲染包的 `./composition` 提供内容分区片段与单元格装饰接缝，渲染包不依赖创作包，正式渲染不加载创作专用代码（ADR-0065；包名和发布兼容策略仍需 #100 对账）。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
+Runtime UI 内部按 DOM 所有权拆分：`RuntimeView` 是正式渲染入口，共享的 `RuntimeSurface` 负责页面校验结果、筛选状态、数据快照和组件分发；内容分区 Module 负责内容分区、网格、组件单元格和 `connectPrevious`。独立创作包 `@metriccanvas/metric-canvas` 通过 `MetricCanvas` 提供选中、拖拽、编辑触发和意图回传，复用同一渲染主体与布局；文档、属性面板、保存和撤销历史仍归集成应用。渲染包的 `./composition` 提供内容分区片段与单元格装饰接缝，渲染包不依赖创作包，正式渲染不加载创作专用代码（ADR-0065；包名和发布兼容策略仍需 #100 对账）。分区网格缺省为 12 列等权轨，Schema 5.3 起可把受控正整数权重列轨翻译为运行时 `fr` 模板；页面不能注入 CSS 字符串。纯渲染组件的内部 DOM 只能由对应组件 Module 设置样式；内容分区与组件外缘通过内部 CSS custom properties 协作，不使用全局 class 选择器穿透。
 
 查询数据源执行行为：
 
@@ -332,15 +332,15 @@ AI 总结组件是一个垂直组件 Module。Host 读取关联数据快照；�
 
 | 应用 | 职责 |
 |---|---|
-| Canvas | 页面目录、页面渲染、预览、创作画布 |
+| Canvas | 页面目录、页面渲染、预览、搭建画布 |
 | Platform | 页面搭建、修订、模板和发布管理 |
 | DQE Sim | 本地 DQE 协议仿真 |
 
 Canvas 从 Platform API 或静态页面仓储加载页面。数据网关端点由应用环境配置注入。
 
-`packages/embed` 是渲染引擎的 JS 挂载入口，不是应用：普通 HTML 或异构宿主通过 JS 地址加载后调用 `mount`，Svelte/创作宿主使用 npm 入口。IOC 的独立微前端子应用与 platform 自行承担应用集成，引擎不实现微前端协议；不开放宿主字体、主题或其他视觉配置。页面文档由宿主加载，数据网关与身份恢复由宿主提供（[ADR-0066](adr/0066-self-contained-rendering-engine-host-boundary.md)）。
+`packages/embed` 是渲染引擎的 JS 挂载入口，不是应用：普通 HTML 或异构集成应用通过 JS 地址加载后调用 `mount`，Svelte/页面搭建类集成应用使用 npm 入口。IOC 的独立微前端子应用与 platform 自行承担应用集成，引擎不实现微前端协议；不向集成应用开放字体、主题或其他视觉配置。页面文档由集成应用加载，数据网关与身份恢复由集成应用提供（[ADR-0066](adr/0066-self-contained-rendering-engine-host-boundary.md)）。
 
-跨页导航使用页面声明的 `href + query`：URL 与显式动态绑定由内容提供方负责，默认普通浏览器跳转，宿主可选接管；6.0 协议、普通查询值与显式迁移见 [ADR-0068](adr/0068-plain-url-navigation-protocol.md)。页面资产身份保留，宿主继续拥有路由栈、返回与面包屑。
+跨页导航使用页面声明的 `href + query`：URL 与显式动态绑定由内容提供方负责，默认普通浏览器跳转，集成应用可选接管；6.0 协议、普通查询值与显式迁移见 [ADR-0068](adr/0068-plain-url-navigation-protocol.md)。页面资产身份保留，集成应用继续拥有路由栈、返回与面包屑。
 
 ## 15. 系统不变式
 
