@@ -111,6 +111,7 @@ public final class PageParams {
         }
 
         Set<String> consumed = new HashSet<>();
+        navigationConsumers(document, consumed);
         for (TextValueReferenceUsage usage : collectTextValueReferences(document)) {
             String param = usage.reference().get("param").textValue();
             JsonNode declaration = byId.get(param);
@@ -136,6 +137,15 @@ public final class PageParams {
                     "页面参数 " + id + " 没有任何消费者;未被消费的参数通常意味着绑错了位置"));
         }
         return errors;
+    }
+
+    private static void navigationConsumers(JsonNode node, Set<String> consumed) {
+        if (node == null) return;
+        if (node.isObject() && "param".equals(Json.text(node.get("source"))) && Json.isString(node.get("id"))) consumed.add(node.get("id").textValue());
+        if (node.isArray()) node.forEach(child -> navigationConsumers(child, consumed));
+        else if (node.isObject()) node.fields().forEachRemaining(entry -> {
+            if (!entry.getKey().equals("dataSources")) navigationConsumers(entry.getValue(), consumed);
+        });
     }
 
     static boolean matchesParamType(JsonNode value, String type) {

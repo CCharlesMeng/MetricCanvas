@@ -1,114 +1,36 @@
 import { describe, expect, it } from 'vitest';
-import { drillThroughSearch } from '../src/navigate';
-import { createFilterState, type FilterValue, type FilterValues } from '../src/filter-state';
+import type { NavigationTarget } from '@metriccanvas/page';
+import { navigationHref, type FilterValues } from '../src';
 
-const current: FilterValues = new Map<string, FilterValue>([
-  ['f-time', { type: 'timeRange', from: '2026-06-01', to: '2026-06-30' }],
-  ['f-region', { type: 'dimension', dimension: 'region', values: ['华东'] }]
+const filters: FilterValues = new Map([
+  ['region', {type:'dimension', dimension:'office-code', level:'office', values:['SH','北京&华南']}],
+  ['period', {type:'timeRange', from:'2026-04-01', to:'2026-04-30'}],
+  ['unused', {type:'search',query:'不得泄漏'}]
 ]);
-
-/** 借 store 的 fromURL 还原查询串,断言"目标页按生命周期④能恢复出什么" */
-function restore(search: string): FilterValues {
-  const probe = createFilterState();
-  probe.fromURL(search);
-  let values: FilterValues = new Map();
-  probe.subscribe((v) => {
-    values = v;
-  })();
-  return values;
-}
-
-describe('drillThroughSearch:筛选值 + 点击上下文 → 目标页 URL 查询串', () => {
-  it('carryFilters 携带当前筛选状态值,setFilters 用点击上下文写入,目标页可完整还原', () => {
-    const search = drillThroughSearch(
-      {
-        page: 'sales-detail',
-        carryFilters: ['f-time', 'f-region'],
-        setFilters: { 'f-channel': 'channel' }
-      },
-      current,
-      { channel: '线上', gmv: 1200 }
-    );
-    const restored = restore(search);
-    expect(restored.get('f-time')).toEqual({ type: 'timeRange', from: '2026-06-01', to: '2026-06-30' });
-    expect(restored.get('f-region')).toEqual({ type: 'dimension', dimension: 'region', values: ['华东'] });
-    expect(restored.get('f-channel')).toEqual({ type: 'dimension', dimension: 'channel', values: ['线上'] });
-    expect(restored.size).toBe(3);
+const query: NonNullable<NavigationTarget['query']> = {
+  code:{source:'row',field:'code'}, month:{source:'param',id:'month'},
+  region:{source:'filter',id:'region'}, level:{source:'filter',id:'region',part:'level'},
+  from:{source:'filter',id:'period',part:'from'}, to:{source:'filter',id:'period',part:'to'}
+};
+describe('普通 URL 导航', () => {
+  it('三种显式来源，重复键，范围和层级，query 覆盖与 hash 保留', () => {
+    const href = navigationHref({href:'../detail?tab=sales&code=old&code=older#history',query}, filters, new Map([['month','2026-04'],['secret','不携带']]), {code:'A&?/%# +中文'});
+    const url = new URL(href,'https://host.example/app/list');
+    expect(url.pathname).toBe('/detail');
+    expect(url.hash).toBe('#history');
+    expect([...url.searchParams.entries()]).toEqual([
+      ['tab','sales'],['code','A&?/%# +中文'],['month','2026-04'],['region','SH'],['region','北京&华南'],['level','office'],['from','2026-04-01'],['to','2026-04-30']
+    ]);
   });
-
-  it('carryFilters 中当前无值的筛选器不占位(缺席即不筛选)', () => {
-    const search = drillThroughSearch(
-      { page: 'sales-detail', carryFilters: ['f-time', 'f-unset'] },
-      current,
-      {}
-    );
-    const restored = restore(search);
-    expect(restored.size).toBe(1);
-    expect(restored.has('f-unset')).toBe(false);
+  it('缺值省略，静态同名参数保留，0 与 false 不丢失', () => {
+    expect(navigationHref({href:'/detail?code=static',query:{code:{source:'row',field:'missing'}, zero:{source:'row',field:'zero'}, flag:{source:'row',field:'flag'}}},new Map(),new Map(),{zero:0,flag:false})).toBe('/detail?code=static&zero=0&flag=false');
+    for (const code of [null,'',NaN]) expect(navigationHref({href:'/detail',query:{code:{source:'row',field:'code'}}},new Map(),new Map(),{code})).toBe('/detail');
   });
-
-  it('点击行缺少占位维度的值时,该 setFilters 项跳过、其余照常', () => {
-    const search = drillThroughSearch(
-      { page: 'sales-detail', setFilters: { 'f-channel': 'channel' }, carryFilters: ['f-time'] },
-      current,
-      { region: '华东' }
-    );
-    const restored = restore(search);
-    expect(restored.has('f-channel')).toBe(false);
-    expect(restored.has('f-time')).toBe(true);
+  it('不解析 hash 路由内部 query', () => {
+    expect(navigationHref({href:'/#/detail?tab=sales',query:{code:{source:'row',field:'code'}}},new Map(),new Map(),{code:'A001'})).toBe('/?code=A001#/detail?tab=sales');
   });
-
-  it('setFilters 与 carryFilters 指向同一筛选器时,点击上下文优先', () => {
-    const search = drillThroughSearch(
-      { page: 'sales-detail', carryFilters: ['f-region'], setFilters: { 'f-region': 'region' } },
-      current,
-      { region: '华南' }
-    );
-    expect(restore(search).get('f-region')).toEqual({
-      type: 'dimension',
-      dimension: 'region',
-      values: ['华南']
-    });
-  });
-
-  it('数值型点击值转为字符串写入(URL 载体只有字符串)', () => {
-    const search = drillThroughSearch(
-      { page: 'sales-detail', setFilters: { 'f-year': 'year' } },
-      new Map(),
-      { year: 2026 }
-    );
-    expect(restore(search).get('f-year')).toEqual({
-      type: 'dimension',
-      dimension: 'year',
-      values: ['2026']
-    });
-  });
-
-  it('无可携带内容时返回空字符串(目标页回落到自身 default)', () => {
-    expect(drillThroughSearch({ page: 'sales-detail' }, new Map(), {})).toBe('');
-  });
-
-  it('setParams 编码到 p: 命名空间,不进筛选状态', () => {
-    const search = drillThroughSearch(
-      {
-        page: 'ioc-project-detail',
-        carryFilters: ['f-region'],
-        setParams: {
-          'opportunity-code': 'opportunity-code',
-          mtime: 'mtime'
-        }
-      },
-      current,
-      { 'opportunity-code': 'OPP202604001', mtime: '202604' }
-    );
-    const params = new URLSearchParams(search);
-    expect(params.get('opportunity-code')).toBe('p:OPP202604001');
-    expect(params.get('mtime')).toBe('p:202604');
-    expect(restore(search).get('f-region')).toEqual({
-      type: 'dimension',
-      dimension: 'region',
-      values: ['华东']
-    });
-    expect(restore(search).has('opportunity-code')).toBe(false);
+  it('绝对地址与文档基址解析，禁止可执行 scheme', () => {
+    for (const href of ['https://example.com/detail','http://example.com','/detail','detail','?tab=x','#history']) expect(navigationHref({href},new Map(),new Map())).toBe(href);
+    for (const href of ['javascript:alert(1)','data:text/html,x','file:///tmp/x',' java\nscript:x','\\evil']) expect(() => navigationHref({href},new Map(),new Map())).toThrow();
   });
 });

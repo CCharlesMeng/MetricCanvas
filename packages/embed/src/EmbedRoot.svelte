@@ -26,5 +26,6 @@
   dataGateway={input.dataGateway}
   aiSummary={input.aiSummary}
   initialSearch={input.initialSearch}
+  navigation={input.navigation}
   onevent={onEvent}
 />

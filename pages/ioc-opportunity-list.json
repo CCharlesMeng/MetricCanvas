@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.1",
+  "schemaVersion": "6.0",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -1114,16 +1114,40 @@
               {
                 "on": "click",
                 "navigate": {
-                  "page": "ioc-project-detail",
-                  "setParams": {
-                    "page-title": "page-title",
-                    "opportunity-code": "opportunity-code",
-                    "mtime": "mtime",
-                    "ati-status-label": "ati-status-label",
-                    "project-initiation-level": "project-initiation-level",
-                    "public-cloud-na-level-name": "public-cloud-na-level-name",
-                    "sub-industry-level1-name": "sub-industry-level1-name",
-                    "party-number": "party-number"
+                  "href": "/pages/ioc-project-detail",
+                  "query": {
+                    "page-title": {
+                      "source": "row",
+                      "field": "page-title"
+                    },
+                    "opportunity-code": {
+                      "source": "row",
+                      "field": "opportunity-code"
+                    },
+                    "mtime": {
+                      "source": "row",
+                      "field": "mtime"
+                    },
+                    "ati-status-label": {
+                      "source": "row",
+                      "field": "ati-status-label"
+                    },
+                    "project-initiation-level": {
+                      "source": "row",
+                      "field": "project-initiation-level"
+                    },
+                    "public-cloud-na-level-name": {
+                      "source": "row",
+                      "field": "public-cloud-na-level-name"
+                    },
+                    "sub-industry-level1-name": {
+                      "source": "row",
+                      "field": "sub-industry-level1-name"
+                    },
+                    "party-number": {
+                      "source": "row",
+                      "field": "party-number"
+                    }
                   }
                 }
               }

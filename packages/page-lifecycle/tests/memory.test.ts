@@ -3,7 +3,7 @@ import type { Page, PageDocument } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '../src/memory';
 
 const inlinePage: Page = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'inline-page',
   dataSources: {
     summary: {

@@ -101,3 +101,15 @@ test('无效草稿回退正式排布，卸载后单元格不再发送创作意�
   await expect(page.locator(cell)).toBeVisible();
   await expect.poll(async () => (await counts(page)).canvas).toBeGreaterThan(1);
 });
+
+test('编辑态捕获原生链接，退出编辑后恢复浏览器跳转', async ({ page }) => {
+  const link = page.locator('#canvas').getByRole('link', { name: '关联内容 →' });
+  await expect(link).toHaveAttribute('href', '#linked-content');
+  const before = page.url();
+  await link.click();
+  expect(page.url()).toBe(before);
+  await expect(page.locator(cell)).toHaveClass(/authoring-selected/);
+  await page.getByRole('button', { name: '切换编辑' }).click();
+  await link.click();
+  await expect(page).toHaveURL(/#linked-content$/);
+});

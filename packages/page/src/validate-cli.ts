@@ -2,7 +2,6 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import type { TypedError } from './errors';
 import { fileNameErrors } from './file-name';
-import { crossPageReferenceErrors } from './navigate';
 import type { Page } from './page';
 import { parsePage } from './validate';
 
@@ -15,8 +14,6 @@ function main(argv: string[]): number {
 
   const files = readdirSync(pagesDir).filter((file) => file.endsWith('.json'));
   const results: Array<{ file: string; errors: TypedError[]; page?: Page }> = [];
-  const knownPageIds = new Set(files.map((file) => file.replace(/\.json$/, '')));
-  const pagesById = new Map<string, Page>();
 
   for (const file of files) {
     let document: unknown;
@@ -45,17 +42,11 @@ function main(argv: string[]): number {
     const page = parsed.page;
     const errors: TypedError[] = [];
     errors.push(...fileNameErrors(file, page));
-    if (errors.length === 0) pagesById.set(page.id, page);
     results.push({ file, errors, ...(errors.length === 0 ? { page } : {}) });
   }
 
   let failed = 0;
   for (const result of results) {
-    if (result.page) {
-      result.errors.push(
-        ...crossPageReferenceErrors(result.page, knownPageIds, pagesById)
-      );
-    }
     if (result.errors.length === 0) {
       console.log(`✓ ${result.file}`);
       continue;

@@ -1,5 +1,5 @@
 import type { RuntimeDataGateway } from '@metriccanvas/runtime';
-import type { AiSummaryConfig, RuntimeViewEvent } from '@metriccanvas/runtime-ui';
+import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/runtime-ui';
 
 export interface RuntimeInput {
   document: unknown;
@@ -8,6 +8,8 @@ export interface RuntimeInput {
   aiSummary?: AiSummaryConfig;
   /** URLSearchParams 形式，不带前导问号。 */
   initialSearch?: string;
+  /** 可选应用能力；省略时按普通浏览器链接跳转。 */
+  navigation?: RuntimeNavigation;
 }
 
 /**

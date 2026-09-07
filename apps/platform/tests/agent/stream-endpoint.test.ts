@@ -21,7 +21,7 @@ import type { AnalysisSessionStore } from '../../src/lib/server/session/store';
 import { createScriptedModelProvider } from '../support/scripted-model-provider';
 
 const IDENTITY: LifecycleContext = { actorId: 'developer-1', clientId: 'workbench', roles: [] };
-const PAGE_DOCUMENT = { schemaVersion: '5.0', id: 'tokens-overview' };
+const PAGE_DOCUMENT = { schemaVersion: '6.0', id: 'tokens-overview' };
 
 interface SseFrame {
   id?: string;

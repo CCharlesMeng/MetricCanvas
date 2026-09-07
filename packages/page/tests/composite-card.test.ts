@@ -15,7 +15,7 @@ import {
 
 function cardPage(): any {
   return structuredClone({
-    schemaVersion: '5.2',
+    schemaVersion: '6.0',
     id: 'composite-probe',
     dataSources: {
       tiers: {
@@ -110,7 +110,7 @@ describe('组合卡', () => {
 
   it('只接受受控的标题图标，不接受任意资源路径', () => {
     const page = cardPage();
-    page.schemaVersion = '5.3';
+    page.schemaVersion = '6.0';
     card(page).props.titleIcon = 'opportunity';
     expect(parsePage(page).errors).toEqual([]);
 
@@ -184,14 +184,6 @@ describe('组合卡', () => {
     expect(
       messagesAt(page, '/sections/0/components/0/props/components/0/props/rows/0/valueField')
     ).toEqual(['字段 tier 的 role 为 dimension，此处要求 measure']);
-  });
-
-  it('组合卡是 5.2 能力，声明 5.1 的文档使用它即触发能力下限', () => {
-    const page = cardPage();
-    page.schemaVersion = '5.1';
-    expect(validate(page)).toContainEqual(
-      expect.objectContaining({ path: '/sections/0/components/0' })
-    );
   });
 });
 
@@ -281,7 +273,7 @@ describe('分类明细', () => {
 describe('地图图例与 tooltip 扩展字段', () => {
   function mapPage(): any {
     return structuredClone({
-      schemaVersion: '5.2',
+      schemaVersion: '6.0',
       id: 'map-probe',
       dataSources: {
         regions: {
@@ -346,7 +338,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 
   it('地域摘要按稳定维度值匹配，且所有绑定都经过字段契约校验', () => {
     const page = mapPage();
-    page.schemaVersion = '5.3';
+    page.schemaVersion = '6.0';
     page.sections[0].components[0].props.variant = 'regionalOverview';
     page.sections[0].components[0].props.pinnedSummary = {
       matchField: 'name',
@@ -364,7 +356,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 
   it('地域摘要只属于 regionalOverview，匹配值类型与字段标签必须有效', () => {
     const page = mapPage();
-    page.schemaVersion = '5.3';
+    page.schemaVersion = '6.0';
     page.sections[0].components[0].props.pinnedSummary = {
       matchField: 'name',
       matchValue: '中国',
@@ -393,7 +385,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 describe('同批的字段级增量', () => {
   function panelPage(columns: unknown): any {
     return structuredClone({
-      schemaVersion: '5.2',
+      schemaVersion: '6.0',
       id: 'panel-probe',
       dataSources: {
         detail: {
@@ -427,7 +419,7 @@ describe('同批的字段级增量', () => {
 
   function ratioPage(scale: unknown): any {
     const page: any = {
-      schemaVersion: '5.2',
+      schemaVersion: '6.0',
       id: 'ratio-probe',
       dataSources: {
         pipeline: {

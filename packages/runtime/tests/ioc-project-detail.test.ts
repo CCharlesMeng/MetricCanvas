@@ -51,8 +51,8 @@ function readyRows(snapshots: PageDataSnapshots, sourceId: string) {
 describe('ioc-project-detail 骨架', () => {
   it('声明 5.3 看板形态并关闭统一工具栏，基本信息与项目规范性按冻结轨道并排', () => {
     const page = loadPage('');
-    expect(page.schemaVersion).toBe('5.3');
-    expect(requiredMinorVersion(document)).toBe(3);
+    expect(page.schemaVersion).toBe('6.0');
+    expect(requiredMinorVersion(document)).toBe(0);
     expect(page.layoutForm).toBe('dashboard');
     expect(page.dashboardToolbar).toBe('hidden');
     expect(page.sections.map((section) => section.id)).toEqual([
@@ -163,7 +163,7 @@ describe('ioc-project-detail 骨架', () => {
       tags: ['运营商', 'L1', '已立项', '战略客户']
     });
 
-    const overridden = loadPage('page-title=p%3A%E8%BF%81%E7%A7%BB%E4%B8%80%E6%9C%9F')
+    const overridden = loadPage('page-title=%E8%BF%81%E7%A7%BB%E4%B8%80%E6%9C%9F')
       .sections[0]!.components[0]!;
     expect(overridden.props).toMatchObject({ title: '迁移一期' });
   });

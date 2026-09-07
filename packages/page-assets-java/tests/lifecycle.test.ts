@@ -22,7 +22,7 @@ const REVISION = {
   revisionNumber: 2,
   pageId: 'tokens-by-region',
   baseRevisionId: 'ffffffffffffffffffffffffffffffff',
-  document: { schemaVersion: '5.4', id: 'tokens-by-region', sections: [] },
+  document: { schemaVersion: '6.0', id: 'tokens-by-region', sections: [] },
   contentHash: 'c'.repeat(64),
   dataContextVersion: '2026-09-02.1',
   source: { type: 'manual' },

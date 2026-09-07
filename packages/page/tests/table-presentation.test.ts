@@ -21,7 +21,7 @@ const forecastSource = (overrides: Record<string, unknown> = {}) => ({
 });
 
 const page = (tableProps: Record<string, unknown>, source = forecastSource()) => ({
-  schemaVersion: '5.1',
+  schemaVersion: '6.0',
   id: 'forecast',
   dataSources: { forecast: source },
   sections: [
@@ -70,23 +70,11 @@ describe('表格呈现能力', () => {
       'mergeBy 必须是表格已声明的列字段:row-kind'
     );
   });
-
-  it('声明 5.0 却使用呈现属性被能力下限拒绝', () => {
-    const document = page({ rowKindField: 'row-kind', mergeBy: 'business-type' });
-    const errors = validate({ ...document, schemaVersion: '5.0' });
-
-    expect(errors.map((error) => error.path)).toEqual(
-      expect.arrayContaining([
-        '/sections/0/components/0/props/rowKindField',
-        '/sections/0/components/0/props/mergeBy'
-      ])
-    );
-  });
 });
 
 describe('信息面板与字段长文本', () => {
   const infoPage = (components: unknown[]) => ({
-    schemaVersion: '5.1',
+    schemaVersion: '6.0',
     id: 'detail',
     dataSources: {
       info: {
@@ -158,20 +146,5 @@ describe('信息面板与字段长文本', () => {
     expect(errors.map((error) => error.message)).toContain(
       '字段 typo 不在数据槽 main 的数据源 info 中'
     );
-  });
-
-  it('声明 5.0 却使用新组件被能力下限拒绝', () => {
-    const document = infoPage([
-      {
-        id: 'panel',
-        type: 'keyValuePanel',
-        layout: { span: 12 },
-        data: { main: 'info' },
-        props: { items: [{ label: 'Owner', field: 'owner' }] }
-      }
-    ]);
-    const errors = validate({ ...document, schemaVersion: '5.0' });
-
-    expect(errors.map((error) => error.path)).toContain('/sections/0/components/0');
   });
 });

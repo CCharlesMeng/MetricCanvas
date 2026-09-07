@@ -2,7 +2,7 @@
   "case": "page-param-default-type-mismatch",
   "invariant": "page-param-default-type",
   "input": {
-    "schemaVersion": "5.1",
+    "schemaVersion": "6.0",
     "id": "params-page",
     "layoutForm": "report",
     "meta": {
@@ -117,9 +117,12 @@
                 {
                   "on": "click",
                   "navigate": {
-                    "page": "params-page",
-                    "setParams": {
-                      "customer": "region"
+                    "href": "/pages/params-page",
+                    "query": {
+                      "customer": {
+                        "source": "row",
+                        "field": "region"
+                      }
                     }
                   }
                 }

@@ -10,7 +10,7 @@ import {
 } from '../src/index';
 
 const page: Page = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'regional-overview',
   dataSources: {},
   sections: [

@@ -1,56 +1,37 @@
-import { fieldName, type DataRow, type NavigateAction, type PageParamValue } from '@metriccanvas/page';
-import { createFilterState, type FilterValues } from './filter-state';
-import { pageParamSearch } from './page-params';
+import { isNavigationHref, type NavigationTarget, type Row } from '@metriccanvas/page';
+import type { FilterValue, FilterValues } from './filter-state';
+import type { PageParamValues } from './page-params';
 
-type NavigateTarget = NavigateAction['navigate'];
-
-/**
- * 跨页下钻(生命周期⑨的 navigate 分支):筛选值 + 点击上下文 → 目标页 URL 查询串(不含 '?')。
- * carryFilters 取当前筛选状态值,setFilters 从点击行按字段绑定取值;
- * setParams 编码到 `p:` 命名空间,不进筛选状态。
- * 序列化复用筛选状态 store 的 toURL 编码——目标页生命周期④用同一套 fromURL 恢复,
- * 跨页传参的物理载体是 URL,编解码只有一处实现。
- * 路由拼接(/pages/<id>)属应用壳知识,不在此层。
- */
-export function drillThroughSearch(
-  navigate: NavigateTarget,
-  current: FilterValues,
-  row: DataRow
-): string {
-  const outgoing = createFilterState();
-
-  for (const filterId of navigate.carryFilters ?? []) {
-    const value = current.get(filterId);
-    // 当前无值的筛选器不占位:缺席即不筛选,目标页回落到自身 default
-    if (value) outgoing.write(filterId, value);
+/** 只按显式绑定构造普通 URL；相对路径留给承载文档解析。 */
+export function navigationHref(target: NavigationTarget, filters: FilterValues, params: PageParamValues, row: Row = {}): string {
+  if (!isNavigationHref(target.href)) throw new Error('导航只允许 HTTP(S) 或相对 URL');
+  const hashIndex = target.href.indexOf('#');
+  const hash = hashIndex < 0 ? '' : target.href.slice(hashIndex);
+  const address = hashIndex < 0 ? target.href : target.href.slice(0, hashIndex);
+  const queryIndex = address.indexOf('?');
+  const path = queryIndex < 0 ? address : address.slice(0, queryIndex);
+  const query = new URLSearchParams(queryIndex < 0 ? '' : address.slice(queryIndex + 1));
+  for (const [key, binding] of Object.entries(target.query ?? {})) {
+    const value = binding.source === 'row' ? row[binding.field]
+      : binding.source === 'param' ? params.get(binding.id)
+      : filterPart(filters.get(binding.id), binding.part ?? 'value');
+    const values = (Array.isArray(value) ? value : [value]).filter(isQueryValue);
+    if (!values.length) continue;
+    query.delete(key);
+    for (const item of values) query.append(key, String(item));
   }
-
-  for (const [filterId, binding] of Object.entries(navigate.setFilters ?? {})) {
-    const code = fieldName(binding);
-    const clicked = row[code];
-    if (clicked == null) continue;
-    outgoing.write(filterId, { type: 'dimension', dimension: code, values: [String(clicked)] });
-  }
-
-  const filterSearch = outgoing.toURL();
-  const params = new Map<string, PageParamValue>();
-  for (const [paramId, binding] of Object.entries(navigate.setParams ?? {})) {
-    const code = fieldName(binding);
-    const clicked = row[code];
-    if (clicked == null) continue;
-    if (typeof clicked === 'string' || typeof clicked === 'number' || typeof clicked === 'boolean') {
-      params.set(paramId, clicked);
-    }
-  }
-  return mergeSearch(filterSearch, pageParamSearch(params));
+  const search = query.toString();
+  return `${path}${search ? `?${search}` : ''}${hash}`;
 }
-
-function mergeSearch(left: string, right: string): string {
-  if (!left) return right;
-  if (!right) return left;
-  const params = new URLSearchParams(left);
-  for (const [key, value] of new URLSearchParams(right)) {
-    params.set(key, value);
-  }
-  return params.toString();
+function isQueryValue(value: unknown): value is string | number | boolean {
+  return (typeof value === 'string' && value !== '') || typeof value === 'boolean' || (typeof value === 'number' && Number.isFinite(value));
+}
+function filterPart(value: FilterValue | undefined, part: string): unknown {
+  if (!value) return undefined;
+  if (part === 'from' || part === 'to') return value.type === 'timeRange' || value.type === 'numberRange' ? value[part] : undefined;
+  if (part === 'level') return value.type === 'dimension' ? value.level : undefined;
+  if (value.type === 'dimension') return value.values;
+  if (value.type === 'search') return value.query;
+  if (value.type === 'timePoint' || value.type === 'boolean') return value.value;
+  return undefined;
 }

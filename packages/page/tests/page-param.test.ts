@@ -178,7 +178,7 @@ describe('页面参数不变式', () => {
 
 describe('参数化页面的端到端校验', () => {
   const page = (overrides: Record<string, unknown>) => ({
-    schemaVersion: '5.1',
+    schemaVersion: '6.0',
     id: 'detail',
     dataSources: {
       info: {
@@ -227,27 +227,6 @@ describe('参数化页面的端到端校验', () => {
 
     expect(errors.map((error) => error.message)).toContain(
       '可选页面参数缺失时引用处整体消失；必填文本属性只能引用必需参数'
-    );
-  });
-
-  it('声明 5.0 却使用页面参数与文本取值引用，两处都被能力下限拒绝', () => {
-    const errors = validate(
-      page({
-        schemaVersion: '5.0',
-        params: [
-          { id: 'page-title', type: 'string', required: true },
-          { id: 'level', type: 'string', required: false }
-        ]
-      })
-    );
-
-    // 引用在解析接缝就会被整值替换掉，因此能力下限必须判在替换之前。
-    expect(errors.map((error) => error.path)).toEqual(
-      expect.arrayContaining([
-        '/params',
-        '/sections/0/components/0/props/title',
-        '/sections/0/components/0/props/tags/0'
-      ])
     );
   });
 });

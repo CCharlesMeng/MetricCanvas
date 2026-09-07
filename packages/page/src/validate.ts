@@ -1,3 +1,4 @@
+import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
 import {
   isInlineDataSource,
@@ -110,7 +111,7 @@ export function parsePage(
   }
 
   const page = materialized.document as Page;
-  const errors = invariantErrors(page);
+  const errors = [...invariantErrors(page), ...navigationErrors(page), ...urlInputErrors(page)];
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
@@ -1840,22 +1841,7 @@ function actionErrors(
       check(action.field, `${path}/field`, 'dimension');
       return;
     }
-    (action.navigate.carryFilters ?? []).forEach((filterId, filterIndex) => {
-      if (!filterIds.has(filterId)) {
-        errors.push(
-          schemaError(
-            `${path}/navigate/carryFilters/${filterIndex}`,
-            `carryFilters 引用了未声明的筛选器:${filterId}`
-          )
-        );
-      }
-    });
-    for (const [filterId, binding] of Object.entries(action.navigate.setFilters ?? {})) {
-      check(binding, `${path}/navigate/setFilters/${escapePointer(filterId)}`, 'dimension');
-    }
-    for (const [paramId, binding] of Object.entries(action.navigate.setParams ?? {})) {
-      check(binding, `${path}/navigate/setParams/${escapePointer(paramId)}`);
-    }
+
   });
   return errors;
 }

@@ -269,7 +269,7 @@ class BuildPageHarnessTest(unittest.IsolatedAsyncioTestCase):
 
         document = save_command["document"]
         self.assertEqual(validate_page_document(document), [])
-        self.assertEqual(document["schemaVersion"], "5.4")
+        self.assertEqual(document["schemaVersion"], "6.0")
         self.assertEqual(document["id"], "tokens-by-region")
         self.assertEqual(
             document["dataSources"]["result"]["source"]["initial"],

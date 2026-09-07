@@ -12,7 +12,7 @@ import {
 import { applyMySqlTestSchema } from './schema';
 
 const page: Page = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'mysql-regional-overview',
   dataSources: {},
   sections: [

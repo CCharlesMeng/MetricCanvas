@@ -21,7 +21,7 @@ import { createScriptedModelProvider } from '../support/scripted-model-provider'
 const IDENTITY: LifecycleContext = { actorId: 'developer-1', clientId: 'workbench', roles: [] };
 const ASK: AgentMessage[] = [{ role: 'user', content: '创建华东区 Tokens 消耗看板' }];
 
-const PAGE_DOCUMENT = { schemaVersion: '5.0', id: 'tokens-overview' };
+const PAGE_DOCUMENT = { schemaVersion: '6.0', id: 'tokens-overview' };
 
 function successMcp(results: Array<{ isError?: boolean; structuredContent?: unknown }> = []) {
   const queue = [...results];

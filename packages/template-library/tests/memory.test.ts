@@ -4,7 +4,7 @@ import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 
 const sourcePage: Page = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'sales-overview',
   dataSources: {
     content: {

@@ -14,8 +14,8 @@ import java.util.regex.Pattern;
  * 都被接受（ADR-0062 "保存接受当前主版本内全部受支持 minor"），声明的版本是能力下限。
  */
 public final class VersionPolicy {
-    public static final int MAJOR = 5;
-    public static final int CURRENT_MINOR = 4;
+    public static final int MAJOR = 6;
+    public static final int CURRENT_MINOR = 0;
     public static final VersionPolicy CURRENT = new VersionPolicy(MAJOR, CURRENT_MINOR);
 
     private static final Pattern VERSION = Pattern.compile("^(\\d+)\\.(\\d+)$");

@@ -3,7 +3,7 @@ import { validate, type Page } from '../src';
 
 function document(): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'risk-summary',
     dataSources: {
       risks: {

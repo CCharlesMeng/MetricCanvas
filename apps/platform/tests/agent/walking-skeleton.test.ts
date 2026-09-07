@@ -5,7 +5,7 @@ import type { AgentEvent, AgentMessage } from '../../src/lib/server/agent/types'
 import { createScriptedModelProvider } from '../support/scripted-model-provider';
 
 const pageDocument = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'sales-total',
   dataSources: {
     sales: {

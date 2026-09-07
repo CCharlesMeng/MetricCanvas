@@ -36,7 +36,8 @@ const ALL_VALID = [
   'params-page',
   'composite-page',
   'map-page',
-  'forecast-page'
+  'forecast-page',
+  'url-navigation-page'
 ];
 
 function firstComponent(document: Doc, section = 0, index = 0): Doc {
@@ -48,6 +49,27 @@ function longString(length: number): string {
 }
 
 export const invariants: InvariantDefinition[] = [
+  {
+    id: 'url-navigation-source-contract',
+    description: 'URL 与来源绑定可校验，目标存在性与必填项由目标负责',
+    valid: ['url-navigation-page'],
+    cases: [
+      {case:'navigation-invalid-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://bad host/path';}},
+      {case:'navigation-invalid-port',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https://example.com:70000/path';}},
+      {case:'navigation-scheme-without-authority',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='https:example.com/path';}},
+      {case:'navigation-unsafe-url',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d).props.actions[0].navigate.href='javascript:alert(1)';}},
+      {case:'navigation-missing-row-field',base:'url-navigation-page',expect:/当前行缺少可传参的标量字段/,mutate:d=>{firstComponent(d).props.actions[0].navigate.query.code.field='missing';}},
+      {case:'navigation-unknown-param',base:'url-navigation-page',expect:/未声明的页面参数:missing/,mutate:d=>{firstComponent(d).props.actions[0].navigate.query.project.id='missing';}},
+      {case:'navigation-wrong-filter-part',base:'url-navigation-page',expect:/不支持分量 value/,mutate:d=>{delete firstComponent(d).props.actions[0].navigate.query.from.part;}},
+      {case:'navigation-text-row-source',base:'url-navigation-page',expect:/当前行缺少可传参的标量字段/,mutate:d=>{firstComponent(d,0,1).props.links[0].query.project={source:'row',field:'code'};}},
+      {case:'navigation-text-unsafe-url',base:'url-navigation-page',expect:/导航只允许 HTTP/,mutate:d=>{firstComponent(d,0,1).props.links[0].href='data:text/html,hello';}},
+      {case:'navigation-url-input-collision',base:'url-navigation-page',expect:/URL 参数名重复:project/,mutate:d=>{d.filters[0].urlParams.value='project';}},
+      {case:'navigation-url-input-wrong-part',base:'url-navigation-page',expect:/该筛选器不支持此 URL 分量/,mutate:d=>{d.filters[1].urlParams.level='level';}},
+      {case:'navigation-clicked-slot-missing-field',base:'url-navigation-page',expect:/当前行缺少可传参的标量字段/,mutate:d=>{firstComponent(d,0,2).props.rows[0].valueField='total';}},
+      {case:'navigation-legacy-target-rejected',base:'url-navigation-page',expect:/缺少必填字段 href/,mutate:d=>{firstComponent(d).props.actions[0].navigate={page:'old'};}}
+    ]
+  },
+
   // ---------------------------------------------------------------- 结构与版本
   {
     id: 'schema-structure',
@@ -113,30 +135,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'query-dashboard',
         expect: /高于运行时当前次版本/,
         mutate: (document) => {
-          document.schemaVersion = '5.9';
-        }
-      }
-    ]
-  },
-  {
-    id: 'capability-floor',
-    description: '文档使用的能力不得高于其声明的次版本',
-    valid: ALL_VALID,
-    cases: [
-      {
-        case: 'capability-floor-field-text-on-5-0',
-        base: 'forecast-page',
-        expect: /字段绑定长文本组件 由 5\.1 引入/,
-        mutate: (document) => {
-          document.schemaVersion = '5.0';
-        }
-      },
-      {
-        case: 'capability-floor-composite-page-on-5-1',
-        base: 'composite-page',
-        expect: /组合卡:组件级分组容器\(ADR-0053\) 由 5\.2 引入/,
-        mutate: (document) => {
-          document.schemaVersion = '5.1';
+          document.schemaVersion = '6.9';
         }
       }
     ]
@@ -1737,16 +1736,16 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
-    id: 'navigate-carry-filters-declared',
-    description: 'carryFilters 只能引用已声明的筛选器',
+    id: 'navigation-filter-source',
+    description: '导航绑定只能引用已声明的筛选器',
     valid: ['filters-page', 'map-page'],
     cases: [
       {
-        case: 'carry-filters-undeclared',
+        case: 'navigation-filter-undeclared',
         base: 'filters-page',
-        expect: /carryFilters 引用了未声明的筛选器:nope/,
+        expect: /未声明的筛选器:nope/,
         mutate: (document) => {
-          firstComponent(document).props.actions[1].navigate.carryFilters.push('nope');
+          firstComponent(document).props.actions[1].navigate.query.nope = {source:'filter',id:'nope'};
         }
       }
     ]

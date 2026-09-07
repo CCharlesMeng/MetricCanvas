@@ -5,9 +5,6 @@ export type { AiSummaryConfig } from './ai-summary/pangu-sse';
 export type { DataErrorEvent } from './data-error-events';
 
 export interface RuntimeNavigationTarget {
-  pageId: string;
-  /** URLSearchParams 形式，不带前导问号。 */
-  search: string;
   href: string;
   /** 来源页面 id;宿主用它记录回跳,运行时不维护导航栈。 */
   sourcePageId?: string;
@@ -17,9 +14,9 @@ export interface RuntimeNavigationTarget {
 
 /** Canvas 等宿主在统一运行时导航接缝上的适配器。 */
 export interface RuntimeNavigation {
-  href(pageId: string, search: string): string;
-  replaceSearch(search: string): void;
-  navigate(target: RuntimeNavigationTarget): void;
+  replaceSearch?(search: string): void;
+  /** 返回 true 表示宿主已接管；否则保留浏览器导航。 */
+  navigate?(target: RuntimeNavigationTarget): boolean | void;
   /** 返回宿主记录的来源页；深链由宿主决定是否回退浏览器历史。 */
   back?(): void;
 }
@@ -45,8 +42,7 @@ export type RuntimeViewEvent =
   | { type: 'filter-change'; search: string }
   | {
       type: 'navigate';
-      pageId: string;
-      search: string;
+      href: string;
       sourcePageId?: string;
       sourceSearch?: string;
     };

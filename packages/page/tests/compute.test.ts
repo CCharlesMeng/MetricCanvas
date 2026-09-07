@@ -3,7 +3,7 @@ import { computeOutputFields, isFoldingOperator } from '../src/compute';
 import { validate } from '../src/validate';
 
 const page = (dataSource: Record<string, unknown>) => ({
-  schemaVersion: '5.1',
+  schemaVersion: '6.0',
   id: 'forecast',
   dataSources: { forecast: dataSource },
   sections: [
@@ -234,17 +234,6 @@ describe('计算阶段校验', () => {
 
     expect(errors.map((error) => error.message)).toContain(
       '类别取值已映射到其它目标列:专题交流'
-    );
-  });
-
-  it('声明 5.0 却使用计算阶段被能力下限拒绝', () => {
-    const errors = validate({ ...page(foldingSource()), schemaVersion: '5.0' });
-
-    expect(errors.map((error) => error.path)).toEqual(
-      expect.arrayContaining([
-        '/dataSources/forecast/compute',
-        '/dataSources/forecast/fields/jan/collapsible'
-      ])
     );
   });
 });

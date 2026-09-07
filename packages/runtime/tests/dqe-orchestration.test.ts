@@ -6,7 +6,7 @@ import type { DataGateway } from '../src/ports';
 
 function page(): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'dqe-runtime',
     filters: [
       {

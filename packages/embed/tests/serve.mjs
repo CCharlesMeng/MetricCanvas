@@ -21,6 +21,11 @@ createServer(async (request, response) => {
       response.writeHead(204).end();
       return;
     }
+    if (/^\/pages\/[^/.]+$/.test(pathname)) {
+      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
+      createReadStream(resolve(root, 'examples/navigation.html')).pipe(response);
+      return;
+    }
     const servingPages = pathname.startsWith('/pages/');
     const publicRoot = servingPages ? pagesRoot : root;
     const publicPath = servingPages

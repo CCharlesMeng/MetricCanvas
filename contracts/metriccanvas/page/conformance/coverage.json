@@ -1,6 +1,28 @@
 {
   "invariants": [
     {
+      "id": "url-navigation-source-contract",
+      "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
+      "valid": [
+        "url-navigation-page"
+      ],
+      "invalid": [
+        "navigation-invalid-authority",
+        "navigation-invalid-port",
+        "navigation-scheme-without-authority",
+        "navigation-unsafe-url",
+        "navigation-missing-row-field",
+        "navigation-unknown-param",
+        "navigation-wrong-filter-part",
+        "navigation-text-row-source",
+        "navigation-text-unsafe-url",
+        "navigation-url-input-collision",
+        "navigation-url-input-wrong-part",
+        "navigation-clicked-slot-missing-field",
+        "navigation-legacy-target-rejected"
+      ]
+    },
+    {
       "id": "schema-structure",
       "description": "Page Schema 结构校验（ajv allErrors 文案与顺序）",
       "valid": [
@@ -13,7 +35,8 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "missing-schema-version",
@@ -36,31 +59,12 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "version-major-unsupported",
         "version-minor-ahead"
-      ]
-    },
-    {
-      "id": "capability-floor",
-      "description": "文档使用的能力不得高于其声明的次版本",
-      "valid": [
-        "inline-report",
-        "mixed-page",
-        "query-dashboard",
-        "filters-page",
-        "compute-page",
-        "grouped-fields-page",
-        "params-page",
-        "composite-page",
-        "map-page",
-        "forecast-page"
-      ],
-      "invalid": [
-        "capability-floor-field-text-on-5-0",
-        "capability-floor-composite-page-on-5-1"
       ]
     },
     {
@@ -326,7 +330,8 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "duplicate-component-id",
@@ -560,7 +565,8 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "data-slot-unknown-source"
@@ -579,7 +585,8 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "field-binding-undeclared-slot",
@@ -599,7 +606,8 @@
         "params-page",
         "composite-page",
         "map-page",
-        "forecast-page"
+        "forecast-page",
+        "url-navigation-page"
       ],
       "invalid": [
         "field-binding-role-mismatch"
@@ -838,14 +846,14 @@
       ]
     },
     {
-      "id": "navigate-carry-filters-declared",
-      "description": "carryFilters 只能引用已声明的筛选器",
+      "id": "navigation-filter-source",
+      "description": "导航绑定只能引用已声明的筛选器",
       "valid": [
         "filters-page",
         "map-page"
       ],
       "invalid": [
-        "carry-filters-undeclared"
+        "navigation-filter-undeclared"
       ]
     },
     {

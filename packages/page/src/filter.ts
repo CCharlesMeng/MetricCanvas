@@ -24,6 +24,8 @@ export interface FilterHierarchyLevel {
 /** 维度筛选器:约束某个维度的取值集合 */
 export interface DimensionFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'dimension';
   /** 约束的维度 code,引用数据服务定义的维度;候选值由运行时经数据网关查询 */
   dimension: string;
@@ -60,6 +62,8 @@ export interface DimensionFilterDeclaration {
 /** 时间范围筛选器:约束查询的时间范围 */
 export interface TimeRangeFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'timeRange';
   /** 筛选器标签,显示于筛选器区 */
   label?: string;
@@ -109,6 +113,8 @@ export interface RelativeTimeExpression {
 
 export interface TimePointFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'timePoint';
   label?: string;
   visible?: boolean;
@@ -120,6 +126,8 @@ export interface TimePointFilterDeclaration {
 
 export interface BooleanFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'boolean';
   label?: string;
   visible?: boolean;
@@ -134,6 +142,8 @@ export interface NumberRangeValue {
 
 export interface NumberRangeFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'numberRange';
   label?: string;
   visible?: boolean;
@@ -142,6 +152,8 @@ export interface NumberRangeFilterDeclaration {
 
 export interface SearchFilterDeclaration {
   id: string;
+  /** 显式 URL 参数名；缺省按筛选器 id 派生。 */
+  urlParams?: { value?: string; from?: string; to?: string; level?: string };
   type: 'search';
   label?: string;
   visible?: boolean;

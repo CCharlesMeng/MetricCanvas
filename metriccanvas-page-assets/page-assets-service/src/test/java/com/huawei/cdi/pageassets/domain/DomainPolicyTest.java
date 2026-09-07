@@ -39,7 +39,7 @@ class DomainPolicyTest {
         assertThat(ContentHash.of(json("{\"a\":1}")))
                 .isEqualTo("015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862");
         assertThat(ContentHash.of(PageAssetsFixture.validPage("inline-report", "inline-report")))
-                .isEqualTo("a77f80bc4a2fafff3b4c34ec48d75ba03b818bb6543c771324b8afac5a681699");
+                .isEqualTo("3471f3f1b4aef83505488ff8e6351d32e96b717a4f756521f88134998ae1865c");
         assertThat(ContentHash.of(json("{\"b\":2,\"a\":1}"))).isEqualTo(ContentHash.of(json("{\"a\":1,\"b\":2}")));
     }
 

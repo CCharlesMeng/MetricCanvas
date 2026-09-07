@@ -58,7 +58,8 @@
     onsort?: (sort: TableSortRule[]) => void;
     onheaderfilter?: (field: string, value: TableHeaderFilterValue | null) => void;
     oncellselect?: (context: { rowIndex: number; column: TableColumn }) => void;
-    onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }) => void;
+    linkHref?: (row: Row) => string | undefined;
+    onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
   }
 
   let {
@@ -74,7 +75,8 @@
     onsort,
     onheaderfilter,
     oncellselect,
-    onlink
+    onlink,
+    linkHref
   }: Props = $props();
 
   const columnLayout = $derived(buildTableColumnLayout(props.columns, data.main.fields));
@@ -452,10 +454,10 @@
                       </span>
                     </button>
                   {:else if column.link && interactive && !column.selection}
-                    <button
-                      type="button"
+                    <a
+                      href={linkHref?.(row.main)}
                       class="link-cell"
-                      onclick={() => onlink?.({ rowIndex: i, column, row: row.main })}
+                      onclick={(event) => onlink?.({ rowIndex: i, column, row: row.main }, event)}
                     >
                       <span class="cell-stack">
                         {#if semanticPresentation}
@@ -469,7 +471,7 @@
                           <span class="cell-primary-value">{formatValue(rawValue, resolved.format)}</span>
                         {/if}
                       </span>
-                    </button>
+                    </a>
                   {:else if column.visual === 'rateBar' && semanticPresentation === undefined}
                     <span class="rate-cell">
                       <span

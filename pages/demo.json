@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.0",
+  "schemaVersion": "6.0",
   "id": "demo",
   "meta": {
     "description": "筛选联动演示:筛选器、页内下钻、跨页下钻(跳销售明细)、URL 可分享"
@@ -530,13 +530,26 @@
               {
                 "on": "click",
                 "navigate": {
-                  "page": "sales-detail",
-                  "carryFilters": [
-                    "f-time",
-                    "f-region"
-                  ],
-                  "setFilters": {
-                    "f-channel": "channel"
+                  "href": "/pages/sales-detail",
+                  "query": {
+                    "f-time.from": {
+                      "source": "filter",
+                      "id": "f-time",
+                      "part": "from"
+                    },
+                    "f-time.to": {
+                      "source": "filter",
+                      "id": "f-time",
+                      "part": "to"
+                    },
+                    "f-region": {
+                      "source": "filter",
+                      "id": "f-region"
+                    },
+                    "f-channel": {
+                      "source": "row",
+                      "field": "channel"
+                    }
                   }
                 }
               }

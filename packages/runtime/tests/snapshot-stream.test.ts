@@ -14,7 +14,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '5.0',
+        schemaVersion: '6.0',
         id: 'text-only',
         dataSources: {},
         sections: [
@@ -54,7 +54,7 @@ describe('统一页面快照流', () => {
     };
     const stream = orchestrate(
       {
-        schemaVersion: '5.0',
+        schemaVersion: '6.0',
         id: 'shared',
         dataSources: {
           sales: {
@@ -147,7 +147,7 @@ describe('统一页面快照流', () => {
 
 function summaryPage(includeTable: boolean): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'summary-source',
     dataSources: {
       'inspection-progress': {

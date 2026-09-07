@@ -4,7 +4,7 @@ import { validate } from '@metriccanvas/page';
 describe('指标卡页面', () => {
   it('拒绝指标卡行引用数据槽契约外的字段', () => {
     const document = {
-      schemaVersion: '5.0',
+      schemaVersion: '6.0',
       id: 'sales-summary',
       dataSources: {
         sales: {
@@ -58,7 +58,7 @@ describe('指标卡页面', () => {
 
   it('值级链接必须绑定至少一个 navigate 动作', () => {
     const document: any = {
-      schemaVersion: '5.4',
+      schemaVersion: '6.0',
       id: 'metric-row-link-contract',
       dataSources: {
         summary: {
@@ -87,7 +87,7 @@ describe('指标卡页面', () => {
     });
 
     document.sections[0].components[0].props.actions = [
-      { on: 'click', navigate: { page: 'ioc-opportunity-analysis' } }
+      { on: 'click', navigate: { href: '/pages/ioc-opportunity-analysis' } }
     ];
     expect(validate(document)).toEqual([]);
   });

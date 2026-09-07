@@ -38,7 +38,7 @@ interface GroupedPageTestDocument {
 
 function groupedPage(): GroupedPageTestDocument {
   return structuredClone({
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'grouped',
     dataSources: {
       current: {
@@ -127,7 +127,7 @@ describe('当前 page schema 边界行为', () => {
   it('componentAction 共享 on:"click" 判别值:两分支各自有效,混合无效', () => {
     const base: any = structuredClone(queryDashboard);
     const writeFilterAction = base.sections[0].components[0].props.actions[0];
-    const navigateAction = { on: 'click', navigate: { page: 'other-page' } };
+    const navigateAction = { on: 'click', navigate: { href: '/pages/other-page' } };
     const withAction = (action: unknown) => {
       const clone = structuredClone(base);
       clone.sections[0].components[0].props.actions = [action];
@@ -194,7 +194,7 @@ describe('当前 page schema 边界行为', () => {
 
   it('筛选器闭集六类与层级、级联有效', () => {
     const base: any = structuredClone(queryDashboard);
-    base.schemaVersion = '5.1';
+    base.schemaVersion = '6.0';
     base.filters = [
       { id: 'flag', type: 'boolean', label: '仅看重点国代' },
       { id: 'month', type: 'timePoint', granularity: 'month', default: '2026-04' },

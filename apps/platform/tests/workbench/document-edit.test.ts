@@ -321,7 +321,7 @@ describe('画布与配置面板的本地文档改写', () => {
 
   it('自定义列轨分区按实际轨数夹取宽度，编辑结果保持可发布', () => {
     const document = assembled();
-    document.schemaVersion = '5.3';
+    document.schemaVersion = '6.0';
     const section = (document.sections as Array<Record<string, unknown>>)[0]!;
     section.columnTracks = [29, 29, 22];
     for (const component of section.components as Array<Record<string, unknown>>) {

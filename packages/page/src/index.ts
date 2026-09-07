@@ -25,7 +25,8 @@ export {
   type PageParseResult
 } from './validate';
 export { fileNameErrors } from './file-name';
-export { compatibleParamType, crossPageReferenceErrors, navigateErrors } from './navigate';
+export { navigationErrors, isNavigationHref, filterURLKeys, urlInputErrors } from './navigate';
+export type { NavigationTarget, NavigationBinding } from './schema/navigation';
 export * from './version';
 export {
   flattenPageComponents,

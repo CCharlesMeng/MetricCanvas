@@ -2,7 +2,7 @@
   "case": "version-minor-ahead",
   "invariant": "schema-version-supported",
   "input": {
-    "schemaVersion": "5.9",
+    "schemaVersion": "6.9",
     "id": "query-dashboard",
     "dataSources": {
       "sales": {
@@ -103,7 +103,7 @@
     {
       "type": "SCHEMA_ERROR",
       "path": "/schemaVersion",
-      "message": "文档格式版本 5.9 高于运行时当前次版本 5.4"
+      "message": "文档格式版本 6.9 高于运行时当前次版本 6.0"
     }
   ]
 }

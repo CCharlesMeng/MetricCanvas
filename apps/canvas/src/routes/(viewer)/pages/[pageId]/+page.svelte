@@ -11,7 +11,6 @@
     type RuntimeNavigation
   } from '@metriccanvas/runtime-ui';
   import {
-    pageHref,
     pageReturnHref,
     rememberPageReturn
   } from '$lib/page-return';
@@ -34,7 +33,7 @@
   let initialSearch = $state('');
   /** 精确修订预览的修订标识,仅用于查询诊断定位。 */
   let pageRevisionId = $state<string | undefined>(undefined);
-  let activePageId = '';
+  let activeURL = '';
   let loadSession = 0;
   let returnHref = $state<string | undefined>(undefined);
   /** 页面外框在校验之前就要定下来,因此按原始文档结构读布局形态。 */
@@ -47,15 +46,19 @@
 
   const navigation = $derived.by<RuntimeNavigation>(() => {
     const base: RuntimeNavigation = {
-      href(pageId, search) {
-        return pageHref(pageId, search);
-      },
       replaceSearch(search) {
-        replaceState(`${location.pathname}${search ? `?${search}` : ''}`, {});
+        const url = new URL(location.href);
+        url.search = search;
+        activeURL = url.href;
+        replaceState(url, {});
       },
-      navigate({ href, pageId, sourcePageId, sourceSearch }) {
-        rememberPageReturn(pageId, { pageId: sourcePageId, search: sourceSearch });
-        void goto(href);
+      navigate({ href, sourcePageId, sourceSearch }) {
+        const url = new URL(href, document.baseURI);
+        const match = /^\/pages\/([^/]+)$/.exec(url.pathname);
+        if (url.origin !== location.origin || !match) return false;
+        rememberPageReturn(decodeURIComponent(match[1]!), { pageId: sourcePageId, search: sourceSearch });
+        void goto(url.href);
+        return true;
       }
     };
     const href = returnHref;
@@ -64,8 +67,8 @@
 
   $effect(() => {
     const pageId = page.params.pageId!;
-    if (pageId === activePageId) return;
-    activePageId = pageId;
+    if (page.url.href === activeURL) return;
+    activeURL = page.url.href;
     initialSearch = page.url.searchParams.toString();
     pageRevisionId = page.url.searchParams.get('revision') ?? undefined;
     returnHref = pageReturnHref(pageId);

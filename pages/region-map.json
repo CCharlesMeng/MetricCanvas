@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.0",
+  "schemaVersion": "6.0",
   "id": "region-map",
   "meta": {
     "description": "切片8 演示:地图区域着色/散点叠加、文本带参链接、筛选器树选与搜索形态"
@@ -339,18 +339,39 @@
             "links": [
               {
                 "label": "打开演示看板",
-                "page": "demo",
-                "carryFilters": [
-                  "f-time",
-                  "f-region"
-                ]
+                "href": "/pages/demo",
+                "query": {
+                  "f-time.from": {
+                    "source": "filter",
+                    "id": "f-time",
+                    "part": "from"
+                  },
+                  "f-time.to": {
+                    "source": "filter",
+                    "id": "f-time",
+                    "part": "to"
+                  },
+                  "f-region": {
+                    "source": "filter",
+                    "id": "f-region"
+                  }
+                }
               },
               {
                 "label": "查看销售明细",
-                "page": "sales-detail",
-                "carryFilters": [
-                  "f-time"
-                ]
+                "href": "/pages/sales-detail",
+                "query": {
+                  "f-time.from": {
+                    "source": "filter",
+                    "id": "f-time",
+                    "part": "from"
+                  },
+                  "f-time.to": {
+                    "source": "filter",
+                    "id": "f-time",
+                    "part": "to"
+                  }
+                }
               }
             ]
           }

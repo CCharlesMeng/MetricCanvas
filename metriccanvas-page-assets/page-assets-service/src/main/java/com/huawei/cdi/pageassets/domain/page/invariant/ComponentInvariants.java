@@ -741,23 +741,7 @@ final class ComponentInvariants {
                 check.check(action.get("field"), path + "/field", "dimension");
                 continue;
             }
-            JsonNode navigate = action.get("navigate");
-            JsonNode carry = navigate.get("carryFilters");
-            if (Json.isArray(carry)) {
-                for (int filterIndex = 0; filterIndex < carry.size(); filterIndex++) {
-                    String filterId = carry.get(filterIndex).asText();
-                    if (!filterIds.contains(filterId)) {
-                        errors.add(TypedError.schema(path + "/navigate/carryFilters/" + filterIndex,
-                                "carryFilters 引用了未声明的筛选器:" + filterId));
-                    }
-                }
-            }
-            for (Map.Entry<String, JsonNode> entry : Json.entries(Json.record(navigate.get("setFilters")))) {
-                check.check(entry.getValue(), path + "/navigate/setFilters/" + JsonPointer.escape(entry.getKey()), "dimension");
-            }
-            for (Map.Entry<String, JsonNode> entry : Json.entries(Json.record(navigate.get("setParams")))) {
-                check.check(entry.getValue(), path + "/navigate/setParams/" + JsonPointer.escape(entry.getKey()));
-            }
+
         }
         return errors;
     }

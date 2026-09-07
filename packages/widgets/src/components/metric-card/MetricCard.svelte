@@ -10,10 +10,11 @@
     data: MetricDataSlots;
     props: MetricCardProps;
     /** 只由声明了 link 的非空值触发。 */
-    onlink?: (row: Row) => void;
+    onlink?: (row: Row, event: MouseEvent) => void;
+    linkHref?: (row: Row) => string | undefined;
   }
 
-  let { data, props, onlink }: Props = $props();
+  let { data, props, onlink, linkHref }: Props = $props();
 
   function fieldText(field: FieldBinding): string {
     const resolved = resolveField(field, data);
@@ -33,9 +34,9 @@
     props.progress ? Number(fieldValue(props.progress.valueField, data) ?? 0) : 0
   );
 
-  function activateLink(field: FieldBinding) {
+  function activateLink(field: FieldBinding, event: MouseEvent) {
     const row = fieldRow(field, data);
-    if (row) onlink?.(row);
+    if (row) onlink?.(row, event);
   }
 
   function toneClass(
@@ -62,16 +63,16 @@
       {@const rawValue = fieldValue(row.valueField, data)}
       <div class="metric-row">
         <span class="row-label">{row.label}</span>
-        {#if row.link === true && rawValue != null && onlink}
-          <button
-            type="button"
+        {#if row.link === true && rawValue != null && linkHref}
+          <a
+            href={linkHref?.(fieldRow(row.valueField, data) ?? {})}
             class="value-line value-link"
             data-metric-row-link
             aria-label={`${row.label} ${fieldText(row.valueField)}`}
-            onclick={() => activateLink(row.valueField)}
+            onclick={(event) => activateLink(row.valueField, event)}
           >
             {@render metricValue(row)}
-          </button>
+          </a>
         {:else}
           <span class="value-line">{@render metricValue(row)}</span>
         {/if}

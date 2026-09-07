@@ -17,14 +17,14 @@ import java.util.function.Predicate;
  */
 public final class PageCapabilities {
     private static final List<PageCapability> ALL = List.of(
-            cap("page-params", 1, "顶层 params:页面参数声明(ADR-0047)",
+            cap("page-params", 0, "顶层 params:页面参数声明(ADR-0047)",
                     document -> Json.nonEmptyArray(Json.get(document, "params")) ? List.of("/params") : List.of()),
-            cap("page-layout-form", 1, "顶层 layoutForm:页面布局形态(看板满宽 / 报表定宽)",
+            cap("page-layout-form", 0, "顶层 layoutForm:页面布局形态(看板满宽 / 报表定宽)",
                     document -> Json.isString(Json.get(document, "layoutForm")) ? List.of("/layoutForm") : List.of()),
-            cap("dashboard-toolbar-visibility", 3, "顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏",
+            cap("dashboard-toolbar-visibility", 0, "顶层 dashboardToolbar:显式关闭 dashboard 统一工具栏",
                     document -> Json.isString(Json.get(document, "dashboardToolbar"))
                             ? List.of("/dashboardToolbar") : List.of()),
-            cap("project-detail-restoration-variants", 3, "项目详情页还原专用的组件呈现档",
+            cap("project-detail-restoration-variants", 0, "项目详情页还原专用的组件呈现档",
                     document -> suffix(componentPaths(document, component -> {
                         String type = type(component);
                         String variant = Json.text(Json.get(props(component), "variant"));
@@ -40,100 +40,98 @@ public final class PageCapabilities {
                                 && (variant.equals("narrativeShort") || variant.equals("narrativeMeeting")
                                 || variant.equals("narrativeRisk") || variant.equals("narrativeProgress")));
                     }), "/props/variant")),
-            cap("key-value-panel-six-columns", 3, "key-value 信息面板的六列排布",
+            cap("key-value-panel-six-columns", 0, "key-value 信息面板的六列排布",
                     document -> suffix(componentPaths(document, component ->
                             "keyValuePanel".equals(type(component))
                                     && numberEquals(Json.get(props(component), "columns"), 6)), "/props/columns")),
-            cap("component-backdrop-layer", 1, "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下",
+            cap("component-backdrop-layer", 0, "组件 layout.layer:分区内叠放层,组件铺满分区置于其余组件之下",
                     PageCapabilities::componentLayerPaths),
-            cap("text-value-reference", 1, "文本取值引用页面参数而不是写字面量(ADR-0047)",
+            cap("text-value-reference", 0, "文本取值引用页面参数而不是写字面量(ADR-0047)",
                     document -> PageParams.collectTextValueReferences(document).stream()
                             .map(PageParams.TextValueReferenceUsage::path).toList()),
-            cap("data-source-computation", 1, "页面数据源的受控计算阶段与具名算子(ADR-0046)",
+            cap("data-source-computation", 0, "页面数据源的受控计算阶段与具名算子(ADR-0046)",
                     document -> suffix(dataSourcePaths(document,
                             dataSource -> Json.nonEmptyArray(dataSource.get("compute"))), "/compute")),
-            cap("collapsible-measure", 1, "结果字段契约上的可折叠度量声明(ADR-0046)",
+            cap("collapsible-measure", 0, "结果字段契约上的可折叠度量声明(ADR-0046)",
                     PageCapabilities::collapsibleFieldPaths),
-            cap("table-row-kind-field", 1, "表格按行类别字段套用明细/小计/合计呈现档位(ADR-0049)",
+            cap("table-row-kind-field", 0, "表格按行类别字段套用明细/小计/合计呈现档位(ADR-0049)",
                     document -> suffix(componentPaths(document, component ->
                             "table".equals(type(component)) && Json.has(props(component), "rowKindField")),
                             "/props/rowKindField")),
-            cap("table-merge-by", 1, "表格按字段合并相邻同值单元格(ADR-0049)",
+            cap("table-merge-by", 0, "表格按字段合并相邻同值单元格(ADR-0049)",
                     document -> suffix(componentPaths(document, component ->
                             "table".equals(type(component)) && Json.has(props(component), "mergeBy")),
                             "/props/mergeBy")),
-            cap("key-value-panel-component", 1, "key-value 信息面板组件",
+            cap("key-value-panel-component", 0, "key-value 信息面板组件",
                     document -> componentPaths(document, component -> "keyValuePanel".equals(type(component)))),
-            cap("field-text-component", 1, "字段绑定长文本组件",
+            cap("field-text-component", 0, "字段绑定长文本组件",
                     document -> componentPaths(document, component -> "fieldText".equals(type(component)))),
-            cap("filter-boolean", 1, "boolean 筛选器(ADR-0050)",
+            cap("filter-boolean", 0, "boolean 筛选器(ADR-0050)",
                     document -> filterPaths(document, filter -> "boolean".equals(type(filter)))),
-            cap("filter-time-point", 1, "timePoint 筛选器(ADR-0050)",
+            cap("filter-time-point", 0, "timePoint 筛选器(ADR-0050)",
                     document -> filterPaths(document, filter -> "timePoint".equals(type(filter)))),
-            cap("filter-number-range", 1, "numberRange 筛选器(ADR-0050)",
+            cap("filter-number-range", 0, "numberRange 筛选器(ADR-0050)",
                     document -> filterPaths(document, filter -> "numberRange".equals(type(filter)))),
-            cap("filter-search", 1, "search 筛选器(ADR-0050)",
+            cap("filter-search", 0, "search 筛选器(ADR-0050)",
                     document -> filterPaths(document, filter -> "search".equals(type(filter)))),
-            cap("filter-hierarchy", 1, "层级维度筛选器(ADR-0050)",
+            cap("filter-hierarchy", 0, "层级维度筛选器(ADR-0050)",
                     document -> suffix(filterPaths(document,
                             filter -> Json.nonEmptyArray(filter.get("hierarchy"))), "/hierarchy")),
-            cap("filter-depends-on", 1, "筛选器级联 dependsOn(ADR-0050)",
+            cap("filter-depends-on", 0, "筛选器级联 dependsOn(ADR-0050)",
                     document -> suffix(filterPaths(document,
                             filter -> Json.isString(filter.get("dependsOn"))), "/dependsOn")),
-            cap("filter-relative-time", 1, "结构化相对时间表达(ADR-0035 / ADR-0050)",
+            cap("filter-relative-time", 0, "结构化相对时间表达(ADR-0035 / ADR-0050)",
                     document -> suffix(filterPaths(document,
                             filter -> Json.isString(Json.get(Json.record(filter.get("default")), "unit"))),
                             "/default")),
-            cap("table-column-link", 1, "表格列声明为行点击导航入口(ADR-0049)",
+            cap("table-column-link", 0, "表格列声明为行点击导航入口(ADR-0049)",
                     PageCapabilities::tableColumnLinkPaths),
-            cap("navigate-set-params", 1, "导航意图 setParams:设置目标页页面参数(ADR-0047)",
-                    PageCapabilities::navigateSetParamsPaths),
-            cap("tab-container-component", 1, "Tab 容器组件",
+            cap("tab-container-component", 0, "Tab 容器组件",
                     document -> componentPaths(document, component -> "tabContainer".equals(type(component)))),
-            cap("gauge-component", 1, "gauge 仪表组件",
+            cap("gauge-component", 0, "gauge 仪表组件",
                     document -> componentPaths(document, component -> "gauge".equals(type(component)))),
-            cap("map-hierarchy-filter", 1, "地图按层级维度筛选器下钻",
+            cap("map-hierarchy-filter", 0, "地图按层级维度筛选器下钻",
                     document -> suffix(componentPaths(document, component ->
                             "mapChart".equals(type(component)) && Json.has(props(component), "hierarchyFilter")),
                             "/props/hierarchyFilter")),
-            cap("composite-card-component", 2, "组合卡:组件级分组容器(ADR-0053)",
+            cap("composite-card-component", 0, "组合卡:组件级分组容器(ADR-0053)",
                     document -> componentPaths(document, component -> "compositeCard".equals(type(component)))),
-            cap("category-breakdown-component", 2, "分类明细组件(ADR-0053)",
+            cap("category-breakdown-component", 0, "分类明细组件(ADR-0053)",
                     document -> componentPaths(document, component -> "categoryBreakdown".equals(type(component)))),
-            cap("map-legend-bands", 2, "地图分档图例",
+            cap("map-legend-bands", 0, "地图分档图例",
                     document -> suffix(componentPaths(document, component ->
                             "mapChart".equals(type(component)) && Json.has(props(component), "legend")),
                             "/props/legend")),
-            cap("map-tooltip-fields", 2, "地图 tooltip 扩展字段",
+            cap("map-tooltip-fields", 0, "地图 tooltip 扩展字段",
                     document -> suffix(componentPaths(document, component ->
                             "mapChart".equals(type(component)) && Json.has(props(component), "tooltipFields")),
                             "/props/tooltipFields")),
-            cap("key-value-panel-single-column", 2, "key-value 信息面板的单列排布",
+            cap("key-value-panel-single-column", 0, "key-value 信息面板的单列排布",
                     document -> suffix(componentPaths(document, component ->
                             "keyValuePanel".equals(type(component))
                                     && numberEquals(Json.get(props(component), "columns"), 1)), "/props/columns")),
-            cap("ratio-scale", 2, "ratio 算子的输出刻度 scale(ADR-0046)", PageCapabilities::ratioScalePaths),
-            cap("section-column-tracks", 3, "内容分区的受控列轨权重(ADR-0054)",
+            cap("ratio-scale", 0, "ratio 算子的输出刻度 scale(ADR-0046)", PageCapabilities::ratioScalePaths),
+            cap("section-column-tracks", 0, "内容分区的受控列轨权重(ADR-0054)",
                     PageCapabilities::sectionColumnTrackPaths),
-            cap("filter-empty-label", 3, "维度筛选器的空选展示文案",
+            cap("filter-empty-label", 0, "维度筛选器的空选展示文案",
                     document -> suffix(filterPaths(document,
                             filter -> Json.isString(filter.get("emptyLabel"))), "/emptyLabel")),
-            cap("filter-hierarchy-picker", 3, "层级维度筛选器的显式级别切换器形态",
+            cap("filter-hierarchy-picker", 0, "层级维度筛选器的显式级别切换器形态",
                     document -> suffix(filterPaths(document,
                             filter -> Json.isString(filter.get("hierarchyPicker"))), "/hierarchyPicker")),
-            cap("metric-row-context", 3, "指标行与主值同排的短上下文",
+            cap("metric-row-context", 0, "指标行与主值同排的短上下文",
                     document -> metricRowPaths(document, "context")),
-            cap("composite-card-compact", 3, "组合卡紧凑呈现档",
+            cap("composite-card-compact", 0, "组合卡紧凑呈现档",
                     document -> suffix(componentPaths(document, component ->
                             "compositeCard".equals(type(component))
                                     && "compact".equals(Json.text(Json.get(props(component), "variant")))),
                             "/props/variant")),
-            cap("tab-container-compact", 3, "Tab 容器紧凑呈现档",
+            cap("tab-container-compact", 0, "Tab 容器紧凑呈现档",
                     document -> suffix(componentPaths(document, component ->
                             "tabContainer".equals(type(component))
                                     && "compact".equals(Json.text(Json.get(props(component), "variant")))),
                             "/props/variant")),
-            cap("table-embedded", 3, "表格嵌入式密度与底部渐隐", document -> {
+            cap("table-embedded", 0, "表格嵌入式密度与底部渐隐", document -> {
                 List<String> paths = new ArrayList<>(suffix(componentPaths(document, component ->
                         "table".equals(type(component))
                                 && "embedded".equals(Json.text(Json.get(props(component), "variant")))),
@@ -143,10 +141,10 @@ public final class PageCapabilities {
                         "/props/bottomFade"));
                 return paths;
             }),
-            cap("key-value-item-unit", 3, "信息面板条目的展示单位", PageCapabilities::keyValueItemUnitPaths),
-            cap("widget-symbol-icons", 3, "组合卡和信息面板的受控语义图标",
+            cap("key-value-item-unit", 0, "信息面板条目的展示单位", PageCapabilities::keyValueItemUnitPaths),
+            cap("widget-symbol-icons", 0, "组合卡和信息面板的受控语义图标",
                     PageCapabilities::widgetSymbolIconPaths),
-            cap("map-regional-overview", 3, "地域概览地图与稳定字段匹配的固定摘要", document -> {
+            cap("map-regional-overview", 0, "地域概览地图与稳定字段匹配的固定摘要", document -> {
                 List<String> paths = new ArrayList<>(suffix(componentPaths(document, component ->
                         "mapChart".equals(type(component))
                                 && "regionalOverview".equals(Json.text(Json.get(props(component), "variant")))),
@@ -156,19 +154,19 @@ public final class PageCapabilities {
                         "/props/pinnedSummary"));
                 return paths;
             }),
-            cap("metric-row-link", 4, "指标行的显式非空值导航入口",
+            cap("metric-row-link", 0, "指标行的显式非空值导航入口",
                     document -> metricRowPaths(document, "link")),
-            cap("tab-container-multi-table", 4, "Tab item 按顺序承载非空表格列表",
+            cap("tab-container-multi-table", 0, "Tab item 按顺序承载非空表格列表",
                     PageCapabilities::tabMultiTablePaths),
-            cap("tab-container-analysis-stack", 4, "Tab 容器的分析表格堆叠呈现档",
+            cap("tab-container-analysis-stack", 0, "Tab 容器的分析表格堆叠呈现档",
                     document -> suffix(componentPaths(document, component ->
                             "tabContainer".equals(type(component))
                                     && "analysisStack".equals(Json.text(Json.get(props(component), "variant")))),
                             "/props/variant")),
-            cap("dashboard-toolbar-compact-read-only", 4, "dashboard 紧凑页头与只读筛选说明",
+            cap("dashboard-toolbar-compact-read-only", 0, "dashboard 紧凑页头与只读筛选说明",
                     document -> Json.isRecord(Json.get(document, "dashboardToolbar"))
                             ? List.of("/dashboardToolbar") : List.of()),
-            cap("composite-card-metric-grid", 4, "组合卡的紧凑指标网格呈现档",
+            cap("composite-card-metric-grid", 0, "组合卡的紧凑指标网格呈现档",
                     document -> suffix(componentPaths(document, component ->
                             "compositeCard".equals(type(component))
                                     && "metricGrid".equals(Json.text(Json.get(props(component), "variant")))),
@@ -282,23 +280,6 @@ public final class PageCapabilities {
                 }
             }
         }
-        return paths;
-    }
-
-    private static List<String> navigateSetParamsPaths(JsonNode document) {
-        List<String> paths = new ArrayList<>();
-        ComponentWalk.walkDocument(document, (component, path) -> {
-            JsonNode actions = Json.get(props(component), "actions");
-            if (!Json.isArray(actions)) {
-                return;
-            }
-            for (int index = 0; index < actions.size(); index++) {
-                JsonNode navigate = Json.record(Json.get(Json.record(actions.get(index)), "navigate"));
-                if (Json.has(navigate, "setParams")) {
-                    paths.add(path + "/props/actions/" + index + "/navigate/setParams");
-                }
-            }
-        });
         return paths;
     }
 

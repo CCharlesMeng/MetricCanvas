@@ -73,7 +73,7 @@ const RUN_TEXT =
     data: JSON.stringify({
       status: 'completed',
       messages: [{ role: 'user', content: '创建销售概览' }],
-      document: { schemaVersion: '5.0', id: 'sales-overview' },
+      document: { schemaVersion: '6.0', id: 'sales-overview' },
       checkpointVersion: 4,
       runtimeOrigin: 'http://localhost:5173',
       agentModel: { provider: 'scripted', model: 'component-selecting-scripted' }
@@ -98,7 +98,7 @@ describe('Agent 运行推送流的分帧解析', () => {
     if (outcome?.kind !== 'outcome') throw new Error('缺少 outcome 帧');
     expect(outcome.outcome.status).toBe('completed');
     expect(outcome.outcome.document).toEqual({
-      schemaVersion: '5.0',
+      schemaVersion: '6.0',
       id: 'sales-overview'
     });
     expect(outcome.outcome.interaction).toBeNull();

@@ -77,7 +77,8 @@ public final class PageValidator {
         }
 
         JsonNode page = materialized.document();
-        List<TypedError> errors = Invariants.errors(page);
+        List<TypedError> errors = new ArrayList<>(Invariants.errors(page));
+        errors.addAll(com.huawei.cdi.pageassets.domain.page.invariant.Navigation.errors(page));
         return errors.isEmpty() ? PageParseResult.success(page) : PageParseResult.failure(errors);
     }
 

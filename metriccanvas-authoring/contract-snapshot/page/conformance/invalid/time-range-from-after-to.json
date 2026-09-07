@@ -2,7 +2,7 @@
   "case": "time-range-from-after-to",
   "invariant": "time-range-default-calendar",
   "input": {
-    "schemaVersion": "5.3",
+    "schemaVersion": "6.0",
     "id": "filters-page",
     "meta": {
       "description": "六类筛选器、层级与级联、筛选绑定、查询分页与表格选择写回的契约样例"
@@ -301,13 +301,31 @@
                 {
                   "on": "click",
                   "navigate": {
-                    "page": "filters-page",
-                    "carryFilters": [
-                      "region",
-                      "period"
-                    ],
-                    "setFilters": {
-                      "city": "city"
+                    "href": "/pages/filters-page",
+                    "query": {
+                      "region": {
+                        "source": "filter",
+                        "id": "region"
+                      },
+                      "region.level": {
+                        "source": "filter",
+                        "id": "region",
+                        "part": "level"
+                      },
+                      "period.from": {
+                        "source": "filter",
+                        "id": "period",
+                        "part": "from"
+                      },
+                      "period.to": {
+                        "source": "filter",
+                        "id": "period",
+                        "part": "to"
+                      },
+                      "city": {
+                        "source": "row",
+                        "field": "city"
+                      }
                     }
                   }
                 }

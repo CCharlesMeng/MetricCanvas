@@ -24,7 +24,7 @@ function dqeQuery(order?: unknown): PageQuery {
 
 function queryPage(language: string) {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'language-page',
     dataSources: {
       sales: {

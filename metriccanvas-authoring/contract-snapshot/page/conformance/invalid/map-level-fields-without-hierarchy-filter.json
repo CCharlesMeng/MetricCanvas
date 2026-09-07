@@ -2,7 +2,7 @@
   "case": "map-level-fields-without-hierarchy-filter",
   "invariant": "map-hierarchy",
   "input": {
-    "schemaVersion": "5.3",
+    "schemaVersion": "6.0",
     "id": "map-page",
     "layoutForm": "dashboard",
     "meta": {
@@ -180,10 +180,18 @@
                 {
                   "on": "click",
                   "navigate": {
-                    "page": "map-page",
-                    "carryFilters": [
-                      "area"
-                    ]
+                    "href": "/pages/map-page",
+                    "query": {
+                      "area": {
+                        "source": "filter",
+                        "id": "area"
+                      },
+                      "area.level": {
+                        "source": "filter",
+                        "id": "area",
+                        "part": "level"
+                      }
+                    }
                   }
                 }
               ]

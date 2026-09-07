@@ -35,7 +35,7 @@ const viewer: TemplateContext = { actorId: 'contract-viewer', clientId: 'contrac
 
 function sourcePage(pageId: string): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: pageId,
     dataSources: {},
     sections: [

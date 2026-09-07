@@ -58,7 +58,8 @@
     /** 图表点击回调;组件不具备 actions 能力时缺席。 */
     onchartclick?: (row: Row) => void;
     /** MetricCard 显式值级链接回调;未声明时缺席。 */
-    onmetriclink?: (row: Row) => void;
+    onmetriclink?: (row: Row, event: MouseEvent) => void;
+    metricHref?: (row: Row) => string | undefined;
     /** 项目详情页头的宿主回退接缝。 */
     onback?: () => void;
     table?: TableRenderBinding;
@@ -76,6 +77,7 @@
     textLinks = [],
     onchartclick,
     onmetriclink,
+    metricHref,
     onback,
     table,
     map,
@@ -106,6 +108,7 @@
       table={nested.table(nestedComponent)}
       onchartclick={nested.onchartclick(nestedComponent)}
       onmetriclink={nested.onmetriclink(nestedComponent)}
+      metricHref={nested.metricHref(nestedComponent)}
       map={nested.map?.(nestedComponent)}
       {nested}
     />
@@ -157,7 +160,7 @@
   <WidgetHost {snapshot}>
     {#snippet ready(_readySnapshot)}
       {#if component.type === 'metricCard'}
-        <MetricCard data={metricData} props={component.props} onlink={onmetriclink} />
+        <MetricCard data={metricData} props={component.props} onlink={onmetriclink} linkHref={metricHref} />
       {:else if component.type === 'barChart'}
         <BarChart
           data={mainData}
@@ -203,6 +206,7 @@
           onheaderfilter={table.onheaderfilter}
           oncellselect={table.oncellselect}
           onlink={table.onlink}
+          linkHref={table.linkHref}
         />
       {:else if component.type === 'mapChart'}
         <MapChart

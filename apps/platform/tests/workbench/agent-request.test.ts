@@ -22,7 +22,7 @@ describe('工作台 Agent 流式请求构造', () => {
       runId: 'run-1',
       messages: [{ role: 'user', content: '创建销售概览' }],
       confirmedPageIds: ['sales-overview'],
-      draft: { schemaVersion: '5.0', id: 'sales-overview' },
+      draft: { schemaVersion: '6.0', id: 'sales-overview' },
       pinnedComponents: [{ dataSourceId: 'region-consumption', componentType: 'barChart' }]
     });
 
@@ -30,7 +30,7 @@ describe('工作台 Agent 流式请求构造', () => {
     expect(body).toMatchObject({
       runId: 'run-1',
       confirmations: [{ kind: 'page_id', pageId: 'sales-overview' }],
-      draft: { schemaVersion: '5.0', id: 'sales-overview' }
+      draft: { schemaVersion: '6.0', id: 'sales-overview' }
     });
   });
 

@@ -43,7 +43,7 @@ async function storeWithSession() {
       basedOnEventSequence: EVENTS.length,
       runId: 'run-1',
       status: 'completed',
-      document: { schemaVersion: '5.3', id: 'ask-transient-session-1' },
+      document: { schemaVersion: '6.0', id: 'ask-transient-session-1' },
       contentHash: 'hash',
       askState: {
         ...initialAskState(),

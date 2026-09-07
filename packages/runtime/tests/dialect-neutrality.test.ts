@@ -20,7 +20,7 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function pagedQueryPage(order: unknown): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'dialect-neutrality',
     dataSources: {
       sales: {

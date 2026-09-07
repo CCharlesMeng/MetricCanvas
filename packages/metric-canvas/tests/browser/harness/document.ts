@@ -2,7 +2,7 @@ import { parsePage } from '@metriccanvas/page';
 import type { RuntimeDataGateway } from '@metriccanvas/runtime';
 
 export const document = {
-  schemaVersion: '5.0', id: 'authoring-isolation',
+  schemaVersion: '6.0', id: 'authoring-isolation',
   dataSources: {
     sales: {
       fields: {
@@ -22,7 +22,7 @@ export const document = {
   filters: [{ id: 'region', type: 'dimension', dimension: 'region', label: '区域', display: 'tabs' }],
   sections: [{
     id: 'main', container: 'card', title: '成交情况', components: [
-      { id: 'note', type: 'text', layout: { span: 12 }, props: { title: '说明', body: '固定说明' } },
+      { id: 'note', type: 'text', layout: { span: 12 }, props: { title: '说明', body: '固定说明', links: [{ label: '关联内容', href: '#linked-content' }] } },
       { id: 'sales', type: 'table', layout: { span: 12 }, data: { main: 'sales' }, props: { title: '成交明细', columns: [{ field: 'region' }, { field: 'gmv' }], pagination: { mode: 'query' } } }
     ]
   }]

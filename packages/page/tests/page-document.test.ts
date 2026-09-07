@@ -15,7 +15,7 @@ function groupedPage() {
   } as const;
 
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'grouped-page',
     dataSources: {
       current: {

@@ -70,7 +70,7 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
     if param_issues:
         return param_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
-    return [*row_issues, *_invariant_issues(value)]
+    return [*row_issues, *_invariant_issues(value), *_navigation_issues(value)]
 
 
 def _schema_issues(
@@ -175,181 +175,8 @@ def _materialize_validation_text_values(value: Any) -> Any:
 
 
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
-    if not isinstance(value, Mapping):
-        return []
-    version = value.get("schemaVersion")
-    match = re.fullmatch(r"(\d+)\.(\d+)", version) if isinstance(version, str) else None
-    if match is None or int(match.group(1)) != 5:
-        return []
-    declared_minor = int(match.group(2))
-    used: list[tuple[int, str]] = []
-
-    def add(minor: int, path: str, condition: bool = True) -> None:
-        if condition and minor > declared_minor:
-            used.append((minor, path))
-
-    params = value.get("params")
-    add(1, "/params", isinstance(params, list) and bool(params))
-    add(1, "/layoutForm", isinstance(value.get("layoutForm"), str))
-    toolbar = value.get("dashboardToolbar")
-    add(3, "/dashboardToolbar", isinstance(toolbar, str))
-    add(4, "/dashboardToolbar", isinstance(toolbar, Mapping))
-    for path, _reference in _text_value_references(value):
-        add(1, path)
-
-    data_sources = value.get("dataSources", {})
-    if isinstance(data_sources, Mapping):
-        for source_id, source in data_sources.items():
-            if not isinstance(source, Mapping):
-                continue
-            source_path = f"/dataSources/{_escape_pointer(source_id)}"
-            compute = source.get("compute")
-            add(1, f"{source_path}/compute", isinstance(compute, list) and bool(compute))
-            if isinstance(compute, list):
-                for index, operator in enumerate(compute):
-                    if isinstance(operator, Mapping):
-                        add(
-                            2,
-                            f"{source_path}/compute/{index}/scale",
-                            operator.get("op") == "ratio" and "scale" in operator,
-                        )
-            fields = source.get("fields")
-            if isinstance(fields, Mapping):
-                for field_path, field in _walk_field_definitions(
-                    fields, f"{source_path}/fields"
-                ):
-                    add(1, f"{field_path}/collapsible", "collapsible" in field)
-
-    filters = value.get("filters", [])
-    if isinstance(filters, list):
-        for index, raw_filter in enumerate(filters):
-            if not isinstance(raw_filter, Mapping):
-                continue
-            path = f"/filters/{index}"
-            filter_type = raw_filter.get("type")
-            add(1, path, filter_type in {"boolean", "timePoint", "numberRange", "search"})
-            add(1, f"{path}/hierarchy", isinstance(raw_filter.get("hierarchy"), list) and bool(raw_filter.get("hierarchy")))
-            add(1, f"{path}/dependsOn", isinstance(raw_filter.get("dependsOn"), str))
-            default = raw_filter.get("default")
-            add(1, f"{path}/default", isinstance(default, Mapping) and isinstance(default.get("unit"), str))
-            add(3, f"{path}/emptyLabel", isinstance(raw_filter.get("emptyLabel"), str))
-            add(3, f"{path}/hierarchyPicker", isinstance(raw_filter.get("hierarchyPicker"), str))
-
-    sections = value.get("sections", [])
-    if not isinstance(sections, list):
-        return []
-    for section_index, section in enumerate(sections):
-        if not isinstance(section, Mapping):
-            continue
-        add(3, f"/sections/{section_index}/columnTracks", "columnTracks" in section)
-        components = section.get("components", [])
-        if not isinstance(components, list):
-            continue
-        for component, path in _walk_components(
-            components, f"/sections/{section_index}/components"
-        ):
-            component_type = component.get("type")
-            props = component.get("props")
-            props = props if isinstance(props, Mapping) else {}
-            layout = component.get("layout")
-            add(1, f"{path}/layout/layer", isinstance(layout, Mapping) and "layer" in layout)
-            add(1, path, component_type == "keyValuePanel")
-            add(1, path, component_type == "fieldText")
-            add(1, path, component_type in {"tabContainer", "gauge"})
-            add(2, path, component_type == "compositeCard")
-            add(2, path, component_type == "categoryBreakdown")
-
-            variant = props.get("variant")
-            add(
-                3,
-                f"{path}/props/variant",
-                (component_type == "reportHeader" and variant == "projectDetail")
-                or (
-                    component_type == "keyValuePanel"
-                    and variant in {"detailSummary", "detailNormMatrix"}
-                )
-                or (component_type == "compositeCard" and variant == "projectNorms")
-                or (component_type == "table" and variant == "forecastMatrix")
-                or (
-                    component_type == "fieldText"
-                    and variant
-                    in {
-                        "narrativeShort",
-                        "narrativeMeeting",
-                        "narrativeRisk",
-                        "narrativeProgress",
-                    }
-                ),
-            )
-            add(3, f"{path}/props/columns", component_type == "keyValuePanel" and props.get("columns") == 6)
-            add(2, f"{path}/props/columns", component_type == "keyValuePanel" and props.get("columns") == 1)
-            add(2, f"{path}/props/legend", component_type == "mapChart" and "legend" in props)
-            add(2, f"{path}/props/tooltipFields", component_type == "mapChart" and "tooltipFields" in props)
-            add(1, f"{path}/props/hierarchyFilter", component_type == "mapChart" and "hierarchyFilter" in props)
-            add(3, f"{path}/props/variant", component_type == "compositeCard" and variant == "compact")
-            add(4, f"{path}/props/variant", component_type == "compositeCard" and variant == "metricGrid")
-            add(3, f"{path}/props/variant", component_type == "tabContainer" and variant == "compact")
-            add(4, f"{path}/props/variant", component_type == "tabContainer" and variant == "analysisStack")
-            add(3, f"{path}/props/variant", component_type == "table" and variant == "embedded")
-            add(3, f"{path}/props/bottomFade", component_type == "table" and "bottomFade" in props)
-            add(3, f"{path}/props/variant", component_type == "mapChart" and variant == "regionalOverview")
-            add(3, f"{path}/props/pinnedSummary", component_type == "mapChart" and "pinnedSummary" in props)
-
-            if component_type == "metricCard":
-                for rows_key in ("rows", "secondaryRows"):
-                    rows = props.get(rows_key, [])
-                    if not isinstance(rows, list):
-                        continue
-                    for row_index, row in enumerate(rows):
-                        if not isinstance(row, Mapping):
-                            continue
-                        add(3, f"{path}/props/{rows_key}/{row_index}/context", "context" in row)
-                        add(4, f"{path}/props/{rows_key}/{row_index}/link", "link" in row)
-            if component_type == "keyValuePanel":
-                items = props.get("items", [])
-                if isinstance(items, list):
-                    for item_index, item in enumerate(items):
-                        if not isinstance(item, Mapping):
-                            continue
-                        add(3, f"{path}/props/items/{item_index}/unit", "unit" in item)
-                        add(3, f"{path}/props/items/{item_index}/icon", "icon" in item)
-                add(3, f"{path}/props/titleIcon", "titleIcon" in props)
-            if component_type == "compositeCard":
-                add(3, f"{path}/props/titleIcon", "titleIcon" in props)
-            if component_type == "tabContainer":
-                tabs = props.get("tabs", [])
-                if isinstance(tabs, list):
-                    for tab_index, tab in enumerate(tabs):
-                        add(
-                            4,
-                            f"{path}/props/tabs/{tab_index}/components",
-                            isinstance(tab, Mapping) and isinstance(tab.get("components"), list),
-                        )
-            if component_type == "table":
-                add(1, f"{path}/props/rowKindField", "rowKindField" in props)
-                add(1, f"{path}/props/mergeBy", "mergeBy" in props)
-                for column, column_path in _table_leaf_columns(
-                    props.get("columns", []), f"{path}/props/columns"
-                ):
-                    add(1, f"{column_path}/link", "link" in column)
-            actions = props.get("actions", [])
-            if isinstance(actions, list):
-                for action_index, action in enumerate(actions):
-                    navigate = action.get("navigate") if isinstance(action, Mapping) else None
-                    add(
-                        1,
-                        f"{path}/props/actions/{action_index}/navigate/setParams",
-                        isinstance(navigate, Mapping) and "setParams" in navigate,
-                    )
-
-    return [
-        PageContractIssue(
-            "SCHEMA_ERROR",
-            path,
-            f"page capability requires schemaVersion 5.{minor}, declared {version}",
-        )
-        for minor, path in used
-    ]
+    # 6.0 includes all former 5.x capabilities; future additive minors register here.
+    return []
 
 
 def _walk_field_definitions(
@@ -418,6 +245,14 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
 
     consumed: set[str] = set()
+    def navigation_consumers(node: Any) -> None:
+        if isinstance(node, list):
+            for child in node: navigation_consumers(child)
+        elif isinstance(node, Mapping):
+            if node.get("source") == "param" and isinstance(node.get("id"), str): consumed.add(node["id"])
+            for key, child in node.items():
+                if key != "dataSources": navigation_consumers(child)
+    navigation_consumers(value)
     for path, reference in _text_value_references(value):
         param_id = reference["param"]
         declaration = by_id.get(param_id)
@@ -1512,20 +1347,6 @@ def _action_issues(
                 issues.append(PageContractIssue("SCHEMA_ERROR", f"{action_path}/writeFilter", "writeFilter target must be a declared dimension filter"))
             check(action.get("field"), f"{action_path}/field", "dimension", None)
             continue
-        navigate = action.get("navigate")
-        if not isinstance(navigate, Mapping):
-            continue
-        for filter_index, filter_id in enumerate(navigate.get("carryFilters", [])):
-            if str(filter_id) not in filters_by_id:
-                issues.append(PageContractIssue("SCHEMA_ERROR", f"{action_path}/navigate/carryFilters/{filter_index}", "carryFilters references unknown filter"))
-        set_filters = navigate.get("setFilters", {})
-        if isinstance(set_filters, Mapping):
-            for filter_id, binding in set_filters.items():
-                check(binding, f"{action_path}/navigate/setFilters/{_escape_pointer(filter_id)}", "dimension", None)
-        set_params = navigate.get("setParams", {})
-        if isinstance(set_params, Mapping):
-            for param_id, binding in set_params.items():
-                check(binding, f"{action_path}/navigate/setParams/{_escape_pointer(param_id)}", None, None)
     return issues
 
 
@@ -2300,3 +2121,61 @@ def _pointer(parts: Any) -> str:
     for part in parts:
         result = _join_pointer(result, part)
     return result
+
+
+def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
+    from urllib.parse import urlsplit, urljoin
+    issues: list[PageContractIssue] = []
+    filters = {f["id"]: f for f in page.get("filters", [])}
+    params = {p["id"] for p in page.get("params", [])}
+    def fail(path: str, message: str) -> None:
+        issues.append(PageContractIssue("SCHEMA_ERROR", path, message))
+    for section_index, section in enumerate(page.get("sections", [])):
+        for component, path in _walk_components(section.get("components", []), f"/sections/{section_index}/components"):
+            props = component.get("props", {})
+            targets = [(link, f"{path}/props/links/{i}") for i, link in enumerate(props.get("links", []))] if component.get("type") == "text" else [(a["navigate"], f"{path}/props/actions/{i}/navigate") for i, a in enumerate(props.get("actions", [])) if "navigate" in a]
+            for target, target_path in targets:
+                href = target["href"]
+                valid = bool(href) and href == href.strip() and not re.search(r"[\x00-\x1f\x7f\\]", href)
+                try:
+                    url = urlsplit(urljoin("https://metriccanvas.invalid/", href))
+                    valid = valid and url.scheme in ("http", "https") and bool(url.hostname) and not re.search(r"[\s<>]", url.hostname or "") and not re.match(r"https?:(?!//)", href, re.I)
+                    _ = url.port
+                except ValueError:
+                    valid = False
+                if not valid: fail(f"{target_path}/href", "导航只允许 HTTP(S) 或相对 URL")
+                for key, binding in target.get("query", {}).items():
+                    p = f"{target_path}/query/{_escape_pointer(key)}"
+                    if binding["source"] == "param":
+                        if binding["id"] not in params: fail(p+"/id", f"未声明的页面参数:{binding['id']}")
+                    elif binding["source"] == "filter":
+                        f = filters.get(binding["id"])
+                        if f is None:
+                            fail(p+"/id", f"未声明的筛选器:{binding['id']}")
+                            continue
+                        part = binding.get("part", "value")
+                        allowed = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
+                        if part not in allowed: fail(p+"/part", f"筛选器 {binding['id']} 不支持分量 {part}")
+                    else:
+                        linked = [row for row in props.get("rows", []) + props.get("secondaryRows", []) if row.get("link")] if component.get("type") == "metricCard" else []
+                        slots = [(row["valueField"].get("data", "main") if isinstance(row["valueField"], Mapping) else "main") for row in linked] or ["main"]
+                        invalid = False
+                        for slot in slots:
+                            source = page.get("dataSources", {}).get(component.get("data", {}).get(slot), {})
+                            fields, _, _ = _resolved_fields(source.get("fields", {}), "")
+                            field = fields.get(binding["field"])
+                            if not field or field.get("type") not in ("string", "number", "money", "boolean", "date", "datetime"):
+                                invalid = True
+                        if invalid:
+                            fail(p+"/field", f"当前行缺少可传参的标量字段:{binding['field']}")
+    used = set(params)
+    for i, f in enumerate(page.get("filters", [])):
+        names = f.get("urlParams", {})
+        parts = ("from", "to") if f["type"] in ("timeRange", "numberRange") else (("value", "level") if f.get("hierarchy") else ("value",))
+        for part in names:
+            if part not in parts: fail(f"/filters/{i}/urlParams/{part}", "该筛选器不支持此 URL 分量")
+        for part in parts:
+            key = names.get(part, f["id"] if part == "value" else f"{f['id']}.{part}")
+            if key in used: fail(f"/filters/{i}/urlParams/{part}", f"URL 参数名重复:{key}")
+            used.add(key)
+    return issues

@@ -1,8 +1,8 @@
-# ADR 基线:68 份已提交决策记录的当前生效结论
+# ADR 基线:68 份决策记录的当前生效结论
 
-本提交含 68 份 ADR（0001–0067、0069）；0068 已由并行 #109 工作预留，待其交付后合并索引。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 68 份 ADR(0001–0068)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(0068 已由 #109 预留，下一编号至少为 `0070`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0069`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -61,7 +61,7 @@
 | [0045](./0045-graphql-query-branch-with-structured-predicates.md) | GraphQL 查询分支以结构化谓词表达,不透传 WHERE 模板 | 提议中(5.1 批次,未落地) |
 | [0046](./0046-controlled-computation-with-named-operators.md) | 受控计算以封闭具名算子分两批进入页面数据源 | 现行(第一批算子;第二批 `joinAggregate` 形状未定) |
 | [0047](./0047-first-class-page-parameters.md) | 页面参数一等化,与筛选器按可变性分界 | 现行 |
-| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由,运行时只上抛导航意图 | 导航目标/强制宿主接管已由 0067 裁决取代，待 #109 迁移；导航栈与回跳所有权仍有效 |
+| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由,运行时只上抛导航意图 | 导航目标/强制宿主接管已由 0067/0068 取代并完成 #109 迁移；导航栈与回跳所有权仍有效 |
 | [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格服务端能力按数据源模式整体下推 | 提议中(呈现已落地,服务端排序筛选未解除) |
 | [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展,层级维度承载地图下钻 | 现行 |
 | [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进,主版本递增须论证 | 现行(2026-08-25 补了"零使用开放面可按次版本收紧"的例外) |
@@ -81,7 +81,7 @@
 | [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行边界(#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决) |
 | [0066](./0066-self-contained-rendering-engine-host-boundary.md) | 渲染引擎提供固定呈现与 JS 挂载入口，应用集成归宿主 | 已裁决宿主边界；#100 发布门禁、#103 真实集成、#101 身份接线分别落实 |
 | [0067](./0067-url-navigation-with-explicit-parameter-bindings.md) | 页面声明 URL 与显式参数绑定，跨页链接无需宿主地址解析 | 现行目标，尚未实现；#109 承接协议/运行时迁移，部分取代 0048 |
-| [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版采用真实 Java 与内存存储、DQE HTTP 仿真，请求凭据归宿主 | #99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
+| [0068](./0068-plain-url-navigation-protocol.md) | URL 导航使用普通查询参数，页面协议切到 6.0 | #109 的后续裁决；实现与验收状态由 #109 记录 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -133,9 +133,7 @@ Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 M
 
 **宿主与嵌入交付([ADR-0066](./0066-self-contained-rendering-engine-host-boundary.md))：** 引擎固定提供视觉呈现，宿主不指定字体、主题或其他样式。宿主获取并传入页面文档，提供数据网关并负责端点、凭据、登录恢复与重试；不新增页面仓储/身份端口。Svelte 使用 npm 入口，异构/普通 HTML 使用 JS 地址 + `mount`，`embed` 是包而非应用，不新增自定义元素、iframe 或引擎微前端协议。IOC 子应用与 platform 自行承担应用集成。`update` 为完整输入替换，运行依赖变化按原语义初始化；`filter-change` 只通知宿主，URL 同步可选且不得原样回灌重启会话。
 
-**导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，待 #109 实施)：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是当前待迁移实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
-
-**本地首版的替代边界([ADR-0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md)，#99)：** 使用真实 Java HTTP 服务与已有内存存储，接受重启清空；页面校验、修订与幂等逻辑保持真实，不以 Node offline lifecycle 绕过 Java。DQE 沿用 HTTP 仿真，只承诺有依据的协议和明确测试场景，未知能力明确失败，不代表真实 DQE/MySQL 验收。所有宿主数据请求的头和相关 Cookie 由宿主决定，本仓不新增身份适配器或用户切换器，也不补默认用户；服务端既有必填项与权限校验保留。旧 scripted/lexical 模型仅作测试与迁移对照，公共 Chat 未接通时显示不可用，其删除时机由 #102 与 #107/#108 对账；不可用状态不能满足 #95/#104 的完整终点线。
+**导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，由 #109 / ADR-0068 实施）：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是已替换的历史实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
 
 ## 页面文档结构与书写原则
 
@@ -189,9 +187,9 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 **仍为提议的扩展:** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 落地 ADR-0034 留白的 GraphQL 分支,筛选条件以结构化谓词(封闭算子 + 绑定筛选器或页面参数 + 空值省略)表达,排序以排序绑定表达,总条数由计数声明复用主查询谓词。**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`。**
 
-当前 `versionPolicy.current` 是 `5.4`(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.4 已发布**(`supportedVersions()` 返回 5.0 / 5.1 / 5.2 / 5.3 / 5.4):[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是 5.2 能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`;[ADR-0054](./0054-section-weighted-column-tracks.md) 的受控权重列轨，以及同批的筛选 `emptyLabel`、紧凑/嵌入式呈现闭集、指标短上下文、键值单位与地域固定摘要是 5.3 增量能力；指标行值级导航、多表 Tab、`analysisStack`、紧凑只读页头与 `compositeCard.metricGrid` 是 5.4 增量能力。存量页面继续声明满足其能力下限的已发布版本,不做强制迁移。
+当前 `versionPolicy.current` 是 `6.0`（[ADR-0068](./0068-plain-url-navigation-protocol.md)：URL 导航与普通查询值的显式主版本切换，5.x 能力进入 6.0 基线；以下 5.x 为历史演进）(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.4 历史能力**（当前 `supportedVersions()` 返回 6.0）:[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是 5.2 能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`;[ADR-0054](./0054-section-weighted-column-tracks.md) 的受控权重列轨，以及同批的筛选 `emptyLabel`、紧凑/嵌入式呈现闭集、指标短上下文、键值单位与地域固定摘要是 5.3 增量能力；指标行值级导航、多表 Tab、`analysisStack`、紧凑只读页头与 `compositeCard.metricGrid` 是 5.4 增量能力。5.x 时期采用同主版本兼容；6.0 的显式迁移例外由 ADR-0068 记录。
 
-**已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 已按此策略承载主版本、次版本与能力表,接受 5.0、5.1、5.2、5.3 与 5.4。
+**已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 已按此策略承载主版本、次版本与能力表,当前接受 6.0，旧主版本由原引擎读取或显式迁移为新修订。
 
 该策略有**一条例外**(2026-08-25 补入 ADR-0051):**从未被任何存量文档行使的开放面,可以按次版本收紧。** 判据是零使用、可证(测试或脚本随收紧一并落地)、并承认形式超集让位于真实文档集合上的超集。它被刻意限定得很死——"很少使用"不是判据,只有"零使用且可证"才是——否则它就是绕过版本策略的后门。第一个适用对象是组件 `layout` 对象补 `.strict()`(每个组件的 `props` 都是 strict,`layout` 不是,写错键名会静默通过),该收紧已随 5.2 行使,零使用证明是 `packages/page/tests/layout-strict-zero-usage.test.ts`。
 
@@ -256,3 +254,5 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 - **ADR-0022 曾编号为 ADR-0008**,与"不可变页面修订与发布租约"的 ADR-0008 编号冲突,已于 2026-08-05 重编号,标题与正文未改动;外部文档若引用旧编号"ADR-0008(命名数据源)",指的是当前的 ADR-0022。
 - **ADR-0023** 记录的是一次纯粹的仓库清理(删除已经零源文件、零消费者的空壳包目录),不引入新的架构决策,列在此处仅为完整性。
+
+**#109 实施基线（2026-09-07）：** [ADR-0068](./0068-plain-url-navigation-protocol.md) 已实现 6.0 的 `href + query` 导航、三种动态来源与普通查询值。旧 pageId 导航和私有前缀不再是当前接口；本索引中 ADR-0047/0048 与 5.x 描述仅记录历史。默认浏览器跳转，宿主可选接管，图表直接点击；不可变旧修订不原地迁移。

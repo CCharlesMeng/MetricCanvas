@@ -135,7 +135,7 @@ class PageAssetServiceTest {
         @Test
         void rejectsMinorAheadOfCurrent() {
             ObjectNode document = inlineReport("p1");
-            document.put("schemaVersion", "5.99");
+            document.put("schemaVersion", "6.99");
             PageAssetException e = failure(() -> fx.service.savePageRevision(firstSave("p1", document, "k1"), ACTOR));
             assertThat(e.code()).isEqualTo(ErrorCode.INVALID_PAGE);
             ErrorDetails.InvalidPage details = (ErrorDetails.InvalidPage) e.details().orElseThrow();

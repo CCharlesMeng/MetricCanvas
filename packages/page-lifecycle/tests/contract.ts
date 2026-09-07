@@ -40,7 +40,7 @@ const admin: LifecycleContext = { actorId: 'admin', clientId: 'test', roles: ['a
 
 function textPage(id: string, sections: Page['sections']): PageDocument {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id,
     dataSources: {},
     sections

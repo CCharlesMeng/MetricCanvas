@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MetricCanvas URL 导航</title></head>
+<body>
+  <main id="dashboard"></main>
+  <script src="/dist/metriccanvas-runtime.global.js"></script>
+  <script type="module">
+    // 内容服务在 /pages/<id> 返回此 HTML，在 /pages/<id>.json 返回页面资产。
+    // 宿主只负责加载文档；没有 pageId 导航解析器或跳转回调。
+    const url = new URL(location.href);
+    const id = url.pathname.startsWith('/pages/')
+      ? decodeURIComponent(url.pathname.slice('/pages/'.length))
+      : url.searchParams.get('page') ?? 'ioc-project-overview';
+    const response = await fetch(`/pages/${encodeURIComponent(id)}.json`);
+    if (!response.ok) throw new Error(`页面加载失败: ${response.status}`);
+    window.pageDocument = await response.json();
+    window.queryEvents = [];
+    window.runtime = MetricCanvas.mount('#dashboard', {
+      document: window.pageDocument,
+      initialSearch: location.search,
+      onEvent(event) {
+        window.queryEvents.push(event);
+        if (event.type === 'filter-change') {
+          const current = new URL(location.href);
+          current.search = event.search;
+          history.replaceState(null, '', current);
+          // 不原样回灌 update，真实切页由浏览器加载完整输入。
+        }
+      }
+    });
+  </script>
+</body>
+</html>

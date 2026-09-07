@@ -8,7 +8,7 @@ import {
 
 function documentWithMixedSources(): Record<string, unknown> {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'ask-transient-metadata',
     dataSources: {
       'query-with-rows': {
@@ -120,7 +120,7 @@ function documentWithMixedSources(): Record<string, unknown> {
 describe('页面文档 metadata.json 格式化', () => {
   it('以两空格缩进输出完整页面文档', () => {
     const document = {
-      schemaVersion: '5.0',
+      schemaVersion: '6.0',
       id: 'ask-transient-8f2c3a1b',
       meta: { description: '区域消耗' },
       dataSources: {},

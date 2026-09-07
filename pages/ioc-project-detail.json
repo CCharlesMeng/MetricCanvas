@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.3",
+  "schemaVersion": "6.0",
   "id": "ioc-project-detail",
   "meta": {
     "description": "IOC 作战地图项目详情页。页面参数来自 URL，业务数据全部是 inline 合成演示数据，不来自真实系统。页面按有效设计源收口为 450:1168 的项目基本信息与项目规范性双卡，规范性两组矩阵同时展示；销售预测展示一至七月并保留小计、总计和合并逻辑；项目叙事收口为六块。原始业务长文本字段全部保留，latest-analysis-meeting-display 与 risk-management-display 仅为 inline 展示合成字段，不构成未来 GraphQL 契约。"

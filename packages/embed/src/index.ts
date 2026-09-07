@@ -24,7 +24,7 @@ export type {
   DimensionValuesGateway,
   RuntimeDataGateway
 } from '@metriccanvas/runtime';
-export type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
+export type { AiSummaryConfig, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/runtime-ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;
@@ -86,6 +86,7 @@ export function mount(
 function runtimeInput(input: RuntimeInput): RuntimeInput {
   return {
     document: input.document,
+    ...(input.navigation !== undefined ? { navigation: input.navigation } : {}),
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
       : {}),

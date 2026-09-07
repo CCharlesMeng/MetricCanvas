@@ -373,14 +373,14 @@ describe('工作台运行状态机:终态', () => {
         { role: 'user', content: '创建销售概览' },
         { role: 'assistant', content: '已完成', toolCalls: [] }
       ],
-      document: { schemaVersion: '5.0', id: 'sales-overview' },
+      document: { schemaVersion: '6.0', id: 'sales-overview' },
       interaction: null,
       error: null,
       checkpointVersion: null
     };
     view = applyOutcome(view, outcome);
     expect(view.status).toBe('completed');
-    expect(view.document).toEqual({ schemaVersion: '5.0', id: 'sales-overview' });
+    expect(view.document).toEqual({ schemaVersion: '6.0', id: 'sales-overview' });
     expect(view.baselineMessages).toEqual(outcome.messages);
   });
 

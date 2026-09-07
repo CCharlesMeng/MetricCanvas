@@ -17,6 +17,7 @@ const filterHierarchyLevelZ = z
 const dimensionFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('dimension'),
     dimension: fieldNameZ,
     label: z.string().optional(),
@@ -54,6 +55,7 @@ const relativeTimeExpressionZ = z
 const timeRangeFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('timeRange'),
     label: z.string().optional(),
     precision: z.enum(['date', 'datetime']).optional(),
@@ -71,6 +73,7 @@ const timeRangeFilterZ = z
 const timePointFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('timePoint'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
@@ -82,6 +85,7 @@ const timePointFilterZ = z
 const booleanFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('boolean'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
@@ -99,6 +103,7 @@ const numberRangeValueZ = z
 const numberRangeFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('numberRange'),
     label: z.string().optional(),
     visible: z.boolean().optional(),
@@ -109,6 +114,7 @@ const numberRangeFilterZ = z
 const searchFilterZ = z
   .object({
     id: idZ,
+    urlParams: z.object({ value: z.string().min(1).optional(), from: z.string().min(1).optional(), to: z.string().min(1).optional(), level: z.string().min(1).optional() }).strict().optional(),
     type: z.literal('search'),
     label: z.string().optional(),
     visible: z.boolean().optional(),

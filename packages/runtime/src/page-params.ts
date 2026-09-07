@@ -1,16 +1,6 @@
 import type { PageParamDeclaration, PageParamValue } from '@metriccanvas/page';
 
-/**
- * 页面参数的 URL 编解码(ADR-0047)。
- *
- * 参数不可变:一次页面打开解析一次即可,因此不进筛选状态,也没有写入口。
- * 值前缀 `p:` 与筛选状态的 `d:` / `t:` 并列,占用同一个查询串但互不识别——
- * `FilterState.fromURL` 认不出 `p:` 会原样忽略,`mergedSearch` 只删除筛选器
- * 自己的键,参数因此不会被筛选变更抹掉。
- */
-
-export const PAGE_PARAM_PREFIX = 'p:';
-
+/** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;
 
 export interface PageParamState {
@@ -39,7 +29,7 @@ export function resolvePageParams(
   return { values, missing };
 }
 
-/** 目标页的参数查询串;跨页下钻的 `setParams` 由它编码。 */
+/** 目标页的参数查询串;跨页下钻 由它编码。 */
 export function pageParamSearch(values: PageParamValues): string {
   const query = new URLSearchParams();
   for (const [id, value] of values) {
@@ -49,21 +39,15 @@ export function pageParamSearch(values: PageParamValues): string {
 }
 
 export function serializePageParam(value: PageParamValue): string {
-  return `${PAGE_PARAM_PREFIX}${encodeURIComponent(String(value))}`;
+  return String(value);
 }
 
 function parseParamValue(
   raw: string | null,
   declaration: PageParamDeclaration
 ): PageParamValue | undefined {
-  if (raw === null || !raw.startsWith(PAGE_PARAM_PREFIX)) return undefined;
-  let text: string;
-  try {
-    text = decodeURIComponent(raw.slice(PAGE_PARAM_PREFIX.length));
-  } catch {
-    // 畸形百分号序列按未提供处理(解析永不 throw)。
-    return undefined;
-  }
+  if (raw === null) return undefined;
+  const text = raw;
   if (declaration.type === 'string') return text === '' ? undefined : text;
   if (declaration.type === 'number') {
     const numeric = Number(text);

@@ -9,7 +9,7 @@ import {
 } from '@metriccanvas/page';
 import {
   createFilterState,
-  drillThroughSearch,
+  navigationHref,
   initialFilterValues,
   orchestrate,
   type PageDataSnapshots
@@ -31,8 +31,8 @@ function loadPage(): Page {
 describe('ioc-project-overview 骨架', () => {
   it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('5.4');
-    expect(requiredMinorVersion(document)).toBe(4);
+    expect(page.schemaVersion).toBe('6.0');
+    expect(requiredMinorVersion(document)).toBe(0);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {
@@ -154,7 +154,7 @@ describe('ioc-project-overview 骨架', () => {
       true, undefined, undefined
     ]);
     expect(opportunityMetrics.props.actions).toEqual([
-      { on: 'click', navigate: { page: 'ioc-opportunity-analysis' } }
+      { on: 'click', navigate: { href: '/pages/ioc-opportunity-analysis' } }
     ]);
     expect(opportunityMetrics.props.rows[0]?.changes?.[0]).toMatchObject({
       label: '较上月', unit: '个', field: { field: 'opportunity-cnt-mom', format: 'number' }
@@ -368,7 +368,7 @@ describe('ioc-project-overview 骨架', () => {
     ]);
   });
 
-  it('地图末级 navigate 携带筛选前缀，TOP 表 setParams 带 party-number', () => {
+  it('地图末级 navigate 携带普通筛选参数，TOP 表 query 带 party-number', () => {
     const page = loadPage();
     const map = page.sections
       .flatMap((section) => section.components)
@@ -388,16 +388,16 @@ describe('ioc-project-overview 骨架', () => {
     filters.subscribe((next) => {
       current = new Map(next);
     })();
-    const listSearch = drillThroughSearch(mapAction.navigate, current, {});
+    const listSearch = new URL(navigationHref(mapAction.navigate, current, new Map()), 'https://host.example').search;
     const listParams = new URLSearchParams(listSearch);
-    expect(listParams.get('mtime')).toBe('m:month:2026-04');
-    expect(listParams.get('region')).toContain('h:rep-office-code:office:BJ-01');
+    expect(listParams.get('mtime')).toBe('2026-04');
+    expect(listParams.get('region')).toBe('BJ-01');
     expect(listParams.has('as-of-date')).toBe(false);
     expect(listParams.has('project-level')).toBe(false);
     expect(listSearch).not.toContain('p:');
 
     const restored = createFilterState();
-    restored.fromURL(listSearch);
+    restored.fromURL(listSearch, page.filters ?? []);
     let restoredValues = new Map();
     restored.subscribe((next) => {
       restoredValues = new Map(next);
@@ -422,10 +422,10 @@ describe('ioc-project-overview 骨架', () => {
     const row = page.dataSources['top-initiated']?.source.type === 'inline'
       ? page.dataSources['top-initiated'].source.rows[0]!
       : {};
-    const search = drillThroughSearch(action.navigate, new Map(), row);
+    const search = new URL(navigationHref(action.navigate, new Map(), new Map(), row), 'https://host.example').search;
     const params = new URLSearchParams(search);
-    expect(action.navigate.page).toBe('ioc-project-detail');
-    expect(params.get('party-number')).toBe('p:PN10001');
-    expect(params.get('opportunity-code')).toBe('p:OPP202604001');
+    expect(action.navigate.href).toBe('/pages/ioc-project-detail');
+    expect(params.get('party-number')).toBe('PN10001');
+    expect(params.get('opportunity-code')).toBe('OPP202604001');
   });
 });

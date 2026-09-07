@@ -11,7 +11,7 @@ import {
 } from '../src/lib/page-editor';
 
 const document: Page = {
-  schemaVersion: '5.0',
+  schemaVersion: '6.0',
   id: 'sales-overview',
   dataSources: {
     summary: {
@@ -121,7 +121,7 @@ describe('页面修订编辑工作副本', () => {
   it('组合卡只作为顶层原子编辑，修改标题与跨度不破坏子组件 JSON', () => {
     const compositeDocument: Page = {
       ...document,
-      schemaVersion: '5.2',
+      schemaVersion: '6.0',
       sections: [{
         id: 'overview',
         components: [{
@@ -163,7 +163,7 @@ describe('页面修订编辑工作副本', () => {
   it('自定义列轨分区按实际轨数展示并夹取组件跨度', () => {
     const weighted: Page = {
       ...document,
-      schemaVersion: '5.3',
+      schemaVersion: '6.0',
       sections: [{
         id: 'overview',
         columnTracks: [29, 29, 22],

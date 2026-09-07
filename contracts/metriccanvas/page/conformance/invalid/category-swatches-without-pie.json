@@ -2,7 +2,7 @@
   "case": "category-swatches-without-pie",
   "invariant": "category-swatches-need-pie",
   "input": {
-    "schemaVersion": "5.4",
+    "schemaVersion": "6.0",
     "id": "composite-page",
     "layoutForm": "dashboard",
     "dashboardToolbar": {
@@ -165,7 +165,7 @@
                       {
                         "on": "click",
                         "navigate": {
-                          "page": "inline-report"
+                          "href": "/pages/inline-report"
                         }
                       }
                     ]

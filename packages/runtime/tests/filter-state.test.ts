@@ -111,96 +111,38 @@ describe('筛选状态 store:订阅与回写', () => {
   });
 });
 
-describe('筛选状态 store:URL 序列化', () => {
-  it('toURL → fromURL 往返完整还原(含中文、逗号、& 等特殊字符)', () => {
-    const tricky: FilterValue = {
-      type: 'dimension',
-      dimension: 'channel',
-      values: ['直营, 加盟', 'a&b=c']
-    };
-    const source = createFilterState(
-      new Map<string, FilterValue>([['f-region', region], ['f-channel', tricky], ['f-time', june]])
-    );
-    const restored = createFilterState();
-    restored.fromURL(source.toURL());
-    const { pushes } = collect(restored);
-    expect(pushes[0].get('f-region')).toEqual(region);
-    expect(pushes[0].get('f-channel')).toEqual(tricky);
-    expect(pushes[0].get('f-time')).toEqual(june);
-    expect(pushes[0].size).toBe(3);
+describe('筛选状态 store:普通 URL', () => {
+  const declarations: import('@metriccanvas/page').FilterDeclaration[] = [
+    {id:'region',type:'dimension',dimension:'geo',hierarchy:[{id:'geo',dimension:'geo'},{id:'office',dimension:'office-code'}],urlParams:{value:'region',level:'level'}},
+    {id:'period',type:'timeRange',urlParams:{from:'from',to:'to'}},
+    {id:'flag',type:'boolean'}, {id:'amount',type:'numberRange'},
+    {id:'month',type:'timePoint',granularity:'month'}, {id:'keyword',type:'search'}
+  ];
+  it('全部类型往返，保留多选、层级和特殊字符，不读取未声明参数', () => {
+    const initial = new Map<string, FilterValue>([
+      ['region',{type:'dimension',dimension:'office-code',level:'office',values:['华东,直营','A&/?+%']}],
+      ['period',{type:'timeRange',from:'2026-04-01',to:'2026-04-30'}],
+      ['flag',{type:'boolean',value:false}], ['amount',{type:'numberRange',from:0,to:9}],
+      ['month',{type:'timePoint',granularity:'month',value:'2026-04'}], ['keyword',{type:'search',query:'云迁移'}]
+    ]);
+    const source = createFilterState(initial), restored = createFilterState();
+    const search = source.toURL(declarations);
+    expect(new URLSearchParams(search).getAll('region')).toEqual(['华东,直营','A&/?+%']);
+    restored.fromURL(search+'&unused=secret',declarations);
+    expect(collect(restored).pushes[0]).toEqual(initial);
   });
-
-  it('空筛选状态 toURL 为空字符串', () => {
-    expect(createFilterState().toURL()).toBe('');
-  });
-
-  it('fromURL 只还原带类型标记的参数,忽略无关参数与畸形值,不抛出', () => {
+  it('接收方声明决定类型，非法范围和未知层级被忽略', () => {
     const state = createFilterState();
-    state.fromURL('?foo=bar&f-region=d%3Aregion%3A%E5%8D%8E%E4%B8%9C&f-bad=d:仅有维度没有值段');
-    const { pushes } = collect(state);
-    expect(pushes[0].size).toBe(1);
-    expect(pushes[0].get('f-region')).toEqual({
-      type: 'dimension',
-      dimension: 'region',
-      values: ['华东']
-    });
+    state.fromURL('region=A&level=unknown&from=2026-02-29&to=2026-03-01&amount.from=bad&flag=yes&month=2026-99',declarations);
+    expect(collect(state).pushes[0].size).toBe(0);
   });
-
-  it('fromURL 丢弃伪日期、非法时分、混合精度与倒序时间范围', () => {
-    const state = createFilterState();
-    expect(() =>
-      state.fromURL(
-        '?bad-date=t%3A2026-02-29~2026-03-01' +
-          '&bad-time=t%3A2026-07-20T24%3A00~2026-07-20T24%3A01' +
-          '&mixed=t%3A2026-07-20~2026-07-20T18%3A00' +
-          '&reversed=t%3A2026-07-21~2026-07-20'
-      )
-    ).not.toThrow();
-    const { pushes } = collect(state);
-    expect(pushes[0].size).toBe(0);
-  });
-
-  it('新类型前缀可往返且不把 p: 页面参数读进筛选状态', () => {
-    const source = createFilterState(
-      new Map<string, FilterValue>([
-        ['flag', { type: 'boolean', value: true }],
-        ['month', { type: 'timePoint', granularity: 'month', value: '2026-04' }],
-        ['amount', { type: 'numberRange', from: 1, to: 9 }],
-        ['keyword', { type: 'search', query: '云迁移' }],
-        [
-          'region',
-          { type: 'dimension', dimension: 'region-dept-code', values: ['R01'], level: 'region-dept' }
-        ]
-      ])
-    );
-    const restored = createFilterState();
-    restored.fromURL(`${source.toURL()}&page-title=p%3A详情`);
-    const { pushes } = collect(restored);
-    expect(pushes[0].get('flag')).toEqual({ type: 'boolean', value: true });
-    expect(pushes[0].get('month')).toEqual({
-      type: 'timePoint',
-      granularity: 'month',
-      value: '2026-04'
-    });
-    expect(pushes[0].get('amount')).toEqual({ type: 'numberRange', from: 1, to: 9 });
-    expect(pushes[0].get('keyword')).toEqual({ type: 'search', query: '云迁移' });
-    expect(pushes[0].get('region')).toEqual({
-      type: 'dimension',
-      dimension: 'region-dept-code',
-      values: ['R01'],
-      level: 'region-dept'
-    });
-    expect(pushes[0].has('page-title')).toBe(false);
-  });
-
-  it('fromURL 以 URL 内容整体替换当前状态并通知订阅者', () => {
-    const state = createFilterState(new Map<string, FilterValue>([['f-region', region]]));
-    const { pushes } = collect(state);
-    const other = createFilterState(new Map<string, FilterValue>([['f-time', june]]));
-    state.fromURL(other.toURL());
+  it('整体替换并通知，空状态不产生查询参数', () => {
+    const state = createFilterState(new Map([['flag',{type:'boolean',value:true}]]));
+    const {pushes} = collect(state);
+    state.fromURL('keyword=hello',declarations);
     expect(pushes).toHaveLength(2);
-    expect(pushes[1].has('f-region')).toBe(false);
-    expect(pushes[1].get('f-time')).toEqual(june);
+    expect(pushes[1]).toEqual(new Map([['keyword',{type:'search',query:'hello'}]]));
+    expect(createFilterState().toURL()).toBe('');
   });
 });
 

@@ -22,7 +22,8 @@ export interface TableRenderBinding {
   onsort: (sort: TableSortRule[]) => void;
   onheaderfilter: (field: string, value: TableHeaderFilterValue | null) => void;
   oncellselect: (context: { rowIndex: number; column: TableColumn }) => void;
-  onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }) => void;
+  linkHref?: (row: Row) => string | undefined;
+  onlink?: (context: { rowIndex: number; column: TableColumn; row: Row }, event: MouseEvent) => void;
 }
 
 /** Tab 容器递归分发时,子组件的数据与交互仍由统一运行时提供。 */
@@ -31,7 +32,8 @@ export interface NestedComponentRender {
   snapshot(component: Component): DataSnapshot;
   table(component: Component): TableRenderBinding | undefined;
   onchartclick(component: Component): ((row: Row) => void) | undefined;
-  onmetriclink(component: Component): ((row: Row) => void) | undefined;
+  onmetriclink(component: Component): ((row: Row, event: MouseEvent) => void) | undefined;
+  metricHref(component: Component): (row: Row) => string | undefined;
   map?(component: Component): 'china' | 'world' | undefined;
 }
 

@@ -1,3 +1,4 @@
+import { filterURLKeys } from '@metriccanvas/page';
 import {
   dimensionOfLevel,
   hierarchyLevelOf,
@@ -11,17 +12,9 @@ import {
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。
- * 值自带类型与维度信息:生效查询合成与 URL 序列化都只依赖值本身,
- * 不需要回查页面声明(orchestrate 的签名因此无需携带 filters 声明)。
+ * 值自带类型与维度信息，供生效查询合成使用；URL 接收与自定义键名映射依赖筛选声明。
  *
- * URL 前缀一次定完,与页面参数 `p:` 并列、互不识别:
- *   d:  扁平维度
- *   h:  层级维度(携带当前层级)
- *   t:  时间范围
- *   m:  时间点
- *   b:  布尔(仅勾选时占位)
- *   n:  数值区间
- *   s:  搜索
+ * URL 使用普通参数；接收时必须有筛选声明，范围/层级的参数名可显式指定。
  */
 export type FilterValue =
   | DimensionFilterValue
@@ -55,7 +48,7 @@ export interface TimePointFilterValue {
 
 export interface BooleanFilterValue {
   type: 'boolean';
-  value: true;
+  value: boolean;
 }
 
 export interface NumberRangeFilterValue {
@@ -82,9 +75,9 @@ export interface FilterState {
   /** 原子写入多个筛选值，只向订阅方推送一次完整状态。 */
   writeMany(updates: ReadonlyArray<readonly [string, FilterValue | null]>): void;
   /** 序列化为 URL 查询串(不含 '?'),筛选状态可分享 */
-  toURL(): string;
-  /** 从 URL 查询串整体还原状态;只识别带类型标记的参数,忽略无关参数与畸形值 */
-  fromURL(search: string): void;
+  toURL(declarations?: readonly FilterDeclaration[]): string;
+  /** 从 URL 查询串整体还原状态;只解析声明的查询键，忽略无关参数与畸形值 */
+  fromURL(search: string, declarations: readonly FilterDeclaration[]): void;
 }
 
 export function createFilterState(initial?: FilterValues): FilterState {
@@ -130,22 +123,13 @@ export function createFilterState(initial?: FilterValues): FilterState {
       if (changed) replace(map);
     },
 
-    toURL() {
-      const params = new URLSearchParams();
-      for (const [id, value] of current) {
-        params.set(id, serializeValue(value));
-      }
-      return params.toString();
+    toURL(declarations = []) {
+      return filterSearch(current, declarations);
     },
-
-    fromURL(search) {
-      const next = new Map<string, FilterValue>();
-      for (const [id, raw] of new URLSearchParams(stripQuestionMark(search))) {
-        const value = parseValue(raw);
-        if (value) next.set(id, value);
-      }
-      replace(next);
+    fromURL(search, declarations) {
+      replace(new Map(parseFilterSearch(search, declarations)));
     }
+
   };
 }
 
@@ -167,7 +151,6 @@ function normalize(value: FilterValue | null): FilterValue | null | undefined {
   if (value?.type === 'timePoint') {
     return validateTimePointValue(value.value, value.granularity) ? undefined : value;
   }
-  if (value?.type === 'boolean') return value.value ? value : null;
   if (value?.type === 'search') return value.query.trim() === '' ? null : value;
   if (value?.type === 'numberRange') {
     if (value.from === undefined && value.to === undefined) return null;
@@ -213,120 +196,66 @@ function stripQuestionMark(search: string): string {
   return search.startsWith('?') ? search.slice(1) : search;
 }
 
-/**
- * 值的自描述序列化(还原时无需页面声明)。
- * URL 转义分两层:外层整值交给 URLSearchParams(容忍浏览器规范化),
- * 内层各分量只转义会与分隔符 : , ~ 冲突的字符。
- */
-function serializeValue(value: FilterValue): string {
-  if (value.type === 'dimension') {
-    const values = value.values.map(escapeComponent).join(',');
-    if (value.level) {
-      return `h:${escapeComponent(value.dimension)}:${escapeComponent(value.level)}:${values}`;
+/** 类型只来自接收页面声明，不从字符串前缀或参数内容猜测。 */
+export function parseFilterSearch(search: string, declarations: readonly FilterDeclaration[]): FilterValues {
+  const query = new URLSearchParams(stripQuestionMark(search));
+  const result = new Map<string, FilterValue>();
+  for (const declaration of declarations) {
+    const keys = filterURLKeys(declaration);
+    const read = (part: string) => keys[part] ? query.get(keys[part]!) : null;
+    let value: FilterValue | null | undefined;
+    if (declaration.type === 'dimension') {
+      const values = query.getAll(keys.value!).filter(v => v !== '');
+      if (!values.length) continue;
+      const level = read('level') ?? declaration.defaultLevel ?? declaration.hierarchy?.[0]?.id;
+      if (level && declaration.hierarchy && !declaration.hierarchy.some(l => l.id === level)) continue;
+      value = { type: 'dimension', values, dimension: dimensionOfLevel(declaration, level), ...(level ? { level } : {}) };
+    } else if (declaration.type === 'timeRange') {
+      const from = read('from'), to = read('to');
+      if (!from || !to || validateCalendarTimeRange({from,to}, declaration.precision).length) continue;
+      value = {type:'timeRange', from, to};
+    } else if (declaration.type === 'numberRange') {
+      const fromText = read('from'), toText = read('to');
+      value = {type:'numberRange', ...(fromText?.trim() ? {from:Number(fromText)} : {}), ...(toText?.trim() ? {to:Number(toText)} : {})};
+    } else if (declaration.type === 'timePoint') {
+      const raw = read('value');
+      if (!raw || validateTimePointValue(raw, declaration.granularity)) continue;
+      value = {type:'timePoint', granularity:declaration.granularity, value:raw};
+    } else if (declaration.type === 'boolean') {
+      const raw = read('value');
+      if (raw !== 'true' && raw !== 'false') continue;
+      // false 明确覆盖默认 true，仍保留在 URL 中以便恢复。
+      value = {type:'boolean', value:raw === 'true'};
+    } else {
+      const raw = read('value');
+      if (!raw?.trim()) continue;
+      value = {type:'search', query:raw};
     }
-    return `d:${escapeComponent(value.dimension)}:${values}`;
+    const valid = normalize(value);
+    if (valid) result.set(declaration.id, valid);
   }
-  if (value.type === 'timeRange') {
-    return `t:${escapeComponent(value.from)}~${escapeComponent(value.to)}`;
+  return result;
+}
+
+export function filterSearch(values: FilterValues, declarations: readonly FilterDeclaration[] = []): string {
+  const query = new URLSearchParams();
+  for (const [id, value] of values) {
+    const declaration = declarations.find(d => d.id === id);
+    const keys = declaration ? filterURLKeys(declaration) : {
+      value:id, from:`${id}.from`, to:`${id}.to`, level:`${id}.level`
+    };
+    const put = (part: string, item: string | number | boolean | undefined) => {
+      if (item !== undefined && keys[part]) query.append(keys[part]!, String(item));
+    };
+    if (value.type === 'dimension') {
+      value.values.forEach(item => put('value',item));
+      put('level',value.level);
+    } else if (value.type === 'timeRange' || value.type === 'numberRange') {
+      put('from',value.from); put('to',value.to);
+    } else if (value.type === 'search') put('value',value.query);
+    else put('value',value.value);
   }
-  if (value.type === 'timePoint') {
-    return `m:${value.granularity}:${escapeComponent(value.value)}`;
-  }
-  if (value.type === 'boolean') return 'b:1';
-  if (value.type === 'search') return `s:${escapeComponent(value.query)}`;
-  const from = value.from === undefined ? '' : escapeComponent(String(value.from));
-  const to = value.to === undefined ? '' : escapeComponent(String(value.to));
-  return `n:${from}~${to}`;
-}
-
-function parseValue(raw: string): FilterValue | null {
-  try {
-    if (raw.startsWith('d:')) return parseDimension(raw.slice(2));
-    if (raw.startsWith('h:')) return parseHierarchical(raw.slice(2));
-    if (raw.startsWith('t:')) return parseTimeRange(raw.slice(2));
-    if (raw.startsWith('m:')) return parseTimePoint(raw.slice(2));
-    if (raw.startsWith('b:')) return raw === 'b:1' ? { type: 'boolean', value: true } : null;
-    if (raw.startsWith('s:')) {
-      const query = decodeURIComponent(raw.slice(2));
-      return query.trim() === '' ? null : { type: 'search', query };
-    }
-    if (raw.startsWith('n:')) return parseNumberRange(raw.slice(2));
-  } catch {
-    // 畸形百分号序列:按不可识别处理(fromURL 永不 throw)
-  }
-  return null;
-}
-
-function parseDimension(rest: string): FilterValue | null {
-  const colon = rest.indexOf(':');
-  if (colon <= 0 || colon === rest.length - 1) return null;
-  return {
-    type: 'dimension',
-    dimension: decodeURIComponent(rest.slice(0, colon)),
-    values: rest
-      .slice(colon + 1)
-      .split(',')
-      .map(decodeURIComponent)
-  };
-}
-
-function parseHierarchical(rest: string): FilterValue | null {
-  const first = rest.indexOf(':');
-  if (first <= 0) return null;
-  const second = rest.indexOf(':', first + 1);
-  if (second <= first + 1 || second === rest.length - 1) return null;
-  return {
-    type: 'dimension',
-    dimension: decodeURIComponent(rest.slice(0, first)),
-    level: decodeURIComponent(rest.slice(first + 1, second)),
-    values: rest
-      .slice(second + 1)
-      .split(',')
-      .map(decodeURIComponent)
-  };
-}
-
-function parseTimeRange(rest: string): FilterValue | null {
-  const tilde = rest.indexOf('~');
-  if (tilde <= 0 || tilde === rest.length - 1) return null;
-  const value: TimeRangeFilterValue = {
-    type: 'timeRange',
-    from: decodeURIComponent(rest.slice(0, tilde)),
-    to: decodeURIComponent(rest.slice(tilde + 1))
-  };
-  return validateCalendarTimeRange(value).length === 0 ? value : null;
-}
-
-function parseTimePoint(rest: string): FilterValue | null {
-  const colon = rest.indexOf(':');
-  if (colon <= 0 || colon === rest.length - 1) return null;
-  const granularity = rest.slice(0, colon);
-  if (granularity !== 'month' && granularity !== 'date') return null;
-  const value = decodeURIComponent(rest.slice(colon + 1));
-  if (validateTimePointValue(value, granularity)) return null;
-  return { type: 'timePoint', granularity, value };
-}
-
-function parseNumberRange(rest: string): FilterValue | null {
-  const tilde = rest.indexOf('~');
-  if (tilde < 0) return null;
-  const fromText = rest.slice(0, tilde);
-  const toText = rest.slice(tilde + 1);
-  const from = fromText === '' ? undefined : Number(decodeURIComponent(fromText));
-  const to = toText === '' ? undefined : Number(decodeURIComponent(toText));
-  if (from !== undefined && !Number.isFinite(from)) return null;
-  if (to !== undefined && !Number.isFinite(to)) return null;
-  if (from === undefined && to === undefined) return null;
-  if (from !== undefined && to !== undefined && from > to) return null;
-  return { type: 'numberRange', from, to };
-}
-
-function escapeComponent(component: string): string {
-  return component
-    .replace(/%/g, '%25')
-    .replace(/,/g, '%2C')
-    .replace(/:/g, '%3A')
-    .replace(/~/g, '%7E');
+  return query.toString();
 }
 
 /**

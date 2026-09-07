@@ -2,7 +2,7 @@
   "case": "table-duplicate-column-binding",
   "invariant": "table-column-binding-unique",
   "input": {
-    "schemaVersion": "5.0",
+    "schemaVersion": "6.0",
     "id": "query-dashboard",
     "dataSources": {
       "sales": {

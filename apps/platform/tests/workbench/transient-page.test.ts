@@ -12,7 +12,7 @@ const ASSET_ID = 'sales-overview';
 
 function pageDocument(pageId: string): Record<string, unknown> {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: pageId,
     meta: { description: '各区域 Tokens 消耗' },
     dataSources: {

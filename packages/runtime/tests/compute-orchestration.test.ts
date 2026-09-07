@@ -24,7 +24,7 @@ const rowKinds = (snapshots: PageDataSnapshots, sourceId: string) => {
 
 function inlinePage(): Page {
   return {
-    schemaVersion: '5.1',
+    schemaVersion: '6.0',
     id: 'inline-compute',
     dataSources: {
       forecast: {
@@ -62,7 +62,7 @@ function inlinePage(): Page {
 
 function queryPage(): Page {
   return {
-    schemaVersion: '5.1',
+    schemaVersion: '6.0',
     id: 'query-compute',
     dataSources: {
       forecast: {

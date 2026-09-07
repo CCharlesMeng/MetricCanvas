@@ -93,7 +93,7 @@ describe('会话回放视图', () => {
         basedOnEventSequence: 4,
         runId: 'run-3',
         status: 'interaction_required',
-        document: { schemaVersion: '5.3', id: 'ask-transient-12345678' },
+        document: { schemaVersion: '6.0', id: 'ask-transient-12345678' },
         contentHash: 'hash',
         askState,
         pinnedComponents: [{ dataSourceId: 'result', componentType: 'barChart' }],
@@ -108,7 +108,7 @@ describe('会话回放视图', () => {
     });
     expect(view.status).toBe('interaction_required');
     expect(view.document).toEqual({
-      schemaVersion: '5.3',
+      schemaVersion: '6.0',
       id: 'ask-transient-12345678'
     });
     expect(view.baselineMessages).toEqual([

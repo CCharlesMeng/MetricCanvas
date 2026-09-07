@@ -5,13 +5,9 @@
     "schemaVersion": {
       "type": "string",
       "enum": [
-        "5.0",
-        "5.1",
-        "5.2",
-        "5.3",
-        "5.4"
+        "6.0"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4"
+      "description": "页面文档契约版本；当前支持 6.0"
     },
     "id": {
       "type": "string",
@@ -1443,6 +1439,28 @@
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
         },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
         "type": {
           "type": "string",
           "const": "dimension"
@@ -1530,6 +1548,28 @@
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
         },
         "type": {
           "type": "string",
@@ -1670,6 +1710,28 @@
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
         },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
         "type": {
           "type": "string",
           "const": "timePoint"
@@ -1705,6 +1767,28 @@
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
         },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
         "type": {
           "type": "string",
           "const": "boolean"
@@ -1731,6 +1815,28 @@
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
         },
         "type": {
           "type": "string",
@@ -1767,6 +1873,28 @@
         "id": {
           "type": "string",
           "pattern": "^[a-z0-9][a-z0-9-]*$"
+        },
+        "urlParams": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "from": {
+              "type": "string",
+              "minLength": 1
+            },
+            "to": {
+              "type": "string",
+              "minLength": 1
+            },
+            "level": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
         },
         "type": {
           "type": "string",
@@ -2407,39 +2535,87 @@
             "navigate": {
               "type": "object",
               "properties": {
-                "page": {
+                "href": {
                   "type": "string",
-                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  "minLength": 1
                 },
-                "carryFilters": {
-                  "type": "array",
-                  "items": {
+                "query": {
+                  "type": "object",
+                  "propertyNames": {
                     "type": "string",
-                    "pattern": "^[a-z0-9][a-z0-9-]*$"
-                  },
-                  "uniqueItems": true
-                },
-                "setFilters": {
-                  "type": "object",
-                  "propertyNames": {
-                    "type": "string"
+                    "minLength": 1
                   },
                   "additionalProperties": {
-                    "$ref": "#/definitions/fieldReference"
-                  }
-                },
-                "setParams": {
-                  "type": "object",
-                  "propertyNames": {
-                    "type": "string"
-                  },
-                  "additionalProperties": {
-                    "$ref": "#/definitions/fieldReference"
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "row"
+                          },
+                          "field": {
+                            "type": "string",
+                            "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "field"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "param"
+                          },
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "const": "filter"
+                          },
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9][a-z0-9-]*$"
+                          },
+                          "part": {
+                            "type": "string",
+                            "enum": [
+                              "value",
+                              "from",
+                              "to",
+                              "level"
+                            ]
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "id"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
                   }
                 }
               },
               "required": [
-                "page"
+                "href"
               ],
               "additionalProperties": false
             }
@@ -4148,25 +4324,91 @@
               "items": {
                 "type": "object",
                 "properties": {
+                  "href": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "query": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "additionalProperties": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "source": {
+                              "type": "string",
+                              "const": "row"
+                            },
+                            "field": {
+                              "type": "string",
+                              "pattern": "^[A-Za-z_][A-Za-z0-9_-]*$"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "field"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "source": {
+                              "type": "string",
+                              "const": "param"
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[a-z0-9][a-z0-9-]*$"
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "source": {
+                              "type": "string",
+                              "const": "filter"
+                            },
+                            "id": {
+                              "type": "string",
+                              "pattern": "^[a-z0-9][a-z0-9-]*$"
+                            },
+                            "part": {
+                              "type": "string",
+                              "enum": [
+                                "value",
+                                "from",
+                                "to",
+                                "level"
+                              ]
+                            }
+                          },
+                          "required": [
+                            "source",
+                            "id"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  },
                   "label": {
                     "$ref": "#/definitions/nonEmptyTextValue"
-                  },
-                  "page": {
-                    "type": "string",
-                    "pattern": "^[a-z0-9][a-z0-9-]*$"
-                  },
-                  "carryFilters": {
-                    "type": "array",
-                    "items": {
-                      "type": "string",
-                      "pattern": "^[a-z0-9][a-z0-9-]*$"
-                    },
-                    "uniqueItems": true
                   }
                 },
                 "required": [
-                  "label",
-                  "page"
+                  "href",
+                  "label"
                 ],
                 "additionalProperties": false
               }
@@ -4289,5 +4531,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v5.4"
+  "$id": "https://metriccanvas/page/v6.0"
 }

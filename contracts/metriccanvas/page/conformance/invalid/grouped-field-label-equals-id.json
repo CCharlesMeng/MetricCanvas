@@ -2,7 +2,7 @@
   "case": "grouped-field-label-equals-id",
   "invariant": "grouped-query-field-label-not-id",
   "input": {
-    "schemaVersion": "5.0",
+    "schemaVersion": "6.0",
     "id": "grouped-fields-page",
     "meta": {
       "description": "query 数据源按角色分组的局部显式字段与 DQE 内嵌初始行归一化的契约样例"

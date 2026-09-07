@@ -153,6 +153,14 @@ export function pageParamErrors(
   });
 
   const consumed = new Set<string>();
+  function navigationConsumers(value: unknown): void {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) { value.forEach(navigationConsumers); return; }
+    const node = value as Record<string, unknown>;
+    if (node.source === 'param' && typeof node.id === 'string') consumed.add(node.id);
+    Object.values(node).forEach(navigationConsumers);
+  }
+  navigationConsumers(textValueScope(document));
   for (const { path, reference } of collectTextValueReferences(document)) {
     const declaration = byId.get(reference.param);
     if (!declaration) {

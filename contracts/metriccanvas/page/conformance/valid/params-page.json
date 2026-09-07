@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.1",
+  "schemaVersion": "6.0",
   "id": "params-page",
   "layoutForm": "report",
   "meta": {
@@ -58,7 +58,7 @@
             "actions": [
               {
                 "on": "click",
-                "navigate": { "page": "params-page", "setParams": { "customer": "region" } }
+                "navigate": {"href": "/pages/params-page", "query": {"customer": {"source": "row", "field": "region"}}}
               }
             ]
           }

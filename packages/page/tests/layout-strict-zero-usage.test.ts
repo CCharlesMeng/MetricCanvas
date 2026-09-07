@@ -81,7 +81,7 @@ describe('layout 补 strict：ADR-0051 例外的零使用证明', () => {
 
   it('收紧生效：写错的键名不再静默通过', () => {
     const page = {
-      schemaVersion: '5.2',
+      schemaVersion: '6.0',
       id: 'layout-strict-probe',
       dataSources: {},
       sections: [

@@ -24,15 +24,14 @@ export type {
   PageSnapshotStream,
   Subscribable
 } from './orchestrator';
-export { createFilterState, initialFilterValues } from './filter-state';
+export { createFilterState, initialFilterValues, filterSearch, parseFilterSearch } from './filter-state';
 export {
-  PAGE_PARAM_PREFIX,
   pageParamSearch,
   resolvePageParams,
   serializePageParam
 } from './page-params';
 export type { PageParamState, PageParamValues } from './page-params';
-export { drillThroughSearch } from './navigate';
+export { navigationHref } from './navigate';
 export type {
   FilterState,
   FilterValue,

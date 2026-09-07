@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "5.4",
+  "schemaVersion": "6.0",
   "id": "ioc-project-overview",
   "layoutForm": "dashboard",
   "meta": {
@@ -930,13 +930,30 @@
               {
                 "on": "click",
                 "navigate": {
-                  "page": "ioc-opportunity-list",
-                  "carryFilters": [
-                    "mtime",
-                    "key-office",
-                    "industry-type",
-                    "region"
-                  ]
+                  "href": "/pages/ioc-opportunity-list",
+                  "query": {
+                    "mtime": {
+                      "source": "filter",
+                      "id": "mtime"
+                    },
+                    "key-office": {
+                      "source": "filter",
+                      "id": "key-office"
+                    },
+                    "industry-type": {
+                      "source": "filter",
+                      "id": "industry-type"
+                    },
+                    "region": {
+                      "source": "filter",
+                      "id": "region"
+                    },
+                    "region.level": {
+                      "source": "filter",
+                      "id": "region",
+                      "part": "level"
+                    }
+                  }
                 }
               }
             ],
@@ -1081,7 +1098,7 @@
                   {
                     "on": "click",
                     "navigate": {
-                      "page": "ioc-opportunity-analysis"
+                      "href": "/pages/ioc-opportunity-analysis"
                     }
                   }
                 ]
@@ -1505,14 +1522,24 @@
                       {
                         "on": "click",
                         "navigate": {
-                          "page": "ioc-opportunity-list",
-                          "carryFilters": [
-                            "mtime",
-                            "key-office",
-                            "industry-type"
-                          ],
-                          "setFilters": {
-                            "region": "rep-office-code"
+                          "href": "/pages/ioc-opportunity-list?region.level=office",
+                          "query": {
+                            "mtime": {
+                              "source": "filter",
+                              "id": "mtime"
+                            },
+                            "key-office": {
+                              "source": "filter",
+                              "id": "key-office"
+                            },
+                            "industry-type": {
+                              "source": "filter",
+                              "id": "industry-type"
+                            },
+                            "region": {
+                              "source": "row",
+                              "field": "rep-office-code"
+                            }
                           }
                         }
                       }
@@ -1572,16 +1599,40 @@
                       {
                         "on": "click",
                         "navigate": {
-                          "page": "ioc-project-detail",
-                          "setParams": {
-                            "page-title": "page-title",
-                            "opportunity-code": "opportunity-code",
-                            "mtime": "mtime",
-                            "ati-status-label": "ati-status-label",
-                            "project-initiation-level": "project-initiation-level",
-                            "public-cloud-na-level-name": "public-cloud-na-level-name",
-                            "sub-industry-level1-name": "sub-industry-level1-name",
-                            "party-number": "party-number"
+                          "href": "/pages/ioc-project-detail",
+                          "query": {
+                            "page-title": {
+                              "source": "row",
+                              "field": "page-title"
+                            },
+                            "opportunity-code": {
+                              "source": "row",
+                              "field": "opportunity-code"
+                            },
+                            "mtime": {
+                              "source": "row",
+                              "field": "mtime"
+                            },
+                            "ati-status-label": {
+                              "source": "row",
+                              "field": "ati-status-label"
+                            },
+                            "project-initiation-level": {
+                              "source": "row",
+                              "field": "project-initiation-level"
+                            },
+                            "public-cloud-na-level-name": {
+                              "source": "row",
+                              "field": "public-cloud-na-level-name"
+                            },
+                            "sub-industry-level1-name": {
+                              "source": "row",
+                              "field": "sub-industry-level1-name"
+                            },
+                            "party-number": {
+                              "source": "row",
+                              "field": "party-number"
+                            }
                           }
                         }
                       }
@@ -1627,16 +1678,40 @@
                       {
                         "on": "click",
                         "navigate": {
-                          "page": "ioc-project-detail",
-                          "setParams": {
-                            "page-title": "page-title",
-                            "opportunity-code": "opportunity-code",
-                            "mtime": "mtime",
-                            "ati-status-label": "ati-status-label",
-                            "project-initiation-level": "project-initiation-level",
-                            "public-cloud-na-level-name": "public-cloud-na-level-name",
-                            "sub-industry-level1-name": "sub-industry-level1-name",
-                            "party-number": "party-number"
+                          "href": "/pages/ioc-project-detail",
+                          "query": {
+                            "page-title": {
+                              "source": "row",
+                              "field": "page-title"
+                            },
+                            "opportunity-code": {
+                              "source": "row",
+                              "field": "opportunity-code"
+                            },
+                            "mtime": {
+                              "source": "row",
+                              "field": "mtime"
+                            },
+                            "ati-status-label": {
+                              "source": "row",
+                              "field": "ati-status-label"
+                            },
+                            "project-initiation-level": {
+                              "source": "row",
+                              "field": "project-initiation-level"
+                            },
+                            "public-cloud-na-level-name": {
+                              "source": "row",
+                              "field": "public-cloud-na-level-name"
+                            },
+                            "sub-industry-level1-name": {
+                              "source": "row",
+                              "field": "sub-industry-level1-name"
+                            },
+                            "party-number": {
+                              "source": "row",
+                              "field": "party-number"
+                            }
                           }
                         }
                       }

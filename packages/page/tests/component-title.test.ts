@@ -3,7 +3,7 @@ import { componentCatalog, validate } from '../src';
 
 function textDocument(): Record<string, any> {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'text-title',
     dataSources: {},
     sections: [{
@@ -20,7 +20,7 @@ function textDocument(): Record<string, any> {
 
 function reportHeaderDocument(): Record<string, any> {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'report-header-title',
     dataSources: {},
     sections: [{

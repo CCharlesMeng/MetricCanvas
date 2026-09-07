@@ -1,20 +1,14 @@
+import { navigationTargetZ } from '../navigation';
 import { z } from 'zod';
 import {
   componentIdZ,
   componentLayoutZ,
-  idZ,
   nonEmptyTextValueZ,
   textValueZ
 } from '../primitives';
 import { componentCatalogRegistry } from '../registry';
 
-const textLinkZ = z
-  .object({
-    label: nonEmptyTextValueZ,
-    page: idZ,
-    carryFilters: z.array(idZ).meta({ uniqueItems: true }).optional()
-  })
-  .strict();
+const textLinkZ = navigationTargetZ.extend({ label: nonEmptyTextValueZ });
 
 export const textComponentZ = z
   .object({

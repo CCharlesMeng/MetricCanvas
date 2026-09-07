@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
-import { createFilterState, drillThroughSearch, initialFilterValues } from '../src';
+import { createFilterState, navigationHref, initialFilterValues } from '../src';
 
 const document = JSON.parse(
   readFileSync(
@@ -42,7 +42,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('5.1');
+    expect(page.schemaVersion).toBe('6.0');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)
@@ -67,7 +67,7 @@ describe('ioc-opportunity-list 骨架', () => {
       level: 'region-dept'
     });
     const restored = createFilterState();
-    restored.fromURL(state.toURL());
+    restored.fromURL(state.toURL(page.filters), page.filters ?? []);
     let values: ReturnType<typeof initialFilterValues> = new Map();
     restored.subscribe((next) => {
       values = new Map(next);
@@ -78,7 +78,7 @@ describe('ioc-opportunity-list 骨架', () => {
     expect(values.get('mtime')).toMatchObject({ value: '2026-04' });
   });
 
-  it('行点击 navigate 用 setParams 带上详情页参数，不进筛选状态', () => {
+  it('行点击 navigate 用 query 带上详情页参数，不进筛选状态', () => {
     const page = loadPage();
     const table = page.sections
       .flatMap((section) => section.components)
@@ -90,16 +90,16 @@ describe('ioc-opportunity-list 骨架', () => {
     const row = page.dataSources['opportunity-list']?.source.type === 'inline'
       ? page.dataSources['opportunity-list'].source.rows[0]!
       : {};
-    const search = drillThroughSearch(action.navigate, new Map(), row);
+    const search = new URL(navigationHref(action.navigate, new Map(), new Map(), row), 'https://host.example').search;
     const params = new URLSearchParams(search);
-    expect(action.navigate.page).toBe('ioc-project-detail');
-    expect(params.get('opportunity-code')).toBe('p:OPP202604001');
-    expect(params.get('mtime')).toBe('p:202604');
-    expect(params.get('page-title')).toBe(`p:${encodeURIComponent('XX 云迁移项目')}`);
-    expect(params.get('ati-status-label')).toBe(`p:${encodeURIComponent('已立项')}`);
-    expect(params.get('party-number')).toBe('p:PN10001');
+    expect(action.navigate.href).toBe('/pages/ioc-project-detail');
+    expect(params.get('opportunity-code')).toBe('OPP202604001');
+    expect(params.get('mtime')).toBe('202604');
+    expect(params.get('page-title')).toBe('XX 云迁移项目');
+    expect(params.get('ati-status-label')).toBe('已立项');
+    expect(params.get('party-number')).toBe('PN10001');
     const filterState = createFilterState();
-    filterState.fromURL(search);
+    filterState.fromURL(search, []);
     let size = 0;
     filterState.subscribe((values) => {
       size = values.size;

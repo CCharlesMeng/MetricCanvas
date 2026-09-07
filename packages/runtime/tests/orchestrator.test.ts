@@ -8,7 +8,7 @@ const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
 
 function page(): Page {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'mixed-runtime',
     filters: [{
       id: 'region-filter',

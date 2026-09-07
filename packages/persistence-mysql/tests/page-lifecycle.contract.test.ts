@@ -38,7 +38,7 @@ describe.runIf(process.env.TEST_MYSQL === '1')('MySQL 契约测试', () => {
     const right = await createMySqlPageLifecycle(options);
     const context = { actorId: 'cross-pool-author', clientId: 'cross-pool-client' };
     const document = (pageId: string) => ({
-      schemaVersion: '5.0' as const,
+      schemaVersion: '6.0' as const,
       id: pageId,
       dataSources: {},
       sections: [

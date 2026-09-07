@@ -2,7 +2,7 @@
   "case": "write-filter-on-inline-component",
   "invariant": "actions-live-only",
   "input": {
-    "schemaVersion": "5.3",
+    "schemaVersion": "6.0",
     "id": "filters-page",
     "meta": {
       "description": "六类筛选器、层级与级联、筛选绑定、查询分页与表格选择写回的契约样例"
@@ -285,13 +285,31 @@
                 {
                   "on": "click",
                   "navigate": {
-                    "page": "filters-page",
-                    "carryFilters": [
-                      "region",
-                      "period"
-                    ],
-                    "setFilters": {
-                      "city": "city"
+                    "href": "/pages/filters-page",
+                    "query": {
+                      "region": {
+                        "source": "filter",
+                        "id": "region"
+                      },
+                      "region.level": {
+                        "source": "filter",
+                        "id": "region",
+                        "part": "level"
+                      },
+                      "period.from": {
+                        "source": "filter",
+                        "id": "period",
+                        "part": "from"
+                      },
+                      "period.to": {
+                        "source": "filter",
+                        "id": "period",
+                        "part": "to"
+                      },
+                      "city": {
+                        "source": "row",
+                        "field": "city"
+                      }
                     }
                   }
                 }
@@ -328,13 +346,13 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/actions/1/navigate/setFilters/city",
-      "message": "字段 city 不在数据槽 main 的数据源 fixed 中"
+      "path": "/sections/0/components/0/props/actions",
+      "message": "writeFilter 只允许绑定 query 数据源的组件；navigate 可以挂在 inline 组件上"
     },
     {
       "type": "SCHEMA_ERROR",
-      "path": "/sections/0/components/0/props/actions",
-      "message": "writeFilter 只允许绑定 query 数据源的组件；navigate 可以挂在 inline 组件上"
+      "path": "/sections/0/components/0/props/actions/1/navigate/query/city/field",
+      "message": "当前行缺少可传参的标量字段:city"
     }
   ]
 }

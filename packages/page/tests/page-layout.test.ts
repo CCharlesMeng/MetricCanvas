@@ -15,7 +15,7 @@ import {
 
 function dashboardPage(): any {
   return structuredClone({
-    schemaVersion: '5.1',
+    schemaVersion: '6.0',
     id: 'layout-probe',
     layoutForm: 'dashboard',
     dataSources: {
@@ -93,42 +93,22 @@ describe('页面布局形态', () => {
     );
   });
 
-  it('声明形态或叠放层都要求 5.1，声明 5.0 时报到具体使用点', () => {
-    const form: any = dashboardPage();
-    delete form.sections[0].components[0].layout.layer;
-    expect(requiredMinorVersion(form)).toBe(1);
-    form.schemaVersion = '5.0';
-    expect(validate(form)).toContainEqual(
-      expect.objectContaining({ path: '/layoutForm' })
-    );
-
-    const layer: any = dashboardPage();
-    delete layer.layoutForm;
-    layer.schemaVersion = '5.0';
-    expect(validate(layer)).toContainEqual(
-      expect.objectContaining({ path: '/sections/0/components/0/layout/layer' })
-    );
-  });
-
-  it('DashboardToolbar 缺省显示，5.3 可显式隐藏且 5.2 会报能力下限', () => {
+  it('DashboardToolbar 缺省显示，6.0 可显式隐藏', () => {
     const visible = dashboardPage();
     const parsedVisible = parsePage(visible);
     expect(parsedVisible.ok).toBe(true);
     if (parsedVisible.ok) expect(parsedVisible.page.dashboardToolbar).toBeUndefined();
 
     const hidden = dashboardPage();
-    hidden.schemaVersion = '5.3';
+    hidden.schemaVersion = '6.0';
     hidden.dashboardToolbar = 'hidden';
     expect(validate(hidden)).toEqual([]);
-    expect(requiredMinorVersion(hidden)).toBe(3);
+    expect(requiredMinorVersion(hidden)).toBe(0);
     const parsedHidden = parsePage(hidden);
     expect(parsedHidden.ok).toBe(true);
     if (parsedHidden.ok) expect(parsedHidden.page.dashboardToolbar).toBe('hidden');
 
-    hidden.schemaVersion = '5.2';
-    expect(validate(hidden)).toContainEqual(
-      expect.objectContaining({ path: '/dashboardToolbar' })
-    );
+
   });
 });
 
@@ -219,7 +199,7 @@ describe('分区受控列轨', () => {
     expect(validate(legacy)).toEqual([]);
 
     const weighted = dashboardPage();
-    weighted.schemaVersion = '5.3';
+    weighted.schemaVersion = '6.0';
     weighted.sections[0].columnTracks = [29, 29, 22];
     weighted.sections[0].components[1].layout.span = 1;
     expect(validate(weighted)).toEqual([]);
@@ -231,7 +211,7 @@ describe('分区受控列轨', () => {
   it('空数组、0、负数、小数和超过 12 条都由结构校验拒绝', () => {
     for (const tracks of [[], [1, 0], [1, -1], [1, 1.5], Array(13).fill(1)]) {
       const page = dashboardPage();
-      page.schemaVersion = '5.3';
+      page.schemaVersion = '6.0';
       page.sections[0].columnTracks = tracks;
       expect(
         validate(page).some((error) => error.path.startsWith('/sections/0/columnTracks')),
@@ -242,24 +222,13 @@ describe('分区受控列轨', () => {
 
   it('非 backdrop 顶层组件不得跨出轨数，backdrop 仍可保留 span 12', () => {
     const page = dashboardPage();
-    page.schemaVersion = '5.3';
+    page.schemaVersion = '6.0';
     page.sections[0].columnTracks = [29, 29, 22];
     expect(validate(page)).toContainEqual(
       expect.objectContaining({ path: '/sections/0/components/1/layout/span' })
     );
     expect(validate(page)).not.toContainEqual(
       expect.objectContaining({ path: '/sections/0/components/0/layout/span' })
-    );
-  });
-
-  it('声明列轨但仍写 5.2 时报到 columnTracks 能力使用点', () => {
-    const page = dashboardPage();
-    page.schemaVersion = '5.2';
-    page.sections[0].columnTracks = [29, 29, 22];
-    page.sections[0].components[1].layout.span = 1;
-    expect(requiredMinorVersion(page)).toBe(3);
-    expect(validate(page)).toContainEqual(
-      expect.objectContaining({ path: '/sections/0/columnTracks' })
     );
   });
 });

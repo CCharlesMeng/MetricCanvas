@@ -3,7 +3,7 @@ import { parsePage, validate } from '../src/validate';
 
 function rawPage(): any {
   return {
-    schemaVersion: '5.0',
+    schemaVersion: '6.0',
     id: 'dqe-page',
     filters: [
       {

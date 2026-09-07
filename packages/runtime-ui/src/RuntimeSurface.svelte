@@ -3,6 +3,7 @@
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
+    filterURLKeys,
     isChartComponent,
     parsePage,
     pageListEntry,
@@ -26,7 +27,9 @@
   import {
     createDimensionValuesLoader,
     createFilterState,
-    drillThroughSearch,
+    navigationHref,
+    parseFilterSearch,
+    type PageParamValues,
     initialFilterValues,
     orchestrate,
     resolvePageParams,
@@ -110,6 +113,7 @@
   let pageState = $state<PageState>({ phase: 'loading' });
   let snapshots = $state<PageDataSnapshots>(new Map());
   let filterValues = $state<FilterValues>(new Map());
+  let pageParams = $state<PageParamValues>(new Map());
   /** 筛选候选值快照(维度名 → 显式状态):筛选控件与表头筛选共用。 */
   let dimensionCandidates = $state<DimensionValuesSnapshots>(new Map());
   let tableViews = $state<Record<string, TableViewState>>({});
@@ -170,6 +174,7 @@
     }
     const paramDeclarations = declared.page.params ?? [];
     const params = resolvePageParams(search, paramDeclarations);
+    pageParams = params.values;
     if (params.missing.length > 0) {
       pageState = {
         phase: 'params-incomplete',
@@ -217,7 +222,7 @@
         filterValues = values;
         if (primed && capabilities.filters) {
           const nextSearch = mergedSearch(state, search);
-          navigationAdapter?.replaceSearch(nextSearch);
+          navigationAdapter?.replaceSearch?.(nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch });
           resetTablePages(loaded, previous, values);
         }
@@ -493,20 +498,15 @@
   }
 
   function parseFilterURL(search: string, declared: FilterDeclaration[]): FilterValues {
-    const probe = createFilterState();
-    probe.fromURL(search);
-    let parsed: FilterValues = new Map();
-    probe.subscribe((value) => {
-      parsed = value;
-    })();
-    const ids = new Set(declared.map((declaration) => declaration.id));
-    return new Map([...parsed].filter(([id]) => ids.has(id)));
+    return parseFilterSearch(search, declared);
   }
 
   function mergedSearch(state: FilterState, initial: string): string {
     const params = new URLSearchParams(initial);
-    for (const declaration of declarations) params.delete(declaration.id);
-    for (const [key, value] of new URLSearchParams(state.toURL())) params.set(key, value);
+    for (const declaration of declarations) {
+      for (const key of Object.values(filterURLKeys(declaration))) params.delete(key);
+    }
+    for (const [key, value] of new URLSearchParams(state.toURL(declarations))) params.append(key, value);
     return params.toString();
   }
 
@@ -554,7 +554,7 @@
 
   function writeBoolean(filterId: string, checked: boolean) {
     if (pageState.phase !== 'ready' || !pageState.capabilities.filters) return;
-    filterState?.write(filterId, checked ? { type: 'boolean', value: true } : null);
+    filterState?.write(filterId, { type: 'boolean', value: checked });
   }
 
   function writeNumberRange(filterId: string, range: NumberRangeValue | null) {
@@ -596,25 +596,20 @@
     }
   }
 
-  function handleTableLink(component: TableComponent, row: Row) {
-    if (!componentCapability(component)?.actions) return;
-    for (const action of component.props.actions ?? []) {
-      if ('navigate' in action) {
-        const search = drillThroughSearch(action.navigate, filterValues, row);
-        navigate(action.navigate.page, search);
-        return;
-      }
-    }
+  function componentHref(component: Component, row: Row): string | undefined {
+    if (!componentCapability(component)?.actions || !('actions' in component.props)) return undefined;
+    const action = component.props.actions?.find(a => 'navigate' in a);
+    return action && 'navigate' in action ? navigationHref(action.navigate, filterValues, pageParams, row) : undefined;
   }
 
-  function handleMetricLink(component: Component, row: Row) {
-    if (component.type !== 'metricCard' || !componentCapability(component)?.actions) return;
-    for (const action of component.props.actions ?? []) {
-      if (!('navigate' in action)) continue;
-      const search = drillThroughSearch(action.navigate, filterValues, row);
-      navigate(action.navigate.page, search);
-      return;
-    }
+  function handleTableLink(component: TableComponent, row: Row, event: MouseEvent) {
+    const href = componentHref(component, row);
+    if (href) navigate(href, event);
+  }
+
+  function handleMetricLink(component: Component, row: Row, event: MouseEvent) {
+    const href = componentHref(component, row);
+    if (href) navigate(href, event);
   }
 
   function handleChartClick(component: ChartComponent, row: Row) {
@@ -639,8 +634,7 @@
     }
     for (const action of component.props.actions ?? []) {
       if ('navigate' in action) {
-        const search = drillThroughSearch(action.navigate, filterValues, row);
-        navigate(action.navigate.page, search);
+        navigate(navigationHref(action.navigate, filterValues, pageParams, row));
         return;
       }
       const code = fieldName(action.field);
@@ -656,27 +650,17 @@
   }
 
   function textLink(link: TextLink) {
-    const search = drillThroughSearch(
-      { page: link.page, carryFilters: link.carryFilters },
-      filterValues,
-      {}
-    );
-    return {
-      label: link.label,
-      href: navigation?.href(link.page, search) ?? `#metriccanvas-page-${link.page}`,
-      onclick: (event: MouseEvent) => {
-        event.preventDefault();
-        navigate(link.page, search);
-      }
-    };
+    const href = navigationHref(link, filterValues, pageParams);
+    return { label: link.label, href, onclick: (event: MouseEvent) => navigate(href, event) };
   }
 
-  function navigate(pageId: string, search: string) {
-    const href = navigation?.href(pageId, search) ?? `#metriccanvas-page-${pageId}`;
+  function navigate(href: string, event?: MouseEvent) {
+    if (event && (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) return;
     const sourcePageId = pageState.phase === 'ready' ? pageState.page.id : undefined;
     const sourceSearch = filterState ? mergedSearch(filterState, initialSearch) : initialSearch;
-    onevent?.({ type: 'navigate', pageId, search, sourcePageId, sourceSearch });
-    navigation?.navigate({ pageId, search, href, sourcePageId, sourceSearch });
+    onevent?.({ type: 'navigate', href, sourcePageId, sourceSearch });
+    if (navigation?.navigate?.({ href, sourcePageId, sourceSearch }) === true) event?.preventDefault();
+    else if (!event) window.location.assign(new URL(href, window.document.baseURI).href);
   }
 
   function componentSnapshots(component: Component): ComponentSnapshots {
@@ -884,7 +868,8 @@
       onheaderfilter: (field, value) => handleTableHeaderFilter(component, field, value),
       oncellselect: ({ rowIndex, column }) =>
         handleTableCellSelect(component, rowIndex, column),
-      onlink: ({ row }) => handleTableLink(component, row)
+      linkHref: (row) => componentHref(component, row),
+      onlink: ({ row }, event) => handleTableLink(component, row, event)
     };
   }
 
@@ -896,7 +881,7 @@
     return (row: Row) => handleChartClick(chart, row);
   }
 
-  function metricLinkHandler(component: Component): ((row: Row) => void) | undefined {
+  function metricLinkHandler(component: Component): ((row: Row, event: MouseEvent) => void) | undefined {
     if (
       component.type !== 'metricCard' ||
       !componentCapability(component)?.actions ||
@@ -904,7 +889,7 @@
     ) {
       return undefined;
     }
-    return (row: Row) => handleMetricLink(component, row);
+    return (row: Row, event: MouseEvent) => handleMetricLink(component, row, event);
   }
 
   function mapOverride(component: Component): 'china' | 'world' | undefined {
@@ -925,6 +910,7 @@
       table: (child) => tableBinding(loaded, child, componentSnapshots(child)),
       onchartclick: chartClickHandler,
       onmetriclink: metricLinkHandler,
+      metricHref: (child) => (row) => componentHref(child, row),
       map: mapOverride
     };
   }
@@ -1050,6 +1036,7 @@
             : []}
           onchartclick={chartClickHandler(component)}
           onmetriclink={metricLinkHandler(component)}
+          metricHref={(row) => componentHref(component, row)}
           onback={navigation?.back}
           table={tableBinding(readyPage, component, slots)}
           map={mapOverride(component)}

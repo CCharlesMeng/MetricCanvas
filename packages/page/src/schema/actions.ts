@@ -1,3 +1,4 @@
+import { navigationTargetZ } from './navigation';
 import { z } from 'zod';
 import { fieldReferenceZ, idZ } from './primitives';
 
@@ -18,14 +19,7 @@ export const writeFilterActionZ = z
 export const navigateActionZ = z
   .object({
     on: z.literal('click'),
-    navigate: z
-      .object({
-        page: idZ,
-        carryFilters: z.array(idZ).meta({ uniqueItems: true }).optional(),
-        setFilters: z.record(z.string(), fieldReferenceZ).optional(),
-        setParams: z.record(z.string(), fieldReferenceZ).optional()
-      })
-      .strict()
+    navigate: navigationTargetZ
   })
   .strict();
 
