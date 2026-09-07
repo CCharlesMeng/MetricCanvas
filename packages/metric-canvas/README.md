@@ -31,7 +31,7 @@
 
 本包当前仍为私有 workspace 包，`@metriccanvas/metric-canvas` 是仓内实现名。正式 npm 包名、版本策略与发布形态由 #100 裁决，尚未发布。本次使用 Svelte attachments，最低 peer 范围相应为 `^5.29.0`。
 
-本包使用 `@metriccanvas/runtime-ui/composition` 的四项导出：`RuntimeSurface`、`RuntimeSection`、`ComponentContent`、`sectionGridColumnCount`。该子入口不从渲染包默认入口转出，但仍是需要版本管理的跨包 Interface，#100 必须显式对账。
+本包使用 `@metriccanvas/engine/ui/composition` 的四项导出：`RuntimeSurface`、`RuntimeSection`、`ComponentContent`、`sectionGridColumnCount`。该子入口不从渲染包默认入口转出，但仍是需要版本管理的跨包 Interface，#100 必须显式对账。
 
 `RuntimeSurface.sectionsContent` 接收已校验的内容分区及绑定到当前数据快照的组件渲染片段。`RuntimeSection` 保留网格、布局盒、行对齐和安全区所有权，通过 `cellAttachment`、`cellOverlay`、`emptyContent` 接受局部装饰；attachment 必须清理监听器与自己添加的属性。创作代码不读取或修改纯渲染组件内部 DOM，也不改变取数编排。
 

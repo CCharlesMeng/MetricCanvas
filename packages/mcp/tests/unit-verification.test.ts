@@ -171,7 +171,7 @@ function fakePort(
   };
 }
 
-/** 与 @metriccanvas/data-gateway 的 DqeGatewayError 同形状(携带字符串 code)。 */
+/** 与 @metriccanvas/engine/dqe 的 DqeGatewayError 同形状(携带字符串 code)。 */
 class FakeDqeGatewayError extends Error {
   constructor(readonly code: string) {
     super(`运行期查询错误:${code}`);

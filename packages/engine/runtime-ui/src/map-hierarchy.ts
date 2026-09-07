@@ -9,7 +9,7 @@ import type {
   DimensionFilterValue,
   DimensionValuesSnapshot,
   FilterValue
-} from '@metriccanvas/runtime';
+} from '../../runtime/src';
 
 export type MapClickDecision =
   | { kind: 'drill'; filterId: string; value: DimensionFilterValue }

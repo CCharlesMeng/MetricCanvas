@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { FilterDeclaration } from '@metriccanvas/page';
-import type { FilterValue } from '@metriccanvas/runtime';
+import type { FilterValue } from '../../runtime/src';
 import {
   cascadeConstraints,
   clearDependentUpdates,

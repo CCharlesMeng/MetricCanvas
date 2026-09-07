@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RuntimeView } from '@metriccanvas/runtime-ui';
+  import { RuntimeView } from '@metriccanvas/engine/ui';
   import { untrack } from 'svelte';
   import type {
     RuntimeInput,

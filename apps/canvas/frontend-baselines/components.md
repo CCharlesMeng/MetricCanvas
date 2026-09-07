@@ -10,7 +10,7 @@
 
 | ID | 指路 | 是什么、何时用 | 被引用 |
 | --- | --- | --- | --- |
-| `COMP-1` | `@metriccanvas/widgets` 的导出面(`packages/widgets/src/index.ts`) | 全部 16 个纯渲染构件的唯一出口。**要知道有哪些构件、各自何时选,查 `COMP-2`,不要读这个文件的导出列表来猜** ——出口是按真实消费面收敛的,内核(字段解析、格式化、ECharts 宿主)刻意不导出 | `packages/runtime-ui` 内 5 个文件 |
+| `COMP-1` | `@metriccanvas/engine/widgets` 的导出面(`packages/widgets/src/index.ts`) | 全部 16 个纯渲染构件的唯一出口。**要知道有哪些构件、各自何时选,查 `COMP-2`,不要读这个文件的导出列表来猜** ——出口是按真实消费面收敛的,内核(字段解析、格式化、ECharts 宿主)刻意不导出 | `packages/runtime-ui` 内 5 个文件 |
 | `COMP-2` | `componentCatalog` / `componentCatalogEntry`(`packages/page/src/component-catalog.ts`),条目数据在 `schema/components/<type>.ts` 的 `registry.add(...)` | **组件能力目录:选构件时唯一该查的地方。** 每个类型带 label、别名、用途、何时选、需要什么数据形状、必填 props、是否必须有标题、默认栅格跨度。写页面文档或让 Agent 组页面前查它;它不是运行时注册表,不能据此发明新类型 | 17 个组件类型;`packages/mcp` 的组页面工具 |
 | `COMP-3` | `ComponentRenderer.svelte`(`packages/runtime-ui/src/`) | 组件类型 → 构件的**唯一**分发点,含 `tabContainer` 的自递归。新增组件类型只改这一个文件加一个构件实现 | `RuntimeSurface.svelte`、自身递归 |
 | `COMP-4` | `WidgetHost.svelte`(`packages/runtime-ui/src/`) | 加载态(骨架)、错误态(按错误分类选标题)、空态(投影为空行让构件保留标题与容器)的**统一呈现宿主**。构件自己不写这三态 | `COMP-3`;`data.md` 的 `PATTERN-DATA-1` |
@@ -52,7 +52,7 @@
 | 规则 | `COMP-1` 下的构件只接收「已投影的数据槽 + props + 回调」。构件内部不得发请求、不得持有跨渲染的交互状态(排序、分页、选中一律由统一运行时持有并回传) |
 | 依据清单 | `COMP-1`、`COMP-11`、`DATA-7` |
 | 依据样本 | `component-render.ts` 的 `TableRenderBinding` 把表格视图状态与回调抽成显式契约,注释写明「组件分发只做转发」;`packages/widgets` 内全仓无 `fetch` 命中 |
-| 违例判定 | `packages/widgets/src/**` 出现 `fetch(` / 导入 `@metriccanvas/data-gateway` / 导入 `@metriccanvas/runtime`,或在构件内 `$state` 里存排序、分页、筛选值 |
+| 违例判定 | `packages/widgets/src/**` 出现 `fetch(` / 导入 `@metriccanvas/engine/dqe` / 导入 `@metriccanvas/engine`,或在构件内 `$state` 里存排序、分页、筛选值 |
 
 #### `PATTERN-COMP-3` · 声明数据槽的构件必须经统一宿主呈现三态
 

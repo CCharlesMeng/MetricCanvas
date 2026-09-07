@@ -2,7 +2,7 @@ import {
   mount as mountSvelte,
   unmount
 } from 'svelte';
-import { createDqeGateway } from '@metriccanvas/data-gateway';
+import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import EmbedRoot from './EmbedRoot.svelte';
 import type {
   MountOptions,
@@ -11,7 +11,7 @@ import type {
 } from './types';
 
 export { createDqeGateway };
-export type { DqeGatewayConfig } from '@metriccanvas/data-gateway';
+export type { DqeGatewayConfig } from '@metriccanvas/engine/dqe';
 export type {
   MountOptions,
   RuntimeEvent,
@@ -23,8 +23,8 @@ export type {
   DataGateway,
   DimensionValuesGateway,
   RuntimeDataGateway
-} from '@metriccanvas/runtime';
-export type { AiSummaryConfig, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/runtime-ui';
+} from '@metriccanvas/engine';
+export type { AiSummaryConfig, RuntimeNavigation, RuntimeNavigationTarget } from '@metriccanvas/engine/ui';
 
 interface EmbedRootExports {
   update(input: RuntimeInput): void;

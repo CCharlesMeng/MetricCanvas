@@ -2,7 +2,7 @@ import { createServer } from 'node:http';
 import { describe, expect, it, vi } from 'vitest';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type { EffectiveQuery } from '@metriccanvas/page';
-import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/runtime';
+import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/engine';
 
 vi.mock('$env/dynamic/private', () => ({ env: {} }));
 vi.mock('../src/lib/server/bundled-assets.server', async () => {

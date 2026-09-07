@@ -1,5 +1,5 @@
-import type { RuntimeDataGateway } from '@metriccanvas/runtime';
-import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/runtime-ui';
+import type { RuntimeDataGateway } from '@metriccanvas/engine';
+import type { AiSummaryConfig, RuntimeViewEvent, RuntimeNavigation } from '@metriccanvas/engine/ui';
 
 export interface RuntimeInput {
   document: unknown;
@@ -14,7 +14,7 @@ export interface RuntimeInput {
 
 /**
  * 嵌入 API 的事件面就是统一运行时视图的事件面。
- * 真源在 `@metriccanvas/runtime-ui` 的 `RuntimeViewEvent`(ADR-0025),
+ * 真源在 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent`(ADR-0025),
  * 这里只保留 embed 的历史公开名,不再逐字段复制。
  */
 export type RuntimeEvent = RuntimeViewEvent;

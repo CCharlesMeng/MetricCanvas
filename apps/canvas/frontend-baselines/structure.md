@@ -30,9 +30,9 @@
 | --- | --- | --- | --- |
 | `STRUCT-1` | `@metriccanvas/page` 包(`packages/page/src/`,出口 `index.ts`) | 页面元数据协议的唯一事实源:页面文档类型、Zod schema、校验、字段与查询契约。任何「页面文档能写什么」的问题从这里进,不要在下游包里重新定义形状 | 97 个源码文件(含测试 164) |
 | `STRUCT-2` | `packages/page/src/schema/`,组件形状在 `schema/components/<type>.ts` | 校验规则(schema)所在层:一个组件类型一个文件,Zod 定义与该类型的目录元数据(`registry.add`)同文件维护 | 由 `STRUCT-1` 的 `schema.ts` / `schema/index.ts` 汇总 |
-| `STRUCT-3` | `@metriccanvas/runtime`(`packages/runtime/src/`) | 领域逻辑层,**零框架导入**:数据编排、筛选状态、页面参数、受控计算、端口定义。要改「数据怎么流」改这里,不要改表现层 | 30 个源码文件 |
-| `STRUCT-4` | `@metriccanvas/runtime-ui`(`packages/runtime-ui/src/`) | Svelte 表现层(统一运行时视图):把 `STRUCT-3` 的状态与快照接到构件上,持有交互状态 | 10 个源码文件(canvas 3、embed 3、platform 4) |
-| `STRUCT-5` | `@metriccanvas/widgets`(`packages/widgets/src/`,`components/<component>/` 一目录一构件) | 纯渲染组件包:只吃已投影的数据槽与 props,不取数、不持状态 | 5 个源码文件,全在 `STRUCT-4` 内 |
+| `STRUCT-3` | `@metriccanvas/engine`(`packages/runtime/src/`) | 领域逻辑层,**零框架导入**:数据编排、筛选状态、页面参数、受控计算、端口定义。要改「数据怎么流」改这里,不要改表现层 | 30 个源码文件 |
+| `STRUCT-4` | `@metriccanvas/engine/ui`(`packages/runtime-ui/src/`) | Svelte 表现层(统一运行时视图):把 `STRUCT-3` 的状态与快照接到构件上,持有交互状态 | 10 个源码文件(canvas 3、embed 3、platform 4) |
+| `STRUCT-5` | `@metriccanvas/engine/widgets`(`packages/widgets/src/`,`components/<component>/` 一目录一构件) | 纯渲染组件包:只吃已投影的数据槽与 props,不取数、不持状态 | 5 个源码文件,全在 `STRUCT-4` 内 |
 | `STRUCT-6` | `@metriccanvas/embed`(`packages/embed/src/`) | 第二形态的对外导出面:嵌入式运行时的挂载契约与类型。第三方宿主页面的唯一接入口 | `packages/embed/examples/`、`tests/browser/` |
 | `STRUCT-7` | 仓根 `pages/*.json`,源码内经 `$pages` 别名引用 | 页面资产(页面文档)目录。加一个看板页面只往这里加 JSON,见 `PATTERN-ROUTE-2` | `apps/canvas/src/lib/page-repository.ts` 的 glob;10 份页面文档 |
 | `STRUCT-8` | 仓根 `AGENTS.md` / `CONTEXT.md` / `PAGE-METADATA.md` / `docs/adr/` | 领域事实源:词汇表、页面 Schema 说明、关键决策。源码注释大量以 `ADR-00xx` / `issue #nn` 反指这里,读不懂某条不变量时回这里 | 源码注释内引用 |
@@ -60,7 +60,7 @@
 | 规则 | 依赖方向只能是 app → `STRUCT-4` → `STRUCT-3` → `STRUCT-1`,`STRUCT-5` 只依赖 `STRUCT-1`。`STRUCT-1` 与 `STRUCT-3` 不得导入任何框架符号 |
 | 依据清单 | `STRUCT-1`、`STRUCT-3`、`STRUCT-4`、`STRUCT-5` |
 | 依据样本 | 全仓搜 `from 'svelte`、`$app/`、`$state`、`$derived` 在 `packages/page/src` 与 `packages/runtime/src` 内**零命中**;`packages/*/package.json` 的 `dependencies` 呈单向 |
-| 违例判定 | `packages/page/src/**` 或 `packages/runtime/src/**` 出现 `svelte` / `$app/*` 导入或 runes 声明;或 `packages/widgets` 依赖 `@metriccanvas/runtime` |
+| 违例判定 | `packages/page/src/**` 或 `packages/runtime/src/**` 出现 `svelte` / `$app/*` 导入或 runes 声明;或 `packages/widgets` 依赖 `@metriccanvas/engine` |
 
 #### `PATTERN-STRUCT-2` · 跨包引用只用包名与工作区协议
 

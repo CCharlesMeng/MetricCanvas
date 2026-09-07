@@ -1,5 +1,5 @@
 import { parsePage } from '@metriccanvas/page';
-import type { RuntimeDataGateway } from '@metriccanvas/runtime';
+import type { RuntimeDataGateway } from '@metriccanvas/engine';
 
 export const document = {
   schemaVersion: '6.0', id: 'authoring-isolation',

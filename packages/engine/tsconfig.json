@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "esModuleInterop": true
+  },
+  "include": [
+    "runtime/src",
+    "widgets/src/**/*.ts",
+    "widgets/src/**/*.svelte",
+    "runtime-ui/src/**/*.ts",
+    "runtime-ui/src/**/*.svelte",
+    "data-gateway/src"
+  ]
+}

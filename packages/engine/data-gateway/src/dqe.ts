@@ -14,7 +14,7 @@ import type {
   DimensionValuesGateway,
   DimensionValuesResult,
   QueryDiagnosticContext
-} from '@metriccanvas/runtime';
+} from '../../runtime/src';
 import type { DqeDevDetail } from './dev-detail';
 
 export const DEFAULT_DQE_ENDPOINT =

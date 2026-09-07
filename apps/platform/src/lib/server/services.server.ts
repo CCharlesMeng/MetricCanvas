@@ -23,7 +23,7 @@ import {
   createPostgresTemplateLibrary
 } from '@metriccanvas/persistence-postgres';
 import { createJavaPageLifecycle } from '@metriccanvas/page-assets-java';
-import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/runtime';
+import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/engine';
 import { createAgentRunner } from './agent/runner';
 import {
   createRunAwareUnitQueryExecutor,

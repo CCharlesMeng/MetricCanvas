@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
-import type { DataGatewayResult } from '@metriccanvas/runtime';
+import type { DataGatewayResult } from '@metriccanvas/engine';
 import type { RuntimeHandle } from '../../src/types';
 
 interface FlowReportDocument {

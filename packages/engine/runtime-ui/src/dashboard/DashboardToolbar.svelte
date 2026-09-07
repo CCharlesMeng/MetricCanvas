@@ -7,7 +7,7 @@
   import type {
     DimensionValuesSnapshots,
     FilterValues
-  } from '@metriccanvas/runtime';
+  } from '../../../runtime/src';
   import FilterBar from '../filters/FilterBar.svelte';
   import { dashboardFilterGroups } from './filter-groups';
 

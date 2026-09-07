@@ -1,4 +1,4 @@
-import { DqeGatewayError, isAbortError } from '@metriccanvas/data-gateway';
+import { DqeGatewayError, isAbortError } from '@metriccanvas/engine/dqe';
 import { isQueryErrorCode } from '@metriccanvas/page';
 import type {
   DataGateway,
@@ -6,7 +6,7 @@ import type {
   DimensionValuesGateway,
   DimensionValuesResult,
   QueryDiagnosticContext
-} from '@metriccanvas/runtime';
+} from '@metriccanvas/engine';
 
 /** 平台服务端取数入口的路由。浏览器只知道这个相对路径，不知道 DQE 端点。 */
 export const PLATFORM_DATA_QUERY_PATH = '/api/data/query';

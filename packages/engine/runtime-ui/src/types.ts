@@ -1,5 +1,5 @@
 import type { TypedError } from '@metriccanvas/page';
-import type { RuntimeDataGateway } from '@metriccanvas/runtime';
+import type { RuntimeDataGateway } from '../../runtime/src';
 import type { DataErrorEvent } from './data-error-events';
 export type { AiSummaryConfig } from './ai-summary/pangu-sse';
 export type { DataErrorEvent } from './data-error-events';

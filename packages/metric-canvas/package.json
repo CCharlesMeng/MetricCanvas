@@ -16,19 +16,18 @@
     "test:browser": "playwright test"
   },
   "dependencies": {
-    "@metriccanvas/page": "workspace:*",
-    "@metriccanvas/runtime-ui": "workspace:*"
+    "@metriccanvas/engine": "workspace:*",
+    "@metriccanvas/page": "workspace:*"
   },
   "peerDependencies": {
-    "svelte": "^5.29.0"
+    "svelte": ">=5.29.0 <6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
+    "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "typescript": "^5.9.3",
-    "@playwright/test": "^1.62.0",
-    "@sveltejs/vite-plugin-svelte": "^7.2.0",
-    "vite": "^8.1.5",
-    "@metriccanvas/runtime": "workspace:*"
+    "vite": "^8.1.5"
   }
 }

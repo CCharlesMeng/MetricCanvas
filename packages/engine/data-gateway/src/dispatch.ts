@@ -8,7 +8,7 @@ import type {
   DimensionValuesGateway,
   DimensionValuesResult,
   RuntimeDataGateway
-} from '@metriccanvas/runtime';
+} from '../../runtime/src';
 import { DqeGatewayError } from './dqe';
 
 /**

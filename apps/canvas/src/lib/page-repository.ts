@@ -1,4 +1,4 @@
-import type { PageRepository } from '@metriccanvas/runtime';
+import type { PageRepository } from '@metriccanvas/engine';
 import { pageListEntry, parsePage } from '@metriccanvas/page';
 
 /**

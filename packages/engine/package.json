@@ -1,0 +1,39 @@
+{
+  "name": "@metriccanvas/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+  },
+  "exports": {
+    ".": "./runtime/src/index.ts",
+    "./widgets": {
+      "svelte": "./widgets/src/index.ts",
+      "default": "./widgets/src/index.ts"
+    },
+    "./ui": {
+      "svelte": "./runtime-ui/src/index.ts",
+      "default": "./runtime-ui/src/index.ts"
+    },
+    "./ui/types": "./runtime-ui/src/types.ts",
+    "./ui/composition": {
+      "svelte": "./runtime-ui/src/composition.ts",
+      "default": "./runtime-ui/src/composition.ts"
+    },
+    "./dqe": "./data-gateway/src/index.ts"
+  },
+  "dependencies": {
+    "@metriccanvas/page": "workspace:*",
+    "echarts": "^6.1.0"
+  },
+  "peerDependencies": {
+    "svelte": ">=5.29.0 <6"
+  },
+  "devDependencies": {
+    "@metriccanvas/dqe-sim": "workspace:*",
+    "svelte": "^5.56.6",
+    "svelte-check": "^4.7.3",
+    "typescript": "^5.9.3"
+  }
+}

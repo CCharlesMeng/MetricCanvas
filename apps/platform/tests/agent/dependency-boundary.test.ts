@@ -35,7 +35,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
     '@metriccanvas/mcp',
     '@metriccanvas/page',
     '@metriccanvas/page-lifecycle',
-    '@metriccanvas/runtime',
+    '@metriccanvas/engine',
     '@metriccanvas/template-library',
     './types'
   ],

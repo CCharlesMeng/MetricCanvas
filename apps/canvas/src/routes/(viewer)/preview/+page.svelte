@@ -5,7 +5,7 @@
     parsePreviewDocument
   } from '$lib/preview-document';
   import { aiSummary, dataGateway } from '$lib/services';
-  import { RuntimeView } from '@metriccanvas/runtime-ui';
+  import { RuntimeView } from '@metriccanvas/engine/ui';
 
   let source = $state(DEFAULT_PREVIEW_JSON);
   let result = $derived(

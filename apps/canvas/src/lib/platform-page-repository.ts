@@ -1,4 +1,4 @@
-import type { PageRepository } from '@metriccanvas/runtime';
+import type { PageRepository } from '@metriccanvas/engine';
 
 export function createPlatformPageRepository(baseUrl: string): PageRepository {
   const origin = baseUrl.replace(/\/+$/, '');

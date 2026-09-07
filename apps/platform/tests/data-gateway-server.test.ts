@@ -4,7 +4,7 @@ import {
   DQE_DEV_DETAIL_MASK,
   type DqeDevDetailRecord,
   type DqeDiagnosticRecord
-} from '@metriccanvas/data-gateway';
+} from '@metriccanvas/engine/dqe';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
 import {
   createServerDataGateway as createServerDataGatewayAdapter,

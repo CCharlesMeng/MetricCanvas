@@ -15,7 +15,7 @@
     dimensionValuesSnapshot,
     type DimensionValuesSnapshots,
     type FilterValues
-  } from '@metriccanvas/runtime';
+  } from '../../../runtime/src';
   import DimensionFilter from './DimensionFilter.svelte';
   import HierarchyFilter from './HierarchyFilter.svelte';
   import TimeRangeFilter from './TimeRangeFilter.svelte';

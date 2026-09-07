@@ -1,7 +1,7 @@
-import { createDqeGateway } from '@metriccanvas/data-gateway';
+import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import { createStaticPageRepository } from './page-repository';
 import { createPlatformPageRepository } from './platform-page-repository';
-import type { AiSummaryConfig } from '@metriccanvas/runtime-ui';
+import type { AiSummaryConfig } from '@metriccanvas/engine/ui';
 
 export const pageRepository = import.meta.env.VITE_PLATFORM_URL
   ? createPlatformPageRepository(import.meta.env.VITE_PLATFORM_URL)

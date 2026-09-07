@@ -3,7 +3,7 @@ import {
   type DimensionFilterDeclaration,
   type FilterDeclaration
 } from '@metriccanvas/page';
-import type { FilterValue, FilterValues } from '@metriccanvas/runtime';
+import type { FilterValue, FilterValues } from '../../../runtime/src';
 
 /**
  * 级联只收窄候选值:按上游当前选中值构造下游候选值端口的约束。

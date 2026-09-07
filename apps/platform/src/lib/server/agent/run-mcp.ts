@@ -17,7 +17,7 @@ import type {
   PageLifecycle,
   RevisionReference
 } from '@metriccanvas/page-lifecycle';
-import type { DataGateway } from '@metriccanvas/runtime';
+import type { DataGateway } from '@metriccanvas/engine';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 import type { AgentRunner } from './types';
 

@@ -6,7 +6,7 @@ import type {
   TableSelectedCell,
   TableSortRule,
   TableViewState
-} from '@metriccanvas/widgets';
+} from '../../widgets/src';
 
 /**
  * 表格交互契约:视图状态与回调由统一运行时持有,组件分发只做转发。

@@ -7,14 +7,14 @@ import {
   type DqeDevDetail,
   type DqeDevDetailRecord,
   type DqeDiagnosticRecord
-} from '@metriccanvas/data-gateway';
+} from '@metriccanvas/engine/dqe';
 import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type {
   DataGateway,
   DimensionValuesGateway,
   QueryDiagnosticContext
-} from '@metriccanvas/runtime';
+} from '@metriccanvas/engine';
 import type {
   PlatformDataQueryResponse,
   PlatformDimensionValuesResponse

@@ -5,11 +5,11 @@
     documentLayoutForm,
     documentUsesRuntimeBackToolbar
   } from '@metriccanvas/page';
-  import type { DataGateway } from '@metriccanvas/runtime';
+  import type { DataGateway } from '@metriccanvas/engine';
   import {
     RuntimeView,
     type RuntimeNavigation
-  } from '@metriccanvas/runtime-ui';
+  } from '@metriccanvas/engine/ui';
   import {
     pageReturnHref,
     rememberPageReturn

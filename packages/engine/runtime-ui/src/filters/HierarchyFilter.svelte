@@ -4,7 +4,7 @@
    * 层级是筛选值的一部分,地图等分层视图读它,不维护自己的层级状态。
    */
   import type { FilterHierarchyLevel } from '@metriccanvas/page';
-  import type { DimensionValuesSnapshot } from '@metriccanvas/runtime';
+  import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { hierarchyControlValues } from '../map-hierarchy';
   import DimensionFilter from './DimensionFilter.svelte';
 

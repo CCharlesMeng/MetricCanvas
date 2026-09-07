@@ -4,7 +4,7 @@ import type {
   DimensionValuesResult,
   QueryDiagnosticContext,
   RuntimeDataGateway
-} from '@metriccanvas/runtime';
+} from '../../runtime/src';
 import { DqeGatewayError, createDataGateway } from '../src';
 
 function dqeEffectiveQuery(): EffectiveQuery {

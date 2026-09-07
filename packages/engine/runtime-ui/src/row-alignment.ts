@@ -2,7 +2,7 @@ import {
   rowAlignmentParticipants,
   subscribeRowAlignment,
   type RowAlignmentTracks
-} from '@metriccanvas/widgets';
+} from '../../widgets/src';
 
 /**
  * 通用行对齐深 Module(统一运行时不变量,不进入页面 JSON):

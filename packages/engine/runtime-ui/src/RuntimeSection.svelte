@@ -4,7 +4,7 @@
     sectionBackdrop,
     type Component
   } from '@metriccanvas/page';
-  import { sectionTitleLeftUrl, sectionTitleRightUrl } from '@metriccanvas/widgets';
+  import { sectionTitleLeftUrl, sectionTitleRightUrl } from '../../widgets/src';
   import { installRowAlignment } from './row-alignment';
   import {
     backdropSafeArea,

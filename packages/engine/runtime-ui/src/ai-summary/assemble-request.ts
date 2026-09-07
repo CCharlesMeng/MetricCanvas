@@ -1,5 +1,5 @@
 import type { AiSummaryProps, FieldValue } from '@metriccanvas/page';
-import type { PageDataSnapshots } from '@metriccanvas/runtime';
+import type { PageDataSnapshots } from '../../../runtime/src';
 
 export interface AiSummaryDataset {
   id: string;

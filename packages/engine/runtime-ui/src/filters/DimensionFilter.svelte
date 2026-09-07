@@ -9,7 +9,7 @@
   import type {
     DimensionValueCandidate,
     DimensionValuesSnapshot
-  } from '@metriccanvas/runtime';
+  } from '../../../runtime/src';
   import {
     buildFilterTree,
     nodeState as treeNodeState,

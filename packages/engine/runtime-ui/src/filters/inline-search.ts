@@ -1,5 +1,5 @@
 import type { FieldDefinition, Row } from '@metriccanvas/page';
-import type { FilterValues } from '@metriccanvas/runtime';
+import type { FilterValues } from '../../../runtime/src';
 
 /**
  * inline 数据源上的 search 筛选器走客户端:对所有字符串字段做不区分大小写包含。

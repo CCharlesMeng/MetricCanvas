@@ -73,4 +73,4 @@ export function toggleNodeValues(
   }
   return [...new Set([...value, ...node.leaves])];
 }
-import type { DimensionValueCandidate } from '@metriccanvas/runtime';
+import type { DimensionValueCandidate } from '../../../runtime/src';

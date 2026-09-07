@@ -40,7 +40,7 @@
     type PageDataSnapshots,
     type PageSnapshotStream,
     type RuntimeDataGateway
-  } from '@metriccanvas/runtime';
+  } from '../../runtime/src';
   import {
     buildTableColumnLayout,
     formatValue,
@@ -51,7 +51,7 @@
     type TablePaginationState,
     type TableSelectedCell,
     type TableViewState
-  } from '@metriccanvas/widgets';
+  } from '../../widgets/src';
   import ComponentRenderer from './ComponentRenderer.svelte';
   import type { NestedComponentRender, TableRenderBinding } from './component-render';
   import {

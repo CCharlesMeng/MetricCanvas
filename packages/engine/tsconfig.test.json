@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "resolveJsonModule": true
+  },
+  "include": [
+    "runtime/src",
+    "runtime/tests",
+    "widgets/tests",
+    "runtime-ui/src/types.ts",
+    "runtime-ui/tests/**/*.ts",
+    "data-gateway/src",
+    "data-gateway/tests",
+    "data-gateway/fixtures"
+  ]
+}

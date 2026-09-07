@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { RuntimeView } from '@metriccanvas/runtime-ui';
+  import { RuntimeView } from '@metriccanvas/engine/ui';
   import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '../../../src';
   import { document, gateway, validDocument } from './document';
 

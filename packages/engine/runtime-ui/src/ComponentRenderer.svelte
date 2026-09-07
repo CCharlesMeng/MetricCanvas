@@ -11,7 +11,7 @@
    * (组合卡这次正是这么漏的)。
    */
   import type { Component, DataSnapshot, Row } from '@metriccanvas/page';
-  import type { PageDataSnapshots } from '@metriccanvas/runtime';
+  import type { PageDataSnapshots } from '../../runtime/src';
   import {
     BarChart,
     CategoryBreakdown,
@@ -33,7 +33,7 @@
     type MetricDataSlots,
     type NamedDataSlots,
     type TextBlockLink
-  } from '@metriccanvas/widgets';
+  } from '../../widgets/src';
   import AiSummaryHost from './ai-summary/AiSummaryHost.svelte';
   import type { AiSummaryConfig } from './ai-summary/pangu-sse';
   import WidgetHost from './WidgetHost.svelte';

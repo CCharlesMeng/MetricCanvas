@@ -33,10 +33,10 @@
 
 | 项 | 内容 |
 | --- | --- |
-| 规则 | 适配器(`API-2` / `API-9`)的构造只发生在宿主装配处;`packages/runtime`、`packages/runtime-ui`、`packages/widgets` 不得导入 `@metriccanvas/data-gateway`,也不得出现端点字面量。**第二形态(嵌入)下网关由第三方宿主经 `mount` 传入**,所以在运行时包里搜不到出口是设计结果,不是缺失 |
+| 规则 | 适配器(`API-2` / `API-9`)的构造只发生在宿主装配处;`packages/runtime`、`packages/runtime-ui`、`packages/widgets` 不得导入 `@metriccanvas/engine/dqe`,也不得出现端点字面量。**第二形态(嵌入)下网关由第三方宿主经 `mount` 传入**,所以在运行时包里搜不到出口是设计结果,不是缺失 |
 | 依据清单 | `API-1`、`API-2`、`API-9`、`STRUCT-3`、`STRUCT-6` |
 | 依据样本 | `apps/canvas/src/lib/services.ts` 是 canvas 唯一构造点;`packages/embed/src/index.ts` 把 `dataGateway` 作为挂载选项透传;`packages/runtime/src/ports.ts` 的注释写明「适配器在 data-gateway,应用壳注入」;`packages/runtime*/package.json` 的 dependencies 不含 data-gateway |
-| 违例判定 | `packages/runtime*` 或 `packages/widgets` 的 `package.json` 或源码出现 `@metriccanvas/data-gateway`;或运行时内出现 `/rest/...` 之类端点字面量 |
+| 违例判定 | `packages/runtime*` 或 `packages/widgets` 的 `package.json` 或源码出现 `@metriccanvas/engine/dqe`;或运行时内出现 `/rest/...` 之类端点字面量 |
 
 #### `PATTERN-API-3` · 错误对象只带结构化事实
 

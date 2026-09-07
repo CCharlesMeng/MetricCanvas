@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { AiSummaryProps } from '@metriccanvas/page';
-  import type { PageDataSnapshots } from '@metriccanvas/runtime';
+  import type { PageDataSnapshots } from '../../../runtime/src';
   import AiSummaryView from './AiSummaryView.svelte';
   import { assembleAiSummaryRequest } from './assemble-request';
   import { createPanguSseClient, type AiSummaryConfig, type AiSummaryTransport } from './pangu-sse';

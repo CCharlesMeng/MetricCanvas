@@ -31,7 +31,7 @@ export interface QueryDiagnosticContext {
 
 /**
  * 数据网关 (Data Gateway):运行时的取数端口——生效查询进、标准化行与可选总条数出。
- * 按意图命名,不按实现方命名;适配器在 @metriccanvas/data-gateway,应用壳注入。
+ * 按意图命名,不按实现方命名;适配器在 @metriccanvas/engine/dqe,应用壳注入。
  * 当前 query 场景由 DQE 适配器实现；inline 静态场景不访问该端口。
  *
  * 主查询执行不假定数据源支持筛选候选值:候选值查询是独立端口
