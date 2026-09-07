@@ -6,7 +6,11 @@
 
 仓库：`/Users/moon/Documents/Code/公司项目/DataDashboard`；GitHub：`CCharlesMeng/MetricCanvas`；当前分支 `main`，HEAD 为 `5a93288`（创作隔离已交付）。
 
+**#100 同日挂起交接：** 用户已确认支持范围、Svelte 下限、ESM/IIFE、统一版本、首版 1.0.0、发布门禁与 Chrome/Edge；Q5 发布单元与正式包名未决，七包只是助手建议。用户要求另开会话独立讨论，#100 保持 OPEN 并解除本会话认领。接续见 [#100 grill handoff](wayfinder-100-release-grill-handoff-2026-09-07.md) 或 [已持久化的挂起评论](https://github.com/CCharlesMeng/MetricCanvas/issues/100#issuecomment-5569086529)，讨论完成后再归档该决策票。
+
 地图：[Wayfinding|platform 静态化与渲染引擎独立交付 #95](https://github.com/CCharlesMeng/MetricCanvas/issues/95)。这是原临时文件 `metriccanvas-wayfinder-95-handoff.md` 的后续交接；不要再按旧文件把 #96 当作未完成 frontier。
+
+**#105 同日范围修正：** 用户明确 Java 服务不由本仓设计实现，直接消费宿主接口。停止旧的后端语义 grill，四项未确认建议不成立；#105 保持开放，转为接口消费资料与前端接入对账，见 [ADR-0070](../adr/0070-consume-host-java-page-assets-api.md)。现有 Java 代码仅作历史对照，去留交 #102，不自动作为宿主契约真源。下文旧 #105 设计职责已被此裁决取代。
 
 ## 先选工作：开发与独立设计分开
 
@@ -48,7 +52,7 @@
 
 **#105 启动语句：**
 
-> 阅读本 handoff，继续地图 #95，只 grill 和设计 #105。先读取本票评论中的宿主 Swagger 原文和仓内作者文件，逐条裁决并形成一份最终 spec。page_id 全局唯一以及 PUT/DELETE 保留已定；#109 只取消导航目标对 pageId 的依赖，不删除页面资产身份。与 #101/#102 对账身份和治理语义；ADR 编号现场扫描，不沿用票内过时的 0066。
+> 阅读本 handoff 和 ADR-0070，继续地图 #95，只做 #105 的宿主 Java 接口消费对账。以票内宿主 Swagger 为输入，核对前端适配与实际接入所需事实；不设计或实现 Java，不重问 PUT/DELETE、存储、资源身份等提供方语义，不把未提供的接口当作不支持。请求头与 Cookie 归宿主。旧 Java 代码只作对照，改动去留交 #102，前端接线与验收交 #101/#104。
 
 ### C. 可立即开展的外部事实工作：#106
 
