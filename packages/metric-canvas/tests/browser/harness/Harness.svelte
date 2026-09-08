@@ -1,6 +1,6 @@
 <script lang="ts">
   import { RuntimeView } from '@metriccanvas/engine/ui';
-  import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '../../../src';
+  import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { document, gateway, validDocument } from './document';
 
   let current = $state.raw(validDocument(document));

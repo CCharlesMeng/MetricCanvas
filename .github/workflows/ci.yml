@@ -84,3 +84,36 @@ jobs:
 
   # ADR-0074：旧 Java 工程由完整历史 tag 保留，不再作为本仓 CI 交付物。
   # 新页面资产接口由外部提供，消费验收见 #105；不以旧 Java job 冒充接入。
+
+  compatibility:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        svelte: ['current', '5.29.0']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: 安装真实 Chrome 和 Edge
+        run: pnpm --filter @metriccanvas/embed exec playwright install --with-deps chrome msedge
+      - name: 仓外 tarball 与 Svelte 版本矩阵
+        env:
+          METRICCANVAS_COMPATIBILITY_DIR: ${{ runner.temp }}/metriccanvas-compatibility
+        run: pnpm compatibility:check --svelte=${{ matrix.svelte }}
+      - name: 保留版本、测试结果和失败日志
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compatibility-${{ matrix.svelte }}-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/metriccanvas-compatibility/summary.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/logs
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/browser-versions.json
+            ${{ runner.temp }}/metriccanvas-compatibility/*/consumer/browser-results.json

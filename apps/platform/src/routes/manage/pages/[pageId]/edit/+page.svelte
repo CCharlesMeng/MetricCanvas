@@ -128,7 +128,7 @@
     return `${locator.sectionId}/${locator.componentId}`;
   }
 
-  function valueOf(event: Event): string {
+  function inputValue(event: Event): string {
     return (event.currentTarget as HTMLInputElement | HTMLTextAreaElement).value;
   }
 
@@ -206,7 +206,7 @@
               <input
                 value={selected.title}
                 required={selected.type === 'reportHeader'}
-                oninput={(event) => applyComponentEdit({ title: valueOf(event) })}
+                oninput={(event) => applyComponentEdit({ title: inputValue(event) })}
               />
             </label>
             {#if selected.detailLabel}
@@ -214,7 +214,7 @@
                 {selected.detailLabel}
                 <textarea
                   rows="4"
-                  oninput={(event) => applyComponentEdit({ detail: valueOf(event) })}
+                  oninput={(event) => applyComponentEdit({ detail: inputValue(event) })}
                 >{selected.detail}</textarea>
               </label>
             {:else}

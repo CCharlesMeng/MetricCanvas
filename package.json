@@ -24,7 +24,8 @@
     "check": "tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
     "build:playground": "pnpm --filter playground build",
     "build:packages": "pnpm --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
-    "packages:check": "tsx tools/package-build/check.ts"
+    "packages:check": "tsx tools/package-build/check.ts",
+    "compatibility:check": "node tools/package-build/compatibility.mjs"
   },
   "devDependencies": {
     "@sveltejs/package": "2.5.8",
