@@ -1,5 +1,7 @@
 # MetricCanvas 页面资产 Java Module 组
 
+> **历史工程，停止 CI 交付（ADR-0070/0074，#125）。** 完整可复现版本见 `legacy/pre-static-platform-2026-09-08`；本仓当前只消费外部提供的页面资产接口（#105）。以下是旧工程的历史操作说明：当前契约导出已不再更新或校验本目录快照，不能按下文把它继续当作新接口真源。源码和本地启动依赖仍待 #125 后续退出。
+
 第一方 Java 17 / Spring Boot 3 / MySQL 页面资产（[ADR-0062](../docs/adr/0062-first-party-java-page-assets-module.md)），
 承载 `savePageRevision` / `getLatestPage` / `getPageRevision` / `listPages` 四个 Interface，
 目标宿主是 `CDINL2DataBuilderService`。实施切片见 [`docs/plan/metriccanvas-page-assets.md`](../docs/plan/metriccanvas-page-assets.md)。

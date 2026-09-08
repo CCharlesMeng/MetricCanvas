@@ -151,7 +151,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 
 ## 仓库结构
 
-`packages/` 按有无对外承诺分组：顶层四个是发布给集成应用的交付物，`packages/server/` 下是不发布的服务端包（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
+`packages/` 中 page、engine、metric-canvas、embed 是发布给集成应用的四个交付物；application-runtime 是应用共用的私有配置模块，`packages/server/` 下是不发布、待退出的旧服务端包（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
 
 | 路径 | 职责 |
 |---|---|
@@ -164,10 +164,11 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/engine/data-gateway/` | DQE 数据网关 |
 | [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | **交付物**：独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
 | `packages/embed/` | **交付物**：浏览器嵌入产物 |
+| `packages/application-runtime/` | 平台与参考应用共用的私有运行配置读取器，不对外发布 |
 | `packages/server/page-lifecycle/` | 页面修订与发布 |
 | `packages/server/template-library/` | 页面模板 |
 | `packages/server/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
-| `packages/server/persistence-mysql/`、`packages/server/persistence-postgres/` | 页面生命周期的数据库实现 |
+| `packages/server/persistence-postgres/` | 待退出的旧页面生命周期数据库实现 |
 | `packages/server/page-assets-java/` | Java 页面资产的页面生命周期实现 |
 | `apps/canvas/` | 页面目录、渲染和预览 |
 | `apps/platform/` | 页面搭建与管理 |
@@ -175,6 +176,8 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `tools/design-facts/` | 设计稿字面量抽取 |
 | `pages/` | 页面 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
+
+旧 MySQL 适配器与 `ioc-data-dev/` 已退出主线，旧 Java 已停止 CI 构建交付；完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。平台其余旧服务与 Node 静态化仍由 #125/#104 承接。
 
 ## 文档入口
 
