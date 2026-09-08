@@ -1,12 +1,12 @@
 <script lang="ts">
   import { RuntimeView } from '@metriccanvas/engine/ui';
-  import { createPlatformDataGateway } from '$lib/platform-data-gateway';
+  import { createInjectedDqeGateway } from '$lib/runtime-config';
   import type { PageData } from './$types';
 
   let { data }: { data: PageData } = $props();
 
-  // 轨道 B 的数据网关浏览器适配器：只打平台服务端取数入口，数据取自仿真。
-  const dataGateway = createPlatformDataGateway();
+  // 按请求现读集成门户注入的端点与身份，直连 DQE。
+  const dataGateway = createInjectedDqeGateway();
 </script>
 
 <svelte:head>

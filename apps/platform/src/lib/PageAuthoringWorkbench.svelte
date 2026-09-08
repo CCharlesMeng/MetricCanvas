@@ -5,7 +5,7 @@
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { parseAskConversation } from './ask/conversation';
   import type { AgentMessage } from './server/agent/types';
-  import { createPlatformDataGateway } from './platform-data-gateway';
+  import { createInjectedDqeGateway } from './runtime-config';
   import type { MetricCandidate } from './server/session/step-event';
   import {
     buildAgentStreamRequestBody,
@@ -60,8 +60,8 @@
    * - 对话消费 POST /api/agent/stream 的 AgentRunStreamEvent 序列,按步骤
    *   展开时间线;运行可取消(POST /api/agent/runs/{runId}/cancel)。
    * - 页面视图把 outcome 帧带回的已校验页面文档直接交给统一运行时的
-   *   MetricCanvas 创作画布复用统一运行时渲染,数据经 createPlatformDataGateway() 走服务端取数
-   *   入口——不再有 iframe,也不依赖已保存修订(ADR-0030:临时页面态)。
+   *   MetricCanvas 创作画布复用统一运行时渲染,数据经 createInjectedDqeGateway() 按注入配置直连 DQE
+   *   ——不再有 iframe,也不依赖已保存修订(ADR-0030:临时页面态)。
    * - 渲染入口只接受文档对象,不写入页面生命周期;保存修订仍是用户显式
    *   动作,且只对非临时页面 id 开放(临时 id 不承载修订归属)。
    * - 临时页面态经沉淀面板(#68)显式转为长期资产:纯函数改写换上经确认
@@ -119,7 +119,7 @@
       }
     | null = null;
 
-  const dataGateway = createPlatformDataGateway();
+  const dataGateway = createInjectedDqeGateway();
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
@@ -978,8 +978,7 @@
         <div class="empty">
           <h2>描述你要解决的业务问题</h2>
           <p>
-            页面文档通过校验后在这里直接渲染——无需保存任何修订,
-            数据经服务端取数入口返回。
+            页面文档通过校验后在这里直接呈现，无需先保存修订。
           </p>
         </div>
       {/if}

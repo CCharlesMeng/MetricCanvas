@@ -10,7 +10,7 @@
 | --- | --- | --- | --- |
 | `API-1` | `DataGateway`(`packages/engine/runtime/src/ports.ts`) | **取数端口**:一条生效查询进、标准化数据行与可选总条数出。运行时只认这个接口,按意图命名而不按实现方命名。任何「页面数据从哪来」的问题从这里进 | 编排器、维度候选值加载器;三个宿主各自注入 |
 | `API-2` | `createDqeGateway`(`packages/engine/data-gateway/src/dqe.ts`,经包出口导出) | `API-1` 的**直连实现**:浏览器直接打远程查询端点。批量信封、并发额度、超时、取消传递、结算幂等、错误分类、诊断落点全部隐藏在里面。canvas 与 embed 用它;改取数行为改这里,不要在调用侧绕 | canvas 与 embed 的服务装配处 |
-| `API-9` | `createPlatformDataGateway` + `PLATFORM_DATA_QUERY_PATH` / `PLATFORM_DIMENSION_VALUES_PATH`(`apps/platform/src/lib/platform-data-gateway.ts`) | `API-1` 的**第二个实现**:经平台服务端代理取数,浏览器只知道相对路径,端点与凭据只存在服务端。失败响应还原成与 `API-2` 同构的错误对象。判断「端口有几个实现」时不能漏掉它 | platform 的服务装配处 |
+| `API-9` | `createInjectedDqeGateway`（Canvas `src/lib/runtime-config.ts`，平台复用） | `API-2` 的第一方装配：每次请求现读注入端点与三个身份头；平台与 Canvas 共用 DQE 适配器，不再存在第二个浏览器代理实现 | 平台问数、页面搭建工作台与 Canvas 服务装配 |
 | `API-3` | `DimensionValuesGateway` + `DimensionValuesResult`(`packages/engine/runtime/src/ports.ts`),实现在 `API-2` 内 | 维度候选值的**独立**端口。能力可缺席——不支持时返回显式 `unavailable`,**不是空数组**。空数组只表示查询成功且候选为空,两者不能混 | 筛选控件、表格表头筛选 |
 | `API-4` | `PageRepository`(`packages/engine/runtime/src/ports.ts`),实现 `createStaticPageRepository` / `createPlatformPageRepository`(`apps/canvas/src/lib/`) | 页面文档的取件端口。两个实现:静态文件(`STRUCT-7`)与平台 API。**`load` 返回 `unknown`**——加载与校验是两步,拿到的是不可信文档 | 目录页与查看器路由 |
 | `API-5` | `packages/engine/runtime-ui/src/ai-summary/pangu-sse.ts` | AI 总结的 SSE 出口。它**不经 `API-1`**,因为它是流式对话而不是查询;配置缺席时组件局部报配置错误,不影响页面其余部分 | `COMP-7` |

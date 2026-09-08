@@ -264,7 +264,7 @@ fetchDimensionValues(dimension, { signal? })
 
 - 主查询执行不假定数据源支持候选值:数据网关可以不实现该端口(能力缺席即不可用),实现方也可以按维度回答 `unavailable`;
 - DQE 适配器把候选值查询作为单项 DQE 执行提交(只输出目标维度、不取指标),对返回行去重;上游明确拒答该查询映射为 `unavailable`,不伪装成空结果;
-- 平台浏览器适配器经独立服务端入口 `/api/data/dimension-values` 提交,端点与凭据不出服务端(与 `/api/data/query` 同纪律);
+- 平台与 Canvas 的候选值查询均经 `createInjectedDqeGateway` 直连 DQE，每次请求现读注入端点与三个身份头（ADR-0073）;
 - 统一运行时按维度维护候选值加载状态,形状只声明一份(`@metriccanvas/runtime` 的 `DimensionValuesSnapshot`):
 
 | 状态 | 含义 |
@@ -417,7 +417,7 @@ Widgets 不负责：
 安全约束:
 
 - 原始响应、数据行、字段值、筛选值和上游错误正文没有任何字段可以进入诊断记录;`DqeGatewayError.detail` 同样只允许结构化事实(类型名、数量、字段名、上游返回码)。
-- 平台服务端取数入口(`/api/data/query`)默认把诊断记录写为 `[query-diagnostics]` 结构化 console 日志;请求体中的诊断上下文是不可信输入,只收编格式正确的字符串标识。
+- 创作期服务端网关默认把诊断记录写为 `[query-diagnostics]` 结构化 console 日志；浏览器直连路径不再经过平台 HTTP 代理。
 - 开发期明细(`DqeDevDetail`)是独立通道,三重闸门:必须显式配置(平台侧 `DQE_DEV_DETAIL=1`)、环境限制(仅 `development`,失败关闭)、按 `DQE_DEV_DETAIL_SAMPLE_RATE` 采样;落盘前对生效 DQE 项脱敏——保留指标名、维度名与结构,筛选值与未知取值一律替换为掩码。**只有接口留在渲染引擎里**(数据网关配置要用它命名 `devDetail` 字段),三重闸门与脱敏的实现在平台侧,不随包发布(ADR-0071)——这条通道能取出生效 DQE 项,随引擎发出等于把该能力交给任何装了包的集成应用。引擎因此不做脱敏:注入点拿到的是原样生效项,掩码是平台侧实现的责任。
 - 开发期明细与 QueryInspector 类调试界面只允许出现在页面搭建或开发通道,不得进入正式渲染通道(统一运行时、Runtime UI、纯渲染组件、Embed、Canvas),生产构建无法通过普通页面参数开启;由守卫测试 `apps/canvas/tests/query-diagnostics-isolation.test.ts` 静态校验,`packages/engine/data-gateway/tests/diagnostics.test.ts` 与 `apps/platform/tests/data-gateway-server.test.ts` 以敏感哨兵值断言诊断、日志与响应中检索不到业务数据。
 

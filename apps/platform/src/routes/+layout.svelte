@@ -1,9 +1,13 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import type { LayoutServerData } from './$types';
+  import { onMount } from 'svelte';
+  import { readRuntimeConfig } from '$lib/runtime-config';
 
-  let { data, children }: { data: LayoutServerData; children: import('svelte').Snippet } =
-    $props();
+  let { children }: { children: import('svelte').Snippet } = $props();
+  let operatorId = $state('');
+  onMount(() => {
+    operatorId = readRuntimeConfig()?.operatorId ?? '';
+  });
 
   const NAV = [
     { href: '/', label: '问数工作台' },
@@ -16,13 +20,6 @@
     return href === '/' ? path === '/' : path.startsWith(href);
   }
 
-  /** 切换 mock 用户:经查询参数触发服务端写 cookie,后续导航保持。 */
-  function switchActor(event: Event) {
-    const actorId = (event.currentTarget as HTMLSelectElement).value;
-    const url = new URL(page.url);
-    url.searchParams.set('mock-actor', actorId);
-    window.location.assign(url.toString());
-  }
 </script>
 
 <svelte:head>
@@ -70,20 +67,11 @@
       </a>
     {/each}
   </nav>
-  <div class="who" title={`当前用户：${data.identity.actorId}`} data-contract-critical>
-    <span class="avatar" class:admin={data.identity.isAdmin} aria-hidden="true">
-      {data.identity.actorId.slice(0, 1).toUpperCase()}
+  <div class="who" title={operatorId ? `当前用户：${operatorId}` : '未注入运行配置'} data-contract-critical>
+    <span class="avatar" aria-hidden="true">
+      {operatorId.slice(0, 1).toUpperCase() || '?'}
     </span>
-    <label class="switcher">
-      <span class="sr-only">切换 mock 用户</span>
-      <select value={data.identity.actorId} onchange={switchActor}>
-        {#each data.mockUsers as user (user.actorId)}
-          <option value={user.actorId}>
-            {user.actorId}{user.isAdmin ? '(管理员)' : ''}
-          </option>
-        {/each}
-      </select>
-    </label>
+    <span class="operator-id" data-testid="operator-id">{operatorId || '未注入'}</span>
   </div>
 </aside>
 
@@ -212,8 +200,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 4px;
     width: 44px;
-    height: 44px;
+    min-height: 44px;
     margin: auto 8px 10px;
     border-radius: 9px;
   }
@@ -236,21 +226,12 @@
     font-size: 10px;
     font-weight: 700;
   }
-  .avatar.admin {
-    background: #b45309;
-  }
-  .switcher {
-    position: absolute;
-    inset: 0;
-  }
-  .switcher select {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0;
-    cursor: pointer;
-    outline: none;
+  .operator-id {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
+    font-size: 9px;
+    line-height: 1.2;
   }
   .sr-only {
     position: absolute;
