@@ -165,7 +165,7 @@
 
   /* 窄屏退化成单列:此时「同一行的邻居」不再存在,竖线无从分隔,横线改由
      DOM 相邻关系派生——分隔的语义仍是「相邻子组件之间」,只是行的定义变了。 */
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .composite-grid {
       grid-template-columns: minmax(0, 1fr);
     }

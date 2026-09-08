@@ -413,7 +413,7 @@
     opacity: 0.9;
     white-space: nowrap;
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .legend-frame {
       position: static;
       inset: auto !important;

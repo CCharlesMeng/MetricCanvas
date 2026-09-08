@@ -312,7 +312,7 @@
     font-size: 12px;
     line-height: 22px;
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .compact-strip {
       --mc-compact-summary-flow: row;
     }
@@ -435,7 +435,7 @@
       font-size: 14px;
     }
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .dual-summary.two-column-panels {
       grid-template-columns: minmax(0, 1fr);
     }
@@ -678,7 +678,7 @@
       --progress-ring-label-line-height: 17px;
     }
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .activity-progress {
       height: 174px;
     }

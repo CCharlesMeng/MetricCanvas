@@ -394,7 +394,7 @@
     --mc-semantic-title-color: var(--mc-color-report-text, #191919);
     --mc-semantic-description-color: var(--mc-color-report-text, #191919);
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .report-header {
       align-items: flex-start;
       flex-direction: column;

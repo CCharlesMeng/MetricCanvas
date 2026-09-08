@@ -85,7 +85,7 @@
     line-height: 36px;
     white-space: nowrap;
   }
-  @media (max-width: 1050px) {
+  @container mc-runtime (max-width: 1050px) {
     .dashboard-toolbar {
       grid-template-columns: minmax(0, 1fr);
       gap: 12px;

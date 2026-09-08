@@ -821,7 +821,7 @@
   }
 
   /* ==== 响应式 ==== */
-  @media (max-width: 1050px) {
+  @container mc-runtime (max-width: 1050px) {
     .page-section.container-panel {
       padding-right: 20px;
       padding-left: 20px;
@@ -835,7 +835,7 @@
       column-gap: 16px;
     }
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     .page-section {
       padding: 16px;
     }

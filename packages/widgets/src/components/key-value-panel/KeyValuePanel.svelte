@@ -169,7 +169,7 @@
     font-size: 14px;
     line-height: 20px;
   }
-  @media (max-width: 760px) {
+  @container mc-runtime (max-width: 760px) {
     dl {
       grid-template-columns: minmax(0, 1fr);
     }

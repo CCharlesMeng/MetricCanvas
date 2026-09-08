@@ -1025,6 +1025,10 @@
 
 <style>
   .runtime-view {
+    /* 系统缩放与门户侧栏都会压缩宿主宽度。整页断点统一读取运行时容器，
+       显式命名避免被指标卡自己的 inline-size 容器截获。 */
+    container: mc-runtime / inline-size;
+
     --mc-color-canvas: #daeaff;
     /* 看板形态画布:中性灰,让白色分区自己成为模块边界。 */
     --mc-color-dashboard-canvas: #f8f8f8;
@@ -1236,7 +1240,7 @@
     padding-right: 24px;
     padding-left: 23px;
   }
-  @media (max-width: 1050px) {
+  @container mc-runtime (max-width: 1050px) {
     .page-content {
       --mc-page-content-padding-inline: 12px;
     }
