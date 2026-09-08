@@ -54,7 +54,7 @@ MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平
 pnpm install
 ```
 
-启动 Canvas、Platform 与 DQE Sim：
+启动 Platform 与 DQE Sim：
 
 ```bash
 pnpm dev
@@ -66,7 +66,7 @@ pnpm dev
 pnpm dev:offline
 ```
 
-仅启动 DQE Sim 与 Canvas（静态页面联调）：
+按需启动页面试验场与 DQE Sim（仓库页面联调）：
 
 ```bash
 pnpm dev:dqe
@@ -76,7 +76,7 @@ pnpm dev:dqe
 
 | 服务 | 地址 |
 |---|---|
-| Canvas | `http://127.0.0.1:5173` |
+| 页面试验场（按需） | `http://127.0.0.1:5173` |
 | Platform | `http://127.0.0.1:5174` |
 | DQE Sim | `http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute` |
 
@@ -87,7 +87,9 @@ pnpm validate     # 校验 pages/*.json
 pnpm test         # 自动化测试
 pnpm design:facts # 重新抽取设计稿字面量(docs/design-facts/)
 pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)
-pnpm build        # 构建 Embed、Canvas 和 Platform
+pnpm build        # 构建 Embed 和 Platform
+pnpm dev:playground   # 按需启动页面试验场
+pnpm build:playground # 按需构建页面试验场
 pnpm test:embed   # 嵌入运行时浏览器测试
 ```
 
@@ -170,7 +172,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/server/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
 | `packages/server/persistence-postgres/` | 待退出的旧页面生命周期数据库实现 |
 | `packages/server/page-assets-java/` | Java 页面资产的页面生命周期实现 |
-| `apps/canvas/` | 页面目录、渲染和预览 |
+| `apps/playground/` | 页面试验场：开发态仓库页面浏览与 JSON 即时预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
 | `tools/design-facts/` | 设计稿字面量抽取 |

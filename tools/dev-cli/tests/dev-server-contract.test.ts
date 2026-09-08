@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import canvasViteConfig from '../../../apps/canvas/vite.config';
+import playgroundViteConfig from '../../../apps/playground/vite.config';
 import platformViteConfig from '../../../apps/platform/vite.config';
 
 const rootPackage = JSON.parse(
@@ -9,8 +9,8 @@ const rootPackage = JSON.parse(
 ) as { scripts: Record<string, string> };
 
 describe('本地开发服务端口契约', () => {
-  it('Canvas 固定占用 5173，端口冲突时禁止静默漂移', () => {
-    expect(canvasViteConfig).toMatchObject({
+  it('页面试验场固定占用 5173，端口冲突时禁止静默漂移', () => {
+    expect(playgroundViteConfig).toMatchObject({
       server: {
         port: 5173,
         strictPort: true
@@ -27,7 +27,7 @@ describe('本地开发服务端口契约', () => {
     });
   });
 
-  it('默认开发命令同时启动 Canvas、Platform 和 DQE Sim', () => {
+  it('默认开发命令使用平台与 DQE Sim 启动器', () => {
     expect(rootPackage.scripts.dev).toBe('tsx tools/dev-cli/src/dev.ts local');
   });
 });

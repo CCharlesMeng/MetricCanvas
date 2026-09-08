@@ -4,7 +4,7 @@ import { getRuntimePlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 
 /**
- * @deprecated 已发布页面目录(ADR-0062):`apps/canvas` 改为只读静态 `pages/`,不再从这里取目录;
+ * @deprecated 已发布页面目录(ADR-0062):`apps/playground` 改为只读静态 `pages/`,不再从这里取目录;
  * Java 页面资产首批没有"已发布"概念,在 `METRICCANVAS_PAGE_ASSETS=java` 下本端点恒为空列表。
  * 保留只为既有 reader 部署平滑过渡,响应带 `Deprecation` 头;新消费者不要接。
  */

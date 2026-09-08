@@ -9,8 +9,6 @@ const DQE_SIM_EXECUTE_ENDPOINT = `${DQE_SIM_ORIGIN}/rest/cdi/cdinl2databuilderse
 const DEV_SERVICES_ARGS = [
   '--parallel',
   '--filter',
-  'canvas',
-  '--filter',
   'platform',
   '--filter',
   '@metriccanvas/dqe-sim',
@@ -40,7 +38,6 @@ export function createDevLaunch({
   Object.assign(env, {
     PLATFORM_ORIGIN: 'http://localhost:5174',
     RUNTIME_ORIGIN: 'http://localhost:5173',
-    VITE_PLATFORM_URL: profile === 'offline' ? 'http://localhost:5174' : '',
     VITE_DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,
     // platform 服务端取数入口用的 DQE 端点;无 VITE_ 前缀,不进浏览器产物。
     DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,

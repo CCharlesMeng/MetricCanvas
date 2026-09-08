@@ -6,12 +6,12 @@
     "dev": "tsx tools/dev-cli/src/dev.ts local",
     "dev:offline": "tsx tools/dev-cli/src/dev.ts offline",
     "dev:dqe": "tsx tools/dqe-sim/src/dev.ts",
-    "dev:runtime": "pnpm --filter canvas dev",
+    "dev:playground": "pnpm --filter playground dev",
     "dev:platform": "pnpm --filter platform dev",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
-    "build": "pnpm --filter @metriccanvas/embed build && pnpm --filter canvas build && pnpm --filter platform build",
-    "test": "pnpm --filter platform --filter canvas exec svelte-kit sync && vitest run",
+    "build": "pnpm --filter @metriccanvas/embed build && pnpm --filter platform build",
+    "test": "pnpm --filter platform --filter playground exec svelte-kit sync && vitest run",
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
     "validate": "tsx packages/page/src/validate-cli.ts",
     "design:facts": "tsx tools/design-facts/src/cli.ts",
@@ -22,7 +22,8 @@
     "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "slice:page-assets": "tsx tools/scripts/slice-page-assets.ts",
-    "check": "tsc --noEmit -p tests/tsconfig.json && pnpm -r check"
+    "check": "tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
+    "build:playground": "pnpm --filter playground build"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

@@ -1,6 +1,6 @@
 # 集成应用契约
 
-MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回栈或面包屑，也不决定自己有多宽。直接调用引擎的应用拥有挂载容器的几何。IOC 微前端子应用和 platform 自行处理应用集成，单页嵌入不要求实现微前端协议。Canvas 是同一份契约的参考实现，不是生产环境的集成应用。
+MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回栈或面包屑，也不决定自己有多宽。直接调用引擎的应用拥有挂载容器的几何。IOC 微前端子应用和 platform 自行处理应用集成，单页嵌入不要求实现微前端协议。页面试验场是同一份契约的参考实现，不是生产环境的集成应用。
 
 面包屑是集成应用的导航 UI。页面标题栏（`reportHeader`）是页面内容，由页面参数驱动。二者视觉上可以相邻，所有者不同。
 
@@ -42,7 +42,7 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 平台的页面目录、页面详情、精确修订预览与保存共用一个页面资产客户端。配置完整时按请求现读 Java 基址和三个身份头；基址已注入但缺身份时，以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。Node 适配器仍在的过渡期，仅缺少 `pageAssetsBaseUrl` 时回退应用 base 下的同源 `/api/pages`。
 
-精确修订预览由平台客户端读取指定修订，再交给 `RuntimeView` 就地呈现；保存成功后按新修订 id 重新读取，编辑中的工作副本不会混入已保存修订。独立 Canvas 的 `VITE_PLATFORM_URL` 页面来源选择保持不变。Java 路径的 `dataContextVersion` 未提供时记录为 null，界面显示「未记录」，不把它解释为页面只含内联数据。
+精确修订预览由平台客户端读取指定修订，再交给 `RuntimeView` 就地呈现；保存成功后按新修订 id 重新读取，编辑中的工作副本不会混入已保存修订。独立开发预览应用只读取仓库页面，不接页面资产接口；旧 `VITE_PLATFORM_URL` 来源选择已移除。Java 路径的 `dataContextVersion` 未提供时记录为 null，界面显示「未记录」，不把它解释为页面只含内联数据。
 
 ### 平台挂载容器与样式
 
@@ -89,7 +89,7 @@ function onEvent(event) {
 
 运行时**不能**检测到集成应用违反了这一条：它只看到一个较窄的容器，并按该宽度正常渲染。因此这是集成应用侧的实现义务，没有运行时兜底。
 
-`apps/canvas` 的参考做法：正式路由的页面外框按 `layoutForm` 切换，报表沿用定宽居中，看板去掉内边距并使用集成应用实际交付的全部可用宽度。1980px 是 IOC Page 的回归视口，不是集成应用固定的槽宽，也不会进入组件契约。顶栏、侧栏与菜单树仍归生产门户，不进入 Canvas Page、`RuntimeView` 或 `packages/embed`。
+`apps/playground` 的参考做法：正式路由的页面外框按 `layoutForm` 切换，报表沿用定宽居中，看板去掉内边距并使用集成应用实际交付的全部可用宽度。1980px 是 IOC Page 的回归视口，不是集成应用固定的槽宽，也不会进入组件契约。顶栏、侧栏与菜单树仍归生产门户，不进入页面试验场的页面内容、`RuntimeView` 或 `packages/embed`。
 
 Page Metadata 的结构仍然是 `Section → Component`，不存在中间业务实体。运行时仅为每个 Component 生成一个组件布局盒（`mc-component-box`），用来承接 `component.layout`、Grid 落位、创作态安装点和容器查询边界；它是 DOM / CSS 实现细节，不是 Page Metadata 层级。组件根节点只占满这个布局盒；跨组件比例只属于 Page Metadata 的 `columnTracks`，组件不得反向读取 Page id、布局形态或全局视口来推断自身宽度。
 
@@ -129,6 +129,6 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 页面参数键为其 id；筛选键缺省为 id（范围、层级有上述后缀），可通过筛选声明的 `urlParams` 显式映射成目标需要的 `value/from/to/level` 键名。未声明键保留并忽略。6.0 不解析旧的 `p:/d:/h:/t:/m:/b:/n:/s:` 前缀；旧文档与旧链接需要显式迁移。
 
-## Canvas 参考实现
+## 页面试验场中的集成示例
 
-`apps/canvas` 用 `sessionStorage` 按目标页 id 记录来源，并在页面标题栏**上方**画一条「返回」面包屑。刷新后回跳仍在；深链接没有记录则不画箭头。
+`apps/playground` 用 `sessionStorage` 按目标页 id 记录来源，并在页面标题栏**上方**画一条「返回」面包屑。刷新后回跳仍在；深链接没有记录则不画箭头。

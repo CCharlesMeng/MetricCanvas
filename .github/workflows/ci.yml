@@ -71,15 +71,8 @@ jobs:
       - name: 静态构建
         run: pnpm build
 
-      # 部署载体(公司内网)待定,先以 artifact 形式交付构建产物;
-      # 确定载体后再接 deploy-pages 或内网发布流程。
-      - name: 上传静态构建产物
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v4
-        with:
-          name: canvas-static
-          path: apps/canvas/build
-
+      # 开发预览应用按需使用，不作为产品构建产物上传。
+      # 平台静态产物与真实部署流程由 #104 接续。
       - name: 上传创作 Bundle
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4

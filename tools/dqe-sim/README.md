@@ -9,8 +9,7 @@ DQE Sim 是独立的本地 DQE 执行仿真，使用真实 HTTP 接口验证浏�
 pnpm dev:dqe
 ```
 
-命令先监听 `127.0.0.1:18228`，再启动 Canvas，并把
-`VITE_DQE_ENDPOINT` 注入为：
+命令先监听 `127.0.0.1:18228`，再启动页面试验场。页面试验场通过共享运行配置模块使用本地 DQE 默认端点：
 
 ```text
 http://127.0.0.1:18228/rest/cdi/cdinl2databuilderservice/v1/dsl/execute
@@ -37,7 +36,7 @@ http://127.0.0.1:5173/pages/customer-activity-risk-briefing
 pnpm sim:dqe
 ```
 
-可通过 `DQE_SIM_PORT` 修改端口。服务还提供 `GET /__health`。
+可通过 `DQE_SIM_PORT` 修改服务端口；使用非默认端口时，还需在页面试验场的运行配置中注入对应 `dqeEndpoint`。服务还提供 `GET /__health`。
 
 直接调用：
 
