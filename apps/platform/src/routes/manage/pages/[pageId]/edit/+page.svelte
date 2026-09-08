@@ -320,6 +320,6 @@
   .error { margin-bottom: 14px; color: #991b1b; background: #fef2f2; border-color: #fecaca; }
   .success { margin-bottom: 14px; color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
   .muted { color: #71717a; }
-  @media (max-width: 1180px) { .workspace { grid-template-columns: 260px minmax(0, 1fr); } .preview-panel { grid-column: 1 / -1; } }
-  @media (max-width: 720px) { .topbar { align-items: stretch; flex-direction: column; } .workspace { grid-template-columns: 1fr; } .preview-panel { grid-column: auto; } }
+  @container platform (max-width: 1180px) { .workspace { grid-template-columns: 260px minmax(0, 1fr); } .preview-panel { grid-column: 1 / -1; } }
+  @container platform (max-width: 720px) { .topbar { align-items: stretch; flex-direction: column; } .workspace { grid-template-columns: 1fr; } .preview-panel { grid-column: auto; } }
 </style>

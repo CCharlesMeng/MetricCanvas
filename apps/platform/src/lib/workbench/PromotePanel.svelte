@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { activateApplicationModal } from './application-modal';
   import { pageAssets } from '$lib/page-assets';
   import {
     DATA_APP_ROLLING_TIME_LIMITATION,
@@ -37,6 +39,9 @@
     onpromoted: (outcome: PromotedOutcome) => void;
   } = $props();
 
+
+  let overlayEl: HTMLDivElement | null = $state(null);
+  onMount(() => overlayEl ? activateApplicationModal(overlayEl, onclose) : undefined);
 
   let direction = $state<PromoteDirection>('dataApp');
   let pageIdText = $state('');
@@ -95,7 +100,7 @@
   }
 </script>
 
-<div class="overlay" role="presentation">
+<div class="overlay" role="presentation" bind:this={overlayEl}>
   <div class="panel" role="dialog" aria-modal="true" aria-label="沉淀为长期资产">
     <header>
       <div>
@@ -212,7 +217,7 @@
 
 <style>
   .overlay {
-    position: fixed;
+    position: absolute;
     inset: 0;
     z-index: 30;
     display: grid;
@@ -224,7 +229,7 @@
     display: grid;
     gap: 14px;
     width: min(560px, 100%);
-    max-height: calc(100vh - 48px);
+    max-height: 100%;
     padding: 18px 20px;
     overflow-y: auto;
     background: #fff;

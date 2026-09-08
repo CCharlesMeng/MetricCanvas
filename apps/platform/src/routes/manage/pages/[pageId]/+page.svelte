@@ -467,13 +467,13 @@
   .error-text {
     color: #b91c1c;
   }
-  @media (max-width: 920px) {
+  @container platform (max-width: 920px) {
     .layout,
     .previews {
       grid-template-columns: 1fr;
     }
   }
-  @media (max-width: 560px) {
+  @container platform (max-width: 560px) {
     .audit dl {
       grid-template-columns: 1fr;
     }

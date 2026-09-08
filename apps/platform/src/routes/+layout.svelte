@@ -27,6 +27,7 @@
   <title>MetricCanvas 指标画布</title>
 </svelte:head>
 
+<div class="platform-app" data-testid="platform-app">
 <aside class="global-rail" data-testid="global-rail" aria-label="Platform 全局导航">
   <a
     class="brand"
@@ -77,13 +78,17 @@
 </aside>
 
 <main class="shell-main">{@render children()}</main>
+</div>
 
 <style>
-  :global(*) {
+  .platform-app,
+  .platform-app :global(*),
+  .platform-app :global(*::before),
+  .platform-app :global(*::after) {
     box-sizing: border-box;
   }
   /* Platform 壳层 token：只服务全局导航与工具面，不覆盖统一运行时 --mc-*。 */
-  :global(:root) {
+  .platform-app {
     --bg: #f3f4f6;
     --surface: #ffffff;
     --surface-subtle: #f9fafb;
@@ -116,8 +121,17 @@
     /* 横向顶栏已收敛进竖向导航，工作台继续消费唯一满高 token。 */
     --topbar-h: 0px;
   }
-  :global(body) {
-    margin: 0;
+  .platform-app {
+    position: relative;
+    isolation: isolate;
+    container: platform / size;
+    display: grid;
+    grid-template-columns: var(--shell-rail-w) minmax(0, 1fr);
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
     color: var(--text);
     background: var(--bg);
     font-family:
@@ -125,20 +139,18 @@
       "PingFang SC", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
   }
-  :global(button),
-  :global(input),
-  :global(textarea),
-  :global(select) {
+  .platform-app :global(button),
+  .platform-app :global(input),
+  .platform-app :global(textarea),
+  .platform-app :global(select) {
     font-family: inherit;
   }
   .global-rail {
-    position: fixed;
-    inset: 0 auto 0 0;
-    z-index: 40;
+    min-height: 0;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     width: var(--shell-rail-w);
-    min-height: 100vh;
     color: var(--rail-text);
     background: var(--rail);
     border-right: 1px solid var(--rail-line);
@@ -242,9 +254,9 @@
     clip: rect(0 0 0 0);
   }
   .shell-main {
-    width: calc(100% - var(--shell-rail-w));
-    min-height: calc(100vh - var(--topbar-h));
-    margin-left: var(--shell-rail-w);
-    overflow-x: clip;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    overflow: auto;
   }
 </style>

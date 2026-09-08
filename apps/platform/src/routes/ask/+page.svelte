@@ -61,7 +61,7 @@
 
 <style>
   .ask-page {
-    min-height: calc(100vh - var(--topbar-h));
+    min-height: 100%;
     background: #daeaff;
   }
   .statusbar {

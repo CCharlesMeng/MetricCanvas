@@ -1016,7 +1016,8 @@
     display: grid;
     grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr) var(--inspector-rail-w);
     grid-template-rows: var(--contextbar-h) minmax(0, 1fr);
-    height: calc(100vh - var(--topbar-h));
+    height: 100%;
+    min-height: 0;
     min-width: 0;
     background: var(--bg);
     overflow: hidden;
@@ -1092,7 +1093,7 @@
   .thread-empty {
     display: grid;
     gap: 7px;
-    margin-top: 12vh;
+    margin-top: 12cqh;
     color: var(--muted);
     font-size: 11px;
     line-height: 1.55;
@@ -1605,7 +1606,7 @@
   .empty {
     display: grid;
     place-content: center;
-    min-height: 60vh;
+    min-height: 60cqh;
     text-align: center;
     color: #71717a;
   }
@@ -1620,13 +1621,13 @@
     font-size: 13px;
     line-height: 1.7;
   }
-  @media (max-width: 1100px) {
+  @container platform (max-width: 1100px) {
     .docbar .stat,
     .page-id {
       display: none;
     }
   }
-  @media (max-width: 760px) {
+  @container platform (max-width: 760px) {
     .workbench {
       --analysis-rail-w: 250px;
       grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr);

@@ -229,7 +229,7 @@
     color: var(--muted);
     font-size: 13px;
   }
-  @media (max-width: 720px) {
+  @container platform (max-width: 720px) {
     .page-link {
       flex-direction: column;
     }

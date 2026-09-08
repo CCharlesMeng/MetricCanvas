@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { activateApplicationModal } from './application-modal';
   import {
     copyMetadataJson,
     formatMetadataJson,
@@ -20,6 +21,7 @@
 
   type CopyState = 'idle' | 'copied' | 'error';
 
+  let overlayEl: HTMLDivElement | null = $state(null);
   let dialogEl: HTMLDialogElement | null = $state(null);
   let copyState = $state<CopyState>('idle');
   let includedInitialSourceIds = $state<string[]>([]);
@@ -51,37 +53,11 @@
 
   onMount(() => {
     active = true;
-    const documentElement = globalThis.document.documentElement;
-    const body = globalThis.document.body;
-    const previousDocumentOverflow = documentElement.style.overflow;
-    const previousBodyOverflow = body.style.overflow;
-    const previousBodyPosition = body.style.position;
-    const previousBodyTop = body.style.top;
-    const previousBodyLeft = body.style.left;
-    const previousBodyRight = body.style.right;
-    const previousBodyWidth = body.style.width;
-    const scrollX = globalThis.scrollX;
-    const scrollY = globalThis.scrollY;
-
-    documentElement.style.overflow = 'hidden';
-    body.style.overflow = 'hidden';
-    body.style.position = 'fixed';
-    body.style.top = `-${scrollY}px`;
-    body.style.left = `-${scrollX}px`;
-    body.style.right = '0';
-    body.style.width = '100%';
-    dialogEl?.showModal();
-
+    const release = overlayEl ? activateApplicationModal(overlayEl, onclose) : undefined;
+    dialogEl?.show();
     return () => {
       active = false;
-      documentElement.style.overflow = previousDocumentOverflow;
-      body.style.overflow = previousBodyOverflow;
-      body.style.position = previousBodyPosition;
-      body.style.top = previousBodyTop;
-      body.style.left = previousBodyLeft;
-      body.style.right = previousBodyRight;
-      body.style.width = previousBodyWidth;
-      globalThis.scrollTo(scrollX, scrollY);
+      release?.();
       if (resetTimer !== null) clearTimeout(resetTimer);
     };
   });
@@ -123,18 +99,12 @@
     onclose();
   }
 
-  function handleKeydown(event: KeyboardEvent) {
-    if (event.key !== 'Escape') return;
-    event.preventDefault();
-    onclose();
-  }
-
   function handleBackdropClick(event: MouseEvent) {
     if (event.target === event.currentTarget) onclose();
   }
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<div class="metadata-overlay" bind:this={overlayEl} role="presentation" onclick={handleBackdropClick}>
 
 <dialog
   class="metadata-json-drawer"
@@ -142,7 +112,7 @@
   aria-labelledby="metadata-json-title"
   data-testid="metadata-json-drawer"
   oncancel={handleCancel}
-  onclick={handleBackdropClick}
+  aria-modal="true"
 >
   <header class="metadata-json-header">
     <div class="metadata-json-heading">
@@ -257,16 +227,23 @@
     <span class="sr-only" role="status" aria-live="polite">{copyLabel}</span>
   {/if}
 </dialog>
+</div>
 
 <style>
+  .metadata-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    background: rgb(24 24 27 / 42%);
+  }
   .metadata-json-drawer {
-    position: fixed;
+    position: absolute;
     inset: 0 0 0 auto;
     display: flex;
     flex-direction: column;
-    width: min(720px, 92vw);
+    width: min(720px, 92%);
     max-width: none;
-    height: 100dvh;
+    height: 100%;
     max-height: none;
     padding: 0;
     margin: 0;
@@ -275,10 +252,6 @@
     border: 0;
     border-left: 1px solid var(--line);
     box-shadow: -18px 0 48px rgb(24 24 27 / 18%);
-  }
-
-  .metadata-json-drawer::backdrop {
-    background: rgb(24 24 27 / 42%);
   }
 
   .metadata-json-drawer:not([open]) {
@@ -483,9 +456,9 @@
     border: 0;
   }
 
-  @media (max-width: 720px) {
+  @container platform (max-width: 720px) {
     .metadata-json-drawer {
-      width: 100vw;
+      width: 100%;
     }
   }
 </style>
