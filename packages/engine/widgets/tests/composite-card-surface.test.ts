@@ -50,7 +50,8 @@ function sourceFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      return entry.name === 'node_modules' ? [] : sourceFiles(full);
+      // 构建副本中的组件并非额外源码赋值点；构建前后使用同一审计范围。
+      return ['node_modules', 'dist', '.svelte-kit'].includes(entry.name) ? [] : sourceFiles(full);
     }
     const inSource = full.includes(`${path.sep}src${path.sep}`);
     return inSource && /\.(svelte|ts|css)$/.test(entry.name) ? [full] : [];

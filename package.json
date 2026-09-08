@@ -10,7 +10,7 @@
     "dev:platform": "pnpm --filter platform dev",
     "db:up": "docker compose up -d postgres",
     "db:down": "docker compose down",
-    "build": "pnpm --filter @metriccanvas/embed build && pnpm --filter platform build",
+    "build": "pnpm build:packages && pnpm --filter @metriccanvas/embed build && pnpm --filter platform build",
     "test": "pnpm --filter platform --filter playground exec svelte-kit sync && vitest run",
     "test:embed": "pnpm --filter @metriccanvas/embed test:browser",
     "validate": "tsx packages/page/src/validate-cli.ts",
@@ -21,13 +21,19 @@
     "authoring:test": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'",
     "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
-    "check": "tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
-    "build:playground": "pnpm --filter playground build"
+    "check": "tsc --noEmit -p tools/package-build && tsc --noEmit -p tests/tsconfig.json && pnpm -r check",
+    "build:playground": "pnpm --filter playground build",
+    "build:packages": "pnpm --filter @metriccanvas/page --filter @metriccanvas/engine --filter @metriccanvas/metric-canvas -r build",
+    "packages:check": "tsx tools/package-build/check.ts"
   },
   "devDependencies": {
+    "@sveltejs/package": "2.5.8",
+    "@sveltejs/vite-plugin-svelte": "7.2.0",
     "@types/node": "^26.1.1",
+    "svelte": "5.56.6",
     "tsx": "^4.23.1",
     "typescript": "^5.9.3",
+    "vite": "8.1.5",
     "vitest": "^4.1.10"
   }
 }

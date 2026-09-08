@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json"
+    "check": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.test.json",
+    "build": "node ../../tools/package-build/build.mjs page",
+    "prepack": "pnpm build"
   },
   "exports": {
     ".": "./src/index.ts",
@@ -13,5 +15,22 @@
   "dependencies": {
     "ajv": "^8.17.1",
     "zod": "^4.4.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./internal": {
+        "types": "./dist/internal.d.ts",
+        "default": "./dist/internal.js"
+      }
+    }
   }
 }

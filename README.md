@@ -87,7 +87,9 @@ pnpm validate     # 校验 pages/*.json
 pnpm test         # 自动化测试
 pnpm design:facts # 重新抽取设计稿字面量(docs/design-facts/)
 pnpm check        # 各包 TypeScript 与 Svelte 检查(pnpm -r check)
-pnpm build        # 构建 Embed 和 Platform
+pnpm build        # 构建四个引擎交付物和 Platform
+pnpm build:packages # 单独构建 page、engine、metric-canvas
+pnpm packages:check # 检查实际 tarball 的入口、声明和组件
 pnpm dev:playground   # 按需启动页面试验场
 pnpm build:playground # 按需构建页面试验场
 pnpm test:embed   # 嵌入运行时浏览器测试
@@ -154,6 +156,8 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 ## 仓库结构
 
 `packages/` 中 page、engine、metric-canvas、embed 是发布给集成应用的四个交付物；application-runtime 是应用共用的私有配置模块，`packages/server/` 下是不发布、待退出的旧服务端包（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
+
+仓内直接消费源码，无需预构建；`pnpm pack` 将发布入口写成 `dist` 中的 JS、组件和类型声明。构建与打包门禁见 [引擎交付物构建](./tools/package-build/README.md)。四个包目前仍为 private，版本推进与真实发布另行验收。
 
 | 路径 | 职责 |
 |---|---|

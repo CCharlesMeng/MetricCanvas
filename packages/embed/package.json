@@ -19,7 +19,8 @@
     "build": "vite build && tsc -p tsconfig.build.json",
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
     "preview:examples": "node tests/serve.mjs",
-    "test:browser": "pnpm build && playwright test"
+    "test:browser": "pnpm build && playwright test",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@metriccanvas/engine": "workspace:*",

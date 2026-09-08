@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "svelte": "./src/index.ts",
   "exports": {
     ".": {
       "svelte": "./src/index.ts",
@@ -13,7 +12,9 @@
   },
   "scripts": {
     "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "build": "node ../../tools/package-build/build.mjs metric-canvas",
+    "prepack": "pnpm build"
   },
   "dependencies": {
     "@metriccanvas/engine": "workspace:*",
@@ -29,5 +30,23 @@
     "svelte-check": "^4.7.3",
     "typescript": "^5.9.3",
     "vite": "^8.1.5"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "svelte": "./dist/index.js",
+        "default": "./dist/index.js"
+      },
+      "./types": {
+        "types": "./dist/types.d.ts",
+        "default": "./dist/types.js"
+      }
+    }
   }
 }

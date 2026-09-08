@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json",
+    "build": "node ../../tools/package-build/build.mjs engine",
+    "prepack": "pnpm build"
   },
   "exports": {
     ".": "./runtime/src/index.ts",
@@ -35,5 +37,41 @@
     "svelte": "^5.56.6",
     "svelte-check": "^4.7.3",
     "typescript": "^5.9.3"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "main": "./dist/runtime/src/index.js",
+    "types": "./dist/runtime/src/index.d.ts",
+    "exports": {
+      ".": {
+        "types": "./dist/runtime/src/index.d.ts",
+        "default": "./dist/runtime/src/index.js"
+      },
+      "./widgets": {
+        "types": "./dist/widgets/src/index.d.ts",
+        "svelte": "./dist/widgets/src/index.js",
+        "default": "./dist/widgets/src/index.js"
+      },
+      "./ui": {
+        "types": "./dist/runtime-ui/src/index.d.ts",
+        "svelte": "./dist/runtime-ui/src/index.js",
+        "default": "./dist/runtime-ui/src/index.js"
+      },
+      "./ui/types": {
+        "types": "./dist/runtime-ui/src/types.d.ts",
+        "default": "./dist/runtime-ui/src/types.js"
+      },
+      "./ui/composition": {
+        "types": "./dist/runtime-ui/src/composition.d.ts",
+        "svelte": "./dist/runtime-ui/src/composition.js",
+        "default": "./dist/runtime-ui/src/composition.js"
+      },
+      "./dqe": {
+        "types": "./dist/data-gateway/src/index.d.ts",
+        "default": "./dist/data-gateway/src/index.js"
+      }
+    }
   }
 }

@@ -18,7 +18,9 @@ date: 2026-09-07
 
 **页面协议必须独立成包，理由是依赖图而非隔离要求。** `mcp`、`page-lifecycle`、`template-library`、`persistence-mysql`、`persistence-postgres`、`page-assets-java` 六个包依赖 `page`，且不依赖任何渲染包。若 `page` 并入渲染交付物，这六个包只能整体依赖它（于是持久化与 MCP 包装上 ECharts 与 Svelte），或继续依赖一个 private 的 `page`（同一份协议代码存在两处，且已发布包不能依赖 private 包）。
 
-**`page` 的主入口收窄为协议契约面并上公开面快照门禁**：`validate`、`parsePage`、`PageDocument`、`Page`、`TypedError`、`ERROR_TYPES`、`versionPolicy`、`supportedVersions`、`pageSchema`、`componentCatalog`、`canonicalizeJson`。这批恰是服务端六包实际导入的集合，也是外部宿主自行校验页面所需的集合。组件属性类型与组件类型移到 `./internal` 子路径，明示仅供引擎自用、不承诺稳定。当前 `src/index.ts` 的 19 个 `export *` 使公开面等于 19 个模块的全部内容，任何新增符号都自动成为对外承诺，发包前必须先分层。
+**`page` 的主入口收窄为协议契约面并上公开面快照门禁**：`validate`、`parsePage`、`PageDocument`、`Page`、`TypedError`、`versionPolicy`、`supportedVersions`、`pageSchema`、`componentCatalog`、`canonicalizeJson`。这批恰是服务端六包实际导入的集合，也是外部宿主自行校验页面所需的集合。组件属性类型与组件类型移到 `./internal` 子路径，明示仅供引擎自用、不承诺稳定。当前 `src/index.ts` 的 19 个 `export *` 使公开面等于 19 个模块的全部内容，任何新增符号都自动成为对外承诺，发包前必须先分层。
+
+**2026-09-08 公开入口细化（#113，用户确认）：** `ERROR_TYPES` 不作为主入口的稳定运行时数组导出，保留在 `./internal`。集成应用需要错误类型时使用 `TypedError['type']`；数组仍是协议类型推导与跨语言契约导出的真源，并有内部回归消费者，不是无用代码。这一项修正原公开清单，不改变错误闭集内容、单向契约生成或版本失败通道。
 
 **组件属性类型留在 `page`，不迁往 `widgets`。** 它们是 `z.infer<typeof xComponentZ>['props']` 形式的 Zod schema 投影，而那些 schema 定义的是「一份合法页面文档里该组件长什么样」，属于协议本身；导出的 `contracts/metriccanvas/page/schema.json` 包含全部组件属性定义，Java 与 Python 照它做平行复验（ADR-0062）。若定义迁入 `widgets`，`page` 生成 schema 就要反向依赖 `widgets` 形成环，且三语言共享的契约会变成必须由 Svelte 组件包参与生成才能产出。可以归 `widgets` 的是组件实现与渲染细节，不能归它的是「页面文档里该组件允许出现哪些字段」。
 
