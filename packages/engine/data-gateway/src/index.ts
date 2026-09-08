@@ -16,13 +16,5 @@ export type {
   DqeDiagnosticStatus,
   InMemoryDqeDiagnostics
 } from './dqe';
-export {
-  DQE_DEV_DETAIL_MASK,
-  createDqeDevDetail,
-  sanitizeDqeDevDetailItem
-} from './dev-detail';
-export type {
-  DqeDevDetail,
-  DqeDevDetailConfig,
-  DqeDevDetailRecord
-} from './dev-detail';
+/** 只出接口:开发期明细的实现在平台侧,不随引擎发布(ADR-0071)。 */
+export type { DqeDevDetail } from './dev-detail';

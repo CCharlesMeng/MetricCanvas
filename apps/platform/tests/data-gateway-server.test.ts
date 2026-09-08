@@ -1,10 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
+import { DEFAULT_DQE_ENDPOINT, type DqeDiagnosticRecord } from '@metriccanvas/engine/dqe';
 import {
-  DEFAULT_DQE_ENDPOINT,
   DQE_DEV_DETAIL_MASK,
-  type DqeDevDetailRecord,
-  type DqeDiagnosticRecord
-} from '@metriccanvas/engine/dqe';
+  type DqeDevDetailRecord
+} from '../src/lib/server/dqe-dev-detail';
 import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   createServerDataGateway as createServerDataGatewayAdapter,

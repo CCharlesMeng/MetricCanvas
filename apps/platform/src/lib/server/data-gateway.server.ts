@@ -2,12 +2,11 @@ import {
   DEFAULT_DQE_ENDPOINT,
   DqeGatewayError,
   createDataGateway,
-  createDqeDevDetail,
   createDqeGateway,
   type DqeDevDetail,
-  type DqeDevDetailRecord,
   type DqeDiagnosticRecord
 } from '@metriccanvas/engine/dqe';
+import { createDqeDevDetail, type DqeDevDetailRecord } from './dqe-dev-detail';
 import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page/internal';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type {

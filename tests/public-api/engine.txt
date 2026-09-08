@@ -120,11 +120,8 @@ sectionGridColumnCount
 
 ## ./dqe
 DEFAULT_DQE_ENDPOINT
-DQE_DEV_DETAIL_MASK
 DataGatewayAdapters
 DqeDevDetail
-DqeDevDetailConfig
-DqeDevDetailRecord
 DqeDiagnosticRecord
 DqeDiagnosticStatus
 DqeDiagnostics
@@ -132,10 +129,8 @@ DqeGatewayConfig
 DqeGatewayError
 InMemoryDqeDiagnostics
 createDataGateway
-createDqeDevDetail
 createDqeGateway
 createInMemoryDqeDiagnostics
 dimensionValuesDqeItem
 effectiveDqeItem
 isAbortError
-sanitizeDqeDevDetailItem

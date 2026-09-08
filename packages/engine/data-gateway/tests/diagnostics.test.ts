@@ -1,13 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
-import {
-  DQE_DEV_DETAIL_MASK,
-  createDqeDevDetail,
-  createDqeGateway,
-  createInMemoryDqeDiagnostics,
-  sanitizeDqeDevDetailItem,
-  type DqeDevDetailRecord
-} from '../src/index';
+import type { EffectiveQuery, JsonObject, JsonValue } from '@metriccanvas/page/internal';
+import { createDqeGateway, createInMemoryDqeDiagnostics } from '../src/index';
 
 /** 敏感哨兵值:任何诊断、日志或错误序列化里检索到它即视为泄漏。 */
 const SENTINEL = '哨兵客户机密9F3E';
@@ -264,99 +257,24 @@ describe('查询诊断默认不保留业务数据行(issue #47)', () => {
   });
 });
 
-describe('开发期明细通道(显式启用、脱敏、采样、环境限制)', () => {
-  it('environment 不是 development 时通道不存在(失败关闭)', () => {
-    const sink = vi.fn();
-    for (const environment of ['production', 'test', 'staging', '']) {
-      expect(createDqeDevDetail({ environment, sink })).toBeUndefined();
-    }
-    expect(sink).not.toHaveBeenCalled();
-  });
-
-  it('development 下记录脱敏后的生效 DQE 项:名称保留,筛选值与未知取值掩码', async () => {
-    const records: DqeDevDetailRecord[] = [];
-    const devDetail = createDqeDevDetail({
-      environment: 'development',
-      sink: (record) => records.push(record)
-    });
+describe('开发期明细通道的注入点(实现在平台侧,ADR-0071)', () => {
+  it('网关把生效 DQE 项原样交给注入的记录器,执行 id 与查询诊断同源', async () => {
+    const recorded: { executionId: string; effectiveItem: JsonValue }[] = [];
     const diagnostics = createInMemoryDqeDiagnostics();
     const gateway = createDqeGateway({
       diagnostics,
-      devDetail,
+      devDetail: {
+        record: (executionId, effectiveItem) => recorded.push({ executionId, effectiveItem })
+      },
       fetchImpl: (async () => successResponse()) as typeof fetch
     });
 
     await gateway.fetchData(sentinelQuery());
 
-    expect(records).toHaveLength(1);
-    expect(records[0]!.executionId).toBe(diagnostics.records()[0]!.executionId);
-    expect(records[0]!.effectiveItem).toEqual({
-      output_metrics: ['NA客户数', { formula: 'COUNT(*)', alias: '数量' }],
-      output_dims: ['客户名称'],
-      filter: {
-        time: {
-          period: 'month',
-          is_aggregate: true,
-          start: DQE_DEV_DETAIL_MASK,
-          end: DQE_DEV_DETAIL_MASK
-        },
-        dims: [
-          { dim_name: '客户名称', dim_value_list: [DQE_DEV_DETAIL_MASK] }
-        ],
-        metrics: []
-      },
-      order: {}
-    });
-    expect(JSON.stringify(records)).not.toContain(SENTINEL);
-  });
-
-  it('采样:sampleRate 为 0 不记录,随机源大于采样率时跳过', async () => {
-    const zeroRecords: DqeDevDetailRecord[] = [];
-    const zero = createDqeDevDetail({
-      environment: 'development',
-      sampleRate: 0,
-      sink: (record) => zeroRecords.push(record)
-    })!;
-    zero.record('dqe-exec-1', { output_metrics: [] });
-    expect(zeroRecords).toEqual([]);
-
-    const sampledRecords: DqeDevDetailRecord[] = [];
-    let next = 0.9;
-    const sampled = createDqeDevDetail({
-      environment: 'development',
-      sampleRate: 0.5,
-      random: () => next,
-      sink: (record) => sampledRecords.push(record)
-    })!;
-    sampled.record('dqe-exec-2', { output_metrics: [] });
-    expect(sampledRecords).toEqual([]);
-    next = 0.2;
-    sampled.record('dqe-exec-3', { output_metrics: [] });
-    expect(sampledRecords).toHaveLength(1);
-    expect(sampledRecords[0]!.executionId).toBe('dqe-exec-3');
-  });
-
-  it('脱敏失败关闭:未知键的取值一律替换为掩码', () => {
-    expect(
-      sanitizeDqeDevDetailItem({
-        output_metrics: ['流水'],
-        自定义扩展: SENTINEL,
-        filter: {
-          metrics: [{ metric_name: '流水', operator: '>', value: 100 }]
-        }
-      })
-    ).toEqual({
-      output_metrics: ['流水'],
-      自定义扩展: DQE_DEV_DETAIL_MASK,
-      filter: {
-        metrics: [
-          {
-            metric_name: '流水',
-            operator: '>',
-            value: DQE_DEV_DETAIL_MASK
-          }
-        ]
-      }
-    });
+    expect(recorded).toHaveLength(1);
+    expect(recorded[0]!.executionId).toBe(diagnostics.records()[0]!.executionId);
+    // 引擎不脱敏:注入点拿到的是原样生效项,掩码由平台侧实现负责,
+    // 因此这里断言哨兵值确实到达了注入点——安全性由 apps/platform 的用例守。
+    expect(JSON.stringify(recorded[0]!.effectiveItem)).toContain(SENTINEL);
   });
 });
