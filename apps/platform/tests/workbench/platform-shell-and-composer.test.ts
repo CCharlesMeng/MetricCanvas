@@ -54,9 +54,6 @@ describe('Platform 样式 token 边界', () => {
       'color-mix(in srgb, var(--accent) 16%, transparent)'
     );
     expect(workbenchSource).toMatch(
-      /\.composer \.stop:hover\s*\{[^}]*background:\s*var\(--down-strong\)/
-    );
-    expect(workbenchSource).toMatch(
       /\.linkish\s*\{[^}]*color:\s*var\(--accent-strong\)/
     );
   });
@@ -83,48 +80,5 @@ describe('AI composer 键盘与禁用判定', () => {
     expect(canSubmitComposer('   ', false)).toBe(false);
     expect(canSubmitComposer('各区域 Tokens 消耗量', true)).toBe(false);
     expect(canSubmitComposer('各区域 Tokens 消耗量', false)).toBe(true);
-  });
-});
-
-describe('新建会话的异步边界', () => {
-  it('保存期间不允许清空会话', () => {
-    expect(workbenchSource).toMatch(
-      /function startNewSession\(\)\s*\{\s*if \(running \|\| savePending\) return;/
-    );
-    expect(workbenchSource).toMatch(
-      /data-testid="new-session"[\s\S]*?disabled=\{running \|\| savePending\}/
-    );
-  });
-
-  it('新建会话使旧会话回放结果失效', () => {
-    expect(workbenchSource).toContain('let sessionGeneration = 0;');
-    expect(workbenchSource).toMatch(
-      /replayRecordedSession\(fromUrl, sessionGeneration\)/
-    );
-    expect(workbenchSource).toMatch(
-      /if \(generation !== sessionGeneration \|\| sessionId !== id\) return;/
-    );
-    expect(workbenchSource).toMatch(
-      /function startNewSession\(\)[\s\S]*?sessionGeneration \+= 1;/
-    );
-  });
-});
-
-describe('会话检查点恢复与本地编辑', () => {
-  it('回放同时恢复续跑基线、钉住状态和临时页面态', () => {
-    expect(workbenchSource).toContain(
-      'conversationBaseline = replay.baselineMessages ?? []'
-    );
-    expect(workbenchSource).toContain('pins = checkpoint?.pinnedComponents ?? []');
-    expect(workbenchSource).toContain(
-      'if (checkpoint?.document) replaceCurrentDocument(checkpoint.document)'
-    );
-  });
-
-  it('本地有效编辑防抖写检查点,并带期望版本防静默覆盖', () => {
-    expect(workbenchSource).toContain('scheduleCheckpointSave(result.draft.pageDocument)');
-    expect(workbenchSource).toContain('expectedVersion');
-    expect(workbenchSource).toContain('/checkpoint`');
-    expect(workbenchSource).toContain('response.status === 409');
   });
 });

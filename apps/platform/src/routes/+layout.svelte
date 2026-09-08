@@ -11,8 +11,8 @@
   });
 
   const NAV = [
-    { href: '/', label: '问数工作台' },
-    { href: '/ask', label: '看板演示' },
+    { href: '/', label: '页面搭建工作台' },
+    { href: '/ask', label: '问数' },
     { href: '/manage', label: '页面管理' }
   ] as const;
 

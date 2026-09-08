@@ -1,0 +1,829 @@
+[
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "container": "panel",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "region-live": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "title": "问数结果",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          },
+          {
+            "id": "region-live-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "region-live"
+            },
+            "props": {
+              "title": "区域成交(实时)",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            },
+            "filterBindings": {
+              "region-filter": {
+                "target": "dimension",
+                "queryField": "区域"
+              },
+              "period": {
+                "target": "time"
+              }
+            }
+          }
+        }
+      }
+    },
+    "filters": [
+      {
+        "id": "region-filter",
+        "type": "dimension",
+        "dimension": "region",
+        "label": "区域"
+      },
+      {
+        "id": "period",
+        "type": "timeRange",
+        "label": "统计区间",
+        "default": {
+          "from": "2026-01-01",
+          "to": "2026-08-12"
+        }
+      }
+    ],
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "avg-ticket": {
+        "fields": {
+          "avgTicket": {
+            "queryField": "客单价",
+            "type": "number",
+            "role": "measure",
+            "label": "客单价",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "客单价": 4018
+              }
+            ],
+            "totalCount": 1
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [],
+                  "output_metrics": [
+                    {
+                      "formula": "成交总额 / 订单数",
+                      "alias": "客单价"
+                    }
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "avg-ticket-metric-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "avg-ticket"
+            },
+            "props": {
+              "title": "平均客单价",
+              "rows": [
+                {
+                  "label": "客单价",
+                  "valueField": "avgTicket"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 12
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "region-gmv-live": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          },
+          {
+            "id": "region-gmv-live-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 6
+            },
+            "data": {
+              "main": "region-gmv-live"
+            },
+            "props": {
+              "title": "区域成交(实时)",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "schemaVersion": "6.0",
+    "id": "ask-transient-8f2c3a1b",
+    "dataSources": {
+      "region-gmv": {
+        "fields": {
+          "region": {
+            "queryField": "区域",
+            "type": "string",
+            "role": "dimension",
+            "label": "区域",
+            "nullable": false
+          },
+          "gmv": {
+            "queryField": "成交总额",
+            "type": "number",
+            "role": "measure",
+            "label": "成交总额",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "区域": "华东",
+                "成交总额": 520000
+              },
+              {
+                "区域": "华北",
+                "成交总额": 430000
+              }
+            ],
+            "totalCount": 2
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [
+                    "区域"
+                  ],
+                  "output_metrics": [
+                    "成交总额"
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      },
+      "avg-ticket": {
+        "fields": {
+          "avgTicket": {
+            "queryField": "客单价",
+            "type": "number",
+            "role": "measure",
+            "label": "客单价",
+            "unit": "元",
+            "nullable": false
+          }
+        },
+        "source": {
+          "type": "query",
+          "initial": {
+            "capturedAt": "2026-08-12T00:00:00+08:00",
+            "rows": [
+              {
+                "客单价": 4018
+              }
+            ],
+            "totalCount": 1
+          },
+          "query": {
+            "language": "dqe",
+            "body": {
+              "dsl_list": [
+                {
+                  "output_dims": [],
+                  "output_metrics": [
+                    {
+                      "formula": "成交总额 / 订单数",
+                      "alias": "客单价"
+                    }
+                  ],
+                  "filter": {
+                    "dims": [],
+                    "metrics": []
+                  },
+                  "order": {}
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "sections": [
+      {
+        "id": "main",
+        "components": [
+          {
+            "id": "region-gmv-bar-chart",
+            "type": "barChart",
+            "layout": {
+              "span": 8
+            },
+            "data": {
+              "main": "region-gmv"
+            },
+            "props": {
+              "title": "区域成交对比",
+              "categoryField": "region",
+              "series": [
+                {
+                  "field": "gmv",
+                  "label": "成交总额"
+                }
+              ]
+            }
+          },
+          {
+            "id": "avg-ticket-metric-card",
+            "type": "metricCard",
+            "layout": {
+              "span": 4
+            },
+            "data": {
+              "main": "avg-ticket"
+            },
+            "props": {
+              "title": "平均客单价",
+              "rows": [
+                {
+                  "label": "客单价",
+                  "valueField": "avgTicket"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

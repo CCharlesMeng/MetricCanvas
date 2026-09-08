@@ -6,7 +6,7 @@ import { createJavaPageLifecycle, JavaPageAssetsError } from '../src';
 /**
  * 契约测试:用一个按 rest-services-page-assets.yaml 信封说话的替身 Java,证明 Adapter 把四个
  * Interface 映射成 `PageLifecycle`,其余方法返回 `NOT_SUPPORTED`。真实 Java 的端到端走
- * `pnpm slice:page-assets`。
+ * 历史基线 tag `legacy/pre-static-platform-2026-09-08` 中的纵切脚本。
  */
 
 interface RecordedRequest {

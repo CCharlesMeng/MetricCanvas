@@ -7,7 +7,6 @@ import {
   resolveMockActor,
   resolveMockUser,
   resolveMetricCanvasRole,
-  toTemplateContext,
   withClient,
   type MockUser
 } from '../src/lib/server/identity.server';
@@ -143,10 +142,4 @@ describe('mock 多用户身份', () => {
     expect(withClient(createIdentity('workbench'), 'page-editor').roles).toEqual([]);
   });
 
-  it('toTemplateContext 对平台管理员窄化出 admin,普通用户为空', () => {
-    expect(toTemplateContext(createIdentity('workbench', mustFind('admin-1'))).roles).toEqual([
-      'admin'
-    ]);
-    expect(toTemplateContext(createIdentity('workbench')).roles).toEqual([]);
-  });
 });

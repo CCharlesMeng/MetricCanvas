@@ -1,0 +1,101 @@
+{
+  "schemaVersion": "6.0",
+  "id": "ask-transient-8f2c3a1b",
+  "meta": {
+    "description": "区域成交对比"
+  },
+  "dataSources": {
+    "region-gmv": {
+      "fields": {
+        "region": {
+          "queryField": "区域",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "成交总额",
+          "type": "number",
+          "role": "measure",
+          "label": "成交总额",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-12T00:00:00+08:00",
+          "rows": [
+            {
+              "区域": "华东",
+              "成交总额": 520000
+            }
+          ],
+          "totalCount": 1
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "成交总额"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "filterBindings": {
+            "region-filter": {
+              "target": "dimension",
+              "queryField": "区域"
+            }
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "region-filter",
+      "type": "dimension",
+      "dimension": "region",
+      "label": "区域"
+    }
+  ],
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "region-gmv-bar-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-gmv"
+          },
+          "props": {
+            "title": "区域成交对比",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "gmv",
+                "label": "成交总额"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -23,7 +23,7 @@ MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平
   └─ 数据快照 → AI 总结组件 → AI 总结快照 → 纯渲染 View
 ```
 
-页面协议版本为 `4.0`。页面顶层结构为：
+页面协议版本为 `6.0`。页面顶层结构为：
 
 ```json
 {
@@ -168,8 +168,6 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `packages/embed/` | **交付物**：浏览器嵌入产物 |
 | `packages/application-runtime/` | 平台与参考应用共用的私有运行配置读取器，不对外发布 |
 | `packages/server/page-lifecycle/` | 页面修订与发布 |
-| `packages/server/template-library/` | 页面模板 |
-| `packages/server/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
 | `packages/server/persistence-postgres/` | 待退出的旧页面生命周期数据库实现 |
 | `packages/server/page-assets-java/` | Java 页面资产的页面生命周期实现 |
 | `apps/playground/` | 页面试验场：开发态仓库页面浏览与 JSON 即时预览 |
@@ -179,7 +177,9 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `pages/` | 页面 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
-旧 MySQL 适配器与 `ioc-data-dev/` 已退出主线，旧 Java 已停止 CI 构建交付；完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。平台其余旧服务与 Node 静态化仍由 #125/#104 承接。
+旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码与纵切命令已退出主线。完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。旧页面资产适配器、页面生命周期、Postgres 与 compose 仍为现有目录/保存/精确修订读取服务，须待 #105 新接口消费验证后退出；#104 尚未切静态 adapter。
+
+公共 Chat 尚未接通，问数入口显示不可用。页面目录中的已保存页面可打开页面搭建工作台，进行十类组件切换、文档编辑、布局、保存和精确修订预览。本版不提供发布治理、模板与 ACL 界面；上方发布模型描述治理目标，保存修订不等于人工确认发布。
 
 ## 文档入口
 

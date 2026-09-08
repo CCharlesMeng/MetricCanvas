@@ -1,5 +1,4 @@
 import type { LifecycleContext, LifecycleRole } from '@metriccanvas/page-lifecycle';
-import type { TemplateContext } from '@metriccanvas/template-library';
 
 /**
  * 唯一的身份构造点与唯一的 mock 用户清单。平台尚无真实用户认证,开发环境以
@@ -91,9 +90,7 @@ export type PlatformClientId =
   | 'reader'
   | 'workbench'
   | 'management-console'
-  | 'page-editor'
-  | 'publish-confirmation'
-  | 'template-publish-confirmation';
+  | 'page-editor';
 
 const CLIENT_ROLES: Record<PlatformClientId, readonly LifecycleRole[]> = {
   // 内网门户只读实例的请求来源：不默认授予发布或管理权限。
@@ -101,12 +98,10 @@ const CLIENT_ROLES: Record<PlatformClientId, readonly LifecycleRole[]> = {
   // Agent(MCP)工具调用面。此前 services.server.ts 里固化的 context() thunk
   // 传 roles: [],导致 Agent 永远无法确认/拒绝/取消发布——这里补齐 publisher。
   workbench: ['publisher'],
-  // 管理控制台承担发布、回滚、强制释放租约、模板管理等偏管理侧操作。
+  // 旧页面资产适配器沿用管理控制台身份；发布与模板入口已经退出。
   'management-console': ['admin'],
   // 页面编辑器只保存修订,不触碰发布生命周期,不需要任何角色。
-  'page-editor': [],
-  'publish-confirmation': ['publisher'],
-  'template-publish-confirmation': ['admin']
+  'page-editor': []
 };
 
 export type MetricCanvasRole = 'reader' | 'authoring';
@@ -145,7 +140,7 @@ export function createIdentity(
 
 /**
  * 同一身份、不同 clientId 的派生。clientId 差异(workbench / management-console /
- * page-editor / publish-confirmation / template-publish-confirmation)反映的是
+ * page-editor)反映的是
  * "哪个客户端发起了这次调用"——用于发布生命周期的幂等命名空间与审计字段,
  * 与"这个请求背后是谁"(actorId)是两回事,因此保留为参数而不是塞进角色里。
  * 用户级角色(如 admin-1 的 admin)按 actorId 重查 mock 清单保留,不随 clientId
@@ -171,19 +166,6 @@ function mergedRoles(
   // 请求上下文必须始终是零角色，不能因切换到 admin-1 静默扩权。
   if (clientId === 'reader') return [];
   return [...new Set([...CLIENT_ROLES[clientId], ...userRoles])];
-}
-
-/**
- * `@metriccanvas/template-library` 的 `TemplateContext` 角色集合比
- * `LifecycleContext` 窄(只有 'admin'),两者结构不兼容,不能直接复用同一个
- * 对象。模板相关路由统一走这里做窄化转换。
- */
-export function toTemplateContext(identity: LifecycleContext): TemplateContext {
-  return {
-    actorId: identity.actorId,
-    clientId: identity.clientId,
-    roles: identity.roles?.includes('admin') ? ['admin'] : []
-  };
 }
 
 /**

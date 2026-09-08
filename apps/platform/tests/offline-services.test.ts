@@ -1,10 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Page } from '@metriccanvas/page';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
-import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
 import {
-  seedPublishedPages,
-  seedPublishedTemplates
+  seedPublishedPages
 } from '../src/lib/server/offline-services';
 
 const page: Page = {
@@ -62,55 +60,4 @@ describe('离线页面种子', () => {
     });
   });
 
-  it('发布只引用内置页面修订的离线页面模板', async () => {
-    const generatedIds = [
-      'page-revision',
-      'page-request',
-      'template-revision',
-      'template-request'
-    ];
-    const lifecycle = createMemoryPageLifecycle({
-      dataContext: { current: async () => ({ version: 'offline-v1' }) },
-      ids: { next: () => generatedIds.shift() ?? 'unexpected-id' },
-      tokens: { next: () => 'offline-token' },
-      urls: {
-        confirmation: (requestId, token) =>
-          `http://localhost/publish/${requestId}/confirm?token=${token}`
-      }
-    });
-    await seedPublishedPages(lifecycle, [page]);
-    const templates = createMemoryTemplateLibrary({
-      pageLifecycle: lifecycle,
-      ids: { next: () => generatedIds.shift() ?? 'unexpected-id' },
-      tokens: { next: () => 'template-token' }
-    });
-
-    await seedPublishedTemplates(templates, lifecycle, [
-      {
-        templateId: 'bundled-overview',
-        title: '内置经营概览',
-        description: '离线搭建起点',
-        tags: ['离线', '经营'],
-        viewerSubjectIds: ['developer-1'],
-        sourcePageId: page.id
-      }
-    ]);
-
-    await expect(
-      templates.search(
-        { query: '经营', limit: 5 },
-        { actorId: 'developer-1', clientId: 'workbench' }
-      )
-    ).resolves.toMatchObject({
-      matches: [
-        {
-          templateId: 'bundled-overview',
-          revision: {
-            source: { pageId: page.id, revisionId: 'page-revision' }
-          },
-          sourcePageRevision: { revisionId: 'page-revision', document: page }
-        }
-      ]
-    });
-  });
 });

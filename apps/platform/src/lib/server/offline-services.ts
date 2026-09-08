@@ -1,5 +1,4 @@
 import type { PageLifecycle } from '@metriccanvas/page-lifecycle';
-import type { TemplateLibrary } from '@metriccanvas/template-library';
 import { OFFLINE_SEED_ACTOR_ID } from './identity.server';
 
 // 启动期种子导入不经过 hooks.server.ts(还没有请求可言),身份独立于
@@ -9,21 +8,6 @@ const seedContext = {
   clientId: 'offline-seed',
   roles: ['publisher'] as const
 };
-
-const templateSeedContext = {
-  actorId: OFFLINE_SEED_ACTOR_ID,
-  clientId: 'offline-seed',
-  roles: ['admin'] as const
-};
-
-export interface OfflineTemplateSeed {
-  templateId: string;
-  title: string;
-  description?: string;
-  tags?: string[];
-  viewerSubjectIds: string[];
-  sourcePageId: string;
-}
 
 export async function seedPublishedPages(
   lifecycle: PageLifecycle,
@@ -60,76 +44,6 @@ export async function seedPublishedPages(
     );
     if (!confirmed.ok) {
       throw new Error(`离线页面发布失败:${pageId}:${confirmed.error.message}`);
-    }
-  }
-}
-
-export async function seedPublishedTemplates(
-  templates: TemplateLibrary,
-  lifecycle: PageLifecycle,
-  seeds: OfflineTemplateSeed[]
-): Promise<void> {
-  const existing = await templates.list(templateSeedContext);
-  for (const seed of seeds) {
-    const current = existing.templates.find(
-      (template) => template.templateId === seed.templateId
-    );
-    if (current?.publishedRevision) continue;
-    const source = await lifecycle.getPublished({ pageId: seed.sourcePageId });
-    if (!source.ok) {
-      throw new Error(
-        `离线页面模板来源尚未发布:${seed.templateId}:${seed.sourcePageId}`
-      );
-    }
-    const saved = await templates.saveRevision(
-      {
-        templateId: seed.templateId,
-        baseRevisionId: current?.latestRevision.revisionId ?? null,
-        title: seed.title,
-        description: seed.description,
-        tags: seed.tags,
-        viewerSubjectIds: seed.viewerSubjectIds,
-        source: {
-          pageId: source.revision.pageId,
-          revisionId: source.revision.revisionId
-        },
-        idempotencyKey: `offline-template-save:${seed.templateId}`
-      },
-      templateSeedContext
-    );
-    if (!saved.ok) {
-      throw new Error(
-        `离线页面模板导入失败:${seed.templateId}:${saved.error.message}`
-      );
-    }
-    const requested = await templates.requestPublish(
-      {
-        templateId: seed.templateId,
-        revisionId: saved.revision.revisionId,
-        idempotencyKey: `offline-template-publish:${seed.templateId}`
-      },
-      templateSeedContext
-    );
-    if (!requested.ok) {
-      throw new Error(
-        `离线页面模板申请发布失败:${seed.templateId}:${requested.error.message}`
-      );
-    }
-    const token = new URL(
-      requested.request.confirmationUrl,
-      'http://localhost'
-    ).searchParams.get('token');
-    if (!token) {
-      throw new Error(`离线页面模板确认链接缺少 token:${seed.templateId}`);
-    }
-    const confirmed = await templates.confirmPublish(
-      { requestId: requested.request.requestId, token },
-      templateSeedContext
-    );
-    if (!confirmed.ok) {
-      throw new Error(
-        `离线页面模板发布失败:${seed.templateId}:${confirmed.error.message}`
-      );
     }
   }
 }

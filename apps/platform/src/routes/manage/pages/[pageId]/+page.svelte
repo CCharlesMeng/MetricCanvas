@@ -28,11 +28,6 @@
   let loadingDiff = $state(false);
   let error = $state('');
   let diffError = $state('');
-  let rollbackMessage = $state('');
-  let rollingBack = $state(false);
-  let publishMessage = $state('');
-  let confirmationUrl = $state('');
-  let requestingPublish = $state(false);
   /** 后端如实声明"未开放"(HTTP 501,NOT_SUPPORTED)时的说明;与加载失败区分显示。 */
   let historyUnavailable = $state('');
 
@@ -92,57 +87,6 @@
       }
     } finally {
       if (selectedRevisionId === revisionId) loadingDiff = false;
-    }
-  }
-
-  async function rollbackSelected() {
-    if (!comparison || comparison.selected.revisionId === revisions[0]?.revisionId) return;
-    rollingBack = true;
-    rollbackMessage = '';
-    try {
-      const response = await fetch(`/api/pages/${encodeURIComponent(pageId)}/rollback`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          targetRevisionId: comparison.selected.revisionId,
-          idempotencyKey: crypto.randomUUID()
-        })
-      });
-      if (!response.ok) throw new Error(await responseMessage(response));
-      const result = (await response.json()) as { revision: Revision };
-      rollbackMessage = `已复制为 R${result.revision.revisionNumber}，请预览后重新申请发布。`;
-      await loadPage();
-    } catch (cause) {
-      rollbackMessage = cause instanceof Error ? cause.message : '回滚失败';
-    } finally {
-      rollingBack = false;
-    }
-  }
-
-  async function requestPublishSelected() {
-    if (!comparison || comparison.selected.revisionId !== revisions[0]?.revisionId) return;
-    requestingPublish = true;
-    publishMessage = '';
-    confirmationUrl = '';
-    try {
-      const response = await fetch(`/api/pages/${encodeURIComponent(pageId)}/publish`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          revisionId: comparison.selected.revisionId,
-          idempotencyKey: crypto.randomUUID()
-        })
-      });
-      if (!response.ok) throw new Error(await responseMessage(response));
-      const result = (await response.json()) as {
-        request: { confirmationUrl: string; expiresAt: string };
-      };
-      confirmationUrl = result.request.confirmationUrl;
-      publishMessage = `发布租约已取得，将于 ${result.request.expiresAt} 到期。`;
-    } catch (cause) {
-      publishMessage = cause instanceof Error ? cause.message : '发起发布失败';
-    } finally {
-      requestingPublish = false;
     }
   }
 
@@ -214,25 +158,12 @@
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}
+              <a class="button-link" href={`${resolve('/')}?page=${encodeURIComponent(pageId)}`}>在页面搭建工作台打开</a>
               <a class="button-link" href={resolve('/manage/pages/[pageId]/edit', { pageId })}>
                 编辑当前页面修订
               </a>
-              <button disabled={requestingPublish} onclick={requestPublishSelected}>
-                {requestingPublish ? '正在取得发布租约…' : `发起发布 R${comparison.selected.revisionNumber}`}
-              </button>
-            {:else}
-              <button disabled={rollingBack} onclick={rollbackSelected}>
-                {rollingBack ? '正在复制旧内容…' : `回滚到 R${comparison.selected.revisionNumber}`}
-              </button>
-            {/if}
-            {#if confirmationUrl}
-              <a class="button-link" href={confirmationUrl} target="_blank" rel="noreferrer">
-                打开发布确认页 ↗
-              </a>
             {/if}
           </div>
-          {#if rollbackMessage}<p class="muted">{rollbackMessage}</p>{/if}
-          {#if publishMessage}<p class="muted">{publishMessage}</p>{/if}
         </section>
 
         <section>

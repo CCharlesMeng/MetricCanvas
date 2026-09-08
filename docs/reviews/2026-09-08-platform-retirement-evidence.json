@@ -1,0 +1,124 @@
+{
+  "workspaceReachable": [
+    "platform",
+    "@metriccanvas/application-runtime",
+    "@metriccanvas/engine",
+    "@metriccanvas/page",
+    "@metriccanvas/metric-canvas",
+    "@metriccanvas/page-assets-java",
+    "@metriccanvas/page-lifecycle",
+    "@metriccanvas/persistence-postgres"
+  ],
+  "workspaceEdges": [
+    [
+      "platform",
+      "@metriccanvas/application-runtime"
+    ],
+    [
+      "@metriccanvas/application-runtime",
+      "@metriccanvas/engine"
+    ],
+    [
+      "@metriccanvas/engine",
+      "@metriccanvas/page"
+    ],
+    [
+      "platform",
+      "@metriccanvas/engine"
+    ],
+    [
+      "platform",
+      "@metriccanvas/metric-canvas"
+    ],
+    [
+      "@metriccanvas/metric-canvas",
+      "@metriccanvas/engine"
+    ],
+    [
+      "@metriccanvas/metric-canvas",
+      "@metriccanvas/page"
+    ],
+    [
+      "platform",
+      "@metriccanvas/page"
+    ],
+    [
+      "platform",
+      "@metriccanvas/page-assets-java"
+    ],
+    [
+      "@metriccanvas/page-assets-java",
+      "@metriccanvas/page"
+    ],
+    [
+      "@metriccanvas/page-assets-java",
+      "@metriccanvas/page-lifecycle"
+    ],
+    [
+      "@metriccanvas/page-lifecycle",
+      "@metriccanvas/page"
+    ],
+    [
+      "platform",
+      "@metriccanvas/page-lifecycle"
+    ],
+    [
+      "platform",
+      "@metriccanvas/persistence-postgres"
+    ],
+    [
+      "@metriccanvas/persistence-postgres",
+      "@metriccanvas/page"
+    ],
+    [
+      "@metriccanvas/persistence-postgres",
+      "@metriccanvas/page-lifecycle"
+    ]
+  ],
+  "buildSourceMaps": 121,
+  "buildSources": 1976,
+  "forbiddenSources": [],
+  "retainedServerSources": [
+    "../../../../../../packages/server/page-lifecycle/src/invariants.ts",
+    "../../../../../../packages/server/page-lifecycle/src/memory.ts",
+    "../../../../../../packages/server/persistence-postgres/src/page-lifecycle.ts",
+    "../../../../../../packages/server/page-assets-java/src/lifecycle.ts"
+  ],
+  "remainingServerRoutes": [
+    "apps/platform/src/routes/api/pages/+server.ts",
+    "apps/platform/src/routes/api/pages/[pageId]/+server.ts",
+    "apps/platform/src/routes/api/pages/[pageId]/revisions/+server.ts",
+    "apps/platform/src/routes/api/pages/[pageId]/revisions/diff/+server.ts",
+    "apps/platform/src/routes/api/runtime/pages/+server.ts",
+    "apps/platform/src/routes/api/runtime/pages/[pageId]/+server.ts",
+    "apps/platform/src/routes/api/runtime/pages/[pageId]/revisions/[revisionId]/+server.ts"
+  ],
+  "baseline": "07536fd7cccfdc9571496732db4e9d57b0eb6e60",
+  "browser": {
+    "origin": "http://127.0.0.1:14174",
+    "storage": "existing offline in-memory page asset adapter",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "savedRevision": "7d447c7f-f1bc-4478-a8e6-73a98be7b07e",
+    "component": {
+      "title": "人工编辑回归",
+      "span": 11,
+      "type": "table"
+    },
+    "apiRequests": [
+      "/api/pages/retirement-regression",
+      "/api/pages/retirement-regression/revisions",
+      "/api/pages/retirement-regression?revisionId=7d447c7f-f1bc-4478-a8e6-73a98be7b07e"
+    ],
+    "pageErrors": [],
+    "retiredEndpoints404": [
+      "/api/agent",
+      "/api/agent/stream",
+      "/api/sessions/old",
+      "/api/templates",
+      "/api/publish-requests/old"
+    ]
+  }
+}

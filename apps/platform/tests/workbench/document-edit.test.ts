@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { validate } from '@metriccanvas/page';
-import type { DqeQueryDefinition } from '@metriccanvas/page/internal';
-import { assembleTransientPage, type ExecutedDataRequestUnit } from '@metriccanvas/mcp';
+import documentFixture from './fixtures/document-edit.json';
 import {
   changeComponentType,
   componentCandidatesFor,
@@ -12,72 +11,8 @@ import {
   unitOfDataSource
 } from '../../src/lib/workbench/document-edit';
 
-function dqeQuery(outputDims: string[], outputMetrics: string[]): DqeQueryDefinition {
-  return {
-    language: 'dqe',
-    body: {
-      dsl_list: [
-        {
-          output_dims: outputDims,
-          output_metrics: outputMetrics,
-          filter: { dims: [], metrics: [] },
-          order: {}
-        }
-      ]
-    }
-  };
-}
-
-const regionUnit: ExecutedDataRequestUnit = {
-  dataSourceId: 'region-tokens',
-  title: '区域消耗对比',
-  fields: {
-    region: { queryField: '区域', type: 'string', role: 'dimension', label: '区域', nullable: false },
-    tokens: { queryField: '消耗量', type: 'number', role: 'measure', label: '消耗量', nullable: false }
-  },
-  query: dqeQuery(['区域'], ['消耗量']),
-  initial: {
-    capturedAt: '2026-08-13T00:00:00+08:00',
-    rows: [
-      { 区域: '华东', 消耗量: 42 },
-      { 区域: '华南', 消耗量: 27 },
-      { 区域: '华北', 消耗量: 21 },
-      { 区域: '西南', 消耗量: 14 },
-      { 区域: '华中', 消耗量: 10 },
-      { 区域: '东北', 消耗量: 6 },
-      { 区域: '西北', 消耗量: 3 }
-    ],
-    totalCount: 7
-  },
-  intent: 'comparison'
-};
-
-const trendUnit: ExecutedDataRequestUnit = {
-  dataSourceId: 'monthly-tokens',
-  title: '月度消耗趋势',
-  fields: {
-    month: { queryField: '月份', type: 'date', role: 'dimension', label: '月份', nullable: false },
-    tokens: { queryField: '消耗量', type: 'number', role: 'measure', label: '消耗量', nullable: false }
-  },
-  query: dqeQuery(['月份'], ['消耗量']),
-  initial: {
-    capturedAt: '2026-08-13T00:00:00+08:00',
-    rows: [
-      { 月份: '2026-06-01', 消耗量: 88 },
-      { 月份: '2026-07-01', 消耗量: 96 }
-    ],
-    totalCount: 2
-  },
-  intent: 'trend'
-};
-
 function assembled(): Record<string, unknown> {
-  const result = assembleTransientPage({
-    pageId: 'ask-transient-0badc0de',
-    units: [regionUnit, trendUnit]
-  });
-  if (!result.ok) throw new Error('测试文档装配失败');
-  return structuredClone(result.document) as unknown as Record<string, unknown>;
+  return structuredClone(documentFixture);
 }
 
 function authoringDraftOf(document: Record<string, unknown>) {

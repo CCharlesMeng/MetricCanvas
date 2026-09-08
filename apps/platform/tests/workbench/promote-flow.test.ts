@@ -1,15 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { validate } from '@metriccanvas/page';
+import type { FormulaTrace } from '../../src/lib/workbench/promote';
+import documentFixture from './fixtures/promote.json';
 import {
-  assembleTransientPage,
-  type FormulaTrace
-} from '@metriccanvas/mcp';
-import {
-  askStateMessage,
-  initialAskState
-} from '../../src/lib/ask/conversation';
-import {
-  askFormulaTraces,
   buildPromotion,
   formalPageIdError,
   promotionSaveBody
@@ -17,7 +10,7 @@ import {
 
 /**
  * 沉淀入口的工作台流程模型(#68):纯函数,脱离浏览器测试。
- * 改写规则本体的表驱动覆盖在 packages/server/mcp/tests/promote.test.ts;
+ * 改写规则本体的表驱动覆盖在 ./promote.test.ts;
  * 这里验证平台接线的决策面——方向分发、命名闸、留痕提取与保存命令翻译。
  */
 
@@ -32,59 +25,7 @@ const traces: FormulaTrace[] = [
 ];
 
 function transientDocument(): Record<string, unknown> {
-  const result = assembleTransientPage({
-    pageId: TRANSIENT_ID,
-    description: '区域成交对比',
-    filters: [
-      { id: 'region-filter', type: 'dimension', dimension: 'region', label: '区域' }
-    ],
-    units: [
-      {
-        dataSourceId: 'region-gmv',
-        title: '区域成交对比',
-        fields: {
-          region: {
-            queryField: '区域',
-            type: 'string',
-            role: 'dimension',
-            label: '区域',
-            nullable: false
-          },
-          gmv: {
-            queryField: '成交总额',
-            type: 'number',
-            role: 'measure',
-            label: '成交总额',
-            nullable: false
-          }
-        },
-        query: {
-          language: 'dqe',
-          body: {
-            dsl_list: [
-              {
-                output_dims: ['区域'],
-                output_metrics: ['成交总额'],
-                filter: { dims: [], metrics: [] },
-                order: {}
-              }
-            ]
-          },
-          filterBindings: {
-            'region-filter': { target: 'dimension', queryField: '区域' }
-          }
-        },
-        initial: {
-          capturedAt: '2026-08-12T00:00:00+08:00',
-          rows: [{ 区域: '华东', 成交总额: 520000 }],
-          totalCount: 1
-        },
-        intent: 'comparison'
-      }
-    ]
-  });
-  if (!result.ok) throw new Error('装配失败');
-  return result.document as unknown as Record<string, unknown>;
+  return structuredClone(documentFixture);
 }
 
 describe('沉淀方向分发', () => {
@@ -132,21 +73,6 @@ describe('正式页面 id 的平台侧命名闸', () => {
 
   it('常规正式 id 放行(占位符与格式由纯函数改写裁决)', () => {
     expect(formalPageIdError('region-gmv-overview')).toBeNull();
-  });
-});
-
-describe('临时指标留痕提取(ask 会话状态消息,#66)', () => {
-  it('从会话基线的状态消息读取 formulaTraces', () => {
-    const messages = [
-      { role: 'user' as const, content: '平均每单成交多少钱?' },
-      askStateMessage({ ...initialAskState(), formulaTraces: traces })
-    ];
-    expect(askFormulaTraces(messages)).toEqual(traces);
-  });
-
-  it('无状态消息或无基线时为空:沉淀警告退化为文档内表达式清单', () => {
-    expect(askFormulaTraces(null)).toEqual([]);
-    expect(askFormulaTraces([{ role: 'user', content: '你好' }])).toEqual([]);
   });
 });
 

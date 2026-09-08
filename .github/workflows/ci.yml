@@ -66,9 +66,8 @@ jobs:
       - name: 类型检查
         run: pnpm check
 
-      # 静态构建(SvelteKit adapter-static,SPA fallback)。索引页由运行时经构建期
-      # glob 收录的全部 pages/*.json 动态列出,新增看板无需手工登记。
-      - name: 静态构建
+      # 产品构建包含 embed 与平台；平台仍为 adapter-node，静态化前置见 #104/#105。
+      - name: 产品构建
         run: pnpm build
 
       # 开发预览应用按需使用，不作为产品构建产物上传。

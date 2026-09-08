@@ -1,0 +1,183 @@
+{
+  "schemaVersion": "6.0",
+  "id": "ask-transient-0badc0de",
+  "dataSources": {
+    "region-tokens": {
+      "fields": {
+        "region": {
+          "queryField": "区域",
+          "type": "string",
+          "role": "dimension",
+          "label": "区域",
+          "nullable": false
+        },
+        "tokens": {
+          "queryField": "消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "消耗量",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-13T00:00:00+08:00",
+          "rows": [
+            {
+              "区域": "华东",
+              "消耗量": 42
+            },
+            {
+              "区域": "华南",
+              "消耗量": 27
+            },
+            {
+              "区域": "华北",
+              "消耗量": 21
+            },
+            {
+              "区域": "西南",
+              "消耗量": 14
+            },
+            {
+              "区域": "华中",
+              "消耗量": 10
+            },
+            {
+              "区域": "东北",
+              "消耗量": 6
+            },
+            {
+              "区域": "西北",
+              "消耗量": 3
+            }
+          ],
+          "totalCount": 7
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "区域"
+                ],
+                "output_metrics": [
+                  "消耗量"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    },
+    "monthly-tokens": {
+      "fields": {
+        "month": {
+          "queryField": "月份",
+          "type": "date",
+          "role": "dimension",
+          "label": "月份",
+          "nullable": false
+        },
+        "tokens": {
+          "queryField": "消耗量",
+          "type": "number",
+          "role": "measure",
+          "label": "消耗量",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-13T00:00:00+08:00",
+          "rows": [
+            {
+              "月份": "2026-06-01",
+              "消耗量": 88
+            },
+            {
+              "月份": "2026-07-01",
+              "消耗量": 96
+            }
+          ],
+          "totalCount": 2
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "月份"
+                ],
+                "output_metrics": [
+                  "消耗量"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "region-tokens-bar-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "region-tokens"
+          },
+          "props": {
+            "title": "区域消耗对比",
+            "categoryField": "region",
+            "series": [
+              {
+                "field": "tokens",
+                "label": "消耗量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "monthly-tokens-line-chart",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "monthly-tokens"
+          },
+          "props": {
+            "title": "月度消耗趋势",
+            "xField": "month",
+            "series": [
+              {
+                "field": "tokens",
+                "label": "消耗量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

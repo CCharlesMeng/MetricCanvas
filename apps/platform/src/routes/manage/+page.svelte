@@ -39,7 +39,6 @@
       <p class="muted">查看页面修订、审计信息、差异与统一运行时预览。</p>
     </div>
     <div class="heading-actions">
-      <a href="/manage/templates">管理页面模板</a>
       <button onclick={loadPages} disabled={loading}>刷新目录</button>
     </div>
   </div>
@@ -56,7 +55,7 @@
   {:else if pages.length === 0}
     <div class="empty">
       <h2>暂无页面</h2>
-      <p>可先在页面搭建工作台创建页面。</p>
+      <p>页面资产服务当前未返回页面。公共 Chat 尚未接通，暂不提供对话创建页面。</p>
       <a href={resolve('/')}>打开页面搭建工作台</a>
     </div>
   {:else}
@@ -113,9 +112,7 @@
     color: var(--muted);
     font-size: 13px;
   }
-  button,
-  .empty a,
-  .heading-actions a {
+  button, .empty a {
     padding: 7px 13px;
     color: var(--text);
     background: var(--surface);
@@ -131,9 +128,7 @@
       box-shadow 0.15s ease,
       transform 0.1s ease;
   }
-  button:hover:not(:disabled),
-  .empty a:hover,
-  .heading-actions a:hover {
+  button:hover:not(:disabled), .empty a:hover {
     border-color: var(--faint);
     box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
   }

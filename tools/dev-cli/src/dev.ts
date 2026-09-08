@@ -39,8 +39,6 @@ export function createDevLaunch({
     PLATFORM_ORIGIN: 'http://localhost:5174',
     RUNTIME_ORIGIN: 'http://localhost:5173',
     VITE_DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,
-    // platform 服务端取数入口用的 DQE 端点;无 VITE_ 前缀,不进浏览器产物。
-    DQE_ENDPOINT: DQE_SIM_EXECUTE_ENDPOINT,
     VITE_AI_SUMMARY_ENDPOINT: `${DQE_SIM_ORIGIN}/api/ai/conversations/`
   });
   if (profile === 'offline') env.METRICCANVAS_OFFLINE = '1';

@@ -6,8 +6,7 @@
     "paths": {
       "$env/dynamic/private": ["tests/support/private-env.ts"],
       "$fixtures/*": ["../../docs/examples/*"],
-      "$pages/*": ["../../pages/*"],
-      "$templates/*": ["../../templates/*"]
+      "$pages/*": ["../../pages/*"]
     }
   },
   "include": [

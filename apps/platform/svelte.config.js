@@ -11,7 +11,6 @@ export default {
     // 仓库根数据资产固定别名,避免服务端代码内的多级相对路径(参照 apps/playground 的 $pages 先例)
     alias: {
       $pages: '../../pages',
-      $templates: '../../templates',
       $fixtures: '../../docs/examples'
     }
   }
