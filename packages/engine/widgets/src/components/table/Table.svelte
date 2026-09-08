@@ -16,7 +16,7 @@
     Row,
     TableColumn,
     TableProps as TableComponentProps
-  } from '@metriccanvas/page';
+  } from '@metriccanvas/page/internal';
   import type { NamedDataSlots } from '../../shared/component-data';
   import {
     resolveField,

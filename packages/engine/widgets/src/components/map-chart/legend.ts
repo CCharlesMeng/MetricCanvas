@@ -1,4 +1,4 @@
-import type { MapChartProps } from '@metriccanvas/page';
+import type { MapChartProps } from '@metriccanvas/page/internal';
 import type { ColorList } from '../../shared/chart-palette';
 import type { MapProjectionRect } from './options';
 

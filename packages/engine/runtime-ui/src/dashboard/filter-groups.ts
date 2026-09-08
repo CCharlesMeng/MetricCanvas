@@ -1,4 +1,4 @@
-import type { FilterDeclaration } from '@metriccanvas/page';
+import type { FilterDeclaration } from '@metriccanvas/page/internal';
 import { visibleFilterDeclarations } from '../filters/filter-bar';
 
 export interface DashboardFilterGroups {

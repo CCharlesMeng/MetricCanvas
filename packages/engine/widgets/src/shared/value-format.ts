@@ -1,4 +1,4 @@
-import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page';
+import type { FieldValue, ValueFormatPreset } from '@metriccanvas/page/internal';
 
 export type ValuePolarity = 'positive' | 'negative' | 'neutral';
 

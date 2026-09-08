@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { componentCatalog, componentCatalogEntry } from '@metriccanvas/page';
+import { componentCatalog } from '@metriccanvas/page';
+import { componentCatalogEntry } from '@metriccanvas/page/internal';
 import {
   recommendComponents,
   type ComponentCandidate,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { LineChartProps } from '@metriccanvas/page';
+import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { lineOption } from '../src/components/line-chart/options';
 

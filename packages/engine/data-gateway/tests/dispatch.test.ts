@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery } from '@metriccanvas/page';
+import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import type {
   DimensionValuesResult,
   QueryDiagnosticContext,

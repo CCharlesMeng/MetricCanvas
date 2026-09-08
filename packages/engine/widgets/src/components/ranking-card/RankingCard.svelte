@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { RankingCardProps } from '@metriccanvas/page';
+  import type { RankingCardProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldLabel, resolveField } from '../../shared/component-data';
   import { formatValue, valuePolarity } from '../../shared/value-format';

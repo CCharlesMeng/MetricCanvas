@@ -112,7 +112,7 @@ describe('筛选状态 store:订阅与回写', () => {
 });
 
 describe('筛选状态 store:普通 URL', () => {
-  const declarations: import('@metriccanvas/page').FilterDeclaration[] = [
+  const declarations: import('@metriccanvas/page/internal').FilterDeclaration[] = [
     {id:'region',type:'dimension',dimension:'geo',hierarchy:[{id:'geo',dimension:'geo'},{id:'office',dimension:'office-code'}],urlParams:{value:'region',level:'level'}},
     {id:'period',type:'timeRange',urlParams:{from:'from',to:'to'}},
     {id:'flag',type:'boolean'}, {id:'amount',type:'numberRange'},

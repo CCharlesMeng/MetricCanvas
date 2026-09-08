@@ -2,7 +2,7 @@ import type {
   DqeRequestBody,
   JsonObject,
   QueryFieldDefinition
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type { DomainSemanticSurface } from '@metriccanvas/mcp';
 import type { DimensionFilter } from '../session/step-event';
 import type { AskDataRequestUnitState, AskUnitMetric } from './ports';

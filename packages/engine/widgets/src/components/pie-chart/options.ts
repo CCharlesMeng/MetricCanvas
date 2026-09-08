@@ -1,4 +1,4 @@
-import type { PieChartProps } from '@metriccanvas/page';
+import type { PieChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';

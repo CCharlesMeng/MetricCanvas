@@ -3,7 +3,7 @@ import {
   type FieldDefinition,
   type TableColumn,
   type TableColumnNode
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 
 export type TableHeaderCell =
   | {

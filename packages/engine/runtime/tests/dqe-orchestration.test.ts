@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery, Page, Row } from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
+import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 import { createFilterState } from '../src/filter-state';
 import { orchestrate } from '../src/orchestrator';
 import type { DataGateway } from '../src/ports';

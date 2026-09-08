@@ -1,6 +1,6 @@
 import type { AddressInfo } from 'node:net';
 import { afterEach, describe, expect, it } from 'vitest';
-import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   createDqeSimServer,
   DQE_EXECUTE_PATH

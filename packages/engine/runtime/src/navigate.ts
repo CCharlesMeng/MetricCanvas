@@ -1,4 +1,4 @@
-import { isNavigationHref, type NavigationTarget, type Row } from '@metriccanvas/page';
+import { isNavigationHref, type NavigationTarget, type Row } from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from './filter-state';
 import type { PageParamValues } from './page-params';
 

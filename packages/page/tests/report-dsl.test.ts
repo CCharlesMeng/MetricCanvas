@@ -3,7 +3,7 @@ import {
   derivePageCapabilities,
   validate,
   type Page
-} from '../src';
+} from '../src/internal';
 import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import mixedPage from '../fixtures/contract-valid/mixed-page.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';

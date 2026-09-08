@@ -1,4 +1,4 @@
-import type { TableColumnNode } from '@metriccanvas/page';
+import type { TableColumnNode } from '@metriccanvas/page/internal';
 import { describe, expect, it } from 'vitest';
 import {
   buildTableColumnLayout,

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import { createMemoryTemplateLibrary } from '@metriccanvas/template-library';
-import type { EffectiveQuery, JsonObject, Row } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject, Row } from '@metriccanvas/page/internal';
 import {
   connectInProcessMetricCanvasMcp,
   createDataContextSearch,

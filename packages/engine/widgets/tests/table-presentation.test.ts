@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Row } from '@metriccanvas/page';
+import type { Row } from '@metriccanvas/page/internal';
 import { mergeSpans, tableRowTier } from '../src/components/table/presentation';
 import type { AlignedTableRow } from '../src/components/table/rows';
 

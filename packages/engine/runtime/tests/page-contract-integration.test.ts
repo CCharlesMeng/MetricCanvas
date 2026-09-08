@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  validate,
-  type EffectiveQuery,
-  type Page,
-  type Row
-} from '@metriccanvas/page';
+import { validate, type Page } from '@metriccanvas/page';
+import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 import inlineReportDocument from '../../../page/fixtures/contract-valid/inline-report.json';
 import mixedPageDocument from '../../../page/fixtures/contract-valid/mixed-page.json';
 import queryDashboardDocument from '../../../page/fixtures/contract-valid/query-dashboard.json';

@@ -8,7 +8,7 @@ import {
   type FieldDefinition,
   type QueryFieldDefinition,
   type StandardFieldType
-} from '../src';
+} from '../src/internal';
 
 /**
  * 结果字段契约共享校验(issue #50):inline 数据校验与查询结果归一化

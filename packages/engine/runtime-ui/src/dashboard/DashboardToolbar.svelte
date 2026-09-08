@@ -3,7 +3,7 @@
     FilterDeclaration,
     NumberRangeValue,
     TimeRangeValue
-  } from '@metriccanvas/page';
+  } from '@metriccanvas/page/internal';
   import type {
     DimensionValuesSnapshots,
     FilterValues

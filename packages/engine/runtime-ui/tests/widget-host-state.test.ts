@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { Component, DataSnapshot, QueryError } from '@metriccanvas/page';
+import type { Component, DataSnapshot, QueryError } from '@metriccanvas/page/internal';
 import {
   hostRenderSnapshot,
   queryErrorView,

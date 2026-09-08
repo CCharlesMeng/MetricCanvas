@@ -1,4 +1,4 @@
-import type { Component } from '@metriccanvas/page';
+import type { Component } from '@metriccanvas/page/internal';
 
 export type ResponsiveBehavior = 'fluid' | 'reflow' | 'scroll-owner' | 'layout-owner';
 

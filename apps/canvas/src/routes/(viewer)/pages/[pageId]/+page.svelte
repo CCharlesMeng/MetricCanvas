@@ -1,10 +1,7 @@
 <script lang="ts">
   import { goto, replaceState } from '$app/navigation';
   import { page } from '$app/state';
-  import {
-    documentLayoutForm,
-    documentUsesRuntimeBackToolbar
-  } from '@metriccanvas/page';
+  import { documentLayoutForm, documentUsesRuntimeBackToolbar } from '@metriccanvas/page/internal';
   import type { DataGateway } from '@metriccanvas/engine';
   import {
     RuntimeView,

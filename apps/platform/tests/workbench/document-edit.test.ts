@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { validate, type DqeQueryDefinition } from '@metriccanvas/page';
+import { validate } from '@metriccanvas/page';
+import type { DqeQueryDefinition } from '@metriccanvas/page/internal';
 import { assembleTransientPage, type ExecutedDataRequestUnit } from '@metriccanvas/mcp';
 import {
   changeComponentType,

@@ -7,7 +7,7 @@ import {
   type DataContextSnapshot,
   type ExecuteDataRequestUnitQuery
 } from '@metriccanvas/mcp';
-import { hasQueryFieldMapping } from '@metriccanvas/page';
+import { hasQueryFieldMapping } from '@metriccanvas/page/internal';
 import type { AgentEvent, AgentMessage } from '../../../src/lib/server/agent/types';
 import type { AnalysisStepEvent } from '../../../src/lib/server/session/step-event';
 import { createSnapshotAskRetrieval } from '../../../src/lib/server/ask/retrieval';

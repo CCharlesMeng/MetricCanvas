@@ -1,11 +1,15 @@
 <script lang="ts">
   import {
+    parsePage,
+    type Page,
+    type TypedError
+  } from '@metriccanvas/page';
+  import {
     dataSourceMode,
     derivePageCapabilities,
     fieldName,
     filterURLKeys,
     isChartComponent,
-    parsePage,
     pageListEntry,
     resolveDataSourceFields,
     flattenPageComponents,
@@ -14,16 +18,14 @@
     type ComponentCapabilities,
     type DataSnapshot,
     type FilterDeclaration,
-    type Page,
     type PageParamDeclaration,
     type Row,
     type TableColumn,
     type TableComponent,
     type TextLink,
     type NumberRangeValue,
-    type TimeRangeValue,
-    type TypedError
-  } from '@metriccanvas/page';
+    type TimeRangeValue
+  } from '@metriccanvas/page/internal';
   import {
     createDimensionValuesLoader,
     createFilterState,

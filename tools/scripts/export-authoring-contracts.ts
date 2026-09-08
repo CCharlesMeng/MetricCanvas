@@ -10,7 +10,7 @@ import {
   validate,
   versionPolicy,
   type DataRow
-} from '../../packages/page/src/index.ts';
+} from '../../packages/page/src/internal.ts';
 import {
   parseDataContextSnapshot,
   semanticSurfaceOf,

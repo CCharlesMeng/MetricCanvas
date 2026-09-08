@@ -7,7 +7,7 @@ import type {
   PivotOperator,
   RatioScale,
   ScalarFieldValue
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 
 /**
  * 受控计算阶段的求值(ADR-0046)。

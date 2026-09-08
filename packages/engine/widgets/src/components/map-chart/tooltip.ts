@@ -1,4 +1,4 @@
-import type { Row, ValueFormatPreset } from '@metriccanvas/page';
+import type { Row, ValueFormatPreset } from '@metriccanvas/page/internal';
 import { formatValue } from '../../shared/value-format';
 
 /** 已解析的 tooltip 追加项:标签 + 字段名 + 该绑定最终生效的展示格式。 */

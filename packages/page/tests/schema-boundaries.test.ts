@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import Ajv from 'ajv';
 import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
-import { pageSchema } from '../src';
+import { pageSchema } from '../src/internal';
 
 /**
  * 当前页面 JSON Schema 的边界行为回归(继承自已删除的等价性安全网):

@@ -2,7 +2,7 @@ import {
   dimensionOfLevel,
   type DimensionFilterDeclaration,
   type FilterDeclaration
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from '../../../runtime/src';
 
 /**

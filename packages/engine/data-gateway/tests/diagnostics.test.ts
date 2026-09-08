@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   DQE_DEV_DETAIL_MASK,
   createDqeDevDetail,

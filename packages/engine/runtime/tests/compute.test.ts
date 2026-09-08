@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ComputeOperator, DataRow, RatioScale } from '@metriccanvas/page';
+import type { ComputeOperator, DataRow, RatioScale } from '@metriccanvas/page/internal';
 import { applyComputation } from '../src/compute';
 
 describe('ratio:分母为零的语义必须显式声明', () => {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { QUERY_ERROR_CODES, type EffectiveQuery, type Page } from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
+import { QUERY_ERROR_CODES, type EffectiveQuery } from '@metriccanvas/page/internal';
 import { createFilterState } from '../src/filter-state';
 import { orchestrate, type PageDataSnapshots } from '../src/orchestrator';
 import type { DataGateway, QueryDiagnosticContext } from '../src/ports';

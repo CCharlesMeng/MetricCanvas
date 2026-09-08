@@ -5,7 +5,7 @@ import {
   normalizeAuthoringDropTarget,
   resolveAuthoringSections
 } from '../src/authoring-layout';
-import type { PageSection } from '@metriccanvas/page';
+import type { PageSection } from '@metriccanvas/page/internal';
 
 describe('画布创作态插槽', () => {
   it('非空内容分区包含首位、组件之间与末位；空内容分区保留一个插槽', () => {

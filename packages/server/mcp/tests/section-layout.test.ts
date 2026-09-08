@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { componentCatalogEntry, type ComponentCatalogEntry } from '@metriccanvas/page';
+import { componentCatalogEntry, type ComponentCatalogEntry } from '@metriccanvas/page/internal';
 import { SECTION_COLUMN_COUNT, packSectionSpans } from '../src';
 
 type ComponentType = ComponentCatalogEntry['type'];

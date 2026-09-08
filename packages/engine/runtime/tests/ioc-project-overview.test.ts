@@ -1,12 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import {
-  parsePage,
-  requiredMinorVersion,
-  sectionBackdrop,
-  type Page
-} from '@metriccanvas/page';
+import { parsePage, type Page } from '@metriccanvas/page';
+import { requiredMinorVersion, sectionBackdrop } from '@metriccanvas/page/internal';
 import {
   createFilterState,
   navigationHref,

@@ -8,7 +8,7 @@
 </script>
 
 <script lang="ts">
-  import type { TextProps } from '@metriccanvas/page';
+  import type { TextProps } from '@metriccanvas/page/internal';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import aiSummaryIconUrl from '../../assets/ai-summary-icon.svg?inline';
   import riskWarningIconUrl from '../../assets/risk-warning.svg?inline';

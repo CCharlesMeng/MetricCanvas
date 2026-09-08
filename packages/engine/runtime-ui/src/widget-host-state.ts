@@ -4,7 +4,7 @@ import {
   type DataSnapshot,
   type QueryError,
   type QueryErrorDisposition
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 
 type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 

@@ -33,7 +33,7 @@ const ALLOWED_IMPORTS: Record<string, readonly string[]> = {
   // 按 run 的 MCP 接线与查询执行:平台侧组合根的一部分。
   'run-mcp.ts': [
     '@metriccanvas/mcp',
-    '@metriccanvas/page',
+    '@metriccanvas/page/internal',
     '@metriccanvas/page-lifecycle',
     '@metriccanvas/engine',
     '@metriccanvas/template-library',

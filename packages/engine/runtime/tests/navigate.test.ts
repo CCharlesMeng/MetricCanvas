@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { NavigationTarget } from '@metriccanvas/page';
+import type { NavigationTarget } from '@metriccanvas/page/internal';
 import { navigationHref, type FilterValues } from '../src';
 
 const filters: FilterValues = new Map([

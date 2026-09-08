@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { FieldType, JsonObject, JsonValue } from '@metriccanvas/page';
+import type { FieldType, JsonObject, JsonValue } from '@metriccanvas/page/internal';
 
 /**
  * 数据上下文快照契约(Schema 元数据 1.1)。

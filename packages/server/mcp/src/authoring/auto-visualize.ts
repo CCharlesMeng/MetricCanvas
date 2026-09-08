@@ -1,8 +1,5 @@
-import {
-  componentCatalog,
-  componentCatalogEntry,
-  type ComponentCatalogEntry
-} from '@metriccanvas/page';
+import { componentCatalog } from '@metriccanvas/page';
+import { componentCatalogEntry, type ComponentCatalogEntry } from '@metriccanvas/page/internal';
 
 /**
  * 自动可视化（创作期）：以组件能力目录 `componentCatalog` 为唯一硬闸来源，

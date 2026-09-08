@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FieldTextProps } from '@metriccanvas/page';
+  import type { FieldTextProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField, semanticHtmlFieldPresentation } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { MapChartProps } from '@metriccanvas/page';
+import type { MapChartProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import {
   mapLegendFrameStyle,

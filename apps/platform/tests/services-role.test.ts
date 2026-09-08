@@ -1,7 +1,7 @@
 import { createServer } from 'node:http';
 import { describe, expect, it, vi } from 'vitest';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
-import type { EffectiveQuery } from '@metriccanvas/page';
+import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/engine';
 
 vi.mock('$env/dynamic/private', () => ({ env: {} }));

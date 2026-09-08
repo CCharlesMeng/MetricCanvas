@@ -1,4 +1,4 @@
-import { rowKinds, type FieldValue, type RowKind } from '@metriccanvas/page';
+import { rowKinds, type FieldValue, type RowKind } from '@metriccanvas/page/internal';
 import type { AlignedTableRow } from './rows';
 
 /**

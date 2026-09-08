@@ -1,7 +1,4 @@
-import {
-  MAX_SEMANTIC_HTML_LENGTH,
-  type ValueFormatPreset
-} from '@metriccanvas/page';
+import { MAX_SEMANTIC_HTML_LENGTH, type ValueFormatPreset } from '@metriccanvas/page/internal';
 import {
   formatValue,
   valuePolarity,

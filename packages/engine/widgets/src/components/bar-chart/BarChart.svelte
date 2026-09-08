@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { BarChartProps, Row } from '@metriccanvas/page';
+  import type { BarChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { resolveField } from '../../shared/component-data';
   import { formatValue } from '../../shared/value-format';

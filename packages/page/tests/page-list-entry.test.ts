@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { Page } from '../src';
-import { pageListEntry } from '../src';
+import type { Page } from '../src/internal';
+import { pageListEntry } from '../src/internal';
 
 function page(): Page {
   return {

@@ -1,4 +1,4 @@
-import type { FilterDeclaration } from '@metriccanvas/page';
+import type { FilterDeclaration } from '@metriccanvas/page/internal';
 
 /**
  * 筛选栏可见性判定:`visible: false` 的隐藏筛选器仍在筛选状态里生效,

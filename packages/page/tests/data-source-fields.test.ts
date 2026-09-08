@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   resolveDataSourceFields,
   type DataSource
-} from '../src';
+} from '../src/internal';
 
 describe('v4 页面数据源字段解析', () => {
   it('inline 直接使用显式结果字段契约', () => {

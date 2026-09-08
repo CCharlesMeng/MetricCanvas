@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { pageListEntry, parsePage, versionPolicy } from '@metriccanvas/page';
+import { parsePage, versionPolicy } from '@metriccanvas/page';
+import { pageListEntry } from '@metriccanvas/page/internal';
 import { createPageIdConfirmationMcpClient, type McpClient } from '../src';
 
 const pageDocument = {

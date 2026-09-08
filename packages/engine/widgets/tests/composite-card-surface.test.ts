@@ -2,7 +2,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { compositeCardChildTypes } from '@metriccanvas/page';
+import { compositeCardChildTypes } from '@metriccanvas/page/internal';
 
 /**
  * 「卡里不套卡」的机器判据(ADR-0053 要求的那次准入实证)。

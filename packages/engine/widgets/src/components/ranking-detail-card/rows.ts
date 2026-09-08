@@ -4,7 +4,7 @@ import type {
   RankingDetailCardProps,
   RecordListFieldDefinition,
   Row
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type { MainDataSlots, ResolvedField } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 import { formatValue, valuePolarity, type ValuePolarity } from '../../shared/value-format';

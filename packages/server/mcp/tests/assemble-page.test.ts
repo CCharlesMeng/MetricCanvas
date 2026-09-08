@@ -1,11 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import { validate, versionPolicy } from '@metriccanvas/page';
 import {
   componentCatalogEntry,
-  validate,
-  versionPolicy,
   type DqeQueryDefinition,
   type FilterDeclaration
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import {
   assembleTransientPage,
   resultShapeOfUnit,

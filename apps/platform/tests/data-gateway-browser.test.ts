@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { DqeGatewayError } from '@metriccanvas/engine/dqe';
-import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   PLATFORM_DATA_QUERY_PATH,
   PLATFORM_DIMENSION_VALUES_PATH,

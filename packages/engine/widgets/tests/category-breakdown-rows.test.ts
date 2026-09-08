@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CategoryBreakdownProps } from '@metriccanvas/page';
+import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { categoryBreakdownView } from '../src/components/category-breakdown/rows';
 

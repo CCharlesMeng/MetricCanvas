@@ -1,5 +1,5 @@
 import { DqeGatewayError, isAbortError } from '@metriccanvas/engine/dqe';
-import { isQueryErrorCode } from '@metriccanvas/page';
+import { isQueryErrorCode } from '@metriccanvas/page/internal';
 import type {
   DataGateway,
   DataGatewayResult,

@@ -5,7 +5,8 @@ import {
   type ComponentCandidate,
   type ExecutedDataRequestUnit
 } from '@metriccanvas/mcp';
-import { validate, type QueryFieldDefinition } from '@metriccanvas/page';
+import { validate } from '@metriccanvas/page';
+import type { QueryFieldDefinition } from '@metriccanvas/page/internal';
 import {
   normalizeAuthoringDropTarget,
   type AuthoringDraftSection,

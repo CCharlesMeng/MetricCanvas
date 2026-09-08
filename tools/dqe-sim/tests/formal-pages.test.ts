@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { parsePage } from '../../../packages/page/src';
 import {
   hasQueryFieldMapping,
   isQueryDataSource,
-  parsePage,
   type DataSources,
   type QueryDataSource
-} from '../../../packages/page/src';
+} from '../../../packages/page/src/internal';
 import customerActivityRiskPage from '../../../pages/customer-activity-risk-briefing.json';
 import flowAnalysisReportPage from '../../../pages/flow-analysis-report.json';
 import { executeDqeItem } from '../src/execute';

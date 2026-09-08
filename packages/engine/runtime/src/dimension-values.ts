@@ -1,4 +1,4 @@
-import type { QueryError } from '@metriccanvas/page';
+import type { QueryError } from '@metriccanvas/page/internal';
 import type { Subscribable } from './orchestrator';
 import type {
   DimensionValueCandidate,

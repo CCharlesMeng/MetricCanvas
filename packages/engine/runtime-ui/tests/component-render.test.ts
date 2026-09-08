@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { isDataComponent, type Component } from '@metriccanvas/page';
+import { isDataComponent, type Component } from '@metriccanvas/page/internal';
 import { rendersWithoutWidgetHost } from '../src/widget-host-state';
 
 /**

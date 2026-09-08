@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { GaugeProps } from '@metriccanvas/page';
+  import type { GaugeProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { fieldValue, resolveField } from '../../shared/component-data';
   import { finiteNumber, formatValue } from '../../shared/value-format';

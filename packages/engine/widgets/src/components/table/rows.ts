@@ -1,4 +1,4 @@
-import type { FieldBinding, FieldValue, Row } from '@metriccanvas/page';
+import type { FieldBinding, FieldValue, Row } from '@metriccanvas/page/internal';
 import type { NamedDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';
 

@@ -3,7 +3,7 @@
     isChartComponent,
     sectionBackdrop,
     type Component
-  } from '@metriccanvas/page';
+  } from '@metriccanvas/page/internal';
   import { sectionTitleLeftUrl, sectionTitleRightUrl } from '../../widgets/src';
   import { installRowAlignment } from './row-alignment';
   import {

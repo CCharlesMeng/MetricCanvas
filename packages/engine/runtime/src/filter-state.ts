@@ -1,4 +1,4 @@
-import { filterURLKeys } from '@metriccanvas/page';
+import { filterURLKeys } from '@metriccanvas/page/internal';
 import {
   dimensionOfLevel,
   hierarchyLevelOf,
@@ -8,7 +8,7 @@ import {
   validateTimePointValue,
   type FilterDeclaration,
   type NumberRangeValue
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 
 /**
  * 筛选状态 (Filter State) 中单个筛选器的当前值。

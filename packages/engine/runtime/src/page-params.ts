@@ -1,4 +1,4 @@
-import type { PageParamDeclaration, PageParamValue } from '@metriccanvas/page';
+import type { PageParamDeclaration, PageParamValue } from '@metriccanvas/page/internal';
 
 /** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;

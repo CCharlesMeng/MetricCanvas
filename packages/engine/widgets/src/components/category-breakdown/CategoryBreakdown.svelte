@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { CategoryBreakdownProps } from '@metriccanvas/page';
+  import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';
   import { categoryBreakdownView } from './rows';

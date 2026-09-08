@@ -1,4 +1,4 @@
-import type { CategoryBreakdownProps } from '@metriccanvas/page';
+import type { CategoryBreakdownProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';
 import { formatValue } from '../../shared/value-format';

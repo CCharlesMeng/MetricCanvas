@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CategoryBreakdownProps, PieChartProps, Row } from '@metriccanvas/page';
+import type { CategoryBreakdownProps, PieChartProps, Row } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { pieOption } from '../src/components/pie-chart/options';
 import { categoryBreakdownView } from '../src/components/category-breakdown/rows';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ReportHeaderProps } from '@metriccanvas/page';
+  import type { ReportHeaderProps } from '@metriccanvas/page/internal';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import sectionTitleLeftUrl from '../../assets/section-title-left.svg?inline';
   import sectionTitleRightUrl from '../../assets/section-title-right.svg?inline';

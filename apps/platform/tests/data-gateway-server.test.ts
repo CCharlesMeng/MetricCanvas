@@ -5,7 +5,7 @@ import {
   type DqeDevDetailRecord,
   type DqeDiagnosticRecord
 } from '@metriccanvas/engine/dqe';
-import type { EffectiveQuery, JsonObject } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject } from '@metriccanvas/page/internal';
 import {
   createServerDataGateway as createServerDataGatewayAdapter,
   dataQueryHttpStatus,

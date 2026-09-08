@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { QueryErrorCode } from '@metriccanvas/page';
+import type { QueryErrorCode } from '@metriccanvas/page/internal';
 import { DqeGatewayError, createDqeGateway, dimensionValuesDqeItem } from '../src';
 
 /** 敏感哨兵值:候选值属业务数据,错误序列化里检索到即视为泄漏(issue #47)。 */

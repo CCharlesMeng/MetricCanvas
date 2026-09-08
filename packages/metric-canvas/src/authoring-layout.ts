@@ -1,4 +1,4 @@
-import type { PageSection } from '@metriccanvas/page';
+import type { PageSection } from '@metriccanvas/page/internal';
 import type {
   AuthoringComponentLocator,
   AuthoringDraftSection

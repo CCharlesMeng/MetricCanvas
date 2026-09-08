@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { DataSnapshot } from '@metriccanvas/page';
+  import type { DataSnapshot } from '@metriccanvas/page/internal';
   import { queryErrorView, renderableDataSnapshot } from './widget-host-state';
 
   /**

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { LineChartProps, Row } from '@metriccanvas/page';
+  import type { LineChartProps, Row } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import EChart from '../../shared/EChart.svelte';
   import { CATEGORICAL_PALETTE_PROPERTY, readColorList } from '../../shared/chart-palette';

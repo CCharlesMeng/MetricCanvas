@@ -1,4 +1,4 @@
-import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page';
+import type { BarChartProps, ValueFormatPreset } from '@metriccanvas/page/internal';
 import type { EChartsOption, LabelLayoutOptionCallbackParams } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { resolveField } from '../../shared/component-data';

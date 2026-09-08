@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { barForecastBoundaryIssues } from '../src';
-import type { BarChartProps } from '../src';
+import { barForecastBoundaryIssues } from '../src/internal';
+import type { BarChartProps } from '../src/internal';
 
 /**
  * 实际/预测边界规则的首个专属测试(此前零覆盖,见 issue #72)。

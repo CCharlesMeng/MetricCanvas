@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { RankingDetailCardProps } from '@metriccanvas/page';
+  import type { RankingDetailCardProps } from '@metriccanvas/page/internal';
   import type { MainDataSlots } from '../../shared/component-data';
   import SemanticHtml from '../../shared/SemanticHtml.svelte';
   import {

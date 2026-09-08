@@ -1,4 +1,4 @@
-import type { LineChartProps } from '@metriccanvas/page';
+import type { LineChartProps } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';

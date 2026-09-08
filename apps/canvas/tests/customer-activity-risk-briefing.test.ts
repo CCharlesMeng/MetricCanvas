@@ -1,12 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { parsePage, validate } from '@metriccanvas/page';
 import {
   isDqeQueryDefinition,
-  parsePage,
-  validate,
   type MetricCardComponent,
   type TableColumn,
   type TableComponent
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import customerActivityRiskBriefing from '../../../pages/customer-activity-risk-briefing.json';
 
 describe('客户活动风险简报页面文档', () => {

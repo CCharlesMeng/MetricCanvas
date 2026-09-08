@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { QUERY_ERROR_CODES, type DataSnapshot } from '@metriccanvas/page';
+import { QUERY_ERROR_CODES, type DataSnapshot } from '@metriccanvas/page/internal';
 import { collectDataErrors } from '../src/data-error-events';
 
 function snapshots(entries: Record<string, DataSnapshot>): Map<string, DataSnapshot> {

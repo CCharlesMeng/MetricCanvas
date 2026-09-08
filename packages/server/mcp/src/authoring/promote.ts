@@ -1,9 +1,9 @@
 import {
-  pageListEntry,
   parsePage,
   validate,
   type TypedError
 } from '@metriccanvas/page';
+import { pageListEntry } from '@metriccanvas/page/internal';
 import type { FormulaTrace } from './unit-verification';
 
 /**

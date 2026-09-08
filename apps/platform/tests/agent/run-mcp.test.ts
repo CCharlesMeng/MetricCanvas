@@ -4,7 +4,7 @@ import {
   type DataContextSnapshot,
   type McpClient
 } from '@metriccanvas/mcp';
-import type { EffectiveQuery } from '@metriccanvas/page';
+import type { EffectiveQuery } from '@metriccanvas/page/internal';
 import { createMemoryPageLifecycle } from '@metriccanvas/page-lifecycle';
 import type { TemplateLibrary } from '@metriccanvas/template-library';
 import {

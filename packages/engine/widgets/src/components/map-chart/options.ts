@@ -1,4 +1,4 @@
-import type { MapChartProps, Row } from '@metriccanvas/page';
+import type { MapChartProps, Row } from '@metriccanvas/page/internal';
 import type { EChartsOption } from 'echarts';
 import type { MainDataSlots } from '../../shared/component-data';
 import { fieldLabel, resolveField } from '../../shared/component-data';

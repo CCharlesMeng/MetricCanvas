@@ -2,7 +2,7 @@ import {
   QUERY_LANGUAGES,
   isQueryLanguage,
   type QueryLanguage
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type {
   DataGateway,
   DimensionValuesGateway,

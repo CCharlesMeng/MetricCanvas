@@ -1,4 +1,4 @@
-import type { DataSnapshot, QueryError } from '@metriccanvas/page';
+import type { DataSnapshot, QueryError } from '@metriccanvas/page/internal';
 
 /**
  * 数据快照错误事件:统一运行时视图(及嵌入 API)向宿主上抛的

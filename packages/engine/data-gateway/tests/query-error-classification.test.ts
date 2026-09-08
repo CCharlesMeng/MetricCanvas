@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { EffectiveQuery, JsonObject, QueryErrorCode } from '@metriccanvas/page';
+import type { EffectiveQuery, JsonObject, QueryErrorCode } from '@metriccanvas/page/internal';
 import { createDqeGateway, DqeGatewayError } from '../src/dqe';
 
 /** 敏感哨兵值:错误序列化里检索到即视为泄漏(issue #47/#51)。 */

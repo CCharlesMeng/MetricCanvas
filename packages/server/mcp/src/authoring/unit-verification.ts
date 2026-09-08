@@ -2,7 +2,7 @@ import type {
   EffectiveQuery,
   QueryFieldDefinition,
   Row
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import { parseValueDomain, type DataContextSnapshot } from '../data-context';
 import type { ExecutedDataRequestUnit } from './assemble-page';
 

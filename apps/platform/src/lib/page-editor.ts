@@ -1,8 +1,5 @@
-import {
-  componentCatalogEntry,
-  type Component,
-  type PageDocument
-} from '@metriccanvas/page';
+import type { PageDocument } from '@metriccanvas/page';
+import { componentCatalogEntry, type Component } from '@metriccanvas/page/internal';
 import type { AuthoringComponentLocator } from '@metriccanvas/metric-canvas/types';
 
 export type ComponentLocator = AuthoringComponentLocator;

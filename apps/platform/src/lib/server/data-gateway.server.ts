@@ -8,7 +8,7 @@ import {
   type DqeDevDetailRecord,
   type DqeDiagnosticRecord
 } from '@metriccanvas/engine/dqe';
-import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page';
+import { isQueryLanguage, type EffectiveQuery } from '@metriccanvas/page/internal';
 import type { LifecycleContext } from '@metriccanvas/page-lifecycle';
 import type {
   DataGateway,

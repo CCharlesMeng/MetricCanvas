@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import {
-  validate,
-  versionPolicy,
-  type DqeQueryDefinition,
-  type FilterDeclaration
-} from '@metriccanvas/page';
+import { validate, versionPolicy } from '@metriccanvas/page';
+import type { DqeQueryDefinition, FilterDeclaration } from '@metriccanvas/page/internal';
 import {
   adHocDefinitionsOf,
   assembleTransientPage,

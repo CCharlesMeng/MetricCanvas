@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Component, PageSection } from '@metriccanvas/page';
+  import type { Component, PageSection } from '@metriccanvas/page/internal';
   import { RuntimeSection, sectionGridColumnCount, type ComponentContent } from '@metriccanvas/engine/ui/composition';
   import type { Attachment } from 'svelte/attachments';
   import { authoringComponentDropIndex, authoringDropSlots, decodeAuthoringComponentLocator } from './authoring-layout';

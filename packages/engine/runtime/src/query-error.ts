@@ -1,4 +1,4 @@
-import { isQueryErrorCode, type QueryError } from '@metriccanvas/page';
+import { isQueryErrorCode, type QueryError } from '@metriccanvas/page/internal';
 
 /**
  * 把数据网关的拒绝保留为结构化查询错误(issue #51)。

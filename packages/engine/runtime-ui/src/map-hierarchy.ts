@@ -4,7 +4,7 @@ import {
   type FilterDeclaration,
   type MapChartProps,
   type Row
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type {
   DimensionFilterValue,
   DimensionValuesSnapshot,

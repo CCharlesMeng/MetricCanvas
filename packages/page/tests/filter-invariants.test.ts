@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { parsePage, validate } from '../src';
+import { parsePage, validate } from '../src/internal';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 
 describe('筛选器不变式', () => {

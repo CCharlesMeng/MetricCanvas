@@ -1,4 +1,4 @@
-import type { EffectiveQuery, Row } from '@metriccanvas/page';
+import type { EffectiveQuery, Row } from '@metriccanvas/page/internal';
 
 export interface DataGatewayResult {
   rows: Row[];

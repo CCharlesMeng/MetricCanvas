@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ValueFormatPreset } from '@metriccanvas/page';
+  import type { ValueFormatPreset } from '@metriccanvas/page/internal';
   import {
     parseSemanticHtml,
     semanticDataPresentation,

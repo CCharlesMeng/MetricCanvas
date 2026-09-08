@@ -1,4 +1,4 @@
-import type { FieldDefinition, Row } from '@metriccanvas/page';
+import type { FieldDefinition, Row } from '@metriccanvas/page/internal';
 import type { FilterValues } from '../../../runtime/src';
 
 /**

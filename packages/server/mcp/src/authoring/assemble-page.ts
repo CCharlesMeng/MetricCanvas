@@ -1,14 +1,16 @@
 import {
-  componentCatalogEntry,
   validate,
   versionPolicy,
+  type TypedError
+} from '@metriccanvas/page';
+import {
+  componentCatalogEntry,
   type DataRow,
   type DqeQueryDefinition,
   type FilterDeclaration,
   type QueryFieldDefinition,
-  type SectionContainer,
-  type TypedError
-} from '@metriccanvas/page';
+  type SectionContainer
+} from '@metriccanvas/page/internal';
 import {
   recommendComponents,
   type AnalysisIntent,

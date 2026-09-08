@@ -1,5 +1,5 @@
 import type { ExecutedDataRequestUnit } from '@metriccanvas/mcp';
-import type { DqeQueryDefinition, QueryFieldDefinition } from '@metriccanvas/page';
+import type { DqeQueryDefinition, QueryFieldDefinition } from '@metriccanvas/page/internal';
 
 /**
  * /ask 最小竖切的预置取数单元（装配输入，与视图分离）。

@@ -1,4 +1,4 @@
-import type { Component, PageSection } from '@metriccanvas/page';
+import type { Component, PageSection } from '@metriccanvas/page/internal';
 import type { Snippet } from 'svelte';
 import type { Attachment } from 'svelte/attachments';
 import type { RuntimeViewProps } from './types';

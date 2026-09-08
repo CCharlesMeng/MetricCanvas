@@ -2,7 +2,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import { validate } from '../src';
+import { validate } from '../src/internal';
 
 /**
  * 组件 `layout` 补 `.strict()` 是一次**收紧**,按 ADR-0051 的例外行使:

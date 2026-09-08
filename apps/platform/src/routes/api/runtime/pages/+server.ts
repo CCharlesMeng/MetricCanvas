@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { pageListEntry } from '@metriccanvas/page';
+import { pageListEntry } from '@metriccanvas/page/internal';
 import { getRuntimePlatformServices } from '$lib/server/services.server';
 import type { RequestHandler } from './$types';
 

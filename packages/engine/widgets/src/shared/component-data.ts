@@ -6,7 +6,7 @@ import {
   type Row,
   type ValueFormatPreset,
   type FieldValue
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 
 export type ReadyDataSnapshot = Extract<DataSnapshot, { status: 'ready' }>;
 

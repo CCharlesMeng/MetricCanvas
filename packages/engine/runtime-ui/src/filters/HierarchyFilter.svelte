@@ -3,7 +3,7 @@
    * 层级维度筛选器(纯渲染):层级 tabs + 维度取值控件。
    * 层级是筛选值的一部分,地图等分层视图读它,不维护自己的层级状态。
    */
-  import type { FilterHierarchyLevel } from '@metriccanvas/page';
+  import type { FilterHierarchyLevel } from '@metriccanvas/page/internal';
   import type { DimensionValuesSnapshot } from '../../../runtime/src';
   import { hierarchyControlValues } from '../map-hierarchy';
   import DimensionFilter from './DimensionFilter.svelte';

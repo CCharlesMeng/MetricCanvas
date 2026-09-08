@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { componentCatalog, validate } from '../src';
+import { componentCatalog, validate } from '../src/internal';
 
 function textDocument(): Record<string, any> {
   return {

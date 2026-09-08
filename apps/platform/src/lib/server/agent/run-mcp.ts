@@ -5,13 +5,13 @@ import {
   type McpClient,
   type UnitQueryExecutionResult
 } from '@metriccanvas/mcp';
-import { hasQueryFieldMapping } from '@metriccanvas/page';
+import { hasQueryFieldMapping } from '@metriccanvas/page/internal';
 import type {
   DetailRecord,
   EffectiveQuery,
   QueryDataSourceFieldDefinition,
   Row
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type {
   LifecycleContext,
   PageLifecycle,

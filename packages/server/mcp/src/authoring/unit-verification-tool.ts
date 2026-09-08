@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { valueFormatPresets } from '@metriccanvas/page';
+import { valueFormatPresets } from '@metriccanvas/page/internal';
 import {
   createDataRequestUnitVerification,
   MAX_UNIT_EXECUTIONS_PER_RUN,

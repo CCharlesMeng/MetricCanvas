@@ -1,4 +1,4 @@
-import type { JsonValue } from '@metriccanvas/page';
+import type { JsonValue } from '@metriccanvas/page/internal';
 
 /** 脱敏后的占位值:开发期明细里所有业务取值都替换成它。 */
 export const DQE_DEV_DETAIL_MASK = '«已脱敏»';

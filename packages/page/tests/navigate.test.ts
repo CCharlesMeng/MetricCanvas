@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { parsePage } from '../src';
+import { parsePage } from '../src/internal';
 import { migrateURLNavigation } from '../../../tools/scripts/migrate-url-navigation';
 const source = () => JSON.parse(readFileSync(new URL('../fixtures/contract-valid/params-page.json',import.meta.url),'utf8'));
 it('拒绝旧导航结构与旧协议，而不是静默解析', () => {

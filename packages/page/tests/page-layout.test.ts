@@ -6,7 +6,7 @@ import {
   requiredMinorVersion,
   sectionBackdrop,
   validate
-} from '../src';
+} from '../src/internal';
 
 /**
  * 页面布局形态与分区叠放层：两者都是 5.1 的纯增量，因此这里既钉住

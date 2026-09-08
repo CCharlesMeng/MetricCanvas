@@ -1,4 +1,4 @@
-import type { Component, DataSnapshot, Row, TableColumn } from '@metriccanvas/page';
+import type { Component, DataSnapshot, Row, TableColumn } from '@metriccanvas/page/internal';
 import type {
   NamedDataSlots,
   TableHeaderFilterValue,

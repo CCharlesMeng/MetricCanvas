@@ -2,11 +2,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import {
-  declaredPaginationLimit,
-  type EffectiveQuery,
-  type Page
-} from '@metriccanvas/page';
+import type { Page } from '@metriccanvas/page';
+import { declaredPaginationLimit, type EffectiveQuery } from '@metriccanvas/page/internal';
 import { orchestrate } from '../src/orchestrator';
 import type { DataGateway } from '../src/ports';
 

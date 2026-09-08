@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { TimeRangeValue } from '@metriccanvas/page';
+  import type { TimeRangeValue } from '@metriccanvas/page/internal';
 
   /**
    * 时间范围筛选器(纯渲染):当前范围由运行时传入,变更只上抛事件。

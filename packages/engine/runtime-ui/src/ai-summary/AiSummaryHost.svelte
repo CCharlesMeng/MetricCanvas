@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { AiSummaryProps } from '@metriccanvas/page';
+  import type { AiSummaryProps } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../../runtime/src';
   import AiSummaryView from './AiSummaryView.svelte';
   import { assembleAiSummaryRequest } from './assemble-request';

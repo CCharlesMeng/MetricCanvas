@@ -6,7 +6,7 @@ import {
   type JsonObject,
   type JsonValue,
   type Row
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import type {
   DataGateway,
   DataGatewayResult,

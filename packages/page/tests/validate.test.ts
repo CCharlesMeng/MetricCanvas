@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validate } from '../src';
+import { validate } from '../src/internal';
 import inlineReport from '../fixtures/contract-valid/inline-report.json';
 import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
 

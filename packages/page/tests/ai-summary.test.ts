@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validate, type Page } from '../src';
+import { validate, type Page } from '../src/internal';
 
 function document(): Page {
   return {

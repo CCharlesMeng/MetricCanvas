@@ -1,12 +1,8 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
-import {
-  flattenPageComponents,
-  parsePage,
-  requiredMinorVersion,
-  type Page
-} from '@metriccanvas/page';
+import { parsePage, type Page } from '@metriccanvas/page';
+import { flattenPageComponents, requiredMinorVersion } from '@metriccanvas/page/internal';
 import { orchestrate, type PageDataSnapshots } from '../src';
 
 const document = JSON.parse(

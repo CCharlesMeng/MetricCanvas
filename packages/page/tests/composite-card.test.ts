@@ -5,7 +5,7 @@ import {
   requiredMinorVersion,
   validate,
   versionPolicy
-} from '../src';
+} from '../src/internal';
 
 /**
  * 5.2 批次的协议判定:组合卡(容器)、分类明细(叶子)与同批的字段级增量。

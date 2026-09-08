@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { RankingDetailCardProps } from '@metriccanvas/page';
+import type { RankingDetailCardProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { buildRankingDetailRows } from '../src/components/ranking-detail-card/rows';
 

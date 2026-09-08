@@ -25,7 +25,10 @@ const update = process.env.UPDATE_PUBLIC_API === '1';
 const artifacts: Record<string, { manifest: string; entries: Record<string, string> }> = {
   '@metriccanvas/page': {
     manifest: 'packages/page/package.json',
-    entries: { '.': 'packages/page/src/index.ts' }
+    entries: {
+      '.': 'packages/page/src/index.ts',
+      './internal': 'packages/page/src/internal.ts'
+    }
   },
   '@metriccanvas/engine': {
     manifest: 'packages/engine/package.json',

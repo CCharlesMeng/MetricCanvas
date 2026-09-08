@@ -1,13 +1,13 @@
+import type { Page } from '@metriccanvas/page';
 import {
   declaredPaginationLimit,
   type DataRow,
   type DataSnapshot,
   type DataSource,
   type EffectiveQuery,
-  type Page,
   type QueryDataSource,
   flattenPageComponents
-} from '@metriccanvas/page';
+} from '@metriccanvas/page/internal';
 import { applyComputation } from './compute';
 import {
   initialFilterValues,

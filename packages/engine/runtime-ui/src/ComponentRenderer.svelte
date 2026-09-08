@@ -10,7 +10,7 @@
    * 那几个类型:两处各列一遍时,新增一个纯容器只改了模板、判定函数就落在后面
    * (组合卡这次正是这么漏的)。
    */
-  import type { Component, DataSnapshot, Row } from '@metriccanvas/page';
+  import type { Component, DataSnapshot, Row } from '@metriccanvas/page/internal';
   import type { PageDataSnapshots } from '../../runtime/src';
   import {
     BarChart,

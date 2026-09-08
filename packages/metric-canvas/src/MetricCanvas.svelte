@@ -1,7 +1,7 @@
 <script lang="ts">
   import { RuntimeSurface, type ComponentContent } from '@metriccanvas/engine/ui/composition';
   import type { RuntimeViewProps } from '@metriccanvas/engine/ui/types';
-  import type { PageSection } from '@metriccanvas/page';
+  import type { PageSection } from '@metriccanvas/page/internal';
   import AuthoringSection from './AuthoringSection.svelte';
   import { resolveAuthoringSections } from './authoring-layout';
   import type { AuthoringOptions } from './types';

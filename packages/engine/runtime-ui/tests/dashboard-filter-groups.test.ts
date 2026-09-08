@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { FilterDeclaration } from '@metriccanvas/page';
+import type { FilterDeclaration } from '@metriccanvas/page/internal';
 import { dashboardFilterGroups } from '../src/dashboard/filter-groups';
 
 const dimension = (id: string, visible?: boolean): FilterDeclaration => ({

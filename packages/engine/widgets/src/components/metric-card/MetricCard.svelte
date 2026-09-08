@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page';
+  import type { FieldBinding, MetricCardProps, Row } from '@metriccanvas/page/internal';
   import type { MetricDataSlots } from '../../shared/component-data';
   import { fieldRow, fieldValue, resolveField } from '../../shared/component-data';
   import { formatValue, valuePolarity } from '../../shared/value-format';

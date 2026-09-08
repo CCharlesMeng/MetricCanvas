@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parsePage, validate } from '../src';
+import { parsePage, validate } from '../src/internal';
 
 function groupedPage() {
   const query = {

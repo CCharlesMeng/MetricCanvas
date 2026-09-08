@@ -2,7 +2,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { filterURLKeys, isNavigationHref, type FilterDeclaration } from '../../packages/page/src/index';
+import { filterURLKeys, isNavigationHref, type FilterDeclaration } from '../../packages/page/src/internal';
 
 type Json = Record<string, any>;
 export function migrateURLNavigation(input: Json, urls: Readonly<Record<string, string>>): Json {

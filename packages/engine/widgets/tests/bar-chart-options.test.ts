@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { BarChartProps } from '@metriccanvas/page';
+import type { BarChartProps } from '@metriccanvas/page/internal';
 import type { MainDataSlots } from '../src/shared/component-data';
 import { barOption } from '../src/components/bar-chart/options';
 

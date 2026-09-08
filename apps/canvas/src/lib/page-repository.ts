@@ -1,5 +1,6 @@
 import type { PageRepository } from '@metriccanvas/engine';
-import { pageListEntry, parsePage } from '@metriccanvas/page';
+import { parsePage } from '@metriccanvas/page';
+import { pageListEntry } from '@metriccanvas/page/internal';
 
 /**
  * PageRepository 静态文件实现(一期,ADR-0004):页面文档来自仓库根 pages/ 目录($pages 别名)。
