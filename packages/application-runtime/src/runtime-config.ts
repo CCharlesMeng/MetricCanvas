@@ -3,6 +3,7 @@ import {
   DqeGatewayError,
   createDqeGateway
 } from '@metriccanvas/engine/dqe';
+import type { DqeDevDetail } from '@metriccanvas/engine/dqe';
 import type { DataGateway, DimensionValuesGateway } from '@metriccanvas/engine';
 
 export const RUNTIME_CONFIG_SOURCE_KEY = '__METRICCANVAS__';
@@ -103,9 +104,11 @@ function requireDqeRuntimeConfig(): Pick<
  * 不把它们快照进 createDqeGateway 的构造参数。
  */
 export function createInjectedDqeGateway(
-  fetchImpl: typeof fetch = fetch
+  fetchImpl: typeof fetch = fetch,
+  devDetail?: DqeDevDetail
 ): DataGateway & DimensionValuesGateway {
   return createDqeGateway({
+    devDetail,
     fetchImpl: (async (_input, init) => {
       const config = requireDqeRuntimeConfig();
       const headers = new Headers(init?.headers);

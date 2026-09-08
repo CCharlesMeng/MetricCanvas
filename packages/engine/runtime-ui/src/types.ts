@@ -34,6 +34,14 @@ export type RuntimeViewEvent =
   | { type: 'ready'; pageId: string }
   | { type: 'invalid'; errors: TypedError[] }
   | {
+      /** 引擎能力失败，与页面文档校验错误分开；版本均指页面协议版本。 */
+      type: 'version-error';
+      requiredSchemaVersion: string;
+      currentSchemaVersion: string;
+      supportedSchemaVersions: string[];
+      message: string;
+    }
+  | {
       type: 'configuration-error';
       code: RuntimeConfigurationErrorCode;
       message: string;

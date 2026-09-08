@@ -63,6 +63,7 @@
     resolveMapClick
   } from './map-hierarchy';
   import { collectDataErrors } from './data-error-events';
+  import { runtimeVersionError } from './version-error';
   import FilterBar from './filters/FilterBar.svelte';
   import DashboardToolbar from './dashboard/DashboardToolbar.svelte';
   import { dashboardFilterGroups } from './dashboard/filter-groups';
@@ -89,6 +90,7 @@
   type PageState =
     | { phase: 'loading' }
     | { phase: 'invalid'; errors: TypedError[] }
+    | { phase: 'version-error'; error: Extract<RuntimeViewEvent, { type: 'version-error' }> }
     | { phase: 'configuration-error'; error: RuntimeConfigurationError }
     /** 必需页面参数缺失:页面输入不完整,与查询错误分类区分开(ADR-0047)。 */
     | { phase: 'params-incomplete'; missing: PageParamDeclaration[] }
@@ -165,6 +167,13 @@
     // 保持异步初始化接缝，避免外层 effect 把初始化中的状态读取纳入依赖。
     await Promise.resolve();
     if (session !== mySession) return;
+
+    const versionIssue = runtimeVersionError(raw);
+    if (versionIssue) {
+      pageState = { phase: 'version-error', error: versionIssue };
+      emit?.(versionIssue);
+      return;
+    }
 
     // 页面参数不可变:先按声明解析一次 URL 输入,再用它们把文本取值引用
     // 整值替换掉。首次解析只为读到 params 声明,替换后的文档才是渲染依据。
@@ -921,6 +930,11 @@
 <div class="runtime-view">
   {#if pageState.phase === 'loading'}
     <p class="muted">加载页面…</p>
+  {:else if pageState.phase === 'version-error'}
+    <div class="error-page">
+      <h1>引擎不支持页面协议版本</h1>
+      <p>{pageState.error.message}</p>
+    </div>
   {:else if pageState.phase === 'configuration-error'}
     <div class="error-page">
       <h1>统一运行时接入配置不完整</h1>

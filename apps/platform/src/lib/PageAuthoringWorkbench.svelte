@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths';
   import { pageAssets } from '$lib/page-assets';
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
-  import { createInjectedDqeGateway } from './runtime-config';
+  import { createWorkbenchDqeGateway } from './workbench/data-gateway';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
     changeComponentType, componentCandidatesFor, createCanvasAuthoringDraft,
@@ -25,7 +25,7 @@
   let previewOpen = $state(false);
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let selectedComponent = $state<ComponentLocator | null>(null);
-  const dataGateway = createInjectedDqeGateway();
+  const dataGateway = createWorkbenchDqeGateway();
 
   // 已保存页面通过页面资产客户端进入工作台，不依赖旧分析会话检查点。
   onMount(() => {

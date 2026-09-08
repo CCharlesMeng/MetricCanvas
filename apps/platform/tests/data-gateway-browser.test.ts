@@ -6,6 +6,7 @@ import {
   installRuntimeConfig,
   MISSING_RUNTIME_CONFIG_MESSAGE
 } from '../src/lib/runtime-config';
+import { createWorkbenchDqeGateway } from '../src/lib/workbench/data-gateway';
 
 const config={
   dqeEndpoint: '/dqe/execute',
@@ -16,7 +17,11 @@ const config={
 };
 
 beforeEach(() => installRuntimeConfig(config));
-afterEach(() => installRuntimeConfig(null));
+afterEach(() => {
+  installRuntimeConfig(null);
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 
 const dslItem: JsonObject={
   output_metrics: ['NA客户数'],
@@ -44,6 +49,44 @@ function response(data: unknown[]=[{ 客户级别: '卓越NA',NA客户数: 15 }]
 }
 
 describe('平台浏览器直连 DQE',() => {
+  it('工作台开发明细显式启用后可用，业务取值、身份与结果不进入记录', async () => {
+    vi.stubEnv('DEV', true);
+    vi.stubEnv('VITE_DQE_DEV_DETAIL', '1');
+    vi.stubEnv('VITE_DQE_DEV_DETAIL_SAMPLE_RATE', '1');
+    const sink = vi.spyOn(console, 'debug').mockImplementation(() => {});
+    await createWorkbenchDqeGateway(async () => response()).fetchData(query);
+    expect(sink).toHaveBeenCalledOnce();
+    expect(sink.mock.calls[0]?.[1]).toMatchObject({
+      executionId: expect.any(String),
+      effectiveItem: { output_metrics: ['NA客户数'], filter: { time: { start: '«已脱敏»', end: '«已脱敏»' } } }
+    });
+    const serialized = JSON.stringify(sink.mock.calls);
+    for (const value of ['2026-07', '卓越NA', config.authToken, config.operatorId, config.workspaceId]) {
+      expect(serialized).not.toContain(value);
+    }
+  });
+
+  it.each([
+    { dev: false, enabled: '1', rate: '1' },
+    { dev: true, enabled: '', rate: '1' },
+    { dev: true, enabled: '1', rate: '0' },
+    { dev: true, enabled: '1', rate: 'invalid' }
+  ])('工作台明细闸门失败关闭：%j', async ({ dev, enabled, rate }) => {
+    vi.stubEnv('DEV', dev);
+    vi.stubEnv('VITE_DQE_DEV_DETAIL', enabled);
+    vi.stubEnv('VITE_DQE_DEV_DETAIL_SAMPLE_RATE', rate);
+    const sink = vi.spyOn(console, 'debug').mockImplementation(() => {});
+    await createWorkbenchDqeGateway(async () => response()).fetchData(query);
+    expect(sink).not.toHaveBeenCalled();
+  });
+
+  it('正式渲染网关不消费工作台开发明细开关', async () => {
+    vi.stubEnv('DEV', true);
+    vi.stubEnv('VITE_DQE_DEV_DETAIL', '1');
+    const sink = vi.spyOn(console, 'debug').mockImplementation(() => {});
+    await createInjectedDqeGateway(async () => response()).fetchData(query);
+    expect(sink).not.toHaveBeenCalled();
+  });
   it('查询与候选值走同一个注入端点，带上三个身份头并归一化结果',async () => {
     const requests: Array<{ input: string; init?: RequestInit }>=[];
     const gateway=createInjectedDqeGateway(async (input,init) => {

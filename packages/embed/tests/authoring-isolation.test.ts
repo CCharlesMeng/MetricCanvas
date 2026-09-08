@@ -89,9 +89,11 @@ describe('纯渲染交付不包含创作 Module', () => {
     });
     expect([...modules].some((id) => id.endsWith('/RuntimeSurface.svelte'))).toBe(true);
     expect([...modules].filter((id) => /packages\/metric-canvas\/|authoring-layout|AuthoringSection|QueryInspector/.test(id))).toEqual([]);
+    expect([...modules].filter((id) => /apps\/platform\/.*(?:dev-detail|workbench\/data-gateway)/.test(id))).toEqual([]);
     expect(artifacts.length).toBeGreaterThan(0);
     for (const artifact of artifacts) {
       expect(artifact).not.toMatch(/authoring-controls|authoring-selected|application\/x-metriccanvas-component|select_component|move_component|edit_component/);
+      expect(artifact).not.toMatch(/createDqeDevDetail|sanitizeDqeDevDetailItem|«已脱敏»|MetricCanvas DQE dev detail/);
     }
   }, 60_000);
 });

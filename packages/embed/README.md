@@ -134,7 +134,7 @@ Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
 ## 事件
 
-`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`configuration-error`、`data-error`、`filter-change`、`navigate`。
+`RuntimeEvent` 是 `@metriccanvas/engine/ui` 的 `RuntimeViewEvent` 的别名，事件形状以该类型定义为唯一真源。当前事件类型：`ready`、`invalid`、`version-error`、`configuration-error`、`data-error`、`filter-change`、`navigate`。
 
 ```js
 const runtime = MetricCanvas.mount('#dashboard', {
@@ -153,7 +153,9 @@ const runtime = MetricCanvas.mount('#dashboard', {
 
 Embed 通过事件通知筛选变化和导航。链接默认跳转；若要接管，使用 `navigation.navigate` 返回 `true`（见[集成应用契约](../../docs/host-contract.md)），不要在观察事件中重复跳转。筛选变化不会自动写入地址栏，集成应用可选择同步。查询串使用普通值，由接收页声明解释；没有私有类型前缀。
 
-`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`@metriccanvas/page` 的 `QueryErrorCode`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
+`data-error` 事件在页面数据源进入错误态(或错误内容变化)时上抛一次，携带页面数据源 id、稳定查询错误分类(`DataErrorEvent['code']`，未携带分类的异常为 `UNKNOWN`)与脱值消息。集成应用按 `code` 决定重试、引导重新登录或展示失败，不要解析 `message` 字符串。
+
+`version-error` 表示页面声明的 `schemaVersion` 超出引擎支持区间，渲染与查询均停止。事件给出 `requiredSchemaVersion`（页面需要的协议版本）、`currentSchemaVersion`（引擎支持的最新协议版本）、`supportedSchemaVersions`（支持列表）与可读 `message`。这些字段指页面协议版本，与 npm 包 SemVer 无关。集成应用应提供支持该协议版本的引擎；不要自动改写页面版本。缺失或格式非法的 `schemaVersion` 仍通过 `invalid` 返回文档错误。更新为受支持的合法文档后，同一实例可恢复渲染。
 
 ## 生命周期
 
