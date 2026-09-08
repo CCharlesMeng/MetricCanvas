@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   formatStructuredJson,
-  runtimePreviewUrl,
   selectRevisionComparison,
   type RevisionAudit
 } from '../src/lib/management-state';
@@ -48,11 +47,7 @@ describe('管理界面修订状态', () => {
     });
   });
 
-  it('把预览固定到运行时中的精确修订', () => {
-    expect(runtimePreviewUrl('http://localhost:5173/', '销售 / 总额', 'revision / 2')).toBe(
-      'http://localhost:5173/pages/%E9%94%80%E5%94%AE%20%2F%20%E6%80%BB%E9%A2%9D?revision=revision%20%2F%202'
-    );
-  });
+
 
   it('以稳定键顺序显示结构化 JSON 差异', () => {
     expect(formatStructuredJson({ z: [{ b: 2, a: 1 }], a: 'first' })).toBe(

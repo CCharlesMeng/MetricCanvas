@@ -60,6 +60,12 @@ export function readRuntimeConfig(): InjectedRuntimeConfig | null {
   return { dqeEndpoint, pageAssetsBaseUrl, authToken, operatorId, workspaceId };
 }
 
+/** 页面资产的过渡期路由选择：仅缺基址时允许回退同源 Node 路由。 */
+export function readPageAssetsBaseUrl(): string | null {
+  const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
+  return raw && typeof raw === 'object' ? trimmedField(raw, 'pageAssetsBaseUrl') ?? null : null;
+}
+
 /** 测试与本地开发入口写入注入源；生产由集成门户在加载前设置。 */
 export function installRuntimeConfig(config: InjectedRuntimeConfig | null): void {
   if (config === null) {

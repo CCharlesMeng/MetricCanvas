@@ -18,8 +18,7 @@ import { isTransientPageId } from './transient-page';
  * 决策接线(方向分发、正式页面 id 的平台侧命名闸、留痕提取与保存命令
  * 翻译),同样保持纯函数,可脱离浏览器测试。
  *
- * 保存走既有通道:POST /api/pages/{pageId}/revisions(page-lifecycle 的
- * saveRevision),生命周期行为不改。面板中的显式确认翻译为命令字段
+ * 保存经平台页面资产客户端进入 saveRevision，生命周期行为不改。面板中的显式确认翻译为命令字段
  * pageIdConfirmed——与 confirm_page_id 机制的 MCP 客户端装饰器同构,
  * 首次保存必须确认的强制仍由 page-lifecycle 统一承担。
  */

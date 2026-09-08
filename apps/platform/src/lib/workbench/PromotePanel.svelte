@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageAssets } from '$lib/page-assets';
   import {
     DATA_APP_ROLLING_TIME_LIMITATION,
     pageIdConfirmationPayload
@@ -36,15 +37,6 @@
     onpromoted: (outcome: PromotedOutcome) => void;
   } = $props();
 
-  interface SaveRevisionResponse {
-    ok?: boolean;
-    revision?: {
-      revisionId: string;
-      revisionNumber: number;
-      dataContextVersion: string | null;
-    };
-    error?: { code?: string; message?: string };
-  }
 
   let direction = $state<PromoteDirection>('dataApp');
   let pageIdText = $state('');
@@ -86,25 +78,14 @@
     saving = true;
     saveError = '';
     try {
-      const response = await fetch(
-        `/api/pages/${encodeURIComponent(pageId)}/revisions`,
-        {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify(promotionSaveBody(preview.document, crypto.randomUUID()))
-        }
-      );
-      const payload = (await response.json()) as SaveRevisionResponse;
-      if (!response.ok || !payload.ok || !payload.revision) {
-        throw new Error(payload.error?.message ?? `沉淀保存失败:${response.status}`);
-      }
+      const revision = await pageAssets.saveRevision(pageId, promotionSaveBody(preview.document, crypto.randomUUID()));
       onpromoted({
         direction,
         pageId,
         document: preview.document,
-        revisionId: payload.revision.revisionId,
-        revisionNumber: payload.revision.revisionNumber,
-        dataContextVersion: payload.revision.dataContextVersion
+        revisionId: revision.revisionId,
+        revisionNumber: revision.revisionNumber,
+        dataContextVersion: revision.dataContextVersion
       });
     } catch (cause) {
       saveError = cause instanceof Error ? cause.message : String(cause);

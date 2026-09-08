@@ -4,6 +4,7 @@ export {
   installLocalDevRuntimeConfig,
   installRuntimeConfig,
   readRuntimeConfig,
+  readPageAssetsBaseUrl,
   MISSING_RUNTIME_CONFIG_MESSAGE,
   type InjectedRuntimeConfig
 } from '../../../canvas/src/lib/runtime-config';

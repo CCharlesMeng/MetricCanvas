@@ -32,15 +32,6 @@ export function selectRevisionComparison(
   };
 }
 
-export function runtimePreviewUrl(
-  runtimeOrigin: string,
-  pageId: string,
-  revisionId: string
-): string {
-  const origin = runtimeOrigin.replace(/\/+$/, '');
-  return `${origin}/pages/${encodeURIComponent(pageId)}?revision=${encodeURIComponent(revisionId)}`;
-}
-
 /** Serialize arbitrary diff payloads consistently for audit review. */
 export function formatStructuredJson(value: unknown): string {
   return JSON.stringify(sortJson(value), null, 2);

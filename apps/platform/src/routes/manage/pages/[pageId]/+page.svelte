@@ -1,10 +1,11 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
+  import RevisionPreview from '$lib/RevisionPreview.svelte';
+  import { pageAssets } from '$lib/page-assets';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import {
     formatStructuredJson,
-    runtimePreviewUrl,
     selectRevisionComparison,
     type RevisionAudit
   } from '$lib/management-state';
@@ -21,7 +22,6 @@
   }
 
   let revisions = $state<Revision[]>([]);
-  let runtimeOrigin = $state('');
   let selectedRevisionId = $state('');
   let diff = $state<RevisionDiff | null>(null);
   let loading = $state(true);
@@ -47,29 +47,11 @@
     loading = true;
     error = '';
     try {
-      const [pageResponse, historyResponse] = await Promise.all([
-        fetch(`/api/pages/${encodeURIComponent(pageId)}`),
-        fetch(`/api/pages/${encodeURIComponent(pageId)}/revisions`)
-      ]);
-      if (!pageResponse.ok) throw new Error(await responseMessage(pageResponse));
-
-      const pageData = (await pageResponse.json()) as {
-        revision: Revision;
-        runtimeOrigin: string;
-      };
-      if (historyResponse.status === 501) {
-        // 首批 Java 页面资产没有修订历史(ADR-0062):只展示当前最新修订,不把它当成失败。
-        historyUnavailable = await responseMessage(historyResponse);
-        revisions = [pageData.revision];
-      } else {
-        if (!historyResponse.ok) throw new Error(await responseMessage(historyResponse));
-        historyUnavailable = '';
-        const history = (await historyResponse.json()) as { revisions: Revision[] };
-        revisions = history.revisions;
-      }
-      runtimeOrigin = pageData.runtimeOrigin;
-      selectedRevisionId = pageData.revision.revisionId;
-      await loadDiff(pageData.revision.revisionId);
+      const details = await pageAssets.getDetails(pageId);
+      historyUnavailable = details.historyUnavailable;
+      revisions = details.revisions;
+      selectedRevisionId = details.revision.revisionId;
+      await loadDiff(details.revision.revisionId);
     } catch (cause) {
       error = cause instanceof Error ? cause.message : '页面加载失败';
     } finally {
@@ -213,7 +195,7 @@
                 <span>时间：{revision.createdAt}</span>
                 <span>基线：{revision.baseRevisionId ?? '无（首个修订）'}</span>
                 <span>内容哈希：{revision.contentHash}</span>
-                <span>数据上下文版本：{revision.dataContextVersion ?? '仅内联页面'}</span>
+                <span>数据上下文版本：{revision.dataContextVersion ?? '未记录'}</span>
               </button>
             </li>
           {/each}
@@ -228,7 +210,7 @@
             <div><dt>创建时间</dt><dd>{comparison.selected.createdAt}</dd></div>
             <div><dt>基线修订</dt><dd>{comparison.selected.baseRevisionId ?? '无（首个修订）'}</dd></div>
             <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash}</code></dd></div>
-            <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '仅内联页面'}</dd></div>
+            <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '未记录'}</dd></div>
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}
@@ -273,19 +255,13 @@
             <article>
               <h3>选中 R{comparison.selected.revisionNumber}</h3>
               <code>{comparison.selected.revisionId}</code>
-              <iframe
-                title={`选中修订 R${comparison.selected.revisionNumber} 统一运行时预览`}
-                src={runtimePreviewUrl(runtimeOrigin, pageId, comparison.selected.revisionId)}
-              ></iframe>
+              <RevisionPreview {pageId} revisionId={selectedRevisionId} />
             </article>
             <article>
               <h3>{comparison.base ? `基线 R${comparison.base.revisionNumber}` : '基线不可用'}</h3>
               {#if comparison.base}
                 <code>{comparison.base.revisionId}</code>
-                <iframe
-                  title={`基线修订 R${comparison.base.revisionNumber} 统一运行时预览`}
-                  src={runtimePreviewUrl(runtimeOrigin, pageId, comparison.base.revisionId)}
-                ></iframe>
+                <RevisionPreview {pageId} revisionId={comparison.base.revisionId} />
               {:else}
                 <p class="muted">首个修订没有前序修订。</p>
               {/if}
@@ -487,13 +463,6 @@
     color: #52525b;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  iframe {
-    width: 100%;
-    min-height: 480px;
-    border: 1px solid #d4d4d8;
-    border-radius: 7px;
-    background: #fff;
   }
   .error-text {
     color: #b91c1c;

@@ -3,7 +3,9 @@
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import type { PageDocument } from '@metriccanvas/page';
-  import { runtimePreviewUrl } from '$lib/management-state';
+  import RevisionPreview from '$lib/RevisionPreview.svelte';
+  import { pageAssets } from '$lib/page-assets';
+  import { PageAssetsError } from '$lib/page-assets-client';
   import {
     commitPageEdit,
     createPageEditorHistory,
@@ -26,7 +28,6 @@
 
   let history = $state<PageEditorHistory | null>(null);
   let baseRevision = $state<Revision | null>(null);
-  let runtimeOrigin = $state('');
   let selectedKey = $state('');
   let loading = $state(true);
   let saving = $state(false);
@@ -56,17 +57,12 @@
     error = '';
     saveMessage = '';
     try {
-      const response = await fetch(`/api/pages/${encodeURIComponent(pageId)}`);
-      if (!response.ok) throw new Error(await responseMessage(response));
-      const payload = (await response.json()) as {
-        revision: Revision;
-        runtimeOrigin: string;
-      };
-      baseRevision = payload.revision;
-      runtimeOrigin = payload.runtimeOrigin;
-      history = createPageEditorHistory(payload.revision.document);
-      const first = listEditableComponents(payload.revision.document)[0];
+      const revision = await pageAssets.getLatest(pageId);
+      baseRevision = revision;
+      history = createPageEditorHistory(revision.document);
+      const first = listEditableComponents(revision.document)[0];
       selectedKey = first ? locatorKey(first.locator) : '';
+
     } catch (cause) {
       error = cause instanceof Error ? cause.message : '页面修订加载失败';
     } finally {
@@ -110,35 +106,19 @@
     error = '';
     saveMessage = '';
     try {
-      const response = await fetch(
-        `/api/pages/${encodeURIComponent(pageId)}/revisions`,
-        {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            baseRevisionId: baseRevision.revisionId,
-            document: history.current,
-            idempotencyKey: crypto.randomUUID()
-          })
-        }
-      );
-      const payload = (await response.json()) as {
-        revision?: Revision;
-        error?: { code?: string; message?: string; validationErrors?: unknown[] };
-      };
-      if (!response.ok || !payload.revision) {
-        const detail = payload.error?.validationErrors?.length
-          ? `（${payload.error.validationErrors.length} 个校验问题）`
-          : '';
-        throw new Error(
-          `${payload.error?.code ?? 'SAVE_FAILED'}: ${payload.error?.message ?? `HTTP ${response.status}`}${detail}`
-        );
-      }
-      baseRevision = payload.revision;
-      history = createPageEditorHistory(payload.revision.document);
-      saveMessage = `页面文档校验通过，已保存为 R${payload.revision.revisionNumber}。`;
+      const revision = await pageAssets.saveRevision(pageId, {
+        baseRevisionId: baseRevision.revisionId,
+        document: history.current,
+        idempotencyKey: crypto.randomUUID()
+      });
+      baseRevision = revision;
+      history = createPageEditorHistory(revision.document);
+      saveMessage = `页面文档校验通过，已保存为 R${revision.revisionNumber}。`;
+
     } catch (cause) {
-      error = cause instanceof Error ? cause.message : '页面修订保存失败';
+      error = cause instanceof PageAssetsError
+        ? `${cause.code}: ${cause.message}${cause.validationErrors.length ? `（${cause.validationErrors.length} 个校验问题）` : ''}`
+        : cause instanceof Error ? cause.message : '页面修订保存失败';
     } finally {
       saving = false;
     }
@@ -152,12 +132,6 @@
     return (event.currentTarget as HTMLInputElement | HTMLTextAreaElement).value;
   }
 
-  async function responseMessage(response: Response): Promise<string> {
-    const payload = (await response.json().catch(() => null)) as {
-      error?: { message?: string };
-    } | null;
-    return payload?.error?.message ?? `HTTP ${response.status}`;
-  }
 </script>
 
 <svelte:head>
@@ -293,10 +267,7 @@
         {#if dirty}
           <p class="preview-note">工作副本尚未成为页面修订；校验并保存后，预览会切换到新修订。</p>
         {/if}
-        <iframe
-          title={`R${baseRevision.revisionNumber} 统一运行时精确预览`}
-          src={runtimePreviewUrl(runtimeOrigin, pageId, baseRevision.revisionId)}
-        ></iframe>
+        <RevisionPreview {pageId} revisionId={baseRevision.revisionId} />
       </aside>
     </div>
   {/if}
@@ -346,10 +317,9 @@
   .order-actions { margin-top: 14px; }
   .hint, .preview-note { margin: 12px 0 0; color: #71717a; font-size: 12px; line-height: 1.6; }
   .preview-note { padding: 9px 11px; margin: -2px 0 12px; color: #92400e; background: #fffbeb; border-radius: 7px; }
-  iframe { width: 100%; min-height: 680px; border: 1px solid #d4d4d8; border-radius: 8px; background: #fff; }
   .error { margin-bottom: 14px; color: #991b1b; background: #fef2f2; border-color: #fecaca; }
   .success { margin-bottom: 14px; color: #166534; background: #f0fdf4; border-color: #bbf7d0; }
   .muted { color: #71717a; }
   @media (max-width: 1180px) { .workspace { grid-template-columns: 260px minmax(0, 1fr); } .preview-panel { grid-column: 1 / -1; } }
-  @media (max-width: 720px) { .topbar { align-items: stretch; flex-direction: column; } .workspace { grid-template-columns: 1fr; } .preview-panel { grid-column: auto; } iframe { min-height: 520px; } }
+  @media (max-width: 720px) { .topbar { align-items: stretch; flex-direction: column; } .workspace { grid-template-columns: 1fr; } .preview-panel { grid-column: auto; } }
 </style>

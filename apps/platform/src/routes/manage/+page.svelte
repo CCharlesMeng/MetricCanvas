@@ -2,12 +2,8 @@
   import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
 
-  interface PageListItem {
-    pageId: string;
-    latestRevision: { revisionId: string } | null;
-    publishedRevision: { revisionId: string } | null;
-    visibility: 'visible' | 'hidden';
-  }
+  import { pageAssets } from '$lib/page-assets';
+  import type { PageListItem } from '$lib/page-assets-client';
 
   let pages = $state<PageListItem[]>([]);
   let loading = $state(true);
@@ -21,10 +17,7 @@
     loading = true;
     error = '';
     try {
-      const response = await fetch('/api/pages');
-      if (!response.ok) throw new Error(await responseMessage(response));
-      const payload = (await response.json()) as { pages: PageListItem[] };
-      pages = payload.pages;
+      pages = (await pageAssets.listPages()).pages;
     } catch (cause) {
       error = cause instanceof Error ? cause.message : '页面目录加载失败';
     } finally {
@@ -32,12 +25,6 @@
     }
   }
 
-  async function responseMessage(response: Response): Promise<string> {
-    const payload = (await response.json().catch(() => null)) as {
-      error?: { message?: string };
-    } | null;
-    return payload?.error?.message ?? `HTTP ${response.status}`;
-  }
 </script>
 
 <svelte:head>

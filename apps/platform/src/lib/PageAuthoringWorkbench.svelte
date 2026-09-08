@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { pageAssets } from '$lib/page-assets';
   import { onMount, tick } from 'svelte';
   import { replaceState } from '$app/navigation';
   import { fade, fly } from 'svelte/transition';
@@ -68,15 +69,6 @@
    *   的正式页面 id 后走同一保存修订通道,问数与探索不自动触发。
    */
 
-  interface SaveRevisionResponse {
-    ok?: boolean;
-    revision?: {
-      revisionId: string;
-      revisionNumber: number;
-      dataContextVersion: string | null;
-    };
-    error?: { code?: string; message?: string };
-  }
 
   let composerText = $state('');
   /** 分析会话 id(ADR-0030):首次提问生成并写入 URL,刷新后按它回放步骤。 */
@@ -457,26 +449,16 @@
     savePending = true;
     saveError = '';
     try {
-      const response = await fetch(
-        `/api/pages/${encodeURIComponent(pageModel.pageId)}/revisions`,
-        {
-          method: 'POST',
-          headers: { 'content-type': 'application/json' },
-          body: JSON.stringify({
-            baseRevisionId,
-            document: currentDocument,
-            idempotencyKey: crypto.randomUUID()
-          })
-        }
-      );
-      const payload = (await response.json()) as SaveRevisionResponse;
-      if (!response.ok || !payload.ok || !payload.revision) {
-        throw new Error(payload.error?.message ?? `保存失败:${response.status}`);
-      }
-      baseRevisionId = payload.revision.revisionId;
+      const revision = await pageAssets.saveRevision(pageModel.pageId, {
+        baseRevisionId,
+        document: currentDocument,
+        idempotencyKey: crypto.randomUUID(),
+        pageIdConfirmed: confirmedPageIds.includes(pageModel.pageId)
+      });
+      baseRevisionId = revision.revisionId;
       saveNotice =
-        `已保存修订 R${payload.revision.revisionNumber}，数据上下文版本：` +
-        `${payload.revision.dataContextVersion ?? '仅内联页面'}`;
+        `已保存修订 R${revision.revisionNumber}，数据上下文版本：` +
+        `${revision.dataContextVersion ?? '未记录'}`;
     } catch (cause) {
       saveError = cause instanceof Error ? cause.message : String(cause);
     } finally {
@@ -664,7 +646,7 @@
     saveNotice =
       `已沉淀为${outcome.direction === 'dataApp' ? ' Data App' : '报告'}:` +
       `页面 ${outcome.pageId} 修订 R${outcome.revisionNumber},数据上下文版本:` +
-      `${outcome.dataContextVersion ?? '仅内联页面'}`;
+      `${outcome.dataContextVersion ?? '未记录'}`;
   }
 
   function closeMetadataDrawer() {
