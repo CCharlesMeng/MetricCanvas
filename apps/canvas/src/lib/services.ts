@@ -1,18 +1,14 @@
-import { createDqeGateway } from '@metriccanvas/engine/dqe';
 import { createStaticPageRepository } from './page-repository';
 import { createPlatformPageRepository } from './platform-page-repository';
+import { createInjectedDqeGateway } from './runtime-config';
 import type { AiSummaryConfig } from '@metriccanvas/engine/ui';
 
 export const pageRepository = import.meta.env.VITE_PLATFORM_URL
   ? createPlatformPageRepository(import.meta.env.VITE_PLATFORM_URL)
   : createStaticPageRepository();
 
-/** inline 页面不会访问网关；query 页面统一进入当前 DQE 执行环境。 */
-export const dataGateway = createDqeGateway({
-  endpoint:
-    import.meta.env.VITE_DQE_ENDPOINT ??
-    '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
-});
+/** inline 页面不会访问网关；query 页面经注入面直连 DQE（ADR-0073）。 */
+export const dataGateway = createInjectedDqeGateway();
 
 /** AI 总结未配置时由组件局部显示配置错误，不影响页面其他组件。 */
 export const aiSummary: AiSummaryConfig | undefined = import.meta.env.VITE_AI_SUMMARY_ENDPOINT

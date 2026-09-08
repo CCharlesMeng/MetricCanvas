@@ -157,7 +157,10 @@ function cors(response: ServerResponse, request: IncomingMessage): void {
     response.setHeader('access-control-allow-credentials', 'true');
     response.setHeader('vary', 'Origin');
   }
-  response.setHeader('access-control-allow-headers', 'content-type,client,env');
+  response.setHeader(
+    'access-control-allow-headers',
+    'content-type,client,env,x-auth-token,x-operator-id,x-workspace-id'
+  );
   response.setHeader('access-control-allow-methods', 'GET,POST,OPTIONS');
   response.setHeader('access-control-expose-headers', 'x-request-id');
 }

@@ -40,14 +40,14 @@
 | ID | 键名 | 读取方 | 敏感 | 有模板默认值 |
 | --- | --- | --- | --- | --- |
 | `RUN-9` | `VITE_PLATFORM_URL` | canvas 浏览器侧 | 否 | 是(`apps/canvas/.env.example`) |
-| `RUN-10` | `VITE_DQE_ENDPOINT` | canvas 浏览器侧 | 否 | 是 |
+| `RUN-10` | ~~`VITE_DQE_ENDPOINT`~~ | 已退场（ADR-0073）：Canvas DQE 端点改由运行配置注入面供给，不再读构建期变量 | 否 | 否 |
 | `RUN-11` | `VITE_AI_SUMMARY_ENDPOINT`、`VITE_AI_SUMMARY_ENV` | canvas 浏览器侧 | 否 | **否**——源码读它,`.env.example` 里没有。缺席时 AI 总结组件局部显示配置错误,页面其余部分照常 |
 | `RUN-12` | `DATABASE_URL`、`DATA_SERVICE_URL`、`DP_URL`、`PLATFORM_ORIGIN`、`RUNTIME_ORIGIN`、`DQE_ENDPOINT`、`METRICCANVAS_OFFLINE` | platform 服务端 | 否 | 是(`apps/platform/.env.example`) |
 | `RUN-13` | `AGENT_MODEL_PROVIDER`、`DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL`、`DEEPSEEK_BASE_URL`、`OPENAI_COMPATIBLE_API_KEY`、`OPENAI_COMPATIBLE_MODEL`、`OPENAI_COMPATIBLE_BASE_URL` | platform 服务端 | **两个 `*_API_KEY` 是** | 键名在模板里 |
 | `RUN-14` | `TEST_POSTGRES` | 测试门控 | 否 | 否 |
 | `RUN-15` | `DQE_SIM_PORT` | `tools/dqe-sim` | 否 | 否 |
 
-**`apps/canvas/.env` 与 `.env.local` 里有一个源码不再读取的键(`VITE_DATA_GATEWAY`)。** 源码侧的取数端点键是 `RUN-10`。本机配置已漂,但按门禁不覆盖已有 `.env*`——要清就手动清。
+**`apps/canvas/.env` 与 `.env.local` 里可能仍有源码不再读取的键(`VITE_DATA_GATEWAY`、`VITE_DQE_ENDPOINT`)。** DQE 端点改由运行配置注入面供给（ADR-0073）。本机配置已漂,但按门禁不覆盖已有 `.env*`——要清就手动清。
 
 ## 质量命令
 

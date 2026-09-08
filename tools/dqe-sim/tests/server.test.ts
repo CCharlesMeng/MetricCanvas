@@ -32,6 +32,15 @@ describe('DQE Sim HTTP 契约', () => {
     });
     expect(preflight.status).toBe(204);
     expect(preflight.headers.get('access-control-allow-origin')).toBe('*');
+    expect(preflight.headers.get('access-control-allow-headers')).toMatch(
+      /x-auth-token/
+    );
+    expect(preflight.headers.get('access-control-allow-headers')).toMatch(
+      /x-operator-id/
+    );
+    expect(preflight.headers.get('access-control-allow-headers')).toMatch(
+      /x-workspace-id/
+    );
 
     const response = await execute(baseUrl, dqeItem());
     expect(response.status).toBe(200);
