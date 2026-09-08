@@ -22,6 +22,16 @@ const snapshotDir = resolve(root, 'tests/public-api');
 const update = process.env.UPDATE_PUBLIC_API === '1';
 
 describe('四个交付物的公开面', () => {
+  it('发布交付物解除 private 并与页面协议包锁步同版', () => {
+    const page = JSON.parse(readFileSync(resolve(root, artifacts['@metriccanvas/page']!.manifest), 'utf8'));
+    expect(page.version).toMatch(/^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/);
+    for (const [name, artifact] of Object.entries(artifacts)) {
+      const manifest = JSON.parse(readFileSync(resolve(root, artifact.manifest), 'utf8'));
+      expect(manifest.private, `${name} 必须允许发布`).not.toBe(true);
+      expect(manifest.version, `${name} 必须与 @metriccanvas/page 同版`).toBe(page.version);
+    }
+  });
+
   for (const [name, artifact] of Object.entries(artifacts)) {
     it(`${name} 的导出名与快照一致`, () => {
       const file = resolve(snapshotDir, `${name.replace('@metriccanvas/', '')}.txt`);

@@ -17,7 +17,7 @@ class BundleInfoTest(unittest.TestCase):
 
         self.assertEqual(info["bundleVersion"], "0.2.0")
         self.assertRegex(str(info["pageSchemaVersion"]), r"^\d+\.\d+$")
-        self.assertEqual(info["productContractVersion"], "0.1.0")
+        self.assertEqual(info["productContractVersion"], "1.0.0-rc.1")
         self.assertEqual(info["authoringContractVersion"], "0.2.0")
         self.assertEqual(info["transport"], "stdio")
 

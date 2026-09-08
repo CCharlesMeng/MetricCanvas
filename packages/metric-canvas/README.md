@@ -29,7 +29,7 @@
 
 ## 交付与组合接缝
 
-本包当前仍为私有 workspace 包，`@metriccanvas/metric-canvas` 是仓内实现名。正式 npm 包名、版本策略与发布形态由 #100 裁决，尚未发布。本次使用 Svelte attachments，最低 peer 范围相应为 `^5.29.0`。
+正式包名为 `@metriccanvas/metric-canvas`，与 page、engine、embed 锁步为 `1.0.0-rc.1`，已解除 private，尚未执行 registry 发布。本包使用 Svelte attachments，peer 范围为 `>=5.29.0 <6`；当前版本与 5.29.0 均通过仓外 tarball 安装、构建和 Chrome / Edge 浏览器门禁。
 
 本包使用 `@metriccanvas/engine/ui/composition` 的四项导出：`RuntimeSurface`、`RuntimeSection`、`ComponentContent`、`sectionGridColumnCount`。该子入口不从渲染包默认入口转出，但仍是需要版本管理的跨包 Interface，#100 必须显式对账。
 

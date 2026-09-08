@@ -12,6 +12,8 @@ import {
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
+const pagePackage = JSON.parse(await readFile(path.join(repoRoot, 'packages/page/package.json'), 'utf8')) as { version: string };
+const productContractVersion = pagePackage.version;
 const productContractRoot = path.join(repoRoot, 'contracts/metriccanvas');
 const bundleRoot = path.join(repoRoot, 'metriccanvas-authoring');
 const authoringContractRoot = path.join(bundleRoot, 'contracts');
@@ -100,7 +102,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
   outputs.set(
     'manifest.json',
     json({
-      productContractVersion: '0.1.0',
+      productContractVersion,
       pageSchemaVersion: versionPolicy.current,
       source: 'TypeScript/Zod single-way export',
       files: manifestFiles(outputs)
@@ -271,7 +273,7 @@ function buildContractLock(productOutputs: OutputMap, authoringOutputs: OutputMa
   const productManifest = requiredOutput(productOutputs, 'manifest.json');
   const authoringManifest = requiredOutput(authoringOutputs, 'manifest.json');
   return json({
-    productContractVersion: '0.1.0',
+    productContractVersion,
     productManifest: 'contract-snapshot/manifest.json',
     productManifestSha256: sha256(productManifest),
     authoringContractVersion,
@@ -369,6 +371,16 @@ async function assertCurrent(
   interfaceOutputs: OutputMap
 ): Promise<void> {
   const drift: string[] = [];
+  for (const file of [
+    'contracts/metriccanvas/manifest.json',
+    'metriccanvas-authoring/contract-snapshot/manifest.json',
+    'metriccanvas-authoring/contract-lock.json'
+  ]) {
+    const actual = JSON.parse(await readFile(path.join(repoRoot, file), 'utf8')) as { productContractVersion?: string };
+    if (actual.productContractVersion !== productContractVersion) {
+      drift.push(`${file}: productContractVersion=${actual.productContractVersion ?? '<missing>'}; @metriccanvas/page version=${productContractVersion}`);
+    }
+  }
   await collectTreeDrift(
     productContractRoot,
     new Map([...productOutputs, ...interfaceOutputs]),

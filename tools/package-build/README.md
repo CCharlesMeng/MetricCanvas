@@ -4,7 +4,9 @@
 
 仓内 package.json 的 exports 保持源码入口；发布入口明确写在 publishConfig.exports。**使用 pnpm pack 打包**：pnpm 会把发布配置写成 tarball 中真正的 exports、main、types，并把 workspace 依赖改为版本号。集成应用只看到 dist 入口，可以使用自己的包管理器安装，不需要源码别名或 MetricCanvas 专用的 Svelte 预处理配置。不要用 npm pack 代替发布流程。
 
-该方式利用 [pnpm 的 manifest 覆盖机制](https://pnpm.io/package_json#publishconfig)，仓内无需增加路径别名、私有解析条件或预构建步骤。所有包仍保留当前 private 与版本；解除 private、锁步版本和真正发布归后续执行票。
+该方式利用 [pnpm 的 manifest 覆盖机制](https://pnpm.io/package_json#publishconfig)，仓内无需增加路径别名、私有解析条件或预构建步骤。page、engine、metric-canvas、embed 四个交付物已解除 private，锁步为 `1.0.0-rc.1`；实际 registry 发布与真实集成应用验收由 #103 接续。
+
+`productContractVersion` 从 page 的 package.json 读取，与四包发布版本一致；页面协议版本仍独立为 `6.0`。`pnpm authoring:contracts` 单向生成产品中立契约和 Bundle 只读快照，`pnpm authoring:contracts:check` 对产品 manifest、Bundle 快照及契约锁检查版本分叉，并明确报告两侧版本。版本调整后须重新导出、更新摘要锁并通过全部门禁；Python 运行时继续只读取 Bundle，不加载 Node。
 
 打包准备只操作 `.svelte-kit/package-input` 中的副本：
 
