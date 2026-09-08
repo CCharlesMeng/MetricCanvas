@@ -12,7 +12,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "0631efed62ea675fc9fb181f59d9743f81431e92306ba47c67978bfa27c5b38f"
+      "sha256": "37c8cd74b2dc8e8d6f45eea5cb8a03b6d53c61cb5a4f3896689e78473bcd64e9"
     },
     {
       "file": "contract-snapshot/data-context/schema.json",
@@ -759,6 +759,10 @@
       "sha256": "260ceeea4d6cf185333e4b191a567caf8457dfa58c0d383c963ef67c2b34eeec"
     },
     {
+      "file": "contracts/authored/analysis-intents.json",
+      "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
+    },
+    {
       "file": "contracts/authored/business-term-resolution.schema.json",
       "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
     },
@@ -788,7 +792,7 @@
     },
     {
       "file": "contracts/manifest.json",
-      "sha256": "21c2113e19033e09a276e16b9099b519188d6158d065b3e138015211cb58659b"
+      "sha256": "3db921b4df173fe9b78e6cc0c2d2ed6e273e4002f980dbdd35ac78116c571fe8"
     },
     {
       "file": "README.md",
@@ -821,6 +825,10 @@
     {
       "file": "test-harness/adapters/fakes.py",
       "sha256": "83ae8c8a314e51eb8d9d0f4e188a1ef339debf864783af363fc098e32c0be31f"
+    },
+    {
+      "file": "test-harness/fixtures/component-building.json",
+      "sha256": "a29c69bdf8cd3976549067e844675752cd0ca46bf8b9047fdc33372906e87d72"
     },
     {
       "file": "test-harness/fixtures/data-context.json",
@@ -873,6 +881,10 @@
     {
       "file": "test-harness/tests/test_business_terms.py",
       "sha256": "c53effe7cc832242418bb85eaa42e50df35031fffb6270076d9615eb43339956"
+    },
+    {
+      "file": "test-harness/tests/test_component_building.py",
+      "sha256": "2a7d0ee115ac756a0bfc5d5ed79b6f0caa1bcfd1f3d6194f169c5e48cac10940"
     },
     {
       "file": "test-harness/tests/test_component_selection.py",

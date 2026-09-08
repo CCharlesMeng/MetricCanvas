@@ -1,10 +1,9 @@
 import {
-  assembleTransientPage,
-  recommendComponents,
+  constructComponent,
   resultShapeOfUnit,
-  type ComponentCandidate,
-  type ExecutedDataRequestUnit
-} from '@metriccanvas/mcp';
+  type ComponentInput
+} from './component-building';
+import { recommendComponents, type ComponentCandidate } from './component-selection';
 import { validate } from '@metriccanvas/page';
 import type { QueryFieldDefinition } from '@metriccanvas/page/internal';
 import {
@@ -17,8 +16,8 @@ import {
  * 画布与配置面板的本地文档改写(#65 检查器):全部为纯函数,输入输出都是
  * 创作态使用原子双投影：canvasDocument 允许内容分区暂时为空，
  * pageDocument 非破坏性忽略空分区后整体 validate，是查询、Agent、保存、
- * 沉淀与 metadata 的唯一输入。组件类型替换复用装配唯一实现
- * (assembleTransientPage)推导新组件 props，不手写第二份组件构造逻辑。
+ * 沉淀与 metadata 的唯一输入。组件类型替换由工作台局部构造器推导 props，
+ * 不运行整页装配器；共同规则由浏览器/Python 共享用例验证。
  */
 
 export interface ComponentLocator {
@@ -54,8 +53,8 @@ export function createCanvasAuthoringDraft(
 export function unitOfDataSource(
   document: Record<string, unknown>,
   dataSourceId: string,
-  overrides?: Partial<Pick<ExecutedDataRequestUnit, 'title' | 'pinnedComponent'>>
-): ExecutedDataRequestUnit | null {
+  overrides?: Partial<Pick<ComponentInput, 'title' | 'pinnedComponent'>>
+): ComponentInput | null {
   const dataSources = recordOf(document.dataSources);
   const dataSource = recordOf(dataSources?.[dataSourceId]);
   const source = recordOf(dataSource?.source);
@@ -66,14 +65,14 @@ export function unitOfDataSource(
   return {
     dataSourceId,
     fields: fields as Record<string, QueryFieldDefinition>,
-    query: query as unknown as ExecutedDataRequestUnit['query'],
+    query: query as unknown as ComponentInput['query'],
     ...(initial &&
     typeof initial.capturedAt === 'string' &&
     Array.isArray(initial.rows)
       ? {
           initial: {
             capturedAt: initial.capturedAt,
-            rows: initial.rows as ExecutedDataRequestUnit['initial'] extends
+            rows: initial.rows as ComponentInput['initial'] extends
               | { rows: infer R }
               | undefined
               ? R
@@ -102,8 +101,8 @@ export function componentCandidatesFor(
 }
 
 /**
- * 单组件类型替换:反推该数据源的取数单元并以目标类型钉住重装配,
- * 从装配产物取出新组件的 type/props 替换进原文档(保留组件 id、
+ * 单组件类型替换:反推数据源字段并以目标类型局部构造,
+ * 取出新组件的 type/props 替换进原文档(保留组件 id、
  * 用户调过的宽度与数据槽),出口整体 validate。
  */
 export function changeComponentType(
@@ -127,19 +126,10 @@ export function changeComponentType(
   });
   if (!unit) return { ok: false, message: '无法从文档反推取数单元' };
 
-  const pageId = typeof next.id === 'string' ? next.id : 'ask-transient-00000000';
-  const assembled = assembleTransientPage({ pageId, units: [unit] });
-  if (!assembled.ok) {
-    return {
-      ok: false,
-      message: assembled.issues.map((issue) => issue.message).join(';')
-    };
-  }
-  const rebuilt = assembled.document.sections[0]?.components[0];
-  if (!rebuilt) return { ok: false, message: '装配产物缺少组件' };
-
-  component.type = rebuilt.type;
-  component.props = rebuilt.props;
+  const built = constructComponent(unit, newType);
+  if (!built.ok) return built;
+  component.type = built.component.type;
+  component.props = built.component.props;
   return projectCanvasDraft(next);
 }
 

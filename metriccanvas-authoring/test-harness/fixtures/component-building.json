@@ -1,0 +1,465 @@
+{
+  "provenance": {
+    "sourceCommit": "fbc391a27419e1de7f5d20d8cf3f269611b27b04",
+    "sources": [
+      "packages/server/mcp/src/authoring/auto-visualize.ts",
+      "packages/server/mcp/src/authoring/assemble-page.ts",
+      "metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_building.py"
+    ],
+    "review": "Explicit expected bindings/defaults authored against the catalog and ADR-0074. Neither implementation generates these expectations."
+  },
+  "accepted": [
+    {
+      "type": "metricCard",
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "rows": [
+          {
+            "label": "金额",
+            "valueField": "amount"
+          }
+        ]
+      }
+    },
+    {
+      "type": "barChart",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "count"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5,
+          "count": 2
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "categoryField": "city",
+        "series": [
+          {
+            "field": "amount",
+            "label": "金额"
+          },
+          {
+            "field": "count",
+            "label": "count"
+          }
+        ]
+      }
+    },
+    {
+      "type": "lineChart",
+      "fields": {
+        "day": {
+          "type": "date",
+          "role": "dimension",
+          "queryField": "day"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "day": "2026-09-08",
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "xField": "day",
+        "series": [
+          {
+            "field": "amount",
+            "label": "金额"
+          }
+        ]
+      }
+    },
+    {
+      "type": "table",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "count"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5,
+          "count": 2
+        }
+      ],
+      "title": null,
+      "expectedProps": {
+        "columns": [
+          {
+            "field": "city",
+            "title": "城市"
+          },
+          {
+            "field": "amount",
+            "title": "金额"
+          },
+          {
+            "field": "count",
+            "title": "count"
+          }
+        ]
+      }
+    },
+    {
+      "type": "pieChart",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "categoryField": "city",
+        "valueField": "amount"
+      }
+    },
+    {
+      "type": "gauge",
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "valueField": "amount"
+      }
+    },
+    {
+      "type": "keyValuePanel",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "count"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5,
+          "count": 2
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "items": [
+          {
+            "label": "城市",
+            "field": "city"
+          },
+          {
+            "label": "金额",
+            "field": "amount"
+          },
+          {
+            "label": "count",
+            "field": "count"
+          }
+        ]
+      }
+    },
+    {
+      "type": "categoryBreakdown",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        },
+        "count": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "count"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5,
+          "count": 2
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "categoryField": "city",
+        "columns": [
+          {
+            "label": "金额",
+            "field": "amount"
+          },
+          {
+            "label": "count",
+            "field": "count"
+          }
+        ]
+      }
+    },
+    {
+      "type": "rankingCard",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "nameField": "city",
+        "valueField": "amount"
+      }
+    },
+    {
+      "type": "rankingDetailCard",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ],
+      "title": "业务标题",
+      "expectedProps": {
+        "title": "业务标题",
+        "nameField": "city",
+        "valueField": "amount"
+      }
+    }
+  ],
+  "rejected": [
+    {
+      "type": "gauge",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "amount": 1
+        }
+      ],
+      "totalCount": 2
+    },
+    {
+      "type": "barChart",
+      "fields": {
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "amount": 1
+        }
+      ]
+    },
+    {
+      "type": "mapChart",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "fields": {
+        "city": {
+          "type": "string",
+          "role": "dimension",
+          "label": "城市",
+          "queryField": "city"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure",
+          "label": "金额",
+          "queryField": "amount"
+        }
+      },
+      "rows": [
+        {
+          "city": "北京",
+          "amount": 5
+        }
+      ]
+    }
+  ]
+}

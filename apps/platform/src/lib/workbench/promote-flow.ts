@@ -3,8 +3,8 @@ import {
   promoteToDataApp,
   promoteToReport,
   type PromoteResult
-} from '@metriccanvas/mcp/authoring/promote';
-import type { FormulaTrace } from '@metriccanvas/mcp';
+} from './promote';
+import type { FormulaTrace } from './promote';
 import { parseAskConversation } from '../ask/conversation';
 import type { AgentMessage } from '../server/agent/types';
 import { isTransientPageId } from './transient-page';
@@ -14,7 +14,7 @@ import { isTransientPageId } from './transient-page';
  *
  * 沉淀只由用户显式发起:唯一入口是工作台 docbar 的沉淀动作(临时页面态
  * 专属),问数编排(#66)不依赖任何页面生命周期端口,结构上无从自动触发。
- * 改写本身是 @metriccanvas/mcp/authoring/promote 的纯函数;本模块只做
+ * 改写本身是 ./promote 的纯函数;本模块只做
  * 决策接线(方向分发、正式页面 id 的平台侧命名闸、留痕提取与保存命令
  * 翻译),同样保持纯函数,可脱离浏览器测试。
  *

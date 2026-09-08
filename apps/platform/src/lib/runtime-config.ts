@@ -1,4 +1,4 @@
-// 平台与 Canvas 复用同一读取器；注入源仅由参考实现模块读写（ADR-0073）。
+// 平台与参考应用共用私有配置模块；每次请求读取同一注入源（ADR-0073）。
 export {
   createInjectedDqeGateway,
   installLocalDevRuntimeConfig,
@@ -7,4 +7,4 @@ export {
   readPageAssetsBaseUrl,
   MISSING_RUNTIME_CONFIG_MESSAGE,
   type InjectedRuntimeConfig
-} from '../../../canvas/src/lib/runtime-config';
+} from '@metriccanvas/application-runtime';

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { ComponentCandidate } from '@metriccanvas/mcp';
+  import type { ComponentCandidate } from './component-selection';
   import type { ComponentLocator } from './document-edit';
   import type { PageComponentView, WorkbenchPageViewModel } from './transient-page';
 

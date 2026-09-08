@@ -9,6 +9,7 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"
   },
   "dependencies": {
+    "@metriccanvas/application-runtime": "workspace:*",
     "@metriccanvas/engine": "workspace:*",
     "@metriccanvas/mcp": "workspace:*",
     "@metriccanvas/metric-canvas": "workspace:*",

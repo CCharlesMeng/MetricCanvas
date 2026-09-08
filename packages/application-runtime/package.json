@@ -1,0 +1,14 @@
+{
+  "name": "@metriccanvas/application-runtime",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/runtime-config.ts"
+  },
+  "scripts": {
+    "check": "tsc --noEmit -p ."
+  },
+  "dependencies": {
+    "@metriccanvas/engine": "workspace:*"
+  }
+}

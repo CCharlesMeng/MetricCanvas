@@ -1,0 +1,18 @@
+{
+  "intents": [
+    "comparison",
+    "trend",
+    "composition",
+    "ranking",
+    "detail",
+    "single_value"
+  ],
+  "visualizationIntentByAnalysisIntent": {
+    "comparison": "comparison",
+    "trend": "trend",
+    "composition": "proportion",
+    "ranking": "ranking",
+    "detail": "detail",
+    "single_value": "summary"
+  }
+}

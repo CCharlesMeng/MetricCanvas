@@ -5,8 +5,8 @@
   import {
     DATA_APP_ROLLING_TIME_LIMITATION,
     pageIdConfirmationPayload
-  } from '@metriccanvas/mcp/authoring/promote';
-  import type { FormulaTrace } from '@metriccanvas/mcp';
+  } from './promote';
+  import type { FormulaTrace } from './promote';
   import {
     adHocDefinitionsOf,
     buildPromotion,
@@ -19,7 +19,7 @@
   /**
    * 沉淀面板(#68,ADR-0030):把临时页面态显式转为长期资产。
    *
-   * 两个方向的改写都是 @metriccanvas/mcp/authoring/promote 的纯函数,
+   * 两个方向的改写都是 ./promote 的纯函数,
    * 面板对当前输入实时试算(纯函数、无 IO),问题清单与确认事实都来自
    * 试算结果;页面 id 的显式确认与 confirm_page_id 机制同源(载荷同构,
    * 确认翻译为保存命令的 pageIdConfirmed)。保存走既有修订通道。
