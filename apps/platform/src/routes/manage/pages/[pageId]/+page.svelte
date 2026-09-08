@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import {
@@ -176,7 +177,7 @@
 </svelte:head>
 
 <section class="management">
-  <a class="back" href="/manage">← 页面</a>
+  <a class="back" href={resolve('/manage')}>← 页面</a>
 
   {#if loading}
     <p class="muted">加载页面修订…</p>
@@ -231,7 +232,7 @@
           </dl>
           <div class="revision-actions">
             {#if comparison.selected.revisionId === revisions[0]?.revisionId}
-              <a class="button-link" href={`/manage/pages/${encodeURIComponent(pageId)}/edit`}>
+              <a class="button-link" href={resolve('/manage/pages/[pageId]/edit', { pageId })}>
                 编辑当前页面修订
               </a>
               <button disabled={requestingPublish} onclick={requestPublishSelected}>

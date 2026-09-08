@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
 
   interface PageListItem {
@@ -69,13 +70,13 @@
     <div class="empty">
       <h2>暂无页面</h2>
       <p>可先在页面搭建工作台创建页面。</p>
-      <a href="/">打开页面搭建工作台</a>
+      <a href={resolve('/')}>打开页面搭建工作台</a>
     </div>
   {:else}
     <ul class="page-list">
       {#each pages as page (page.pageId)}
         <li>
-          <a class="page-link" href={`/manage/pages/${encodeURIComponent(page.pageId)}`}>
+          <a class="page-link" href={resolve('/manage/pages/[pageId]', { pageId: page.pageId })}>
             <span class="page-id">{page.pageId}</span>
             <span class="summary">
               <span>

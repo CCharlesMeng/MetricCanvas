@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
   import { readRuntimeConfig } from '$lib/runtime-config';
@@ -13,11 +14,11 @@
     { href: '/', label: '问数工作台' },
     { href: '/ask', label: '看板演示' },
     { href: '/manage', label: '页面管理' }
-  ];
+  ] as const;
 
   function isActive(href: string): boolean {
-    const path = page.url.pathname;
-    return href === '/' ? path === '/' : path.startsWith(href);
+    const route = page.route.id ?? '';
+    return route === href || (href !== '/' && route.startsWith(`${href}/`));
   }
 
 </script>
@@ -29,7 +30,7 @@
 <aside class="global-rail" data-testid="global-rail" aria-label="Platform 全局导航">
   <a
     class="brand"
-    href="/"
+    href={resolve('/')}
     aria-label="MetricCanvas"
     title="MetricCanvas"
     data-contract-shell-label
@@ -38,7 +39,7 @@
   <nav aria-label="主导航">
     {#each NAV as item (item.href)}
       <a
-        href={item.href}
+        href={resolve(item.href)}
         class="nav-link"
         class:active={isActive(item.href)}
         aria-current={isActive(item.href) ? 'page' : undefined}

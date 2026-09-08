@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
   import { page } from '$app/state';
   import type { PageDocument } from '@metriccanvas/page';
@@ -166,7 +167,7 @@
 <section class="editor-page">
   <div class="topbar">
     <div>
-      <a href={`/manage/pages/${encodeURIComponent(pageId)}`}>← 返回页面修订</a>
+      <a href={resolve('/manage/pages/[pageId]', { pageId })}>← 返回页面修订</a>
       <p class="eyebrow">页面修订编辑</p>
       <h1>{pageId}</h1>
     </div>
