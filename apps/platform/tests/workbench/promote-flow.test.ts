@@ -17,7 +17,7 @@ import {
 
 /**
  * 沉淀入口的工作台流程模型(#68):纯函数,脱离浏览器测试。
- * 改写规则本体的表驱动覆盖在 packages/mcp/tests/promote.test.ts;
+ * 改写规则本体的表驱动覆盖在 packages/server/mcp/tests/promote.test.ts;
  * 这里验证平台接线的决策面——方向分发、命名闸、留痕提取与保存命令翻译。
  */
 

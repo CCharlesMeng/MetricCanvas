@@ -59,7 +59,7 @@ importers:
         version: link:../../packages/engine
       '@metriccanvas/mcp':
         specifier: workspace:*
-        version: link:../../packages/mcp
+        version: link:../../packages/server/mcp
       '@metriccanvas/metric-canvas':
         specifier: workspace:*
         version: link:../../packages/metric-canvas
@@ -68,16 +68,16 @@ importers:
         version: link:../../packages/page
       '@metriccanvas/page-assets-java':
         specifier: workspace:*
-        version: link:../../packages/page-assets-java
+        version: link:../../packages/server/page-assets-java
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
-        version: link:../../packages/page-lifecycle
+        version: link:../../packages/server/page-lifecycle
       '@metriccanvas/persistence-postgres':
         specifier: workspace:*
-        version: link:../../packages/persistence-postgres
+        version: link:../../packages/server/persistence-postgres
       '@metriccanvas/template-library':
         specifier: workspace:*
-        version: link:../../packages/template-library
+        version: link:../../packages/server/template-library
     devDependencies:
       '@sveltejs/adapter-node':
         specifier: ^5.5.7
@@ -148,31 +148,6 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/mcp:
-    dependencies:
-      '@metriccanvas/page':
-        specifier: workspace:*
-        version: link:../page
-      '@metriccanvas/page-lifecycle':
-        specifier: workspace:*
-        version: link:../page-lifecycle
-      '@metriccanvas/template-library':
-        specifier: workspace:*
-        version: link:../template-library
-      '@modelcontextprotocol/sdk':
-        specifier: ^1.29.0
-        version: 1.29.0(zod@4.4.3)
-      zod:
-        specifier: ^4.4.3
-        version: 4.4.3
-    devDependencies:
-      ajv:
-        specifier: ^8.20.0
-        version: 8.20.0
-      ajv-formats:
-        specifier: ^3.0.1
-        version: 3.0.1(ajv@8.20.0)
-
   packages/metric-canvas:
     dependencies:
       '@metriccanvas/engine':
@@ -210,26 +185,51 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
-  packages/page-assets-java:
+  packages/server/mcp:
     dependencies:
       '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../page
+        version: link:../../page
+      '@metriccanvas/page-lifecycle':
+        specifier: workspace:*
+        version: link:../page-lifecycle
+      '@metriccanvas/template-library':
+        specifier: workspace:*
+        version: link:../template-library
+      '@modelcontextprotocol/sdk':
+        specifier: ^1.29.0
+        version: 1.29.0(zod@4.4.3)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
+    devDependencies:
+      ajv:
+        specifier: ^8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: ^3.0.1
+        version: 3.0.1(ajv@8.20.0)
+
+  packages/server/page-assets-java:
+    dependencies:
+      '@metriccanvas/page':
+        specifier: workspace:*
+        version: link:../../page
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
 
-  packages/page-lifecycle:
+  packages/server/page-lifecycle:
     dependencies:
       '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../page
+        version: link:../../page
 
-  packages/persistence-mysql:
+  packages/server/persistence-mysql:
     dependencies:
       '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../page
+        version: link:../../page
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
@@ -244,11 +244,11 @@ importers:
         specifier: ^12.0.4
         version: 12.1.0
 
-  packages/persistence-postgres:
+  packages/server/persistence-postgres:
     dependencies:
       '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../page
+        version: link:../../page
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
         version: link:../page-lifecycle
@@ -263,7 +263,7 @@ importers:
         specifier: ^12.0.4
         version: 12.0.4
 
-  packages/template-library:
+  packages/server/template-library:
     dependencies:
       '@metriccanvas/page-lifecycle':
         specifier: workspace:*
@@ -271,7 +271,7 @@ importers:
     devDependencies:
       '@metriccanvas/page':
         specifier: workspace:*
-        version: link:../page
+        version: link:../../page
 
   tools/design-facts: {}
 
@@ -1999,9 +1999,6 @@ packages:
   teex@1.0.1:
     resolution: {integrity: sha512-eYE6iEI62Ni1H8oIa7KlDU6uQBtqr4Eajni3wX7rpfXD8ysFx8z0+dri+KWEPWpBsxXfxu58x/0jvTVT1ekOSg==}
 
-  testcontainers@12.0.4:
-    resolution: {integrity: sha512-QIR/8xF1+F/26cIM+9B4yyxNTbKJxAv3hygZyhPRgZ8Q2AhlPZjDdpXRuk16V37X4bgJRI3hXFhoEICMBA7Adg==}
-
   testcontainers@12.1.0:
     resolution: {integrity: sha512-YjDLqIITuhGLMnM10yhg3oV6lIG5IMpz1R1DPBZoOOks83q7i7IVpeSWRTiyl7roozjiyLmwIoLK/KY8OnZmIA==}
     engines: {node: '>= 22.22'}
@@ -2067,10 +2064,6 @@ packages:
 
   undici@8.10.0:
     resolution: {integrity: sha512-HvltHd7avK13QIw/oLe4qoOLyoVSoafqJ2jYOrtMRBkbYT31eiBQ8O0ehRKZiEZCMEyLFQNIADpgCWC5fALvYQ==}
-    engines: {node: '>=22.19.0'}
-
-  undici@8.7.0:
-    resolution: {integrity: sha512-N7iQtfyLhIMOFgQubvmLV26svHpO0bqKnAiWotTQCVKCmWrcGbBotPuW1x+xwYZ2VHdSTVUfPQQnlEt1/LouTQ==}
     engines: {node: '>=22.19.0'}
 
   unpipe@1.0.0:
@@ -2679,7 +2672,7 @@ snapshots:
 
   '@testcontainers/postgresql@12.0.4':
     dependencies:
-      testcontainers: 12.0.4
+      testcontainers: 12.1.0
     transitivePeerDependencies:
       - bare-abort-controller
       - bare-buffer
@@ -3905,29 +3898,6 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  testcontainers@12.0.4:
-    dependencies:
-      '@balena/dockerignore': 1.0.2
-      '@types/dockerode': 4.0.1
-      archiver: 7.0.1
-      async-lock: 1.4.1
-      byline: 5.0.0
-      debug: 4.4.3
-      docker-compose: 1.4.2
-      dockerode: 5.0.1
-      get-port: 5.1.1
-      proper-lockfile: 4.1.2
-      properties-reader: 3.0.1
-      ssh-remote-port-forward: 1.0.4
-      tar-fs: 3.1.3
-      tmp: 0.2.7
-      undici: 8.7.0
-    transitivePeerDependencies:
-      - bare-abort-controller
-      - bare-buffer
-      - react-native-b4a
-      - supports-color
-
   testcontainers@12.1.0:
     dependencies:
       '@balena/dockerignore': 1.0.2
@@ -4000,8 +3970,6 @@ snapshots:
   undici-types@8.3.0: {}
 
   undici@8.10.0: {}
-
-  undici@8.7.0: {}
 
   unpipe@1.0.0: {}
 

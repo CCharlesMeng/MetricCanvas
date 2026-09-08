@@ -22,7 +22,7 @@
     "authoring:check": "python3 metriccanvas-authoring/scripts/check_bundle.py && pnpm authoring:test",
     "sim:dqe": "tsx tools/dqe-sim/src/server.ts",
     "slice:page-assets": "tsx tools/scripts/slice-page-assets.ts",
-    "check": "pnpm -r check"
+    "check": "tsc --noEmit -p tests/tsconfig.json && pnpm -r check"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",

@@ -13,7 +13,7 @@ import {
 
 /**
  * 分析会话存储的行为契约,按「内存 / PostgreSQL 同契约」的既有做法参数化
- * (参照 packages/page-lifecycle/tests/contract.ts)。本轮只有内存实现;
+ * (参照 packages/server/page-lifecycle/tests/contract.ts)。本轮只有内存实现;
  * PostgreSQL 实现接入(#52 版本化迁移)时,新建 postgres 契约测试文件导入
  * runAnalysisSessionStoreContract,用同一批用例喂它,任何断言在某一实现下
  * 失败都说明两份实现出现了行为漂移。

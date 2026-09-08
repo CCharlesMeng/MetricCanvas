@@ -18,7 +18,7 @@
 
 因此第一期多一个前置工作项：**为该域建立数据上下文**——业务域描述、指标条目、维度、时间维度与粒度能力。
 
-⚠️ **映射对齐要早做，即使 A5 排在后面。** 判据是：这个域的概念能不能装进 `DataContextSnapshot` 的现有结构（`DataSchema` / `MetricEntry` / `DataField` / `DataRelationship`）。装得进，A5 就是纯 adapter 工作，改动锁在 `packages/mcp` 里；装不进——特别是「知识点」如果不是指标形态而是别的东西——那就是 **schema 工作，会触碰核心**，`formatVersion` 要递增，语义面投影、检索、创作期验真都要跟着动。两种情况的工作量与风险差一个量级，而这个判断只需要一次对齐会议就能做出，不需要等到 A5 开工。
+⚠️ **映射对齐要早做，即使 A5 排在后面。** 判据是：这个域的概念能不能装进 `DataContextSnapshot` 的现有结构（`DataSchema` / `MetricEntry` / `DataField` / `DataRelationship`）。装得进，A5 就是纯 adapter 工作，改动锁在 `packages/server/mcp` 里；装不进——特别是「知识点」如果不是指标形态而是别的东西——那就是 **schema 工作，会触碰核心**，`formatVersion` 要递增，语义面投影、检索、创作期验真都要跟着动。两种情况的工作量与风险差一个量级，而这个判断只需要一次对齐会议就能做出，不需要等到 A5 开工。
 
 **完成判据：** 该域的两到三个页面（其中至少一个由 AI 建页产出）在内网门户中，由真实用户以自己的身份打开，取到正确数据。
 
@@ -58,7 +58,7 @@ AI 建页是一个**可能跑满 120 秒的普通 POST**（`AGENT_RUN_TIMEOUT_MS
 
 **每个外部 seam 一份契约测试，内存 fake 与真实 adapter 跑同一份。** 换外部系统时「有没有破坏核心能力」是机器判据。
 
-仓库已有范例，不需要发明：`packages/page-lifecycle/tests/contract.ts` 的 `runPageLifecycleContract`（memory / postgres 共用，**已含并发用例**）、`apps/platform/tests/session-store.contract.test.ts` 的 `runAnalysisSessionStoreContract`、`packages/mcp/tests/data-context-contract.test.ts`。
+仓库已有范例，不需要发明：`packages/server/page-lifecycle/tests/contract.ts` 的 `runPageLifecycleContract`（memory / postgres 共用，**已含并发用例**）、`apps/platform/tests/session-store.contract.test.ts` 的 `runAnalysisSessionStoreContract`、`packages/server/mcp/tests/data-context-contract.test.ts`。
 
 **纪律：契约要改必须所有实现同时改并说明理由。** 不允许「先让新 adapter 通过，旧实现稍后跟上」——一旦开口，旧实现腐化成半成品，参照价值归零。
 
@@ -84,7 +84,7 @@ AI 建页是一个**可能跑满 120 秒的普通 POST**（`AGENT_RUN_TIMEOUT_MS
 ### 3.1 取数：`DataGateway`
 
 ```
-packages/runtime/src/ports.ts
+packages/engine/runtime/src/ports.ts
 fetchData(query: EffectiveQuery, diagnosticContext?, signal?): Promise<DataGatewayResult>
 ```
 
@@ -105,14 +105,14 @@ export interface ServerDataGatewayConfig {
 
 1. **取消贯通**：`signal` 传递到底层网络请求，中止后的拒绝归类为 `DQE_CANCELLED`。运行时请求代次机制（issue #53）依赖它；退化成「丢弃迟到结果」会让快速切筛选时上游请求积压。
 2. **批量执行**：同一微任务窗口的查询合并为 `dsl_list`，请求顺序与结果顺序一致，每项独立成败，数量不一致时拒绝批次。若上游不支持批量，adapter 退化为 N 个并发请求，需同步重新确认并发上限（当前 5）、错误隔离粒度与诊断记录的 `batchId`。
-3. **诊断脱敏红线**（issue #47）：原始响应、数据行、字段值、筛选值、上游错误正文**没有任何字段**可以进诊断记录。`packages/data-gateway/tests/diagnostics.test.ts` 用敏感哨兵值断言，新 adapter 纳入同一套断言。
+3. **诊断脱敏红线**（issue #47）：原始响应、数据行、字段值、筛选值、上游错误正文**没有任何字段**可以进诊断记录。`packages/engine/data-gateway/tests/diagnostics.test.ts` 用敏感哨兵值断言，新 adapter 纳入同一套断言。
 
 错误分类映射到 `QueryErrorCode` 封闭集（`packages/page/src/query-error.ts`），不新造分类。
 
 ### 3.2 数据上下文：`DataContextProvider` + overlay
 
 ```
-packages/mcp/src/data-context.ts
+packages/server/mcp/src/data-context.ts
 current(): Promise<DataContextSnapshot>
 ```
 
@@ -161,7 +161,7 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 #### P1 · 按驱动拆包
 
-**触碰模块**：新建 `packages/persistence-postgres`、`packages/persistence-mysql`；`packages/page-lifecycle`、`packages/template-library` 收缩为端口 + 不变式 + memory + 契约 harness；`services.server.ts` 改 import。
+**触碰模块**：新建 `packages/server/persistence-postgres`、`packages/server/persistence-mysql`；`packages/server/page-lifecycle`、`packages/server/template-library` 收缩为端口 + 不变式 + memory + 契约 harness；`services.server.ts` 改 import。
 
 按驱动而不是按领域拆——两个持久化领域（页面生命周期、模板库）共用同一个连接池，拆成四个包是无谓的 workspace 变动。内网部署只装 `persistence-mysql`。
 
@@ -169,7 +169,7 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 #### P2 · MySQL adapter
 
-**触碰模块**：`packages/persistence-mysql`。驱动用 `mysql2`。
+**触碰模块**：`packages/server/persistence-mysql`。驱动用 `mysql2`。
 
 已核实的移植障碍，按严重程度：
 
@@ -190,7 +190,7 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 #### P3 · 版本化迁移 Job
 
-**触碰模块**：`packages/persistence-mysql`（移除启动期建表）、部署清单。
+**触碰模块**：`packages/server/persistence-mysql`（移除启动期建表）、部署清单。
 
 独立的迁移容器/Job，应用启动前执行。**不在应用启动时自迁移**：多副本下会并发执行，而 MySQL 的 DDL 大多不是事务性的，中途失败会留下半截 schema。独立 Job 也让 DBA 能在执行前审 SQL。
 
@@ -198,7 +198,7 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 #### P4 · overlay 持久化
 
-**触碰模块**：`packages/persistence-mysql`（表与修订链）、`packages/mcp`（合并逻辑）。
+**触碰模块**：`packages/server/persistence-mysql`（表与修订链）、`packages/server/mcp`（合并逻辑）。
 
 不可变修订 + 审计事件 + 导入导出 + 差异导出。第一期只覆盖创作期验真闭集（§3.2）。
 
@@ -241,15 +241,15 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 #### A4 · 取数 adapter
 
-**触碰模块**：`packages/data-gateway`、`data-gateway.server.ts`。依赖 A1 的身份位。
+**触碰模块**：`packages/engine/data-gateway`、`data-gateway.server.ts`。依赖 A1 的身份位。
 
 按 §3.1 的三条既有契约实现。创作期验真复用同一 adapter（`createRunAwareUnitQueryExecutor` 已是这个形状），**查询正确性标准只有一份**。
 
-**验收判据**：诊断哨兵值断言（复用 `packages/data-gateway/tests/diagnostics.test.ts` 形式）；取消贯通测试；批量语义与错误分类映射的契约测试。`tools/dqe-sim` 作为契约测试的对照实现。
+**验收判据**：诊断哨兵值断言（复用 `packages/engine/data-gateway/tests/diagnostics.test.ts` 形式）；取消贯通测试；批量语义与错误分类映射的契约测试。`tools/dqe-sim` 作为契约测试的对照实现。
 
 #### A5 · 数据上下文 adapter
 
-**触碰模块**：`packages/mcp`、`services.server.ts`。依赖 A1、P4。
+**触碰模块**：`packages/server/mcp`、`services.server.ts`。依赖 A1、P4。
 
 第一期只覆盖创作期验真所需闭集，并承载「数据地图与知识点」域（§1.1）。
 
@@ -325,7 +325,7 @@ complete(request: ModelRequest): Promise<ModelResponse>   // 非流式，chat + 
 
 | 议题 | 状态 | 影响 |
 |---|---|---|
-| **「数据地图与知识点」的映射形态** | 待对齐，不阻塞开工 | 语义层有该域且可映射，但形态略有不同。对齐结论决定 A5 是 adapter 工作（锁在 `packages/mcp`）还是 schema 工作（触碰核心、`formatVersion` 递增）。见 §1.1 |
+| **「数据地图与知识点」的映射形态** | 待对齐，不阻塞开工 | 语义层有该域且可映射，但形态略有不同。对齐结论决定 A5 是 adapter 工作（锁在 `packages/server/mcp`）还是 schema 工作（触碰核心、`formatVersion` 递增）。见 §1.1 |
 | 自有取数系统的取消与批量能力 | 阻塞 A4 的形状 | 不支持取消 → 请求代次机制退化；不支持批量 → adapter 改 N 路并发，需重定并发上限与错误隔离粒度 |
 | Platform 如何验证门户身份 | 暂缓 | 推荐 JWT 验签（只需公钥、无网络往返、不耦合门户存储实现）。定下前 mock 保持不变，A1 的通道照做 |
 | 取数 adapter 传递身份的形式 | 暂缓，先预留 | **红线：不能只传服务账号。** 那样数据侧无法做行级过滤，「权限全交数据侧」当场落空，且没有任何报错——查询照样成功，只是返回了这个用户不该看的数据行。这是第一期最容易静默出事的一处 |

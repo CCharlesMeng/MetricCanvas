@@ -20,10 +20,10 @@ import {
  */
 
 const schemaPath = fileURLToPath(
-  new URL('../../../docs/schema-metadata.schema.json', import.meta.url)
+  new URL('../../../../docs/schema-metadata.schema.json', import.meta.url)
 );
 const examplePath = fileURLToPath(
-  new URL('../../../docs/examples/schema-metadata.example.json', import.meta.url)
+  new URL('../../../../docs/examples/schema-metadata.example.json', import.meta.url)
 );
 
 const jsonSchema = JSON.parse(readFileSync(schemaPath, 'utf8')) as Record<string, unknown>;

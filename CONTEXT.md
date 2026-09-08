@@ -328,7 +328,7 @@ _Avoid_: 自动保存、另存为看板、发布
 ## 运行与渲染
 
 **统一运行时 (Runtime，又称渲染引擎)**:
-加载、校验和渲染页面的引擎。统一运行时解析页面数据源，执行查询，管理筛选状态，并向组件分发数据快照。
+加载、校验和渲染页面的引擎。统一运行时解析页面数据源，执行查询，管理筛选状态，并向组件分发数据快照。它作为交付物发布时的包名 `@metriccanvas/engine` 是「渲染引擎」的缩写形式（[ADR-0071](docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
 _Avoid_: 页面搭建 Agent、组件库、Embed 应用、另立的嵌入渲染器
 
 **页面仓储 (Page Repository)**:

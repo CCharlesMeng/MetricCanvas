@@ -14,7 +14,7 @@ import {
   type RunScopedMcpDependencies
 } from '../../src/lib/server/agent/run-mcp';
 
-/** 与 packages/mcp 契约测试同款的最小数据上下文:一个可执行的取数单元语义面。 */
+/** 与 packages/server/mcp 契约测试同款的最小数据上下文:一个可执行的取数单元语义面。 */
 const snapshot: DataContextSnapshot = {
   formatVersion: '1.1',
   id: 'run-mcp-context',

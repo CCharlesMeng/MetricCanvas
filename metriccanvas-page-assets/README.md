@@ -12,7 +12,7 @@ Python 与 platform 两个 consumer 的 HTTP Adapter 与一键纵切 `pnpm slice
 
 - Python 创作 Tool：`metriccanvas-authoring/tool/metriccanvas_authoring/adapters/outbound/java_page_assets.py`，
   由 `METRICCANVAS_PAGE_ASSETS_BASE_URL` 配置，`X-Operator-Id` 来自服务态 `IdentityPort`。
-- platform：`packages/page-assets-java`（`createJavaPageLifecycle`），`METRICCANVAS_PAGE_ASSETS=java` 切换；
+- platform：`packages/server/page-assets-java`（`createJavaPageLifecycle`），`METRICCANVAS_PAGE_ASSETS=java` 切换；
   四个接口真实调用，其余 `PageLifecycle` 方法返回 `NOT_SUPPORTED`（HTTP 501）。
 - 两者都只读 `contracts/metriccanvas/page-assets/rest-services-page-assets.yaml` 这份导出副本；改 Interface 先改
   作者文件再 `pnpm authoring:contracts`。仓根 `pnpm slice:page-assets` 一条命令起 MySQL + Java + Python stdio

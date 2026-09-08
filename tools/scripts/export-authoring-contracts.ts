@@ -15,16 +15,16 @@ import {
   parseDataContextSnapshot,
   semanticSurfaceOf,
   type DataContextSnapshot
-} from '../../packages/mcp/src/data-context.ts';
+} from '../../packages/server/mcp/src/data-context.ts';
 import {
   assembleTransientPage,
   type ExecutedDataRequestUnit
-} from '../../packages/mcp/src/authoring/assemble-page.ts';
-import type { ComponentCandidate } from '../../packages/mcp/src/authoring/auto-visualize.ts';
+} from '../../packages/server/mcp/src/authoring/assemble-page.ts';
+import type { ComponentCandidate } from '../../packages/server/mcp/src/authoring/auto-visualize.ts';
 import {
   createDataRequestUnitVerification,
   validateUnitManifest
-} from '../../packages/mcp/src/authoring/unit-verification.ts';
+} from '../../packages/server/mcp/src/authoring/unit-verification.ts';
 import {
   ANALYSIS_INTENTS,
   type AnalysisIntent,

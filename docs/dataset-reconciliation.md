@@ -101,7 +101,7 @@ ADR-0033 挂起计算数据集的三条理由,与规划文档的对应关系:
 
 ## 8. 建议路径
 
-**阶段一(已完成):偿还指标语义元数据欠账。** [ADR-0044](./adr/0044-first-class-metric-entries.md) 把指标条目提升为数据上下文快照的一等结构,承载业务名、别名、口径说明、单位、是否为比率、可加性、时间聚合方式与可用维度,`formatVersion` 升到 `1.1`。同批改动 `packages/mcp/src/data-context.ts`、`packages/mcp/src/authoring/unit-verification.ts`、`docs/schema-metadata.schema.json`、`docs/schema-metadata.md`、示例快照与 `tools/dqe-sim` 投影(同面守卫测试强制两边一致)。此阶段未引入任何计算能力,语义面投影形状未变,问数链路未受影响。遗留输入:各业务域指标的可加性取值需由数据侧复核。
+**阶段一(已完成):偿还指标语义元数据欠账。** [ADR-0044](./adr/0044-first-class-metric-entries.md) 把指标条目提升为数据上下文快照的一等结构,承载业务名、别名、口径说明、单位、是否为比率、可加性、时间聚合方式与可用维度,`formatVersion` 升到 `1.1`。同批改动 `packages/server/mcp/src/data-context.ts`、`packages/server/mcp/src/authoring/unit-verification.ts`、`docs/schema-metadata.schema.json`、`docs/schema-metadata.md`、示例快照与 `tools/dqe-sim` 投影(同面守卫测试强制两边一致)。此阶段未引入任何计算能力,语义面投影形状未变,问数链路未受影响。遗留输入:各业务域指标的可加性取值需由数据侧复核。
 
 **阶段二:实现 ADR-0039 派生度量模板。** 这是已 accepted 的决策,不需要新裁决,且它是覆盖存量 47% 场景的那一笔。实现过程中一并确定性裁定缺口二(分母为零、基期缺失、缺失周期的返回值)与案例二的月份补全归属。同时按缺口三,在 ADR-0032 的清单校验中加入粒度推导与可加性校验 —— 这是把规划文档最有价值的一条落地,且无需新架构。
 

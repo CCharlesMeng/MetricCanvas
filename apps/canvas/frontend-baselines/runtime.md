@@ -28,7 +28,7 @@
 
 1. **`RUN-3` 会覆盖你 shell 里的同名变量。** `tools/dev-cli/src/dev.ts` 在 spawn 前把 `PLATFORM_ORIGIN` / `RUNTIME_ORIGIN` / `VITE_PLATFORM_URL` / `VITE_DQE_ENDPOINT` / `DQE_ENDPOINT` / `VITE_AI_SUMMARY_ENDPOINT` 全部赋成本地开发值(其中 `VITE_PLATFORM_URL` 在 local 档被设为空串)。所以「`.env` 里配了却不生效」在 `RUN-3` 下是预期的;要让 `.env` 生效得走 `RUN-5`。
 2. **`RUN-3` 起的是 canvas + platform + dqe-sim 三个服务,不含 embed。** embed 没有 `dev` script,它只有 `build` 与浏览器测试。
-3. `RUN-6` 起的 Postgres 只服务 `packages/persistence-postgres`;该包的 Postgres 测试还要额外的开关,见 `PATTERN-TEST-3`。
+3. `RUN-6` 起的 Postgres 只服务 `packages/server/persistence-postgres`;该包的 Postgres 测试还要额外的开关,见 `PATTERN-TEST-3`。
 4. 质量命令一律**在仓根跑**。`test` 与 `validate` 都定义在仓根且依赖仓根路径(`vitest.config.ts` 的 glob、页面资产目录),进子包跑会找不到用例或页面。
 
 ## 环境变量

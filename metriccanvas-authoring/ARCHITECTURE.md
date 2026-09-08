@@ -366,7 +366,7 @@ flowchart LR
 | 真实 Lab/DQE 环境验收 | 联调环境 | 地址、账号、数据和错误分支全部取证 |
 | MetricService 维度取值 Adapter | 外部接口契约 | URL/DTO 明确后实现 `DimensionValuePort` Adapter |
 | 兼容保存路径退出 | 本仓 + 调用方 | Relay/平台目标链稳定后删除 `build_page`、`PageAssetPort` 和 Java Adapter |
-| 旧 TypeScript/Node 创作链退出 | `apps/platform`、`packages/mcp` | M5–M7 差分、灰度、回滚门禁通过后删除双实现 |
+| 旧 TypeScript/Node 创作链退出 | `apps/platform`、`packages/server/mcp` | M5–M7 差分、灰度、回滚门禁通过后删除双实现 |
 
 因此，当前正确表述是：**确定性 Authoring Core、Agent Core 规则和本仓可实现的外部 HTTP Adapter 已具备；Relay 生产编排、Page Artifact/Session 双通道、UI 接线、用户身份与真实环境实证尚未收口，Agent 迁移未全部完成。**
 
@@ -456,7 +456,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover \
 | 业务词和检索 | [`business-terms.ts`](../apps/platform/src/lib/server/ask/business-terms.ts)、[`retrieval.ts`](../apps/platform/src/lib/server/ask/retrieval.ts) |
 | Agent Runner 与事件流 | [`apps/platform/src/lib/server/agent/runner.ts`](../apps/platform/src/lib/server/agent/runner.ts)、[`stream-endpoint.ts`](../apps/platform/src/lib/server/agent/stream-endpoint.ts) |
 | 会话事件与最新检查点 | [`apps/platform/src/lib/server/session/`](../apps/platform/src/lib/server/session/) |
-| TypeScript 页面装配基线 | [`packages/mcp/src/authoring/`](../packages/mcp/src/authoring/) |
+| TypeScript 页面装配基线 | [`packages/server/mcp/src/authoring/`](../packages/server/mcp/src/authoring/) |
 
 迁移前后比较的是 Interface 上可观察的结果、事件顺序、失败分类、权限、幂等和性能下限，不比较 tokenizer、模型思维链、日志文本或内部代码形状。
 

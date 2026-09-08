@@ -19,7 +19,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { canonicalizeJson } from '../../packages/page/src/canonical-json.ts';
-import { createJavaPageLifecycle } from '../../packages/page-assets-java/src/index.ts';
+import { createJavaPageLifecycle } from '../../packages/server/page-assets-java/src/index.ts';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const javaRoot = path.join(repoRoot, 'metriccanvas-page-assets');

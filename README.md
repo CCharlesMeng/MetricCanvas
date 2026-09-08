@@ -151,19 +151,24 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 
 ## 仓库结构
 
+`packages/` 按有无对外承诺分组：顶层四个是发布给集成应用的交付物，`packages/server/` 下是不发布的服务端包（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
+
 | 路径 | 职责 |
 |---|---|
-| `packages/page/` | 页面类型、JSON Schema、校验器和能力推导 |
-| `packages/data-gateway/` | DQE 数据网关 |
-| `packages/runtime/` | 页面数据编排和筛选状态 |
-| `packages/widgets/` | 纯渲染组件 |
-| `packages/runtime-ui/` | 正式渲染入口 `RuntimeView`、共享渲染主体与布局 |
-| [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | 独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
-| `packages/runtime-ui/src/ai-summary/` | AI 总结垂直组件 Module 与私有 SSE Adapter |
-| `packages/embed/` | 浏览器嵌入产物 |
-| `packages/page-lifecycle/` | 页面修订与发布 |
-| `packages/template-library/` | 页面模板 |
-| `packages/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
+| `packages/page/` | **交付物**：页面协议、类型、JSON Schema、校验器和能力推导 |
+| `packages/engine/` | **交付物**：渲染引擎，下列四份源码收入同一个包 |
+| `packages/engine/runtime/` | 页面数据编排和筛选状态 |
+| `packages/engine/widgets/` | 纯渲染组件 |
+| `packages/engine/runtime-ui/` | 正式渲染入口 `RuntimeView`、共享渲染主体与布局 |
+| `packages/engine/runtime-ui/src/ai-summary/` | AI 总结垂直组件 Module 与私有 SSE Adapter |
+| `packages/engine/data-gateway/` | DQE 数据网关 |
+| [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | **交付物**：独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
+| `packages/embed/` | **交付物**：浏览器嵌入产物 |
+| `packages/server/page-lifecycle/` | 页面修订与发布 |
+| `packages/server/template-library/` | 页面模板 |
+| `packages/server/mcp/` | 页面搭建 MCP、数据上下文类型与检索 |
+| `packages/server/persistence-mysql/`、`packages/server/persistence-postgres/` | 页面生命周期的数据库实现 |
+| `packages/server/page-assets-java/` | Java 页面资产的页面生命周期实现 |
 | `apps/canvas/` | 页面目录、渲染和预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |

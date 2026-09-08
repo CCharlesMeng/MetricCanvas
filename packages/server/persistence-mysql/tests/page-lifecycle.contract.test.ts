@@ -8,7 +8,7 @@ import { createMySqlPageLifecycle } from '../src/index';
 import { applyMySqlTestSchema } from './schema';
 
 // 只在显式要求时跑（需要真实 Docker/MySQL 8.0 环境）：
-//   TEST_MYSQL=1 pnpm exec vitest run packages/persistence-mysql/tests
+//   TEST_MYSQL=1 pnpm exec vitest run packages/server/persistence-mysql/tests
 describe.runIf(process.env.TEST_MYSQL === '1')('MySQL 契约测试', () => {
   let mysql: StartedMySqlContainer;
 
