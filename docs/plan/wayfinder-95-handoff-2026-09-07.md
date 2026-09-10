@@ -1,5 +1,7 @@
 # Handoff：#95 platform 静态化与渲染引擎独立交付
 
+> **2026-09-08 接续修正：** 本文是历史快照。#101 已决，不按旧启动语句重开 grill；当前盘古边界以 [ADR-0077](../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 和[接入基线](wayfinder-107-pangu-integration-baseline.md)为准：只替换左侧对话，保留画布和检查器；每轮可返回确认问题并在回应后继续；首版允许整体处理中，已有页面按 3A 保留。接口未说明不等于不支持，盘古历史不等于分析会话。本文冻结的 10 问仍为事实清单，不将它改写为新的已发出提问。
+
 状态快照：2026-09-07。已读取 #95 地图、全部子票状态和原生 blocked_by；新会话开工仍需刷新所选票的正文、评论、指派与阻塞状态。
 
 **同日 #99 后续裁决：** 用户已确认真实 Java HTTP + 内存存储（接受重启清空）、DQE HTTP 仿真仅承诺已知协议与明确测试场景；所有数据请求的头与相关 Cookie 均归宿主，本仓不新增身份适配器或用户切换器；旧 scripted/lexical 模型仅作测试与迁移对照。见 [ADR-0069](../adr/0069-local-boundary-substitutes-and-host-owned-credentials.md)。#99 的 grill 已完成；下文其启动语句保留为历史，不再作为待讨论入口。#101 接线、#102 删除与 #104 验收分别承接执行。导航另一路已新增 ADR-0068，#109 以现场状态为准。
@@ -58,7 +60,7 @@
 
 [#106 盘古助手对话客户端的待确认事项](https://github.com/CCharlesMeng/MetricCanvas/issues/106) 没有原生 blocker，标签是 `wayfinder:task`，是**提供方问答**，不是开发票。
 
-- **2026-09-07 对象已改**：对话 chrome 归盘古助手第二实例（`window.pangu.instance`）；问数结果仍在 RuntimeView 旁路。platform 是微前端子应用，不重复加载 `loader.js`。发送消息服务的传输层不再问。
+- **2026-09-07 对象已改**：对话 chrome 归盘古助手第二实例（`window.pangu.instance`）；问数结果仍在 RuntimeView 旁路。父页面已加载 `loader.js` 时不重复加载；platform 的装载方式按 ADR-0073 在部署期确定。发送消息服务的传输层不再问。
 - 发送消息服务接口原文仍在 [#106 评论](https://github.com/CCharlesMeng/MetricCanvas/issues/106#issuecomment-5567401672)，仅作对照。现行提问稿见 `docs/plan/wayfinder-106-relay-chat-handoff-2026-09-07.md`（10 问，对象是盘古助手）。
 - 对接时核实 #107 所需的受控 Skill 路由（`skillInfo` / `referrer`）和 `getCustomOnMessageEvent` 事件形状，以及 #108 所需的会话读回 / 持久化边界；不要凭猜测认定 adapter 已支持问数编排或产物通道。
 - 用户或获明确授权的对接者取得提供方回答。不得在未获发送授权时替用户联系他人。

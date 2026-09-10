@@ -10,6 +10,8 @@
 [完整迁移计划](../docs/plan/metriccanvas-agent-full-migration.md)为准。
 本文只保留 Relay 实施必需的顺序、Interface、风险和完成判据。
 
+> **2026-09-08 对话集成修正：** [ADR-0077](../docs/adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 只将平台原左侧对话替换为盘古，页面仍在原画布；每轮 ask 可返回确认问题，§6.3 的检查点等待/新轮继续语义保持。首版可只显示整体处理中，不把事后投影冒充实时进度。实际盘古回调和分析会话检查点接口分别验收，不按旧 WebSocket 字段接线。
+
 ## 0. 先看五个阻断事实
 
 > [!WARNING]
@@ -138,7 +140,7 @@ Agent Core Interface 执行。
 
 | Module | 对外 Interface | Seam / Adapter | 负责 | 不属于它 |
 |---|---|---|---|---|
-| Relay Chat | `/ws/{client_id}` + `user-message` | `role_name` + `config.agent_context` | 问题、pageId、session、target、确认回复 | Skill 正文、工具权限、鉴权 token |
+| 平台 Chat | 原左侧盘古实例 API | PanguQuery + adapter；受控路由/事件/回应关联待 #106 | 全部对话输入与呈现，承接确认问题和回应 | 页面画布、检查器、Skill 正文/权限的浏览器覆盖 |
 | Relay Workflow | `executeMetricCanvasTurn(...)` | 固定 Workflow 扩展 | 状态机、模型调用、预算、等待/恢复 | DQE/Page JSON 派生，第二份 reducer |
 | 模型 Adapter | 三类结构化决策 | LiteLLM/Provider | 业务语义分类与补全 | 确定性检索、消歧、查询、组件和布局 |
 | Python Agent Core | 待冻结单一 transition Interface | 内部 MCP 或版本化 Python Adapter | ID/reducer/target/guard/presentation/gap | 模型、HTTP、会话持久化 |
@@ -681,7 +683,7 @@ Bundle `432` 项摘要校验通过，契约无漂移。
 | MCP config | `mcp_loader.py:288-348` | 扫描 `.relay/mcp_configs/*.json` |
 | oneshot 调用 | `mcp_tool_proxy.py:222-286,364-430`、`mcp_oneshot_worker.py:562-605` | Artifact 截获、身份与取消插入点 |
 | Tool Schema | `mcp_tool_proxy.py:910-962` | 验证 inputSchema 对真实模型可用 |
-| WebSocket | `web_server.py:1045-1046`、`message_router.py:159-234` | `/ws/{client_id}` + `role_name` |
+| WebSocket（历史调查） | `web_server.py:1045-1046`、`message_router.py:159-234` | 历史为 `/ws/{client_id}` + `role_name`，不作为平台新接线依据；现按盘古实例 API + adapter |
 | 事件/POBM | `event_protocol.py:30-100,170-176`、`web_relay_observer.py:177-211` | Adapter 必须在持久化/广播前运行 |
 | 增量恢复 | `message_handlers.py:488-602` | 沿用 `session_id + version_id`，另加 latest checkpoint |
 | 取消 | `message_router.py:68-80`、`relay_application.py:294-351` | 将 MCP 进程组纳入 interrupt |

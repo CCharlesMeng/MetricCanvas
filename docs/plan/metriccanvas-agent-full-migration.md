@@ -1,5 +1,9 @@
 # MetricCanvas Agent 创作链完整迁移方案
 
+> **2026-09-08 盘古交互边界：** [ADR-0077](../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](wayfinder-107-pangu-integration-baseline.md)。
+
+> **2026-09-08 去留边界更新：** [ADR-0074](../adr/0074-browser-component-building-and-isolated-legacy-baseline.md) 将旧链路保留方式改为完整提交/tag 的可复现历史基线，按需在仓外运行。主线完成依赖解耦即可移除相应旧实现，不必等待本计划的生产灰度门槛；功能等价和生产验收条件继续有效，不能以隔离完成宣称迁移完成。人工组件切换与沉淀的最小能力长期归浏览器工作台，覆盖 Python 全部可装配组件，故下文“删除 TS 双实现”不包括该能力。旧基线不得再作为主线构建、CI 或当前测试预期生成的前置。
+
 > 状态：Accepted for implementation；M0 已完成，M1 契约/基线已覆盖首批事件序列；M2 的
 > 发现、Agent Core、compose、有序并发、formula/样例行/呈现细节与页面预检已落地。M1 全量黄金集、M3–M8 仍未退出。
 >
@@ -89,7 +93,8 @@
 
 | Module | 对外 Interface | 隐藏的 Implementation | Seam / Adapter |
 |---|---|---|---|
-| Svelte SPA | Chat 输入、步骤事件、交互回复、临时页面、精确修订预览 | Relay 协议细节、页面组件渲染 | Relay WebSocket Adapter、Java HTTP Adapter |
+| Svelte SPA | 原页面画布、检查器、文档工具栏、临时页面与精确修订预览 | 盘古内部对话/传输、页面组件渲染 | 左侧盘古实例 API + adapter、受控 Artifact 读取、Java HTTP Adapter |
+| 盘古对话实例 | 原左侧全部对话输入/呈现、确认问题与回应 | 对发送消息服务的实际调用与对话历史 | PanguQuery/adapter 的字段和事件以 #106 实证为准 |
 | Relay Agent Workflow | `execute(command) -> ordered events + outcome` | 状态机、三类模型决策、重试、确认等待、取消与恢复 | M3A Skill-Play；M3B Relay 可执行扩展或等价强制层 |
 | Data Discovery | `resolve(question, limit) -> businessDomains + matches + resolution + time/intent/structureOperation` | 规范域闭集、业务词识别、别名、候选排序、消歧、敏感取值隐去 | DataContextPort + 真实/Fake Adapter |
 | Python Agent Core | 纯函数：路由/消歧、单元 reducer、target/结构 guard/组件话语、部分可答/Metric Gap | 稳定 ID、未触及状态保持、六单元诚实截断和确认后记录 | 待 Relay Workflow 组合；不调模型或远程服务 |
@@ -232,7 +237,7 @@ M3A 按当前顺序接通，M3B 前必须用 ADR 在“执行前基于声明形�
 `discover_data_context + compose_page`，FastMCP 以 `METRICCANVAS_TOOL_SURFACE=relay` 显式启用同一
 工具面，`compose_page` 成功结果使用 `metriccanvas.page-build-artifact` 判别信封，并以 Schema 锁定
 完整 `artifact` 与无数据行 `modelSummary`。默认工具面仍是 compatibility，避免 Relay Adapter 缺失时
-误把完整页面文档送入模型。Python Agent Core 已落地三类模型决策之间的 reducer、guard、target、路由/消歧、组件话语与 Metric Gap 规则，但 Relay 尚未调用它们。M3 尚未退出；Relay 仓内的固定 Workflow、Artifact Adapter、Session checkpoint、WebSocket/UI E2E 仍未实现。
+误把完整页面文档送入模型。Python Agent Core 已落地三类模型决策之间的 reducer、guard、target、路由/消歧、组件话语与 Metric Gap 规则，但 Relay 尚未调用它们。M3 尚未退出；Relay 仓内的固定 Workflow、Artifact Adapter、Session checkpoint 与真实对话/UI E2E 仍未实现；后续平台 E2E 按 ADR-0077 经过盘古实例，不要求浏览器自打 WebSocket。
 
 Relay Page Artifact Adapter 的最小实现顺序固定为：
 
@@ -268,11 +273,9 @@ Data Context `version` 已从“数据集 id/更新时间摘要”收紧为完�
 
 交付：
 
-- Svelte 通过 WebSocket `/ws/{client_id}` 与 `role_name` 唤起 Skill，业务参数使用
-  `config.agent_context`。
-- 把步骤进度映射到结构化事件，已校验 `PageBuildArtifact` 的受控摘要使用 `result_summary` 透出；
-  正式修订标识只由平台调用 Java 保存后返回。
-- 使用 `session_id + version_id` 增量重放，实现 `interrupt` 与取消后迟到结果处理。
+- 在现有左侧位置挂载盘古第二实例，通过实例 API + adapter 发送问题并请求受控 skill 路由；字段、身份、回调和卸载语义以 #106 实证为准，不自打旧 WebSocket/`role_name`。
+- 区分内部结构化步骤事件与盘古实际回调；未经验证不直接映射。首版可只显示整体处理中，所有对话呈现归盘古。已校验 `PageBuildArtifact` 仍经 ADR-0064 双通道交付原画布，正式修订标识只由平台调用 Java 保存后返回。
+- 通过已验证的分析会话检查点/事件 Interface 关联版本并恢复；不得将盘古聊天历史直接当作检查点。停止接收与服务端取消分别验收，取消后的迟到结果不覆盖新状态；新轮失败、等待或只有文本时按 3A 保留上轮页面。
 - 按 ADR-0058 恢复最新已校验临时页面态、结构化续跑状态、钉住项与待确认交互。
 - Relay Session 实施 90 天保留、本人/平台管理员可见性、检查点乐观并发和过期清理；Java 不复制会话。
 
@@ -326,7 +329,7 @@ pnpm authoring:e2e:relay
 | E1 Interface 向量 | 给定输入的输出、事件、失败和 Port 调用正确 | 真实远程 Adapter 可用 |
 | E2 跨实现差分 | TypeScript 与 Python/Relay 的确定性行为一致 | 真实模型稳定 |
 | E3 Adapter 契约 | Data Context、DQE、Java 的传输映射正确 | 整条用户旅程正确 |
-| E4 真实 Relay E2E | 真实 Skill-Play、模型、MCP、WebSocket 能闭环 | 长期质量无退化 |
+| E4 真实 Relay E2E | 盘古实例、受控 Skill 路由、真实模型与 MCP 能闭环，页面经独立产物通道到原画布 | 长期质量无退化 |
 | E5 非功能与安全 | p95、并发、取消、权限、幂等和冲突满足门禁 | 用户业务满意度 |
 | E6 影子/灰度 | 在真实流量和分布下不退化 | 未来变更永远不回归 |
 
@@ -382,7 +385,7 @@ compatibility 工具面仍保留 `build_page`，Relay 工具面则只暴露 `dis
 9. 刷新、断线、取消、超时、修订冲突和迟到结果都可恢复，不静默覆盖。
 10. 生产创作链不需要 Node 服务端，回滚开关可按新会话生效。
 
-任何一项不满足都不能删除 TypeScript 基线实现。
+以上条件约束目标创作链的完整迁移与生产切换。按 ADR-0074，尚未满足时以可复现历史基线保留旧行为；主线完成依赖解耦后可移除相应旧代码，不要求它继续参加主线构建或 CI。
 
 ## 10. 回滚策略
 

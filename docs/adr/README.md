@@ -1,8 +1,8 @@
-# ADR 基线:73 份决策记录的当前生效结论
+# ADR 基线:77 份决策记录的当前生效结论
 
-`docs/adr/` 现有 73 份 ADR(0001–0073)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 77 份 ADR(0001–0077)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0074`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0078`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -50,7 +50,7 @@
 | [0034](./0034-graphql-rest-as-data-gateway-adapters.md) | GraphQL/数据接口以数据网关适配器接入,组件不直连 | 现行 |
 | [0035](./0035-structured-relative-time-expressions.md) | 页面时间范围支持结构化相对时间表达 | 现行 |
 | [0036](./0036-metric-gap-non-blocking-exit.md) | 指标缺口不阻塞问数,临时口径可见、计数并在沉淀处设闸 | 现行 |
-| [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排顺序与人机分工:域回显、候选消歧、条件确认、分步流式 | 现行 |
+| [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排顺序与人机分工:域回显、候选消歧、条件确认、分步流式 | 现行；0077 允许首版实时分步暂未实现，确认仍保留 |
 | [0038](./0038-section-container-and-row-alignment-invariant.md) | 分区容器 `container` 单一真源,行对齐为运行时不变量,Schema 5.0 硬切换 | 现行 |
 | [0039](./0039-derived-measure-templates-as-company-definitions.md) | 派生度量模板(环比/同比/占比)视同公司口径,本地确定性计算 | 现行 |
 | [0040](./0040-scope-card-as-control-panel.md) | 口径卡升级为控制面板:token 行、要素就地修改落事件、已验证查询快路径、消歧预选 | 现行 |
@@ -86,6 +86,12 @@
 | [0070](./0070-consume-host-java-page-assets-api.md) | Java 页面资产由宿主提供，本仓负责接口消费 | 用户修正 #105 范围；部分取代 0062 的第一方 Java 建设前提 |
 | [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | #100 已裁决；发布门禁与目录重组待执行票 |
 | [0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) | 「宿主」改称集成应用，创作期与渲染期确立为对立时段 | 词汇表已补齐；ADR 正文与 `docs/plan/` 保留「宿主」原措辞 |
+| [0073](./0073-static-platform-direct-access-with-injected-runtime-config.md) | 静态平台直连外部服务，运行配置由集成应用注入 | #101 已裁决；接线与静态化归 #104，应用外壳归 #110 |
+| [0074](./0074-browser-component-building-and-isolated-legacy-baseline.md) | 人工组件切换在浏览器完成，旧服务链隔离为可复现历史基线 | #122–#125 已建立基线并完成主体解耦清理；新页面资产消费验证后退出旧适配器 |
+| [0075](./0075-page-playground-as-development-tool.md) | 页面试验场作为按需使用的开发工具保留 | 原 canvas 改名；退出默认产品启动、构建和产物上传，保留测试与类型检查 |
+| [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | #95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
+
+| [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古只替换现有左侧对话，每轮 ask 有结果并保留旧页 | 已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -109,6 +115,10 @@
 
 ## 领域建模、包边界与部署形态
 
+**形式化架构的范围与门禁([ADR-0076](./0076-formal-architecture-contract-scope-and-enforcement.md))：** 用户确认以概念、关系、公理和操作语义检查设计自洽性，并通过模块、接口、执行环境和交付物映射验证实现符合性。第一版覆盖 #95 主干，提供声明、校验和架构图，不生成业务代码。模型规范与源码/构建事实分开；新增或扩大的违规阻断开发检查，既存违规精确登记退出条件和执行票，目标交付不允许旧代码混入的迁移豁免。`CONTEXT.md` 的当前术语真源身份不变；具体表达方式、维护来源与行为验证深度仍待模型草案收口，不能把该方向裁决当作检查器已实现。
+
+**人工搭建与旧链路隔离的后续裁决([ADR-0074](./0074-browser-component-building-and-isolated-legacy-baseline.md)，#102)：** 人工组件切换和沉淀的最小能力归页面搭建工作台，浏览器与 Python 同步支持全部可装配组件（当前十类），共享用例约束共同规则；AI 整页装配仍归 Python，搭建画布不接管文档与业务规则。旧服务链以完整仓库提交和固定 tag 保存为可复现历史基线，按需在仓外检出；主线完成活能力、客户端和契约生成解耦后移除相应旧实现，依赖可达性与实际构建产物共同验证隔离。旧基线不进入默认安装、开发、测试、构建或 CI，主线保留有来源的验收用例。生产门槛继续保留，但不再要求为等待它们而把旧代码留在主线。旧 Java 停止交付，旧适配器待新客户端验证后退场；`ioc-data-dev/` 退主线，页面资产与 DQE 仿真保留，顶层模板播种随模板库退场。该决策尚未实施，以下早期条目须按此边界理解。
+
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
 部署目标已由 ADR-0060 改为静态 Svelte SPA + 独立 Java 17/Spring Boot 3.5.15 模块化单体 + Relay Skill-Play + Python FastMCP Tool:Java/MySQL 拥有页面资产,Python 拥有确定性页面装配算法,Relay 拥有内网模型、Skill、对话与 Agent Run,生产不运行 Node 服务端。统一运行时继续通过 `PageRepository` 端口对存储无感知,基于 `pages/` 目录的离线/开发 Adapter 仍可保留。当前 `apps/platform` 的 SvelteKit Node、TypeScript Agent/MCP 与持久化代码尚未迁移,因此 ADR-0009 与 ADR-0024 仍解释当前实现,但不再定义目标生产形态。
@@ -117,7 +127,7 @@ ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创
 
 ADR-0062 把 Java 页面资产落为仓根 `metriccanvas-page-assets/` 的第一方 Maven module 组(`model` / `service` / `bootstrap`),形状按"可被 `CDINL2DataBuilderService` 整体吸收"设计:挂 `cbcbi-parent`,包根 `com.huawei.cdi.pageassets`,MyBatis XML + Druid + MariaDB 驱动,Swagger 2.0 + `dfs-codegen` spec-first(作者文件在 Java,副本导出到 `contracts/metriccanvas/page-assets/`),Flyway 启动迁移且独立历史表,`/rest/cdi/{service}/v1/` 路径与 `X-Operator-Id` 作为 actorId,tar.gz + Docker 交付。有意分歧:JUnit 5、无 Redis(`GET_LOCK`)、`utf8mb4`、HTTP 状态语义信封。Java 完整复验页面(JSON Schema + 全部跨引用不变式,共享向量为门禁),`(operation, actorId, idempotencyKey)` 指纹幂等,固定锁序,首批不建发布/租约/审计表。**前端接线只接 `apps/platform`**:一个 Java HTTP Adapter 实现完整 `PageLifecycle`,四接口真实调用,其余返回 `NOT_SUPPORTED`;`apps/canvas` 定位为示例与参考宿主,只读 `pages/`。由此,ADR-0060 的"唯一产品界面、生产不运行 Node"指向的是 platform,"platform 去 Node 服务端"成为已登记、待单独裁决的必经轨道。
 
-ADR-0063 用 Relay 与 DQE 的真实接口修正了创作期的四个前提:Relay 无 Run 概念,`source.relay` 改为 `{ sessionId?, runId?, skillVersion }` 且 `skillVersion` 由 Tool 从 `bundle.json` 提供;`build_page` 幂等键由 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))` 以吸收模型与 Planner 重试;Tool 以 sdist 交付供 Relay `uvx` stdio 拉起(修正 0061 "不发布 wheel");Relay 的 MCP 路径不传用户身份,第一阶段以 MCP config `env` 的服务态身份调 DQE——**这是对 0060 "不以后台身份替用户验真"的明确偏离**,收敛在 `IdentityPort` 后面,生产门禁是经 Relay Plugin `on_tool_execute_before` 注入按用户身份。DQE 只经 `CDINL2DataBuilderService` 的 `dsl/execute`,永不直连 Lab;元数据发现接受全量、执行按身份(放宽 0060 的按身份过滤);`metric_code` 只用于鉴权、DQE 用中文名的关系至此确认。Chat 入口按 Relay 现状是 WebSocket + `role_name`,`skillKey` 只是示意。
+ADR-0063 用 Relay 与 DQE 的真实接口修正了创作期的四个前提:Relay 无 Run 概念,`source.relay` 改为 `{ sessionId?, runId?, skillVersion }` 且 `skillVersion` 由 Tool 从 `bundle.json` 提供;`build_page` 幂等键由 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))` 以吸收模型与 Planner 重试;Tool 以 sdist 交付供 Relay `uvx` stdio 拉起(修正 0061 "不发布 wheel");Relay 的 MCP 路径不传用户身份,第一阶段以 MCP config `env` 的服务态身份调 DQE——**这是对 0060 "不以后台身份替用户验真"的明确偏离**,收敛在 `IdentityPort` 后面,生产门禁是经 Relay Plugin `on_tool_execute_before` 注入按用户身份。DQE 只经 `CDINL2DataBuilderService` 的 `dsl/execute`,永不直连 Lab;元数据发现接受全量、执行按身份(放宽 0060 的按身份过滤);`metric_code` 只用于鉴权、DQE 用中文名的关系至此确认。当时的 Chat 调查是 WebSocket + `role_name`，现已不作为浏览器接线依据：按 [ADR-0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 使用盘古实例 API + adapter，受控 skill 字段和回调语义仍待 #106 实证。
 
 ADR-0064 再把页面装配与持久化拆开:Python Authoring Core 的目标 Interface 是
 `compose(PageBuildSpec) -> PageBuildArtifact`,不拥有 `PageAssetPort`;Relay 保存分析会话、
@@ -218,6 +228,8 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0058](./0058-latest-session-checkpoint-restores-transient-page-state.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)。
 
 ## 问数编排与口径治理
+
+**盘古接入与第一版反馈边界（[ADR-0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md)）：** 保留 platform 全局导航、文档工具栏、页面画布和右侧检查器，只将原左侧对话区整体替换为盘古；所有问答、确认、口径说明、进度、错误与历史都在盘古，不新增自有对话反馈面或独立页面切换。每次 ask 都返回本轮结果，结果可以是确认问题，分析仍可等待并在回应后继续。缺少可靠实时事件时首版允许整体处理中，不伪造分步状态；失败、取消、等待或文本答复均保留并标识上轮页面，新合格产物才替换。0037/0040 的确认与确定性校准目标、0055 的页面口径分区、0058/0064 的检查点与双通道继续有效；接口兑现仍待实证。细项见[接入基线](../plan/wayfinder-107-pangu-integration-baseline.md)。下列历史实现描述不能当成盘古已经接通。
 
 **现行结论:** 编排顺序固定为域路由 → 指标与维度检索 → 候选消歧 → 口径成形 → 清单校验 → 真实执行 → 意图判定与组件选择 → 呈现,全部发生在创作期;当前由 Platform 实现,目标由 Relay/Skill 调度与 Python 确定性页面装配 Module 协作实现。域路由由模型分类但**结果必须可见且可改**(静默路由错域会产出看起来完全正常的错数);检索返回排序候选与口径差异说明,取数核对是一次**消歧**而不是一次确认;执行前展示完整生效范围卡,但只在候选歧义、使用自由 formula、命中临时指标、时间口径由模型补全或预估成本超阈值时阻塞等待确认;每步中间结果分步流式呈现,既处理延迟也充当纠错锚点。Answer 允许由多个组件组成,就是一份完整的临时页面文档。组件选择以能力目录、字段角色、维度基数与时间粒度为**硬闸**,在允许范围内按分析意图排序,意图回显且用户可钉住,不把可视化决策外包给提问者。多轮修改是定向增量 patch,允许一轮同时改多层,原则是**用户未提及的显式设置保持不变**。
 

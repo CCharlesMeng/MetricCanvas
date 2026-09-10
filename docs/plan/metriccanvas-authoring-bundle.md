@@ -1,5 +1,7 @@
 # MetricCanvas 独立创作 Bundle 实施计划
 
+> **2026-09-08 盘古交互边界：** [ADR-0077](../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 保留平台现有布局，只替换左侧对话区。所有对话呈现归盘古，原页面画布、检查器与显式沉淀保留；每次 ask 有本轮答复，确认问题也算结果，用户回应后可继续分析。首版允许整体处理中，失败/取消等保留并标识上轮页面。浏览器不自打旧 WebSocket/`role_name`；真实接线和恢复仍待 #106–#108，详见[接入基线](wayfinder-107-pangu-integration-baseline.md)。
+
 > 状态：S4 已完成；S5 首个无保存 `compose` Core/有序并发切片与 M1 首批 Agent 契约、
 > Python 指标词解析切片已落地（2026-09-03）；
 > Bundle 侧 A1–A3 可独立实现部分已落地（2026-09-03）：sdist/uvx、Relay MCP
@@ -175,6 +177,8 @@ MCP 传输错误。`bundle_info` 继续只是 Resource。生产组合根对未�
 
 ### S5：迁移切换
 
+**2026-09-08 范围修订：** [ADR-0074](../adr/0074-browser-component-building-and-isolated-legacy-baseline.md) 将 Python 真源限定为 AI 整页装配；人工组件切换与沉淀所需的最小浏览器能力长期保留，且两侧同步支持全部可装配组件。旧服务链以完整提交/tag 隔离为仓外按需运行的历史基线，主线解耦后即可移除相应实现；完整功能与生产验收仍按下述迁移计划进行，不能用隔离代替验收。主线契约导出和 CI 需解除对旧基线的执行依赖，保留有来源的冻结向量。
+
 - 完整 Agent 前半链、两速生命周期、Relay/Chat/会话、差分、灰度与删除门禁见
   [`metriccanvas-agent-full-migration.md`](./metriccanvas-agent-full-migration.md)。本节只保留 Bundle 视角的切换摘要，
   不再把「页面 JSON 等价」误当成「Agent 功能全等价」。
@@ -240,7 +244,7 @@ Relay 与 DQE 的真实接口已由调查报告确认。外部前置仍有：测
 `METRICCANVAS_TOOL_SURFACE=relay uvx --from <local.tar.gz> metriccanvas-authoring`
 完成安装与 stdio 启动。
 
-完成条件：本地 Relay 以 `role_name` 唤起 Skill，真实模型经 MCP 调到 Tool，
+完成条件：以已核实的受控标识唤起 Skill（平台接入使用盘古实例 API + adapter，不固定旧 `role_name`），真实模型经 MCP 调到 Tool，
 Page Artifact Adapter 写入会话检查点并只向模型返回安全摘要。
 
 ### A2：身份与 DQE Adapter

@@ -1,5 +1,7 @@
 # Handoff：#95 剩余决策票的 grill
 
+> **2026-09-08 接续修正：** 本文是历史快照。#101 已决，不按旧启动语句重开 grill；当前盘古边界以 [ADR-0077](../adr/0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 和[接入基线](wayfinder-107-pangu-integration-baseline.md)为准：只替换左侧对话，保留画布和检查器；每轮可返回确认问题并在回应后继续；首版允许整体处理中，已有页面按 3A 保留。接口未说明不等于不支持，盘古历史不等于分析会话。本文冻结的 10 问仍为事实清单，不将它改写为新的已发出提问。
+
 状态快照：2026-09-07 22:45。仓库 `/Users/moon/Documents/Code/公司项目/DataDashboard`，GitHub `CCharlesMeng/MetricCanvas`，分支 `main`，HEAD `fa508db`。地图 [#95](https://github.com/CCharlesMeng/MetricCanvas/issues/95)。
 
 **启动语句：**
