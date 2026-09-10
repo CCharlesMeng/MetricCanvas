@@ -45,7 +45,7 @@ function sourceWorkspace(directory, logs, version) {
   if (version === '5.29.0') {
     const pins = { svelte: '5.29.0', vite: '6.3.6', '@sveltejs/vite-plugin-svelte': '5.1.1' };
     const manifests = [join(directory, 'package.json')];
-    for (const base of ['packages', 'packages/server', 'apps', 'tools']) {
+    for (const base of ['packages', 'apps', 'tools']) {
       for (const entry of readdirSync(join(directory, base), { withFileTypes: true })) {
         const path = join(directory, base, entry.name, 'package.json');
         if (entry.isDirectory() && existsSync(path)) manifests.push(path);

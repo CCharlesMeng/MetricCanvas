@@ -1,10 +1,6 @@
 packages:
   - packages/*
-  - packages/server/*
   - apps/*
   - tools/*
 allowBuilds:
-  cpu-features: false
   esbuild: true
-  protobufjs: false
-  ssh2: false

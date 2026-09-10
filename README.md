@@ -60,12 +60,6 @@ pnpm install
 pnpm dev
 ```
 
-启动离线开发环境：
-
-```bash
-pnpm dev:offline
-```
-
 按需启动页面试验场与 DQE Sim（仓库页面联调）：
 
 ```bash
@@ -155,7 +149,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 
 ## 仓库结构
 
-`packages/` 中 page、engine、metric-canvas、embed 是发布给集成应用的四个交付物；application-runtime 是应用共用的私有配置模块，`packages/server/` 下是不发布、待退出的旧服务端包（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
+`packages/` 中 page、engine、metric-canvas、embed 是发布给集成应用的四个交付物；application-runtime 是平台与页面试验场共用的私有配置模块。旧 TypeScript 页面生命周期、Postgres 持久化与 Java 适配器已退出主线，页面资产由外部 Java 服务持有（[ADR-0071](./docs/adr/0071-four-release-artifacts-with-standalone-page-protocol.md)）。
 
 仓内直接消费源码，无需预构建；`pnpm pack` 将发布入口写成 `dist` 中的 JS、组件和类型声明。构建与打包门禁见 [引擎交付物构建](./tools/package-build/README.md)。四个包目前仍为 private，版本推进与真实发布另行验收。
 
@@ -171,9 +165,6 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | [`packages/metric-canvas/`](./packages/metric-canvas/README.md) | **交付物**：独立创作组件 `MetricCanvas`，选中、拖拽和编辑意图回传 |
 | `packages/embed/` | **交付物**：浏览器嵌入产物 |
 | `packages/application-runtime/` | 平台与参考应用共用的私有运行配置读取器，不对外发布 |
-| `packages/server/page-lifecycle/` | 页面修订与发布 |
-| `packages/server/persistence-postgres/` | 待退出的旧页面生命周期数据库实现 |
-| `packages/server/page-assets-java/` | Java 页面资产的页面生命周期实现 |
 | `apps/playground/` | 页面试验场：开发态仓库页面浏览与 JSON 即时预览 |
 | `apps/platform/` | 页面搭建与管理 |
 | `tools/dqe-sim/` | DQE HTTP 仿真 |
@@ -181,9 +172,9 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `pages/` | 页面 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
-旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码与纵切命令已退出主线。完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。旧页面资产适配器、页面生命周期、Postgres 与 compose 仍为现有目录/保存/精确修订读取服务，须待 #105 新接口消费验证后退出；#104 尚未切静态 adapter。
+旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
 
-公共 Chat 尚未接通，问数入口显示不可用。页面目录中的已保存页面可打开页面搭建工作台，进行十类组件切换、文档编辑、布局、保存和精确修订预览。本版不提供发布治理、模板与 ACL 界面；上方发布模型描述治理目标，保存修订不等于人工确认发布。
+公共 Chat 尚未接通，问数入口显示不可用。页面目录中的已保存页面可打开页面搭建工作台，进行十类组件切换、文档编辑、布局、保存和当前修订预览。本版不提供历史修订、发布治理、模板与 ACL 界面；上方发布模型描述治理目标，保存修订不等于人工确认发布。
 
 ## 文档入口
 

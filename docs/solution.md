@@ -1,6 +1,6 @@
 # MetricCanvas 整体解决方案
 
-> 迁移状态（2026-09-08，#125）：本文发布治理与模板流程保留目标语义；本版已退出旧问数/会话编排、发布确认、模板及 ACL 界面。公共 Chat 未接通时明确不可用；人工页面搭建与页面资产读取/保存/精确修订预览继续提供。旧页面资产适配器及其 Node/Postgres 依赖等待 #105 真实接口消费验证，静态交付仍归 #104。
+> 迁移状态（2026-09-10）：本文发布治理与模板流程保留目标语义；本版已退出旧问数/会话编排、发布确认、模板及 ACL 界面。Platform 已为静态 SPA，浏览器直接消费 DQE 与外部 Java 页面资产接口；旧 TypeScript 页面生命周期、Postgres 持久化和 Java 适配器已退出主线。公共 Chat 未接通时明确不可用，历史修订精确读取等未确认外部能力不伪造成功。
 
 ## 1. 系统定位
 
@@ -41,13 +41,21 @@ MetricCanvas 将数据查询、页面描述、运行时渲染和发布治理分�
 
 ```text
 apps
-  → runtime-ui
+  → application-runtime
+  → metric-canvas
+  → engine/runtime-ui
     → runtime
       → page
       → DataGateway 端口
-  → page-lifecycle
-  → template-library
-  → mcp
+
+platform(浏览器)
+  → DQE
+  → 外部 Java 页面资产服务
+
+Relay
+  → Python 页面装配 Tool
+    → DQE
+    → 外部 Java 页面资产服务
 
 data-gateway
   → runtime 的 DataGateway 端口
@@ -145,9 +153,9 @@ Schema 元数据规则见 [schema-metadata.md](./schema-metadata.md)。
 
 ## 6. 页面搭建
 
-页面搭建能力由 `packages/server/mcp` 和 Platform 组成(ADR-0024):`mcp` 提供页面搭建 Prompt、工具与数据上下文检索;Agent 循环、模型 adapter 与测试替身收敛为 Platform 的 `agent/` 模块,不再独立成包。
+页面搭建由两条明确边界组成：Platform 在浏览器内提供人工局部文档改写与预览；Relay 调用 Python 页面装配 Tool 完成 AI 整页装配。本仓不再运行 TypeScript MCP、Agent 循环或 Node 服务端页面生命周期。
 
-MCP 提供：
+Python 页面装配 Tool 与其中立契约提供：
 
 - 页面搭建 Prompt；
 - 页面 JSON Schema；

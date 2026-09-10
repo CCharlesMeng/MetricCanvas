@@ -40,9 +40,9 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 
 ### 平台页面资产访问
 
-平台的页面目录、页面详情、精确修订预览与保存共用一个页面资产客户端。配置完整时按请求现读 Java 基址和三个身份头；基址已注入但缺身份时，以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。Node 适配器仍在的过渡期，仅缺少 `pageAssetsBaseUrl` 时回退应用 base 下的同源 `/api/pages`。
+平台的页面目录、页面详情、保存与更新共用一个浏览器页面资产客户端。客户端按每次请求现读 Java 基址和身份字段，不存在 Node 适配器或同源 `/api/pages` 回退。页面资产请求发送 `X-Auth-Token` 与 `X-Operator-Id`；`workspaceId` 仅供 DQE 请求使用。缺少必需配置时以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。
 
-精确修订预览由平台客户端读取指定修订，再交给 `RuntimeView` 就地呈现；保存成功后按新修订 id 重新读取，编辑中的工作副本不会混入已保存修订。独立开发预览应用只读取仓库页面，不接页面资产接口；旧 `VITE_PLATFORM_URL` 来源选择已移除。Java 路径的 `dataContextVersion` 未提供时记录为 null，界面显示「未记录」，不把它解释为页面只含内联数据。
+当指定修订就是接口返回的当前修订时，平台客户端将其交给 `RuntimeView` 就地呈现。已确认接口尚未提供历史修订列表、历史详情或 diff；请求非当前修订时显式返回 `REVISION_NOT_FOUND`，不用当前内容伪装历史修订。Java 路径的 `dataContextVersion`、`createdBy` 或 `contentHash` 未提供时显示「接口未提供」，不在前端伪造。
 
 ### 平台挂载容器与样式
 

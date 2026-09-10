@@ -7,7 +7,6 @@ export default defineConfig({
       'apps/*/tests/**/*.test.ts',
       'packages/*/tests/**/*.test.ts',
       'packages/engine/*/tests/**/*.test.ts',
-      'packages/server/*/tests/**/*.test.ts',
       'tools/*/tests/**/*.test.ts'
     ]
   }

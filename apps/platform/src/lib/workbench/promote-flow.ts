@@ -78,7 +78,7 @@ export interface PromotionSaveBody {
 
 /**
  * 沉淀保存命令:首个修订(baseRevisionId 为 null),面板的显式确认翻译为
- * pageIdConfirmed。是否真为首次保存由 page-lifecycle 裁决,这里不判断。
+ * pageIdConfirmed。是否真为首次保存由外部 Java 页面资产服务裁决,这里不判断。
  */
 export function promotionSaveBody(
   document: Record<string, unknown>,
