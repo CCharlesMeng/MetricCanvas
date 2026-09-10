@@ -61,7 +61,7 @@ export function readRuntimeConfig(): InjectedRuntimeConfig | null {
   return { dqeEndpoint, pageAssetsBaseUrl, authToken, operatorId, workspaceId };
 }
 
-/** 页面资产的过渡期路由选择：仅缺基址时允许回退同源 Node 路由。 */
+/** 读取页面资产基址；静态平台不再提供同源 Node 回退。 */
 export function readPageAssetsBaseUrl(): string | null {
   const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
   return raw && typeof raw === 'object' ? trimmedField(raw, 'pageAssetsBaseUrl') ?? null : null;
@@ -81,7 +81,7 @@ export function installLocalDevRuntimeConfig(): void {
   if (readRuntimeConfig()) return;
   installRuntimeConfig({
     dqeEndpoint: `http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`,
-    pageAssetsBaseUrl: 'http://127.0.0.1:8080/rest/cdi/pageassets/v1',
+    pageAssetsBaseUrl: 'http://127.0.0.1:8080/rest/cdi/cdinl2databuilderservice/v1',
     authToken: 'local-dev',
     operatorId: 'developer-1',
     workspaceId: 'local'

@@ -12,13 +12,10 @@
     "@metriccanvas/application-runtime": "workspace:*",
     "@metriccanvas/engine": "workspace:*",
     "@metriccanvas/metric-canvas": "workspace:*",
-    "@metriccanvas/page": "workspace:*",
-    "@metriccanvas/page-assets-java": "workspace:*",
-    "@metriccanvas/page-lifecycle": "workspace:*",
-    "@metriccanvas/persistence-postgres": "workspace:*"
+    "@metriccanvas/page": "workspace:*"
   },
   "devDependencies": {
-    "@sveltejs/adapter-node": "^5.5.7",
+    "@sveltejs/adapter-static": "^3.0.10",
     "@sveltejs/kit": "^2.70.1",
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "svelte": "^5.56.6",

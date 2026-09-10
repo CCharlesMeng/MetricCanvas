@@ -117,11 +117,11 @@
 
 **形式化架构的范围与门禁([ADR-0076](./0076-formal-architecture-contract-scope-and-enforcement.md))：** 用户确认以概念、关系、公理和操作语义检查设计自洽性，并通过模块、接口、执行环境和交付物映射验证实现符合性。第一版覆盖 #95 主干，提供声明、校验和架构图，不生成业务代码。模型规范与源码/构建事实分开；新增或扩大的违规阻断开发检查，既存违规精确登记退出条件和执行票，目标交付不允许旧代码混入的迁移豁免。`CONTEXT.md` 的当前术语真源身份不变；具体表达方式、维护来源与行为验证深度仍待模型草案收口，不能把该方向裁决当作检查器已实现。
 
-**人工搭建与旧链路隔离的后续裁决([ADR-0074](./0074-browser-component-building-and-isolated-legacy-baseline.md)，#102)：** 人工组件切换和沉淀的最小能力归页面搭建工作台，浏览器与 Python 同步支持全部可装配组件（当前十类），共享用例约束共同规则；AI 整页装配仍归 Python，搭建画布不接管文档与业务规则。旧服务链以完整仓库提交和固定 tag 保存为可复现历史基线，按需在仓外检出；主线完成活能力、客户端和契约生成解耦后移除相应旧实现，依赖可达性与实际构建产物共同验证隔离。旧基线不进入默认安装、开发、测试、构建或 CI，主线保留有来源的验收用例。生产门槛继续保留，但不再要求为等待它们而把旧代码留在主线。旧 Java 停止交付，旧适配器待新客户端验证后退场；`ioc-data-dev/` 退主线，页面资产与 DQE 仿真保留，顶层模板播种随模板库退场。该决策尚未实施，以下早期条目须按此边界理解。
+**人工搭建与旧链路隔离的后续裁决([ADR-0074](./0074-browser-component-building-and-isolated-legacy-baseline.md)，#102)：** 人工组件切换和沉淀的最小能力归页面搭建工作台，浏览器与 Python 同步支持全部可装配组件（当前十类），共享用例约束共同规则；AI 整页装配仍归 Python，搭建画布不接管文档与业务规则。旧服务链以完整仓库提交和固定 tag 保存为可复现历史基线，按需在仓外检出；主线完成活能力、客户端和契约生成解耦后移除相应旧实现，依赖可达性与实际构建产物共同验证隔离。旧基线不进入默认安装、开发、测试、构建或 CI，主线保留有来源的验收用例。生产门槛继续保留，但不再要求为等待它们而把旧代码留在主线。旧 Java 停止交付，旧适配器待新客户端验证后退场；`ioc-data-dev/` 退主线，页面资产与 DQE 仿真保留，顶层模板播种随模板库退场。#122–#125 已建立基线并完成主体解耦清理，以下早期条目须按此边界理解。
 
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
-部署目标已由 ADR-0060 改为静态 Svelte SPA + 独立 Java 17/Spring Boot 3.5.15 模块化单体 + Relay Skill-Play + Python FastMCP Tool:Java/MySQL 拥有页面资产,Python 拥有确定性页面装配算法,Relay 拥有内网模型、Skill、对话与 Agent Run,生产不运行 Node 服务端。统一运行时继续通过 `PageRepository` 端口对存储无感知,基于 `pages/` 目录的离线/开发 Adapter 仍可保留。当前 `apps/platform` 的 SvelteKit Node、TypeScript Agent/MCP 与持久化代码尚未迁移,因此 ADR-0009 与 ADR-0024 仍解释当前实现,但不再定义目标生产形态。
+部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已切换为 `adapter-static` 的纯前端 SPA，删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。历史修订精确读取尚待提供方契约与内网联调，真实部署载体及盘古接线仍属 #104/#106–#108 未完成项。
 
 ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 是锁步发布容器,内部的 Skill 与 Python Tool 是两个平级 Module,只通过 MCP Tool Interface 协作;Authoring contracts 只拥有 Page Build Spec 等 Skill↔Tool 接口,产品中立契约则由仓根 `contracts/metriccanvas` 承载,Bundle 携带摘要锁定的只读快照。FastMCP 只作为入站 Adapter,Fake 与 fixture 只属于 Test Harness。TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成 Page Build Spec,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。
 

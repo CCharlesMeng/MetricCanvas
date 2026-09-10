@@ -64,6 +64,10 @@
     const next = selectRevisionComparison(revisions, revisionId);
     diff = null;
     diffError = '';
+    if (historyUnavailable) {
+      loadingDiff = false;
+      return;
+    }
     if (!next?.base) {
       loadingDiff = false;
       return;
@@ -71,16 +75,7 @@
 
     loadingDiff = true;
     try {
-      const search = new URLSearchParams({
-        fromRevisionId: next.base.revisionId,
-        toRevisionId: next.selected.revisionId
-      });
-      const response = await fetch(
-        `/api/pages/${encodeURIComponent(pageId)}/revisions/diff?${search}`
-      );
-      if (!response.ok) throw new Error(await responseMessage(response));
-      const payload = (await response.json()) as { diff: RevisionDiff };
-      if (selectedRevisionId === revisionId) diff = payload.diff;
+      throw new Error('当前静态平台未获得服务端修订差异接口');
     } catch (cause) {
       if (selectedRevisionId === revisionId) {
         diffError = cause instanceof Error ? cause.message : '修订差异加载失败';
@@ -90,12 +85,6 @@
     }
   }
 
-  async function responseMessage(response: Response): Promise<string> {
-    const payload = (await response.json().catch(() => null)) as {
-      error?: { message?: string };
-    } | null;
-    return payload?.error?.message ?? `HTTP ${response.status}`;
-  }
 </script>
 
 <svelte:head>
@@ -135,10 +124,10 @@
               <button onclick={() => selectRevision(revision.revisionId)}>
                 <strong>R{revision.revisionNumber}</strong>
                 <code>{revision.revisionId}</code>
-                <span>创建人：{revision.createdBy}</span>
-                <span>时间：{revision.createdAt}</span>
-                <span>基线：{revision.baseRevisionId ?? '无（首个修订）'}</span>
-                <span>内容哈希：{revision.contentHash}</span>
+                <span>创建人：{revision.createdBy || '接口未提供'}</span>
+                <span>时间：{revision.createdAt || '接口未提供'}</span>
+                <span>基线：{historyUnavailable ? '接口未提供' : revision.baseRevisionId ?? '无（首个修订）'}</span>
+                <span>内容哈希：{revision.contentHash || '接口未提供'}</span>
                 <span>数据上下文版本：{revision.dataContextVersion ?? '未记录'}</span>
               </button>
             </li>
@@ -150,10 +139,10 @@
         <section class="audit">
           <h2>选中修订 R{comparison.selected.revisionNumber}</h2>
           <dl>
-            <div><dt>创建人</dt><dd>{comparison.selected.createdBy}</dd></div>
-            <div><dt>创建时间</dt><dd>{comparison.selected.createdAt}</dd></div>
-            <div><dt>基线修订</dt><dd>{comparison.selected.baseRevisionId ?? '无（首个修订）'}</dd></div>
-            <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash}</code></dd></div>
+            <div><dt>创建人</dt><dd>{comparison.selected.createdBy || '接口未提供'}</dd></div>
+            <div><dt>创建时间</dt><dd>{comparison.selected.createdAt || '接口未提供'}</dd></div>
+            <div><dt>基线修订</dt><dd>{historyUnavailable ? '接口未提供' : comparison.selected.baseRevisionId ?? '无（首个修订）'}</dd></div>
+            <div><dt>内容哈希</dt><dd><code>{comparison.selected.contentHash || '接口未提供'}</code></dd></div>
             <div><dt>数据上下文版本</dt><dd>{comparison.selected.dataContextVersion ?? '未记录'}</dd></div>
           </dl>
           <div class="revision-actions">
@@ -168,7 +157,9 @@
 
         <section>
           <h2>结构化 JSON 差异</h2>
-          {#if comparison.base === null}
+          {#if historyUnavailable}
+            <p class="muted">当前页面资产接口未开放历史修订与差异读取。</p>
+          {:else if comparison.base === null}
             <p class="muted">这是首个修订，没有前序基线可供比较。</p>
           {:else if loadingDiff}
             <p class="muted">加载差异…</p>

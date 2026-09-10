@@ -3,122 +3,173 @@ import { createPageAssetsClient } from '../src/lib/page-assets-client';
 import { installRuntimeConfig } from '../src/lib/runtime-config';
 
 const config = {
-  dqeEndpoint: '/dqe', pageAssetsBaseUrl: 'https://pages.example/rest/cdi/pageassets/v1/',
-  authToken: 'token-1', operatorId: 'operator-1', workspaceId: 'ws-1'
+  dqeEndpoint: '/dqe',
+  pageAssetsBaseUrl: 'https://pages.example/rest/cdi/cdinl2databuilderservice/v1/',
+  authToken: 'token-1',
+  operatorId: 'operator-1',
+  workspaceId: 'ws-1'
 };
 const document = { id: 'report', schemaVersion: '6.0', title: '报告' };
-const revision = {
-  pageId: 'report', revisionId: 'rev-1', revisionNumber: 1, document,
-  baseRevisionId: null, contentHash: 'hash', dataContextVersion: null,
-  createdBy: 'operator-1', createdAt: '2026-09-08T00:00:00Z'
+const providerRevision = {
+  retCode: '0',
+  retDesc: '',
+  page_metadata_id: 'metadata-1',
+  page_id: 'report',
+  revision_id: 'rev-1',
+  revision_number: 1,
+  page_metadata_definition: JSON.stringify(document),
+  created_at: '2026-09-08T00:00:00Z',
+  updated_at: '2026-09-08T00:00:00Z'
 };
-const command = { baseRevisionId: null, document, idempotencyKey: 'save-1', pageIdConfirmed: true };
+const command = {
+  baseRevisionId: null,
+  document,
+  idempotencyKey: 'save-1',
+  pageIdConfirmed: true
+};
+
 afterEach(() => installRuntimeConfig(null));
 
-describe('平台页面资产客户端', () => {
-  it('目录、最新、精确修订、保存都使用注入基址和三个身份头，适配 Java 信封', async () => {
+describe('静态平台页面资产客户端', () => {
+  it('目录与详情按已确认的 user-page-metadata 契约读取', async () => {
     installRuntimeConfig(config);
     const calls: Array<{ url: string; init?: RequestInit }> = [];
-    const client = createPageAssetsClient({ fetchImpl: async (input, init) => {
-      calls.push({ url: String(input), init });
-      return String(input).endsWith('/pages')
-        ? Response.json({ pages: [{ pageId: 'report', latestRevision: { revisionId: 'rev-1' } }], nextAfter: 'report' })
-        : Response.json(revision, { status: init?.method === 'POST' ? 201 : 200 });
-    } });
-    await expect(client.listPages()).resolves.toEqual({ pages: [{ pageId: 'report', latestRevision: { revisionId: 'rev-1' }, publishedRevision: null, visibility: 'visible' }], nextPageId: 'report' });
-    await expect(client.getLatest('report')).resolves.toEqual(revision);
-    await expect(client.getRevision('report', 'rev-1')).resolves.toEqual(revision);
-    await expect(client.saveRevision('report', command)).resolves.toEqual(revision);
+    const client = createPageAssetsClient({
+      fetchImpl: async (input, init) => {
+        calls.push({ url: String(input), init });
+        return String(input).includes('?')
+          ? Response.json({
+              retCode: '0',
+              page_metadata_list: [providerRevision],
+              total: 1,
+              page_no: 1,
+              page_size: 1000
+            })
+          : Response.json(providerRevision);
+      }
+    });
+
+    await expect(client.listPages()).resolves.toEqual({
+      pages: [{
+        pageId: 'report',
+        latestRevision: { revisionId: 'rev-1' },
+        publishedRevision: null,
+        visibility: 'visible'
+      }],
+      nextPageId: null
+    });
+    await expect(client.getLatest('report')).resolves.toMatchObject({
+      pageId: 'report',
+      revisionId: 'rev-1',
+      revisionNumber: 1,
+      document
+    });
+
     expect(calls.map((call) => call.url)).toEqual([
-      `${config.pageAssetsBaseUrl}pages`, `${config.pageAssetsBaseUrl}pages/report`,
-      `${config.pageAssetsBaseUrl}pages/report/revisions/rev-1`, `${config.pageAssetsBaseUrl}pages/report/revisions`
+      `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
+      `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
+      `${config.pageAssetsBaseUrl}user-page-metadata/metadata-1`
     ]);
     for (const { init } of calls) {
       const headers = new Headers(init?.headers);
       expect(headers.get('X-Auth-Token')).toBe('token-1');
       expect(headers.get('X-Operator-Id')).toBe('operator-1');
-      expect(headers.get('X-Workspace-Id')).toBe('ws-1');
+      expect(headers.has('X-Workspace-Id')).toBe(false);
     }
-    expect(JSON.parse(String(calls[3]?.init?.body))).toEqual({ ...command, source: { type: 'manual' }, dataContextVersion: null });
   });
 
-  it.each(['absent', 'missing-base'] as const)('%s 时回退当前同源路径，包含应用 base，保留首次保存确认', async (kind) => {
-    installRuntimeConfig(kind === 'absent' ? null : { ...config, pageAssetsBaseUrl: '' });
+  it('首建使用 POST，后续修订先解析记录 id 再使用 PUT', async () => {
+    installRuntimeConfig(config);
     const calls: Array<{ url: string; init?: RequestInit }> = [];
-    const client = createPageAssetsClient({ applicationBase: '/metriccanvas', fetchImpl: async (input, init) => {
-      calls.push({ url: String(input), init });
-      return String(input).endsWith('/api/pages')
-        ? Response.json({ pages: [], nextPageId: null })
-        : Response.json({ ok: true, revision });
-    } });
-    await client.listPages();
-    await client.getLatest('a/b');
-    await client.getRevision('a/b', 'rev?1');
-    await client.saveRevision('a/b', command);
-    expect(calls.map((call) => call.url)).toEqual([
-      '/metriccanvas/api/pages', '/metriccanvas/api/pages/a%2Fb',
-      '/metriccanvas/api/pages/a%2Fb?revisionId=rev%3F1', '/metriccanvas/api/pages/a%2Fb/revisions'
+    const client = createPageAssetsClient({
+      fetchImpl: async (input, init) => {
+        calls.push({ url: String(input), init });
+        if (String(input).includes('?')) {
+          return Response.json({ retCode: '0', page_metadata_list: [providerRevision], total: 1 });
+        }
+        return Response.json({ ...providerRevision, revision_id: init?.method === 'PUT' ? 'rev-2' : 'rev-1', revision_number: init?.method === 'PUT' ? 2 : 1 });
+      }
+    });
+
+    await client.saveRevision('report', command);
+    await expect(client.saveRevision('report', { ...command, baseRevisionId: 'rev-1' }))
+      .resolves.toMatchObject({ revisionId: 'rev-2', revisionNumber: 2, baseRevisionId: 'rev-1' });
+
+    expect(calls.map(({ url, init }) => [init?.method, url])).toEqual([
+      ['POST', `${config.pageAssetsBaseUrl}user-page-metadata`],
+      ['GET', `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`],
+      ['PUT', `${config.pageAssetsBaseUrl}user-page-metadata/metadata-1`]
     ]);
-    expect(JSON.parse(String(calls[3]?.init?.body))).toEqual(command);
+    expect(JSON.parse(String(calls[0]?.init?.body))).toEqual({
+      page_id: 'report',
+      page_metadata_definition: document
+    });
+    expect(JSON.parse(String(calls[2]?.init?.body))).toEqual({
+      page_metadata_definition: document,
+      base_revision_id: 'rev-1'
+    });
   });
 
-  it('请求时现读：更换基址和三个身份字段无需重建客户端', async () => {
+  it('每次请求现读基址与身份，不保留 Node 同源回退', async () => {
     installRuntimeConfig(config);
     const calls: Array<{ url: string; headers: Headers }> = [];
-    const client = createPageAssetsClient({ fetchImpl: async (input, init) => {
-      calls.push({ url: String(input), headers: new Headers(init?.headers) });
-      return Response.json(revision);
-    } });
-    await client.getLatest('report');
-    installRuntimeConfig({ ...config, pageAssetsBaseUrl: '/new-assets', authToken: 'token-2', operatorId: 'operator-2', workspaceId: 'ws-2' });
-    await client.saveRevision('report', command);
-    expect(calls[1]?.url).toBe('/new-assets/pages/report/revisions');
+    const client = createPageAssetsClient({
+      fetchImpl: async (input, init) => {
+        calls.push({ url: String(input), headers: new Headers(init?.headers) });
+        return Response.json({ retCode: '0', page_metadata_list: [], total: 0 });
+      }
+    });
+    await client.listPages();
+    installRuntimeConfig({
+      ...config,
+      pageAssetsBaseUrl: '/new-assets/user-page-metadata',
+      authToken: 'token-2',
+      operatorId: 'operator-2'
+    });
+    await client.listPages();
+    expect(calls[1]?.url).toBe('/new-assets/user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false');
     expect(calls[1]?.headers.get('X-Auth-Token')).toBe('token-2');
     expect(calls[1]?.headers.get('X-Operator-Id')).toBe('operator-2');
-    expect(calls[1]?.headers.get('X-Workspace-Id')).toBe('ws-2');
   });
 
-  it('有基址而缺身份时，读和写在发网前报告未注入配置，不回退 Node', async () => {
-    installRuntimeConfig({ ...config, authToken: '' });
+  it('未注入完整配置时在发网前失败', async () => {
+    installRuntimeConfig({ ...config, pageAssetsBaseUrl: '' });
     const fetchImpl = vi.fn<typeof fetch>();
     const client = createPageAssetsClient({ fetchImpl });
-    await expect(client.getLatest('report')).rejects.toMatchObject({ code: 'DQE_CONFIG_ERROR', message: '集成应用未注入运行配置' });
-    await expect(client.saveRevision('report', command)).rejects.toMatchObject({ code: 'DQE_CONFIG_ERROR', message: '集成应用未注入运行配置' });
+    await expect(client.listPages()).rejects.toMatchObject({
+      code: 'DQE_CONFIG_ERROR',
+      message: '集成应用未注入运行配置'
+    });
     expect(fetchImpl).not.toHaveBeenCalled();
   });
 
-  it('精确修订读取携带信号，取消到达实际请求', async () => {
+  it('精确修订只能命中当前修订，不伪造历史读取', async () => {
     installRuntimeConfig(config);
-    const controller = new AbortController();
-    const client = createPageAssetsClient({ fetchImpl: (_input, init) => new Promise<Response>((_resolve, reject) => {
-      init?.signal?.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')), { once: true });
-    }) });
-    const pending = client.getRevision('report', 'rev-1', controller.signal);
-    controller.abort();
-    await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    const client = createPageAssetsClient({
+      fetchImpl: async (input) => String(input).includes('?')
+        ? Response.json({ retCode: '0', page_metadata_list: [providerRevision], total: 1 })
+        : Response.json(providerRevision)
+    });
+    await expect(client.getRevision('report', 'rev-1')).resolves.toMatchObject({ revisionId: 'rev-1' });
+    await expect(client.getRevision('report', 'old-rev')).rejects.toMatchObject({
+      code: 'REVISION_NOT_FOUND',
+      status: 404
+    });
   });
 
-  it.each([false, true])('业务冲突与校验问题保留分类，Java=%s', async (injected) => {
-    installRuntimeConfig(injected ? config : null);
-    const issue = { type: 'INVALID_FIELD', path: 'sections', message: '字段错误' };
-    const error = { code: 'INVALID_PAGE', message: '页面校验失败', ...(injected ? { details: { errors: [issue] } } : { validationErrors: [issue] }) };
-    const client = createPageAssetsClient({ fetchImpl: async () => Response.json(injected ? error : { error }, { status: 422 }) });
-    await expect(client.saveRevision('report', command)).rejects.toMatchObject({ code: 'INVALID_PAGE', message: '页面校验失败', validationErrors: [issue] });
-  });
-
-  it('HTTP 401 报告需要登录，无刷新重试', async () => {
+  it('HTTP 401 报告需要登录，CommonRsp 业务失败保留返回码', async () => {
     installRuntimeConfig(config);
-    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response('unauthorized', { status: 401 }));
-    const client = createPageAssetsClient({ fetchImpl });
-    await expect(client.getLatest('report')).rejects.toMatchObject({ code: 'DQE_AUTH_REQUIRED', message: expect.stringContaining('需要登录') });
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
-  });
+    const unauthorized = createPageAssetsClient({
+      fetchImpl: vi.fn<typeof fetch>().mockResolvedValue(new Response('unauthorized', { status: 401 }))
+    });
+    await expect(unauthorized.listPages()).rejects.toMatchObject({
+      code: 'DQE_AUTH_REQUIRED',
+      message: expect.stringContaining('需要登录')
+    });
 
-  it('Java 详情只展示该服务的最新修订，不混入旧 Node 历史', async () => {
-    installRuntimeConfig(config);
-    const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(Response.json(revision));
-    const client = createPageAssetsClient({ fetchImpl });
-    await expect(client.getDetails('report')).resolves.toMatchObject({ revision, revisions: [revision], historyUnavailable: expect.any(String) });
-    expect(fetchImpl).toHaveBeenCalledTimes(1);
+    const failed = createPageAssetsClient({
+      fetchImpl: vi.fn<typeof fetch>().mockResolvedValue(Response.json({ retCode: 'E42', retDesc: '服务拒绝' }))
+    });
+    await expect(failed.listPages()).rejects.toMatchObject({ code: 'E42', message: '服务拒绝' });
   });
 });

@@ -66,15 +66,22 @@ jobs:
       - name: 类型检查
         run: pnpm check
 
-      # 产品构建包含四个引擎交付物与平台；平台仍为 adapter-node，静态化前置见 #104/#105。
+      # 产品构建包含四个引擎交付物与纯前端静态平台。
       - name: 产品构建
         run: pnpm build
 
       - name: 检查打包入口、声明与组件
         run: pnpm packages:check
 
+      - name: 上传静态平台
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v4
+        with:
+          name: metriccanvas-platform-static-${{ github.sha }}
+          path: apps/platform/build
+
       # 开发预览应用按需使用，不作为产品构建产物上传。
-      # 平台静态产物与真实部署流程由 #104 接续。
+      # 实际内网载体的 deploy job 仍待部署环境确定。
       - name: 上传创作 Bundle
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { RuntimeView } from '@metriccanvas/engine/ui';
-  import type { PageRevision } from '@metriccanvas/page-lifecycle';
+  import type { PageRevision } from './page-assets-client';
   import { createInjectedDqeGateway } from './runtime-config';
   import { pageAssets } from './page-assets';
 
