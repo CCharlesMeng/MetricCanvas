@@ -819,3 +819,11 @@ S1/S4本轮本仓票交接完成，S2可提供最终交付生成/回归支援，
 S0审阅资源失败/超时/缺API/插入异常的清理、同版重试及版本锁、预加载来源拒绝、固定容器配置、异常实例清理与容器ID所有权。独立集成5文件73项通过（新增13），采用S5最终check零错零警告、静态build与原T01/T02/T13真实浏览器配本地SDK替身证据；真实SDK身份/路由/取消/精确产物/升级及内网未联调。document.scripts精确URL匹配只是可见来源检查，不证明资源内容不可变。
 
 基础适配本仓切片通过，不关闭#106/#107/#108。S2已受托固定b4868fc执行最终完整TS/Python/check/build/export/Bundle组合门禁，日志结果待回报，不把不同基线数字合写成最终全量通过。无需重跑无关公开四包版本矩阵。
+
+## 最终固定组合验证通过
+
+S2独立detached验证树`/private/tmp/metriccanvas-126-s2-final`，精确产品SHA b4868fccafb529fff2c194511d7f413333723b57，产品/锁/版本零修改。S0读取`/private/tmp/s2-final-results.json`及实际全量/check/build日志，并核对当前集成与该SHA的apps/packages/Bundle/tools/contracts无差异。最终146文件1233通过/5既有设计源依赖skip；Python281通过；原命令pnpm check与build通过，Svelte0错0警告；契约471/4/1、1919摘要、11页面校验、四包rc.4入口/声明/组件门禁通过。没有重复无关跨Svelte版本矩阵。
+
+环境失败完整保留：offline依赖缓存缺mri，frozen-lockfile正常准备后锁不变；tsx CLI的IPC EPERM发生在入口执行前，改用相同入口node --import tsx后export/validate通过。Vite大chunk提示非失败。所有通过数字来自同一固定组合，不沿用旧树冒称最终全量。S0测试用临时依赖链接已移除（仅本次创建指向S1的链接），不触及S1依赖或原工作区。
+
+本仓实现与最终组合门禁均完成，真实模型14cases及M3仍未完成。第二批尚未远端发布/更新Issue；具体可审阅发布范围与回写文案见handoff/release-review.md，后续须明确批准该批次再发送，不绕过此前审批拒绝。
