@@ -115,7 +115,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 `contracts/authored/publish-request.schema.json` 仅引用共同 `publication/1` 的 Request；包内 `contract-snapshot/authoring/publication.schema.json` 包含闭合 Page 定义。完整候选、差异、参数摘要及操作回执只通过同一受保护程序输出交付，模型仅见状态、引用、摘要和令牌。调整只允许保留维度值选择及服务给定参数 ID 的选择，不接受任意页面补丁。
 
-人工确认令牌必须由独立 `HumanConfirmationPort` 读取可信人工事件，绑定身份、精确候选、源修订、内容与审阅摘要、保留选择和租约；模型工具不能创建证明。内容 hash 与包含十一字段的审阅 hash 分别验证，算法身份由适配器固定。保留既有参数的 null 分类还要求可信精确源读取及原文完整性验证。最终权限、候选有效期、源头版本、证明撤销和租约消费必须在服务发布事务中原子检查。
+人工确认令牌必须由独立 `HumanConfirmationPort` 读取可信人工事件，绑定身份、精确候选、源修订、内容与审阅摘要、保留选择和租约；模型工具不能创建证明。内容 hash 与包含十一字段的审阅 hash 分别验证，算法身份由适配器固定。所有候选接收均要求可信精确源读取及原文完整性验证，并核对非维度参数完整保留；null 分类还要求原维度声明与绑定保持。最终权限、候选有效期、源头版本、证明撤销和租约消费必须在服务发布事务中原子检查。
 
 三类写操作均先查询完整原请求，只在权威 `not-applied/retrySafe:true` 时提交。确认丢失、异常回执或程序交付失败保持 unknown，使用原令牌查询恢复；已完成重放返回原结果，不再次消费租约或要求重新人工确认，但仍需当前读取权限。测试替身与人工事件模拟仅位于 `test-harness/publish_stdio_server.py`，不进入生产分发；这些测试不能证明真实 Java/Relay 已接通。
 

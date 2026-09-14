@@ -8,7 +8,7 @@ from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
-from publish_stdio_server import Programs, Identities, ProposedService, PublicationProvider, HumanEvents, prepare_request, context
+from publish_stdio_server import Programs, Identities, PublicationSources, PublicationProvider, HumanEvents, prepare_request, context
 from metriccanvas_authoring.application.publish_ports import PublicationDependencies
 from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
 
@@ -28,7 +28,7 @@ class PublishStdioTest(unittest.IsolatedAsyncioTestCase):
         programs, identities, humans = Programs(), Identities(), HumanEvents()
         provider = PublicationProvider(humans)
         programs.inputs['prepare-token'] = prepare_request()
-        server = create_lifecycle_mcp_server(ProposedService(), programs, identities,
+        server = create_lifecycle_mcp_server(PublicationSources(), programs, identities,
             publication=PublicationDependencies(provider, humans))
         async with Client(server) as client:
             self.assertEqual({t.name for t in await client.list_tools()}, NAMES)

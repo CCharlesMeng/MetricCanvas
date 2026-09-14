@@ -6,7 +6,7 @@ from copy import deepcopy
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
-from publish_stdio_server import PublicationProvider, HumanEvents, candidate, signed, context, prepare_request, SOURCE
+from publish_stdio_server import PublicationProvider, HumanEvents, candidate, signed, context, prepare_request, SOURCE, PublicationSources
 from lifecycle_stdio_server import Identities, Programs, ProposedService
 from metriccanvas_authoring.application.lifecycle_publish import Publication, validate_candidate_parameters
 from metriccanvas_authoring.application.publish_ports import PublicationDependencies
@@ -17,7 +17,8 @@ class PublicationTest(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.programs, self.identities, self.humans = Programs(), Identities(), HumanEvents()
         self.provider = PublicationProvider(self.humans)
-        self.app = Publication(PublicationDependencies(self.provider, self.humans), self.programs, self.identities)
+        self.sources = PublicationSources()
+        self.app = Publication(PublicationDependencies(self.provider, self.humans), self.programs, self.identities, self.sources)
         self.programs.inputs['prepare-token'] = prepare_request()
     async def call(self, operation='prepare', token='prepare-token'):
         return await self.app.call(operation, token)
@@ -193,11 +194,40 @@ class PublicationTest(unittest.IsolatedAsyncioTestCase):
         self.identities.value = Identities.value
         self.assertEqual((await self.call('lookup', 'publish-token'))['status'], 'completed')
         self.assertEqual(self.provider.writes['publish'], 1)
+    async def test_new_extractions_still_preserve_all_non_dimension_parameters(self):
+        first = await self.ready()
+        for change in ('changed', 'deleted', 'added'):
+            value = deepcopy(first)
+            if change == 'changed':
+                value['document']['params'][2]['default'] = 'Unexpected replacement'
+            elif change == 'deleted':
+                value['document']['params'].pop(2)
+                value['document']['sections'][0]['components'][0]['props']['title'] = 'Literal heading'
+            else:
+                value['document']['params'].append({'id': 'new-heading', 'type': 'string', 'required': True, 'default': 'New'})
+                extra = deepcopy(value['document']['sections'][0]['components'][0])
+                extra['id'] = 'extra-heading'
+                extra['props']['title'] = {'param': 'new-heading'}
+                value['document']['sections'][0]['components'].append(extra)
+            self.provider.candidates['v1'] = signed(value)
+            result = await self.call('read', 'read-token')
+            self.assertEqual(result['status'], 'rejected', (change, result))
+            self.assertEqual(result['code'], 'RESPONSE_MISMATCH', (change, result))
+        self.provider.candidates['v1'] = first
+        self.app.sources = None
+        self.assertEqual((await self.call('read', 'read-token'))['code'], 'CAPABILITY_UNAVAILABLE')
+        replay = await self.call('lookup')
+        self.assertEqual((replay['status'], replay['code']), ('unknown', 'CAPABILITY_UNAVAILABLE'))
+        self.programs.inputs['prepare-new'] = prepare_request('prepare-new')
+        self.assertEqual((await self.call('prepare', 'prepare-new'))['code'], 'CAPABILITY_UNAVAILABLE')
+        self.assertEqual(self.provider.writes['prepare'], 1)
+
     async def test_existing_parameter_requires_exact_verified_source(self):
         first = await self.ready()
         first['parameterSummary'][0]['extractionKind'] = None
         signed(first)
         self.provider.candidates['v1'] = first
+        self.app.sources = None
         self.assertEqual((await self.call('read', 'read-token'))['code'], 'CAPABILITY_UNAVAILABLE')
         source = {'ref': deepcopy(SOURCE), 'document': deepcopy(first['document']),
                   'contentHash': first['contentHash'], 'canonicalization': first['canonicalization']}

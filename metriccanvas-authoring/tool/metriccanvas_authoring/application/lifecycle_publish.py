@@ -73,15 +73,13 @@ class Publication:
                                               candidate['canonicalization']) is True)
         require(self.service.verify_review(deepcopy(candidate)) is True)
         require(not validate_page_document(candidate['document']), 'INVALID_PAGE')
-        source = None
-        if any(p['extractionKind'] is None for p in candidate['parameterSummary']):
-            require(self.sources is not None and self.sources.capabilities.exact_read, 'CAPABILITY_UNAVAILABLE')
-            source = deepcopy(await self.sources.read(identity, deepcopy(candidate['ref']['source'])))
-            self.current(identity)
-            require(source.get('ref') == candidate['ref']['source'])
-            require(self.sources.verify_document(source.get('document'), source.get('contentHash'), source.get('canonicalization')) is True)
-            require(not validate_page_document(source.get('document')), 'INVALID_PAGE')
-            require(source['document']['id'] == source['ref']['pageId'])
+        require(self.sources is not None and self.sources.capabilities.exact_read, 'CAPABILITY_UNAVAILABLE')
+        source = deepcopy(await self.sources.read(identity, deepcopy(candidate['ref']['source'])))
+        self.current(identity)
+        require(source.get('ref') == candidate['ref']['source'])
+        require(self.sources.verify_document(source.get('document'), source.get('contentHash'), source.get('canonicalization')) is True)
+        require(not validate_page_document(source.get('document')), 'INVALID_PAGE')
+        require(source['document']['id'] == source['ref']['pageId'])
         validate_candidate_parameters(candidate, source)
 
     async def outcome(self, identity, command, result, *, lookup):
@@ -105,6 +103,7 @@ class Publication:
     async def perform(self, identity, command):
         kind = command['kind']
         if kind == 'prepare':
+            require(self.sources is not None and self.sources.capabilities.exact_read, 'CAPABILITY_UNAVAILABLE')
             self.current(identity)
             return await self.service.prepare(identity, deepcopy(command))
         candidate = await self.candidate(identity, command['ref'])
@@ -140,6 +139,9 @@ class Publication:
             if error.code in ERROR_CODES - {'RESPONSE_MISMATCH'}:
                 return self.control(command, 'rejected', code=error.code, retryable=False)
             return self.control(command, 'unknown', code='RESPONSE_MISMATCH')
+        def unverified(error):
+            code = 'CAPABILITY_UNAVAILABLE' if isinstance(error, LifecycleError) and error.code == 'CAPABILITY_UNAVAILABLE' else 'RESPONSE_MISMATCH'
+            return self.control(command, 'unknown', code=code)
         try:
             result = deepcopy(await self.service.lookup(identity, deepcopy(command)))
             self.current(identity)
@@ -149,9 +151,9 @@ class Publication:
             return self.control(command, 'unknown', code='SERVICE_UNAVAILABLE')
         try:
             await self.outcome(identity, command, result, lookup=True)
-        except Exception:
-            # A malformed completed receipt cannot establish that no write happened.
-            return self.control(command, 'unknown', code='RESPONSE_MISMATCH')
+        except Exception as error:
+            # An unverified completed receipt cannot establish that no write happened.
+            return unverified(error)
         if not lookup and result['status'] == 'not-applied':
             if not result['retrySafe']:
                 return self.control(command, 'unknown')
@@ -164,8 +166,8 @@ class Publication:
                 return self.control(command, 'unknown', code='SERVICE_UNAVAILABLE')
             try:
                 await self.outcome(identity, command, result, lookup=False)
-            except Exception:
-                return self.control(command, 'unknown', code='RESPONSE_MISMATCH')
+            except Exception as error:
+                return unverified(error)
         return await self.deliver(identity, command, result)
 
     async def call(self, operation, token):

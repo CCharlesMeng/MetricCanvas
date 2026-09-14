@@ -55,6 +55,22 @@ def candidate(version='v1', retain=True):
         'retainDimensionValues': retain, 'validation': {'valid': True, 'issues': []}})
 
 
+class PublicationSources(ProposedService):
+    """Authenticated exact original source fixture, independent of candidate edits."""
+    def __init__(self):
+        super().__init__()
+        value = candidate()
+        self.source = {'ref': deepcopy(SOURCE), 'document': deepcopy(value['document']),
+                      'contentHash': value['contentHash'], 'canonicalization': value['canonicalization']}
+    async def read(self, identity, ref):
+        self.authorize(identity)
+        if ref != self.source['ref']:
+            raise LifecycleError('REVISION_NOT_FOUND')
+        return deepcopy(self.source)
+    def verify_document(self, document, content_hash, algorithm):
+        return algorithm == 'fixture-document/1' and digest(document) == content_hash
+
+
 def prepare_request(operation='prepare-1'):
     return {'kind': 'prepare', 'context': context(operation), 'source': deepcopy(SOURCE), 'retainDimensionValues': True}
 
@@ -198,5 +214,5 @@ if __name__ == '__main__':
                                                'ref': first['ref'], 'confirmationToken': confirmation_token}
     programs.inputs['publish-unconfirmed-token'] = {'kind': 'publish', 'context': context('unconfirmed-1'),
         'ref': first['ref'], 'confirmationToken': 'unrecorded-human-token'}
-    create_lifecycle_mcp_server(ProposedService(), programs, Identities(),
+    create_lifecycle_mcp_server(PublicationSources(), programs, Identities(),
         publication=PublicationDependencies(provider, humans)).run()
