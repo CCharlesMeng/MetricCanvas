@@ -1,19 +1,15 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
   import type { DialogueAdapter } from './port';
   import { panguDialogueAdapter } from './runtime';
+  import { attachDialogue } from './lifecycle';
   let { adapter = panguDialogueAdapter }: { adapter?: DialogueAdapter } = $props();
   let container: HTMLDivElement;
   let error = $state('');
-  onMount(() => {
-    let disposed = false;
-    let cleanup: (() => void) | undefined;
-    void adapter.mount(container).then((destroy) => {
-      if (disposed) destroy(); else cleanup = destroy;
-    }).catch((cause: unknown) => {
-      if (!disposed) error = cause instanceof Error ? cause.message : String(cause);
+  $effect(() => {
+    error = '';
+    return attachDialogue(adapter, container, (cause) => {
+      error = cause instanceof Error ? cause.message : String(cause);
     });
-    return () => { disposed = true; cleanup?.(); };
   });
 </script>
 <div class="dialogue" aria-label="盘古对话模块">
