@@ -353,3 +353,26 @@ stableSave=false时不得将自动队列接入无幂等旧保存端点；先本�
 既有作者触点归S3本票范围：`metriccanvas-authoring/tool/pyproject.toml`（独立content CLI/打包）、`metriccanvas-authoring/test-harness/tests/test_distribution.py`、`metriccanvas-authoring/README.md`。S4后续若需相同打包/分发文件必须先请求唯一作者安排，不并发写；page_building.py若需修改另报准确范围。产品生成物/锁由S2唯一生成，不手改。
 
 模型输入仅baseline token+受控操作；完整基线由可信只读端口按精确ref/原文hash校验，产物走程序通道，模型仅必要摘要。无保存/发布端口；部分失败必须合法依赖闭合，no-change/全失败不产生可保存新产物。S3准备受控标题/占位/移动/类型/属性/布局操作，最终范围以#134及后续各票职责为准，避免提前消耗#135–#137验收。GitHub既有审批边界保持。
+
+## M0后S2 #143开工登记
+
+任务不变；工作树`/private/tmp/metriccanvas-126-s2`，分支`codex/s2-params-bindings-143`；已消费e65b012。S0读取#143正文，#133前置满足。6.2及dimension/multiple、query.paramBindings、filter.initialParam均为S2待验收提案，其他角色不得提前当正式契约消费。公开校验/实例化/统一运行时/Embed、部分共享/缺值、URL仅初始化、旧标量/文本兼容及跨语言一致性为本票门槛。
+
+已登记作者路径归S2：
+- `packages/page/src/page-param.ts`
+- `packages/page/src/query.ts`
+- `packages/page/src/filter.ts`
+- `packages/page/src/text-value.ts`
+- `packages/page/src/validate.ts`
+- `packages/page/src/version.ts`
+- `packages/page/src/schema/primitives.ts`
+- `packages/page/src/schema/data-source.ts`
+- `packages/page/src/schema/filter.ts`
+- `packages/page/src/param-bindings.ts`
+- `packages/engine/runtime/src/page-params.ts`
+- `packages/engine/runtime/src/orchestrator.ts`
+- `packages/engine/runtime-ui/src/RuntimeSurface.svelte`
+- `PAGE-METADATA.md`（参数章节）
+- `docs/page-metadata/parameters.md`
+
+测试、代表模板fixture、t17证据准确文件名及其他生成作者触点待S2补登记；生成物/版本门禁仍S2唯一作者。不修改S1工作台或S3 Python作者源；若需Python语义适配，先与S3指定唯一作者及可验证基线，不以pending豁免跨语言验收。
