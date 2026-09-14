@@ -583,3 +583,11 @@ S3任务不变；独立树`/private/tmp/metriccanvas-s3-136`、分支`codex/s3-1
 来源120f7c9030194f8ddcaa17a57a17be831b6253d9及0ef24366b0364115bcb275dbef593bb279de40fe按顺序保留作者集成（本条前两提交完整SHA见Git）；未取来源merge，集成apps树与S1最终组合一致。S0读票/审阅单步undo持久化、新操作恢复、历史快照/分页/重复游标与精确读取门禁，独立五文件60项通过；采用t15最终d593df组合1020通过/5既有skip、类型/check/build及四浏览器证据，不冒称全量重跑。
 
 本仓#141范围通过：撤销最近一次完整操作，保留原操作与历史，未知已发先核实；旧版本恢复以当前base新保存，即使相同内容也属显式新动作。历史能力缺失明确提示，未实现多步undo/redo或真实Java历史。回退时带undoDraft记录会被旧严格恢复器拒绝但保留，不自动删除。#142可按真实前置开工，#146仍只等#138，S4尚未登记；S2预览三路径仍临时独占。
+
+## #142开工登记
+
+新增S1唯一作者：`apps/platform/src/lib/workbench/property-edit.ts`、`apps/platform/src/lib/workbench/ComponentProperties.svelte`、`apps/platform/tests/workbench/property-edit.test.ts`、`apps/platform/tests/workbench/property-edit-browser.mjs`、`apps/platform/tests/workbench/property-fixture.ts`、`docs/plan/authoring-tickets-126/t16-evidence.md`。既有`apps/platform/src/lib/workbench/Inspector.svelte`及PageAuthoringWorkbench.svelte接线；document-edit.ts如需仅导出已验证画布投影入口，不重写模型。
+
+六类属性白名单按#126/T08及现有Schema核对，保持未触及props/绑定/动作；完整合法应用操作进入原同步/撤销边界，无变化不新增操作。预览路径仍S2临时所有。#146在#138到齐时优先，当前不解锁。
+
+#144最终7748586审阅待补：同target但不同execution.document可能替换已读精确文档，S0已要求接缝内容一致性检查与真实浏览器反例，未验收。S2回报最终GitHub评论自动审批拒绝（未明确授权披露此批提交/测试信息），S0不代发绕过，本地证据流程继续。
