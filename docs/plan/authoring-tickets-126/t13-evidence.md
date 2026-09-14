@@ -57,3 +57,7 @@ S5待移交清单：dialogue/runtime.ts真实资源/实例适配，dialogue/Pang
 原已发command保留在原身份IndexedDB记录，未重发、未丢弃；重新打开后的读取与核实仍由#140实现，本票不声称已有自动恢复。IndexedDB的可用性检查延迟到实际保护操作，缺失或抛错均进入保护失败状态。
 
 新增单测覆盖verifySaved挂起→身份变化→返回成功仍保留原base/队头，以及切换身份后enqueue/retry零新增写入和请求。补正后定向20项、全量979项通过，tsc/svelte-check/build通过。浏览器与build并行运行的一次开发页重载导致断言失败；构建结束后两套浏览器脚本独立重跑全部通过，没有放宽断言。
+
+## #143 正式基线兼容复验
+
+已合入S0正式SHA `be73806a0120d0826fd57a0edf62745760d5561a`。针对性34项（sync/coordinator/document-edit）和Platform测试类型检查通过。原command为6.1且结果未知时，追加6.2工作副本；核实not-applied后仅重发完全相同的6.1原command，随后才发送6.2下一操作。版本/current变化不重新归一化或覆盖冻结command。没有修改#143协议源，也未启动#140。

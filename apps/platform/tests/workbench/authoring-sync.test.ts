@@ -62,9 +62,13 @@ describe('durable serial authoring operations', () => {
     port.save = vi.fn<StableSavePort['save']>(async (command) => { commands.push(command); if (commands.length === 1) throw Error('offline'); return saved(command, 2); });
     await sync.enqueue(draft('one'), 'one', true); await settle(); await sync.retry();
     expect(commands).toHaveLength(1);
+    const next = draft('two'); next.pageDocument.schemaVersion = '6.2';
+    await sync.enqueue(next, 'newer schema operation', false);
+    expect(commands[0].document.schemaVersion).toBe('6.1');
     port.lookup = async (context) => ({ status: 'not-applied', operationId: context.operationId, retrySafe: false }); await sync.retry(); expect(commands).toHaveLength(1);
     port.lookup = async (context) => ({ status: 'not-applied', operationId: context.operationId, retrySafe: true }); await sync.retry(); await settle();
-    expect(commands).toHaveLength(2); expect(commands[1]).toEqual(commands[0]); sync.dispose();
+    expect(commands).toHaveLength(3); expect(commands[1]).toEqual(commands[0]);
+    expect(commands[1].document.schemaVersion).toBe('6.1'); expect(commands[2].document.schemaVersion).toBe('6.2'); sync.dispose();
   });
   it('conflict or bad integrity preserves queue and never advances base', async () => {
     for (const kind of ['conflict', 'hash'] as const) {
