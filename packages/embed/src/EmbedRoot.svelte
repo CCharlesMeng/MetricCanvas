@@ -23,6 +23,7 @@
 
 <RuntimeView
   document={input.document}
+  execution={input.execution}
   dataGateway={input.dataGateway}
   aiSummary={input.aiSummary}
   initialSearch={input.initialSearch}

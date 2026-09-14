@@ -223,3 +223,20 @@ http://127.0.0.1:4175/examples/esm.html
 
 
 6.1 的布局兼容读取与存量迁移见 [迁移说明](../../docs/page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。
+
+## 消费执行结果
+
+已接可信执行适配器的宿主可以用 `loadExecution(request, executionPort, signal)` 加载，或用 `prepareExecution(request, response)` 校验已有回执，再挂载：
+
+```js
+const execution = await MetricCanvas.loadExecution(request, executionPort, signal);
+const runtime = MetricCanvas.mount('#dashboard', {
+  document: execution.document,
+  execution,
+  dataGateway // 后续筛选、分页继续使用既有网关
+});
+```
+
+ESM 同名导出也可用。初始实际参数/筛选及逐源快照来自执行回执，URL 不覆盖它们。缺源、错目标、错条件、非法文档拒绝；部分源失败保留其它源。执行端口缺席返回 `CAPABILITY_UNAVAILABLE`。未传 execution 时沿用现有流程。
+
+需要最后筛选记录时，由可信宿主创建 `createLastFilterRecorder(context, port, onStatus)`，将其 `record` 传给 `prepareExecution` 第三个参数。宿主在销毁或身份切换时调用 recorder.dispose，并给新实例新的 clientId。记录失败不回滚当前筛选；服务须保证历史写入顺序及权限复核。内部 DTO、来源核对、精确预览及待提供方确认的边界见 [执行消费契约](../../docs/plan/authoring-tickets-126/t18-execution-contract.md)。

@@ -11,6 +11,8 @@ import type {
 } from './types';
 
 export { createDqeGateway };
+export { prepareExecution, loadExecution, createLastFilterRecorder, ExecutionError } from '@metriccanvas/engine';
+export type { ExecutionBootstrap, ExecutionRequest, ExecutionTarget, ExecutionPort, LastFilterContext, LastFilterRequest, LastFilterPort, LastFilterStatus } from '@metriccanvas/engine';
 export type { DqeGatewayConfig } from '@metriccanvas/engine/dqe';
 export type {
   MountOptions,
@@ -86,6 +88,7 @@ export function mount(
 function runtimeInput(input: RuntimeInput): RuntimeInput {
   return {
     document: input.document,
+    ...(input.execution !== undefined ? {execution:input.execution} : {}),
     ...(input.navigation !== undefined ? { navigation: input.navigation } : {}),
     ...(input.dataGateway !== undefined
       ? { dataGateway: input.dataGateway }
