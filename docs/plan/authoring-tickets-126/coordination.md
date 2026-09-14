@@ -408,3 +408,11 @@ S3已明确确认#143临时移交：`metriccanvas-authoring/tool/metriccanvas_au
 ### #134导入副作用最小改动登记
 
 S0已核对当前server模块在import时执行create_production_server。新增S3唯一作者触点：`metriccanvas-authoring/tool/metriccanvas_authoring/server.py`及`metriccanvas-authoring/tool/server.py`；限main内延迟创建兼容MCP、源码入口调用main，以允许content_server复用配置函数而不创建带保存工具的兼容实例。不改外部配置/Java语义；须搜索旧mcp变量消费者，验证安装CLI与源码入口、compatibility/relay及stdio回归，避免破坏已有入口。S4若需这些共享入口先协调，不并发写。
+
+### #143版本迁移范围追加
+
+S2新增唯一作者：`packages/page/src/layout-compatibility.ts`、`tests/public-api/page.txt`、`tests/public-api/engine.txt`、`packages/engine/runtime-ui/tests/version-error.test.ts`；四候选包`packages/page/package.json`、`packages/engine/package.json`、`packages/metric-canvas/package.json`、`packages/embed/package.json`拟锁步rc.3（仅本地候选，不授权发布）；锁文件如实际需改由包管理器生成并补清单。
+
+S2拟将layout-only迁移限定最低6.1，已有6.1/6.2保持，不再机械升至current；新维度能力需6.2，新作者写current。此为公开规范化行为调整，须同步文档/跨语言黄金矩阵、保留原文校验次序并回归旧6.0/6.1与新6.2，不以规避断言代替契约验收。
+
+S1所有的`apps/platform/tests/workbench/document-edit.test.ts`未来版本反例需6.2→6.3，S0已请求S1提供单行独立提交或明确临时授权；确认前S2不得修改。其他工作台文件保持原所有权。
