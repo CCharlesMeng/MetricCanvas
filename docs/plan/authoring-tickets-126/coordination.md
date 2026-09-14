@@ -609,3 +609,15 @@ S0读票并审阅执行目标/操作/条件/逐源快照、最后筛选记录与
 参考手册方案中的C0真源/字段生成/Bundle与Skill分发责任由已登记S2承接；S0仅协调与验收，不另建重复文档作者线。S2从3286efc独立准备，先完成rc.4现有两Svelte版本×Chrome/Edge真实tarball矩阵。独占`tools/package-build/compatibility.mjs`（仅新增#143/#144夹具复制与类型导入映射，保留安全overrides与既有断言），新增`docs/plan/authoring-tickets-126/t18-compatibility-evidence.md`；不发布包。
 
 手册作者范围先登记`PAGE-METADATA.md`、`docs/page-metadata/`方案列出的模块/17组件/索引Markdown及`docs/plan/authoring-tickets-126/reference-evidence.md`。统一导出入口`tools/scripts/export-authoring-contracts.ts`与产品`contracts/metriccanvas/page/reference/`、Bundle`metriccanvas-authoring/contract-snapshot/page/reference/`及既有生成锁仍S2；生成物不手写。实施先提交精确新增生成器/测试/Skill投影路径清单，S0登记后再改这些尚未确定路径，避免占用S3/S4 Skill作者入口。沿已确认手册方案执行，当前真源为6.2，方案旧6.0现状属历史；不改页面协议或内容工具行为。各模块语义/示例不足由对应角色提供证据，手册不得把Schema支持当装配或外部服务可用。
+
+## #136验收集成
+
+正式3286efc上的作者29d708f76af7b304ef3d4db840f289d68cf1a062→e8be4c18033aad8bd96e0d1ae3f009324eb1eb2d；S2生成源5b0f956、本树5bfbc84ad019a15d75e04b4ba4d49a6078311f1f→9c68a7dab3428fc64a37c08462fe2a4e4b73d38f；证据1eca58b8aa22078b2f5f00ec81cac79ca512c122→4d967eae66a74e29678655d6574547ff3cbba305。18文件均登记范围，集成Bundle树与最终作者组合一致，保留rc.4/#141/#144；旧rc.3生成不消费。
+
+S0读取Issue完整正文/最新评论并审阅容器构造、子类型/全局ID/整页回滚、删除保护及可信summary配置，独立8领域+2公开stdio测试通过、507摘要通过。默认Python缺依赖改用已有3.12依赖环境；stdio本机监听在沙箱外复验通过。读取最终207全量及独立安装日志，采用t10真实Chrome两形态/Tab/组合卡/本地HTTP-SSE白名单与删除、2产品CLI及17类型闭集证据，不冒称S0重跑全部浏览器。
+
+本仓#136范围验收通过；aiSummary仅显式runtime_sse与可信部署配置下创建，普通text保持正文，配置不进入页面或模型摘要。真实总结服务授权/连通未验证，本地SSE是外部协议边界测试。S3可从本条正式HEAD续跑#137，先读票/登记作者新文件，生成仍S2；M2剩余票与参考手册/矩阵未完成。
+
+## 手册新增路径登记
+
+S2唯一新增作者：`tools/scripts/page-reference.ts`、`tests/page-reference.test.ts`、`docs/page-metadata/reference-map.json`；既有`tests/authoring-export-isolation.test.ts`限补手册作者输入复制。导出器生成`metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/`下自包含文档/索引/示例，禁止手改投影。临时独占`metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md`仅增加按需阅读入口与整目录安装说明，不改工具授权/路由/行为；完成提交后归还，S3/S4有入口需要先协调。新增合法分支夹具仍逐文件登记，不扩展页面协议。
