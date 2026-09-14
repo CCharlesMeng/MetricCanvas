@@ -73,3 +73,11 @@ S0验收后归还S1临时文件RevisionPreview.svelte与新增浏览器脚本；
 该组合重新执行：check通过且Svelte 0错误/警告；全量138文件1038通过/5既有skip；Python197通过；导出195/4/1无漂移、502摘要通过。日志为 `/private/tmp/s2-t18-combined-check.log`、`s2-t18-combined-tests.log`、`s2-t18-combined-python.log`。相对88246f的packages/apps与隔离测试零差异，所以沿用该固定源码的构建、46Chrome、精确预览及四tarball证据，没有无关重跑。保留#135的新增编辑操作、文本/地图作者、地名资产、sdist包含规则；没有用rc.4旧锁覆盖新增内容。
 
 S0要求将隔离测试修复独立前置解锁S1；S2另从8ea095f提交 `38316c196068164e7ab3830a34c655bb62f8e781`，S0验收进 `d593df25a0b79d1a17792fe7cbe341a489602415`。S2再合入此正式基线；相同修复只保留一次，该步仅新增S0协调记录，不改已验证代码/锁。S0可从此共同基线按最终组合差异集成#144；不要把合并提交第一父差异当成独立#144补丁。
+
+## S0审阅补正：精确引用还须绑定文档内容
+
+S0指出原RevisionPreview仅比较target，随后把execution.document同时当输入和bootstrap基准，可能接受相同引用下被替换的正文。修正先对可信已读document调用公开normalizePageDocument并固定副本，给执行器独立PageRevision副本；回执document同样规范化，完整canonicalizeJson内容必须相等。只允许既有layout兼容规范化，不允许组件/字段/查询替换。原始hash核验仍在可信读取端，不以此比较冒充提供方hash保证。
+
+追加实现三文件：RevisionPreview.svelte、revision-preview-execution-browser.mjs、t18-execution-contract.md。`pnpm --filter platform check`通过，Svelte 0错误/警告，日志 `/private/tmp/s2-t18-preview-integrity-check.log`。真实Chrome脚本 `/private/tmp/s2-t18-preview-integrity.log`通过：同target/不同合法组件文档被拒绝且替换内容不渲染，仍显示原精确修订引用；正常6.0原文→6.1公开规范化且实际heading参数不同于default可呈现；两阶段取消/迟到、错target、卸载、无executor旧预览继续通过。
+
+旧浏览器夹具曾用执行器改标题区分轮次，未验证正文一致；现改为原始param引用与appliedInputs取值区分。新反例第一次替换唯一参数消费位置，先触发完整页面校验拒绝，不能证明本缺口；改为替换另一组件标题、保留参数消费，使prepareExecution通过后明确由RevisionPreview完整性检查拒绝。未改产品校验或放宽断言。此补正未改packages/生成锁，沿用此前包与Embed证据；没有把旧全量1038结果写成补正后的全仓重跑。
