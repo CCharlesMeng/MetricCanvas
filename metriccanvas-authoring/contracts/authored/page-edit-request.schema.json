@@ -1,0 +1,531 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/page-edit-request/1.0",
+  "title": "Controlled page edit request",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "operations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "items": {
+        "oneOf": [
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_title"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "title"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_component_layout"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "changes": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "span": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 12
+                  },
+                  "connectPrevious": {
+                    "type": "boolean"
+                  },
+                  "layer": {
+                    "enum": [
+                      "backdrop"
+                    ]
+                  }
+                },
+                "required": [],
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "changes"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_properties"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "minProperties": 1,
+                "properties": {
+                  "showTrendArrows": {
+                    "type": "boolean"
+                  },
+                  "horizontal": {
+                    "type": "boolean"
+                  },
+                  "stacked": {
+                    "type": "boolean"
+                  },
+                  "rounded": {
+                    "type": "boolean"
+                  },
+                  "showSegmentLabels": {
+                    "type": "boolean"
+                  },
+                  "showStackTotalLabels": {
+                    "type": "boolean"
+                  },
+                  "smooth": {
+                    "type": "boolean"
+                  },
+                  "areaGradient": {
+                    "type": "boolean"
+                  },
+                  "showPointLabels": {
+                    "type": "boolean"
+                  },
+                  "hideYAxis": {
+                    "type": "boolean"
+                  },
+                  "labelLine": {
+                    "type": "boolean"
+                  },
+                  "subtitle": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "badge": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000
+                    },
+                    "maxItems": 50
+                  },
+                  "ring": {
+                    "type": "string",
+                    "pattern": "^\\d{1,2}%$"
+                  },
+                  "fit": {
+                    "enum": [
+                      "content",
+                      "container"
+                    ]
+                  }
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "properties"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_series_label"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 4000
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "index",
+              "label"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_metric_row"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "index": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "rows": {
+                "enum": [
+                  "rows",
+                  "secondaryRows"
+                ]
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "label": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "context": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "unit": {
+                    "type": "string",
+                    "maxLength": 4000
+                  }
+                },
+                "required": [],
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "index",
+              "properties"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_table_column"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "fieldId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "slot": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "properties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "maxLength": 4000
+                  },
+                  "width": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "fixed": {
+                    "enum": [
+                      "left",
+                      "right"
+                    ]
+                  },
+                  "align": {
+                    "enum": [
+                      "left",
+                      "right"
+                    ]
+                  }
+                },
+                "required": [],
+                "minProperties": 1
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "fieldId",
+              "properties"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "move_component"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "beforeId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "set_page_layout"
+              },
+              "layout": {
+                "enum": [
+                  "report",
+                  "dashboard"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "layout"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "type": {
+                "const": "change_component_type"
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "componentType": {
+                "enum": [
+                  "metricCard",
+                  "barChart",
+                  "lineChart",
+                  "pieChart",
+                  "table",
+                  "gauge",
+                  "keyValuePanel",
+                  "categoryBreakdown",
+                  "rankingCard",
+                  "rankingDetailCard"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "componentType"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "required": [
+    "operations"
+  ]
+}

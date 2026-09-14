@@ -30,7 +30,13 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-FastMCP 提供两个互斥工具面，避免迁移期同时出现三个模型可见工具：
+Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+
+`edit_page` 只接收 `baseline_token` 和受控 `request.operations`，操作请求规范见 [`page-edit-request.schema.json`](./contracts/authored/page-edit-request.schema.json)。可信程序通过 `ContentBaselinePort` 注入完整精确基线；自带只读适配器从 `METRICCANVAS_CONTENT_BASELINES_DIR/<token>.json` 读取 `{ref:{pageId,revisionId,resourceId},document,documentSha256}`。目录按身份和工作区隔离，由外部可信适配器填充，token 必须不可变关联同一基线；没有配置或基线时明确失败，不读取“最新页”或重建整页。此摘要为本工具规范 JSON 的 SHA-256，不冒充 Java 已确认的 hash 算法。
+
+内容工具先核验原文引用与摘要，再规范化、逐操作整页校验；独立失败回滚、依赖跳过。`changed/partial` 返回程序产物，`unchanged/failed/invalid_request/invalid_baseline` 不返回可保存产物。文本内容只含操作摘要，完整 `structuredContent.artifactEnvelope` 仍须由 Relay 可信适配器截取，模型只接收 `modelSummary`。该适配器、按用户身份和生命周期保存接线仍待真实外部集成；本仓 stdio 通过不代表生产已接通。
+
+既有 FastMCP 入口提供两个互斥工具面：
 
 - 默认 `METRICCANVAS_TOOL_SURFACE=compatibility`：`discover_data_context + build_page`。`build_page` 是 compose 后继续调 Java 保存的兼容包装。
 - `METRICCANVAS_TOOL_SURFACE=relay`：`discover_data_context + compose_page`。成功结果是 `kind=metriccanvas.page-build-artifact` 信封。

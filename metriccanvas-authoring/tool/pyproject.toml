@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 metriccanvas-authoring = "metriccanvas_authoring.server:main"
+metriccanvas-content = "metriccanvas_authoring.content_server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["metriccanvas_authoring"]
@@ -31,6 +32,7 @@ include = [
 "../bundle.json" = "metriccanvas_authoring/_bundle/bundle.json"
 "../contract-lock.json" = "metriccanvas_authoring/_bundle/contract-lock.json"
 "../contracts/authored/page-build-spec.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json"
+"../contracts/authored/page-edit-request.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json"
 "../contracts/exported/analysis-intents.json" = "metriccanvas_authoring/_bundle/contracts/exported/analysis-intents.json"
 "../contract-snapshot/data-context/schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/data-context/schema.json"
 "../contract-snapshot/page/component-catalog.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/component-catalog.json"

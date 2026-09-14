@@ -23,6 +23,10 @@ class DistributionContractTest(unittest.TestCase):
             project["project"]["scripts"]["metriccanvas-authoring"],
             "metriccanvas_authoring.server:main",
         )
+        self.assertEqual(
+            project["project"]["scripts"]["metriccanvas-content"],
+            "metriccanvas_authoring.content_server:main",
+        )
         requirements = {
             line
             for line in (TOOL_ROOT / "requirements.in").read_text(
@@ -38,6 +42,7 @@ class DistributionContractTest(unittest.TestCase):
             "metriccanvas_authoring/_bundle/bundle.json",
             "metriccanvas_authoring/_bundle/contract-lock.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json",
+            "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json",
             "metriccanvas_authoring/_bundle/contracts/exported/analysis-intents.json",
             "metriccanvas_authoring/_bundle/contract-snapshot/data-context/schema.json",
             "metriccanvas_authoring/_bundle/contract-snapshot/page/component-catalog.json",
