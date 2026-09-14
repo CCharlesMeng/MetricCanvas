@@ -182,3 +182,18 @@ S1 授权 S2 临时修改 `apps/platform/tests/workbench/promote.test.ts`：仅�
 - #129 此次通过的是契约与浏览器读取边界验收，足以提供 #131/#132 基线。跨语言共享期望已单向生成；Python 当前执行尚有三项差距，**不宣称全跨端一致性已通过**：layout-before-6.1 缺 SCHEMA_ERROR /layout；layout-dual-equal、layout-dual-conflict 缺 SCHEMA_ERROR /layoutForm。由 #132 完成并由 #133 汇总；不加 pending 豁免、不让 #132 等 M0。Issue 不因本次解锁自动关闭。
 - S3 现在可消费本条所在集成 HEAD：先合入并验证预期三项差距及 32 项矩阵，再实施 Python；S2 消费同一 HEAD 后执行 #131。#133 继续等 #131/#132 验收集成。M0 尚未 READY。
 - #130 与 S2 的原始 hash→规范化顺序已有书面及 normalizePageDocument 内容保持测试证据；S1 #128 实际接口兼容仍待交付，外部新能力与真实联调均未确认。
+
+### #131 开工与 S1 临时移交
+
+已向 S1/S2/S3 实际发送 #129 验收和解锁消息，共同开工 SHA `32d0e08976b443aed69d18922f12da051470fbc6`。S3 做 #132，S2 做 #131；当前新增登记不要求再次切换纯台账 HEAD。
+
+S1 明确授权、S0 确认 S2 为下列四文件迁移范围唯一作者：
+
+- `apps/platform/src/lib/workbench/document-edit.ts`：createCanvasAuthoringDraft 输入规范化，保留空分区投影。
+- `apps/platform/src/lib/workbench/promote.ts`：两方向完整输出规范化。
+- `apps/platform/tests/workbench/document-edit.test.ts`
+- `apps/platform/tests/workbench/promote.test.ts`
+
+测试覆盖旧输入→新输出及原文不变；#131 提交验收后归还 S1，期间 S1 不编辑。既有 #129 promote 测试授权已核验归还，现按本条 #131 范围续接。不移交 PageAuthoringWorkbench.svelte、page-assets-client.ts 或协调边界；禁止读取客户端在原文 hash 验证前规范化。
+
+S2 #131 另登记：`packages/embed/examples/inline.html`、`esm.html`、`query.html`、`ai-summary.html`（同 examples 前缀）；`packages/metric-canvas/tests/browser/harness/document.ts`、`Harness.svelte`（同 harness 前缀）；`packages/metric-canvas/tests/browser/metric-canvas.spec.ts`；`apps/playground/src/lib/page-repository.ts`、`preview-document.ts`（同 lib 前缀）；`apps/playground/tests/preview-document.test.ts`；新增 `docs/plan/authoring-tickets-126/t05-browser-evidence.md`。最终按真实需要修改，其他新增共享路径另报；pages/迁移和发布支持说明留 #133。
