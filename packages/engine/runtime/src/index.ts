@@ -44,3 +44,8 @@ export type {
   NumberRangeFilterValue,
   SearchFilterValue
 } from './filter-state';
+
+export { prepareExecution, loadExecution, ExecutionError } from './execution';
+export type { ExecutionBootstrap, ExecutionRequest, ExecutionTarget, ExecutionPort } from './execution';
+export { createLastFilterRecorder } from './filter-history';
+export type { LastFilterContext, LastFilterRequest, LastFilterPort, LastFilterStatus } from './filter-history';

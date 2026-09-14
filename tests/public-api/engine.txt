@@ -11,9 +11,18 @@ DimensionValuesResult
 DimensionValuesSnapshot
 DimensionValuesSnapshots
 DimensionValuesStream
+ExecutionBootstrap
+ExecutionError
+ExecutionPort
+ExecutionRequest
+ExecutionTarget
 FilterState
 FilterValue
 FilterValues
+LastFilterContext
+LastFilterPort
+LastFilterRequest
+LastFilterStatus
 NumberRangeFilterValue
 PageDataSnapshots
 PageParamState
@@ -29,14 +38,17 @@ TimeRangeFilterValue
 applyComputation
 createDimensionValuesLoader
 createFilterState
+createLastFilterRecorder
 dimensionValuesSnapshot
 filterSearch
 initialFilterValues
 initializePageParams
+loadExecution
 navigationHref
 orchestrate
 pageParamSearch
 parseFilterSearch
+prepareExecution
 resolvePageParams
 serializePageParam
 
