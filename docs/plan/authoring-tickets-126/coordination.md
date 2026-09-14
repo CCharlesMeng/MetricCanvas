@@ -131,3 +131,23 @@ M3：#105 Java、#106–#108 真实盘古/Relay、#103 内网消费、#104 真�
 S1 登记已接受 resourceId/pageId/revisionId 分离、保存四态、未知结果不盲重发、能力不可用与旧页保留。这是语义回执，尚非接口/运行证据。已请求 S1 #128 补实际接口路径与测试、候选/执行兼容说明；请求 S2 回执原始文档 hash 验证先于规范化、精确执行 target/条件匹配/既有错误数据快照，不提前实现 #143/#144。
 
 M0 IN PROGRESS，尚无新增实施票验收提交。S0 收到逐票回执后核验、集成、发精确 SHA；S3 可直接与 S2 调查，但不能把未集成开发分支当作 #132 可消费基线。S4/S5 尚未开启。当前消息已实际发给已登记三任务，无外部联系、无创建新任务。
+
+### 首批补充回执
+
+S1：干净工作树已装依赖并完成 svelte-kit sync，既有 page-assets-client / analysis-page-state / document-edit 共 3 文件 28 用例通过（S1 回执，S0 尚未作为本票验收重检）；#127 的模块加载/配置分离两项具体实施选择已向用户提问，等答复后实施，无产品提交。此等待只影响 S1 对应选择，不阻塞 S2 #129 或 S3 调查。
+
+S2 更正/追加已登记路径：
+
+- `packages/page/src/validate.ts`（替代不存在的 parse.ts）
+- 新增 `packages/page/src/layout-compatibility.ts`
+- `packages/page/src/internal.ts`
+- 新增 `packages/embed/tests/browser/layout-compatibility.spec.ts`
+- `packages/engine/runtime-ui/tests/version-error.test.ts`
+- `packages/embed/tests/browser/version-error.spec.ts`
+- `tools/scripts/page-conformance-vectors.ts`
+- 新增 `packages/page/fixtures/contract-valid/layout-6.1-report.json`
+- 新增 `packages/page/fixtures/contract-valid/layout-6.1-dashboard.json`
+
+S2 版本方案回执：6.1 增量引入根 layout，6.0 layoutForm 保留读取；同值/异值双字段均拒绝；规范化写出 6.1 layout，缺省 report，组件 layout 不改。S0 已要求版本×字段组合完整矩阵及公共入口验证。此方案尚未交付提交，不解锁 #132。
+
+T04：S2 书面接受“原始精确引用/hash 校验后规范化，规范化不覆盖旧修订”；执行响应匹配 target/operationId/源/有效条件，沿 queryField 与 DataSnapshot error，缺源拒绝，后续筛选不重初始化。S1 主要保存语义接受已记录；准确代码接口及消费兼容证据仍等 #128/#129 交付，未来参数/执行 DTO 不提前实现。未将这两份书面回执写成真实联调通过。
