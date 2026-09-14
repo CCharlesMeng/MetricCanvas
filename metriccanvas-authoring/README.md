@@ -40,6 +40,10 @@ Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `pyth
 
 `add_ai_summary` 必须声明 `generation: runtime_sse`、非空 promptTemplate 和 relatedData 字段白名单。可信组合根通过 `summary_config` 传入运行时现有的 AiSummaryConfig；源码/安装入口从 `METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG` 读取 JSON，支持 conversationBaseUrl（完整 HTTP(S) 基址）及可选 env。配置由当前集成应用的可信部署方提供并与渲染端保持一致，工具不猜端点、不中途探测或调用总结服务，也不把配置写入页面或模型摘要。配置缺失/格式错误时本操作明确失败；模型不能在操作里提供端点。此检查证明配置可表达，不能证明服务可达或用户拥有调用权限，真实联调另验。标题包含“AI 总结”的普通文本不会升级为 aiSummary。
 
+交互编辑复用现行 filters/filterBindings 与 href/query：`add_dimension_filter` 同时声明维度筛选器和至少一个显式 query 绑定；`update_dimension_filter` 的 bindings 是该筛选器完整的目标绑定集合，允许显式空数组仅解除绑定，未列入的新旧其他筛选绑定保持不变。绑定 queryField 必须是既有 query 数据源已映射的 dimension，不能凭空发明查询字段。`remove_dimension_filter` 同步移除该筛选器的查询绑定；仍被导航、级联、动作或参数关系引用时整项失败。query body/initial/paramBindings 不重写，initialParam 等已有声明保留并接受产品校验。
+
+`set_table_link` 以 componentId/fieldId（可选 slot）定位一列，同时设置 link 与表格级 navigate；navigate 必须提供 href 和显式 query 绑定，支持现行 row/param/filter 三种来源。不声明新页面参数。目标列有 selection 时拒绝，其他链接列共享不同导航目标时拒绝，避免暗改既有交互。`remove_table_link` 只清目标列入口，最后一个入口移除时一并清导航动作，其他动作保留。分组列和 Tab 内表格沿同一组件/列遍历处理。查询分页、排序和表头筛选不能经这些操作或普通属性编辑开启。
+
 `edit_page` 只接收 `baseline_token` 和受控 `request.operations`，操作请求规范见 [`page-edit-request.schema.json`](./contracts/authored/page-edit-request.schema.json)。可信程序通过 `ContentBaselinePort` 注入完整精确基线；自带只读适配器从 `METRICCANVAS_CONTENT_BASELINES_DIR/<token>.json` 读取 `{ref:{pageId,revisionId,resourceId},document,documentSha256}`。目录按身份和工作区隔离，由外部可信适配器填充，token 必须不可变关联同一基线；没有配置或基线时明确失败，不读取“最新页”或重建整页。此摘要为本工具规范 JSON 的 SHA-256，不冒充 Java 已确认的 hash 算法。
 
 内容工具先核验原文引用与摘要，再规范化、逐操作整页校验；独立失败回滚、依赖跳过。`changed/partial` 返回程序产物，`unchanged/failed/invalid_request/invalid_baseline` 不返回可保存产物。文本内容只含操作摘要，完整 `structuredContent.artifactEnvelope` 仍须由 Relay 可信适配器截取，模型只接收 `modelSummary`。该适配器、按用户身份和生命周期保存接线仍待真实外部集成；本仓 stdio 通过不代表生产已接通。
