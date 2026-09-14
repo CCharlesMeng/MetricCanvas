@@ -733,3 +733,19 @@ S1真实任务01a09f69-8346-7e91-9c66-9e091d3f6e77，树`/private/tmp/metriccanv
 S0审阅新建策略/只改根layout的影响摘要、双Skill主文/共享基线、分发检查与生成器；独立组合9项布局/公开stdio流程通过、1902摘要通过。读取最终组合259 Python、shuffle生成/隔离19项通过日志，采用S3两独立Skill与旧Skill复制闭合、最终安装包与18真实Chrome容器场景证据，不冒称独立重跑全部浏览器。旧page-builder整目录保持，四包公开面与版本不变。
 
 本仓双Skill/布局与兼容分发补项通过；14真实模型cases全部not_run，真实Relay路由/模型效果/服务联调仍未确认，#126与M2不据此结束。T04同步实际入口名称，分发登记不代替外部路由。后续#146/#145消费本条新基线时保留两线成果，#146已获准运行无需等待本补项。
+
+## #145共同契约与工具实施冻结
+
+S0读取#145完整正文/评论、ADR0071/0078及S4固定草案ae781cb后冻结下列本仓实现选择；不是外部wire事实。共同基线812ad98241e31a1e24ebd6b739a9e3844ef9e5e6。S4既有任务、树不变，分支codex/s4-publish-145；S1优先#146，后续发布UI仍其唯一所有。
+
+采用t19-tool-contract.md（ae781cb）的CandidateRef/source、原文hash与明确算法、11字段review payload、可信verifyReview/verifyResult、独立HumanConfirmationPort、参数评审/validation/corrections及五工具正反例。五工具名prepare_candidate/read_candidate/revise_candidate/confirm_publish/get_publish_operation_result；生产lifecycle固定九工具，既有三位置参数兼容，可选发布依赖缺失明确不可用，不注册到content。review算法身份由可信验证端口绑定，生产无默认算法；普通程序token或模型肯定回复不等于人工确认。
+
+选中参数与候选中dimension参数及其全部paramBindings双向对账；非维度参数保留不参与提取，未选候选可不在文档。selected=false必须not-selected；required+missing可形成合法模板但执行必须明确缺值。只消费dimension-eq/in、同值部分共享，未知/范围/不同值共享拒绝发布。候选结构/原文/评审面完整性与服务提取算法分开，不在本仓重写提取。修正只retainDimensionValues与parameterSelections，返回同候选不同版本并使旧确认不可复用。
+
+新发布依赖当前候选与人工证明完整绑定、服务事务最终权限/head/版本/期限/租约裁决。原已完成操作经当前权限与原请求指纹验证可重放原结果，不因旧确认自然过期而再发新写；撤权仍禁止结果读取。pending/unknown/不安全not-applied零重发，丢回执/程序输出失败保留原operationId查询。共同向量须覆盖这些正反例；草案文字不替代测试。
+
+S2唯一新增作者：`metriccanvas-authoring/contracts/authored/publication-contract.ts`（无外部运行时依赖的内部TS类型/结构Schema真源）、同目录`publication-conformance.json`、`tests/publication-contract.test.ts`；既有`tools/scripts/export-authoring-contracts.ts`统一闭合Page定义并生成publication schema/向量及必要manifest/锁/Bundle快照。Platform可直接消费内部源，S2内存编译验证0诊断；不新增私有包/依赖，不改page公开出口/四包版本。TS/Schema一致性及TS/Python同向量接受拒绝须验证，不能以复制两套定义自证。Python只读生成JSON，不运行Node。具体生成路径由S2在固定作者回执列全，任何新增非生成作者先登记。
+
+S4唯一新增Bundle作者：`tool/metriccanvas_authoring/application/lifecycle_publish.py`、`application/publish_ports.py`、`adapters/inbound/publish_mcp.py`、`adapters/outbound/publish_unavailable.py`（后3在tool/metriccanvas_authoring）；`contracts/authored/publish-request.schema.json`；`test-harness/publish_stdio_server.py`、`test-harness/tests/test_lifecycle_publish.py`、`test-harness/tests/test_publish_stdio.py`；文档`docs/plan/authoring-tickets-126/t19-tool-contract.md`与`t19-tool-evidence.md`。既有Bundle `tool/metriccanvas_authoring/lifecycle_server.py`和`adapters/inbound/lifecycle_mcp.py`仅兼容可选发布装载；`tool/pyproject.toml`仅schema打包；`test-harness/tests/test_distribution.py`仅精确打包集合、`test_lifecycle_stdio.py`仅新默认工具集合；README仅发布工具节。S4不得改S1客户端/UI或S2共同作者/生成物。
+
+S2先固定共同作者给S1/S4消费，S4可并行实现内部编排但不自立第二套字段；最终必须在共同契约固定SHA上验证公开工具及安装。S1发布UI精确文件需在其#146完成后另登记；#145最终由S1与S0汇合验收。
