@@ -89,10 +89,13 @@ class Lifecycle:
         try:
             response = await self.service.lookup(identity, deepcopy(command))
             prior = self.saved(response, command)
-            if not lookup and prior['status'] == 'not-applied' and prior['retrySafe']:
-                self.still_current(identity)
-                response = await self.service.save(identity, deepcopy(command))
-                require(response.get('status') != 'not-applied')
+            if not lookup and prior['status'] == 'not-applied':
+                if prior['retrySafe']:
+                    self.still_current(identity)
+                    response = await self.service.save(identity, deepcopy(command))
+                    require(response.get('status') != 'not-applied')
+                else:
+                    response = {'status':'unknown', 'operationId':command['context']['operationId']}
         except LifecycleError as error:
             if error.code in {'UNAUTHENTICATED','FORBIDDEN','CAPABILITY_UNAVAILABLE','REVISION_CONFLICT','IDEMPOTENCY_CONFLICT','INVALID_PAGE','INVALID_REQUEST'}:
                 return {'status':'rejected','operationId':command['context']['operationId'],

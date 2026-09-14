@@ -44,7 +44,8 @@ class LifecycleTest(unittest.IsolatedAsyncioTestCase):
     async def test_unknown_pending_expired_dedup_never_submit(self):
         for state in [{'status':'unknown'},{'status':'pending'},{'status':'not-applied','retrySafe':False}]:
             self.service.lookup_status=state
-            self.assertEqual((await self.call())['status'],state['status'])
+            self.assertEqual((await self.call())['status'],state['status'] if state['status'] != 'not-applied' else 'unknown')
+            self.assertEqual((await self.call('get_save_result'))['status'],state['status'])
         self.assertEqual(self.service.save_calls,0)
     async def test_conflict_does_not_advance_revision(self):
         await self.call()
