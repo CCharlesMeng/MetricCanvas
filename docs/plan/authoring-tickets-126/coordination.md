@@ -683,3 +683,9 @@ S4真实任务`01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，树`/Users/moon/.codex/wo
 S5真实任务`01a0a034-c4c3-7033-af2b-2539d6d9e0ae`，树`/Users/moon/.codex/worktrees/8291/DataDashboard`，分支`codex/s5-pangu-integration`，起点a6e9231。已登记角色但两文件尚未移交：用户另有任务`01a0a02b-3a24-7f61-b17d-32d48a6f3d4d`（配置对话模块CI接缝）在独立树合入main，S0只读确认其用户授权后请求实际文件/提交回执；不擅改其任务授权。S5先只读核验SDK/环境事实，提交新测试/证据精确范围，待该并行窗口核清再正式接runtime.ts/PanguDialogue.svelte；port.ts与工作台仍S1。
 
 最新#126第4.1节及末尾双Skill/布局基线补充进入M2核查清单。当前代码仅page-builder Skill，S3受托只读核对已有证据和新增时间，先报缺口、不提前实现；不能用剩余三票关闭替代补充范围完成。
+
+新阶段支援窗口：S1准备文档2d61ec1a78427631417d9adeea7ca7ea0e3443f6已集成（前一提交），仅文档；两文件无并行修改回执成立，暂待用户CI接缝任务最终结果。S5唯一新增`apps/platform/tests/workbench/pangu-runtime.test.ts`、`docs/plan/authoring-tickets-126/s5-pangu-evidence.md`，可先记录已核验指南/环境缺口与独立测试设计，runtime.ts/PanguDialogue.svelte仍未移交；真实SDKURL/版本/内网入口尚缺，不宣称接通。
+
+S2支援#138：唯一修改`tools/scripts/export-authoring-contracts.ts`的显式authoring清单以加入S4新`contracts/authored/lifecycle-request.schema.json`读取/摘要；待S4固定作者SHA后独立实施，统一刷新Bundle三生成锁/manifest。无产品真源变化不人为改快照/手册。S2新分支`codex/s2-next-stage-contracts`、树不变、起点a6e9231。
+
+S3只读核验确认双Platform Skill/双布局基线/模型评测为已确认但未交付补充，不能证明在17票验收后才新增；#134可信基线/原子修改/set_page_layout与T04路由方案已覆盖底座，不重做。缺创建/修改两个Skill及路由分发、分别维护的report/dashboard选择基线、形态切换影响分析与实际模型行为评测；待报精确作者范围后沿S3/S2/S0既有职责推进，纳入M2欠项，保持#126开放。
