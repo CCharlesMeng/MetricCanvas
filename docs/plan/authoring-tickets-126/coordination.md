@@ -376,3 +376,25 @@ stableSave=false时不得将自动队列接入无幂等旧保存端点；先本�
 - `docs/page-metadata/parameters.md`
 
 测试、代表模板fixture、t17证据准确文件名及其他生成作者触点待S2补登记；生成物/版本门禁仍S2唯一作者。不修改S1工作台或S3 Python作者源；若需Python语义适配，先与S3指定唯一作者及可验证基线，不以pending豁免跨语言验收。
+
+### #143测试/导出精确路径补充
+
+以下归S2：
+- `packages/page/tests/param-bindings.test.ts`
+- `packages/page/tests/page-param.test.ts`
+- `packages/page/tests/version.test.ts`
+- `packages/page/tests/layout-compatibility.test.ts`
+- `packages/page/tests/canonical-writers.test.ts`
+- `packages/page/tests/layout-migration-cli.test.ts`
+- `packages/page/tests/validate-cli.test.ts`
+- `packages/engine/runtime/tests/page-params.test.ts`
+- `packages/engine/runtime/tests/param-initialization.test.ts`
+- `packages/engine/runtime/src/index.ts`
+- `packages/embed/tests/browser/params-initialization.spec.ts`
+- `packages/page/fixtures/contract-valid/dimension-params-page.json`
+- `docs/plan/authoring-tickets-126/t17-params-contract.md`
+- `docs/plan/authoring-tickets-126/t17-evidence.md`
+
+S2回报S3允许参数/版本Python兼容由S2单独提交；原报tool/src路径不实，已核对真实作者为`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_validation.py`，测试为`metriccanvas-authoring/test-harness/tests/test_page_validation.py`。S0已向S3请求精确两文件窗口确认；确认前不改，其他TS工作可继续。不得扩展至S3内容编辑/打包文件；作者与生成物成套验收后归还。
+
+参数规则待验证：single为非空string，multiple为非空去重string[]；非法文档default拒绝；非法URL回退声明default，否则required阻止呈现、optional缺席；同目标参数/筛选来源一致，筛选接管后清空不复活参数。这些为#143待验收契约，不解锁下游。
