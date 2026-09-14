@@ -1,3 +1,4 @@
+import { validate } from '@metriccanvas/page';
 import { afterEach, expect, it } from 'vitest';
 import { createAuthoringPublication } from '../../src/lib/workbench/authoring-publication';
 import { createPublicationFixture } from '../../src/lib/workbench/publication-fixture';
@@ -29,6 +30,11 @@ for(const mutation of ['change','delete','add'] as const)it(`all-eq/in candidate
   if(mutation==='change')params.find(p=>p.id==='heading')!.default='changed';
   else if(mutation==='delete')result.candidate.document.params=params.filter(p=>p.id!=='heading');
   else params.push({id:'extra',type:'string',required:false,default:'new'});
+  if(mutation!=='change'){
+   const replace=(value:any):any=>Array.isArray(value)?value.map(replace):value&&typeof value==='object'?value.param==='heading'?(mutation==='delete'?'Regional sales':{param:'extra'}):Object.fromEntries(Object.entries(value).map(([k,v])=>[k,replace(v)])):value;
+   result.candidate.document.sections=replace(result.candidate.document.sections);
+  }
+  expect(validate(result.candidate.document)).toEqual([]);
  }return result;};f.port.verifyResult=async()=>true;f.port.verifyCandidate=async()=>true;
  await f.api.prepare(true);expect(f.api.snapshot().candidate).toBeNull();
 });
@@ -36,3 +42,9 @@ it('unknown with unsafe not-applied remains unresolved and cannot reprepare',asy
 it('a changed preview input clears eligibility for human confirmation',async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();f.api.clearPreview();await f.api.confirmAndPublish();expect(f.counts().human).toBe(0);});
 it('reselecting an offered parameter is a provider correction and requires fresh preview',async()=>{const f=setup();await f.api.prepare(true);await f.api.revise({parameterSelections:[{parameterId:'segment',selected:false}]});await f.api.revise({parameterSelections:[{parameterId:'segment',selected:true}]});expect(f.api.snapshot().candidate!.parameterSummary.find(p=>p.parameterId==='segment')?.selected).toBe(true);expect(f.api.snapshot().preview).toBeNull();});
 it('missing required values are not invented as executable defaults',async()=>{const f=setup();await f.api.prepare(false);await f.api.preview();expect(f.api.snapshot().preview).toBeNull();expect(f.api.snapshot().message).toContain('执行被拒绝');await f.api.preview({regions:['APAC']});expect(f.api.snapshot().preview).not.toBeNull();});
+it('unavailable production capability is a known no-send state, not an unresolved mutation',async()=>{const f=setup();f.port.available=false;await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('error');expect(f.counts().prepare).toBe(0);f.port.available=true;await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('review');});
+it('cancel releases local transport ownership so an ignored abort cannot block original-operation lookup',async()=>{const f=setup();const mutate=f.port.mutate;let complete!:()=>void;
+ f.port.mutate=async(...args)=>{const result=await mutate(...args);await new Promise<void>(resolve=>complete=resolve);return result;};
+ const work=f.api.prepare(true);await new Promise(resolve=>setTimeout(resolve,5));await f.api.cancel();await f.api.lookup();
+ expect(f.counts().lookup).toBe(1);expect(f.api.snapshot().phase).toBe('review');await f.api.preview();expect(f.api.snapshot().preview).not.toBeNull();complete();await work;expect(f.api.snapshot().phase).toBe('review');
+});

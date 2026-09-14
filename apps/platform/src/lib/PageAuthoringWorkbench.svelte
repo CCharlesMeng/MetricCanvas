@@ -284,7 +284,6 @@
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
-    {#if publicationOpen && publication}<PublicationReview {publication} />{/if}
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if languageState}
       <p class="notice" role="status" data-testid="language-status">{languageState.message}</p>
@@ -309,7 +308,9 @@
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
-      {#if previewOpen && previewRef}
+      {#if publicationOpen && publication}
+        <PublicationReview {publication} />
+      {:else if previewOpen && previewRef}
         <p class="notice">正在预览已保存修订；再次点击“精确修订预览”返回工作副本。</p>
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
           readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />

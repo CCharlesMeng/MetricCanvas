@@ -1,6 +1,8 @@
 <script lang="ts">
  import { onMount, untrack } from 'svelte';
  import { RuntimeView } from '@metriccanvas/engine/ui';
+ import { createInjectedDqeGateway } from '../runtime-config';
+ const dataGateway=createInjectedDqeGateway();
  import type { createAuthoringPublication } from './authoring-publication';
  let {publication}:{publication:ReturnType<typeof createAuthoringPublication>}=$props();
  let view=$state(untrack(()=>publication.snapshot()));
@@ -33,7 +35,7 @@
   <label><input type="checkbox" checked={candidate.retainDimensionValues} disabled={busy} onchange={event=>publication.revise({retainDimensionValues:event.currentTarget.checked})}/>发布时保留具体维度取值</label>
   {#each candidate.validation.issues as issue}<p role={issue.severity==='blocking'?'alert':'status'}>{issue.severity==='blocking'?'阻断':'提示'}：{issue.message} {issue.path??''}</p>{/each}
   <button disabled={busy} onclick={()=>{acknowledged=false;void publication.preview(inputs());}}>预览当前候选</button>
-  {#if view.preview}<div aria-label="候选执行预览"><RuntimeView document={view.preview.document} execution={view.preview}/></div>{/if}
+  {#if view.preview}<div aria-label="候选执行预览"><RuntimeView document={view.preview.document} execution={view.preview} {dataGateway}/></div>{/if}
   <label><input type="checkbox" bind:checked={acknowledged} disabled={busy||!view.preview||!candidate.validation.valid}/>我已核对当前候选、来源修订及保留取值选择</label>
   <button disabled={busy||!view.preview||!candidate.validation.valid||!acknowledged} onclick={()=>{acknowledged=false;void publication.confirmAndPublish();}}>人工确认并发布</button>
   <p>修改页面内容须先取消评审，返回草稿保存后重新准备。候选有效期与租约由管理服务校验。</p>

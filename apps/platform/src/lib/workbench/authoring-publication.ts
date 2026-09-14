@@ -10,6 +10,7 @@ export type { Candidate, Corrections };
 type Identity = { actorId: string; workspaceId: string };
 /** Explicit trusted adapters. No production HTTP/proof/hash/clock implementation is inferred. */
 export interface PublicationPort {
+  available: boolean;
   readSource(ref: DraftRef, signal: AbortSignal): Promise<VerifiedSource>;
   mutate(request: MutationRequest, signal: AbortSignal): Promise<LookupOutcome>;
   lookup(request: MutationRequest, signal: AbortSignal): Promise<LookupOutcome>;
@@ -24,7 +25,7 @@ export interface HumanConfirmationPort {
   verify(confirmation: Confirmation, candidate: Candidate, identity: Identity, signal: AbortSignal): Promise<boolean>;
 }
 const unavailable = async (): Promise<never> => { throw Error('CAPABILITY_UNAVAILABLE：发布管理服务尚未接通。'); };
-export const unavailablePublicationPort: PublicationPort = { readSource: unavailable, mutate: unavailable, lookup: unavailable, verifyCandidate: unavailable, verifyResult: unavailable, release: unavailable, execution: { execute: unavailable } };
+export const unavailablePublicationPort: PublicationPort = { available: false, readSource: unavailable, mutate: unavailable, lookup: unavailable, verifyCandidate: unavailable, verifyResult: unavailable, release: unavailable, execution: { execute: unavailable } };
 export const unavailableHumanConfirmation: HumanConfirmationPort = { confirm: unavailable, verify: unavailable };
 export interface PublicationSnapshot {
   phase: 'idle'|'busy'|'review'|'unknown'|'published'|'stale'|'error'; message: string;
@@ -87,7 +88,7 @@ export function createAuthoringPublication(options: {
     emit({phase:'busy',message:'正在核验当前发布操作…'});
     try { await task(active.signal,expected); }
     catch(error) { if(!disposed && expected===generation && !active.signal.aborted)emit({phase:pending?'unknown':'error',message:error instanceof Error?error.message:String(error),preview:null}); }
-    finally { busy=false;if(controller===active)controller=null; }
+    finally { if(controller===active){busy=false;controller=null;} }
   }
   async function submit(request:MutationRequest,signal:AbortSignal,expected:number) {
     requireCurrent();requireValid(validatePublicationStructure('Request',request,structure));
@@ -99,13 +100,14 @@ export function createAuthoringPublication(options: {
     subscribe(listener:(value:PublicationSnapshot)=>void){listeners.add(listener);listener(snapshot());return()=>{listeners.delete(listener);};},
     invalidate() {
       if(!anchor||stillCurrent())return;
-      generation++;controller?.abort();
+      generation++;controller?.abort();controller=null;busy=false;
       const candidate=state.candidate;
       if(candidate)void options.port.release(candidate.ref).catch(()=>{});
       emit({phase:'stale',candidate:null,preview:null,published:equal(anchor.identity,options.identity())?state.published:null,message:'来源或身份已变化，旧候选和确认已失效。'});
     },
     async prepare(retainDimensionValues:boolean) {
       if(pending||busy)return;
+      if(!options.port.available){emit({phase:'error',message:'CAPABILITY_UNAVAILABLE：发布管理服务尚未接通。'});return;}
       try { const identity=options.identity();if(!identity.actorId||!identity.workspaceId)throw Error('身份失效');
         anchor={scope:options.scope(),identity:{...identity},source:structuredClone(options.synchronizedRef())};
       }catch(error){emit({phase:'error',message:String(error)});return;}
@@ -158,7 +160,7 @@ export function createAuthoringPublication(options: {
       await perform(async(signal,expected)=>consume(request,await options.port.lookup(structuredClone(request),signal),signal,expected));
     },
     async cancel() {
-      generation++;controller?.abort();const candidate=state.candidate;
+      generation++;controller?.abort();controller=null;busy=false;const candidate=state.candidate;
       emit({candidate:null,preview:null,phase:pending?'unknown':'idle',message:pending?'已停止本地接收，已发操作仍需查询。':'已取消本次评审。'});
       if(candidate)try{await options.port.release(candidate.ref);}catch{emit({message:'本地评审已取消，服务租约释放未确认。'});}
     },

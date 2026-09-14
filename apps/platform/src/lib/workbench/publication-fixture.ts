@@ -13,6 +13,7 @@ export function createPublicationFixture(){
  const counts={prepare:0,revise:0,publish:0,human:0,lookup:0,release:0};
  function seal(c:Candidate){c.contentHash=hash(c.document);c.canonicalization='fixture-json/1';c.reviewCanonicalization='fixture-json/1';c.reviewHash=hash(candidateReviewPayload(c));return c;}seal(candidate);
  const port:PublicationPort={
+  available:true,
   async readSource(ref){if(hash(ref)!==hash(latest))throw Error('REVISION_CONFLICT');return{ref:clone(ref),document:clone(original)};},
   async verifyCandidate(c){return !['expired','forbidden','lease'].includes(mode)&&hash(c.ref)===hash(candidate.ref)&&c.contentHash===hash(c.document)&&c.reviewHash===hash(candidateReviewPayload(c));},
   async verifyResult(req,result){const saved=results.get(req.context.operationId);return mode!=='bad-result'&&!!saved&&hash(saved.request)===hash(req)&&hash(saved.result)===hash(result);},
