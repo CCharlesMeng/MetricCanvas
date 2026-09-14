@@ -13,6 +13,13 @@
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
   import RevisionPreview from './RevisionPreview.svelte';
+  import PanguDialogue from './dialogue/PanguDialogue.svelte';
+  import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
+  import { readRuntimeConfig } from './runtime-config';
+  let { dialogueAdapter, readSavedDraft = unavailableDraftReader }: {
+    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft;
+  } = $props();
+  let workbenchEpoch = 0;
 
   let currentDraft = $state<CanvasAuthoringDraft | null>(null);
   let baseRevisionId = $state<string | null>(null);
@@ -31,9 +38,21 @@
   onMount(() => {
     const pageId = new URLSearchParams(window.location.search).get('page');
     if (pageId) void loadPage(pageId);
+    return listenForSavedDrafts({
+      target: window, read: readSavedDraft,
+      captureScope: () => {
+        const identity = readRuntimeConfig();
+        return `${workbenchEpoch}:${identity?.operatorId}:${identity?.workspaceId}`;
+      },
+      onpage: (draft) => {
+        if (replaceCurrentDocument({ ...draft.document })) baseRevisionId = draft.ref.revisionId;
+      },
+      onerror: (message) => { saveError = message; }
+    });
   });
 
   async function loadPage(pageId: string) {
+    workbenchEpoch += 1;
     loading = true;
     try {
       const revision = await pageAssets.getLatest(pageId);
@@ -110,6 +129,7 @@
 
   async function saveRevision() {
     if (!currentDocument || !pageModel || pageModel.transient || savePending) return;
+    workbenchEpoch += 1;
     savePending = true;
     saveError = '';
     try {
@@ -137,6 +157,7 @@
       editError = result.message;
       return false;
     }
+    workbenchEpoch += 1;
     currentDraft = result.draft;
     if (selectedComponent) {
       selectedComponent = locatorOfComponent(
@@ -150,7 +171,8 @@
 
   function applyDocumentEdit(result: DocumentEditResult) {
     if (result.ok) {
-      currentDraft = result.draft;
+      workbenchEpoch += 1;
+    currentDraft = result.draft;
       if (selectedComponent) {
         selectedComponent = locatorOfComponent(
           result.draft.canvasDocument,
@@ -255,20 +277,8 @@
   </div>
 
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
-    <header class="chat-header"><h1>分析与搭建</h1></header>
-    <div class="thread">
-      <div class="thread-empty" role="status" data-testid="chat-unavailable">
-        <h2>公共 Chat 暂不可用</h2>
-        <p>对话服务尚未接通。你可以从页面目录打开已保存页面，继续人工页面搭建。</p>
-        <a class="linkish" href={resolve('/manage')}>打开页面目录</a>
-      </div>
-    </div>
-    <div class="composer">
-      <div class="composer-box">
-        <textarea rows="1" aria-label="AI 输入" placeholder="公共 Chat 暂不可用" disabled></textarea>
-        <button class="action send" type="button" aria-label="发送" disabled>↑</button>
-      </div>
-    </div>
+    <PanguDialogue adapter={dialogueAdapter} />
+    <a class="linkish" href={resolve('/manage')}>打开页面目录</a>
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
@@ -358,65 +368,6 @@
     background: var(--surface);
     border-right: 1px solid var(--line);
   }
-  .chat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 40px;
-    padding: 7px 10px 7px 13px;
-    border-bottom: 1px solid var(--line);
-  }
-  .chat-header h1 {
-    margin: 0;
-    color: var(--text);
-    font-size: 12.5px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-  }
-
-  .thread {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 0;
-    padding: 12px 13px;
-    overflow-y: auto;
-  }
-  .thread-empty {
-    display: grid;
-    gap: 7px;
-    margin-top: 12cqh;
-    color: var(--muted);
-    font-size: 11px;
-    line-height: 1.55;
-    text-align: left;
-  }
-  .thread-empty h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 13px;
-    letter-spacing: -0.01em;
-  }
-  .thread-empty p {
-    margin: 0;
-    max-width: 26rem;
-  }
-
-  /* 执行过程:linkish 切换 + 展开区虚线分隔(原型 v2)。 */
-
-  @keyframes dot-bounce {
-    0%,
-    60%,
-    100% {
-      opacity: 0.35;
-      transform: translateY(0);
-    }
-    30% {
-      opacity: 1;
-      transform: translateY(-3px);
-    }
-  }
   .linkish {
     padding: 0;
     color: var(--accent-strong);
@@ -430,84 +381,6 @@
     color: var(--accent-strong);
     text-decoration: underline;
   }
-
-  .composer {
-    display: grid;
-    gap: 5px;
-    padding: 8px 10px 9px;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-  }
-
-  /* 紧凑输入容器：单行约 32px，1～4 行增高，第 5 行内部滚动。 */
-  .composer-box {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    padding: 3px 4px 3px 9px;
-    background: var(--surface-subtle);
-    border: 1px solid var(--control-line);
-    border-radius: 8px;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-  .composer-box:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
-  }
-  .composer-box textarea {
-    flex: 1;
-    min-width: 0;
-    height: auto;
-    max-height: 74px;
-    padding: 5px 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    color: var(--text);
-    border: 0;
-    resize: none;
-    background: none;
-    font-size: 11px;
-    line-height: 16px;
-  }
-  .composer-box textarea::placeholder {
-    color: var(--faint);
-  }
-  .composer-box textarea:focus {
-    outline: none;
-  }
-  .composer .action {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition:
-      background 0.15s ease,
-      transform 0.1s ease,
-      opacity 0.15s ease;
-  }
-  .composer .action:active:not(:disabled) {
-    transform: scale(0.94);
-  }
-
-  .composer .send {
-    color: var(--text-on-strong);
-    background: var(--accent);
-  }
-  .composer .send:hover:not(:disabled) {
-    background: var(--accent-strong);
-  }
-  .composer .send:disabled {
-    background: var(--control-line);
-    cursor: not-allowed;
-  }
-
 
   .canvas {
     grid-column: 2;
