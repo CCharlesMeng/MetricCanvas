@@ -416,3 +416,5 @@ S2新增唯一作者：`packages/page/src/layout-compatibility.ts`、`tests/publ
 S2拟将layout-only迁移限定最低6.1，已有6.1/6.2保持，不再机械升至current；新维度能力需6.2，新作者写current。此为公开规范化行为调整，须同步文档/跨语言黄金矩阵、保留原文校验次序并回归旧6.0/6.1与新6.2，不以规避断言代替契约验收。
 
 S1所有的`apps/platform/tests/workbench/document-edit.test.ts`未来版本反例需6.2→6.3，S0已请求S1提供单行独立提交或明确临时授权；确认前S2不得修改。其他工作台文件保持原所有权。
+
+S1已明确授权S2仅修改`apps/platform/tests/workbench/document-edit.test.ts`未来版本反例6.2→6.3一行，随#143提交/验证后归还；S1#139期间不编辑该文件，不将#139其他改动带入#143。S0正式确认该临时单行所有权，其他范围不变。
