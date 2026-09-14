@@ -424,3 +424,5 @@ S1已明确授权S2仅修改`apps/platform/tests/workbench/document-edit.test.ts
 `packages/embed/tests/browser/version-error.spec.ts`归S2，限current/support断言6.2与未来反例6.3。生成器build-page-conformance当前作者期望须明确写current6.2，与layoutnormalize最低6.1分开，冻结历史来源保持。S2回报TS133文件983通过/5既有skip、check/build通过，Python参数/版本6项通过；均为进行中证据，完整回归未完成、不验收。
 
 `metriccanvas-authoring/test-harness/tests/test_build_page.py`与`metriccanvas-authoring/test-harness/tests/test_stdio.py`各一处新作者写出6.1硬编码拟改为contract-lock.pageSchemaVersion；S0已请求S3核对窗口，确认前不得修改。必要读取支持须最小化，历史输入/其他断言不变，不能混#134工作。
+
+S3确认#134不编辑test_build_page.py/test_stdio.py，明确授权S2在#143仅改新作者输出schemaVersion对账行为自身contract-lock.pageSchemaVersion；旧6.1读取向量不得随current漂移。S0确认此窗口，验收后归还；若需额外辅助代码先列最小差异，不扩大版本行授权。
