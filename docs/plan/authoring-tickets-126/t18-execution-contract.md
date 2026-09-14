@@ -24,7 +24,7 @@ S2 任务 `01a09f69-a06b-7703-b87b-ccdfe05d765e`，分支 `codex/s2-execution-co
 
 ## 精确修订预览
 
-`RevisionPreview` 新增可选 `executeRevision(loadedRevision, signal): Promise<ExecutionBootstrap>`。先由既有 reader 读取指定 pageId/revisionId，再把完整已读修订交适配器；回执必须是同 pageId/revisionId/resourceId 的 draft target。旧请求在切换、重试或卸载时取消，读取和执行两个阶段都丢弃迟到结果。未注入执行器时保留旧精确修订预览。
+`RevisionPreview` 新增可选 `executeRevision(loadedRevision, signal): Promise<ExecutionBootstrap>`。先由既有 reader 读取指定 pageId/revisionId，再把完整已读修订交适配器；回执必须是同 pageId/revisionId/resourceId 的 draft target。调用执行器前固定已读文档的公开规范化副本，执行器收到独立修订副本；返回文档再次公开规范化后须与基线的 canonicalizeJson 完整一致。只接受既有布局兼容规范化，不接受字段、组件或查询被替换；实际参数/初始行仍通过 appliedInputs/dataSources 传递，不得重写修订正文。旧请求在切换、重试或卸载时取消，读取和执行两个阶段都丢弃迟到结果。未注入执行器时保留旧精确修订预览。
 
 本票没有把未确认的精确读取能力变成可用：原始持久化文档 hash / 引用核验仍在可信读取边界，适配器不得用 latest 冒充精确修订。当前 hook 为 S1/#145 对接点，不宣称线上端点已接通。
 

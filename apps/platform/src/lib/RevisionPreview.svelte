@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { canonicalizeJson, normalizePageDocument } from '@metriccanvas/page';
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
   import { RuntimeView } from '@metriccanvas/engine/ui';
   import type { PageRevision } from './page-assets-client';
@@ -29,9 +30,16 @@
         const loaded = await reader(expectedPageId, expectedRevisionId, controller.signal);
         if (controller.signal.aborted) return;
         if (loaded.pageId !== expectedPageId || loaded.revisionId !== expectedRevisionId) throw new Error('精确预览读取了不匹配的修订');
-        const result = executor ? await executor(loaded, controller.signal) : undefined;
+        // 固定可信已读内容；执行器只能补实际取值/快照，不能换掉修订正文。
+        const baseline = executor ? normalizePageDocument(loaded.document) : undefined;
+        if (baseline && !baseline.ok) throw new Error('精确预览修订文档未通过校验');
+        const result = executor ? await executor(structuredClone(loaded), controller.signal) : undefined;
         if (controller.signal.aborted) return;
         if (result && (result.target.kind !== 'draft' || result.target.ref.pageId !== loaded.pageId || result.target.ref.revisionId !== loaded.revisionId || !loaded.resourceId || result.target.ref.resourceId !== loaded.resourceId)) throw new Error('执行预览与已读精确修订不匹配');
+        if (result && baseline?.ok) {
+          const returned = normalizePageDocument(result.document);
+          if (!returned.ok || canonicalizeJson(returned.document) !== canonicalizeJson(baseline.document)) throw new Error('执行预览文档与已读精确修订不匹配');
+        }
         execution = result;
         revision = loaded;
       } catch (cause) {
