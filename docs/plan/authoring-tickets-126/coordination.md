@@ -285,3 +285,9 @@ S2报告已实测9135d22下兼容工具5.29分支因既有overrides断言失败�
 S1 定义具体事件名、负载校验与监听生命周期，事件只传引用、不传页面文档或对话消息；不新增服务地址/凭据配置界面。重复通知、异步读回竞态、无效引用、读取失败保留旧画布、卸载移除监听/重复挂载需有本仓证据。草稿 ID 是否精确标识不可变版本须与现有领域/读取接口核对，由 S1 回传实际契约供 S0 对齐 #130；不能将可变资产 ID 默认为精确修订，也不能未经确认增加上游通知负载。
 
 这是用户确定的产品接入要求，非盘古提供方已确认实现或真实联调证据；实际 dispatch、加载与升级演练的真实服务部分仍由 S5 接续。当前产品基线仍为 `29ca8a085027228199484ab19f044bae8d783cd6`，本条仅统筹记录。
+
+### S1 解除等待后的精确路径补登记
+
+S1 已开始 #127→#128，保留此前登记文件，新增独占：`apps/platform/src/lib/dialogue/runtime.ts`（地址/版本与资源装载）、`apps/platform/tests/workbench/authoring-browser.mjs`（边界替身及浏览器回归）；既有 `apps/platform/tests/workbench/platform-shell-and-composer.test.ts` 因对话组件抽取调整定位；`apps/platform/src/lib/RevisionPreview.svelte` 的可替换读取端口由 S1 负责，若实际路径不同须在修改前更正。不扩大至产品公共导出或其他角色文件。
+
+S1 回执事件负载仅 draftId；精确 ID 解析由协调读取端口负责。现有 Java 只支持 current-match，未证实不可变 draftId 寻址，真实事件读回默认 CAPABILITY_UNAVAILABLE；禁止猜测 draftId 等于 pageId/revisionId。本仓替身可验证事件/读回流程，但不得计为外部能力确认或真实联调。该差距纳入 #130 消费对齐。
