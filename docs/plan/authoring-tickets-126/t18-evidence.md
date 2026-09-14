@@ -65,3 +65,11 @@ S0验收后归还S1临时文件RevisionPreview.svelte与新增浏览器脚本；
 - `tests/authoring-export-isolation.test.ts`
 - `tests/public-api/embed.txt`
 - `tests/public-api/engine.txt`
+
+## #135正式组合追加验证
+
+在原实现/证据不改写的前提下，合入S0正式 #135 基线 `8ea095f744f13bd5af4574f09117685ebf09d1b8`；唯一冲突为bundle.lock.json的contract-lock摘要，使用统一导出器重建，不手改生成值。组合提交 `1ead7b760e9d25192cc991621fc12df9b5fb5e44`，树 `67c6338d6d751cc3631dc86e6f6097979e032cf5`。
+
+该组合重新执行：check通过且Svelte 0错误/警告；全量138文件1038通过/5既有skip；Python197通过；导出195/4/1无漂移、502摘要通过。日志为 `/private/tmp/s2-t18-combined-check.log`、`s2-t18-combined-tests.log`、`s2-t18-combined-python.log`。相对88246f的packages/apps与隔离测试零差异，所以沿用该固定源码的构建、46Chrome、精确预览及四tarball证据，没有无关重跑。保留#135的新增编辑操作、文本/地图作者、地名资产、sdist包含规则；没有用rc.4旧锁覆盖新增内容。
+
+S0要求将隔离测试修复独立前置解锁S1；S2另从8ea095f提交 `38316c196068164e7ab3830a34c655bb62f8e781`，S0验收进 `d593df25a0b79d1a17792fe7cbe341a489602415`。S2再合入此正式基线；相同修复只保留一次，该步仅新增S0协调记录，不改已验证代码/锁。S0可从此共同基线按最终组合差异集成#144；不要把合并提交第一父差异当成独立#144补丁。
