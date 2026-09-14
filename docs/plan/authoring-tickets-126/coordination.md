@@ -749,3 +749,15 @@ S2唯一新增作者：`metriccanvas-authoring/contracts/authored/publication-co
 S4唯一新增Bundle作者：`tool/metriccanvas_authoring/application/lifecycle_publish.py`、`application/publish_ports.py`、`adapters/inbound/publish_mcp.py`、`adapters/outbound/publish_unavailable.py`（后3在tool/metriccanvas_authoring）；`contracts/authored/publish-request.schema.json`；`test-harness/publish_stdio_server.py`、`test-harness/tests/test_lifecycle_publish.py`、`test-harness/tests/test_publish_stdio.py`；文档`docs/plan/authoring-tickets-126/t19-tool-contract.md`与`t19-tool-evidence.md`。既有Bundle `tool/metriccanvas_authoring/lifecycle_server.py`和`adapters/inbound/lifecycle_mcp.py`仅兼容可选发布装载；`tool/pyproject.toml`仅schema打包；`test-harness/tests/test_distribution.py`仅精确打包集合、`test_lifecycle_stdio.py`仅新默认工具集合；README仅发布工具节。S4不得改S1客户端/UI或S2共同作者/生成物。
 
 S2先固定共同作者给S1/S4消费，S4可并行实现内部编排但不自立第二套字段；最终必须在共同契约固定SHA上验证公开工具及安装。S1发布UI精确文件需在其#146完成后另登记；#145最终由S1与S0汇合验收。
+
+#145参数边缘事实补正：S2公开validate验证required为必填，前一通信“缺省false”错误，已立即纠正给S4；共同契约按文档显式required值对账，缺字段拒绝。合法既有dimension参数可无query绑定，targets允许空且不造绑定。extractionKind可为null仅表示精确source证明的既有参数保留、无本次提取依据，不能从空targets推定来源；新增提取仍仅eq/in且真实非空目标。selected=false ID不得冒充现有非维度参数。上述由S2单真源/向量落实，S4不得建立相反默认。
+
+## #146本仓验收集成
+
+合并9c094511bb1f8b0ba66c0a497caf0afff4b688a3纳入S1作者a0ac309、共同产品组合ce10734、证据c2cdca266ab93c43ea005f7d801dc512e041bb13及审阅修正d3bddacee65e789e3aa9c5db4ff86340d72895ee。8登记文件，无生成物；集成apps/platform与最终S1固定树相同，保留统筹与#145契约冻结记录。
+
+S0审阅语言轮租约、可信binding、原操作查询/取消恢复、开发路由生产保护及公开MCP组合证据。发现取消后直接lookup读取绕过通知层三标识保护，Object.values不能拒绝缺字段；S1已改为三个必需标识显式检查，新增首次创建取消后缺各标识3独立反例。S0独立运行语言/通知/协调器3文件43项通过（语言25），采用S1此前1097通过/5既有skip、tsc/check/build与实际公开内容+生命周期MCP浏览器和既有T01/T02/T13证据；不冒称修正后重跑全量。集成树缺前端依赖，pnpm自动安装遇网络失败已中止，实际在源码逐字相同的S1固定树已有依赖环境执行上述43项；原工作区未改。
+
+#146本仓范围通过，M1本仓组合覆盖代表页内容修改→保存→仅draftId通知→精确读回及失败/断网/取消；真实模型理解/Relay/Java/盘古端口没有联调，不能宣告整体真实M1或M3。取消后已保存只提供精确预览并保留旧画布/锁，跨刷新语言轮恢复仍外部#108；不是手工离线队列已覆盖语言恢复。
+
+S1可继续#145 UI，先消费S2固定共同契约并登记精确文件，S4工具并行；只剩#145实施票待验收，但真实模型补项/最终组合回归/外部联调仍未完成，M2/M3不收口。#138/#146本地已验收但未远端发布/关闭。S1具体GitHub评论被自动审批拒绝，尚未发送，S0不代发绕过；后续远端回写需明确本批载荷/范围授权。

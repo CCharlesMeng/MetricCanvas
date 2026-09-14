@@ -34,6 +34,7 @@ export interface AuthoringSnapshot {
   draft: CanvasAuthoringDraft | null;
   ref: DraftRef | null;
   loading: boolean;
+  languageLocked: boolean;
   dirty: boolean;
   save: SaveOutcome | null;
   error: string;
@@ -55,8 +56,9 @@ export function createAuthoringCoordinator(options: {
   identity(): { actorId: string; workspaceId: string };
   operationId?: () => string;
 }) {
-  let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, dirty: false, save: null, error: '', sync: null };
+  let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, languageLocked: false, dirty: false, save: null, error: '', sync: null };
   let epoch = 0;
+  let languageLease: symbol | null = null;
   let owner: string | null = null;
   let syncConfig: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort } | null = null;
   let sync: ReturnType<typeof createAuthoringSync> | null = null;
@@ -124,13 +126,35 @@ export function createAuthoringCoordinator(options: {
     async retrySync() { await sync?.retry(); },
     /** Shared gate for consumers that require fully synchronized content (including publication). */
     requireSynchronizedRef(): DraftRef {
-      if (!state.ref || languageBlocked() || state.dirty || owner !== identityKey()) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
+      if (languageLease || !state.ref || languageBlocked() || state.dirty || owner !== identityKey()) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
       return structuredClone(state.ref);
+    },
+    /** Local lease; trusted Relay association is separately verified by authoring-language. */
+    beginLanguage() {
+      if (languageLease || languageBlocked() || state.dirty) throw Error('等待当前工作同步后再进行语言修改。');
+      const identity = options.identity();
+      if (!identity.actorId || !identity.workspaceId) throw Error('身份失效。');
+      const token = Symbol('language'), expected = scope();
+      languageLease = token;
+      state = { ...state, languageLocked: true }; emit();
+      return {
+        identity: { ...identity }, base: state.ref ? structuredClone(state.ref) : null,
+        retainDimensionValues,
+        current: () => !disposed && languageLease === token && scope() === expected,
+        accept(draft: SavedDraft) {
+          if (disposed || languageLease !== token || scope() !== expected) return false;
+          return coordinator.acceptSavedDraft(draft, token);
+        },
+        release() {
+          if (languageLease !== token) return;
+          languageLease = null; state = { ...state, languageLocked: false }; emit();
+        }
+      };
     },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft, description = '手工页面修改', forceOperation = false): boolean {
-      if (disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
+      if (languageLease || disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
@@ -145,7 +169,7 @@ export function createAuthoringCoordinator(options: {
       return true;
     },
     async load(pageId: string): Promise<void> {
-      if (disposed || unresolved()) return;
+      if (languageLease || disposed || unresolved()) return;
       epoch++; read?.abort(); read = new AbortController();
       const signal = read.signal, expected = scope();
       state = { ...state, loading: true, error: '' }; emit();
@@ -178,7 +202,7 @@ export function createAuthoringCoordinator(options: {
       }
     },
     readSavedDraft: (async (draftId, signal) => {
-      if (languageBlocked()) throw new Error('保存结果未确定或身份已变化，暂不能接收新的草稿。');
+      if (languageLease || languageBlocked()) throw new Error('保存结果未确定或身份已变化，暂不能接收新的草稿。');
       if (state.dirty) throw new Error('工作副本有未保存修改，保留当前页面，请先保存后重试草稿通知。');
       if (!options.port.capabilities.exactDraftRead || !options.port.readSavedDraft) return unavailableDraftReader(draftId, signal);
       const expected = scope();
@@ -186,8 +210,8 @@ export function createAuthoringCoordinator(options: {
       if (signal.aborted || scope() !== expected || languageBlocked() || state.dirty) throw new Error('草稿读取期间工作范围已变化，保留当前工作副本。');
       return result;
     }) as ReadSavedDraft,
-    acceptSavedDraft(draft: SavedDraft): boolean {
-      if (languageBlocked()) return false;
+    acceptSavedDraft(draft: SavedDraft, lease?: symbol): boolean {
+      if ((languageLease && languageLease !== lease) || languageBlocked()) return false;
       if (draft.document.id !== draft.ref.pageId || state.dirty || (state.draft && state.draft.pageDocument.id !== draft.ref.pageId)) {
         state = { ...state, error: '草稿通知与当前工作副本不兼容，保留当前页面。' }; emit(); return false;
       }
@@ -197,7 +221,7 @@ export function createAuthoringCoordinator(options: {
       change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; void attachSync(undefined, true); emit(); return true;
     },
     async undo(): Promise<void> {
-      if (disposed || !sync || state.loading || owner !== identityKey()) throw Error('当前工作副本不能撤销。');
+      if (languageLease || disposed || !sync || state.loading || owner !== identityKey()) throw Error('当前工作副本不能撤销。');
       const expected = scope();
       const draft = await sync.undo(retainDimensionValues);
       if (disposed || scope() !== expected) return;
@@ -216,7 +240,7 @@ export function createAuthoringCoordinator(options: {
     },
     async restoreRevision(ref: DraftRef, signal?: AbortSignal): Promise<void> {
       if (!options.port.capabilities.exactRead) throw Error('当前生命周期端口尚未开放历史精确读取。');
-      if (disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
+      if (languageLease || disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
       const before = scope();
       if ((state.sync?.pending ?? 0) > 0) await sync.retry();
       if (disposed || scope() !== before) throw Error('历史恢复范围已变化。');
@@ -238,7 +262,7 @@ export function createAuthoringCoordinator(options: {
       return { ...revision, document: parsed.document };
     },
     async save(): Promise<SaveOutcome | null> {
-      if (disposed || !state.draft) return null;
+      if (languageLease || disposed || !state.draft) return null;
       if (sync) { await sync.retry(); return null; }
       if (unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT')) return state.save;
       const identity = options.identity();
