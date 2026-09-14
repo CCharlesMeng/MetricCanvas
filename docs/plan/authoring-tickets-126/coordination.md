@@ -535,3 +535,13 @@ S2从正式ca8c549独立生成树新增`contracts/metriccanvas/page/map-regions.
 #140固定ef0597d3审阅中：S0四文件51项复验通过，尚未验收；已要求语言读取/接收门禁与初始protection pending、owner身份及dispose资格对齐，保留合法空画布创建路径。待追加修正证据，不提前解锁#146。
 
 #144追加S2作者范围：四`packages/page/package.json`、`packages/engine/package.json`、`packages/metric-canvas/package.json`、`packages/embed/package.json`锁步rc.4本地候选，页面协议不再升版；`packages/embed/README.md`执行入口说明。S2已合入e29b9bd保留#134/#135生成资产，Python作者不改、锁由统一生成。28项阶段测试回执尚非最终验收，未授权registry发布。
+
+## #140验收集成
+
+实现ef0597d3a759385aca0d4e5b1e829400d74782ce→6237b4f4ed25b87599caf665bb9f7d4ad5c17da7；门禁补正bcd8d9d8d3250b92f69cde1743eb597ea67a27f6→06f6c8b793934a53c4947680fed2f62d92b06e8e。8文件实现及3文件修正均S1所有权，未改S2预览窗口；集成apps树与S1最终固定提交一致，地名生成支援保留。
+
+S0读#140正文、审阅记录严格校验/双投影/CAS/原命令恢复/有界重试/语言门禁，独立复验恢复/队列/协调/编辑四文件53项通过。新增门禁使初始保护挂起、身份切换、dispose阻止读取/接收/引用，空画布创建路径保留，异步返回再核对scope。采用t14全量1009通过/5既有skip、tsc/check/build与三浏览器脚本及补正两浏览器证据；未冒称最终补正后全仓重跑。
+
+本仓恢复范围通过，已发无outcome先lookup，原6.1命令不升版，1/3/10秒最多3次追加核实，损坏/冲突/身份/保护失败暂停；本地工作与运行凭据分离。离线重开前提是壳已加载，无Service Worker/壳离线缓存承诺。真实强Java端口未确认，非真实联调。
+
+#146已具备#127/#134/#140，唯一未满足前置#138（S4尚未登记）；S0通知S1准备但不提前实现依赖。#145仍等#138/#144，S1主责最终界面与验收、S4工具。S1可按各票依赖继续#141/#142，先读票及登记，#146一旦齐备优先。M1未通过。
