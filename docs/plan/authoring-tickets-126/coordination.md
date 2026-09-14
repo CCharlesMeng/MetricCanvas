@@ -669,3 +669,53 @@ S0审阅结构遍历/分支required保留/语义映射/完整例子裁剪/分支
 ## 用户审查通过与远端收口授权
 
 用户已明确“可以，没问题，审查通过，更新issue状态，并生成下一步计划执行的handoff”。S0接管本批17票+手册/矩阵的远端交付，替代旧9票冻结批次；旧交付任务已通知停止重复操作。已验收基线f15c708，新增handoff/next-stage.md与索引，定义新唯一在线基线应为本批合并后的main。计划关闭#128–#137/#139–#144（#127已关闭），#138/#145/#146/#126/#95保留开放；实际远端结果以GitHub PR/merge与状态核验为准，不把本条当已发布。S4/S5未登记，盘古两文件仍S1保管，启动后正式交接。
+
+## 下一阶段正式开工（PR147之后）
+
+共同产品基线为在线main `a6e923187e124c7fd6c7f7c2e78bafd101e3dda6`，S0已fetch核对；继续独立`/private/tmp/metriccanvas-126-integration`与`codex/authoring-126-integration`，原工作区保持原位。PR147已合并、三CI通过、17实施票关闭，实际交付回执见#126 issuecomment-5664914719。用户通过启动任务01a0a028-7cf6-7c71-bd79-067106479073要求直接开始下一阶段；本轮授权本仓实施/测试/本地提交集成，后续远端交付另核明确授权，不沿用上一批。
+
+S1原任务不变，新分支`codex/authoring-126-s1-next`、树`/private/tmp/metriccanvas-126-s1`、起点a6e9231；唯一新增准备文件`docs/plan/authoring-tickets-126/handoff/s1-next-stage-preparation.md`，本阶段先交盘古与#146/#145场景准备，不越过#138实施依赖。S1已明确runtime.ts/PanguDialogue.svelte无并行修改。
+
+S4真实任务`01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，树`/Users/moon/.codex/worktrees/da9f/DataDashboard`，分支`codex/s4-lifecycle-138`，起点a6e9231，负责#138后#145工具。S4唯一新增Bundle下：`tool/metriccanvas_authoring/lifecycle_server.py`、`application/lifecycle.py`、`application/lifecycle_ports.py`、`adapters/inbound/lifecycle_mcp.py`、`adapters/outbound/lifecycle_spool.py`、`adapters/outbound/lifecycle_http.py`（后五路径均在tool/metriccanvas_authoring/）；`test-harness/tests/test_lifecycle.py`、`test_lifecycle_http.py`、`test_lifecycle_stdio.py`（后两均同tests目录）、`test-harness/lifecycle_stdio_server.py`、`contracts/authored/lifecycle-request.schema.json`；新增`docs/plan/authoring-tickets-126/t12-evidence.md`。既有Bundle `tool/pyproject.toml`仅生命周期entry及自有schema打包，`README.md`仅生命周期使用。生成锁/公共导出仍S2。
+
+#138可信身份作用域与spool token绑定完整命令，模型不自填身份/文档/操作键；稳定操作与原请求由可信调用方提供，校验引用/内容/回执一致性，未知先查结果再按原操作重试。默认已知HTTP只允许明确current-match读取能力，stableSave/exactRead/history/operationLookup未确认保持关闭，current-match不得冒充不可变精确历史；未来端口以T04正反例验证，不发明生产地址。#138验收集成后通知S1优先#146，同时解锁S4的#145工具前置。
+
+S5真实任务`01a0a034-c4c3-7033-af2b-2539d6d9e0ae`，树`/Users/moon/.codex/worktrees/8291/DataDashboard`，分支`codex/s5-pangu-integration`，起点a6e9231。已登记角色但两文件尚未移交：用户另有任务`01a0a02b-3a24-7f61-b17d-32d48a6f3d4d`（配置对话模块CI接缝）在独立树合入main，S0只读确认其用户授权后请求实际文件/提交回执；不擅改其任务授权。S5先只读核验SDK/环境事实，提交新测试/证据精确范围，待该并行窗口核清再正式接runtime.ts/PanguDialogue.svelte；port.ts与工作台仍S1。
+
+最新#126第4.1节及末尾双Skill/布局基线补充进入M2核查清单。当前代码仅page-builder Skill，S3受托只读核对已有证据和新增时间，先报缺口、不提前实现；不能用剩余三票关闭替代补充范围完成。
+
+新阶段支援窗口：S1准备文档2d61ec1a78427631417d9adeea7ca7ea0e3443f6已集成（前一提交），仅文档；两文件无并行修改回执成立，暂待用户CI接缝任务最终结果。S5唯一新增`apps/platform/tests/workbench/pangu-runtime.test.ts`、`docs/plan/authoring-tickets-126/s5-pangu-evidence.md`，可先记录已核验指南/环境缺口与独立测试设计，runtime.ts/PanguDialogue.svelte仍未移交；真实SDKURL/版本/内网入口尚缺，不宣称接通。
+
+S2支援#138：唯一修改`tools/scripts/export-authoring-contracts.ts`的显式authoring清单以加入S4新`contracts/authored/lifecycle-request.schema.json`读取/摘要；待S4固定作者SHA后独立实施，统一刷新Bundle三生成锁/manifest。无产品真源变化不人为改快照/手册。S2新分支`codex/s2-next-stage-contracts`、树不变、起点a6e9231。
+
+S3只读核验确认双Platform Skill/双布局基线/模型评测为已确认但未交付补充，不能证明在17票验收后才新增；#134可信基线/原子修改/set_page_layout与T04路由方案已覆盖底座，不重做。缺创建/修改两个Skill及路由分发、分别维护的report/dashboard选择基线、形态切换影响分析与实际模型行为评测；待报精确作者范围后沿S3/S2/S0既有职责推进，纳入M2欠项，保持#126开放。
+
+## #126双Platform Skill补充实施登记
+
+沿用户已确认规格4.1补足，不重开#134–#137或新增平行票。S3原任务负责新增作者：Bundle `skill/metriccanvas-platform-create/SKILL.md`、`skill/metriccanvas-platform-edit/SKILL.md`、`skill-shared/platform-authoring.md`、`skill-shared/layouts/report.md`、`skill-shared/layouts/dashboard.md`；`tool/metriccanvas_authoring/domain/layout_policy.py`；`test-harness/tests/test_platform_layout_policy.py`、`test_platform_authoring_flows.py`（同tests目录）、`test-harness/platform_layout_browser.mjs`、`test-harness/model-evals/platform-authoring.cases.json`、`test-harness/model-evals/README.md`，及`docs/plan/authoring-tickets-126/platform-skills-evidence.md`。S3既有触点：Bundle `tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`、`application/create_content_page.py`、`domain/component_editing.py`（后两同tool/metriccanvas_authoring目录）；README.md仅Skill/布局内容节，S4生命周期节保留，分别提交避免整文件覆盖。
+
+新创建默认限Platform入口，新修改继承原形态；创建/修改Skill共用内容MCP与现有原ref/hash/操作/部分成功校验，旧普通问数Skill路由及compose应用保持。显式切换复用set_page_layout，检查标题/容器/铺底/span与响应式影响；不套新模板、不暗搬标题或丢手工设置，不能无损表达的真实冲突才拒绝并说明。合法跨形态组合继续支持，默认不能变硬约束；优先已有issues/adjustments，不另立布局字段或任意路径入口。
+
+S2先冻结多Skill分发形状及精确bundle/check/export文件，references统一投影；S3可先写作者与本仓逻辑/测试，产品契约/分发配置需S2登记后实施，作者固定后生成。S0负责t04-java-relay-proposal.md中实际双入口名及可信路由/产物要求补充（外部提案），不实现Relay。
+
+验收：四组合创建/修改×report/dashboard、双向切换、继承形态、缺基线、手工后局部编辑、合法跨形态容器及宽窄呈现；公开stdio与差异断言，独立Skill分发及适用全量。模型cases/运行约定单独交付；真实Relay入口、身份、模型版本/参数、trace/基线通道与评测账户预算缺失时只列未运行，不以替身/关键词检查代替真实模型成绩，不擅自冻结达标阈值。
+
+## 补充范围精确登记与阶段交接
+
+S3双Skill任务实际树`/private/tmp/metriccanvas-s3-platform-skills`、分支`codex/s3-platform-skills`，起点6ad16375；新增既有测试维护窗口为Bundle `test-harness/tests/test_content_mcp.py`与`test-harness/tests/test_page_editing.py`，仅调整新建默认/切换影响摘要对应预期，保留数据与整页差异断言。不制造合法切换的丢标题冲突。S4追加Bundle `test-harness/tests/test_distribution.py`，仅sdist契约精确集合加入自有lifecycle-request.schema.json，不能弱化集合检查。
+
+S2多Skill分发方案冻结：bundle.json保留原skill.entrypoint，追加skills数组登记page-builder/platform-create/platform-edit三个完整ID与各自入口；只描述分发，不扩充路由授权。三个Skill独立目录自包含；旧references保持，新两套references/page-metadata及platform-authoring.md、layouts/report.md、layouts/dashboard.md从单一作者生成，禁止跨目录依赖或符号链接。共享作者链接layouts/report.md、layouts/dashboard.md，布局返回../platform-authoring.md。
+
+S2唯一作者窗口：Bundle `bundle.json`、`scripts/check_bundle.py`；根`tools/scripts/export-authoring-contracts.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`；新增Bundle `test-harness/tests/test_bundle_skills.py`。生成仅新增两Skill references及必要锁，旧主文与入口逐字保留，旧only-skill配置兼容，验证入口唯一/越界/缺项及真实独立复制闭合。不得把分场景30秒测试合并回累计超时单例。S3固定作者后S2生成，#138独立树/提交，S0组合后统一生成防锁覆盖。
+
+S5事实证据源06d0bbca8e507736c51953b7a6b319e17f7ca233已只读审阅：仅事实文档，尚无新增运行时测试/真实联调；运行时文件仍等CI任务最终回执，不在此转移。
+
+## #138本仓验收集成
+
+完整纳入S4作者7df7598/055a9d2/7444387、S2导出消费ffdeccc与最终锁组合f70a2f4、证据1850e503；整棵Bundle及导出器与最终证据树相同，保留本树既有统筹/交接文档。19文件均登记范围，未混双Skill增量。
+
+S0审阅生命周期编排、可信spool权限/身份隔离、公开四工具与已知HTTP边界及正反例；独立集成树24专项（含公开stdio）通过、1342摘要通过，发行包SHA256与t12一致，读取最终246全量及隔离安装证据。首次裸Python缺fastmcp/httpx，改用已有锁定依赖环境复验通过；未把环境失败当产品失败或跳过。采用S4完整回归/安装证据，不冒称S0重跑全量。
+
+#138本仓范围验收通过：模型只传程序token，保存先查原操作、unknown/pending不重发，程序输出失败保持原operationId，精确读取验证原文与完整ref，历史固定快照。生产强保存/精确历史/操作查询保持不可用；外部确认无新增、真实Java/Relay/盘古联调未执行。#138尚未远端发布/关闭，不能以本仓验收冒称M1/M3。
+
+本条提交即正式可消费基线：通知S1核对#127/#134/#138/#140后优先启动#146，先登记精确作者文件与判轮资格契约；#145前置齐备，S4可与S1准备候选/确认工具契约，公共契约交S2冻结后再实施，不能越权修改工作台客户端/公共导出。真实事件仍仅draftId，未见过的旧轮首次迟到必须通过可信关联验证，不扩展事件字段。
