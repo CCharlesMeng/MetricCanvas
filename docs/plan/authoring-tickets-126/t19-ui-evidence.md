@@ -57,3 +57,11 @@ PYTHONPATH=metriccanvas-authoring/tool /private/tmp/metriccanvas-126-delivery-py
 本票8文件均在登记窗口；没有修改 page-assets-client.ts、RevisionPreview.svelte、公共产品导出或原工作区。回退 S1两作者提交及证据可移除UI接缝，S4工具回退按其证据独立处理；没有生产数据迁移或真实模板写入。
 
 GitHub证据回写仍等待此前自动审批拒绝后的明确批准；本轮没有尝试以其他任务代发或发布 #145评论。只交本地提交与此可审阅回执。
+
+## 交验后增量更正：释放回调归属
+
+此前201b085/9e6bac9回执保留历史；最终代码替换为 **`f5aafa2e3893f43e488b31b0af5df6673b61ad4c`**。S1交验后自查发现确认失败的await release后清候选、取消release失败提示，可能迟到覆盖新评审，已立即通知S0暂停原最终放行结论。确认失败先同步移除旧候选/预览再释放，清理及迟到错误提示均检查generation归属；取消提示也检查当前操作/候选状态。新增两个真实挂起释放反例：旧确认失败或取消→新准备完成→旧释放拒绝，新snapshot逐项保持不变。
+
+最终UI专项 **31通过**，tests tsc通过、Svelte **0错0警告**、Vite build通过；新构建完整发布浏览器及生产门禁PASS，日志 `/private/tmp/s1-t19-release-browser.log`。全量最终 **144文件、1203通过、5既有跳过**，日志 `/private/tmp/s1-t19-release-full-unsandboxed.log`，退出0。第一次本轮全量在沙箱中因本地HTTP listen EPERM导致13项失败（日志 `/private/tmp/s1-t19-release-full.log`），没有改测试或跳过，取得本地监听权限后原命令完整重跑通过。Python工具/安装产物未改，沿用前述固定汇合验证。
+
+本增量只修改已登记控制器与其测试；证据另提交。不重写历史；S0复核此增量后再给最终正式共同SHA。
