@@ -1,0 +1,284 @@
+{
+  "formatVersion": 1,
+  "executionStatus": "not_run",
+  "reason": "Real Relay/model evaluation environment and account budget not supplied",
+  "cases": [
+    {
+      "id": "create-report",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "新建一份月度经营分析报告，采用 report。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-create",
+        "layout": "report",
+        "creation": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "create-dashboard",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "新建实时监控概览，采用 dashboard。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-create",
+        "layout": "dashboard",
+        "creation": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "create-user-choice",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "我做经营分析，但明确用 dashboard。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-create",
+        "layout": "dashboard",
+        "explicitChoiceWins": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "create-ambiguous",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "帮我新建一个页面。",
+        "用于每月阅读分析，选 report。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-create",
+        "clarifyBeforeCreation": true,
+        "layout": "report"
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "edit-report",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report"
+      },
+      "turns": [
+        "把 table 的标题改为地域明细。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "tool": "edit_page",
+        "target": "table",
+        "preserveExcept": [
+          "/sections/0/components/2/props/title"
+        ]
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "edit-dashboard",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "dashboard",
+        "container": "panel"
+      },
+      "turns": [
+        "把 chart 的标题改为经营趋势。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "tool": "edit_page",
+        "target": "chart",
+        "preserveExcept": [
+          "/sections/0/components/1/props/title"
+        ]
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "existing-add",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "dashboard"
+      },
+      "turns": [
+        "在当前页增加一段普通业务说明。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "tool": "edit_page",
+        "operation": "add_text",
+        "preserveExisting": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "missing-baseline",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": null,
+        "existingPage": true
+      },
+      "turns": [
+        "在这个已有页面增加一个图。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "awaitTrustedBaseline": true,
+        "forbiddenTools": [
+          "compose_page",
+          "create_content_page"
+        ]
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "ambiguous-target",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report"
+      },
+      "turns": [
+        "把那个组件标题改一下。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "clarifyTarget": true,
+        "noEditUntilResolved": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "switch-dashboard",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "container": "panel"
+      },
+      "turns": [
+        "把已有页明确切成 dashboard，其他设置不动。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "operation": "set_page_layout",
+        "layout": "dashboard",
+        "preserveExcept": [
+          "/layout"
+        ],
+        "explainLayoutImpact": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "switch-report-backdrop",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "packages/page/fixtures/contract-valid/composite-page.json",
+        "layout": "dashboard"
+      },
+      "turns": [
+        "切换为 report，保留铺底与卡片。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "operation": "set_page_layout",
+        "layout": "report",
+        "preserveExcept": [
+          "/layout"
+        ],
+        "legalBackdropPreserved": true
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "manual-language-multiturn",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "manualChanges": {
+          "/sections/0/components/2/props/columns/0/width": 230
+        }
+      },
+      "turns": [
+        "把 header 标题改为本月经营。",
+        "再把 chart 的标题改为区域对比。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-edit",
+        "tool": "edit_page",
+        "freshBaselineEveryTurn": true,
+        "preserveManualColumnWidth": 230,
+        "targets": [
+          "header",
+          "chart"
+        ]
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "explicit-new-from-existing",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report"
+      },
+      "turns": [
+        "保留当前页，另外新建 dashboard 页面。"
+      ],
+      "expected": {
+        "skill": "metriccanvas-platform-create",
+        "newPageIdFromProgram": true,
+        "originalUntouched": true,
+        "layout": "dashboard"
+      },
+      "status": "not_run"
+    },
+    {
+      "id": "ordinary-ask",
+      "group": "regression",
+      "context": {
+        "entry": "ordinary-ask",
+        "baseline": null
+      },
+      "turns": [
+        "上个月各区域的请求量是多少？"
+      ],
+      "expected": {
+        "skill": "metriccanvas-page-builder",
+        "platformSkillsNotSelected": true
+      },
+      "status": "not_run"
+    }
+  ]
+}

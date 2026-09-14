@@ -6,6 +6,8 @@ import { pageSchema, componentCatalog, validate } from '../packages/page/src/int
 import { atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
 
 const root = process.cwd();
+const bundle = JSON.parse(await readFile('metriccanvas-authoring/bundle.json','utf8'));
+const skills: Array<{id:string;entrypoint:string}> = bundle.skills ?? [{id:'metriccanvas-page-builder',entrypoint:bundle.skill.entrypoint}];
 const authorMap = JSON.parse(await readFile('docs/page-metadata/reference-map.json', 'utf8')) as ReferenceMap;
 const inputs = new Map<string,string>();
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
@@ -59,8 +61,23 @@ describe('页面参考手册生成与分发', () => {
     const temp = await mkdtemp(path.join(tmpdir(),'page-reference-copy-'));
     try {
       await cp('metriccanvas-authoring',path.join(temp,'bundle'),{recursive:true,filter:source=>!source.split(path.sep).some(part=>['__pycache__','.venv','node_modules'].includes(part))});
-      await cp('metriccanvas-authoring/skill/metriccanvas-page-builder',path.join(temp,'skill'),{recursive:true});
-      for(const prefix of ['bundle/contract-snapshot/page/reference','skill/references/page-metadata']) {
+      expect(bundle.skill.entrypoint).toBe('skill/metriccanvas-page-builder/SKILL.md');
+      expect(skills.map(skill=>skill.id)).toEqual(['metriccanvas-page-builder','metriccanvas-platform-create','metriccanvas-platform-edit']);
+      const prefixes = ['bundle/contract-snapshot/page/reference'];
+      for (const skill of skills) {
+        const directory = path.dirname(skill.entrypoint);
+        await cp(path.join('metriccanvas-authoring',directory),path.join(temp,skill.id),{recursive:true});
+        const standalone = new Map<string,string>();
+        for(const entry of await readdir(path.join(temp,skill.id),{recursive:true,withFileTypes:true})) if(entry.isFile()) {
+          const absolute = path.join(entry.parentPath,entry.name);
+          standalone.set(path.relative(path.join(temp,skill.id),absolute).split(path.sep).join('/'),await readFile(absolute,'utf8'));
+        }
+        validateReferenceLinks(standalone);
+        expect(standalone.get('SKILL.md')).toContain('references/page-metadata');
+        if (skill.id !== 'metriccanvas-page-builder') for (const file of ['platform-authoring.md','layouts/report.md','layouts/dashboard.md']) expect(standalone.get(`references/${file}`)).toBe(await readFile(`metriccanvas-authoring/skill-shared/${file}`,'utf8'));
+        prefixes.push(`${skill.id}/references/page-metadata`);
+      }
+      for(const prefix of prefixes) {
         const copied = new Map<string,string>();
         for(const entry of await readdir(path.join(temp,prefix),{recursive:true,withFileTypes:true})) if(entry.isFile()) {
           const absolute = path.join(entry.parentPath,entry.name);
@@ -70,10 +87,9 @@ describe('页面参考手册生成与分发', () => {
         validateReferenceLinks(copied);
         for(const [file,content] of copied) if(file.startsWith('examples/')&&file.endsWith('.json')) expect(validate(JSON.parse(content)),file).toEqual([]);
       }
-      expect(await readFile(path.join(temp,'skill/SKILL.md'),'utf8')).toContain('references/page-metadata');
     } finally { await rm(temp,{recursive:true,force:true}); }
   });
   it('生成内容与产品、Bundle和独立Skill逐字一致' , async () => {
-    for (const [file, content] of reference) for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference','metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata']) expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
+    for (const [file, content] of reference) for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference',...skills.map(skill=>`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata`)]) expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
   });
 });

@@ -7,6 +7,7 @@ from metriccanvas_authoring.domain.page_building import (
 )
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 from metriccanvas_authoring.domain.page_validation import _resolved_fields
+from metriccanvas_authoring.domain.layout_policy import layout_transition_impacts
 
 DATA_COMPONENTS = (
     "metricCard", "barChart", "lineChart", "pieChart", "table", "gauge",
@@ -141,8 +142,9 @@ def move_component(page, op):
 
 
 def set_page_layout(page, op):
+    impacts = layout_transition_impacts(page, op["layout"])
     page["layout"] = op["layout"]
-    return ["page.layout"]
+    return impacts
 
 
 def change_component_type(page, op):

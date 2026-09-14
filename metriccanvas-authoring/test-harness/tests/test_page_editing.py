@@ -131,7 +131,8 @@ class PageEditingTest(unittest.TestCase):
         expected = page(); expected["layout"] = "dashboard"
         result = edit(page(), {"id": "layout", "type": "set_page_layout", "layout": "dashboard"})
         self.assertEqual(result["document"], expected)
-        self.assertEqual(result["operations"][0]["adjustments"], ["page.layout"])
+        self.assertEqual(result["operations"][0]["adjustments"][0], "page.layout")
+        self.assertTrue(any("宽度" in impact for impact in result["operations"][0]["adjustments"]))
 
     def test_move_and_resize_preserve_other_components(self):
         result = edit(page(), {"id": "move", "type": "move_component", "componentId": "metric", "sectionId": "main", "beforeId": "chart"},

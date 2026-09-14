@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "6.1",
+  "id": "composite-page",
+  "layout": "dashboard",
+  "dashboardToolbar": {
+    "variant": "compact",
+    "readOnly": true,
+    "note": "只读"
+  },
+  "dataSources": {
+    "summary": {
+      "fields": {
+        "channel": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "number",
+          "role": "measure"
+        },
+        "share": {
+          "type": "number",
+          "role": "measure"
+        },
+        "score": {
+          "type": "number",
+          "role": "measure"
+        },
+        "owner": {
+          "type": "string",
+          "role": "dimension"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "channel": "线上",
+            "amount": 60,
+            "share": 60,
+            "score": 88,
+            "owner": "张三"
+          },
+          {
+            "channel": "线下",
+            "amount": 40,
+            "share": 40,
+            "score": 70,
+            "owner": "李四"
+          }
+        ]
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "single-panel",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 1
+          },
+          "data": {
+            "main": "summary"
+          },
+          "props": {
+            "columns": 1,
+            "items": [
+              {
+                "label": "负责人",
+                "field": "owner"
+              }
+            ],
+            "variant": "detailNormMatrix"
+          }
+        }
+      ]
+    }
+  ]
+}
