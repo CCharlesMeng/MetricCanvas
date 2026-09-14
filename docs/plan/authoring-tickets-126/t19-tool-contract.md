@@ -44,7 +44,7 @@ S0已指定装载方式：生产独立 lifecycle stdio 固定注册九工具（#
 
 reviewHash 固定覆盖以下无歧义对象：`{ref,contentHash,canonicalization,diff,affectedDataSources,parameterSummary,retainDimensionValues,validation,expiresAt,leaseId,leaseExpiresAt}`。document 先单独验 contentHash，reviewHash/reviewCanonicalization 自身不进入该对象；候选 source 已包含在 ref。算法由显式可信 `verifyReview` 端口协商并验证，不仅检查摘要字符串非空。原文 canonicalization 标识在精确payload中；reviewCanonicalization 必须匹配可信端口预先协商的算法身份，并作为验证上下文绑定，不由候选自行降低算法要求。未知标识或降级请求均拒绝，不能逐个尝试弱算法直到通过。本仓测试算法只能用于明确边界替身，不能成为生产默认。候选复用同一 ref 时其评审面必须不可变；客户端先核验原文和评审摘要，再校验页面结构与关联。
 
-候选的完整文档必须经既有公开页面校验。业务 validation 可以为 false，供程序通道展示错误并修正，但不得发布。非法页面或结构错误的响应不得被工具当作可发布候选。期限是否已过、当前 head、租约状态由服务权威裁决；不把本机时钟当作发布授权。
+每个候选接收都须读取并验真其精确 source 原文，以检查所有非维度参数完整保留；不能仅在 null 分类存在时读取源，也不能用候选服务签名代替语义对账。候选的完整文档必须经既有公开页面校验。业务 validation 可以为 false，供程序通道展示错误并修正，但不得发布。非法页面或结构错误的响应不得被工具当作可发布候选。期限是否已过、当前 head、租约状态由服务权威裁决；不把本机时钟当作发布授权。
 
 ## 3. diff、参数摘要与修正
 
@@ -227,4 +227,4 @@ proof 必须在可信人工端口/Java 的登记或验证体系内确实有效�
 
 共同契约由 S2 维护内部 `metriccanvas-authoring/contracts/authored/publication-contract.ts`；不创建公共 DTO 出口、不升版。
 
-实施起点已合 S0 正式产品组合 `812ad98241e31a1e24ebd6b739a9e3844ef9e5e6` 与冻结台账 ea19706，保留双Platform Skill及#138成果。最终消费 S0 正式共同基线 b3261ae；工具作者 7c9d802、分发生成 a15730f 的实际验证见 t19-tool-evidence.md。
+实施起点已合 S0 正式产品组合 `812ad98241e31a1e24ebd6b739a9e3844ef9e5e6` 与冻结台账 ea19706，保留双Platform Skill及#138成果。最终消费 S0 正式共同基线 b3261ae；工具作者 7c9d802 与修复 f9dd282、最终分发生成 da1f29b 的实际验证见 t19-tool-evidence.md。
