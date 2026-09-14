@@ -487,3 +487,11 @@ S1明确授权、S0确认S2仅#144可选executeRevision精确预览接线：`app
 ### #140精确恢复作者路径追加
 
 S1已合入04c4869444c2c5d3be6eade427bb191553fa81ec并启动#140。新增`apps/platform/src/lib/workbench/authoring-recovery.ts`、`apps/platform/tests/workbench/authoring-recovery.test.ts`、`apps/platform/tests/workbench/authoring-recovery-browser.mjs`、`docs/plan/authoring-tickets-126/t14-evidence.md`归S1。既有sync/storage/coordinator沿用，`apps/platform/src/lib/workbench/document-edit.ts`仅增加严校验双投影恢复入口，工作台接重连生命周期；RevisionPreview三路径仍S2临时独占。
+
+## #134成套验收集成
+
+作者608a3bd8fba59cc799cf2c514b32c24d7af6bf31→0ad7789afe0d9f1c73f71ceb40736e0ce0eab634；生成710f428f0de4dbb83ba11bbaed53a65bf422e892→b18bc40695585b4dc5206d9515c6771a50ce3f10；证据fa6f5c5c6a652d6bd9110671682778e5395b78ec→5d441180c0038b8a54ce5f9f5cf3bd372530bb89。18作者/4生成及最终证据按登记核对，产品域树与S3固定组合一致，保留#139 Platform增量，未取旧6.1锁。
+
+S0读取#134正文/评论（无新增）、审阅可信只读token/ref/hash、逐操作复制校验/回滚/依赖跳过/净无变化、程序产物与摘要分离、延迟server入口。独立复验page_editing20+content_baselines4通过，495摘要通过；读取最终184全量通过日志和独立安装三工具面/部分编辑安全text日志。采用S3最终194导出无漂移、53矩阵/独立安装及11产物产品CLI证据，不冒称S0全量/stdio重跑。
+
+本仓#134范围通过，可消费独立content工具/九操作与扩展注册；无保存/发布依赖。真实Relay摘要截取、spool填充/身份、Java/DQE真实联调及模型评测未完成。此前GitHub评论审批边界保持，仓内验收不代为绕过。#146的#127/#134前置已满足，仍等#138/#140；S4尚未登记，不宣称M1完成。S3按后续票完整依赖继续#135–#137，新增文件先登记，逐票验收。
