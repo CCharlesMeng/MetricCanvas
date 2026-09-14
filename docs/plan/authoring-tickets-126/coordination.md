@@ -563,3 +563,17 @@ S0读票正文并审阅三组件构造、可信source token/ref/hash、queryFiel
 本仓#135范围通过：text可无源，fieldText要求单行非空长文本，mapChart要求有效地域/数值与真实底图匹配；plain/card追加地图明确失败不暗改原分区，新页面用main panel；创建content-page-artifact与既有page-edit-artifact分开，无保存/发布副作用。S3可从本条HEAD继续#136后#137，读各票/登记新增文件。#144最终组合需保留本票新增内容工具/manifest并统一重生成，不覆盖为旧rc.3锁；该票未验收。
 
 #135共同基线兼容补正：S2独立38316c196068164e7ab3830a34c655bb62f8e781（父8ea095f）只改tests/authoring-export-isolation.test.ts，复制两底图并创建父目录；S0审阅/独立隔离测试1项通过后已集成（本条前一提交）。未引入#144实现，解除S1全量ENOENT阻塞；历史预期篡改/当前契约漂移断言保持。#144内同一修正后续合并保留一次，不重复覆盖。
+
+## #136开工登记
+
+S3任务不变；独立树`/private/tmp/metriccanvas-s3-136`、分支`codex/s3-136-containers-summary`，基线8ea095f。新增S3路径：
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/container_building.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/summary_capability.py`
+- `metriccanvas-authoring/test-harness/tests/test_container_building.py`
+- `metriccanvas-authoring/test-harness/tests/test_content_containers.py`
+- `metriccanvas-authoring/test-harness/container_browser.mjs`
+- `docs/plan/authoring-tickets-126/t10-evidence.md`
+
+既有作者触点（均S3）：Bundle tool/metriccanvas_authoring下domain/page_editing.py注册、domain/text_map_building.py仅复用删除保护的允许类型、application/edit_page.py与create_content_page.py传可信summary配置、adapters/inbound/content_mcp.py、content_server.py；Bundle contracts/authored/page-edit-request.schema.json、test-harness/content_stdio_server.py、README.md。生成锁仍S2唯一作者。
+
+容器子树采用受控字段/数据源recipe复用构造器，tab表格及组合卡白名单按#136要求验收，不接任意JSON/空壳。aiSummary须显式runtime_sse意图、非空promptTemplate/relatedData与可信部署AiSummaryConfig；模型不得提供conversationBaseUrl，缺配置明确失败，add_text不自动升级。浏览器仅以真实本地SSE边界验证现有协议，外部服务不冒称已连通；精确范围和全部正反例以整票回执验收。
