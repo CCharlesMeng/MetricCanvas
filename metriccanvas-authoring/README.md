@@ -30,7 +30,11 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+
+`create_content_page` 用 `page_id/title/layout` 与 `request.operations` 创建新页。允许 `add_text/add_field_text/add_map_chart`，目标分区为 `main`（panel）；静态正文直接声明，字段长文本与地图仅从可信 `source_token` 对应完整页面复用数据源。创建产物 `metriccanvas.content-page-artifact` 包含新 document/hash、可空 sourceRef 和 Bundle 版本，不包含保存结果，也不将创建冒充既有页修改。
+
+这些追加操作也可用于 `edit_page`；`remove_component` 删除这三类顶层组件，后继组件仍以 connectPrevious 依赖它时拒绝删除。原有查询、样例行、无关组件不重建。fieldText 要求一行非空 string/semanticHtml 正文；mapChart 要求地域 dimension、数值 measure、可验证行证据和 china/world 明确底图，名称必须匹配随包地名契约或通过 nameMap 显式映射。缺少 initial 的查询、未物化 compute、空/未知地域均明确失败。plain/card 分区无法提供普通地图所需高度，追加时返回 MAP_SECTION_REQUIRES_CHART_HEIGHT；选已有 panel 或缺省分区。此限制来自真实运行时验真，不会暗改既有分区。完整数据只留程序通道；新操作不接收原文、rows 或 query。
 
 `edit_page` 只接收 `baseline_token` 和受控 `request.operations`，操作请求规范见 [`page-edit-request.schema.json`](./contracts/authored/page-edit-request.schema.json)。可信程序通过 `ContentBaselinePort` 注入完整精确基线；自带只读适配器从 `METRICCANVAS_CONTENT_BASELINES_DIR/<token>.json` 读取 `{ref:{pageId,revisionId,resourceId},document,documentSha256}`。目录按身份和工作区隔离，由外部可信适配器填充，token 必须不可变关联同一基线；没有配置或基线时明确失败，不读取“最新页”或重建整页。此摘要为本工具规范 JSON 的 SHA-256，不冒充 Java 已确认的 hash 算法。
 

@@ -5,12 +5,14 @@ from typing import Any
 
 from jsonschema import Draft202012Validator
 
-from metriccanvas_authoring.domain.component_editing import EditFailure, OPERATION_HANDLERS
+from metriccanvas_authoring.domain.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+from metriccanvas_authoring.domain.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text())
 OPERATION_SCHEMA = EDIT_SCHEMA["properties"]["operations"]["items"]
+OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS}
 
 
 def edit_page_document(baseline: Any, request: Any) -> dict[str, Any]:

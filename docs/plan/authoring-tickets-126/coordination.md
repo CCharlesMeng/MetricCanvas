@@ -545,3 +545,19 @@ S0读#140正文、审阅记录严格校验/双投影/CAS/原命令恢复/有界�
 本仓恢复范围通过，已发无outcome先lookup，原6.1命令不升版，1/3/10秒最多3次追加核实，损坏/冲突/身份/保护失败暂停；本地工作与运行凭据分离。离线重开前提是壳已加载，无Service Worker/壳离线缓存承诺。真实强Java端口未确认，非真实联调。
 
 #146已具备#127/#134/#140，唯一未满足前置#138（S4尚未登记）；S0通知S1准备但不提前实现依赖。#145仍等#138/#144，S1主责最终界面与验收、S4工具。S1可按各票依赖继续#141/#142，先读票及登记，#146一旦齐备优先。M1未通过。
+
+## #141开工登记
+
+S1已消费155346f2并读#141/#142完整正文，先实施#141。新增S1唯一作者：`apps/platform/src/lib/workbench/authoring-history.ts`、`apps/platform/src/lib/workbench/AuthoringHistory.svelte`、`apps/platform/tests/workbench/authoring-history.test.ts`、`apps/platform/tests/workbench/authoring-history-browser.mjs`、`docs/plan/authoring-tickets-126/t15-evidence.md`。既有sync/recovery/coordinator/PageAuthoringWorkbench及开发fixture接线仍S1；S2预览三路径不动。
+
+撤销/恢复沿原队列新增操作，未确定原操作先核实，不删除已发项；history/exactRead缺失明确提示、不猜生产URL。#142未实施，#146等#138齐备后优先；具体历史分页/精确读取和撤销边界按本票验收，不将内部端口当外部确认。
+
+#144追加S2测试作者`tests/authoring-export-isolation.test.ts`，限临时仓复制列表补`packages/engine/widgets/src/components/map-chart/maps/china.json`与`world.json`（同目录），以满足#135新增生成器源输入；不改历史预期/地图源。S2报告全量此处ENOENT、其余1017通过，需修复后完成要求的回归，不计最终通过。
+
+## #135整票验收集成
+
+作者02b602633e636e9cc540875b0ff7f192f4604c49→be44aa5843eb34c16461c369547344d216159695；生成c7a8ba4fd2a62bba0d2c9e09881c7cecdd429036→2d93360a29d2aa7e1be5c54d0be1a4c1f937d4eb；证据aae5858eabfc8009900eb2f5cdd9218d7debc06c→da1f91da425c35d2ae5ddb5731c84a54332f61df。14作者文件、3锁/manifest与证据按登记核对；集成Bundle树与S3固定最终组合一致，保留#140工作台。
+
+S0读票正文并审阅三组件构造、可信source token/ref/hash、queryField行证据、地图资产校验/容器门禁、删除引用检查与程序摘要边界。独立运行9领域+4创建/实际stdio测试全部通过，502摘要通过，读取197全量通过日志。采用t09公开工具2/2产品CLI、report/dashboard Chrome几何与浙江省18 tooltip、零pageerror及最终独立安装生产content四工具/hash/text证据，不冒称S0重跑浏览器或真实DQE。
+
+本仓#135范围通过：text可无源，fieldText要求单行非空长文本，mapChart要求有效地域/数值与真实底图匹配；plain/card追加地图明确失败不暗改原分区，新页面用main panel；创建content-page-artifact与既有page-edit-artifact分开，无保存/发布副作用。S3可从本条HEAD继续#136后#137，读各票/登记新增文件。#144最终组合需保留本票新增内容工具/manifest并统一重生成，不覆盖为旧rc.3锁；该票未验收。

@@ -20,7 +20,7 @@ class ContentMcpTest(unittest.IsolatedAsyncioTestCase):
     async def test_real_stdio_creation_and_partial_edit_only_return_safe_text(self):
         async with Client(ROOT / "test-harness/content_stdio_server.py") as client:
             tools = {t.name: t for t in await client.list_tools()}
-            self.assertEqual(set(tools), {"discover_data_context", "compose_page", "edit_page"})
+            self.assertEqual(set(tools), {"discover_data_context", "compose_page", "edit_page", "create_content_page"})
             self.assertEqual(set(tools["edit_page"].inputSchema["properties"]), {"baseline_token", "request"})
             request = {"operations": [title(), title("bad", "missing"), title("dependent", "table", dependsOn=["bad"])]}
             edited = await client.call_tool("edit_page", {"baseline_token": "trusted-baseline-token", "request": request})
@@ -73,4 +73,4 @@ class ContentMcpTest(unittest.IsolatedAsyncioTestCase):
         with patch.object(compatibility, "create_production_server", side_effect=AssertionError("must not initialize")), patch.object(compatibility, "configure_page_assets", side_effect=AssertionError("must not configure saves")), patch.dict(os.environ, {"METRICCANVAS_TOOL_SURFACE": "invalid-unused-value"}):
             server = create_production_content_server()
             async with Client(server) as client:
-                self.assertEqual({t.name for t in await client.list_tools()}, {"discover_data_context", "compose_page", "edit_page"})
+                self.assertEqual({t.name for t in await client.list_tools()}, {"discover_data_context", "compose_page", "edit_page", "create_content_page"})

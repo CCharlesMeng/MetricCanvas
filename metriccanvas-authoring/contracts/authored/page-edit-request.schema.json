@@ -520,6 +520,259 @@
               "componentId",
               "componentType"
             ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_text"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "body": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 20000
+              },
+              "bodyFormat": {
+                "const": "semanticHtml"
+              },
+              "variant": {
+                "enum": [
+                  "plain",
+                  "heading",
+                  "insight",
+                  "reportInline",
+                  "riskNotice"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "body"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_field_text"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "dataSourceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "fieldId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "variant": {
+                "enum": [
+                  "plain",
+                  "quote",
+                  "narrativeShort",
+                  "narrativeMeeting",
+                  "narrativeRisk",
+                  "narrativeProgress"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "dataSourceId",
+              "fieldId"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_map_chart"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "dataSourceId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "nameField": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "valueField": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "map": {
+                "enum": [
+                  "china",
+                  "world"
+                ]
+              },
+              "nameMap": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "dataSourceId",
+              "nameField",
+              "valueField",
+              "map"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "remove_component"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId"
+            ]
           }
         ]
       }
