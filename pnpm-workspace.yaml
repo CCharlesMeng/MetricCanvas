@@ -4,3 +4,12 @@ packages:
   - tools/*
 allowBuilds:
   esbuild: true
+overrides:
+  # Kit 2.70.2 uses cookie's legacy parse/serialize API; 0.7.2 fixes GHSA-pxg6-pf52-xh8x.
+  '@sveltejs/kit@2.70.2>cookie': 0.7.2
+  # Keep transitive tooling types aligned with the repository's Node 24 runtime.
+  '@types/node': 24.13.4
+  # Patch vulnerable transitive versions without changing their parent packages.
+  'postcss@<8.5.26': 8.5.26
+  'nanoid@<3.3.18': 3.3.18
+  'fast-uri@>=3.0.0 <3.1.6': 3.1.6

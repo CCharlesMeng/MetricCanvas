@@ -1,0 +1,2783 @@
+{
+  "date": "2026-09-14",
+  "sources": [
+    "package.json",
+    "*/package.json",
+    "pnpm-lock.yaml"
+  ],
+  "definition": "Categories follow all workspace manifest roots. Production traversal follows workspace dependencies, not their devDependencies. A package may belong to both categories. Optional packages include all platforms recorded in the lockfile; this is not a deployed-bundle SBOM.",
+  "overrides": {
+    "@sveltejs/kit@2.70.2>cookie": "0.7.2",
+    "@types/node": "24.13.4",
+    "postcss@<8.5.26": "8.5.26",
+    "nanoid@<3.3.18": "3.3.18",
+    "fast-uri@>=3.0.0 <3.1.6": "3.1.6"
+  },
+  "direct": [
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/package",
+      "range": "2.5.8",
+      "version": "2.5.8",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/vite-plugin-svelte",
+      "range": "7.2.0",
+      "version": "7.2.0",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@types/node",
+      "range": "24.13.4",
+      "version": "24.13.4",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte",
+      "range": "5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "tsx",
+      "range": "^4.23.1",
+      "version": "4.23.1",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "typescript",
+      "range": "^5.9.3",
+      "version": "5.9.3",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vite",
+      "range": "8.1.5",
+      "version": "8.1.5",
+      "internal": false
+    },
+    {
+      "workspace": ".",
+      "workspaceName": "metriccanvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vitest",
+      "range": "^4.1.11",
+      "version": "4.1.11",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/application-runtime",
+      "range": "workspace:*",
+      "version": "link:../../packages/application-runtime",
+      "internal": true
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/engine",
+      "range": "workspace:*",
+      "version": "link:../../packages/engine",
+      "internal": true
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/metric-canvas",
+      "range": "workspace:*",
+      "version": "link:../../packages/metric-canvas",
+      "internal": true
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/page",
+      "range": "workspace:*",
+      "version": "link:../../packages/page",
+      "internal": true
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/adapter-static",
+      "range": "^3.0.10",
+      "version": "3.0.10",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/kit",
+      "range": "^2.70.2",
+      "version": "2.70.2",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/vite-plugin-svelte",
+      "range": "^7.2.0",
+      "version": "7.2.0",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte",
+      "range": "^5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte-check",
+      "range": "^4.7.3",
+      "version": "4.7.3",
+      "internal": false
+    },
+    {
+      "workspace": "apps/platform",
+      "workspaceName": "platform",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vite",
+      "range": "^8.1.5",
+      "version": "8.1.5",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/application-runtime",
+      "range": "workspace:*",
+      "version": "link:../../packages/application-runtime",
+      "internal": true
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/engine",
+      "range": "workspace:*",
+      "version": "link:../../packages/engine",
+      "internal": true
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/page",
+      "range": "workspace:*",
+      "version": "link:../../packages/page",
+      "internal": true
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/adapter-static",
+      "range": "^3.0.10",
+      "version": "3.0.10",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/kit",
+      "range": "^2.70.2",
+      "version": "2.70.2",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/vite-plugin-svelte",
+      "range": "^7.2.0",
+      "version": "7.2.0",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@types/node",
+      "range": "24.13.4",
+      "version": "24.13.4",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte",
+      "range": "^5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte-check",
+      "range": "^4.7.3",
+      "version": "4.7.3",
+      "internal": false
+    },
+    {
+      "workspace": "apps/playground",
+      "workspaceName": "playground",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vite",
+      "range": "^8.1.5",
+      "version": "8.1.5",
+      "internal": false
+    },
+    {
+      "workspace": "packages/application-runtime",
+      "workspaceName": "@metriccanvas/application-runtime",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/engine",
+      "range": "workspace:*",
+      "version": "link:../engine",
+      "internal": true
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/engine",
+      "range": "workspace:*",
+      "version": "link:../engine",
+      "internal": true
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/page",
+      "range": "workspace:*",
+      "version": "link:../page",
+      "internal": true
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "dependencies",
+      "category": "production",
+      "name": "svelte",
+      "range": "^5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@playwright/test",
+      "range": "^1.62.0",
+      "version": "1.62.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/vite-plugin-svelte",
+      "range": "^7.2.0",
+      "version": "7.2.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte-check",
+      "range": "^4.7.3",
+      "version": "4.7.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "typescript",
+      "range": "^5.9.3",
+      "version": "5.9.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/embed",
+      "workspaceName": "@metriccanvas/embed",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vite",
+      "range": "^8.1.5",
+      "version": "8.1.5",
+      "internal": false
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/page",
+      "range": "workspace:*",
+      "version": "link:../page",
+      "internal": true
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "dependencies",
+      "category": "production",
+      "name": "echarts",
+      "range": "^6.1.0",
+      "version": "6.1.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@metriccanvas/dqe-sim",
+      "range": "workspace:*",
+      "version": "link:../../tools/dqe-sim",
+      "internal": true
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte",
+      "range": "^5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte-check",
+      "range": "^4.7.3",
+      "version": "4.7.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/engine",
+      "workspaceName": "@metriccanvas/engine",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "typescript",
+      "range": "^5.9.3",
+      "version": "5.9.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/engine",
+      "range": "workspace:*",
+      "version": "link:../engine",
+      "internal": true
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "dependencies",
+      "category": "production",
+      "name": "@metriccanvas/page",
+      "range": "workspace:*",
+      "version": "link:../page",
+      "internal": true
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@playwright/test",
+      "range": "^1.62.0",
+      "version": "1.62.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "@sveltejs/vite-plugin-svelte",
+      "range": "^7.2.0",
+      "version": "7.2.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte",
+      "range": "^5.56.6",
+      "version": "5.56.6",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "svelte-check",
+      "range": "^4.7.3",
+      "version": "4.7.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "typescript",
+      "range": "^5.9.3",
+      "version": "5.9.3",
+      "internal": false
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "workspaceName": "@metriccanvas/metric-canvas",
+      "field": "devDependencies",
+      "category": "development",
+      "name": "vite",
+      "range": "^8.1.5",
+      "version": "8.1.5",
+      "internal": false
+    },
+    {
+      "workspace": "packages/page",
+      "workspaceName": "@metriccanvas/page",
+      "field": "dependencies",
+      "category": "production",
+      "name": "ajv",
+      "range": "^8.17.1",
+      "version": "8.20.0",
+      "internal": false
+    },
+    {
+      "workspace": "packages/page",
+      "workspaceName": "@metriccanvas/page",
+      "field": "dependencies",
+      "category": "production",
+      "name": "zod",
+      "range": "^4.4.3",
+      "version": "4.4.3",
+      "internal": false
+    }
+  ],
+  "peers": [
+    {
+      "workspace": "packages/engine",
+      "name": "svelte",
+      "range": ">=5.29.0 <6"
+    },
+    {
+      "workspace": "packages/metric-canvas",
+      "name": "svelte",
+      "range": ">=5.29.0 <6"
+    }
+  ],
+  "packages": [
+    {
+      "name": "@emnapi/core",
+      "version": "1.11.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@emnapi/runtime",
+      "version": "1.11.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@emnapi/wasi-threads",
+      "version": "1.2.2",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/aix-ppc64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/android-arm",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/android-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/android-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/darwin-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/darwin-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/freebsd-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/freebsd-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-arm",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-ia32",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-loong64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-mips64el",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-ppc64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-riscv64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-s390x",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/linux-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/netbsd-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/netbsd-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/openbsd-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/openbsd-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/openharmony-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/sunos-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/win32-arm64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/win32-ia32",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@esbuild/win32-x64",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@jridgewell/gen-mapping",
+      "version": "0.3.13",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@jridgewell/remapping",
+      "version": "2.3.5",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@jridgewell/resolve-uri",
+      "version": "3.1.2",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@jridgewell/sourcemap-codec",
+      "version": "1.5.5",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@jridgewell/trace-mapping",
+      "version": "0.3.31",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@napi-rs/wasm-runtime",
+      "version": "1.1.6",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@oxc-project/types",
+      "version": "0.139.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "@playwright/test",
+      "version": "1.62.0",
+      "production": [],
+      "development": [
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@polka/url",
+      "version": "1.0.0-next.29",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@rolldown/binding-android-arm64",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-darwin-arm64",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-darwin-x64",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-freebsd-x64",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-arm-gnueabihf",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-arm64-gnu",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-arm64-musl",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-ppc64-gnu",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-s390x-gnu",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-x64-gnu",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-linux-x64-musl",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-openharmony-arm64",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-wasm32-wasi",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-win32-arm64-msvc",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/binding-win32-x64-msvc",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@rolldown/pluginutils",
+      "version": "1.0.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "@standard-schema/spec",
+      "version": "1.1.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/acorn-typescript",
+      "version": "1.0.11",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/adapter-static",
+      "version": "3.0.10",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/kit",
+      "version": "2.70.2",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/load-config",
+      "version": "0.2.0",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/package",
+      "version": "2.5.8",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@sveltejs/vite-plugin-svelte",
+      "version": "7.2.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@tybys/wasm-util",
+      "version": "0.10.3",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "@types/chai",
+      "version": "5.2.3",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@types/cookie",
+      "version": "0.6.0",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@types/deep-eql",
+      "version": "4.0.2",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@types/estree",
+      "version": "1.0.9",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@types/node",
+      "version": "24.13.4",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "@types/trusted-types",
+      "version": "2.0.7",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/expect",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/mocker",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/pretty-format",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/runner",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/snapshot",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/spy",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "@vitest/utils",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "acorn",
+      "version": "8.17.0",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "ajv",
+      "version": "8.20.0",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "aria-query",
+      "version": "5.3.1",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "assertion-error",
+      "version": "2.0.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "axobject-query",
+      "version": "4.1.0",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "chai",
+      "version": "6.2.2",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "chokidar",
+      "version": "4.0.3",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "chokidar",
+      "version": "5.0.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "clsx",
+      "version": "2.1.1",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "convert-source-map",
+      "version": "2.0.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "cookie",
+      "version": "0.7.2",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "dedent-js",
+      "version": "1.0.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "deepmerge",
+      "version": "4.3.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "detect-libc",
+      "version": "2.1.2",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "devalue",
+      "version": "5.8.1",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "echarts",
+      "version": "6.1.0",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "es-module-lexer",
+      "version": "2.3.2",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "esbuild",
+      "version": "0.28.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "esm-env",
+      "version": "1.2.2",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "esrap",
+      "version": "2.3.0",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "estree-walker",
+      "version": "3.0.3",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "expect-type",
+      "version": "1.4.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "fast-deep-equal",
+      "version": "3.1.3",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "fast-uri",
+      "version": "3.1.6",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "fdir",
+      "version": "6.5.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "fsevents",
+      "version": "2.3.2",
+      "production": [],
+      "development": [
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "fsevents",
+      "version": "2.3.3",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "is-reference",
+      "version": "3.0.3",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "json-schema-traverse",
+      "version": "1.0.0",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "kleur",
+      "version": "4.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "lightningcss",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-android-arm64",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-darwin-arm64",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-darwin-x64",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-freebsd-x64",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-linux-arm-gnueabihf",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-linux-arm64-gnu",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-linux-arm64-musl",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-linux-x64-gnu",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-linux-x64-musl",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-win32-arm64-msvc",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "lightningcss-win32-x64-msvc",
+      "version": "1.32.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "locate-character",
+      "version": "3.0.0",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "magic-string",
+      "version": "0.30.21",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "mri",
+      "version": "1.2.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "mrmime",
+      "version": "2.0.1",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "nanoid",
+      "version": "3.3.18",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "obug",
+      "version": "2.1.4",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "obug",
+      "version": "2.2.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "pathe",
+      "version": "2.0.3",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "picocolors",
+      "version": "1.1.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "picomatch",
+      "version": "4.0.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "picomatch",
+      "version": "4.0.7",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "playwright",
+      "version": "1.62.0",
+      "production": [],
+      "development": [
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "playwright-core",
+      "version": "1.62.0",
+      "production": [],
+      "development": [
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "postcss",
+      "version": "8.5.26",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "readdirp",
+      "version": "4.1.2",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "readdirp",
+      "version": "5.1.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "require-from-string",
+      "version": "2.0.2",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "rolldown",
+      "version": "1.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "sade",
+      "version": "1.8.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "scule",
+      "version": "1.3.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "semver",
+      "version": "7.8.5",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "set-cookie-parser",
+      "version": "3.1.2",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "siginfo",
+      "version": "2.0.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "sirv",
+      "version": "3.0.2",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "source-map-js",
+      "version": "1.2.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "stackback",
+      "version": "0.0.2",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "std-env",
+      "version": "4.2.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "svelte",
+      "version": "5.56.6",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "svelte-check",
+      "version": "4.7.3",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "svelte2tsx",
+      "version": "0.7.61",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "tinybench",
+      "version": "2.9.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "tinyexec",
+      "version": "1.3.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "tinyglobby",
+      "version": "0.2.17",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "tinyrainbow",
+      "version": "3.1.1",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "totalist",
+      "version": "3.0.1",
+      "production": [],
+      "development": [
+        "apps/platform",
+        "apps/playground"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "tslib",
+      "version": "2.3.0",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "tslib",
+      "version": "2.8.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "tsx",
+      "version": "4.23.1",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "typescript",
+      "version": "5.9.3",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "undici-types",
+      "version": "7.18.2",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "vite",
+      "version": "8.1.5",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": true
+    },
+    {
+      "name": "vitefu",
+      "version": "1.1.3",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "vitest",
+      "version": "4.1.11",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "why-is-node-running",
+      "version": "2.3.0",
+      "production": [],
+      "development": [
+        "."
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "yaml",
+      "version": "2.9.0",
+      "production": [],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/metric-canvas"
+      ],
+      "required": false,
+      "optional": true
+    },
+    {
+      "name": "zimmerframe",
+      "version": "1.1.4",
+      "production": [
+        "packages/embed"
+      ],
+      "development": [
+        ".",
+        "apps/platform",
+        "apps/playground",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "zod",
+      "version": "4.4.3",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas",
+        "packages/page"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    },
+    {
+      "name": "zrender",
+      "version": "6.1.0",
+      "production": [
+        "apps/platform",
+        "apps/playground",
+        "packages/application-runtime",
+        "packages/embed",
+        "packages/engine",
+        "packages/metric-canvas"
+      ],
+      "development": [],
+      "required": true,
+      "optional": false
+    }
+  ],
+  "unreachableLockPackages": []
+}
