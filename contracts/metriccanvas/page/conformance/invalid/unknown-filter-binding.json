@@ -2,7 +2,8 @@
   "case": "unknown-filter-binding",
   "invariant": "filter-binding",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
+    "layout": "report",
     "id": "query-dashboard",
     "dataSources": {
       "sales": {

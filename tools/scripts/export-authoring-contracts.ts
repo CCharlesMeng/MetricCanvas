@@ -94,6 +94,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
     outputs.set(`page/conformance/valid/${fileName}`, content);
   }
 
+  const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
   for (const schemaVersion of ['6.0', '6.1', '6.2', '7.0']) {
     for (const declaration of [
@@ -103,7 +104,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
       { layout: 'dashboard', layoutForm: 'report' },
       { layout: 'kiosk' }
     ]) {
-      const input = { ...(fixtures.get('inline-report') as object), schemaVersion, ...declaration };
+      const input = { ...layoutBase, schemaVersion, ...declaration };
       layoutCases.push({ input, expected: normalizePageDocument(input) });
     }
   }

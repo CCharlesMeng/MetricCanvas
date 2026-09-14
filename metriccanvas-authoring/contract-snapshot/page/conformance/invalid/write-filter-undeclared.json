@@ -2,7 +2,8 @@
   "case": "write-filter-undeclared",
   "invariant": "write-filter-target",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
+    "layout": "report",
     "id": "query-dashboard",
     "dataSources": {
       "sales": {

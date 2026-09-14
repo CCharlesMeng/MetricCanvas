@@ -80,7 +80,8 @@ flowchart LR
 
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
+  "layout": "report",
   "id": "sales-overview",
   "meta": { "title": "销售概览", "description": "销售概览" },
   "dataSources": {},
@@ -102,10 +103,10 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前为 `"6.0"`，5.x 文档须显式迁移 |
+| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前为 `"6.1"`，读取支持6.0/6.1，5.x 文档须显式迁移 |
 | `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | object | 否 | 页面资产信息；允许可选 `title` 与 `description`。目录标题按 `meta.title` → 首个 `reportHeader.props.title` → 页面 `id` 回退；dashboard 工具栏使用同一结果 |
-| `layoutForm` | string | 否 | 页面布局形态（5.1 起）：`report`（缺省）或 `dashboard` |
+| `layout` | string | 否 | 页面布局形态（6.1规范字段；旧layoutForm读取兼容）：`report`（缺省）或 `dashboard` |
 | `params` | array | 否 | 页面参数声明（5.1 起），至少一项 |
 | `dataSources` | object | 是 | 命名页面数据源；纯标题或说明页可以为空对象 |
 | `filters` | array | 否 | 页面级筛选状态声明 |
@@ -117,7 +118,7 @@ flowchart LR
 
 次版本只承载纯增量变更（新增可选字段、判别联合新增分支、封闭闭集新增成员、放宽既有约束），因此当前主版本内最新的 schema 是全部次版本的超集，校验器接受该主版本内不高于当前值的任意次版本。跨主版本不接受，也不提供自动迁移。
 
-当前协议为 **6.0**。5.x 的既有能力整体进入 6.0 基线；后续同主版本增量仍按 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 登记能力下限。下文提到的“5.x 起”仅说明历史引入时间，不表示当前校验器接受旧主版本。
+当前协议为 **6.1**；6.0 继续可读。5.x 的既有能力整体进入 6.0 基线；后续同主版本增量仍按 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 登记能力下限。下文提到的“5.x 起”仅说明历史引入时间，不表示当前校验器接受旧主版本。
 
 6.0 将导航改为 `href + query`，查询串改用普通值；删除 `page/carryFilters/setFilters/setParams` 与旧前缀编码，不运行双协议兼容层。仓内页面和校验样例已迁移。外部 5.x 页面可用 `tools/scripts/migrate-url-navigation.ts` 配合显式页面地址映射生成新文档；工具拒绝覆盖原文件。不可变历史修订保留原文，由原引擎读取，或迁移后另存新修订。完整裁决见 [ADR-0068](docs/adr/0068-plain-url-navigation-protocol.md)。
 
@@ -719,7 +720,7 @@ last90d
 
 不得使用已删除的 `section.variant`、`section.layout` 或根据组件组合推断分区外观。
 
-**页面布局形态（`layoutForm`，5.1 起）** 决定页面外框几何与外观，是这两者的唯一真源。它与 `container` 是两层：形态管页面外框，`container` 管分区外观，同一档 `container` 在两种形态下表达同一语义、观感随形态调整。
+**页面布局形态（`layout`，6.1 起）** 决定页面外框几何与外观，是这两者的唯一真源。它与 `container` 是两层：形态管页面外框，`container` 管分区外观，同一档 `container` 在两种形态下表达同一语义、观感随形态调整。
 
 | 值 | 语义 |
 |---|---|
@@ -1575,7 +1576,8 @@ flowchart LR
 
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
+  "layout": "report",
   "id": "revenue-overview",
   "meta": {
     "description": "收入概览"
@@ -1635,7 +1637,8 @@ flowchart LR
 
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
+  "layout": "report",
   "id": "sales-by-region",
   "meta": {
     "description": "区域销售分析"
@@ -1747,8 +1750,8 @@ flowchart LR
 
 ### 11.1 结构
 
-- [ ] 顶层只有 `schemaVersion`、`id`、`meta`、可选 `params`、`dataSources`、`filters`、`sections`；
-- [ ] `schemaVersion` 为 `"6.0"`；旧主版本通过显式迁移生成新文档/新修订；
+- [ ] 顶层只有 `schemaVersion`、`id`、`meta`、可选 `layout`、`dashboardToolbar`、`params`、`dataSources`、`filters`、`sections`；
+- [ ] 新写出 `schemaVersion` 为 `"6.1"`，仅使用顶层 `layout`；旧主版本通过显式迁移生成新文档/新修订；
 - [ ] 所有对象没有未定义属性；
 - [ ] `sections`、每个 `components`、每个页面数据源 `fields` 均满足最小数量；
 - [ ] 所有 id 符合各自正则，筛选器、分区和组件 id 无重复。
@@ -1825,3 +1828,6 @@ pnpm validate pages/demo.json
 | `DQE_PROTOCOL_ERROR` | DQE 请求或响应协议不合法 |
 | `DQE_EXECUTION_ERROR` | DQE 查询执行失败 |
 | `DATA_CONTEXT_ERROR` | 创作所需的数据上下文、权限或口径不足 |
+
+
+6.1 的布局兼容读取与存量迁移见 [迁移说明](docs/page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。

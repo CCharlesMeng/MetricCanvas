@@ -2,9 +2,9 @@
   "case": "duplicate-page-param-id",
   "invariant": "page-param-id-unique",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "params-page",
-    "layoutForm": "report",
+    "layout": "report",
     "meta": {
       "title": {
         "param": "customer"

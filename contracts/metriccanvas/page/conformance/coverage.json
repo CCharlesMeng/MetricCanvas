@@ -4,8 +4,8 @@
       "id": "page-layout-compatibility",
       "description": "6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取",
       "valid": [
-        "inline-report",
-        "query-dashboard",
+        "legacy-layout-report",
+        "legacy-layout-dashboard",
         "layout-6-1-report",
         "layout-6-1-dashboard"
       ],

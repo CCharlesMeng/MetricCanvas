@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 import unittest
 from pathlib import Path
@@ -17,7 +18,8 @@ class BundleInfoTest(unittest.TestCase):
 
         self.assertEqual(info["bundleVersion"], "0.2.0")
         self.assertRegex(str(info["pageSchemaVersion"]), r"^\d+\.\d+$")
-        self.assertEqual(info["productContractVersion"], "1.0.0-rc.1")
+        lock = json.loads((BUNDLE_ROOT / "contract-lock.json").read_text(encoding="utf-8"))
+        self.assertEqual(info["productContractVersion"], lock["productContractVersion"])
         self.assertEqual(info["authoringContractVersion"], "0.2.0")
         self.assertEqual(info["transport"], "stdio")
 

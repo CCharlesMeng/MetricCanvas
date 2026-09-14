@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
   "id": "params-page",
-  "layoutForm": "report",
+  "layout": "report",
   "meta": {
     "title": { "param": "customer" },
     "description": "页面参数与文本取值引用的契约样例"

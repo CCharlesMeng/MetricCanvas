@@ -2,7 +2,8 @@
   "case": "navigation-legacy-target-rejected",
   "invariant": "url-navigation-source-contract",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
+    "layout": "report",
     "id": "url-navigation-page",
     "params": [
       {

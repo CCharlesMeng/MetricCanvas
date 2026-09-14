@@ -2,9 +2,9 @@
   "case": "page-param-named-like-filter",
   "invariant": "page-param-not-filter-name",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "params-page",
-    "layoutForm": "report",
+    "layout": "report",
     "meta": {
       "title": {
         "param": "customer"

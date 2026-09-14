@@ -2,7 +2,8 @@
   "case": "field-binding-undeclared-slot",
   "invariant": "field-binding-resolves",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
+    "layout": "report",
     "id": "inline-report",
     "meta": {
       "description": "内联报告契约样例"

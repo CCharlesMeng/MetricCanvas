@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
   "id": "composite-page",
-  "layoutForm": "dashboard",
+  "layout": "dashboard",
   "dashboardToolbar": { "variant": "compact", "readOnly": true, "note": "只读" },
   "meta": {
     "description": "组合卡、Tab 容器、叠放层、列轨与 5.4 呈现档的契约样例"

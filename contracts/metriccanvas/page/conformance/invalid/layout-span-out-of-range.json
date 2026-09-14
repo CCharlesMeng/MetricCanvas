@@ -2,7 +2,8 @@
   "case": "layout-span-out-of-range",
   "invariant": "schema-structure",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
+    "layout": "report",
     "id": "inline-report",
     "meta": {
       "description": "内联报告契约样例"

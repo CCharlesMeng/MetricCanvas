@@ -52,7 +52,7 @@ export const invariants: InvariantDefinition[] = [
   {
     id: 'page-layout-compatibility',
     description: '6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取',
-    valid: ['inline-report', 'query-dashboard', 'layout-6-1-report', 'layout-6-1-dashboard'],
+    valid: ['legacy-layout-report', 'legacy-layout-dashboard', 'layout-6-1-report', 'layout-6-1-dashboard'],
     cases: [
       { case: 'layout-before-6.1', base: 'layout-6-1-dashboard', expect: /由 6.1 引入/, mutate: d => { d.schemaVersion = '6.0'; } },
       { case: 'layout-dual-equal', base: 'layout-6-1-dashboard', expect: /不得同时声明/, mutate: d => { d.layoutForm = 'dashboard'; } },

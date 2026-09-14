@@ -9,7 +9,7 @@ import type {
   QueryScalarFieldDefinition,
   QueryStandardScalarFieldDefinition
 } from './field';
-import type { Page } from './page';
+import type { Page, PageLayoutForm } from './page';
 
 /** 与查询定义一起保存的 DQE 原始执行结果，字段键使用 DQE 输出字段名。 */
 export interface EmbeddedInitialRowsDocument {
@@ -62,5 +62,7 @@ export type PageDataSourcesDocument = Record<string, PageDataSourceDocument>;
  * 分组的局部显式形式；跨过统一运行时接缝前必须解析为 Page。
  */
 export interface PageDocument extends Omit<Page, 'dataSources'> {
+  /** 仅兼容旧文档输入；normalizePageDocument 写出删除此字段，运行态 Page 不含它。 */
+  layoutForm?: PageLayoutForm;
   dataSources: PageDataSourcesDocument;
 }

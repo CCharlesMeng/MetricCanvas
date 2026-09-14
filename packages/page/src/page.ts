@@ -200,8 +200,6 @@ export interface Page {
   meta?: PageMeta;
   /** 页面布局形态；缺省等价于 `report`。 */
   layout?: PageLayoutForm;
-  /** @deprecated 仅旧文档输入兼容；规范化输出使用 layout。 */
-  layoutForm?: PageLayoutForm;
   /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
   dashboardToolbar?: DashboardToolbar;
   /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */

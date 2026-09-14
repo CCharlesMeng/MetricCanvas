@@ -2,9 +2,9 @@
   "case": "category-swatches-without-pie",
   "invariant": "category-swatches-need-pie",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "composite-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "dashboardToolbar": {
       "variant": "compact",
       "readOnly": true,

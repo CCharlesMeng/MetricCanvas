@@ -2,9 +2,9 @@
   "case": "layer-inside-composite-card",
   "invariant": "layer-top-level-only",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "composite-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "dashboardToolbar": {
       "variant": "compact",
       "readOnly": true,

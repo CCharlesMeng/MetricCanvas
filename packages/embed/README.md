@@ -4,7 +4,7 @@
 
 这是渲染引擎的 JS 挂载入口，不是独立应用或自定义元素。集成应用通过 JS 地址加载并调用 `mount`；视觉呈现由引擎统一提供，集成应用不配置字体/主题。文档获取、数据网关与登录恢复等边界见[集成应用契约](../../docs/host-contract.md)。
 
-当前页面协议为 **6.0**：页面声明普通 URL 与显式动态参数，默认浏览器导航；集成应用可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
+当前页面协议为 **6.1**（读取支持6.0/6.1）：页面声明普通 URL 与显式动态参数，默认浏览器导航；集成应用可选接管。协议与旧版本迁移见 [ADR-0068](../../docs/adr/0068-plain-url-navigation-protocol.md)。
 
 构建产物：
 
@@ -27,7 +27,7 @@ pnpm --filter @metriccanvas/embed build
 <script src="./metriccanvas-runtime.global.js"></script>
 <script>
   const pageDocument = {
-    schemaVersion: '6.0',
+    schemaVersion: '6.1', layout: 'report',
     id: 'hello',
     dataSources: {},
     sections: [
@@ -130,7 +130,7 @@ interface RuntimeInput {
 
 Embed 在 Shadow DOM 中渲染页面，以隔离集成应用样式。
 
-**集成应用必须交出宽度。** 页面外框几何由页面文档的 `layoutForm` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，集成应用不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。集成应用的完整义务见 [集成应用契约](../../docs/host-contract.md)。
+**集成应用必须交出宽度。** 页面外框几何由页面文档的 `layout` 决定：声明 `dashboard` 的页面按满宽看板渲染，挂载容器的可用宽度就是页面宽度，集成应用不得再加 `max-width` 或水平内边距；`report`（缺省）自己定宽居中，对容器宽度不敏感。给定宽容器（例如门户的 1440 内容区）会让看板页在里面被裁掉，运行时检测不到这件事。集成应用的完整义务见 [集成应用契约](../../docs/host-contract.md)。
 
 ## 事件
 
@@ -220,3 +220,6 @@ http://127.0.0.1:4175/examples/esm.html
 | `navigation.html` | 无导航适配器；由 `/pages/ioc-project-overview` 进入，概览→清单→详情 |
 
 页面协议见 [PAGE-METADATA.md](../../PAGE-METADATA.md)。
+
+
+6.1 的布局兼容读取与存量迁移见 [迁移说明](../../docs/page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。

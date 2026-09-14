@@ -17,6 +17,6 @@ describe('validate CLI', () => {
     );
 
     expect(result.status, result.stderr).toBe(0);
-    expect(result.stdout).toContain('共 13 个页面文档,13 通过,0 失败');
+    expect(result.stdout).toContain('共 15 个页面文档,15 通过,0 失败');
   });
 });

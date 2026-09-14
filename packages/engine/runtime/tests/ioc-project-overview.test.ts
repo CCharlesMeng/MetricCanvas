@@ -28,7 +28,7 @@ describe('ioc-project-overview 骨架', () => {
   it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe('6.1');
-    expect(requiredMinorVersion(document)).toBe(0);
+    expect(requiredMinorVersion(document)).toBe(1);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {

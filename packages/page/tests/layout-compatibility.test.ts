@@ -3,17 +3,18 @@ import { describe, expect, it } from 'vitest';
 import { normalizePageDocument, parsePage, validate, canonicalizeJson } from '../src/index';
 
 const fixture = (name: string) => JSON.parse(readFileSync(new URL(`../fixtures/contract-valid/${name}.json`, import.meta.url), 'utf8'));
+const legacyBase = () => { const { layout: _layout, ...base } = fixture('inline-report'); return base; };
 
 describe('6.1 layout 兼容公开边界', () => {
   for (const schemaVersion of ['6.0', '6.1']) {
     for (const form of ['report', 'dashboard']) {
       it(`${schemaVersion} layoutForm ${form} 保持布局且只写新版`, () => {
-        const input = { ...fixture('inline-report'), schemaVersion, layoutForm: form };
+        const input = { ...legacyBase(), schemaVersion, layoutForm: form };
         const before = canonicalizeJson(input);
         const result = normalizePageDocument(input);
         expect(result.ok).toBe(true);
         if (!result.ok) throw new Error(JSON.stringify(result.errors));
-        expect(result.document).toEqual({ ...fixture('inline-report'), schemaVersion: '6.1', layout: form });
+        expect(result.document).toEqual({ ...legacyBase(), schemaVersion: '6.1', layout: form });
         expect(parsePage(input)).toEqual(parsePage(result.document));
         expect(normalizePageDocument(result.document)).toEqual(result);
         expect(canonicalizeJson(input)).toBe(before);
@@ -21,7 +22,7 @@ describe('6.1 layout 兼容公开边界', () => {
       });
     }
     it(`${schemaVersion} 缺省布局规范化为 report`, () => {
-      const result = normalizePageDocument({ ...fixture('inline-report'), schemaVersion });
+      const result = normalizePageDocument({ ...legacyBase(), schemaVersion });
       expect(result).toMatchObject({ ok: true, document: { schemaVersion: '6.1', layout: 'report' } });
     });
   }

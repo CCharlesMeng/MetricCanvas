@@ -1,11 +1,11 @@
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
   "id": "ioc-opportunity-analysis",
   "meta": {
     "title": "机会点数",
     "description": "合成演示数据，非生产口径；首版筛选尚未接入查询。"
   },
-  "layoutForm": "dashboard",
+  "layout": "dashboard",
   "dashboardToolbar": {
     "variant": "compact",
     "readOnly": true,

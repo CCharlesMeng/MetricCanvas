@@ -2,9 +2,9 @@
   "case": "backdrop-in-card-container",
   "invariant": "backdrop-container-plain",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "composite-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "dashboardToolbar": {
       "variant": "compact",
       "readOnly": true,

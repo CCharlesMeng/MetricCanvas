@@ -2,9 +2,9 @@
   "case": "composite-card-nested-container",
   "invariant": "composite-card-pure-container",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "composite-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "dashboardToolbar": {
       "variant": "compact",
       "readOnly": true,

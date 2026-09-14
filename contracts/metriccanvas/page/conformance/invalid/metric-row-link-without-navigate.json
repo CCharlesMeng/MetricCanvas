@@ -2,9 +2,9 @@
   "case": "metric-row-link-without-navigate",
   "invariant": "metric-row-link-needs-navigate",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "composite-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "dashboardToolbar": {
       "variant": "compact",
       "readOnly": true,

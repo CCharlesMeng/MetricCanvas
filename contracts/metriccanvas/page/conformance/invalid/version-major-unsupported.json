@@ -3,6 +3,7 @@
   "invariant": "schema-version-supported",
   "input": {
     "schemaVersion": "4.0",
+    "layout": "report",
     "id": "query-dashboard",
     "dataSources": {
       "sales": {
