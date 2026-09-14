@@ -173,3 +173,15 @@ describe('静态平台页面资产客户端', () => {
     await expect(failed.listPages()).rejects.toMatchObject({ code: 'E42', message: '服务拒绝' });
   });
 });
+
+it('rejects malformed CommonRsp and sends an explicit resource ID without rediscovering latest', async () => {
+  installRuntimeConfig(config);
+  const malformed = createPageAssetsClient({ fetchImpl: async () => Response.json({ ...providerRevision, retCode: 0 }) });
+  await expect(malformed.getLatest('report')).rejects.toMatchObject({ code: 'PAGE_ASSETS_RESPONSE_ERROR' });
+  const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(Response.json(providerRevision));
+  const client = createPageAssetsClient({ fetchImpl });
+  await client.saveRevision('report', { ...command, baseRevisionId: 'rev-0', resourceId: 'metadata-exact' });
+  expect(fetchImpl).toHaveBeenCalledTimes(1);
+  expect(String(fetchImpl.mock.calls[0][0])).toContain('/user-page-metadata/metadata-exact');
+  expect(fetchImpl.mock.calls[0][1]?.method).toBe('PUT');
+});

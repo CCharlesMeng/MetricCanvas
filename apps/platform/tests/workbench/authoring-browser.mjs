@@ -47,6 +47,53 @@ try {
       await expect(page.getByLabel('盘古对话模块').getByText(/SDK fixture/)).toBeVisible();
     }
   }
+  const manual = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+  manual.on('pageerror', (error) => errors.push(error.message));
+  await manual.addInitScript(() => {
+    window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageAssetsBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'alice', workspaceId: 'workspace' };
+  });
+  let stored = { schemaVersion: '6.0', layoutForm: 'report', id: 'manual-page', dataSources: {}, sections: [{ id: 's', title: '页面', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: '固定内容' } }] }] };
+  let revision = 1, writes = 0, fail = false;
+  const response = () => ({ retCode: '0', page_metadata_id: 'metadata-7', page_id: 'manual-page', revision_id: `r${revision}`, revision_number: revision, page_metadata_definition: JSON.stringify(stored) });
+  await manual.route('**/fixture-assets/user-page-metadata**', async (route) => {
+    const request = route.request();
+    if (request.method() === 'PUT') {
+      writes++;
+      const body = request.postDataJSON();
+      expect(request.url()).toContain('/metadata-7'); expect(body.base_revision_id).toBe(`r${revision}`);
+      expect(body.page_metadata_definition.schemaVersion).toBe('6.1'); expect(body.page_metadata_definition.layout).toBe('report');
+      expect(body.page_metadata_definition.layoutForm).toBeUndefined();
+      expect(body.idempotencyKey).toBeUndefined();
+      if (fail) { await route.abort(); return; }
+      await new Promise((resolve) => setTimeout(resolve, 200));
+      stored = body.page_metadata_definition; revision++;
+    }
+    await route.fulfill({ json: request.url().includes('?') ? { retCode: '0', total: 1, page_metadata_list: [response()] } : response() });
+  });
+  await manual.goto(`${root}/?page=manual-page`);
+  const inspector = manual.getByRole('complementary', { name: '检查器' });
+  await inspector.getByRole('button', { name: /原标题/ }).click();
+  await inspector.getByLabel('组件标题').fill('手工改名');
+  await inspector.getByLabel('组件标题').press('Tab');
+  await manual.getByRole('button', { name: '保存新修订', exact: true }).click();
+  await expect(manual.getByRole('button', { name: '保存中…' })).toBeDisabled();
+  await expect(manual.getByText('已保存修订 R2')).toBeVisible(); expect(writes).toBe(1);
+  await manual.getByRole('button', { name: '精确修订预览' }).click();
+  await expect(manual.getByLabel('精确修订预览 r2').getByText('手工改名')).toBeVisible();
+  await manual.screenshot({ path: '/private/tmp/metriccanvas-s1-evidence/t02-preview.png' });
+  await manual.getByRole('button', { name: '精确修订预览' }).click();
+  await inspector.getByLabel('组件标题').fill('离线保留'); await inspector.getByLabel('组件标题').press('Tab');
+  fail = true;
+  await manual.getByRole('button', { name: '保存新修订', exact: true }).click();
+  await expect(manual.getByText(/保存结果未确定，已暂停再次保存/)).toBeVisible();
+  await expect(manual.getByRole('button', { name: '保存新修订', exact: true })).toBeDisabled();
+  await expect(manual.getByRole('main', { name: '页面画布', exact: true }).getByText('离线保留')).toBeVisible();
+  expect(writes).toBe(2);
+  await manual.screenshot({ path: '/private/tmp/metriccanvas-s1-evidence/t02-unknown.png' });
+  await manual.goto(`${root}/manage/pages/manual-page`);
+  await expect(manual.getByText(/尚未开放历史修订读取/)).toBeVisible();
+  await manual.close();
+  console.log('T02 browser PASS: open legacy, manual edit, one PUT, exact preview, unknown blocks resend/preserves local, history unavailable.');
   expect(errors).toEqual([]);
   console.log('T01 browser PASS: standalone, embedded, failure/invalid/late preservation, shell, SDK v1→v2, destroy.');
 } finally { await browser.close(); }

@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
-  import { pageAssets } from '$lib/page-assets';
+  import { pageAuthoringPort } from '$lib/page-assets';
+  import { createAuthoringCoordinator, type AuthoringPort, type DraftRef } from './workbench/authoring-coordinator';
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { createWorkbenchDqeGateway } from './workbench/data-gateway';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
-    changeComponentType, componentCandidatesFor, createCanvasAuthoringDraft,
+    changeComponentType, componentCandidatesFor,
     editComponent, locatorOfComponent, moveComponent,
-    type ComponentLocator, type CanvasAuthoringDraft, type DocumentEditResult
+    type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
@@ -16,57 +17,57 @@
   import PanguDialogue from './dialogue/PanguDialogue.svelte';
   import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
   import { readRuntimeConfig } from './runtime-config';
-  let { dialogueAdapter, readSavedDraft = unavailableDraftReader }: {
-    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft;
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort }: {
+    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort;
   } = $props();
-  let workbenchEpoch = 0;
-
-  let currentDraft = $state<CanvasAuthoringDraft | null>(null);
-  let baseRevisionId = $state<string | null>(null);
-  let savePending = $state(false);
-  let loading = $state(false);
-  let saveNotice = $state('');
+  const coordinator = untrack(() => createAuthoringCoordinator({
+    port: {
+      ...authoringPort,
+      capabilities: { ...authoringPort.capabilities, exactDraftRead: !!readSavedDraft || authoringPort.capabilities.exactDraftRead },
+      readSavedDraft: readSavedDraft ?? authoringPort.readSavedDraft ?? unavailableDraftReader
+    },
+    identity: () => {
+      const config = readRuntimeConfig();
+      return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
+    }
+  }));
+  let authoring = $state(coordinator.snapshot());
+  const currentDraft = $derived(authoring.draft);
+  const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
+  const savePending = $derived(authoring.save?.status === 'pending');
+  const saveBlocked = $derived(savePending || authoring.save?.status === 'unknown' ||
+    (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
+  const loading = $derived(authoring.loading);
+  const saveNotice = $derived(authoring.save?.status === 'saved' ? `已保存修订 R${authoring.save.revision.revisionNumber}` : '');
   let saveError = $state('');
   let editError = $state('');
   let metadataOpen = $state(false);
   let previewOpen = $state(false);
+  let previewRef = $state<DraftRef | null>(null);
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let selectedComponent = $state<ComponentLocator | null>(null);
   const dataGateway = createWorkbenchDqeGateway();
 
-  // 已保存页面通过页面资产客户端进入工作台，不依赖旧分析会话检查点。
+  // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
+    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
     const pageId = new URLSearchParams(window.location.search).get('page');
-    if (pageId) void loadPage(pageId);
-    return listenForSavedDrafts({
-      target: window, read: readSavedDraft,
+    if (pageId) void coordinator.load(pageId);
+    const stop = listenForSavedDrafts({
+      target: window, read: coordinator.readSavedDraft,
       captureIdentity: () => {
         const identity = readRuntimeConfig();
         return JSON.stringify([identity?.operatorId, identity?.workspaceId]);
       },
-      captureScope: () => {
-        const identity = readRuntimeConfig();
-        return `${workbenchEpoch}:${identity?.operatorId}:${identity?.workspaceId}`;
-      },
+      captureScope: coordinator.scope,
       onpage: (draft) => {
-        if (replaceCurrentDocument({ ...draft.document })) baseRevisionId = draft.ref.revisionId;
+        if (coordinator.acceptSavedDraft(draft)) { previewOpen = false; saveError = ''; relocateSelection(); }
       },
       onerror: (message) => { saveError = message; }
     });
+    return () => { stop(); unsubscribe(); coordinator.dispose(); };
   });
 
-  async function loadPage(pageId: string) {
-    workbenchEpoch += 1;
-    loading = true;
-    try {
-      const revision = await pageAssets.getLatest(pageId);
-      if (replaceCurrentDocument({ ...revision.document })) baseRevisionId = revision.revisionId;
-    } catch (cause) {
-      saveError = cause instanceof Error ? cause.message : String(cause);
-    } finally {
-      loading = false;
-    }
-  }
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const pageModel = $derived(
@@ -132,61 +133,19 @@
   });
 
   async function saveRevision() {
-    if (!currentDocument || !pageModel || pageModel.transient || savePending) return;
-    workbenchEpoch += 1;
-    savePending = true;
+    if (!currentDocument || !pageModel || pageModel.transient || saveBlocked) return;
     saveError = '';
-    try {
-      const revision = await pageAssets.saveRevision(pageModel.pageId, {
-        baseRevisionId,
-        document: currentDocument,
-        idempotencyKey: crypto.randomUUID(),
-        pageIdConfirmed: true
-      });
-      baseRevisionId = revision.revisionId;
-      saveNotice =
-        `已保存修订 R${revision.revisionNumber}，数据上下文版本：` +
-        `${revision.dataContextVersion ?? '未记录'}`;
-    } catch (cause) {
-      saveError = cause instanceof Error ? cause.message : String(cause);
-    } finally {
-      savePending = false;
-    }
+    await coordinator.save();
   }
 
-  /** 文档替换后按组件 id 重定位选中项；组件已消失则清除检查器上下文。 */
-  function replaceCurrentDocument(document: Record<string, unknown>): boolean {
-    const result = createCanvasAuthoringDraft(document);
-    if (!result.ok) {
-      editError = result.message;
-      return false;
-    }
-    workbenchEpoch += 1;
-    currentDraft = result.draft;
-    if (selectedComponent) {
-      selectedComponent = locatorOfComponent(
-        result.draft.canvasDocument,
-        selectedComponent.componentId
-      );
-    }
-    editError = '';
-    return true;
+  function relocateSelection() {
+    if (selectedComponent && currentDraft) selectedComponent = locatorOfComponent(currentDraft.canvasDocument, selectedComponent.componentId);
   }
 
   function applyDocumentEdit(result: DocumentEditResult) {
     if (result.ok) {
-      workbenchEpoch += 1;
-    currentDraft = result.draft;
-      if (selectedComponent) {
-        selectedComponent = locatorOfComponent(
-          result.draft.canvasDocument,
-          selectedComponent.componentId
-        );
-      }
-      editError = '';
-    } else {
-      editError = result.message;
-    }
+      if (coordinator.replaceDraft(result.draft)) { relocateSelection(); editError = ''; }
+    } else editError = result.message;
   }
 
   /** 画布创作意图分发:选中进检查器,重排与标题/宽度编辑走本地文档改写。 */
@@ -241,7 +200,7 @@
       <strong class="canvas-title">页面画布</strong>
       {#if pageModel}
         <span class="badge" class:transient={pageModel.transient}>
-          {pageModel.transient ? '临时页面态' : '未保存工作副本'}
+          {pageModel.transient ? '临时页面态' : authoring.dirty ? '未保存工作副本' : '已保存页面修订'}
         </span>
         {#if pageModel.adHocFormulas.length > 0}
           <!-- 临时指标与已定义指标视觉可区分(ADR-0036、#67):文档含现场
@@ -259,7 +218,7 @@
     </div>
     <div class="r" data-testid="document-actions">
       {#if baseRevisionId}
-        <button class="btn" onclick={() => (previewOpen = !previewOpen)}>精确修订预览</button>
+        <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>精确修订预览</button>
       {/if}
       <button
         type="button"
@@ -273,7 +232,7 @@
         查看元数据
       </button>
       {#if pageModel && !pageModel.transient}
-        <button type="button" class="btn" disabled={savePending} onclick={saveRevision}>
+        <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
           {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
         </button>
       {/if}
@@ -287,13 +246,16 @@
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
-    {#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
+    {#if saveError || authoring.error}<p class="error" role="alert">{saveError || authoring.error}</p>{/if}
+    {#if authoring.save?.status === 'unknown'}<p class="error" role="alert">保存结果未确定，已暂停再次保存。{authoring.save.message} 工作副本仅在本页内存中，尚无浏览器恢复保护。</p>{/if}
+    {#if authoring.save?.status === 'rejected'}<p class="error" role="alert">{authoring.save.code}：{authoring.save.message}</p>{/if}
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
-      {#if previewOpen && pageModel && baseRevisionId}
+      {#if previewOpen && previewRef}
         <p class="notice">正在预览已保存修订；再次点击“精确修订预览”返回工作副本。</p>
-        <RevisionPreview pageId={pageModel.pageId} revisionId={baseRevisionId} />
+        <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
+          readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />
       {:else if currentDocument}
         <MetricCanvas
           document={currentDocument}

@@ -10,6 +10,7 @@ const PAGE_SIZE = 1000;
 const HISTORY_UNAVAILABLE = '当前页面资产接口只支持目录与当前修订，尚未开放历史修订读取。';
 
 export interface PageRevision {
+  resourceId?: string;
   pageId: string;
   revisionId: string;
   revisionNumber: number;
@@ -29,6 +30,7 @@ export interface PageListItem {
 }
 
 export interface SavePageRevision {
+  resourceId?: string;
   baseRevisionId: string | null;
   document: PageDocument | Record<string, unknown>;
   idempotencyKey: string;
@@ -110,7 +112,10 @@ export function createPageAssetsClient({
     if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
       throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产返回无效响应', response.status);
     }
-    if (typeof payload.retCode === 'string' && payload.retCode !== '0') {
+    if (typeof payload.retCode !== 'string') {
+      throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产返回缺少 retCode', response.status);
+    }
+    if (payload.retCode !== '0') {
       throw providerError(payload, response.status);
     }
     return payload;
@@ -221,7 +226,7 @@ export function createPageAssetsClient({
         });
         return revisionOf(payload, null);
       }
-      const { metadataId } = await findRecord(pageId, config);
+      const metadataId = command.resourceId ?? (await findRecord(pageId, config)).metadataId;
       const payload = await request(
         'PUT',
         `${collection}/${encodeURIComponent(metadataId)}`,
@@ -243,6 +248,7 @@ function revisionOf(
   baseRevisionId: string | null
 ): PageRevision {
   return {
+    resourceId: requiredString(payload.page_metadata_id, 'page_metadata_id'),
     pageId: requiredString(payload.page_id, 'page_id'),
     revisionId: requiredString(payload.revision_id, 'revision_id'),
     revisionNumber: providerRevisionNumber(payload),

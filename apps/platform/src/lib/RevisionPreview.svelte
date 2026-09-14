@@ -4,7 +4,10 @@
   import { createInjectedDqeGateway } from './runtime-config';
   import { pageAssets } from './page-assets';
 
-  let { pageId, revisionId }: { pageId: string; revisionId: string } = $props();
+  let { pageId, revisionId, readRevision = pageAssets.getRevision }: {
+    pageId: string; revisionId: string;
+    readRevision?: (pageId: string, revisionId: string, signal?: AbortSignal) => Promise<PageRevision>;
+  } = $props();
   let revision = $state<PageRevision | null>(null);
   let error = $state('');
   let retry = $state(0);
@@ -15,7 +18,7 @@
     const controller = new AbortController();
     revision = null;
     error = '';
-    void pageAssets.getRevision(pageId, revisionId, controller.signal).then(
+    void readRevision(pageId, revisionId, controller.signal).then(
       (loaded) => { if (!controller.signal.aborted) revision = loaded; },
       (cause: unknown) => {
         if (!controller.signal.aborted) error = cause instanceof Error ? cause.message : String(cause);

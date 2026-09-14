@@ -17,7 +17,7 @@
   });
 </script>
 {#if dev && fixture}
-  <div class="demo">
+  <div class="dialogue-lab">
     <label><input type="checkbox" bind:checked={embedded} />嵌入工作台</label>
     <p role="status">受控替身结果：{result}</p>
     {#if embedded}
@@ -29,4 +29,4 @@
 {:else}
   <p>独立对话验收入口仅供开发环境使用。</p>
 {/if}
-<style>.demo { height: 100%; display: flex; flex-direction: column; } label, p { padding: 8px; margin: 0; }</style>
+<style>.dialogue-lab { height: 100%; display: flex; flex-direction: column; } label, p { padding: 8px; margin: 0; }</style>
