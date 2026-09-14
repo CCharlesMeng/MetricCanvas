@@ -4,7 +4,7 @@
 
 ## 唯一基线与开工
 
-最终产品组合为 `a79187e3c7c533b773b376bf69b604db78dd373f`，包含在线main `640dd2aa435a45b50b1954967054c136468a473d`、生命周期、双Skill、语言引用交接与发布界面/工具。实际消费应取包含本页及最新 [coordination.md](../coordination.md) 的S0正式提交SHA。集成树 `/private/tmp/metriccanvas-126-integration`，分支 `codex/authoring-126-integration`。
+最终产品组合为 `b4868fccafb529fff2c194511d7f413333723b57`，包含在线main `640dd2aa435a45b50b1954967054c136468a473d`、生命周期、双Skill、语言引用交接与发布界面/工具。实际消费应取包含本页及最新 [coordination.md](../coordination.md) 的S0正式提交SHA。集成树 `/private/tmp/metriccanvas-126-integration`，分支 `codex/authoring-126-integration`。
 
 先读 [common.md](common.md)、[development-plan.md](../development-plan.md)、执行仓AGENTS/CONTEXT/ADR及负责Issue完整正文与最新评论。继续独立worktree，原工作区及其他任务改动保持；不用旧#127/九票交付分支起跑。不新建任务。所有权只由S0台账登记，生成物只由S2统一生成。
 
@@ -17,7 +17,7 @@
 | S2 | 01a09f69-a06b-7703-b87b-ccdfe05d765e | 公共作者/参考投影/锁唯一维护；最终组合生成与回归支援 |
 | S3 | 01a09f69-d2b5-71b0-ba93-c7cc183d4ee2 | 内容与双Skill本仓已交验；真实模型14用例待环境后执行 |
 | S4 | 01a0a034-68fb-79e1-bfe3-cf7d3ab15d38 | 生命周期/发布工具已交验；处理具体外部消费适配缺口 |
-| S5 | 01a0a034-c4c3-7033-af2b-2539d6d9e0ae | 已接runtime.ts/PanguDialogue.svelte，基础SDK适配与专属测试进行中 |
+| S5 | 01a0a034-c4c3-7033-af2b-2539d6d9e0ae | 基础适配与专属测试已验收；真实SDK与内网输入待提供 |
 
 S5只维护台账分配的两文件及pangu-runtime.test.ts/证据，port.ts与工作台仍S1。已合main的attachDialogue负责adapter替换/异步卸载，不重做CI成果。真实SDK地址/固定版本和内网入口缺失时只做可证实的本仓适配；新增文件先登记。用户定案保持：window全局事件 `metriccanvas:draft-saved` 的detail仅 `{draftId}`，部署注入 `window.__METRICCANVAS_PANGU__={resourceUrl,version}`；凭据只在运行内存。SDK、适配、环境资源配置分离。draftId不等于页面/修订/资源标识。
 
@@ -25,7 +25,7 @@ S5只维护台账分配的两文件及pangu-runtime.test.ts/证据，port.ts与�
 
 - M0：已通过。
 - M1：本仓公开内容/生命周期组合已覆盖修改→保存→只传引用→精确读回及断网/失败/取消；真实模型/Relay链路未验证，不声称真实创作端到端完成。
-- M2：20票及双Skill/布局/手册已有本仓证据。尚需最新main与最终S5产物合流后的完整交付回归；双Skill真实模型评测14项全部not_run，不能用确定性工具测试顶替。
+- M2：20票及双Skill/布局/手册已有本仓证据。最新main与S5已合流，S2正在固定b4868fc执行完整交付回归；双Skill真实模型评测14项全部not_run，不能用确定性工具测试顶替。
 - M3：待真实SDK/Java/Relay/DQE、内网部署与#103/#104原执行线消费、上游更新后重集成。没有对应环境就明确等待，不重复本地替身充数。
 
 真实联调最小输入见 [S5证据缺口](../s5-pangu-evidence.md)：SDK resourceUrl/version/访问入口；用户身份与失效机制；双Skill真实注册路由；draftId鉴权精确解析及operation/run/source关联；强保存/操作查询/原文算法/历史；人工确认与租约事务。模型评测还需模型版本/参数、可导出trace与基线产物通道、账户及预算约束。不要联系外部提供方或编造已确认能力。
