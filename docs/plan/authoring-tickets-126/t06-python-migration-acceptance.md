@@ -1,6 +1,6 @@
 # T06 / #132 Python 布局迁移调查与验收设计
 
-2026-09-14，S3。状态：调查完成，迁移未实施；等待 S0 发布 #129 已验收集成 SHA，不等待 M0。本文不冻结产品版本或兼容策略。
+2026-09-14，S3。状态：Python 作者实现与 S2 生成契约成套复验通过，提交 S0 验收集成。下文调查部分保留开工时事实，实际实施与最终证据见末尾；本文不另行冻结产品版本或兼容策略。
 
 ## 登记与范围
 
@@ -90,3 +90,40 @@ PYTHONDONTWRITEBYTECODE=1 /Users/moon/Documents/Code/公司项目/DataDashboard/
 等待 S0 的 #129 已验收集成 SHA、版本契约及证据。收到后读取 #129/#132 最新评论，确认该 SHA 包含契约与生成快照，再合入本分支并运行针对性兼容检查；按矩阵完成 Python 作者代码。S3 提交代码后由 S2 从唯一作者源刷新涉及作者文件的 Bundle 锁并交 S0 验收集成，不能由 S3 手工补摘要。
 
 最终回执包含本次基线/提交 SHA、逐文件差异、精确版本、矩阵对应测试结果、产品校验结果、外部状态和回退方式，回写 #132 并交 S0/S2 解锁 #133。当前仅文档调查提交可单独撤销，不影响产品运行；实现阶段回退须由 S0 协调消费者与生成快照成套回退。
+
+## #129 放行后的实施记录
+
+- S0 放行基线：`32d0e08976b443aed69d18922f12da051470fbc6`，已合入本工作树。最新 #129 评论与 `t03-layout-compatibility.md` / `t03-evidence.md` 已核对。
+- 作者提交：`479bf25dd68d22470cd45663ae075c6c18e5a39f`。准确六文件：上述 page_building.py、page_validation.py、test_build_page.py、test_component_building.py、test_page_validation.py、test_stdio.py。没有修改应用用例、注册器或新增模块。
+- 新增公开 Python `normalize_page_document(value)`：成功返回 `{ok: true, document, errors: []}`，失败仅返回 `{ok: false, errors}`；完整校验通过后深复制，读取现有 contract-lock 当前版本，转换顶层 layout。源文档、参数引用、分组字段、原始行与嵌套手工设置保留。调用方先核验持久化原文 hash。
+- `validate_page_document` 补齐 6.0 + layout 能力下限及双字段拒绝，仍使用产品 Schema 枚举限制支持版本；同一 6.0 双字段输入同时报告两个错误。
+- 构造器显式写出 layout: report，版本仍由现有 Bundle 锁提供；组件占位不变。没有增加布局选择业务能力、内容编辑 MCP 或改普通问数保存语义。
+
+### 已执行证据
+
+| 验收项 | 实际结果 |
+|---|---|
+| 迁移前差距复现 | 合入 #129 后运行 test_page_validation.py，精确复现 layout-before-6.1、layout-dual-equal、layout-dual-conflict 三项失败 |
+| P03/P04/P05/P06 | 修改后该文件 5 项测试通过，包含全部32项共享矩阵、全部共享正反例、规范化完整文档等价、幂等、输入及嵌套内容不变、非法文档不返回产物；pending 仍为空 |
+| P02 | test_component_building.py 通过，既有十类组件分别形成 report/dashboard 完整6.1页面并校验；reportHeader与查询装配沿原build/compose用例回归 |
+| P01/P07 | 全量156项测试中公开stdio用例通过，检查6.1/layout产物、可信信封与模型摘要隔离、无savedRevision、失败无产物；保存兼容路径仍保留原语义 |
+| P06 产品校验 | 将1份compose查询产物和13份共享合法文档经Python规范化输出到临时目录，以本树 `packages/page/src/validate-cli.ts` 校验：14/14通过；复用依赖只创建临时node_modules软链接，运行后已移除 |
+| P08 独立安装 | `uv build --sdist` 后以 `uv pip install --no-deps --target` 安装到独立临时目录；离开仓根以Python隔离模式运行32/32矩阵通过，运行契约路径确认为安装包 `_bundle/contract-snapshot`，未修改共享虚拟环境 |
+
+首次全量运行156项仅剩2项共享构造期望差异：build/compose预期文档仍为6.0且没有layout，实际产物已为6.1/layout。S2负责从冻结历史期望经产品公开规范化派生当前期望，保留历史来源与业务字段，不以Python输出重写黄金答案。S3未改快照、导出生成器或锁；最终全绿记录待其独立生成提交后补充。
+
+本轮未回写GitHub评论：自动审批因拟发布本地路径、任务ID及内部协作信息拒绝，已向用户说明并请求许可，S0已知悉且不代发。仓内与协作任务证据继续交付；#132不由S3关闭。真实Java/Relay/DQE联调未执行，使用既有受控替身。
+
+### 最终组合验收
+
+S2 生成源提交 `4f6be5f5a33e41385d4dabbb96e67b7a5d885062` 已单独 cherry-pick，实际验证组合 SHA 为 `1a185463a5357ce5b47fb5479f9f0cc3c99bec3c`。其准确五文件为 `tools/scripts/export-authoring-contracts.ts` 及 Bundle 内的 `bundle.lock.json`、`contract-lock.json`、`contracts/manifest.json`、`contracts/exported/build-page-conformance.json`。未包含 #131 实现，没有重复合入作者代码。本文最终记录随后单独提交，不改变已验证产品树。
+
+- 全量 Python：`python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'`，156项全部通过，0失败、0错误；完整日志 `/private/tmp/s3-132-final-tests.log`。包含stdio真实进程边界与本机HTTP替身，执行时允许本机端口。
+- 产品与生成：`node --import tsx tools/scripts/export-authoring-contracts.ts --check`，190 product / 4 authoring / 1 interface均无漂移；`check_bundle.py`，474摘要全过。S3只运行check，不生成。
+- 组合树再次以公开产品CLI验证 `/private/tmp/s3-132-product-pages`：14/14通过。页面为当前Python生成/规范化结果；其中代表性查询产物来源于compose及受控DQE替身。
+- 从组合树重新构建 `/private/tmp/s3-132-final-dist/metriccanvas_authoring-0.2.0.tar.gz` 并安装至 `/private/tmp/s3-132-final-installed`，离开仓根、Python `-I` 模式运行全部32矩阵再次通过，运行资产确认来自随包 `_bundle`。测试矩阵仅作为外部测试输入读取，不是运行时依赖。
+- `git diff --check`通过；临时node_modules软链接已移除；产品快照/锁均来自S2提交。此前2项共享期望差异已归零。
+
+P01–P08对应证据齐全，本仓范围可验收；正式集成与下游放行由S0裁决。可解锁 #133 的Python部分，仍须同时满足 #131。未实现 #134、参数新语法、额外组件、Java/Relay服务或真实环境联调。
+
+回退：作者提交与S2生成提交成套逆向撤销，避免保留不匹配的Bundle锁或黄金期望；6.0原始文档未改写。若已经产生6.1修订，继续保留#129的双版本读取，不退回仅支持6.0的消费者。业务保存/发布及原始hash检查仍由原调用方负责。
