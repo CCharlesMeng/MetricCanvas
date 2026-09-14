@@ -203,3 +203,5 @@ S2 #131 另登记：`packages/embed/examples/inline.html`、`esm.html`、`query.
 S3 已消费 `32d0e08976b443aed69d18922f12da051470fbc6`，提交 `479bf25dd68d22470cd45663ae075c6c18e5a39f`，仅 6 个已登记 Python 文件；S0 已核对文件统计与 diff check。S3 回报三项语义差距修复、32 项矩阵/全量正反向量/10 组件×2布局通过；156 项全量仍有 2 项共享 expected.document 为 6.0 的差异。以上是进行中回执，非整票验收。
 
 S2 负责从此精确作者提交更新共享构造向量作者源、生成物及锁，必须单独提交、不混 #131；S0 已向 S2/S3 发成套交付要求。S3 继续代表性产物产品校验和独立交付，等待生成提交后验证剩余差异归零并提供整票回执。作者提交当前未集成，不解锁 #133。
+
+S2 生成隔离登记：从 `32d0e089` 建立 `/private/tmp/metriccanvas-126-s2-contracts`、`codex/s2-132-contracts`，消费 S3 精确作者提交后，单独修改 `tools/scripts/export-authoring-contracts.ts` 的当前 6.1 派生及生成物/锁；保留 `tools/fixtures/legacy-contracts` 历史源。生成提交交 S3 复验后与作者代码成套交 S0，不代表 #133 开工。S2 主 #131 工作树仍为 `/private/tmp/metriccanvas-126-s2`，工作分支更新为 `codex/s2-browser-layout-131`，基线 `32d0e089`；上述为角色回执，成套验收时复核实际树与提交。
