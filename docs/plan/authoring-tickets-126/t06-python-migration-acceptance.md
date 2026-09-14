@@ -51,6 +51,10 @@ docs/plan/authoring-tickets-126/t06-python-migration-acceptance.md
 
 S2 本轮消息给出的待集成方案：增量 6.1，继续接受 6.0；6.0 使用 layout 拒绝；6.0/6.1 单独 layoutForm 可读；任何双字段（含同值）拒绝；缺省 report；规范写出为 6.1 + layout。此消息尚未替代 S0 验收 SHA。Python 消费无已知方向性阻碍，但须补能力下限/双字段检查，并保留完整文档中的文本引用、分组字段、DQE 原始 initial，不能把物化结果反写为新基线。
 
+S2 随后提供待验收向量（已从其独立工作树只读核对）：`layout-before-6.1`、`layout-dual-equal`、`layout-dual-conflict`、`layout-invalid-value`，以及正例 `layout-6.1-report` / `layout-6.1-dashboard`。错误均为 SCHEMA_ERROR：6.0 + layout 对应 `/layout`；双字段对应 `/layoutForm`；非法 layout 对应 `/layout`；未知版本对应 `/schemaVersion`。S2 指定 6.0 双字段合法值同时报告 `/layout` 与 `/layoutForm`，实现时需覆盖完整错误集合。
+
+不新增独立版本资产：读取版本范围来自 Schema 的 schemaVersion 枚举，写出版本来自 contract-lock。规范化仅在完整原文校验成功后复制原文、提升版本到 6.1、删除 layoutForm，并依次从 layout、layoutForm、report 确定布局形态；不需要为此调整 sdist 资产清单。上述仍为待 S0 验收集成输入，不代表 #129 或 #132 已通过。
+
 所有“按契约”预期均在 #129 集成后替换为精确版本、向量名和错误键，不提前自定策略。
 
 | ID / #132 条件 | 输入与公开入口 | 必须观察到的结果 | 证据归属 |
