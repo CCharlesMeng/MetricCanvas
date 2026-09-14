@@ -28,7 +28,7 @@ it.each(['report', 'dashboard'])('CLI追加迁移%s且原文不变，重复规�
   }
 });
 
-it.each(['7.0', '6.2', 'bad'])('CLI拒绝%s且不留下输出', (schemaVersion) => {
+it.each(['7.0', '6.3', 'bad'])('CLI拒绝%s且不留下输出', (schemaVersion) => {
   const input = join(dir, `bad-${schemaVersion}.json`);
   const output = join(dir, `bad-${schemaVersion}-output.json`);
   writeFileSync(input, JSON.stringify({ schemaVersion }));

@@ -1,6 +1,6 @@
 {
-  "productContractVersion": "1.0.0-rc.2",
-  "pageSchemaVersion": "6.1",
+  "productContractVersion": "1.0.0-rc.3",
+  "pageSchemaVersion": "6.2",
   "source": "TypeScript/Zod single-way export",
   "files": [
     {
@@ -673,11 +673,11 @@
     },
     {
       "file": "page/conformance/invalid/version-major-unsupported.json",
-      "sha256": "6ae0e01d5bd3cc7f04a6eff254983d406015769e5697573dfaebd20794313554"
+      "sha256": "5625cc8ad0dc54ab7dd2f4abf72cc6085a872c48a1720a87fbe1a25b9c5b1383"
     },
     {
       "file": "page/conformance/invalid/version-minor-ahead.json",
-      "sha256": "0c204aba8fd0339211677231a6993d8361f5f1ca4583d755f2288f7407165f3c"
+      "sha256": "375e184c7381810c958b04f0c463d2fbaf4f1b0eca6564d5f936315bd471fa21"
     },
     {
       "file": "page/conformance/invalid/write-filter-non-dimension.json",
@@ -693,7 +693,11 @@
     },
     {
       "file": "page/conformance/layout-compatibility.json",
-      "sha256": "c1748a0b0db9f94a89ed5f72756e1835daa028791f661d6b1b28a2ad6bdefe2e"
+      "sha256": "769e8e8a555f9f9f9486ad857b72a07413a9fcef77eb21459e5aaf16ea15ad84"
+    },
+    {
+      "file": "page/conformance/param-bindings.json",
+      "sha256": "74f887ebcd411e1643899fb9cfc235432e03206df51dda33b59d9c489381d9b6"
     },
     {
       "file": "page/conformance/valid/composite-page.json",
@@ -702,6 +706,10 @@
     {
       "file": "page/conformance/valid/compute-page.json",
       "sha256": "34bb5cbd927f0d7196c9f79a665a96a18007c028ca30a5695ad23039f1c395a2"
+    },
+    {
+      "file": "page/conformance/valid/dimension-params-page.json",
+      "sha256": "caf7b330cddad9ff109ce43d535516c011ec13024f1d34dcdb2e764f00ab0aae"
     },
     {
       "file": "page/conformance/valid/filters-page.json",
@@ -761,7 +769,7 @@
     },
     {
       "file": "page/schema.json",
-      "sha256": "27b4c910bb25a993e20f9ac227d9a812e51a3651f8de86741765d76adb3f57d5"
+      "sha256": "37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399"
     },
     {
       "file": "query/error-codes.json",

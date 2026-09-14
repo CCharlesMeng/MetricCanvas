@@ -30,7 +30,7 @@ for (const mode of ['classic', 'esm'] as const) {
     expect(await page.evaluate(() => ({ events: window.queryEvents, calls: window.queryCalls })))
       .toMatchObject({
         calls: [],
-        events: [{ type: 'version-error', requiredSchemaVersion: '7.0', currentSchemaVersion: '6.1', supportedSchemaVersions: ['6.0', '6.1'] }]
+        events: [{ type: 'version-error', requiredSchemaVersion: '7.0', currentSchemaVersion: '6.2', supportedSchemaVersions: ['6.0', '6.1', '6.2'] }]
       });
     await expect(host.getByRole('table')).toHaveCount(0);
 
@@ -43,7 +43,7 @@ for (const mode of ['classic', 'esm'] as const) {
     expect(await page.evaluate(() => window.queryCalls.length)).toBeGreaterThan(0);
     expect(await page.evaluate(() => window.queryEvents.some((event) => event.type === 'ready'))).toBe(true);
 
-    for (const schemaVersion of ['6.2', '5.4']) {
+    for (const schemaVersion of ['6.3', '5.4']) {
       await page.evaluate((schemaVersion) => {
         window.queryEvents = [];
         window.queryCalls = [];

@@ -38,7 +38,7 @@ class PageContractConformanceTest(unittest.TestCase):
         matrix = json.loads(
             (CONTRACT_ROOT / "page/conformance/layout-compatibility.json").read_text()
         )
-        self.assertEqual(len(matrix["cases"]), 32)
+        self.assertEqual(len(matrix["cases"]), 40)
         for index, case in enumerate(matrix["cases"]):
             with self.subTest(case=index):
                 original = deepcopy(case["input"])
@@ -56,13 +56,28 @@ class PageContractConformanceTest(unittest.TestCase):
                         {(e["type"], e["path"]) for e in expected["errors"]},
                     )
 
+    def test_dimension_param_bindings_match_shared_contract(self) -> None:
+        matrix = json.loads((CONTRACT_ROOT / "page/conformance/param-bindings.json").read_text())
+        self.assertGreaterEqual(len(matrix["cases"]), 12)
+        for case in matrix["cases"]:
+            with self.subTest(case=case["name"]):
+                before = deepcopy(case["input"])
+                actual = normalize_page_document(case["input"])
+                expected = case["expected"]
+                self.assertEqual(actual["ok"], expected["ok"])
+                if expected["ok"]:
+                    self.assertEqual(actual, expected)
+                else:
+                    self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
+                self.assertEqual(case["input"], before)
+
     def test_normalization_preserves_all_valid_source_content(self) -> None:
         for path in sorted((CONTRACT_ROOT / "page/conformance/valid").glob("*.json")):
             with self.subTest(fixture=path.name):
                 original = json.loads(path.read_text())
                 baseline = deepcopy(original)
                 expected = deepcopy(original)
-                expected["schemaVersion"] = "6.1"
+                expected["schemaVersion"] = "6." + str(max(1, int(original["schemaVersion"].split(".")[1])))
                 expected["layout"] = expected.pop("layoutForm", expected.get("layout", "report"))
                 result = normalize_page_document(original)
                 self.assertEqual(result, {"ok": True, "document": expected, "errors": []})

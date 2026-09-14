@@ -6,9 +6,10 @@
       "type": "string",
       "enum": [
         "6.0",
-        "6.1"
+        "6.1",
+        "6.2"
       ],
-      "description": "页面文档契约版本；当前支持 6.0 / 6.1"
+      "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2"
     },
     "id": {
       "type": "string",
@@ -197,47 +198,96 @@
       "description": "dashboard 页面统一工具栏显隐或紧凑只读呈现；缺省 visible"
     },
     "pageParam": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^[a-z0-9][a-z0-9-]*$"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "string",
-            "number",
-            "boolean"
-          ]
-        },
-        "required": {
-          "type": "boolean"
-        },
-        "label": {
-          "type": "string",
-          "minLength": 1
-        },
-        "default": {
-          "anyOf": [
-            {
-              "type": "string"
+      "anyOf": [
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
             },
-            {
-              "type": "number"
+            "type": {
+              "type": "string",
+              "enum": [
+                "string",
+                "number",
+                "boolean"
+              ]
             },
-            {
+            "required": {
               "type": "boolean"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "default": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
             }
-          ]
+          },
+          "required": [
+            "id",
+            "type",
+            "required"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "type": {
+              "type": "string",
+              "const": "dimension"
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "multiple": {
+              "type": "boolean"
+            },
+            "default": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "required"
+          ],
+          "additionalProperties": false
         }
-      },
-      "required": [
-        "id",
-        "type",
-        "required"
       ],
-      "additionalProperties": false,
       "description": "页面参数：打开页面时由 URL 确定、此后不可改变的具名输入"
     },
     "dataSource": {
@@ -1391,6 +1441,31 @@
           ],
           "additionalProperties": false
         },
+        "paramBindings": {
+          "type": "object",
+          "propertyNames": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "target": {
+                "type": "string",
+                "const": "dimension"
+              },
+              "queryField": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "target",
+              "queryField"
+            ],
+            "additionalProperties": false
+          }
+        },
         "filterBindings": {
           "type": "object",
           "propertyNames": {
@@ -1508,6 +1583,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "initialParam": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
         },
         "hierarchy": {
           "minItems": 2,
@@ -4539,5 +4618,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.1"
+  "$id": "https://metriccanvas/page/v6.2"
 }

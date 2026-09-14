@@ -35,6 +35,7 @@
     initialFilterValues,
     orchestrate,
     resolvePageParams,
+    initializePageParams,
     type DimensionValuesSnapshots,
     type FilterState,
     type FilterValue,
@@ -198,14 +199,14 @@
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, format: formatValue } });
+        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? String(value) : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: parsed.errors };
       emit?.({ type: 'invalid', errors: parsed.errors });
       return;
     }
 
-    const loaded = parsed.page;
+    const loaded = initializePageParams(parsed.page, params.values);
     const mode = dataSourceMode(loaded.dataSources);
     const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {

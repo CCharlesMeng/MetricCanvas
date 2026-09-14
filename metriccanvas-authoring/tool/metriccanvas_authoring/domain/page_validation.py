@@ -67,7 +67,7 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
             )
         )
         return optional_issues
-    param_issues = _page_param_issues(value)
+    param_issues = [*_param_binding_issues(value), *_page_param_issues(value)]
     if param_issues:
         return param_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
@@ -85,10 +85,7 @@ def normalize_page_document(value: Any) -> dict[str, Any]:
     if issues:
         return {"ok": False, "errors": [issue.as_dict() for issue in issues]}
     document = deepcopy(value)
-    contract_lock = json.loads(
-        (BUNDLE_ROOT / "contract-lock.json").read_text(encoding="utf-8")
-    )
-    document["schemaVersion"] = contract_lock["pageSchemaVersion"]
+    document["schemaVersion"] = "6." + str(max(1, int(document["schemaVersion"].split(".")[1])))
     document["layout"] = document.get("layout", document.get("layoutForm", "report"))
     document.pop("layoutForm", None)
     return {"ok": True, "document": document, "errors": []}
@@ -203,6 +200,11 @@ def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
             "SCHEMA_ERROR", "/layout",
             "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0",
         ))
+    if int(value["schemaVersion"].split(".")[1]) < 2:
+        paths = [f"/params/{i}" for i, p in enumerate(value.get("params", [])) if p["type"] == "dimension"]
+        paths += [f"/filters/{i}/initialParam" for i, f in enumerate(value.get("filters", [])) if "initialParam" in f]
+        paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if "paramBindings" in source.get("source", {}).get("query", {})]
+        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "维度参数绑定由6.2引入") for path in paths)
     if "layout" in value and "layoutForm" in value:
         issues.append(PageContractIssue(
             "SCHEMA_ERROR", "/layoutForm",
@@ -271,12 +273,13 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
         by_id[param_id] = declaration
         if param_id in filter_ids:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
-        if "default" in declaration and not _matches_json_type(
-            declaration.get("default"), declaration.get("type")
-        ):
+        if "default" in declaration and not _matches_param_default(declaration):
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
 
     consumed: set[str] = set()
+    for source in value.get("dataSources", {}).values():
+        consumed.update(source.get("source", {}).get("query", {}).get("paramBindings", {}))
+    consumed.update(f["initialParam"] for f in raw_filters if "initialParam" in f)
     def navigation_consumers(node: Any) -> None:
         if isinstance(node, list):
             for child in node: navigation_consumers(child)
@@ -2210,4 +2213,64 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
             key = names.get(part, f["id"] if part == "value" else f"{f['id']}.{part}")
             if key in used: fail(f"/filters/{i}/urlParams/{part}", f"URL 参数名重复:{key}")
             used.add(key)
+    return issues
+
+
+def _matches_param_default(declaration: Mapping[str, Any]) -> bool:
+    value = declaration.get("default")
+    if declaration["type"] != "dimension":
+        return _matches_json_type(value, declaration["type"])
+    if declaration.get("multiple", False):
+        return isinstance(value, list) and bool(value) and all(isinstance(v, str) and bool(v) for v in value) and len(set(value)) == len(value)
+    return isinstance(value, str) and bool(value)
+
+
+def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
+    params = {p["id"]: p for p in page.get("params", [])}
+    filters = {f["id"]: f for f in page.get("filters", [])}
+    issues = []
+    consumed = set()
+    def error(path: str, message: str) -> None:
+        issues.append(PageContractIssue("SCHEMA_ERROR", path, message))
+    for source_id, source in page["dataSources"].items():
+        query = source["source"].get("query")
+        if source["source"]["type"] != "query" or not query:
+            continue
+        owners = {}
+        for param_id, binding in query.get("paramBindings", {}).items():
+            path = f"/dataSources/{_escape_pointer(source_id)}/source/query/paramBindings/{_escape_pointer(param_id)}"
+            if params.get(param_id, {}).get("type") != "dimension":
+                error(path, "查询参数绑定必须引用已声明的dimension参数")
+            field = binding["queryField"]
+            if field in owners:
+                error(path, "同一查询目标只能有一个参数来源")
+            owners[field] = param_id
+            raw_filter = query["body"]["dsl_list"][0].get("filter")
+            if isinstance(raw_filter, dict) and isinstance(raw_filter.get("dims"), list) and any(isinstance(d, dict) and d.get("dim_name") == field for d in raw_filter["dims"]):
+                error(path, "参数绑定目标不得另有查询体默认条件")
+            matching = [(k, v) for k, v in query.get("filterBindings", {}).items() if v.get("target") == "dimension" and v.get("queryField") == field]
+            if len(matching) > 1:
+                error(path, "参数绑定目标不得由多个筛选器控制")
+            for filter_id, _ in matching:
+                declaration = filters.get(filter_id, {})
+                if declaration.get("type") != "dimension" or declaration.get("initialParam") != param_id:
+                    error(path, "查询与筛选必须引用同一参数初值来源")
+                else:
+                    consumed.add(filter_id)
+        for filter_id, binding in query.get("filterBindings", {}).items():
+            declaration = filters.get(filter_id, {})
+            if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(binding.get("queryField")) != declaration["initialParam"]):
+                error(f"/dataSources/{_escape_pointer(source_id)}/source/query/filterBindings/{_escape_pointer(filter_id)}", "参数初始化筛选的每个查询目标都必须显式绑定同一参数")
+    for index, declaration in enumerate(page.get("filters", [])):
+        if declaration["type"] != "dimension" or "initialParam" not in declaration:
+            continue
+        path = f"/filters/{index}/initialParam"
+        if params.get(declaration["initialParam"], {}).get("type") != "dimension":
+            error(path, "筛选初值必须引用已声明的dimension参数")
+        if "default" in declaration:
+            error(path, "参数初始化与筛选default互斥，默认来源只能声明一次")
+        if declaration.get("hierarchy"):
+            error(path, "第一版参数初始化只支持平面维度筛选")
+        if declaration["id"] not in consumed:
+            error(path, "参数初始化筛选必须具有匹配的显式查询目标")
     return issues

@@ -28,6 +28,7 @@ export { createFilterState, initialFilterValues, filterSearch, parseFilterSearch
 export {
   pageParamSearch,
   resolvePageParams,
+  initializePageParams,
   serializePageParam
 } from './page-params';
 export type { PageParamState, PageParamValues } from './page-params';

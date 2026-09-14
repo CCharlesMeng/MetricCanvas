@@ -1,6 +1,6 @@
 {
   "bundleVersion": "0.2.0",
-  "pageSchemaVersion": "6.1",
+  "pageSchemaVersion": "6.2",
   "artifacts": [
     {
       "file": "ARCHITECTURE.md",
@@ -12,7 +12,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "9b08ee0c0efd0ccfa6ae0b35763a83d7fb1ed28e68733bc9679facdd6bee9d11"
+      "sha256": "2240684ba244e454a4357ed6c395012ce8e23e4633e4c1eb41af3fa4a7559239"
     },
     {
       "file": "contract-snapshot/data-context/schema.json",
@@ -20,7 +20,7 @@
     },
     {
       "file": "contract-snapshot/manifest.json",
-      "sha256": "20a1513bd0806043c44c1a29373758403be6d6dce043b1354e965a3b7bd53f65"
+      "sha256": "04447969b14c5994c0779f4e8ae4d88d8e18262f4a1c4ae84b4040b58f94f913"
     },
     {
       "file": "contract-snapshot/page/component-catalog.json",
@@ -688,11 +688,11 @@
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/version-major-unsupported.json",
-      "sha256": "6ae0e01d5bd3cc7f04a6eff254983d406015769e5697573dfaebd20794313554"
+      "sha256": "5625cc8ad0dc54ab7dd2f4abf72cc6085a872c48a1720a87fbe1a25b9c5b1383"
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/version-minor-ahead.json",
-      "sha256": "0c204aba8fd0339211677231a6993d8361f5f1ca4583d755f2288f7407165f3c"
+      "sha256": "375e184c7381810c958b04f0c463d2fbaf4f1b0eca6564d5f936315bd471fa21"
     },
     {
       "file": "contract-snapshot/page/conformance/invalid/write-filter-non-dimension.json",
@@ -708,7 +708,11 @@
     },
     {
       "file": "contract-snapshot/page/conformance/layout-compatibility.json",
-      "sha256": "c1748a0b0db9f94a89ed5f72756e1835daa028791f661d6b1b28a2ad6bdefe2e"
+      "sha256": "769e8e8a555f9f9f9486ad857b72a07413a9fcef77eb21459e5aaf16ea15ad84"
+    },
+    {
+      "file": "contract-snapshot/page/conformance/param-bindings.json",
+      "sha256": "74f887ebcd411e1643899fb9cfc235432e03206df51dda33b59d9c489381d9b6"
     },
     {
       "file": "contract-snapshot/page/conformance/valid/composite-page.json",
@@ -717,6 +721,10 @@
     {
       "file": "contract-snapshot/page/conformance/valid/compute-page.json",
       "sha256": "34bb5cbd927f0d7196c9f79a665a96a18007c028ca30a5695ad23039f1c395a2"
+    },
+    {
+      "file": "contract-snapshot/page/conformance/valid/dimension-params-page.json",
+      "sha256": "caf7b330cddad9ff109ce43d535516c011ec13024f1d34dcdb2e764f00ab0aae"
     },
     {
       "file": "contract-snapshot/page/conformance/valid/filters-page.json",
@@ -776,7 +784,7 @@
     },
     {
       "file": "contract-snapshot/page/schema.json",
-      "sha256": "27b4c910bb25a993e20f9ac227d9a812e51a3651f8de86741765d76adb3f57d5"
+      "sha256": "37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399"
     },
     {
       "file": "contract-snapshot/query/error-codes.json",
@@ -824,11 +832,11 @@
     },
     {
       "file": "contracts/exported/build-page-conformance.json",
-      "sha256": "fd633bb327042ab703bedc9df5defb4eabe752cb32e4594c5145fa47ce8de5be"
+      "sha256": "45f01122c5f3e9ab8793728d1da422fc7858eb7a1593d490bcc21778ff5fbca5"
     },
     {
       "file": "contracts/manifest.json",
-      "sha256": "263aa6dfe1af4b14b3a312faa776ca51b24f9e795284dfb6224452e3794859a9"
+      "sha256": "85c1a79c599568f570edd31b980f89f85f51a09f907c1a09718efea3043562d7"
     },
     {
       "file": "README.md",
@@ -908,7 +916,7 @@
     },
     {
       "file": "test-harness/tests/test_build_page.py",
-      "sha256": "1979156ef298ec0bbcb48a2a43580496007dbc7b12b9503c93ff3611c8b327f0"
+      "sha256": "d9b1ca8380662c66a1af97682ba90d1ee2934c37463f39c4c5623b420bb34cd0"
     },
     {
       "file": "test-harness/tests/test_bundle_info.py",
@@ -956,7 +964,7 @@
     },
     {
       "file": "test-harness/tests/test_page_validation.py",
-      "sha256": "45ba22ec9eac1085c1bfd2ab41ee90bd8c0e2adc20f598eb62343cd4c804b390"
+      "sha256": "2a411cf708f2d420e945712fd6ba88e5a42df3b9bb49bd837df7f7927d3662de"
     },
     {
       "file": "test-harness/tests/test_ports.py",
@@ -976,7 +984,7 @@
     },
     {
       "file": "test-harness/tests/test_stdio.py",
-      "sha256": "a562ea8ad03b9353e415b1b3e6e71ab727dbaa2843a21922d5dcb671fadab686"
+      "sha256": "17a43e0a0f28f640424bfb049e3fbd3da59076919a88483bb8590fd20283705b"
     },
     {
       "file": "tool/metriccanvas_authoring/__init__.py",
@@ -1076,7 +1084,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/domain/page_validation.py",
-      "sha256": "c365e6a1ae234b9959be40693330885e499fc96180eb8f417af889aeb2e6de57"
+      "sha256": "52dd0e90ad19a41c20fb34ccdee9029b41d71b535f0ce84af521202b1267903c"
     },
     {
       "file": "tool/metriccanvas_authoring/domain/section_layout.py",

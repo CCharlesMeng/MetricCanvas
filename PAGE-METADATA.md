@@ -103,7 +103,7 @@ flowchart LR
 
 | 字段 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
-| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前为 `"6.1"`，读取支持6.0/6.1，5.x 文档须显式迁移 |
+| `schemaVersion` | string | 是 | `MAJOR.MINOR`；当前为 `"6.2"`，读取支持6.0/6.1/6.2，5.x 文档须显式迁移 |
 | `id` | string | 是 | 页面稳定标识；正式文件名为 `<id>.json` |
 | `meta` | object | 否 | 页面资产信息；允许可选 `title` 与 `description`。目录标题按 `meta.title` → 首个 `reportHeader.props.title` → 页面 `id` 回退；dashboard 工具栏使用同一结果 |
 | `layout` | string | 否 | 页面布局形态（6.1规范字段；旧layoutForm读取兼容）：`report`（缺省）或 `dashboard` |
@@ -118,7 +118,7 @@ flowchart LR
 
 次版本只承载纯增量变更（新增可选字段、判别联合新增分支、封闭闭集新增成员、放宽既有约束），因此当前主版本内最新的 schema 是全部次版本的超集，校验器接受该主版本内不高于当前值的任意次版本。跨主版本不接受，也不提供自动迁移。
 
-当前协议为 **6.1**；6.0 继续可读。5.x 的既有能力整体进入 6.0 基线；后续同主版本增量仍按 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 登记能力下限。下文提到的“5.x 起”仅说明历史引入时间，不表示当前校验器接受旧主版本。
+当前协议为 **6.2**；6.0/6.1 继续可读。5.x 的既有能力整体进入 6.0 基线；后续同主版本增量仍按 [ADR-0051](docs/adr/0051-additive-minor-versions-for-page-schema.md) 登记能力下限。下文提到的“5.x 起”仅说明历史引入时间，不表示当前校验器接受旧主版本。
 
 6.0 将导航改为 `href + query`，查询串改用普通值；删除 `page/carryFilters/setFilters/setParams` 与旧前缀编码，不运行双协议兼容层。仓内页面和校验样例已迁移。外部 5.x 页面可用 `tools/scripts/migrate-url-navigation.ts` 配合显式页面地址映射生成新文档；工具拒绝覆盖原文件。不可变历史修订保留原文，由原引擎读取，或迁移后另存新修订。完整裁决见 [ADR-0068](docs/adr/0068-plain-url-navigation-protocol.md)。
 
@@ -138,10 +138,11 @@ flowchart LR
 | 属性 | 类型 | 必填 | 说明 |
 |---|---|---:|---|
 | `id` | string | 是 | 参数标识；不得与任何筛选器 id 相同 |
-| `type` | `string` / `number` / `boolean` | 是 | 取值只能是标量 |
+| `type` | `string` / `number` / `boolean` / `dimension` | 是 | 旧标量保持；6.2维度分支支持受控单值/多值 |
 | `required` | boolean | 是 | 必需参数缺失时页面呈现「页面输入不完整」 |
 | `label` | non-empty string | 否 | 缺失提示与创作期展示用 |
-| `default` | scalar | 否 | URL 未提供时的取值 |
+| `default` | scalar / string[] | 否 | URL缺值或非法时的唯一默认；数组仅dimension+multiple |
+| `multiple` | boolean | 否 | 仅dimension；缺省false，true要求非空且无重复的字符串数组 |
 
 **文本取值**：页面文档中一切渲染为用户可见文本的属性位置，取值类型都由 `string` 放宽为「字面量或页面参数引用」。规则落在**位置**上，不按组件类型维护白名单：分区标题、组件标题与副标题、`reportHeader` 的标题与标签、`text` 的正文、表格列标题、指标卡行标签与单位等都适用。
 
@@ -157,7 +158,7 @@ flowchart LR
 - **可选参数缺失时，引用位置整体消失**：该属性视为未声明，数组型位置中的该项被移除，而不是渲染成空字符串。因此**必填文本属性只能引用必需参数**。
 - **每个声明的页面参数必须至少有一个消费者**，否则校验失败——没有消费者通常意味着作者绑错了位置。
 
-URL 查询键为参数 id，值是普通字符串，由接收页按参数声明转换类型。例如 `?code=A001&month=2026-04`。参数不进筛选状态；导航可用 `{ "source": "param", "id": "code" }` 显式取当前参数值。缺省与必填校验由接收页负责，发送页不预检目标要求。
+URL 查询键为参数 id，值是普通字符串，由接收页按参数声明转换类型。例如 `?code=A001&month=2026-04`。参数本身不变；6.2可通过显式initialParam只初始化筛选状态，见[参数与初始化参考](docs/page-metadata/parameters.md)。导航可用 `{ "source": "param", "id": "code" }` 显式取当前参数值。缺省与必填校验由接收页负责，发送页不预检目标要求。
 
 ### 3.1 标识符与唯一性
 

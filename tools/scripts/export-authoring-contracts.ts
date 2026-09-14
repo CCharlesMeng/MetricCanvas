@@ -96,7 +96,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
-  for (const schemaVersion of ['6.0', '6.1', '6.2', '7.0']) {
+  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '7.0']) {
     for (const declaration of [
       {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
       { layout: 'report' }, { layout: 'dashboard' },
@@ -109,6 +109,28 @@ async function buildProductOutputs(): Promise<OutputMap> {
     }
   }
   outputs.set('page/conformance/layout-compatibility.json', json({ cases: layoutCases }));
+
+  const parameterTemplate = fixtures.get('dimension-params-page');
+  const parameterCases: Array<{name: string; input: unknown; expected: unknown}> = [];
+  const parameterCase = (name: string, change: (page: any) => void) => {
+    const input = structuredClone(parameterTemplate);
+    change(input);
+    parameterCases.push({ name, input, expected: normalizePageDocument(input) });
+  };
+  parameterCase('multiple-partial-sharing', () => {});
+  parameterCase('single-dimension', p => { p.params[0].multiple = false; p.params[0].default = 'APAC'; });
+  parameterCase('required-no-default', p => { delete p.params[0].default; });
+  parameterCase('old-version-floor', p => { p.schemaVersion = '6.1'; });
+  parameterCase('wrong-default-shape', p => { p.params[0].default = 'APAC'; });
+  parameterCase('duplicate-default', p => { p.params[0].default = ['APAC','APAC']; });
+  parameterCase('filter-two-defaults', p => { p.filters[0].default = ['EU']; });
+  parameterCase('unknown-initial-param', p => { p.filters[0].initialParam = 'unknown'; });
+  parameterCase('query-two-defaults', p => { p.dataSources.sales.source.query.body.dsl_list[0].filter.dims = [{dim_name:'region',dim_value_list:['EU']}]; });
+  parameterCase('mismatched-filter-target', p => { p.dataSources.sales.source.query.paramBindings.regions.queryField = 'different'; });
+  parameterCase('duplicate-target', p => { p.dataSources.shared.source.query.paramBindings.segment.queryField = 'region'; });
+  parameterCase('scalar-query-binding', p => { p.params[1].type = 'string'; });
+  parameterCase('unknown-query-param', p => { p.dataSources.shared.source.query.paramBindings.unknown = {target:'dimension',queryField:'other'}; });
+  outputs.set('page/conformance/param-bindings.json', json({ cases: parameterCases }));
 
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {
@@ -234,7 +256,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
   const normalizedBuildPage = normalizePageDocument(buildPageVector.expected.document);
   if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
-  buildPageVector.expected.document = normalizedBuildPage.document;
+  buildPageVector.expected.document = { ...normalizedBuildPage.document, schemaVersion: versionPolicy.current };
   const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);

@@ -1,3 +1,4 @@
+import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
 import {
@@ -91,6 +92,7 @@ export function parsePage(
   const documentErrors = [
     ...capabilityFloorErrors(document),
     ...layoutCompatibilityErrors(document),
+    ...paramBindingErrors(document),
     ...pageParamErrors(
       declarations,
       new Set(filterDeclarations(document).map((filter) => filter.id)),

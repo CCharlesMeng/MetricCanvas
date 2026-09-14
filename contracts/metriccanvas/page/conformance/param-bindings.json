@@ -1,0 +1,4902 @@
+{
+  "cases": [
+    {
+      "name": "multiple-partial-sharing",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.2",
+          "layout": "report",
+          "id": "dimension-params-page",
+          "dataSources": {
+            "sales": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region-filter": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  }
+                }
+              }
+            },
+            "shared": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    },
+                    "segment": {
+                      "target": "dimension",
+                      "queryField": "segment"
+                    }
+                  }
+                }
+              }
+            },
+            "unbound": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "filters": [
+            {
+              "id": "region-filter",
+              "type": "dimension",
+              "dimension": "region",
+              "initialParam": "regions"
+            }
+          ],
+          "sections": [
+            {
+              "id": "details",
+              "components": [
+                {
+                  "id": "heading",
+                  "type": "reportHeader",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": {
+                      "param": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "sales-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "sales"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "shared-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "shared"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "unbound-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "unbound"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "params": [
+            {
+              "id": "regions",
+              "type": "dimension",
+              "multiple": true,
+              "required": true,
+              "default": [
+                "APAC"
+              ]
+            },
+            {
+              "id": "segment",
+              "type": "dimension",
+              "required": false
+            },
+            {
+              "id": "heading",
+              "type": "string",
+              "required": true,
+              "default": "Regional sales"
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "single-dimension",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": false,
+            "required": true,
+            "default": "APAC"
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.2",
+          "layout": "report",
+          "id": "dimension-params-page",
+          "dataSources": {
+            "sales": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region-filter": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  }
+                }
+              }
+            },
+            "shared": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    },
+                    "segment": {
+                      "target": "dimension",
+                      "queryField": "segment"
+                    }
+                  }
+                }
+              }
+            },
+            "unbound": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "filters": [
+            {
+              "id": "region-filter",
+              "type": "dimension",
+              "dimension": "region",
+              "initialParam": "regions"
+            }
+          ],
+          "sections": [
+            {
+              "id": "details",
+              "components": [
+                {
+                  "id": "heading",
+                  "type": "reportHeader",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": {
+                      "param": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "sales-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "sales"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "shared-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "shared"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "unbound-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "unbound"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "params": [
+            {
+              "id": "regions",
+              "type": "dimension",
+              "multiple": false,
+              "required": true,
+              "default": "APAC"
+            },
+            {
+              "id": "segment",
+              "type": "dimension",
+              "required": false
+            },
+            {
+              "id": "heading",
+              "type": "string",
+              "required": true,
+              "default": "Regional sales"
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "required-no-default",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.2",
+          "layout": "report",
+          "id": "dimension-params-page",
+          "dataSources": {
+            "sales": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "filterBindings": {
+                    "region-filter": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    }
+                  }
+                }
+              }
+            },
+            "shared": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  },
+                  "paramBindings": {
+                    "regions": {
+                      "target": "dimension",
+                      "queryField": "region"
+                    },
+                    "segment": {
+                      "target": "dimension",
+                      "queryField": "segment"
+                    }
+                  }
+                }
+              }
+            },
+            "unbound": {
+              "fields": {
+                "region": {
+                  "queryField": "region",
+                  "type": "string",
+                  "role": "dimension",
+                  "nullable": false
+                },
+                "gmv": {
+                  "queryField": "gmv",
+                  "type": "number",
+                  "role": "measure",
+                  "nullable": false
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "region"
+                        ],
+                        "output_metrics": [
+                          "gmv"
+                        ],
+                        "filter": {
+                          "dims": [],
+                          "metrics": []
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "filters": [
+            {
+              "id": "region-filter",
+              "type": "dimension",
+              "dimension": "region",
+              "initialParam": "regions"
+            }
+          ],
+          "sections": [
+            {
+              "id": "details",
+              "components": [
+                {
+                  "id": "heading",
+                  "type": "reportHeader",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "title": {
+                      "param": "heading"
+                    }
+                  }
+                },
+                {
+                  "id": "sales-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "sales"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "shared-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "shared"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "unbound-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "unbound"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "region"
+                      },
+                      {
+                        "field": "gmv"
+                      }
+                    ],
+                    "pagination": {
+                      "mode": "query"
+                    },
+                    "actions": [
+                      {
+                        "on": "click",
+                        "writeFilter": "region-filter",
+                        "field": "region"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "params": [
+            {
+              "id": "regions",
+              "type": "dimension",
+              "multiple": true,
+              "required": true
+            },
+            {
+              "id": "segment",
+              "type": "dimension",
+              "required": false
+            },
+            {
+              "id": "heading",
+              "type": "string",
+              "required": true,
+              "default": "Regional sales"
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "old-version-floor",
+      "input": {
+        "schemaVersion": "6.1",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0",
+            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/1",
+            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/filters/0/initialParam",
+            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/sales/source/query/paramBindings",
+            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/shared/source/query/paramBindings",
+            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "wrong-default-shape",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": "APAC"
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0/default",
+            "message": "默认值不符合参数类型 dimension"
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate-default",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC",
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0/default",
+            "message": "默认值不符合参数类型 dimension"
+          }
+        ]
+      }
+    },
+    {
+      "name": "filter-two-defaults",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions",
+            "default": [
+              "EU"
+            ]
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/filters/0/initialParam",
+            "message": "参数初始化与筛选default互斥，默认来源只能声明一次"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown-initial-param",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "unknown"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/sales/source/query/paramBindings/regions",
+            "message": "查询与筛选必须引用同一参数初值来源"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/sales/source/query/filterBindings/region-filter",
+            "message": "参数初始化筛选的每个查询目标都必须显式绑定同一参数"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/filters/0/initialParam",
+            "message": "筛选初值必须引用已声明的dimension参数"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/filters/0/initialParam",
+            "message": "参数初始化筛选必须具有匹配的显式查询目标"
+          }
+        ]
+      }
+    },
+    {
+      "name": "query-two-defaults",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "region",
+                            "dim_value_list": [
+                              "EU"
+                            ]
+                          }
+                        ],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/sales/source/query/paramBindings/regions",
+            "message": "参数绑定目标不得另有查询体默认条件"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mismatched-filter-target",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "different"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/sales/source/query/filterBindings/region-filter",
+            "message": "参数初始化筛选的每个查询目标都必须显式绑定同一参数"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/filters/0/initialParam",
+            "message": "参数初始化筛选必须具有匹配的显式查询目标"
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate-target",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/shared/source/query/paramBindings/segment",
+            "message": "同一查询目标只能有一个参数来源"
+          }
+        ]
+      }
+    },
+    {
+      "name": "scalar-query-binding",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "string",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/shared/source/query/paramBindings/segment",
+            "message": "查询参数绑定必须引用已声明的dimension参数"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unknown-query-param",
+      "input": {
+        "schemaVersion": "6.2",
+        "layout": "report",
+        "id": "dimension-params-page",
+        "dataSources": {
+          "sales": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "filterBindings": {
+                  "region-filter": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  }
+                }
+              }
+            }
+          },
+          "shared": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "regions": {
+                    "target": "dimension",
+                    "queryField": "region"
+                  },
+                  "segment": {
+                    "target": "dimension",
+                    "queryField": "segment"
+                  },
+                  "unknown": {
+                    "target": "dimension",
+                    "queryField": "other"
+                  }
+                }
+              }
+            }
+          },
+          "unbound": {
+            "fields": {
+              "region": {
+                "queryField": "region",
+                "type": "string",
+                "role": "dimension",
+                "nullable": false
+              },
+              "gmv": {
+                "queryField": "gmv",
+                "type": "number",
+                "role": "measure",
+                "nullable": false
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [
+                        "region"
+                      ],
+                      "output_metrics": [
+                        "gmv"
+                      ],
+                      "filter": {
+                        "dims": [],
+                        "metrics": []
+                      },
+                      "order": {
+                        "offset": 0,
+                        "limit": 20
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "filters": [
+          {
+            "id": "region-filter",
+            "type": "dimension",
+            "dimension": "region",
+            "initialParam": "regions"
+          }
+        ],
+        "sections": [
+          {
+            "id": "details",
+            "components": [
+              {
+                "id": "heading",
+                "type": "reportHeader",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "title": {
+                    "param": "heading"
+                  }
+                }
+              },
+              {
+                "id": "sales-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "sales"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "shared-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "shared"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "unbound-table",
+                "type": "table",
+                "layout": {
+                  "span": 12
+                },
+                "data": {
+                  "main": "unbound"
+                },
+                "props": {
+                  "columns": [
+                    {
+                      "field": "region"
+                    },
+                    {
+                      "field": "gmv"
+                    }
+                  ],
+                  "pagination": {
+                    "mode": "query"
+                  },
+                  "actions": [
+                    {
+                      "on": "click",
+                      "writeFilter": "region-filter",
+                      "field": "region"
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ],
+        "params": [
+          {
+            "id": "regions",
+            "type": "dimension",
+            "multiple": true,
+            "required": true,
+            "default": [
+              "APAC"
+            ]
+          },
+          {
+            "id": "segment",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "heading",
+            "type": "string",
+            "required": true,
+            "default": "Regional sales"
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/shared/source/query/paramBindings/unknown",
+            "message": "查询参数绑定必须引用已声明的dimension参数"
+          }
+        ]
+      }
+    }
+  ]
+}

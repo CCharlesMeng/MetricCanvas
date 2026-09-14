@@ -29,7 +29,7 @@ describe('6.1 layout 兼容公开边界', () => {
   it.each(['report', 'dashboard'])('6.1 layout %s 原生可读', (layout) => {
     const input = fixture(`layout-6-1-${layout}`);
     expect(validate(input)).toEqual([]);
-    expect(normalizePageDocument(input)).toMatchObject({ ok: true, document: input });
+    expect(normalizePageDocument(input)).toMatchObject({ ok: true, document: { ...input, schemaVersion: '6.1' } });
   });
   it('旧版本不可使用新字段', () => {
     expect(validate({ ...fixture('layout-6-1-dashboard'), schemaVersion: '6.0' })).toEqual([
@@ -41,7 +41,7 @@ describe('6.1 layout 兼容公开边界', () => {
       expect.objectContaining({ type: 'SCHEMA_ERROR', path: '/layoutForm' })
     ]);
   });
-  it.each(['5.4', '6.2', '7.0', '06.1'])('未知或非规范版本 %s 不得自动升级', (schemaVersion) => {
+  it.each(['5.4', '6.3', '7.0', '06.1'])('未知或非规范版本 %s 不得自动升级', (schemaVersion) => {
     const input = { ...fixture('layout-6-1-dashboard'), schemaVersion };
     expect(normalizePageDocument(input)).toMatchObject({ ok: false, errors: [expect.objectContaining({ path: '/schemaVersion' })] });
   });

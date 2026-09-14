@@ -227,6 +227,7 @@ flattenPageComponents
 formatSuitsParamType
 hasQueryFieldMapping
 hierarchyLevelOf
+initializeQueryParams
 isChartComponent
 isDataComponent
 isDqeQueryDefinition
@@ -241,6 +242,7 @@ isTextValueReference
 isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
+matchesParamDeclaration
 navigationErrors
 normalizePageDocument
 normalizeQueryRows

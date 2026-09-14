@@ -45,6 +45,8 @@ export interface DimensionFilterDeclaration {
   visible?: boolean;
   /** 初始选中的维度值;缺省为不筛选 */
   default?: string[];
+  /** 只在实例化时读取参数；与default互斥。 */
+  initialParam?: string;
   /**
    * 有序层级。取值同时携带选中值与所在层级;层级是查询谓词选字段
    * 与地图当前视角的唯一来源。至少两级。

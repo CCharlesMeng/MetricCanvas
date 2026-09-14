@@ -42,6 +42,7 @@ export interface DqeQueryDefinition {
   language: 'dqe';
   body: DqeRequestBody;
   filterBindings?: Record<string, DqeFilterBinding>;
+  paramBindings?: Record<string, { target: 'dimension'; queryField: string }>;
 }
 
 /**
@@ -121,4 +122,20 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
   }
   // 未在上方自述分页能力的协议分支落到这里:视为未声明分页(失败安全)。
   return undefined;
+}
+
+/** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
+export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
+  const initialized = structuredClone(query);
+  for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
+    if (Object.values(initialized.filterBindings ?? {}).some(f => f.target === 'dimension' && f.queryField === binding.queryField)) continue;
+    const value = values.get(id);
+    if (value === undefined) continue;
+    const item = initialized.body.dsl_list[0];
+    const rawFilter = item.filter;
+    const filter = rawFilter && typeof rawFilter === 'object' && !Array.isArray(rawFilter) ? rawFilter : {};
+    const dims = Array.isArray(filter.dims) ? filter.dims : [];
+    item.filter = { ...filter, dims: [...dims, { dim_name: binding.queryField, dim_value_list: Array.isArray(value) ? [...value] : [String(value)] }] };
+  }
+  return initialized;
 }
