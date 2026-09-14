@@ -14,5 +14,19 @@
   "contracts": {
     "authoring": "contracts/manifest.json",
     "productLock": "contract-lock.json"
-  }
+  },
+  "skills": [
+    {
+      "id": "metriccanvas-page-builder",
+      "entrypoint": "skill/metriccanvas-page-builder/SKILL.md"
+    },
+    {
+      "id": "metriccanvas-platform-create",
+      "entrypoint": "skill/metriccanvas-platform-create/SKILL.md"
+    },
+    {
+      "id": "metriccanvas-platform-edit",
+      "entrypoint": "skill/metriccanvas-platform-edit/SKILL.md"
+    }
+  ]
 }

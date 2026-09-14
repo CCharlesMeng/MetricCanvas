@@ -23,6 +23,8 @@ Java 权威：页面/修订持久化、同一基线并发、提取/候选修正�
 
 可信上下文由集成门户/Relay 注入；`actorId` 只能是经过服务验证的身份语义，不由模型指定。workspaceId 用于本地隔离及最后筛选归属，不推断新版 Java 要求第三身份头；实际头/Cookie 保持提供方契约。token 不进文档、队列、日志、模型输入或样例。
 
+本仓实际入口为 `metriccanvas-platform-create` 与 `metriccanvas-platform-edit`；普通问数继续 `metriccanvas-page-builder`。Bundle 的 `skills` 只登记分发目录，旧 `skill.entrypoint` 保持，不证明 Relay 已注册路由。两个 Platform Skill 分别随目录携带共享编排、report/dashboard 基线及完整页面参考；Relay 应按新建/已有页修改意图显式选择，并在缺部署入口时明确不可用。
+
 创建 Skill 在首次生成完整合法页面前不调用保存。修改 Skill 必须有精确基线，从可信程序通道读完整文档；缺基线拒绝重建整页。已有页面新增组件仍为修改；只有明确另建才创建。普通问数不改路由。report/dashboard 的默认及切换由内容线既有规范负责。
 
 程序流：可信基线上下文 → Relay 受控计划 → 内容工具程序产物 → 生命周期保存 → 已保存引用 → Platform 精确读取/校验 → 当前轮次及工作副本基线检查 → 画布更新。完整文档/数据行只走程序通道；模型只见摘要、受控操作结果及引用。内容工具返回的部分成功须为合法依赖闭合子集，保存一次；全失败/no-change 不保存。未经验证的 Page Artifact Adapter 不向真实模型开放 compose_page。

@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
+import unicodedata
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote, urlsplit
 
 
 BUNDLE_ROOT = Path(__file__).resolve().parents[1]
@@ -34,6 +37,72 @@ def verify_manifest(
     return len(manifest["files"])
 
 
+def markdown_anchors(text: str) -> set[str]:
+    anchors = set(re.findall(r'<a\s+id="([^"]+)"', text))
+    counts: dict[str, int] = {}
+    for heading in re.findall(r"^#{1,6} +(.+)$", text, re.MULTILINE):
+        slug = "".join(c for c in heading.lower() if c in "-_ " or unicodedata.category(c)[0] in "LN").replace(" ", "-")
+        count = counts.get(slug, 0)
+        counts[slug] = count + 1
+        anchors.add(f"{slug}-{count}" if count else slug)
+    return anchors
+
+
+def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> list[str]:
+    """Validate distribution only; this registry grants no tool or Relay routing authority."""
+    errors: list[str] = []
+    legacy_spec = bundle.get("skill")
+    legacy = legacy_spec.get("entrypoint") if isinstance(legacy_spec, dict) else None
+    if legacy != "skill/metriccanvas-page-builder/SKILL.md":
+        errors.append("skill.entrypoint: legacy entrypoint changed")
+    entries = bundle.get("skills", [{"id": "metriccanvas-page-builder", "entrypoint": legacy}])
+    if not isinstance(entries, list) or not entries:
+        return errors + ["skills: expected nonempty registry"]
+    ids: set[str] = set()
+    paths: set[str] = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            errors.append("skills: invalid entry")
+            continue
+        name, relative = entry.get("id"), entry.get("entrypoint")
+        if (not isinstance(name, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", name)
+                or relative != f"skill/{name}/SKILL.md" or name in ids or relative in paths):
+            errors.append(f"skills: invalid or duplicate entry {name}")
+            continue
+        ids.add(name)
+        paths.add(relative)
+        folder = root / "skill" / name
+        if not folder.resolve().is_relative_to(root.resolve()):
+            errors.append(f"{relative}: Skill directory escapes bundle")
+            continue
+        if not (folder / "SKILL.md").is_file():
+            errors.append(f"{relative}: missing entrypoint")
+            continue
+        for file in folder.rglob("*"):
+            if not file.resolve().is_relative_to(folder.resolve()):
+                errors.append(f"{file.relative_to(root)}: escapes standalone Skill")
+                continue
+            if not file.is_file():
+                continue
+            if file.relative_to(root).as_posix() not in locked:
+                errors.append(f"{file.relative_to(root)}: absent from bundle lock")
+            if file.suffix != ".md":
+                continue
+            text = re.sub(r"```.*?```", "", file.read_text(encoding="utf-8"), flags=re.DOTALL)
+            for href in re.findall(r"\[[^\]]*\]\(([^)]+)\)", text):
+                parsed = urlsplit(href)
+                if parsed.scheme in {"http", "https", "mailto"}:
+                    continue
+                target = (file.parent / unquote(parsed.path)).resolve() if parsed.path else file.resolve()
+                if parsed.scheme or parsed.netloc or not target.is_relative_to(folder.resolve()) or not target.is_file():
+                    errors.append(f"{file.relative_to(root)}: invalid standalone link {href}")
+                elif parsed.fragment and unquote(parsed.fragment) not in markdown_anchors(target.read_text(encoding="utf-8")):
+                    errors.append(f"{file.relative_to(root)}: missing anchor {href}")
+    if legacy not in paths or "metriccanvas-page-builder" not in ids:
+        errors.append("skills: missing legacy entrypoint alias")
+    return errors
+
+
 def main() -> None:
     bundle = read_json(BUNDLE_ROOT / "bundle.json")
     bundle_lock = read_json(BUNDLE_ROOT / "bundle.lock.json")
@@ -41,7 +110,7 @@ def main() -> None:
     if bundle["bundleVersion"] != bundle_lock["bundleVersion"]:
         raise SystemExit("bundleVersion does not match bundle.lock.json")
 
-    drift: list[str] = []
+    drift = validate_skills(BUNDLE_ROOT, bundle, {entry["file"] for entry in bundle_lock["artifacts"]})
     for artifact in bundle_lock["artifacts"]:
         path = BUNDLE_ROOT / artifact["file"]
         if not path.is_file():
