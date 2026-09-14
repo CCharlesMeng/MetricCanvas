@@ -100,6 +100,57 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     });
   }, scenarioTimeout);
 
+  it.each(['platform-authoring.md', 'layouts/report.md', 'layouts/dashboard.md'])('拒绝共享 Skill 作者漂移：%s', file => {
+    const relative = `metriccanvas-authoring/skill-shared/${file}`;
+    withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged shared reference\n', () => {
+      const result = runExport();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain(`skill/metriccanvas-platform-create/references/${file}`);
+    });
+  }, scenarioTimeout);
+
+  it('拒绝缺少独立 Skill 投影', () => {
+    const relative = 'metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/report.md';
+    const file = path.join(isolated,relative);
+    const original = readFileSync(file);
+    try {
+      rmSync(file);
+      const result = runExport();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('skill/metriccanvas-platform-edit/references/layouts/report.md');
+    } finally { writeFileSync(file,original); }
+  }, scenarioTimeout);
+
+  it('拒绝重复 Skill 入口', () => {
+    const relative = 'metriccanvas-authoring/bundle.json';
+    const bundle = JSON.parse(readFileSync(path.join(isolated,relative),'utf8'));
+    bundle.skills.push(bundle.skills[0]);
+    withChangedFile(relative,JSON.stringify(bundle),()=>{
+      const result = runExport();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('Invalid or duplicate Skill entry');
+    });
+  }, scenarioTimeout);
+
+  it('旧单入口配置仍可导出且不改旧 Skill 主文', () => {
+    const legacyRoot = mkdtempSync(path.join(tmpdir(),'metriccanvas-legacy-skill-'));
+    try {
+      cpSync(isolated,legacyRoot,{recursive:true,verbatimSymlinks:true});
+      const manifest = path.join(legacyRoot,'metriccanvas-authoring/bundle.json');
+      const bundle = JSON.parse(readFileSync(manifest,'utf8'));
+      delete bundle.skills;
+      writeFileSync(manifest,JSON.stringify(bundle));
+      const entrypoint = path.join(legacyRoot,'metriccanvas-authoring',bundle.skill.entrypoint);
+      const original = readFileSync(entrypoint,'utf8');
+      const generated = runExport([],legacyRoot);
+      expect(generated.status,generated.stderr).toBe(0);
+      const checked = runExport(['--check'],legacyRoot);
+      expect(checked.status,checked.stderr).toBe(0);
+      expect(checked.stdout).toContain('authoring contract export current');
+      expect(readFileSync(entrypoint,'utf8')).toBe(original);
+    } finally { rmSync(legacyRoot,{recursive:true,force:true}); }
+  }, scenarioTimeout);
+
   it('包版本变更后拒绝旧导出并可重新生成', () => {
     // Regeneration rewrites multiple projections. Give this mutating scenario its
     // own copy so ordering/shuffling cannot contaminate other drift assertions.
