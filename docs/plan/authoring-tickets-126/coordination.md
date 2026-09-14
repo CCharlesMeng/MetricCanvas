@@ -525,3 +525,9 @@ S2从正式ca8c549独立生成树新增`contracts/metriccanvas/page/map-regions.
 #140阶段回执：S1报告离线重开2项恢复、重连串行、刷新丢回执只lookup及跨用户隔离浏览器通过，仍在全量收尾。拟新增coordinator公开requireSynchronizedRef门禁，未同步/保护失败/身份不符拒绝，供#146消费；此为进行中接口，未集成不正式解锁。
 
 #135地名支援新增S2测试`packages/page/tests/map-regions.test.ts`，对账原GeoJSON SHA、完整去重名称集合与真实geoRegionName的nameMap行为；源路径为`packages/engine/widgets/src/components/map-chart/maps/china.json`与`world.json`（同目录）。拟产物contractVersion=1，maps按china/world分别含regions及source.file/sha256。仅测试/生成既有地图事实，不改原底图或运行时；固定提交验收后冻结。
+
+## #135地名契约支援验收（非整票完成）
+
+来源7d95e8462ec4dc4de17e1b9f04205bf9e9b31a14，ca8c549基线，独立S2 contracts树；本条之前的集成提交保留原作者。8文件范围核对；仅生成器/地名产物与manifest/锁/对账测试，未改底图/runtime。源树未跟踪node_modules依赖链接不纳入。S0复验china/world两测试通过，195product/4authoring/1interface无漂移，497摘要通过。contractVersion1含china31/world177原始去重名称及源SHA，nameMap运行行为对账通过。
+
+本支援可供S3#135正式消费，不代表text/fieldText/map内容实现或浏览器已验收；页面仍6.2、产品rc.3，无新增页面协议。S2#144后续生成保留此增量，不覆盖旧锁。
