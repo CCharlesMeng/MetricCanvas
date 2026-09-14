@@ -43,6 +43,7 @@ class DistributionContractTest(unittest.TestCase):
             "metriccanvas_authoring/_bundle/contract-lock.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-build-spec.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/page-edit-request.schema.json",
+            "metriccanvas_authoring/_bundle/contracts/authored/lifecycle-request.schema.json",
             "metriccanvas_authoring/_bundle/contract-snapshot/page/map-regions.json",
             "metriccanvas_authoring/_bundle/contracts/exported/analysis-intents.json",
             "metriccanvas_authoring/_bundle/contract-snapshot/data-context/schema.json",
