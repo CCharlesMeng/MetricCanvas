@@ -501,3 +501,17 @@ S0读取#134正文/评论（无新增）、审阅可信只读token/ref/hash、�
 交付任务01a09fb2-fcd6-7f93-acc2-fd686430731f回报：独立`codex/authoring-126-delivery`，a63c487仅增加delivery-status-2026-09-14.md，产品树与04c4869一致。组合复验134文件992通过/5既有skip，全仓check/build、194/4/1无漂移、独立Python3.12依赖安装后authoring:check与157测试、T01/T02/T13两套浏览器通过；这是交付任务提供的证据，S0未重跑。
 
 该任务已确认用户此前明确push只覆盖#127，九票固定批次正请求具体发布授权；尚未push/PR/main合并/批量更新Issue。S0不代授，不重复操作；#132审批边界保持。#134的ca8c549留下一批，不扩当前冻结范围。待其用户授权及实际远端回执后追加状态。
+
+## #135开工登记
+
+S3任务不变；新worktree`/private/tmp/metriccanvas-s3-135`、分支`codex/s3-135-text-map`，基线ca8c549b05c129fd6b0d0fc155b3b7f7a86de4b1；已读#135正文/评论回执。新增作者路径归S3：
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/text_map_building.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/create_content_page.py`
+- `metriccanvas-authoring/test-harness/tests/test_text_map_building.py`
+- `metriccanvas-authoring/test-harness/tests/test_content_creation.py`
+- `metriccanvas-authoring/test-harness/text_map_browser.mjs`
+- `docs/plan/authoring-tickets-126/t09-evidence.md`
+
+既有S3作者触点：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/component_editing.py`（add_text/add_field_text/add_map_chart/remove_component受控操作）、`metriccanvas-authoring/tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`、`metriccanvas-authoring/contracts/authored/page-edit-request.schema.json`、`metriccanvas-authoring/tool/pyproject.toml`、`metriccanvas-authoring/test-harness/tests/test_distribution.py`、`metriccanvas-authoring/test-harness/tests/test_content_mcp.py`、`metriccanvas-authoring/test-harness/content_stdio_server.py`、`metriccanvas-authoring/README.md`。
+
+静态text可无数据；fieldText/map通过可信source token读取已验证完整数据源，模型仅标识，不搬运原文/行；新增/删除沿#134事务校验。地图名称机器资产由S2从现有内置地图唯一导出，准确作者/生成路径另登记，未到齐前不伪造空地图成功。只消费现有Embed，不改引擎；#136/#137不混入。新增公开创建工具仍须明确与既有compose职责及模型摘要隔离。
