@@ -629,3 +629,29 @@ S1作者及证据cc54937e87d095a5b1fd8359c4c40c5fdefddb22→543c97d6aae6037bc057
 本仓#142范围通过，六类型仅既有白名单字段，未触及绑定/动作/格式/分页保持；中间输入/无变化/非法值不保存，完整合法修改沿原队列与撤销。参数引用被编辑时界面明确会替换为固定文字。当前检查器未扩展容器子树选择；代表性inline六类型不代表所有variant/引用组合。真实Java强端口仍未知。
 
 S1本阶段可执行票已完成，#145/#146均只等#138（S4未登记）；不为等待虚构新票或后台续跑。#146齐备优先通知。M2仍剩#137/#138/#145/#146及参考手册/分发矩阵等验收，M1/M3均未宣布通过。
+
+## #137开工登记
+
+S3任务不变，工作树`/private/tmp/metriccanvas-s3-137`、分支`codex/s3-137-filters-navigation`，开工基线9d08de447b989dac988890605eec0192b4efe5d3；已通知最终保留b1afd6c的#142增量。新增唯一作者：Bundle `tool/metriccanvas_authoring/domain/interaction_editing.py`、`test-harness/tests/test_interaction_editing.py`、`test-harness/tests/test_content_interactions.py`、`test-harness/interaction_browser.mjs`，及`docs/plan/authoring-tickets-126/t11-evidence.md`。既有Bundle domain/page_editing.py仅注册、contracts/authored/page-edit-request.schema.json、test-harness/content_stdio_server.py仅可信query测试token、README.md；不改S2临时Skill入口/运行时/参数真源，生成仍S2。
+
+S0读取完整票/最新评论，确认前置#134已满足。维度筛选新增/修改以显式完整bindings为原子操作；移除清理自身绑定，剩余引用由整页校验拒绝。仅既有受控query维度映射，不暗改query body/initial/paramBindings或其他数据源。表格link+导航创建/移除复用#109 href和显式row/param/filter传参，已有共用目标冲突或selection占用明确失败；最终需公开工具产物在统一运行时实际触发的证据。支持部分成功，分页/排序/表头筛选继续拒绝，不能以文档或静态校验代替运行验收。
+
+## rc.4分发矩阵验收
+
+S2实现e3b94e31d9af9766547c2e4d4d656d8cf6919300→02606d0b54e0023644075dc4d91e9402d6be9643，证据3ff2fe6fdd7d940bb8dd64e197550e7f5727d1ac→22fe622082b4852eeef793982ebd8f3ae8aec611，表格补正7440d4da8125c5a7424a03bf294d7cfd88d45444→eb2454acf50ff998e261d441bc77fda96a14e9b7。仅已登记compatibility.mjs三行和证据文档，原断言/安全overrides保持。
+
+S0核对8tarball大小与SHA256，读取两组结构化浏览器报告各112 expected/0unexpected/0skipped/0flaky，合224通过；采用固定e3b94e3树两版本Svelte5.56.6/5.29.0各1045通过/5既有skip及源码check/build、独立真实包安装/类型/Svelte/Vite门禁。实际Chrome152.0.7977.83、Edge153.0.4234.32。本证据适用于四包rc.4，不能冒称在后续#136/#142共同树重跑源码全量；两票不变四包实现，无需重复无关矩阵。未发布registry/部署或真实内网消费，#95仍待原执行线环境。S2继续手册，S3继续#137；#138仍需S4。
+
+手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-variants-page.json`，仅最小合法rankingCard与显式gauge mini及必要字段/inline数据，补参考示例缺口；不改Schema/工具行为。经既有统一导出生成合法向量/快照/锁，在page-reference.test.ts核对组件与公开页面校验。29模块/17组件/940节点目前仅阶段回报，尚未审阅全分支覆盖与分发证据，不计M2完成；其它夹具缺口继续逐文件登记。
+
+## #137验收集成
+
+作者f241c3043dc69c659375ff427b09d1ebe87945cc→ac102c13e20efbe285ef6be6f62e0d8bb7bbf6a4；S2源e9ea3070ead180b0892ef673bfbd065fd1314c9e、本树8db110bbaf49ba55bc94256e1bd0b1ac5a9cba14→65097c7ce37609b0906cbd718542635ba4f717e8；证据4656deecc271647e1292f622dbdad7fde956896f→1c901e3a557e2adb0ee062607d0434e15e1ea595。12文件范围符合登记，Bundle树与S3最终组合一致，未混手册。
+
+S0已读完整票/最新评论，审阅筛选全绑定集合/移除/查询字段来源及导航共享目标/selection冲突/精确列定位，独立领域与公开stdio15项通过、511摘要通过；读取最终222全量及安装日志，采用t11两形态真实Chrome和HTTP gateway筛选清空/未绑定数据保持/原order不变、导航row/param/filter与固定query/hash、精确删除往返和产品CLI2/2证据。未冒称S0重跑全部浏览器或真实外部DQE。
+
+本仓#137范围通过，完整操作原子回滚与部分成功边界保留；不开放查询分页/排序/表头筛选，不重做#109导航。S3本阶段票完成，可保留干净工作树并交接，手册如需语义证据由S2提出具体缺口；不凭空开新票。20票已验收17票，剩#138/#145/#146（S4未登记），另手册尚未验收，M1/M2/M3不提前宣布。
+
+手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-text-page.json`，最小6.2 text正文含title/body、空dataSources，作为heading/insight/reportInline完整示例的真源；经统一生成/校验，不改工具行为。仅links/backdrop的历史例子不能冒称正文variant证据；显示语义仍关联实际渲染来源/验证范围。
+
+手册联合分支追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-branches-page.json`，用最小合法数据/组件/参数/筛选覆盖已盘点缺口，不改协议；既有`packages/page/tests/validate-cli.test.ts`限把硬编码夹具总数改为实际目录JSON数，保留有效/无效退出状态与错误断言，不能将计数自洽当内容覆盖证明。联合分支见证需由独立Schema匹配与完整页面公开校验证明并保留缺口清单。当前110分支中89有见证、21缺口及140文件1060通过/5skip/1失败均为阶段回报，未验收完整手册。

@@ -9,6 +9,7 @@ sys.path[:0] = [str(ROOT / "tool"), str(ROOT / "test-harness"), str(ROOT / "test
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from test_page_editing import page
 from test_text_map_building import content_page
+from test_interaction_editing import interaction_page
 from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
@@ -18,9 +19,9 @@ from metriccanvas_authoring.application.ports import DqeExecutionResult
 
 class Baselines:
     async def read(self, token):
-        if token not in {"trusted-baseline-token", "trusted-content-source"}:
+        if token not in {"trusted-baseline-token", "trusted-content-source", "trusted-interaction-source"}:
             raise ContentBaselineError("BASELINE_NOT_FOUND")
-        document = content_page() if token == "trusted-content-source" else page()
+        document = interaction_page() if token == "trusted-interaction-source" else content_page() if token == "trusted-content-source" else page()
         return ContentBaseline({"pageId": document["id"], "revisionId": "r1", "resourceId": "resource1"}, document, document_sha256(document))
 
 

@@ -110,13 +110,13 @@ for (const version of versions) {
   assert.equal(json(engineRequire.resolve('svelte/package.json')).version, version);
   for (const name of names) assert(realpathSync(join(consumer, 'node_modules/@metriccanvas', name)).startsWith(consumer + '/'), 'Installed package points back into workspace');
 
-  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'pages']) {
+  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'pages']) {
     cpSync(join(source, path), join(consumer, path), { recursive: true });
   }
   // 既有浏览器用例与断言不变；类型导入改为已安装包，不能读取本仓 src。
-  for (const file of ['embed.spec.ts', 'version-error.spec.ts', 'globals.d.ts']) {
+  for (const file of ['embed.spec.ts', 'version-error.spec.ts', 'execution.spec.ts', 'globals.d.ts']) {
     const path = join(consumer, 'packages/embed/tests/browser', file);
-    writeFileSync(path, readFileSync(path, 'utf8').replaceAll("'../../src/types'", "'@metriccanvas/embed'"));
+    writeFileSync(path, readFileSync(path, 'utf8').replaceAll("'../../src/types'", "'@metriccanvas/embed'").replaceAll("'../../src'", "'@metriccanvas/embed'"));
   }
   cpSync(join(consumer, 'node_modules/@metriccanvas/embed/dist'), join(consumer, 'packages/embed/dist'), { recursive: true });
   for (const [from, to] of [['consumer-vite.config.js', 'vite.config.js'], ['consumer-playwright.config.ts', 'playwright.config.ts'], ['browser-versions.mjs', 'browser-versions.mjs']]) cpSync(join(source, 'tools/package-build/fixtures', from), join(consumer, to));
