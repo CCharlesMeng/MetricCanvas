@@ -523,3 +523,5 @@ S3任务不变；新worktree`/private/tmp/metriccanvas-s3-135`、分支`codex/s3
 S2从正式ca8c549独立生成树新增`contracts/metriccanvas/page/map-regions.json`及`metriccanvas-authoring/contract-snapshot/page/map-regions.json`；作者`tools/scripts/export-authoring-contracts.ts`按既有map-chart/maps/china.json与world.json features.properties.name及geoRegionName/nameMap语义提取，原底图不改。生成manifest/锁由S2唯一刷新，完整清单随提交；不混#144未验收实现。S3收到正式验收生成SHA后消费，未到齐前可独立开发但不硬编码替代地名资产。
 
 #140阶段回执：S1报告离线重开2项恢复、重连串行、刷新丢回执只lookup及跨用户隔离浏览器通过，仍在全量收尾。拟新增coordinator公开requireSynchronizedRef门禁，未同步/保护失败/身份不符拒绝，供#146消费；此为进行中接口，未集成不正式解锁。
+
+#135地名支援新增S2测试`packages/page/tests/map-regions.test.ts`，对账原GeoJSON SHA、完整去重名称集合与真实geoRegionName的nameMap行为；源路径为`packages/engine/widgets/src/components/map-chart/maps/china.json`与`world.json`（同目录）。拟产物contractVersion=1，maps按china/world分别含regions及source.file/sha256。仅测试/生成既有地图事实，不改原底图或运行时；固定提交验收后冻结。
