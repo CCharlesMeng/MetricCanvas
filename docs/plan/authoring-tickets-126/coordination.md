@@ -418,3 +418,9 @@ S2拟将layout-only迁移限定最低6.1，已有6.1/6.2保持，不再机械升
 S1所有的`apps/platform/tests/workbench/document-edit.test.ts`未来版本反例需6.2→6.3，S0已请求S1提供单行独立提交或明确临时授权；确认前S2不得修改。其他工作台文件保持原所有权。
 
 S1已明确授权S2仅修改`apps/platform/tests/workbench/document-edit.test.ts`未来版本反例6.2→6.3一行，随#143提交/验证后归还；S1#139期间不编辑该文件，不将#139其他改动带入#143。S0正式确认该临时单行所有权，其他范围不变。
+
+### #143生成期望与回归追加
+
+`packages/embed/tests/browser/version-error.spec.ts`归S2，限current/support断言6.2与未来反例6.3。生成器build-page-conformance当前作者期望须明确写current6.2，与layoutnormalize最低6.1分开，冻结历史来源保持。S2回报TS133文件983通过/5既有skip、check/build通过，Python参数/版本6项通过；均为进行中证据，完整回归未完成、不验收。
+
+`metriccanvas-authoring/test-harness/tests/test_build_page.py`与`metriccanvas-authoring/test-harness/tests/test_stdio.py`各一处新作者写出6.1硬编码拟改为contract-lock.pageSchemaVersion；S0已请求S3核对窗口，确认前不得修改。必要读取支持须最小化，历史输入/其他断言不变，不能混#134工作。
