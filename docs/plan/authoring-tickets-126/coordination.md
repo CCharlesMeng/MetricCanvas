@@ -709,3 +709,13 @@ S2多Skill分发方案冻结：bundle.json保留原skill.entrypoint，追加skil
 S2唯一作者窗口：Bundle `bundle.json`、`scripts/check_bundle.py`；根`tools/scripts/export-authoring-contracts.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`；新增Bundle `test-harness/tests/test_bundle_skills.py`。生成仅新增两Skill references及必要锁，旧主文与入口逐字保留，旧only-skill配置兼容，验证入口唯一/越界/缺项及真实独立复制闭合。不得把分场景30秒测试合并回累计超时单例。S3固定作者后S2生成，#138独立树/提交，S0组合后统一生成防锁覆盖。
 
 S5事实证据源06d0bbca8e507736c51953b7a6b319e17f7ca233已只读审阅：仅事实文档，尚无新增运行时测试/真实联调；运行时文件仍等CI任务最终回执，不在此转移。
+
+## #138本仓验收集成
+
+完整纳入S4作者7df7598/055a9d2/7444387、S2导出消费ffdeccc与最终锁组合f70a2f4、证据1850e503；整棵Bundle及导出器与最终证据树相同，保留本树既有统筹/交接文档。19文件均登记范围，未混双Skill增量。
+
+S0审阅生命周期编排、可信spool权限/身份隔离、公开四工具与已知HTTP边界及正反例；独立集成树24专项（含公开stdio）通过、1342摘要通过，发行包SHA256与t12一致，读取最终246全量及隔离安装证据。首次裸Python缺fastmcp/httpx，改用已有锁定依赖环境复验通过；未把环境失败当产品失败或跳过。采用S4完整回归/安装证据，不冒称S0重跑全量。
+
+#138本仓范围验收通过：模型只传程序token，保存先查原操作、unknown/pending不重发，程序输出失败保持原operationId，精确读取验证原文与完整ref，历史固定快照。生产强保存/精确历史/操作查询保持不可用；外部确认无新增、真实Java/Relay/盘古联调未执行。#138尚未远端发布/关闭，不能以本仓验收冒称M1/M3。
+
+本条提交即正式可消费基线：通知S1核对#127/#134/#138/#140后优先启动#146，先登记精确作者文件与判轮资格契约；#145前置齐备，S4可与S1准备候选/确认工具契约，公共契约交S2冻结后再实施，不能越权修改工作台客户端/公共导出。真实事件仍仅draftId，未见过的旧轮首次迟到必须通过可信关联验证，不扩展事件字段。
