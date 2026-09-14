@@ -94,3 +94,15 @@ METRICCANVAS_TOOL_SURFACE=relay \
 ```
 
 完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/plan/metriccanvas-agent-full-migration.md`](../docs/plan/metriccanvas-agent-full-migration.md)。
+
+## Platform 创建与修改 Skill、布局基线
+
+Platform 使用 `metriccanvas-platform-create` 与 `metriccanvas-platform-edit` 两个 Skill，共用独立 `metriccanvas-content`。旧 `metriccanvas-page-builder` 继续服务普通问数临时页面态。创建、修改的路由由 Relay 部署方落实，目录/frontmatter 不是已接通证明；内容工具始终不保存或发布。
+
+新 Skill 安装时复制完整目录及生成的 `references/`。公共作者真源为 `skill-shared/platform-authoring.md` 与 `skill-shared/layouts/{report,dashboard}.md`，由统一分发投影；不要单独复制 SKILL.md 或手改投影。创建显式选择 layout；已有页新增仍属于修改，缺可信精确基线时等待读取，不退回整页重建。
+
+Platform 内容入口新建报告沿用章节布局；看板页头采用 plain，未分组模块用缺省分区和组件标题，需独立分组标题的非图表内容使用 card。带图表的有标题分组保留 panel，避免 card 清除图表高度。这里只改变新建默认，旧问数 compose 应用不变；合法 dashboard+panel、report+backdrop 继续支持。
+
+修改默认继承布局。显式 `set_page_layout` 保留原标题、容器、轨道/span、数据与手工设置，报告可用宽度、工具栏、标题归属和铺底窄屏回流影响；沿用整页校验拒绝非法候选，不重套创建模板或静默丢弃设置。
+
+四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。`test-harness/model-evals/` 单独提供14个真实模型评测用例与运行约定；当前全部未运行，缺真实 Relay/模型环境、身份与预算，不能将工具测试视为模型准确度成绩。
