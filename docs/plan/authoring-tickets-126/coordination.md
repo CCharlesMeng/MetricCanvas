@@ -164,3 +164,7 @@ T04：S2 书面接受“原始精确引用/hash 校验后规范化，规范化�
 S2 #129 后续准确文件追加（无已登记冲突）：`tests/public-api/page.txt`（UPDATE_PUBLIC_API 单向生成）；`packages/engine/runtime/tests/ioc-project-overview.test.ts`、`ioc-project-detail.test.ts`、`ioc-opportunity-list.test.ts`、`ioc-opportunity-analysis.test.ts`。后四项沿用同目录前缀，原 6.0 fixtures 保留。S2 回报 normalizePageDocument 新增、parsePage 返回规范化 6.1/layout，27 文件 204 测试及新增矩阵 18 测试通过，ESM/IIFE 浏览器仍在执行。当前无固定提交，未正式验收；Python 新语义待 #132，要求明确失败向量/责任，不用新增 pending 豁免掩盖。
 
 S3 准备文档追加 `f07a00e359b8ab8130a3cb49fc202d3575d6e2ce`：仅同一 t06 文档增加 4 行，记录从 S2 工作树只读核对的黄金向量、错误路径及无需新增 sdist 版本资产。S0 已审阅差异与 diff check，接受为待验收输入；无产品改动、不重跑旧测试、仍未解锁 #132。对应集成提交见本条前一个 Git 提交（保留来源作者）。
+
+### #129 测试文件临时所有权例外（S1 明确授权）
+
+S1 授权 S2 临时修改 `apps/platform/tests/workbench/promote.test.ts`：仅将旧 6.0 输入确认载荷的版本预期从 `versionPolicy.current` 改为 `document.schemaVersion`，并在需要时清理因此未使用的 import。随 #129 提交、验证及 S0 范围核验后归还 S1；此窗口内 S1 不并发修改该文件。不改 fixture、不改生产模块、不启动 #131 消费迁移，不将此例外扩大到其他工作台文件。S0 验收 #129 时单独核对此差异及测试结果。
