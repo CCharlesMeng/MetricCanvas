@@ -426,3 +426,13 @@ S1已明确授权S2仅修改`apps/platform/tests/workbench/document-edit.test.ts
 `metriccanvas-authoring/test-harness/tests/test_build_page.py`与`metriccanvas-authoring/test-harness/tests/test_stdio.py`各一处新作者写出6.1硬编码拟改为contract-lock.pageSchemaVersion；S0已请求S3核对窗口，确认前不得修改。必要读取支持须最小化，历史输入/其他断言不变，不能混#134工作。
 
 S3确认#134不编辑test_build_page.py/test_stdio.py，明确授权S2在#143仅改新作者输出schemaVersion对账行为自身contract-lock.pageSchemaVersion；旧6.1读取向量不得随current漂移。S0确认此窗口，验收后归还；若需额外辅助代码先列最小差异，不扩大版本行授权。
+
+## #143验收集成与#144放行
+
+实现25b8d737429fba7fbe385926d5d045de2bdc0fb0→bbebaa5d483152a8a9e8c684f8ae6cee96fbde5a；证据c43d59bb5c47325a615c32308ef0bd7f9c898b73→ce483d7d793bca52108eb03bfbb74c723e7dffdc。57实现文件范围核对，集成产品树与固定提供树一致。S0审阅参数声明/目标唯一性/筛选接管、URL初始化、规范化版本行为；四文件45测试通过，194product/4authoring/1interface无漂移，482摘要通过。核对Python sdist SHA256与t17一致、实际日志44浏览器及157Python通过。采用t17全仓983通过/5既有skip、check/build/四包pack与仓外53向量证据，不冒称重跑全量或Edge/最低版本矩阵。
+
+6.2受控维度参数契约按t17正式可消费；layout迁移最低6.1、已有6.1/6.2保持，新作者写current6.2；四包rc.3仅本地候选。#133旧rc.2双矩阵证据不冒作本次新包完整双矩阵，后续M2/真实消费仍需相应验证。没有真实Java/Relay联调。
+
+临时文件已核对：S1 document-edit.test.ts仅未来版本单行；S3 test_build_page.py/test_stdio.py各一行读取lock，page_validation.py及其测试为参数/版本范围。正式归还各原所有者。S2可消费本条HEAD后执行#144，逐票提交证据。
+
+#134作者501eda4与M0隔离生成仍是待验收输入；现集成版本已6.2，最终合入不得用旧6.1/rc.2锁覆盖新基线。S2/S3需将#134作者与本次正式基线组合、单向重生成并复验内容/53兼容向量及独立安装后成套交S0；M0隔离证据保留但不替代最终组合。#139亦须在验收集成时核验新版规范化对队列原文的兼容，不重写已冻结操作。
