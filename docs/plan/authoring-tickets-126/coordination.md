@@ -577,3 +577,9 @@ S3任务不变；独立树`/private/tmp/metriccanvas-s3-136`、分支`codex/s3-1
 既有作者触点（均S3）：Bundle tool/metriccanvas_authoring下domain/page_editing.py注册、domain/text_map_building.py仅复用删除保护的允许类型、application/edit_page.py与create_content_page.py传可信summary配置、adapters/inbound/content_mcp.py、content_server.py；Bundle contracts/authored/page-edit-request.schema.json、test-harness/content_stdio_server.py、README.md。生成锁仍S2唯一作者。
 
 容器子树采用受控字段/数据源recipe复用构造器，tab表格及组合卡白名单按#136要求验收，不接任意JSON/空壳。aiSummary须显式runtime_sse意图、非空promptTemplate/relatedData与可信部署AiSummaryConfig；模型不得提供conversationBaseUrl，缺配置明确失败，add_text不自动升级。浏览器仅以真实本地SSE边界验证现有协议，外部服务不冒称已连通；精确范围和全部正反例以整票回执验收。
+
+## #141验收集成
+
+来源120f7c9030194f8ddcaa17a57a17be831b6253d9及0ef24366b0364115bcb275dbef593bb279de40fe按顺序保留作者集成（本条前两提交完整SHA见Git）；未取来源merge，集成apps树与S1最终组合一致。S0读票/审阅单步undo持久化、新操作恢复、历史快照/分页/重复游标与精确读取门禁，独立五文件60项通过；采用t15最终d593df组合1020通过/5既有skip、类型/check/build及四浏览器证据，不冒称全量重跑。
+
+本仓#141范围通过：撤销最近一次完整操作，保留原操作与历史，未知已发先核实；旧版本恢复以当前base新保存，即使相同内容也属显式新动作。历史能力缺失明确提示，未实现多步undo/redo或真实Java历史。回退时带undoDraft记录会被旧严格恢复器拒绝但保留，不自动删除。#142可按真实前置开工，#146仍只等#138，S4尚未登记；S2预览三路径仍临时独占。
