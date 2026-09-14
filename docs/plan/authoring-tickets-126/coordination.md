@@ -795,3 +795,11 @@ S0审阅全候选source对账、真实执行预览注入、人工确认与版本
 #145本仓整票范围通过。20票#127–#146均已有各自本仓范围验收，#130仍仅方案；双Skill/布局/手册/矩阵已有本仓证据。#126整体M2仍含真实模型评测欠项（14全部not_run）及最新main合流回归，M3外部确认/真实联调/内网未完成，#95不关闭。第二批#138/#145/#146及补项仍仅本地提交，未远端发布或关闭。
 
 发现先前CI接缝任务已结束，用户授权main提交26d6db3及文档640dd2a；S0读取真实任务记录，下一步核对最终main变更、独立合流验证，再正式转交S5两文件，不能继续以“任务仍运行”阻塞其基础适配。
+
+## #145验收暂停与盘古正式交接
+
+S1在6ac142b记录后自查发现confirmAndPublish/cancel的await release迟到回调可能覆盖新评审，S0立即暂停前条#145整票最终放行；已经合入的代码历史保留，等待S1追加固定修正与独立反例，不发布或关闭Issue。前条不能作为最终完成依据。
+
+S0 fetch确认在线main为640dd2aa435a45b50b1954967054c136468a473d，包含用户另任务已授权CI接缝26d6db3与盘古文档640dd2a；已合入本独立树，无冲突。审阅port只读事件辅助、PanguDialogue响应adapter变化及独立attachDialogue清理；runtime.ts与工作台未被该main增量改动。独立集成49项对话/通知/#146语言测试通过。复用已有node_modules链接并生成本树SvelteKit配置，首次缺生成tsconfig失败后复验通过，未安装新依赖或更改原工作区。
+
+S5任务01a0a034-c4c3-7033-af2b-2539d6d9e0ae现正式接收`apps/platform/src/lib/dialogue/runtime.ts`与`apps/platform/src/lib/dialogue/PanguDialogue.svelte`，在本条SHA建/合独立基线后报告实际分支。原S1无并行修改回执和CI任务结束均已核实；`port.ts`/工作台仍S1，新增`lifecycle.ts`/stub及混合测试不默认转移，确需修改先登记。已登记专属pangu-runtime.test.ts及s5-pangu-evidence.md保持。先读最终main的docs/pangu-development.md与现有adapter替换清理，不重做CI成果；真实SDKURL/版本/内网缺口仍明确，基础适配本仓验证可继续，不等#145修正。
