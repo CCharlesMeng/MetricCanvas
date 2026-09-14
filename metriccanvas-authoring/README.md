@@ -94,3 +94,17 @@ METRICCANVAS_TOOL_SURFACE=relay \
 ```
 
 完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/plan/metriccanvas-agent-full-migration.md`](../docs/plan/metriccanvas-agent-full-migration.md)。
+
+## 独立生命周期 MCP（#138）
+
+`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.lifecycle_server`）独立装载，四项工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行编辑、参数提取或发布。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
+
+受信任 Relay 适配器在调用之前把完整请求写到独立用户/工作区进程的 `METRICCANVAS_LIFECYCLE_INPUTS_DIR/<token>.json`。目录权限须 0700、文件 0600，令牌为 16–128 位字母/数字/下划线/连字符；文件内容 `{actorId,workspaceId,request}`，request 按该 schema 的 save/read/history 分支。目录不可由模型写入；调用方必须保证同一逻辑操作的请求文件不可变并持久保留，禁止在重试时换 operationId 或修改原载荷。token 只定位受信任请求，不代替服务鉴权；保存指纹、基线原子比较、去重期限与授权仍由服务裁决。
+
+身份只从程序注入：`METRICCANVAS_OPERATOR_ID`、`METRICCANVAS_WORKSPACE_ID`、`METRICCANVAS_AUTH_TOKEN`，凭据只在进程内存和请求头中；不写 spool 或工具输出。当前环境适配器不是登录/身份验证实现，真实 Relay 按用户注入与 Java token/actor 校验仍待 #105/#106。自有 spool 只是本仓可用的程序接缝，不声称真实 Relay 已会写这些文件。输入命令显式固定 origin、base、description、retainDimensionValues 与 operationId；模型不可传这些字段或完整 document。
+
+完整精确读取结果与历史写入 `METRICCANVAS_LIFECYCLE_OUTPUTS_DIR`，权限同上；模型和 MCP structuredContent 均仅见引用、状态、程序令牌及完整性摘要。保存结果的程序输出保留 receipt/context/base，供可信编排核对原轮次；缺失 sessionId/runId 不代表已验证轮归属。Relay 必须直接读取程序输出并转交内容基线/前端读取边界，不能经模型转抄。输出令牌不是 draftId，不生成 `metriccanvas:draft-saved` 事件，不推断三个修订标识与通知标识相等。输出清理由拥有该进程的集成方按使用期限执行。
+
+保存先查询原请求：权威 `not-applied` 且 `retrySafe:true` 才提交原命令；saved 返回原修订，pending/unknown/过期去重结果均不重发。回执丢失返回 unknown，可用相同保存 token 调 `get_save_result`。此模块没有本地幂等数据库，不把生成令牌或客户端 UUID 当成强幂等。精确读取验证完整 ref 与持久化原文 hash，再校验页面；不规范化原始修订、不回退 latest。跨语言 canonicalization 必须由接入适配器明确协商并实现 `verify_document`；测试中的 Python 排序 JSON 算法仅是外部边界替身的算法，生产没有默认 hash 算法。
+
+生产组合默认使用 #105 已知 HTTP 消费适配器。`METRICCANVAS_LIFECYCLE_COLLECTION_URL` 由部署传入真实 `.../user-page-metadata` 集合地址；适配器仅提供当前资源匹配 GET，响应必须同时 HTTP 200、`retCode:"0"`、三元引用与页面文档匹配。它不是强 exactRead，因此不会通过上述精确工具暴露。stableSave/exactRead/history/operationLookup 默认关闭，工具明确返回 CAPABILITY_UNAVAILABLE，不调用拟新增端点。强端口只能通过受信任程序组合显式实现，不能设置环境开关把未知能力变成可用。当前匹配读取的成功回执仍仅 assurance=provider-response，不升级为强 Saved。
