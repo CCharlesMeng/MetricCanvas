@@ -561,3 +561,5 @@ S1已消费155346f2并读#141/#142完整正文，先实施#141。新增S1唯一�
 S0读票正文并审阅三组件构造、可信source token/ref/hash、queryField行证据、地图资产校验/容器门禁、删除引用检查与程序摘要边界。独立运行9领域+4创建/实际stdio测试全部通过，502摘要通过，读取197全量通过日志。采用t09公开工具2/2产品CLI、report/dashboard Chrome几何与浙江省18 tooltip、零pageerror及最终独立安装生产content四工具/hash/text证据，不冒称S0重跑浏览器或真实DQE。
 
 本仓#135范围通过：text可无源，fieldText要求单行非空长文本，mapChart要求有效地域/数值与真实底图匹配；plain/card追加地图明确失败不暗改原分区，新页面用main panel；创建content-page-artifact与既有page-edit-artifact分开，无保存/发布副作用。S3可从本条HEAD继续#136后#137，读各票/登记新增文件。#144最终组合需保留本票新增内容工具/manifest并统一重生成，不覆盖为旧rc.3锁；该票未验收。
+
+#135共同基线兼容补正：S2独立38316c196068164e7ab3830a34c655bb62f8e781（父8ea095f）只改tests/authoring-export-isolation.test.ts，复制两底图并创建父目录；S0审阅/独立隔离测试1项通过后已集成（本条前一提交）。未引入#144实现，解除S1全量ENOENT阻塞；历史预期篡改/当前契约漂移断言保持。#144内同一修正后续合并保留一次，不重复覆盖。
