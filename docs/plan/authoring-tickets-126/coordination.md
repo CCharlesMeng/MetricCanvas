@@ -160,3 +160,5 @@ T04：S2 书面接受“原始精确引用/hash 校验后规范化，规范化�
 - S3 回报旧基线 153 项中 151 通过、2 项受沙箱 bind 限制；该测试文件提权复验 7 项通过；Bundle 460 摘要通过。S0 审阅记录，未重跑未改变的产品测试，不将其作为新版兼容证据。
 - 文中 6.1 接受单独 layoutForm 属 S2 待集成兼容提案；最终以 #129 黄金矩阵与验收 SHA 为准，不由准备文档冻结。#132 继续等待 #129，不等待 M0。
 - S3 报告 #132 进度评论遭自动审批拒绝，理由包含本地路径/任务 ID/内部协作信息；未发布。S0 不代为重发或绕过该拒绝，执行证据暂保存在仓内；远端记录仍待允许的发布方式。此限制不阻塞本地文档整合。
+
+S2 #129 后续准确文件追加（无已登记冲突）：`tests/public-api/page.txt`（UPDATE_PUBLIC_API 单向生成）；`packages/engine/runtime/tests/ioc-project-overview.test.ts`、`ioc-project-detail.test.ts`、`ioc-opportunity-list.test.ts`、`ioc-opportunity-analysis.test.ts`。后四项沿用同目录前缀，原 6.0 fixtures 保留。S2 回报 normalizePageDocument 新增、parsePage 返回规范化 6.1/layout，27 文件 204 测试及新增矩阵 18 测试通过，ESM/IIFE 浏览器仍在执行。当前无固定提交，未正式验收；Python 新语义待 #132，要求明确失败向量/责任，不用新增 pending 豁免掩盖。
