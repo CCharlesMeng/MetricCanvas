@@ -669,3 +669,17 @@ S0审阅结构遍历/分支required保留/语义映射/完整例子裁剪/分支
 ## 用户审查通过与远端收口授权
 
 用户已明确“可以，没问题，审查通过，更新issue状态，并生成下一步计划执行的handoff”。S0接管本批17票+手册/矩阵的远端交付，替代旧9票冻结批次；旧交付任务已通知停止重复操作。已验收基线f15c708，新增handoff/next-stage.md与索引，定义新唯一在线基线应为本批合并后的main。计划关闭#128–#137/#139–#144（#127已关闭），#138/#145/#146/#126/#95保留开放；实际远端结果以GitHub PR/merge与状态核验为准，不把本条当已发布。S4/S5未登记，盘古两文件仍S1保管，启动后正式交接。
+
+## 下一阶段正式开工（PR147之后）
+
+共同产品基线为在线main `a6e923187e124c7fd6c7f7c2e78bafd101e3dda6`，S0已fetch核对；继续独立`/private/tmp/metriccanvas-126-integration`与`codex/authoring-126-integration`，原工作区保持原位。PR147已合并、三CI通过、17实施票关闭，实际交付回执见#126 issuecomment-5664914719。用户通过启动任务01a0a028-7cf6-7c71-bd79-067106479073要求直接开始下一阶段；本轮授权本仓实施/测试/本地提交集成，后续远端交付另核明确授权，不沿用上一批。
+
+S1原任务不变，新分支`codex/authoring-126-s1-next`、树`/private/tmp/metriccanvas-126-s1`、起点a6e9231；唯一新增准备文件`docs/plan/authoring-tickets-126/handoff/s1-next-stage-preparation.md`，本阶段先交盘古与#146/#145场景准备，不越过#138实施依赖。S1已明确runtime.ts/PanguDialogue.svelte无并行修改。
+
+S4真实任务`01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，树`/Users/moon/.codex/worktrees/da9f/DataDashboard`，分支`codex/s4-lifecycle-138`，起点a6e9231，负责#138后#145工具。S4唯一新增Bundle下：`tool/metriccanvas_authoring/lifecycle_server.py`、`application/lifecycle.py`、`application/lifecycle_ports.py`、`adapters/inbound/lifecycle_mcp.py`、`adapters/outbound/lifecycle_spool.py`、`adapters/outbound/lifecycle_http.py`（后五路径均在tool/metriccanvas_authoring/）；`test-harness/tests/test_lifecycle.py`、`test_lifecycle_http.py`、`test_lifecycle_stdio.py`（后两均同tests目录）、`test-harness/lifecycle_stdio_server.py`、`contracts/authored/lifecycle-request.schema.json`；新增`docs/plan/authoring-tickets-126/t12-evidence.md`。既有Bundle `tool/pyproject.toml`仅生命周期entry及自有schema打包，`README.md`仅生命周期使用。生成锁/公共导出仍S2。
+
+#138可信身份作用域与spool token绑定完整命令，模型不自填身份/文档/操作键；稳定操作与原请求由可信调用方提供，校验引用/内容/回执一致性，未知先查结果再按原操作重试。默认已知HTTP只允许明确current-match读取能力，stableSave/exactRead/history/operationLookup未确认保持关闭，current-match不得冒充不可变精确历史；未来端口以T04正反例验证，不发明生产地址。#138验收集成后通知S1优先#146，同时解锁S4的#145工具前置。
+
+S5真实任务`01a0a034-c4c3-7033-af2b-2539d6d9e0ae`，树`/Users/moon/.codex/worktrees/8291/DataDashboard`，分支`codex/s5-pangu-integration`，起点a6e9231。已登记角色但两文件尚未移交：用户另有任务`01a0a02b-3a24-7f61-b17d-32d48a6f3d4d`（配置对话模块CI接缝）在独立树合入main，S0只读确认其用户授权后请求实际文件/提交回执；不擅改其任务授权。S5先只读核验SDK/环境事实，提交新测试/证据精确范围，待该并行窗口核清再正式接runtime.ts/PanguDialogue.svelte；port.ts与工作台仍S1。
+
+最新#126第4.1节及末尾双Skill/布局基线补充进入M2核查清单。当前代码仅page-builder Skill，S3受托只读核对已有证据和新增时间，先报缺口、不提前实现；不能用剩余三票关闭替代补充范围完成。
