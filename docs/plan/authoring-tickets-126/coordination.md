@@ -545,3 +545,9 @@ S0读#140正文、审阅记录严格校验/双投影/CAS/原命令恢复/有界�
 本仓恢复范围通过，已发无outcome先lookup，原6.1命令不升版，1/3/10秒最多3次追加核实，损坏/冲突/身份/保护失败暂停；本地工作与运行凭据分离。离线重开前提是壳已加载，无Service Worker/壳离线缓存承诺。真实强Java端口未确认，非真实联调。
 
 #146已具备#127/#134/#140，唯一未满足前置#138（S4尚未登记）；S0通知S1准备但不提前实现依赖。#145仍等#138/#144，S1主责最终界面与验收、S4工具。S1可按各票依赖继续#141/#142，先读票及登记，#146一旦齐备优先。M1未通过。
+
+## #141开工登记
+
+S1已消费155346f2并读#141/#142完整正文，先实施#141。新增S1唯一作者：`apps/platform/src/lib/workbench/authoring-history.ts`、`apps/platform/src/lib/workbench/AuthoringHistory.svelte`、`apps/platform/tests/workbench/authoring-history.test.ts`、`apps/platform/tests/workbench/authoring-history-browser.mjs`、`docs/plan/authoring-tickets-126/t15-evidence.md`。既有sync/recovery/coordinator/PageAuthoringWorkbench及开发fixture接线仍S1；S2预览三路径不动。
+
+撤销/恢复沿原队列新增操作，未确定原操作先核实，不删除已发项；history/exactRead缺失明确提示、不猜生产URL。#142未实施，#146等#138齐备后优先；具体历史分页/精确读取和撤销边界按本票验收，不将内部端口当外部确认。
