@@ -30,8 +30,9 @@
 | 票 | 本仓证据 | 外部确认 | 真实联调 | 集成提交 / 下游 |
 |---|---|---|---|---|
 | #127/#128 | 待 S1 逐票回执 | 盘古事实见 #106 | 待 #107/#108 | 无 |
-| #129/#131/#133 | 待 S2 逐票回执 | 不以外部服务为本仓前置 | #103 待内网 | 无 |
-| #132 | 待 #129 集成与 S3 回执 | 不适用 | Python 独立交付按票验证 | 无 |
+| #129 | 本票契约/浏览器范围验收集成；Python执行一致性由 #132 接续 | 无新增外部确认 | #103 待内网 | `dd64de0`；解锁 #131/#132 |
+| #131/#133 | 待 S2 逐票回执 | 不以外部服务为本仓前置 | #103 待内网 | 无 |
+| #132 | #129 已集成，等待 S3 实施及兼容回执 | 不适用 | Python 独立交付按票验证 | 无 |
 | #130 | 方案与正反例本仓交付通过：21 场景/32 步骤、22 处文档校验；S1 已接受主要保存语义，S1/S2 完整接口证据待回执 | #105 只确认既有目录/详情/新增更新资料；新提案未确认 | 待 #105/#106 | `265b2ca` 文档交付；#138/#144 可评审，功能仍等待 M0 |
 
 每票回执：范围/未实现、基线与提交 SHA、准确变更文件、公开契约版本、逐项验收与实际命令结果、外部状态、下游、回退方式。S0 核验后保留提交身份整合；下游以集成 SHA + 针对性兼容证据消费，不以关闭状态代替。
@@ -168,3 +169,16 @@ S3 准备文档追加 `f07a00e359b8ab8130a3cb49fc202d3575d6e2ce`：仅同一 t06
 ### #129 测试文件临时所有权例外（S1 明确授权）
 
 S1 授权 S2 临时修改 `apps/platform/tests/workbench/promote.test.ts`：仅将旧 6.0 输入确认载荷的版本预期从 `versionPolicy.current` 改为 `document.schemaVersion`，并在需要时清理因此未使用的 import。随 #129 提交、验证及 S0 范围核验后归还 S1；此窗口内 S1 不并发修改该文件。不改 fixture、不改生产模块、不启动 #131 消费迁移，不将此例外扩大到其他工作台文件。S0 验收 #129 时单独核对此差异及测试结果。
+
+## #129 契约范围验收与正式解锁（2026-09-14）
+
+- 提供方提交：`64acd60501239904b9ae1f55a2618ed2a17d41bf`，起点 `057703b1604f4937601f99534c713a4f72995c08`。
+- 集成提交：`dd64de0520249c3ede18246c4921871d2aaeab8e`。52 文件逐项核对；产品树（apps/packages/contracts/metriccanvas-authoring/tools/tests）与提供方固定提交无差异。原作者保留，本地集成未 push。
+- S0 已读 #129 最新正文和 S2 交付评论、t03 契约与证据；审阅 normalizePageDocument / parsePage、版本/双字段规则、RuntimeSurface、生成器及公开测试。增量双读/唯一规范化写出/原始文档保持和升级顺序符合本票范围。
+- S0 针对性复验：layout-compatibility、version、promote 三测试文件 **48 项通过**；产品导出 `--check` **190 product / 4 authoring / 1 interface** 无漂移；Bundle **474 digest checks** 通过；diff check 通过。在 S2 干净工作树固定提交运行，随后核对集成产品树等同。
+- S2 证据采用：全量 **127 文件 / 936 通过 / 5 既有 skip**，pnpm check，Embed 构建及 **6 项 ESM/IIFE 浏览器**通过。S0 不重复全量和浏览器验证；非内网验收。详细可复现命令在 t03-evidence.md。
+- 临时授权 `apps/platform/tests/workbench/promote.test.ts` 核对仅一行版本预期变更，现正式归还 S1。额外测试 `packages/page/tests/validate-cli.test.ts` 仅将 fixture 数量 11 改 13，S0 本轮补登记并认可；新 fixture/生成物完整文件名以 52 文件提交清单为准。
+- 接收矩阵已冻结：6.0 layoutForm；6.1 layout 或单独 layoutForm；无字段缺省 report；任意双字段拒绝；6.0 layout 拒绝；未知版本拒绝。规范化完整原文复制后只改顶层版本/布局，不物化 params/initial，不覆盖历史修订。
+- #129 此次通过的是契约与浏览器读取边界验收，足以提供 #131/#132 基线。跨语言共享期望已单向生成；Python 当前执行尚有三项差距，**不宣称全跨端一致性已通过**：layout-before-6.1 缺 SCHEMA_ERROR /layout；layout-dual-equal、layout-dual-conflict 缺 SCHEMA_ERROR /layoutForm。由 #132 完成并由 #133 汇总；不加 pending 豁免、不让 #132 等 M0。Issue 不因本次解锁自动关闭。
+- S3 现在可消费本条所在集成 HEAD：先合入并验证预期三项差距及 32 项矩阵，再实施 Python；S2 消费同一 HEAD 后执行 #131。#133 继续等 #131/#132 验收集成。M0 尚未 READY。
+- #130 与 S2 的原始 hash→规范化顺序已有书面及 normalizePageDocument 内容保持测试证据；S1 #128 实际接口兼容仍待交付，外部新能力与真实联调均未确认。
