@@ -1,5 +1,6 @@
 """Real stdio transport with controlled external data/baseline ports."""
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -31,7 +32,7 @@ execution = fixture("page-build-execution.json")
 server = create_content_mcp_server(ComposePageDependencies(
     FakeDataContextPort(fixture("data-context.json")),
     FakeDqeExecutionPort(DqeExecutionResult(rows=execution["rows"], total_count=execution.get("totalCount"), captured_at=execution.get("capturedAt"))),
-), Baselines())
+), Baselines(), summary_config=json.loads(os.environ.get("METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG", "null")))
 
 if __name__ == "__main__":
     server.run()

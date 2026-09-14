@@ -6,16 +6,17 @@ from typing import Any
 from jsonschema import Draft202012Validator
 
 from metriccanvas_authoring.domain.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+from metriccanvas_authoring.domain.container_building import CONTAINER_HANDLERS, add_ai_summary
 from metriccanvas_authoring.domain.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text())
 OPERATION_SCHEMA = EDIT_SCHEMA["properties"]["operations"]["items"]
-OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS}
+OPERATION_HANDLERS = {**COMPONENT_HANDLERS, **TEXT_MAP_HANDLERS, **CONTAINER_HANDLERS}
 
 
-def edit_page_document(baseline: Any, request: Any) -> dict[str, Any]:
+def edit_page_document(baseline: Any, request: Any, *, summary_enabled: bool = False) -> dict[str, Any]:
     normalized = normalize_page_document(baseline)
     if not normalized["ok"]:
         return {"status": "invalid_baseline", "document": None, "operations": [], "issues": [
@@ -43,7 +44,8 @@ def edit_page_document(baseline: Any, request: Any) -> dict[str, Any]:
         else:
             candidate = deepcopy(current)
             try:
-                adjustments = OPERATION_HANDLERS[op["type"]](candidate, op)
+                adjustments = (add_ai_summary(candidate, op, summary_enabled=summary_enabled) if op["type"] == "add_ai_summary"
+                    else OPERATION_HANDLERS[op["type"]](candidate, op))
                 errors = validate_page_document(candidate)
                 if errors:
                     result["issues"] = [{"code": e.type, "path": e.path} for e in errors]

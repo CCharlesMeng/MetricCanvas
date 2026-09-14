@@ -773,6 +773,362 @@
               "type",
               "componentId"
             ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_composite_card"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "children": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "componentId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "dataSourceId": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "componentType": {
+                      "enum": [
+                        "metricCard",
+                        "pieChart",
+                        "gauge",
+                        "keyValuePanel",
+                        "categoryBreakdown"
+                      ]
+                    },
+                    "title": {
+                      "type": "string",
+                      "maxLength": 4000
+                    },
+                    "span": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 12
+                    }
+                  },
+                  "required": [
+                    "componentId",
+                    "dataSourceId",
+                    "componentType"
+                  ]
+                }
+              },
+              "dividers": {
+                "type": "boolean"
+              },
+              "titleIcon": {
+                "enum": [
+                  "opportunity",
+                  "tieredManagement",
+                  "review"
+                ]
+              },
+              "variant": {
+                "enum": [
+                  "compact",
+                  "projectNorms",
+                  "metricGrid"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "children"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_tab_container"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "tabs": {
+                "type": "array",
+                "minItems": 1,
+                "maxItems": 20,
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "label": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000,
+                      "pattern": "\\S"
+                    },
+                    "children": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 20,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "componentId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "dataSourceId": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "componentType": {
+                            "enum": [
+                              "table"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "maxLength": 4000
+                          },
+                          "span": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 12
+                          }
+                        },
+                        "required": [
+                          "componentId",
+                          "dataSourceId",
+                          "componentType"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "label",
+                    "children"
+                  ]
+                }
+              },
+              "defaultTab": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "variant": {
+                "enum": [
+                  "compact",
+                  "analysisStack"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "tabs"
+            ]
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "dependsOn": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 128
+                },
+                "uniqueItems": true,
+                "maxItems": 50
+              },
+              "componentId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "type": {
+                "const": "add_ai_summary"
+              },
+              "sectionId": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              "span": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 12
+              },
+              "title": {
+                "type": "string",
+                "maxLength": 4000
+              },
+              "generation": {
+                "const": "runtime_sse"
+              },
+              "promptTemplate": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 4000,
+                "pattern": "\\S"
+              },
+              "relatedData": {
+                "type": "object",
+                "minProperties": 1,
+                "maxProperties": 20,
+                "additionalProperties": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "source": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 128
+                    },
+                    "description": {
+                      "type": "string",
+                      "minLength": 1,
+                      "maxLength": 4000,
+                      "pattern": "\\S"
+                    },
+                    "fields": {
+                      "type": "array",
+                      "minItems": 1,
+                      "maxItems": 50,
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 128
+                          },
+                          "term": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 4000,
+                            "pattern": "\\S"
+                          }
+                        },
+                        "required": [
+                          "field",
+                          "term"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "source",
+                    "description",
+                    "fields"
+                  ]
+                }
+              },
+              "variant": {
+                "const": "reportInline"
+              }
+            },
+            "required": [
+              "id",
+              "type",
+              "componentId",
+              "sectionId",
+              "generation",
+              "promptTemplate",
+              "relatedData"
+            ]
           }
         ]
       }

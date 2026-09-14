@@ -3,6 +3,7 @@ import hashlib
 import re
 from typing import Any
 
+from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaselinePort
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.domain.idempotency import canonical_json
@@ -27,12 +28,12 @@ async def read_verified_baseline(baselines: ContentBaselinePort, token: str):
     return baseline
 
 
-def create_edit_page(baselines: ContentBaselinePort):
+def create_edit_page(baselines: ContentBaselinePort, summary_config=None):
     async def edit_page(token: str, request: Any) -> dict[str, Any]:
         try:
             baseline = await read_verified_baseline(baselines, token)
             ref = baseline.ref
-            result = edit_page_document(baseline.document, request)
+            result = edit_page_document(baseline.document, request, summary_enabled=summary_configured(summary_config))
         except ContentBaselineError as error:
             return {"ok": False, "artifactEnvelope": None, "modelSummary": {
                 "status": "invalid_baseline", "operations": [], "issues": [{"code": error.code, "path": ""}],

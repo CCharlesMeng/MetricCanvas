@@ -1,6 +1,7 @@
 """Create a page from controlled content recipes; source data stays program-owned."""
 from copy import deepcopy
 
+from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.application.content_ports import ContentBaselineError
 from metriccanvas_authoring.application.edit_page import read_verified_baseline, document_sha256
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
@@ -8,13 +9,13 @@ from metriccanvas_authoring.domain.page_editing import edit_page_document
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 
-def create_content_page(baselines):
+def create_content_page(baselines, summary_config=None):
     async def create(page_id, title, layout, request, source_token=None):
         def failure(code):
             return {"ok": False, "artifactEnvelope": None, "modelSummary": {"status": "failed", "issues": [{"code": code, "path": ""}], "operations": []}}
         if (not isinstance(request, dict) or set(request) != {"operations"}
                 or not isinstance(request["operations"], list)
-                or any(not isinstance(op, dict) or op.get("type") not in {"add_text", "add_field_text", "add_map_chart"} for op in request["operations"])):
+                or any(not isinstance(op, dict) or op.get("type") not in {"add_text", "add_field_text", "add_map_chart", "add_tab_container", "add_composite_card", "add_ai_summary"} for op in request["operations"])):
             return failure("CONTENT_CREATION_REQUEST_INVALID")
         document = {"schemaVersion": load_bundle_info()["pageSchemaVersion"], "id": page_id, "layout": layout,
             "dataSources": {}, "sections": [{"id": "main", "container": "panel", "components": [{
@@ -30,7 +31,7 @@ def create_content_page(baselines):
                     if key in source.document: document[key] = deepcopy(source.document[key])
             except ContentBaselineError as error:
                 return failure(error.code)
-        result = edit_page_document(document, request)
+        result = edit_page_document(document, request, summary_enabled=summary_configured(summary_config))
         summary = {"status": result["status"], "operations": result["operations"], "issues": result["issues"]}
         envelope = None
         if result["document"] is not None:

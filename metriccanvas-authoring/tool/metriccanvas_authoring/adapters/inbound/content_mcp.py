@@ -27,10 +27,10 @@ RESULT_SCHEMA = {
 }
 
 
-def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: ContentBaselinePort) -> FastMCP:
+def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: ContentBaselinePort, *, summary_config=None) -> FastMCP:
     compose = create_compose_page(dependencies)
-    edit = create_edit_page(baselines)
-    create_content = make_content_page(baselines)
+    edit = create_edit_page(baselines, summary_config)
+    create_content = make_content_page(baselines, summary_config)
     discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context))
     mcp = FastMCP("metriccanvas-content", instructions=(
         "Create with compose_page or create_content_page; edit an existing page only with edit_page and a trusted baseline_token. "
@@ -96,7 +96,10 @@ def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: 
     @mcp.tool(output_schema=RESULT_SCHEMA)
     async def create_content_page(page_id: str, title: str, request: PageEditRequest,
             layout: Literal["report", "dashboard"] = "report", source_token: str | None = None) -> ToolResult:
-        """Create text/fieldText/mapChart in section main using explicit add operations.
+        """Create complete content in section main using explicit add operations.
+
+        Containers take governed child recipes. AI summaries require generation=runtime_sse,
+        explicit prompt/relatedData and a deployment-owned summary configuration.
 
         Static text needs no source. Field text and maps require a trusted source_token
         whose complete page supplies governed data and verified row evidence. Never

@@ -94,12 +94,12 @@ def add_map_chart(page, op):
     return []
 
 
-def remove_component(page, op):
-    # Container editing is T10. Only the three T09 leaf types are removable here.
+def remove_component(page, op, *, allowed_types=("text", "fieldText", "mapChart")):
+    # Remove a complete top-level subtree; full-page validation follows.
     for section in page["sections"]:
         for index, component in enumerate(section["components"]):
             if component["id"] == op["componentId"]:
-                if component["type"] not in {"text", "fieldText", "mapChart"}:
+                if component["type"] not in allowed_types:
                     raise EditFailure("REMOVE_COMPONENT_TYPE_UNSUPPORTED")
                 if index + 1 < len(section["components"]) and section["components"][index + 1]["layout"].get("connectPrevious"):
                     raise EditFailure("COMPONENT_REFERENCED_BY_CONNECTION", "/componentId")
