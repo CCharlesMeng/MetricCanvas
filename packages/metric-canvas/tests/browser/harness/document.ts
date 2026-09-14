@@ -1,8 +1,8 @@
-import { parsePage } from '@metriccanvas/page';
+import { normalizePageDocument } from '@metriccanvas/page';
 import type { RuntimeDataGateway } from '@metriccanvas/engine';
 
 export const document = {
-  schemaVersion: '6.0', id: 'authoring-isolation',
+  schemaVersion: '6.1', layout: 'report', id: 'authoring-isolation',
   dataSources: {
     sales: {
       fields: {
@@ -29,9 +29,9 @@ export const document = {
 };
 
 export function validDocument(raw: unknown) {
-  const parsed = parsePage(raw);
+  const parsed = normalizePageDocument(raw);
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
-  return parsed.page;
+  return parsed.document;
 }
 
 export function gateway(onfetch: () => void): RuntimeDataGateway {

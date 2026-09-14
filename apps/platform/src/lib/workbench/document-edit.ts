@@ -4,7 +4,7 @@ import {
   type ComponentInput
 } from './component-building';
 import { recommendComponents, type ComponentCandidate } from './component-selection';
-import { validate } from '@metriccanvas/page';
+import { validate, normalizePageDocument } from '@metriccanvas/page';
 import type { QueryFieldDefinition } from '@metriccanvas/page/internal';
 import {
   normalizeAuthoringDropTarget,
@@ -44,9 +44,9 @@ export type DocumentEditResult =
 export function createCanvasAuthoringDraft(
   document: Record<string, unknown>
 ): DocumentEditResult {
-  const errors = validate(document);
-  if (errors.length > 0) return invalidResult(errors);
-  return projectCanvasDraft(jsonClone(document));
+  const normalized = normalizePageDocument(document);
+  if (!normalized.ok) return invalidResult(normalized.errors);
+  return projectCanvasDraft({ ...normalized.document });
 }
 
 /** 由文档数据源反推取数单元(装配输入):字段契约、查询定义与内嵌初始行。 */

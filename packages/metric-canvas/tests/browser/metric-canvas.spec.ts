@@ -113,3 +113,26 @@ test('编辑态捕获原生链接，退出编辑后恢复浏览器跳转', async
   await link.click();
   await expect(page).toHaveURL(/#linked-content$/);
 });
+
+for (const schemaVersion of ['6.0', '6.1']) {
+  for (const layout of ['report', 'dashboard']) {
+    test(`${schemaVersion} ${layout} 进入搭建画布与正式渲染后保持规范布局`, async ({ page }) => {
+      await page.goto(`${url}?schemaVersion=${schemaVersion}&layout=${layout}`);
+      for (const host of ['#canvas', '#runtime']) {
+        await expect(page.locator(`${host} [data-page-layout-form]`)).toHaveAttribute('data-page-layout-form', layout);
+        await expect(page.locator(`${host} [data-component="main/note"]`)).toHaveCSS('grid-column-start', 'span 12');
+      }
+      const original = JSON.parse(await page.locator('[data-document]').textContent() ?? '{}');
+      expect(original).toMatchObject({ schemaVersion: '6.1', layout });
+      expect(original).not.toHaveProperty('layoutForm');
+      await page.locator(cell).getByRole('heading', { name: '说明' }).click();
+      const input = page.locator(cell).getByRole('textbox');
+      await input.fill('布局迁移后的修改');
+      await input.press('Tab');
+      await expect(page.locator('#runtime').getByRole('heading', { name: '布局迁移后的修改' })).toBeVisible();
+      const edited = JSON.parse(await page.locator('[data-document]').textContent() ?? '{}');
+      expect(edited).toMatchObject({ schemaVersion: '6.1', layout, dataSources: original.dataSources });
+      expect(edited).not.toHaveProperty('layoutForm');
+    });
+  }
+}

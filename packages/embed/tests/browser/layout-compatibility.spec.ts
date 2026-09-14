@@ -8,6 +8,7 @@ for (const mode of ['classic', 'esm'] as const) {
         window.runtime.destroy();
         const url = '/dist/metriccanvas-runtime.es.js';
         const mount = mode === 'classic' ? MetricCanvas.mount : (await import(url)).mount;
+        delete window.pageDocument.layout;
         window.runtime = mount('#dashboard', { document: { ...window.pageDocument, schemaVersion: '6.0', layoutForm: layout } });
       }, { mode, layout });
       const surface = page.locator('[data-page-layout-form]');

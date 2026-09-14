@@ -233,7 +233,7 @@ describe('画布与配置面板的本地文档改写', () => {
     expect(unchanged.ok).toBe(true);
     if (!unchanged.ok) return;
     expect(unchanged.draft).toBe(draft);
-    expect(unchanged.draft.canvasDocument).toEqual(original);
+    expect(unchanged.draft.canvasDocument).toEqual({ ...original, schemaVersion: '6.1', layout: 'report' });
   });
 
   it('标题与宽度编辑:宽度夹取 1–12,空标题移除 props.title', () => {
@@ -281,5 +281,28 @@ describe('画布与配置面板的本地文档改写', () => {
       componentId: first.id
     });
     expect(locatorOfComponent(document, 'ghost')).toBeNull();
+  });
+});
+
+describe('旧页面进入创作草稿的规范化', () => {
+  it.each(['report', 'dashboard'])('%s 文档两份投影只写6.1/layout，原始查询与初始行不变', (layoutForm) => {
+    const input: Record<string, unknown> = { ...assembled(), schemaVersion: '6.0', layoutForm };
+    const original = structuredClone(input);
+    const result = createCanvasAuthoringDraft(input);
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    for (const document of [result.draft.canvasDocument, result.draft.pageDocument]) {
+      expect(document).toMatchObject({ schemaVersion: '6.1', layout: layoutForm });
+      expect(document).not.toHaveProperty('layoutForm');
+      expect(document.dataSources).toEqual(input.dataSources);
+      expect(document.sections).toEqual(input.sections);
+    }
+    expect(input).toEqual(original);
+  });
+  it('双字段与未来版本不能借草稿投影进入工作台', () => {
+    for (const input of [
+      { ...assembled(), schemaVersion: '6.1', layout: 'report', layoutForm: 'report' },
+      { ...assembled(), schemaVersion: '6.2' }
+    ]) expect(createCanvasAuthoringDraft(input).ok).toBe(false);
   });
 });

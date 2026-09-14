@@ -1,6 +1,6 @@
 import {
   parsePage,
-  validate,
+  normalizePageDocument,
   type TypedError
 } from '@metriccanvas/page';
 import { pageListEntry } from '@metriccanvas/page/internal';
@@ -23,7 +23,7 @@ export interface FormulaTrace {
  *   不引入新的数据源类型或渲染路径。
  *
  * 改写是纯函数:不依赖平台、浏览器与 IO,不改动输入文档。页面合法性只信
- * validate()——两个方向的产物都在出口整体过页面校验,失败时透传原始错误。
+ * normalizePageDocument()——两个方向的产物都在出口整体过页面校验并规范化布局,失败时透传原始错误。
  * 结构化相对时间(ADR-0035)不在 V0 沉淀路径内,因此 Data App 方向的产物
  * 缺少滚动时间语义,这一已知限制以 knownLimitations 显式返回,由界面原样
  * 告知用户,不得靠临时加字段绕过。
@@ -112,11 +112,11 @@ export function promoteToDataApp(input: PromoteToDataAppInput): PromoteResult {
   }
 
   const document = { ...input.document, id: input.pageId };
-  const issues = rewrittenPageIssues(document, transientIdOf(input.document));
-  if (issues.length > 0) return { ok: false, issues };
+  const rewritten = rewritePage(document, transientIdOf(input.document));
+  if (!rewritten.ok) return rewritten;
   return {
     ok: true,
-    document,
+    document: rewritten.document,
     adHocDefinitions,
     frozenAt: [],
     knownLimitations: [DATA_APP_ROLLING_TIME_LIMITATION]
@@ -158,11 +158,11 @@ export function promoteToReport(input: PromoteToReportInput): PromoteResult {
     id: input.pageId,
     dataSources: rewrittenSources
   };
-  const rewritten = rewrittenPageIssues(document, transientIdOf(input.document));
-  if (rewritten.length > 0) return { ok: false, issues: rewritten };
+  const rewritten = rewritePage(document, transientIdOf(input.document));
+  if (!rewritten.ok) return rewritten;
   return {
     ok: true,
-    document,
+    document: rewritten.document,
     adHocDefinitions: adHocDefinitionsOf(input.document, input.formulaTraces),
     frozenAt,
     knownLimitations: []
@@ -262,25 +262,25 @@ function transientIdOf(document: Record<string, unknown>): string {
 }
 
 /** 改写出口的统一裁决:无临时 id 痕迹残留,且整体通过页面校验。 */
-function rewrittenPageIssues(
+function rewritePage(
   document: Record<string, unknown>,
   transientPageId: string
-): PromotionIssue[] {
+): { ok: true; document: Record<string, unknown> } | { ok: false; issues: PromotionIssue[] } {
   if (transientPageId !== '' && JSON.stringify(document).includes(transientPageId)) {
-    return [{
+    return { ok: false, issues: [{
       code: 'TRANSIENT_ID_TRACE_REMAINING',
       message: `沉淀产物仍包含临时页面 id 痕迹:${transientPageId}`
-    }];
+    }] };
   }
-  const errors = validate(document);
-  if (errors.length > 0) {
-    return [{
+  const normalized = normalizePageDocument(document);
+  if (!normalized.ok) {
+    return { ok: false, issues: [{
       code: 'PAGE_VALIDATION_FAILED',
       message: '沉淀产物未通过页面校验',
-      errors
-    }];
+      errors: normalized.errors
+    }] };
   }
-  return [];
+  return { ok: true, document: { ...normalized.document } };
 }
 
 interface QueryParts {
