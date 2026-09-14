@@ -7,6 +7,7 @@ from metriccanvas_authoring.application.edit_page import read_verified_baseline,
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.domain.page_editing import edit_page_document
 from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
 
 
 def create_content_page(baselines, summary_config=None):
@@ -32,6 +33,10 @@ def create_content_page(baselines, summary_config=None):
             except ContentBaselineError as error:
                 return failure(error.code)
         result = edit_page_document(document, request, summary_enabled=summary_configured(summary_config))
+        if result["document"] is not None:
+            result["document"] = apply_creation_layout(result["document"], layout)
+            if validate_page_document(result["document"]):
+                return failure("CONTENT_CREATION_LAYOUT_INVALID")
         summary = {"status": result["status"], "operations": result["operations"], "issues": result["issues"]}
         envelope = None
         if result["document"] is not None:
