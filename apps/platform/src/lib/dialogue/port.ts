@@ -3,7 +3,7 @@ import { createAnalysisPageState } from '../workbench/analysis-page-state';
 
 /** Internal event v1. draftId must address an immutable saved revision, never latest. */
 export const DRAFT_SAVED_EVENT = 'metriccanvas:draft-saved';
-export interface DraftSavedDetail { draftId: string }
+export interface DraftSavedDetail { readonly draftId: string }
 export interface SavedDraft {
   draftId: string;
   ref: { pageId: string; revisionId: string; resourceId: string };
@@ -23,6 +23,19 @@ export function draftIdOf(detail: unknown): string | null {
   if (Object.keys(value).length !== 1 || typeof value.draftId !== 'string') return null;
   const id = value.draftId;
   return id.length > 0 && id.length <= 512 && id.trim() === id && !/[\x00-\x1f\x7f]/.test(id) ? id : null;
+}
+
+/** Copy the validated exact reference; retain the existing strict payload boundary. */
+export function readDraftSavedDetail(event: Event): DraftSavedDetail | null {
+  if (event.type !== DRAFT_SAVED_EVENT || !('detail' in event)) return null;
+  const draftId = draftIdOf(event.detail);
+  return draftId === null ? null : Object.freeze({ draftId });
+}
+
+declare global {
+  interface WindowEventMap {
+    'metriccanvas:draft-saved': CustomEvent<DraftSavedDetail>;
+  }
 }
 
 /** Read adapter authenticates, verifies exact identity/hash BEFORE returning the raw document.
