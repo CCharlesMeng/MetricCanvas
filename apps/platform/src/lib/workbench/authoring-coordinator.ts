@@ -1,4 +1,6 @@
 import { normalizePageDocument } from '@metriccanvas/page';
+import { createAuthoringSync, type DurableAuthoringState, type StableSavePort, type SyncSnapshot } from './authoring-sync';
+import type { AuthoringStorage } from './authoring-storage';
 import { PageAssetsError, type PageRevision, type SavePageRevision } from '../page-assets-client';
 import { createCanvasAuthoringDraft, type CanvasAuthoringDraft } from './document-edit';
 import { type SavedDraft, type ReadSavedDraft, unavailableDraftReader } from '../dialogue/port';
@@ -32,11 +34,13 @@ export interface AuthoringSnapshot {
   dirty: boolean;
   save: SaveOutcome | null;
   error: string;
+  sync: SyncSnapshot | null;
 }
 function refOf(revision: PageRevision): DraftRef {
   if (!revision.pageId || !revision.revisionId || !revision.resourceId) throw new Error('RESPONSE_MISMATCH：页面、修订或资源 ID 缺失。');
   return { pageId: revision.pageId, revisionId: revision.revisionId, resourceId: revision.resourceId };
 }
+function messageOf(error: unknown) { return error instanceof Error ? error.message : String(error); }
 function stable(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(stable).join(',')}]`;
   if (value && typeof value === 'object') return `{${Object.entries(value).sort(([a], [b]) => a.localeCompare(b)).map(([key, item]) => `${JSON.stringify(key)}:${stable(item)}`).join(',')}}`;
@@ -48,9 +52,12 @@ export function createAuthoringCoordinator(options: {
   identity(): { actorId: string; workspaceId: string };
   operationId?: () => string;
 }) {
-  let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, dirty: false, save: null, error: '' };
+  let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, dirty: false, save: null, error: '', sync: null };
   let epoch = 0;
   let owner: string | null = null;
+  let syncConfig: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort } | null = null;
+  let sync: ReturnType<typeof createAuthoringSync> | null = null;
+  let retainDimensionValues = true;
   let disposed = false;
   let read: AbortController | null = null;
   const listeners = new Set<(state: AuthoringSnapshot) => void>();
@@ -58,11 +65,31 @@ export function createAuthoringCoordinator(options: {
   const emit = () => { for (const listener of listeners) listener(snapshot()); };
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
   const scope = () => `${epoch}:${identityKey()}`;
-  const unresolved = () => state.save?.status === 'pending' || state.save?.status === 'unknown';
+  const unresolved = () => state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
   function change(draft: CanvasAuthoringDraft) { epoch++; read?.abort(); state = { ...state, draft: structuredClone(draft), loading: false, error: '' }; }
+
+  function attachSync() {
+    if (!syncConfig || !state.draft) return;
+    sync?.dispose();
+    const identity = options.identity();
+    sync = createAuthoringSync({
+      initial: { format: 1, scope: { ...identity, pageId: String(state.draft.pageDocument.id) }, base: state.ref, draft: state.draft, queue: [] },
+      ...syncConfig, identity: options.identity
+    });
+    sync.subscribe((value) => {
+      if (disposed) return;
+      state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0 };
+      emit();
+    });
+  }
 
   return {
     snapshot, scope,
+    enableAutoSync(config: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort }) {
+      syncConfig = config; if (state.draft) attachSync();
+    },
+    setRetainDimensionValues(value: boolean) { retainDimensionValues = value; },
+    async retrySync() { await sync?.retry(); },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft): boolean {
@@ -75,7 +102,9 @@ export function createAuthoringCoordinator(options: {
       change(draft);
       if (changed) state = { ...state, dirty: true };
       if (state.save?.status === 'saved') state = { ...state, save: null };
-      emit(); return true;
+      emit();
+      if (sync) void sync.enqueue(draft, '手工页面修改', retainDimensionValues).catch((error: unknown) => { state = { ...state, error: messageOf(error) }; emit(); });
+      return true;
     },
     async load(pageId: string): Promise<void> {
       if (disposed || unresolved()) return;
@@ -90,7 +119,7 @@ export function createAuthoringCoordinator(options: {
         const parsed = createCanvasAuthoringDraft({ ...revision.document });
         if (!parsed.ok) throw new Error(parsed.message);
         owner = identityKey();
-        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; emit();
+        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; attachSync(); emit();
       } catch (cause) {
         if (!disposed && !signal.aborted && scope() === expected) { state = { ...state, error: String(cause) }; }
       } finally {
@@ -111,7 +140,7 @@ export function createAuthoringCoordinator(options: {
       const parsed = createCanvasAuthoringDraft({ ...draft.document });
       if (!parsed.ok) { state = { ...state, error: parsed.message }; emit(); return false; }
       owner = identityKey();
-      change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; emit(); return true;
+      change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; attachSync(); emit(); return true;
     },
     /** Current-match preview remains available; false exactRead explicitly forbids claiming historical availability. */
     async preview(ref: DraftRef, signal?: AbortSignal): Promise<PageRevision> {
@@ -123,6 +152,7 @@ export function createAuthoringCoordinator(options: {
     },
     async save(): Promise<SaveOutcome | null> {
       if (disposed || !state.draft) return null;
+      if (sync) { await sync.retry(); return null; }
       if (unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT')) return state.save;
       const identity = options.identity();
       const context: OperationContext = { ...identity, origin: { kind: 'manual' }, operationId: options.operationId?.() ?? crypto.randomUUID() };
@@ -162,6 +192,6 @@ export function createAuthoringCoordinator(options: {
       }
       return outcome;
     },
-    dispose() { disposed = true; epoch++; read?.abort(); listeners.clear(); }
+    dispose() { disposed = true; epoch++; read?.abort(); sync?.dispose(); listeners.clear(); }
   };
 }

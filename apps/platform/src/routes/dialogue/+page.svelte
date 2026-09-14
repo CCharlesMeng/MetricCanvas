@@ -4,9 +4,12 @@
   import PanguDialogue from '$lib/dialogue/PanguDialogue.svelte';
   import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';
   import { createDialogueFixture } from '$lib/dialogue/fixture-adapter';
+  import { createStableSaveFixture, type SyncFixtureMode } from '$lib/workbench/authoring-sync-fixture';
   import { listenForSavedDrafts } from '$lib/dialogue/port';
   let fixture = $state<ReturnType<typeof createDialogueFixture> | null>(null);
   let embedded = $state(false);
+  let syncMode = $state<SyncFixtureMode>('delay');
+  const stableSavePort = createStableSaveFixture(() => syncMode);
   let result = $state('尚无页面');
   onMount(() => {
     if (!dev) return;
@@ -20,8 +23,9 @@
   <div class="dialogue-lab">
     <label><input type="checkbox" bind:checked={embedded} />嵌入工作台</label>
     <p role="status">受控替身结果：{result}</p>
+    <label>同步替身场景<select aria-label="同步替身场景" bind:value={syncMode}><option value="delay">延迟成功</option><option value="lost-ack">提交后丢回执</option><option value="conflict">基线冲突</option><option value="offline">未提交断网</option></select></label>
     {#if embedded}
-      <PageAuthoringWorkbench dialogueAdapter={fixture.adapter} readSavedDraft={fixture.read} />
+      <PageAuthoringWorkbench dialogueAdapter={fixture.adapter} readSavedDraft={fixture.read} {stableSavePort} />
     {:else}
       <PanguDialogue adapter={fixture.adapter} />
     {/if}

@@ -17,8 +17,10 @@
   import PanguDialogue from './dialogue/PanguDialogue.svelte';
   import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
   import { readRuntimeConfig } from './runtime-config';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort }: {
-    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort;
+  import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
+  import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave }: {
+    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
   } = $props();
   const coordinator = untrack(() => createAuthoringCoordinator({
     port: {
@@ -41,6 +43,7 @@
   const saveNotice = $derived(authoring.save?.status === 'saved' ? `已保存修订 R${authoring.save.revision.revisionNumber}` : '');
   let saveError = $state('');
   let editError = $state('');
+  let retainDimensionValues = $state(true);
   let metadataOpen = $state(false);
   let previewOpen = $state(false);
   let previewRef = $state<DraftRef | null>(null);
@@ -50,6 +53,7 @@
 
   // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
+    coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
     const pageId = new URLSearchParams(window.location.search).get('page');
     if (pageId) void coordinator.load(pageId);
@@ -234,9 +238,14 @@
         查看元数据
       </button>
       {#if pageModel && !pageModel.transient}
-        <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
-          {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
-        </button>
+        {#if authoring.sync}
+          <label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>
+          {#if authoring.sync.pending > 0}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
+        {:else}
+          <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
+            {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
+          </button>
+        {/if}
       {/if}
     </div>
   </div>
@@ -248,6 +257,15 @@
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
+    {#if authoring.sync}
+      {#if authoring.sync.protection === 'failed'}
+        <p class="error" role="alert">浏览器保护失败，请勿关闭页面。{authoring.sync.message}</p>
+      {:else if authoring.sync.pending > 0}
+        <p class="notice" role="status">{authoring.sync.protection === 'protected' ? '已在浏览器保护' : '正在保护到浏览器'}，待同步 {authoring.sync.pending} 个操作。{authoring.sync.message}</p>
+      {:else if authoring.sync.lastSaved}
+        <p class="notice" role="status">服务端已保存修订 R{authoring.sync.lastSaved.revisionNumber}</p>
+      {/if}
+    {/if}
     {#if saveError || authoring.error}<p class="error" role="alert">{saveError || authoring.error}</p>{/if}
     {#if authoring.save?.status === 'unknown'}<p class="error" role="alert">保存结果未确定，已暂停再次保存。{authoring.save.message} 工作副本仅在本页内存中，尚无浏览器恢复保护。</p>{/if}
     {#if authoring.save?.status === 'rejected'}<p class="error" role="alert">{authoring.save.code}：{authoring.save.message}</p>{/if}
