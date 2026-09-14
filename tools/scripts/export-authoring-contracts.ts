@@ -1,3 +1,4 @@
+import { buildPublicationSchema } from '../../metriccanvas-authoring/contracts/authored/publication-contract.ts';
 import { createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -73,6 +74,8 @@ function manifestFiles(outputs: OutputMap): Array<{ file: string; sha256: string
 async function buildProductOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   outputs.set('page/schema.json', json(pageSchema));
+  outputs.set('authoring/publication.schema.json', json(buildPublicationSchema(pageSchema)));
+  outputs.set('authoring/publication-conformance.json', await readFile(path.join(authoringContractRoot, 'authored/publication-conformance.json'), 'utf8'));
   outputs.set('page/component-catalog.json', json(componentCatalog));
   const maps: Record<string, { regions: string[]; source: { file: string; sha256: string } }> = {};
   for (const name of ['china', 'world']) {
@@ -282,6 +285,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
+        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },
