@@ -655,3 +655,13 @@ S0已读完整票/最新评论，审阅筛选全绑定集合/移除/查询字段
 手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-text-page.json`，最小6.2 text正文含title/body、空dataSources，作为heading/insight/reportInline完整示例的真源；经统一生成/校验，不改工具行为。仅links/backdrop的历史例子不能冒称正文variant证据；显示语义仍关联实际渲染来源/验证范围。
 
 手册联合分支追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-branches-page.json`，用最小合法数据/组件/参数/筛选覆盖已盘点缺口，不改协议；既有`packages/page/tests/validate-cli.test.ts`限把硬编码夹具总数改为实际目录JSON数，保留有效/无效退出状态与错误断言，不能将计数自洽当内容覆盖证明。联合分支见证需由独立Schema匹配与完整页面公开校验证明并保留缺口清单。当前110分支中89有见证、21缺口及140文件1060通过/5skip/1失败均为阶段回报，未验收完整手册。
+
+## 页面元数据参考手册本仓验收
+
+merge 324925bd1aa70148c839833ae393bbfb7e6cb9ae纳入作者ab8a0ccf606bda77b20a7552b11a016978abc7e2、生成388004ce09e3036899293c5e97123686ce773bf4、统一组合57b9343f153af5c2d0ec8b01f44fa66f5e571f38与证据a719dbb74cac121e4177d5c89d670efce17c1cb3。整棵集成树与最终证据提交相同，#137保留；未孤立消费旧锁。867文件大部分是三套相同单向投影，作者范围遵循登记。
+
+S0审阅结构遍历/分支required保留/语义映射/完整例子裁剪/分支见证和拒绝向量/三投影及Skill入口，独立page-reference与export-isolation两文件6项通过、1330摘要通过，读取最终1062通过/5skip及222 Python日志；采用最终check和469/4/1无漂移证据。复制Bundle/独立Skill相对链接/锚点/示例独立闭合，投影逐字一致，漂移与缺项负例有效。
+
+手册本仓范围验收：29模块/17组件/940节点，53组件variant条目，74规则；110联合分支严格区分109合法见证与1 text导航row语义拒绝（具体Schema路径/SCHEMA_ERROR路径见reference-evidence）。新增例子仅证实结构语义合法，逐variant视觉验收未新增，现有渲染来源与外部边界仍明确，不冒称外部确认/真实联调。
+
+正式结束S2对`metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md`的临时独占，归还S3；参考作者/生成器/生成投影仍S2唯一维护，其他角色不手改references。S2本阶段可执行交付完成，保留干净工作树交接；后续内容更新需统一重生成。M2仍等#138/#145/#146，M1/M3仍未宣告；S4尚未登记是当前实施阻塞。
