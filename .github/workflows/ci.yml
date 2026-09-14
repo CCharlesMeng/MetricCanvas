@@ -60,10 +60,12 @@ jobs:
       - name: 验证创作 Bundle
         run: pnpm authoring:check
 
-      - name: 单元测试
+      # 自动包含 apps/platform/tests/dialogue.test.ts；不依赖内网盘古 SDK。
+      - name: 单元测试（含对话接缝）
         run: pnpm test
 
-      - name: 类型检查
+      # platform check 覆盖 dialogue 的 port/runtime、Svelte 容器和测试类型。
+      - name: 类型检查（含对话模块）
         run: pnpm check
 
       # 产品构建包含四个引擎交付物与纯前端静态平台。
