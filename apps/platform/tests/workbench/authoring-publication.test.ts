@@ -48,3 +48,11 @@ it('cancel releases local transport ownership so an ignored abort cannot block o
  const work=f.api.prepare(true);await new Promise(resolve=>setTimeout(resolve,5));await f.api.cancel();await f.api.lookup();
  expect(f.counts().lookup).toBe(1);expect(f.api.snapshot().phase).toBe('review');await f.api.preview();expect(f.api.snapshot().preview).not.toBeNull();complete();await work;expect(f.api.snapshot().phase).toBe('review');
 });
+
+for(const operation of ['confirm','cancel'] as const)it(`late ${operation} lease-release failure cannot replace a newer review`,async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();
+ let rejectRelease!:(reason:Error)=>void,started!:()=>void;const releasing=new Promise<void>(resolve=>started=resolve);
+ f.port.release=async()=>{started();await new Promise<void>((_,reject)=>rejectRelease=reject);};
+ if(operation==='confirm')f.setMode('bad-proof');const old=operation==='confirm'?f.api.confirmAndPublish():f.api.cancel();await releasing;
+ f.setMode('success');await f.api.prepare(true);const current=f.api.snapshot();expect(current.phase).toBe('review');expect(current.candidate).not.toBeNull();
+ rejectRelease(Error('late release failure'));await old;expect(f.api.snapshot()).toEqual(current);
+});
