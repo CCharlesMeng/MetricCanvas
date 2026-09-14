@@ -1,5 +1,7 @@
 <script lang="ts">
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
+  import PublicationReview from './workbench/PublicationReview.svelte';
+  import { createAuthoringPublication, unavailablePublicationPort, unavailableHumanConfirmation, type PublicationPort, type HumanConfirmationPort } from './workbench/authoring-publication';
   import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
@@ -22,7 +24,8 @@
   import { readRuntimeConfig } from './runtime-config';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady }: {
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+    publicationPort?: PublicationPort; humanConfirmation?: HumanConfirmationPort;
     languagePort?: LanguagePort; onLanguageReady?: (api: ReturnType<typeof createAuthoringLanguage>) => void;
     dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
   } = $props();
@@ -37,12 +40,15 @@
       return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
     }
   }));
+  let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
+  let publicationOpen = $state(false);
+  let publicationBusy = $state(false);
   let language = $state<ReturnType<typeof createAuthoringLanguage> | null>(null);
   let languageState = $state<ReturnType<ReturnType<typeof createAuthoringLanguage>['snapshot']> | null>(null);
   let authoring = $state(coordinator.snapshot());
   const currentDraft = $derived(authoring.draft);
   const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
-  const savePending = $derived(authoring.save?.status === 'pending' || authoring.languageLocked);
+  const savePending = $derived(authoring.save?.status === 'pending' || authoring.languageLocked || publicationBusy);
   const saveBlocked = $derived(savePending || authoring.save?.status === 'unknown' ||
     (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
   const loading = $derived(authoring.loading);
@@ -65,7 +71,9 @@
     const online = () => coordinator.setOnline(true);
     const offline = () => coordinator.setOnline(false);
     window.addEventListener('online', online); window.addEventListener('offline', offline);
-    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
+    publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
+    publication.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
+    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); });
     const pageId = new URLSearchParams(window.location.search).get('page');
     if (pageId) void coordinator.load(pageId);
     if (languagePort) {
@@ -88,7 +96,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -240,6 +248,7 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
+      <button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
       <button class="btn" disabled={!authoring.sync?.canUndo || loading || savePending} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
       <button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>
       {#if baseRevisionId}
@@ -275,6 +284,7 @@
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
+    {#if publicationOpen && publication}<PublicationReview {publication} />{/if}
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if languageState}
       <p class="notice" role="status" data-testid="language-status">{languageState.message}</p>
