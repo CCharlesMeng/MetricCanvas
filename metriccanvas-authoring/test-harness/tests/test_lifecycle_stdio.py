@@ -17,7 +17,7 @@ class LifecycleStdioTest(unittest.IsolatedAsyncioTestCase):
         transport=StdioTransport(command=sys.executable,args=[str(ROOT/'test-harness/lifecycle_stdio_server.py')],env=env)
         async with Client(transport) as client:
             tools=await client.list_tools()
-            self.assertEqual({t.name for t in tools},{'save_draft','get_save_result','read_revision','list_revisions'})
+            self.assertEqual({t.name for t in tools},{'save_draft','get_save_result','read_revision','list_revisions','prepare_candidate','read_candidate','revise_candidate','confirm_publish','get_publish_operation_result'})
             for tool in tools:
                 self.assertEqual(set(tool.inputSchema['properties']),{'request_token'})
             saved=await client.call_tool('save_draft',{'request_token':'save-request-token'})
@@ -43,7 +43,7 @@ class LifecycleStdioTest(unittest.IsolatedAsyncioTestCase):
             args=[str(Path(installed)/'bin/metriccanvas-lifecycle')] if installed else ['-m','metriccanvas_authoring.lifecycle_server']
             transport=StdioTransport(command=sys.executable,args=args,env=env,cwd=directory)
             async with Client(transport) as client:
-                self.assertEqual(len(await client.list_tools()),4)
+                self.assertEqual(len(await client.list_tools()),9)
                 result=await client.call_tool('save_draft',{'request_token':'production-token'})
                 self.assertEqual(result.data['code'],'CAPABILITY_UNAVAILABLE')
                 result=await client.call_tool('get_save_result',{'request_token':'production-token'})

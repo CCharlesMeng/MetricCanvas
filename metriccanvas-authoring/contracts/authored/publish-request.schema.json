@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.dev/authoring/publish-request.schema.json",
+  "title": "Trusted publication request; all fields owned by the shared publication contract",
+  "$ref": "https://metriccanvas.dev/contracts/authoring/publication/1#/$defs/Request"
+}

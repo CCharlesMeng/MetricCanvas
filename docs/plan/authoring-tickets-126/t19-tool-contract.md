@@ -1,14 +1,14 @@
-# #145 / T19 发布工具与共同消费契约草案
+# #145 / T19 发布工具与共同消费契约
 
-**状态：待 S0/S1/S2 冻结，不是已实现或外部提供方已确认的契约。** S4 task `01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，分支 `codex/s4-publish-145`，干净开工基线为 S0 验收 #138 后发布的 `9dcb2b8539fd4597fdd6816928e0fbffa0486b89`。前置 #138/#140/#144 本仓已验收；S1 的 #146 优先推进，不等待本文。
+**状态：S0 已于 `ea19706f0079805e7473ed16b6e8de48b782ad98` 冻结本仓实施，后续边缘规则以台账更正为准；不是已实现或外部提供方已确认的契约。** S4 task `01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，分支 `codex/s4-publish-145`，干净开工基线为 S0 验收 #138 后发布的 `9dcb2b8539fd4597fdd6816928e0fbffa0486b89`。前置 #138/#140/#144 本仓已验收；S1 的 #146 优先推进，不等待本文。
 
-沿 T04 `authoring-lifecycle-proposal/1`、ADR-0078 和 #143 参数/ #144 执行接缝。本文只提出本仓消费字段及保护规则，不是 Java/Relay HTTP/SDK 定义。S2 已只读确认总体方向，S1 已给出最小 UI 消费字段（稳定参数ID/名称/值类型/选择/required/缺值/作用源、可读diff与可定位validation）；下文已合入这些建议。公共作者源、字段名和装载方式由 S0/S2 冻结后落实；S4 不修改 S1 工作台、页面资产客户端或公共产品导出。
+沿 T04 `authoring-lifecycle-proposal/1`、ADR-0078 和 #143 参数/ #144 执行接缝。本文只提出本仓消费字段及保护规则，不是 Java/Relay HTTP/SDK 定义。S2 已只读确认总体方向，S1 已给出最小 UI 消费字段（稳定参数ID/名称/值类型/选择/required/缺值/作用源、可读diff与可定位validation）；下文已合入这些建议。共同作者为 S2 维护的 `metriccanvas-authoring/contracts/authored/publication-contract.ts`，Python 消费其闭合生成 JSON；S4 不修改 S1 工作台、页面资产客户端或公共产品导出。
 
 ## 1. 操作与程序通道
 
-拟在独立生命周期 MCP 中提供五个工具，每个只收 `request_token`：
+在独立生命周期 MCP 中提供五个工具，每个只收 `request_token`：
 
-| 工具（S0已选定名称，待最终作者登记） | 可信请求 | 输出 |
+| 工具（S0冻结名称） | 可信请求 | 输出 |
 |---|---|---|
 | prepare_candidate | context、精确 source、显式 retainDimensionValues | 新候选引用、状态、程序输出令牌 |
 | read_candidate | 精确 CandidateRef | 候选状态、程序输出令牌 |
@@ -20,7 +20,7 @@
 
 完整请求、候选文档、diff、参数取值、错误细节与确认记录只走 #138 的身份作用域程序通道。模型只见状态、精确引用、计数、摘要 hash 和程序输出令牌。确认 proof 不进入模型 text/structuredContent，不是页面字段，也不写入普通保存文档。所有通道按 actor/workspace 隔离；令牌只是引用，不认证操作者、不证明发生过人工确认。
 
-S0已指定装载方式：生产独立 lifecycle stdio 固定注册九工具（#138四项加本票五项），默认发布端口明确 unavailable。既有 create_lifecycle_mcp_server(service, programs, identities) 三个位置参数保持兼容，仅通过可选关键字发布依赖扩展；缺任何必需端口时新工具返回明确 unavailable，不影响原四项。不会向内容 MCP 注册发布工具；具体共同作者代码未最终登记前不实施。
+S0已指定装载方式：生产独立 lifecycle stdio 固定注册九工具（#138四项加本票五项），默认发布端口明确 unavailable。既有 create_lifecycle_mcp_server(service, programs, identities) 三个位置参数保持兼容，仅通过可选关键字发布依赖扩展；缺任何必需端口时新工具返回明确 unavailable，不影响原四项。不会向内容 MCP 注册发布工具。
 
 ## 2. 身份、精确引用与候选评审面
 
@@ -30,7 +30,7 @@ S0已指定装载方式：生产独立 lifecycle stdio 固定注册九工具（#
 
 `OperationContext={operationId,actorId,workspaceId,origin}`，来源 manual 或 relay（skillVersion、可得时 sessionId/runId）。由可信编排在发送前持久固定，模型不可改；缺轮次字段不等于已验证轮资格。服务按已验证身份、操作种类和原操作键去重；指纹包含完整原请求，确认写请求中的 confirmationToken 也固定。
 
-拟冻结完整 Candidate：
+共同 Candidate：
 
 ```text
 {ref, document, contentHash, canonicalization,
@@ -40,30 +40,30 @@ S0已指定装载方式：生产独立 lifecycle stdio 固定注册九工具（#
  reviewHash, reviewCanonicalization}
 ```
 
-其中 ref/document/contentHash/有效期/租约/评审字段沿 T04；canonicalization 明确原始文档算法。**reviewHash/reviewCanonicalization 是本次新增实施选择，S0已认可方向、共同作者尚待登记**，用于绑定整份展示给人的评审面，避免相同 document 但保留值/参数选择/diff 已变时复用旧确认。需 S0/S2 冻结才实施。
+其中 ref/document/contentHash/有效期/租约/评审字段沿 T04；canonicalization 明确原始文档算法。**reviewHash/reviewCanonicalization 是 S0 冻结的实施选择**，用于绑定整份展示给人的评审面，避免相同 document 但保留值/参数选择/diff 已变时复用旧确认。具体定义以共同作者为准。
 
-reviewHash 建议固定覆盖以下无歧义对象：`{ref,contentHash,canonicalization,diff,affectedDataSources,parameterSummary,retainDimensionValues,validation,expiresAt,leaseId,leaseExpiresAt}`。document 先单独验 contentHash，reviewHash/reviewCanonicalization 自身不进入该对象；候选 source 已包含在 ref。算法由显式可信 `verifyReview` 端口协商并验证，不仅检查摘要字符串非空。原文 canonicalization 标识在精确payload中；reviewCanonicalization 必须匹配可信端口预先协商的算法身份，并作为验证上下文绑定，不由候选自行降低算法要求。未知标识或降级请求均拒绝，不能逐个尝试弱算法直到通过。本仓测试算法只能用于明确边界替身，不能成为生产默认。候选复用同一 ref 时其评审面必须不可变；客户端先核验原文和评审摘要，再校验页面结构与关联。
+reviewHash 固定覆盖以下无歧义对象：`{ref,contentHash,canonicalization,diff,affectedDataSources,parameterSummary,retainDimensionValues,validation,expiresAt,leaseId,leaseExpiresAt}`。document 先单独验 contentHash，reviewHash/reviewCanonicalization 自身不进入该对象；候选 source 已包含在 ref。算法由显式可信 `verifyReview` 端口协商并验证，不仅检查摘要字符串非空。原文 canonicalization 标识在精确payload中；reviewCanonicalization 必须匹配可信端口预先协商的算法身份，并作为验证上下文绑定，不由候选自行降低算法要求。未知标识或降级请求均拒绝，不能逐个尝试弱算法直到通过。本仓测试算法只能用于明确边界替身，不能成为生产默认。候选复用同一 ref 时其评审面必须不可变；客户端先核验原文和评审摘要，再校验页面结构与关联。
 
 候选的完整文档必须经既有公开页面校验。业务 validation 可以为 false，供程序通道展示错误并修正，但不得发布。非法页面或结构错误的响应不得被工具当作可发布候选。期限是否已过、当前 head、租约状态由服务权威裁决；不把本机时钟当作发布授权。
 
-## 3. diff、参数摘要与修正（具体字段待共同作者冻结）
+## 3. diff、参数摘要与修正
 
-T04 非空 diff/parameterSummary 的子字段尚未定义，本段是待定消费建议，不引入新 params 语法：
+以下字段由 S2 共同作者定义，不引入新 params 语法：
 
-- diff 条目建议 `{summary,sourcePath?,candidatePath?,parameterId?,before?,after?}`，仅为 Java 产出的展示记录，不是让工具执行的 JSON Patch。完整值只进程序通道。
-- parameterSummary 条目建议 `{parameterId,label,valueType,selected,required,valueState,defaultValue?,targets,extractionKind,sharing}`。valueType 仅 string / string[]；valueState 为 retained / missing / not-selected，缺值必须明确 missing，不伪造默认值；defaultValue 只在 retained 时存在且类型一致。未保留值但 required 的合法模板可等待执行显式输入，missing 本身不自动成为禁止发布的理由。targets 固定 `[{dataSourceId,queryField}]`，引用现有 6.2 `params` / DQE `paramBindings`；不得另造 globalParams/dimensionValues。extractionKind 仅 dimension-eq / dimension-in；sharing 仅 none / identical-values。字段只是权威服务报告，不证明服务算法正确。
-- validation 建议 `{valid,issues:[{severity,code,message,parameterId?,path?}]}`，severity 为 blocking / warning；valid 与不存在 blocking 条目一致，warning 不假装阻塞。所有可读说明均由 Java 提供且只在程序通道/人工界面展示。
-- `affectedDataSources` 为精确候选内已存在的查询数据源标识，不得带任意外部来源；selected=false 必须 valueState=not-selected，且该参数不进入候选维度参数声明/绑定；selected=true 的维度参数与文档声明、全部 targets 双向对账。建议对账面固定为 document.params 中 type=dimension 的参数及相应全部 paramBindings，既有 string/number 等非维度参数仍合法且不作为提取候选；此精确对账面待 S2 确认。未选择但尚未入 document.params 的服务候选 ID 仍可被修正选中。
-- corrections 建议仅 `{retainDimensionValues?,parameterSelections?:[{parameterId,selected:boolean}]}`，至少一项；参数条目不得重复，不能指向未列出的候选参数；不接受文档、查询、任意 patch、参数类型、共享合并或范围字段。实际参数选择和保留值变更由 Java 重新提取/校验，返回新版本候选。
+- diff 条目为 `{summary,sourcePath?,candidatePath?,parameterId?,before?,after?}`，仅为 Java 产出的展示记录，不是让工具执行的 JSON Patch。完整值只进程序通道。
+- parameterSummary 条目为 `{parameterId,label,valueType,selected,required,valueState,defaultValue?,targets,extractionKind,sharing}`。valueType 仅 string / string[]；valueState 为 retained / missing / not-selected，缺值必须明确 missing，不伪造默认值；defaultValue 只在 retained 时存在且类型一致。未保留值但 required 的合法模板可等待执行显式输入，missing 本身不自动成为禁止发布的理由。targets 固定 `[{dataSourceId,queryField}]`，引用现有 6.2 `params` / DQE `paramBindings`；不得另造 globalParams/dimensionValues。本次新提取的 extractionKind 仅 dimension-eq / dimension-in，且有实际非空 targets；extractionKind=null 仅用于精确 source 证明的既有维度参数保留，不能根据 targets=[] 自动推断既有来源；sharing 仅 none / identical-values。字段只是权威服务报告，不证明服务算法正确。
+- validation 为 `{valid,issues:[{severity,code,message,parameterId?,path?}]}`，severity 为 blocking / warning；valid 与不存在 blocking 条目一致，warning 不假装阻塞。所有可读说明均由 Java 提供且只在程序通道/人工界面展示。
+- `affectedDataSources` 为精确候选内已存在的查询数据源标识，不得带任意外部来源；selected=false 必须 valueState=not-selected，且该参数不进入候选维度参数声明/绑定；selected=true 的维度参数与文档声明、全部 targets 双向对账。建议对账面固定为 document.params 中 type=dimension 的参数及相应全部 paramBindings，既有 string/number 等非维度参数仍合法且不作为提取候选；此对账面已由 S2 逐项核验。required 在页面协议中显式必填，缺失拒绝，不能缺省false。targets 可为空，但完整页面仍须有合法非query消费者（例如text参数引用）；unused参数依然拒绝，不新增或弱化Page规则。未选择但尚未入 document.params 的服务候选 ID 仍可被修正选中。
+- corrections 仅 `{retainDimensionValues?,parameterSelections?:[{parameterId,selected:boolean}]}`，至少一项；参数条目不得重复，不能指向未列出的候选参数；不接受文档、查询、任意 patch、参数类型、共享合并或范围字段。实际参数选择和保留值变更由 Java 重新提取/校验，返回新版本候选。
 - 第一版只消费 DQE 维度等值/多值及其部分数据源共享。明确标注为时间/金额范围、不同取值共享、未知提取类型或不支持的校验结果不可发布；本仓不读取查询条件重写 Java 的提取算法。真正排除这些路径的服务保证须独立联调。
 
-若已有共同定义可满足上述行为，采用它并删除本段字段建议；S4 不在 Python 和 S1 UI 各写一套事实来源。
+字段结构以 S2 共同作者和生成 Schema 为唯一来源；Python 应用关联检查使用同一组共享向量验证。
 
 ## 4. 人工确认凭据
 
-拟新增独立 `HumanConfirmationPort.read(confirmationToken, identity)`，由可信人工操作集成实现，默认 unavailable。它不从一般程序请求中的 `proof` 字符串推断有效确认，不提供模型可调用的“生成确认”工具。
+新增独立 `HumanConfirmationPort.read(confirmationToken, identity)`，由可信人工操作集成实现，默认 unavailable。它不从一般程序请求中的 `proof` 字符串推断有效确认，不提供模型可调用的“生成确认”工具。
 
-返回的可信确认记录建议绑定：
+返回的可信确认记录绑定：
 
 ```text
 {actorId, workspaceId, candidate:CandidateRef, source:DraftRef,
@@ -80,7 +80,7 @@ Java 在最终同一事务中复验：实际身份与权限、当前草稿 head�
 
 ## 5. 写回执、重复、未知与恢复
 
-拟统一写回执为带 `operationId` 的判别式（字段名待 S2 一次冻结）：
+写回执为带 `operationId` 的共同判别式：
 
 - prepare/revise 成功：`{status:'completed', operationKind:'prepare'|'revise', operationId, candidate:Candidate}`。
 - confirm 成功：`{status:'completed', operationKind:'publish', operationId, template:TemplateRef}`。可信 `verifyResult(identity,originalCommand,result)` 端口必须验证完整原请求指纹及关联（包括精确 CandidateRef/confirmationToken），不能仅匹配 source；模板来源同时须等于原候选来源。该端口默认不能验证，不得用无条件 true 的生产实现绕过。
@@ -98,20 +98,20 @@ Java 在最终同一事务中复验：实际身份与权限、当前草稿 head�
 
 ## 7. 文件与验收范围
 
-待登记 S4 新文件（Bundle 路径）：
+S0 已登记 S4 新文件（Bundle 路径）：
 
 - `tool/metriccanvas_authoring/application/lifecycle_publish.py`、`application/publish_ports.py`。
 - `tool/metriccanvas_authoring/adapters/inbound/publish_mcp.py`、`adapters/outbound/publish_unavailable.py`。
-- `contracts/authored/publish-request.schema.json`（仅自有可信请求；共用类型作者源待 S2 决定）。
+- `contracts/authored/publish-request.schema.json`（仅引用共同 Request）。
 - `test-harness/publish_stdio_server.py`、`tests/test_lifecycle_publish.py`、`tests/test_publish_stdio.py`。
 
-拟修改既有生命周期入口/装载 `lifecycle_server.py`、`adapters/inbound/lifecycle_mcp.py`，仅新工具注册；`tool/pyproject.toml`/`test_distribution.py` 仅新增 schema 打包；`test_lifecycle_stdio.py` 仅默认工具集合；README 仅发布工具节。文档 `t19-tool-contract.md`、`t19-tool-evidence.md`。S2 唯一公共作者/导出/生成锁；S1 唯一 UI/客户端/整票验收，S3 内容工具与 Skill 不改。
+修改既有生命周期入口/装载 `lifecycle_server.py`、`adapters/inbound/lifecycle_mcp.py`，仅新工具注册；`tool/pyproject.toml`/`test_distribution.py` 仅新增 schema 打包；`test_lifecycle_stdio.py` 仅默认工具集合；README 仅发布工具节。文档 `t19-tool-contract.md`、`t19-tool-evidence.md`。S2 唯一公共作者/导出/生成锁；S1 唯一 UI/客户端/整票验收，S3 内容工具与 Skill 不改。
 
-实施前需 S0/S1/S2 冻结：工具集合和注册方式、共同 Candidate/Confirmation/MutationOutcome 作者源、reviewHash 绑定面、diff/参数摘要/修正准确子字段、人工确认端口不可用行为。测试将覆盖成功/修正后再确认/重复、相同内容不同评审面、旧确认/旧候选、head前进、过期/租约失效/未确认/伪proof/跨身份、请求换载荷、回执或程序输出丢失与原键查询、发布后草稿前进不改变旧模板、未支持提取类别拒绝，以及生产 stdio 关闭能力与隔离安装。示例服务在外部边界替身内；本仓工具不实现提取或发布事务。
+S0/S1/S2 已冻结：工具集合和注册方式、共同 Candidate/Confirmation/MutationOutcome 作者源、reviewHash 绑定面、diff/参数摘要/修正准确子字段、人工确认端口不可用行为。测试将覆盖成功/修正后再确认/重复、相同内容不同评审面、旧确认/旧候选、head前进、过期/租约失效/未确认/伪proof/跨身份、请求换载荷、回执或程序输出丢失与原键查询、发布后草稿前进不改变旧模板、未支持提取类别拒绝，以及生产 stdio 关闭能力与隔离安装。示例服务在外部边界替身内；本仓工具不实现提取或发布事务。
 
 本仓工具验收、外部提供方确认、真实 Java/Relay/盘古联调三类证据分开；#145 整票只由 S1/S0 汇合验收，本文件不解锁或代替其 UI 工作。
 
-## 8. 完整消费场景（草案，尚未执行）
+## 8. 完整消费场景与验收期望
 
 以下约定给出确定的程序输入、服务端口响应与工具期望。`D` 是完整读取 `packages/page/fixtures/contract-valid/dimension-params-page.json` 得到的 JSON，不是模型摘要；禁止用变量名 D 代替实际程序传输的完整文档。场景替身只消费该固定候选，不在测试或产品工具中实现参数提取。所有场景独立，除明确顺序步骤外不共享状态。
 
@@ -219,10 +219,12 @@ proof 必须在可信人工端口/Java 的登记或验证体系内确实有效�
 | 精确CandidateRef/TemplateRef/source；修正产生新版本；保留值二次确认；Java提取与原子发布；租约/有效期/身份/head保护；完整文档程序通道；稳定操作/回执未知恢复 | T04、#126、#145已有要求 |
 | #144精确candidate target预览、合法6.2 params/paramBindings、维度多值与required缺值 | 已验收#143/#144消费边界 |
 | request_token和身份作用域spool、模型无完整文档、默认未知服务能力关闭 | #138已验收程序通道；本票复用 |
-| 五个具体工具名、默认注册方式、独立HumanConfirmationPort、reviewHash的11字段payload和verifyReview/verifyResult端口、operationKind+completed分支 | 本草案新增实现选择，未冻结、未实现、非外部wire事实 |
-| 非空diff/parameterSummary/validation的具体子字段、受控parameterSelections、共同作者源/Schema路径/公共DTO出口 | 本草案与S1/S2最小字段建议，待S0一次冻结；没有授权公共文件/升版 |
-| 原成功操作过期后重放不新写，当前权限撤销仍限制结果读取 | 对T04幂等/鉴权语义的明确消费解释，提交S0确认；不能冒充提供方已保证 |
+| 五个具体工具名、默认注册方式、独立HumanConfirmationPort、reviewHash的11字段payload和verifyReview/verifyResult端口、operationKind+completed分支 | S0 已冻结的本仓实施选择，非外部 wire 事实 |
+| 非空diff/parameterSummary/validation的具体子字段、受控parameterSelections、共同作者源/Schema路径/公共DTO出口 | S0 冻结的 S2 内部共同作者；不进入公共 page 包或升版 |
+| 原成功操作过期后重放不新写，当前权限撤销仍限制结果读取 | 对T04幂等/鉴权语义的明确消费解释，S0 已冻结；不能冒充提供方已保证 |
 
-以上场景是实施验收计划，尚未运行；最终证据必须由公开工具/程序端口测试、生产stdio和安装后测试产生，不能引用本表代替行为验证。
+以上场景定义验收期望；实际运行记录见 t19-tool-evidence.md，不能引用本表代替行为验证。
 
-S0阶段审阅补充：共同契约不进入page包，拟由S2维护内部 `contracts/authored/publication-contract.ts`，等待其最小构建路径确认后统一登记；不创建公共DTO出口、不升版。本文仍是待最终冻结草案，九工具/查询名称/摘要绑定方向已按S0意见修订。
+共同契约由 S2 维护内部 `metriccanvas-authoring/contracts/authored/publication-contract.ts`；不创建公共 DTO 出口、不升版。
+
+实施起点已合 S0 正式产品组合 `812ad98241e31a1e24ebd6b739a9e3844ef9e5e6` 与冻结台账 ea19706，保留双Platform Skill及#138成果。共同Schema未固定前仅内部编排并行，最终公开工具/安装验证等待S2精确作者与生成SHA。
