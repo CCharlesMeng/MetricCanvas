@@ -136,6 +136,7 @@ export function createAuthoringPublication(options: {
     },
     async confirmAndPublish() {
       const candidate=state.candidate;if(!candidate||!state.preview||pending||busy)return;
+      const expected=generation;
       await perform(async(signal,expected)=>{
         await verifyCandidate(candidate,signal);
         if(!candidate.validation.valid)throw Error('候选存在阻断问题，不能发布。');
@@ -149,9 +150,11 @@ export function createAuthoringPublication(options: {
         await verifyCandidate(candidate,signal);
         await submit({kind:'publish',context:context(),ref:candidate.ref,confirmationToken:human.token},signal,expected);
       });
-      if(!pending && state.phase==='error') {
-        try { await options.port.release(candidate.ref); } catch { /* Never claim release succeeded. */ emit({message:state.message+' 服务租约释放未确认。'}); }
+      if(expected===generation && !pending && state.phase==='error') {
         emit({candidate:null,preview:null});
+        try { await options.port.release(candidate.ref); } catch {
+          if(!disposed && expected===generation && state.phase==='error')emit({message:state.message+' 服务租约释放未确认。'});
+        }
       }
     },
     async lookup() {
@@ -160,9 +163,9 @@ export function createAuthoringPublication(options: {
       await perform(async(signal,expected)=>consume(request,await options.port.lookup(structuredClone(request),signal),signal,expected));
     },
     async cancel() {
-      generation++;controller?.abort();controller=null;busy=false;const candidate=state.candidate;
+      generation++;controller?.abort();controller=null;busy=false;const candidate=state.candidate,expected=generation;
       emit({candidate:null,preview:null,phase:pending?'unknown':'idle',message:pending?'已停止本地接收，已发操作仍需查询。':'已取消本次评审。'});
-      if(candidate)try{await options.port.release(candidate.ref);}catch{emit({message:'本地评审已取消，服务租约释放未确认。'});}
+      if(candidate)try{await options.port.release(candidate.ref);}catch{if(!disposed && expected===generation && !busy && !state.candidate)emit({message:'本地评审已取消，服务租约释放未确认。'});}
     },
     dispose(){disposed=true;generation++;controller?.abort();if(state.candidate)void options.port.release(state.candidate.ref).catch(()=>{});listeners.clear();}
   };
