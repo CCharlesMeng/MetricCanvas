@@ -263,3 +263,5 @@ S2 回执：工作树 `/private/tmp/metriccanvas-126-s2`，分支 `codex/s2-layo
 #133 测试路径追加：`packages/page/tests/filter-invariants.test.ts` 仅将旧6.0筛选回归输入改读 legacy-layout-dashboard，防当前6.1字段污染；`packages/engine/runtime/tests/ioc-project-overview.test.ts`、`ioc-project-detail.test.ts`、`ioc-opportunity-analysis.test.ts`（同runtime/tests前缀）仅将当前页面 requiredMinorVersion 预期0→1。均归S2，无已登记冲突。
 
 S2报告已实测9135d22下兼容工具5.29分支因既有overrides断言失败，拟在原overrides块加入框架pins并保留安全条目，最终两版本矩阵待提交验收。S2报告临时解包Edge153.0.4234.32及官方摘要/签名/公证检查完成；S0尚未核验该外部来源或浏览器运行结果，要求正式t07回执提供完整证据，不以下载/解包成功判浏览器通过。当前pnpm check通过属于进行中回执。
+
+#133 最终验收文件明确为 S2 独占 `docs/plan/authoring-tickets-126/t07-layout-closeout-evidence.md`、`t07-artifacts.json`。冻结验证树回报为 `96bd6b1e91e9a0861ce8de3d54b7279f8c030964`，未集成；S2阶段回报当前Svelte5.56.6隔离安装及Chrome/Edge102项通过，最低5.29.0源码test/check/build通过而仓外门禁仍在执行。最终文件须绑定两版本实际产物、8个tarball/Python sdist摘要和完整矩阵；S0收到整票回执前不判定#133或M0通过。
