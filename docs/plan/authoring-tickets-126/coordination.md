@@ -629,3 +629,9 @@ S1作者及证据cc54937e87d095a5b1fd8359c4c40c5fdefddb22→543c97d6aae6037bc057
 本仓#142范围通过，六类型仅既有白名单字段，未触及绑定/动作/格式/分页保持；中间输入/无变化/非法值不保存，完整合法修改沿原队列与撤销。参数引用被编辑时界面明确会替换为固定文字。当前检查器未扩展容器子树选择；代表性inline六类型不代表所有variant/引用组合。真实Java强端口仍未知。
 
 S1本阶段可执行票已完成，#145/#146均只等#138（S4未登记）；不为等待虚构新票或后台续跑。#146齐备优先通知。M2仍剩#137/#138/#145/#146及参考手册/分发矩阵等验收，M1/M3均未宣布通过。
+
+## #137开工登记
+
+S3任务不变，工作树`/private/tmp/metriccanvas-s3-137`、分支`codex/s3-137-filters-navigation`，开工基线9d08de447b989dac988890605eec0192b4efe5d3；已通知最终保留b1afd6c的#142增量。新增唯一作者：Bundle `tool/metriccanvas_authoring/domain/interaction_editing.py`、`test-harness/tests/test_interaction_editing.py`、`test-harness/tests/test_content_interactions.py`、`test-harness/interaction_browser.mjs`，及`docs/plan/authoring-tickets-126/t11-evidence.md`。既有Bundle domain/page_editing.py仅注册、contracts/authored/page-edit-request.schema.json、test-harness/content_stdio_server.py仅可信query测试token、README.md；不改S2临时Skill入口/运行时/参数真源，生成仍S2。
+
+S0读取完整票/最新评论，确认前置#134已满足。维度筛选新增/修改以显式完整bindings为原子操作；移除清理自身绑定，剩余引用由整页校验拒绝。仅既有受控query维度映射，不暗改query body/initial/paramBindings或其他数据源。表格link+导航创建/移除复用#109 href和显式row/param/filter传参，已有共用目标冲突或selection占用明确失败；最终需公开工具产物在统一运行时实际触发的证据。支持部分成功，分页/排序/表头筛选继续拒绝，不能以文档或静态校验代替运行验收。
