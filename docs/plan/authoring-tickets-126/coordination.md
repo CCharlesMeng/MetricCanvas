@@ -323,3 +323,9 @@ S0针对性复验3文件23测试通过，包含不响应abort的A→B→A；集�
 三类证据：本仓架构通过；外部确认仍仅已有资料，强保存/精确draftId/候选/执行新增契约未确认；真实Java/Relay/盘古/内网联调未完成，M3继续等待#103–#108原线。M0不是M1语言创作闭环，不关闭#95或#126整体目标。
 
 下游：S1从共同SHA继续#139→#140及创作交接；#127/#134/#138/#140齐备立即优先#146，其他工作按handoff技术前置。S2继续#143→#144。S3继续#134→#135/#136/#137。用户现在可开启S4（#138生命周期工具）和S5（接续真实盘古），不由S0创建任务；二者先登记独立worktree/分支/准确文件，S5等S1显式交出真实适配文件。#145仍等#138/#140/#144，S1主责UI/最终验收，S4工具；公共客户端S1、产品导出S2唯一作者。每票再次验收集成后通知下游，不以M0放行代替功能票证据。
+
+## M0后S1首批登记
+
+S1已消费e65b012c0a93d5c9a1ac9c0e51e320133e97a0f1并读取#139/#140完整票。#139新增唯一所有权：`apps/platform/src/lib/workbench/authoring-sync.ts`（队列/稳定操作/强保存端口）、`apps/platform/src/lib/workbench/authoring-storage.ts`（IndexedDB持久化端口）、`apps/platform/tests/workbench/authoring-sync.test.ts`、`apps/platform/tests/workbench/authoring-storage-browser.mjs`、`docs/plan/authoring-tickets-126/t13-evidence.md`。#140预登记复用上述两模块，新增`apps/platform/tests/workbench/authoring-recovery.test.ts`与`docs/plan/authoring-tickets-126/t14-evidence.md`；不新建第二份队列。coordinator/工作台/page-assets.ts/authoring-browser.mjs继续由S1负责。逐票验收，#140依赖以#139集成SHA为准。
+
+stableSave=false时不得将自动队列接入无幂等旧保存端点；先本地持久保护并明确能力不可用，顺序/查询结果使用强契约替身验证，真实能力单列。S5拟移交仅`apps/platform/src/lib/dialogue/runtime.ts`与`apps/platform/src/lib/dialogue/PanguDialogue.svelte`，待S5实际登记及S1正式交出；port.ts全局事件契约/接收与coordinator仍S1所有。当前未移交、不允许并发写拟移交文件。
