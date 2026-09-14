@@ -174,6 +174,7 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
       else if(sourceParams.get(entry.parameterId)?.type!=='dimension'||!same(sourceParams.get(entry.parameterId),declaration)||
         !same(sortedTargets(parameterTargets(source.document,entry.parameterId)),targets))fail(p,'EXISTING_PARAMETER_CHANGED');
     } else {
+      if(entry.extractionKind!==(declaration.multiple===true?'dimension-in':'dimension-eq'))fail(`${p}/extractionKind`);
       if(!entry.targets.length)fail(`${p}/targets`);
       if(!value.retainDimensionValues&&entry.valueState==='retained')fail(`${p}/valueState`);
     }
