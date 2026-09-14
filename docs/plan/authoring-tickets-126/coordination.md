@@ -699,3 +699,13 @@ S3只读核验确认双Platform Skill/双布局基线/模型评测为已确认�
 S2先冻结多Skill分发形状及精确bundle/check/export文件，references统一投影；S3可先写作者与本仓逻辑/测试，产品契约/分发配置需S2登记后实施，作者固定后生成。S0负责t04-java-relay-proposal.md中实际双入口名及可信路由/产物要求补充（外部提案），不实现Relay。
 
 验收：四组合创建/修改×report/dashboard、双向切换、继承形态、缺基线、手工后局部编辑、合法跨形态容器及宽窄呈现；公开stdio与差异断言，独立Skill分发及适用全量。模型cases/运行约定单独交付；真实Relay入口、身份、模型版本/参数、trace/基线通道与评测账户预算缺失时只列未运行，不以替身/关键词检查代替真实模型成绩，不擅自冻结达标阈值。
+
+## 补充范围精确登记与阶段交接
+
+S3双Skill任务实际树`/private/tmp/metriccanvas-s3-platform-skills`、分支`codex/s3-platform-skills`，起点6ad16375；新增既有测试维护窗口为Bundle `test-harness/tests/test_content_mcp.py`与`test-harness/tests/test_page_editing.py`，仅调整新建默认/切换影响摘要对应预期，保留数据与整页差异断言。不制造合法切换的丢标题冲突。S4追加Bundle `test-harness/tests/test_distribution.py`，仅sdist契约精确集合加入自有lifecycle-request.schema.json，不能弱化集合检查。
+
+S2多Skill分发方案冻结：bundle.json保留原skill.entrypoint，追加skills数组登记page-builder/platform-create/platform-edit三个完整ID与各自入口；只描述分发，不扩充路由授权。三个Skill独立目录自包含；旧references保持，新两套references/page-metadata及platform-authoring.md、layouts/report.md、layouts/dashboard.md从单一作者生成，禁止跨目录依赖或符号链接。共享作者链接layouts/report.md、layouts/dashboard.md，布局返回../platform-authoring.md。
+
+S2唯一作者窗口：Bundle `bundle.json`、`scripts/check_bundle.py`；根`tools/scripts/export-authoring-contracts.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`；新增Bundle `test-harness/tests/test_bundle_skills.py`。生成仅新增两Skill references及必要锁，旧主文与入口逐字保留，旧only-skill配置兼容，验证入口唯一/越界/缺项及真实独立复制闭合。不得把分场景30秒测试合并回累计超时单例。S3固定作者后S2生成，#138独立树/提交，S0组合后统一生成防锁覆盖。
+
+S5事实证据源06d0bbca8e507736c51953b7a6b319e17f7ca233已只读审阅：仅事实文档，尚无新增运行时测试/真实联调；运行时文件仍等CI任务最终回执，不在此转移。
