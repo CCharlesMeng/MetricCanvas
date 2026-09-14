@@ -635,3 +635,9 @@ S1本阶段可执行票已完成，#145/#146均只等#138（S4未登记）；不
 S3任务不变，工作树`/private/tmp/metriccanvas-s3-137`、分支`codex/s3-137-filters-navigation`，开工基线9d08de447b989dac988890605eec0192b4efe5d3；已通知最终保留b1afd6c的#142增量。新增唯一作者：Bundle `tool/metriccanvas_authoring/domain/interaction_editing.py`、`test-harness/tests/test_interaction_editing.py`、`test-harness/tests/test_content_interactions.py`、`test-harness/interaction_browser.mjs`，及`docs/plan/authoring-tickets-126/t11-evidence.md`。既有Bundle domain/page_editing.py仅注册、contracts/authored/page-edit-request.schema.json、test-harness/content_stdio_server.py仅可信query测试token、README.md；不改S2临时Skill入口/运行时/参数真源，生成仍S2。
 
 S0读取完整票/最新评论，确认前置#134已满足。维度筛选新增/修改以显式完整bindings为原子操作；移除清理自身绑定，剩余引用由整页校验拒绝。仅既有受控query维度映射，不暗改query body/initial/paramBindings或其他数据源。表格link+导航创建/移除复用#109 href和显式row/param/filter传参，已有共用目标冲突或selection占用明确失败；最终需公开工具产物在统一运行时实际触发的证据。支持部分成功，分页/排序/表头筛选继续拒绝，不能以文档或静态校验代替运行验收。
+
+## rc.4分发矩阵验收
+
+S2实现e3b94e31d9af9766547c2e4d4d656d8cf6919300→02606d0b54e0023644075dc4d91e9402d6be9643，证据3ff2fe6fdd7d940bb8dd64e197550e7f5727d1ac→22fe622082b4852eeef793982ebd8f3ae8aec611，表格补正7440d4da8125c5a7424a03bf294d7cfd88d45444→eb2454acf50ff998e261d441bc77fda96a14e9b7。仅已登记compatibility.mjs三行和证据文档，原断言/安全overrides保持。
+
+S0核对8tarball大小与SHA256，读取两组结构化浏览器报告各112 expected/0unexpected/0skipped/0flaky，合224通过；采用固定e3b94e3树两版本Svelte5.56.6/5.29.0各1045通过/5既有skip及源码check/build、独立真实包安装/类型/Svelte/Vite门禁。实际Chrome152.0.7977.83、Edge153.0.4234.32。本证据适用于四包rc.4，不能冒称在后续#136/#142共同树重跑源码全量；两票不变四包实现，无需重复无关矩阵。未发布registry/部署或真实内网消费，#95仍待原执行线环境。S2继续手册，S3继续#137；#138仍需S4。
