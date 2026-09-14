@@ -259,3 +259,7 @@ S2 回执：工作树 `/private/tmp/metriccanvas-126-s2`，分支 `codex/s2-layo
 新增 `packages/page/tests/canonical-writers.test.ts`、`tools/scripts/migrate-layout.ts`、`packages/page/tests/layout-migration-cli.test.ts`。S0明确迁移CLI为纯本地、显式输入→独立新输出，不覆盖原文/同路径、不留貌似成功的半成品、不调用资产保存或伪造修订；复用公开规范化，覆盖旧版两形态、幂等、非法版本及原文保持。工作台五文件不在本票范围。最终验收需完整实际生成清单与四包候选摘要；未授权发布。
 
 #133 Python测试临时所有权：S3明确授权 S2 修改 `metriccanvas-authoring/test-harness/tests/test_bundle_info.py` 的 productContractVersion 硬编码 `1.0.0-rc.1` 断言，改为与本Bundle的 contract-lock 对账，并允许读取锁所需最小改动。保留版本一致性断言，其他Python作者代码不动；S3期间不编辑该文件，随#133提交/复验后归还。S0已通知S2；若该文件摘要受Bundle锁管理，仍通过唯一生成流程更新，不手改摘要。此例外不启动#134。
+
+#133 测试路径追加：`packages/page/tests/filter-invariants.test.ts` 仅将旧6.0筛选回归输入改读 legacy-layout-dashboard，防当前6.1字段污染；`packages/engine/runtime/tests/ioc-project-overview.test.ts`、`ioc-project-detail.test.ts`、`ioc-opportunity-analysis.test.ts`（同runtime/tests前缀）仅将当前页面 requiredMinorVersion 预期0→1。均归S2，无已登记冲突。
+
+S2报告已实测9135d22下兼容工具5.29分支因既有overrides断言失败，拟在原overrides块加入框架pins并保留安全条目，最终两版本矩阵待提交验收。S2报告临时解包Edge153.0.4234.32及官方摘要/签名/公证检查完成；S0尚未核验该外部来源或浏览器运行结果，要求正式t07回执提供完整证据，不以下载/解包成功判浏览器通过。当前pnpm check通过属于进行中回执。
