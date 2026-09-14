@@ -404,3 +404,7 @@ S2回报S3允许参数/版本Python兼容由S2单独提交；原报tool/src路�
 新增`apps/platform/src/lib/workbench/authoring-sync-fixture.ts`归S1；扩展已归S1的`apps/platform/src/routes/dialogue/+page.svelte`仅在开发替身入口注入StableSavePort，覆盖强保存/结果查询/完整性，不新增生产URL或global服务接口。authoring-storage-browser.mjs已登记。工作台自动持久化/同步接入以#139验收为准，强能力不可用不得偷偷调用旧PUT或声称已同步；既有手工行为的保留/替代需按#139正文明确说明并保留回归证据，#128测试继续有效。
 
 S3已明确确认#143临时移交：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_validation.py`与`metriccanvas-authoring/test-harness/tests/test_page_validation.py`仅参数/版本兼容范围由S2唯一修改；#134不编辑，当前无冲突。S0正式放行，成套验收后归还S3。
+
+### #134导入副作用最小改动登记
+
+S0已核对当前server模块在import时执行create_production_server。新增S3唯一作者触点：`metriccanvas-authoring/tool/metriccanvas_authoring/server.py`及`metriccanvas-authoring/tool/server.py`；限main内延迟创建兼容MCP、源码入口调用main，以允许content_server复用配置函数而不创建带保存工具的兼容实例。不改外部配置/Java语义；须搜索旧mcp变量消费者，验证安装CLI与源码入口、compatibility/relay及stdio回归，避免破坏已有入口。S4若需这些共享入口先协调，不并发写。
