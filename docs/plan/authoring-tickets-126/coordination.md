@@ -398,3 +398,7 @@ stableSave=false时不得将自动队列接入无幂等旧保存端点；先本�
 S2回报S3允许参数/版本Python兼容由S2单独提交；原报tool/src路径不实，已核对真实作者为`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_validation.py`，测试为`metriccanvas-authoring/test-harness/tests/test_page_validation.py`。S0已向S3请求精确两文件窗口确认；确认前不改，其他TS工作可继续。不得扩展至S3内容编辑/打包文件；作者与生成物成套验收后归还。
 
 参数规则待验证：single为非空string，multiple为非空去重string[]；非法文档default拒绝；非法URL回退声明default，否则required阻止呈现、optional缺席；同目标参数/筛选来源一致，筛选接管后清空不复活参数。这些为#143待验收契约，不解锁下游。
+
+### #139开发替身追加
+
+新增`apps/platform/src/lib/workbench/authoring-sync-fixture.ts`归S1；扩展已归S1的`apps/platform/src/routes/dialogue/+page.svelte`仅在开发替身入口注入StableSavePort，覆盖强保存/结果查询/完整性，不新增生产URL或global服务接口。authoring-storage-browser.mjs已登记。工作台自动持久化/同步接入以#139验收为准，强能力不可用不得偷偷调用旧PUT或声称已同步；既有手工行为的保留/替代需按#139正文明确说明并保留回归证据，#128测试继续有效。
