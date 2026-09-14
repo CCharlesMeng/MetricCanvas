@@ -78,6 +78,9 @@ export function createAuthoringCoordinator(options: {
     });
     sync.subscribe((value) => {
       if (disposed) return;
+      if (owner !== identityKey()) {
+        state = { ...state, error: '身份已变化，原队列已停写停发，请重新打开页面。' }; emit(); return;
+      }
       state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0 };
       emit();
     });
@@ -94,6 +97,7 @@ export function createAuthoringCoordinator(options: {
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft): boolean {
       if (disposed || state.save?.status === 'pending') return false;
+      if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
       }

@@ -9,11 +9,13 @@ export class AuthoringStorageConflict extends Error {
   constructor() { super('其他窗口或先前工作已更新本地记录，已暂停同步并保留当前内容。'); this.name = 'AuthoringStorageConflict'; }
 }
 const keyOf = (scope: StorageScope) => JSON.stringify([scope.actorId, scope.workspaceId, scope.pageId]);
-export function createIndexedAuthoringStorage<T>(factory: IDBFactory = indexedDB): AuthoringStorage<T> {
+export function createIndexedAuthoringStorage<T>(factory?: IDBFactory): AuthoringStorage<T> {
   let connection: Promise<IDBDatabase> | undefined;
   function open() {
     connection ??= new Promise<IDBDatabase>((resolve, reject) => {
-      const request = factory.open('metriccanvas-authoring', 1);
+      const source = factory ?? globalThis.indexedDB;
+      if (!source) throw new Error('浏览器未提供创作存储能力。');
+      const request = source.open('metriccanvas-authoring', 1);
       request.onupgradeneeded = () => request.result.createObjectStore('work');
       request.onsuccess = () => {
         const db = request.result;

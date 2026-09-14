@@ -88,3 +88,21 @@ it('malformed transport results become unknown without a retry loop', async () =
   expect(sync.snapshot()).toMatchObject({ phase: 'unknown', pending: 1 });
   expect(port.save).toHaveBeenCalledTimes(1); sync.dispose();
 });
+
+it('does not advance or discard an issued command when identity changes during verification', async () => {
+  const { sync, port, writes, changeIdentity } = setup();
+  let resolve!: (value: boolean) => void;
+  port.verifySaved = vi.fn(() => new Promise<boolean>((done) => { resolve = done; }));
+  await sync.enqueue(draft('one'), 'one', true); await settle();
+  const before = structuredClone(writes.at(-1)); changeIdentity(); resolve(true); await settle();
+  expect(sync.snapshot()).toMatchObject({ phase: 'identity-changed', pending: 1, base: { revisionId: 'r1' } });
+  expect(writes.at(-1)).toEqual(before); expect(writes.at(-1)?.queue[0].command?.context.operationId).toBe('op-1'); sync.dispose();
+});
+
+it('never writes a new identity edit into the previous identity scope', async () => {
+  const { sync, port, writes, changeIdentity } = setup(); port.stableSave = false;
+  await sync.enqueue(draft('old-user'), 'old', true); const before = structuredClone(writes);
+  changeIdentity(); await sync.enqueue(draft('new-user'), 'new', true); await sync.retry();
+  expect(writes).toEqual(before); expect(port.save).not.toHaveBeenCalled();
+  expect(sync.snapshot().phase).toBe('identity-changed'); sync.dispose();
+});

@@ -59,21 +59,26 @@ export function createAuthoringSync(options: {
   let state = structuredClone(options.initial);
   let storageVersion = 0;
   let durable = false, disposed = false, running = false;
+  let identityInvalidated = false;
   let status: SyncSnapshot = { pending: state.queue.length, protection: 'pending', phase: 'idle', message: '', base: state.base, lastSaved: null };
   let serial: Promise<unknown> = Promise.resolve();
   const listeners = new Set<(value: SyncSnapshot) => void>();
   const identityMatches = () => {
     const identity = options.identity();
-    return identity.actorId === state.scope.actorId && identity.workspaceId === state.scope.workspaceId;
+    if (identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
+    return !identityInvalidated;
   };
   const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base });
   const emit = () => { if (!disposed) for (const listener of listeners) listener(snapshot()); };
   function transaction(change: () => void): Promise<boolean> {
     const result = serial.then(async () => {
       if (disposed) return false;
+      if (!identityMatches()) { pause('identity-changed', '身份已变化，原队列已停写停发，请重新打开页面。'); return false; }
       change(); durable = false; status.protection = 'pending'; emit();
       try {
         storageVersion = await options.storage.write(state.scope, storageVersion, structuredClone(state));
+        if (disposed) return false;
+        if (!identityMatches()) { pause('identity-changed', '身份已变化，原记录已保留，请重新打开页面。'); return false; }
         durable = true; status.protection = 'protected'; emit(); return true;
       } catch (error) {
         status = { ...status, phase: 'storage-failed', protection: 'failed', message: messageOf(error) }; emit(); return false;
@@ -94,6 +99,7 @@ export function createAuthoringSync(options: {
       try { verified = matching && await options.port.verifySaved(command, outcome); } catch { /* uncertain verification never acknowledges a save */ }
       if (!verified) outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：保存引用或完整性验证失败。' };
     }
+    if (!identityMatches()) { pause('identity-changed', '身份已变化，原已发操作等待原身份重新打开后核实。'); return false; }
     // Persist only the declared receipt fields, never arbitrary transport metadata.
     const result: StrongSaveOutcome = outcome.status === 'saved'
       ? { status: 'saved', operationId: outcome.operationId, ref: { pageId: outcome.ref.pageId, revisionId: outcome.ref.revisionId, resourceId: outcome.ref.resourceId }, base: command.base, contentHash: outcome.contentHash, canonicalization: outcome.canonicalization, revisionNumber: outcome.revisionNumber }
@@ -146,6 +152,7 @@ export function createAuthoringSync(options: {
     subscribe(listener: (value: SyncSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     /** Exactly one call for one committed edit, never an input/drag intermediate. */
     async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean): Promise<void> {
+      if (!identityMatches()) { pause('identity-changed', '身份已变化，编辑未写入旧用户记录，请重新打开页面。'); return; }
       const parsed = normalizePageDocument(draft.pageDocument);
       if (!parsed.ok || parsed.document.id !== state.scope.pageId) throw new Error('无效页面操作，未加入保存队列。');
       const operationId = options.operationId?.() ?? crypto.randomUUID();

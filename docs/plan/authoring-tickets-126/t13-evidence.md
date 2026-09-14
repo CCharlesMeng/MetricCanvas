@@ -31,7 +31,7 @@ UI区分：正在保护到浏览器、已在浏览器保护、浏览器保护失
 
 ## 实际命令与结果
 
-- `pnpm test`：132文件977通过/5既有skip（含7项authoring-sync公开行为用例）。
+- `pnpm test`：132文件979通过/5既有skip（含9项authoring-sync公开行为用例）。
 - `tsc --noEmit -p apps/platform/tsconfig.test.json`：通过。
 - Platform `svelte-check --tsconfig tsconfig.json`：0 errors / 0 warnings。
 - Platform `vite build`：adapter-static成功；`git diff --check`通过。
@@ -49,3 +49,11 @@ UI区分：正在保护到浏览器、已在浏览器保护、浏览器保护失
 回退：revert本票恢复#128工作台；保留IndexedDB已有记录，不执行删除/迁移。没有真实外部写入；真实服务仍走能力关闭路径。
 
 S5待移交清单：dialogue/runtime.ts真实资源/实例适配，dialogue/PanguDialogue.svelte挂载生命周期；port.ts通知契约/接收与全部创作协调仍S1。S5未登记前不转所有权。
+
+## S0 复核补正：身份异步边界
+
+完整性验证挂起期间切换身份，旧回执不得推进base或移除原已发command；切换后的编辑不得进入旧actor/workspace记录。队列在enqueue入口、串行事务实际执行、verifySaved返回及存储返回后检查身份；检测到变化后本实例永久停写停发，要求重新打开页面，即使切回原身份也不自动恢复。工作台同步订阅与replaceDraft同时拦截身份不匹配，旧结果不推进当前可见引用。
+
+原已发command保留在原身份IndexedDB记录，未重发、未丢弃；重新打开后的读取与核实仍由#140实现，本票不声称已有自动恢复。IndexedDB的可用性检查延迟到实际保护操作，缺失或抛错均进入保护失败状态。
+
+新增单测覆盖verifySaved挂起→身份变化→返回成功仍保留原base/队头，以及切换身份后enqueue/retry零新增写入和请求。补正后定向20项、全量979项通过，tsc/svelte-check/build通过。浏览器与build并行运行的一次开发页重载导致断言失败；构建结束后两套浏览器脚本独立重跑全部通过，没有放宽断言。
