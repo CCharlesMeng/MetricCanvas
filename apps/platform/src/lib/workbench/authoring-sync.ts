@@ -55,17 +55,27 @@ export function createAuthoringSync(options: {
   port: StableSavePort;
   identity(): Pick<StorageScope, 'actorId' | 'workspaceId'>;
   operationId?: () => string;
+  restoredVersion?: number;
+  online?: boolean;
+  retryDelays?: readonly number[];
 }) {
   let state = structuredClone(options.initial);
-  let storageVersion = 0;
-  let durable = false, disposed = false, running = false;
+  let storageVersion = options.restoredVersion ?? 0;
+  let durable = options.restoredVersion !== undefined, disposed = false, running = false;
+  // A durable command may have crossed the network even when no outcome was stored.
+  if (options.restoredVersion && state.queue[0]?.command && !state.queue[0].outcome) state.queue[0].outcome = { status: 'unknown', operationId: state.queue[0].operationId, message: '恢复的原操作等待核实。' };
+  let online = options.online ?? true;
+  let attempts = 0, retryBlocked = false;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const delays = options.retryDelays ?? [1000, 3000, 10000];
   let identityInvalidated = false;
-  let status: SyncSnapshot = { pending: state.queue.length, protection: 'pending', phase: 'idle', message: '', base: state.base, lastSaved: null };
+  const restoredOutcome = state.queue[0]?.outcome;
+  let status: SyncSnapshot = { pending: state.queue.length, protection: durable ? 'protected' : 'pending', phase: state.queue[0]?.outcome?.status === 'rejected' ? 'rejected' : 'idle', message: restoredOutcome && restoredOutcome.status !== 'saved' ? restoredOutcome.message ?? '' : '', base: state.base, lastSaved: null };
   let serial: Promise<unknown> = Promise.resolve();
   const listeners = new Set<(value: SyncSnapshot) => void>();
   const identityMatches = () => {
     const identity = options.identity();
-    if (identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
+    if (!identity.actorId || !identity.workspaceId || identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
     return !identityInvalidated;
   };
   const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base });
@@ -86,10 +96,14 @@ export function createAuthoringSync(options: {
     });
     serial = result.catch(() => {}); return result;
   }
+  function scheduleRetry() {
+    if (timer || disposed || running || !online || !durable || retryBlocked || !options.port.stableSave || !state.queue.length || state.queue[0].outcome?.status === 'rejected' || !identityMatches() || attempts >= delays.length) return;
+    timer = setTimeout(() => { timer = undefined; attempts++; void api.retry(false); }, delays[attempts]);
+  }
   function pause(phase: SyncSnapshot['phase'], message: string) { status = { ...status, phase, message }; emit(); }
   async function accept(command: DurableSaveCommand, outcome: StrongSaveOutcome): Promise<boolean> {
     if (!identityMatches()) { pause('identity-changed', '身份已变化，已停止同步；原工作保留在原用户范围。'); return false; }
-    if (!outcome || typeof outcome !== 'object' || !['saved', 'pending', 'unknown', 'rejected'].includes(outcome.status) || outcome.operationId !== command.context.operationId) outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：操作回执不匹配。' };
+    if (!outcome || typeof outcome !== 'object' || !['saved', 'pending', 'unknown', 'rejected'].includes(outcome.status) || outcome.operationId !== command.context.operationId) { retryBlocked = true; outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：操作回执不匹配。' }; }
     if (outcome.status === 'saved') {
       const matching = !!outcome.ref && typeof outcome.ref === 'object' && same(outcome.base, command.base) && outcome.ref.pageId === command.pageId &&
         Number.isInteger(outcome.revisionNumber) && outcome.revisionNumber > 0 &&
@@ -97,6 +111,7 @@ export function createAuthoringSync(options: {
         (!command.base || (outcome.ref.resourceId === command.base.resourceId && outcome.ref.revisionId !== command.base.revisionId));
       let verified = false;
       try { verified = matching && await options.port.verifySaved(command, outcome); } catch { /* uncertain verification never acknowledges a save */ }
+      if (!verified) { retryBlocked = true; }
       if (!verified) outcome = { status: 'unknown', operationId: command.context.operationId, message: 'RESPONSE_MISMATCH：保存引用或完整性验证失败。' };
     }
     if (!identityMatches()) { pause('identity-changed', '身份已变化，原已发操作等待原身份重新打开后核实。'); return false; }
@@ -118,13 +133,13 @@ export function createAuthoringSync(options: {
     return false;
   }
   async function pump() {
-    if (running || disposed || !durable || !state.queue.length) return;
+    if (running || disposed || !durable || !state.queue.length || !online) return;
     if (!identityMatches()) { pause('identity-changed', '身份已变化，已暂停同步。'); return; }
     if (!options.port.stableSave) { pause('unavailable', '服务尚未确认稳定幂等保存，工作已在浏览器保护。'); return; }
     if (state.queue[0].outcome || status.phase === 'identity-changed') return;
     running = true;
     try {
-      while (!disposed && durable && state.queue.length && identityMatches()) {
+      while (!disposed && durable && online && state.queue.length && identityMatches()) {
         const operation = state.queue[0];
         if (operation.outcome) break;
         if (!operation.command) {
@@ -144,11 +159,21 @@ export function createAuthoringSync(options: {
       }
     } finally {
       running = false;
-      if (!disposed && durable && state.queue.length && !state.queue[0].outcome && identityMatches() && options.port.stableSave) queueMicrotask(() => void pump());
+      if (!disposed && durable && online && state.queue.length && !state.queue[0].outcome && identityMatches() && options.port.stableSave) queueMicrotask(() => void pump());
+      else scheduleRetry();
     }
   }
-  return {
+  const api = {
     snapshot,
+    start() {
+      if (!durable) { void transaction(() => {}).then((protectedWork) => { if (protectedWork) void pump(); }); return; }
+      if (state.queue[0]?.outcome) void api.retry(false); else void pump();
+    },
+    setOnline(value: boolean) {
+      const reconnect = !online && value; online = value;
+      if (!value && timer) { clearTimeout(timer); timer = undefined; }
+      if (reconnect) { attempts = 0; if (!retryBlocked) void api.retry(false); }
+    },
     subscribe(listener: (value: SyncSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     /** Exactly one call for one committed edit, never an input/drag intermediate. */
     async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean): Promise<void> {
@@ -164,9 +189,10 @@ export function createAuthoringSync(options: {
       if (persisted) void pump();
     },
     /** Explicit retry first resolves the original key; unknown is never treated as not applied. */
-    async retry(): Promise<void> {
+    async retry(manual = true): Promise<void> {
+      if (manual) { attempts = 0; if (timer) { clearTimeout(timer); timer = undefined; } }
       await serial;
-      if (disposed || running || !identityMatches()) return;
+      if (disposed || running || !online || !identityMatches()) return;
       if (!durable && !await transaction(() => {})) return;
       const head = state.queue[0];
       if (!head) return;
@@ -177,15 +203,16 @@ export function createAuthoringSync(options: {
       try {
         const result = await options.port.lookup(head.command.context);
         if (!identityMatches()) { pause('identity-changed', '身份已变化，已暂停同步。'); return; }
-        if (!result || typeof result !== 'object' || result.operationId !== head.operationId) { pause('unknown', '操作查询回执不匹配。'); return; }
+        if (!result || typeof result !== 'object' || result.operationId !== head.operationId) { retryBlocked = true; pause('unknown', '操作查询回执不匹配。'); return; }
         if (result.status === 'not-applied') {
-          if (result.retrySafe !== true) { pause('unknown', '服务无法保证幂等重试窗口，请保留工作并人工核实。'); return; }
+          if (result.retrySafe !== true) { retryBlocked = true; pause('unknown', '服务无法保证幂等重试窗口，请保留工作并人工核实。'); return; }
           await transaction(() => { delete head.outcome; });
         } else await accept(head.command, result);
       } catch (error) { pause('unknown', messageOf(error)); }
-      finally { running = false; }
+      finally { running = false; scheduleRetry(); }
       void pump();
     },
-    dispose() { disposed = true; listeners.clear(); }
+    dispose() { disposed = true; if (timer) clearTimeout(timer); listeners.clear(); }
   };
+  return api;
 }

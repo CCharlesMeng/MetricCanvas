@@ -1,6 +1,7 @@
 import { normalizePageDocument } from '@metriccanvas/page';
 import { createAuthoringSync, type DurableAuthoringState, type StableSavePort, type SyncSnapshot } from './authoring-sync';
-import type { AuthoringStorage } from './authoring-storage';
+import { validateAuthoringRecord } from './authoring-recovery';
+import type { AuthoringStorage, StoredRecord } from './authoring-storage';
 import { PageAssetsError, type PageRevision, type SavePageRevision } from '../page-assets-client';
 import { createCanvasAuthoringDraft, type CanvasAuthoringDraft } from './document-edit';
 import { type SavedDraft, type ReadSavedDraft, unavailableDraftReader } from '../dialogue/port';
@@ -58,6 +59,7 @@ export function createAuthoringCoordinator(options: {
   let syncConfig: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort } | null = null;
   let sync: ReturnType<typeof createAuthoringSync> | null = null;
   let retainDimensionValues = true;
+  let online = true;
   let disposed = false;
   let read: AbortController | null = null;
   const listeners = new Set<(state: AuthoringSnapshot) => void>();
@@ -65,38 +67,66 @@ export function createAuthoringCoordinator(options: {
   const emit = () => { for (const listener of listeners) listener(snapshot()); };
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
   const scope = () => `${epoch}:${identityKey()}`;
-  const unresolved = () => state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
+  const unresolved = () => state.loading || state.sync?.protection === 'failed' || state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
   function change(draft: CanvasAuthoringDraft) { epoch++; read?.abort(); state = { ...state, draft: structuredClone(draft), loading: false, error: '' }; }
 
-  function attachSync() {
+  async function attachSync(prepared?: StoredRecord<DurableAuthoringState> | null, incoming = false) {
     if (!syncConfig || !state.draft) return;
-    sync?.dispose();
+    sync?.dispose(); sync = null;
     const identity = options.identity();
-    sync = createAuthoringSync({
-      initial: { format: 1, scope: { ...identity, pageId: String(state.draft.pageDocument.id) }, base: state.ref, draft: state.draft, queue: [] },
-      ...syncConfig, identity: options.identity
-    });
-    sync.subscribe((value) => {
-      if (disposed) return;
-      if (owner !== identityKey()) {
-        state = { ...state, error: '身份已变化，原队列已停写停发，请重新打开页面。' }; emit(); return;
+    const expected = scope();
+    const storageScope = { ...identity, pageId: String(state.draft.pageDocument.id) };
+    state = { ...state, loading: true, sync: null }; emit();
+    try {
+      if (!identity.actorId || !identity.workspaceId) throw new Error('身份失效，原记录已保留，请重新登录后打开页面。');
+      const raw = prepared === undefined ? await syncConfig.storage.read(storageScope) : prepared;
+      let stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
+      if (disposed || scope() !== expected) return;
+      if (incoming && stored && stored.value.queue.length === 0) {
+        const value: DurableAuthoringState = { format: 1, scope: storageScope, base: state.ref, draft: state.draft!, queue: [] };
+        const version = await syncConfig.storage.write(storageScope, stored.version, structuredClone(value));
+        if (disposed || scope() !== expected) return;
+        stored = { version, value };
       }
-      state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0 };
-      emit();
-    });
+      if (stored) state = { ...state, draft: stored.value.draft, ref: stored.value.base, dirty: stored.value.queue.length > 0 };
+      const active = createAuthoringSync({
+        initial: stored?.value ?? { format: 1, scope: storageScope, base: state.ref, draft: state.draft!, queue: [] },
+        ...syncConfig, identity: options.identity, restoredVersion: stored?.version, online
+      });
+      sync = active;
+      active.subscribe((value) => {
+        if (disposed || sync !== active) return;
+        if (owner !== identityKey()) {
+          state = { ...state, error: '身份已变化，原队列已停写停发，请重新打开页面。' }; emit(); return;
+        }
+        state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0 }; emit();
+      });
+      state = { ...state, loading: false }; emit();
+      active.start();
+    } catch (error) {
+      if (!disposed && scope() === expected) {
+        state = { ...state, loading: false, sync: { pending: 0, protection: 'failed', phase: 'storage-failed', message: messageOf(error), base: state.ref, lastSaved: null } }; emit();
+      }
+    }
   }
 
   return {
     snapshot, scope,
     enableAutoSync(config: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort }) {
-      syncConfig = config; if (state.draft) attachSync();
+      syncConfig = config; if (state.draft) void attachSync();
     },
+    setOnline(value: boolean) { online = value; sync?.setOnline(value); },
     setRetainDimensionValues(value: boolean) { retainDimensionValues = value; },
     async retrySync() { await sync?.retry(); },
+    /** Shared gate for consumers that require fully synchronized content (including publication). */
+    requireSynchronizedRef(): DraftRef {
+      if (!state.ref || unresolved() || state.dirty || owner !== identityKey() || (syncConfig && state.sync?.protection !== 'protected')) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
+      return structuredClone(state.ref);
+    },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft): boolean {
-      if (disposed || state.save?.status === 'pending') return false;
+      if (disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
@@ -116,6 +146,19 @@ export function createAuthoringCoordinator(options: {
       const signal = read.signal, expected = scope();
       state = { ...state, loading: true, error: '' }; emit();
       try {
+        let stored: StoredRecord<DurableAuthoringState> | null = null;
+        if (syncConfig) {
+          const storageScope = { ...options.identity(), pageId };
+          if (!storageScope.actorId || !storageScope.workspaceId) throw new Error('身份失效，请重新登录后打开页面。');
+          const raw = await syncConfig.storage.read(storageScope);
+          if (disposed || signal.aborted || scope() !== expected) return;
+          stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
+          if (stored) {
+            owner = identityKey();
+            change(stored.value.draft); state = { ...state, ref: stored.value.base, dirty: stored.value.queue.length > 0, save: null };
+            await attachSync(stored); return;
+          }
+        }
         const revision = await options.port.getLatest(pageId, signal);
         if (disposed || signal.aborted || scope() !== expected) return;
         if (revision.pageId !== pageId || revision.document.id !== pageId) throw new Error('RESPONSE_MISMATCH：页面身份不匹配。');
@@ -123,7 +166,7 @@ export function createAuthoringCoordinator(options: {
         const parsed = createCanvasAuthoringDraft({ ...revision.document });
         if (!parsed.ok) throw new Error(parsed.message);
         owner = identityKey();
-        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; attachSync(); emit();
+        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; await attachSync(null); emit();
       } catch (cause) {
         if (!disposed && !signal.aborted && scope() === expected) { state = { ...state, error: String(cause) }; }
       } finally {
@@ -144,7 +187,7 @@ export function createAuthoringCoordinator(options: {
       const parsed = createCanvasAuthoringDraft({ ...draft.document });
       if (!parsed.ok) { state = { ...state, error: parsed.message }; emit(); return false; }
       owner = identityKey();
-      change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; attachSync(); emit(); return true;
+      change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; void attachSync(undefined, true); emit(); return true;
     },
     /** Current-match preview remains available; false exactRead explicitly forbids claiming historical availability. */
     async preview(ref: DraftRef, signal?: AbortSignal): Promise<PageRevision> {

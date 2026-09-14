@@ -49,6 +49,24 @@ export function createCanvasAuthoringDraft(
   return projectCanvasDraft({ ...normalized.document });
 }
 
+/** Restore both projections without dropping empty authoring sections or upgrading versions. */
+export function restoreCanvasAuthoringDraft(value: unknown): DocumentEditResult {
+  const stored = recordOf(value);
+  const canvas = recordOf(stored?.canvasDocument);
+  if (!stored || !canvas) return { ok: false, message: '本地创作草稿结构无效' };
+  const projected = projectCanvasDraft(jsonClone(canvas));
+  if (!projected.ok) return projected;
+  const stable = (input: unknown): string => {
+    if (Array.isArray(input)) return `[${input.map(stable).join(',')}]`;
+    if (input && typeof input === 'object') return `{${Object.entries(input).sort(([a], [b]) => a.localeCompare(b)).map(([key, child]) => `${JSON.stringify(key)}:${stable(child)}`).join(',')}}`;
+    return JSON.stringify(input);
+  };
+  if (stable(projected.draft.pageDocument) !== stable(stored.pageDocument) || stable(projected.draft.authoringSections) !== stable(stored.authoringSections)) {
+    return { ok: false, message: '本地创作草稿双投影不一致，原记录已保留' };
+  }
+  return projected;
+}
+
 /** 由文档数据源反推取数单元(装配输入):字段契约、查询定义与内嵌初始行。 */
 export function unitOfDataSource(
   document: Record<string, unknown>,

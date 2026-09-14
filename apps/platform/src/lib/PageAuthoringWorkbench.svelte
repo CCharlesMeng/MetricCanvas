@@ -54,6 +54,10 @@
   // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
     coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
+    coordinator.setOnline(navigator.onLine);
+    const online = () => coordinator.setOnline(true);
+    const offline = () => coordinator.setOnline(false);
+    window.addEventListener('online', online); window.addEventListener('offline', offline);
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
     const pageId = new URLSearchParams(window.location.search).get('page');
     if (pageId) void coordinator.load(pageId);
@@ -71,7 +75,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { stop(); unsubscribe(); coordinator.dispose(); };
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
