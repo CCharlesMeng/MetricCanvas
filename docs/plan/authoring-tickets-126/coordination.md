@@ -245,3 +245,15 @@ S0 复验：page_validation 5 项（包含32矩阵及全量正反向量）、com
 S0 接受四发布包锁步 `1.0.0-rc.2` 作为本地6.1候选版本，不授权registry发布或push。S2需登记四package.json及实际compatibility.mjs路径；既有安全overrides不能为通过兼容门禁删除，应最小调整门禁以保留配置并验证实际两版本。浏览器及环境证据如实记录；#133不代表M2参考手册主体完成。
 
 S1 回执并经 S0 核对：`codex/authoring-126-s1-platform` 已快进至 `9135d22f1616ff63357cbfce5cd6a80b016f0e24`，工作树干净；五个临时文件所有权已收回。#127 仍等待用户对两项实施选择的答复，尚无本角色产品代码提交；保持已规范化 document-edit/promote 边界，不在客户端提前变换原文。此等待不阻止 S2 执行已解锁的 #133，M0 状态不变。
+
+### #133 精确开工清单
+
+S2 回执：工作树 `/private/tmp/metriccanvas-126-s2`，分支 `codex/s2-layout-closeout-133`，基线 `9135d22f1616ff63357cbfce5cd6a80b016f0e24`，先复验18项兼容测试通过；未作为本票最终验收。
+
+存量 `pages/` 11 文件：`empty-state-showcase.json`、`tokens-report.json`、`region-map.json`、`sales-detail.json`、`ioc-opportunity-list.json`、`ioc-project-overview.json`、`demo.json`、`customer-activity-risk-briefing.json`、`flow-analysis-report.json`、`ioc-opportunity-analysis.json`、`ioc-project-detail.json`。
+
+`packages/page/fixtures/contract-valid/` 当前11样例：`grouped-fields-page.json`、`filters-page.json`、`url-navigation-page.json`、`inline-report.json`、`forecast-page.json`、`query-dashboard.json`、`composite-page.json`、`mixed-page.json`、`map-page.json`、`compute-page.json`、`params-page.json`；既有 layout-6-1 两样例不需升级。新增旧读取专用 `legacy-layout-report.json` / `legacy-layout-dashboard.json`；当前写出门禁明确区分用途。32矩阵生成前剥离当前样例layout再设置声明，保留原始6.0输入覆盖。
+
+版本：`packages/page/package.json`、`packages/engine/package.json`、`packages/metric-canvas/package.json`、`packages/embed/package.json`；`pnpm-lock.yaml` 仅锁步需要时由工具更新。`tools/package-build/compatibility.mjs` 限最低版本既有overrides合并，以及真实运行证实必要的工具版本调整；安全overrides保留，回执说明依据。
+
+新增 `packages/page/tests/canonical-writers.test.ts`、`tools/scripts/migrate-layout.ts`、`packages/page/tests/layout-migration-cli.test.ts`。S0明确迁移CLI为纯本地、显式输入→独立新输出，不覆盖原文/同路径、不留貌似成功的半成品、不调用资产保存或伪造修订；复用公开规范化，覆盖旧版两形态、幂等、非法版本及原文保持。工作台五文件不在本票范围。最终验收需完整实际生成清单与四包候选摘要；未授权发布。
