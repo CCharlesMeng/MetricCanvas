@@ -72,3 +72,14 @@ describe('notification retry and SDK document lifetime', () => {
     await resource('sdk?v=1'); expect(load).toHaveBeenCalledTimes(2);
   });
 });
+
+
+it('releases an aborted unsettled A synchronously so A→B→A can re-read', async () => {
+  const target = new EventTarget(); const pending: Array<(value: SavedDraft) => void> = [];
+  const read = vi.fn(() => new Promise<SavedDraft>((resolve) => { pending.push(resolve); }));
+  const onpage = vi.fn(); const stop = listenForSavedDrafts({ target, read, onpage, onerror: vi.fn() });
+  emit(target, 'a'); emit(target, 'b'); emit(target, 'a'); expect(read).toHaveBeenCalledTimes(3);
+  pending[2](draft('a')); await flush(); pending[0](draft('a')); pending[1](draft('b')); await flush();
+  expect(onpage).toHaveBeenCalledTimes(1); expect(onpage.mock.calls[0][0].draftId).toBe('a');
+  emit(target, 'a'); expect(read).toHaveBeenCalledTimes(3); stop();
+});

@@ -39,6 +39,7 @@ export function listenForSavedDrafts(options: {
   const state = createAnalysisPageState();
   const seen = new Map<string, { scope: unknown; status: 'pending' | 'accepted' }>();
   let pending: AbortController | null = null;
+  let releasePending: (() => void) | null = null;
   let disposed = false;
   const listener = (event: Event) => {
     const id = draftIdOf((event as CustomEvent<unknown>).detail);
@@ -52,7 +53,9 @@ export function listenForSavedDrafts(options: {
     seen.set(key, entry);
     const forget = () => { if (seen.get(key) === entry) seen.delete(key); };
     if (seen.size > 256) seen.delete(seen.keys().next().value!);
+    releasePending?.();
     pending?.abort();
+    releasePending = () => { if (entry.status === 'pending') forget(); };
     const controller = new AbortController();
     pending = controller;
     const handle = state.begin();
@@ -83,6 +86,7 @@ export function listenForSavedDrafts(options: {
   options.target.addEventListener(DRAFT_SAVED_EVENT, listener);
   return () => {
     disposed = true;
+    releasePending?.();
     pending?.abort();
     state.reset();
     options.target.removeEventListener(DRAFT_SAVED_EVENT, listener);
