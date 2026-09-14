@@ -531,3 +531,7 @@ S2从正式ca8c549独立生成树新增`contracts/metriccanvas/page/map-regions.
 来源7d95e8462ec4dc4de17e1b9f04205bf9e9b31a14，ca8c549基线，独立S2 contracts树；本条之前的集成提交保留原作者。8文件范围核对；仅生成器/地名产物与manifest/锁/对账测试，未改底图/runtime。源树未跟踪node_modules依赖链接不纳入。S0复验china/world两测试通过，195product/4authoring/1interface无漂移，497摘要通过。contractVersion1含china31/world177原始去重名称及源SHA，nameMap运行行为对账通过。
 
 本支援可供S3#135正式消费，不代表text/fieldText/map内容实现或浏览器已验收；页面仍6.2、产品rc.3，无新增页面协议。S2#144后续生成保留此增量，不覆盖旧锁。
+
+#140固定ef0597d3审阅中：S0四文件51项复验通过，尚未验收；已要求语言读取/接收门禁与初始protection pending、owner身份及dispose资格对齐，保留合法空画布创建路径。待追加修正证据，不提前解锁#146。
+
+#144追加S2作者范围：四`packages/page/package.json`、`packages/engine/package.json`、`packages/metric-canvas/package.json`、`packages/embed/package.json`锁步rc.4本地候选，页面协议不再升版；`packages/embed/README.md`执行入口说明。S2已合入e29b9bd保留#134/#135生成资产，Python作者不改、锁由统一生成。28项阶段测试回执尚非最终验收，未授权registry发布。
