@@ -15,9 +15,9 @@
 | 角色 | 实际 task ID / 状态 | 工作分支 | 票序与前置 | 文件所有权 |
 |---|---|---|---|---|
 | S0 | `01a09f5f-0882-7762-b736-c3ed8b5504e8` 已就位 | codex/authoring-126-s0-t04 | #130 无前置；统筹整合 | 本 coordination.md；t04-java-relay-proposal.md、t04-contract-examples.json、t04-verify-examples.py、t04-evidence.md；intranet-126-handoff.md |
-| S1 | 未登记，不发送任务给猜测对象 | 待登记 | #127→#128；M0 后 #139→#140→优先 #146，#141/#142、#145 | 现有 `apps/platform/src/lib/PageAuthoringWorkbench.svelte` （已核对路径）；page-assets-client.ts、page-assets.ts 与工作台相关测试/组装/导出由 S1 唯一修改；新增文件开工登记 |
-| S2 | 未登记 | 待登记 | #129→#131；#131/#132 集成后 #133；M0 后 #143→#144 | packages/page、engine、embed 的协议/运行时作者文件、公开导出及产品生成快照由 S2 唯一修改；精确文件清单开工登记；参考手册总责 |
-| S3 | 未登记 | 待登记 | #129 集成后 #132（不等 M0）；M0 后 #134→#135/#136/#137 | Python 内容算法、内容 MCP 注册与自有工具契约，开工登记准确路径；不手改产品快照 |
+| S1 | `01a09f69-8346-7e91-9c66-9e091d3f6e77` 已登记 | codex/authoring-126-s1-platform | #127→#128；M0 后 #139→#140→优先 #146，#141/#142、#145 | 现有 `apps/platform/src/lib/PageAuthoringWorkbench.svelte` （已核对路径）；page-assets-client.ts、page-assets.ts 与工作台相关测试/组装/导出由 S1 唯一修改；新增文件开工登记 |
+| S2 | `01a09f69-a06b-7703-b87b-ccdfe05d765e` 已登记 | codex/s2-protocol-runtime-129 | #129→#131；#131/#132 集成后 #133；M0 后 #143→#144 | packages/page、engine、embed 的协议/运行时作者文件、公开导出及产品生成快照由 S2 唯一修改；首批精确文件见后文登记；参考手册总责 |
+| S3 | `01a09f69-d2b5-71b0-ba93-c7cc183d4ee2` 已登记 | codex/s3-132-python-layout | #129 集成后 #132（不等 M0）；M0 后 #134→#135/#136/#137 | Python 内容算法、内容 MCP 注册与自有工具契约，开工登记准确路径；不手改产品快照 |
 | S4 | 未开启；M0 后用户开启 | 待登记 | #138；#138/#140/#144 后参与 #145 | 生命周期 MCP 工具/注册/服务适配和其测试；不得修改工作台公共客户端与产品导出 |
 | S5 | 未开启；M0 后用户开启且 S1 交接 | 待登记 | #127 已验收；续 #106/#107/#108 | S1 移交的盘古独立模块具体适配文件及配置；不修改工作副本或上游源码 |
 
@@ -32,7 +32,7 @@
 | #127/#128 | 待 S1 逐票回执 | 盘古事实见 #106 | 待 #107/#108 | 无 |
 | #129/#131/#133 | 待 S2 逐票回执 | 不以外部服务为本仓前置 | #103 待内网 | 无 |
 | #132 | 待 #129 集成与 S3 回执 | 不适用 | Python 独立交付按票验证 | 无 |
-| #130 | 方案与正反例本仓交付通过：21 场景/32 步骤、22 处文档校验；S1/S2 对齐待登记 | #105 只确认既有目录/详情/新增更新资料；新提案未确认 | 待 #105/#106 | `265b2ca` 文档交付；#138/#144 可评审，功能仍等待 M0 |
+| #130 | 方案与正反例本仓交付通过：21 场景/32 步骤、22 处文档校验；S1 已接受主要保存语义，S1/S2 完整接口证据待回执 | #105 只确认既有目录/详情/新增更新资料；新提案未确认 | 待 #105/#106 | `265b2ca` 文档交付；#138/#144 可评审，功能仍等待 M0 |
 
 每票回执：范围/未实现、基线与提交 SHA、准确变更文件、公开契约版本、逐项验收与实际命令结果、外部状态、下游、回退方式。S0 核验后保留提交身份整合；下游以集成 SHA + 针对性兼容证据消费，不以关闭状态代替。
 
@@ -67,3 +67,67 @@ M3：#105 Java、#106–#108 真实盘古/Relay、#103 内网消费、#104 真�
 已两次查看当前任务列表，仍未发现登记 S1/S2/S3；未向旧任务发送消息，未创建任务。现在可由用户启动 S1/S2/S3，按上方可复制文字和对应 handoff 登记开工。S4/S5 继续等 M0 READY。无无界等待、无后台续跑承诺。
 
 未完成及解锁条件：#127/#128 等 S1；#129/#131/#133 等 S2；#132 等 #129 集成 + S3。#130 消费对齐等待 S1/S2 回执。#103/#104 原内网环境按旧 handoff 等待，本版运行产物尚未生成，新增场景已写 intranet-126-handoff.md，未来据实际产物补版本与摘要。
+
+## 首批角色正式登记（2026-09-14，取代此前“未登记”的当前状态）
+
+三方主动登记，S0 已核对 `git worktree list` 并发送确认与彼此真实 task ID。共同开工 SHA 均为 `057703b1604f4937601f99534c713a4f72995c08`；本次只更新台账，不要求开发者中断工作合并此纯文档提交。
+
+| 角色 | 已核工作树 | 当前可执行工作 | 下一交付 |
+|---|---|---|---|
+| S1 | /private/tmp/metriccanvas-126-s1 | #127→#128 | #127 独立/工作台挂载及更新演练证据；#128 契约与浏览器回归 |
+| S2 | /private/tmp/metriccanvas-126-s2 | #129 | 冻结版本、旧版读取、双字段规则、唯一写出、规范化入口、黄金向量及兼容证据 |
+| S3 | /private/tmp/metriccanvas-s3-132 | #132 调查、验收设计 | t06 验收设计；实现等 #129 验收集成 SHA |
+
+### S1 首批准确文件
+
+- `apps/platform/src/lib/PageAuthoringWorkbench.svelte`
+- `apps/platform/src/lib/page-assets-client.ts`
+- `apps/platform/src/lib/page-assets.ts`
+- 新增 `apps/platform/src/lib/dialogue/port.ts`
+- 新增 `apps/platform/src/lib/dialogue/PanguDialogue.svelte`
+- 新增 `apps/platform/src/lib/dialogue/fixture-adapter.ts`
+- 新增 `apps/platform/src/routes/dialogue/+page.svelte`
+- 新增 `apps/platform/src/lib/workbench/authoring-coordinator.ts`
+- 新增 `apps/platform/tests/workbench/dialogue-boundary.test.ts`
+- 新增 `apps/platform/tests/workbench/authoring-coordinator.test.ts`
+- 新增 `docs/plan/authoring-tickets-126/t01-evidence.md`
+- 新增 `docs/plan/authoring-tickets-126/t02-evidence.md`
+
+`analysis-page-state.ts` 只消费，不重写。#131 工作台最小补丁仍由 S1 唯一写入。
+
+### S2 首批准确文件与待补清单
+
+- `packages/page/src/version.ts`
+- `packages/page/src/page.ts`
+- `packages/page/src/page-document.ts`
+- `packages/page/src/schema/page.ts`
+- `packages/page/src/index.ts`
+- `packages/page/tests/version.test.ts`
+- 新增 `packages/page/tests/layout-compatibility.test.ts`
+- `packages/engine/runtime-ui/src/RuntimeSurface.svelte`
+- `tools/scripts/export-authoring-contracts.ts`
+- 新增 `docs/plan/authoring-tickets-126/t03-layout-compatibility.md`
+- 新增 `docs/plan/authoring-tickets-126/t03-evidence.md`
+
+登记中的 `packages/page/src/parse.ts` 在基线不存在，已通知 S2 公共 parsePage 实际位于 `packages/page/src/validate.ts`，要求按真实改动补登记。新增运行时兼容测试尚缺准确路径；产品 snapshot/锁/导出文件由 S2 单向生成，生成后给完整清单，S3 只读。上述路径以外的新增触点继续追加，不能用整目录责任替代文件登记。
+
+### S3 首批准确文件
+
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_building.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_validation.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/build_page.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/compose_page.py`
+- `metriccanvas-authoring/test-harness/tests/test_build_page.py`
+- `metriccanvas-authoring/test-harness/tests/test_page_validation.py`
+- `metriccanvas-authoring/test-harness/tests/test_compose_page.py`
+- `metriccanvas-authoring/test-harness/tests/test_component_building.py`
+- `metriccanvas-authoring/test-harness/tests/test_stdio.py`
+- 新增 `docs/plan/authoring-tickets-126/t06-python-migration-acceptance.md`
+
+无当前文件冲突。新增兼容模块若需要，S3 先追加准确路径；不修改产品生成快照或锁。
+
+### #130 消费对齐与门槛
+
+S1 登记已接受 resourceId/pageId/revisionId 分离、保存四态、未知结果不盲重发、能力不可用与旧页保留。这是语义回执，尚非接口/运行证据。已请求 S1 #128 补实际接口路径与测试、候选/执行兼容说明；请求 S2 回执原始文档 hash 验证先于规范化、精确执行 target/条件匹配/既有错误数据快照，不提前实现 #143/#144。
+
+M0 IN PROGRESS，尚无新增实施票验收提交。S0 收到逐票回执后核验、集成、发精确 SHA；S3 可直接与 S2 调查，但不能把未集成开发分支当作 #132 可消费基线。S4/S5 尚未开启。当前消息已实际发给已登记三任务，无外部联系、无创建新任务。
