@@ -803,3 +803,11 @@ S1在6ac142b记录后自查发现confirmAndPublish/cancel的await release迟到�
 S0 fetch确认在线main为640dd2aa435a45b50b1954967054c136468a473d，包含用户另任务已授权CI接缝26d6db3与盘古文档640dd2a；已合入本独立树，无冲突。审阅port只读事件辅助、PanguDialogue响应adapter变化及独立attachDialogue清理；runtime.ts与工作台未被该main增量改动。独立集成49项对话/通知/#146语言测试通过。复用已有node_modules链接并生成本树SvelteKit配置，首次缺生成tsconfig失败后复验通过，未安装新依赖或更改原工作区。
 
 S5任务01a0a034-c4c3-7033-af2b-2539d6d9e0ae现正式接收`apps/platform/src/lib/dialogue/runtime.ts`与`apps/platform/src/lib/dialogue/PanguDialogue.svelte`，在本条SHA建/合独立基线后报告实际分支。原S1无并行修改回执和CI任务结束均已核实；`port.ts`/工作台仍S1，新增`lifecycle.ts`/stub及混合测试不默认转移，确需修改先登记。已登记专属pangu-runtime.test.ts及s5-pangu-evidence.md保持。先读最终main的docs/pangu-development.md与现有adapter替换清理，不重做CI成果；真实SDKURL/版本/内网缺口仍明确，基础适配本仓验证可继续，不等#145修正。
+
+## #145最终修正验收恢复
+
+merge a79187e3c7c533b773b376bf69b604db78dd373f纳入S1迟到release保护f5aafa2e3893f43e488b31b0af5df6673b61ad4c、main合流组合7c60bf3及最终证据99334ba0f0f6f1f74cd173a760fb1bab2b2ea6c9。S0审阅confirm/cancel在await释放前后generation与状态保护、两个新评审完成后旧释放失败的完整snapshot反例；独立5文件152项通过，被测Platform/Bundle与集成树一致。
+
+采用S1修正后未合main时1203通过/5既有skip及0错0警告/build/生产门禁证据，main合流后追加152相关项及原T01/T02/T13、T19实际工作台浏览器；严格区分两次基线，不冒称main合流后全量重建已运行。#145本仓整票验收恢复，先前暂停解除，以本条新SHA为准。最新main合流后完整组合回归尚待最终交付门禁。
+
+S1/S4本轮本仓票交接完成，S2可提供最终交付生成/回归支援，S5继续已登记基础适配。20票本仓范围均验收不等于M2所有补充及M3完成：真实模型14cases未跑、SDK真实环境/Java/Relay/内网尚缺，第二批未远端发布。next-stage.md已改为当前阶段待办，旧起跑提示归历史。
