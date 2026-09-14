@@ -92,6 +92,7 @@
 | [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | #95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
 
 | [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古只替换现有左侧对话，每轮 ask 有结果并保留旧页 | 已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
+| [0078](./0078-dimension-values-templates-and-page-instances.md) | 草稿经维度取值提取发布为模板，执行产生页面实例 | 新版设计已确认，协议与服务未实现；在 Platform 创作范围内部分调整 0010/0064 |
 
 ## IOC 作战地图批次(0045–0051)
 
