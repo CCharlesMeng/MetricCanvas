@@ -61,7 +61,9 @@
       },
       captureScope: coordinator.scope,
       onpage: (draft) => {
-        if (coordinator.acceptSavedDraft(draft)) { previewOpen = false; saveError = ''; relocateSelection(); }
+        const accepted = coordinator.acceptSavedDraft(draft);
+        if (accepted) { previewOpen = false; saveError = ''; relocateSelection(); }
+        return accepted;
       },
       onerror: (message) => { saveError = message; }
     });

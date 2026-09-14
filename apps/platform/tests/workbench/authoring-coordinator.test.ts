@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
+import { listenForSavedDrafts, DRAFT_SAVED_EVENT } from '../../src/lib/dialogue/port';
 import { createAuthoringCoordinator, confirmedPageAssetCapabilities, type AuthoringPort } from '../../src/lib/workbench/authoring-coordinator';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { PageAssetsError, type PageRevision } from '../../src/lib/page-assets-client';
@@ -87,6 +88,27 @@ it('refuses valid documents whose page ID differs from the requested asset', asy
   port.getLatest = async () => ({ ...revision(), document: { ...revision().document, id: 'foreign' } });
   await coordinator.load('p'); expect(coordinator.snapshot().draft?.pageDocument.id).toBe('p');
   expect(coordinator.snapshot().error).toContain('RESPONSE_MISMATCH');
-  port.getRevision = port.getLatest;
+  port.getRevision = (pageId) => port.getLatest(pageId);
   await expect(coordinator.preview({ pageId: 'p', revisionId: 'r1', resourceId: 'resource' })).rejects.toThrow('RESPONSE_MISMATCH');
+});
+
+
+it('does not advance the base when a PUT receipt changes the opened resource', async () => {
+  const { coordinator } = setup(vi.fn(async () => ({ ...revision('r2'), resourceId: 'different-resource' })));
+  await coordinator.load('p'); expect(await coordinator.save()).toMatchObject({ status: 'unknown' });
+  expect(coordinator.snapshot().ref).toEqual({ pageId: 'p', revisionId: 'r1', resourceId: 'resource' });
+});
+
+it('retries an ID after workbench rejection, then deduplicates successful delivery', async () => {
+  const { coordinator, port } = setup(); await coordinator.load('p');
+  const target = new EventTarget();
+  const read = vi.fn(async () => ({ draftId: 'draft-other', ref: { pageId: 'other', revisionId: 'r2', resourceId: 'other-resource' }, document: { ...revision().document, id: 'other' } }));
+  const stop = listenForSavedDrafts({ target, read, onpage: coordinator.acceptSavedDraft, onerror: vi.fn() });
+  const notify = () => target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: 'draft-other' } }));
+  const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+  notify(); await settle(); expect(coordinator.snapshot().ref?.pageId).toBe('p');
+  port.getLatest = async () => ({ ...revision(), pageId: 'other', resourceId: 'other-resource', document: { ...revision().document, id: 'other' } });
+  await coordinator.load('other'); notify(); await settle();
+  expect(coordinator.snapshot().ref?.revisionId).toBe('r2');
+  notify(); await settle(); expect(read).toHaveBeenCalledTimes(2); stop();
 });

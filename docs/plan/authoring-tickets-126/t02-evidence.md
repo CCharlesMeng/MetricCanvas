@@ -84,3 +84,11 @@
 8. apps/platform/tests/workbench/authoring-coordinator.test.ts
 9. apps/platform/tests/workbench/authoring-browser.mjs
 10. docs/plan/authoring-tickets-126/t02-evidence.md
+
+## S0 复核追加修正
+
+1. 有base时，保存回执resourceId必须等于本次PUT的base.resourceId；错资源即unknown，不推进ref。新增同page/同document但resource变更的回归。
+2. `listenForSavedDrafts.onpage` 返回`boolean|void`；false明确拒收并释放本通知记录，原void消费者兼容。工作台把acceptSavedDraft结果回传。新增listener+coordinator组合用例：不同页首次拒收→切到正确页后同ID可重新读取/接收→成功重复仍去重。该变化只扩展内部回调，不改全局事件负载。
+3. 新增测试的getRevision替身显式适配参数签名；最终tsconfig.test与svelte-check均通过（0错0警告）。
+
+复核后`pnpm test`：131文件970通过/5既有skip；18项协调/通知定向测试通过；T01/T02浏览器再次PASS；最终Platform静态构建成功。追加文件含既有S1 `dialogue/port.ts`，其余仍在原10文件范围内。完整页面ID、resourceId与ref一致性现在在读取/保存/预览边界核验。

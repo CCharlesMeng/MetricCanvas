@@ -31,7 +31,8 @@ export function draftIdOf(detail: unknown): string | null {
 export function listenForSavedDrafts(options: {
   target: EventTarget;
   read: ReadSavedDraft;
-  onpage(draft: SavedDraft): void;
+  /** false means consumer rejected delivery; void preserves existing consumers. */
+  onpage(draft: SavedDraft): boolean | void;
   onerror(message: string): void;
   captureScope?(): unknown;
   captureIdentity?(): unknown;
@@ -70,8 +71,8 @@ export function listenForSavedDrafts(options: {
       }
       const outcome = state.acceptVerifiedPage(handle, draft.document);
       if (outcome === 'accepted') {
-        entry.status = 'accepted';
-        options.onpage(draft);
+        if (options.onpage(draft) === false) forget();
+        else entry.status = 'accepted';
       } else {
         forget();
         if (outcome === 'invalid') options.onerror('草稿页面校验失败，保留当前页面。');

@@ -143,7 +143,7 @@ export function createAuthoringCoordinator(options: {
         });
         const ref = refOf(revision);
         const parsed = normalizePageDocument(revision.document);
-        if (ref.pageId !== pageId || !parsed.ok || stable(parsed.document) !== stable(document)) {
+        if (ref.pageId !== pageId || (base && ref.resourceId !== base.resourceId) || !parsed.ok || stable(parsed.document) !== stable(document)) {
           throw new Error('RESPONSE_MISMATCH：保存回执与提交内容不匹配，结果未确定。');
         }
         outcome = { status: 'saved', context, ref, revision, assurance: 'provider-response' };
