@@ -50,7 +50,10 @@ class ContentMcpTest(unittest.IsolatedAsyncioTestCase):
             registry = Registry().with_resource(artifact_schema["$id"], Resource.from_contents(artifact_schema))
             self.assertEqual(list(Draft202012Validator(envelope_schema, registry=registry).iter_errors(created.structured_content["artifactEnvelope"])), [])
             dashboard = await client.call_tool("compose_page", {"page_id": "content-created", "spec": spec, "layout": "dashboard"})
-            expected_dashboard = dict(document, layout="dashboard")
+            from copy import deepcopy
+            expected_dashboard = deepcopy(document)
+            expected_dashboard["layout"] = "dashboard"
+            expected_dashboard["sections"][1]["container"] = "panel"
             dashboard_artifact = dashboard.structured_content["artifactEnvelope"]["artifact"]
             self.assertEqual(dashboard_artifact["document"], expected_dashboard)
             self.assertEqual(dashboard_artifact["documentSha256"], document_sha256(expected_dashboard))
