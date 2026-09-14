@@ -65,3 +65,7 @@ GitHub证据回写仍等待此前自动审批拒绝后的明确批准；本轮�
 最终UI专项 **31通过**，tests tsc通过、Svelte **0错0警告**、Vite build通过；新构建完整发布浏览器及生产门禁PASS，日志 `/private/tmp/s1-t19-release-browser.log`。全量最终 **144文件、1203通过、5既有跳过**，日志 `/private/tmp/s1-t19-release-full-unsandboxed.log`，退出0。第一次本轮全量在沙箱中因本地HTTP listen EPERM导致13项失败（日志 `/private/tmp/s1-t19-release-full.log`），没有改测试或跳过，取得本地监听权限后原命令完整重跑通过。Python工具/安装产物未改，沿用前述固定汇合验证。
 
 本增量只修改已登记控制器与其测试；证据另提交。不重写历史；S0复核此增量后再给最终正式共同SHA。
+
+## 主线CI接缝合流后的最终针对回归
+
+按S0通知合入正式 `fef8d20ce11f18d2af5815c0b531f87d45459663`，形成最终产品组合 **`7c60bf372791ca18b7e7b7d5162df068fc31657c`**，无冲突，S1未另改盘古适配所有权文件。该组合上的dialogue、语言创作、发布、共同契约4文件145项，以及dialogue-boundary 7项，合计 **152项通过**；tests tsc通过。实际 `authoring-browser.mjs` T01/T02/T13与 `authoring-publication-browser.mjs` 全部通过（退出0），日志 `/private/tmp/s1-t19-main-authoring-browser.log`、`s1-t19-main-publication-browser.log`。此轮生产构建门禁沿用前述f5aafa2对应的构建/浏览器证据，没有把旧preview称作最新主线构建验证。全量1203/5属于合流前f5aafa2，主线合流后执行上述针对回归，不混淆运行范围。
