@@ -30,7 +30,25 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-FastMCP 提供两个互斥工具面，避免迁移期同时出现三个模型可见工具：
+Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+
+`create_content_page` 用 `page_id/title/layout` 与 `request.operations` 创建新页。允许 `add_text/add_field_text/add_map_chart/add_tab_container/add_composite_card/add_ai_summary`，目标分区为 `main`（panel）；静态正文直接声明，字段长文本与地图仅从可信 `source_token` 对应完整页面复用数据源。创建产物 `metriccanvas.content-page-artifact` 包含新 document/hash、可空 sourceRef 和 Bundle 版本，不包含保存结果，也不将创建冒充既有页修改。
+
+这些追加操作也可用于 `edit_page`；`remove_component` 删除这三类顶层组件，后继组件仍以 connectPrevious 依赖它时拒绝删除。原有查询、样例行、无关组件不重建。fieldText 要求一行非空 string/semanticHtml 正文；mapChart 要求地域 dimension、数值 measure、可验证行证据和 china/world 明确底图，名称必须匹配随包地名契约或通过 nameMap 显式映射。缺少 initial 的查询、未物化 compute、空/未知地域均明确失败。plain/card 分区无法提供普通地图所需高度，追加时返回 MAP_SECTION_REQUIRES_CHART_HEIGHT；选已有 panel 或缺省分区。此限制来自真实运行时验真，不会暗改既有分区。完整数据只留程序通道；新操作不接收原文、rows 或 query。
+
+容器操作用非空 child recipes（componentId/componentType/dataSourceId 与可选 title/span）复用既有字段与构造器。`add_tab_container.tabs[].children` 仅接受 table；`add_composite_card.children` 仅接受 metricCard/pieChart/gauge/keyValuePanel/categoryBreakdown。子组件、容器 id 一起判重，defaultTab、数据源和字段引用均经整页校验；`remove_component` 可删除完整容器或 aiSummary，连接依赖仍受保护，不删除共享数据源。
+
+`add_ai_summary` 必须声明 `generation: runtime_sse`、非空 promptTemplate 和 relatedData 字段白名单。可信组合根通过 `summary_config` 传入运行时现有的 AiSummaryConfig；源码/安装入口从 `METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG` 读取 JSON，支持 conversationBaseUrl（完整 HTTP(S) 基址）及可选 env。配置由当前集成应用的可信部署方提供并与渲染端保持一致，工具不猜端点、不中途探测或调用总结服务，也不把配置写入页面或模型摘要。配置缺失/格式错误时本操作明确失败；模型不能在操作里提供端点。此检查证明配置可表达，不能证明服务可达或用户拥有调用权限，真实联调另验。标题包含“AI 总结”的普通文本不会升级为 aiSummary。
+
+交互编辑复用现行 filters/filterBindings 与 href/query：`add_dimension_filter` 同时声明维度筛选器和至少一个显式 query 绑定；`update_dimension_filter` 的 bindings 是该筛选器完整的目标绑定集合，允许显式空数组仅解除绑定，未列入的新旧其他筛选绑定保持不变。绑定 queryField 必须是既有 query 数据源已映射的 dimension，不能凭空发明查询字段。`remove_dimension_filter` 同步移除该筛选器的查询绑定；仍被导航、级联、动作或参数关系引用时整项失败。query body/initial/paramBindings 不重写，initialParam 等已有声明保留并接受产品校验。
+
+`set_table_link` 以 componentId/fieldId（可选 slot）定位一列，同时设置 link 与表格级 navigate；navigate 必须提供 href 和显式 query 绑定，支持现行 row/param/filter 三种来源。不声明新页面参数。目标列有 selection 时拒绝，其他链接列共享不同导航目标时拒绝，避免暗改既有交互。`remove_table_link` 只清目标列入口，最后一个入口移除时一并清导航动作，其他动作保留。分组列和 Tab 内表格沿同一组件/列遍历处理。查询分页、排序和表头筛选不能经这些操作或普通属性编辑开启。
+
+`edit_page` 只接收 `baseline_token` 和受控 `request.operations`，操作请求规范见 [`page-edit-request.schema.json`](./contracts/authored/page-edit-request.schema.json)。可信程序通过 `ContentBaselinePort` 注入完整精确基线；自带只读适配器从 `METRICCANVAS_CONTENT_BASELINES_DIR/<token>.json` 读取 `{ref:{pageId,revisionId,resourceId},document,documentSha256}`。目录按身份和工作区隔离，由外部可信适配器填充，token 必须不可变关联同一基线；没有配置或基线时明确失败，不读取“最新页”或重建整页。此摘要为本工具规范 JSON 的 SHA-256，不冒充 Java 已确认的 hash 算法。
+
+内容工具先核验原文引用与摘要，再规范化、逐操作整页校验；独立失败回滚、依赖跳过。`changed/partial` 返回程序产物，`unchanged/failed/invalid_request/invalid_baseline` 不返回可保存产物。文本内容只含操作摘要，完整 `structuredContent.artifactEnvelope` 仍须由 Relay 可信适配器截取，模型只接收 `modelSummary`。该适配器、按用户身份和生命周期保存接线仍待真实外部集成；本仓 stdio 通过不代表生产已接通。
+
+既有 FastMCP 入口提供两个互斥工具面：
 
 - 默认 `METRICCANVAS_TOOL_SURFACE=compatibility`：`discover_data_context + build_page`。`build_page` 是 compose 后继续调 Java 保存的兼容包装。
 - `METRICCANVAS_TOOL_SURFACE=relay`：`discover_data_context + compose_page`。成功结果是 `kind=metriccanvas.page-build-artifact` 信封。

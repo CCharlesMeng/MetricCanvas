@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -1157,5 +1157,5 @@
       ]
     }
   ],
-  "layoutForm": "dashboard"
+  "layout": "dashboard"
 }

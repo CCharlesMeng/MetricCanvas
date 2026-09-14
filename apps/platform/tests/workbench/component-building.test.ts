@@ -38,7 +38,7 @@ describe('浏览器与 Python 共同的局部组件构造规则（ADR-0074）', 
       expect(built.component.props).toEqual(vector.expectedProps);
       // 用现行页面协议验证局部构造，然后经真实编辑入口验证布局与数据槽保留。
       const document = {
-        schemaVersion: versionPolicy.current, id: 'component-example',
+        schemaVersion: versionPolicy.current, layout: 'report', id: 'component-example',
         dataSources: { result: { source: { type: 'query', query: unit.query, initial: unit.initial }, fields: unit.fields } },
         sections: [{ id: 'section', components: [{ ...built.component, id: 'kept-id', layout: { span: 5 } }] }]
       };

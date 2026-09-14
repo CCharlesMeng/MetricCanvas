@@ -319,6 +319,9 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
         )
 
         artifact = envelope["artifact"]
+        self.assertEqual(artifact["document"]["schemaVersion"], json.loads((BUNDLE_ROOT / "contract-lock.json").read_text())["pageSchemaVersion"])
+        self.assertEqual(artifact["document"]["layout"], "report")
+        self.assertNotIn("layoutForm", artifact["document"])
         summary = envelope["modelSummary"]
         self.assertEqual(summary["status"], "page_composed")
         self.assertEqual(summary["pageId"], "tokens-by-region")

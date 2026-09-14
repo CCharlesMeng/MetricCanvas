@@ -5,6 +5,15 @@ AiSummaryConfig
 DataGateway
 DimensionValuesGateway
 DqeGatewayConfig
+ExecutionBootstrap
+ExecutionError
+ExecutionPort
+ExecutionRequest
+ExecutionTarget
+LastFilterContext
+LastFilterPort
+LastFilterRequest
+LastFilterStatus
 MountOptions
 RuntimeDataGateway
 RuntimeEvent
@@ -14,4 +23,7 @@ RuntimeNavigation
 RuntimeNavigationTarget
 TypedError
 createDqeGateway
+createLastFilterRecorder
+loadExecution
 mount
+prepareExecution

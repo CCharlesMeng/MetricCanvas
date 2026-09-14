@@ -1,0 +1,1150 @@
+{
+  "modules": {
+    "page.md": {
+      "title": "页面、版本与布局",
+      "definitions": [
+        "pageLayoutForm",
+        "dashboardToolbar"
+      ],
+      "keywords": [
+        "page",
+        "页面、版本与布局"
+      ],
+      "examples": [
+        "inline-report",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/page.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "page-layout-compatibility",
+        "schema-structure",
+        "schema-version-supported"
+      ]
+    },
+    "params-and-text-values.md": {
+      "title": "页面参数与文本取值",
+      "definitions": [
+        "nonEmptyTextValue",
+        "textValueReference",
+        "textValue",
+        "pageParam"
+      ],
+      "keywords": [
+        "params-and-text-values",
+        "页面参数与文本取值"
+      ],
+      "examples": [
+        "dimension-params-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/primitives.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "page-param-id-unique",
+        "page-param-not-filter-name",
+        "page-param-default-type",
+        "text-value-param-declared",
+        "text-value-format-compatible",
+        "page-param-consumed",
+        "optional-param-not-in-required-text"
+      ]
+    },
+    "data-sources.md": {
+      "title": "页面数据源与初始行",
+      "definitions": [
+        "dataSource",
+        "inlineDataSource",
+        "queryDataSource",
+        "inlineSource",
+        "querySource",
+        "embeddedInitialRows"
+      ],
+      "keywords": [
+        "data-sources",
+        "页面数据源与初始行"
+      ],
+      "examples": [
+        "query-dashboard"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/data-source.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "query-initial-rows-normalize",
+        "inline-rows-contract",
+        "captured-at-valid",
+        "pagination-initial-rows"
+      ]
+    },
+    "fields.md": {
+      "title": "结果字段契约",
+      "definitions": [
+        "fields",
+        "field",
+        "scalarField",
+        "recordListField",
+        "fieldValue",
+        "scalar",
+        "detailRecordList",
+        "detailRecord",
+        "queryFields",
+        "queryField",
+        "queryScalarField",
+        "queryRecordListField",
+        "groupedQueryFields",
+        "groupedDimensionQueryFieldGroup",
+        "groupedMeasureQueryFieldGroup"
+      ],
+      "keywords": [
+        "fields",
+        "结果字段契约"
+      ],
+      "examples": [
+        "grouped-fields-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/data-source.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "grouped-query-fields-unique",
+        "grouped-query-field-label-not-id",
+        "inline-rows-contract",
+        "detail-item-object",
+        "detail-list-max-items",
+        "query-field-mapping",
+        "detail-field-consumption"
+      ]
+    },
+    "queries-and-bindings.md": {
+      "title": "查询定义与显式绑定",
+      "definitions": [
+        "pageQuery",
+        "dqeQuery"
+      ],
+      "keywords": [
+        "queries-and-bindings",
+        "查询定义与显式绑定"
+      ],
+      "examples": [
+        "dimension-params-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/query.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "query-field-mapping",
+        "filter-binding"
+      ]
+    },
+    "compute.md": {
+      "title": "具名算子",
+      "definitions": [
+        "compute",
+        "computeOperator",
+        "rowKindMark"
+      ],
+      "keywords": [
+        "compute",
+        "具名算子"
+      ],
+      "examples": [
+        "compute-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/compute.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "compute-operator-inputs",
+        "compute-operator-outputs",
+        "compute-folding-collapsible",
+        "compute-row-kind-field",
+        "compute-pivot-categories-unique",
+        "compute-output-not-in-rows"
+      ]
+    },
+    "filters.md": {
+      "title": "筛选声明与运行状态",
+      "definitions": [
+        "dimensionFilter",
+        "timeRangeFilter",
+        "relativeTimeExpression",
+        "timePointFilter",
+        "booleanFilter",
+        "numberRangeFilter",
+        "searchFilter"
+      ],
+      "keywords": [
+        "filters",
+        "筛选声明与运行状态"
+      ],
+      "examples": [
+        "filters-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/filter.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "filter-id-unique",
+        "time-range-default-calendar",
+        "relative-time-anchor",
+        "time-point-default",
+        "number-range-default",
+        "hierarchy-level-id-unique",
+        "default-level-declared",
+        "hierarchy-picker-requires-hierarchy",
+        "filter-depends-on",
+        "hidden-hierarchy-picker-needs-map"
+      ]
+    },
+    "sections-and-layout.md": {
+      "title": "内容分区与布局",
+      "definitions": [
+        "section",
+        "sectionContainer",
+        "sectionColumnTracks",
+        "componentId",
+        "componentLayout",
+        "componentLayer"
+      ],
+      "keywords": [
+        "sections-and-layout",
+        "内容分区与布局"
+      ],
+      "examples": [
+        "composite-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/page.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "section-id-unique",
+        "component-id-unique",
+        "layer-top-level-only",
+        "single-backdrop-per-section",
+        "backdrop-needs-siblings",
+        "backdrop-container-plain",
+        "column-track-span"
+      ]
+    },
+    "field-bindings-and-formats.md": {
+      "title": "数据槽、字段绑定与格式",
+      "definitions": [
+        "metricData",
+        "mainData",
+        "tableData",
+        "fieldBinding",
+        "fieldReference"
+      ],
+      "keywords": [
+        "field-bindings-and-formats",
+        "数据槽、字段绑定与格式"
+      ],
+      "examples": [
+        "compute-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/primitives.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "actions-and-navigation.md": {
+      "title": "交互与导航",
+      "definitions": [
+        "actions",
+        "componentAction"
+      ],
+      "keywords": [
+        "actions-and-navigation",
+        "交互与导航"
+      ],
+      "examples": [
+        "url-navigation-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/actions.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "url-navigation-source-contract",
+        "metric-row-link-needs-navigate",
+        "actions-live-only",
+        "write-filter-target",
+        "navigation-filter-source"
+      ]
+    },
+    "semantic-html.md": {
+      "title": "受控语义HTML",
+      "definitions": [
+        "semanticHtmlField",
+        "querySemanticHtmlField"
+      ],
+      "keywords": [
+        "semantic-html",
+        "受控语义HTML"
+      ],
+      "examples": [
+        "compute-page"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/data-source.ts",
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/engine/widgets/src/shared/semantic-html.ts"
+      ],
+      "rules": [
+        "ranking-detail-semantic-description"
+      ]
+    },
+    "validation.md": {
+      "title": "校验、错误与修复",
+      "definitions": [],
+      "keywords": [
+        "validation",
+        "校验、错误与修复"
+      ],
+      "examples": [
+        "inline-report"
+      ],
+      "sources": [
+        "packages/page/src/validate.ts",
+        "packages/page/src/schema/page.ts",
+        "tools/scripts/page-conformance-vectors.ts"
+      ],
+      "rules": [
+        "page-layout-compatibility",
+        "url-navigation-source-contract",
+        "schema-structure",
+        "schema-version-supported",
+        "composite-card-pure-container",
+        "page-param-id-unique",
+        "page-param-not-filter-name",
+        "page-param-default-type",
+        "text-value-param-declared",
+        "text-value-format-compatible",
+        "page-param-consumed",
+        "optional-param-not-in-required-text",
+        "grouped-query-fields-unique",
+        "grouped-query-field-label-not-id",
+        "query-initial-rows-normalize",
+        "filter-id-unique",
+        "time-range-default-calendar",
+        "relative-time-anchor",
+        "time-point-default",
+        "number-range-default",
+        "hierarchy-level-id-unique",
+        "default-level-declared",
+        "hierarchy-picker-requires-hierarchy",
+        "filter-depends-on",
+        "hidden-hierarchy-picker-needs-map",
+        "section-id-unique",
+        "component-id-unique",
+        "layer-top-level-only",
+        "single-backdrop-per-section",
+        "backdrop-needs-siblings",
+        "backdrop-container-plain",
+        "column-track-span",
+        "inline-rows-contract",
+        "detail-item-object",
+        "detail-list-max-items",
+        "captured-at-valid",
+        "query-field-mapping",
+        "filter-binding",
+        "compute-operator-inputs",
+        "compute-operator-outputs",
+        "compute-folding-collapsible",
+        "compute-row-kind-field",
+        "compute-pivot-categories-unique",
+        "compute-output-not-in-rows",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "detail-field-consumption",
+        "field-binding-match",
+        "ai-summary-related-data",
+        "metric-row-link-needs-navigate",
+        "bar-forecast-boundary",
+        "table-row-key",
+        "table-row-kind-field",
+        "table-merge-by-column",
+        "table-selection-writes",
+        "table-column-binding-unique",
+        "table-filterable-dimension",
+        "category-swatches-need-pie",
+        "map-legend-bands-increasing",
+        "map-pinned-summary",
+        "map-hierarchy",
+        "tab-container",
+        "ranking-detail-semantic-description",
+        "ranking-detail-records",
+        "actions-live-only",
+        "write-filter-target",
+        "navigation-filter-source",
+        "pagination-local-inline",
+        "pagination-query-source",
+        "pagination-query-order",
+        "pagination-initial-rows",
+        "pagination-no-view-columns",
+        "pagination-exclusive-source"
+      ]
+    },
+    "components/reportHeader.md": {
+      "title": "报告页头 reportHeader",
+      "definitions": [
+        "reportHeaderComponent"
+      ],
+      "keywords": [
+        "components/reportHeader",
+        "报告页头 reportHeader"
+      ],
+      "examples": [
+        "inline-report"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/report-header.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/metricCard.md": {
+      "title": "指标卡 metricCard",
+      "definitions": [
+        "metricCardComponent"
+      ],
+      "keywords": [
+        "components/metricCard",
+        "指标卡 metricCard"
+      ],
+      "examples": [
+        "inline-report"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/metric-card.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/barChart.md": {
+      "title": "柱状图 barChart",
+      "definitions": [
+        "barChartComponent",
+        "barChartSeries"
+      ],
+      "keywords": [
+        "components/barChart",
+        "柱状图 barChart"
+      ],
+      "examples": [
+        "forecast-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/charts.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "bar-forecast-boundary"
+      ]
+    },
+    "components/lineChart.md": {
+      "title": "折线图 lineChart",
+      "definitions": [
+        "lineChartComponent",
+        "chartSeries"
+      ],
+      "keywords": [
+        "components/lineChart",
+        "折线图 lineChart"
+      ],
+      "examples": [
+        "mixed-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/charts.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/pieChart.md": {
+      "title": "饼图 pieChart",
+      "definitions": [
+        "pieChartComponent"
+      ],
+      "keywords": [
+        "components/pieChart",
+        "饼图 pieChart"
+      ],
+      "examples": [
+        "composite-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/charts.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/table.md": {
+      "title": "明细表 table",
+      "definitions": [
+        "tableComponent",
+        "tableColumnNode",
+        "tableColumn",
+        "tableColumnGroup"
+      ],
+      "keywords": [
+        "components/table",
+        "明细表 table"
+      ],
+      "examples": [
+        "query-dashboard",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/table.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "table-row-key",
+        "table-row-kind-field",
+        "table-merge-by-column",
+        "table-selection-writes",
+        "table-column-binding-unique",
+        "table-filterable-dimension",
+        "pagination-local-inline",
+        "pagination-query-source",
+        "pagination-query-order",
+        "pagination-initial-rows",
+        "pagination-no-view-columns",
+        "pagination-exclusive-source"
+      ]
+    },
+    "components/mapChart.md": {
+      "title": "地图 mapChart",
+      "definitions": [
+        "mapChartComponent",
+        "mapLegend",
+        "mapLegendBand",
+        "mapTooltipField",
+        "mapPinnedSummary"
+      ],
+      "keywords": [
+        "components/mapChart",
+        "地图 mapChart"
+      ],
+      "examples": [
+        "map-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/map-chart.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "map-legend-bands-increasing",
+        "map-pinned-summary",
+        "map-hierarchy"
+      ]
+    },
+    "components/gauge.md": {
+      "title": "仪表 gauge",
+      "definitions": [
+        "gaugeComponent"
+      ],
+      "keywords": [
+        "components/gauge",
+        "仪表 gauge"
+      ],
+      "examples": [
+        "composite-page",
+        "reference-variants-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/gauge.ts",
+        "packages/embed/tests/browser/embed.spec.ts",
+        "packages/engine/widgets/src/components/gauge/Gauge.svelte",
+        "packages/engine/widgets/src/components/gauge/gauge.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/tabContainer.md": {
+      "title": "Tab 容器 tabContainer",
+      "definitions": [
+        "tabContainerComponent",
+        "tabItem"
+      ],
+      "keywords": [
+        "components/tabContainer",
+        "Tab 容器 tabContainer"
+      ],
+      "examples": [
+        "composite-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/tab-container.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "tab-container"
+      ]
+    },
+    "components/compositeCard.md": {
+      "title": "组合卡 compositeCard",
+      "definitions": [
+        "compositeCardComponent",
+        "compositeCardChild"
+      ],
+      "keywords": [
+        "components/compositeCard",
+        "组合卡 compositeCard"
+      ],
+      "examples": [
+        "composite-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/composite-card.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "composite-card-pure-container"
+      ]
+    },
+    "components/rankingCard.md": {
+      "title": "排行卡 rankingCard",
+      "definitions": [
+        "rankingCardComponent"
+      ],
+      "keywords": [
+        "components/rankingCard",
+        "排行卡 rankingCard"
+      ],
+      "examples": [
+        "reference-variants-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/ranking-card.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/rankingDetailCard.md": {
+      "title": "详细排行卡 rankingDetailCard",
+      "definitions": [
+        "rankingDetailCardComponent"
+      ],
+      "keywords": [
+        "components/rankingDetailCard",
+        "详细排行卡 rankingDetailCard"
+      ],
+      "examples": [
+        "compute-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/ranking-detail-card.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "ranking-detail-semantic-description",
+        "ranking-detail-records"
+      ]
+    },
+    "components/keyValuePanel.md": {
+      "title": "信息面板 keyValuePanel",
+      "definitions": [
+        "keyValuePanelComponent",
+        "keyValueItem"
+      ],
+      "keywords": [
+        "components/keyValuePanel",
+        "信息面板 keyValuePanel"
+      ],
+      "examples": [
+        "composite-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/key-value-panel.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/categoryBreakdown.md": {
+      "title": "分类明细 categoryBreakdown",
+      "definitions": [
+        "categoryBreakdownComponent",
+        "categoryBreakdownColumn"
+      ],
+      "keywords": [
+        "components/categoryBreakdown",
+        "分类明细 categoryBreakdown"
+      ],
+      "examples": [
+        "composite-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/category-breakdown.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "category-swatches-need-pie"
+      ]
+    },
+    "components/fieldText.md": {
+      "title": "字段长文本 fieldText",
+      "definitions": [
+        "fieldTextComponent"
+      ],
+      "keywords": [
+        "components/fieldText",
+        "字段长文本 fieldText"
+      ],
+      "examples": [
+        "compute-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/field-text.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/text.md": {
+      "title": "文本 text",
+      "definitions": [
+        "textComponent"
+      ],
+      "keywords": [
+        "components/text",
+        "文本 text"
+      ],
+      "examples": [
+        "reference-text-page",
+        "url-navigation-page",
+        "reference-branches-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/text.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "schema-structure",
+        "data-slot-known-source",
+        "field-binding-resolves",
+        "field-binding-role",
+        "field-binding-match"
+      ]
+    },
+    "components/aiSummary.md": {
+      "title": "AI 总结 aiSummary",
+      "definitions": [
+        "aiSummaryComponent",
+        "aiSummaryRelatedDataDefinition",
+        "aiSummaryRelatedField"
+      ],
+      "keywords": [
+        "components/aiSummary",
+        "AI 总结 aiSummary"
+      ],
+      "examples": [
+        "forecast-page"
+      ],
+      "sources": [
+        "packages/page/src/schema/components/ai-summary.ts",
+        "packages/embed/tests/browser/embed.spec.ts"
+      ],
+      "rules": [
+        "ai-summary-related-data"
+      ]
+    }
+  },
+  "fieldNotes": {
+    "id": "稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。",
+    "title": "展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。",
+    "type": "选择所属结构的类型分支。",
+    "props": "组件的受控呈现配置。",
+    "data": "组件数据槽与页面数据源的显式关联。",
+    "layout": "受控布局声明。",
+    "fields": "结果字段契约；对象键就是页面字段id。",
+    "queryField": "DQE输出或目标字段名，不等于页面字段id。",
+    "default": "作者声明的初始默认；不是运行时随状态变化重新应用的值。",
+    "format": "显示格式，不修改原始数据。",
+    "source": "此处声明的数据来源，分支由type选择。",
+    "required": "参数是否必需；缺值时是否阻止初始化。",
+    "multiple": "维度参数多值开关，缺省单值。",
+    "initialParam": "只初始化筛选状态的维度参数id。",
+    "paramBindings": "参数id到查询维度目标的显式绑定。",
+    "filterBindings": "筛选器id到当前查询目标的显式绑定。",
+    "rows": "按结果字段契约命名和校验的数据行。",
+    "nullable": "是否显式允许空值，不能以字段缺失代替null。",
+    "role": "维度、度量或明细等受控字段角色。",
+    "actions": "组件受控交互动作集合。",
+    "align": "所在列或文本的对齐方向。",
+    "anchor": "相对时间计算所用的日历锚点。",
+    "areaGradient": "折线/面积呈现使用受控渐变。",
+    "asOf": "数据采集截止时间，用于区分实际与预测。",
+    "badge": "徽标呈现声明。",
+    "badgeField": "徽标内容绑定字段。",
+    "badgeFields": "多项徽标字段集合。",
+    "bands": "按下界递增的图例档位。",
+    "body": "静态正文或页面参数文本取值；bodyFormat决定是否走受控语义HTML。",
+    "bodyFormat": "正文的显式格式分支，非任意HTML授权。",
+    "bottomFade": "是否使用底部渐隐呈现。",
+    "capturedAt": "内嵌行的有效RFC3339捕获时间。",
+    "categories": "该透视目标列按顺序匹配的类别取值。",
+    "categoryField": "类别维度字段绑定。",
+    "categoryLabel": "类别列头；缺省取字段label，false显式隐藏列头。",
+    "changeField": "变化量/变化率的字段绑定。",
+    "changes": "变化项集合，具体形状由所属分支约束。",
+    "children": "递归列组或受控子结构的子项。",
+    "codeField": "编码字段绑定。",
+    "collapsible": "显式允许折叠加总，不能从measure角色推断。",
+    "columnTracks": "分区列轨比例；正整数权重，不是像素宽度。",
+    "columns": "列或透视输出列的有序声明，按所属分支解释。",
+    "compare": "对比数据槽。",
+    "component": "单个受控组件声明。",
+    "components": "受控子组件集合；容器白名单与顶层集合不同。",
+    "compoundCellLayout": "复合单元格的受控排列方式。",
+    "compute": "按顺序执行的封闭具名算子。",
+    "connectPrevious": "与前一个内容块的连接关系，删除须考虑该依赖。",
+    "container": "内容分区容器呈现。",
+    "context": "上下文说明字段或结构。",
+    "currency": "货币语义声明，不负责汇率换算。",
+    "dangerValues": "应使用异常语义的有限取值集合。",
+    "dashboardToolbar": "看板统一工具栏的显示或compact分支。",
+    "dataSources": "命名页面数据源集合，键为源id。",
+    "decoration": "受控装饰呈现，不是任意CSS。",
+    "defaultExpanded": "初始展开状态，后续交互由运行态维护。",
+    "defaultFormat": "字段的缺省显示格式；显式绑定format优先。",
+    "defaultLevel": "初始层级id，须存在于hierarchy。",
+    "defaultTab": "初始Tab id，须存在于tabs。",
+    "denominator": "ratio分母数值字段。",
+    "dependsOn": "级联依赖的维度筛选器id，不能形成环。",
+    "description": "说明文本。",
+    "descriptionField": "说明内容的字段绑定。",
+    "details": "受控明细呈现结构。",
+    "dimension": "筛选维度语义或维度字段绑定；不隐式等于queryField。",
+    "dimensions": "按角色声明的维度字段组。",
+    "display": "当前筛选器的受控输入显示方式。",
+    "dividers": "是否显示分隔线。",
+    "dsl_list": "DQE协议中的查询DSL列表。",
+    "dualAxis": "受控双轴呈现。",
+    "emphasis": "强调样式，不改变数值或角色。",
+    "emptyLabel": "空值状态的展示文案。",
+    "equals": "显式相等匹配值。",
+    "field": "页面字段引用或字段绑定。",
+    "filterable": "表头筛选能力，仅允许适用的维度列。",
+    "filters": "页面筛选器声明集合。",
+    "fit": "受控适配方式。",
+    "fixed": "表格固定列位置。",
+    "from": "范围起点；与to的顺序和精度须匹配。",
+    "generatedBy": "生成来源标识，不能替代可信服务身份。",
+    "granularity": "时间值的粒度。",
+    "groupBy": "折叠分组的维度字段。",
+    "hideYAxis": "隐藏纵轴呈现。",
+    "hierarchy": "显式层级维度定义。",
+    "hierarchyFilter": "地图负责下钻的层级维度筛选器id。",
+    "hierarchyPicker": "层级选择器显示方式；隐藏时须有地图承担下钻。",
+    "horizontal": "使用横向图表方向。",
+    "href": "目标URL，必须通过安全协议及结构检查。",
+    "icon": "受控图标标识。",
+    "includeCurrent": "相对时间范围是否包含当前周期。",
+    "initial": "与声明查询条件匹配的内嵌初始行。",
+    "items": "数组/嵌套明细项的契约。",
+    "keyFields": "pivot保留的分组键字段。",
+    "kind": "判别结构分支。",
+    "label": "人类可读标签，不代替稳定id。",
+    "labelLine": "标签指引线呈现。",
+    "labelSuffix": "分组小计标签后缀。",
+    "language": "受控查询语言判别。",
+    "layer": "content正常内容层或backdrop铺底层。",
+    "layoutForm": "旧布局字段，仅兼容输入；新作者写layout。",
+    "legend": "图例及受控档位。",
+    "level": "当前层级或层级绑定部分。",
+    "levelField": "层级字段引用。",
+    "levelMaps": "层级与地图配置的显式映射。",
+    "link": "把当前列/指标行作为导航入口，需对应navigate。",
+    "links": "显式文本导航链接集合。",
+    "main": "主数据槽，值引用已声明页面数据源。",
+    "map": "选用china/world内置底图。",
+    "match": "按声明维度等值选择行。",
+    "matchField": "用于匹配地域/行的字段。",
+    "matchValue": "与matchField类型一致的匹配值。",
+    "max": "量表上界；Schema数值约束与运行时范围规则同时适用。",
+    "maxWidth": "受控最大宽度数值，不接受任意CSS。",
+    "measures": "度量字段集合或分组。",
+    "mergeBy": "表格合并分组字段，必须是已声明列。",
+    "meta": "页面标题和说明等元信息。",
+    "metricLabel": "度量展示标签。",
+    "min": "量表下界。",
+    "minuend": "delta被减数数值字段。",
+    "mode": "分页或其它受控结构的模式判别。",
+    "n": "相对时间的周期数量。",
+    "nameField": "对象名称维度字段绑定。",
+    "nameMap": "业务区域名与底图原名的显式映射。",
+    "navigate": "受控URL与参数来源映射。",
+    "note": "补充说明文本。",
+    "numbered": "是否显示序号。",
+    "numerator": "ratio分子数值字段。",
+    "on": "触发动作的受控事件。",
+    "onZeroDenominator": "ratio遇零或缺分母时输出null或0的显式裁决。",
+    "op": "选择具名算子，不接受表达式。",
+    "output": "算子写入的已声明页面字段。",
+    "pageSize": "分页每页条数。",
+    "pagination": "分页来源与大小配置；query与local条件不同。",
+    "panelLayout": "面板内的受控布局。",
+    "param": "已声明页面参数id，整值替换，不插值拼接。",
+    "params": "一次初始化的不可变页面参数声明。",
+    "parentField": "父地域/父级字段绑定。",
+    "part": "导航取筛选值的value/from/to/level部分。",
+    "pinnedSummary": "地图固定地域摘要，须符合regionalOverview分支。",
+    "precision": "显示精度，不改原始数据。",
+    "progress": "进度呈现相关结构。",
+    "promptTemplate": "动态总结提示模板；字段数据受relatedData白名单约束。",
+    "query": "受控查询定义，或导航URL参数映射，按所属结构判别。",
+    "range": "受控范围结构。",
+    "readOnly": "只读呈现标记，不是服务端权限保证。",
+    "relatedData": "动态总结允许读取的数据源/字段集合。",
+    "ring": "饼图环形呈现。",
+    "ringPercent": "环形占比呈现声明。",
+    "rounded": "受控圆角呈现。",
+    "rowKey": "多数据槽对齐的维度键，各槽字段类型须一致。",
+    "rowKind": "算子写入汇总行类别的声明。",
+    "rowKindField": "表格读取的行类别字段，必须由折叠算子写入。",
+    "scale": "ratio输出刻度；显式100转换为百分刻度。",
+    "scatter": "地图散点或图表散点呈现结构。",
+    "schemaVersion": "页面协议版本，与npm包版本分离。",
+    "secondaryField": "次要信息字段绑定。",
+    "secondaryRows": "次要指标行集合。",
+    "secondaryTitle": "次要标题文本。",
+    "sections": "有序内容分区集合。",
+    "selection": "单元格选择写回，优先于同列link。",
+    "semanticDescriptionField": "语义HTML说明字段，必须是semanticHtml/detail。",
+    "series": "图表序列及角色/字段绑定。",
+    "showPointLabels": "显示各数据点标签。",
+    "showSegmentLabels": "显示堆叠分段标签。",
+    "showStackTotalLabels": "显示堆叠总量标签。",
+    "showTrendArrows": "显示趋势箭头。",
+    "smooth": "使用平滑曲线呈现。",
+    "sortable": "本列是否开放排序，查询分页仍受能力限制。",
+    "span": "占用列轨数量，不是百分比或像素。",
+    "stackOrder": "堆叠序列的受控顺序。",
+    "stacked": "启用堆叠呈现。",
+    "subtitle": "副标题文本取值。",
+    "subtitleFormat": "副标题显式受控语义HTML分支。",
+    "subtrahend": "delta减数数值字段。",
+    "swatches": "按类别取值显示同色点，须同页匹配饼图。",
+    "tabs": "非空Tab集合，每项id唯一。",
+    "tags": "标签集合。",
+    "target": "写回目标或查询绑定目标，按所在结构明确类型。",
+    "term": "关联字段对应的业务术语。",
+    "titleField": "标题内容绑定字段。",
+    "titleIcon": "标题前受控图标。",
+    "to": "范围终点；与from的顺序和精度须匹配。",
+    "tone": "受控内容语气/正负语义。",
+    "tooltipFields": "悬浮提示允许展示的字段集合。",
+    "totalCount": "查询总条数；不能用当前页rows.length冒充。",
+    "unit": "展示单位，不自动改变数值刻度。",
+    "urlParams": "页面参数/筛选输入对应的公开URL键映射。",
+    "value": "当前分支的固定值或绑定取值。",
+    "valueField": "主要数值字段绑定。",
+    "variant": "此组件支持的受控呈现变体，不能跨类型复用枚举。",
+    "visible": "显示状态声明。",
+    "visual": "单元格或数值的受控视觉语义。",
+    "width": "受控列宽数值。",
+    "writeFilter": "写入已声明dimension筛选器。",
+    "writes": "选择写回的目标与字段/固定值映射。",
+    "xField": "横轴维度字段绑定。"
+  },
+  "enumNotes": {
+    "6.0": "布局使用layoutForm的兼容旧文档；不能声明layout或6.2参数能力。",
+    "6.1": "支持layout的增量布局协议；不能使用6.2维度参数能力。",
+    "6.2": "当前作者写出版本，增加维度单/多值及显式初始化绑定。",
+    "report": "定宽居中报表外框，未声明布局时采用。",
+    "dashboard": "满宽看板外框。",
+    "visible": "显示统一工具栏。",
+    "hidden": "隐藏统一工具栏，适用于页面已有自有页头。",
+    "string": "字符串标量。",
+    "number": "数值标量或原数值格式，按所在字段解释。",
+    "boolean": "布尔值；false是显式取值。",
+    "date": "日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。",
+    "datetime": "带时间部分的日期时间字段。",
+    "dimension": "分类维度或维度目标；不是数值度量。",
+    "measure": "可计算的数值度量；能否加总还须collapsible。",
+    "text": "普通文本格式，不能执行HTML。",
+    "number-1": "保留1位小数。",
+    "number-2": "保留2位小数。",
+    "number-grouped": "千分位数值展示。",
+    "compact-wan-0": "按万缩放，0位小数。",
+    "compact-wan-1": "按万缩放，1位小数。",
+    "compact-yi-1": "按亿缩放，1位小数。",
+    "cny-adaptive": "按金额量级使用元/万/亿自适应展示。",
+    "percent-0": "原数值加百分号，0位小数。",
+    "percent-1": "原数值加百分号，1位小数。",
+    "percent-2": "原数值加百分号，2位小数。",
+    "percent-2-signed": "原数值百分比，2位小数并显示正负号。",
+    "date-month-day": "只展示月日的日期格式。",
+    "null": "零/缺分母时输出空值。",
+    "zero": "零/缺分母时输出0。",
+    "subtotal": "分组小计行标记。",
+    "total": "全局合计行标记。",
+    "day": "日粒度。",
+    "week": "周粒度。",
+    "month": "月粒度；timePoint使用YYYY-MM。",
+    "quarter": "季度粒度。",
+    "year": "年粒度。",
+    "today": "以当前日为锚的今天范围。",
+    "last7d": "受控最近7日快捷范围。",
+    "last30d": "受控最近30日快捷范围。",
+    "last90d": "受控最近90日快捷范围。",
+    "select": "下拉候选选择。",
+    "tabs": "平铺Tab选项。",
+    "tree": "层级树选择。",
+    "from": "范围起点部分。",
+    "to": "范围终点部分。",
+    "value": "普通单值/多值输入部分。",
+    "level": "层级维度的层级部分。",
+    "plain": "普通呈现；分区为无额外容器，文本/单元格按各模块普通样式解释。",
+    "panel": "章节面板容器。",
+    "card": "小节卡片容器。",
+    "content": "正常内容层。",
+    "backdrop": "铺底层，不占正常内容流。",
+    "left": "左对齐或左侧固定，由字段位置决定。",
+    "right": "右对齐或右侧固定，由字段位置决定。",
+    "auto": "由当前组件既有自动规则选择。",
+    "positive": "正向语义。",
+    "negative": "负向语义。",
+    "neutral": "中性语义。",
+    "danger": "危险/异常语义。",
+    "actual": "实际值序列角色。",
+    "forecast": "预测值序列角色。",
+    "effect": "效果值序列角色。",
+    "china": "中国底图，区域名来自地名契约china集合。",
+    "world": "世界底图，区域名来自地名契约world集合。",
+    "dateRange": "日期范围筛选控件。",
+    "rateBar": "在单元格内用比例条呈现。",
+    "signed": "显示正负语义的数值呈现。",
+    "stacked": "堆叠结构。",
+    "point": "点型语义。",
+    "container": "当前容器作为交互/呈现作用域。",
+    "search": "普通文本搜索输入。",
+    "mini": "紧凑环形仪表，值域计算不变。",
+    "100": "ratio输出乘100，匹配百分比原值展示。",
+    "activityProgress": "活动进展呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "analysisStack": "分析纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compact": "紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compactStack": "紧凑纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compactStrip": "紧凑横条呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compactSummary": "紧凑摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "counterStrip": "计数器横条呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "detailNormMatrix": "明细规范矩阵呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "detailSummary": "明细摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "dualSummary": "双摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "embedded": "嵌入式内容呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "forecastMatrix": "预测矩阵呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "goldMedal": "金牌呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "heading": "标题文字呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "insight": "洞察文字呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "metricGrid": "指标网格呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "narrativeMeeting": "会议叙述呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "narrativeProgress": "进展叙述呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "narrativeRisk": "风险叙述呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "narrativeShort": "短叙述呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "opportunity": "机会点呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "projectNorms": "项目规范呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "quote": "引用文字呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "redCard": "红牌呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "reportCompact": "紧凑报告呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "reportInline": "报告行内呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "review": "复盘呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "riskNotice": "风险提示呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "silverMedal": "银牌呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "summary": "摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "tieredManagement": "分层管理呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "twoColumn": "双列呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "yellowCard": "黄牌呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。"
+  },
+  "branchExceptions": {
+    "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
+      "case": "navigation-text-row-source",
+      "rule": "url-navigation-source-contract",
+      "reason": "text不绑定行数据；结构共享的row来源分支被页面导航语义明确拒绝，只有反例，没有合法页面见证。",
+      "source": "packages/page/src/navigate.ts"
+    }
+  }
+}

@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 0;
+const CURRENT_MINOR = 2;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -33,6 +33,23 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'dimension-params': {
+    minor: 2, description: '维度参数、查询目标与筛选初值绑定',
+    usedAt: (document) => {
+      const raw = record(document);
+      const params = Array.isArray(raw?.params) ? raw.params : [];
+      return [
+        ...params.flatMap((p, i) => record(p)?.type === 'dimension' ? [`/params/${i}`] : []),
+        ...filterPaths(document, f => has(f, 'initialParam')).map(p => `${p}/initialParam`),
+        ...dataSourcePaths(document, d => has(record(record(d.source)?.query), 'paramBindings')).map(p => `${p}/source/query/paramBindings`)
+      ];
+    }
+  },
+  'page-layout': {
+    minor: 1,
+    description: '顶层 layout:页面布局形态的规范字段',
+    usedAt: (document) => record(document)?.layout !== undefined ? ['/layout'] : []
+  },
   'page-params': {
     minor: 0,
     description: '顶层 params:页面参数声明(ADR-0047)',

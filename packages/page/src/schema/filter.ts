@@ -28,6 +28,7 @@ const dimensionFilterZ = z
     display: z.enum(['select', 'tabs', 'tree', 'search']).optional(),
     visible: z.boolean().optional(),
     default: z.array(z.string()).optional(),
+    initialParam: idZ.optional(),
     hierarchy: z.array(filterHierarchyLevelZ).min(2).optional(),
     defaultLevel: idZ.optional(),
     dependsOn: idZ.optional()

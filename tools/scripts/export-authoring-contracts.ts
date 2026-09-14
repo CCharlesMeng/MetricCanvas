@@ -3,12 +3,14 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   componentCatalog,
+  normalizePageDocument,
   ERROR_TYPES,
   pageSchema,
   QUERY_ERROR_CODES,
   validate,
   versionPolicy
 } from '../../packages/page/src/internal.ts';
+import { buildPageReference } from './page-reference.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
@@ -72,6 +74,16 @@ async function buildProductOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   outputs.set('page/schema.json', json(pageSchema));
   outputs.set('page/component-catalog.json', json(componentCatalog));
+  const maps: Record<string, { regions: string[]; source: { file: string; sha256: string } }> = {};
+  for (const name of ['china', 'world']) {
+    const file = `packages/engine/widgets/src/components/map-chart/maps/${name}.json`;
+    const content = await readFile(path.join(repoRoot, file), 'utf8');
+    const geo = JSON.parse(content) as { features: Array<{ properties: { name?: unknown } }> };
+    const regions = [...new Set(geo.features.map(f => f.properties.name).filter((n): n is string => typeof n === 'string' && n.length > 0))].sort();
+    if (!regions.length) throw new Error(`底图 ${name} 缺少区域名称`);
+    maps[name] = { regions, source: { file, sha256: sha256(content) } };
+  }
+  outputs.set('page/map-regions.json', json({ contractVersion: '1', maps }));
   outputs.set('query/error-codes.json', json({ codes: QUERY_ERROR_CODES }));
   outputs.set('page/error-types.json', json({ types: ERROR_TYPES }));
   outputs.set(
@@ -93,11 +105,51 @@ async function buildProductOutputs(): Promise<OutputMap> {
     outputs.set(`page/conformance/valid/${fileName}`, content);
   }
 
+  const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
+  const layoutCases = [];
+  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '7.0']) {
+    for (const declaration of [
+      {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
+      { layout: 'report' }, { layout: 'dashboard' },
+      { layout: 'dashboard', layoutForm: 'dashboard' },
+      { layout: 'dashboard', layoutForm: 'report' },
+      { layout: 'kiosk' }
+    ]) {
+      const input = { ...layoutBase, schemaVersion, ...declaration };
+      layoutCases.push({ input, expected: normalizePageDocument(input) });
+    }
+  }
+  outputs.set('page/conformance/layout-compatibility.json', json({ cases: layoutCases }));
+
+  const parameterTemplate = fixtures.get('dimension-params-page');
+  const parameterCases: Array<{name: string; input: unknown; expected: unknown}> = [];
+  const parameterCase = (name: string, change: (page: any) => void) => {
+    const input = structuredClone(parameterTemplate);
+    change(input);
+    parameterCases.push({ name, input, expected: normalizePageDocument(input) });
+  };
+  parameterCase('multiple-partial-sharing', () => {});
+  parameterCase('single-dimension', p => { p.params[0].multiple = false; p.params[0].default = 'APAC'; });
+  parameterCase('required-no-default', p => { delete p.params[0].default; });
+  parameterCase('old-version-floor', p => { p.schemaVersion = '6.1'; });
+  parameterCase('wrong-default-shape', p => { p.params[0].default = 'APAC'; });
+  parameterCase('duplicate-default', p => { p.params[0].default = ['APAC','APAC']; });
+  parameterCase('filter-two-defaults', p => { p.filters[0].default = ['EU']; });
+  parameterCase('unknown-initial-param', p => { p.filters[0].initialParam = 'unknown'; });
+  parameterCase('query-two-defaults', p => { p.dataSources.sales.source.query.body.dsl_list[0].filter.dims = [{dim_name:'region',dim_value_list:['EU']}]; });
+  parameterCase('mismatched-filter-target', p => { p.dataSources.sales.source.query.paramBindings.regions.queryField = 'different'; });
+  parameterCase('duplicate-target', p => { p.dataSources.shared.source.query.paramBindings.segment.queryField = 'region'; });
+  parameterCase('scalar-query-binding', p => { p.params[1].type = 'string'; });
+  parameterCase('unknown-query-param', p => { p.dataSources.shared.source.query.paramBindings.unknown = {target:'dimension',queryField:'other'}; });
+  outputs.set('page/conformance/param-bindings.json', json({ cases: parameterCases }));
+
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {
     outputs.set(`page/conformance/invalid/${vector.case}.json`, json(vector));
   }
   outputs.set('page/conformance/coverage.json', json(conformance.coverage));
+  const reference = await buildPageReference(repoRoot, pageSchema, componentCatalog, outputs, versionPolicy.current);
+  for (const [file, content] of reference) outputs.set(`page/reference/${file}`, content);
 
   outputs.set(
     'manifest.json',
@@ -202,6 +254,7 @@ function conformanceInput(
 async function buildAuthoringOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   const authoredSchema = await readFile(authoredPageBuildSpec, 'utf8');
+  const authoredEditRequest = await readFile(path.join(authoringContractRoot, 'authored/page-edit-request.schema.json'), 'utf8');
   const authoredArtifactSchema = await readFile(authoredPageBuildArtifact, 'utf8');
   const authoredRelayArtifactEnvelopeSchema = await readFile(
     authoredRelayPageArtifactEnvelope,
@@ -212,7 +265,13 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const authoredStepEventSchema = await readFile(authoredAgentStepEvent, 'utf8');
   const authoredConformanceSchema = await readFile(authoredAgentConformance, 'utf8');
   const analysisIntents = await readFile(path.join(authoringContractRoot, 'authored/analysis-intents.json'), 'utf8');
-  const buildPageConformance = await legacyContract('build-page-conformance.json');
+  // 历史预期仍冻结并核验摘要；当前契约只派生版本/布局升级，
+  // 不从 Python 或浏览器构造器的输出反向更新业务预期。
+  const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
+  const normalizedBuildPage = normalizePageDocument(buildPageVector.expected.document);
+  if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
+  buildPageVector.expected.document = { ...normalizedBuildPage.document, schemaVersion: versionPolicy.current };
+  const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);
   outputs.set('exported/agent-conformance.json', agentConformance);
@@ -223,6 +282,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
       authoringContractVersion,
       files: [
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
+        { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         {
           file: 'authored/agent-conformance.schema.json',
           sha256: sha256(authoredConformanceSchema)
@@ -315,6 +375,7 @@ async function writeOutputs(
     await writeFile(target, content, 'utf8');
   }
   await writeTree(snapshotRoot, productOutputs);
+  await writeTree(path.join(bundleRoot, 'skill/metriccanvas-page-builder/references/page-metadata'), referenceProjection(productOutputs));
   await rm(path.join(authoringContractRoot, 'exported'), { recursive: true, force: true });
   for (const [relativePath, content] of authoringOutputs) {
     const target = path.join(authoringContractRoot, relativePath);
@@ -328,6 +389,10 @@ async function writeOutputs(
     'utf8'
   );
   await writeFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock(), 'utf8');
+}
+
+function referenceProjection(outputs: OutputMap): OutputMap {
+  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => [file.slice('page/reference/'.length), content]));
 }
 
 async function writeTree(root: string, outputs: OutputMap): Promise<void> {
@@ -388,6 +453,7 @@ async function assertCurrent(
     drift
   );
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
+  await collectTreeDrift(path.join(bundleRoot, 'skill/metriccanvas-page-builder/references/page-metadata'), referenceProjection(productOutputs), 'skill/references/page-metadata', drift);
   const generatedAuthoringOutputs = new Map(
     [...authoringOutputs].filter(
       ([file]) => file === 'manifest.json' || file.startsWith('exported/')

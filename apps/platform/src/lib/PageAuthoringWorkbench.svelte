@@ -1,49 +1,86 @@
 <script lang="ts">
-  import { onMount, tick } from 'svelte';
+  import AuthoringHistory from './workbench/AuthoringHistory.svelte';
+  import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
-  import { pageAssets } from '$lib/page-assets';
+  import { pageAuthoringPort } from '$lib/page-assets';
+  import { createAuthoringCoordinator, type AuthoringPort, type DraftRef } from './workbench/authoring-coordinator';
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { createWorkbenchDqeGateway } from './workbench/data-gateway';
   import { workbenchPageViewModel } from './workbench/transient-page';
   import {
-    changeComponentType, componentCandidatesFor, createCanvasAuthoringDraft,
+    changeComponentType, componentCandidatesFor,
     editComponent, locatorOfComponent, moveComponent,
-    type ComponentLocator, type CanvasAuthoringDraft, type DocumentEditResult
+    type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
+  import { propertyControls, editProperty } from './workbench/property-edit';
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
   import RevisionPreview from './RevisionPreview.svelte';
-
-  let currentDraft = $state<CanvasAuthoringDraft | null>(null);
-  let baseRevisionId = $state<string | null>(null);
-  let savePending = $state(false);
-  let loading = $state(false);
-  let saveNotice = $state('');
+  import PanguDialogue from './dialogue/PanguDialogue.svelte';
+  import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
+  import { readRuntimeConfig } from './runtime-config';
+  import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
+  import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave }: {
+    dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
+  } = $props();
+  const coordinator = untrack(() => createAuthoringCoordinator({
+    port: {
+      ...authoringPort,
+      capabilities: { ...authoringPort.capabilities, exactDraftRead: !!readSavedDraft || authoringPort.capabilities.exactDraftRead },
+      readSavedDraft: readSavedDraft ?? authoringPort.readSavedDraft ?? unavailableDraftReader
+    },
+    identity: () => {
+      const config = readRuntimeConfig();
+      return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
+    }
+  }));
+  let authoring = $state(coordinator.snapshot());
+  const currentDraft = $derived(authoring.draft);
+  const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
+  const savePending = $derived(authoring.save?.status === 'pending');
+  const saveBlocked = $derived(savePending || authoring.save?.status === 'unknown' ||
+    (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
+  const loading = $derived(authoring.loading);
+  const saveNotice = $derived(authoring.save?.status === 'saved' ? `已保存修订 R${authoring.save.revision.revisionNumber}` : '');
   let saveError = $state('');
   let editError = $state('');
+  let retainDimensionValues = $state(true);
   let metadataOpen = $state(false);
   let previewOpen = $state(false);
+  let historyOpen = $state(false);
+  let previewRef = $state<DraftRef | null>(null);
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let selectedComponent = $state<ComponentLocator | null>(null);
   const dataGateway = createWorkbenchDqeGateway();
 
-  // 已保存页面通过页面资产客户端进入工作台，不依赖旧分析会话检查点。
+  // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
+    coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
+    coordinator.setOnline(navigator.onLine);
+    const online = () => coordinator.setOnline(true);
+    const offline = () => coordinator.setOnline(false);
+    window.addEventListener('online', online); window.addEventListener('offline', offline);
+    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
     const pageId = new URLSearchParams(window.location.search).get('page');
-    if (pageId) void loadPage(pageId);
+    if (pageId) void coordinator.load(pageId);
+    const stop = listenForSavedDrafts({
+      target: window, read: coordinator.readSavedDraft,
+      captureIdentity: () => {
+        const identity = readRuntimeConfig();
+        return JSON.stringify([identity?.operatorId, identity?.workspaceId]);
+      },
+      captureScope: coordinator.scope,
+      onpage: (draft) => {
+        const accepted = coordinator.acceptSavedDraft(draft);
+        if (accepted) { previewOpen = false; saveError = ''; relocateSelection(); }
+        return accepted;
+      },
+      onerror: (message) => { saveError = message; }
+    });
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); unsubscribe(); coordinator.dispose(); };
   });
 
-  async function loadPage(pageId: string) {
-    loading = true;
-    try {
-      const revision = await pageAssets.getLatest(pageId);
-      if (replaceCurrentDocument({ ...revision.document })) baseRevisionId = revision.revisionId;
-    } catch (cause) {
-      saveError = cause instanceof Error ? cause.message : String(cause);
-    } finally {
-      loading = false;
-    }
-  }
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
   const canvasDocument = $derived(currentDraft?.canvasDocument ?? null);
   const pageModel = $derived(
@@ -109,58 +146,19 @@
   });
 
   async function saveRevision() {
-    if (!currentDocument || !pageModel || pageModel.transient || savePending) return;
-    savePending = true;
+    if (!currentDocument || !pageModel || pageModel.transient || saveBlocked) return;
     saveError = '';
-    try {
-      const revision = await pageAssets.saveRevision(pageModel.pageId, {
-        baseRevisionId,
-        document: currentDocument,
-        idempotencyKey: crypto.randomUUID(),
-        pageIdConfirmed: true
-      });
-      baseRevisionId = revision.revisionId;
-      saveNotice =
-        `已保存修订 R${revision.revisionNumber}，数据上下文版本：` +
-        `${revision.dataContextVersion ?? '未记录'}`;
-    } catch (cause) {
-      saveError = cause instanceof Error ? cause.message : String(cause);
-    } finally {
-      savePending = false;
-    }
+    await coordinator.save();
   }
 
-  /** 文档替换后按组件 id 重定位选中项；组件已消失则清除检查器上下文。 */
-  function replaceCurrentDocument(document: Record<string, unknown>): boolean {
-    const result = createCanvasAuthoringDraft(document);
-    if (!result.ok) {
-      editError = result.message;
-      return false;
-    }
-    currentDraft = result.draft;
-    if (selectedComponent) {
-      selectedComponent = locatorOfComponent(
-        result.draft.canvasDocument,
-        selectedComponent.componentId
-      );
-    }
-    editError = '';
-    return true;
+  function relocateSelection() {
+    if (selectedComponent && currentDraft) selectedComponent = locatorOfComponent(currentDraft.canvasDocument, selectedComponent.componentId);
   }
 
   function applyDocumentEdit(result: DocumentEditResult) {
     if (result.ok) {
-      currentDraft = result.draft;
-      if (selectedComponent) {
-        selectedComponent = locatorOfComponent(
-          result.draft.canvasDocument,
-          selectedComponent.componentId
-        );
-      }
-      editError = '';
-    } else {
-      editError = result.message;
-    }
+      if (coordinator.replaceDraft(result.draft)) { relocateSelection(); editError = ''; }
+    } else editError = result.message;
   }
 
   /** 画布创作意图分发:选中进检查器,重排与标题/宽度编辑走本地文档改写。 */
@@ -215,7 +213,7 @@
       <strong class="canvas-title">页面画布</strong>
       {#if pageModel}
         <span class="badge" class:transient={pageModel.transient}>
-          {pageModel.transient ? '临时页面态' : '未保存工作副本'}
+          {pageModel.transient ? '临时页面态' : authoring.dirty ? '未保存工作副本' : '已保存页面修订'}
         </span>
         {#if pageModel.adHocFormulas.length > 0}
           <!-- 临时指标与已定义指标视觉可区分(ADR-0036、#67):文档含现场
@@ -232,8 +230,10 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
+      <button class="btn" disabled={!authoring.sync?.canUndo || loading} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
+      <button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>
       {#if baseRevisionId}
-        <button class="btn" onclick={() => (previewOpen = !previewOpen)}>精确修订预览</button>
+        <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>精确修订预览</button>
       {/if}
       <button
         type="button"
@@ -247,39 +247,45 @@
         查看元数据
       </button>
       {#if pageModel && !pageModel.transient}
-        <button type="button" class="btn" disabled={savePending} onclick={saveRevision}>
-          {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
-        </button>
+        {#if authoring.sync}
+          <label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>
+          {#if authoring.sync.pending > 0}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
+        {:else}
+          <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
+            {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
+          </button>
+        {/if}
       {/if}
     </div>
   </div>
 
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
-    <header class="chat-header"><h1>分析与搭建</h1></header>
-    <div class="thread">
-      <div class="thread-empty" role="status" data-testid="chat-unavailable">
-        <h2>公共 Chat 暂不可用</h2>
-        <p>对话服务尚未接通。你可以从页面目录打开已保存页面，继续人工页面搭建。</p>
-        <a class="linkish" href={resolve('/manage')}>打开页面目录</a>
-      </div>
-    </div>
-    <div class="composer">
-      <div class="composer-box">
-        <textarea rows="1" aria-label="AI 输入" placeholder="公共 Chat 暂不可用" disabled></textarea>
-        <button class="action send" type="button" aria-label="发送" disabled>↑</button>
-      </div>
-    </div>
+    <PanguDialogue adapter={dialogueAdapter} />
+    <a class="linkish" href={resolve('/manage')}>打开页面目录</a>
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
+    {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
-    {#if saveError}<p class="error" role="alert">{saveError}</p>{/if}
+    {#if authoring.sync}
+      {#if authoring.sync.protection === 'failed'}
+        <p class="error" role="alert">浏览器保护失败，请勿关闭页面。{authoring.sync.message}</p>
+      {:else if authoring.sync.pending > 0}
+        <p class="notice" role="status">{authoring.sync.protection === 'protected' ? '已在浏览器保护' : '正在保护到浏览器'}，待同步 {authoring.sync.pending} 个操作。{authoring.sync.message}</p>
+      {:else if authoring.sync.lastSaved}
+        <p class="notice" role="status">服务端已保存修订 R{authoring.sync.lastSaved.revisionNumber}</p>
+      {/if}
+    {/if}
+    {#if saveError || authoring.error}<p class="error" role="alert">{saveError || authoring.error}</p>{/if}
+    {#if authoring.save?.status === 'unknown'}<p class="error" role="alert">保存结果未确定，已暂停再次保存。{authoring.save.message} 工作副本仅在本页内存中，尚无浏览器恢复保护。</p>{/if}
+    {#if authoring.save?.status === 'rejected'}<p class="error" role="alert">{authoring.save.code}：{authoring.save.message}</p>{/if}
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
-      {#if previewOpen && pageModel && baseRevisionId}
+      {#if previewOpen && previewRef}
         <p class="notice">正在预览已保存修订；再次点击“精确修订预览”返回工作副本。</p>
-        <RevisionPreview pageId={pageModel.pageId} revisionId={baseRevisionId} />
+        <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
+          readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />
       {:else if currentDocument}
         <MetricCanvas
           document={currentDocument}
@@ -313,9 +319,11 @@
       {selectedView}
       {selectedSpan}
       {selectedColumnCount}
+      properties={propertyControls(currentDraft, selectedComponent)}
+      onPropertyEdit={(edit) => { if (currentDraft && selectedComponent && !previewOpen && !loading) applyDocumentEdit(editProperty(currentDraft, selectedComponent, edit)); }}
       candidates={typeCandidates}
       fieldRows={selectedFieldRows}
-      busy={savePending || previewOpen}
+      busy={savePending || previewOpen || loading}
       onSelectType={selectComponentType}
       onSelectComponent={selectComponentFromList}
       onEdit={(edit) => {
@@ -358,65 +366,6 @@
     background: var(--surface);
     border-right: 1px solid var(--line);
   }
-  .chat-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: 40px;
-    padding: 7px 10px 7px 13px;
-    border-bottom: 1px solid var(--line);
-  }
-  .chat-header h1 {
-    margin: 0;
-    color: var(--text);
-    font-size: 12.5px;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-  }
-
-  .thread {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 0;
-    padding: 12px 13px;
-    overflow-y: auto;
-  }
-  .thread-empty {
-    display: grid;
-    gap: 7px;
-    margin-top: 12cqh;
-    color: var(--muted);
-    font-size: 11px;
-    line-height: 1.55;
-    text-align: left;
-  }
-  .thread-empty h2 {
-    margin: 0;
-    color: var(--text);
-    font-size: 13px;
-    letter-spacing: -0.01em;
-  }
-  .thread-empty p {
-    margin: 0;
-    max-width: 26rem;
-  }
-
-  /* 执行过程:linkish 切换 + 展开区虚线分隔(原型 v2)。 */
-
-  @keyframes dot-bounce {
-    0%,
-    60%,
-    100% {
-      opacity: 0.35;
-      transform: translateY(0);
-    }
-    30% {
-      opacity: 1;
-      transform: translateY(-3px);
-    }
-  }
   .linkish {
     padding: 0;
     color: var(--accent-strong);
@@ -430,84 +379,6 @@
     color: var(--accent-strong);
     text-decoration: underline;
   }
-
-  .composer {
-    display: grid;
-    gap: 5px;
-    padding: 8px 10px 9px;
-    background: var(--surface);
-    border-top: 1px solid var(--line);
-  }
-
-  /* 紧凑输入容器：单行约 32px，1～4 行增高，第 5 行内部滚动。 */
-  .composer-box {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    padding: 3px 4px 3px 9px;
-    background: var(--surface-subtle);
-    border: 1px solid var(--control-line);
-    border-radius: 8px;
-    transition:
-      border-color 0.15s ease,
-      box-shadow 0.15s ease;
-  }
-  .composer-box:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 16%, transparent);
-  }
-  .composer-box textarea {
-    flex: 1;
-    min-width: 0;
-    height: auto;
-    max-height: 74px;
-    padding: 5px 0;
-    overflow-x: hidden;
-    overflow-y: hidden;
-    color: var(--text);
-    border: 0;
-    resize: none;
-    background: none;
-    font-size: 11px;
-    line-height: 16px;
-  }
-  .composer-box textarea::placeholder {
-    color: var(--faint);
-  }
-  .composer-box textarea:focus {
-    outline: none;
-  }
-  .composer .action {
-    display: grid;
-    flex: none;
-    place-items: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    border: 0;
-    border-radius: 6px;
-    cursor: pointer;
-    transition:
-      background 0.15s ease,
-      transform 0.1s ease,
-      opacity 0.15s ease;
-  }
-  .composer .action:active:not(:disabled) {
-    transform: scale(0.94);
-  }
-
-  .composer .send {
-    color: var(--text-on-strong);
-    background: var(--accent);
-  }
-  .composer .send:hover:not(:disabled) {
-    background: var(--accent-strong);
-  }
-  .composer .send:disabled {
-    background: var(--control-line);
-    cursor: not-allowed;
-  }
-
 
   .canvas {
     grid-column: 2;

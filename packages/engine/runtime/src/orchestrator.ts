@@ -1,3 +1,4 @@
+import { executionSourceKey } from './execution';
 import type { Page } from '@metriccanvas/page';
 import {
   declaredPaginationLimit,
@@ -50,7 +51,8 @@ export function orchestrate(
   page: Page,
   gateway: DataGateway,
   filters?: FilterState,
-  diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>
+  diagnostics?: Pick<QueryDiagnosticContext, 'pageRevisionId'>,
+  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>
 ): PageSnapshotStream {
   const bindings = collectReferencedSources(page);
   const queryBindings = bindings.filter(isQueryBinding);
@@ -69,7 +71,7 @@ export function orchestrate(
       subscribers.add(run);
       session ??= startSession(bindings, queryBindings, gateway, filters, (snapshots) => {
         for (const subscriber of subscribers) notify(subscriber, snapshots);
-      }, defaults, diagnosticBase);
+      }, defaults, diagnosticBase, execution);
       notify(run, session.current());
       return () => {
         if (!subscribers.delete(run)) return;
@@ -221,7 +223,8 @@ function startSession(
   filters: FilterState | undefined,
   push: (snapshots: PageDataSnapshots) => void,
   defaults: FilterValues,
-  diagnosticBase: QueryDiagnosticContext
+  diagnosticBase: QueryDiagnosticContext,
+  execution?: Pick<import('./execution').ExecutionBootstrap, 'filters' | 'snapshots' | 'sourceKeys'>
 ): Session {
   let values: FilterValues = filters ? new Map() : defaults;
   let primed = false;
@@ -231,8 +234,16 @@ function startSession(
       values = next;
     }
   });
-  const useEmbeddedInitialRows = sameFilterValues(values, defaults);
+  const useEmbeddedInitialRows = !execution && sameFilterValues(values, defaults);
   let snapshots = initialSnapshots(bindings, useEmbeddedInitialRows);
+  const executionMatches = new Set<string>();
+  if (execution && sameFilterValues(values, execution.filters)) for (const binding of queryBindings) {
+    const snapshot = execution.snapshots.get(binding.sourceId);
+    if (snapshot && execution.sourceKeys.get(binding.sourceId) === executionSourceKey(binding.dataSource)) {
+      executionMatches.add(binding.sourceId);
+      snapshots.set(binding.sourceId, computedSnapshot(binding.dataSource, snapshot));
+    }
+  }
   const sequences = new Map<string, number>();
   const inFlightRequests = new Set<InFlightRequest>();
   const cache = new Map<string, DataSnapshot>();
@@ -388,7 +399,7 @@ function startSession(
 
   refetch(
     queryBindings.filter(
-      (binding) => !(useEmbeddedInitialRows && binding.dataSource.source.initial)
+      (binding) => !(executionMatches.has(binding.sourceId)) && !(useEmbeddedInitialRows && binding.dataSource.source.initial)
     ),
     false
   );

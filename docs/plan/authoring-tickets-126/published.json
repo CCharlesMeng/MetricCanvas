@@ -1,0 +1,185 @@
+{
+  "T01": {
+    "number": 127,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/127",
+    "title": "[创作生命周期 T01] 拆出可独立运行的盘古对话接入边界",
+    "blockedBy": [],
+    "databaseId": 5447756497
+  },
+  "T02": {
+    "number": 128,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/128",
+    "title": "[创作生命周期 T02] 将现有草稿读写接入独立创作协调边界",
+    "blockedBy": [],
+    "databaseId": 5447756765
+  },
+  "T03": {
+    "number": 129,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/129",
+    "title": "[创作生命周期 T03] 为 layout 新字段建立版本化兼容读取",
+    "blockedBy": [],
+    "databaseId": 5447757074
+  },
+  "T04": {
+    "number": 130,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/130",
+    "title": "[创作生命周期 T04] 交付 Java 与 Relay 创作生命周期修改方案",
+    "blockedBy": [],
+    "databaseId": 5447757353
+  },
+  "T05": {
+    "number": 131,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/131",
+    "title": "[创作生命周期 T05] 迁移浏览器消费端到 layout 规范形式",
+    "blockedBy": [
+      "T03"
+    ],
+    "databaseId": 5447757656
+  },
+  "T06": {
+    "number": 132,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/132",
+    "title": "[创作生命周期 T06] 迁移 Python 页面产物到 layout 规范形式",
+    "blockedBy": [
+      "T03"
+    ],
+    "databaseId": 5447757990
+  },
+  "T07": {
+    "number": 133,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/133",
+    "title": "[创作生命周期 T07] 收口布局字段迁移并验证交付物兼容",
+    "blockedBy": [
+      "T05",
+      "T06"
+    ],
+    "databaseId": 5447758315
+  },
+  "T08": {
+    "number": 134,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/134",
+    "title": "[创作生命周期 T08] 内容 MCP 对既有页面执行受控改版",
+    "blockedBy": [
+      "T02",
+      "T06"
+    ],
+    "databaseId": 5447758816
+  },
+  "T09": {
+    "number": 135,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/135",
+    "title": "[创作生命周期 T09] 补齐文本、字段文本和地图组件的语言创建",
+    "blockedBy": [
+      "T08"
+    ],
+    "databaseId": 5447759111
+  },
+  "T10": {
+    "number": 136,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/136",
+    "title": "[创作生命周期 T10] 补齐容器与动态总结组件的语言创建",
+    "blockedBy": [
+      "T08"
+    ],
+    "databaseId": 5447759395
+  },
+  "T11": {
+    "number": 137,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/137",
+    "title": "[创作生命周期 T11] 语言修改维度筛选及表格链接下钻",
+    "blockedBy": [
+      "T08"
+    ],
+    "databaseId": 5447759696
+  },
+  "T12": {
+    "number": 138,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/138",
+    "title": "[创作生命周期 T12] 独立生命周期 MCP 保存并读取精确草稿",
+    "blockedBy": [
+      "T02",
+      "T04"
+    ],
+    "databaseId": 5447760005
+  },
+  "T13": {
+    "number": 139,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/139",
+    "title": "[创作生命周期 T13] 每个完整手工操作有序保存为页面修订",
+    "blockedBy": [
+      "T02",
+      "T04"
+    ],
+    "databaseId": 5447760443
+  },
+  "T14": {
+    "number": 140,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/140",
+    "title": "[创作生命周期 T14] 断网或重开后恢复并安全重试创作工作",
+    "blockedBy": [
+      "T13"
+    ],
+    "databaseId": 5447760703
+  },
+  "T15": {
+    "number": 141,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/141",
+    "title": "[创作生命周期 T15] 撤销编辑并恢复任意可读取历史修订",
+    "blockedBy": [
+      "T14"
+    ],
+    "databaseId": 5447761007
+  },
+  "T16": {
+    "number": 142,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/142",
+    "title": "[创作生命周期 T16] 手工调整已有组件的白名单属性并保存",
+    "blockedBy": [
+      "T13"
+    ],
+    "databaseId": 5447761276
+  },
+  "T17": {
+    "number": 143,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/143",
+    "title": "[创作生命周期 T17] 用 params 初始化页面并保持后续筛选独立",
+    "blockedBy": [
+      "T07"
+    ],
+    "databaseId": 5447761567
+  },
+  "T18": {
+    "number": 144,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/144",
+    "title": "[创作生命周期 T18] 消费执行结果完成初始化、预览及筛选历史接入",
+    "blockedBy": [
+      "T02",
+      "T04",
+      "T17"
+    ],
+    "databaseId": 5447762033
+  },
+  "T19": {
+    "number": 145,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/145",
+    "title": "[创作生命周期 T19] 界面与生命周期 MCP 完成候选确认发布",
+    "blockedBy": [
+      "T12",
+      "T14",
+      "T18"
+    ],
+    "databaseId": 5447762377
+  },
+  "T20": {
+    "number": 146,
+    "url": "https://github.com/CCharlesMeng/MetricCanvas/issues/146",
+    "title": "[创作生命周期 T20] 按已保存草稿引用完成语言创作交接",
+    "blockedBy": [
+      "T01",
+      "T08",
+      "T12",
+      "T14"
+    ],
+    "databaseId": 5447762668
+  }
+}

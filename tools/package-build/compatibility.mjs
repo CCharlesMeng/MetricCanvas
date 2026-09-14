@@ -60,8 +60,10 @@ function sourceWorkspace(directory, logs, version) {
     }
     const workspace = join(directory, 'pnpm-workspace.yaml');
     const yaml = readFileSync(workspace, 'utf8');
-    assert(!/^overrides:/m.test(yaml), 'Merge existing overrides explicitly before extending this matrix');
-    writeFileSync(workspace, yaml + '\noverrides:\n' + Object.entries(pins).map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}\n`).join(''));
+    const frameworkOverrides = Object.entries(pins).map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}\n`).join('');
+    writeFileSync(workspace, /^overrides:/m.test(yaml)
+      ? yaml.replace(/^overrides:\s*$/m, `overrides:\n${frameworkOverrides.trimEnd()}`)
+      : yaml + '\noverrides:\n' + frameworkOverrides);
   }
   run('pnpm', ['install', version === '5.29.0' ? '--no-frozen-lockfile' : '--frozen-lockfile', '--strict-peer-dependencies'], directory, join(logs, 'source-install.log'));
   for (const command of ['test', 'check', 'build']) run('pnpm', [command], directory, join(logs, `source-${command}.log`));
@@ -108,13 +110,13 @@ for (const version of versions) {
   assert.equal(json(engineRequire.resolve('svelte/package.json')).version, version);
   for (const name of names) assert(realpathSync(join(consumer, 'node_modules/@metriccanvas', name)).startsWith(consumer + '/'), 'Installed package points back into workspace');
 
-  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'pages']) {
+  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'pages']) {
     cpSync(join(source, path), join(consumer, path), { recursive: true });
   }
   // 既有浏览器用例与断言不变；类型导入改为已安装包，不能读取本仓 src。
-  for (const file of ['embed.spec.ts', 'version-error.spec.ts', 'globals.d.ts']) {
+  for (const file of ['embed.spec.ts', 'version-error.spec.ts', 'execution.spec.ts', 'globals.d.ts']) {
     const path = join(consumer, 'packages/embed/tests/browser', file);
-    writeFileSync(path, readFileSync(path, 'utf8').replaceAll("'../../src/types'", "'@metriccanvas/embed'"));
+    writeFileSync(path, readFileSync(path, 'utf8').replaceAll("'../../src/types'", "'@metriccanvas/embed'").replaceAll("'../../src'", "'@metriccanvas/embed'"));
   }
   cpSync(join(consumer, 'node_modules/@metriccanvas/embed/dist'), join(consumer, 'packages/embed/dist'), { recursive: true });
   for (const [from, to] of [['consumer-vite.config.js', 'vite.config.js'], ['consumer-playwright.config.ts', 'playwright.config.ts'], ['browser-versions.mjs', 'browser-versions.mjs']]) cpSync(join(source, 'tools/package-build/fixtures', from), join(consumer, to));

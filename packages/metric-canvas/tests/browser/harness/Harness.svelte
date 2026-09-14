@@ -3,7 +3,13 @@
   import { MetricCanvas, normalizeAuthoringDropTarget, type AuthoringComponentLocator, type AuthoringDraftSection, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { document, gateway, validDocument } from './document';
 
-  let current = $state.raw(validDocument(document));
+  const params = new URLSearchParams(location.search);
+  const layout = params.get('layout') === 'dashboard' ? 'dashboard' : 'report';
+  const { layout: _defaultLayout, ...content } = document;
+  const initial = params.get('schemaVersion') === '6.0'
+    ? { ...content, schemaVersion: '6.0', layoutForm: layout }
+    : { ...content, schemaVersion: '6.1', layout };
+  let current = $state.raw(validDocument(initial));
   let selected = $state<AuthoringComponentLocator>();
   let enabled = $state(true);
   let inlineControls = $state(true);
@@ -51,6 +57,7 @@
   <button onclick={() => draftSections = [{ id: 'bad', componentIds: ['missing'] }]}>无效草稿</button>
   <button onclick={() => current = validDocument({ ...document, id: 'replacement' })}>替换文档</button>
 </nav>
+<output data-document hidden>{JSON.stringify(current)}</output>
 <output data-calls>{JSON.stringify(calls)}</output>
 <output data-intents>{JSON.stringify(intents)}</output>
 <div id="canvas">

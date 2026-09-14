@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parsePage, validate } from '../src/internal';
-import queryDashboard from '../fixtures/contract-valid/query-dashboard.json';
+import queryDashboard from '../fixtures/contract-valid/legacy-layout-dashboard.json';
 
 describe('筛选器不变式', () => {
   it('拒绝级联循环与未知上游', () => {

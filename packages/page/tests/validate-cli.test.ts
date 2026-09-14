@@ -1,3 +1,4 @@
+import { readdirSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -17,6 +18,7 @@ describe('validate CLI', () => {
     );
 
     expect(result.status, result.stderr).toBe(0);
-    expect(result.stdout).toContain('共 11 个页面文档,11 通过,0 失败');
+    const count = readdirSync(resolve(root, 'packages/page/fixtures/contract-valid')).filter(file => file.endsWith('.json')).length;
+    expect(result.stdout).toContain(`共 ${count} 个页面文档,${count} 通过,0 失败`);
   });
 });

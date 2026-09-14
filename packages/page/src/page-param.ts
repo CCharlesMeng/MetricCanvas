@@ -7,13 +7,15 @@ import { isValueFormatPreset, type ValueFormatPreset } from './field';
  * 改变的是筛选器,不能改变的是页面参数,换一个取值意味着打开另一个页面实例。
  */
 
-export type PageParamType = 'string' | 'number' | 'boolean';
-export type PageParamValue = string | number | boolean;
+export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension';
+export type PageParamValue = string | number | boolean | string[];
 
 export interface PageParamDeclaration {
   id: string;
   type: PageParamType;
   required: boolean;
+  /** 仅维度参数支持多值；缺省单值。 */
+  multiple?: boolean;
   label?: string;
   default?: PageParamValue;
 }
@@ -145,7 +147,7 @@ export function pageParamErrors(
         )
       );
     }
-    if (declaration.default !== undefined && !matchesParamType(declaration.default, declaration.type)) {
+    if (declaration.default !== undefined && !matchesParamDeclaration(declaration.default, declaration)) {
       errors.push(
         schemaError(`${path}/default`, `默认值不符合参数类型 ${declaration.type}`)
       );
@@ -153,6 +155,9 @@ export function pageParamErrors(
   });
 
   const consumed = new Set<string>();
+  const raw = document as { dataSources?: Record<string, {source?: {query?: {paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
+  for (const source of Object.values(raw.dataSources ?? {})) for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
+  for (const filter of raw.filters ?? []) if (filter.initialParam) consumed.add(filter.initialParam);
   function navigationConsumers(value: unknown): void {
     if (!value || typeof value !== 'object') return;
     if (Array.isArray(value)) { value.forEach(navigationConsumers); return; }
@@ -191,8 +196,11 @@ export function pageParamErrors(
   return errors;
 }
 
-function matchesParamType(value: PageParamValue, type: PageParamType): boolean {
-  return typeof value === type;
+export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
+  if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
+  return declaration.multiple
+    ? Array.isArray(value) && value.length > 0 && value.every(item => typeof item === 'string' && item.length > 0) && new Set(value).size === value.length
+    : typeof value === 'string' && value.length > 0;
 }
 
 function schemaError(path: string, message: string): TypedError {

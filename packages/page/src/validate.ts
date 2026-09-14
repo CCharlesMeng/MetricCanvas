@@ -1,3 +1,4 @@
+import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
 import {
@@ -53,6 +54,8 @@ import {
 import { barForecastBoundaryIssues } from './bar-forecast-boundary';
 import { pageSchema } from './schema';
 import { capabilityFloorErrors, versionErrors } from './version';
+import { layoutCompatibilityErrors, canonicalLayoutDocument } from './layout-compatibility';
+import type { PageDocument } from './page-document';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
 const validateStructure = ajv.compile(pageSchema);
@@ -88,6 +91,8 @@ export function parsePage(
   const declarations = pageParamDeclarations(document);
   const documentErrors = [
     ...capabilityFloorErrors(document),
+    ...layoutCompatibilityErrors(document),
+    ...paramBindingErrors(document),
     ...pageParamErrors(
       declarations,
       new Set(filterDeclarations(document).map((filter) => filter.id)),
@@ -110,11 +115,25 @@ export function parsePage(
     };
   }
 
-  const page = materialized.document as Page;
+  const page = canonicalLayoutDocument(materialized.document as Page);
   const errors = [...invariantErrors(page), ...navigationErrors(page), ...urlInputErrors(page)];
   return errors.length === 0
     ? { ok: true, page, errors: [] }
     : { ok: false, errors };
+}
+
+/**
+ * 完整文档的兼容读取/唯一写出边界。先校验再复制，仅升级布局表示；
+ * 不写入参数物化值、字段展开或归一化后的 initial 行。原始修订/hash 由调用方先核验。
+ */
+export function normalizePageDocument(document: unknown):
+  | { ok: true; document: PageDocument; errors: [] }
+  | { ok: false; errors: TypedError[] } {
+  const parsed = parsePage(document);
+  if (!parsed.ok) return parsed;
+  // JSON 文档也可能是 Svelte Proxy，使用 JSON 树复制，不使用 structuredClone。
+  const cloned = JSON.parse(JSON.stringify(document)) as PageDocument;
+  return { ok: true, document: canonicalLayoutDocument(cloned), errors: [] };
 }
 
 /**

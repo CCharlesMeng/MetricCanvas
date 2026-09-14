@@ -1,4 +1,4 @@
-import type { PageDocument, TypedError } from '@metriccanvas/page';
+import { normalizePageDocument, type PageDocument, type TypedError } from '@metriccanvas/page';
 import defaultPreviewPage from './default-preview-page.json';
 
 export type PreviewDocumentResult =
@@ -23,9 +23,11 @@ export function parsePreviewDocument(
   }
 
   const errors = validateDocument(document);
-  return errors.length > 0
-    ? { status: 'contract-error', errors }
-    : { status: 'valid', document };
+  if (errors.length > 0) return { status: 'contract-error', errors };
+  const normalized = normalizePageDocument(document);
+  return normalized.ok
+    ? { status: 'valid', document: normalized.document }
+    : { status: 'contract-error', errors: normalized.errors };
 }
 
 export const DEFAULT_PREVIEW_PAGE = defaultPreviewPage as PageDocument;

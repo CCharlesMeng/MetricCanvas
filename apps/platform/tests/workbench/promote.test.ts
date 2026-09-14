@@ -75,8 +75,9 @@ describe('沉淀为 Data App:换正式页面 id,其余原样保留', () => {
     expect(result.document.id).toBe('region-gmv-overview');
     expect(JSON.stringify(result.document)).not.toContain(TRANSIENT_ID);
     expect(JSON.stringify(result.document)).not.toContain('ask-transient');
-    // 除页面 id 外逐字节一致:沉淀不夹带任何其他改写。
-    expect({ ...result.document, id: TRANSIENT_ID }).toEqual(document);
+    // 页面 id 与布局版本升级之外，业务内容保持原文。
+    expect({ ...result.document, id: TRANSIENT_ID, schemaVersion: document.schemaVersion, layout: undefined })
+      .toEqual({ ...document, layout: undefined });
   });
 
   it.each(cases)('$name:显式返回缺少滚动时间语义的已知限制', ({ document }) => {
@@ -270,7 +271,7 @@ describe('正式页面 id 的确认与校验(复用 confirm_page_id 机制的判
       title: 'region-gmv-overview',
       stablePath: '/pages/region-gmv-overview',
       immutableAfterSave: true,
-      schemaVersion: versionPolicy.current
+      schemaVersion: promoted.document.schemaVersion
     });
   });
 });
@@ -294,4 +295,21 @@ describe('临时指标扫描:文档是唯一真源,留痕只补充问题原文',
   it('inline 页面没有查询体,不产生临时指标', () => {
     expect(adHocDefinitionsOf(inlineTransientPage)).toEqual([]);
   });
+});
+
+describe('沉淀输出使用规范布局文档', () => {
+  for (const promote of [promoteToDataApp, promoteToReport]) {
+    it.each(['report', 'dashboard'])(`${promote.name} 兼容旧 %s 且不改原文`, (layoutForm) => {
+      const input: Record<string, unknown> = { ...inlineTransientPage, schemaVersion: '6.0', layoutForm };
+      const before = structuredClone(input);
+      const result = promote({ document: input, pageId: 'canonical-layout' });
+      expect(result.ok).toBe(true);
+      if (!result.ok) return;
+      expect(result.document).toMatchObject({ schemaVersion: '6.1', layout: layoutForm });
+      expect(result.document).not.toHaveProperty('layoutForm');
+      expect(result.document.dataSources).toEqual(input.dataSources);
+      expect(result.document.sections).toEqual(input.sections);
+      expect(input).toEqual(before);
+    });
+  }
 });

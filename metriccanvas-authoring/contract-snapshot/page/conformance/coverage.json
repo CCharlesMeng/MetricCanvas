@@ -1,6 +1,22 @@
 {
   "invariants": [
     {
+      "id": "page-layout-compatibility",
+      "description": "6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取",
+      "valid": [
+        "legacy-layout-report",
+        "legacy-layout-dashboard",
+        "layout-6-1-report",
+        "layout-6-1-dashboard"
+      ],
+      "invalid": [
+        "layout-before-6.1",
+        "layout-dual-equal",
+        "layout-dual-conflict",
+        "layout-invalid-value"
+      ]
+    },
+    {
       "id": "url-navigation-source-contract",
       "description": "URL 与来源绑定可校验，目标存在性与必填项由目标负责",
       "valid": [

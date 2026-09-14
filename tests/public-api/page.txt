@@ -6,6 +6,7 @@ PageDocument
 TypedError
 canonicalizeJson
 componentCatalog
+normalizePageDocument
 pageSchema
 parsePage
 supportedVersions
@@ -226,6 +227,7 @@ flattenPageComponents
 formatSuitsParamType
 hasQueryFieldMapping
 hierarchyLevelOf
+initializeQueryParams
 isChartComponent
 isDataComponent
 isDqeQueryDefinition
@@ -240,7 +242,9 @@ isTextValueReference
 isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
+matchesParamDeclaration
 navigationErrors
+normalizePageDocument
 normalizeQueryRows
 pageCapabilities
 pageListEntry

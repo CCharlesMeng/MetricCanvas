@@ -82,6 +82,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 /** 正式渲染输入；创作行为不属于该 Interface。 */
 export interface RuntimeViewProps {
   document: unknown;
+  execution?: import('../../runtime/src').ExecutionBootstrap;
   dataGateway?: RuntimeDataGateway;
   aiSummary?: import('./ai-summary/pangu-sse').AiSummaryConfig;
   initialSearch?: string;

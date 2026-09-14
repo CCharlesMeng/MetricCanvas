@@ -2,9 +2,9 @@
   "case": "map-hierarchy-filter-not-hierarchical",
   "invariant": "map-hierarchy",
   "input": {
-    "schemaVersion": "6.0",
+    "schemaVersion": "6.1",
     "id": "map-page",
-    "layoutForm": "dashboard",
+    "layout": "dashboard",
     "meta": {
       "description": "地域概览地图、层级下钻、分档图例与固定摘要的契约样例"
     },

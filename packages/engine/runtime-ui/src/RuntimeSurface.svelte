@@ -1,6 +1,7 @@
 <script lang="ts">
   import {
     parsePage,
+    canonicalizeJson,
     type Page,
     type TypedError
   } from '@metriccanvas/page';
@@ -35,6 +36,7 @@
     initialFilterValues,
     orchestrate,
     resolvePageParams,
+    initializePageParams,
     type DimensionValuesSnapshots,
     type FilterState,
     type FilterValue,
@@ -111,7 +113,8 @@
     initialSearch = '',
     navigation,
     onevent,
-    pageRevisionId
+    pageRevisionId,
+    execution
   }: RuntimeSurfaceProps = $props();
 
   let pageState = $state<PageState>({ phase: 'loading' });
@@ -135,7 +138,7 @@
   let disposers: Array<() => void> = [];
 
   $effect(() => {
-    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId);
+    void run(document, dataGateway, initialSearch, navigation, onevent, pageRevisionId, execution);
     return dispose;
   });
 
@@ -153,7 +156,8 @@
     search: string,
     navigationAdapter: RuntimeNavigation | undefined,
     emit: ((event: RuntimeViewEvent) => void) | undefined,
-    revisionId: string | undefined
+    revisionId: string | undefined,
+    bootstrap: import('../../runtime/src').ExecutionBootstrap | undefined
   ) {
     const mySession = ++session;
     pageState = { phase: 'loading' };
@@ -168,6 +172,11 @@
     await Promise.resolve();
     if (session !== mySession) return;
 
+    if (bootstrap && canonicalizeJson(raw) !== canonicalizeJson(bootstrap.document)) {
+      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/',message:'执行快照与页面文档不匹配'}]};
+      emit?.({type:'invalid',errors:pageState.errors});
+      return;
+    }
     const versionIssue = runtimeVersionError(raw);
     if (versionIssue) {
       pageState = { phase: 'version-error', error: versionIssue };
@@ -184,7 +193,7 @@
       return;
     }
     const paramDeclarations = declared.page.params ?? [];
-    const params = resolvePageParams(search, paramDeclarations);
+    const params = bootstrap ? {values:bootstrap.params,missing:[]} : resolvePageParams(search, paramDeclarations);
     pageParams = params.values;
     if (params.missing.length > 0) {
       pageState = {
@@ -198,14 +207,14 @@
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, format: formatValue } });
+        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? String(value) : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: parsed.errors };
       emit?.({ type: 'invalid', errors: parsed.errors });
       return;
     }
 
-    const loaded = parsed.page;
+    const loaded = initializePageParams(parsed.page, params.values);
     const mode = dataSourceMode(loaded.dataSources);
     const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {
@@ -223,7 +232,7 @@
     const fromURL: FilterValues = capabilities.filters
       ? parseFilterURL(search, declarations)
       : new Map();
-    const state = createFilterState(new Map([...fromDeclarations, ...fromURL]));
+    const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]));
     filterState = state;
 
     let primed = false;
@@ -235,6 +244,7 @@
           const nextSearch = mergedSearch(state, search);
           navigationAdapter?.replaceSearch?.(nextSearch);
           emit?.({ type: 'filter-change', search: nextSearch });
+          try { bootstrap?.recordFilters?.(values); } catch { /* 记录失败不能回滚当前筛选或中止查询 */ }
           resetTablePages(loaded, previous, values);
         }
         primed = true;
@@ -258,7 +268,8 @@
       loaded,
       activeGateway,
       capabilities.filters ? state : undefined,
-      revisionId !== undefined ? { pageRevisionId: revisionId } : undefined
+      revisionId !== undefined ? { pageRevisionId: revisionId } : undefined,
+      bootstrap
     );
     stream = pageStream;
     const emittedDataErrors = new Map<string, string>();
@@ -970,7 +981,7 @@
     </div>
   {:else}
     {@const readyPage = pageState.page}
-    {@const layoutForm = readyPage.layoutForm ?? 'report'}
+    {@const layoutForm = readyPage.layout ?? 'report'}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}

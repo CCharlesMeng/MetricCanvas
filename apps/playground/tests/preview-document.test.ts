@@ -45,3 +45,11 @@ describe('Page JSON 即时预览文档', () => {
     });
   });
 });
+
+it('旧页面预览只向后续流程交规范文档，保留文本引用及数据', () => {
+  const { layout: _layout, ...content } = DEFAULT_PREVIEW_PAGE;
+  const input = { ...content, schemaVersion: '6.0', layoutForm: 'dashboard' };
+  const result = parsePreviewDocument(JSON.stringify(input), validate);
+  expect(result).toMatchObject({ status: 'valid', document: { ...content, schemaVersion: '6.1', layout: 'dashboard' } });
+  if (result.status === 'valid') expect(result.document).not.toHaveProperty('layoutForm');
+});

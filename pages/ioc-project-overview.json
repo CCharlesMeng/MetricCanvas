@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.1",
   "id": "ioc-project-overview",
-  "layoutForm": "dashboard",
+  "layout": "dashboard",
   "meta": {
     "title": "全球/区域作战地图",
     "description": "IOC 作战地图概览页。主数据源全部是 inline，数据行与分类金额均为合成演示数据，不来自真实系统，不得用于业务判断。五个 IOC 维度候选只用于本地 DQE Sim 联调；立项率、分析会召开率、赢单率与复盘率由受控 ratio 算子按 0–100 刻度计算，管道支撑率仍是预计算字段。六个未知区域编码保留 TBD-*；GraphQL、真实编码、认证与权限到位后另行对接。"

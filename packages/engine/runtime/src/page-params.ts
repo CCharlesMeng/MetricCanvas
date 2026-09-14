@@ -1,4 +1,4 @@
-import type { PageParamDeclaration, PageParamValue } from '@metriccanvas/page/internal';
+import { initializeQueryParams, matchesParamDeclaration, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
 
 /** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -18,8 +18,12 @@ export function resolvePageParams(
   const missing: string[] = [];
 
   for (const declaration of declarations) {
-    const parsed = parseParamValue(query.get(declaration.id), declaration);
-    const value = parsed ?? declaration.default;
+    const parsed = declaration.type === 'dimension' && declaration.multiple
+      ? query.has(declaration.id) ? query.getAll(declaration.id) : undefined
+      : declaration.type === 'dimension' && query.getAll(declaration.id).length > 1 ? undefined
+      : parseParamValue(query.get(declaration.id), declaration);
+    const valid = matchesParamDeclaration(parsed, declaration) ? parsed : undefined;
+    const value = valid ?? declaration.default;
     if (value !== undefined) {
       values.set(declaration.id, value);
     } else if (declaration.required) {
@@ -33,7 +37,8 @@ export function resolvePageParams(
 export function pageParamSearch(values: PageParamValues): string {
   const query = new URLSearchParams();
   for (const [id, value] of values) {
-    query.set(id, serializePageParam(value));
+    if (Array.isArray(value)) for (const item of value) query.append(id, item);
+    else query.set(id, serializePageParam(value));
   }
   return query.toString();
 }
@@ -48,7 +53,7 @@ function parseParamValue(
 ): PageParamValue | undefined {
   if (raw === null) return undefined;
   const text = raw;
-  if (declaration.type === 'string') return text === '' ? undefined : text;
+  if (declaration.type === 'string' || declaration.type === 'dimension') return text === '' ? undefined : text;
   if (declaration.type === 'number') {
     const numeric = Number(text);
     return text.trim() !== '' && Number.isFinite(numeric) ? numeric : undefined;
@@ -60,4 +65,22 @@ function parseParamValue(
 
 function stripQuestionMark(search: string): string {
   return search.startsWith('?') ? search.slice(1) : search;
+}
+
+/** 运行态副本：参数只写入未受筛选控制的查询目标及筛选初值，模板不变。 */
+export function initializePageParams(page: import('@metriccanvas/page').Page, values: PageParamValues): import('@metriccanvas/page').Page {
+  for (const declaration of page.params ?? []) {
+    const value = values.get(declaration.id);
+    if ((value === undefined && declaration.required) || (value !== undefined && !matchesParamDeclaration(value, declaration))) throw new Error(`参数取值缺失或类型错误:${declaration.id}`);
+  }
+  const initialized = structuredClone(page);
+  for (const declaration of initialized.filters ?? []) {
+    if (declaration.type !== 'dimension' || !declaration.initialParam) continue;
+    const value = values.get(declaration.initialParam);
+    declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+  }
+  for (const source of Object.values(initialized.dataSources)) {
+    if (source.source.type === 'query') source.source.query = initializeQueryParams(source.source.query, values);
+  }
+  return initialized;
 }

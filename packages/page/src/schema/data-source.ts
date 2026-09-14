@@ -39,6 +39,7 @@ export const dqeQueryZ = z
         dsl_list: z.array(dslItemZ).length(1)
       })
       .strict(),
+    paramBindings: z.record(idZ, z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict()).optional(),
     filterBindings: z
       .record(
         idZ,

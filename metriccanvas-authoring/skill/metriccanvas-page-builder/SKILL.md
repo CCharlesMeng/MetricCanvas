@@ -14,6 +14,12 @@ metadata:
 
 生成通过页面校验的临时页面态。由模型理解业务问题并形成 Page Build Spec；由确定性工具派生 DQE 查询、字段绑定、组件、布局和页面元数据。
 
+## 按需查阅页面协议
+
+选组件时读 [组件选型](references/page-metadata/components/README.md)；核对字段、分支或版本约束时从 [模块索引](references/page-metadata/README.md) 定位，再读对应模块和完整示例。结构表随契约生成，示例只证明静态合法；正常装配仍按 Page Build Spec 和已授权工具完成。
+
+安装本 Skill 时复制整个 `metriccanvas-page-builder/` 目录，保留 `references/page-metadata/`。该参考目录自包含，单独安装后也可查阅，无需回到 Bundle 或仓库根目录。
+
 ## 运行前提与工具注册
 
 运行本 Skill 前，由 Relay 部署侧完成以下注册；这些动作不是 Agent 的运行步骤：

@@ -78,9 +78,9 @@ function onEvent(event) {
 
 ## 集成应用必须交出宽度
 
-页面外框几何由页面文档的 `layoutForm` 决定，它是唯一真源（[ADR-0052](./adr/0052-dashboard-layout-form-backdrop-and-safe-area.md)）：
+页面外框几何由页面文档的 `layout` 决定，它是唯一真源（[ADR-0052](./adr/0052-dashboard-layout-form-backdrop-and-safe-area.md)）：
 
-| `layoutForm` | 页面期望的容器 |
+| `layout` | 页面期望的容器 |
 |---|---|
 | `report`（缺省） | 不敏感。页面自己定宽居中，集成应用给多宽都对 |
 | `dashboard` | **挂载容器的可用宽度就是页面宽度。** 集成应用不得再加 `max-width` 或水平内边距 |
@@ -89,7 +89,7 @@ function onEvent(event) {
 
 运行时**不能**检测到集成应用违反了这一条：它只看到一个较窄的容器，并按该宽度正常渲染。因此这是集成应用侧的实现义务，没有运行时兜底。
 
-`apps/playground` 的参考做法：正式路由的页面外框按 `layoutForm` 切换，报表沿用定宽居中，看板去掉内边距并使用集成应用实际交付的全部可用宽度。1980px 是 IOC Page 的回归视口，不是集成应用固定的槽宽，也不会进入组件契约。顶栏、侧栏与菜单树仍归生产门户，不进入页面试验场的页面内容、`RuntimeView` 或 `packages/embed`。
+`apps/playground` 的参考做法：正式路由的页面外框按 `layout` 切换，报表沿用定宽居中，看板去掉内边距并使用集成应用实际交付的全部可用宽度。1980px 是 IOC Page 的回归视口，不是集成应用固定的槽宽，也不会进入组件契约。顶栏、侧栏与菜单树仍归生产门户，不进入页面试验场的页面内容、`RuntimeView` 或 `packages/embed`。
 
 Page Metadata 的结构仍然是 `Section → Component`，不存在中间业务实体。运行时仅为每个 Component 生成一个组件布局盒（`mc-component-box`），用来承接 `component.layout`、Grid 落位、创作态安装点和容器查询边界；它是 DOM / CSS 实现细节，不是 Page Metadata 层级。组件根节点只占满这个布局盒；跨组件比例只属于 Page Metadata 的 `columnTracks`，组件不得反向读取 Page id、布局形态或全局视口来推断自身宽度。
 
@@ -132,3 +132,6 @@ const runtime = MetricCanvas.mount('#dashboard', {
 ## 页面试验场中的集成示例
 
 `apps/playground` 用 `sessionStorage` 按目标页 id 记录来源，并在页面标题栏**上方**画一条「返回」面包屑。刷新后回跳仍在；深链接没有记录则不画箭头。
+
+
+6.1 的布局兼容读取与存量迁移见 [迁移说明](page-metadata/layout-migration.md)：旧 `layoutForm` 仅在文档输入边界接受，双字段同时出现拒绝，规范化后只写6.1 `layout`。先核验原始修订hash，再规范化；历史修订不原地重写。

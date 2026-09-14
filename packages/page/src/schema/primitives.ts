@@ -70,7 +70,7 @@ export const nonEmptyTextValueZ = z
   .union([z.string().min(1), textValueReferenceZ])
   .meta({ id: 'nonEmptyTextValue' }) as unknown as TextValueSchema;
 
-export const pageParamZ = z
+export const pageParamZ = z.union([z
   .object({
     id: idZ,
     type: z.enum(['string', 'number', 'boolean']),
@@ -78,7 +78,11 @@ export const pageParamZ = z
     label: z.string().min(1).optional(),
     default: z.union([z.string(), z.number(), z.boolean()]).optional()
   })
-  .strict()
+  .strict(), z.object({
+    id: idZ, type: z.literal('dimension'), required: z.boolean(),
+    label: z.string().min(1).optional(), multiple: z.boolean().optional(),
+    default: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional()
+  }).strict()])
   .meta({
     id: 'pageParam',
     description: '页面参数：打开页面时由 URL 确定、此后不可改变的具名输入'

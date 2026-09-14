@@ -1,5 +1,5 @@
 import type { PageRepository } from '@metriccanvas/engine';
-import { parsePage } from '@metriccanvas/page';
+import { parsePage, normalizePageDocument } from '@metriccanvas/page';
 import { pageListEntry } from '@metriccanvas/page/internal';
 
 /**
@@ -40,7 +40,10 @@ export function createStaticPageRepository(): PageRepository {
     async load(pageId: string): Promise<unknown> {
       const loader = loaders.get(pageId);
       if (!loader) throw new Error(`页面不存在:${pageId}`);
-      return (await loader()).default;
+      const raw = (await loader()).default;
+      const normalized = normalizePageDocument(raw);
+      // 无效页面保留原文给统一运行时呈现准确错误。
+      return normalized.ok ? normalized.document : raw;
     },
 
     async list() {

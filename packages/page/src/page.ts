@@ -199,7 +199,7 @@ export interface Page {
   id: string;
   meta?: PageMeta;
   /** 页面布局形态；缺省等价于 `report`。 */
-  layoutForm?: PageLayoutForm;
+  layout?: PageLayoutForm;
   /** dashboard 统一工具栏；缺省显示，页面有自有页头时可显式关闭。 */
   dashboardToolbar?: DashboardToolbar;
   /** 页面参数声明（ADR-0047）；取值在页面打开时由 URL 确定。 */
@@ -215,7 +215,8 @@ export interface Page {
  * `report`，让非法文档走各自的错误页而不是先把外框算错。
  */
 export function documentLayoutForm(document: unknown): PageLayoutForm {
-  const declared = (document as { layoutForm?: unknown } | null)?.layoutForm;
+  const input = document as { layout?: unknown; layoutForm?: unknown } | null;
+  const declared = input?.layout ?? input?.layoutForm;
   return declared === 'dashboard' ? 'dashboard' : 'report';
 }
 

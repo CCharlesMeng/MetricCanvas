@@ -28,19 +28,10 @@ describe('Platform 样式 token 边界', () => {
     expect(`${layoutSource}\n${workbenchSource}`).not.toMatch(/--mc-[\w-]+\s*:/);
   });
 
-  it('分析会话轨与 AI composer 统一使用浅色 surface', () => {
-    expect(workbenchSource).toMatch(
-      /\.chat\s*\{[^}]*color:\s*var\(--text\)[^}]*background:\s*var\(--surface\)/
-    );
-    expect(workbenchSource).toMatch(
-      /\.composer\s*\{[^}]*background:\s*var\(--surface\)/
-    );
-    expect(workbenchSource).toMatch(
-      /\.composer-box\s*\{[^}]*background:\s*var\(--surface-subtle\)/
-    );
-    expect(workbenchSource).not.toMatch(
-      /\.(?:chat|composer)\s*\{[^}]*background:\s*var\(--panel-dark(?:-strong)?\)/
-    );
+  it('分析会话轨使用浅色 surface，输入由独立盘古模块承担', () => {
+    expect(workbenchSource).toMatch(/\.chat\s*\{[^}]*color:\s*var\(--text\)[^}]*background:\s*var\(--surface\)/);
+    expect(workbenchSource).toContain('<PanguDialogue');
+    expect(workbenchSource).not.toContain('<textarea');
   });
 
   it('强调背景前景与浅色会话链接消费语义 token', () => {
@@ -50,9 +41,6 @@ describe('Platform 样式 token 边界', () => {
       /(?:color|background):\s*#fff\b/
     );
     expect(workbenchSource).not.toContain('rgb(99 102 241 / 16%)');
-    expect(workbenchSource).toContain(
-      'color-mix(in srgb, var(--accent) 16%, transparent)'
-    );
     expect(workbenchSource).toMatch(
       /\.linkish\s*\{[^}]*color:\s*var\(--accent-strong\)/
     );

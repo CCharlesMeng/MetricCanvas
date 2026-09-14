@@ -151,8 +151,5 @@ def create_production_server():
     )
 
 
-mcp = create_production_server()
-
-
 def main() -> None:
-    mcp.run()
+    create_production_server().run()
