@@ -10,6 +10,7 @@ import {
   validate,
   versionPolicy
 } from '../../packages/page/src/internal.ts';
+import { buildPageReference } from './page-reference.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
@@ -147,6 +148,8 @@ async function buildProductOutputs(): Promise<OutputMap> {
     outputs.set(`page/conformance/invalid/${vector.case}.json`, json(vector));
   }
   outputs.set('page/conformance/coverage.json', json(conformance.coverage));
+  const reference = await buildPageReference(repoRoot, pageSchema, componentCatalog, outputs, versionPolicy.current);
+  for (const [file, content] of reference) outputs.set(`page/reference/${file}`, content);
 
   outputs.set(
     'manifest.json',
@@ -372,6 +375,7 @@ async function writeOutputs(
     await writeFile(target, content, 'utf8');
   }
   await writeTree(snapshotRoot, productOutputs);
+  await writeTree(path.join(bundleRoot, 'skill/metriccanvas-page-builder/references/page-metadata'), referenceProjection(productOutputs));
   await rm(path.join(authoringContractRoot, 'exported'), { recursive: true, force: true });
   for (const [relativePath, content] of authoringOutputs) {
     const target = path.join(authoringContractRoot, relativePath);
@@ -385,6 +389,10 @@ async function writeOutputs(
     'utf8'
   );
   await writeFile(path.join(bundleRoot, 'bundle.lock.json'), await buildBundleLock(), 'utf8');
+}
+
+function referenceProjection(outputs: OutputMap): OutputMap {
+  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => [file.slice('page/reference/'.length), content]));
 }
 
 async function writeTree(root: string, outputs: OutputMap): Promise<void> {
@@ -445,6 +453,7 @@ async function assertCurrent(
     drift
   );
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
+  await collectTreeDrift(path.join(bundleRoot, 'skill/metriccanvas-page-builder/references/page-metadata'), referenceProjection(productOutputs), 'skill/references/page-metadata', drift);
   const generatedAuthoringOutputs = new Map(
     [...authoringOutputs].filter(
       ([file]) => file === 'manifest.json' || file.startsWith('exported/')
