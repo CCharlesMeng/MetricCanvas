@@ -104,14 +104,17 @@ class Lifecycle:
         self.still_current(identity)
         try:
             result = self.saved(response, command)
-            if result['status'] == 'saved':
+        except Exception:
+            return {'status':'unknown', 'operationId':command['context']['operationId'], 'code':'RESPONSE_MISMATCH'}
+        if result['status'] == 'saved':
+            try:
                 result['programToken'] = await self.programs.store({'receipt':deepcopy(result),
                     'context':command['context'], 'base':command['base']}, identity)
                 self.still_current(identity)
-            return result
-        except LifecycleError:
-            # A malformed success could still have committed. Never advise a new key.
-            return {'status':'unknown', 'operationId':command['context']['operationId'], 'code':'RESPONSE_MISMATCH'}
+            except Exception:
+                # Program delivery can fail after the service transaction committed.
+                return {'status':'unknown', 'operationId':command['context']['operationId'], 'code':'PROGRAM_DELIVERY_FAILED'}
+        return result
 
     async def read(self, token):
         identity = self.identity()

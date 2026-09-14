@@ -153,6 +153,17 @@ class LifecycleTest(unittest.IsolatedAsyncioTestCase):
             self.service.history=history
             self.assertEqual((await self.call('list_revisions','history-token'))['code'],'RESPONSE_MISMATCH')
 
+    async def test_program_delivery_failure_retains_unknown_original_operation(self):
+        store=self.programs.store
+        async def unavailable(value,identity): raise OSError('private output path')
+        self.programs.store=unavailable
+        result=await self.call()
+        self.assertEqual(result['status'],'unknown')
+        self.assertEqual(result['operationId'],'operation-1'); self.assertNotIn('ref',result)
+        self.programs.store=store
+        recovered=await self.call('get_save_result')
+        self.assertEqual(recovered['status'],'saved'); self.assertEqual(self.service.save_calls,1)
+
 
 class SpoolTest(unittest.IsolatedAsyncioTestCase):
     async def test_scope_traversal_symlink_and_private_roundtrip(self):
