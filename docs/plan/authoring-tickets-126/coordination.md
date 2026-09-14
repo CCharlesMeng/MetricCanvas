@@ -442,3 +442,11 @@ S3确认#134不编辑test_build_page.py/test_stdio.py，明确授权S2在#143仅
 S3最终工作树`/private/tmp/metriccanvas-s3-134-final`、分支`codex/s3-134-content-edit-final`从be73806a0120d0826fd57a0edf62745760d5561a建立，仅取作者501eda4d8c92cf215f7424224963f582bd4d0886。S2提供最终生成855076a9ebab1e1199018caa7109187d72ab7f07（其树作者复制67b6a08），回报194product/495摘要、6.2/rc.3，四文件生成器/manifest/contract-lock/bundle.lock；待S3最终复验与S0核验，不提前集成。
 
 原`/private/tmp/metriccanvas-s3-134`的6.1隔离183测试/491摘要/10产物/独立安装仅保留历史证据；旧生成2d1623b不带入。S3仍按原准确所有权实施，已收回四Python临时文件但#134不修改。最终回执须绑定实际作者+新生成+证据SHA，包含53兼容向量与内容行为/独立安装。
+
+## #139验收集成与#140放行
+
+来源0e00cab7dc88ab2789f1e865e1dba14e101901d5→1d189f6d1ebed53c776402d768be46587df6ec06；身份修正f41b607f328aa4de2d0baba90d7e63ac404b7aef→fcfcd4891e5f7466c93ab64708e1c887f6bd644e；6.2兼容d6474632e7d3ff78fbfb2daed46bb65609c65006→e7ea7003b96931f5d03fc2227c33b5660f50701e。未取来源merge；最终产品树与S1固定组合一致。
+
+S0读取#139正文、审阅队列/IndexedDB CAS/协调/UI与证据，复验sync/coordinator/document-edit三文件34项通过；身份变化在enqueue、串行事务执行、verifySaved和持久化await后重新校验，锁停实例，保留原操作待核实。冻结6.1命令在6.2新操作追加后原样重试，后续命令写6.2。采用t13修正前基线全量979通过/5既有skip、类型/check/build及两套浏览器证据，最终组合34项针对性与tsc回执；不冒称最终组合全量重跑。
+
+本仓有序保护/同步替身范围通过，先持久化操作和命令再发，未知先lookup且仅明确retrySafe的not-applied重试；冲突/完整性失败暂停，迟到不覆新内容。真实stableSave=false仅本地保护，不调用旧PUT，未确认强服务；当前重开恢复仍未实现，不宣称M1完成。S1现可从本条HEAD执行#140，同队列恢复/有界重试，不另建机制；#146仍待#134/#138/#140验收集成。
