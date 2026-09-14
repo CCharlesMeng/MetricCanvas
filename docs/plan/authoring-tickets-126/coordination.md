@@ -725,3 +725,11 @@ S0审阅生命周期编排、可信spool权限/身份隔离、公开四工具与
 S1真实任务01a09f69-8346-7e91-9c66-9e091d3f6e77，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合入正式9dcb2b8539fd4597fdd6816928e0fbffa0486b89。唯一既有触点`apps/platform/src/lib/workbench/authoring-coordinator.ts`、`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-language.ts`、`apps/platform/src/routes/language/+page.svelte`、`apps/platform/tests/workbench/authoring-language.test.ts`、`apps/platform/tests/workbench/language-relay-fixture.py`、`apps/platform/tests/workbench/authoring-language-browser.mjs`及`docs/plan/authoring-tickets-126/t20-evidence.md`。其他fixture模块另登记。
 
 /language仅开发组合验收，必须沿项目既有开发路由保护验证生产构建不可用，不作为真实Relay入口。可信程序读取必须验证operationId/runId/actor/workspace/base关联，事件仍仅draftId；旧轮首次迟到在读取前后校验接收资格，异步读取期间切换身份/轮次不得覆盖旧画布。生产Relay/强读默认不可用，开发替身不得进入生产默认组合。S5两文件/port.ts、S4/S2作者窗口不变。
+
+## 双Platform Skill本仓补项验收集成
+
+正式组合a8dfb6dbd883f382d73b5cb44202b1ccf187f644，双父70584c9与S3证据069b0d58；包含S3作者55f598e/c7e74cf、S2作者aa9e793与生成d957d4b，合并后S2唯一重新生成最终锁。README双方段落逐字保留，#138 schema/manifest/contract-lock与S0台账未变。S0已快进消费此精确组合。
+
+S0审阅新建策略/只改根layout的影响摘要、双Skill主文/共享基线、分发检查与生成器；独立组合9项布局/公开stdio流程通过、1902摘要通过。读取最终组合259 Python、shuffle生成/隔离19项通过日志，采用S3两独立Skill与旧Skill复制闭合、最终安装包与18真实Chrome容器场景证据，不冒称独立重跑全部浏览器。旧page-builder整目录保持，四包公开面与版本不变。
+
+本仓双Skill/布局与兼容分发补项通过；14真实模型cases全部not_run，真实Relay路由/模型效果/服务联调仍未确认，#126与M2不据此结束。T04同步实际入口名称，分发登记不代替外部路由。后续#146/#145消费本条新基线时保留两线成果，#146已获准运行无需等待本补项。
