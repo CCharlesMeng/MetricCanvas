@@ -475,3 +475,11 @@ S2同工作树、分支`codex/s2-execution-consumer-144`，基线be73806，13项
 prepareExecution提案校验T04目标/操作/源/条件，产生含params/filters/逐源快照的运行初始化结果；RuntimeView/Embed消费该结果，条件变化沿既有gateway。recordLastFilters为注入端口，固定actor/workspace/metadata与sequence，失败不回滚当前筛选。服务默认未接通，不新增HTTP路径。最终以本票完整正反例及运行行为验收冻结，预登记不等于契约通过。
 
 RevisionPreview.svelte仍S1唯一作者，S2只提最小注入需求；须S1独立补丁或明确临时授权再集成，不能直接修改。候选/IOC消费同一执行适配，不复制保存客户端。
+
+### #144预览临时所有权确认
+
+S1明确授权、S0确认S2仅#144可选executeRevision精确预览接线：`apps/platform/src/lib/RevisionPreview.svelte`及新增`apps/platform/tests/workbench/revision-preview-execution.test.ts`、`apps/platform/tests/workbench/revision-preview-execution-browser.mjs`。未注入保留旧行为；S1冻结三路径至验收归还。客户端/协调器/工作台/既有authoring-browser.mjs不移交。
+
+### 固定快照远端交付另线协调
+
+已只读核实用户任务“完成 Issue 127 并推送代码”`01a09fb2-fcd6-7f93-acc2-fd686430731f`上下文：其负责核对固定04c4869444c2c5d3be6eade427bb191553fa81ec远端交付与Issue状态。该快照已验收#127–#133/#139/#143，后续在途#134/#140/#144不纳入。S0不重复操作这批GitHub状态；远端push/main合并权限由该任务依据自身用户授权判断，S0原授权不自动涵盖。#132既有自动审批拒绝边界已告知不得绕过。要求独立交付树、不改本台账/原工作区，完成回传远端SHA/PR/Issue清单。此任务不是S5，盘古两文件仍待正式角色移交。
