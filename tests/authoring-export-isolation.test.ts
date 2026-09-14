@@ -27,7 +27,8 @@ function withChangedFile(relative: string, content: string, verify: () => void) 
 
 describe('当前契约检查无需旧服务源码', () => {
   it('无旧链时可运行，拒绝历史预期篡改和当前产品契约漂移', () => {
-    for (const relative of ['tools/scripts', 'tools/fixtures/legacy-contracts', 'packages/page', 'contracts', 'metriccanvas-authoring']) {
+    for (const relative of ['tools/scripts', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
+      mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,
         filter: (source) => !['node_modules', '__pycache__', '.venv', 'venv'].includes(path.basename(source))
