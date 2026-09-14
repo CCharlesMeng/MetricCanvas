@@ -211,3 +211,7 @@ S2 生成隔离登记：从 `32d0e089` 建立 `/private/tmp/metriccanvas-126-s2-
 S2 生成提交 `4f6be5f5a33e41385d4dabbb96e67b7a5d885062`，父提交完整值 `eb87872d13ae4cf42c5a109b8bfed8e7b79e040e`（S3 作者代码在生成树的 cherry-pick）。S0 已核对恰 5 文件：`tools/scripts/export-authoring-contracts.ts` 与 `metriccanvas-authoring/bundle.lock.json`、`contract-lock.json`、`contracts/manifest.json`、`contracts/exported/build-page-conformance.json`。生成器先读取并核验冻结历史来源，再用公开 normalizePageDocument 派生当前 expected.document；未改 legacy/provenance，不从构造器结果反向编写期望。diff check 通过。
 
 S2 回报生成无漂移（190 product）、474 摘要、compose 14 测试通过；S0 未据此替代整票测试。已通知 S3 仅将该生成提交合到自己的 `479bf25` 上，避免重复合入生成分支里的作者复制提交；整票回执需给实际组合 SHA、全量/产品/独立分发证据。两提交均暂未集成，#133 未解锁。
+
+#131 临时文件新增（S1 明确同意、S0 已确认并通知 S2）：`apps/platform/tests/workbench/component-building.test.ts` 仅在当前版本测试文档构造处补 `layout: 'report'` 一行，使同义组件替换的内容保持比较使用规范工作副本。S0 已只读核对该用例；不改生产构造器/共享 fixture，保留其他旧版和缺省兼容用例。验收后与原四文件一同归还 S1。S2 回报50针对性、10画布、41Embed测试通过，单行修改后全量仍待复验，尚无#131整票提交。
+
+S0 另发现 S2 工作树涉及 `apps/playground/src/lib/default-preview-page.json` 与 `packages/embed/tests/browser/layout-compatibility.spec.ts`，已要求补具体迁移/兼容解释；后者仍属于 S2，旧6.0输入测试不能因共享示例升级而变成双字段。正式验收以固定提交逐文件核对，不以工作树进行中状态判定通过。
