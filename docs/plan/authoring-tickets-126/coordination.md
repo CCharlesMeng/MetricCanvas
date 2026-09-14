@@ -483,3 +483,7 @@ S1明确授权、S0确认S2仅#144可选executeRevision精确预览接线：`app
 ### 固定快照远端交付另线协调
 
 已只读核实用户任务“完成 Issue 127 并推送代码”`01a09fb2-fcd6-7f93-acc2-fd686430731f`上下文：其负责核对固定04c4869444c2c5d3be6eade427bb191553fa81ec远端交付与Issue状态。该快照已验收#127–#133/#139/#143，后续在途#134/#140/#144不纳入。S0不重复操作这批GitHub状态；远端push/main合并权限由该任务依据自身用户授权判断，S0原授权不自动涵盖。#132既有自动审批拒绝边界已告知不得绕过。要求独立交付树、不改本台账/原工作区，完成回传远端SHA/PR/Issue清单。此任务不是S5，盘古两文件仍待正式角色移交。
+
+### #140精确恢复作者路径追加
+
+S1已合入04c4869444c2c5d3be6eade427bb191553fa81ec并启动#140。新增`apps/platform/src/lib/workbench/authoring-recovery.ts`、`apps/platform/tests/workbench/authoring-recovery.test.ts`、`apps/platform/tests/workbench/authoring-recovery-browser.mjs`、`docs/plan/authoring-tickets-126/t14-evidence.md`归S1。既有sync/storage/coordinator沿用，`apps/platform/src/lib/workbench/document-edit.ts`仅增加严校验双投影恢复入口，工作台接重连生命周期；RevisionPreview三路径仍S2临时独占。
