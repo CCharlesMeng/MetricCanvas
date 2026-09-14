@@ -190,6 +190,7 @@ def assemble_page_document(
 
     return {
         "schemaVersion": schema_version,
+        "layout": "report",
         "id": page_id,
         **({} if description is None else {"meta": {"description": description}}),
         "dataSources": data_sources,

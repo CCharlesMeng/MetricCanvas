@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import sys
 import unittest
+from copy import deepcopy
 from pathlib import Path
 
 
@@ -11,7 +12,10 @@ CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 PENDING_PATH = BUNDLE_ROOT / "test-harness" / "fixtures" / "page-conformance-pending.json"
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
+from metriccanvas_authoring.domain.page_validation import (  # noqa: E402
+    normalize_page_document,
+    validate_page_document,
+)
 
 
 def _load_pending() -> tuple[frozenset[str], frozenset[str]]:
@@ -29,6 +33,57 @@ class PageContractConformanceTest(unittest.TestCase):
     Python 侧的页面校验是创作期预检，必须对齐全部导出不变式。
     pending 注册表现在为空；新向量必须直接命中，不得通过扩大清单静默豁免。
     """
+
+    def test_normalizes_all_shared_layout_cases_without_mutating_input(self) -> None:
+        matrix = json.loads(
+            (CONTRACT_ROOT / "page/conformance/layout-compatibility.json").read_text()
+        )
+        self.assertEqual(len(matrix["cases"]), 32)
+        for index, case in enumerate(matrix["cases"]):
+            with self.subTest(case=index):
+                original = deepcopy(case["input"])
+                expected = case["expected"]
+                actual = normalize_page_document(case["input"])
+                self.assertEqual(case["input"], original)
+                self.assertEqual(actual["ok"], expected["ok"])
+                if expected["ok"]:
+                    self.assertEqual(actual, expected)
+                    self.assertEqual(normalize_page_document(actual["document"]), actual)
+                else:
+                    self.assertNotIn("document", actual)
+                    self.assertEqual(
+                        {(e["type"], e["path"]) for e in actual["errors"]},
+                        {(e["type"], e["path"]) for e in expected["errors"]},
+                    )
+
+    def test_normalization_preserves_all_valid_source_content(self) -> None:
+        for path in sorted((CONTRACT_ROOT / "page/conformance/valid").glob("*.json")):
+            with self.subTest(fixture=path.name):
+                original = json.loads(path.read_text())
+                baseline = deepcopy(original)
+                expected = deepcopy(original)
+                expected["schemaVersion"] = "6.1"
+                expected["layout"] = expected.pop("layoutForm", expected.get("layout", "report"))
+                result = normalize_page_document(original)
+                self.assertEqual(result, {"ok": True, "document": expected, "errors": []})
+                self.assertEqual(original, baseline)
+                # A consumer editing the returned tree cannot mutate the baseline.
+                result["document"]["sections"][0]["id"] = "changed-after-reading"
+                self.assertEqual(original, baseline)
+
+    def test_normalization_rejects_all_invalid_pages_before_transforming(self) -> None:
+        for path in sorted((CONTRACT_ROOT / "page/conformance/invalid").glob("*.json")):
+            with self.subTest(fixture=path.name):
+                case = json.loads(path.read_text())
+                original = deepcopy(case["input"])
+                result = normalize_page_document(case["input"])
+                self.assertFalse(result["ok"])
+                self.assertNotIn("document", result)
+                self.assertEqual(case["input"], original)
+                self.assertEqual(
+                    {(e["type"], e["path"]) for e in result["errors"]},
+                    {(e["type"], e["path"]) for e in case["expected"]},
+                )
 
     def test_accepts_every_exported_valid_page(self) -> None:
         pending_valid, _pending = _load_pending()

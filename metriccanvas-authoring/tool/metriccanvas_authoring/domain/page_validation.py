@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import math
 import re
+from copy import deepcopy
 from dataclasses import asdict, dataclass
 from datetime import date, datetime
 from typing import Any, Callable, Mapping
@@ -71,6 +72,26 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
         return param_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
     return [*row_issues, *_invariant_issues(value), *_navigation_issues(value)]
+
+
+def normalize_page_document(value: Any) -> dict[str, Any]:
+    """Validate a complete baseline and copy it into the canonical write form.
+
+    This preserves source fields and rows, including parameter references; it
+    never writes validation-time materialized values back into the document.
+    Verify persisted content hashes before calling this function.
+    """
+    issues = validate_page_document(value)
+    if issues:
+        return {"ok": False, "errors": [issue.as_dict() for issue in issues]}
+    document = deepcopy(value)
+    contract_lock = json.loads(
+        (BUNDLE_ROOT / "contract-lock.json").read_text(encoding="utf-8")
+    )
+    document["schemaVersion"] = contract_lock["pageSchemaVersion"]
+    document["layout"] = document.get("layout", document.get("layoutForm", "report"))
+    document.pop("layoutForm", None)
+    return {"ok": True, "document": document, "errors": []}
 
 
 def _schema_issues(
@@ -175,8 +196,19 @@ def _materialize_validation_text_values(value: Any) -> Any:
 
 
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
-    # 6.0 includes all former 5.x capabilities; future additive minors register here.
-    return []
+    # Structure (including the supported-version enum) has already been checked.
+    issues = []
+    if value["schemaVersion"] == "6.0" and "layout" in value:
+        issues.append(PageContractIssue(
+            "SCHEMA_ERROR", "/layout",
+            "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0",
+        ))
+    if "layout" in value and "layoutForm" in value:
+        issues.append(PageContractIssue(
+            "SCHEMA_ERROR", "/layoutForm",
+            "layout 与 layoutForm 不得同时声明；仅保留一个布局真源",
+        ))
+    return issues
 
 
 def _walk_field_definitions(
