@@ -205,3 +205,9 @@ S3 已消费 `32d0e08976b443aed69d18922f12da051470fbc6`，提交 `479bf25dd68d22
 S2 负责从此精确作者提交更新共享构造向量作者源、生成物及锁，必须单独提交、不混 #131；S0 已向 S2/S3 发成套交付要求。S3 继续代表性产物产品校验和独立交付，等待生成提交后验证剩余差异归零并提供整票回执。作者提交当前未集成，不解锁 #133。
 
 S2 生成隔离登记：从 `32d0e089` 建立 `/private/tmp/metriccanvas-126-s2-contracts`、`codex/s2-132-contracts`，消费 S3 精确作者提交后，单独修改 `tools/scripts/export-authoring-contracts.ts` 的当前 6.1 派生及生成物/锁；保留 `tools/fixtures/legacy-contracts` 历史源。生成提交交 S3 复验后与作者代码成套交 S0，不代表 #133 开工。S2 主 #131 工作树仍为 `/private/tmp/metriccanvas-126-s2`，工作分支更新为 `codex/s2-browser-layout-131`，基线 `32d0e089`；上述为角色回执，成套验收时复核实际树与提交。
+
+### #132 独立生成提交到齐（待 S3 整票复验）
+
+S2 生成提交 `4f6be5f5a33e41385d4dabbb96e67b7a5d885062`，父提交完整值 `eb87872d13ae4cf42c5a109b8bfed8e7b79e040e`（S3 作者代码在生成树的 cherry-pick）。S0 已核对恰 5 文件：`tools/scripts/export-authoring-contracts.ts` 与 `metriccanvas-authoring/bundle.lock.json`、`contract-lock.json`、`contracts/manifest.json`、`contracts/exported/build-page-conformance.json`。生成器先读取并核验冻结历史来源，再用公开 normalizePageDocument 派生当前 expected.document；未改 legacy/provenance，不从构造器结果反向编写期望。diff check 通过。
+
+S2 回报生成无漂移（190 product）、474 摘要、compose 14 测试通过；S0 未据此替代整票测试。已通知 S3 仅将该生成提交合到自己的 `479bf25` 上，避免重复合入生成分支里的作者复制提交；整票回执需给实际组合 SHA、全量/产品/独立分发证据。两提交均暂未集成，#133 未解锁。
