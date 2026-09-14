@@ -1,0 +1,673 @@
+{
+  "schemaVersion": "6.2",
+  "layout": "report",
+  "id": "reference-branches-page",
+  "dataSources": {
+    "sales": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          "filterBindings": {
+            "region-filter": {
+              "target": "dimension",
+              "queryField": "region"
+            }
+          },
+          "paramBindings": {
+            "regions": {
+              "target": "dimension",
+              "queryField": "region"
+            }
+          }
+        }
+      }
+    },
+    "shared": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          "paramBindings": {
+            "regions": {
+              "target": "dimension",
+              "queryField": "region"
+            },
+            "segment": {
+              "target": "dimension",
+              "queryField": "segment"
+            }
+          }
+        }
+      }
+    },
+    "unbound": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "amounts": {
+      "fields": {
+        "name": {
+          "type": "string",
+          "role": "dimension"
+        },
+        "amount": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY"
+        }
+      },
+      "source": {
+        "type": "inline",
+        "rows": [
+          {
+            "name": "示例对象",
+            "amount": 80
+          }
+        ]
+      }
+    },
+    "regions": {
+      "fields": {
+        "name": {
+          "queryField": "name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "code": {
+          "queryField": "code",
+          "type": "number",
+          "role": "dimension"
+        },
+        "level": {
+          "queryField": "level",
+          "type": "string",
+          "role": "dimension"
+        },
+        "parent": {
+          "queryField": "parent",
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure"
+        },
+        "growth": {
+          "queryField": "growth",
+          "type": "number",
+          "role": "measure"
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-08-01T00:00:00Z",
+          "rows": [
+            {
+              "name": "上海",
+              "code": 310000,
+              "level": "province",
+              "parent": null,
+              "gmv": 120,
+              "growth": 0.1
+            }
+          ]
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "name",
+                  "code",
+                  "level",
+                  "parent"
+                ],
+                "output_metrics": [
+                  "gmv",
+                  "growth"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "filters": [
+    {
+      "id": "region-filter",
+      "type": "dimension",
+      "dimension": "region",
+      "initialParam": "regions"
+    },
+    {
+      "id": "recent",
+      "type": "timeRange",
+      "default": "today"
+    },
+    {
+      "id": "previous",
+      "type": "timeRange",
+      "default": {
+        "unit": "month",
+        "range": {
+          "kind": "previousComplete"
+        },
+        "includeCurrent": false
+      }
+    },
+    {
+      "id": "current",
+      "type": "timeRange",
+      "default": {
+        "unit": "month",
+        "range": {
+          "kind": "currentToDate"
+        },
+        "includeCurrent": true
+      }
+    }
+  ],
+  "sections": [
+    {
+      "id": "details",
+      "components": [
+        {
+          "id": "heading",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "param": "heading"
+            }
+          }
+        },
+        {
+          "id": "sales-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "sales"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "region-filter",
+                "field": {
+                  "data": "main",
+                  "field": "region"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "shared-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "shared"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "region-filter",
+                "field": "region"
+              }
+            ]
+          }
+        },
+        {
+          "id": "unbound-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "unbound"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            },
+            "actions": [
+              {
+                "on": "click",
+                "writeFilter": "region-filter",
+                "field": "region"
+              }
+            ]
+          }
+        },
+        {
+          "id": "parameter-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": {
+              "param": "quantity",
+              "format": "number"
+            },
+            "body": {
+              "param": "enabled"
+            },
+            "links": [
+              {
+                "label": "按筛选查看",
+                "href": "/detail",
+                "query": {
+                  "region": {
+                    "source": "filter",
+                    "id": "region-filter"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "table-none",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "columns": [
+              {
+                "kind": "group",
+                "id": "identity",
+                "title": "对象",
+                "children": [
+                  {
+                    "field": "name"
+                  }
+                ]
+              },
+              {
+                "field": "amount"
+              }
+            ],
+            "pagination": {
+              "mode": "none"
+            }
+          }
+        },
+        {
+          "id": "table-local",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "columns": [
+              {
+                "kind": "group",
+                "id": "identity",
+                "title": "对象",
+                "children": [
+                  {
+                    "field": "name"
+                  }
+                ]
+              },
+              {
+                "field": "amount"
+              }
+            ],
+            "pagination": {
+              "mode": "local",
+              "pageSize": 10
+            }
+          }
+        },
+        {
+          "id": "panel-2",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "columns": 2,
+            "items": [
+              {
+                "label": "金额",
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "panel-3",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "columns": 3,
+            "items": [
+              {
+                "label": "金额",
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "panel-4",
+          "type": "keyValuePanel",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "columns": 4,
+            "items": [
+              {
+                "label": "金额",
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "categories-label",
+          "type": "categoryBreakdown",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "categoryField": "name",
+            "categoryLabel": "类别",
+            "columns": [
+              {
+                "label": "金额",
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "categories-hidden",
+          "type": "categoryBreakdown",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "amounts"
+          },
+          "props": {
+            "categoryField": "name",
+            "categoryLabel": false,
+            "columns": [
+              {
+                "label": "金额",
+                "field": "amount"
+              }
+            ]
+          }
+        },
+        {
+          "id": "map-numeric-match",
+          "type": "mapChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions"
+          },
+          "props": {
+            "variant": "regionalOverview",
+            "nameField": "name",
+            "valueField": "gmv",
+            "map": "china",
+            "legend": {
+              "title": "GMV",
+              "bands": [
+                {
+                  "label": "低",
+                  "from": 0
+                },
+                {
+                  "label": "高",
+                  "from": 100
+                }
+              ]
+            },
+            "tooltipFields": [
+              {
+                "label": "增长",
+                "field": {
+                  "data": "main",
+                  "field": "growth",
+                  "format": "percent-1"
+                }
+              }
+            ],
+            "pinnedSummary": {
+              "matchField": "code",
+              "matchValue": 310000,
+              "titleField": "name",
+              "fields": [
+                {
+                  "label": "GMV",
+                  "field": "gmv"
+                },
+                {
+                  "label": "增长",
+                  "field": "growth"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "params": [
+    {
+      "id": "regions",
+      "type": "dimension",
+      "multiple": false,
+      "required": true,
+      "default": "APAC"
+    },
+    {
+      "id": "segment",
+      "type": "dimension",
+      "required": false
+    },
+    {
+      "id": "heading",
+      "type": "string",
+      "required": true,
+      "default": "Regional sales"
+    },
+    {
+      "id": "quantity",
+      "type": "number",
+      "required": true,
+      "default": 3
+    },
+    {
+      "id": "enabled",
+      "type": "boolean",
+      "required": true,
+      "default": false
+    }
+  ],
+  "dashboardToolbar": "visible"
+}

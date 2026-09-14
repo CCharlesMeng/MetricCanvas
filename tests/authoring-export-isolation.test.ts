@@ -27,14 +27,19 @@ function withChangedFile(relative: string, content: string, verify: () => void) 
 
 describe('当前契约检查无需旧服务源码', () => {
   it('无旧链时可运行，拒绝历史预期篡改和当前产品契约漂移', () => {
-    for (const relative of ['tools/scripts', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
+    for (const relative of ['tools/scripts', 'docs/page-metadata', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
       mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,
         filter: (source) => !['node_modules', '__pycache__', '.venv', 'venv'].includes(path.basename(source))
       });
     }
-    mkdirSync(path.join(isolated, 'docs'));
+    const referenceMap = JSON.parse(readFileSync(path.join(root, 'docs/page-metadata/reference-map.json'), 'utf8')) as { modules: Record<string, { sources: string[] }> };
+    for (const relative of new Set(Object.values(referenceMap.modules).flatMap(module => module.sources))) {
+      mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
+      cpSync(path.join(root, relative), path.join(isolated, relative));
+    }
+    mkdirSync(path.join(isolated, 'docs'), { recursive: true });
     for (const relative of ['docs/schema-metadata.schema.json', 'package.json', 'tsconfig.base.json']) {
       cpSync(path.join(root, relative), path.join(isolated, relative));
     }
@@ -53,6 +58,11 @@ describe('当前契约检查无需旧服务源码', () => {
       const result = runExport();
       expect(result.status).not.toBe(0);
       expect(result.stderr).toContain('Frozen legacy vector changed');
+    });
+    withChangedFile('docs/page-metadata/components/gauge.md', '# changed reference\n', () => {
+      const result = runExport();
+      expect(result.status).not.toBe(0);
+      expect(result.stderr).toContain('page/reference/components/gauge.md');
     });
     withChangedFile('contracts/metriccanvas/page/schema.json', '{}\n', () => {
       const result = runExport();

@@ -1,0 +1,103 @@
+{
+  "schemaVersion": "6.1",
+  "layout": "report",
+  "id": "forecast-page",
+  "dataSources": {
+    "monthly": {
+      "fields": {
+        "month": {
+          "queryField": "month",
+          "type": "string",
+          "role": "dimension"
+        },
+        "actual": {
+          "queryField": "actual",
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        },
+        "forecast": {
+          "queryField": "forecast",
+          "type": "number",
+          "role": "measure",
+          "nullable": true
+        }
+      },
+      "source": {
+        "type": "query",
+        "initial": {
+          "capturedAt": "2026-06-15T00:00:00Z",
+          "rows": [
+            {
+              "month": "5月",
+              "actual": 10,
+              "forecast": null
+            },
+            {
+              "month": "6月",
+              "actual": 12,
+              "forecast": null
+            },
+            {
+              "month": "7月",
+              "actual": null,
+              "forecast": 15
+            }
+          ]
+        },
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month"
+                ],
+                "output_metrics": [
+                  "actual",
+                  "forecast"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "trend",
+          "type": "barChart",
+          "layout": {
+            "span": 8
+          },
+          "data": {
+            "main": "monthly"
+          },
+          "props": {
+            "variant": "reportForecast",
+            "categoryField": "month",
+            "series": [
+              {
+                "field": "actual",
+                "role": "actual"
+              },
+              {
+                "field": "forecast",
+                "role": "forecast"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
