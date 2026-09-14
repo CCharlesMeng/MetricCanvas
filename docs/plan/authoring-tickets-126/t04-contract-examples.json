@@ -1,0 +1,4282 @@
+{
+  "contractVersion": "authoring-lifecycle-proposal/1",
+  "evidenceClass": "local-proposal-only",
+  "notes": [
+    "All values are illustrative internal port values, never provider HTTP or SDK fields.",
+    "Each scenario starts independently. Preconditions are trusted server facts, never client authorization.",
+    "The ASCII 6.0 fixture has no dimension extraction; params binding and layout migration remain S2 owned."
+  ],
+  "cases": [
+    {
+      "id": "save-exact-read",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 1
+          }
+        },
+        {
+          "operation": "readRevision",
+          "request": {
+            "pageId": "t04-example",
+            "revisionId": "rev-a",
+            "resourceId": "metadata-a"
+          },
+          "response": {
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1"
+          },
+          "expected": {
+            "decision": "accept",
+            "replaceCanvas": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "retry-identical",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 1
+          }
+        },
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "retry-different-payload",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 1
+          }
+        },
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "Changed payload under same key",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "rejected",
+            "code": "IDEMPOTENCY_CONFLICT",
+            "retryable": false,
+            "requestId": "req-2"
+          },
+          "expected": {
+            "decision": "reject",
+            "newRevisions": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "lost-ack",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "unknown",
+            "operationId": "save-1"
+          },
+          "expected": {
+            "decision": "wait",
+            "replaceCanvas": false
+          }
+        },
+        {
+          "operation": "getOperationResult",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "operationId": "save-1"
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 0
+          }
+        },
+        {
+          "operation": "readRevision",
+          "request": {
+            "pageId": "t04-example",
+            "revisionId": "rev-a",
+            "resourceId": "metadata-a"
+          },
+          "response": {
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1"
+          },
+          "expected": {
+            "decision": "accept",
+            "replaceCanvas": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "exact-read-reject-latest",
+      "steps": [
+        {
+          "operation": "readRevision",
+          "request": {
+            "pageId": "t04-example",
+            "revisionId": "rev-a",
+            "resourceId": "metadata-a"
+          },
+          "response": {
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-b",
+              "resourceId": "metadata-a"
+            },
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1"
+          },
+          "expected": {
+            "decision": "reject",
+            "code": "RESPONSE_MISMATCH",
+            "replaceCanvas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "exact-read-reject-hash",
+      "steps": [
+        {
+          "operation": "readRevision",
+          "request": {
+            "pageId": "t04-example",
+            "revisionId": "rev-a",
+            "resourceId": "metadata-a"
+          },
+          "response": {
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "contentHash": "0000000000000000000000000000000000000000000000000000000000000000",
+            "canonicalization": "fixture-sorted-json-utf8/1"
+          },
+          "expected": {
+            "decision": "reject",
+            "code": "RESPONSE_MISMATCH",
+            "replaceCanvas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "stale-save",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-2",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "rejected",
+            "code": "REVISION_CONFLICT",
+            "retryable": false,
+            "requestId": "req-3",
+            "current": {
+              "pageId": "t04-example",
+              "revisionId": "rev-b",
+              "resourceId": "metadata-a"
+            }
+          },
+          "expected": {
+            "decision": "reject",
+            "newRevisions": 0,
+            "preserveLocal": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate-publish-repeat",
+      "steps": [
+        {
+          "operation": "prepareCandidate",
+          "request": {
+            "source": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "operationId": "prepare-1"
+          },
+          "response": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "expiresAt": "2026-09-14T10:15:00Z",
+            "leaseId": "lease-a",
+            "leaseExpiresAt": "2026-09-14T10:15:00Z",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "diff": [],
+            "affectedDataSources": [],
+            "parameterSummary": [],
+            "retainDimensionValues": true,
+            "validation": {
+              "valid": true,
+              "errors": []
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d"
+          },
+          "expected": {
+            "decision": "accept"
+          }
+        },
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "published",
+            "operationId": "publish-1",
+            "template": {
+              "templateId": "template-a",
+              "templateRevisionId": "template-r1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "newTemplates": 1
+          }
+        },
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "published",
+            "operationId": "publish-1",
+            "template": {
+              "templateId": "template-a",
+              "templateRevisionId": "template-r1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "newTemplates": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate-unconfirmed",
+      "steps": [
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": null,
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "CONFIRMATION_REQUIRED",
+            "retryable": false,
+            "requestId": "candidate-unconfirmed"
+          },
+          "expected": {
+            "decision": "reject",
+            "newTemplates": 0
+          }
+        }
+      ],
+      "preconditions": {
+        "serverNow": "2026-09-14T10:05:00Z",
+        "currentHead": {
+          "pageId": "t04-example",
+          "revisionId": "rev-a",
+          "resourceId": "metadata-a"
+        },
+        "currentCandidateVersion": "candidate-v1",
+        "leaseValid": true
+      }
+    },
+    {
+      "id": "candidate-expired",
+      "steps": [
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "CANDIDATE_EXPIRED",
+            "retryable": false,
+            "requestId": "candidate-expired"
+          },
+          "expected": {
+            "decision": "reject",
+            "newTemplates": 0
+          }
+        }
+      ],
+      "preconditions": {
+        "serverNow": "2026-09-14T10:16:00Z",
+        "currentHead": {
+          "pageId": "t04-example",
+          "revisionId": "rev-a",
+          "resourceId": "metadata-a"
+        },
+        "currentCandidateVersion": "candidate-v1",
+        "leaseValid": true
+      }
+    },
+    {
+      "id": "candidate-stale-version",
+      "steps": [
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "CANDIDATE_CHANGED",
+            "retryable": false,
+            "requestId": "candidate-stale-version"
+          },
+          "expected": {
+            "decision": "reject",
+            "newTemplates": 0
+          }
+        }
+      ],
+      "preconditions": {
+        "serverNow": "2026-09-14T10:05:00Z",
+        "currentHead": {
+          "pageId": "t04-example",
+          "revisionId": "rev-a",
+          "resourceId": "metadata-a"
+        },
+        "currentCandidateVersion": "candidate-v2",
+        "leaseValid": true
+      }
+    },
+    {
+      "id": "candidate-head-changed",
+      "steps": [
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "REVISION_CONFLICT",
+            "retryable": false,
+            "requestId": "candidate-head-changed"
+          },
+          "expected": {
+            "decision": "reject",
+            "newTemplates": 0
+          }
+        }
+      ],
+      "preconditions": {
+        "serverNow": "2026-09-14T10:05:00Z",
+        "currentHead": {
+          "pageId": "t04-example",
+          "revisionId": "rev-b",
+          "resourceId": "metadata-a"
+        },
+        "currentCandidateVersion": "candidate-v1",
+        "leaseValid": true
+      }
+    },
+    {
+      "id": "candidate-lease-expired",
+      "steps": [
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v1",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": true,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "LEASE_EXPIRED",
+            "retryable": false,
+            "requestId": "candidate-lease-expired"
+          },
+          "expected": {
+            "decision": "reject",
+            "newTemplates": 0
+          }
+        }
+      ],
+      "preconditions": {
+        "serverNow": "2026-09-14T10:05:00Z",
+        "currentHead": {
+          "pageId": "t04-example",
+          "revisionId": "rev-a",
+          "resourceId": "metadata-a"
+        },
+        "currentCandidateVersion": "candidate-v1",
+        "leaseValid": false
+      }
+    },
+    {
+      "id": "execute-success",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "success",
+            "operationId": "execute-1",
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "executionId": "execution-a",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "appliedInputs": {},
+            "filterValues": {},
+            "conditionKey": "conditions-a",
+            "dataSources": {
+              "gmv": {
+                "status": "success",
+                "rows": [
+                  {
+                    "gmv": 100
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              },
+              "order-count": {
+                "status": "success",
+                "rows": [
+                  {
+                    "order-count": 2
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "snapshots": {
+              "gmv": "ready",
+              "order-count": "ready"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "execute-partial",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "partial",
+            "operationId": "execute-1",
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "executionId": "execution-a",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "appliedInputs": {},
+            "filterValues": {},
+            "conditionKey": "conditions-a",
+            "dataSources": {
+              "gmv": {
+                "status": "success",
+                "rows": [
+                  {
+                    "gmv": 100
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              },
+              "order-count": {
+                "status": "error",
+                "error": {
+                  "code": "DQE_TIMEOUT",
+                  "message": "Query exceeded deadline",
+                  "retryable": true
+                },
+                "conditionKey": "conditions-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "snapshots": {
+              "gmv": "ready",
+              "order-count": "error"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "execute-empty",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "success",
+            "operationId": "execute-1",
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "executionId": "execution-a",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "appliedInputs": {},
+            "filterValues": {},
+            "conditionKey": "conditions-a",
+            "dataSources": {
+              "gmv": {
+                "status": "success",
+                "rows": [],
+                "conditionKey": "conditions-a"
+              },
+              "order-count": {
+                "status": "success",
+                "rows": [
+                  {
+                    "order-count": 2
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "snapshots": {
+              "gmv": "empty",
+              "order-count": "ready"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "execute-missing-source",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "success",
+            "operationId": "execute-1",
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "executionId": "execution-a",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "appliedInputs": {},
+            "filterValues": {},
+            "conditionKey": "conditions-a",
+            "dataSources": {
+              "gmv": {
+                "status": "success",
+                "rows": [
+                  {
+                    "gmv": 100
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "reject",
+            "code": "RESPONSE_MISMATCH",
+            "replaceCanvas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "execute-wrong-conditions",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "success",
+            "operationId": "execute-1",
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "executionId": "execution-a",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "appliedInputs": {},
+            "filterValues": {},
+            "conditionKey": "conditions-a",
+            "dataSources": {
+              "gmv": {
+                "status": "success",
+                "rows": [
+                  {
+                    "gmv": 100
+                  }
+                ],
+                "conditionKey": "old-conditions"
+              },
+              "order-count": {
+                "status": "success",
+                "rows": [
+                  {
+                    "order-count": 2
+                  }
+                ],
+                "conditionKey": "conditions-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "reject",
+            "code": "RESPONSE_MISMATCH",
+            "replaceCanvas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "execute-no-access",
+      "steps": [
+        {
+          "operation": "execute",
+          "request": {
+            "target": {
+              "kind": "draft",
+              "ref": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "explicitInputs": {},
+            "operationId": "execute-1"
+          },
+          "response": {
+            "status": "rejected",
+            "code": "NO_ACCESS_SCOPE",
+            "retryable": false,
+            "requestId": "req-access"
+          },
+          "expected": {
+            "decision": "reject",
+            "queryCalls": 0,
+            "replaceCanvas": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "historical-read-after-next-save",
+      "steps": [
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-1",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": null,
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "First draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-1",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "base": null,
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 1
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 1
+          }
+        },
+        {
+          "operation": "saveDraft",
+          "request": {
+            "context": {
+              "operationId": "save-next",
+              "actorId": "actor-a",
+              "workspaceId": "workspace-a",
+              "origin": {
+                "kind": "manual"
+              }
+            },
+            "base": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "pageId": "t04-example",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "Second revision"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "description": "Second draft",
+            "retainDimensionValues": true
+          },
+          "response": {
+            "status": "saved",
+            "operationId": "save-next",
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-b",
+              "resourceId": "metadata-a"
+            },
+            "base": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "contentHash": "dc8d9f6d533426571a1abb5fa32a3e8e9d4aab08c2ad03ddb9f66adde63fb437",
+            "canonicalization": "fixture-sorted-json-utf8/1",
+            "revisionNumber": 2
+          },
+          "expected": {
+            "decision": "accept",
+            "newRevisions": 1
+          }
+        },
+        {
+          "operation": "readRevision",
+          "request": {
+            "pageId": "t04-example",
+            "revisionId": "rev-a",
+            "resourceId": "metadata-a"
+          },
+          "response": {
+            "ref": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+            "canonicalization": "fixture-sorted-json-utf8/1"
+          },
+          "expected": {
+            "decision": "accept",
+            "replaceCanvas": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "candidate-correct-revalidate-confirm",
+      "steps": [
+        {
+          "operation": "prepareCandidate",
+          "request": {
+            "source": {
+              "pageId": "t04-example",
+              "revisionId": "rev-a",
+              "resourceId": "metadata-a"
+            },
+            "operationId": "prepare-1"
+          },
+          "response": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "expiresAt": "2026-09-14T10:15:00Z",
+            "leaseId": "lease-a",
+            "leaseExpiresAt": "2026-09-14T10:15:00Z",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "diff": [],
+            "affectedDataSources": [],
+            "parameterSummary": [],
+            "retainDimensionValues": true,
+            "validation": {
+              "valid": true,
+              "errors": []
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d"
+          },
+          "expected": {
+            "decision": "accept"
+          }
+        },
+        {
+          "operation": "reviseCandidate",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "corrections": {
+              "retainDimensionValues": false
+            },
+            "operationId": "correct-1"
+          },
+          "response": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v2",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "expiresAt": "2026-09-14T10:15:00Z",
+            "leaseId": "lease-a",
+            "leaseExpiresAt": "2026-09-14T10:15:00Z",
+            "document": {
+              "schemaVersion": "6.0",
+              "id": "t04-example",
+              "meta": {
+                "description": "T04 boundary fixture"
+              },
+              "layoutForm": "report",
+              "dataSources": {
+                "gmv": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "gmv"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "gmv": {
+                      "queryField": "gmv",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "gmv",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                },
+                "order-count": {
+                  "source": {
+                    "type": "query",
+                    "query": {
+                      "language": "dqe",
+                      "body": {
+                        "dsl_list": [
+                          {
+                            "output_dims": [],
+                            "output_metrics": [
+                              "order-count"
+                            ],
+                            "filter": {
+                              "time": {
+                                "period": "day",
+                                "is_aggregate": false,
+                                "start": "2026-01-01",
+                                "end": "2026-12-31"
+                              },
+                              "dims": [],
+                              "metrics": []
+                            },
+                            "order": {}
+                          }
+                        ]
+                      }
+                    }
+                  },
+                  "fields": {
+                    "order-count": {
+                      "queryField": "order-count",
+                      "type": "number",
+                      "role": "measure",
+                      "label": "order-count",
+                      "defaultFormat": "number-grouped"
+                    }
+                  }
+                }
+              },
+              "sections": [
+                {
+                  "id": "summary",
+                  "components": [
+                    {
+                      "id": "gmv",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "gmv"
+                      },
+                      "props": {
+                        "title": "gmv",
+                        "rows": [
+                          {
+                            "label": "gmv",
+                            "valueField": "gmv"
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "order-count",
+                      "type": "metricCard",
+                      "layout": {
+                        "span": 6
+                      },
+                      "data": {
+                        "main": "order-count"
+                      },
+                      "props": {
+                        "title": "order-count",
+                        "rows": [
+                          {
+                            "label": "order-count",
+                            "valueField": "order-count"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            "diff": [],
+            "affectedDataSources": [],
+            "parameterSummary": [],
+            "retainDimensionValues": false,
+            "validation": {
+              "valid": true,
+              "errors": []
+            },
+            "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d"
+          },
+          "expected": {
+            "decision": "accept",
+            "oldConfirmationInvalidated": true
+          }
+        },
+        {
+          "operation": "confirmPublish",
+          "request": {
+            "ref": {
+              "candidateId": "candidate-a",
+              "candidateVersion": "candidate-v2",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            },
+            "confirmation": {
+              "actorId": "actor-a",
+              "candidate": {
+                "candidateId": "candidate-a",
+                "candidateVersion": "candidate-v2",
+                "source": {
+                  "pageId": "t04-example",
+                  "revisionId": "rev-a",
+                  "resourceId": "metadata-a"
+                }
+              },
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              },
+              "retainDimensionValues": false,
+              "contentHash": "22998ed5634f617bd7134f6bbda33d5c107a37aa3c0ab8d5e4840073365ae85d",
+              "expiresAt": "2026-09-14T10:15:00Z",
+              "proof": "opaque-human-confirmation-example"
+            },
+            "lease": "lease-a",
+            "operationId": "publish-v2"
+          },
+          "response": {
+            "status": "published",
+            "operationId": "publish-v2",
+            "template": {
+              "templateId": "template-a",
+              "templateRevisionId": "template-r1",
+              "source": {
+                "pageId": "t04-example",
+                "revisionId": "rev-a",
+                "resourceId": "metadata-a"
+              }
+            }
+          },
+          "expected": {
+            "decision": "accept",
+            "newTemplates": 1
+          }
+        }
+      ]
+    }
+  ]
+}
