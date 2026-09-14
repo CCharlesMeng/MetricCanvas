@@ -450,3 +450,28 @@ S3最终工作树`/private/tmp/metriccanvas-s3-134-final`、分支`codex/s3-134-
 S0读取#139正文、审阅队列/IndexedDB CAS/协调/UI与证据，复验sync/coordinator/document-edit三文件34项通过；身份变化在enqueue、串行事务执行、verifySaved和持久化await后重新校验，锁停实例，保留原操作待核实。冻结6.1命令在6.2新操作追加后原样重试，后续命令写6.2。采用t13修正前基线全量979通过/5既有skip、类型/check/build及两套浏览器证据，最终组合34项针对性与tsc回执；不冒称最终组合全量重跑。
 
 本仓有序保护/同步替身范围通过，先持久化操作和命令再发，未知先lookup且仅明确retrySafe的not-applied重试；冲突/完整性失败暂停，迟到不覆新内容。真实stableSave=false仅本地保护，不调用旧PUT，未确认强服务；当前重开恢复仍未实现，不宣称M1完成。S1现可从本条HEAD执行#140，同队列恢复/有界重试，不另建机制；#146仍待#134/#138/#140验收集成。
+
+## #144开工登记
+
+S2同工作树、分支`codex/s2-execution-consumer-144`，基线be73806，13项前置参数测试回执通过（非本票验收）。以下新/既有文件归S2：
+- `packages/engine/runtime/src/execution.ts`
+- `packages/engine/runtime/src/filter-history.ts`
+- `packages/engine/runtime/tests/execution.test.ts`
+- `packages/engine/runtime/tests/filter-history.test.ts`
+- `packages/engine/runtime/src/index.ts`
+- `packages/engine/runtime/src/orchestrator.ts`
+- `packages/engine/runtime-ui/src/types.ts`
+- `packages/engine/runtime-ui/src/RuntimeView.svelte`
+- `packages/engine/runtime-ui/src/RuntimeSurface.svelte`
+- `packages/embed/src/types.ts`
+- `packages/embed/src/EmbedRoot.svelte`
+- `packages/embed/src/index.ts`
+- `packages/embed/tests/browser/execution.spec.ts`
+- `tests/public-api/engine.txt`
+- `tests/public-api/embed.txt`
+- `docs/plan/authoring-tickets-126/t18-execution-contract.md`
+- `docs/plan/authoring-tickets-126/t18-evidence.md`
+
+prepareExecution提案校验T04目标/操作/源/条件，产生含params/filters/逐源快照的运行初始化结果；RuntimeView/Embed消费该结果，条件变化沿既有gateway。recordLastFilters为注入端口，固定actor/workspace/metadata与sequence，失败不回滚当前筛选。服务默认未接通，不新增HTTP路径。最终以本票完整正反例及运行行为验收冻结，预登记不等于契约通过。
+
+RevisionPreview.svelte仍S1唯一作者，S2只提最小注入需求；须S1独立补丁或明确临时授权再集成，不能直接修改。候选/IOC消费同一执行适配，不复制保存客户端。
