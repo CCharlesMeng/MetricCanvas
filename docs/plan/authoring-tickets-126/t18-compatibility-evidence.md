@@ -8,8 +8,8 @@ S2任务01a09f69-a06b-7703-b87b-ccdfe05d765e，分支codex/s2-rc4-compatibility�
 
 | Svelte | 源码全量测试 | source check/build | 独立消费者 | 实际浏览器 | 浏览器结果 |
 |---|---|---|---|---|---|
-| 5.56.6 | 1045 passed | 5 skipped (1050) | 通过 | page-only Node ESM、严格peer安装、类型/Svelte检查、Vite构建通过 | Chrome 152.0.7977.83 / Edge 153.0.4234.32 | 112通过，0失败/跳过/flaky |
-| 5.29.0 | 1045 passed | 5 skipped (1050) | 通过 | page-only Node ESM、严格peer安装、类型/Svelte检查、Vite构建通过 | Chrome 152.0.7977.83 / Edge 153.0.4234.32 | 112通过，0失败/跳过/flaky |
+| 5.56.6 | 1045通过，5既有skip（1050） | 通过 | page-only Node ESM、严格peer安装、类型/Svelte检查、Vite构建通过 | Chrome 152.0.7977.83 / Edge 153.0.4234.32 | 112通过，0失败/跳过/flaky |
+| 5.29.0 | 1045通过，5既有skip（1050） | 通过 | page-only Node ESM、严格peer安装、类型/Svelte检查、Vite构建通过 | Chrome 152.0.7977.83 / Edge 153.0.4234.32 | 112通过，0失败/跳过/flaky |
 
 合计224项真实浏览器测试，包含ESM/IIFE、Canvas、版本门禁、布局兼容、维度参数和执行初始快照/筛选记录。四包均为1.0.0-rc.4，实际消费者安装来自每组四个tarball，安装包realpath不回指仓根；page-only不带Svelte/ECharts。所有公开子路径的类型与渲染消费门禁通过。此为仓外隔离消费者证据，不冒称真实内网#103验收或#104部署、Java/Relay真实联调。
 
