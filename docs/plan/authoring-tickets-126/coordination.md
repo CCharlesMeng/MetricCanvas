@@ -621,3 +621,11 @@ S0读取Issue完整正文/最新评论并审阅容器构造、子类型/全局ID
 ## 手册新增路径登记
 
 S2唯一新增作者：`tools/scripts/page-reference.ts`、`tests/page-reference.test.ts`、`docs/page-metadata/reference-map.json`；既有`tests/authoring-export-isolation.test.ts`限补手册作者输入复制。导出器生成`metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/`下自包含文档/索引/示例，禁止手改投影。临时独占`metriccanvas-authoring/skill/metriccanvas-page-builder/SKILL.md`仅增加按需阅读入口与整目录安装说明，不改工具授权/路由/行为；完成提交后归还，S3/S4有入口需要先协调。新增合法分支夹具仍逐文件登记，不扩展页面协议。
+
+## #142验收集成
+
+S1作者及证据cc54937e87d095a5b1fd8359c4c40c5fdefddb22→543c97d6aae6037bc0573833e3e76880616cea3b，9文件全部登记范围；集成apps/platform树与S1最终固定树一致，#136的Python/锁增量保留。S0读取完整Issue/最新评论、对照白名单及审阅封闭属性目标/复制/整页投影/队列接线，独立属性+同步+历史3文件28项通过。采用t16最终140文件1057通过/5既有skip、check/tsc/build与27次属性操作加撤销、旧浏览器及#144预览证据，不冒称重跑全部浏览器。
+
+本仓#142范围通过，六类型仅既有白名单字段，未触及绑定/动作/格式/分页保持；中间输入/无变化/非法值不保存，完整合法修改沿原队列与撤销。参数引用被编辑时界面明确会替换为固定文字。当前检查器未扩展容器子树选择；代表性inline六类型不代表所有variant/引用组合。真实Java强端口仍未知。
+
+S1本阶段可执行票已完成，#145/#146均只等#138（S4未登记）；不为等待虚构新票或后台续跑。#146齐备优先通知。M2仍剩#137/#138/#145/#146及参考手册/分发矩阵等验收，M1/M3均未宣布通过。
