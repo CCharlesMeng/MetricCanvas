@@ -12,6 +12,7 @@
     editComponent, locatorOfComponent, moveComponent,
     type ComponentLocator, type DocumentEditResult
   } from './workbench/document-edit';
+  import { propertyControls, editProperty } from './workbench/property-edit';
   import Inspector from './workbench/Inspector.svelte';
   import MetadataJsonDrawer from './workbench/MetadataJsonDrawer.svelte';
   import RevisionPreview from './RevisionPreview.svelte';
@@ -318,9 +319,11 @@
       {selectedView}
       {selectedSpan}
       {selectedColumnCount}
+      properties={propertyControls(currentDraft, selectedComponent)}
+      onPropertyEdit={(edit) => { if (currentDraft && selectedComponent && !previewOpen && !loading) applyDocumentEdit(editProperty(currentDraft, selectedComponent, edit)); }}
       candidates={typeCandidates}
       fieldRows={selectedFieldRows}
-      busy={savePending || previewOpen}
+      busy={savePending || previewOpen || loading}
       onSelectType={selectComponentType}
       onSelectComponent={selectComponentFromList}
       onEdit={(edit) => {

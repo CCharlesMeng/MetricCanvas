@@ -226,7 +226,8 @@ export function locatorOfComponent(
   return null;
 }
 
-function projectCanvasDraft(
+/** Internal validated projection shared by closed authoring operations. */
+export function projectCanvasDraft(
   canvasDocument: Record<string, unknown>
 ): DocumentEditResult {
   const authoringSections = authoringSectionsOf(canvasDocument);

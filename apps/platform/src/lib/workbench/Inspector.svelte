@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ComponentProperties from './ComponentProperties.svelte';
+  import type { PropertyControl, PropertyEdit } from './property-edit';
   import type { ComponentCandidate } from './component-selection';
   import type { ComponentLocator } from './document-edit';
   import type { PageComponentView, WorkbenchPageViewModel } from './transient-page';
@@ -19,7 +21,9 @@
     busy = false,
     onSelectType,
     onSelectComponent,
-    onEdit
+    onEdit,
+    properties = [],
+    onPropertyEdit
   }: {
     pageModel: WorkbenchPageViewModel | null;
     selected: ComponentLocator | null;
@@ -34,6 +38,8 @@
     onSelectType: (type: ComponentCandidate['type']) => void;
     onSelectComponent: (componentId: string) => void;
     onEdit: (edit: { title?: string; span?: number }) => void;
+    properties?: PropertyControl[];
+    onPropertyEdit?: (edit: PropertyEdit) => void;
   } = $props();
 </script>
 
@@ -113,6 +119,8 @@
           </div>
         {/if}
       </section>
+
+      {#if onPropertyEdit}<ComponentProperties controls={properties} {busy} onEdit={onPropertyEdit} />{/if}
 
       {#if selectedView.dataSourceId}
         <section>
