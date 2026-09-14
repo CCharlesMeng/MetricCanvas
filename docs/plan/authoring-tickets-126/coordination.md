@@ -197,3 +197,9 @@ S1 明确授权、S0 确认 S2 为下列四文件迁移范围唯一作者：
 测试覆盖旧输入→新输出及原文不变；#131 提交验收后归还 S1，期间 S1 不编辑。既有 #129 promote 测试授权已核验归还，现按本条 #131 范围续接。不移交 PageAuthoringWorkbench.svelte、page-assets-client.ts 或协调边界；禁止读取客户端在原文 hash 验证前规范化。
 
 S2 #131 另登记：`packages/embed/examples/inline.html`、`esm.html`、`query.html`、`ai-summary.html`（同 examples 前缀）；`packages/metric-canvas/tests/browser/harness/document.ts`、`Harness.svelte`（同 harness 前缀）；`packages/metric-canvas/tests/browser/metric-canvas.spec.ts`；`apps/playground/src/lib/page-repository.ts`、`preview-document.ts`（同 lib 前缀）；`apps/playground/tests/preview-document.test.ts`；新增 `docs/plan/authoring-tickets-126/t05-browser-evidence.md`。最终按真实需要修改，其他新增共享路径另报；pages/迁移和发布支持说明留 #133。
+
+### #132 作者实现进度（未集成）
+
+S3 已消费 `32d0e08976b443aed69d18922f12da051470fbc6`，提交 `479bf25dd68d22470cd45663ae075c6c18e5a39f`，仅 6 个已登记 Python 文件；S0 已核对文件统计与 diff check。S3 回报三项语义差距修复、32 项矩阵/全量正反向量/10 组件×2布局通过；156 项全量仍有 2 项共享 expected.document 为 6.0 的差异。以上是进行中回执，非整票验收。
+
+S2 负责从此精确作者提交更新共享构造向量作者源、生成物及锁，必须单独提交、不混 #131；S0 已向 S2/S3 发成套交付要求。S3 继续代表性产物产品校验和独立交付，等待生成提交后验证剩余差异归零并提供整票回执。作者提交当前未集成，不解锁 #133。
