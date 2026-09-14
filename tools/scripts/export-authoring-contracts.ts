@@ -257,6 +257,7 @@ function conformanceInput(
 async function buildAuthoringOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   const authoredSchema = await readFile(authoredPageBuildSpec, 'utf8');
+  const authoredPublishRequest = await readFile(path.join(authoringContractRoot, 'authored/publish-request.schema.json'), 'utf8');
   const authoredLifecycleRequest = await readFile(path.join(authoringContractRoot, 'authored/lifecycle-request.schema.json'), 'utf8');
   const authoredEditRequest = await readFile(path.join(authoringContractRoot, 'authored/page-edit-request.schema.json'), 'utf8');
   const authoredArtifactSchema = await readFile(authoredPageBuildArtifact, 'utf8');
@@ -289,6 +290,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },
+        { file: 'authored/publish-request.schema.json', sha256: sha256(authoredPublishRequest) },
         {
           file: 'authored/agent-conformance.schema.json',
           sha256: sha256(authoredConformanceSchema)
