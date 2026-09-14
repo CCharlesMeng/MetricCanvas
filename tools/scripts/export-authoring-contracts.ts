@@ -73,6 +73,16 @@ async function buildProductOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
   outputs.set('page/schema.json', json(pageSchema));
   outputs.set('page/component-catalog.json', json(componentCatalog));
+  const maps: Record<string, { regions: string[]; source: { file: string; sha256: string } }> = {};
+  for (const name of ['china', 'world']) {
+    const file = `packages/engine/widgets/src/components/map-chart/maps/${name}.json`;
+    const content = await readFile(path.join(repoRoot, file), 'utf8');
+    const geo = JSON.parse(content) as { features: Array<{ properties: { name?: unknown } }> };
+    const regions = [...new Set(geo.features.map(f => f.properties.name).filter((n): n is string => typeof n === 'string' && n.length > 0))].sort();
+    if (!regions.length) throw new Error(`底图 ${name} 缺少区域名称`);
+    maps[name] = { regions, source: { file, sha256: sha256(content) } };
+  }
+  outputs.set('page/map-regions.json', json({ contractVersion: '1', maps }));
   outputs.set('query/error-codes.json', json({ codes: QUERY_ERROR_CODES }));
   outputs.set('page/error-types.json', json({ types: ERROR_TYPES }));
   outputs.set(
