@@ -515,3 +515,5 @@ S3任务不变；新worktree`/private/tmp/metriccanvas-s3-135`、分支`codex/s3
 既有S3作者触点：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/component_editing.py`（add_text/add_field_text/add_map_chart/remove_component受控操作）、`metriccanvas-authoring/tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`、`metriccanvas-authoring/contracts/authored/page-edit-request.schema.json`、`metriccanvas-authoring/tool/pyproject.toml`、`metriccanvas-authoring/test-harness/tests/test_distribution.py`、`metriccanvas-authoring/test-harness/tests/test_content_mcp.py`、`metriccanvas-authoring/test-harness/content_stdio_server.py`、`metriccanvas-authoring/README.md`。
 
 静态text可无数据；fieldText/map通过可信source token读取已验证完整数据源，模型仅标识，不搬运原文/行；新增/删除沿#134事务校验。地图名称机器资产由S2从现有内置地图唯一导出，准确作者/生成路径另登记，未到齐前不伪造空地图成功。只消费现有Embed，不改引擎；#136/#137不混入。新增公开创建工具仍须明确与既有compose职责及模型摘要隔离。
+
+#135作者触点更正：操作注册改为`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_editing.py`合并既有handler表与独立text_map_building表，component_editing.py本票不改。追加`metriccanvas-authoring/tool/metriccanvas_authoring/application/edit_page.py`仅提取read_verified_baseline供create_content_page复用，ref/原文hash校验及原edit错误语义保持。两文件均S3，无跨线冲突。
