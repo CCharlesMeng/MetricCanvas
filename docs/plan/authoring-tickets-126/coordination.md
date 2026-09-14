@@ -689,3 +689,13 @@ S5真实任务`01a0a034-c4c3-7033-af2b-2539d6d9e0ae`，树`/Users/moon/.codex/wo
 S2支援#138：唯一修改`tools/scripts/export-authoring-contracts.ts`的显式authoring清单以加入S4新`contracts/authored/lifecycle-request.schema.json`读取/摘要；待S4固定作者SHA后独立实施，统一刷新Bundle三生成锁/manifest。无产品真源变化不人为改快照/手册。S2新分支`codex/s2-next-stage-contracts`、树不变、起点a6e9231。
 
 S3只读核验确认双Platform Skill/双布局基线/模型评测为已确认但未交付补充，不能证明在17票验收后才新增；#134可信基线/原子修改/set_page_layout与T04路由方案已覆盖底座，不重做。缺创建/修改两个Skill及路由分发、分别维护的report/dashboard选择基线、形态切换影响分析与实际模型行为评测；待报精确作者范围后沿S3/S2/S0既有职责推进，纳入M2欠项，保持#126开放。
+
+## #126双Platform Skill补充实施登记
+
+沿用户已确认规格4.1补足，不重开#134–#137或新增平行票。S3原任务负责新增作者：Bundle `skill/metriccanvas-platform-create/SKILL.md`、`skill/metriccanvas-platform-edit/SKILL.md`、`skill-shared/platform-authoring.md`、`skill-shared/layouts/report.md`、`skill-shared/layouts/dashboard.md`；`tool/metriccanvas_authoring/domain/layout_policy.py`；`test-harness/tests/test_platform_layout_policy.py`、`test_platform_authoring_flows.py`（同tests目录）、`test-harness/platform_layout_browser.mjs`、`test-harness/model-evals/platform-authoring.cases.json`、`test-harness/model-evals/README.md`，及`docs/plan/authoring-tickets-126/platform-skills-evidence.md`。S3既有触点：Bundle `tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`、`application/create_content_page.py`、`domain/component_editing.py`（后两同tool/metriccanvas_authoring目录）；README.md仅Skill/布局内容节，S4生命周期节保留，分别提交避免整文件覆盖。
+
+新创建默认限Platform入口，新修改继承原形态；创建/修改Skill共用内容MCP与现有原ref/hash/操作/部分成功校验，旧普通问数Skill路由及compose应用保持。显式切换复用set_page_layout，检查标题/容器/铺底/span与响应式影响；不套新模板、不暗搬标题或丢手工设置，不能无损表达的真实冲突才拒绝并说明。合法跨形态组合继续支持，默认不能变硬约束；优先已有issues/adjustments，不另立布局字段或任意路径入口。
+
+S2先冻结多Skill分发形状及精确bundle/check/export文件，references统一投影；S3可先写作者与本仓逻辑/测试，产品契约/分发配置需S2登记后实施，作者固定后生成。S0负责t04-java-relay-proposal.md中实际双入口名及可信路由/产物要求补充（外部提案），不实现Relay。
+
+验收：四组合创建/修改×report/dashboard、双向切换、继承形态、缺基线、手工后局部编辑、合法跨形态容器及宽窄呈现；公开stdio与差异断言，独立Skill分发及适用全量。模型cases/运行约定单独交付；真实Relay入口、身份、模型版本/参数、trace/基线通道与评测账户预算缺失时只列未运行，不以替身/关键词检查代替真实模型成绩，不擅自冻结达标阈值。
