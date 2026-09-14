@@ -436,3 +436,9 @@ S3确认#134不编辑test_build_page.py/test_stdio.py，明确授权S2在#143仅
 临时文件已核对：S1 document-edit.test.ts仅未来版本单行；S3 test_build_page.py/test_stdio.py各一行读取lock，page_validation.py及其测试为参数/版本范围。正式归还各原所有者。S2可消费本条HEAD后执行#144，逐票提交证据。
 
 #134作者501eda4与M0隔离生成仍是待验收输入；现集成版本已6.2，最终合入不得用旧6.1/rc.2锁覆盖新基线。S2/S3需将#134作者与本次正式基线组合、单向重生成并复验内容/53兼容向量及独立安装后成套交S0；M0隔离证据保留但不替代最终组合。#139亦须在验收集成时核验新版规范化对队列原文的兼容，不重写已冻结操作。
+
+### #134最终组合验收目标
+
+S3最终工作树`/private/tmp/metriccanvas-s3-134-final`、分支`codex/s3-134-content-edit-final`从be73806a0120d0826fd57a0edf62745760d5561a建立，仅取作者501eda4d8c92cf215f7424224963f582bd4d0886。S2提供最终生成855076a9ebab1e1199018caa7109187d72ab7f07（其树作者复制67b6a08），回报194product/495摘要、6.2/rc.3，四文件生成器/manifest/contract-lock/bundle.lock；待S3最终复验与S0核验，不提前集成。
+
+原`/private/tmp/metriccanvas-s3-134`的6.1隔离183测试/491摘要/10产物/独立安装仅保留历史证据；旧生成2d1623b不带入。S3仍按原准确所有权实施，已收回四Python临时文件但#134不修改。最终回执须绑定实际作者+新生成+证据SHA，包含53兼容向量与内容行为/独立安装。
