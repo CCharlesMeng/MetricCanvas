@@ -34,36 +34,48 @@ export function listenForSavedDrafts(options: {
   onpage(draft: SavedDraft): void;
   onerror(message: string): void;
   captureScope?(): unknown;
+  captureIdentity?(): unknown;
 }) {
   const state = createAnalysisPageState();
-  const seen = new Set<string>();
+  const seen = new Map<string, { scope: unknown; status: 'pending' | 'accepted' }>();
   let pending: AbortController | null = null;
   let disposed = false;
   const listener = (event: Event) => {
     const id = draftIdOf((event as CustomEvent<unknown>).detail);
     if (!id) { options.onerror('草稿通知无效：只接受非空的精确草稿 ID。'); return; }
-    if (seen.has(id)) return;
-    seen.add(id);
-    // Bound memory; ordering of unseen IDs is the provider's responsibility.
-    if (seen.size > 256) seen.delete(seen.values().next().value!);
+    const scope = options.captureScope?.();
+    const identity = options.captureIdentity ? options.captureIdentity() : scope;
+    const key = JSON.stringify([identity, id]);
+    const existing = seen.get(key);
+    if (existing?.status === 'accepted' || (existing && existing.scope === scope)) return;
+    const entry = { scope, status: 'pending' as 'pending' | 'accepted' };
+    seen.set(key, entry);
+    const forget = () => { if (seen.get(key) === entry) seen.delete(key); };
+    if (seen.size > 256) seen.delete(seen.keys().next().value!);
     pending?.abort();
     const controller = new AbortController();
     pending = controller;
     const handle = state.begin();
-    const scope = options.captureScope?.();
     void options.read(id, controller.signal).then((draft) => {
-      if (disposed || controller.signal.aborted || scope !== options.captureScope?.()) return;
+      if (disposed || controller.signal.aborted || scope !== options.captureScope?.()) { forget(); return; }
       if (draft.draftId !== id || !draft.ref ||
           ![draft.ref.pageId, draft.ref.revisionId, draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
           draft.document.id !== draft.ref.pageId) {
+        forget();
         options.onerror('RESPONSE_MISMATCH：精确草稿引用不匹配，保留当前页面。');
         return;
       }
       const outcome = state.acceptVerifiedPage(handle, draft.document);
-      if (outcome === 'accepted') options.onpage(draft);
-      else if (outcome === 'invalid') options.onerror('草稿页面校验失败，保留当前页面。');
+      if (outcome === 'accepted') {
+        entry.status = 'accepted';
+        options.onpage(draft);
+      } else {
+        forget();
+        if (outcome === 'invalid') options.onerror('草稿页面校验失败，保留当前页面。');
+      }
     }).catch((cause: unknown) => {
-      if (disposed || controller.signal.aborted || scope !== options.captureScope?.()) return;
+      if (disposed || controller.signal.aborted || scope !== options.captureScope?.()) { forget(); return; }
+      forget();
       state.finishWithoutPage(handle, 'failed');
       options.onerror(cause instanceof Error ? cause.message : String(cause));
     });

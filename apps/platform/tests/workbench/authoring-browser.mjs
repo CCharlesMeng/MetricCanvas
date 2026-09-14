@@ -37,6 +37,15 @@ try {
     await expect(page.getByLabel('盘古对话模块').getByText(/SDK fixture/)).toBeVisible();
     await page.getByRole('link', { name: '页面管理', exact: true }).click();
     await expect.poll(() => page.evaluate(() => window.destroyed)).toBe(1);
+    if (version === 'v1') {
+      await page.evaluate(() => { window.__METRICCANVAS_PANGU__.version = 'v2'; });
+      await page.getByRole('link', { name: '页面搭建工作台', exact: true }).click();
+      await expect(page.getByText('盘古资源版本已固定，请重新加载页面后切换版本。')).toBeVisible();
+      await page.getByRole('link', { name: '页面管理', exact: true }).click();
+      await page.evaluate(() => { window.__METRICCANVAS_PANGU__.version = 'v1'; });
+      await page.getByRole('link', { name: '页面搭建工作台', exact: true }).click();
+      await expect(page.getByLabel('盘古对话模块').getByText(/SDK fixture/)).toBeVisible();
+    }
   }
   expect(errors).toEqual([]);
   console.log('T01 browser PASS: standalone, embedded, failure/invalid/late preservation, shell, SDK v1→v2, destroy.');

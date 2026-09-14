@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { DRAFT_SAVED_EVENT, draftIdOf, listenForSavedDrafts, type SavedDraft } from '../../src/lib/dialogue/port';
-import { panguResourceUrl } from '../../src/lib/dialogue/runtime';
+import { panguResourceUrl, createPanguResourceLoader } from '../../src/lib/dialogue/runtime';
 function draft(id: string): SavedDraft {
   return { draftId: id, ref: { pageId: 'p', revisionId: id, resourceId: 'resource' }, document: {
     schemaVersion: '6.1', layout: 'report', id: 'p', dataSources: {},
@@ -46,5 +46,29 @@ describe('global draft reference boundary v1', () => {
     expect(config).toEqual(before);
     expect(panguResourceUrl({ ...config, version: 'v2' }, 'https://example.test')).toContain('v=v2');
     expect(() => panguResourceUrl({ resourceUrl: 'javascript:alert(1)', version: '1' }, 'https://example.test')).toThrow();
+  });
+});
+
+
+describe('notification retry and SDK document lifetime', () => {
+  it('retries a failed ID, suppresses pending/accepted duplicates, isolates identity and old cleanup', async () => {
+    const target = new EventTarget(); let identity = 'alice'; let scope = 0;
+    let complete!: (value: SavedDraft) => void;
+    const read = vi.fn().mockRejectedValueOnce(Error('offline')).mockImplementationOnce(() => new Promise<SavedDraft>((resolve) => { complete = resolve; })).mockResolvedValue(draft('a'));
+    const onpage = vi.fn(), onerror = vi.fn();
+    const stop = listenForSavedDrafts({ target, read, onpage, onerror, captureScope: () => scope, captureIdentity: () => identity });
+    emit(target, 'a'); await flush(); emit(target, 'a'); emit(target, 'a'); expect(read).toHaveBeenCalledTimes(2);
+    identity = 'bob'; scope++; emit(target, 'a'); await flush(); complete(draft('a')); await flush();
+    emit(target, 'a'); expect(read).toHaveBeenCalledTimes(3); expect(onpage).toHaveBeenCalledTimes(1);
+    identity = 'alice'; scope++; emit(target, 'a'); await flush(); expect(onpage).toHaveBeenCalledTimes(2);
+    emit(target, 'a'); expect(read).toHaveBeenCalledTimes(4); stop();
+  });
+  it('retries the same failed resource but rejects v1→v2→v1 in one document', async () => {
+    const load = vi.fn().mockRejectedValueOnce(Error('offline')).mockResolvedValue(undefined);
+    const resource = createPanguResourceLoader(load);
+    await expect(resource('sdk?v=1')).rejects.toThrow('offline');
+    await resource('sdk?v=1'); await resource('sdk?v=1');
+    await expect(resource('sdk?v=2')).rejects.toThrow('重新加载页面');
+    await resource('sdk?v=1'); expect(load).toHaveBeenCalledTimes(2);
   });
 });

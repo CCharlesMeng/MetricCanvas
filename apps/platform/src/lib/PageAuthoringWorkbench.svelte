@@ -40,6 +40,10 @@
     if (pageId) void loadPage(pageId);
     return listenForSavedDrafts({
       target: window, read: readSavedDraft,
+      captureIdentity: () => {
+        const identity = readRuntimeConfig();
+        return JSON.stringify([identity?.operatorId, identity?.workspaceId]);
+      },
       captureScope: () => {
         const identity = readRuntimeConfig();
         return `${workbenchEpoch}:${identity?.operatorId}:${identity?.workspaceId}`;

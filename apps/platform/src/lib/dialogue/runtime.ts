@@ -13,7 +13,17 @@ declare global {
     pangu?: PanguApi;
   }
 }
-const loads = new Map<string, Promise<void>>();
+/** One SDK version per document. A version change requires a full page reload. */
+export function createPanguResourceLoader(load: (url: string) => Promise<void>) {
+  let selected: string | undefined;
+  let pending: Promise<void> | undefined;
+  return (url: string): Promise<void> => {
+    if (selected && selected !== url) return Promise.reject(new Error('盘古资源版本已固定，请重新加载页面后切换版本。'));
+    selected = url;
+    pending ??= load(url).catch((error: unknown) => { pending = undefined; throw error; });
+    return pending;
+  };
+}
 
 /** Deployment-owned URL and version only. No credentials or dialogue history are persisted. */
 export function panguResourceUrl(config: PanguDeployment, base: string): string {
@@ -24,10 +34,8 @@ export function panguResourceUrl(config: PanguDeployment, base: string): string 
   return url.href;
 }
 
-function loadResource(url: string): Promise<void> {
-  const existing = loads.get(url);
-  if (existing) return existing;
-  const promise = new Promise<void>((resolve, reject) => {
+const loadResource = createPanguResourceLoader((url: string): Promise<void> => {
+  return new Promise<void>((resolve, reject) => {
     const script = document.createElement('script');
     script.src = url;
     script.async = true;
@@ -40,10 +48,8 @@ function loadResource(url: string): Promise<void> {
     script.onerror = fail;
     script.onload = () => { clearTimeout(timer); resolve(); };
     document.head.append(script);
-  }).catch((error: unknown) => { loads.delete(url); throw error; });
-  loads.set(url, promise);
-  return promise;
-}
+  });
+});
 
 export const panguDialogueAdapter: DialogueAdapter = {
   async mount(element) {
