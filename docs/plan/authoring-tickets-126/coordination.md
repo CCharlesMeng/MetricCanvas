@@ -653,3 +653,5 @@ S0已读完整票/最新评论，审阅筛选全绑定集合/移除/查询字段
 本仓#137范围通过，完整操作原子回滚与部分成功边界保留；不开放查询分页/排序/表头筛选，不重做#109导航。S3本阶段票完成，可保留干净工作树并交接，手册如需语义证据由S2提出具体缺口；不凭空开新票。20票已验收17票，剩#138/#145/#146（S4未登记），另手册尚未验收，M1/M2/M3不提前宣布。
 
 手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-text-page.json`，最小6.2 text正文含title/body、空dataSources，作为heading/insight/reportInline完整示例的真源；经统一生成/校验，不改工具行为。仅links/backdrop的历史例子不能冒称正文variant证据；显示语义仍关联实际渲染来源/验证范围。
+
+手册联合分支追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-branches-page.json`，用最小合法数据/组件/参数/筛选覆盖已盘点缺口，不改协议；既有`packages/page/tests/validate-cli.test.ts`限把硬编码夹具总数改为实际目录JSON数，保留有效/无效退出状态与错误断言，不能将计数自洽当内容覆盖证明。联合分支见证需由独立Schema匹配与完整页面公开校验证明并保留缺口清单。当前110分支中89有见证、21缺口及140文件1060通过/5skip/1失败均为阶段回报，未验收完整手册。
