@@ -719,3 +719,9 @@ S0审阅生命周期编排、可信spool权限/身份隔离、公开四工具与
 #138本仓范围验收通过：模型只传程序token，保存先查原操作、unknown/pending不重发，程序输出失败保持原operationId，精确读取验证原文与完整ref，历史固定快照。生产强保存/精确历史/操作查询保持不可用；外部确认无新增、真实Java/Relay/盘古联调未执行。#138尚未远端发布/关闭，不能以本仓验收冒称M1/M3。
 
 本条提交即正式可消费基线：通知S1核对#127/#134/#138/#140后优先启动#146，先登记精确作者文件与判轮资格契约；#145前置齐备，S4可与S1准备候选/确认工具契约，公共契约交S2冻结后再实施，不能越权修改工作台客户端/公共导出。真实事件仍仅draftId，未见过的旧轮首次迟到必须通过可信关联验证，不扩展事件字段。
+
+## #146开工所有权登记
+
+S1真实任务01a09f69-8346-7e91-9c66-9e091d3f6e77，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合入正式9dcb2b8539fd4597fdd6816928e0fbffa0486b89。唯一既有触点`apps/platform/src/lib/workbench/authoring-coordinator.ts`、`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-language.ts`、`apps/platform/src/routes/language/+page.svelte`、`apps/platform/tests/workbench/authoring-language.test.ts`、`apps/platform/tests/workbench/language-relay-fixture.py`、`apps/platform/tests/workbench/authoring-language-browser.mjs`及`docs/plan/authoring-tickets-126/t20-evidence.md`。其他fixture模块另登记。
+
+/language仅开发组合验收，必须沿项目既有开发路由保护验证生产构建不可用，不作为真实Relay入口。可信程序读取必须验证operationId/runId/actor/workspace/base关联，事件仍仅draftId；旧轮首次迟到在读取前后校验接收资格，异步读取期间切换身份/轮次不得覆盖旧画布。生产Relay/强读默认不可用，开发替身不得进入生产默认组合。S5两文件/port.ts、S4/S2作者窗口不变。
