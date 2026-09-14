@@ -761,3 +761,9 @@ S0审阅语言轮租约、可信binding、原操作查询/取消恢复、开发�
 #146本仓范围通过，M1本仓组合覆盖代表页内容修改→保存→仅draftId通知→精确读回及失败/断网/取消；真实模型理解/Relay/Java/盘古端口没有联调，不能宣告整体真实M1或M3。取消后已保存只提供精确预览并保留旧画布/锁，跨刷新语言轮恢复仍外部#108；不是手工离线队列已覆盖语言恢复。
 
 S1可继续#145 UI，先消费S2固定共同契约并登记精确文件，S4工具并行；只剩#145实施票待验收，但真实模型补项/最终组合回归/外部联调仍未完成，M2/M3不收口。#138/#146本地已验收但未远端发布/关闭。S1具体GitHub评论被自动审批拒绝，尚未发送，S0不代发绕过；后续远端回写需明确本批载荷/范围授权。
+
+## #145发布UI所有权登记
+
+S1真实任务不变，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合正式ccf53c2100f23d634677706a99a4e8636148a432。唯一既有触点`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-publication.ts`、`apps/platform/src/lib/workbench/PublicationReview.svelte`、`apps/platform/src/lib/workbench/publication-fixture.ts`、`apps/platform/src/routes/publication/+page.svelte`、`apps/platform/tests/workbench/authoring-publication.test.ts`、`apps/platform/tests/workbench/authoring-publication-browser.mjs`及`docs/plan/authoring-tickets-126/t19-ui-evidence.md`。
+
+消费S2固定内部publication-contract作者与验证；依赖字段实施待固定SHA，不自建另一套DTO。publication-fixture仅明确开发边界替身，/publication沿dev门禁并验证生产无替身请求/可执行入口；生产PublicationPort默认不可用，不造服务端点。S4发布工具、S2共同作者/生成、S5适配所有权不变；若需页面资产客户端/RevisionPreview等额外修改先登记。最终S1主责整票UI与工具消费汇合验收，证据按本仓/外部确认/真实联调分列。
