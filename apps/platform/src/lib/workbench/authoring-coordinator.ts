@@ -68,6 +68,8 @@ export function createAuthoringCoordinator(options: {
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
   const scope = () => `${epoch}:${identityKey()}`;
   const unresolved = () => state.loading || state.sync?.protection === 'failed' || state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
+  const languageBlocked = () => disposed || unresolved() || (owner !== null && owner !== identityKey()) ||
+    (!!syncConfig && !!state.draft && state.sync?.protection !== 'protected');
   function change(draft: CanvasAuthoringDraft) { epoch++; read?.abort(); state = { ...state, draft: structuredClone(draft), loading: false, error: '' }; }
 
   async function attachSync(prepared?: StoredRecord<DurableAuthoringState> | null, incoming = false) {
@@ -120,7 +122,7 @@ export function createAuthoringCoordinator(options: {
     async retrySync() { await sync?.retry(); },
     /** Shared gate for consumers that require fully synchronized content (including publication). */
     requireSynchronizedRef(): DraftRef {
-      if (!state.ref || unresolved() || state.dirty || owner !== identityKey() || (syncConfig && state.sync?.protection !== 'protected')) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
+      if (!state.ref || languageBlocked() || state.dirty || owner !== identityKey()) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
       return structuredClone(state.ref);
     },
     capabilities: options.port.capabilities,
@@ -174,13 +176,16 @@ export function createAuthoringCoordinator(options: {
       }
     },
     readSavedDraft: (async (draftId, signal) => {
-      if (unresolved()) throw new Error('保存结果未确定，暂不能接收新的草稿。');
+      if (languageBlocked()) throw new Error('保存结果未确定或身份已变化，暂不能接收新的草稿。');
       if (state.dirty) throw new Error('工作副本有未保存修改，保留当前页面，请先保存后重试草稿通知。');
       if (!options.port.capabilities.exactDraftRead || !options.port.readSavedDraft) return unavailableDraftReader(draftId, signal);
-      return options.port.readSavedDraft(draftId, signal);
+      const expected = scope();
+      const result = await options.port.readSavedDraft(draftId, signal);
+      if (signal.aborted || scope() !== expected || languageBlocked() || state.dirty) throw new Error('草稿读取期间工作范围已变化，保留当前工作副本。');
+      return result;
     }) as ReadSavedDraft,
     acceptSavedDraft(draft: SavedDraft): boolean {
-      if (disposed || unresolved()) return false;
+      if (languageBlocked()) return false;
       if (draft.document.id !== draft.ref.pageId || state.dirty || (state.draft && state.draft.pageDocument.id !== draft.ref.pageId)) {
         state = { ...state, error: '草稿通知与当前工作副本不兼容，保留当前页面。' }; emit(); return false;
       }

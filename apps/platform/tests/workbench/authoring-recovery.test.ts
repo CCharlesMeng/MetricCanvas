@@ -148,3 +148,35 @@ it('opening a fresh remote revision protects its initial copy before opening the
   coordinator.enableAutoSync({ storage: f.storage, port: f.port }); coordinator.acceptSavedDraft({ draftId: 'new', ref: base, document: f.command.document }); await settle();
   expect(coordinator.requireSynchronizedRef()).toEqual(base); expect(f.storage.write).toHaveBeenCalledTimes(1); expect(f.port.save).not.toHaveBeenCalled();
 });
+it('language reads and receipts wait for initial protection while an empty canvas can receive creation', async () => {
+  const f = fixture(); f.storage.read = vi.fn(async () => null);
+  let protect!: (version: number) => void;
+  f.storage.write = vi.fn(() => new Promise<number>((resolve) => { protect = resolve; }));
+  const savedDraft = { draftId: 'new', ref: base, document: f.command.document };
+  const port: AuthoringPort = { capabilities: { ...confirmedPageAssetCapabilities, exactDraftRead: true }, getLatest: vi.fn(), getRevision: vi.fn(), saveRevision: vi.fn(), readSavedDraft: vi.fn(async () => savedDraft) };
+  const coordinator = createAuthoringCoordinator({ port, identity: () => scope }); cleanups.push(() => coordinator.dispose());
+  coordinator.enableAutoSync({ storage: f.storage, port: f.port });
+  await expect(coordinator.readSavedDraft('new', new AbortController().signal)).resolves.toEqual(savedDraft);
+  expect(coordinator.acceptSavedDraft(savedDraft)).toBe(true); await settle(); vi.mocked(port.readSavedDraft!).mockClear();
+  expect(coordinator.snapshot()).toMatchObject({ loading: false, sync: { pending: 0, protection: 'pending' } });
+  await expect(coordinator.readSavedDraft('new', new AbortController().signal)).rejects.toThrow();
+  expect(port.readSavedDraft).not.toHaveBeenCalled(); expect(coordinator.acceptSavedDraft(savedDraft)).toBe(false);
+  expect(() => coordinator.requireSynchronizedRef()).toThrow();
+  protect(1); await settle();
+  await expect(coordinator.readSavedDraft('new', new AbortController().signal)).resolves.toEqual(savedDraft);
+  expect(coordinator.requireSynchronizedRef()).toEqual(base);
+  coordinator.dispose(); expect(() => coordinator.requireSynchronizedRef()).toThrow();
+  await expect(coordinator.readSavedDraft('new', new AbortController().signal)).rejects.toThrow();
+  expect(coordinator.acceptSavedDraft(savedDraft)).toBe(false);
+});
+it('a changed owner with an empty protected queue cannot read or accept language results', async () => {
+  const f = fixture(); f.value.queue = []; let actorId = 'alice';
+  const savedDraft = { draftId: 'new', ref: base, document: f.command.document };
+  const port: AuthoringPort = { capabilities: { ...confirmedPageAssetCapabilities, exactDraftRead: true }, getLatest: vi.fn(), getRevision: vi.fn(), saveRevision: vi.fn(), readSavedDraft: vi.fn(async () => savedDraft) };
+  const coordinator = createAuthoringCoordinator({ port, identity: () => ({ actorId, workspaceId: 'w' }) }); cleanups.push(() => coordinator.dispose());
+  coordinator.enableAutoSync({ storage: f.storage, port: f.port }); await coordinator.load('p');
+  actorId = 'bob';
+  await expect(coordinator.readSavedDraft('new', new AbortController().signal)).rejects.toThrow();
+  expect(port.readSavedDraft).not.toHaveBeenCalled(); expect(coordinator.acceptSavedDraft(savedDraft)).toBe(false);
+  expect(() => coordinator.requireSynchronizedRef()).toThrow(); expect(f.storage.write).not.toHaveBeenCalled();
+});
