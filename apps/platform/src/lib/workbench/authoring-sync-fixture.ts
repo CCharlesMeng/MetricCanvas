@@ -18,3 +18,15 @@ export function createStableSaveFixture(mode: () => SyncFixtureMode): StableSave
     }
   };
 }
+
+import { pageAuthoringPort } from '../page-assets';
+import type { AuthoringPort } from './authoring-coordinator';
+/** Explicit dev-only lifecycle history port; no production endpoint is inferred. */
+export function createAuthoringHistoryFixture(): AuthoringPort {
+  return {
+    ...pageAuthoringPort,
+    capabilities: { ...pageAuthoringPort.capabilities, history: true, exactRead: true },
+    getRevision: (pageId, revisionId) => request('read-revision', { pageId, revisionId }),
+    listRevisions: (pageId, cursor, limit) => request('list-revisions', { pageId, cursor, limit })
+  };
+}

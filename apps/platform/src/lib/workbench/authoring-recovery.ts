@@ -20,10 +20,15 @@ export function validateAuthoringRecord(input: unknown, scope: StorageScope): St
   if (![scope.actorId, scope.workspaceId, scope.pageId].every(text)) return fail();
   if (!record(input) || !keys(input, ['version', 'value']) || !Number.isSafeInteger(input.version) || Number(input.version) < 1) return fail();
   const value = input.value;
-  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue']) || value.format !== 1 || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
+  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue', 'undoDraft']) || value.format !== 1 || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
   if (!record(value.draft) || !keys(value.draft, ['canvasDocument', 'pageDocument', 'authoringSections'])) return fail();
   const draft = restoreCanvasAuthoringDraft(value.draft);
   if (!draft.ok || draft.draft.pageDocument.id !== scope.pageId) return fail();
+  if (value.undoDraft !== undefined) {
+    if (!record(value.undoDraft) || !keys(value.undoDraft, ['canvasDocument', 'pageDocument', 'authoringSections'])) return fail();
+    const previous = restoreCanvasAuthoringDraft(value.undoDraft);
+    if (!previous.ok || previous.draft.pageDocument.id !== scope.pageId) return fail();
+  }
   const ids = new Set<string>();
   for (const [index, operation] of value.queue.entries()) {
     if (!record(operation) || !keys(operation, ['operationId', 'document', 'description', 'retainDimensionValues', 'command', 'outcome']) || !text(operation.operationId) || ids.has(operation.operationId) || typeof operation.description !== 'string' || typeof operation.retainDimensionValues !== 'boolean' || !record(operation.document) || operation.document.id !== scope.pageId || validate(operation.document).length) return fail();

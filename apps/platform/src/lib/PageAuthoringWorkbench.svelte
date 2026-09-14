@@ -1,4 +1,5 @@
 <script lang="ts">
+  import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
   import { pageAuthoringPort } from '$lib/page-assets';
@@ -46,6 +47,7 @@
   let retainDimensionValues = $state(true);
   let metadataOpen = $state(false);
   let previewOpen = $state(false);
+  let historyOpen = $state(false);
   let previewRef = $state<DraftRef | null>(null);
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
   let selectedComponent = $state<ComponentLocator | null>(null);
@@ -227,6 +229,8 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
+      <button class="btn" disabled={!authoring.sync?.canUndo || loading} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
+      <button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>
       {#if baseRevisionId}
         <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>精确修订预览</button>
       {/if}
@@ -260,6 +264,7 @@
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
+    {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
     {#if authoring.sync}
       {#if authoring.sync.protection === 'failed'}

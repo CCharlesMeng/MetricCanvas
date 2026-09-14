@@ -11,7 +11,7 @@ try {
   await page.getByRole('button', { name: 'draft-a', exact: true }).click();
   await expect(page.getByText('受控替身结果：draft-a')).toBeVisible();
   await page.screenshot({ path: '/private/tmp/metriccanvas-s1-evidence/t01-standalone.png' });
-  await page.getByRole('checkbox').check();
+  await page.getByRole('checkbox', { name: '嵌入工作台' }).check();
   await page.getByRole('button', { name: 'draft-a', exact: true }).click();
   const canvas = page.getByRole('main', { name: '页面画布', exact: true });
   await expect(canvas.getByText('页面 draft-a')).toBeVisible();

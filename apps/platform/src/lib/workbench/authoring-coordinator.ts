@@ -1,5 +1,6 @@
 import { normalizePageDocument } from '@metriccanvas/page';
 import { createAuthoringSync, type DurableAuthoringState, type StableSavePort, type SyncSnapshot } from './authoring-sync';
+import { validateHistoryPage, type ListRevisions } from './authoring-history';
 import { validateAuthoringRecord } from './authoring-recovery';
 import type { AuthoringStorage, StoredRecord } from './authoring-storage';
 import { PageAssetsError, type PageRevision, type SavePageRevision } from '../page-assets-client';
@@ -23,6 +24,7 @@ export interface AuthoringPort {
   getRevision(pageId: string, revisionId: string, signal?: AbortSignal): Promise<PageRevision>;
   saveRevision(pageId: string, command: SavePageRevision): Promise<PageRevision>;
   readSavedDraft?: ReadSavedDraft;
+  listRevisions?: ListRevisions;
 }
 export const confirmedPageAssetCapabilities: AuthoringCapabilities = {
   currentRead: true, exactRead: false, exactDraftRead: false, history: false,
@@ -112,7 +114,7 @@ export function createAuthoringCoordinator(options: {
     }
   }
 
-  return {
+  const coordinator = {
     snapshot, scope,
     enableAutoSync(config: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort }) {
       syncConfig = config; if (state.draft) void attachSync();
@@ -127,7 +129,7 @@ export function createAuthoringCoordinator(options: {
     },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
-    replaceDraft(draft: CanvasAuthoringDraft): boolean {
+    replaceDraft(draft: CanvasAuthoringDraft, description = '手工页面修改', forceOperation = false): boolean {
       if (disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
@@ -136,10 +138,10 @@ export function createAuthoringCoordinator(options: {
       owner ??= identityKey();
       const changed = stable(state.draft?.pageDocument) !== stable(draft.pageDocument);
       change(draft);
-      if (changed) state = { ...state, dirty: true };
+      if (changed || forceOperation) state = { ...state, dirty: true };
       if (state.save?.status === 'saved') state = { ...state, save: null };
       emit();
-      if (sync) void sync.enqueue(draft, '手工页面修改', retainDimensionValues).catch((error: unknown) => { state = { ...state, error: messageOf(error) }; emit(); });
+      if (sync) void sync.enqueue(draft, description, retainDimensionValues, forceOperation).catch((error: unknown) => { state = { ...state, error: messageOf(error) }; emit(); });
       return true;
     },
     async load(pageId: string): Promise<void> {
@@ -194,6 +196,39 @@ export function createAuthoringCoordinator(options: {
       owner = identityKey();
       change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; void attachSync(undefined, true); emit(); return true;
     },
+    async undo(): Promise<void> {
+      if (disposed || !sync || state.loading || owner !== identityKey()) throw Error('当前工作副本不能撤销。');
+      const expected = scope();
+      const draft = await sync.undo(retainDimensionValues);
+      if (disposed || scope() !== expected) return;
+      if (draft) { change(draft); emit(); }
+    },
+    async listHistory(cursor: string | null = null, expectedSnapshot?: DraftRef, signal?: AbortSignal) {
+      if (disposed || !state.ref || owner !== identityKey()) throw Error('当前工作副本不能读取历史。');
+      if (!options.port.capabilities.history || !options.port.listRevisions) throw Error('当前生命周期端口尚未开放页面历史，不能用对话历史代替。');
+      if (cursor !== null && !expectedSnapshot) throw Error('历史后续分页必须携带原快照。');
+      const pageId = state.ref.pageId, expected = scope();
+      const result = await options.port.listRevisions(pageId, cursor, 20, signal);
+      if (disposed || signal?.aborted || scope() !== expected) throw Error('历史读取范围已变化。');
+      const valid = validateHistoryPage(result, pageId, expectedSnapshot);
+      if (valid.snapshot.resourceId !== state.ref?.resourceId) throw Error('历史快照资源不属于当前页面。');
+      return valid;
+    },
+    async restoreRevision(ref: DraftRef, signal?: AbortSignal): Promise<void> {
+      if (!options.port.capabilities.exactRead) throw Error('当前生命周期端口尚未开放历史精确读取。');
+      if (disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
+      const before = scope();
+      if ((state.sync?.pending ?? 0) > 0) await sync.retry();
+      if (disposed || scope() !== before) throw Error('历史恢复范围已变化。');
+      const current = coordinator.requireSynchronizedRef();
+      if (current.pageId !== ref.pageId || current.resourceId !== ref.resourceId) throw Error('历史修订引用不属于当前页面资源。');
+      const revision = await coordinator.preview(ref, signal);
+      if (disposed || signal?.aborted || scope() !== before) throw Error('历史恢复期间工作副本已变化。');
+      coordinator.requireSynchronizedRef();
+      const parsed = createCanvasAuthoringDraft({ ...revision.document });
+      if (!parsed.ok) throw Error(parsed.message);
+      if (!coordinator.replaceDraft(parsed.draft, `恢复历史修订 ${ref.revisionId}`, true)) throw Error('当前工作副本不能恢复历史。');
+    },
     /** Current-match preview remains available; false exactRead explicitly forbids claiming historical availability. */
     async preview(ref: DraftRef, signal?: AbortSignal): Promise<PageRevision> {
       const revision = await options.port.getRevision(ref.pageId, ref.revisionId, signal);
@@ -246,4 +281,5 @@ export function createAuthoringCoordinator(options: {
     },
     dispose() { disposed = true; epoch++; read?.abort(); sync?.dispose(); listeners.clear(); }
   };
+  return coordinator;
 }

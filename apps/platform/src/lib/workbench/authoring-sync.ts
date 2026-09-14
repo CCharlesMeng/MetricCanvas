@@ -35,9 +35,10 @@ interface QueuedOperation {
 export interface DurableAuthoringState {
   format: 1; scope: StorageScope; base: DraftRef | null; draft: CanvasAuthoringDraft;
   queue: QueuedOperation[];
+  undoDraft?: CanvasAuthoringDraft;
 }
 export interface SyncSnapshot {
-  pending: number; protection: 'pending' | 'protected' | 'failed';
+  canUndo?: boolean; pending: number; protection: 'pending' | 'protected' | 'failed';
   phase: 'idle' | 'saving' | 'unavailable' | 'unknown' | 'rejected' | 'storage-failed' | 'identity-changed';
   message: string; base: DraftRef | null; lastSaved: StrongSaved | null;
 }
@@ -69,6 +70,7 @@ export function createAuthoringSync(options: {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const delays = options.retryDelays ?? [1000, 3000, 10000];
   let identityInvalidated = false;
+  let undoing = false;
   const restoredOutcome = state.queue[0]?.outcome;
   let status: SyncSnapshot = { pending: state.queue.length, protection: durable ? 'protected' : 'pending', phase: state.queue[0]?.outcome?.status === 'rejected' ? 'rejected' : 'idle', message: restoredOutcome && restoredOutcome.status !== 'saved' ? restoredOutcome.message ?? '' : '', base: state.base, lastSaved: null };
   let serial: Promise<unknown> = Promise.resolve();
@@ -78,7 +80,7 @@ export function createAuthoringSync(options: {
     if (!identity.actorId || !identity.workspaceId || identity.actorId !== state.scope.actorId || identity.workspaceId !== state.scope.workspaceId) identityInvalidated = true;
     return !identityInvalidated;
   };
-  const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base });
+  const snapshot = (): SyncSnapshot => structuredClone({ ...status, pending: state.queue.length, base: state.base, canUndo: !!state.undoDraft });
   const emit = () => { if (!disposed) for (const listener of listeners) listener(snapshot()); };
   function transaction(change: () => void): Promise<boolean> {
     const result = serial.then(async () => {
@@ -176,17 +178,44 @@ export function createAuthoringSync(options: {
     },
     subscribe(listener: (value: SyncSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     /** Exactly one call for one committed edit, never an input/drag intermediate. */
-    async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean): Promise<void> {
+    async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean, forceOperation = false): Promise<void> {
       if (!identityMatches()) { pause('identity-changed', '身份已变化，编辑未写入旧用户记录，请重新打开页面。'); return; }
       const parsed = normalizePageDocument(draft.pageDocument);
       if (!parsed.ok || parsed.document.id !== state.scope.pageId) throw new Error('无效页面操作，未加入保存队列。');
       const operationId = options.operationId?.() ?? crypto.randomUUID();
       const persisted = await transaction(() => {
-        if (same(state.draft.pageDocument, parsed.document)) { state.draft = structuredClone(draft); return; }
+        if (!forceOperation && same(state.draft.pageDocument, parsed.document)) { state.draft = structuredClone(draft); return; }
+        state.undoDraft = structuredClone(state.draft);
         state.draft = structuredClone(draft);
         state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues });
       });
       if (persisted) void pump();
+    },
+    async undo(retainDimensionValues = true): Promise<CanvasAuthoringDraft | null> {
+      if (undoing) return null;
+      undoing = true;
+      try {
+      await serial;
+      if (disposed || !identityMatches()) throw Error('身份已变化或工作台已关闭。');
+      if (!durable) throw Error('本地工作尚未保护，不能撤销。');
+      const requested = structuredClone(state.draft);
+      if (running || state.queue.some((item) => item.command)) {
+        await api.retry();
+        if (running || state.queue.some((item) => item.command)) throw Error('原操作结果尚未确定或存在冲突，请先核实后撤销。');
+      }
+      if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化，请重新选择操作。');
+      if (!state.undoDraft) return null;
+      const draft = structuredClone(state.undoDraft);
+      const parsed = normalizePageDocument(draft.pageDocument);
+      if (!parsed.ok) throw Error('撤销目标未通过页面校验。');
+      await transaction(() => {
+        if (!same(state.draft, requested)) throw Error('撤销期间工作副本已变化。');
+        state.draft = draft; delete state.undoDraft;
+        state.queue.push({ operationId: options.operationId?.() ?? crypto.randomUUID(), document: parsed.document, description: '撤销上一步完整操作', retainDimensionValues });
+      });
+      if (disposed || !identityMatches()) throw Error('工作范围已变化，原操作已保留。');
+      void pump(); return structuredClone(state.draft);
+      } finally { undoing = false; }
     },
     /** Explicit retry first resolves the original key; unknown is never treated as not applied. */
     async retry(manual = true): Promise<void> {
