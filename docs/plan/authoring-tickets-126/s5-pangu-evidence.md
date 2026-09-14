@@ -1,6 +1,6 @@
 # S5 盘古适配核验记录
 
-状态：只读事实核验完成，实现文件尚未正式移交。本文不是 #106/#107/#108 的整票验收，也不证明真实服务接通。
+状态：S0 已正式移交，基础资源/实例适配及本仓验证完成，详见末节。前面的只读记录保留原阶段事实。本文不是 #106/#107/#108 的整票验收，也不证明真实服务接通。
 
 ## 基线与文件所有权
 
@@ -71,3 +71,31 @@
 S0 正式移交时提供包含 CI 接缝的可消费 SHA 与最终文件清单；S5 先核对差异，再实施尚缺的独立生命周期测试和适配，避免重复或覆盖 CI 工作。混合测试仍归 S1，专属测试文件本轮未创建。完整创作联调等待 #138/#146，发布确认联合 #145；基础适配不等待整票完成。当前有界交接结束，不自动轮询。
 
 回退：撤销本文对应的单一文档提交即可，无运行时、协议或存储迁移。
+
+## 正式移交后的基础适配切片
+
+S0 在 `fef8d20ce11f18d2af5815c0b531f87d45459663` 正式移交 runtime.ts/PanguDialogue.svelte；该基线包含 CI 接缝及 #146 增量。本分支合入后 HEAD 为 `9ea366d0351a955d4c75df8e1689b224a408d722`，合入前后均干净。`docs/pangu-development.md` 开头旧 #127 分支说明按 next-stage 优先规则只视为历史，不作为开发起点。
+
+实现提交：`a98dc2363b58d74c1e31b1d306d16657997e7d65`。实际只修改 `apps/platform/src/lib/dialogue/runtime.ts`，新增 `apps/platform/tests/workbench/pangu-runtime.test.ts`；没有修改 PanguDialogue、attachDialogue、port、工作台、混合测试或 CI。组件现有 adapter 替换与异步卸载接缝完整保留。
+
+### 变化与边界
+
+- 按指南显式关闭 draggable/resizable/adsorbable，仍使用 side 与 autoRecover:false。测试验证传参；真实 SDK 是否严格留在目标容器内仍需实际版本验收。
+- 同文档同 URL 只加载一次；同步加载异常也返回可重试 Promise。加载超时、error、DOM 插入失败或加载后缺 instance 接口均释放回调、定时器与脚本元素；同版本可重试，版本变化仍要求刷新。移除脚本不等于撤销已经运行的上游脚本副作用。
+- 对已存在的 window.pangu，仅当 document.scripts 中存在与部署配置完全一致的 URL 且 instance 可调用时复用，不追加第二个 loader；来源无法核对时明确拒绝。URL 对应内容、v 参数确实固定不可变 SDK 的保证仍归部署服务；DOM 检查不是代码完整性或真实版本证明。不可见脚本、其他文档、仅有全局 API 的载体不推测版本。
+- 实例创建/接口形状/渲染失败时尝试销毁并恢复自身占用的容器 ID；已由替换适配器改写的 ID 不覆盖。SDK 异常不原样显示，避免把运行时私有信息带到界面。
+- 清理至多调用一次；即使 SDK destroy 自身抛错，也恢复仍属于自己的 ID，并避免打断替换或卸载。此种异常不能宣称 SDK 内部资源已释放；真实 SDK 清理失败需刷新并在目标环境核查，本仓不记录其原始异常。
+- 不增加运行时配置字段、身份映射、技能路由或消息回调；事件仍只有 `{draftId}`。#146 的轮次关联由 S1 负责，本切片没有从 opaque ID 推测归属。真实 SDK/身份/精确读取仍未开放。
+
+### 本次实际验证
+
+1. `pnpm install --frozen-lockfile` 安装依赖，锁文件未变。首次 offline 安装因缓存缺包退出；正式安装成功。首次 Vitest 因工作树缺 SvelteKit 生成 tsconfig 未启动测试；执行平台 check 的 sync 后重跑，不计首次失败为通过。
+2. `pnpm exec vitest run apps/platform/tests/workbench/pangu-runtime.test.ts apps/platform/tests/dialogue.test.ts apps/platform/tests/workbench/dialogue-boundary.test.ts apps/platform/tests/workbench/authoring-language.test.ts apps/platform/tests/workbench/analysis-page-state.test.ts`：**5 文件 73 项通过**，其中 S5 新增 **13 项**。包括预加载复用/拒绝、并行实例、失败重试、超时、无 SDK、插入失败、脱离容器、实例创建/渲染/销毁异常、文档版本锁及替身新版本装载；复用 #146 的取消/迟到关联与既有通知/旧页保护回归。
+3. `pnpm --filter platform check`：通过，svelte-check **0 errors / 0 warnings**，测试 TypeScript 检查通过。
+4. 在本工作树用 Vite `127.0.0.1:5195` 启动，执行原有 `S1_BASE_URL=http://127.0.0.1:5195 node apps/platform/tests/workbench/authoring-browser.mjs`：最终实现上 **T01 与 T02/T13 browser PASS**。覆盖独立/嵌入、失败/非法/迟到保留、外壳、卸载、SDK 替身 v1→同文档拒绝 v2→刷新加载 v2；页面 JS 错误数组为空。此脚本没有修改，结果是实际浏览器配合本地替身，不是实际盘古服务。
+5. `pnpm --filter platform build`：通过，adapter-static 写出 build；未增加服务端部署要求。
+6. `git diff --cached --check`：通过。
+
+外部确认：本次仍没有新增提供方资料。真实联调：仍未执行；上表 SDK 资源/环境、受控路由、身份、确认、取消、精确产物、恢复及真实升级缺口保持。没有用替身结果关闭 #106/#107/#108 或宣告 M3。#145 的验收暂停不影响本切片，也未在此重新放行。
+
+交付 S0 时仅消费实现提交及后续证据提交，不需取 S5 的基线合并提交。回退本实现提交即可恢复原基础适配，无数据迁移；新测试随同回退。后续按真实 SDK/内网输入续跑相应验收，不轮询外部状态、不联系提供方、不远端发布。
