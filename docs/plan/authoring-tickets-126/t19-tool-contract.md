@@ -227,4 +227,4 @@ proof 必须在可信人工端口/Java 的登记或验证体系内确实有效�
 
 共同契约由 S2 维护内部 `metriccanvas-authoring/contracts/authored/publication-contract.ts`；不创建公共 DTO 出口、不升版。
 
-实施起点已合 S0 正式产品组合 `812ad98241e31a1e24ebd6b739a9e3844ef9e5e6` 与冻结台账 ea19706，保留双Platform Skill及#138成果。共同Schema未固定前仅内部编排并行，最终公开工具/安装验证等待S2精确作者与生成SHA。
+实施起点已合 S0 正式产品组合 `812ad98241e31a1e24ebd6b739a9e3844ef9e5e6` 与冻结台账 ea19706，保留双Platform Skill及#138成果。最终消费 S0 正式共同基线 b3261ae；工具作者 7c9d802、分发生成 a15730f 的实际验证见 t19-tool-evidence.md。
