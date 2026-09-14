@@ -291,3 +291,13 @@ S1 定义具体事件名、负载校验与监听生命周期，事件只传引�
 S1 已开始 #127→#128，保留此前登记文件，新增独占：`apps/platform/src/lib/dialogue/runtime.ts`（地址/版本与资源装载）、`apps/platform/tests/workbench/authoring-browser.mjs`（边界替身及浏览器回归）；既有 `apps/platform/tests/workbench/platform-shell-and-composer.test.ts` 因对话组件抽取调整定位；`apps/platform/src/lib/RevisionPreview.svelte` 的可替换读取端口由 S1 负责，若实际路径不同须在修改前更正。不扩大至产品公共导出或其他角色文件。
 
 S1 回执事件负载仅 draftId；精确 ID 解析由协调读取端口负责。现有 Java 只支持 current-match，未证实不可变 draftId 寻址，真实事件读回默认 CAPABILITY_UNAVAILABLE；禁止猜测 draftId 等于 pageId/revisionId。本仓替身可验证事件/读回流程，但不得计为外部能力确认或真实联调。该差距纳入 #130 消费对齐。
+
+## #127 本仓验收集成（2026-09-14）
+
+来源 `ae022722a44a6abbc7a1ba0baa84c8189c6cd689` → `bdfbd983841234a8a54ea2d9db4b3816d9d986ca`；修正 `5341c31b9c86ac098900bec5f3a7476395f31f18` → `075c602952ef9c0b095fcf93cd701020f47835c8`；最终修正 `b79a44856d3859c9494c5c16afad2c3e37fb683c` → `5b21cc56b08a53eb3f8c3fd5d1b1ca5b73c82696`。S0核对正文/最新评论、登记范围与最终apps树一致，保留原作者；未纳入S1工作树的#128未提交内容。
+
+事件 `metriccanvas:draft-saved`，detail仅 `{draftId}`；部署 `__METRICCANVAS_PANGU__` 仅 `{resourceUrl,version}`。复用#108控制器，模块独立与工作台挂载；真实精确读取默认CAPABILITY_UNAVAILABLE。S0审阅要求并收到修复：失败通知重试、身份去重、取消时同步释放自己的pending记录（不等适配器返回）、旧响应不删除新记录；同document固定SDK地址/版本，切换须刷新，禁止缓存版本串用。
+
+S0针对性复验3文件23测试通过，包含不响应abort的A→B→A；集成apps树与最终固定提交无差异，diff check通过。采用S1 t01证据的Platform类型/Svelte检查及浏览器独立/嵌入、外壳、失败/非法/迟到保留、SDK同页拒绝切换及刷新升级演练；不冒称S0重跑浏览器或真实盘古验证。
+
+本仓范围#127通过，解锁S1 #128。通知无序号时未知旧ID的权威资格仍由精确读取服务确认；未证明Java/盘古真实能力，不关闭#95外部目标。M0仍等#128及#130实际接口对齐。
