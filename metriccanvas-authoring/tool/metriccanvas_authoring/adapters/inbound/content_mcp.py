@@ -9,6 +9,7 @@ from pydantic import Field, WithJsonSchema
 
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
 from metriccanvas_authoring.application.compose_page import ComposePageCommand, ComposePageDependencies, create_compose_page
+from metriccanvas_authoring.application.create_content_page import create_content_page as make_content_page
 from metriccanvas_authoring.application.content_ports import ContentBaselinePort
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextCommand, DiscoverDataContextDependencies, create_discover_data_context
 from metriccanvas_authoring.application.edit_page import create_edit_page, document_sha256
@@ -29,9 +30,10 @@ RESULT_SCHEMA = {
 def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: ContentBaselinePort) -> FastMCP:
     compose = create_compose_page(dependencies)
     edit = create_edit_page(baselines)
+    create_content = make_content_page(baselines)
     discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context))
     mcp = FastMCP("metriccanvas-content", instructions=(
-        "Create with compose_page; edit an existing page only with edit_page and a trusted baseline_token. "
+        "Create with compose_page or create_content_page; edit an existing page only with edit_page and a trusted baseline_token. "
         "Never reconstruct a missing baseline. No tool saves or publishes. "
         "Relay must retain structured artifactEnvelope for trusted program handoff and expose only "
         "modelSummary to the model; do not expose this server to a model without that adapter."
@@ -89,6 +91,18 @@ def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: 
         returned for a failed or unchanged batch. Raw page JSON is not a tool input.
         """
         output = await edit(baseline_token, request)
+        return ToolResult(content=output["modelSummary"], structured_content=output)
+
+    @mcp.tool(output_schema=RESULT_SCHEMA)
+    async def create_content_page(page_id: str, title: str, request: PageEditRequest,
+            layout: Literal["report", "dashboard"] = "report", source_token: str | None = None) -> ToolResult:
+        """Create text/fieldText/mapChart in section main using explicit add operations.
+
+        Static text needs no source. Field text and maps require a trusted source_token
+        whose complete page supplies governed data and verified row evidence. Never
+        pass raw rows, queries or page JSON. Full artifacts stay in the trusted channel.
+        """
+        output = await create_content(page_id, title, layout, request, source_token)
         return ToolResult(content=output["modelSummary"], structured_content=output)
 
     return mcp

@@ -13,19 +13,25 @@ def document_sha256(document: Any) -> str:
     return hashlib.sha256(canonical_json(document).encode("utf-8")).hexdigest()
 
 
+async def read_verified_baseline(baselines: ContentBaselinePort, token: str):
+    baseline = await baselines.read(token)
+    ref = baseline.ref
+    if (not isinstance(ref, dict) or set(ref) != {"pageId", "revisionId", "resourceId"}
+            or any(not isinstance(v, str) or not v.strip() for v in ref.values())
+            or not isinstance(baseline.document, dict) or baseline.document.get("id") != ref["pageId"]):
+        raise ContentBaselineError("BASELINE_REF_MISMATCH")
+    if (not isinstance(baseline.document_sha256, str)
+            or not re.fullmatch(r"[a-f0-9]{64}", baseline.document_sha256)
+            or document_sha256(baseline.document) != baseline.document_sha256):
+        raise ContentBaselineError("BASELINE_HASH_MISMATCH")
+    return baseline
+
+
 def create_edit_page(baselines: ContentBaselinePort):
     async def edit_page(token: str, request: Any) -> dict[str, Any]:
         try:
-            baseline = await baselines.read(token)
+            baseline = await read_verified_baseline(baselines, token)
             ref = baseline.ref
-            if (not isinstance(ref, dict) or set(ref) != {"pageId", "revisionId", "resourceId"}
-                    or any(not isinstance(v, str) or not v.strip() for v in ref.values())
-                    or not isinstance(baseline.document, dict) or baseline.document.get("id") != ref["pageId"]):
-                raise ContentBaselineError("BASELINE_REF_MISMATCH")
-            if (not isinstance(baseline.document_sha256, str)
-                    or not re.fullmatch(r"[a-f0-9]{64}", baseline.document_sha256)
-                    or document_sha256(baseline.document) != baseline.document_sha256):
-                raise ContentBaselineError("BASELINE_HASH_MISMATCH")
             result = edit_page_document(baseline.document, request)
         except ContentBaselineError as error:
             return {"ok": False, "artifactEnvelope": None, "modelSummary": {

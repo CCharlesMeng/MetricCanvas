@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "tool"), str(ROOT / "test-harness"), str(ROOT / "test-harness/tests")]
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from test_page_editing import page
+from test_text_map_building import content_page
 from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
@@ -16,9 +17,9 @@ from metriccanvas_authoring.application.ports import DqeExecutionResult
 
 class Baselines:
     async def read(self, token):
-        if token != "trusted-baseline-token":
+        if token not in {"trusted-baseline-token", "trusted-content-source"}:
             raise ContentBaselineError("BASELINE_NOT_FOUND")
-        document = page()
+        document = content_page() if token == "trusted-content-source" else page()
         return ContentBaseline({"pageId": document["id"], "revisionId": "r1", "resourceId": "resource1"}, document, document_sha256(document))
 
 
