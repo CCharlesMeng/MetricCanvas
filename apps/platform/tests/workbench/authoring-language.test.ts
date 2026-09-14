@@ -146,3 +146,13 @@ it('storage failure leaves language pending and cancellation never invokes Relay
   await flush(); const run = f.language.start('edit'); await flush(); f.language.cancel(); await run;
   expect(f.port.run).not.toHaveBeenCalled(); expect(f.coordinator.snapshot().ref).toEqual(base);
 });
+for (const field of ['pageId', 'revisionId', 'resourceId'] as const) it(`cancelled first creation rejects a saved recovery missing ${field}`, async () => {
+  const f = await setup(true); const run = f.language.start('create'); await flush();
+  const saved = f.deliver(); const entry = f.deliveries.get(saved.draftId)!;
+  Reflect.deleteProperty(entry.draft.ref, field);
+  f.language.cancel(); f.resolve(saved); await run;
+  f.port.lookup = vi.fn(async () => saved); await f.language.lookup();
+  expect(f.language.snapshot()).toMatchObject({ phase: 'unknown', recovery: null });
+  expect(f.language.snapshot().message).toContain('RESPONSE_MISMATCH');
+  expect(f.coordinator.snapshot().draft).toBeNull(); expect(f.coordinator.snapshot().ref).toBeNull();
+});

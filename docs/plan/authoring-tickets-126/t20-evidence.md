@@ -60,3 +60,11 @@ S1_PRODUCTION_URL=http://127.0.0.1:5187 node apps/platform/tests/workbench/autho
 本仓：闭环与反例通过，交 S0 决定 M1 本仓范围放行。外部确认：本轮无新增，强幂等/原文算法/draftId权威映射/身份及运行关联仍沿 #105/#106/#108。真实联调：没有调用真实盘古、Java、Relay或模型；默认生产未注入 languagePort，强保存和精确通知读取保持不可用。不能据此宣称 M3、真实模型评测或 #107/#108 全票通过。
 
 #145 待 S2/S4 冻结契约与工具交接后继续，既有精确预览/同步门禁可复用。本票没有参数提取、人工发布或外部服务改动。回退作者与后续证据提交即可移除新组合入口/语言消费端口；无数据迁移、远端推送或真实资产写入。
+
+## S0 接收口复核修正
+
+S0 发现取消后 lookup→trustedRead→recovered 不经过普通通知监听器的三标识兜底；此前使用 Object.values 只验证已存在字段，首次创建 base=null 时可能遗漏 revisionId/resourceId。现直接逐项检查 pageId/revisionId/resourceId，复用 T01 相同非空/长度/控制字符规则，不改 port.ts。新增首次创建取消后缺少三个标识各一反例，均保持 draft/ref/recovery 为 null、状态 unknown 且提示 RESPONSE_MISMATCH。
+
+修正后针对性三文件 **43 项通过**（语言模块累计25项），tests tsc、diff --check通过。前述142文件全量及浏览器是修正前完整流程证据；本次只收紧必需字段，未冒称重新运行整套矩阵。
+
+本票 GitHub 评论回写被自动审批拒绝，评论没有发布；本地代码与证据已交 S0，不经其他任务代发绕过。待用户明确批准具体评论发布后再回写。

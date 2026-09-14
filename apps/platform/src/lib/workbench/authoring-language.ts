@@ -70,7 +70,7 @@ export function createAuthoringLanguage(options: {
     if (!current(turn)) throw Error('语言操作身份或工作范围已变化。');
     const result = await options.port.read(draftId, signal);
     if (signal.aborted || !current(turn) || !sameBinding(result.binding, turn.context) ||
-        result.draft.draftId !== draftId || !Object.values(result.draft.ref).every((value) => draftIdOf({ draftId: value })) ||
+        result.draft.draftId !== draftId || !result.draft.ref || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
         validate(result.draft.document).length > 0 || result.draft.document.id !== result.draft.ref.pageId ||
         (turn.context.base && (result.draft.ref.pageId !== turn.context.base.pageId || result.draft.ref.resourceId !== turn.context.base.resourceId || result.draft.ref.revisionId === turn.context.base.revisionId))) {
       throw Error('RESPONSE_MISMATCH：通知不属于当前可信操作，保留当前页面。');
