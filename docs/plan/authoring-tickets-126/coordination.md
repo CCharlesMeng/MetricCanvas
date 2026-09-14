@@ -551,3 +551,5 @@ S0读#140正文、审阅记录严格校验/双投影/CAS/原命令恢复/有界�
 S1已消费155346f2并读#141/#142完整正文，先实施#141。新增S1唯一作者：`apps/platform/src/lib/workbench/authoring-history.ts`、`apps/platform/src/lib/workbench/AuthoringHistory.svelte`、`apps/platform/tests/workbench/authoring-history.test.ts`、`apps/platform/tests/workbench/authoring-history-browser.mjs`、`docs/plan/authoring-tickets-126/t15-evidence.md`。既有sync/recovery/coordinator/PageAuthoringWorkbench及开发fixture接线仍S1；S2预览三路径不动。
 
 撤销/恢复沿原队列新增操作，未确定原操作先核实，不删除已发项；history/exactRead缺失明确提示、不猜生产URL。#142未实施，#146等#138齐备后优先；具体历史分页/精确读取和撤销边界按本票验收，不将内部端口当外部确认。
+
+#144追加S2测试作者`tests/authoring-export-isolation.test.ts`，限临时仓复制列表补`packages/engine/widgets/src/components/map-chart/maps/china.json`与`world.json`（同目录），以满足#135新增生成器源输入；不改历史预期/地图源。S2报告全量此处ENOENT、其余1017通过，需修复后完成要求的回归，不计最终通过。
