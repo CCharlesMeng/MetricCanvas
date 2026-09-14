@@ -243,3 +243,5 @@ S0 复验：page_validation 5 项（包含32矩阵及全量正反向量）、com
 #133 已实际通知 S2 从 `9135d22f1616ff63357cbfce5cd6a80b016f0e24` 开工；同 SHA 已通知 S1 消费并归还五文件。S2 预登记 page.ts/page-document.ts 的运行态别名收口、布局/CLI测试及写出门禁、存量pages和当前样例、生成器/生成物、PAGE-METADATA.md、docs/host-contract.md、packages/embed/README.md、tools/package-build/README.md、t07证据/迁移说明。存量/新文件完整清单须开改前补齐，旧读取黄金样例保留。
 
 S0 接受四发布包锁步 `1.0.0-rc.2` 作为本地6.1候选版本，不授权registry发布或push。S2需登记四package.json及实际compatibility.mjs路径；既有安全overrides不能为通过兼容门禁删除，应最小调整门禁以保留配置并验证实际两版本。浏览器及环境证据如实记录；#133不代表M2参考手册主体完成。
+
+S1 回执并经 S0 核对：`codex/authoring-126-s1-platform` 已快进至 `9135d22f1616ff63357cbfce5cd6a80b016f0e24`，工作树干净；五个临时文件所有权已收回。#127 仍等待用户对两项实施选择的答复，尚无本角色产品代码提交；保持已规范化 document-edit/promote 边界，不在客户端提前变换原文。此等待不阻止 S2 执行已解锁的 #133，M0 状态不变。
