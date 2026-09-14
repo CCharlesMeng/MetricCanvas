@@ -228,7 +228,13 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   const authoredStepEventSchema = await readFile(authoredAgentStepEvent, 'utf8');
   const authoredConformanceSchema = await readFile(authoredAgentConformance, 'utf8');
   const analysisIntents = await readFile(path.join(authoringContractRoot, 'authored/analysis-intents.json'), 'utf8');
-  const buildPageConformance = await legacyContract('build-page-conformance.json');
+  // 历史预期仍冻结并核验摘要；当前契约只派生版本/布局升级，
+  // 不从 Python 或浏览器构造器的输出反向更新业务预期。
+  const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
+  const normalizedBuildPage = normalizePageDocument(buildPageVector.expected.document);
+  if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
+  buildPageVector.expected.document = normalizedBuildPage.document;
+  const buildPageConformance = json(buildPageVector);
   const agentConformance = await legacyContract('agent-conformance.json');
   outputs.set('exported/analysis-intents.json', analysisIntents);
   outputs.set('exported/agent-conformance.json', agentConformance);

@@ -191,7 +191,7 @@
       }
     ],
     "document": {
-      "schemaVersion": "6.0",
+      "schemaVersion": "6.1",
       "id": "tokens-by-region",
       "meta": {
         "description": "区域 Tokens 请求量对比"
@@ -307,7 +307,8 @@
             }
           ]
         }
-      ]
+      ],
+      "layout": "report"
     }
   },
   "errorCases": [
