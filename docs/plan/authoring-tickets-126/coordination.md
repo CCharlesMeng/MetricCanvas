@@ -329,3 +329,27 @@ S0针对性复验3文件23测试通过，包含不响应abort的A→B→A；集�
 S1已消费e65b012c0a93d5c9a1ac9c0e51e320133e97a0f1并读取#139/#140完整票。#139新增唯一所有权：`apps/platform/src/lib/workbench/authoring-sync.ts`（队列/稳定操作/强保存端口）、`apps/platform/src/lib/workbench/authoring-storage.ts`（IndexedDB持久化端口）、`apps/platform/tests/workbench/authoring-sync.test.ts`、`apps/platform/tests/workbench/authoring-storage-browser.mjs`、`docs/plan/authoring-tickets-126/t13-evidence.md`。#140预登记复用上述两模块，新增`apps/platform/tests/workbench/authoring-recovery.test.ts`与`docs/plan/authoring-tickets-126/t14-evidence.md`；不新建第二份队列。coordinator/工作台/page-assets.ts/authoring-browser.mjs继续由S1负责。逐票验收，#140依赖以#139集成SHA为准。
 
 stableSave=false时不得将自动队列接入无幂等旧保存端点；先本地持久保护并明确能力不可用，顺序/查询结果使用强契约替身验证，真实能力单列。S5拟移交仅`apps/platform/src/lib/dialogue/runtime.ts`与`apps/platform/src/lib/dialogue/PanguDialogue.svelte`，待S5实际登记及S1正式交出；port.ts全局事件契约/接收与coordinator仍S1所有。当前未移交、不允许并发写拟移交文件。
+
+## M0后S3 #134开工登记
+
+任务仍01a09f69-d2b5-71b0-ba93-c7cc183d4ee2；独立worktree `/private/tmp/metriccanvas-s3-134`、分支`codex/s3-134-content-edit`，起点e65b012c0a93d5c9a1ac9c0e51e320133e97a0f1。S3回执已读#134/#128正文评论。优先交付#134以解锁#146，不将预登记视为验收。
+
+以下新文件归S3：
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_editing.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/domain/component_editing.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/content_ports.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/application/edit_page.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/adapters/outbound/content_baselines.py`
+- `metriccanvas-authoring/tool/metriccanvas_authoring/content_server.py`
+- `metriccanvas-authoring/test-harness/tests/test_page_editing.py`
+- `metriccanvas-authoring/test-harness/tests/test_content_mcp.py`
+- `metriccanvas-authoring/test-harness/tests/test_content_baselines.py`
+- `metriccanvas-authoring/test-harness/content_stdio_server.py`
+- `metriccanvas-authoring/contracts/authored/page-edit-request.schema.json`
+- `docs/plan/authoring-tickets-126/t08-content-edit-contract.md`
+- `docs/plan/authoring-tickets-126/t08-evidence.md`
+
+既有作者触点归S3本票范围：`metriccanvas-authoring/tool/pyproject.toml`（独立content CLI/打包）、`metriccanvas-authoring/test-harness/tests/test_distribution.py`、`metriccanvas-authoring/README.md`。S4后续若需相同打包/分发文件必须先请求唯一作者安排，不并发写；page_building.py若需修改另报准确范围。产品生成物/锁由S2唯一生成，不手改。
+
+模型输入仅baseline token+受控操作；完整基线由可信只读端口按精确ref/原文hash校验，产物走程序通道，模型仅必要摘要。无保存/发布端口；部分失败必须合法依赖闭合，no-change/全失败不产生可保存新产物。S3准备受控标题/占位/移动/类型/属性/布局操作，最终范围以#134及后续各票职责为准，避免提前消耗#135–#137验收。GitHub既有审批边界保持。
