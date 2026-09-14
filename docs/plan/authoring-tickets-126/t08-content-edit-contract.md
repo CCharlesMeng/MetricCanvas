@@ -1,6 +1,6 @@
 # T08 / #134 内容 MCP 契约
 
-基线 `e65b012c0a93d5c9a1ac9c0e51e320133e97a0f1`，S3；本票消费页面6.1/产品rc.2，版本规则由S2唯一维护。新增独立入口 `metriccanvas-content`，沿现有Bundle安装；普通问数 compatibility/relay 入口保持原语义。
+原实施基线 `e65b012c0a93d5c9a1ac9c0e51e320133e97a0f1`，S3；最终按S0要求消费已验收#143基线 `be73806a0120d0826fd57a0edf62745760d5561a`（页面6.2/产品rc.3），版本规则由S2唯一维护。新增独立入口 `metriccanvas-content`，沿现有Bundle安装；普通问数 compatibility/relay 入口保持原语义。
 
 ## 工具入口与可信通道
 
