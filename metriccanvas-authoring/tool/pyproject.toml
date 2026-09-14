@@ -40,3 +40,5 @@ include = [
 "../contract-snapshot/page/component-catalog.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/component-catalog.json"
 "../contract-snapshot/page/schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/schema.json"
 "../contracts/authored/lifecycle-request.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/lifecycle-request.schema.json"
+"../contracts/authored/publish-request.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/publish-request.schema.json"
+"../contract-snapshot/authoring/publication.schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/authoring/publication.schema.json"
