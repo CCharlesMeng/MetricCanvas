@@ -643,3 +643,13 @@ S2实现e3b94e31d9af9766547c2e4d4d656d8cf6919300→02606d0b54e0023644075dc4d91e9
 S0核对8tarball大小与SHA256，读取两组结构化浏览器报告各112 expected/0unexpected/0skipped/0flaky，合224通过；采用固定e3b94e3树两版本Svelte5.56.6/5.29.0各1045通过/5既有skip及源码check/build、独立真实包安装/类型/Svelte/Vite门禁。实际Chrome152.0.7977.83、Edge153.0.4234.32。本证据适用于四包rc.4，不能冒称在后续#136/#142共同树重跑源码全量；两票不变四包实现，无需重复无关矩阵。未发布registry/部署或真实内网消费，#95仍待原执行线环境。S2继续手册，S3继续#137；#138仍需S4。
 
 手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-variants-page.json`，仅最小合法rankingCard与显式gauge mini及必要字段/inline数据，补参考示例缺口；不改Schema/工具行为。经既有统一导出生成合法向量/快照/锁，在page-reference.test.ts核对组件与公开页面校验。29模块/17组件/940节点目前仅阶段回报，尚未审阅全分支覆盖与分发证据，不计M2完成；其它夹具缺口继续逐文件登记。
+
+## #137验收集成
+
+作者f241c3043dc69c659375ff427b09d1ebe87945cc→ac102c13e20efbe285ef6be6f62e0d8bb7bbf6a4；S2源e9ea3070ead180b0892ef673bfbd065fd1314c9e、本树8db110bbaf49ba55bc94256e1bd0b1ac5a9cba14→65097c7ce37609b0906cbd718542635ba4f717e8；证据4656deecc271647e1292f622dbdad7fde956896f→1c901e3a557e2adb0ee062607d0434e15e1ea595。12文件范围符合登记，Bundle树与S3最终组合一致，未混手册。
+
+S0已读完整票/最新评论，审阅筛选全绑定集合/移除/查询字段来源及导航共享目标/selection冲突/精确列定位，独立领域与公开stdio15项通过、511摘要通过；读取最终222全量及安装日志，采用t11两形态真实Chrome和HTTP gateway筛选清空/未绑定数据保持/原order不变、导航row/param/filter与固定query/hash、精确删除往返和产品CLI2/2证据。未冒称S0重跑全部浏览器或真实外部DQE。
+
+本仓#137范围通过，完整操作原子回滚与部分成功边界保留；不开放查询分页/排序/表头筛选，不重做#109导航。S3本阶段票完成，可保留干净工作树并交接，手册如需语义证据由S2提出具体缺口；不凭空开新票。20票已验收17票，剩#138/#145/#146（S4未登记），另手册尚未验收，M1/M2/M3不提前宣布。
+
+手册夹具追加登记：S2唯一新增`packages/page/fixtures/contract-valid/reference-text-page.json`，最小6.2 text正文含title/body、空dataSources，作为heading/insight/reportInline完整示例的真源；经统一生成/校验，不改工具行为。仅links/backdrop的历史例子不能冒称正文variant证据；显示语义仍关联实际渲染来源/验证范围。
