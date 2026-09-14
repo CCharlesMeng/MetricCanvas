@@ -20,6 +20,7 @@ export { pageSchema } from './schema';
 export { compositeCardChildTypes } from './schema/component';
 export {
   parsePage,
+  normalizePageDocument,
   validate,
   type PageParseOptions,
   type PageParseResult

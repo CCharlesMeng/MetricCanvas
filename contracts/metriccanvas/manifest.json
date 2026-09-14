@@ -1,6 +1,6 @@
 {
   "productContractVersion": "1.0.0-rc.1",
-  "pageSchemaVersion": "6.0",
+  "pageSchemaVersion": "6.1",
   "source": "TypeScript/Zod single-way export",
   "files": [
     {
@@ -13,7 +13,7 @@
     },
     {
       "file": "page/conformance/coverage.json",
-      "sha256": "497615ce903b43979e9ec8a22b44d81485238d319defb88d096f1b812b9ea0ef"
+      "sha256": "5f04e0ba1933e485851845de8bc0bc5d17da1a1cbe3b709d2565bbb95e0875cd"
     },
     {
       "file": "page/conformance/invalid/actual-after-captured-month.json",
@@ -310,6 +310,22 @@
     {
       "file": "page/conformance/invalid/layer-inside-composite-card.json",
       "sha256": "497f4cdfe46f298783f90b59f51ded0b10813aba9b423835d5df2dcdba48b9f2"
+    },
+    {
+      "file": "page/conformance/invalid/layout-before-6.1.json",
+      "sha256": "3422de22ec6c22f5301df3f16d6c691a8a889ee59bcf1d2abc55ef0c24e21b95"
+    },
+    {
+      "file": "page/conformance/invalid/layout-dual-conflict.json",
+      "sha256": "bb86869cf188c906f99b3fce942d66117d12329442ead172ed54bd452d3dd0ed"
+    },
+    {
+      "file": "page/conformance/invalid/layout-dual-equal.json",
+      "sha256": "60aadc8cc20df936fd8394e866dcbb96d5de835d7b6ddc5f9aa1fc845d4fb052"
+    },
+    {
+      "file": "page/conformance/invalid/layout-invalid-value.json",
+      "sha256": "11258654892005464728706fe6a0d1bdd26fe9e0f7dc1be3b6d020933acea9d1"
     },
     {
       "file": "page/conformance/invalid/layout-span-out-of-range.json",
@@ -657,11 +673,11 @@
     },
     {
       "file": "page/conformance/invalid/version-major-unsupported.json",
-      "sha256": "64322c24e7adb58535e7f740ace1dc45e40addc19cf68f539a87dc74489d098c"
+      "sha256": "e00118940eabc88cbae80861a86ccab73398ccd02e1cb57f04dd5736c3ea6f2a"
     },
     {
       "file": "page/conformance/invalid/version-minor-ahead.json",
-      "sha256": "8b23a067c1e99abbecfe89c56b03090444fbeccf84dea4d7a50141152a90fa80"
+      "sha256": "ffe51d6897ada704c03f148e5b7b8138f61b21c419760b795fa0b0a5352313db"
     },
     {
       "file": "page/conformance/invalid/write-filter-non-dimension.json",
@@ -674,6 +690,10 @@
     {
       "file": "page/conformance/invalid/write-filter-undeclared.json",
       "sha256": "6439ab36602fcd88831b82903c3834a3cba1c5aab6b55185b19b401be4b27750"
+    },
+    {
+      "file": "page/conformance/layout-compatibility.json",
+      "sha256": "c1748a0b0db9f94a89ed5f72756e1835daa028791f661d6b1b28a2ad6bdefe2e"
     },
     {
       "file": "page/conformance/valid/composite-page.json",
@@ -698,6 +718,14 @@
     {
       "file": "page/conformance/valid/inline-report.json",
       "sha256": "9662c3fd2c85b2f9aa8a4aa2dac06e9587f85e515fa51c9e2f66bd00fae5d75f"
+    },
+    {
+      "file": "page/conformance/valid/layout-6-1-dashboard.json",
+      "sha256": "c61530c130233736fa245014e61e07a6365920062f0f218032e6f4c86cfa1247"
+    },
+    {
+      "file": "page/conformance/valid/layout-6-1-report.json",
+      "sha256": "f41eb9aa6e047f8e4dc422fef83806474029d2f312f436edb67b8cf757a01b99"
     },
     {
       "file": "page/conformance/valid/map-page.json",
@@ -725,7 +753,7 @@
     },
     {
       "file": "page/schema.json",
-      "sha256": "b98be6a69a490319ae39ab33683f62c010199e0966e3051534dde3768d230ae8"
+      "sha256": "27b4c910bb25a993e20f9ac227d9a812e51a3651f8de86741765d76adb3f57d5"
     },
     {
       "file": "query/error-codes.json",

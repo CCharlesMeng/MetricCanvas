@@ -5,9 +5,10 @@
     "schemaVersion": {
       "type": "string",
       "enum": [
-        "6.0"
+        "6.0",
+        "6.1"
       ],
-      "description": "页面文档契约版本；当前支持 6.0"
+      "description": "页面文档契约版本；当前支持 6.0 / 6.1"
     },
     "id": {
       "type": "string",
@@ -28,6 +29,13 @@
         }
       },
       "additionalProperties": false
+    },
+    "layout": {
+      "allOf": [
+        {
+          "$ref": "#/definitions/pageLayoutForm"
+        }
+      ]
     },
     "layoutForm": {
       "allOf": [
@@ -4531,5 +4539,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.0"
+  "$id": "https://metriccanvas/page/v6.1"
 }

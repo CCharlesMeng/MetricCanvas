@@ -270,7 +270,7 @@ describe('正式页面 id 的确认与校验(复用 confirm_page_id 机制的判
       title: 'region-gmv-overview',
       stablePath: '/pages/region-gmv-overview',
       immutableAfterSave: true,
-      schemaVersion: versionPolicy.current
+      schemaVersion: document.schemaVersion
     });
   });
 });

@@ -13,7 +13,7 @@
 export type { Page } from './page';
 export type { PageDocument } from './page-document';
 export type { TypedError } from './errors';
-export { parsePage, validate } from './validate';
+export { parsePage, validate, normalizePageDocument } from './validate';
 export { versionPolicy, supportedVersions } from './version';
 export { pageSchema } from './schema';
 export { componentCatalog } from './component-catalog';

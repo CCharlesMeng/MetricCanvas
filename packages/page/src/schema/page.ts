@@ -101,6 +101,7 @@ export const pageDocumentSchemaZ = z
       }),
     id: idZ,
     meta: pageMetaZ.optional(),
+    layout: pageLayoutFormZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
     dashboardToolbar: dashboardToolbarZ.optional(),
     params: z.array(pageParamZ).min(1).optional(),

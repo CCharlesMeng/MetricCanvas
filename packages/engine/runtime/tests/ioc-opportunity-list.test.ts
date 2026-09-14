@@ -20,7 +20,7 @@ function loadPage(): Page {
 describe('ioc-opportunity-list 骨架', () => {
   it('声明标准看板工具栏标题，内容区只保留明细卡片', () => {
     const page = loadPage();
-    expect(page.layoutForm).toBe('dashboard');
+    expect(page.layout).toBe('dashboard');
     expect(page.meta?.title).toBe('机会点清单');
     expect(page.sections.map((section) => section.container)).toEqual(['card']);
     expect(page.sections.map((section) => section.id)).toEqual(['list']);
@@ -42,7 +42,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.0');
+    expect(page.schemaVersion).toBe('6.1');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)

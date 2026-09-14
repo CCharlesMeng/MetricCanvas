@@ -3,6 +3,7 @@ import { mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import {
   componentCatalog,
+  normalizePageDocument,
   ERROR_TYPES,
   pageSchema,
   QUERY_ERROR_CODES,
@@ -92,6 +93,21 @@ async function buildProductOutputs(): Promise<OutputMap> {
     fixtures.set(fileName.slice(0, -'.json'.length), document);
     outputs.set(`page/conformance/valid/${fileName}`, content);
   }
+
+  const layoutCases = [];
+  for (const schemaVersion of ['6.0', '6.1', '6.2', '7.0']) {
+    for (const declaration of [
+      {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
+      { layout: 'report' }, { layout: 'dashboard' },
+      { layout: 'dashboard', layoutForm: 'dashboard' },
+      { layout: 'dashboard', layoutForm: 'report' },
+      { layout: 'kiosk' }
+    ]) {
+      const input = { ...(fixtures.get('inline-report') as object), schemaVersion, ...declaration };
+      layoutCases.push({ input, expected: normalizePageDocument(input) });
+    }
+  }
+  outputs.set('page/conformance/layout-compatibility.json', json({ cases: layoutCases }));
 
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {

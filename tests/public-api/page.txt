@@ -6,6 +6,7 @@ PageDocument
 TypedError
 canonicalizeJson
 componentCatalog
+normalizePageDocument
 pageSchema
 parsePage
 supportedVersions
@@ -241,6 +242,7 @@ isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
 navigationErrors
+normalizePageDocument
 normalizeQueryRows
 pageCapabilities
 pageListEntry

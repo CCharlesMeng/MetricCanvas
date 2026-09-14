@@ -50,6 +50,17 @@ function longString(length: number): string {
 
 export const invariants: InvariantDefinition[] = [
   {
+    id: 'page-layout-compatibility',
+    description: '6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取',
+    valid: ['inline-report', 'query-dashboard', 'layout-6-1-report', 'layout-6-1-dashboard'],
+    cases: [
+      { case: 'layout-before-6.1', base: 'layout-6-1-dashboard', expect: /由 6.1 引入/, mutate: d => { d.schemaVersion = '6.0'; } },
+      { case: 'layout-dual-equal', base: 'layout-6-1-dashboard', expect: /不得同时声明/, mutate: d => { d.layoutForm = 'dashboard'; } },
+      { case: 'layout-dual-conflict', base: 'layout-6-1-dashboard', expect: /不得同时声明/, mutate: d => { d.layoutForm = 'report'; } },
+      { case: 'layout-invalid-value', base: 'layout-6-1-dashboard', expect: /取值不在允许范围/, mutate: d => { d.layout = 'kiosk'; } }
+    ]
+  },
+  {
     id: 'url-navigation-source-contract',
     description: 'URL 与来源绑定可校验，目标存在性与必填项由目标负责',
     valid: ['url-navigation-page'],

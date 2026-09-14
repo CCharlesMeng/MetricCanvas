@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 0;
+const CURRENT_MINOR = 1;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -33,6 +33,11 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'page-layout': {
+    minor: 1,
+    description: '顶层 layout:页面布局形态的规范字段',
+    usedAt: (document) => record(document)?.layout !== undefined ? ['/layout'] : []
+  },
   'page-params': {
     minor: 0,
     description: '顶层 params:页面参数声明(ADR-0047)',

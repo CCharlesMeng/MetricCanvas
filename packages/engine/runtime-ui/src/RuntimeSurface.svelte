@@ -970,7 +970,7 @@
     </div>
   {:else}
     {@const readyPage = pageState.page}
-    {@const layoutForm = readyPage.layoutForm ?? 'report'}
+    {@const layoutForm = readyPage.layout ?? 'report'}
     {@const dashboardToolbar = readyPage.dashboardToolbar ?? 'visible'}
     {@const dashboardToolbarConfig =
       typeof dashboardToolbar === 'object' ? dashboardToolbar : undefined}
