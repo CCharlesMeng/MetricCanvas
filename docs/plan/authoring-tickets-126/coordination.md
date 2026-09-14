@@ -767,3 +767,11 @@ S1可继续#145 UI，先消费S2固定共同契约并登记精确文件，S4工�
 S1真实任务不变，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合正式ccf53c2100f23d634677706a99a4e8636148a432。唯一既有触点`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-publication.ts`、`apps/platform/src/lib/workbench/PublicationReview.svelte`、`apps/platform/src/lib/workbench/publication-fixture.ts`、`apps/platform/src/routes/publication/+page.svelte`、`apps/platform/tests/workbench/authoring-publication.test.ts`、`apps/platform/tests/workbench/authoring-publication-browser.mjs`及`docs/plan/authoring-tickets-126/t19-ui-evidence.md`。
 
 消费S2固定内部publication-contract作者与验证；依赖字段实施待固定SHA，不自建另一套DTO。publication-fixture仅明确开发边界替身，/publication沿dev门禁并验证生产无替身请求/可执行入口；生产PublicationPort默认不可用，不造服务端点。S4发布工具、S2共同作者/生成、S5适配所有权不变；若需页面资产客户端/RevisionPreview等额外修改先登记。最终S1主责整票UI与工具消费汇合验收，证据按本仓/外部确认/真实联调分列。
+
+## #145共同契约消费基线验收
+
+S2作者5a4e44ea63aa1f22326bceb37a874b0d869c1514、生成84b9e0d55be2aa471d7ab7e99e47caf8ec82c4ea及审阅修正/重生成669412823d97aa899db85997bb6e5088c0bb38a4已完整集成，保留#146与本树登记。内部无依赖TS字段单真源推导类型/Schema/结构检查，四包公开面/依赖/版本未变。
+
+S0审阅字段构造、闭合Page引用、11字段评审payload及候选/确认/修正/结果关联，复现多值参数误报eq仍接受，S2已补声明multiple到eq/in的双向校验及两反向量。S0独立最终72项publication测试通过（含Python69结构向量及TS关联），集成1910摘要通过，共同作者/产物与被测固定树相同；采用S2生成471/4/1无漂移与tsc、先前19生成/隔离回归。
+
+仅共同契约本仓范围验收，69向量的Python应用关联一致性还须S4消费实测；结构校验不证明source/hash/算法身份/人工proof/期限/租约/权限/服务原子事务。正式下游消费以本条提交SHA为准，S1/S4可依此实施#145；整票UI/工具/最终组合及真实服务均未验收，不关闭Issue。
