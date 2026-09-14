@@ -57,9 +57,15 @@ try {
   await expect(status).toContainText('停止本地接收');
   await page.getByRole('button',{name:'查询本轮保存结果'}).click(); await expect(status).toContainText('取消后服务已保存');
   await expect(canvas.getByText('slow', { exact:true })).toBeVisible();
-  await page.getByRole('button',{name:'查看取消后已保存修订'}).click(); await expect(page.getByText('正在预览已保存修订')).toBeVisible();
+  await page.getByRole('button',{name:'查看取消后已保存修订'}).click(); await expect(page.getByText('正在预览已保存修订')).toBeVisible(); await expect(canvas.getByText('slow-new', { exact: true })).toBeVisible(); await expect(canvas.getByText('加载精确修订…')).toHaveCount(0);
   await mkdir('/private/tmp/metriccanvas-s1-evidence',{recursive:true}); await page.screenshot({path:'/private/tmp/metriccanvas-s1-evidence/t20-cancelled-saved.png'});
   expect(events.length).toBeGreaterThan(3); for(const event of events) expect(Object.keys(event)).toEqual(['draftId']);
+  const production = process.env.S1_PRODUCTION_URL;
+  if (production) {
+    let fixtureRequests = 0; page.on('request', request => { if (request.url().includes('/__fixtures/language/')) fixtureRequests++; });
+    await page.goto(production+'/language'); await expect(page.getByText('语言组合验收入口仅供开发环境使用。')).toBeVisible();
+    await expect(page.getByRole('button', {name:'执行语言场景'})).toHaveCount(0); expect(fixtureRequests).toBe(0);
+  }
   expect(errors).toEqual([]);
   console.log('T20 browser PASS: actual MCP composition, invalid create, partial, text/wait/failure, lost ack, read retry, offline, stale notification, cancel/recovery; events contain only draftId.');
 } finally { await browser.close(); }
