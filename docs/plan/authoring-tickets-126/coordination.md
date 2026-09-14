@@ -239,3 +239,7 @@ S0 复验：page_validation 5 项（包含32矩阵及全量正反向量）、com
 - 五个临时授权文件（document-edit.ts、promote.ts、对应两tests、component-building.test.ts）全部核对范围通过，正式归还 S1；S2 #133 不继续占用这五文件。default-preview-page.json 明确6.1/report；旧版Embed测试先移除示例新layout，再构造6.0/layoutForm，保持旧版真实覆盖。
 - #131 与 #132 技术前置同时满足，S2 可消费本台账提交 HEAD 后执行 #133，不等待 M0。精确消费 SHA 通过实际任务消息公布。#133 需保留6.0/6.1旧字段读取、查全生产写出、成套生成/四交付物/存量迁移和支持区间证据；新增共享文件先登记。
 - M0 仍未 READY：#127/#128 尚未正式交付，#130 等 #128 实际接口对齐，#133 正在解锁。#134 等功能票不提前开启，S4/S5未开启。
+
+#133 已实际通知 S2 从 `9135d22f1616ff63357cbfce5cd6a80b016f0e24` 开工；同 SHA 已通知 S1 消费并归还五文件。S2 预登记 page.ts/page-document.ts 的运行态别名收口、布局/CLI测试及写出门禁、存量pages和当前样例、生成器/生成物、PAGE-METADATA.md、docs/host-contract.md、packages/embed/README.md、tools/package-build/README.md、t07证据/迁移说明。存量/新文件完整清单须开改前补齐，旧读取黄金样例保留。
+
+S0 接受四发布包锁步 `1.0.0-rc.2` 作为本地6.1候选版本，不授权registry发布或push。S2需登记四package.json及实际compatibility.mjs路径；既有安全overrides不能为通过兼容门禁删除，应最小调整门禁以保留配置并验证实际两版本。浏览器及环境证据如实记录；#133不代表M2参考手册主体完成。
