@@ -257,3 +257,5 @@ S2 回执：工作树 `/private/tmp/metriccanvas-126-s2`，分支 `codex/s2-layo
 版本：`packages/page/package.json`、`packages/engine/package.json`、`packages/metric-canvas/package.json`、`packages/embed/package.json`；`pnpm-lock.yaml` 仅锁步需要时由工具更新。`tools/package-build/compatibility.mjs` 限最低版本既有overrides合并，以及真实运行证实必要的工具版本调整；安全overrides保留，回执说明依据。
 
 新增 `packages/page/tests/canonical-writers.test.ts`、`tools/scripts/migrate-layout.ts`、`packages/page/tests/layout-migration-cli.test.ts`。S0明确迁移CLI为纯本地、显式输入→独立新输出，不覆盖原文/同路径、不留貌似成功的半成品、不调用资产保存或伪造修订；复用公开规范化，覆盖旧版两形态、幂等、非法版本及原文保持。工作台五文件不在本票范围。最终验收需完整实际生成清单与四包候选摘要；未授权发布。
+
+#133 Python测试临时所有权：S3明确授权 S2 修改 `metriccanvas-authoring/test-harness/tests/test_bundle_info.py` 的 productContractVersion 硬编码 `1.0.0-rc.1` 断言，改为与本Bundle的 contract-lock 对账，并允许读取锁所需最小改动。保留版本一致性断言，其他Python作者代码不动；S3期间不编辑该文件，随#133提交/复验后归还。S0已通知S2；若该文件摘要受Bundle锁管理，仍通过唯一生成流程更新，不手改摘要。此例外不启动#134。
