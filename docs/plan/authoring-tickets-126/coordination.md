@@ -603,3 +603,9 @@ S0读票并审阅执行目标/操作/条件/逐源快照、最后筛选记录与
 本仓#144范围通过，四包rc.4/Schema6.2。真实执行优先级、权限裁决/无权限范围、lastFilters跨实例写入顺序仍外部权威；本仓固定回执和本地序号非外部确认。未重跑rc.4 Edge/最低Svelte矩阵，M2/真实消费需补适用证据。最终GitHub评论自动审批拒绝保持，不代发绕过。
 
 正式归还S1：RevisionPreview.svelte与revision-preview-execution-browser.mjs；预登记revision-preview-execution.test.ts未实际创建，窗口结束。S1/S4后续沿t18精确预览/执行接缝，产品公共导出仍S2。#145已满足#140/#144但等待#138，#146亦只等#138，S4尚未登记。#136后续最终生成必须保留rc.4执行契约和#135增量，不能取旧rc.3锁覆盖；S2继续独立生成支援并在M2补手册/必要分发矩阵，不实施他人模块。
+
+## M2参考手册与rc.4分发登记
+
+参考手册方案中的C0真源/字段生成/Bundle与Skill分发责任由已登记S2承接；S0仅协调与验收，不另建重复文档作者线。S2从3286efc独立准备，先完成rc.4现有两Svelte版本×Chrome/Edge真实tarball矩阵。独占`tools/package-build/compatibility.mjs`（仅新增#143/#144夹具复制与类型导入映射，保留安全overrides与既有断言），新增`docs/plan/authoring-tickets-126/t18-compatibility-evidence.md`；不发布包。
+
+手册作者范围先登记`PAGE-METADATA.md`、`docs/page-metadata/`方案列出的模块/17组件/索引Markdown及`docs/plan/authoring-tickets-126/reference-evidence.md`。统一导出入口`tools/scripts/export-authoring-contracts.ts`与产品`contracts/metriccanvas/page/reference/`、Bundle`metriccanvas-authoring/contract-snapshot/page/reference/`及既有生成锁仍S2；生成物不手写。实施先提交精确新增生成器/测试/Skill投影路径清单，S0登记后再改这些尚未确定路径，避免占用S3/S4 Skill作者入口。沿已确认手册方案执行，当前真源为6.2，方案旧6.0现状属历史；不改页面协议或内容工具行为。各模块语义/示例不足由对应角色提供证据，手册不得把Schema支持当装配或外部服务可用。
