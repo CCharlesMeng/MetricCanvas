@@ -517,3 +517,9 @@ S3任务不变；新worktree`/private/tmp/metriccanvas-s3-135`、分支`codex/s3
 静态text可无数据；fieldText/map通过可信source token读取已验证完整数据源，模型仅标识，不搬运原文/行；新增/删除沿#134事务校验。地图名称机器资产由S2从现有内置地图唯一导出，准确作者/生成路径另登记，未到齐前不伪造空地图成功。只消费现有Embed，不改引擎；#136/#137不混入。新增公开创建工具仍须明确与既有compose职责及模型摘要隔离。
 
 #135作者触点更正：操作注册改为`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_editing.py`合并既有handler表与独立text_map_building表，component_editing.py本票不改。追加`metriccanvas-authoring/tool/metriccanvas_authoring/application/edit_page.py`仅提取read_verified_baseline供create_content_page复用，ref/原文hash校验及原edit错误语义保持。两文件均S3，无跨线冲突。
+
+### #135地名契约独立生成登记
+
+S2从正式ca8c549独立生成树新增`contracts/metriccanvas/page/map-regions.json`及`metriccanvas-authoring/contract-snapshot/page/map-regions.json`；作者`tools/scripts/export-authoring-contracts.ts`按既有map-chart/maps/china.json与world.json features.properties.name及geoRegionName/nameMap语义提取，原底图不改。生成manifest/锁由S2唯一刷新，完整清单随提交；不混#144未验收实现。S3收到正式验收生成SHA后消费，未到齐前可独立开发但不硬编码替代地名资产。
+
+#140阶段回执：S1报告离线重开2项恢复、重连串行、刷新丢回执只lookup及跨用户隔离浏览器通过，仍在全量收尾。拟新增coordinator公开requireSynchronizedRef门禁，未同步/保护失败/身份不符拒绝，供#146消费；此为进行中接口，未集成不正式解锁。
