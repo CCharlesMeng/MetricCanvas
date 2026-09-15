@@ -15,7 +15,7 @@ export type SaveOutcome =
   | { status: 'pending' | 'unknown'; context: OperationContext; message: string }
   | { status: 'rejected'; context: OperationContext; code: string; message: string };
 export interface AuthoringCapabilities {
-  currentRead: boolean; exactRead: boolean; exactDraftRead: boolean; history: boolean;
+  latestRead?: boolean; currentRead: boolean; exactRead: boolean; exactDraftRead: boolean; history: boolean;
   stableSave: boolean; operationLookup: boolean; candidate: boolean; execute: boolean;
 }
 export interface AuthoringPort {
@@ -59,6 +59,8 @@ export function createAuthoringCoordinator(options: {
   let state: AuthoringSnapshot = { draft: null, ref: null, loading: false, languageLocked: false, dirty: false, save: null, error: '', sync: null };
   let epoch = 0;
   let languageLease: symbol | null = null;
+  let preparation: symbol | null = null;
+  let flushing = false;
   let owner: string | null = null;
   let syncConfig: { storage: AuthoringStorage<DurableAuthoringState>; port: StableSavePort } | null = null;
   let sync: ReturnType<typeof createAuthoringSync> | null = null;
@@ -71,6 +73,7 @@ export function createAuthoringCoordinator(options: {
   const emit = () => { for (const listener of listeners) listener(snapshot()); };
   const identityKey = () => { const value = options.identity(); return JSON.stringify([value.actorId, value.workspaceId]); };
   const scope = () => `${epoch}:${identityKey()}`;
+  const recoveryLocked = () => state.save?.status === 'unknown' || state.save?.status === 'pending' || state.sync?.phase === 'unknown';
   const unresolved = () => state.loading || state.sync?.protection === 'failed' || state.save?.status === 'pending' || state.save?.status === 'unknown' || (state.sync?.pending ?? 0) > 0;
   const languageBlocked = () => disposed || unresolved() || (owner !== null && owner !== identityKey()) ||
     (!!syncConfig && !!state.draft && state.sync?.protection !== 'protected');
@@ -105,7 +108,7 @@ export function createAuthoringCoordinator(options: {
         if (owner !== identityKey()) {
           state = { ...state, error: '身份已变化，原队列已停写停发，请重新打开页面。' }; emit(); return;
         }
-        state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0 }; emit();
+        state = { ...state, sync: value, ref: value.base, dirty: value.pending > 0, languageLocked: !!preparation || !!languageLease || value.phase === 'unknown' }; emit();
       });
       state = { ...state, loading: false }; emit();
       active.start();
@@ -122,16 +125,16 @@ export function createAuthoringCoordinator(options: {
       syncConfig = config; if (state.draft) void attachSync();
     },
     setOnline(value: boolean) { online = value; sync?.setOnline(value); },
-    setRetainDimensionValues(value: boolean) { retainDimensionValues = value; },
+    setRetainDimensionValues(value: boolean) { if ((!preparation || flushing) && !languageLease && !recoveryLocked()) retainDimensionValues = value; },
     async retrySync() { await sync?.retry(); },
     /** Shared gate for consumers that require fully synchronized content (including publication). */
     requireSynchronizedRef(): DraftRef {
-      if (languageLease || !state.ref || languageBlocked() || state.dirty || owner !== identityKey()) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
+      if (preparation || languageLease || !state.ref || languageBlocked() || state.dirty || owner !== identityKey()) throw new Error('工作尚未完成同步，暂不能进入语言修改或发布。');
       return structuredClone(state.ref);
     },
     /** Local lease; trusted Relay association is separately verified by authoring-language. */
-    beginLanguage() {
-      if (languageLease || languageBlocked() || state.dirty) throw Error('等待当前工作同步后再进行语言修改。');
+    beginLanguage(newPageId?: string) {
+      if (preparation || languageLease || languageBlocked() || state.dirty) throw Error('等待当前工作同步后再进行语言修改。');
       const identity = options.identity();
       if (!identity.actorId || !identity.workspaceId) throw Error('身份失效。');
       const token = Symbol('language'), expected = scope();
@@ -143,18 +146,73 @@ export function createAuthoringCoordinator(options: {
         current: () => !disposed && languageLease === token && scope() === expected,
         accept(draft: SavedDraft) {
           if (disposed || languageLease !== token || scope() !== expected) return false;
-          return coordinator.acceptSavedDraft(draft, token);
+          if (newPageId && draft.ref.pageId !== newPageId) return false;
+          return coordinator.acceptSavedDraft(draft, token, !!newPageId);
         },
         release() {
           if (languageLease !== token) return;
-          languageLease = null; state = { ...state, languageLocked: false }; emit();
+          languageLease = null; state = { ...state, languageLocked: recoveryLocked() }; emit();
+        }
+      };
+    },
+    /** Locks new writers before draining already-started input. Sync itself remains live. */
+    beginPreparation() {
+      if (preparation || languageLease || disposed) throw Error('当前轮次尚未结束。');
+      const token = Symbol('preparation');
+      const identity = identityKey();
+      preparation = token; state = { ...state, languageLocked: true }; emit();
+      const current = () => !disposed && preparation === token && identityKey() === identity;
+      return {
+        current,
+        flush(callback: () => void) {
+          if (!current()) throw Error('工作范围已变化。');
+          flushing = true;
+          try { callback(); } finally { flushing = false; }
+        },
+        async synchronize() {
+          if (!current()) throw Error('工作范围已变化。');
+          if (sync) await sync.retry();
+          else if (state.dirty) {
+            // The private preparation token alone may drain the existing manual draft.
+            await coordinator.save(token);
+          }
+        },
+        async latest(signal: AbortSignal) {
+          if (!current() || languageBlocked() || state.dirty) throw Error('当前工作尚未同步。');
+          if (!options.port.capabilities.latestRead) throw Error('CAPABILITY_UNAVAILABLE：服务未保证最新页面读取。');
+          const pageId = state.ref?.pageId;
+          if (!pageId) throw Error('必须明确新建或打开已有页面。');
+          const revision = await options.port.getLatest(pageId, signal);
+          if (signal.aborted || !current() || revision.pageId !== pageId || revision.document.id !== pageId || revision.resourceId !== state.ref?.resourceId) throw Error('RESPONSE_MISMATCH：最新页面范围已变化。');
+          refOf(revision);
+          if (!normalizePageDocument(revision.document).ok) throw Error('最新页面校验失败。');
+          return structuredClone(revision);
+        },
+        async adoptLatest(revision: PageRevision) {
+          if (!current() || state.dirty || languageBlocked()) throw Error('工作范围已变化。');
+          if (stable(state.ref) === stable(refOf(revision)) && stable(state.draft?.pageDocument) === stable(revision.document)) return;
+          const parsed = createCanvasAuthoringDraft({ ...revision.document });
+          if (!parsed.ok) throw Error(parsed.message);
+          change(parsed.draft); state = { ...state, ref: refOf(revision), dirty: false, save: null };
+          await attachSync(undefined, true); emit();
+          if (!current() || state.sync?.protection === 'failed') throw Error('最新工作副本保护失败。');
+        },
+        acquire(newPageId?: string) {
+          if (!current()) throw Error('工作范围已变化。');
+          preparation = null;
+          try { return coordinator.beginLanguage(newPageId); }
+          catch (error) { preparation = token; throw error; }
+        },
+        release() {
+          if (preparation !== token) return;
+          preparation = null; state = { ...state, languageLocked: recoveryLocked() }; emit();
         }
       };
     },
     capabilities: options.port.capabilities,
     subscribe(listener: (state: AuthoringSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     replaceDraft(draft: CanvasAuthoringDraft, description = '手工页面修改', forceOperation = false): boolean {
-      if (languageLease || disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
+      if ((preparation && !flushing) || languageLease || recoveryLocked() || disposed || (syncConfig && state.loading) || state.save?.status === 'pending') return false;
       if (owner && owner !== identityKey()) { state = { ...state, error: '身份已变化，请重新打开页面后编辑。' }; emit(); return false; }
       if (state.ref && draft.pageDocument.id !== state.ref.pageId) {
         state = { ...state, error: 'RESPONSE_MISMATCH：编辑不能改变页面身份。' }; emit(); return false;
@@ -169,7 +227,7 @@ export function createAuthoringCoordinator(options: {
       return true;
     },
     async load(pageId: string): Promise<void> {
-      if (languageLease || disposed || unresolved()) return;
+      if (preparation || languageLease || disposed || unresolved()) return;
       epoch++; read?.abort(); read = new AbortController();
       const signal = read.signal, expected = scope();
       state = { ...state, loading: true, error: '' }; emit();
@@ -202,7 +260,7 @@ export function createAuthoringCoordinator(options: {
       }
     },
     readSavedDraft: (async (draftId, signal) => {
-      if (languageLease || languageBlocked()) throw new Error('保存结果未确定或身份已变化，暂不能接收新的草稿。');
+      if (preparation || languageLease || languageBlocked()) throw new Error('保存结果未确定或身份已变化，暂不能接收新的草稿。');
       if (state.dirty) throw new Error('工作副本有未保存修改，保留当前页面，请先保存后重试草稿通知。');
       if (!options.port.capabilities.exactDraftRead || !options.port.readSavedDraft) return unavailableDraftReader(draftId, signal);
       const expected = scope();
@@ -210,9 +268,9 @@ export function createAuthoringCoordinator(options: {
       if (signal.aborted || scope() !== expected || languageBlocked() || state.dirty) throw new Error('草稿读取期间工作范围已变化，保留当前工作副本。');
       return result;
     }) as ReadSavedDraft,
-    acceptSavedDraft(draft: SavedDraft, lease?: symbol): boolean {
-      if ((languageLease && languageLease !== lease) || languageBlocked()) return false;
-      if (draft.document.id !== draft.ref.pageId || state.dirty || (state.draft && state.draft.pageDocument.id !== draft.ref.pageId)) {
+    acceptSavedDraft(draft: SavedDraft, lease?: symbol, newPage = false): boolean {
+      if (preparation || (languageLease && languageLease !== lease) || languageBlocked()) return false;
+      if (draft.document.id !== draft.ref.pageId || state.dirty || (!newPage && state.draft && state.draft.pageDocument.id !== draft.ref.pageId)) {
         state = { ...state, error: '草稿通知与当前工作副本不兼容，保留当前页面。' }; emit(); return false;
       }
       const parsed = createCanvasAuthoringDraft({ ...draft.document });
@@ -221,7 +279,7 @@ export function createAuthoringCoordinator(options: {
       change(parsed.draft); state = { ...state, ref: structuredClone(draft.ref), dirty: false, save: null }; void attachSync(undefined, true); emit(); return true;
     },
     async undo(): Promise<void> {
-      if (languageLease || disposed || !sync || state.loading || owner !== identityKey()) throw Error('当前工作副本不能撤销。');
+      if (preparation || languageLease || disposed || !sync || state.loading || owner !== identityKey()) throw Error('当前工作副本不能撤销。');
       const expected = scope();
       const draft = await sync.undo(retainDimensionValues);
       if (disposed || scope() !== expected) return;
@@ -240,7 +298,7 @@ export function createAuthoringCoordinator(options: {
     },
     async restoreRevision(ref: DraftRef, signal?: AbortSignal): Promise<void> {
       if (!options.port.capabilities.exactRead) throw Error('当前生命周期端口尚未开放历史精确读取。');
-      if (languageLease || disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
+      if (preparation || languageLease || disposed || !sync || owner !== identityKey()) throw Error('当前工作副本不能恢复历史。');
       const before = scope();
       if ((state.sync?.pending ?? 0) > 0) await sync.retry();
       if (disposed || scope() !== before) throw Error('历史恢复范围已变化。');
@@ -261,8 +319,8 @@ export function createAuthoringCoordinator(options: {
       if (!parsed.ok) throw new Error('预览页面校验失败。');
       return { ...revision, document: parsed.document };
     },
-    async save(): Promise<SaveOutcome | null> {
-      if (languageLease || disposed || !state.draft) return null;
+    async save(preparationPermit?: symbol): Promise<SaveOutcome | null> {
+      if ((preparation && preparation !== preparationPermit) || languageLease || disposed || !state.draft) return null;
       if (sync) { await sync.retry(); return null; }
       if (unresolved() || (state.save?.status === 'rejected' && state.save.code === 'REVISION_CONFLICT')) return state.save;
       const identity = options.identity();

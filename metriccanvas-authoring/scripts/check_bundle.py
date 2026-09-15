@@ -4,6 +4,7 @@ import hashlib
 import json
 import re
 import unicodedata
+import tomllib
 from pathlib import Path
 from typing import Any
 from urllib.parse import unquote, urlsplit
@@ -107,6 +108,13 @@ def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> lis
     if platform_ids and platform_ids != {"metriccanvas-platform-authoring"}:
         errors.append("skills: expected one unified Platform entrypoint")
     if "metriccanvas-platform-authoring" in ids:
+        registration = next(entry for entry in entries if entry.get("id") == "metriccanvas-platform-authoring")
+        expected_service = {"command": "metriccanvas-platform-content", "module": "metriccanvas_authoring.unified_content_server", "contextContract": "authoring-turn/1.0"}
+        if registration.get("mcpServer") != "metriccanvas-platform-content" or bundle.get("toolServices", {}).get("metriccanvas-platform-content") != expected_service:
+            errors.append("Platform Skill: unified deployment must use the gated content service")
+        project = root / "tool/pyproject.toml"
+        if not project.is_file() or tomllib.loads(project.read_text()).get("project", {}).get("scripts", {}).get("metriccanvas-platform-content") != "metriccanvas_authoring.unified_content_server:main":
+            errors.append("Platform Skill: gated CLI is missing or replaced")
         folder = root / "skill/metriccanvas-platform-authoring"
         for relative, budget in (("SKILL.md", 200), ("workflows/create.md", 250), ("workflows/edit.md", 250)):
             file = folder / relative

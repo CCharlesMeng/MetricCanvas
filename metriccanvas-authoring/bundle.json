@@ -25,7 +25,15 @@
       "id": "metriccanvas-platform-authoring",
       "entrypoint": "skill/metriccanvas-platform-authoring/SKILL.md",
       "referenceMode": "injected-or-file-read",
-      "referenceProjection": "none"
+      "referenceProjection": "none",
+      "mcpServer": "metriccanvas-platform-content"
     }
-  ]
+  ],
+  "toolServices": {
+    "metriccanvas-platform-content": {
+      "command": "metriccanvas-platform-content",
+      "module": "metriccanvas_authoring.unified_content_server",
+      "contextContract": "authoring-turn/1.0"
+    }
+  }
 }

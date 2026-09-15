@@ -61,6 +61,8 @@
   let historyOpen = $state(false);
   let previewRef = $state<DraftRef | null>(null);
   let metadataEntryEl: HTMLButtonElement | null = $state(null);
+  let flushingInput = false;
+  let workbenchElement: HTMLDivElement;
   let selectedComponent = $state<ComponentLocator | null>(null);
   const dataGateway = createWorkbenchDqeGateway();
 
@@ -78,6 +80,13 @@
     if (pageId) void coordinator.load(pageId);
     if (languagePort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
+        selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
+        flushPendingInput: () => {
+          const input = document.activeElement;
+          if (!(input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement) || !workbenchElement?.contains(input)) return;
+          flushingInput = true;
+          try { input.dispatchEvent(new Event('change', { bubbles: true })); input.blur(); } finally { flushingInput = false; }
+        },
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
       language.subscribe((value) => { languageState = value; });
       onLanguageReady?.(language);
@@ -185,7 +194,7 @@
       selectedComponent = intent.locator;
       return;
     }
-    if (savePending || !currentDraft) return;
+    if ((savePending && !flushingInput) || !currentDraft) return;
     if (intent.type === 'move_component') {
       const result = moveComponent(currentDraft, intent.locator, intent.destination);
       applyDocumentEdit(result);
@@ -225,7 +234,7 @@
   <title>MetricCanvas 页面搭建工作台</title>
 </svelte:head>
 
-<div class="workbench" data-testid="workbench">
+<div bind:this={workbenchElement} class="workbench" data-testid="workbench">
   <div class="docbar" data-testid="workbench-contextbar" data-contract-critical>
     <div class="l">
       <strong class="canvas-title">页面画布</strong>
@@ -354,7 +363,7 @@
       onSelectType={selectComponentType}
       onSelectComponent={selectComponentFromList}
       onEdit={(edit) => {
-        if (!savePending && currentDraft && selectedComponent) {
+        if ((!savePending || flushingInput) && currentDraft && selectedComponent) {
           applyDocumentEdit(editComponent(currentDraft, selectedComponent, edit));
         }
       }}

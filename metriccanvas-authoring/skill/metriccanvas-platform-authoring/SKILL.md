@@ -2,13 +2,14 @@
 name: metriccanvas-platform-authoring
 description: 在 MetricCanvas Platform 新建或修改页面，或回答当前组件配置问题。已有页新增内容属于修改；普通业务问数沿用问数入口。
 allowed-tools:
+  - read_page_context
   - discover_data_context
   - compose_page
   - create_content_page
   - edit_page
 metadata:
   mcp_servers:
-    - metriccanvas-content
+    - metriccanvas-platform-content
 ---
 
 # Platform 页面创作
@@ -17,8 +18,8 @@ metadata:
 
 ## 选择本轮路径
 
-- **新建或明确另建页面**：读取[创建流程](workflows/create.md)。需要平台分配的 page_id。
-- **修改当前页面，包括新增组件**：读取[修改流程](workflows/edit.md)。需要可信完整基线及 baseline_token。
+- **新建或明确另建页面**：读取[创建流程](workflows/create.md)。需要可信程序分配的新建上下文 contextRef。
+- **修改当前页面，包括新增组件**：读取[修改流程](workflows/edit.md)。需要本轮可信上下文 contextRef。
 - **询问当前组件配置**：直接使用下方只读规则；不加载创建/修改流程。
 - **普通问数**：沿部署的普通问数入口处理，不把临时页面态当作当前页面的编辑基线。
 
@@ -26,11 +27,11 @@ metadata:
 
 ## 当前目标与只读问答
 
-1. 使用本轮可信程序提供的 pageId、精确修订/完整性引用、目标稳定 ID、必要配置及省略说明。明确文字目标优先于选择状态；“这个”才使用当前选择。
-2. 目标跨页、被删除、同名歧义或未选择时澄清。省略不代表不存在；让集成程序提供同一修订的目标配置，缺少补读能力则说明缺口并等待。
+1. 使用本轮可信程序提供的 contextRef，调用 read_page_context 读取页面结构或必要目标配置、精确修订/完整性引用及省略说明。明确文字目标优先于选择状态；“这个”才使用当前选择。
+2. 目标跨页、被删除、同名歧义或未选择时澄清。省略不代表不存在；使用同一 context_ref 和 nextCursor 补读同修订配置；补读被拒绝则保留已知事实并说明缺口。
 3. 只回答实际提供的配置，区分显式值与默认行为；配置不足时不能从标题猜绑定、查询或格式。只读问答不调用内容生成、保存或业务数据发现。
 
-当前内容 MCP 没有公开 latest 或配置补读工具。baseline_token 证明可访问注册的完整基线，不证明服务端最新；每轮重新读取、人工输入同步、轮次隔离由集成程序承担，尚未兑现时如实说明。历史 token 和聊天摘要不能替代本轮可信上下文。
+统一内容工具由可信程序的本轮上下文门禁约束；contextRef 本身不是授权或最新证明。程序先收敛手工输入、同步并通过具备 latest 保证的端口准备上下文，再将身份/页/轮次/精确引用/hash 带外绑定。提供方未接通时工具明确不可用；历史 token、聊天摘要与旧兼容服务均不能替代本轮上下文。
 
 ## 工具与参考加载
 

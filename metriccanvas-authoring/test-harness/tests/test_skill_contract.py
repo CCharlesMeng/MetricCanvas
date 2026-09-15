@@ -176,8 +176,8 @@ class UnifiedSkillContractTest(unittest.TestCase):
             self.assertEqual(list(Draft202012Validator(schema).iter_errors(example["request"])), [])
         frontmatter = yaml.safe_load((folder / "SKILL.md").read_text().split("---", 2)[1])
         self.assertEqual(set(frontmatter["allowed-tools"]), {
-            "discover_data_context", "compose_page", "create_content_page", "edit_page"})
-        self.assertEqual(frontmatter["metadata"]["mcp_servers"], ["metriccanvas-content"])
+            "read_page_context", "discover_data_context", "compose_page", "create_content_page", "edit_page"})
+        self.assertEqual(frontmatter["metadata"]["mcp_servers"], ["metriccanvas-platform-content"])
 
 
 if __name__ == "__main__":

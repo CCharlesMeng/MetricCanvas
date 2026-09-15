@@ -2,6 +2,7 @@
 Never imported by production. HTTP is a loopback test transport, not a proposed service API.
 """
 import asyncio
+import hashlib
 import json
 import sys
 import uuid
@@ -48,6 +49,7 @@ identities.value = LifecycleIdentity('developer-1','local','fixture-secret')
 programs = TrustedPrograms()
 service = Service()
 contexts, notifications, operations, summaries = {}, {}, {}, []
+prepared_turns = {}
 reads = 0
 
 def authorize(context):
@@ -80,15 +82,40 @@ def delivery(result, context):
     return {'status': 'failed' if status in ('rejected','unavailable') else status, 'operations':contexts[op].get('operations',[])}
 
 async def dispatch(path, body):
-    global service, programs, contexts, notifications, operations, summaries, reads
+    global service, programs, contexts, notifications, operations, summaries, reads, prepared_turns
     if path == '/reset':
         service, programs = Service(), TrustedPrograms()
         contexts, notifications, operations, summaries, reads = {}, {}, {}, [], 0
+        prepared_turns = {}
         return {'ok':True}
     if path == '/metrics': return {'saves':service.save_calls,'revisions':len(service.revisions),'reads':reads,'model':summaries,'notifications':list(notifications)}
+    if path == '/latest':
+        if not service.head or service.head['pageId'] != body['pageId']: raise LifecycleError('PAGE_NOT_FOUND')
+        return await dispatch('/revision', {'ref':service.head})
+    if path == '/prepare':
+        authorize(body)
+        mode = body['mode']
+        if mode == 'existing':
+            latest = body['latest']
+            ref = {key:latest[key] for key in ('pageId','revisionId','resourceId')}
+            if ref != service.head or body['pageId'] != ref['pageId']: raise LifecycleError('STALE_BASE')
+            raw = await service.read(identities.current(), ref)
+            if json.loads(body['documentJson']) != raw['document'] or latest['document'] != raw['document']: raise LifecycleError('DOCUMENT_MISMATCH')
+            sha = hashlib.sha256(body['documentJson'].encode('utf-8')).hexdigest()
+            page_id = ref['pageId']
+        else:
+            if mode != 'new' or any(body[key] is not None for key in ('pageId','latest','documentJson','selectedComponentId')): raise LifecycleError('INVALID_NEW_BASE')
+            ref, sha, page_id = None, None, 'language-page'
+        binding = {key:body[key] for key in ('actorId','workspaceId','requestId','runId','turnId','mode','access','selectedComponentId')}
+        binding.update(version='1.0',contextRef=str(uuid.uuid4()),capabilityVersion='1.0',status='active',pageId=page_id,baseRef=ref,documentSha256=sha)
+        prepared_turns[binding['contextRef']] = deepcopy(binding)
+        return binding
     if path == '/run':
         context, mode = deepcopy(body['context']), body['prompt']
         authorize(context)
+        binding = context['binding']
+        if prepared_turns.get(binding['contextRef']) != binding: raise LifecycleError('TURN_MISMATCH')
+        if binding['baseRef'] != context['base'] or binding['requestId'] != context['operationId']: raise LifecycleError('TURN_MISMATCH')
         op = context['operationId']
         if op in contexts: raise LifecycleError('IDEMPOTENCY_CONFLICT')
         contexts[op] = deepcopy(context)

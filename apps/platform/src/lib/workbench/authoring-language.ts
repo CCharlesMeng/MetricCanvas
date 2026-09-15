@@ -1,4 +1,6 @@
-import { validate } from '@metriccanvas/page';
+import { validateAuthoringTurn, type AuthoringTurnBinding } from '../../../../../metriccanvas-authoring/contracts/authored/authoring-turn-contract';
+import type { PageRevision } from '../page-assets-client';
+import { canonicalizeJson, validate } from '@metriccanvas/page';
 import { listenForSavedDrafts, DRAFT_SAVED_EVENT, draftIdOf, type SavedDraft } from '../dialogue/port';
 import { createAnalysisPageState } from './analysis-page-state';
 import type { createAuthoringCoordinator, DraftRef } from './authoring-coordinator';
@@ -7,13 +9,25 @@ import type { createAuthoringCoordinator, DraftRef } from './authoring-coordinat
 export interface LanguageContext {
   actorId: string; workspaceId: string; runId: string; operationId: string;
   base: DraftRef | null; retainDimensionValues: boolean;
+  binding: AuthoringTurnBinding;
 }
 export interface LanguageOperation { id: string; status: string }
 export type LanguageResult =
   | { status: 'saved'; draftId: string; operations: LanguageOperation[] }
   | { status: 'text' | 'waiting' | 'failed' | 'not-applied'; operations: LanguageOperation[] }
   | { status: 'unknown' | 'pending'; operations: LanguageOperation[] };
+export interface PrepareLanguageRequest {
+  actorId: string; workspaceId: string; requestId: string; runId: string; turnId: string;
+  mode: 'new' | 'existing'; access: 'read' | 'write'; pageId: string | null;
+  selectedComponentId: string | null; latest: PageRevision | null; documentJson: string | null;
+}
+export async function authoringDocumentHash(document: unknown) {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(canonicalizeJson(document)));
+  return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+}
 export interface LanguagePort {
+  /** Trusted authenticated program channel: registers latest complete document, never model input. */
+  prepare?(request: PrepareLanguageRequest, signal: AbortSignal): Promise<AuthoringTurnBinding>;
   /** Provider adapter must persist the original command before sending and authenticate each call. */
   run(context: LanguageContext, prompt: string, signal: AbortSignal): Promise<LanguageResult>;
   lookup(context: LanguageContext, signal: AbortSignal): Promise<LanguageResult>;
@@ -35,18 +49,22 @@ const sameRef = (a: DraftRef | null, b: DraftRef | null) => a === null || b === 
   a.pageId === b.pageId && a.revisionId === b.revisionId && a.resourceId === b.resourceId;
 function sameBinding(a: LanguageContext, b: LanguageContext) {
   return a.actorId === b.actorId && a.workspaceId === b.workspaceId && a.runId === b.runId &&
-    a.operationId === b.operationId && a.retainDimensionValues === b.retainDimensionValues && sameRef(a.base, b.base);
+    canonicalizeJson(a.binding) === canonicalizeJson(b.binding) && a.operationId === b.operationId && a.retainDimensionValues === b.retainDimensionValues && sameRef(a.base, b.base);
 }
 const message = (error: unknown) => error instanceof Error ? error.message : String(error);
 
 export function createAuthoringLanguage(options: {
   coordinator: Coordinator; port: LanguagePort; target: EventTarget;
   identity(): { actorId: string; workspaceId: string }; id?: () => string;
+  /** Synchronous flush of input captured before the lock. No asynchronous/new edits are admitted. */
+  flushPendingInput?(): void;
+  selection?(): { pageId: string; componentId: string } | null;
 }) {
   let snapshot: LanguageSnapshot = { phase: 'idle', message: '', operations: [], recovery: null };
   let disposed = false;
   let active: { context: LanguageContext; lease: Lease; handle: symbol; cancelled: boolean } | null = null;
   let startController: AbortController | null = null;
+  let preparation: ReturnType<Coordinator['beginPreparation']> | null = null;
   let stopNotifications: (() => void) | null = null;
   let lookupPending = false;
   const pageState = createAnalysisPageState();
@@ -67,10 +85,10 @@ export function createAuthoringLanguage(options: {
     startController?.abort(); startController = null;
   }
   async function trustedRead(turn: NonNullable<typeof active>, draftId: string, signal: AbortSignal) {
-    if (!current(turn)) throw Error('语言操作身份或工作范围已变化。');
+    if (!current(turn) || turn.context.binding.access === 'read') throw Error('语言操作身份、权限或工作范围已变化。');
     const result = await options.port.read(draftId, signal);
     if (signal.aborted || !current(turn) || !sameBinding(result.binding, turn.context) ||
-        result.draft.draftId !== draftId || !result.draft.ref || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
+        result.draft.draftId !== draftId || !result.draft.ref || result.draft.ref.pageId !== turn.context.binding.pageId || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
         validate(result.draft.document).length > 0 || result.draft.document.id !== result.draft.ref.pageId ||
         (turn.context.base && (result.draft.ref.pageId !== turn.context.base.pageId || result.draft.ref.resourceId !== turn.context.base.resourceId || result.draft.ref.revisionId === turn.context.base.revisionId))) {
       throw Error('RESPONSE_MISMATCH：通知不属于当前可信操作，保留当前页面。');
@@ -83,9 +101,12 @@ export function createAuthoringLanguage(options: {
       const check = () => {
         const state = options.coordinator.snapshot();
         if (signal.aborted || disposed) { unsubscribe(); reject(Error('已取消等待同步。')); return; }
-        if (!state.loading && !state.dirty && !state.languageLocked &&
+        if (state.sync?.protection === 'failed' || ['unavailable', 'rejected', 'unknown', 'identity-changed'].includes(state.sync?.phase ?? '') || state.save?.status === 'rejected' || state.save?.status === 'unknown') {
+          unsubscribe(); reject(Error(state.sync?.message || '同步失败，保留当前工作。')); return;
+        }
+        if (!state.loading && !state.dirty &&
             (!state.sync || (state.sync.protection === 'protected' && state.sync.pending === 0)) &&
-            state.save?.status !== 'unknown' && state.save?.status !== 'pending') {
+            state.save?.status !== 'pending') {
           unsubscribe(); resolve();
         }
       };
@@ -97,6 +118,7 @@ export function createAuthoringLanguage(options: {
     if (!current(turn) || turn.cancelled) return;
     emit({ operations: result.operations.map(({ id, status }) => ({ id, status })) });
     if (result.status === 'saved') {
+      if (turn.context.binding.access === 'read') { emit({ phase: 'unknown', message: 'RESPONSE_MISMATCH：只读轮次收到写入回执，需核实服务结果。' }); return; }
       emit({ phase: 'reading', message: '已保存，正在鉴权读取精确修订。' });
       options.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: result.draftId } }));
     } else if (result.status === 'unknown' || result.status === 'pending') {
@@ -111,16 +133,39 @@ export function createAuthoringLanguage(options: {
   const api = {
     snapshot: (): LanguageSnapshot => active && !identityMatches(active.context) ? { phase: 'unknown', message: '身份已变化，请重新打开页面。', operations: [], recovery: null } : structuredClone(snapshot),
     subscribe(listener: (value: LanguageSnapshot) => void) { listeners.add(listener); listener(api.snapshot()); return () => { listeners.delete(listener); }; },
-    async start(prompt: string) {
+    async start(prompt: string, intent: { mode?: 'new' | 'existing'; access?: 'read' | 'write' } = {}) {
       if (disposed || active || startController || !prompt.trim()) return;
       const controller = new AbortController(); startController = controller;
       emit({ phase: 'synchronizing', message: '等待当前工作同步完成。', operations: [], recovery: null });
       try {
+        preparation = options.coordinator.beginPreparation();
+        const preparing = preparation;
+        preparing.flush(() => options.flushPendingInput?.());
+        await preparing.synchronize();
         await waitForSync(controller.signal);
-        if (controller.signal.aborted || disposed) return;
-        const lease = options.coordinator.beginLanguage();
+        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        if (!options.port.prepare) throw Error('CAPABILITY_UNAVAILABLE：可信本轮上下文服务尚未接通。');
+        const mode = intent.mode ?? 'existing';
+        const latest = mode === 'existing' ? await preparing.latest(controller.signal) : null;
+        const selection = options.selection?.();
+        const selectedComponentId = latest && selection?.pageId === latest.pageId &&
+          latest.document.sections.some(section => section.components.some(component => component.id === selection.componentId)) ? selection.componentId : null;
         const id = options.id ?? (() => crypto.randomUUID());
-        const context: LanguageContext = { ...lease.identity, base: lease.base, retainDimensionValues: lease.retainDimensionValues, runId: id(), operationId: id() };
+        const request: PrepareLanguageRequest = { ...options.identity(), requestId: id(), runId: id(), turnId: id(),
+          mode, access: intent.access ?? 'write', pageId: latest?.pageId ?? null, latest, documentJson: latest ? canonicalizeJson(latest.document) : null, selectedComponentId };
+        const expectedHash = latest ? await authoringDocumentHash(latest.document) : null;
+        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        const binding = await options.port.prepare(structuredClone(request), controller.signal);
+        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        if (!validateAuthoringTurn(binding) || binding.status !== 'active' || binding.capabilityVersion !== '1.0' ||
+          ['actorId', 'workspaceId', 'requestId', 'runId', 'turnId', 'mode', 'access'].some(key => binding[key as keyof AuthoringTurnBinding] !== request[key as keyof PrepareLanguageRequest]) ||
+          binding.documentSha256 !== expectedHash || binding.selectedComponentId !== selectedComponentId ||
+          (latest && (binding.pageId !== latest.pageId || !sameRef(binding.baseRef, { pageId: latest.pageId, revisionId: latest.revisionId, resourceId: latest.resourceId! }))) ||
+          (!latest && (binding.baseRef !== null || binding.documentSha256 !== null))) throw Error('RESPONSE_MISMATCH：本轮上下文绑定不匹配。');
+        if (latest) { await preparing.adoptLatest(latest); await waitForSync(controller.signal); }
+        if (controller.signal.aborted || disposed || !preparing.current()) return;
+        const lease = preparing.acquire(mode === 'new' ? binding.pageId : undefined); preparation = null;
+        const context: LanguageContext = { ...lease.identity, base: binding.baseRef, binding, retainDimensionValues: lease.retainDimensionValues, runId: request.runId, operationId: request.requestId };
         const turn = { context, lease, handle: pageState.begin(), cancelled: false }; active = turn;
         stopNotifications = listenForSavedDrafts({
           target: options.target, captureScope: options.coordinator.scope,
@@ -137,10 +182,10 @@ export function createAuthoringLanguage(options: {
         await outcome(turn, await options.port.run(structuredClone(context), prompt, controller.signal));
       } catch (error) {
         if (!disposed && !controller.signal.aborted && (!active || current(active))) emit({ phase: active ? 'unknown' : 'failed', message: message(error) });
-      } finally { if (startController === controller) startController = null; }
+      } finally { if (startController === controller) { preparation?.release(); preparation = null; startController = null; } }
     },
     cancel() {
-      startController?.abort(); startController = null;
+      startController?.abort(); startController = null; preparation?.release(); preparation = null;
       if (active) {
         active.cancelled = true; pageState.cancel(active.handle); stopNotifications?.(); stopNotifications = null;
         emit({ phase: 'cancelled', message: '已停止本地接收；已发保存仍需查询实际结果。' });
@@ -167,7 +212,7 @@ export function createAuthoringLanguage(options: {
       } catch (error) { if (current(turn)) emit({ phase: 'unknown', message: message(error) }); }
       finally { lookupPending = false; }
     },
-    dispose() { disposed = true; startController?.abort(); stopNotifications?.(); active?.lease.release(); active = null; pageState.reset(); listeners.clear(); }
+    dispose() { disposed = true; startController?.abort(); preparation?.release(); stopNotifications?.(); active?.lease.release(); active = null; pageState.reset(); listeners.clear(); }
   };
   return api;
 }

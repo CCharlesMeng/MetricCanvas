@@ -25,10 +25,10 @@ describe('authoring coordination public boundary', () => {
     expect(coordinator.capabilities).toMatchObject({ history: false, stableSave: false, exactRead: false });
     await expect(coordinator.readSavedDraft('opaque', new AbortController().signal)).rejects.toThrow('CAPABILITY_UNAVAILABLE');
   });
-  it('unknown save result blocks new sends and loads while preserving editable local content', async () => {
+  it('unknown save result blocks new sends, writes and loads while preserving local content', async () => {
     const { coordinator, save } = setup(vi.fn(async () => { throw Error('offline'); }));
     await coordinator.load('p'); expect(await coordinator.save()).toMatchObject({ status: 'unknown' });
-    const draft = coordinator.snapshot().draft!; expect(coordinator.replaceDraft(draft)).toBe(true);
+    const draft = coordinator.snapshot().draft!; expect(coordinator.replaceDraft(draft)).toBe(false);
     await coordinator.save(); await coordinator.load('other'); expect(save).toHaveBeenCalledTimes(1);
     expect(coordinator.snapshot().draft?.pageDocument.id).toBe('p');
     expect(coordinator.snapshot().ref?.revisionId).toBe('r1');

@@ -29,6 +29,11 @@ class BundleSkillsTest(unittest.TestCase):
         for name in ("create", "edit"):
             (workflows / f"{name}.md").write_text("# Workflow\n")
         self.bundle = {"skill": {"entrypoint": self.entries[0]["entrypoint"]}, "skills": self.entries}
+        self.entries[1]["mcpServer"] = "metriccanvas-platform-content"
+        self.bundle["toolServices"] = {"metriccanvas-platform-content": {"command": "metriccanvas-platform-content", "module": "metriccanvas_authoring.unified_content_server", "contextContract": "authoring-turn/1.0"}}
+        (self.root / "tool").mkdir()
+        (self.root / "tool/pyproject.toml").write_text('[project.scripts]\nmetriccanvas-platform-content = "metriccanvas_authoring.unified_content_server:main"\n')
+
 
     def check(self, bundle=None, locked=None):
         if locked is None:
@@ -93,6 +98,13 @@ class BundleSkillsTest(unittest.TestCase):
         value = copy.deepcopy(self.bundle)
         value["skills"][1]["referenceProjection"] = "all-contracts"
         self.assertTrue(any("projection" in error for error in self.check(value)))
+
+    def test_unified_deployment_cannot_route_to_legacy_service(self) -> None:
+        value = copy.deepcopy(self.bundle)
+        value["toolServices"]["metriccanvas-platform-content"]["module"] = "metriccanvas_authoring.content_server"
+        self.assertTrue(any("gated" in error for error in self.check(value)))
+        (self.root / "tool/pyproject.toml").write_text('[project.scripts]\nmetriccanvas-platform-content = "metriccanvas_authoring.content_server:main"\n')
+        self.assertTrue(any("CLI" in error for error in self.check()))
 
 
 if __name__ == "__main__":

@@ -66,6 +66,18 @@ try {
     await page.goto(production+'/language'); await expect(page.getByText('语言组合验收入口仅供开发环境使用。')).toBeVisible();
     await expect(page.getByRole('button', {name:'执行语言场景'})).toHaveCount(0); expect(fixtureRequests).toBe(0);
   }
+  // Starting without blurring first must flush the real change-only inspector input.
+  await fresh(); await run('create'); await expect(status).toContainText('已保存并读回');
+  const inspector = page.getByRole('complementary', { name: '检查器' });
+  await inspector.getByRole('button', { name: /Created/ }).click();
+  await page.getByLabel('替身语言场景').fill('edit-after-input');
+  await inspector.getByLabel('组件标题').fill('unfinished-title');
+  const beforeFlush = await call('metrics');
+  await page.getByRole('button', { name: '执行语言场景' }).evaluate(button => button.click());
+  await expect(status).toContainText('服务尚未确认稳定幂等保存');
+  await expect(canvas.getByText('unfinished-title', { exact: true })).toBeVisible();
+  expect((await call('metrics')).saves).toBe(beforeFlush.saves);
+  await expect(inspector.getByLabel('组件标题')).toBeEnabled();
   expect(errors).toEqual([]);
   console.log('T20 browser PASS: actual MCP composition, invalid create, partial, text/wait/failure, lost ack, read retry, offline, stale notification, cancel/recovery; events contain only draftId.');
 } finally { await browser.close(); }

@@ -316,7 +316,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
-        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
+        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },
@@ -447,6 +447,11 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
   for (const entry of entries) {
     if (!entry || typeof entry.id !== 'string' || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(entry.id) ||
         entry.entrypoint !== `skill/${entry.id}/SKILL.md` || seen.has(entry.id)) throw new Error('Invalid or duplicate Skill entry');
+    if (entry.id === 'metriccanvas-platform-authoring' &&
+        (entry.mcpServer !== 'metriccanvas-platform-content' ||
+         bundle.toolServices?.['metriccanvas-platform-content']?.module !== 'metriccanvas_authoring.unified_content_server')) {
+      throw new Error('Unified Platform deployment requires gated content service');
+    }
     seen.add(entry.id);
     const directory = path.posix.dirname(entry.entrypoint);
     if (await realpath(path.join(bundleRoot,directory)) !== path.join(actualBundleRoot,directory) ||
