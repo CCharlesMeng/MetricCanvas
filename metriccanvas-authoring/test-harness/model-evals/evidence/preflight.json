@@ -1,0 +1,41 @@
+{
+  "modelRequests": 0,
+  "configuration": "available",
+  "dependencies": {
+    "fastmcp": "3.4.7",
+    "httpx": "0.28.1",
+    "jsonschema": "4.26.0",
+    "pydantic": "2.13.5"
+  },
+  "registeredTools": {
+    "discover_data_context": "46b905948e8f64237b53c2fbb0ce9d0de342801a11fd98d4a3139d6a2d7f008a",
+    "compose_page": "2502bd984cd1f02ecae75a1bdfc67abe8d152ff6ed15de229d677f661100dc25",
+    "edit_page": "2221f21b0d18e0f8c202eee839b66111a8f86b0fc4c91aa01fec69c391ba4d11",
+    "create_content_page": "d73273903c411e829e4a0d8253330971ece718e13939d7515cd2bd20c5ef6499"
+  },
+  "suiteSha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+  "missingInjectionSources": {
+    "baseline": [],
+    "unified": [
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/dashboard.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/edit.md"
+    ]
+  },
+  "historicalRawFiles": 163,
+  "historicalHashMismatches": [],
+  "historicalSourceHashes": {
+    "first-round.provenance.json": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec",
+    "first-round.results.json": "2246f9e057322a0f86fefdec733b4f12bafabd8dc167d76f2dc75e8269768be5",
+    "platform-authoring.cases.json": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1",
+    "run_local.py": "62d207fdeee5c80eb371fed18d687d7d6189548cd5471e94f8e8ff2b1bf8fda8",
+    "score_local.py": "904ac909bb6c93851e45dde59f86723b8f2b06a280c94b05d35897bf03f8b0de",
+    "verify_evidence.py": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605"
+  },
+  "routing": "blocked: local manual Skill assignment",
+  "latest": "blocked: local fixture baseline only",
+  "dataServices": "blocked: not configured in isolated child environment"
+}

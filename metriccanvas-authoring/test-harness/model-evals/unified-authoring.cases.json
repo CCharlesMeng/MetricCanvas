@@ -1,0 +1,210 @@
+{
+  "formatVersion": 2,
+  "frozenAt": "2026-09-15",
+  "repetitions": 3,
+  "holdoutPolicy": "Frozen independently before inspecting unified Skill text; no holdout output fed to prompt authors. Changes require a new suite hash.",
+  "cases": [
+    {
+      "id": "existing-add",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "dashboard"
+      },
+      "turns": [
+        "在当前页增加一段普通业务说明。"
+      ],
+      "expected": {
+        "tool": "edit_page",
+        "operation": "add_text",
+        "preserveExisting": true,
+        "noDiscovery": true
+      },
+      "status": "not_run",
+      "cohort": "original-misuse",
+      "workflow": "edit"
+    },
+    {
+      "id": "switch-dashboard",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "container": "panel"
+      },
+      "turns": [
+        "把已有页明确切成 dashboard，其他设置不动。"
+      ],
+      "expected": {
+        "operation": "set_page_layout",
+        "layout": "dashboard",
+        "preserveExcept": [
+          "/layout"
+        ],
+        "explainLayoutImpact": true,
+        "noDiscovery": true
+      },
+      "status": "not_run",
+      "cohort": "original-misuse",
+      "workflow": "edit"
+    },
+    {
+      "id": "switch-report-backdrop",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "packages/page/fixtures/contract-valid/composite-page.json",
+        "layout": "dashboard"
+      },
+      "turns": [
+        "切换为 report，保留铺底与卡片。"
+      ],
+      "expected": {
+        "operation": "set_page_layout",
+        "layout": "report",
+        "preserveExcept": [
+          "/layout"
+        ],
+        "legalBackdropPreserved": true,
+        "noDiscovery": true
+      },
+      "status": "not_run",
+      "cohort": "original-misuse",
+      "workflow": "edit"
+    },
+    {
+      "id": "edit-report",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report"
+      },
+      "turns": [
+        "把 table 的标题改为地域明细。"
+      ],
+      "expected": {
+        "tool": "edit_page",
+        "target": "table",
+        "preserveExcept": [
+          "/sections/0/components/2/props/title"
+        ],
+        "noDiscovery": true
+      },
+      "status": "not_run",
+      "cohort": "positive",
+      "workflow": "edit"
+    },
+    {
+      "id": "manual-language-multiturn",
+      "group": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "manualChanges": {
+          "/sections/0/components/2/props/columns/0/width": 230
+        }
+      },
+      "turns": [
+        "把 header 标题改为本月经营。",
+        "再把 chart 的标题改为区域对比。"
+      ],
+      "expected": {
+        "tool": "edit_page",
+        "freshBaselineEveryTurn": true,
+        "preserveManualColumnWidth": 230,
+        "targets": [
+          "header",
+          "chart"
+        ],
+        "noDiscovery": true
+      },
+      "status": "not_run",
+      "cohort": "positive",
+      "workflow": "edit"
+    },
+    {
+      "id": "create-report",
+      "group": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "新建一份月度经营分析报告，采用 report。"
+      ],
+      "expected": {
+        "layout": "report",
+        "creation": true,
+        "noDiscovery": false
+      },
+      "status": "not_run",
+      "cohort": "positive",
+      "workflow": "create"
+    },
+    {
+      "id": "heldout-config",
+      "cohort": "heldout",
+      "workflow": null,
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "selectedComponentId": "table",
+        "includeTargetConfig": true
+      },
+      "turns": [
+        "我选中的这个表格目前各列宽度是怎样配置的？只解释。"
+      ],
+      "expected": {
+        "noTools": true,
+        "semantic": "Explain region width 150 and amount width unspecified, without inventing a numeric default; do not claim saved."
+      }
+    },
+    {
+      "id": "heldout-explicit-target",
+      "cohort": "heldout",
+      "workflow": "edit",
+      "context": {
+        "entry": "platform",
+        "baseline": "test_page_editing.page",
+        "layout": "report",
+        "selectedComponentId": "chart"
+      },
+      "turns": [
+        "虽然选中的是图，实际请把 table 标题改为核对清单，其他都别动。"
+      ],
+      "expected": {
+        "noDiscovery": true,
+        "tool": "edit_page",
+        "target": "table",
+        "preserveExcept": [
+          "/sections/0/components/2/props/title"
+        ],
+        "titleValue": "核对清单"
+      }
+    },
+    {
+      "id": "heldout-static-new",
+      "cohort": "heldout",
+      "workflow": "create",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "turns": [
+        "新建 report 页面，只有一段静态说明“本页仅作操作指引”，不使用业务数据。"
+      ],
+      "expected": {
+        "noDiscovery": true,
+        "tool": "create_content_page",
+        "layout": "report",
+        "creation": true,
+        "semantic": "Artifact contains the requested static text and no invented business data; do not claim saved."
+      }
+    }
+  ]
+}
