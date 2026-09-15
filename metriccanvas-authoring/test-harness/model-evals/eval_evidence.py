@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import subprocess
+import re
 
 
 def sha(path):
@@ -24,6 +25,35 @@ def injection_paths(root, case, arm):
         layout = case['expected'].get('layout', 'report')
         paths.append(folder/'references/layouts'/f'{layout}.md')
     return paths
+
+
+def legacy_runner_protocol(skill_path):
+    """Fail closed unless repository-style frontmatter declares the S1 protocol.
+
+    This deliberately accepts only the existing block-list metadata convention;
+    unknown/ambiguous YAML forms require explicit harness support, not guessing.
+    """
+    reason = 'Unsupported Skill protocol: legacy runner requires metriccanvas-content and S1 tools'
+    try:
+        text = skill_path.read_text()
+        parts = text.split('---', 2)
+        if len(parts) != 3 or parts[0].strip():
+            raise ValueError('Missing frontmatter')
+        header = parts[1]
+        servers = re.findall(r'^  mcp_servers:\s*\n((?:    - [a-z0-9_-]+\n)+)(?=\s*\Z)', header, re.M)
+        allowed = re.findall(r'^allowed-tools:\s*\n((?:  - [a-z0-9_]+\n)+)(?=^[^ \t]|\Z)', header, re.M)
+        metadata = re.findall(r'^metadata:\s*$', header, re.M)
+        if len(servers) != 1 or len(allowed) != 1 or len(metadata) != 1:
+            raise ValueError('Unsupported metadata')
+        server_names = [line.strip()[2:] for line in servers[0].splitlines()]
+        tool_names = [line.strip()[2:] for line in allowed[0].splitlines()]
+        if server_names != ['metriccanvas-content'] or not tool_names or not set(tool_names) <= {'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'}:
+            raise ValueError('Incompatible protocol')
+        return {'status':'pass', 'skillSha256':sha(skill_path), 'servers':server_names,
+                'reason':'S1 legacy content protocol; no trusted current-turn claim'}
+    except (OSError, ValueError):
+        return {'status':'blocked', 'reason':reason, 'modelRequests':0,
+                'skillSha256':sha(skill_path) if skill_path.is_file() else None}
 
 
 def select_tools(definitions, profile, production):

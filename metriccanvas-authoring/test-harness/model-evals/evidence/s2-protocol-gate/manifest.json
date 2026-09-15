@@ -1,0 +1,15 @@
+{
+  "status": "blocked",
+  "reason": "UNSUPPORTED_SKILL_PROTOCOL",
+  "modelRequests": 0,
+  "arm": "unified",
+  "toolProfile": "diagnostic",
+  "protocolChecks": {
+    "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md": {
+      "status": "blocked",
+      "reason": "Unsupported Skill protocol: legacy runner requires metriccanvas-content and S1 tools",
+      "modelRequests": 0,
+      "skillSha256": "61c2c901d259abdce69a89e7d37be31262ffc4f48c2b63b60049616ef08989a9"
+    }
+  }
+}

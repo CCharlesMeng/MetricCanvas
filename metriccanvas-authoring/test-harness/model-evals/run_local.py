@@ -16,7 +16,7 @@ import sys
 import time
 import uuid
 import importlib.metadata
-from eval_evidence import source_manifest, injection_paths, select_tools, audit_messages
+from eval_evidence import source_manifest, injection_paths, select_tools, audit_messages, legacy_runner_protocol
 
 ROOT = Path(__file__).resolve().parents[3]
 AUTHORING = ROOT / 'metriccanvas-authoring'
@@ -227,6 +227,13 @@ async def main():
         unknown = set(args.cases)-{c['id'] for c in cases}
         if unknown: parser.error('unknown case ids')
         cases = [c for c in cases if c['id'] in args.cases]
+    skill_paths = sorted({injection_paths(ROOT, case, args.arm)[0] for case in cases})
+    protocols = {str(path.relative_to(ROOT)):legacy_runner_protocol(path) for path in skill_paths}
+    if any(result['status'] != 'pass' for result in protocols.values()):
+        dump(args.output/'manifest.json', {'status':'blocked', 'reason':'UNSUPPORTED_SKILL_PROTOCOL',
+             'modelRequests':0, 'arm':args.arm, 'toolProfile':args.profile, 'protocolChecks':protocols})
+        print(json.dumps({'status':'blocked','reason':'UNSUPPORTED_SKILL_PROTOCOL','modelRequests':0}))
+        raise SystemExit(2)
     cfg = config(args.config)
     cfg.update(arm=args.arm, profile=args.profile, productionTools=args.production_tools,
                skill='metriccanvas-platform-authoring' if args.arm == 'unified' else 'legacy-manual-workflow', tokenBudget=args.token_budget)
@@ -237,7 +244,7 @@ async def main():
     if args.profile == 'production' and not args.production_tools:
         parser.error('production profile requires confirmed --production-tools')
     manifest = source_manifest(ROOT, suite_path, Path(__file__), cases, args.arm)
-    manifest.update(model=cfg['DEEPSEEK_MODEL'], parameters=PARAMS, maxCallsPerTurn=MAX_CALLS, maxToolCallsPerTurn=12,
+    manifest.update(protocolChecks=protocols, model=cfg['DEEPSEEK_MODEL'], parameters=PARAMS, maxCallsPerTurn=MAX_CALLS, maxToolCallsPerTurn=12,
                     tokenBudget=args.token_budget, retries=0, arm=args.arm, toolProfile=args.profile,
                     productionTools=args.production_tools, repetitions=3,
                     dependencies={n:importlib.metadata.version(n) for n in ['fastmcp','httpx','jsonschema','pydantic']},

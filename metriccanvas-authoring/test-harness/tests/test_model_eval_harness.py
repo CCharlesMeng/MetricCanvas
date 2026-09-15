@@ -6,6 +6,8 @@ import tempfile
 import sys
 from types import SimpleNamespace
 import unittest
+import asyncio
+from unittest.mock import patch
 
 EVALS=Path(__file__).resolve().parents[1]/'model-evals'
 spec=importlib.util.spec_from_file_location('eval_evidence', EVALS/'eval_evidence.py')
@@ -105,6 +107,41 @@ class ModelEvalHarnessTest(unittest.TestCase):
         definitions=[SimpleNamespace(name=name,inputSchema={}) for name in preflight.LEGACY_TOOLS]
         self.assertEqual(preflight.surface_evidence('legacy-content',definitions)['introspection']['status'],'pass')
         self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
+
+    def test_legacy_runner_rejects_s2_or_ambiguous_skill_metadata(self):
+        with tempfile.TemporaryDirectory() as t:
+            path=Path(t)/'SKILL.md'
+            for server,tool in [('metriccanvas-platform-content','edit_page'),('metriccanvas-content','read_page_context')]:
+                path.write_text(f'---\nallowed-tools:\n  - {tool}\nmetadata:\n  mcp_servers:\n    - {server}\n---\n')
+                self.assertEqual(evidence.legacy_runner_protocol(path)['status'],'blocked')
+            path.write_text('---\nmetadata: {}\n---\n')
+            self.assertEqual(evidence.legacy_runner_protocol(path)['status'],'blocked')
+
+    def test_legacy_runner_accepts_s1_skill_metadata(self):
+        with tempfile.TemporaryDirectory() as t:
+            path=Path(t)/'SKILL.md'
+            path.write_text('---\nname: metriccanvas-platform-authoring\nallowed-tools:\n  - edit_page\nmetadata:\n  mcp_servers:\n    - metriccanvas-content\n---\n')
+            self.assertEqual(evidence.legacy_runner_protocol(path)['status'],'pass')
+            self.assertEqual(evidence.legacy_runner_protocol(path)['skillSha256'],evidence.sha(path))
+
+    @unittest.skipUnless(importlib.util.find_spec('fastmcp'), 'Requires existing authoring Python environment')
+    def test_s2_gate_precedes_config_stdio_and_http(self):
+        with patch.dict(sys.modules, {'eval_evidence':evidence}):
+            spec=importlib.util.spec_from_file_location('model_eval_runner_gate', EVALS/'run_local.py')
+            runner=importlib.util.module_from_spec(spec);spec.loader.exec_module(runner)
+        with tempfile.TemporaryDirectory() as t:
+            root=Path(t)
+            skill=root/'metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md'
+            skill.parent.mkdir(parents=True)
+            skill.write_text('---\nallowed-tools:\n  - read_page_context\nmetadata:\n  mcp_servers:\n    - metriccanvas-platform-content\n---\n')
+            argv=['runner','--config','/unused','--output',str(root/'raw'),'--arm','unified','--profile','diagnostic']
+            with patch.object(runner,'ROOT',root), patch.object(sys,'argv',argv), patch.object(runner,'config') as config, patch.object(runner,'Client') as stdio, patch.object(runner.httpx,'AsyncClient') as http:
+                with self.assertRaises(SystemExit) as error:asyncio.run(runner.main())
+                self.assertEqual(error.exception.code,2)
+                config.assert_not_called();stdio.assert_not_called();http.assert_not_called()
+            result=json.loads((root/'raw/manifest.json').read_text())
+            self.assertEqual(result['reason'],'UNSUPPORTED_SKILL_PROTOCOL')
+            self.assertEqual(result['modelRequests'],0)
 
     def test_original_fourteen_records_retained(self):
         raw=json.loads((EVALS/'history/first-round.results.json').read_text())

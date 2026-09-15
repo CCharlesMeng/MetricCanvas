@@ -70,3 +70,5 @@ PYTHONDONTWRITEBYTECODE=1 /private/tmp/metriccanvas-126-delivery-python/bin/pyth
 `introspection.status=pass` 仅表示注册集合/参数签名符合该 surface，不证明可写或 latest 已实现。`expectedServerName` 是核对源码后声明的预期名，不冒充远端握手验证。独立 stdio 未注入可信 current-turn 提供方，五工具必须 fail closed；本预检不执行五工具来替代提供方测试。
 
 当前 `run_local.py` **仅支持 S1 legacy-content**。即使 `--arm unified` 也只是 S1 统一 Skill 文本，不能当 S2 五工具运行。S2 预检的 `modelRunner.status` 固定为 blocked（unsupported trusted port），`trustedCurrentTurn/latest/writeReadiness` 同样 blocked。不得拿旧 `baseline_token/source_token/page_id` 发模型请求并宣称 S2 验收；需后续真实可信轮次 Adapter 接入和另行冻结的 S2 输入，且获得主任务中的具体模型授权后再运行。
+
+`run_local.py` 现已在读取模型配置、启动 stdio 和网络请求之前检查实际 SKILL frontmatter：只接受仓库当前 block-list 格式的 `metadata.mcp_servers: [metriccanvas-content]` 和 S1 工具子集。S2服务、`read_page_context`、缺失或无法确定的 metadata 会输出 `UNSUPPORTED_SKILL_PROTOCOL`、`status=blocked`、`modelRequests=0`，退出码2。此门禁检查实际文本及哈希，`--arm unified` 不能绕过。它不引入完整 S2 runner，也不改变 S1 冻结用例。
