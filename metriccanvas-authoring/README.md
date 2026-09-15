@@ -121,9 +121,9 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## Platform 创建与修改 Skill、布局基线
 
-Platform 使用 `metriccanvas-platform-create` 与 `metriccanvas-platform-edit` 两个 Skill，共用独立 `metriccanvas-content`。旧 `metriccanvas-page-builder` 继续服务普通问数临时页面态。创建、修改的路由由 Relay 部署方落实，目录/frontmatter 不是已接通证明；内容工具始终不保存或发布。
+Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md 与按需参考；安装完整目录即可引用闭合。生产工具需求为 metriccanvas-content 的四个实际工具，部署须核实 list_tools、摘要/完整产物分流及可信基线。注册不证明 Relay 路由或 latest 已实现。
 
-新 Skill 安装时复制完整目录及生成的 `references/`。公共作者真源为 `skill-shared/platform-authoring.md` 与 `skill-shared/layouts/{report,dashboard}.md`，由统一分发投影；不要单独复制 SKILL.md 或手改投影。创建显式选择 layout；已有页新增仍属于修改，缺可信精确基线时等待读取，不退回整页重建。
+Bundle registry 的 referenceProjection 声明生成器所有权：普通问数仅 references/page-metadata 为生成子树，统一作者使用 none，生成器不覆盖任何作者参考。完整产品 Schema、正反例仍保留在 contract-snapshot；旧共享文本的基线副本和哈希见 docs/plan 的 S0 记录，不参与部署。参考注入/文件补读方式按统一 Skill 的 references/tools.md 声明。
 
 Platform 内容入口新建报告沿用章节布局；看板页头采用 plain，未分组模块用缺省分区和组件标题，需独立分组标题的非图表内容使用 card。带图表的有标题分组保留 panel，避免 card 清除图表高度。这里只改变新建默认，旧问数 compose 应用不变；合法 dashboard+panel、report+backdrop 继续支持。
 

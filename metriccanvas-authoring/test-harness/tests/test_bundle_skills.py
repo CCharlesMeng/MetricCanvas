@@ -17,13 +17,17 @@ class BundleSkillsTest(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.entries = []
-        for name in ("metriccanvas-page-builder", "metriccanvas-platform-create", "metriccanvas-platform-edit"):
+        for name in ("metriccanvas-page-builder", "metriccanvas-platform-authoring"):
             entry = f"skill/{name}/SKILL.md"
             self.entries.append({"id": name, "entrypoint": entry})
             folder = self.root / "skill" / name
             (folder / "references").mkdir(parents=True)
             (folder / "SKILL.md").write_text("[rules](references/rules.md#rules)\n", encoding="utf-8")
             (folder / "references/rules.md").write_text('<a id="rules"></a>\nRules\n', encoding="utf-8")
+        workflows = self.root / "skill/metriccanvas-platform-authoring/workflows"
+        workflows.mkdir()
+        for name in ("create", "edit"):
+            (workflows / f"{name}.md").write_text("# Workflow\n")
         self.bundle = {"skill": {"entrypoint": self.entries[0]["entrypoint"]}, "skills": self.entries}
 
     def check(self, bundle=None, locked=None):
@@ -31,7 +35,7 @@ class BundleSkillsTest(unittest.TestCase):
             locked = {p.relative_to(self.root).as_posix() for p in self.root.rglob("*") if p.is_file()}
         return validate_skills(self.root, self.bundle if bundle is None else bundle, locked)
 
-    def test_legacy_entrypoint_and_three_independent_skills(self) -> None:
+    def test_legacy_entrypoint_and_unified_independent_skill(self) -> None:
         self.assertEqual(self.check(), [])
         legacy = {"skill": self.bundle["skill"]}
         self.assertEqual(self.check(legacy), [])
@@ -72,9 +76,23 @@ class BundleSkillsTest(unittest.TestCase):
         self.assertTrue(self.check(locked=set()))
         external = self.root / "outside.md"
         external.write_text("outside")
-        link = self.root / "skill/metriccanvas-platform-create/references/escape.md"
+        link = self.root / "skill/metriccanvas-platform-authoring/references/escape.md"
         link.symlink_to(external)
         self.assertTrue(self.check())
+
+    def test_budget_and_retired_entry_are_rejected(self) -> None:
+        workflow = self.root / "skill/metriccanvas-platform-authoring/workflows/create.md"
+        workflow.write_text("line\n" * 251)
+        self.assertTrue(any("budget" in error for error in self.check()))
+        workflow.write_text("# Workflow\n")
+        value = copy.deepcopy(self.bundle)
+        value["skills"].append({"id": "metriccanvas-platform-create", "entrypoint": "skill/metriccanvas-platform-create/SKILL.md"})
+        self.assertTrue(any("unified" in error for error in self.check(value)))
+
+    def test_registry_rejects_unknown_projection(self) -> None:
+        value = copy.deepcopy(self.bundle)
+        value["skills"][1]["referenceProjection"] = "all-contracts"
+        self.assertTrue(any("projection" in error for error in self.check(value)))
 
 
 if __name__ == "__main__":

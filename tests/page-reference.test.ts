@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -16,6 +17,14 @@ for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid
 const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, '6.3');
 
 describe('页面参考手册生成与分发', () => {
+  it('退役参考全部保留在冻结来源', async () => {
+    const manifest = JSON.parse(await readFile('docs/plan/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
+    expect(manifest.files).toHaveLength(275);
+    for (const entry of manifest.files) {
+      const bytes = await readFile(entry.retainedSource ?? entry.source);
+      expect(createHash('sha256').update(bytes).digest('hex'), entry.reference).toBe(entry.sha256);
+    }
+  });
   it('独立保留联合必填、动态键、数组项、const和递归引用，不无限展开', () => {
     const schema = {type:'object',properties:{node:{$ref:'#/definitions/node'}},required:['node'],definitions:{node:{oneOf:[{type:'object',properties:{kind:{const:'leaf'},value:{type:'string'}},required:['kind','value'],additionalProperties:false},{type:'object',properties:{kind:{const:'branch'},children:{type:'array',items:{$ref:'#/definitions/node'}}},required:['kind','children'],additionalProperties:{type:'number'}}]}}};
     const nodes = referenceNodes(schema, {modules:{'page.md':{title:'page',definitions:['node'],keywords:[],examples:[],sources:[]}},fieldNotes:{},enumNotes:{}});
@@ -62,7 +71,7 @@ describe('页面参考手册生成与分发', () => {
     try {
       await cp('metriccanvas-authoring',path.join(temp,'bundle'),{recursive:true,filter:source=>!source.split(path.sep).some(part=>['__pycache__','.venv','node_modules'].includes(part))});
       expect(bundle.skill.entrypoint).toBe('skill/metriccanvas-page-builder/SKILL.md');
-      expect(skills.map(skill=>skill.id)).toEqual(['metriccanvas-page-builder','metriccanvas-platform-create','metriccanvas-platform-edit']);
+      expect(skills.map(skill=>skill.id)).toEqual(['metriccanvas-page-builder','metriccanvas-platform-authoring']);
       const prefixes = ['bundle/contract-snapshot/page/reference'];
       for (const skill of skills) {
         const directory = path.dirname(skill.entrypoint);
@@ -73,9 +82,13 @@ describe('页面参考手册生成与分发', () => {
           standalone.set(path.relative(path.join(temp,skill.id),absolute).split(path.sep).join('/'),await readFile(absolute,'utf8'));
         }
         validateReferenceLinks(standalone);
-        expect(standalone.get('SKILL.md')).toContain('references/page-metadata');
-        if (skill.id !== 'metriccanvas-page-builder') for (const file of ['platform-authoring.md','layouts/report.md','layouts/dashboard.md']) expect(standalone.get(`references/${file}`)).toBe(await readFile(`metriccanvas-authoring/skill-shared/${file}`,'utf8'));
-        prefixes.push(`${skill.id}/references/page-metadata`);
+        if (skill.id === 'metriccanvas-page-builder') {
+          prefixes.push(`${skill.id}/references/page-metadata`);
+        } else {
+          expect(standalone.has('workflows/create.md')).toBe(true);
+          expect(standalone.has('workflows/edit.md')).toBe(true);
+          expect([...standalone.values()].reduce((total, content) => total + content.split('\n').length, 0)).toBeLessThanOrEqual(10000);
+        }
       }
       for(const prefix of prefixes) {
         const copied = new Map<string,string>();
@@ -90,6 +103,6 @@ describe('页面参考手册生成与分发', () => {
     } finally { await rm(temp,{recursive:true,force:true}); }
   });
   it('生成内容与产品、Bundle和独立Skill逐字一致' , async () => {
-    for (const [file, content] of reference) for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference',...skills.map(skill=>`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata`)]) expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
+    for (const [file, content] of reference) for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference',...skills.filter(skill=>skill.id === 'metriccanvas-page-builder').map(skill=>`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata`)]) expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
   });
 });

@@ -165,5 +165,20 @@ class RelaySkillContractTest(unittest.TestCase):
         self.assertIn("如果模型直接看到 `artifactEnvelope.artifact`", body)
 
 
+class UnifiedSkillContractTest(unittest.TestCase):
+    def test_examples_conform_to_actual_controlled_request_schema(self) -> None:
+        folder = BUNDLE_ROOT / "skill/metriccanvas-platform-authoring"
+        examples = [json.loads(value) for value in re.findall(
+            r"```json\n(.*?)\n```", (folder / "references/examples.md").read_text(), re.DOTALL)]
+        schema = json.loads((BUNDLE_ROOT / "contracts/authored/page-edit-request.schema.json").read_text())
+        self.assertEqual(len(examples), 2)
+        for example in examples:
+            self.assertEqual(list(Draft202012Validator(schema).iter_errors(example["request"])), [])
+        frontmatter = yaml.safe_load((folder / "SKILL.md").read_text().split("---", 2)[1])
+        self.assertEqual(set(frontmatter["allowed-tools"]), {
+            "discover_data_context", "compose_page", "create_content_page", "edit_page"})
+        self.assertEqual(frontmatter["metadata"]["mcp_servers"], ["metriccanvas-content"])
+
+
 if __name__ == "__main__":
     unittest.main()

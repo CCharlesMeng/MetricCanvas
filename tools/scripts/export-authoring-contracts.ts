@@ -414,7 +414,7 @@ async function writeOutputs(
     await writeFile(target, content, 'utf8');
   }
   await writeTree(snapshotRoot, productOutputs);
-  for (const skill of skills) await writeTree(path.join(bundleRoot, skill.directory, 'references'), skill.outputs);
+  for (const skill of skills) await writeTree(path.join(bundleRoot, skill.directory, 'references/page-metadata'), skill.outputs);
   await rm(path.join(authoringContractRoot, 'exported'), { recursive: true, force: true });
   for (const [relativePath, content] of authoringOutputs) {
     const target = path.join(authoringContractRoot, relativePath);
@@ -451,15 +451,23 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
     const directory = path.posix.dirname(entry.entrypoint);
     if (await realpath(path.join(bundleRoot,directory)) !== path.join(actualBundleRoot,directory) ||
         await realpath(path.join(bundleRoot,entry.entrypoint)) !== path.join(actualBundleRoot,entry.entrypoint)) throw new Error('Skill entrypoint must be an independent file');
-    const outputs: OutputMap = new Map([...referenceProjection(productOutputs)].map(([file,content])=>[`page-metadata/${file}`,content]));
-    if (entry.id === 'metriccanvas-platform-create' || entry.id === 'metriccanvas-platform-edit') {
-      for (const file of ['platform-authoring.md','layouts/report.md','layouts/dashboard.md']) {
-        outputs.set(file,await readFile(path.join(bundleRoot,'skill-shared',file),'utf8'));
-      }
+    // The registry declares the only generated subtree. Everything else belongs
+    // to the Skill author and must survive regeneration, including references.
+    const mode = entry.referenceProjection ?? (entry.id === 'metriccanvas-page-builder' ? 'page-metadata' : 'none');
+    if (!['none', 'page-metadata'].includes(mode)) throw new Error('Unknown Skill reference projection');
+    if (entry.id.startsWith('metriccanvas-platform-') && entry.id !== 'metriccanvas-platform-authoring') {
+      throw new Error('Retired Platform Skill entry');
     }
-    const document = await readFile(path.join(bundleRoot,entry.entrypoint),'utf8');
-    validateReferenceLinks(new Map([['SKILL.md',document],...[...outputs].map(([file,content]):[string,string]=>[`references/${file}`,content])]));
-    projections.push({directory,outputs});
+    if (entry.id === 'metriccanvas-platform-authoring' && mode !== 'none') throw new Error('Platform Skill must use authored references');
+    const documents: OutputMap = new Map();
+    for (const file of await listFiles(path.join(bundleRoot, directory))) {
+      if (mode === 'page-metadata' && file.startsWith('references/page-metadata/')) continue;
+      documents.set(file, await readFile(path.join(bundleRoot, directory, file), 'utf8'));
+    }
+    const outputs = mode === 'page-metadata' ? referenceProjection(productOutputs) : new Map<string, string>();
+    for (const [file, content] of outputs) documents.set(`references/page-metadata/${file}`, content);
+    validateReferenceLinks(documents);
+    if (mode === 'page-metadata') projections.push({directory, outputs});
   }
   if (!seen.has('metriccanvas-page-builder')) throw new Error('Skill registry missing legacy entrypoint');
   return projections;
@@ -524,7 +532,7 @@ async function assertCurrent(
   );
   await collectTreeDrift(snapshotRoot, productOutputs, 'contract-snapshot', drift);
   for (const skill of await buildSkillProjections(productOutputs)) {
-    await collectTreeDrift(path.join(bundleRoot,skill.directory,'references'),skill.outputs,`${skill.directory}/references`,drift);
+    await collectTreeDrift(path.join(bundleRoot,skill.directory,'references/page-metadata'),skill.outputs,`${skill.directory}/references/page-metadata`,drift);
   }
   const generatedAuthoringOutputs = new Map(
     [...authoringOutputs].filter(

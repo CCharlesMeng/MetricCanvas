@@ -69,6 +69,11 @@ def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> lis
                 or relative != f"skill/{name}/SKILL.md" or name in ids or relative in paths):
             errors.append(f"skills: invalid or duplicate entry {name}")
             continue
+        projection = entry.get("referenceProjection", "page-metadata" if name == "metriccanvas-page-builder" else "none")
+        if projection not in {"none", "page-metadata"}:
+            errors.append(f"{name}: unknown reference projection")
+        if name == "metriccanvas-platform-authoring" and projection != "none":
+            errors.append(f"{name}: expected authored references")
         ids.add(name)
         paths.add(relative)
         folder = root / "skill" / name
@@ -98,6 +103,24 @@ def validate_skills(root: Path, bundle: dict[str, Any], locked: set[str]) -> lis
                     errors.append(f"{file.relative_to(root)}: invalid standalone link {href}")
                 elif parsed.fragment and unquote(parsed.fragment) not in markdown_anchors(target.read_text(encoding="utf-8")):
                     errors.append(f"{file.relative_to(root)}: missing anchor {href}")
+    platform_ids = {name for name in ids if name.startswith("metriccanvas-platform-")}
+    if platform_ids and platform_ids != {"metriccanvas-platform-authoring"}:
+        errors.append("skills: expected one unified Platform entrypoint")
+    if "metriccanvas-platform-authoring" in ids:
+        folder = root / "skill/metriccanvas-platform-authoring"
+        for relative, budget in (("SKILL.md", 200), ("workflows/create.md", 250), ("workflows/edit.md", 250)):
+            file = folder / relative
+            if not file.is_file():
+                errors.append(f"{relative}: missing workflow")
+            elif len(file.read_text(encoding="utf-8").splitlines()) > budget:
+                errors.append(f"{relative}: line budget exceeded")
+        files = [p for p in folder.rglob("*") if p.is_file() and p.resolve().is_relative_to(folder.resolve())]
+        try:
+            lines = sum(len(p.read_text(encoding="utf-8").splitlines()) for p in files)
+            if lines > 10000:
+                errors.append("Platform Skill: distribution line budget exceeded")
+        except UnicodeDecodeError:
+            errors.append("Platform Skill: expected text distribution")
     if legacy not in paths or "metriccanvas-page-builder" not in ids:
         errors.append("skills: missing legacy entrypoint alias")
     return errors

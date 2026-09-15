@@ -18,15 +18,14 @@
   "skills": [
     {
       "id": "metriccanvas-page-builder",
-      "entrypoint": "skill/metriccanvas-page-builder/SKILL.md"
+      "entrypoint": "skill/metriccanvas-page-builder/SKILL.md",
+      "referenceProjection": "page-metadata"
     },
     {
-      "id": "metriccanvas-platform-create",
-      "entrypoint": "skill/metriccanvas-platform-create/SKILL.md"
-    },
-    {
-      "id": "metriccanvas-platform-edit",
-      "entrypoint": "skill/metriccanvas-platform-edit/SKILL.md"
+      "id": "metriccanvas-platform-authoring",
+      "entrypoint": "skill/metriccanvas-platform-authoring/SKILL.md",
+      "referenceMode": "injected-or-file-read",
+      "referenceProjection": "none"
     }
   ]
 }

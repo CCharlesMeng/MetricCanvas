@@ -100,25 +100,41 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     });
   }, scenarioTimeout);
 
-  it.each(['platform-authoring.md', 'layouts/report.md', 'layouts/dashboard.md'])('拒绝共享 Skill 作者漂移：%s', file => {
-    const relative = `metriccanvas-authoring/skill-shared/${file}`;
+  it.each(['tools.md', 'layouts/report.md', 'layouts/dashboard.md'])('拒绝共享 Skill 作者漂移：%s', file => {
+    const relative = `metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/${file}`;
     withChangedFile(relative, readFileSync(path.join(isolated,relative),'utf8') + '\nchanged shared reference\n', () => {
       const result = runExport();
       expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain(`skill/metriccanvas-platform-create/references/${file}`);
+      expect(result.stderr).toContain('bundle.lock.json: stale');
     });
   }, scenarioTimeout);
 
   it('拒绝缺少独立 Skill 投影', () => {
-    const relative = 'metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/report.md';
+    const relative = 'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md';
     const file = path.join(isolated,relative);
     const original = readFileSync(file);
     try {
       rmSync(file);
       const result = runExport();
       expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain('skill/metriccanvas-platform-edit/references/layouts/report.md');
+      expect(result.stderr).toContain('Broken reference link: workflows/create.md -> ../references/layouts/report.md');
     } finally { writeFileSync(file,original); }
+  }, scenarioTimeout);
+
+  it('生成器保留作者参考且只清理生成子树', () => {
+    const folder = mkdtempSync(path.join(tmpdir(), 'metriccanvas-ownership-'));
+    try {
+      cpSync(isolated, folder, {recursive:true, verbatimSymlinks:true});
+      const authored = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/private.md');
+      writeFileSync(authored, '# Authored extension\n');
+      const stale = path.join(folder, 'metriccanvas-authoring/skill/metriccanvas-page-builder/references/page-metadata/stale.md');
+      writeFileSync(stale, '# Stale projection\n');
+      const result = runExport([], folder);
+      expect(result.status, result.stderr).toBe(0);
+      expect(readFileSync(authored, 'utf8')).toBe('# Authored extension\n');
+      expect(existsSync(stale)).toBe(false);
+      expect(runExport(['--check'], folder).status).toBe(0);
+    } finally { rmSync(folder, {recursive:true, force:true}); }
   }, scenarioTimeout);
 
   it('拒绝重复 Skill 入口', () => {
