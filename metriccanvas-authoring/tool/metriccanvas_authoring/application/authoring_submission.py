@@ -44,8 +44,8 @@ def semantic_equal(left, right):
 
 class _TurnScopedService:
     """Gate Lifecycle's internal lookup-to-save await seam without changing legacy users."""
-    def __init__(self, service, current):
-        self.service, self.current = service, current
+    def __init__(self, service, current, before_save=None):
+        self.service, self.current, self.before_save = service, current, before_save
 
     def __getattr__(self, name):
         return getattr(self.service, name)
@@ -56,6 +56,7 @@ class _TurnScopedService:
 
     async def save(self, identity, command):
         await self.current()
+        if self.before_save is not None: await self.before_save()
         return await self.service.save(identity, command)
 
     async def read(self, identity, ref):
@@ -205,7 +206,15 @@ class AuthoringSubmissionCoordinator:
             loaded = await self.lifecycle.programs.load(record['programToken'], identity)
             require(canonical_json(loaded) == canonical_json(record['command']), 'PROGRAM_TOKEN_INVALID')
             await self._current(prepared, identity)
-            scoped = Lifecycle(_TurnScopedService(self.lifecycle.service, lambda: self._current(prepared, identity)),
+            async def persisted_send_permission():
+                get = getattr(self.records, 'get', None)
+                if callable(get):
+                    snapshot = await get(key)
+                    require(snapshot is not None and not snapshot['control']['cancelRequested'], 'EXECUTION_CANCELLED')
+                    require(snapshot['record']['operationId'] == record['operationId'] and
+                            canonical_json(snapshot['record']['command']) == canonical_json(record['command']))
+                    await self._current(prepared, identity)
+            scoped = Lifecycle(_TurnScopedService(self.lifecycle.service, lambda: self._current(prepared, identity), persisted_send_permission),
                                self.lifecycle.programs, self.lifecycle.identities)
             # Duplicates can only query the frozen operation. No automatic resubmission.
             response = await scoped.call('save_draft' if created else 'get_save_result', record['programToken'])

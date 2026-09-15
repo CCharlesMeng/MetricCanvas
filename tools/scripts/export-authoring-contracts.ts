@@ -316,7 +316,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
-        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
+        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },

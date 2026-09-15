@@ -18,10 +18,16 @@ ExecutionRecordPort原claim(key,record)->(record,created)与update(key,record)�
 
 AuthoringRecoveryCoordinator(candidates,records,lifecycle,authority,*,clock_ms)提供recover(key,attempt_id)、cancel(key)、retry_original(key,attempt_id)、reserve_attempt(key,attempt_id)、retry_preview(key,attempt_id,preview)。每次reserve先CAS持久追加稳定attempt_id；重复ID不重复扣减；超maxAttempts或截止返回budget-exhausted，保留原未决状态。模型Adapter可调用相同reserve入口共享预算，本片仅证明入口消费，未接模型不可宣称真实共享接线完成。
 
-recover仅查询原operation/command，保存成功先持久saveReceipt，再精确read并与候选完整内容/hash比较，verified后saved；读取/预览失败保留receipt/ref，不变成not-applied或再保存。重复恢复只查原操作或按已有receipt精确回读。programToken丢失/损坏保留未知并明确不可用，不能新造载荷或重置命令。
+recover仅查询原operation/command，保存成功先持久saveReceipt，再精确read并与候选完整内容/hash比较，verified后saved；读取/预览失败保留receipt/ref，不变成not-applied或再保存。重复恢复只查原操作或按已有receipt精确回读。已设置的programToken丢失/损坏保留未知并明确不可用，不能替换token或重置命令。若首次claim后、program.store前崩溃，selected且programToken=null时允许重新鉴权后从冻结command生成第一个token，以CAS仅安装空→token，竞争者复用赢家；随后只查询，显式retry仍须权威retrySafe，不自动保存。
 
 cancel通过CAS持久取消意图。selected且尚未进入sending时可终止本地发送资格；进入sending后只能认为可能已发，查询原操作。S3首次提交及S4重试在实际service.save前读取持久取消状态；取消先赢则不发。已发请求远端是否撤回只能由提供方权威确定。
 
 retry_original只有权威not-applied且retrySafe=true、未取消、预算允许并CAS获取sending后才用原token调用Lifecycle.save_draft；Lifecycle仍先查询且实际save前复查权限和取消。始终保持原operationId和完整command；不允许取消后新操作重试。并发CAS失败重读，不能覆盖另一恢复者已保存的结果。
 
 preview是可信程序提供的async callback(ref,document)，只收到已精确核实的修订；失败保留saved事实与ref，重试不保存。Publication继续消费精确候选/确认对象，禁止将恢复得到的另一修订套用旧确认。持久发布重放接线另按既有Publication原操作协议集成，不扩充模型工具面。
+
+恢复结果status=saved-unverified表示保存回执已核实且含ref，但完整精确回读尚未完成；执行record仍unknown、verificationState=pending。此状态不得直接映射为工作台已保存并读回。回读完成才返回saved；preview失败返回saved和previewState=failed。budget-exhausted同样是恢复调用结果，不覆写原执行记录状态。
+
+attempt_id代表一次逻辑尝试：reserve返回是否新预留；recover/retry/preview遇已消费ID仅返回持久快照或未决状态，不再发网络请求。新的实际尝试需要新的可信ID并计入同一预算，避免重复ID绕过调用预算。
+
+S4 CAS对not-applied作限定例外：这是一次权威查询时点的事实；后续原操作查询的新证据可更新它，不能阻止已经受理的请求晚到saved/pending/unknown。retry→sending另须未取消和已记录retrySafe=true。S3兼容update仍保守保护not-applied；saved/rejected/unchanged继续终态防降级。保存回执落盘时若原状态非saved，同一CAS将状态置unknown（待完整回读），防止receipt与not-applied矛盾。
