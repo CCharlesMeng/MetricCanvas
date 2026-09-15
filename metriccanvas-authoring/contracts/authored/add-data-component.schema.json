@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/add-data-component/1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "type",
+    "sectionId",
+    "componentId",
+    "spec"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "type": {
+      "const": "add_data_component"
+    },
+    "sectionId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "componentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "dependsOn": {
+      "type": "array",
+      "uniqueItems": true,
+      "maxItems": 50,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      }
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "spec": {
+      "$ref": "https://metriccanvas.local/contracts/page-build-spec/0.1.0",
+      "properties": {
+        "units": {
+          "maxItems": 1
+        }
+      }
+    }
+  }
+}

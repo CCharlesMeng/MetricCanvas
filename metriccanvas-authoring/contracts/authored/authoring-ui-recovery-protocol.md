@@ -9,3 +9,5 @@ PageAuthoringWorkbench新增可选languageRecoveryPort和onLanguageRecoveryReady
 恢复控制器createAuthoringLanguageRecovery暴露snapshot/subscribe/check(pageId)/recover()/cancel()/retryOriginal()/openSaved()/dispose()；可复用coordinator.beginLanguage(pageId)仅作本地输入锁（无内容调用），不重建原模型轮次。不在检查未知操作前加载本地队列或启动自动发写。重复check不得释放未决锁，pending时禁止换页；不丢弃原ref。
 
 not-applied/rejected/unchanged必须来自可信原操作结果才可释放恢复锁并普通load；saved须保留锁，用户明确openSaved时调用readVerified，验证返回draft.ref与摘要精确ref/页一致、文档合法，再通过现有lease.accept和自动同步保护接受，保留现有手工队列冲突处理。saved-unverified仅允许继续恢复读取，不能声称已读回。cancel不暗示远端撤回，只有后续权威结果决定释放。页面提供简洁的恢复状态、查询/取消/原操作重试/打开已保存修订操作；不暴露内部程序标识。
+
+check(pageId)及loadPending的scope.pageId允许null，用于无URL页的新建入口：先按可信actor/workspace查未决起点；null结果才正常放行新建。若提供方返回唯一未决记录，使用其真实pageId核对后续精确读；多个未决须拒绝歧义，不能猜页。已有明确pageId的查询则必须严格同页。resume回调相应接受string|null；没有页时不执行coordinator.load。
