@@ -113,3 +113,5 @@ HTTP支持原9例 `unified-authoring.cases.json`，不提供脚本替代答案�
 整个HTTP批次共享600k token上限（不是逐case重置），按完整输入字节+协议余量+4096输出预留；每轮最多6模型调用和12工具调用，无重试。HTTP错误、缺usage、预算不足立即停止整批，已尝试请求数保留。外部返回模型ID和实际usage按原响应记录；没有计费金额或固定模型版本保证。
 
 冻结suite的真实HTTP结果可用既有 `eval_evidence.py` 命令评分。统一协议分支从程序侧trusted-turn/candidate验证创建身份和逐轮本地基线，模型上下文不补回旧`page_id/baseline_token`。原`noTools`与S2必须读取配置的行为不等价：原断言保留为inconclusive并解释差异，另检查只读边界，不能偷偷改成pass。答案语义仍需逐次hash绑定审阅。`local-smoke`使用自身确定性report，不冒充冻结suite准确率。
+
+多轮对话保留前轮安全的user/assistant/tool消息，每轮追加新的可信context与用户请求。旧context和候选在历史中仅是历史证据；本轮工具仍须通过新scope门禁。scripted只从最后一条user之后的工具消息解析候选引用，不能自动复用上轮候选。此修正额外通过30项定向测试与fresh-local-turn三次真实stdio模拟验证，证据为`evidence/trusted-history.report.json`；早先36次本地验证清单保持原样可追溯。

@@ -111,6 +111,34 @@ class TrustedTransportTest(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(scored['checks']['readOnlyContentBoundary']['status'],'fail')
                 else:self.assertEqual(scored['checks'][next(iter(expected))]['status'],'pass',scored)
 
+    async def test_multiturn_preserves_safe_history_with_new_current_context(self):
+        case=next(c for c in scenarios() if c['id']=='fresh-local-turn')
+        class RecordingScripted(ScriptedTransport):
+            def __init__(self,turns):super().__init__(turns);self.requests=[]
+            async def complete(self,request):
+                self.requests.append(deepcopy(request))
+                return await super().complete(request)
+        transport=RecordingScripted(case['turns'])
+        with tempfile.TemporaryDirectory() as t:
+            folder=Path(t)/'run';result=await run_case(case,folder,transport)
+            self.assertNotEqual(result.get('deterministicStatus'),'fail',result)
+            second=next(r for r in transport.requests if sum(m['role']=='user' for m in r['messages'])==2)
+            users=[json.loads(m['content']) for m in second['messages'] if m['role']=='user']
+            self.assertNotEqual(users[0]['trustedContext']['context_ref'],users[1]['trustedContext']['context_ref'])
+            self.assertTrue(any(m['role']=='tool' for m in second['messages']))
+            self.assertTrue(any(m['role']=='assistant' for m in second['messages']))
+            state=json.loads((folder/'trusted-turn-2.json').read_text())
+            self.assertEqual(users[-1]['trustedContext']['context_ref'],state['binding']['contextRef'])
+            self.assertEqual(json.loads(state['documentJson'])['sections'][0]['components'][0]['props']['title'],'Stage one')
+
+    async def test_scripted_candidate_resolution_cannot_reuse_previous_turn(self):
+        transport=ScriptedTransport([[{'name':'edit_page','arguments':{'context_ref':'$context','candidate_ref':'$candidate'}}]])
+        transport.begin_turn()
+        messages=[{'role':'user','content':json.dumps({'trustedContext':{'context_ref':'old'}})},
+                  {'role':'tool','content':json.dumps({'candidateRef':'old-candidate'})},
+                  {'role':'user','content':json.dumps({'trustedContext':{'context_ref':'new'}})}]
+        with self.assertRaisesRegex(ValueError,'No candidate'):await transport.complete({'messages':messages,'tools':[]})
+
     async def test_ordinary_ask_stops_before_model_transport(self):
         case={'id':'ordinary-ask','context':{'entry':'ordinary-ask'}}
         transport=ScriptedTransport([])

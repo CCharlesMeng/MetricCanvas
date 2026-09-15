@@ -20,9 +20,10 @@ class ScriptedTransport:
             return {'model':'scripted-no-model', 'usage':None,
                     'choices':[{'message':{'role':'assistant','content':'Script completed (not a model answer).'}}]}
         # Resolve opaque refs exclusively from the same channel an actual model receives.
-        context = next(json.loads(m['content'])['trustedContext'] for m in reversed(request['messages']) if m['role']=='user')
+        current_start = max(i for i,m in enumerate(request['messages']) if m['role']=='user')
+        context = json.loads(request['messages'][current_start]['content'])['trustedContext']
         candidate = None
-        for m in request['messages']:
+        for m in request['messages'][current_start+1:]:
             if m['role']=='tool':
                 value=json.loads(m['content'])
                 if value.get('candidateRef'): candidate=value['candidateRef']

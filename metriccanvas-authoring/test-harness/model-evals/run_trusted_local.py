@@ -150,6 +150,7 @@ async def run_case(case, folder, transport):
     sources=injection_paths(ROOT,case,'unified')
     # No legacy aliases here: source/identity are trusted-process inputs only.
     system='Local synthetic content evaluation. No tool saves or publishes. '+ '\n\n'.join(p.read_text() for p in sources)
+    messages=[{'role':'system','content':system}]
     dump(folder/'injection.json',{str(p.relative_to(ROOT)):sha(p) for p in sources})
     mcp={'mcpServers':{'content':{'command':sys.executable,'args':[str(HERE/'trusted_fixture_server.py'),str(folder/'trusted-state.json')],
          'env':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONPATH':str(ROOT/'metriccanvas-authoring/tool')}}}}
@@ -172,7 +173,7 @@ async def run_case(case, folder, transport):
                 context={'context_ref':state['binding']['contextRef'],'mode':state['binding']['mode'],
                          'baselineAuthority':'local-synthetic; remote latest unverified; next local turn uses last admitted candidate'}
                 contexts.append(context['context_ref'])
-                messages=[{'role':'system','content':system},{'role':'user','content':json.dumps({'trustedContext':context,'userRequest':prompt},ensure_ascii=False)}]
+                messages.append({'role':'user','content':json.dumps({'trustedContext':context,'userRequest':prompt},ensure_ascii=False)})
                 transport.begin_turn();tool_count=0;turn_calls=[]
                 result['turns'].append({'context':context,'calls':turn_calls})
                 for step in range(MAX_CALLS):
