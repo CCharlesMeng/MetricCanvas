@@ -13,7 +13,7 @@ it('当前页面与样例仅写6.1/layout，旧兼容夹具明确隔离', () => 
         expect(raw.schemaVersion).toBe('6.0');
         expect(raw).toHaveProperty('layoutForm');
       } else {
-        expect(['6.1', '6.2'], name).toContain(raw.schemaVersion);
+        expect(['6.1', '6.2', '6.3'], name).toContain(raw.schemaVersion);
         expect(raw, name).not.toHaveProperty('layoutForm');
         if (normalized.ok) expect(normalized.document, name).toEqual(raw);
       }

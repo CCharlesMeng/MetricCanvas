@@ -5,7 +5,7 @@ import math
 import re
 from copy import deepcopy
 from dataclasses import asdict, dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any, Callable, Mapping
 
 from jsonschema import Draft202012Validator
@@ -56,6 +56,10 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
     capability_issues = _capability_floor_issues(value)
     if capability_issues:
         return capability_issues
+    # 与页面包相同：先验证原始参数契约，再物化文本做第二次结构校验。
+    param_issues = [*_param_binding_issues(value), *_page_param_issues(value)]
+    if param_issues:
+        return param_issues
     optional_materialized = _materialize_validation_text_values(value)
     optional_issues = _schema_issues(validator, optional_materialized)
     if optional_issues:
@@ -67,9 +71,6 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
             )
         )
         return optional_issues
-    param_issues = [*_param_binding_issues(value), *_page_param_issues(value)]
-    if param_issues:
-        return param_issues
     row_issues = [*_query_initial_row_issues(value), *_inline_row_issues(value)]
     return [*row_issues, *_invariant_issues(value), *_navigation_issues(value)]
 
@@ -195,6 +196,10 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
+    if int(value["schemaVersion"].split(".")[1]) < 3:
+        paths = [f"/params/{i}" for i, p in enumerate(value.get("params", [])) if p["type"] == "time"]
+        paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("target") == "time" for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
+        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "确定性时间参数绑定由6.3引入") for path in paths)
     if value["schemaVersion"] == "6.0" and "layout" in value:
         issues.append(PageContractIssue(
             "SCHEMA_ERROR", "/layout",
@@ -2218,11 +2223,56 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
 
 def _matches_param_default(declaration: Mapping[str, Any]) -> bool:
     value = declaration.get("default")
+    if declaration["type"] == "time":
+        return _matches_time_value(value, declaration.get("granularity"))
     if declaration["type"] != "dimension":
         return _matches_json_type(value, declaration["type"])
     if declaration.get("multiple", False):
         return isinstance(value, list) and bool(value) and all(isinstance(v, str) and bool(v) for v in value) and len(set(value)) == len(value)
     return isinstance(value, str) and bool(value)
+
+
+def _matches_time_value(value: Any, granularity: Any) -> bool:
+    pattern = r"[0-9]{4}-[0-9]{2}" if granularity == "month" else r"[0-9]{4}-[0-9]{2}-[0-9]{2}"
+    if not isinstance(value, str) or not re.fullmatch(pattern, value):
+        return False
+    try:
+        date.fromisoformat(value + "-01" if granularity == "month" else value)
+        return True
+    except ValueError:
+        return False
+
+
+def _time_window_compatible(granularity: str, window: Mapping[str, Any]) -> bool:
+    if window["kind"] == "lastN":
+        return window["unit"] == ("month" if granularity == "month" else "day")
+    return granularity != "month" or window["unit"] != "day"
+
+
+def _valid_default_time_window(declaration: Mapping[str, Any], window: Mapping[str, Any]) -> bool:
+    if not _matches_time_value(declaration["default"], declaration.get("granularity")) or not _time_window_compatible(declaration["granularity"], window):
+        return False
+    try:
+        value = declaration["default"]
+        anchor = date.fromisoformat(value + "-01" if declaration["granularity"] == "month" else value)
+        if window["kind"] == "period":
+            offset = window.get("offset", 0)
+            if window["unit"] == "year":
+                date(anchor.year + offset, 1, 1)
+            elif window["unit"] == "month":
+                year, month = divmod(anchor.year * 12 + anchor.month - 1 + offset, 12)
+                date(year, month + 1, 1)
+            else:
+                anchor + timedelta(days=offset)
+        elif window["kind"] == "lastN":
+            if window["unit"] == "month":
+                year, month = divmod(anchor.year * 12 + anchor.month - window["n"], 12)
+                date(year, month + 1, 1)
+            else:
+                anchor - timedelta(days=window["n"] - 1)
+        return True
+    except (ValueError, OverflowError):
+        return False
 
 
 def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
@@ -2237,8 +2287,33 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
         if source["source"]["type"] != "query" or not query:
             continue
         owners = {}
+        time_owner = None
         for param_id, binding in query.get("paramBindings", {}).items():
             path = f"/dataSources/{_escape_pointer(source_id)}/source/query/paramBindings/{_escape_pointer(param_id)}"
+            if binding["target"] == "time":
+                declaration = params.get(param_id, {})
+                if declaration.get("type") != "time" or not declaration.get("required"):
+                    error(path, "时间绑定必须引用必需的time参数")
+                if time_owner is not None:
+                    error(path, "同一查询的时间只能有一个参数来源")
+                time_owner = param_id
+                if any(f["target"] == "time" for f in query.get("filterBindings", {}).values()):
+                    error(path, "固定时间参数不得与页内时间筛选器共同控制查询")
+                raw_filter = query["body"]["dsl_list"][0].get("filter")
+                time = raw_filter.get("time") if isinstance(raw_filter, dict) else None
+                if not isinstance(time, dict):
+                    error(path, "时间绑定需要显式filter.time，保留查询粒度与聚合设置")
+                else:
+                    if "start" in time or "end" in time:
+                        error(path, "时间绑定不得另有查询体起止默认值")
+                    period = "month" if declaration.get("granularity") == "month" else "day"
+                    if time.get("period") != period:
+                        error(path, f"时间参数精度要求查询period={period}；第一版不隐式转换查询粒度")
+                if declaration.get("granularity") and not _time_window_compatible(declaration["granularity"], binding["window"]):
+                    error(path, "时间窗口单位与参数精度不相容")
+                if isinstance(declaration.get("default"), str) and (declaration.get("granularity") not in ("month", "date") or not _valid_default_time_window(declaration, binding["window"])):
+                    error(path, "默认时间无法生成合法查询窗口")
+                continue
             if params.get(param_id, {}).get("type") != "dimension":
                 error(path, "查询参数绑定必须引用已声明的dimension参数")
             field = binding["queryField"]

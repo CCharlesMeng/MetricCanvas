@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.2",
-  "schemaSha256": "37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399",
+  "schemaVersion": "6.3",
+  "schemaSha256": "716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -23,8 +23,12 @@
       "sha256": "53689875d9fea4f045e408d04cd913b79793f8924852b04effb1af2478465d64"
     },
     {
+      "file": "packages/page/src/param-bindings.ts",
+      "sha256": "c4ba1118ddad7d7affc66c8e3863705af7fb658be901943c44c09e99878e38ab"
+    },
+    {
       "file": "packages/page/src/query.ts",
-      "sha256": "8b953650ffbeaa97b3086deaed559b21199771c9a84da9e3215929b3a9aaf905"
+      "sha256": "8abb02510e80e694b6b6c081337c8d71f21479c3b01a3563bc28cb9ee4428ceb"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -96,7 +100,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "0b5ff233f215e9213568b221b229230433c346b4e3c5f1f3e9f262110ce56a58"
+      "sha256": "9f9a788e095252632ef23c23613ea44ed969cb76387873a0d921f25c15785515"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -108,7 +112,11 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "c7da93b21168c83cd29bc724d9fe8ecba5d7a68ed424709aa8a693458de67353"
+      "sha256": "f8eb503a330147ba34ae845921b426c10d29b8135bd463f8c593b1414c860ee6"
+    },
+    {
+      "file": "packages/page/src/time-param.ts",
+      "sha256": "9198a71d56f401860c2f4c7242d3c38169be7e8c17981d7e9d852dc1c0f46aba"
     },
     {
       "file": "packages/page/src/validate.ts",
@@ -151,7 +159,8 @@
         "nonEmptyTextValue",
         "textValueReference",
         "textValue",
-        "pageParam"
+        "pageParam",
+        "timeWindow"
       ],
       "keywords": [
         "params-and-text-values",
@@ -159,12 +168,15 @@
       ],
       "examples": [
         "dimension-params-page",
-        "reference-branches-page"
+        "reference-branches-page",
+        "time-params-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
         "packages/page/src/schema/primitives.ts",
-        "tools/scripts/page-conformance-vectors.ts"
+        "tools/scripts/page-conformance-vectors.ts",
+        "packages/page/src/time-param.ts",
+        "packages/page/src/param-bindings.ts"
       ],
       "rules": [
         "page-param-id-unique",
@@ -1038,11 +1050,12 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\"]",
+      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\",\"6.3\"]",
       "enum": [
         "6.0",
         "6.1",
-        "6.2"
+        "6.2",
+        "6.3"
       ]
     },
     {
@@ -1450,6 +1463,67 @@
       "module": "params-and-text-values.md",
       "type": "\"string\"",
       "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2",
+      "path": "@pageParam · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"id\",\"type\",\"granularity\",\"required\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/id",
+      "path": "@pageParam · anyOf[2].id",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "pattern=\"^[a-z0-9][a-z0-9-]*$\""
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/type",
+      "path": "@pageParam · anyOf[2].type",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "const=\"time\"",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/granularity",
+      "path": "@pageParam · anyOf[2].granularity",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"month\",\"date\"]",
+      "enum": [
+        "month",
+        "date"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/required",
+      "path": "@pageParam · anyOf[2].required",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"boolean\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/label",
+      "path": "@pageParam · anyOf[2].label",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/default",
+      "path": "@pageParam · anyOf[2].default",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "无额外结构约束"
     },
     {
       "pointer": "#/properties/dataSources",
@@ -3455,12 +3529,20 @@
       "path": "@dqeQuery.paramBindings{key}",
       "required": "动态键的值",
       "module": "queries-and-bindings.md",
+      "type": "oneOf联合",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
       "type": "\"object\"",
       "constraints": "required=[\"target\",\"queryField\"]; additionalProperties=false"
     },
     {
-      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/properties/target",
-      "path": "@dqeQuery.paramBindings{key}.target",
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0/properties/target",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[0].target",
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "type": "\"string\"",
@@ -3468,12 +3550,150 @@
       "const": "dimension"
     },
     {
-      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/properties/queryField",
-      "path": "@dqeQuery.paramBindings{key}.queryField",
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0/properties/queryField",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[0].queryField",
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "type": "\"string\"",
       "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"target\",\"window\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/target",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "type": "\"string\"",
+      "constraints": "const=\"time\"",
+      "const": "time"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/window",
+      "path": "@dqeQuery.paramBindings{key} · oneOf[1].window",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "type": "引用 #/definitions/timeWindow",
+      "constraints": "无额外结构约束",
+      "ref": "#/definitions/timeWindow"
+    },
+    {
+      "pointer": "#/definitions/timeWindow",
+      "path": "@timeWindow",
+      "required": "类型/分支",
+      "module": "params-and-text-values.md",
+      "type": "oneOf联合",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/0",
+      "path": "@timeWindow · oneOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"kind\",\"unit\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/0/properties/kind",
+      "path": "@timeWindow · oneOf[0].kind",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "const=\"period\"",
+      "const": "period"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/0/properties/unit",
+      "path": "@timeWindow · oneOf[0].unit",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"day\",\"month\",\"year\"]",
+      "enum": [
+        "day",
+        "month",
+        "year"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/0/properties/offset",
+      "path": "@timeWindow · oneOf[0].offset",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"integer\"",
+      "constraints": "minimum=-9007199254740991; maximum=9007199254740991"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/1",
+      "path": "@timeWindow · oneOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"kind\",\"unit\",\"n\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/1/properties/kind",
+      "path": "@timeWindow · oneOf[1].kind",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "const=\"lastN\"",
+      "const": "lastN"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/1/properties/unit",
+      "path": "@timeWindow · oneOf[1].unit",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"day\",\"month\"]",
+      "enum": [
+        "day",
+        "month"
+      ]
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/1/properties/n",
+      "path": "@timeWindow · oneOf[1].n",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"integer\"",
+      "constraints": "minimum=1; maximum=9007199254740991"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/2",
+      "path": "@timeWindow · oneOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"kind\",\"unit\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/2/properties/kind",
+      "path": "@timeWindow · oneOf[2].kind",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "const=\"toDate\"",
+      "const": "toDate"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/2/properties/unit",
+      "path": "@timeWindow · oneOf[2].unit",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"month\",\"year\"]",
+      "enum": [
+        "month",
+        "year"
+      ]
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/paramBindings/propertyNames",
@@ -9696,6 +9916,12 @@
       "pointer": "#/params/0/default"
     },
     {
+      "schemaPointer": "#/definitions/pageParam/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/params/0"
+    },
+    {
       "schemaPointer": "#/definitions/dataSource/anyOf/0",
       "module": "data-sources.md",
       "file": "examples/component-metricCard.json",
@@ -9880,6 +10106,36 @@
       "module": "queries-and-bindings.md",
       "file": "examples/component-barChart.json",
       "pointer": "#/dataSources/monthly/source/query"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0",
+      "module": "queries-and-bindings.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/dataSources/sales/source/query/paramBindings/regions"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1",
+      "module": "queries-and-bindings.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/current/source/query/paramBindings/report-month"
+    },
+    {
+      "schemaPointer": "#/definitions/timeWindow/oneOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/current/source/query/paramBindings/report-month/window"
+    },
+    {
+      "schemaPointer": "#/definitions/timeWindow/oneOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/rolling/source/query/paramBindings/report-month/window"
+    },
+    {
+      "schemaPointer": "#/definitions/timeWindow/oneOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/to-date/source/query/paramBindings/report-month/window"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",

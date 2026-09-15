@@ -1,5 +1,6 @@
 import type { TypedError } from './errors';
 import { isValueFormatPreset, type ValueFormatPreset } from './field';
+import { matchesTimeValue, type TimeParamGranularity } from './time-param';
 
 /**
  * 页面参数(ADR-0047):页面打开时由 URL 确定、此后不可改变的具名输入。
@@ -7,7 +8,7 @@ import { isValueFormatPreset, type ValueFormatPreset } from './field';
  * 改变的是筛选器,不能改变的是页面参数,换一个取值意味着打开另一个页面实例。
  */
 
-export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension';
+export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time';
 export type PageParamValue = string | number | boolean | string[];
 
 export interface PageParamDeclaration {
@@ -16,6 +17,7 @@ export interface PageParamDeclaration {
   required: boolean;
   /** 仅维度参数支持多值；缺省单值。 */
   multiple?: boolean;
+  granularity?: TimeParamGranularity;
   label?: string;
   default?: PageParamValue;
 }
@@ -197,6 +199,7 @@ export function pageParamErrors(
 }
 
 export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
+  if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
   if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
   return declaration.multiple
     ? Array.isArray(value) && value.length > 0 && value.every(item => typeof item === 'string' && item.length > 0) && new Set(value).size === value.length

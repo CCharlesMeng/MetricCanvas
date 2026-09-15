@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "6.2",
+  "schemaVersion": "6.3",
   "layout": "report",
   "id": "flow-analysis-report-params",
   "meta": {
-    "description": "流水分析报告（页面维度参数版）。代表处取值通过 params.default 保存，9 个查询显式绑定同一维度参数。沿用原流水分析报告的演示查询定义，展示需数据服务支持对应字段；不携带固定初始行。"
+    "description": "流水分析报告（确定性时间与维度参数版）。代表处与报告月份通过 params.default 保存；所有查询显式绑定，不按最新期回退。月度指标取报告当月，趋势取所在全年。沿用演示查询定义，实际取数需数据服务支持对应字段与指标口径。"
   },
   "dataSources": {
     "flow-kpis": {
@@ -93,9 +93,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -108,6 +106,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -184,9 +189,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false,
-                    "start": "2026-01",
-                    "end": "2026-12"
+                    "is_aggregate": false
                   },
                   "dims": [],
                   "metrics": []
@@ -199,6 +202,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "year"
+              }
             }
           }
         }
@@ -275,9 +285,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": false,
-                    "start": "2026-01",
-                    "end": "2026-12"
+                    "is_aggregate": false
                   },
                   "dims": [],
                   "metrics": []
@@ -290,6 +298,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "year"
+              }
             }
           }
         }
@@ -364,9 +379,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -379,6 +392,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -463,9 +483,7 @@
                 ],
                 "filter": {
                   "time": {
-                    "period": "month",
-                    "start": "202602",
-                    "end": "202602"
+                    "period": "month"
                   },
                   "metrics": [
                     {
@@ -490,6 +508,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -546,9 +571,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -561,6 +584,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -645,9 +675,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -660,6 +688,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -775,9 +810,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -790,6 +823,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -905,9 +945,7 @@
                 "filter": {
                   "time": {
                     "period": "month",
-                    "is_aggregate": true,
-                    "start": "2026-02",
-                    "end": "2026-02"
+                    "is_aggregate": true
                   },
                   "dims": [],
                   "metrics": []
@@ -920,6 +958,13 @@
             "representative-office": {
               "target": "dimension",
               "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month"
+              }
             }
           }
         }
@@ -938,16 +983,18 @@
             "span": 12
           },
           "props": {
-            "title": "2026年2月流水分析报告（参数版）",
+            "title": "流水分析报告（参数版）",
             "generatedBy": "报告由云战地助手—智能数据Agent生成",
             "badge": {
               "param": "representative-office"
             },
             "asOf": {
-              "label": "数据统计时间截至",
-              "value": "2026年2月28日"
+              "label": "报告月份",
+              "value": {
+                "param": "report-month"
+              }
             },
-            "subtitle": "<p>本报告按所选代表处分析整体流水、月度趋势、重点客户、赛道与行业表现。月度指标统计期为2026年2月，趋势覆盖2026年全年。</p>",
+            "subtitle": "<p>本报告按指定代表处和报告月份查询。月度指标取报告当月，月度趋势覆盖报告所在全年；指定期间无数据时显示空结果。</p>",
             "subtitleFormat": "semanticHtml",
             "decoration": "shortBar"
           }
@@ -1904,6 +1951,14 @@
       "required": true,
       "label": "代表处",
       "default": "北京代表处"
+    },
+    {
+      "id": "report-month",
+      "type": "time",
+      "granularity": "month",
+      "required": true,
+      "label": "报告月份",
+      "default": "2026-02"
     }
   ]
 }

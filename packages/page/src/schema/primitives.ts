@@ -82,6 +82,13 @@ export const pageParamZ = z.union([z
     id: idZ, type: z.literal('dimension'), required: z.boolean(),
     label: z.string().min(1).optional(), multiple: z.boolean().optional(),
     default: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional()
+  }).strict(), z.object({
+    id: idZ,
+    type: z.literal('time'),
+    granularity: z.enum(['month', 'date']),
+    required: z.boolean(),
+    label: z.string().min(1).optional(),
+    default: z.string().optional()
   }).strict()])
   .meta({
     id: 'pageParam',

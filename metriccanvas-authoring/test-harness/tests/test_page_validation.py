@@ -71,6 +71,18 @@ class PageContractConformanceTest(unittest.TestCase):
                     self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
                 self.assertEqual(case["input"], before)
 
+    def test_time_param_bindings_match_typescript_contract(self) -> None:
+        matrix = json.loads((CONTRACT_ROOT / "page/conformance/time-param-bindings.json").read_text())
+        for case in matrix["cases"]:
+            with self.subTest(case=case["name"]):
+                actual = normalize_page_document(case["input"])
+                expected = case["expected"]
+                self.assertEqual(actual["ok"], expected["ok"])
+                if expected["ok"]:
+                    self.assertEqual(actual, expected)
+                else:
+                    self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
+
     def test_normalization_preserves_all_valid_source_content(self) -> None:
         for path in sorted((CONTRACT_ROOT / "page/conformance/valid").glob("*.json")):
             with self.subTest(fixture=path.name):

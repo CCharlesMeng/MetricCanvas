@@ -146,6 +146,36 @@ async function buildProductOutputs(): Promise<OutputMap> {
   parameterCase('unknown-query-param', p => { p.dataSources.shared.source.query.paramBindings.unknown = {target:'dimension',queryField:'other'}; });
   outputs.set('page/conformance/param-bindings.json', json({ cases: parameterCases }));
 
+  const timeCases: Array<{name: string; input: unknown; expected: unknown}> = [];
+  const timeCase = (name: string, change: (page: any) => void) => {
+    const input = structuredClone(fixtures.get('time-params-page'));
+    change(input);
+    timeCases.push({name, input, expected: normalizePageDocument(input)});
+  };
+  timeCase('month-windows', () => {});
+  timeCase('required-no-default', p => { delete p.params[0].default; });
+  timeCase('date-windows', p => {
+    p.params[0].granularity = 'date'; p.params[0].default = '2024-02-29';
+    for (const source of Object.values(p.dataSources) as any[]) {
+      source.source.query.body.dsl_list[0].filter.time.period = 'day';
+      const window = source.source.query.paramBindings['report-month'].window;
+      if (window.kind === 'lastN') window.unit = 'day';
+    }
+  });
+  timeCase('old-version-floor', p => { p.schemaVersion = '6.2'; });
+  timeCase('invalid-month', p => { p.params[0].default = '2026-13'; });
+  timeCase('optional-time', p => { p.params[0].required = false; });
+  timeCase('unknown-param', p => { p.params[0].id = 'other'; });
+  timeCase('scalar-time', p => { p.params[0].type = 'string'; delete p.params[0].granularity; });
+  timeCase('duplicate-time', p => { p.params.push({...p.params[0],id:'other'}); p.dataSources.current.source.query.paramBindings.other = {target:'time',window:{kind:'period',unit:'month'}}; });
+  timeCase('static-boundary', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.start = '2026-01'; });
+  timeCase('missing-period', p => { delete p.dataSources.current.source.query.body.dsl_list[0].filter.time; });
+  timeCase('wrong-period', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.period = 'day'; });
+  timeCase('wrong-window-unit', p => { p.dataSources.current.source.query.paramBindings['report-month'].window.unit = 'day'; });
+  timeCase('window-out-of-range', p => { p.params[0].default = '0001-01'; });
+  timeCase('filter-conflict', p => { p.filters = [{id:'date-filter',type:'timeRange'}]; p.dataSources.current.source.query.filterBindings = {'date-filter':{target:'time'}}; });
+  outputs.set('page/conformance/time-param-bindings.json', json({cases:timeCases}));
+
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {
     outputs.set(`page/conformance/invalid/${vector.case}.json`, json(vector));

@@ -214,7 +214,14 @@
       return;
     }
 
-    const loaded = initializePageParams(parsed.page, params.values);
+    let loaded: typeof parsed.page;
+    try {
+      loaded = initializePageParams(parsed.page, params.values);
+    } catch {
+      pageState = {phase:'invalid',errors:[{type:'SCHEMA_ERROR',path:'/params',message:'页面参数无法生成合法查询条件，请检查时间值与窗口范围'}]};
+      emit?.({type:'invalid',errors:pageState.errors});
+      return;
+    }
     const mode = dataSourceMode(loaded.dataSources);
     const configIssue = configurationIssue(mode, gatewayOverride);
     if (configIssue) {
@@ -954,8 +961,8 @@
     </div>
   {:else if pageState.phase === 'params-incomplete'}
     <div class="error-page">
-      <h1>页面输入不完整</h1>
-      <p class="muted">以下页面参数是必需的，请检查链接是否被裁剪。</p>
+      <h1>页面输入不完整或无效</h1>
+      <p class="muted">以下页面参数缺少有效取值，请检查链接中的参数及日期格式。</p>
       <ul class="errors">
         {#each pageState.missing as declaration (declaration.id)}
           <li>

@@ -82,6 +82,7 @@ export function validationResolution(
 }
 
 function placeholderFor(declaration: PageParamDeclaration): PageParamValue {
+  if (declaration.type === 'time') return declaration.granularity === 'month' ? '2000-01' : '2000-01-01';
   if (declaration.type === 'number') return 0;
   if (declaration.type === 'boolean') return false;
   return declaration.label ?? declaration.id;

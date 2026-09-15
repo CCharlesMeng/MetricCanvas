@@ -11,7 +11,7 @@ urlParams仅映射该类允许的value/from/to/level键，不能与本页其它�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.2。结构真源为本册[schema.json](schema.json)，SHA256 `37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399`。字段表自动生成；可选不等于有默认值。
+页面协议 6.3。结构真源为本册[schema.json](schema.json)，SHA256 `716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -517,7 +517,7 @@ Schema位置：`#/definitions/relativeTimeExpression/properties/range/oneOf/0/pr
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "lastN" | 用于选择@relativeTimeExpression.range · oneOf[0].kind分支；同分支其它约束同时成立。 |
+| "lastN" | 含基准期的最近N期；时间参数窗口按自身日期/月精度计数。 |
 
 <a id="schema-232f646566696e6974696f6e732f72656c617469766554696d6545787072657373696f6e2f70726f706572746965732f72616e67652f6f6e654f662f302f70726f706572746965732f6e"></a>
 

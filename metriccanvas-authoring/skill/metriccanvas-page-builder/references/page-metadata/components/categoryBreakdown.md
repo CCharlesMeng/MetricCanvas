@@ -11,7 +11,7 @@
 categoryLabel缺省使用字段label，字符串覆盖列头，false明确隐藏列头。swatches按类别取值从共享配色取色，需要同页饼图绑定相同类别字段；不是按行序猜颜色。带色点的完整例子保留这一依赖。
 
 
-页面协议 6.2。结构真源为本册[schema.json](../schema.json)，SHA256 `37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399`。字段表自动生成；可选不等于有默认值。
+页面协议 6.3。结构真源为本册[schema.json](../schema.json)，SHA256 `716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

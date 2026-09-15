@@ -276,6 +276,28 @@ function executeFlowAnalysisReport(
   if (!equalJson(item.filter.metrics, expectedMetrics)) {
     return unsupported('流水分析报告 filter.metrics 与已验证查询不一致');
   }
+  // 参数报告走受控扩展：样本属于北京代表处及夹具注明的期间。
+  // 接受合法但无样本的条件并返回空，不能把旧行换个日期冒充新数据。
+  const dims = item.filter.dims;
+  const office = Array.isArray(dims) && dims.length === 1 && isRecord(dims[0]) &&
+    dims[0].dim_name === '代表处' && Object.keys(dims[0]).every(k => ['dim_name','dim_value_list'].includes(k)) &&
+    Array.isArray(dims[0].dim_value_list) && dims[0].dim_value_list.length === 1 &&
+    typeof dims[0].dim_value_list[0] === 'string' && dims[0].dim_value_list[0].length > 0
+    ? dims[0].dim_value_list[0] : undefined;
+  if (office !== undefined && (expectedDims === undefined || equalJson(expectedDims, []))) {
+    const time = item.filter.time;
+    const month = (v: unknown): v is string => typeof v === 'string' && /^(?!0000)\d{4}-(0[1-9]|1[0-2])$/.test(v);
+    if (!isRecord(time) || !month(time.start) || !month(time.end) || time.start > time.end ||
+        !matchesTime(time, {...query.time,start:time.start,end:time.end})) {
+      return unsupported('参数报告要求有效且有序的月份范围，并保留既有聚合粒度');
+    }
+    if (query.order ? !equalJson(item.order, query.order) : !validOrder(item.order)) {
+      return unsupported('流水分析报告排序与已验证查询不一致');
+    }
+    const normalizeMonth = (v: string) => /^\d{6}$/.test(v) ? `${v.slice(0,4)}-${v.slice(4)}` : v;
+    const hasSample = office === '北京代表处' && time.start === normalizeMonth(query.time.start) && time.end === normalizeMonth(query.time.end);
+    return successResult(item, hasSample ? query.rows.map(row => ({...row})) : [], flowAnalysisMetadata(query));
+  }
   if (!equalJson(item.filter.dims, expectedDims)) {
     return unsupported('流水分析报告 filter.dims 与已验证查询不一致');
   }

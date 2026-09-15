@@ -786,9 +786,10 @@
           "enum": [
             "6.0",
             "6.1",
-            "6.2"
+            "6.2",
+            "6.3"
           ],
-          "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2"
+          "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3"
         },
         "id": {
           "type": "string",
@@ -1062,6 +1063,43 @@
               "required": [
                 "id",
                 "type",
+                "required"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "type": {
+                  "type": "string",
+                  "const": "time"
+                },
+                "granularity": {
+                  "type": "string",
+                  "enum": [
+                    "month",
+                    "date"
+                  ]
+                },
+                "required": {
+                  "type": "boolean"
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "default": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "granularity",
                 "required"
               ],
               "additionalProperties": false
@@ -2227,22 +2265,43 @@
                 "pattern": "^[a-z0-9][a-z0-9-]*$"
               },
               "additionalProperties": {
-                "type": "object",
-                "properties": {
-                  "target": {
-                    "type": "string",
-                    "const": "dimension"
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "target": {
+                        "type": "string",
+                        "const": "dimension"
+                      },
+                      "queryField": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "target",
+                      "queryField"
+                    ],
+                    "additionalProperties": false
                   },
-                  "queryField": {
-                    "type": "string",
-                    "minLength": 1
+                  {
+                    "type": "object",
+                    "properties": {
+                      "target": {
+                        "type": "string",
+                        "const": "time"
+                      },
+                      "window": {
+                        "$ref": "#/$defs/Page/definitions/timeWindow"
+                      }
+                    },
+                    "required": [
+                      "target",
+                      "window"
+                    ],
+                    "additionalProperties": false
                   }
-                },
-                "required": [
-                  "target",
-                  "queryField"
-                ],
-                "additionalProperties": false
+                ]
               }
             },
             "filterBindings": {
@@ -2293,6 +2352,85 @@
             "body"
           ],
           "additionalProperties": false
+        },
+        "timeWindow": {
+          "oneOf": [
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "period"
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "day",
+                    "month",
+                    "year"
+                  ]
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "kind",
+                "unit"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "lastN"
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "day",
+                    "month"
+                  ]
+                },
+                "n": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 9007199254740991
+                }
+              },
+              "required": [
+                "kind",
+                "unit",
+                "n"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "toDate"
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "month",
+                    "year"
+                  ]
+                }
+              },
+              "required": [
+                "kind",
+                "unit"
+              ],
+              "additionalProperties": false
+            }
+          ]
         },
         "dimensionFilter": {
           "type": "object",

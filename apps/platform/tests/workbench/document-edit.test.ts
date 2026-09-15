@@ -302,7 +302,7 @@ describe('旧页面进入创作草稿的规范化', () => {
   it('双字段与未来版本不能借草稿投影进入工作台', () => {
     for (const input of [
       { ...assembled(), schemaVersion: '6.1', layout: 'report', layoutForm: 'report' },
-      { ...assembled(), schemaVersion: '6.3' }
+      { ...assembled(), schemaVersion: '6.4' }
     ]) expect(createCanvasAuthoringDraft(input).ok).toBe(false);
   });
 });

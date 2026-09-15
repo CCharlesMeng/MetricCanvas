@@ -31,6 +31,12 @@ export const inlineSourceZ = z
 
 const dslItemZ = z.record(z.string(), z.unknown());
 
+export const timeWindowZ = z.discriminatedUnion('kind', [
+  z.object({ kind: z.literal('period'), unit: z.enum(['day', 'month', 'year']), offset: z.int().optional() }).strict(),
+  z.object({ kind: z.literal('lastN'), unit: z.enum(['day', 'month']), n: z.int().min(1) }).strict(),
+  z.object({ kind: z.literal('toDate'), unit: z.enum(['month', 'year']) }).strict()
+]).meta({ id: 'timeWindow' });
+
 export const dqeQueryZ = z
   .object({
     language: z.literal('dqe'),
@@ -39,7 +45,10 @@ export const dqeQueryZ = z
         dsl_list: z.array(dslItemZ).length(1)
       })
       .strict(),
-    paramBindings: z.record(idZ, z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict()).optional(),
+    paramBindings: z.record(idZ, z.discriminatedUnion('target', [
+      z.object({ target: z.literal('dimension'), queryField: z.string().min(1) }).strict(),
+      z.object({ target: z.literal('time'), window: timeWindowZ }).strict()
+    ])).optional(),
     filterBindings: z
       .record(
         idZ,

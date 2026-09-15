@@ -2,6 +2,7 @@ import type { TypedError } from './errors';
 import type { PageParamDeclaration } from './page-param';
 import type { FilterDeclaration } from './filter';
 import type { DqeQueryDefinition } from './query';
+import { resolveTimeWindow, timeWindowCompatible } from './time-param';
 
 /** 结构校验后的参数绑定不变量；不从字段名猜目标，不解释任意表达式。 */
 export function paramBindingErrors(document: unknown): TypedError[] {
@@ -15,8 +16,31 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     const query = source.source.query;
     if (source.source.type !== 'query' || !query) continue;
     const owners = new Map<string, string>();
+    let timeOwner: string | undefined;
     for (const [id, binding] of Object.entries(query.paramBindings ?? {})) {
       const path = `/dataSources/${pointer(sourceId)}/source/query/paramBindings/${pointer(id)}`;
+      if (binding.target === 'time') {
+        const declaration = params.get(id);
+        if (declaration?.type !== 'time' || !declaration.required) error(path, '时间绑定必须引用必需的time参数');
+        if (timeOwner !== undefined) error(path, '同一查询的时间只能有一个参数来源');
+        timeOwner = id;
+        if (Object.values(query.filterBindings ?? {}).some(f => f.target === 'time')) error(path, '固定时间参数不得与页内时间筛选器共同控制查询');
+        const filter = query.body.dsl_list[0].filter;
+        const time = filter && typeof filter === 'object' && !Array.isArray(filter) ? filter.time : undefined;
+        if (!time || typeof time !== 'object' || Array.isArray(time)) {
+          error(path, '时间绑定需要显式filter.time，保留查询粒度与聚合设置');
+        } else {
+          if ('start' in time || 'end' in time) error(path, '时间绑定不得另有查询体起止默认值');
+          const period = declaration?.granularity === 'month' ? 'month' : 'day';
+          if (time.period !== period) error(path, `时间参数精度要求查询period=${period}；第一版不隐式转换查询粒度`);
+        }
+        if (declaration?.granularity && !timeWindowCompatible(declaration.granularity, binding.window)) error(path, '时间窗口单位与参数精度不相容');
+        if (typeof declaration?.default === 'string') {
+          try { resolveTimeWindow(declaration.default, binding.window); }
+          catch { error(path, '默认时间无法生成合法查询窗口'); }
+        }
+        continue;
+      }
       if (params.get(id)?.type !== 'dimension') error(path, '查询参数绑定必须引用已声明的dimension参数');
       if (owners.has(binding.queryField)) error(path, '同一查询目标只能有一个参数来源');
       owners.set(binding.queryField, id);

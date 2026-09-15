@@ -1,6 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import flowFixtureJson from '../fixtures/flow-analysis-report.json';
 import { executeDqeItem } from '../src/execute';
+import { readFileSync } from 'node:fs';
+import { parsePage } from '../../../packages/page/src';
+import { initializePageParams, resolvePageParams } from '../../../packages/engine/runtime/src/page-params';
+
+it('参数报告接受代表处与时间条件；未配置样本的期间返回空结果且不回退', () => {
+  const parsed = parsePage(JSON.parse(readFileSync('pages/flow-analysis-report-params.json','utf8')));
+  if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+  for (const [search, nonempty] of [['',8], ['report-month=2099-01',0], ['representative-office=上海代表处',0]] as const) {
+    const values = resolvePageParams(search, parsed.page.params ?? []).values;
+    const page = initializePageParams(parsed.page,values);
+    const results = Object.values(page.dataSources).map(source => {
+      if (source.source.type !== 'query') throw new Error('expected query');
+      return executeDqeItem(source.source.query.body.dsl_list[0]);
+    });
+    expect(results.every(r => r.code === 'SUCCESS')).toBe(true);
+    expect(results.filter(r => r.data.length > 0)).toHaveLength(nonempty);
+  }
+});
 
 interface FlowQueryFixture {
   output_dims: string[];

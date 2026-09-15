@@ -13,7 +13,7 @@ const inputs = new Map<string,string>();
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
 inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanvas/page/conformance/coverage.json','utf8'));
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));
-const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, '6.2');
+const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, '6.3');
 
 describe('页面参考手册生成与分发', () => {
   it('独立保留联合必填、动态键、数组项、const和递归引用，不无限展开', () => {

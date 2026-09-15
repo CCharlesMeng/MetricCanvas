@@ -18,6 +18,18 @@ export function resolvePageParams(
   const missing: string[] = [];
 
   for (const declaration of declarations) {
+    if (declaration.type === 'time') {
+      // 显式非法输入不回退默认月份，防止展示了另一统计期却看似成功。
+      const value = query.has(declaration.id) ? query.get(declaration.id) : declaration.default;
+      if (query.getAll(declaration.id).length > 1 || (value !== undefined && !matchesParamDeclaration(value, declaration))) {
+        missing.push(declaration.id);
+      } else if (value !== undefined) {
+        values.set(declaration.id, value);
+      } else if (declaration.required) {
+        missing.push(declaration.id);
+      }
+      continue;
+    }
     const parsed = declaration.type === 'dimension' && declaration.multiple
       ? query.has(declaration.id) ? query.getAll(declaration.id) : undefined
       : declaration.type === 'dimension' && query.getAll(declaration.id).length > 1 ? undefined
@@ -80,7 +92,13 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
     declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
   }
   for (const source of Object.values(initialized.dataSources)) {
-    if (source.source.type === 'query') source.source.query = initializeQueryParams(source.source.query, values);
+    if (source.source.type === 'query') {
+      if (Object.values(source.source.query.paramBindings ?? {}).some(binding => binding.target === 'time')) {
+        // 内嵌行没有当前参数的执行凭据；已核验的执行回执另由 execution 接管。
+        delete source.source.initial;
+      }
+      source.source.query = initializeQueryParams(source.source.query, values);
+    }
   }
   return initialized;
 }

@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.2。结构真源为本册[schema.json](schema.json)，SHA256 `37d234af1e56009be5e50aba97a63f28d3207d2ef26da028ee0d90eee17bb399`。字段表自动生成；可选不等于有默认值。
+页面协议 6.3。结构真源为本册[schema.json](schema.json)，SHA256 `716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -125,13 +125,23 @@ Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProper
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 动态键的值 | required=["target","queryField"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| oneOf联合 | 动态键的值 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
-<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f746172676574"></a>
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f30"></a>
 
-### `@dqeQuery.paramBindings{key}.target`
+### `@dqeQuery.paramBindings{key} · oneOf[0]`
 
-Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/properties/target`。
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","queryField"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[0].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0/properties/target`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -141,15 +151,49 @@ Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProper
 |---|---|
 | "dimension" | 分类维度或维度目标；不是数值度量。 |
 
-<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f70726f706572746965732f71756572794669656c64"></a>
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f302f70726f706572746965732f71756572794669656c64"></a>
 
-### `@dqeQuery.paramBindings{key}.queryField`
+### `@dqeQuery.paramBindings{key} · oneOf[0].queryField`
 
-Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/properties/queryField`。
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0/properties/queryField`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | DQE输出或目标字段名，不等于页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f31"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[1]`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target","window"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[1].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="time" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "time" | 用于选择@dqeQuery.paramBindings{key} · oneOf[1].target分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f6164646974696f6e616c50726f706572746965732f6f6e654f662f312f70726f706572746965732f77696e646f77"></a>
+
+### `@dqeQuery.paramBindings{key} · oneOf[1].window`
+
+Schema位置：`#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1/properties/window`。目标：[#/definitions/timeWindow](params-and-text-values.md#schema-232f646566696e6974696f6e732f74696d6557696e646f77)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/timeWindow | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 确定性查询时间窗口：由绑定参数推导起止，起止包含；不决定指标口径。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f706172616d42696e64696e67732f70726f70657274794e616d6573"></a>
 
@@ -264,5 +308,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/propertyNames`�
 ## 联合分支见证（生成）
 
 - `#/definitions/pageQuery/oneOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/monthly/source/query`。
+- `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/paramBindings/regions`。
+- `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/dataSources/regions/source/query/filterBindings/area`。
 - `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/source/query/filterBindings/period`。

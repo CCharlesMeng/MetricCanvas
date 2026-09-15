@@ -1,5 +1,6 @@
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
+import { resolveTimeWindow, type TimeWindow } from './time-param';
 
 export type JsonValue =
   | string
@@ -42,7 +43,10 @@ export interface DqeQueryDefinition {
   language: 'dqe';
   body: DqeRequestBody;
   filterBindings?: Record<string, DqeFilterBinding>;
-  paramBindings?: Record<string, { target: 'dimension'; queryField: string }>;
+  paramBindings?: Record<string,
+    | { target: 'dimension'; queryField: string }
+    | { target: 'time'; window: TimeWindow }
+  >;
 }
 
 /**
@@ -128,6 +132,17 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
   const initialized = structuredClone(query);
   for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
+    if (binding.target === 'time') {
+      const value = values.get(id);
+      if (typeof value !== 'string') throw new Error(`时间绑定缺少有效参数:${id}`);
+      const item = initialized.body.dsl_list[0];
+      const filter = item.filter;
+      if (!filter || typeof filter !== 'object' || Array.isArray(filter)) throw new Error('时间绑定需要 filter.time');
+      const time = filter.time;
+      if (!time || typeof time !== 'object' || Array.isArray(time)) throw new Error('时间绑定需要 filter.time');
+      filter.time = { ...time, ...resolveTimeWindow(value, binding.window) };
+      continue;
+    }
     if (Object.values(initialized.filterBindings ?? {}).some(f => f.target === 'dimension' && f.queryField === binding.queryField)) continue;
     const value = values.get(id);
     if (value === undefined) continue;
