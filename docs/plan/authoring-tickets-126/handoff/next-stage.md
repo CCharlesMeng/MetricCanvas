@@ -6,7 +6,7 @@
 
 最终产品组合为 `b4868fccafb529fff2c194511d7f413333723b57`，包含在线main `640dd2aa435a45b50b1954967054c136468a473d`、生命周期、双Skill、语言引用交接与发布界面/工具。已发布的唯一消费基线为 `7f998ba8407fd0b988bb6252c05a30b5c80b7c08`（PR #148 merge SHA）；本页发布回执后补，后续代码从该已合main基线继续。集成树 `/private/tmp/metriccanvas-126-integration`，分支 `codex/authoring-126-integration`。
 
-先读 [common.md](common.md)、[development-plan.md](../development-plan.md)、执行仓AGENTS/CONTEXT/ADR及负责Issue完整正文与最新评论。继续独立worktree，原工作区及其他任务改动保持；不用旧#127/九票交付分支起跑。不新建任务。所有权只由S0台账登记，生成物只由S2统一生成。
+先读 [common.md](common.md)、[development-plan.md](../development-plan.md)、执行仓AGENTS/CONTEXT/ADR及负责Issue完整正文与最新评论。继续独立worktree，原工作区及其他任务改动保持；不用旧#127/九票交付分支起跑。既有模块不新建重复任务；用户已额外授权在GitHub收尾后启动独立模型评测任务，见[评测交接](model-eval-next.md)。所有权只由S0台账登记，生成物只由S2统一生成。
 
 ## 现有角色与下一步
 
@@ -39,3 +39,7 @@ S5只维护台账分配的两文件及pangu-runtime.test.ts/证据，port.ts与�
 参考证据：[T12](../t12-evidence.md)、[T20](../t20-evidence.md)、[T19工具](../t19-tool-evidence.md)、[T19界面](../t19-ui-evidence.md)、[双Skill](../platform-skills-evidence.md)。分别记录“本仓/外部确认/真实联调”；不把旧基线测试写成新组合测试。复用#104静态化/#108本地状态隔离，#125仅核对遗留清理，不恢复旧后端。
 
 无可做工作时有界等待后清楚交接，不承诺自动后台继续。
+
+## 新获授权的评测启动
+
+用户已授权使用配置过的DeepSeek v4 flash，先2–3例校准，再14例首轮。新任务按[model-eval-next.md](model-eval-next.md)执行；本地模型直连与真实Relay联调分别记录。此前“账户/模型未提供”的描述保留为历史，当前尚需由新任务核实本机实际入口及模型ID。
