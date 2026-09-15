@@ -280,7 +280,6 @@
 
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
     <PanguDialogue adapter={dialogueAdapter} />
-    <a class="linkish" href={resolve('/manage')}>打开页面目录</a>
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
@@ -394,20 +393,6 @@
     background: var(--surface);
     border-right: 1px solid var(--line);
   }
-  .linkish {
-    padding: 0;
-    color: var(--accent-strong);
-    background: none;
-    border: 0;
-    font-size: 11.5px;
-    cursor: pointer;
-    transition: color 0.15s ease;
-  }
-  .linkish:hover {
-    color: var(--accent-strong);
-    text-decoration: underline;
-  }
-
   .canvas {
     grid-column: 2;
     grid-row: 2;
@@ -591,7 +576,7 @@
   }
   @container platform (max-width: 760px) {
     .workbench {
-      --analysis-rail-w: 250px;
+      --analysis-rail-w: 480px;
       grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr);
     }
     .inspector-track {

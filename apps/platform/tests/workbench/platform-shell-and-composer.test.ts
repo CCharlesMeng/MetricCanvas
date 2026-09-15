@@ -34,16 +34,22 @@ describe('Platform 样式 token 边界', () => {
     expect(workbenchSource).not.toContain('<textarea');
   });
 
-  it('强调背景前景与浅色会话链接消费语义 token', () => {
+  it('分析会话轨在所有工作台断点保持 480px 宽', () => {
+    expect(layoutSource).toMatch(/--analysis-rail-w:\s*480px;/);
+    const breakpointWidths = [...workbenchSource.matchAll(/--analysis-rail-w:\s*([^;]+);/g)]
+      .map((match) => match[1].trim());
+    expect(breakpointWidths).toEqual(['480px']);
+  });
+
+  it('强调背景前景消费语义 token，页面管理入口只保留在全局导航', () => {
     expect(layoutSource).toMatch(/--text-on-strong:\s*#(?:fff|ffffff);/);
     expect(layoutSource).toMatch(/--down-strong:\s*#[0-9a-f]{6};/i);
     expect(`${layoutSource}\n${workbenchSource}`).not.toMatch(
       /(?:color|background):\s*#fff\b/
     );
     expect(workbenchSource).not.toContain('rgb(99 102 241 / 16%)');
-    expect(workbenchSource).toMatch(
-      /\.linkish\s*\{[^}]*color:\s*var\(--accent-strong\)/
-    );
+    expect(workbenchSource).not.toContain('打开页面目录');
+    expect(layoutSource).toContain("{ href: '/manage', label: '页面管理' }");
   });
 });
 

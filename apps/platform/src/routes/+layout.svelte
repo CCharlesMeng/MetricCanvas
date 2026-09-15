@@ -12,7 +12,6 @@
 
   const NAV = [
     { href: '/', label: '页面搭建工作台' },
-    { href: '/ask', label: '问数' },
     { href: '/manage', label: '页面管理' }
   ] as const;
 
@@ -52,10 +51,6 @@
         {#if item.href === '/'}
           <svg viewBox="0 0 20 20" aria-hidden="true">
             <path d="M4 4.75h12v8.5H9l-3.5 2.5v-2.5H4z" />
-          </svg>
-        {:else if item.href === '/ask'}
-          <svg viewBox="0 0 20 20" aria-hidden="true">
-            <path d="M4 15V9m6 6V5m6 10v-8" />
           </svg>
         {:else}
           <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -116,7 +111,7 @@
     --down-strong: #b91c1c;
     --shell-rail-w: 60px;
     --contextbar-h: 46px;
-    --analysis-rail-w: 292px;
+    --analysis-rail-w: 480px;
     --inspector-rail-w: 260px;
     /* 横向顶栏已收敛进竖向导航，工作台继续消费唯一满高 token。 */
     --topbar-h: 0px;
