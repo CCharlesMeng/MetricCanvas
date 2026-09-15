@@ -10,6 +10,8 @@
 
 ## 快速查阅与验证
 
+维度与时间参数的统一现行说明见[页面参数：维度与时间](PAGE-PARAMETERS.md)，包含概念、字段用途、查询绑定、时间窗口及保存行为。
+
 1. 从[模块参考](contracts/metriccanvas/page/reference/README.md)按任务或JSON路径定位；[组件选型](contracts/metriccanvas/page/reference/components/README.md)说明用途与数据形状。
 2. 选择模块内的完整JSON例子，保留其显式数据/参数/筛选依赖；字段表中的联合分支分别阅读，不能合并必填项。
 3. 使用仓库现有 `pnpm validate <页面 JSON 所在目录>` 进行完整页面校验。静态例子不证明真实DQE或SSE成功；执行结果仍须经过受控端口。

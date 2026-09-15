@@ -23,11 +23,12 @@ MetricCanvas 是以页面为核心资产的 AI 原生数据分析与可视化平
   └─ 数据快照 → AI 总结组件 → AI 总结快照 → 纯渲染 View
 ```
 
-页面协议版本为 `6.0`。页面顶层结构为：
+当前页面协议版本为 `6.3`，读取兼容6.0—6.3。维度与时间参数的现行方案见 [PAGE-PARAMETERS.md](PAGE-PARAMETERS.md)，整体协议见 [PAGE-METADATA.md](PAGE-METADATA.md)。页面顶层结构示意为：
 
 ```json
 {
-  "schemaVersion": "6.0",
+  "schemaVersion": "6.3",
+  "layout": "report",
   "id": "page-id",
   "meta": {},
   "dataSources": {},
