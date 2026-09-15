@@ -3167,12 +3167,72 @@
       "sha256": "350dae61a911f8ca8ff381a2ff3369a09030de06e4bbd01164cfd9798ff0ec2d"
     },
     {
+      "file": "test-harness/model-evals/.gitignore",
+      "sha256": "9a2cca869b7c7a6eaede47af7dc1c76a4ff42a4c0cd0456d6a5bbfd067b0955c"
+    },
+    {
+      "file": "test-harness/model-evals/eval_evidence.py",
+      "sha256": "3825594dd08ee912897a9bf08d39147ceacb36e779d4e15d105f71ddc7248e36"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/approval-request.md",
+      "sha256": "87d55739a4668945362cc41ace2f7125fb8c0f89d102d307c60a903d4d27e8c0"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/baseline-audit.md",
+      "sha256": "bde99212e2a2d94380fca17f201920fbf998e2b3ea2564345f6db8198c31a1c9"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/execution-plan.json",
+      "sha256": "3b2c5bfe4c321915ad0d0d7996223cc6063de992c80fc96139ead1ce373bd901"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/preflight.json",
+      "sha256": "61072c4f35aa563a2a8c66b232a9979a4a0df5b4e84fa0222f161b27938c1fd1"
+    },
+    {
+      "file": "test-harness/model-evals/history/first-round.provenance.json",
+      "sha256": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec"
+    },
+    {
+      "file": "test-harness/model-evals/history/first-round.results.json",
+      "sha256": "2246f9e057322a0f86fefdec733b4f12bafabd8dc167d76f2dc75e8269768be5"
+    },
+    {
+      "file": "test-harness/model-evals/history/platform-authoring.cases.json",
+      "sha256": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1"
+    },
+    {
+      "file": "test-harness/model-evals/history/run_local.py",
+      "sha256": "62d207fdeee5c80eb371fed18d687d7d6189548cd5471e94f8e8ff2b1bf8fda8"
+    },
+    {
+      "file": "test-harness/model-evals/history/score_local.py",
+      "sha256": "904ac909bb6c93851e45dde59f86723b8f2b06a280c94b05d35897bf03f8b0de"
+    },
+    {
+      "file": "test-harness/model-evals/history/verify_evidence.py",
+      "sha256": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605"
+    },
+    {
       "file": "test-harness/model-evals/platform-authoring.cases.json",
       "sha256": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1"
     },
     {
+      "file": "test-harness/model-evals/preflight.py",
+      "sha256": "06f43164ed2b9dd55da5cbd83342f515df21146455a6a1af93bdb4070e1e9166"
+    },
+    {
       "file": "test-harness/model-evals/README.md",
-      "sha256": "27e04496c98a9d6085658f0c1c3760f2a00d1689b0f3abe71a65ac66522b92ad"
+      "sha256": "be7559ad79b59eadabd248917771243448739a0eaebf982bca8dab216b5b2f60"
+    },
+    {
+      "file": "test-harness/model-evals/run_local.py",
+      "sha256": "d70b78558d381b89391c8996f053f11aff5ae175d2d7a31ff7ebbcb3fda00d16"
+    },
+    {
+      "file": "test-harness/model-evals/unified-authoring.cases.json",
+      "sha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4"
     },
     {
       "file": "test-harness/platform_layout_browser.mjs",
@@ -3297,6 +3357,10 @@
     {
       "file": "test-harness/tests/test_lifecycle.py",
       "sha256": "c90e161cf06b173e0a584a1c240f8db4d43c2ae2365961be10a02c22fcedab02"
+    },
+    {
+      "file": "test-harness/tests/test_model_eval_harness.py",
+      "sha256": "2c7ab099b424f211d9d362e6a93c14e058162a823ff61c4ef11a690d2a818303"
     },
     {
       "file": "test-harness/tests/test_page_build_spec.py",
