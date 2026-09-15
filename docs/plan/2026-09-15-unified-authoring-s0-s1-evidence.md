@@ -96,3 +96,9 @@ node node_modules/vitest/vitest.mjs run tests/authoring-export-isolation.test.ts
 - Bundle：1381次摘要校验通过；导出check通过；skill-creator quick_validate通过；git diff --check通过。
 - 普通问数 Skill 与完整 contract-snapshot：git diff为空，现有问数测试保持通过。
 - S0代码/确定性验证 pass；S1代码/分发 pass；真实模型行为 blocked；真实服务接入 blocked。S1整体尚未完成，后续独立代码可继续，但生产切换禁止越过这些门禁。
+
+## 集成验收
+
+S1作者提交 `2a52f438e441c49e51043e71eab56a6c895f54c8`；TB2来源提交 `5bdc2f20f2c0226e5d794e0f59693bfd1afd7135` 已 cherry-pick 为 `9ac7b23`；集成锁版本 `4fcb581`。本地完整回归295项通过，TS21项通过，契约导出与Bundle校验通过。新增[统一预检](2026-09-15-unified-authoring-s1-preflight.json)固定8文件hash、工具Schema hash和冻结用例hash：真实stdio四工具齐备，统一注入源缺失0，历史163文件hash匹配，模型请求0。旧入口仅在基线checkout评测；本worktree旧注入源缺失是预期退役。
+
+规则覆盖通过主文路径、独立包链接闭合、实际受控示例Schema、现有公开内容创建/编辑/布局/部分成功/无保存副作用测试共同保留。缺参考停止、文字目标优先、明确另建、只读回答和结果措辞仍须真实模型审阅，不能从这些确定性检查推断通过。当前runner未动态补读errors/examples，诊断与生产均同四工具；这两项限制和0新模型成绩继续明确保留。

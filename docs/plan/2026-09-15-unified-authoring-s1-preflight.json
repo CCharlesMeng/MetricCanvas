@@ -1,0 +1,78 @@
+{
+  "modelRequests": 0,
+  "configuration": "available",
+  "dependencies": {
+    "fastmcp": "3.4.7",
+    "httpx": "0.28.1",
+    "jsonschema": "4.26.0",
+    "pydantic": "2.13.5"
+  },
+  "registeredTools": {
+    "discover_data_context": "46b905948e8f64237b53c2fbb0ce9d0de342801a11fd98d4a3139d6a2d7f008a",
+    "compose_page": "2502bd984cd1f02ecae75a1bdfc67abe8d152ff6ed15de229d677f661100dc25",
+    "edit_page": "2221f21b0d18e0f8c202eee839b66111a8f86b0fc4c91aa01fec69c391ba4d11",
+    "create_content_page": "d73273903c411e829e4a0d8253330971ece718e13939d7515cd2bd20c5ef6499"
+  },
+  "suiteSha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+  "missingInjectionSources": {
+    "baseline": [
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/SKILL.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/layouts/dashboard.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/layouts/report.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/platform-authoring.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/SKILL.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/dashboard.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/report.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/platform-authoring.md"
+    ],
+    "unified": []
+  },
+  "historicalRawFiles": 163,
+  "historicalHashMismatches": [],
+  "historicalSourceHashes": {
+    "first-round.provenance.json": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec",
+    "first-round.results.json": "2246f9e057322a0f86fefdec733b4f12bafabd8dc167d76f2dc75e8269768be5",
+    "platform-authoring.cases.json": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1",
+    "run_local.py": "62d207fdeee5c80eb371fed18d687d7d6189548cd5471e94f8e8ff2b1bf8fda8",
+    "score_local.py": "904ac909bb6c93851e45dde59f86723b8f2b06a280c94b05d35897bf03f8b0de",
+    "verify_evidence.py": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605"
+  },
+  "routing": "blocked: local manual Skill assignment",
+  "latest": "blocked: local fixture baseline only",
+  "dataServices": "blocked: not configured in isolated child environment",
+  "verifiedHead": "4fcb581",
+  "skillFiles": [
+    {
+      "file": "SKILL.md",
+      "sha256": "a6a3a6daf8418697b218e492d038ef9f46cf277dbd7a723da68be825430d1536"
+    },
+    {
+      "file": "references/errors.md",
+      "sha256": "1ee809a1b427e637edeec58c39f5ac21405b2001902813c33200b8287935b970"
+    },
+    {
+      "file": "references/examples.md",
+      "sha256": "62fc68427513d992a51e00728a05727129ae55d7484a0c7cccb2814c23011c0e"
+    },
+    {
+      "file": "references/layouts/dashboard.md",
+      "sha256": "5387092755062a092e748d2a9b6faf6feff8a70cbb1ca838695e4d1e2d12270d"
+    },
+    {
+      "file": "references/layouts/report.md",
+      "sha256": "942913a74019dba809ad72a10d5c0f9e954651385b8dbf839ee8f6c8d2e79bfd"
+    },
+    {
+      "file": "references/tools.md",
+      "sha256": "7966fcbe6142cc87e4858933e3b23d6d256dc0fdae6c5062ebd1a08e6956a901"
+    },
+    {
+      "file": "workflows/create.md",
+      "sha256": "c4ee92e658ce9f6dfc6750730459ac28e9e76b426b41e87d28a29ebc3305f42c"
+    },
+    {
+      "file": "workflows/edit.md",
+      "sha256": "83ce5388ff20ad6d33c1767affc020044893ce8fb6b656e661d820c99b61c256"
+    }
+  ]
+}
