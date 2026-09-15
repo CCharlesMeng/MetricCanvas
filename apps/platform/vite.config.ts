@@ -1,22 +1,45 @@
+import { existsSync, readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
-export default defineConfig({
-  plugins: [sveltekit()],
-  server: {
-    // `local.huawei.com` 在开发机 hosts 中解析至 127.0.0.1。
-    // 浏览器一律请求相对路径 `/aiknow/...`；Vite 再将它转发到内网服务，
-    // 从而不触发浏览器的跨域检查。
-    host: '127.0.0.1',
-    port: 5174,
-    strictPort: true,
-    allowedHosts: ['local.huawei.com'],
-    proxy: {
-      '/aiknow': {
-        target: 'https://aiknow.huawei.com',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/aiknow/, '')
+const appRoot = dirname(fileURLToPath(import.meta.url));
+const localHuaweiHost = 'local.ulanqab.huawei.com';
+
+function localHuaweiTls() {
+  const certificateDirectory = resolve(appRoot, '.local-tls');
+  const key = resolve(certificateDirectory, `${localHuaweiHost}.key`);
+  const cert = resolve(certificateDirectory, `${localHuaweiHost}.pem`);
+  if (!existsSync(key) || !existsSync(cert)) {
+    throw new Error(
+      '缺少本地 HTTPS 证书。请先执行 apps/platform/scripts/create-local-huawei-tls.sh。'
+    );
+  }
+  return { key: readFileSync(key), cert: readFileSync(cert) };
+}
+
+export default defineConfig(() => {
+  const localHuaweiDevelopment = process.env.METRICCANVAS_LOCAL_HUAWEI === '1';
+  const localHuaweiPort = Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443');
+
+  return {
+    plugins: [sveltekit()],
+    server: {
+      // HTTPS 使本地环境可测试 Secure Cookie；`:443` 入口须以管理员权限启动。
+      // 必须使用相对路径 `/aiknow/...`，由 Vite 转发后浏览器才不会发生跨域请求。
+      host: localHuaweiDevelopment ? '127.0.0.1' : undefined,
+      port: localHuaweiDevelopment ? localHuaweiPort : 5174,
+      strictPort: true,
+      allowedHosts: localHuaweiDevelopment ? [localHuaweiHost] : undefined,
+      https: localHuaweiDevelopment ? localHuaweiTls() : undefined,
+      proxy: {
+        '/aiknow': {
+          target: 'https://aiknow.huawei.com',
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/aiknow/, '')
+        }
       }
     }
-  }
+  };
 });

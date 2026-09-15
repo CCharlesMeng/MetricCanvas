@@ -4,6 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 5174",
+    "dev:local-huawei": "METRICCANVAS_LOCAL_HUAWEI=1 METRICCANVAS_LOCAL_HUAWEI_PORT=5175 vite dev",
+    "dev:local-huawei:443": "METRICCANVAS_LOCAL_HUAWEI=1 vite dev",
     "build": "vite build",
     "preview": "vite preview --port 4174",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json && tsc --noEmit -p tsconfig.test.json"

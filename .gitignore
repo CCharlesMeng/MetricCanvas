@@ -17,6 +17,9 @@ __pycache__/
 **/.env.*
 !**/.env.example
 
+# 本机开发 HTTPS 私钥与证书，绝不提交。
+apps/platform/.local-tls/
+
 # 临时工作产物,不属于仓库交付内容
 .scratch/
 deliverables/
