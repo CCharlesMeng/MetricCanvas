@@ -12,7 +12,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "bea2bcb31c1e6dbd53b7b0a4c99e079dd64af0584bb8bd2f7dc564fb89537791"
+      "sha256": "a510ee88fe9384941d4c73cc60bb312f94dc0d4404ca2256b1e082d41de69370"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -1927,6 +1927,14 @@
       "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
     },
     {
+      "file": "contracts/authored/authoring-turn.conformance.json",
+      "sha256": "4152c30ee7a853801f81b692232f4770967d678acd250f7953dce130fdba12b1"
+    },
+    {
+      "file": "contracts/authored/authoring-turn.schema.json",
+      "sha256": "9955748188755beb90cceba2f6dcc56061919fb0ee62a1128519844f2324a9d2"
+    },
+    {
       "file": "contracts/authored/business-term-resolution.schema.json",
       "sha256": "f8ecad1e32c668cf16b7bde3201a6503fef9b7d91783f0e16584428107120b45"
     },
@@ -1976,7 +1984,7 @@
     },
     {
       "file": "contracts/manifest.json",
-      "sha256": "bf7c5c54c9fac68127a80cf4c864a2a43f8a488614b0e03810cb2330da6b895e"
+      "sha256": "50fe66abd5dee9106169dd89172dcfa467621457c5276b7db62a5ab86c5ab6d4"
     },
     {
       "file": "README.md",
