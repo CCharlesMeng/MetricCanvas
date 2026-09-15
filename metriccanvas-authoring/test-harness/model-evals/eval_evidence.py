@@ -126,21 +126,24 @@ def audit_trace(folder, calls):
             if not isinstance(usage.get('total_tokens'),int):raise ValueError('Missing token accounting')
         if sorted(models)!=sorted(c.get('model','') for c in calls):
             raise ValueError('Model trace mismatch')
-    except (KeyError, ValueError, OSError):
+    except (KeyError, ValueError, OSError, TypeError, AttributeError):
         return {'status':'fail','reason':'Original trace invalid or model-channel safety violation'}
     return {'status':'pass','reason':'Original requests/responses present and model-channel artifact check passed'}
 
 
 def score(case, folder, review=None):
     raw=json.loads((folder/'result.json').read_text())
+    non_model=raw.get('evidenceKind') == 'non-model-evidence'
+    unified=raw.get('protocol') == 'unified-content'
     checks={}
+    if non_model:checks['evidenceKind']={'status':'blocked','reason':'Scripted transport is non-model-evidence regardless of review'}
     def check(name, passed, reason):
         checks[name]={'status':'pass' if passed else 'fail','reason':reason}
     if raw.get('status') == 'blocked':
         checks['execution']={'status':'blocked','reason':raw.get('reason','Runtime unavailable')}
     turns=raw.get('turns',[])
     calls=[c for t in turns for c in t.get('calls',[])]
-    checks['rawTrace']=audit_trace(folder,calls)
+    checks['rawTrace']={'status':'blocked','reason':'No real model transport'} if non_model else audit_trace(folder,calls)
     tools=[t for c in calls for t in c.get('tools',[])]
     operations=[o for t in tools for o in t.get('arguments',{}).get('request',{}).get('operations',[])]
     before=json.loads((folder/'before.json').read_text()) if (folder/'before.json').exists() else None
@@ -156,23 +159,50 @@ def score(case, folder, review=None):
         check('artifactIntegrity', after is not None and not validate_page_document(after) and document_sha256(after)==artifacts[-1]['artifactSha256'], 'Production validator and document hash')
     else:
         diff=None
+    states=[]
+    if unified:
+        try:
+            from run_trusted_local import admit_candidate
+            from metriccanvas_authoring.application.authoring_turns import SCOPE_KEYS
+            admitted={}
+            for index,turn in enumerate(turns,1):
+                state=json.loads((folder/f'trusted-turn-{index}.json').read_text());states.append(state)
+                binding=state['binding']
+                if turn['context']['context_ref']!=binding['contextRef'] or any(state['scope'][k]!=binding[k] for k in SCOPE_KEYS):raise ValueError('Scope mismatch')
+                doc=state['documentJson']
+                if doc is not None and hashlib.sha256(doc.encode()).hexdigest()!=binding['documentSha256']:raise ValueError('Baseline bytes mismatch')
+                for call in turn.get('calls',[]):
+                    for tool in call.get('tools',[]):
+                        path=(folder/tool['programFile']).resolve()
+                        if not path.is_relative_to(folder.resolve()):raise ValueError('Evidence path escapes run')
+                        output=json.loads(path.read_text())
+                        record=admit_candidate(output,state,admitted,tool['arguments'].get('candidate_ref'))
+                        if record is not None and record['documentSha256']!=tool.get('artifactSha256'):raise ValueError('Trace hash mismatch')
+            check('trustedCandidateEvidence',bool(states),'Trusted local turn bytes and production candidate records, not remote latest')
+        except (KeyError,ValueError,OSError,TypeError):
+            checks['trustedCandidateEvidence']={'status':'inconclusive','reason':'Trusted turn/candidate evidence missing or mismatched'}
     expected=case['expected']
     for name,value in expected.items():
         if name in ['semantic','explainLayoutImpact']:
             continue
         if name=='noDiscovery':
             check(name,not value or not any(t['name']=='discover_data_context' for t in tools),'Actual discovery calls')
-        elif name=='noTools':check(name,not tools,'Read-only question made no content calls')
+        elif name=='noTools':
+            if unified:
+                checks[name]={'status':'inconclusive','reason':'Original S1 noTools assertion not applicable unchanged: S2 requires read_page_context; frozen expectation retained'}
+                check('readOnlyContentBoundary',all(t['name']=='read_page_context' for t in tools),'No discovery or mutation in configuration answer')
+            else:check(name,not tools,'Read-only question made no content calls')
         elif name=='tool':check(name,any(t['name']==value for t in tools),'Actual tool call')
         elif name=='target':check(name,any(o.get('componentId')==value for o in operations),'Actual target')
         elif name=='operation':check(name,any(o.get('type')==value for o in operations),'Actual controlled operation')
         elif name=='targets':check(name,[o.get('componentId') for o in operations]==value,'Ordered actual targets')
         elif name in ['layout','creation','preserveExcept','preserveExisting','legalBackdropPreserved','preserveManualColumnWidth','titleValue','freshBaselineEveryTurn']:
             if not artifacts or after is None:
-                checks[name]={'status':'blocked' if any('CONFIG' in i.get('code','') for t in tools for i in t.get('summary',{}).get('issues',[])) else 'fail','reason':'No verified artifact'}
+                checks[name]={'status':'blocked' if any(('CONFIG' in i.get('code','') or 'UNAVAILABLE' in i.get('code','')) for t in tools for i in t.get('summary',{}).get('issues',[])) else 'fail','reason':'No verified artifact'}
                 continue
             if name=='layout':ok=after['layout']==value
-            elif name=='creation':ok=before is None and after['id']==turns[0]['context']['page_id']
+            elif name=='creation':
+                ok=before is None and bool(states) and after['id']==states[0]['binding']['pageId'] if unified else before is None and after['id']==turns[0]['context']['page_id']
             elif name=='preserveExcept':ok=set(d['path'] for d in diff(before,after))==set(value)
             elif name=='preserveExisting':
                 candidate=json.loads(json.dumps(after));candidate['sections'][0]['components']=candidate['sections'][0]['components'][:len(before['sections'][0]['components'])];ok=candidate==before
@@ -180,9 +210,19 @@ def score(case, folder, review=None):
             elif name=='preserveManualColumnWidth':ok=after['sections'][0]['components'][2]['props']['columns'][0]['width']==value
             elif name=='titleValue':ok=after['sections'][0]['components'][2]['props']['title']==value
             else:
-                tokens=[t['context']['baseline_token'] for t in turns]
-                used=[t['arguments'].get('baseline_token') for t in tools if t['name']=='edit_page']
-                ok=len(tokens)==len(set(tokens)) and tokens==used and len(artifacts)>=2 and turns[1]['context']['documentSha256']==artifacts[0]['artifactSha256']
+                if unified:
+                    tokens=[t['context']['context_ref'] for t in turns]
+                    ok=len(states)==len(turns) and len(tokens)==len(set(tokens)) and len(states)>1
+                    for i in range(1,len(states)):
+                        previous=[t for c in turns[i-1].get('calls',[]) for t in c.get('tools',[]) if t.get('artifactSha256')]
+                        doc=states[i]['documentJson']
+                        ok=ok and bool(previous) and doc is not None and document_sha256(json.loads(doc))==previous[-1]['artifactSha256']
+                    for i,turn in enumerate(turns):
+                        ok=ok and all(t['arguments'].get('context_ref')==tokens[i] for c in turn.get('calls',[]) for t in c.get('tools',[]))
+                else:
+                    tokens=[t['context']['baseline_token'] for t in turns]
+                    used=[t['arguments'].get('baseline_token') for t in tools if t['name']=='edit_page']
+                    ok=len(tokens)==len(set(tokens)) and tokens==used and len(artifacts)>=2 and turns[1]['context']['documentSha256']==artifacts[0]['artifactSha256']
             check(name,ok,'Program artifact/trace comparison; fixture freshness does not prove server latest')
         else:
             checks[name]={'status':'inconclusive','reason':'Unsupported assertion; requires review'}
@@ -192,7 +232,7 @@ def score(case, folder, review=None):
         checks['semanticReview']={k:review[k] for k in ['status','reason']}
     else:
         checks['semanticReview']={'status':'inconclusive','reason':'Needs reviewer, reason and exact resultSha256; no canned semantic pass'}
-    return {'id':case['id'],'repeat':raw.get('repeat'),'status':status(checks),'checks':checks,
+    return {'id':case['id'],'repeat':raw.get('repeat'),'status':'blocked' if non_model else status(checks),'checks':checks,'evidenceKind':raw.get('evidenceKind'),'modelRequests':raw.get('modelRequests',len(calls)),'simulatedModelCalls':raw.get('simulatedModelCalls',0),
             'resultSha256':digest,'models':sorted({c.get('model','unknown') for c in calls}),
             'modelCalls':len(calls),'toolCalls':len(tools),'seconds':raw.get('seconds'),
             'usage':dict(sum((Counter({k:v for k,v in (c.get('usage') or {}).items() if isinstance(v,(int,float))}) for c in calls),Counter())),

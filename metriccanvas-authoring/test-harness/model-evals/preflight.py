@@ -41,8 +41,9 @@ def surface_evidence(surface, definitions):
             'introspection':{'status':'fail' if errors else 'pass', 'errors':errors,
                              'scope':'Tool names and input schemas only; no content tool invoked'},
             'modelRunner':{'status':'blocked' if surface == 'unified-content' else 'not-run',
-                           'reason':'Unsupported: run_local.py has no trusted current-turn port injection; legacy tokens cannot evaluate S2'
+                           'reason':'This introspection did not execute run_trusted_local.py or inject a current-turn provider; real model behavior unverified'
                            if surface == 'unified-content' else 'S1 legacy runner only; real model authorization required'},
+            'localHarness':{'runner':'run_trusted_local.py','support':'local-synthetic trusted port with shared scripted/http loop; not exercised by this preflight'},
             'trustedCurrentTurn':{'status':'blocked', 'reason':'No trusted provider injected by this preflight'},
             'writeReadiness':'blocked: listing tools does not prove usable write capability',
             'latest':'blocked: introspection does not verify provider latest semantics'}
