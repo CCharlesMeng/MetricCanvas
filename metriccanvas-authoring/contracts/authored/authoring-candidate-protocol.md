@@ -25,3 +25,5 @@ ExecutionRecordPort.claim(key,record)->(frozen_record,created)必须原子地为
 先claim冻结操作及载荷，再持久化Lifecycle programToken、记录sending，最后调用Lifecycle.save_draft。成功必须按回执ref用Lifecycle.read_revision精确回读并核对完整候选与hash后才报告saved。异常/未知/取消竞争保留原记录及原operationId，不发送第二个新命令；S4负责实际持久Adapter、重启与取消恢复。S3替身只证明端口消费和正常/未知门禁，不宣称跨进程持久化。
 
 S3生产写路径保持关闭；缺强生命周期能力、候选/执行记录/程序通道任一项都明确不可用。S4及外部服务保证验收前不开放生产写入。普通问数及旧兼容内容面保持边界。
+
+协调器的LifecycleProgramPort提供方必须支持store返回token由load在同一身份/工作区内再次解析（命令与精确回读产物均适用）。旧FileLifecyclePrograms是输入request/输出result分离的Relay spool，不满足该读写存储要求，不能直接作为协调器提供方；S3只用明确实现该能力的可信替身，真实Adapter另验收。
