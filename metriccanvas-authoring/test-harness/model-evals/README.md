@@ -56,3 +56,17 @@ PYTHONDONTWRITEBYTECODE=1 /private/tmp/metriccanvas-126-delivery-python/bin/pyth
 pass 需要原始 request/response、实际调用、合法完整产物/保持检查（如适用），及独立语义理由。发现违规优先 fail；运行环境缺失 blocked；缺 trace/审阅 inconclusive。原文件 hash 清单随新报告写出，历史核验使用 `verify_hashes`。报告分样本和配置展示，routing/latest 始终另记 blocked。零关键违规须逐条检查后判断，不能从空列表或无工具调用推断。
 
 不可把 6/14 当作完整平台成功率：历史 13 例实际调用、34 请求，路由全部未验；返回模型别名也不能当固定模型版本。文件行数不换算模型 token、费用或成功率。
+
+## S2 surface 预检（独立于 S1 冻结评测）
+
+`preflight.py --surface legacy-content|unified-content` 选择实际 stdio 模块。默认 `legacy-content` 保持上述 S1 四工具协议；历史记录、S1 用例和已有输入哈希均不改。
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 /private/tmp/metriccanvas-126-delivery-python/bin/python metriccanvas-authoring/test-harness/model-evals/preflight.py --config "$EVAL_CONFIG" --output "$NEW_S2_PREFLIGHT_JSON" --surface unified-content
+```
+
+在已集成 S2 代码的仓库运行。`unified-content` 启动 `metriccanvas_authoring.unified_content_server`，预期 FastMCP 名为 `metriccanvas-platform-content`；只列工具，不调用内容工具或模型。验证工具集合恰为 `read_page_context / discover_data_context / compose_page / create_content_page / edit_page`，每个 Schema 要求字符串 `context_ref`；不得暴露 `page_id / baseline_token / source_token`。缺 S2 模块会失败，不回退旧服务器。
+
+`introspection.status=pass` 仅表示注册集合/参数签名符合该 surface，不证明可写或 latest 已实现。`expectedServerName` 是核对源码后声明的预期名，不冒充远端握手验证。独立 stdio 未注入可信 current-turn 提供方，五工具必须 fail closed；本预检不执行五工具来替代提供方测试。
+
+当前 `run_local.py` **仅支持 S1 legacy-content**。即使 `--arm unified` 也只是 S1 统一 Skill 文本，不能当 S2 五工具运行。S2 预检的 `modelRunner.status` 固定为 blocked（unsupported trusted port），`trustedCurrentTurn/latest/writeReadiness` 同样 blocked。不得拿旧 `baseline_token/source_token/page_id` 发模型请求并宣称 S2 验收；需后续真实可信轮次 Adapter 接入和另行冻结的 S2 输入，且获得主任务中的具体模型授权后再运行。

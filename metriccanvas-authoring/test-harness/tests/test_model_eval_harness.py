@@ -3,12 +3,16 @@ import importlib.util
 import json
 from pathlib import Path
 import tempfile
+import sys
 from types import SimpleNamespace
 import unittest
 
 EVALS=Path(__file__).resolve().parents[1]/'model-evals'
 spec=importlib.util.spec_from_file_location('eval_evidence', EVALS/'eval_evidence.py')
 evidence=importlib.util.module_from_spec(spec);spec.loader.exec_module(evidence)
+sys.modules[spec.name]=evidence
+spec=importlib.util.spec_from_file_location('model_eval_preflight', EVALS/'preflight.py')
+preflight=importlib.util.module_from_spec(spec);spec.loader.exec_module(preflight)
 
 
 class ModelEvalHarnessTest(unittest.TestCase):
@@ -66,6 +70,41 @@ class ModelEvalHarnessTest(unittest.TestCase):
         case={'workflow':None,'expected':{}}
         paths=evidence.injection_paths(Path('/repo'),case,'unified')
         self.assertEqual([p.name for p in paths],['SKILL.md','tools.md'])
+
+    def test_preflight_surface_selects_module_without_legacy_fallback(self):
+        root=Path('/repo')
+        legacy=preflight.client_configuration(root)['mcpServers']['content']
+        unified=preflight.client_configuration(root,'unified-content')['mcpServers']['content']
+        self.assertEqual(legacy['args'],['-m','metriccanvas_authoring.content_server'])
+        self.assertEqual(unified['args'],['-m','metriccanvas_authoring.unified_content_server'])
+        self.assertNotIn('METRICCANVAS_CONTENT_BASELINES_DIR',unified['env'])
+        with self.assertRaises(KeyError):preflight.client_configuration(root,'unknown')
+
+    def test_s2_tool_listing_never_marks_runner_or_latest_ready(self):
+        definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
+                     for name in preflight.LEGACY_TOOLS | {'read_page_context'}]
+        result=preflight.surface_evidence('unified-content',definitions)
+        self.assertEqual(result['introspection']['status'],'pass')
+        self.assertEqual(result['modelRunner']['status'],'blocked')
+        self.assertEqual(result['trustedCurrentTurn']['status'],'blocked')
+        self.assertTrue(result['latest'].startswith('blocked'))
+        self.assertTrue(result['writeReadiness'].startswith('blocked'))
+        self.assertEqual(result['expectedServerName'],'metriccanvas-platform-content')
+
+    def test_s2_rejects_legacy_token_and_missing_current_context(self):
+        definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
+                     for name in preflight.LEGACY_TOOLS | {'read_page_context'}]
+        for legacy_key in ['page_id','baseline_token','source_token']:
+            definitions[0].inputSchema['properties'][legacy_key]={'type':'string'}
+            self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
+            del definitions[0].inputSchema['properties'][legacy_key]
+        definitions[0].inputSchema['required']=[]
+        self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
+
+    def test_s2_requires_exact_five_tool_set(self):
+        definitions=[SimpleNamespace(name=name,inputSchema={}) for name in preflight.LEGACY_TOOLS]
+        self.assertEqual(preflight.surface_evidence('legacy-content',definitions)['introspection']['status'],'pass')
+        self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
 
     def test_original_fourteen_records_retained(self):
         raw=json.loads((EVALS/'history/first-round.results.json').read_text())

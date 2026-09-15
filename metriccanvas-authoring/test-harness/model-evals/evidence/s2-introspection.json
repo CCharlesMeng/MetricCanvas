@@ -1,0 +1,66 @@
+{
+  "modelRequests": 0,
+  "configuration": "available",
+  "dependencies": {
+    "fastmcp": "3.4.7",
+    "httpx": "0.28.1",
+    "jsonschema": "4.26.0",
+    "pydantic": "2.13.5"
+  },
+  "registeredTools": {
+    "read_page_context": "54d810e835ff4fe45eaa7cc5fbf2693f78e79cd6988e56e7206348840a1cfd69",
+    "discover_data_context": "2d38346c6155d5319f8bdfef216e2678d8c3a6dbabb65e1e920e04d5b9479d6c",
+    "compose_page": "f31d7a6426618c1999f9e80c3782fc46d0a76da70139a5bbc6a1365b85dbf42d",
+    "create_content_page": "6834a1c2dd9f44c145636f5dc1701afaf8ce5f92b866b4aaebba11b7e9a63fa6",
+    "edit_page": "a62333c36ab0bc50368c8027f9858a1bc6be8342e44ea0b48c25353d1651aed7"
+  },
+  "suiteSha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+  "missingInjectionSources": {
+    "baseline": [
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/SKILL.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/layouts/dashboard.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/layouts/report.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-create/references/platform-authoring.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/SKILL.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/dashboard.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/layouts/report.md",
+      "metriccanvas-authoring/skill/metriccanvas-platform-edit/references/platform-authoring.md"
+    ],
+    "unified": []
+  },
+  "historicalRawFiles": 163,
+  "historicalHashMismatches": [],
+  "historicalSourceHashes": {
+    "first-round.provenance.json": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec",
+    "first-round.results.json": "2246f9e057322a0f86fefdec733b4f12bafabd8dc167d76f2dc75e8269768be5",
+    "platform-authoring.cases.json": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1",
+    "run_local.py": "62d207fdeee5c80eb371fed18d687d7d6189548cd5471e94f8e8ff2b1bf8fda8",
+    "score_local.py": "904ac909bb6c93851e45dde59f86723b8f2b06a280c94b05d35897bf03f8b0de",
+    "verify_evidence.py": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605"
+  },
+  "routing": "blocked: local manual Skill assignment",
+  "latest": "blocked: introspection does not verify provider latest semantics",
+  "dataServices": "blocked: not configured in isolated child environment",
+  "surface": "unified-content",
+  "expectedServerName": "metriccanvas-platform-content",
+  "introspection": {
+    "status": "pass",
+    "errors": [],
+    "scope": "Tool names and input schemas only; no content tool invoked"
+  },
+  "modelRunner": {
+    "status": "blocked",
+    "reason": "Unsupported: run_local.py has no trusted current-turn port injection; legacy tokens cannot evaluate S2"
+  },
+  "trustedCurrentTurn": {
+    "status": "blocked",
+    "reason": "No trusted provider injected by this preflight"
+  },
+  "writeReadiness": "blocked: listing tools does not prove usable write capability",
+  "sourceRoot": "/private/tmp/metriccanvas-unified-s1-20260915",
+  "sourceHead": "ff93b61ccc4d696af8c5a4c8c54bf43e0119f044",
+  "inspectedSourceHashes": {
+    "metriccanvas-authoring/tool/metriccanvas_authoring/unified_content_server.py": "3435ab0e1a04e47cb3cd13dd1a58f248ece1f614a7509a55947b73257b521d75",
+    "metriccanvas-authoring/tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py": "9e5f677aa58401aa8aa8c09c4070259bce34cd401bb03369a2e58c9950e22d2b"
+  }
+}
