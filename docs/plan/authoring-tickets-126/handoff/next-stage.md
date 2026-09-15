@@ -1,10 +1,10 @@
 # #126 下一阶段执行 handoff
 
-当前状态：#127–#146共20票均已按各自本仓范围验收；#130只是Java/Relay修改方案。首批17票已由PR #147发布并关闭。第二批#138/#145/#146及双Platform Skill补项仅本地集成，尚未远端发布或关闭。#126、#95保持开放。
+当前状态：#127–#146共20票均已按各自本仓范围验收；#130只是Java/Relay修改方案。首批17票已由PR #147发布并关闭。第二批#138/#145/#146及双Platform Skill补项已由[PR #148](https://github.com/CCharlesMeng/MetricCanvas/pull/148)合并，三票已关闭并更新验收勾选和回执。#126、#95保持开放。
 
 ## 唯一基线与开工
 
-最终产品组合为 `b4868fccafb529fff2c194511d7f413333723b57`，包含在线main `640dd2aa435a45b50b1954967054c136468a473d`、生命周期、双Skill、语言引用交接与发布界面/工具。实际消费应取包含本页及最新 [coordination.md](../coordination.md) 的S0正式提交SHA。集成树 `/private/tmp/metriccanvas-126-integration`，分支 `codex/authoring-126-integration`。
+最终产品组合为 `b4868fccafb529fff2c194511d7f413333723b57`，包含在线main `640dd2aa435a45b50b1954967054c136468a473d`、生命周期、双Skill、语言引用交接与发布界面/工具。已发布的唯一消费基线为 `7f998ba8407fd0b988bb6252c05a30b5c80b7c08`（PR #148 merge SHA）；本页发布回执后补，后续代码从该已合main基线继续。集成树 `/private/tmp/metriccanvas-126-integration`，分支 `codex/authoring-126-integration`。
 
 先读 [common.md](common.md)、[development-plan.md](../development-plan.md)、执行仓AGENTS/CONTEXT/ADR及负责Issue完整正文与最新评论。继续独立worktree，原工作区及其他任务改动保持；不用旧#127/九票交付分支起跑。不新建任务。所有权只由S0台账登记，生成物只由S2统一生成。
 
@@ -34,7 +34,7 @@ S5只维护台账分配的两文件及pangu-runtime.test.ts/证据，port.ts与�
 
 ## 交付与验收规则
 
-每票提供作者/生成/证据SHA后由S0验收集成，下游只消费集成SHA。第二批最终远端发布尚未执行；S1具体GitHub评论曾被自动审批拒绝，禁止通过别的任务代发绕过。待用户明确批准本批具体回写/发布范围后更新#138/#145/#146；不提前关闭#126/#95。
+每票提供作者/生成/证据SHA后由S0验收集成，下游只消费集成SHA。用户已明确批准release-review.md中的具体发布和回写范围，S0执行后确认PR #148合并、三票关闭、#126回执已发送。历史自动审批拒绝未绕过，此次按新获明确批准执行；#126/#95继续开放。PR主CI及两组Svelte兼容性检查全部通过。
 
 参考证据：[T12](../t12-evidence.md)、[T20](../t20-evidence.md)、[T19工具](../t19-tool-evidence.md)、[T19界面](../t19-ui-evidence.md)、[双Skill](../platform-skills-evidence.md)。分别记录“本仓/外部确认/真实联调”；不把旧基线测试写成新组合测试。复用#104静态化/#108本地状态隔离，#125仅核对遗留清理，不恢复旧后端。
 

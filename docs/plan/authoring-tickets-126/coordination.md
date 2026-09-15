@@ -827,3 +827,7 @@ S2独立detached验证树`/private/tmp/metriccanvas-126-s2-final`，精确产品
 环境失败完整保留：offline依赖缓存缺mri，frozen-lockfile正常准备后锁不变；tsx CLI的IPC EPERM发生在入口执行前，改用相同入口node --import tsx后export/validate通过。Vite大chunk提示非失败。所有通过数字来自同一固定组合，不沿用旧树冒称最终全量。S0测试用临时依赖链接已移除（仅本次创建指向S1的链接），不触及S1依赖或原工作区。
 
 本仓实现与最终组合门禁均完成，真实模型14cases及M3仍未完成。第二批尚未远端发布/更新Issue；具体可审阅发布范围与回写文案见handoff/release-review.md，后续须明确批准该批次再发送，不绕过此前审批拒绝。
+
+## 第二批远端发布回执（2026-09-15）
+
+用户明确批准release-review.md具体动作及文案后，S0推送990136cac300892e6f462ba84a3b284e980c9c1f，创建并合并[PR #148](https://github.com/CCharlesMeng/MetricCanvas/pull/148)。主CI、Svelte current与5.29.0兼容性全部通过；已发布消费基线为 `7f998ba8407fd0b988bb6252c05a30b5c80b7c08`。#138/#145/#146验收勾选及评论已更新，读取确认CLOSED；#126回执已发且OPEN，#95读取确认OPEN，未改#103–#108/#125状态。原工作区保持不动。本节与handoff状态修订为合并后本地文档回执，不作为新增产品提交或真实服务验收。后续依handoff/next-stage.md等待具体真实输入，不自动后台续跑。
