@@ -46,3 +46,5 @@ include = [
 
 "../contracts/authored/authoring-turn.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json"
 "../contracts/authored/authoring-candidate.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-candidate.schema.json"
+"../contracts/authored/source-description.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json"
+"../contracts/authored/add-data-component.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/add-data-component.schema.json"

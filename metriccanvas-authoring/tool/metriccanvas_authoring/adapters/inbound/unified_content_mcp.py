@@ -1,11 +1,11 @@
 """Unified tool surface: every invocation requires a trusted active authoring turn."""
-from typing import Annotated, Literal
+from typing import Annotated, Literal, Any
 from copy import deepcopy
 from dataclasses import replace
 
 from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
-from pydantic import Field
+from pydantic import Field, WithJsonSchema
 
 from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server, PageEditRequest, RESULT_SCHEMA
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
@@ -13,9 +13,11 @@ from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
 from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.application.summary_capability import summary_configured
-from metriccanvas_authoring.domain.page_editing import edit_page_document
+from metriccanvas_authoring.application.unified_edit_page import edit_unified_page, UNIFIED_EDIT_SCHEMA
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 
+
+UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema(UNIFIED_EDIT_SCHEMA)]
 
 def create_unified_content_mcp_server(dependencies, current_turns=None, *, summary_config=None, candidate_store=None):
     gate = AuthoringTurnGate(current_turns)
@@ -40,10 +42,15 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             prepared = await gate.require(context_ref, write=write, mode=mode)
             if write: candidates.ensure_available()
             parent = await candidates.require(candidate_ref, prepared) if candidate_ref is not None else None
-            if parent is not None:
-                edited = edit_page_document(parent['document'], args['request'], summary_enabled=summary_configured(summary_config))
+            scoped_dependencies = replace(dependencies, authoring_scope=dict(prepared.binding), require_source_description=True) if write else dependencies
+            source_descriptions = []
+            if name == 'edit_page':
+                baseline = parent['document'] if parent is not None else prepared.baseline.document
+                edited = await edit_unified_page(baseline, args['request'], scoped_dependencies,
+                    summary_enabled=summary_configured(summary_config), current=lambda: gate.unchanged(prepared, write=True))
                 summary = {key: edited[key] for key in ('status', 'operations', 'issues')}
                 document = edited['document']
+                source_descriptions = edited.get('sourceDescriptions', [])
                 output = {'ok': edited['status'] in {'changed', 'partial', 'unchanged'}, 'artifactEnvelope': None, 'modelSummary': summary}
             else:
                 output = None
@@ -52,7 +59,7 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
                     args['page_id'] = prepared.binding['pageId']
                 if name == 'edit_page': args['baseline_token'] = context_ref
                 # Existing content algorithms remain private, never registered as a bypass.
-                legacy = create_content_mcp_server(dependencies, TurnBaselines(prepared), summary_config=summary_config)
+                legacy = create_content_mcp_server(scoped_dependencies, TurnBaselines(prepared), summary_config=summary_config)
                 tool = await legacy.get_tool(name)
                 result = await tool.run(args)
                 if not write:
@@ -61,10 +68,14 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
                 output = deepcopy(result.structured_content)
                 envelope = output['artifactEnvelope']
                 document = envelope['artifact']['document'] if envelope else None
+                source_descriptions = envelope['artifact'].get('sourceDescriptions', []) if envelope else []
             await gate.unchanged(prepared, write=write)
             record = None
             if document is not None:
-                record = await candidates.put(prepared, document, args.get('request', {}).get('operations', []), candidate_ref)
+                record_operations = deepcopy(args.get('request', {}).get('operations', []))
+                if source_descriptions:
+                    record_operations.append({'type': 'source_description_evidence', 'descriptors': deepcopy(source_descriptions)})
+                record = await candidates.put(prepared, document, record_operations, candidate_ref)
             elif parent is not None and output['modelSummary'].get('status') == 'unchanged':
                 record = parent
             if record is not None:
@@ -125,7 +136,7 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
         return await invoke('create_content_page', context_ref, {'title': title, 'request': request, 'layout': layout}, write=True, mode='new')
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
-    async def edit_page(context_ref: str, request: PageEditRequest, candidate_ref: str | None = None) -> ToolResult:
+    async def edit_page(context_ref: str, request: UnifiedEditRequest, candidate_ref: str | None = None) -> ToolResult:
         """Apply controlled operations to the complete trusted current baseline, without saving."""
         return await invoke('edit_page', context_ref, {'request': request}, write=True,
                             mode=None if candidate_ref is not None else 'existing', candidate_ref=candidate_ref)

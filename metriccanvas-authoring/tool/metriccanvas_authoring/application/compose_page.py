@@ -4,9 +4,12 @@ import asyncio
 import hashlib
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
+from copy import deepcopy
 from typing import Any, Mapping
 
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.application.source_description_ports import SourceDescriptionPort
+from metriccanvas_authoring.domain.source_mapping import map_source_description, validate_mapped_rows, SourceMappingError
 from metriccanvas_authoring.application.ports import (
     DataContextError,
     DataContextPort,
@@ -39,6 +42,9 @@ class ComposePageCommand:
 class ComposePageDependencies:
     data_context: DataContextPort
     dqe: DqeExecutionPort
+    source_description: SourceDescriptionPort | None = None
+    authoring_scope: Mapping[str, Any] | None = None
+    require_source_description: bool = False
 
 
 @dataclass(frozen=True, slots=True)
@@ -59,6 +65,7 @@ class PageBuildArtifact:
     data_context_version: str
     bundle_version: str
     formula_traces: tuple[FormulaTrace, ...]
+    source_descriptions: tuple[Mapping[str, Any], ...] = ()
 
     def to_payload(self) -> dict[str, Any]:
         return {
@@ -68,6 +75,7 @@ class PageBuildArtifact:
             "dataContextVersion": self.data_context_version,
             "bundleVersion": self.bundle_version,
             "formulaTraces": [trace.to_payload() for trace in self.formula_traces],
+            **({"sourceDescriptions": deepcopy(list(self.source_descriptions))} if self.source_descriptions else {}),
         }
 
 
@@ -182,6 +190,24 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                 completed_stages=("discovery",),
             )
 
+        source_descriptions = []
+        if dependencies.require_source_description or dependencies.source_description is not None:
+            if dependencies.source_description is None or dependencies.authoring_scope is None:
+                return ComposePageResult(ok=False, issues=(ComposePageIssue(
+                    'SOURCE_DESCRIPTION_UNAVAILABLE', '', 'SOURCE_DESCRIPTION_UNAVAILABLE'),), completed_stages=('discovery', 'generation'))
+            mapped_units = []
+            for index, unit in enumerate(units):
+                try:
+                    description = await dependencies.source_description.describe(
+                        deepcopy(dict(dependencies.authoring_scope)), data_context.version, deepcopy(unit.effective_query()))
+                    mapped_units.append(map_source_description(unit, description, data_context.version))
+                    source_descriptions.append(deepcopy(description))
+                except Exception as error:
+                    code = error.code if isinstance(error, SourceMappingError) else 'SOURCE_DESCRIPTION_UNAVAILABLE'
+                    return ComposePageResult(ok=False, issues=(ComposePageIssue(code, f'/units/{index}', code),),
+                                             completed_stages=('discovery', 'generation'))
+            units = mapped_units
+
         execution_results = await asyncio.gather(
             *(
                 dependencies.dqe.execute(unit.effective_query())
@@ -209,6 +235,14 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
         executions = [
             result for result in execution_results if not isinstance(result, Exception)
         ]
+
+        if dependencies.require_source_description or dependencies.source_description is not None:
+            for index, (unit, execution) in enumerate(zip(units, executions, strict=True)):
+                try:
+                    validate_mapped_rows(unit.fields, execution.rows)
+                except SourceMappingError as error:
+                    return ComposePageResult(ok=False, issues=(ComposePageIssue(error.code, f'/units/{index}', error.code, stage='presentation'),),
+                                             completed_stages=('discovery', 'generation', 'execution'))
 
         bundle_info = load_bundle_info()
         try:
@@ -275,6 +309,7 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
                 ).hexdigest(),
                 data_context_version=data_context.version,
                 bundle_version=str(bundle_info["bundleVersion"]),
+                source_descriptions=tuple(source_descriptions),
                 formula_traces=tuple(
                     trace for unit in units for trace in unit.formula_traces
                 ),

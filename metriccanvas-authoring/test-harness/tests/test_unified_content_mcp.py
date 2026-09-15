@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
+from test_source_mapping import DescriptorFixture
 from test_page_editing import title
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
@@ -21,7 +22,7 @@ def dependencies():
     def fixture(name): return json.loads((ROOT / 'test-harness/fixtures' / name).read_text())
     execution = fixture('page-build-execution.json')
     return ComposePageDependencies(FakeDataContextPort(fixture('data-context.json')),
-        FakeDqeExecutionPort(DqeExecutionResult(rows=execution['rows'], total_count=execution.get('totalCount'), captured_at=execution.get('capturedAt'))))
+        FakeDqeExecutionPort(DqeExecutionResult(rows=execution['rows'], total_count=execution.get('totalCount'), captured_at=execution.get('capturedAt'))), source_description=DescriptorFixture())
 
 
 class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):

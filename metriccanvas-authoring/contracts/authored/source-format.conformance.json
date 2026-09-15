@@ -1,0 +1,19 @@
+{
+  "version": "1.0",
+  "scope": "Display-only source scale evidence; no numerical conversion is performed by S5",
+  "cases": [
+    {"name":"percentage-value", "scale":"percent", "format":"percent-2", "accepted":true, "value":42, "expected":"42.00%"},
+    {"name":"fraction-needs-conversion", "scale":"fraction", "format":"percent-2", "accepted":false},
+    {"name":"percentage-point", "scale":"percent", "format":"number-2", "accepted":true, "value":2.5, "expected":"2.50"},
+    {"name":"zero-percent", "scale":"percent", "format":"percent-1", "accepted":true, "value":0, "expected":"0.0%"},
+    {"name":"null-percent", "scale":"percent", "format":"percent-1", "accepted":true, "value":null, "expected":"—"},
+    {"name":"negative-percent", "scale":"percent", "format":"percent-2", "accepted":true, "value":-2.525, "expected":"-2.53%"},
+    {"name":"currency-base-to-wan", "scale":"currency-base", "format":"compact-wan-1", "accepted":true, "value":12345, "expected":"1.2万"},
+    {"name":"wan-double-scaling", "scale":"currency-wan", "format":"compact-wan-1", "accepted":false},
+    {"name":"wan-cny-adaptive", "scale":"currency-wan", "format":"cny-adaptive", "accepted":false},
+    {"name":"rounding-boundary", "scale":"currency-base", "format":"cny-adaptive", "accepted":true, "value":99999, "expected":"10.00万"},
+    {"name":"zero-currency", "scale":"currency-base", "format":"cny-adaptive", "accepted":true, "value":0, "expected":"0元"},
+    {"name":"unknown-percent", "scale":"unknown", "format":"percent-1", "accepted":false},
+    {"name":"plain-unknown-preserved", "scale":"unknown", "format":"number-2", "accepted":true, "value":1.5, "expected":"1.50"}
+  ]
+}
