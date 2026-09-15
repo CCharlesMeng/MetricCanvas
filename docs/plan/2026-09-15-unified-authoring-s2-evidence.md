@@ -42,3 +42,9 @@ node node_modules/vitest/vitest.mjs run apps/platform/tests/workbench
 本地sdist构建成功，安装到work/s2-installed；从空目录以隔离Python启动已安装CLI，五工具注册齐备，无current-turn提供方的read返回CURRENT_TURN_UNAVAILABLE，模型请求0。新增Schema确实随sdist进入_bundle，未依赖源码仓路径。
 
 TB2的S2预检和协议门禁以来源提交9ce6646/7e62e52集成为27d1c9d/89e884a。preflight可显式选unified-content列真实五工具；旧S1runner在加载S2 Skill时，于读取配置、启动stdio或HTTP客户端之前返回UNSUPPORTED_SKILL_PROTOCOL，避免旧token工厂冒充新入口。S2真实runner/current-turn服务仍blocked，S1历史保持不改。
+
+## 同一提交集成结果
+
+代码提交 `80ad2a7` 完整重跑：317个Python测试通过（19.171秒），21个TS测试文件/287项通过（含256工作台和31契约/分发）。契约check、Bundle 1412次摘要校验、diff检查通过。旧模型runner协议门禁输出blocked/UNSUPPORTED_SKILL_PROTOCOL/modelRequests=0，未读取配置或请求模型。
+
+S2代码/本地公开路径为pass，真实模型行为及真实服务接入为blocked；独立stdio无provider的不可用结果是正确失败边界，不是服务已接通。工作台真实浏览器只使用localhost测试fixture。后续S3可继续本地实现，生产切换仍受S4/S8及外部保证门禁约束。
