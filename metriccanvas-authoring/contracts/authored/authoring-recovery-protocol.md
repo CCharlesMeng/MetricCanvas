@@ -1,0 +1,27 @@
+# Authoring recovery / 1.0
+
+S4扩展authoring-candidate/1.0，复用Lifecycle和Publication。生产未接通；本地SQLite Adapter可证明持久端口消费，不替代Relay/Java的真实保证。
+
+## 持久封套与唯一作者
+
+ExecutionSnapshot为程序专用对象：formatVersion固定1.0、recordVersion从1递增、commandSha256、record（S3七字段完整记录）、control、saveReceipt、verificationState、previewState。commandSha256沿Python canonical_json计算冻结完整command。control为cancelRequested:boolean、attemptIds:string[]、maxAttempts:正整数、deadlineEpochMs:非负整数|null。saveReceipt为经过Lifecycle校验的完整回执或null；verificationState为pending|verified；previewState为not-requested|failed|ready。没有凭据。未知格式拒绝恢复。
+
+ExecutionRecordPort原claim(key,record)->(record,created)与update(key,record)保留S3兼容，新增get(key)->snapshot|null、compare_and_swap(key,expected_version,replacement_snapshot)->snapshot；CAS只接受当前版本，持久化时版本加1，冲突用EXECUTION_VERSION_CONFLICT重新读取。key仍是actor/workspace/run/turn/page五元组。claim默认控制由可信Adapter构造参数max_attempts=20、deadline_epoch_ms=None设定，重复claim不得重置。candidateRef/rootBinding/operationId/command/commandSha256不可改变。
+
+兼容update必须保护终态，不让迟到unknown覆盖saved/rejected/not-applied/unchanged；programToken已设置后只能保持相同token。CAS同样保护冻结字段和已确认保存事实，预算attemptIds只追加去重、上限/截止不可变，cancelRequested只能false→true。saveReceipt一旦设置不可更换精确ref/操作；已verified不能降级。每次返回隔离副本，原子事务不跨网络await。
+
+候选与program存储沿S3端口。SQLite实现分为SqliteCandidateStore(path)、SqliteExecutionRecords(path,max_attempts=20,deadline_epoch_ms=None)、SqliteLifecyclePrograms(path)，同数据库共享显式schema版本；候选不可替换，program.store的token可load，绑定actor/workspace且不存auth_token。既有输入/输出spool不自动迁移。
+
+## 恢复权限与副作用
+
+新增RecoveryAuthorityPort.authorize(root_binding,command)->None，由可信提供方重新鉴权当前身份对原页/原操作的权限；协调器还必须比较Lifecycle.current identity与冻结actor/workspace。未提供authority则不可用。恢复不要求原turn仍active；原rootBinding不改成cancelled，也不授权模型继续旧候选编辑。
+
+AuthoringRecoveryCoordinator(candidates,records,lifecycle,authority,*,clock_ms)提供recover(key,attempt_id)、cancel(key)、retry_original(key,attempt_id)、reserve_attempt(key,attempt_id)、retry_preview(key,attempt_id,preview)。每次reserve先CAS持久追加稳定attempt_id；重复ID不重复扣减；超maxAttempts或截止返回budget-exhausted，保留原未决状态。模型Adapter可调用相同reserve入口共享预算，本片仅证明入口消费，未接模型不可宣称真实共享接线完成。
+
+recover仅查询原operation/command，保存成功先持久saveReceipt，再精确read并与候选完整内容/hash比较，verified后saved；读取/预览失败保留receipt/ref，不变成not-applied或再保存。重复恢复只查原操作或按已有receipt精确回读。programToken丢失/损坏保留未知并明确不可用，不能新造载荷或重置命令。
+
+cancel通过CAS持久取消意图。selected且尚未进入sending时可终止本地发送资格；进入sending后只能认为可能已发，查询原操作。S3首次提交及S4重试在实际service.save前读取持久取消状态；取消先赢则不发。已发请求远端是否撤回只能由提供方权威确定。
+
+retry_original只有权威not-applied且retrySafe=true、未取消、预算允许并CAS获取sending后才用原token调用Lifecycle.save_draft；Lifecycle仍先查询且实际save前复查权限和取消。始终保持原operationId和完整command；不允许取消后新操作重试。并发CAS失败重读，不能覆盖另一恢复者已保存的结果。
+
+preview是可信程序提供的async callback(ref,document)，只收到已精确核实的修订；失败保留saved事实与ref，重试不保存。Publication继续消费精确候选/确认对象，禁止将恢复得到的另一修订套用旧确认。持久发布重放接线另按既有Publication原操作协议集成，不扩充模型工具面。

@@ -12,7 +12,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "5dcfe0e1c07efb2554e9e26df52d55d4e56261f778256ca3e3c6a33ab12f8a22"
+      "sha256": "ec8f195767d5afd9e213e5cc78eff309621b13fe410cee360b5a0231a216b5b5"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -1939,6 +1939,10 @@
       "sha256": "f55a8885bcf8b99871b7a69889d3efc46a68e3c2db3235b34af199703a937a4e"
     },
     {
+      "file": "contracts/authored/authoring-recovery-protocol.md",
+      "sha256": "8d9c489ee23328ffca9132192e3917e41d1f937b33fb7f5a2601ad0564e8c3af"
+    },
+    {
       "file": "contracts/authored/authoring-turn-contract.ts",
       "sha256": "46968c58ce8388f402e74bc17994b85c2228c97196781ddfc9adfd1ff560c2c4"
     },
@@ -2008,7 +2012,7 @@
     },
     {
       "file": "contracts/manifest.json",
-      "sha256": "a9dea0320a4683ebb1ef17038fa243f9b2f285e146a6e87c717a382ad879eb14"
+      "sha256": "7514c99b5613e93a6553aaff3a4fe083fc7cded85e168519717415ebea21094b"
     },
     {
       "file": "README.md",
