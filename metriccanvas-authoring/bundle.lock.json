@@ -3236,7 +3236,7 @@
     },
     {
       "file": "test-harness/model-evals/eval_evidence.py",
-      "sha256": "3dd9e395905a6ed49501f94422165b1933ffd7476319b38f6aca8cd9e48248ce"
+      "sha256": "b5106bde7af0c810116539c608a91d2d7f548290401291dac78c86ae5ef6a4f5"
     },
     {
       "file": "test-harness/model-evals/evidence/approval-request.md",
@@ -3263,6 +3263,18 @@
       "sha256": "88e44e24f12cb1a30928dbe5f4857e44d7610c5587340f5f21d5ab6131ac8338"
     },
     {
+      "file": "test-harness/model-evals/evidence/trusted-history.report.json",
+      "sha256": "a63b9f1ca76ef08dd8e43fa0d707d0ca625793c5083ed078c592d1879f7b91b5"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/trusted-local.manifest.json",
+      "sha256": "88053bbb2245f7066b60e3716c59f3976246166877924cdefb4a47586df87de9"
+    },
+    {
+      "file": "test-harness/model-evals/evidence/trusted-local.report.json",
+      "sha256": "57a1b904c7146466692e36a39a2801a5795dc0268558634614533c8783eb9574"
+    },
+    {
       "file": "test-harness/model-evals/history/first-round.provenance.json",
       "sha256": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec"
     },
@@ -3287,20 +3299,36 @@
       "sha256": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605"
     },
     {
+      "file": "test-harness/model-evals/model_transport.py",
+      "sha256": "7a586252a17f5650030c1e9ab6e04ee48a23eae13505f7fdbbe1e2411eca778f"
+    },
+    {
       "file": "test-harness/model-evals/platform-authoring.cases.json",
       "sha256": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1"
     },
     {
       "file": "test-harness/model-evals/preflight.py",
-      "sha256": "373cb385982705ee242f99b77556a62705452bae161c042d09bb0f888c11e8fa"
+      "sha256": "43125af6c640d6aeeb2faf8b0ea62023e5f031c9b01c37d02ccc97e0a26b3dbd"
     },
     {
       "file": "test-harness/model-evals/README.md",
-      "sha256": "1e4b4b3ada3d8e9d60420a8c1cc4d66a66acb36b2052270e91a6d8c172b810cc"
+      "sha256": "67c3aa611681990aeef42d75ec5fa5141a3e657801a7703bbb1ca93f0d15760e"
     },
     {
       "file": "test-harness/model-evals/run_local.py",
       "sha256": "3b48e514cc4106c94bb529cbc5e7d649764d07b2924cf8ff709926f9a213a400"
+    },
+    {
+      "file": "test-harness/model-evals/run_trusted_local.py",
+      "sha256": "0ecbeb1c60beca09a6282b9eb428de9be6f4eca86e04e74e07a93de4af474eba"
+    },
+    {
+      "file": "test-harness/model-evals/trusted_fixture_server.py",
+      "sha256": "1c736435571df1d0a72e67226b9f569e870ce8a4b2c47a0947293227d20b53a6"
+    },
+    {
+      "file": "test-harness/model-evals/trusted_scenarios.py",
+      "sha256": "770635528e41ffdbb9393dde5d827f9aee91bcd278fabce3dbf9bd250ad9cf1e"
     },
     {
       "file": "test-harness/model-evals/unified-authoring.cases.json",
@@ -3533,6 +3561,10 @@
     {
       "file": "test-harness/tests/test_text_map_building.py",
       "sha256": "df2296ad6e8f825bd4151d151f43ab6760bdcfe8a01d54bfe85fe4c7b72c4c01"
+    },
+    {
+      "file": "test-harness/tests/test_trusted_model_eval_harness.py",
+      "sha256": "8415b35ae0964119f7fef83ab649dd74572d3171ec03f034536bcdfd27d25b99"
     },
     {
       "file": "test-harness/tests/test_unified_composition.py",
