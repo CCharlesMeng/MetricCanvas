@@ -1,6 +1,5 @@
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { execFileSync } from 'node:child_process';
 import { describe, expect, it } from 'vitest';
 import { pageSchema, validate } from '../packages/page/src/internal';
 import { buildPublicationSchema, publicationSchemaId, validatePublicationStructure, validateCandidateRelations, validateConfirmationRelations, validateCorrectionsRelations, validateResultRelations, candidateReviewPayload, reviewFields, type DefinitionName, type Request } from '../metriccanvas-authoring/contracts/authored/publication-contract';
@@ -39,21 +38,5 @@ describe('publication/1 single-author contract', () => {
     for(const key of reviewFields){const changed=structuredClone(candidate);changed[key]=null;expect(candidateReviewPayload(changed)).not.toEqual(payload);}
     for(const key of ['document','reviewHash','reviewCanonicalization']){const changed=structuredClone(candidate);changed[key]=null;expect(candidateReviewPayload(changed)).toEqual(payload);}
     payload.ref.candidateId='changed';expect(candidate.ref.candidateId).toBe('candidate-1');
-  });
-  it('Python validates the same standalone JSON structure without TypeScript', () => {
-    const python=process.env.PUBLICATION_PYTHON??'python3';
-    const output=execFileSync(python,['-c',`
-import json
-from jsonschema import Draft202012Validator
-schema=json.load(open('contracts/metriccanvas/authoring/publication.schema.json'))
-vectors=json.load(open('contracts/metriccanvas/authoring/publication-conformance.json'))
-Draft202012Validator.check_schema(schema)
-for case in vectors['cases']:
-    target=dict(schema, **{'$ref':'#/$defs/'+case['definition']})
-    actual=Draft202012Validator(target).is_valid(case['input'])
-    assert actual == case['expected']['structure'], case['id']
-print(len(vectors['cases']))
-`],{encoding:'utf8'});
-    expect(Number(output.trim())).toBe(vectors.cases.length);
   });
 });

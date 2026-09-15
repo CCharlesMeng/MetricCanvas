@@ -16,7 +16,15 @@ describe('本地开发服务端口契约', () => {
   });
 
   it('Platform 固定占用 5174，端口冲突时禁止静默漂移', () => {
-    expect(platformViteConfig).toMatchObject({
+    const config = typeof platformViteConfig === 'function'
+      ? platformViteConfig({
+          command: 'serve',
+          mode: 'development',
+          isSsrBuild: false,
+          isPreview: false
+        })
+      : platformViteConfig;
+    expect(config).toMatchObject({
       server: { port: 5174, strictPort: true }
     });
   });
