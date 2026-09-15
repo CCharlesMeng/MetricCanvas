@@ -1,0 +1,27 @@
+# Authoring candidate / 1.0
+
+S3扩展ADR0079，继续复用既有内容算法与Lifecycle。候选不是页面修订，模型不调用保存/发布。
+
+## 唯一记录与端口
+
+authoring-candidate.schema.json为完整候选记录作者：version、candidateRef、candidateVersion、parentRef、rootBinding、document、documentSha256、operations。rootBinding是本轮authoring-turn/1.0完整绑定；后续candidate编辑始终保留最初rootBinding和root基线。candidateVersion从1开始，每个子候选为parentVersion+1；分支靠不同candidateRef区分，不把版本号当全局唯一身份。
+
+CandidateStorePort异步put(record:dict)->None和get(candidate_ref:str)->dict负责不可变记录。put已存在同ref且内容不同必须拒绝，get返回隔离副本；没有提供方时内容候选不可用，不把临时文件token作为候选系统。完整document与operations仅在程序通道；模型只获candidateRef/version及安全逐项摘要。
+
+候选documentSha256继续沿既有Python内容artifact的document_sha256，仅在Python程序边界验证；不是S2的documentJson字节hash。每次读/编辑/最终选择都校验完整页面合法性、ID、hash、记录结构与rootBinding和当前可信轮次逐项一致。rootBinding.documentSha256仍是S2原始精确字节基线，不能用候选hash替换。
+
+## 公开内容行为
+
+compose_page/create_content_page在明确new上下文产生候选。edit_page(context_ref,request,candidate_ref?)：无candidate_ref时修改existing原基线；有引用时在同轮候选上继续，可为new或existing，且始终保持root基线。read_page_context增加可选candidate_ref，回复明确view/candidateRef/version/hash；root补读与candidate补读不可混用。
+
+无产物、全失败或不变批次不新建候选；后续编辑不变时可返回原候选引用并说明unchanged，不新增版本。最终候选若与原始基线语义相同，不保存新修订。独立部分成功仍以完整合法页面作为候选，失败依赖不应用。
+
+## 可信最终提交
+
+可信程序在轮次内容结束时显式传final candidateRef给AuthoringSubmissionCoordinator，不新增模型保存工具。协调器核对身份、scope/active/write、root候选绑定、hash、合法性和基线后，从候选构造既有Lifecycle的save命令。命令使用根baseRef、完整候选document、程序operationId、retainDimensionValues与description；模型不提供完整载荷/operationId。
+
+ExecutionRecordPort.claim(key,record)->(frozen_record,created)必须原子地为本轮选定一次最终候选，key绑定identity/workspace/run/turn/page。后续重复finalize只返回或查询已冻结原操作；不能换候选/operationId覆盖记录。record含candidateRef、rootBinding、operationId、command、programToken、status与result，完整数据只在可信存储。update(key,record)仅允许更新状态/结果/programToken，原命令与选择不变。
+
+先claim冻结操作及载荷，再持久化Lifecycle programToken、记录sending，最后调用Lifecycle.save_draft。成功必须按回执ref用Lifecycle.read_revision精确回读并核对完整候选与hash后才报告saved。异常/未知/取消竞争保留原记录及原operationId，不发送第二个新命令；S4负责实际持久Adapter、重启与取消恢复。S3替身只证明端口消费和正常/未知门禁，不宣称跨进程持久化。
+
+S3生产写路径保持关闭；缺强生命周期能力、候选/执行记录/程序通道任一项都明确不可用。S4及外部服务保证验收前不开放生产写入。普通问数及旧兼容内容面保持边界。

@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://metriccanvas.local/contracts/authoring-candidate/1.0",
+  "title": "Immutable candidate record; program channel only",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "candidateRef",
+    "candidateVersion",
+    "parentRef",
+    "rootBinding",
+    "document",
+    "documentSha256",
+    "operations"
+  ],
+  "properties": {
+    "version": {
+      "const": "1.0"
+    },
+    "candidateRef": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "candidateVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "parentRef": {
+      "anyOf": [
+        {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rootBinding": {
+      "$ref": "https://metriccanvas.local/contracts/authoring-turn/1.0"
+    },
+    "document": {
+      "type": "object"
+    },
+    "documentSha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "operations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

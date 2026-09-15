@@ -40,6 +40,7 @@ class DistributionContractTest(unittest.TestCase):
     def test_sdist_embeds_all_runtime_contracts_for_wheel_build(self) -> None:
         project = tomllib.loads(PYPROJECT.read_text(encoding="utf-8"))
         expected = {
+            "metriccanvas_authoring/_bundle/contracts/authored/authoring-candidate.schema.json",
             "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json",
             "metriccanvas_authoring/_bundle/bundle.json",
             "metriccanvas_authoring/_bundle/contract-lock.json",

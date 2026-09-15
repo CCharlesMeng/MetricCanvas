@@ -12,7 +12,7 @@
     },
     {
       "file": "contract-lock.json",
-      "sha256": "663383fc9006084105875535b6fdfcfc7dcb74f1709b82c72b787485728469cf"
+      "sha256": "6bbd3ee5a23bfdb74ac2b9d8b92c41812eab7c5aa044ec9d3d1fd5f5a51b4b30"
     },
     {
       "file": "contract-snapshot/authoring/publication-conformance.json",
@@ -1927,6 +1927,14 @@
       "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
     },
     {
+      "file": "contracts/authored/authoring-candidate-protocol.md",
+      "sha256": "e2ddcc4d8375a78dd9303e2956bdf2eb0978f085498773e188a1787e389cabc9"
+    },
+    {
+      "file": "contracts/authored/authoring-candidate.schema.json",
+      "sha256": "f55a8885bcf8b99871b7a69889d3efc46a68e3c2db3235b34af199703a937a4e"
+    },
+    {
       "file": "contracts/authored/authoring-turn-contract.ts",
       "sha256": "46968c58ce8388f402e74bc17994b85c2228c97196781ddfc9adfd1ff560c2c4"
     },
@@ -1996,7 +2004,7 @@
     },
     {
       "file": "contracts/manifest.json",
-      "sha256": "d9c438be403c94f4712ab3eab432f63052c18ed26c166654dd6f5a63b927804c"
+      "sha256": "6699ac2dc1667c8171a57b7a2eca6f6e6ecfd21d1e587b15fe41fcb1df826ee4"
     },
     {
       "file": "README.md",
@@ -3360,7 +3368,7 @@
     },
     {
       "file": "test-harness/tests/test_distribution.py",
-      "sha256": "d8a138360d69372ef649931f4047f146f73bdc8fd3cd62c157ed53206e0efcc9"
+      "sha256": "4ae4605f028a8fe47c2213df441797e2ddb04076c2c9903bbda137a40e3d73d7"
     },
     {
       "file": "test-harness/tests/test_dqe_http.py",
@@ -3668,7 +3676,7 @@
     },
     {
       "file": "tool/pyproject.toml",
-      "sha256": "b8cd88e95845d8014c5a5269307ecac2d3cc5f611f22c1f8a89aed2eb4a5c57c"
+      "sha256": "16655398d7e5b3bdd06fa84c8ae77821bcd07611fd7712cca412bbb4adff5bde"
     },
     {
       "file": "tool/requirements.in",
