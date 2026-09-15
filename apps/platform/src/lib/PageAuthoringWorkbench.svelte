@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
+  import PublicationReview from './workbench/PublicationReview.svelte';
+  import { createAuthoringPublication, unavailablePublicationPort, unavailableHumanConfirmation, type PublicationPort, type HumanConfirmationPort } from './workbench/authoring-publication';
   import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
@@ -21,7 +24,9 @@
   import { readRuntimeConfig } from './runtime-config';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave }: {
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+    publicationPort?: PublicationPort; humanConfirmation?: HumanConfirmationPort;
+    languagePort?: LanguagePort; onLanguageReady?: (api: ReturnType<typeof createAuthoringLanguage>) => void;
     dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
   } = $props();
   const coordinator = untrack(() => createAuthoringCoordinator({
@@ -35,10 +40,15 @@
       return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' };
     }
   }));
+  let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
+  let publicationOpen = $state(false);
+  let publicationBusy = $state(false);
+  let language = $state<ReturnType<typeof createAuthoringLanguage> | null>(null);
+  let languageState = $state<ReturnType<ReturnType<typeof createAuthoringLanguage>['snapshot']> | null>(null);
   let authoring = $state(coordinator.snapshot());
   const currentDraft = $derived(authoring.draft);
   const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
-  const savePending = $derived(authoring.save?.status === 'pending');
+  const savePending = $derived(authoring.save?.status === 'pending' || authoring.languageLocked || publicationBusy);
   const saveBlocked = $derived(savePending || authoring.save?.status === 'unknown' ||
     (authoring.save?.status === 'rejected' && authoring.save.code === 'REVISION_CONFLICT'));
   const loading = $derived(authoring.loading);
@@ -61,10 +71,18 @@
     const online = () => coordinator.setOnline(true);
     const offline = () => coordinator.setOnline(false);
     window.addEventListener('online', online); window.addEventListener('offline', offline);
-    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; });
+    publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
+    publication.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
+    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); });
     const pageId = new URLSearchParams(window.location.search).get('page');
     if (pageId) void coordinator.load(pageId);
-    const stop = listenForSavedDrafts({
+    if (languagePort) {
+      language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
+        identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
+      language.subscribe((value) => { languageState = value; });
+      onLanguageReady?.(language);
+    }
+    const stop = languagePort ? () => {} : listenForSavedDrafts({
       target: window, read: coordinator.readSavedDraft,
       captureIdentity: () => {
         const identity = readRuntimeConfig();
@@ -78,7 +96,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); unsubscribe(); coordinator.dispose(); };
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -230,7 +248,8 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
-      <button class="btn" disabled={!authoring.sync?.canUndo || loading} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
+      <button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
+      <button class="btn" disabled={!authoring.sync?.canUndo || loading || savePending} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
       <button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>
       {#if baseRevisionId}
         <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>精确修订预览</button>
@@ -248,7 +267,7 @@
       </button>
       {#if pageModel && !pageModel.transient}
         {#if authoring.sync}
-          <label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>
+          <label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>
           {#if authoring.sync.pending > 0}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
         {:else}
           <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
@@ -266,6 +285,13 @@
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
+    {#if languageState}
+      <p class="notice" role="status" data-testid="language-status">{languageState.message}</p>
+      {#if languageState.operations.length}<ul aria-label="本轮操作结果">{#each languageState.operations as operation}<li>{operation.id}：{operation.status}</li>{/each}</ul>{/if}
+      {#if ['synchronizing', 'running', 'reading', 'unknown'].includes(languageState.phase)}<button class="btn" onclick={() => language?.cancel()}>停止接收本轮结果</button>{/if}
+      {#if ['unknown', 'cancelled', 'recovered'].includes(languageState.phase) && authoring.languageLocked}<button class="btn" onclick={() => language?.lookup()}>查询本轮保存结果</button>{/if}
+      {#if languageState.recovery}<button class="btn" onclick={() => { previewRef = languageState!.recovery; previewOpen = true; }}>查看取消后已保存修订</button><a class="linkish" href={resolve('/manage')}>返回页面目录重新打开</a>{/if}
+    {/if}
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
     {#if authoring.sync}
       {#if authoring.sync.protection === 'failed'}
@@ -282,7 +308,9 @@
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
-      {#if previewOpen && previewRef}
+      {#if publicationOpen && publication}
+        <PublicationReview {publication} />
+      {:else if previewOpen && previewRef}
         <p class="notice">正在预览已保存修订；再次点击“精确修订预览”返回工作副本。</p>
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
           readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />

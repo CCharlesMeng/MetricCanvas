@@ -1,6 +1,5 @@
 """Independent content MCP; full artifacts stay on the trusted program channel."""
 from typing import Annotated, Any, Literal
-from copy import deepcopy
 from dataclasses import replace
 
 from fastmcp import FastMCP
@@ -16,6 +15,7 @@ from metriccanvas_authoring.application.edit_page import create_edit_page, docum
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA
 from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
 
 PageEditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_SCHEMA)]
 RESULT_SCHEMA = {
@@ -57,9 +57,8 @@ def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: 
     async def compose_page(page_id: str, spec: PageBuildSpec, layout: Literal["report", "dashboard"] = "report") -> ToolResult:
         """Create using existing discovery/DQE/building; return a save-free artifact."""
         result = await compose(ComposePageCommand(page_id, spec))
-        if result.artifact is not None and layout != result.artifact.document["layout"]:
-            document = deepcopy(result.artifact.document)
-            document["layout"] = layout
+        if result.artifact is not None:
+            document = apply_creation_layout(result.artifact.document, layout)
             errors = validate_page_document(document)
             if errors:
                 summary = {"status": "failed", "issues": [{"code": e.type, "path": e.path} for e in errors]}

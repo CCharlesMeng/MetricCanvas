@@ -1,0 +1,58 @@
+import { validate } from '@metriccanvas/page';
+import { afterEach, expect, it } from 'vitest';
+import { createAuthoringPublication } from '../../src/lib/workbench/authoring-publication';
+import { createPublicationFixture } from '../../src/lib/workbench/publication-fixture';
+const cleanups:(()=>void)[]=[];afterEach(()=>cleanups.splice(0).forEach(f=>f()));
+function setup(){const fixture=createPublicationFixture();let scope='1',identity={...fixture.identity};
+ const api=createAuthoringPublication({port:fixture.port,human:fixture.human,identity:()=>identity,scope:()=>scope,synchronizedRef:()=>fixture.ref});
+ cleanups.push(()=>api.dispose());return{...fixture,api,edit:()=>{scope+='x';api.invalidate();},switchIdentity:()=>{identity={actorId:'other',workspaceId:'elsewhere'};api.invalidate();}};}
+it('requires preview and explicit human proof, publishes an immutable reference',async()=>{const f=setup();await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('review');
+ await f.api.confirmAndPublish();expect(f.counts().human).toBe(0);await f.api.preview();expect(f.api.snapshot().preview,f.api.snapshot().message).not.toBeNull();
+ await f.api.confirmAndPublish();expect(f.api.snapshot().phase).toBe('published');expect(f.counts()).toMatchObject({human:1,publish:1});const published=f.api.snapshot().published;f.edit();expect(f.api.snapshot().published).toEqual(published);});
+it('corrections invalidate preview and bind new version and retained/missing values',async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();const old=f.api.snapshot().candidate!.ref;
+ await f.api.revise({retainDimensionValues:false,parameterSelections:[{parameterId:'segment',selected:false}]});expect(f.api.snapshot().phase).toBe('review');expect(f.api.snapshot().preview).toBeNull();expect(f.api.snapshot().candidate!.ref.candidateVersion).not.toBe(old.candidateVersion);
+ expect(f.api.snapshot().candidate!.parameterSummary[0].valueState).toBe('missing');await f.api.confirmAndPublish();expect(f.counts().human).toBe(0);await f.api.preview({regions:['APAC']});await f.api.confirmAndPublish();expect(f.api.snapshot().phase).toBe('published');});
+for(const mode of ['expired','lease','forbidden','bad-proof'])it(`rejects ${mode} even after local review`,async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();f.setMode(mode);await f.api.confirmAndPublish();expect(f.counts().publish).toBe(0);expect(f.api.snapshot().published).toBeNull();});
+it('blocking candidate stays readable but cannot confirm',async()=>{const f=setup();f.setMode('blocking');await f.api.prepare(true);expect(f.api.snapshot().candidate).not.toBeNull();await f.api.preview();await f.api.confirmAndPublish();expect(f.counts().human).toBe(0);});
+it('source edits and identity switch invalidate prior candidate',async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();f.edit();await f.api.confirmAndPublish();expect(f.counts().publish).toBe(0);expect(f.api.snapshot().candidate).toBeNull();
+ await f.api.prepare(true);f.switchIdentity();expect(f.api.snapshot().candidate).toBeNull();});
+it('identity changes while proof is pending never submit publish',async()=>{const f=setup();const confirm=f.human.confirm;let resolve!:(v:Awaited<ReturnType<typeof confirm>>)=>void;
+ f.human.confirm=async(...args)=>{const value=await confirm(...args);return new Promise(done=>resolve=()=>done(value));};await f.api.prepare(true);await f.api.preview();const work=f.api.confirmAndPublish();await new Promise(r=>setTimeout(r,5));f.switchIdentity();resolve(undefined as never);await work;expect(f.counts().publish).toBe(0);});
+it('lost publish acknowledgement queries the original command without another proof or publication',async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();f.setMode('lost-ack');await f.api.confirmAndPublish();expect(f.api.snapshot().phase).toBe('unknown');expect(f.api.snapshot().published).toBeNull();f.setMode('success');await f.api.lookup();expect(f.api.snapshot().phase).toBe('published');expect(f.counts()).toMatchObject({human:1,publish:1,lookup:1});});
+it('cancelled late prepare cannot reopen the review and lease release is explicit',async()=>{const f=setup();const mutate=f.port.mutate;let done!:()=>void;f.port.mutate=async request=>{const result=await mutate(request,new AbortController().signal);await new Promise<void>(resolve=>done=resolve);return result;};const work=f.api.prepare(true);await new Promise(r=>setTimeout(r,5));await f.api.cancel();done();await work;expect(f.api.snapshot().candidate).toBeNull();});
+for(const field of ['actorId','workspaceId','contentHash','reviewHash','leaseId','canonicalization','reviewCanonicalization'] as const)it(`shared confirmation mismatch ${field} blocks mutation`,async()=>{const f=setup();const confirm=f.human.confirm;f.human.confirm=async(...args)=>{const result=await confirm(...args);result.confirmation[field]='wrong';return result;};await f.api.prepare(true);await f.api.preview();await f.api.confirmAndPublish();expect(f.counts().publish).toBe(0);});
+it('rejects both frozen eq/in cardinality mismatch directions at the UI consumer',async()=>{for(const kind of ['dimension-eq','dimension-in'] as const){const f=setup();const mutate=f.port.mutate;f.port.mutate=async(...args)=>{const result=await mutate(...args);if(result.status==='completed'&&'candidate'in result){result.candidate.parameterSummary[kind==='dimension-eq'?0:1].extractionKind=kind;}return result;};f.port.verifyResult=async()=>true;await f.api.prepare(true);expect(f.api.snapshot().candidate).toBeNull();}});
+it('mismatched execute document and untrusted result never become a preview or published success',async()=>{const f=setup();await f.api.prepare(true);const execute=f.port.execution.execute;f.port.execution.execute=async(...args)=>{const result=await execute(...args) as {document:{meta?:unknown}};result.document.meta={description:'tampered'};return result;};await f.api.preview();expect(f.api.snapshot().preview).toBeNull();
+ f.port.execution.execute=execute;await f.api.preview();f.setMode('bad-result');await f.api.confirmAndPublish();expect(f.api.snapshot().published).toBeNull();expect(f.api.snapshot().phase).toBe('unknown');});
+for(const mutation of ['change','delete','add'] as const)it(`all-eq/in candidate cannot ${mutation} non-dimension parameters`,async()=>{
+ const f=setup();const mutate=f.port.mutate;f.port.mutate=async(...args)=>{const result=await mutate(...args);if(result.status==='completed'&&'candidate'in result){
+  const params=result.candidate.document.params as {id:string;type:string;required:boolean;default?:unknown}[];
+  if(mutation==='change')params.find(p=>p.id==='heading')!.default='changed';
+  else if(mutation==='delete')result.candidate.document.params=params.filter(p=>p.id!=='heading');
+  else params.push({id:'extra',type:'string',required:false,default:'new'});
+  if(mutation!=='change'){
+   const replace=(value:any):any=>Array.isArray(value)?value.map(replace):value&&typeof value==='object'?value.param==='heading'?(mutation==='delete'?'Regional sales':{param:'extra'}):Object.fromEntries(Object.entries(value).map(([k,v])=>[k,replace(v)])):value;
+   result.candidate.document.sections=replace(result.candidate.document.sections);
+  }
+  expect(validate(result.candidate.document)).toEqual([]);
+ }return result;};f.port.verifyResult=async()=>true;f.port.verifyCandidate=async()=>true;
+ await f.api.prepare(true);expect(f.api.snapshot().candidate).toBeNull();
+});
+it('unknown with unsafe not-applied remains unresolved and cannot reprepare',async()=>{const f=setup();f.setMode('lost-ack');await f.api.prepare(true);f.port.lookup=async request=>({status:'not-applied',operationKind:request.kind,operationId:request.context.operationId,retrySafe:false});f.port.verifyResult=async()=>true;await f.api.lookup();await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('unknown');expect(f.counts().prepare).toBe(1);});
+it('a changed preview input clears eligibility for human confirmation',async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();f.api.clearPreview();await f.api.confirmAndPublish();expect(f.counts().human).toBe(0);});
+it('reselecting an offered parameter is a provider correction and requires fresh preview',async()=>{const f=setup();await f.api.prepare(true);await f.api.revise({parameterSelections:[{parameterId:'segment',selected:false}]});await f.api.revise({parameterSelections:[{parameterId:'segment',selected:true}]});expect(f.api.snapshot().candidate!.parameterSummary.find(p=>p.parameterId==='segment')?.selected).toBe(true);expect(f.api.snapshot().preview).toBeNull();});
+it('missing required values are not invented as executable defaults',async()=>{const f=setup();await f.api.prepare(false);await f.api.preview();expect(f.api.snapshot().preview).toBeNull();expect(f.api.snapshot().message).toContain('执行被拒绝');await f.api.preview({regions:['APAC']});expect(f.api.snapshot().preview).not.toBeNull();});
+it('unavailable production capability is a known no-send state, not an unresolved mutation',async()=>{const f=setup();f.port.available=false;await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('error');expect(f.counts().prepare).toBe(0);f.port.available=true;await f.api.prepare(true);expect(f.api.snapshot().phase).toBe('review');});
+it('cancel releases local transport ownership so an ignored abort cannot block original-operation lookup',async()=>{const f=setup();const mutate=f.port.mutate;let complete!:()=>void;
+ f.port.mutate=async(...args)=>{const result=await mutate(...args);await new Promise<void>(resolve=>complete=resolve);return result;};
+ const work=f.api.prepare(true);await new Promise(resolve=>setTimeout(resolve,5));await f.api.cancel();await f.api.lookup();
+ expect(f.counts().lookup).toBe(1);expect(f.api.snapshot().phase).toBe('review');await f.api.preview();expect(f.api.snapshot().preview).not.toBeNull();complete();await work;expect(f.api.snapshot().phase).toBe('review');
+});
+
+for(const operation of ['confirm','cancel'] as const)it(`late ${operation} lease-release failure cannot replace a newer review`,async()=>{const f=setup();await f.api.prepare(true);await f.api.preview();
+ let rejectRelease!:(reason:Error)=>void,started!:()=>void;const releasing=new Promise<void>(resolve=>started=resolve);
+ f.port.release=async()=>{started();await new Promise<void>((_,reject)=>rejectRelease=reject);};
+ if(operation==='confirm')f.setMode('bad-proof');const old=operation==='confirm'?f.api.confirmAndPublish():f.api.cancel();await releasing;
+ f.setMode('success');await f.api.prepare(true);const current=f.api.snapshot();expect(current.phase).toBe('review');expect(current.candidate).not.toBeNull();
+ rejectRelease(Error('late release failure'));await old;expect(f.api.snapshot()).toEqual(current);
+});

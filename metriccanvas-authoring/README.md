@@ -94,3 +94,39 @@ METRICCANVAS_TOOL_SURFACE=relay \
 ```
 
 完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/plan/metriccanvas-agent-full-migration.md`](../docs/plan/metriccanvas-agent-full-migration.md)。
+
+## 独立生命周期 MCP（#138）
+
+`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
+
+受信任 Relay 适配器在调用之前把完整请求写到独立用户/工作区进程的 `METRICCANVAS_LIFECYCLE_INPUTS_DIR/<token>.json`。目录权限须 0700、文件 0600，令牌为 16–128 位字母/数字/下划线/连字符；文件内容 `{actorId,workspaceId,request}`，request 按该 schema 的 save/read/history 分支。目录不可由模型写入；调用方必须保证同一逻辑操作的请求文件不可变并持久保留，禁止在重试时换 operationId 或修改原载荷。token 只定位受信任请求，不代替服务鉴权；保存指纹、基线原子比较、去重期限与授权仍由服务裁决。
+
+身份只从程序注入：`METRICCANVAS_OPERATOR_ID`、`METRICCANVAS_WORKSPACE_ID`、`METRICCANVAS_AUTH_TOKEN`，凭据只在进程内存和请求头中；不写 spool 或工具输出。当前环境适配器不是登录/身份验证实现，真实 Relay 按用户注入与 Java token/actor 校验仍待 #105/#106。自有 spool 只是本仓可用的程序接缝，不声称真实 Relay 已会写这些文件。输入命令显式固定 origin、base、description、retainDimensionValues 与 operationId；模型不可传这些字段或完整 document。
+
+完整精确读取结果与历史写入 `METRICCANVAS_LIFECYCLE_OUTPUTS_DIR`，权限同上；模型和 MCP structuredContent 均仅见引用、状态、程序令牌及完整性摘要。保存结果的程序输出保留 receipt/context/base，供可信编排核对原轮次；缺失 sessionId/runId 不代表已验证轮归属。Relay 必须直接读取程序输出并转交内容基线/前端读取边界，不能经模型转抄。输出令牌不是 draftId，不生成 `metriccanvas:draft-saved` 事件，不推断三个修订标识与通知标识相等。输出清理由拥有该进程的集成方按使用期限执行。
+
+保存先查询原请求：权威 `not-applied` 且 `retrySafe:true` 才提交原命令；saved 返回原修订，pending/unknown/过期去重结果均不重发。回执丢失返回 unknown，可用相同保存 token 调 `get_save_result`。此模块没有本地幂等数据库，不把生成令牌或客户端 UUID 当成强幂等。精确读取验证完整 ref 与持久化原文 hash，再校验页面；不规范化原始修订、不回退 latest。跨语言 canonicalization 必须由接入适配器明确协商并实现 `verify_document`；测试中的 Python 排序 JSON 算法仅是外部边界替身的算法，生产没有默认 hash 算法。
+
+生产组合默认使用 #105 已知 HTTP 消费适配器。`METRICCANVAS_LIFECYCLE_COLLECTION_URL` 由部署传入真实 `.../user-page-metadata` 集合地址；适配器仅提供当前资源匹配 GET，响应必须同时 HTTP 200、`retCode:"0"`、三元引用与页面文档匹配。它不是强 exactRead，因此不会通过上述精确工具暴露。stableSave/exactRead/history/operationLookup 默认关闭，工具明确返回 CAPABILITY_UNAVAILABLE，不调用拟新增端点。强端口只能通过受信任程序组合显式实现，不能设置环境开关把未知能力变成可用。当前匹配读取的成功回执仍仅 assurance=provider-response，不升级为强 Saved。
+
+## 发布工具（#145）
+
+生命周期 MCP 另注册 `prepare_candidate`、`read_candidate`、`revise_candidate`、`confirm_publish`、`get_publish_operation_result`，共九项工具，每项只接受 `request_token`。受信任程序通过可选关键字 `publication=PublicationDependencies(service, confirmations)` 接入；原三参数调用兼容。生产默认发布依赖明确不可用，返回 `CAPABILITY_UNAVAILABLE`，没有拟定 HTTP 地址或环境开关。
+
+`contracts/authored/publish-request.schema.json` 仅引用共同 `publication/1` 的 Request；包内 `contract-snapshot/authoring/publication.schema.json` 包含闭合 Page 定义。完整候选、差异、参数摘要及操作回执只通过同一受保护程序输出交付，模型仅见状态、引用、摘要和令牌。调整只允许保留维度值选择及服务给定参数 ID 的选择，不接受任意页面补丁。
+
+人工确认令牌必须由独立 `HumanConfirmationPort` 读取可信人工事件，绑定身份、精确候选、源修订、内容与审阅摘要、保留选择和租约；模型工具不能创建证明。内容 hash 与包含十一字段的审阅 hash 分别验证，算法身份由适配器固定。所有候选接收均要求可信精确源读取及原文完整性验证，并核对非维度参数完整保留；null 分类还要求原维度声明与绑定保持。最终权限、候选有效期、源头版本、证明撤销和租约消费必须在服务发布事务中原子检查。
+
+三类写操作均先查询完整原请求，只在权威 `not-applied/retrySafe:true` 时提交。确认丢失、异常回执或程序交付失败保持 unknown，使用原令牌查询恢复；已完成重放返回原结果，不再次消费租约或要求重新人工确认，但仍需当前读取权限。测试替身与人工事件模拟仅位于 `test-harness/publish_stdio_server.py`，不进入生产分发；这些测试不能证明真实 Java/Relay 已接通。
+
+## Platform 创建与修改 Skill、布局基线
+
+Platform 使用 `metriccanvas-platform-create` 与 `metriccanvas-platform-edit` 两个 Skill，共用独立 `metriccanvas-content`。旧 `metriccanvas-page-builder` 继续服务普通问数临时页面态。创建、修改的路由由 Relay 部署方落实，目录/frontmatter 不是已接通证明；内容工具始终不保存或发布。
+
+新 Skill 安装时复制完整目录及生成的 `references/`。公共作者真源为 `skill-shared/platform-authoring.md` 与 `skill-shared/layouts/{report,dashboard}.md`，由统一分发投影；不要单独复制 SKILL.md 或手改投影。创建显式选择 layout；已有页新增仍属于修改，缺可信精确基线时等待读取，不退回整页重建。
+
+Platform 内容入口新建报告沿用章节布局；看板页头采用 plain，未分组模块用缺省分区和组件标题，需独立分组标题的非图表内容使用 card。带图表的有标题分组保留 panel，避免 card 清除图表高度。这里只改变新建默认，旧问数 compose 应用不变；合法 dashboard+panel、report+backdrop 继续支持。
+
+修改默认继承布局。显式 `set_page_layout` 保留原标题、容器、轨道/span、数据与手工设置，报告可用宽度、工具栏、标题归属和铺底窄屏回流影响；沿用整页校验拒绝非法候选，不重套创建模板或静默丢弃设置。
+
+四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。`test-harness/model-evals/` 单独提供14个真实模型评测用例与运行约定；当前全部未运行，缺真实 Relay/模型环境、身份与预算，不能将工具测试视为模型准确度成绩。

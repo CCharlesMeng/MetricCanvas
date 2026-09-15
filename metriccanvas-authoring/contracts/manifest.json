@@ -2,12 +2,28 @@
   "authoringContractVersion": "0.2.0",
   "files": [
     {
+      "file": "authored/publication-contract.ts",
+      "sha256": "7fffc33b6f7f4f1eb2fb8278cee4dce621269e83c59ade3ebcea0613c30aa898"
+    },
+    {
+      "file": "authored/publication-conformance.json",
+      "sha256": "5d731877c9e2620c48a11aaaf6edf892b99be4d8f3f0cc761f695a7e996f63a5"
+    },
+    {
       "file": "authored/analysis-intents.json",
       "sha256": "14b464fb5b9263ef69cbcb7514f5950598be07b03eccf365d9c90057575f9485"
     },
     {
       "file": "authored/page-edit-request.schema.json",
       "sha256": "d6c0972a6cf6a0d14dcb9d1dc6b5aa09cee0dc50e90f9208f0dd7e44ff52979a"
+    },
+    {
+      "file": "authored/lifecycle-request.schema.json",
+      "sha256": "25b2ff5d45756f2b7aa56aa6b3baee16e366e33ce909ea6a0740f2690250bb78"
+    },
+    {
+      "file": "authored/publish-request.schema.json",
+      "sha256": "ae0c4f5e656ad55d702bd0e10e106fab7faa693ddbcc40964b29ae0d3d1ee4e3"
     },
     {
       "file": "authored/agent-conformance.schema.json",

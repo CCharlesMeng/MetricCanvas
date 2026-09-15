@@ -669,3 +669,161 @@ S0审阅结构遍历/分支required保留/语义映射/完整例子裁剪/分支
 ## 用户审查通过与远端收口授权
 
 用户已明确“可以，没问题，审查通过，更新issue状态，并生成下一步计划执行的handoff”。S0接管本批17票+手册/矩阵的远端交付，替代旧9票冻结批次；旧交付任务已通知停止重复操作。已验收基线f15c708，新增handoff/next-stage.md与索引，定义新唯一在线基线应为本批合并后的main。计划关闭#128–#137/#139–#144（#127已关闭），#138/#145/#146/#126/#95保留开放；实际远端结果以GitHub PR/merge与状态核验为准，不把本条当已发布。S4/S5未登记，盘古两文件仍S1保管，启动后正式交接。
+
+## 下一阶段正式开工（PR147之后）
+
+共同产品基线为在线main `a6e923187e124c7fd6c7f7c2e78bafd101e3dda6`，S0已fetch核对；继续独立`/private/tmp/metriccanvas-126-integration`与`codex/authoring-126-integration`，原工作区保持原位。PR147已合并、三CI通过、17实施票关闭，实际交付回执见#126 issuecomment-5664914719。用户通过启动任务01a0a028-7cf6-7c71-bd79-067106479073要求直接开始下一阶段；本轮授权本仓实施/测试/本地提交集成，后续远端交付另核明确授权，不沿用上一批。
+
+S1原任务不变，新分支`codex/authoring-126-s1-next`、树`/private/tmp/metriccanvas-126-s1`、起点a6e9231；唯一新增准备文件`docs/plan/authoring-tickets-126/handoff/s1-next-stage-preparation.md`，本阶段先交盘古与#146/#145场景准备，不越过#138实施依赖。S1已明确runtime.ts/PanguDialogue.svelte无并行修改。
+
+S4真实任务`01a0a034-68fb-79e1-bfe3-cf7d3ab15d38`，树`/Users/moon/.codex/worktrees/da9f/DataDashboard`，分支`codex/s4-lifecycle-138`，起点a6e9231，负责#138后#145工具。S4唯一新增Bundle下：`tool/metriccanvas_authoring/lifecycle_server.py`、`application/lifecycle.py`、`application/lifecycle_ports.py`、`adapters/inbound/lifecycle_mcp.py`、`adapters/outbound/lifecycle_spool.py`、`adapters/outbound/lifecycle_http.py`（后五路径均在tool/metriccanvas_authoring/）；`test-harness/tests/test_lifecycle.py`、`test_lifecycle_http.py`、`test_lifecycle_stdio.py`（后两均同tests目录）、`test-harness/lifecycle_stdio_server.py`、`contracts/authored/lifecycle-request.schema.json`；新增`docs/plan/authoring-tickets-126/t12-evidence.md`。既有Bundle `tool/pyproject.toml`仅生命周期entry及自有schema打包，`README.md`仅生命周期使用。生成锁/公共导出仍S2。
+
+#138可信身份作用域与spool token绑定完整命令，模型不自填身份/文档/操作键；稳定操作与原请求由可信调用方提供，校验引用/内容/回执一致性，未知先查结果再按原操作重试。默认已知HTTP只允许明确current-match读取能力，stableSave/exactRead/history/operationLookup未确认保持关闭，current-match不得冒充不可变精确历史；未来端口以T04正反例验证，不发明生产地址。#138验收集成后通知S1优先#146，同时解锁S4的#145工具前置。
+
+S5真实任务`01a0a034-c4c3-7033-af2b-2539d6d9e0ae`，树`/Users/moon/.codex/worktrees/8291/DataDashboard`，分支`codex/s5-pangu-integration`，起点a6e9231。已登记角色但两文件尚未移交：用户另有任务`01a0a02b-3a24-7f61-b17d-32d48a6f3d4d`（配置对话模块CI接缝）在独立树合入main，S0只读确认其用户授权后请求实际文件/提交回执；不擅改其任务授权。S5先只读核验SDK/环境事实，提交新测试/证据精确范围，待该并行窗口核清再正式接runtime.ts/PanguDialogue.svelte；port.ts与工作台仍S1。
+
+最新#126第4.1节及末尾双Skill/布局基线补充进入M2核查清单。当前代码仅page-builder Skill，S3受托只读核对已有证据和新增时间，先报缺口、不提前实现；不能用剩余三票关闭替代补充范围完成。
+
+新阶段支援窗口：S1准备文档2d61ec1a78427631417d9adeea7ca7ea0e3443f6已集成（前一提交），仅文档；两文件无并行修改回执成立，暂待用户CI接缝任务最终结果。S5唯一新增`apps/platform/tests/workbench/pangu-runtime.test.ts`、`docs/plan/authoring-tickets-126/s5-pangu-evidence.md`，可先记录已核验指南/环境缺口与独立测试设计，runtime.ts/PanguDialogue.svelte仍未移交；真实SDKURL/版本/内网入口尚缺，不宣称接通。
+
+S2支援#138：唯一修改`tools/scripts/export-authoring-contracts.ts`的显式authoring清单以加入S4新`contracts/authored/lifecycle-request.schema.json`读取/摘要；待S4固定作者SHA后独立实施，统一刷新Bundle三生成锁/manifest。无产品真源变化不人为改快照/手册。S2新分支`codex/s2-next-stage-contracts`、树不变、起点a6e9231。
+
+S3只读核验确认双Platform Skill/双布局基线/模型评测为已确认但未交付补充，不能证明在17票验收后才新增；#134可信基线/原子修改/set_page_layout与T04路由方案已覆盖底座，不重做。缺创建/修改两个Skill及路由分发、分别维护的report/dashboard选择基线、形态切换影响分析与实际模型行为评测；待报精确作者范围后沿S3/S2/S0既有职责推进，纳入M2欠项，保持#126开放。
+
+## #126双Platform Skill补充实施登记
+
+沿用户已确认规格4.1补足，不重开#134–#137或新增平行票。S3原任务负责新增作者：Bundle `skill/metriccanvas-platform-create/SKILL.md`、`skill/metriccanvas-platform-edit/SKILL.md`、`skill-shared/platform-authoring.md`、`skill-shared/layouts/report.md`、`skill-shared/layouts/dashboard.md`；`tool/metriccanvas_authoring/domain/layout_policy.py`；`test-harness/tests/test_platform_layout_policy.py`、`test_platform_authoring_flows.py`（同tests目录）、`test-harness/platform_layout_browser.mjs`、`test-harness/model-evals/platform-authoring.cases.json`、`test-harness/model-evals/README.md`，及`docs/plan/authoring-tickets-126/platform-skills-evidence.md`。S3既有触点：Bundle `tool/metriccanvas_authoring/adapters/inbound/content_mcp.py`、`application/create_content_page.py`、`domain/component_editing.py`（后两同tool/metriccanvas_authoring目录）；README.md仅Skill/布局内容节，S4生命周期节保留，分别提交避免整文件覆盖。
+
+新创建默认限Platform入口，新修改继承原形态；创建/修改Skill共用内容MCP与现有原ref/hash/操作/部分成功校验，旧普通问数Skill路由及compose应用保持。显式切换复用set_page_layout，检查标题/容器/铺底/span与响应式影响；不套新模板、不暗搬标题或丢手工设置，不能无损表达的真实冲突才拒绝并说明。合法跨形态组合继续支持，默认不能变硬约束；优先已有issues/adjustments，不另立布局字段或任意路径入口。
+
+S2先冻结多Skill分发形状及精确bundle/check/export文件，references统一投影；S3可先写作者与本仓逻辑/测试，产品契约/分发配置需S2登记后实施，作者固定后生成。S0负责t04-java-relay-proposal.md中实际双入口名及可信路由/产物要求补充（外部提案），不实现Relay。
+
+验收：四组合创建/修改×report/dashboard、双向切换、继承形态、缺基线、手工后局部编辑、合法跨形态容器及宽窄呈现；公开stdio与差异断言，独立Skill分发及适用全量。模型cases/运行约定单独交付；真实Relay入口、身份、模型版本/参数、trace/基线通道与评测账户预算缺失时只列未运行，不以替身/关键词检查代替真实模型成绩，不擅自冻结达标阈值。
+
+## 补充范围精确登记与阶段交接
+
+S3双Skill任务实际树`/private/tmp/metriccanvas-s3-platform-skills`、分支`codex/s3-platform-skills`，起点6ad16375；新增既有测试维护窗口为Bundle `test-harness/tests/test_content_mcp.py`与`test-harness/tests/test_page_editing.py`，仅调整新建默认/切换影响摘要对应预期，保留数据与整页差异断言。不制造合法切换的丢标题冲突。S4追加Bundle `test-harness/tests/test_distribution.py`，仅sdist契约精确集合加入自有lifecycle-request.schema.json，不能弱化集合检查。
+
+S2多Skill分发方案冻结：bundle.json保留原skill.entrypoint，追加skills数组登记page-builder/platform-create/platform-edit三个完整ID与各自入口；只描述分发，不扩充路由授权。三个Skill独立目录自包含；旧references保持，新两套references/page-metadata及platform-authoring.md、layouts/report.md、layouts/dashboard.md从单一作者生成，禁止跨目录依赖或符号链接。共享作者链接layouts/report.md、layouts/dashboard.md，布局返回../platform-authoring.md。
+
+S2唯一作者窗口：Bundle `bundle.json`、`scripts/check_bundle.py`；根`tools/scripts/export-authoring-contracts.ts`、`tests/page-reference.test.ts`、`tests/authoring-export-isolation.test.ts`；新增Bundle `test-harness/tests/test_bundle_skills.py`。生成仅新增两Skill references及必要锁，旧主文与入口逐字保留，旧only-skill配置兼容，验证入口唯一/越界/缺项及真实独立复制闭合。不得把分场景30秒测试合并回累计超时单例。S3固定作者后S2生成，#138独立树/提交，S0组合后统一生成防锁覆盖。
+
+S5事实证据源06d0bbca8e507736c51953b7a6b319e17f7ca233已只读审阅：仅事实文档，尚无新增运行时测试/真实联调；运行时文件仍等CI任务最终回执，不在此转移。
+
+## #138本仓验收集成
+
+完整纳入S4作者7df7598/055a9d2/7444387、S2导出消费ffdeccc与最终锁组合f70a2f4、证据1850e503；整棵Bundle及导出器与最终证据树相同，保留本树既有统筹/交接文档。19文件均登记范围，未混双Skill增量。
+
+S0审阅生命周期编排、可信spool权限/身份隔离、公开四工具与已知HTTP边界及正反例；独立集成树24专项（含公开stdio）通过、1342摘要通过，发行包SHA256与t12一致，读取最终246全量及隔离安装证据。首次裸Python缺fastmcp/httpx，改用已有锁定依赖环境复验通过；未把环境失败当产品失败或跳过。采用S4完整回归/安装证据，不冒称S0重跑全量。
+
+#138本仓范围验收通过：模型只传程序token，保存先查原操作、unknown/pending不重发，程序输出失败保持原operationId，精确读取验证原文与完整ref，历史固定快照。生产强保存/精确历史/操作查询保持不可用；外部确认无新增、真实Java/Relay/盘古联调未执行。#138尚未远端发布/关闭，不能以本仓验收冒称M1/M3。
+
+本条提交即正式可消费基线：通知S1核对#127/#134/#138/#140后优先启动#146，先登记精确作者文件与判轮资格契约；#145前置齐备，S4可与S1准备候选/确认工具契约，公共契约交S2冻结后再实施，不能越权修改工作台客户端/公共导出。真实事件仍仅draftId，未见过的旧轮首次迟到必须通过可信关联验证，不扩展事件字段。
+
+## #146开工所有权登记
+
+S1真实任务01a09f69-8346-7e91-9c66-9e091d3f6e77，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合入正式9dcb2b8539fd4597fdd6816928e0fbffa0486b89。唯一既有触点`apps/platform/src/lib/workbench/authoring-coordinator.ts`、`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-language.ts`、`apps/platform/src/routes/language/+page.svelte`、`apps/platform/tests/workbench/authoring-language.test.ts`、`apps/platform/tests/workbench/language-relay-fixture.py`、`apps/platform/tests/workbench/authoring-language-browser.mjs`及`docs/plan/authoring-tickets-126/t20-evidence.md`。其他fixture模块另登记。
+
+/language仅开发组合验收，必须沿项目既有开发路由保护验证生产构建不可用，不作为真实Relay入口。可信程序读取必须验证operationId/runId/actor/workspace/base关联，事件仍仅draftId；旧轮首次迟到在读取前后校验接收资格，异步读取期间切换身份/轮次不得覆盖旧画布。生产Relay/强读默认不可用，开发替身不得进入生产默认组合。S5两文件/port.ts、S4/S2作者窗口不变。
+
+## 双Platform Skill本仓补项验收集成
+
+正式组合a8dfb6dbd883f382d73b5cb44202b1ccf187f644，双父70584c9与S3证据069b0d58；包含S3作者55f598e/c7e74cf、S2作者aa9e793与生成d957d4b，合并后S2唯一重新生成最终锁。README双方段落逐字保留，#138 schema/manifest/contract-lock与S0台账未变。S0已快进消费此精确组合。
+
+S0审阅新建策略/只改根layout的影响摘要、双Skill主文/共享基线、分发检查与生成器；独立组合9项布局/公开stdio流程通过、1902摘要通过。读取最终组合259 Python、shuffle生成/隔离19项通过日志，采用S3两独立Skill与旧Skill复制闭合、最终安装包与18真实Chrome容器场景证据，不冒称独立重跑全部浏览器。旧page-builder整目录保持，四包公开面与版本不变。
+
+本仓双Skill/布局与兼容分发补项通过；14真实模型cases全部not_run，真实Relay路由/模型效果/服务联调仍未确认，#126与M2不据此结束。T04同步实际入口名称，分发登记不代替外部路由。后续#146/#145消费本条新基线时保留两线成果，#146已获准运行无需等待本补项。
+
+## #145共同契约与工具实施冻结
+
+S0读取#145完整正文/评论、ADR0071/0078及S4固定草案ae781cb后冻结下列本仓实现选择；不是外部wire事实。共同基线812ad98241e31a1e24ebd6b739a9e3844ef9e5e6。S4既有任务、树不变，分支codex/s4-publish-145；S1优先#146，后续发布UI仍其唯一所有。
+
+采用t19-tool-contract.md（ae781cb）的CandidateRef/source、原文hash与明确算法、11字段review payload、可信verifyReview/verifyResult、独立HumanConfirmationPort、参数评审/validation/corrections及五工具正反例。五工具名prepare_candidate/read_candidate/revise_candidate/confirm_publish/get_publish_operation_result；生产lifecycle固定九工具，既有三位置参数兼容，可选发布依赖缺失明确不可用，不注册到content。review算法身份由可信验证端口绑定，生产无默认算法；普通程序token或模型肯定回复不等于人工确认。
+
+选中参数与候选中dimension参数及其全部paramBindings双向对账；非维度参数保留不参与提取，未选候选可不在文档。selected=false必须not-selected；required+missing可形成合法模板但执行必须明确缺值。只消费dimension-eq/in、同值部分共享，未知/范围/不同值共享拒绝发布。候选结构/原文/评审面完整性与服务提取算法分开，不在本仓重写提取。修正只retainDimensionValues与parameterSelections，返回同候选不同版本并使旧确认不可复用。
+
+新发布依赖当前候选与人工证明完整绑定、服务事务最终权限/head/版本/期限/租约裁决。原已完成操作经当前权限与原请求指纹验证可重放原结果，不因旧确认自然过期而再发新写；撤权仍禁止结果读取。pending/unknown/不安全not-applied零重发，丢回执/程序输出失败保留原operationId查询。共同向量须覆盖这些正反例；草案文字不替代测试。
+
+S2唯一新增作者：`metriccanvas-authoring/contracts/authored/publication-contract.ts`（无外部运行时依赖的内部TS类型/结构Schema真源）、同目录`publication-conformance.json`、`tests/publication-contract.test.ts`；既有`tools/scripts/export-authoring-contracts.ts`统一闭合Page定义并生成publication schema/向量及必要manifest/锁/Bundle快照。Platform可直接消费内部源，S2内存编译验证0诊断；不新增私有包/依赖，不改page公开出口/四包版本。TS/Schema一致性及TS/Python同向量接受拒绝须验证，不能以复制两套定义自证。Python只读生成JSON，不运行Node。具体生成路径由S2在固定作者回执列全，任何新增非生成作者先登记。
+
+S4唯一新增Bundle作者：`tool/metriccanvas_authoring/application/lifecycle_publish.py`、`application/publish_ports.py`、`adapters/inbound/publish_mcp.py`、`adapters/outbound/publish_unavailable.py`（后3在tool/metriccanvas_authoring）；`contracts/authored/publish-request.schema.json`；`test-harness/publish_stdio_server.py`、`test-harness/tests/test_lifecycle_publish.py`、`test-harness/tests/test_publish_stdio.py`；文档`docs/plan/authoring-tickets-126/t19-tool-contract.md`与`t19-tool-evidence.md`。既有Bundle `tool/metriccanvas_authoring/lifecycle_server.py`和`adapters/inbound/lifecycle_mcp.py`仅兼容可选发布装载；`tool/pyproject.toml`仅schema打包；`test-harness/tests/test_distribution.py`仅精确打包集合、`test_lifecycle_stdio.py`仅新默认工具集合；README仅发布工具节。S4不得改S1客户端/UI或S2共同作者/生成物。
+
+S2先固定共同作者给S1/S4消费，S4可并行实现内部编排但不自立第二套字段；最终必须在共同契约固定SHA上验证公开工具及安装。S1发布UI精确文件需在其#146完成后另登记；#145最终由S1与S0汇合验收。
+
+#145参数边缘事实补正：S2公开validate验证required为必填，前一通信“缺省false”错误，已立即纠正给S4；共同契约按文档显式required值对账，缺字段拒绝。合法既有dimension参数可无query绑定，targets允许空且不造绑定。extractionKind可为null仅表示精确source证明的既有参数保留、无本次提取依据，不能从空targets推定来源；新增提取仍仅eq/in且真实非空目标。selected=false ID不得冒充现有非维度参数。上述由S2单真源/向量落实，S4不得建立相反默认。
+
+## #146本仓验收集成
+
+合并9c094511bb1f8b0ba66c0a497caf0afff4b688a3纳入S1作者a0ac309、共同产品组合ce10734、证据c2cdca266ab93c43ea005f7d801dc512e041bb13及审阅修正d3bddacee65e789e3aa9c5db4ff86340d72895ee。8登记文件，无生成物；集成apps/platform与最终S1固定树相同，保留统筹与#145契约冻结记录。
+
+S0审阅语言轮租约、可信binding、原操作查询/取消恢复、开发路由生产保护及公开MCP组合证据。发现取消后直接lookup读取绕过通知层三标识保护，Object.values不能拒绝缺字段；S1已改为三个必需标识显式检查，新增首次创建取消后缺各标识3独立反例。S0独立运行语言/通知/协调器3文件43项通过（语言25），采用S1此前1097通过/5既有skip、tsc/check/build与实际公开内容+生命周期MCP浏览器和既有T01/T02/T13证据；不冒称修正后重跑全量。集成树缺前端依赖，pnpm自动安装遇网络失败已中止，实际在源码逐字相同的S1固定树已有依赖环境执行上述43项；原工作区未改。
+
+#146本仓范围通过，M1本仓组合覆盖代表页内容修改→保存→仅draftId通知→精确读回及失败/断网/取消；真实模型理解/Relay/Java/盘古端口没有联调，不能宣告整体真实M1或M3。取消后已保存只提供精确预览并保留旧画布/锁，跨刷新语言轮恢复仍外部#108；不是手工离线队列已覆盖语言恢复。
+
+S1可继续#145 UI，先消费S2固定共同契约并登记精确文件，S4工具并行；只剩#145实施票待验收，但真实模型补项/最终组合回归/外部联调仍未完成，M2/M3不收口。#138/#146本地已验收但未远端发布/关闭。S1具体GitHub评论被自动审批拒绝，尚未发送，S0不代发绕过；后续远端回写需明确本批载荷/范围授权。
+
+## #145发布UI所有权登记
+
+S1真实任务不变，树`/private/tmp/metriccanvas-126-s1`、分支`codex/authoring-126-s1-next`，已合正式ccf53c2100f23d634677706a99a4e8636148a432。唯一既有触点`apps/platform/src/lib/PageAuthoringWorkbench.svelte`；唯一新增`apps/platform/src/lib/workbench/authoring-publication.ts`、`apps/platform/src/lib/workbench/PublicationReview.svelte`、`apps/platform/src/lib/workbench/publication-fixture.ts`、`apps/platform/src/routes/publication/+page.svelte`、`apps/platform/tests/workbench/authoring-publication.test.ts`、`apps/platform/tests/workbench/authoring-publication-browser.mjs`及`docs/plan/authoring-tickets-126/t19-ui-evidence.md`。
+
+消费S2固定内部publication-contract作者与验证；依赖字段实施待固定SHA，不自建另一套DTO。publication-fixture仅明确开发边界替身，/publication沿dev门禁并验证生产无替身请求/可执行入口；生产PublicationPort默认不可用，不造服务端点。S4发布工具、S2共同作者/生成、S5适配所有权不变；若需页面资产客户端/RevisionPreview等额外修改先登记。最终S1主责整票UI与工具消费汇合验收，证据按本仓/外部确认/真实联调分列。
+
+## #145共同契约消费基线验收
+
+S2作者5a4e44ea63aa1f22326bceb37a874b0d869c1514、生成84b9e0d55be2aa471d7ab7e99e47caf8ec82c4ea及审阅修正/重生成669412823d97aa899db85997bb6e5088c0bb38a4已完整集成，保留#146与本树登记。内部无依赖TS字段单真源推导类型/Schema/结构检查，四包公开面/依赖/版本未变。
+
+S0审阅字段构造、闭合Page引用、11字段评审payload及候选/确认/修正/结果关联，复现多值参数误报eq仍接受，S2已补声明multiple到eq/in的双向校验及两反向量。S0独立最终72项publication测试通过（含Python69结构向量及TS关联），集成1910摘要通过，共同作者/产物与被测固定树相同；采用S2生成471/4/1无漂移与tsc、先前19生成/隔离回归。
+
+仅共同契约本仓范围验收，69向量的Python应用关联一致性还须S4消费实测；结构校验不证明source/hash/算法身份/人工proof/期限/租约/权限/服务原子事务。正式下游消费以本条提交SHA为准，S1/S4可依此实施#145；整票UI/工具/最终组合及真实服务均未验收，不关闭Issue。
+
+## #145发布工具范围验收集成
+
+merge dd307f140fa24f9ca806cdedc2b2d97886114e70纳入S4原作者7c9d802、S2生成a15730f、原证据3e0335a，及S0阻塞修正作者f9dd282c54cff8a627150f5bb8f79073b46e94e1、最终生成da1f29bac50a032301618af012a9afc973c9299d、替代证据fc92c5cdfdd422a08f2009f54e493ced6560ecca。Bundle及导出器与最终被测树相同，保留S1#146及台账。
+
+S0审阅候选/人工确认/原操作编排和Python共用向量消费，实际复现全eq/in摘要时不读取source可接受改写heading非维度参数。修正后所有候选均无条件取得鉴权/精确ref/原文hash/合法Page的source，再比较非维度声明；缺能力不新prepare，已完成回执无法验证保持unknown。新增合法且重新签名候选改/删/新增非维度参数反例，不能靠hash通过替代语义保持。
+
+S0独立应用/公开MCP-stdio22项通过，集成1919摘要通过，新包SHA256 a0a13baac48aed7f13ef053a22cf58b7455120294ef91ff622aeb123efda082e核对一致；读取最终281全量及离线安装证据，采用S4安装应用19/发布3/草稿2与51源码逐字节证据。69结构/48关联向量Python一致性已完成；未冒称本轮重跑无关矩阵。
+
+#145工具本仓范围通过，生产固定九工具且既有三参数兼容，默认未知发布/人工端口不可用；不运行参数提取或服务事务。整票仍等S1界面+公开工具同契约组合及最终验收，真实Java/Relay/盘古无新增确认/联调。通知S1按本条正式SHA汇合，S4暂交接等待具体问题，不发布或关闭Issue。
+
+## #145整票本仓验收集成
+
+merge bac34718bbafa55ede8fec6417893e0bc3898abb纳入S1 UI作者b277c332、正式工具组合a6d7bb8、最终修正201b0857839a907ca3f8d2aa5c338ea856b189f0与证据9e6bac97463a67f414a80ad8fb8238ee10ee6777。8文件均登记，UI无生成物；平台/Bundle/导出器与最终交验树相同，S4/S2产物保持。
+
+S0审阅全候选source对账、真实执行预览注入、人工确认与版本/评审绑定、unknown查询、取消后异步所有权及工作台禁用/生产dev门禁。独立UI29+共同72共101项通过，集成1919摘要通过；读取最终144文件1201通过/5既有skip及浏览器PASS日志，采用S1真实RuntimeView/工作台滚动/失败保留编辑/生产零fixture请求和工具19+3汇合证据，S4 281/安装证据维持原归属。未冒称真实服务或本轮S0全浏览器重跑。
+
+#145本仓整票范围通过。20票#127–#146均已有各自本仓范围验收，#130仍仅方案；双Skill/布局/手册/矩阵已有本仓证据。#126整体M2仍含真实模型评测欠项（14全部not_run）及最新main合流回归，M3外部确认/真实联调/内网未完成，#95不关闭。第二批#138/#145/#146及补项仍仅本地提交，未远端发布或关闭。
+
+发现先前CI接缝任务已结束，用户授权main提交26d6db3及文档640dd2a；S0读取真实任务记录，下一步核对最终main变更、独立合流验证，再正式转交S5两文件，不能继续以“任务仍运行”阻塞其基础适配。
+
+## #145验收暂停与盘古正式交接
+
+S1在6ac142b记录后自查发现confirmAndPublish/cancel的await release迟到回调可能覆盖新评审，S0立即暂停前条#145整票最终放行；已经合入的代码历史保留，等待S1追加固定修正与独立反例，不发布或关闭Issue。前条不能作为最终完成依据。
+
+S0 fetch确认在线main为640dd2aa435a45b50b1954967054c136468a473d，包含用户另任务已授权CI接缝26d6db3与盘古文档640dd2a；已合入本独立树，无冲突。审阅port只读事件辅助、PanguDialogue响应adapter变化及独立attachDialogue清理；runtime.ts与工作台未被该main增量改动。独立集成49项对话/通知/#146语言测试通过。复用已有node_modules链接并生成本树SvelteKit配置，首次缺生成tsconfig失败后复验通过，未安装新依赖或更改原工作区。
+
+S5任务01a0a034-c4c3-7033-af2b-2539d6d9e0ae现正式接收`apps/platform/src/lib/dialogue/runtime.ts`与`apps/platform/src/lib/dialogue/PanguDialogue.svelte`，在本条SHA建/合独立基线后报告实际分支。原S1无并行修改回执和CI任务结束均已核实；`port.ts`/工作台仍S1，新增`lifecycle.ts`/stub及混合测试不默认转移，确需修改先登记。已登记专属pangu-runtime.test.ts及s5-pangu-evidence.md保持。先读最终main的docs/pangu-development.md与现有adapter替换清理，不重做CI成果；真实SDKURL/版本/内网缺口仍明确，基础适配本仓验证可继续，不等#145修正。
+
+## #145最终修正验收恢复
+
+merge a79187e3c7c533b773b376bf69b604db78dd373f纳入S1迟到release保护f5aafa2e3893f43e488b31b0af5df6673b61ad4c、main合流组合7c60bf3及最终证据99334ba0f0f6f1f74cd173a760fb1bab2b2ea6c9。S0审阅confirm/cancel在await释放前后generation与状态保护、两个新评审完成后旧释放失败的完整snapshot反例；独立5文件152项通过，被测Platform/Bundle与集成树一致。
+
+采用S1修正后未合main时1203通过/5既有skip及0错0警告/build/生产门禁证据，main合流后追加152相关项及原T01/T02/T13、T19实际工作台浏览器；严格区分两次基线，不冒称main合流后全量重建已运行。#145本仓整票验收恢复，先前暂停解除，以本条新SHA为准。最新main合流后完整组合回归尚待最终交付门禁。
+
+S1/S4本轮本仓票交接完成，S2可提供最终交付生成/回归支援，S5继续已登记基础适配。20票本仓范围均验收不等于M2所有补充及M3完成：真实模型14cases未跑、SDK真实环境/Java/Relay/内网尚缺，第二批未远端发布。next-stage.md已改为当前阶段待办，旧起跑提示归历史。
+
+## S5基础适配本仓切片验收
+
+仅顺序消费S5实现a98dc2363b58d74c1e31b1d306d16657997e7d65→b1204cf、证据57c26b43ace897797917d24095e2abb718bf4ee7→b4868fccafb529fff2c194511d7f413333723b57，不合其旧基线merge。实际3文件均所有权内，PanguDialogue/attachDialogue/port/工作台未改，#145最终release修正保留。
+
+S0审阅资源失败/超时/缺API/插入异常的清理、同版重试及版本锁、预加载来源拒绝、固定容器配置、异常实例清理与容器ID所有权。独立集成5文件73项通过（新增13），采用S5最终check零错零警告、静态build与原T01/T02/T13真实浏览器配本地SDK替身证据；真实SDK身份/路由/取消/精确产物/升级及内网未联调。document.scripts精确URL匹配只是可见来源检查，不证明资源内容不可变。
+
+基础适配本仓切片通过，不关闭#106/#107/#108。S2已受托固定b4868fc执行最终完整TS/Python/check/build/export/Bundle组合门禁，日志结果待回报，不把不同基线数字合写成最终全量通过。无需重跑无关公开四包版本矩阵。
+
+## 最终固定组合验证通过
+
+S2独立detached验证树`/private/tmp/metriccanvas-126-s2-final`，精确产品SHA b4868fccafb529fff2c194511d7f413333723b57，产品/锁/版本零修改。S0读取`/private/tmp/s2-final-results.json`及实际全量/check/build日志，并核对当前集成与该SHA的apps/packages/Bundle/tools/contracts无差异。最终146文件1233通过/5既有设计源依赖skip；Python281通过；原命令pnpm check与build通过，Svelte0错0警告；契约471/4/1、1919摘要、11页面校验、四包rc.4入口/声明/组件门禁通过。没有重复无关跨Svelte版本矩阵。
+
+环境失败完整保留：offline依赖缓存缺mri，frozen-lockfile正常准备后锁不变；tsx CLI的IPC EPERM发生在入口执行前，改用相同入口node --import tsx后export/validate通过。Vite大chunk提示非失败。所有通过数字来自同一固定组合，不沿用旧树冒称最终全量。S0测试用临时依赖链接已移除（仅本次创建指向S1的链接），不触及S1依赖或原工作区。
+
+本仓实现与最终组合门禁均完成，真实模型14cases及M3仍未完成。第二批尚未远端发布/更新Issue；具体可审阅发布范围与回写文案见handoff/release-review.md，后续须明确批准该批次再发送，不绕过此前审批拒绝。
