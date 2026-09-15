@@ -7,7 +7,7 @@ from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
-from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server, PageEditRequest, RESULT_SCHEMA
+from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server, RESULT_SCHEMA
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
 from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, TurnBaselines, read_page_projection
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
@@ -15,9 +15,11 @@ from metriccanvas_authoring.application.authoring_candidates import AuthoringCan
 from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.application.unified_edit_page import edit_unified_page, UNIFIED_EDIT_SCHEMA
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.application.unified_composition import compose_unified_content, COMPOSITION_SCHEMA
 
 
 UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema(UNIFIED_EDIT_SCHEMA)]
+CompositionRequest = Annotated[dict[str, Any], WithJsonSchema(COMPOSITION_SCHEMA)]
 
 def create_unified_content_mcp_server(dependencies, current_turns=None, *, summary_config=None, candidate_store=None):
     gate = AuthoringTurnGate(current_turns)
@@ -44,7 +46,15 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             parent = await candidates.require(candidate_ref, prepared) if candidate_ref is not None else None
             scoped_dependencies = replace(dependencies, authoring_scope=dict(prepared.binding), require_source_description=True) if write else dependencies
             source_descriptions = []
-            if name == 'edit_page':
+            if name == 'create_content_page':
+                edited = await compose_unified_content(prepared.binding['pageId'], args['title'], args['layout'], args['request'],
+                    scoped_dependencies, summary_enabled=summary_configured(summary_config),
+                    current=lambda: gate.unchanged(prepared, write=True))
+                document = edited['document']
+                source_descriptions = edited.get('sourceDescriptions', [])
+                output = {'ok': document is not None, 'artifactEnvelope': None,
+                          'modelSummary': {key: edited[key] for key in ('status', 'operations', 'issues')}}
+            elif name == 'edit_page':
                 baseline = parent['document'] if parent is not None else prepared.baseline.document
                 edited = await edit_unified_page(baseline, args['request'], scoped_dependencies,
                     summary_enabled=summary_configured(summary_config), current=lambda: gate.unchanged(prepared, write=True))
@@ -130,9 +140,15 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
         return await invoke('compose_page', context_ref, {'spec': spec, 'layout': layout}, write=True, mode='new')
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
-    async def create_content_page(context_ref: str, title: str, request: PageEditRequest,
+    async def create_content_page(context_ref: str, title: str, request: CompositionRequest,
                                   layout: Literal['report', 'dashboard'] = 'report') -> ToolResult:
-        """Create explicit content on a trusted empty new-page baseline; no model-supplied source tokens."""
+        """Create mixed governed data and static content on a new page.
+
+        Operations run in order with explicit dependencies. Target section main;
+        page-header is protected. Set span/order with controlled layout/move
+        operations. Explicit unsupported components fail; no source tokens or raw
+        rows/query/page payloads. Independent success may produce a partial candidate.
+        """
         return await invoke('create_content_page', context_ref, {'title': title, 'request': request, 'layout': layout}, write=True, mode='new')
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
