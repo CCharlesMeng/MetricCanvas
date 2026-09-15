@@ -12,6 +12,20 @@ from metriccanvas_authoring.domain.execution import DqeExecutionResult, FormulaT
 from metriccanvas_authoring.domain.section_layout import pack_section_spans
 
 
+ASSEMBLED_COMPONENT_TYPES = frozenset({
+        "metricCard",
+        "barChart",
+        "lineChart",
+        "pieChart",
+        "table",
+        "gauge",
+        "keyValuePanel",
+        "categoryBreakdown",
+        "rankingCard",
+        "rankingDetailCard",
+    })
+
+
 @dataclass(frozen=True, slots=True)
 class PageBuildingIssue(Exception):
     code: str
@@ -433,18 +447,7 @@ def _component_for(
                 path=f"/units/{unit_index}",
                 message="no component passed the capability gate",
             )
-    if selected.component_type not in {
-        "metricCard",
-        "barChart",
-        "lineChart",
-        "pieChart",
-        "table",
-        "gauge",
-        "keyValuePanel",
-        "categoryBreakdown",
-        "rankingCard",
-        "rankingDetailCard",
-    }:
+    if selected.component_type not in ASSEMBLED_COMPONENT_TYPES:
         raise PageBuildingIssue(
             code="COMPONENT_ASSEMBLY_UNSUPPORTED",
             path=f"/units/{unit_index}/pinnedComponent",

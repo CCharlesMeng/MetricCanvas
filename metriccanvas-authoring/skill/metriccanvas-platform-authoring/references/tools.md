@@ -30,4 +30,4 @@ spec为Page Build Spec：question、可选description、dataContextVersion、uni
 
 统一数据装配必须取得与当前数据上下文版本及查询一致的可信源描述；缺失或不一致时停止，不猜字段ID或输出列。格式只消费已验证刻度：percent不能直接代替fraction转换，万元不能再次按元缩放。未支持的规则链或未解决差异拒绝整组；完整源证据只留在程序候选审计中。
 
-部署可通过可信装配器选择metriccanvas-platform-authoring或define-report作为单一注册名，均引用本目录与同一工具服务。当前可替换已注册data端口；业务解释、组件和系统扩展未实现时明确拒绝。部署manifest不能加载代码、覆盖核心字段或开启真实提供方能力。
+部署可通过可信装配器选择metriccanvas-platform-authoring或define-report作为单一注册名，均引用本目录与同一工具服务。可信装配器可选择已注册的数据、业务解释、组件选择策略和系统端口。业务解释只提出带来源且经治理校验的候选，歧义须消解；组件策略不能覆盖用户指定类型或开启未实现渲染器；系统端口继续使用同一提交/恢复状态机。部署manifest不能加载代码、覆盖核心字段或开启真实提供方能力。

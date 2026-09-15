@@ -30,6 +30,7 @@ from metriccanvas_authoring.domain.page_building import (
     derive_executable_units,
 )
 from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.application.component_policy import apply_component_policy
 
 
 @dataclass(frozen=True, slots=True)
@@ -45,6 +46,8 @@ class ComposePageDependencies:
     source_description: SourceDescriptionPort | None = None
     authoring_scope: Mapping[str, Any] | None = None
     require_source_description: bool = False
+    business_interpretation: Any = None
+    component_policy: Any = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -246,6 +249,7 @@ def create_compose_page(dependencies: ComposePageDependencies) -> ComposePage:
 
         bundle_info = load_bundle_info()
         try:
+            units = await apply_component_policy(units, executions, dependencies.component_policy, dependencies.authoring_scope)
             document = assemble_page_document(
                 page_id=command.page_id,
                 description=_optional_string(command.spec.get("description")),

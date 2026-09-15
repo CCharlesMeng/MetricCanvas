@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import json
 from collections.abc import Awaitable, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from metriccanvas_authoring.application.ports import DataContextError, DataContextPort
+from metriccanvas_authoring.application.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
 from metriccanvas_authoring.domain.business_terms import (
     MetricTermResolution,
     ResolvedBusinessTerms,
@@ -30,6 +31,7 @@ class DiscoverDataContextCommand:
 class DiscoverDataContextDependencies:
     data_context: DataContextPort
     now: Callable[[], datetime] = _utc_now
+    business_interpretation: BusinessInterpretationPort | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -90,11 +92,12 @@ def create_discover_data_context(
             metric_entries=data_context.metric_entries,
             limit=command.limit,
         )
+        current_time = dependencies.now()
         business_resolution = resolve_business_terms(
             question=command.query,
             business_domains=business_domains,
             dimension_entries=data_context.dimension_entries,
-            now=dependencies.now(),
+            now=current_time,
         )
         matches = data_context.search(command.query, command.limit)
         if not matches:
@@ -105,7 +108,7 @@ def create_discover_data_context(
                 business_resolution,
             )
         metric_payload = metric_resolution.to_payload(command.query)
-        return DiscoverDataContextResult(
+        result = DiscoverDataContextResult(
             ok=True,
             data_context_version=data_context.version,
             business_domains=business_domains,
@@ -127,6 +130,21 @@ def create_discover_data_context(
             intent=business_resolution.intent,
             structure_operation=business_resolution.structure_operation,
         )
+
+        if dependencies.business_interpretation is not None:
+            try:
+                resolution, time, terms = await extend_interpretation(dependencies.business_interpretation,
+                    command.query, data_context, current_time, result.resolution, result.time)
+            except BusinessInterpretationError as error:
+                return DiscoverDataContextResult(ok=False, data_context_version=data_context.version,
+                    issues=(DiscoverDataContextIssue(error.code, '', error.code),))
+            enriched = list(result.matches)
+            for term, kind in terms:
+                for match in data_context.search(term, command.limit):
+                    if match.get('kind') == ('field' if kind == 'dimension' else kind) and match not in enriched:
+                        enriched.append(match)
+            result = replace(result, resolution=resolution, time=time, matches=tuple(enriched[:command.limit]))
+        return result
 
     return discover
 

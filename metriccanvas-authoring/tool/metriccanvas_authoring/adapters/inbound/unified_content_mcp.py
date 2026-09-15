@@ -15,6 +15,7 @@ from metriccanvas_authoring.application.authoring_candidates import AuthoringCan
 from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.application.unified_edit_page import edit_unified_page, UNIFIED_EDIT_SCHEMA
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextDependencies, DiscoverDataContextCommand, create_discover_data_context
 from metriccanvas_authoring.application.unified_composition import compose_unified_content, COMPOSITION_SCHEMA
 
 
@@ -46,6 +47,16 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             parent = await candidates.require(candidate_ref, prepared) if candidate_ref is not None else None
             scoped_dependencies = replace(dependencies, authoring_scope=dict(prepared.binding), require_source_description=True) if write else dependencies
             source_descriptions = []
+            if name == 'discover_data_context':
+                discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context,
+                    business_interpretation=dependencies.business_interpretation))
+                found = await discover(DiscoverDataContextCommand(args['query'], args['limit']))
+                await gate.unchanged(prepared)
+                payload = {'ok': found.ok, 'dataContextVersion': found.data_context_version,
+                    'businessDomains': list(found.business_domains), 'matches': list(found.matches),
+                    'resolution': found.resolution, 'time': found.time, 'intent': found.intent, 'structureOperation': found.structure_operation,
+                    'issues': [{'code': issue.code, 'path': issue.path, 'stage': issue.stage} for issue in found.issues]}
+                return ToolResult(content=payload, structured_content=payload)
             if name == 'create_content_page':
                 edited = await compose_unified_content(prepared.binding['pageId'], args['title'], args['layout'], args['request'],
                     scoped_dependencies, summary_enabled=summary_configured(summary_config),
