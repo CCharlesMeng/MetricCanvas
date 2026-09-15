@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "measuredAt": "2026-09-15",
+  "sourceCommit": "294487e60b195fe45534af060f5d093cfe06c4c4",
+  "scope": "Two Platform Skill directories; ordinary ask/page-builder excluded",
+  "method": "UTF-8 text splitlines including blank lines/comments; byte-for-byte SHA-256 comparison at matching relative paths. File counts include all files; not a token or semantic coverage measurement.",
+  "directories": {
+    "metriccanvas-platform-create": {
+      "files": 276,
+      "lines": 91907,
+      "bytes": 2965470
+    },
+    "metriccanvas-platform-edit": {
+      "files": 276,
+      "lines": 91905,
+      "bytes": 2965603
+    }
+  },
+  "combinedLines": 183812,
+  "sharedReferenceFiles": 275,
+  "sharedReferenceLinesPerCopy": 91888,
+  "sourceMatches": 275,
+  "uniqueContentLinesAfterRemovingOneSharedCopy": 91924,
+  "referenceCategoriesPerCopy": {
+    "guides_and_component_reference": {
+      "files": 34,
+      "lines": 12451,
+      "bytes": 766829
+    },
+    "error_vectors": {
+      "files": 169,
+      "lines": 55336,
+      "bytes": 1482387
+    },
+    "examples": {
+      "files": 69,
+      "lines": 7839,
+      "bytes": 182369
+    },
+    "schema_and_machine_indexes": {
+      "files": 3,
+      "lines": 16262,
+      "bytes": 531793
+    }
+  },
+  "preservedLocations": [
+    "docs/page-metadata/",
+    "packages/page/src/",
+    "tools/scripts/page-reference.ts",
+    "tools/scripts/page-conformance-vectors.ts",
+    "tools/fixtures/",
+    "metriccanvas-authoring/contract-snapshot/",
+    "metriccanvas-authoring/skill-shared/"
+  ],
+  "notes": [
+    "All 275 shared reference files match existing canonical snapshot/shared-author files.",
+    "Category usefulness is a disposition decision, not proof that every old example is currently tool-executable.",
+    "Only the two SKILL.md files differ between these two Skill trees."
+  ]
+}

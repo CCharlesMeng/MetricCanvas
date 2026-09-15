@@ -176,6 +176,7 @@
 
 ## Further Notes
 
+- 编码接手入口：[详细实施计划与新会话交接](../plan/2026-09-15-unified-authoring-skill-implementation.md)，包含任务依赖、具体改点、规模估算、资料保留策略及接手提示词；[资料盘点](../plan/2026-09-15-authoring-reference-inventory.json)记录重复分发与现有来源的实测结果。
 - 当前正式开发分支为 `codex/unified-authoring-skill`，基于 main `52fef83`；工作位置为本仓现有 Authoring 目录。前一轮独立映射原型已退出正式交付，不将其接口或 15 项测试认定为本规格完成证据。
 - 架构依据：[页面创作 Agent：统一目录、执行契约与功能迁移](../plan/2026-09-15-authoring-agent-architecture.md)。功能规格以本文件及对应 GitHub Issue 为本次实施依据，架构文档负责设计解释和目标目录。
 - 关联 [创作生命周期规格 #126](https://github.com/CCharlesMeng/MetricCanvas/issues/126)，复用其已落地能力；真实外部接口事实继续关联 #105、#106、#107、#108，不因本规格发布将这些依赖标为已完成。
