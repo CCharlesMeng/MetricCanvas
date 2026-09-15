@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createAuthoringLanguageRecovery, type TrustedLanguageRecoveryPort } from './workbench/authoring-language-recovery';
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
   import PublicationReview from './workbench/PublicationReview.svelte';
   import { createAuthoringPublication, unavailablePublicationPort, unavailableHumanConfirmation, type PublicationPort, type HumanConfirmationPort } from './workbench/authoring-publication';
@@ -24,8 +25,9 @@
   import { readRuntimeConfig } from './runtime-config';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
     publicationPort?: PublicationPort; humanConfirmation?: HumanConfirmationPort;
+    languageRecoveryPort?: TrustedLanguageRecoveryPort; onLanguageRecoveryReady?: (api: ReturnType<typeof createAuthoringLanguageRecovery>) => void;
     languagePort?: LanguagePort; onLanguageReady?: (api: ReturnType<typeof createAuthoringLanguage>) => void;
     dialogueAdapter?: DialogueAdapter; readSavedDraft?: ReadSavedDraft; authoringPort?: AuthoringPort; stableSavePort?: StableSavePort;
   } = $props();
@@ -45,6 +47,8 @@
   let publicationBusy = $state(false);
   let language = $state<ReturnType<typeof createAuthoringLanguage> | null>(null);
   let languageState = $state<ReturnType<ReturnType<typeof createAuthoringLanguage>['snapshot']> | null>(null);
+  let languageRecovery = $state<ReturnType<typeof createAuthoringLanguageRecovery> | null>(null);
+  let recoveryState = $state<ReturnType<ReturnType<typeof createAuthoringLanguageRecovery>['snapshot']> | null>(null);
   let authoring = $state(coordinator.snapshot());
   const currentDraft = $derived(authoring.draft);
   const baseRevisionId = $derived(authoring.ref?.revisionId ?? null);
@@ -68,7 +72,22 @@
 
   // Coordinator owns the working copy; UI only projects snapshots and forwards intents.
   onMount(() => {
-    coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
+    const pageId = new URLSearchParams(window.location.search).get('page');
+    let syncEnabled = false;
+    const enableSync = () => {
+      if (syncEnabled) return;
+      syncEnabled = true;
+      coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
+    };
+    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId); };
+    if (languageRecoveryPort) {
+      languageRecovery = createAuthoringLanguageRecovery({ coordinator, port: languageRecoveryPort,
+        identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; },
+        currentPageId: () => new URLSearchParams(window.location.search).get('page'), resume, protectSaved: enableSync });
+      languageRecovery.subscribe(value => { recoveryState = value; });
+      void languageRecovery.check(pageId);
+      onLanguageRecoveryReady?.(languageRecovery);
+    } else void resume(pageId);
     coordinator.setOnline(navigator.onLine);
     const online = () => coordinator.setOnline(true);
     const offline = () => coordinator.setOnline(false);
@@ -76,8 +95,6 @@
     publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
     publication.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); });
-    const pageId = new URLSearchParams(window.location.search).get('page');
-    if (pageId) void coordinator.load(pageId);
     if (languagePort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
@@ -105,7 +122,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -293,6 +310,17 @@
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
     {#if historyOpen}{#key authoring.ref?.resourceId}<AuthoringHistory list={coordinator.listHistory} restore={coordinator.restoreRevision} />{/key}{/if}
+    {#if recoveryState}
+      <p class="notice" role="status" data-testid="language-recovery-status">{recoveryState.message || '正在检查未决操作…'}</p>
+      {#if !recoveryState.summary}
+        <button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.check(new URLSearchParams(window.location.search).get('page'))}>再次检查恢复</button>
+      {:else}
+        <button class="btn" disabled={recoveryState.busy || recoveryState.phase === 'opened'} onclick={() => languageRecovery?.recover()}>查询原操作</button>
+        <button class="btn" disabled={recoveryState.busy || recoveryState.summary.cancelRequested || !recoveryState.locked} onclick={() => languageRecovery?.cancel()}>取消未完成操作</button>
+        {#if recoveryState.summary.status === 'not-applied' && !recoveryState.summary.cancelRequested}<button class="btn" disabled={recoveryState.busy} onclick={() => languageRecovery?.retryOriginal()}>重试原操作</button>{/if}
+        {#if recoveryState.summary.status === 'saved'}<button class="btn" disabled={recoveryState.busy || !recoveryState.locked} onclick={() => languageRecovery?.openSaved()}>打开已保存修订</button>{/if}
+      {/if}
+    {/if}
     {#if languageState}
       <p class="notice" role="status" data-testid="language-status">{languageState.message}</p>
       {#if languageState.operations.length}<ul aria-label="本轮操作结果">{#each languageState.operations as operation}<li>{operation.id}：{operation.status}</li>{/each}</ul>{/if}
