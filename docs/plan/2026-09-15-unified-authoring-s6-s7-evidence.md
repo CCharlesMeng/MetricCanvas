@@ -46,4 +46,4 @@
 | contract-lock.json | 337e14b779d92357ea8d8e5c2c0ee92586c77c658ddaf8b262e4519b3b4ba46f |
 | 本地sdist metriccanvas_authoring-0.2.0.tar.gz | 6f8e83c3d00b625db4afaec4f23c43878c706f4452c29373b1ab51cdf0477e59 |
 
-真实模型请求仍为0。旧runner在新协议上明确退出；还需实现可信运行Adapter，并解决既有DeepSeek载荷/目的地址授权缺口，不能直接重跑旧runner。审批缺口、真实服务接通与内部向量三者是分别存在的剩余工作。
+真实模型请求仍为0。旧runner在新协议上明确退出；当时尚欠的本地可信runner已在后续e526358补齐，见[runner集成证据](2026-09-15-unified-authoring-runner-evidence.md)；旧runner门禁仍保留，需使用新版入口。DeepSeek载荷/目的地址授权、真实服务接通与内部向量仍分别待完成。

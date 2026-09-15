@@ -1,6 +1,6 @@
 # 统一创作交付、内部迁移与 S8 就绪边界
 
-日期：2026-09-15。本记录不批准生产切换。代码在独立实施分支，本地验收与真实提供方验收分别记账。最终实现冻结版本为09982cb；完整三层状态和统一HEAD验收见[验收记录](2026-09-15-unified-authoring-s6-s7-evidence.md)。
+日期：2026-09-15。本记录不批准生产切换。代码在独立实施分支，本地验收与真实提供方验收分别记账。产品实现冻结版本为09982cb；新版runner集成冻结e526358，见[runner证据](2026-09-15-unified-authoring-runner-evidence.md)。完整三层状态和产品HEAD验收见[验收记录](2026-09-15-unified-authoring-s6-s7-evidence.md)。
 
 ## F1–F17 迁移清单
 
@@ -19,7 +19,7 @@
 | F9 | 组织业务规则→独立解释扩展 | 可替换业务解释器，不允许公司字段覆盖核心或主流程 | 原职责边界、组织/权限规则真实用例 |
 | F10 | 缓存/预览占位符→修订绑定预览端口 | S4保存回执/精确回读后才可打开，预览单独重试 | 实际缓存键、占位符及失效协议 |
 | F11 | 可见工具→bundle服务/公开list_tools | 单一统一服务五工具，缺可信上下文明确不可用 | 内部Relay生产工具暴露与配置 |
-| F12 | 对话工具投影→程序产物分流 | 完整候选/源证据不进入modelSummary | 真实Relay确实隔离产物，支持可信轮次runner |
+| F12 | 对话工具投影→程序产物分流 | 完整候选/源证据不进入modelSummary | 真实Relay确实隔离产物；本地可信轮次runner已另行验证 |
 | F13 | 历史测试资产→逐项审查H1–H15 | 未取得用例，不伪造恢复断言或通过率 | H1–H15原用例、对应事实和适用性 |
 | F14 | 错误归一化→领域/Adapter错误 | 参数/冲突/取消/未知写入/源不支持分开；异常净化 | 真实服务错误码与阶段映射 |
 | F15 | 操作身份/幂等→执行记录+Lifecycle | SQLite进程重建/丢回执、原操作查询、一次写入 | 后端幂等、原子查写、取消竞争实际保证 |
@@ -30,7 +30,7 @@
 
 | 门禁 | 当前证据 | 结论 |
 |---|---|---|
-| 真实模型与采样 | 新请求0；历史14例不是新版本结果；旧runner拒绝新协议 | blocked，不能用确定性替身替代 |
+| 真实模型与采样 | 新请求0；历史14例不是新版本结果；新版可信本地runner已完成并通过定向验证 | blocked，不能用确定性替身替代 |
 | latest与本轮身份 | 本地工作台/可信turn契约覆盖 | 真实提供方blocked |
 | 候选、程序通道、取消、预算 | 本地不可变候选/SQLite执行记录/故障回归 | Relay消费与共享模型预算blocked |
 | 远端原操作查询、保存、精确回读 | 本地Lifecycle与恢复纵切，无重复写入 | Java强能力实测blocked |
@@ -76,3 +76,11 @@ bb8ea82 feat(workbench): restore pending authoring operations before editing
 dfd9fce feat(authoring): compose mixed pages and select verified data extensions
 09982cb feat(authoring): bind business component and system extension consumers
 ```
+
+## 后续 runner 集成提交
+
+- 5669b1c：新版五工具共享评测循环、transport与评分适配（来源2f7117a）。
+- b8fb2d2：保留多轮安全历史、限制当轮候选引用（来源ca4b1b7）。
+- e526358：集成评测资产生成锁；30定向测试、12本地场景、导出及分发检查通过。
+
+可信本地runner适配已完成，不再列作本仓待实现项；真实外发授权与实际提供方验收仍分别阻塞。
