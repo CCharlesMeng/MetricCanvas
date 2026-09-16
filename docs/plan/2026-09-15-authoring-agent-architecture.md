@@ -2,6 +2,22 @@
 
 状态：目标架构，2026-09-15。正式编码依据为[统一创作 Skill 规格](../specs/2026-09-15-unified-authoring-skill.md)及 [Issue #150](https://github.com/CCharlesMeng/MetricCanvas/issues/150)。替代此前《统一 Platform 创作 Skill：整体方案》的架构提案；旧文保留调查与讨论历史。本文描述目标，不代表产品、Skill 或外部接口已实施，也不把内部报告的静态代码描述当成端到端验证。
 
+## 实施对照（2026-09-16）
+
+本轮实现及可信评测 runner 已合入 main `d5aa4be`。本文仍保留目标设计；当前代码维护入口是 [metriccanvas-authoring/ARCHITECTURE.md](../../metriccanvas-authoring/ARCHITECTURE.md)，实际验收见[交付就绪清单](2026-09-15-unified-authoring-release-readiness.md)。S0–S7 的本仓实现与确定性验证已交付，S7 内部真实迁移和 S8 仍未完成；真实模型新请求为0。已推送代码不代表已接通或切换生产。
+
+| 本文目标职责 | 已落地位置（相对 metriccanvas-authoring/） | 边界 |
+|---|---|---|
+| 统一 Skill | `skill/metriccanvas-platform-authoring/` | 一个作者、create/edit 流程、按需参考；普通问数保留 |
+| runtime / 上下文与交接 | `tool/metriccanvas_authoring/application/authoring_turns.py`；仓库 `apps/platform/src/lib/workbench/` | 最新读取是可信端口前置，真实提供方待接 |
+| prepare / inspect 内容工具 | `tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py` | 实际五工具：read_page_context、discover_data_context、compose_page、create_content_page、edit_page |
+| 候选与提交恢复 | `application/authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`（均在实际 Python 包内） | SQLite 提供本地持久实现，远端原子性由真实服务证明 |
+| metadata_mapping / 组合 | Python 包内 `domain/source_mapping.py`、`application/unified_edit_page.py`、`unified_composition.py` | 新建及已有页新增均贯通；未支持转换明确拒绝 |
+| extensions / bootstrap | Python 包内 `application/authoring_deployment.py`、`business_interpretation.py`、`component_policy.py`、包顶层 `authoring_bootstrap.py` | data/business/component/system 均有受控消费者；内部实现未迁移 |
+| tests / evals | `test-harness/tests/`、`test-harness/model-evals/` | 可信 runner 已适配；本地模拟不计真实模型成绩 |
+
+下文 §3.3 的 `src/runtime/ports/extensions/config/tests/evals` 是职责示意，不是要求再搬一次目录的待办。真实源码继续复用 `tool/metriccanvas_authoring/{application,domain,adapters}`，契约作者/导出路径沿用现有生成链；后续开发按维护入口定位。本文工具示意名以实际注册为准，新鲜性与状态所有权补充决策见 [ADR-0079](../adr/0079-trusted-authoring-turns-gate-content-tools.md)。
+
 ## 1. 设计结论
 
 采用 **一个创作目录 + 一个创作 Agent + 可恢复的确定性执行流程 + 受控内容工具**。系统接线与业务差异放在同一项目的 adapters/extensions 中，按接口隔离；不另建公司版项目。
@@ -98,7 +114,7 @@ Relay 保存执行检查点，Java 保存页面事务结果，不互相建立第
 
 采用一个 `metriccanvas-authoring/` 源码树，按职责组织文档、程序、契约、配置和测试。不再建立 company-authoring 项目或并排维护公司版主流程。此前独立目录仅意在表达维护归属，该表达现已撤回；维护归属由目录负责人、扩展契约和版本锁表达。
 
-以下为目标目录，新增文件名尚未实施；代码可以复用既有 application/domain/adapters，不以目录迁移代替功能改造。Python 包名 metriccanvas_authoring 是同一项目的代码包，不是另一套系统。
+以下为目标职责目录，不是当前文件清单；对应功能的实际落点见上方实施对照。代码复用既有 application/domain/adapters，不以目录迁移代替功能改造。Python 包名 metriccanvas_authoring 是同一项目的代码包，不是另一套系统。
 
 ```text
 metriccanvas-authoring/
