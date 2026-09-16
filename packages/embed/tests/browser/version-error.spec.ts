@@ -1,12 +1,18 @@
 import { expect, test } from '@playwright/test';
+import { supportedVersions, versionPolicy } from '@metriccanvas/page';
 import type { MountOptions } from '../../src/types';
+
+const supported = supportedVersions();
+const [major, minor] = versionPolicy.current.split('.').map(Number);
+const futureMajor = `${major + 1}.0`;
+const futureMinor = `${major}.${minor + 1}`;
 
 for (const mode of ['classic', 'esm'] as const) {
   test(`${mode} 版本失败关闭、宿主事件分类与更新恢复`, async ({ page }) => {
     await page.goto('/examples/query.html');
     const host = page.locator('[data-metriccanvas-runtime]');
     await expect(host.getByRole('table')).toBeVisible();
-    await page.evaluate(async (mode) => {
+    await page.evaluate(async ({ mode, futureMajor }) => {
       window.queryRuntime.destroy();
       window.queryEvents = [];
       window.queryCalls = [];
@@ -15,7 +21,7 @@ for (const mode of ['classic', 'esm'] as const) {
       const esmUrl = '/dist/metriccanvas-runtime.es.js';
       const mount = mode === 'classic' ? MetricCanvas.mount : (await import(esmUrl)).mount;
       const options: MountOptions = {
-        document: { ...window.queryPageDocument, schemaVersion: '7.0' },
+        document: { ...window.queryPageDocument, schemaVersion: futureMajor },
         dataGateway: {
           async fetchData() {
             window.queryCalls.push({});
@@ -25,25 +31,34 @@ for (const mode of ['classic', 'esm'] as const) {
         onEvent: (event) => window.queryEvents.push(event)
       };
       window.missingRuntime = mount('#dashboard', options);
-    }, mode);
+    }, { mode, futureMajor });
     await expect(host.getByRole('heading', { name: '引擎不支持页面协议版本' })).toBeVisible();
     expect(await page.evaluate(() => ({ events: window.queryEvents, calls: window.queryCalls })))
       .toMatchObject({
         calls: [],
-        events: [{ type: 'version-error', requiredSchemaVersion: '7.0', currentSchemaVersion: '6.2', supportedSchemaVersions: ['6.0', '6.1', '6.2'] }]
+        events: [{ type: 'version-error', requiredSchemaVersion: futureMajor, currentSchemaVersion: versionPolicy.current, supportedSchemaVersions: supported }]
       });
     await expect(host.getByRole('table')).toHaveCount(0);
 
-    await page.evaluate(() => window.missingRuntime.update({
-      document: window.queryPageDocument,
-      dataGateway: { async fetchData() { window.queryCalls.push({}); return { rows: [{ region: '恢复查询', gmv: 42 }], totalCount: 1 }; } }
-    }));
-    await expect(host.getByRole('table')).toBeVisible();
-    await expect(host.getByText('恢复查询')).toBeVisible();
-    expect(await page.evaluate(() => window.queryCalls.length)).toBeGreaterThan(0);
-    expect(await page.evaluate(() => window.queryEvents.some((event) => event.type === 'ready'))).toBe(true);
+    // Recover the example's declared version and the current protocol. Do not
+    // downgrade newer document features by only changing schemaVersion.
+    const originalVersion = await page.evaluate(() => window.queryPageDocument.schemaVersion);
+    for (const schemaVersion of new Set([originalVersion, versionPolicy.current])) {
+      await page.evaluate((schemaVersion) => {
+        window.queryEvents = [];
+        window.queryCalls = [];
+        window.missingRuntime.update({
+          document: { ...window.queryPageDocument, schemaVersion },
+          dataGateway: { async fetchData() { window.queryCalls.push({}); return { rows: [{ region: `恢复查询 ${schemaVersion}`, gmv: 42 }], totalCount: 1 }; } }
+        });
+      }, schemaVersion);
+      await expect(host.getByRole('table')).toBeVisible();
+      await expect(host.getByText(`恢复查询 ${schemaVersion}`, { exact: true })).toBeVisible();
+      expect(await page.evaluate(() => window.queryCalls.length)).toBeGreaterThan(0);
+      expect(await page.evaluate(() => window.queryEvents.some((event) => event.type === 'ready'))).toBe(true);
+    }
 
-    for (const schemaVersion of ['6.3', '5.4']) {
+    for (const schemaVersion of [futureMinor, `${major - 1}.4`]) {
       await page.evaluate((schemaVersion) => {
         window.queryEvents = [];
         window.queryCalls = [];
