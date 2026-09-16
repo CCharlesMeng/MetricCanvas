@@ -12,7 +12,9 @@ export const MISSING_RUNTIME_CONFIG_MESSAGE = '集成应用未注入运行配置
 
 export interface InjectedRuntimeConfig {
   dqeEndpoint: string;
-  pageAssetsBaseUrl: string;
+  pageMetadataBaseUrl: string;
+  /** 页面元数据请求的附加凭据，由集成门户提供；未配置时不发送。 */
+  cftk?: string;
   authToken: string;
   operatorId: string;
   workspaceId: string;
@@ -51,20 +53,22 @@ export function readRuntimeConfig(): InjectedRuntimeConfig | null {
   const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
   if (!raw || typeof raw !== 'object') return null;
   const dqeEndpoint = trimmedField(raw, 'dqeEndpoint');
-  const pageAssetsBaseUrl = trimmedField(raw, 'pageAssetsBaseUrl');
+  const pageMetadataBaseUrl = trimmedField(raw, 'pageMetadataBaseUrl');
   const authToken = trimmedField(raw, 'authToken');
   const operatorId = trimmedField(raw, 'operatorId');
   const workspaceId = trimmedField(raw, 'workspaceId');
-  if (!dqeEndpoint || !pageAssetsBaseUrl || !authToken || !operatorId || !workspaceId) {
+  if (!dqeEndpoint || !pageMetadataBaseUrl || !authToken || !operatorId || !workspaceId) {
     return null;
   }
-  return { dqeEndpoint, pageAssetsBaseUrl, authToken, operatorId, workspaceId };
+  const cftk = trimmedField(raw, 'cftk');
+  return { dqeEndpoint, pageMetadataBaseUrl, authToken, operatorId, workspaceId,
+    ...(cftk ? { cftk } : {}) };
 }
 
-/** 读取页面资产基址；静态平台不再提供同源 Node 回退。 */
-export function readPageAssetsBaseUrl(): string | null {
+/** 读取页面元数据基址；静态平台不再提供同源 Node 回退。 */
+export function readPageMetadataBaseUrl(): string | null {
   const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
-  return raw && typeof raw === 'object' ? trimmedField(raw, 'pageAssetsBaseUrl') ?? null : null;
+  return raw && typeof raw === 'object' ? trimmedField(raw, 'pageMetadataBaseUrl') ?? null : null;
 }
 
 /** 测试与本地开发入口写入注入源；生产由集成门户在加载前设置。 */
@@ -77,14 +81,15 @@ export function installRuntimeConfig(config: InjectedRuntimeConfig | null): void
 }
 
 /** 仅应由本地开发入口在 DEV 下调用；已有注入时不覆盖。 */
-export function installLocalDevRuntimeConfig(): void {
+export function installLocalDevRuntimeConfig(overrides: Partial<InjectedRuntimeConfig> = {}): void {
   if (readRuntimeConfig()) return;
   installRuntimeConfig({
-    dqeEndpoint: `http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`,
-    pageAssetsBaseUrl: 'http://127.0.0.1:8080/rest/cdi/cdinl2databuilderservice/v1',
-    authToken: 'local-dev',
-    operatorId: 'developer-1',
-    workspaceId: 'local'
+    dqeEndpoint: trimmedField(overrides, 'dqeEndpoint') ?? `http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`,
+    pageMetadataBaseUrl: trimmedField(overrides, 'pageMetadataBaseUrl') ?? 'http://127.0.0.1:8080/rest/cdi/cdinl2databuilderservice/v1',
+    authToken: trimmedField(overrides, 'authToken') ?? 'local-dev',
+    operatorId: trimmedField(overrides, 'operatorId') ?? 'developer-1',
+    workspaceId: trimmedField(overrides, 'workspaceId') ?? 'local',
+    ...(trimmedField(overrides, 'cftk') ? { cftk: trimmedField(overrides, 'cftk') } : {})
   });
 }
 

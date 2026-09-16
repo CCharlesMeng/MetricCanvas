@@ -50,7 +50,7 @@ try {
   const manual = await browser.newPage({ viewport: { width: 1440, height: 900 } });
   manual.on('pageerror', (error) => errors.push(error.message));
   await manual.addInitScript(() => {
-    window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageAssetsBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'alice', workspaceId: 'workspace' };
+    window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageMetadataBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'alice', workspaceId: 'workspace' };
   });
   let stored = { schemaVersion: '6.0', layoutForm: 'report', id: 'manual-page', dataSources: {}, sections: [{ id: 's', title: '页面', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: '固定内容' } }] }] };
   let revision = 1, writes = 0, fail = false;

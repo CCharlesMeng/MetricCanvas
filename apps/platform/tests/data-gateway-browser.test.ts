@@ -10,7 +10,7 @@ import { createWorkbenchDqeGateway } from '../src/lib/workbench/data-gateway';
 
 const config={
   dqeEndpoint: '/dqe/execute',
-  pageAssetsBaseUrl: '/page-assets',
+  pageMetadataBaseUrl: '/page-assets',
   authToken: 'user-token-1',
   operatorId: 'operator-1',
   workspaceId: 'workspace-1'

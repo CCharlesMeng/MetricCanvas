@@ -26,7 +26,8 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 | 字段 | 说明 |
 |---|---|
 | `dqeEndpoint` | DQE 执行地址。相对路径表示同源反代，绝对地址表示 CORS 直连，两种部署形态共用同一份产物 |
-| `pageAssetsBaseUrl` | Java 页面资产基址 |
+| `pageMetadataBaseUrl` | 页面元数据接口基址（原配置名已更换，门户须同步更新） |
+| `cftk` | 可选，页面元数据请求的 `cftk` 头；空值不发送 |
 | `authToken` | 随请求发出的 `X-Auth-Token`，用户态 token |
 | `operatorId` | 随请求发出的 `X-Operator-Id` |
 | `workspaceId` | 随请求发出的 `X-Workspace-Id` |
@@ -39,6 +40,12 @@ MetricCanvas 统一运行时（渲染引擎）不拥有应用路由器、返回�
 - **平台不实现微前端协议。** 它是自包含静态 SPA，门户用 iframe、整页跳转、菜单链接或微前端框架装载它都可以。DQE 与 Java 页面资产需允许上述三个身份请求头跨源并允许携带凭据，这是对服务提供方的要求，对账见 #3 / #105。
 
 ### 平台页面资产访问
+
+页面元数据请求使用 `credentials: 'include'`（Fetch 对应 XHR 的 `withCredentials: true`），配置了 `cftk` 时同时发送该请求头。Cookie 仍由浏览器按目标域、路径等限制选取；前端不能借此把只属于 `ioc.huawei.com` 的 Cookie 发送给 `gray.cloudioc.huawei.com`。
+
+从 `https://ioc.huawei.com:443` 直连 `https://gray.cloudioc.huawei.com` 属于跨源请求。服务端需允许实际 Origin `https://ioc.huawei.com`（默认 HTTPS 端口不包含在序列化 Origin 中），返回 `Access-Control-Allow-Credentials: true`，并在 OPTIONS 预检中允许 `cftk`、`X-Auth-Token`、`X-Operator-Id`、`Content-Type` 以及实际请求方法。携带凭据时 `Access-Control-Allow-Origin` 不能是 `*`。仅修改前端凭据设置不保证消除 CORS 错误。
+
+本地 mock 运行配置：将 `apps/platform/.env.example` 复制为 `.env.local`，填写 `VITE_LOCAL_PAGE_METADATA_BASE_URL`、`VITE_LOCAL_CFTK` 及需要的身份字段，重启开发服务。只在 DEV 入口生效，已有完整门户注入优先；生产仍由门户提供运行配置。本地模拟值可以验证头部发送，不能代替真实服务的有效凭据。现有 `/apply-page` 模拟入口使用内存数据，不发 HTTP 请求；联调请求头应使用普通工作台或页面目录。
 
 平台的页面目录、页面详情、保存与更新共用一个浏览器页面资产客户端。客户端按每次请求现读 Java 基址和身份字段，不存在 Node 适配器或同源 `/api/pages` 回退。页面资产请求发送 `X-Auth-Token` 与 `X-Operator-Id`；`workspaceId` 仅供 DQE 请求使用。缺少必需配置时以 `DQE_CONFIG_ERROR` 报告「集成应用未注入运行配置」。
 

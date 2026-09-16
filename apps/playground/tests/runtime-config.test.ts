@@ -4,13 +4,15 @@ import { DqeGatewayError } from '@metriccanvas/engine/dqe';
 import {
   MISSING_RUNTIME_CONFIG_MESSAGE,
   createInjectedDqeGateway,
+  installLocalDevRuntimeConfig,
   installRuntimeConfig,
+  readPageMetadataBaseUrl,
   readRuntimeConfig
 } from '../src/lib/runtime-config';
 
 const completeConfig = {
   dqeEndpoint: 'https://dqe.example/rest/cdi/cdinl2databuilderservice/v1/dsl/execute',
-  pageAssetsBaseUrl: 'https://pages.example/rest/cdi/pageassets/v1',
+  pageMetadataBaseUrl: 'https://pages.example/rest/cdi/pageassets/v1',
   authToken: 'token-1',
   operatorId: 'developer-1',
   workspaceId: 'ws-1'
@@ -53,6 +55,20 @@ afterEach(() => {
 });
 
 describe('运行配置注入面', () => {
+  it('本地 mock 可覆盖端点与 cftk，但不覆盖已有门户配置', () => {
+    installLocalDevRuntimeConfig({ pageMetadataBaseUrl: ' https://pages.example/v1 ', cftk: ' mock-cftk ' });
+    expect(readPageMetadataBaseUrl()).toBe('https://pages.example/v1');
+    expect(readRuntimeConfig()).toMatchObject({ cftk: 'mock-cftk', authToken: 'local-dev' });
+    installRuntimeConfig({ ...completeConfig, cftk: 'portal-cftk' });
+    installLocalDevRuntimeConfig({ cftk: 'should-not-replace' });
+    expect(readRuntimeConfig()).toEqual({ ...completeConfig, cftk: 'portal-cftk' });
+  });
+
+  it('空的本地覆盖项保留默认配置，未提供 cftk 时不产生伪造凭据', () => {
+    installLocalDevRuntimeConfig({ pageMetadataBaseUrl: ' ', authToken: '', cftk: ' ' });
+    expect(readRuntimeConfig()).toMatchObject({ authToken: 'local-dev' });
+    expect(readRuntimeConfig()?.cftk).toBeUndefined();
+  });
   it('每次读取都现读注入源，不快照', () => {
     expect(readRuntimeConfig()).toBeNull();
     installRuntimeConfig(completeConfig);

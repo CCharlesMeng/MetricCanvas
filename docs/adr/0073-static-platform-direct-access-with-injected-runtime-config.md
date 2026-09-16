@@ -24,7 +24,7 @@ date: 2026-09-07
 | 字段 | 用途 |
 |---|---|
 | `dqeEndpoint` | DQE 执行地址。填相对路径即同源反代，填绝对地址即 CORS 直连 |
-| `pageAssetsBaseUrl` | Java 页面资产基址 |
+| `pageMetadataBaseUrl` | Java 页面资产基址 |
 | `authToken` | `X-Auth-Token` |
 | `operatorId` | `X-Operator-Id` |
 | `workspaceId` | `X-Workspace-Id` |

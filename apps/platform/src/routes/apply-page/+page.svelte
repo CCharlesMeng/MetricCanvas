@@ -9,7 +9,7 @@
     if (!dev) return;
     const previous = readRuntimeConfig();
     installRuntimeConfig({ operatorId: 'apply-page-mock', workspaceId: crypto.randomUUID(),
-      authToken: 'mock', pageAssetsBaseUrl: '/__unused-mock-assets', dqeEndpoint: '/__unused-mock-dqe' });
+      authToken: 'mock', pageMetadataBaseUrl: '/__unused-mock-assets', dqeEndpoint: '/__unused-mock-dqe' });
     fixture = createApplyPageFixture(window);
     return () => installRuntimeConfig(previous);
   });

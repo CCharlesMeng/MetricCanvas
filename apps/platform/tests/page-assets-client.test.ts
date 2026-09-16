@@ -5,7 +5,7 @@ import { installRuntimeConfig } from '../src/lib/runtime-config';
 
 const config = {
   dqeEndpoint: '/dqe',
-  pageAssetsBaseUrl: 'https://pages.example/rest/cdi/cdinl2databuilderservice/v1/',
+  pageMetadataBaseUrl: 'https://pages.example/rest/cdi/cdinl2databuilderservice/v1/',
   authToken: 'token-1',
   operatorId: 'operator-1',
   workspaceId: 'ws-1'
@@ -30,6 +30,31 @@ const command = {
 };
 
 afterEach(() => installRuntimeConfig(null));
+
+it('页面元数据读写携带跨源凭据，cftk 随运行配置更新且可移除', async () => {
+  const fetchImpl = vi.fn<typeof fetch>(async (input) => String(input).includes('?')
+    ? Response.json({ retCode: '0', page_metadata_list: [providerRevision], total: 1 })
+    : Response.json(providerRevision));
+  const client = createPageAssetsClient({ fetchImpl });
+  const signal = new AbortController().signal;
+  installRuntimeConfig({ ...config, cftk: ' mock-cftk-1 ' });
+  await client.getLatest('report', signal);
+  for (const [, init] of fetchImpl.mock.calls) {
+    expect(init?.credentials).toBe('include');
+    expect(init?.signal).toBe(signal);
+    expect(new Headers(init?.headers).get('cftk')).toBe('mock-cftk-1');
+  }
+  installRuntimeConfig({ ...config, cftk: 'mock-cftk-2' });
+  await client.saveRevision('report', command);
+  await client.saveRevision('report', { ...command, baseRevisionId: 'rev-1', resourceId: 'metadata-1' });
+  for (const [, init] of fetchImpl.mock.calls.slice(2)) {
+    expect(init?.credentials).toBe('include');
+    expect(new Headers(init?.headers).get('cftk')).toBe('mock-cftk-2');
+  }
+  installRuntimeConfig({ ...config, cftk: ' ' });
+  await client.listPages();
+  expect(new Headers(fetchImpl.mock.calls.at(-1)?.[1]?.headers).has('cftk')).toBe(false);
+});
 
 describe('静态平台页面资产客户端', () => {
   it('目录与详情按已确认的 user-page-metadata 契约读取', async () => {
@@ -67,9 +92,9 @@ describe('静态平台页面资产客户端', () => {
     });
 
     expect(calls.map((call) => call.url)).toEqual([
-      `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
-      `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
-      `${config.pageAssetsBaseUrl}user-page-metadata/metadata-1`
+      `${config.pageMetadataBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
+      `${config.pageMetadataBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`,
+      `${config.pageMetadataBaseUrl}user-page-metadata/metadata-1`
     ]);
     for (const { init } of calls) {
       const headers = new Headers(init?.headers);
@@ -97,9 +122,9 @@ describe('静态平台页面资产客户端', () => {
       .resolves.toMatchObject({ revisionId: 'rev-2', revisionNumber: 2, baseRevisionId: 'rev-1' });
 
     expect(calls.map(({ url, init }) => [init?.method, url])).toEqual([
-      ['POST', `${config.pageAssetsBaseUrl}user-page-metadata`],
-      ['GET', `${config.pageAssetsBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`],
-      ['PUT', `${config.pageAssetsBaseUrl}user-page-metadata/metadata-1`]
+      ['POST', `${config.pageMetadataBaseUrl}user-page-metadata`],
+      ['GET', `${config.pageMetadataBaseUrl}user-page-metadata?pageNo=1&pageSize=1000&needDefinition=false`],
+      ['PUT', `${config.pageMetadataBaseUrl}user-page-metadata/metadata-1`]
     ]);
     expect(JSON.parse(String(calls[0]?.init?.body))).toEqual({
       page_id: 'report',
@@ -123,7 +148,7 @@ describe('静态平台页面资产客户端', () => {
     await client.listPages();
     installRuntimeConfig({
       ...config,
-      pageAssetsBaseUrl: '/new-assets/user-page-metadata',
+      pageMetadataBaseUrl: '/new-assets/user-page-metadata',
       authToken: 'token-2',
       operatorId: 'operator-2'
     });
@@ -134,7 +159,7 @@ describe('静态平台页面资产客户端', () => {
   });
 
   it('未注入完整配置时在发网前失败', async () => {
-    installRuntimeConfig({ ...config, pageAssetsBaseUrl: '' });
+    installRuntimeConfig({ ...config, pageMetadataBaseUrl: '' });
     const fetchImpl = vi.fn<typeof fetch>();
     const client = createPageAssetsClient({ fetchImpl });
     await expect(client.listPages()).rejects.toMatchObject({

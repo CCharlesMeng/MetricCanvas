@@ -4,7 +4,7 @@ export {
   installLocalDevRuntimeConfig,
   installRuntimeConfig,
   readRuntimeConfig,
-  readPageAssetsBaseUrl,
+  readPageMetadataBaseUrl,
   MISSING_RUNTIME_CONFIG_MESSAGE,
   type InjectedRuntimeConfig
 } from '@metriccanvas/application-runtime';

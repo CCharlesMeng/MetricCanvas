@@ -81,7 +81,7 @@ export function createPageAssetsClient({
   }
 
   function collectionUrl(config: InjectedRuntimeConfig): string {
-    const base = config.pageAssetsBaseUrl.replace(/\/+$/, '');
+    const base = config.pageMetadataBaseUrl.replace(/\/+$/, '');
     return base.endsWith('/user-page-metadata') ? base : `${base}/user-page-metadata`;
   }
 
@@ -96,11 +96,12 @@ export function createPageAssetsClient({
       'X-Auth-Token': config.authToken,
       'X-Operator-Id': config.operatorId
     });
+    if (config.cftk) headers.set('cftk', config.cftk);
     if (body !== undefined) headers.set('content-type', 'application/json');
     const response = await fetchImpl(url, {
       method,
       headers,
-      credentials: 'same-origin',
+      credentials: 'include',
       ...(signal ? { signal } : {}),
       ...(body === undefined ? {} : { body: JSON.stringify(body) })
     });

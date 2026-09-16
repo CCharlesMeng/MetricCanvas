@@ -7,7 +7,7 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const errors = []; page.on('pageerror', (error) => errors.push(error.message));
 const root = process.env.S1_BASE_URL || 'http://127.0.0.1:5181';
 let stored = propertyFixture(), revision = 1; const commands = [], reads = [];
-await page.addInitScript(() => { window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageAssetsBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'property-user', workspaceId: 'property-workspace' }; });
+await page.addInitScript(() => { window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageMetadataBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'property-user', workspaceId: 'property-workspace' }; });
 await page.route('**/fixture-assets/user-page-metadata**', async (route) => {
   expect(route.request().method()).toBe('GET'); reads.push(revision);
   const value = { page_metadata_id: 'property-resource', page_id: stored.id, revision_id: `r${revision}`, revision_number: revision, page_metadata_definition: JSON.stringify(stored) };
