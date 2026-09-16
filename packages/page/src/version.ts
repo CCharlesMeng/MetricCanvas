@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 3;
+const CURRENT_MINOR = 4;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -33,6 +33,13 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'named-to-date-windows': {
+    minor: 4, description: '具名年初/月初至报告基准期窗口',
+    usedAt: (document) => dataSourcePaths(document, d =>
+      Object.values(record(record(record(d.source)?.query)?.paramBindings) ?? {}).some(b =>
+        ['yearToDate', 'monthToDate'].includes(String(record(record(b)?.window)?.kind))
+      )).map(p => `${p}/source/query/paramBindings`)
+  },
   'time-params': {
     minor: 3, description: '确定性日期/月参数与查询时间窗口绑定',
     usedAt: (document) => {

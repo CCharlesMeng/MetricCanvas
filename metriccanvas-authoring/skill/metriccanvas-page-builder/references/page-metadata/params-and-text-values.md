@@ -19,12 +19,12 @@
 
 查询通过 `paramBindings.<参数id> = {target:"time",window:...}` 引用必需时间参数。每个查询只有一个时间参数来源，不与时间filterBindings共同控制；query.body内必须保留filter.time，不能同时声明start/end。month参数要求period=month，date参数要求period=day；这只是第一版接入限制，不是把输入精度与指标统计周期等同。
 
-窗口：`{kind:"period",unit:"day"|"month"|"year",offset?:整数}` 表示完整周期（offset缺省0）；`{kind:"lastN",unit:"day"|"month",n:正整数}` 表示含基准期的最近N期；`{kind:"toDate",unit:"month"|"year"}` 表示自然月/年起点至基准期。月参数不能推断某一天；lastN单位须与输入精度一致（month→month、date→day）。日期计算为确定性日历算术，不读取时钟，不受进程时区影响；起止包含。生成窗口越出0001—9999年时报错。
+窗口：`{kind:"period",unit:"day"|"month"|"year",offset?:整数}` 表示完整周期（offset缺省0）；`{kind:"lastN",unit:"day"|"month",n:正整数}` 表示含基准期的最近N期；6.4新增 `{kind:"monthToDate"}` / `{kind:"yearToDate"}` 表示自然月/年起点至基准期，不读取系统今天，无需unit。旧 `{kind:"toDate",unit:"month"|"year"}` 保持兼容。月参数不能推断某一天；lastN单位须与输入精度一致（month→month、date→day）。日期计算为确定性日历算术，不读取时钟，不受进程时区影响；起止包含。生成窗口越出0001—9999年时报错。
 
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
 
-页面协议 6.3。结构真源为本册[schema.json](schema.json)，SHA256 `716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96`。字段表自动生成；可选不等于有默认值。
+页面协议 6.4。结构真源为本册[schema.json](schema.json)，SHA256 `658115448330391be3903ba7bae6968d91b202e9df23c456506d3c28ec67cb09`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -512,7 +512,7 @@ Schema位置：`#/definitions/timeWindow/oneOf/2`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["kind","unit"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f322f70726f706572746965732f6b696e64"></a>
 
@@ -522,17 +522,65 @@ Schema位置：`#/definitions/timeWindow/oneOf/2/properties/kind`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
+| "string" | 本分支必填 | const="yearToDate" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "yearToDate" | 自然年起点至绑定参数的报告基准期，不读取系统今天（6.4）。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f33"></a>
+
+### `@timeWindow · oneOf[3]`
+
+Schema位置：`#/definitions/timeWindow/oneOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f332f70726f706572746965732f6b696e64"></a>
+
+### `@timeWindow · oneOf[3].kind`
+
+Schema位置：`#/definitions/timeWindow/oneOf/3/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="monthToDate" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "monthToDate" | 自然月起点至绑定参数的报告基准期，不读取系统今天（6.4）。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f34"></a>
+
+### `@timeWindow · oneOf[4]`
+
+Schema位置：`#/definitions/timeWindow/oneOf/4`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["kind","unit"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f342f70726f706572746965732f6b696e64"></a>
+
+### `@timeWindow · oneOf[4].kind`
+
+Schema位置：`#/definitions/timeWindow/oneOf/4/properties/kind`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
 | "string" | 本分支必填 | const="toDate" | Schema未设默认；装配/运行时默认见语义说明 | 判别结构分支。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "toDate" | 基准所在月/年的起点至基准期，包含基准期。 |
+| "toDate" | 兼容6.3的旧写法，新文档优先使用yearToDate或monthToDate。 |
 
-<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f322f70726f706572746965732f756e6974"></a>
+<a id="schema-232f646566696e6974696f6e732f74696d6557696e646f772f6f6e654f662f342f70726f706572746965732f756e6974"></a>
 
-### `@timeWindow · oneOf[2].unit`
+### `@timeWindow · oneOf[4].unit`
 
-Schema位置：`#/definitions/timeWindow/oneOf/2/properties/unit`。
+Schema位置：`#/definitions/timeWindow/oneOf/4/properties/unit`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
@@ -609,5 +657,7 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - `#/definitions/timeWindow/oneOf/0`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/rolling/source/query/paramBindings/report-month/window`。
 - `#/definitions/timeWindow/oneOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/to-date/source/query/paramBindings/report-month/window`。
+- `#/definitions/timeWindow/oneOf/3`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/month-to-date/source/query/paramBindings/report-month/window`。
+- `#/definitions/timeWindow/oneOf/4`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window`。
 - `#/definitions/textValue/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/legend/title`。
 - `#/definitions/textValue/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/sections/0/components/4/props/title`。

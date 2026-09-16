@@ -1,9 +1,9 @@
 {
-  "schemaVersion": "6.3",
+  "schemaVersion": "6.4",
   "layout": "report",
   "id": "flow-analysis-report-params",
   "meta": {
-    "description": "流水分析报告（确定性时间与维度参数版）。代表处与报告月份通过 params.default 保存；所有查询显式绑定，不按最新期回退。月度指标取报告当月，趋势取所在全年。沿用演示查询定义，实际取数需数据服务支持对应字段与指标口径。"
+    "description": "流水分析报告（确定性时间与维度参数版）。代表处与报告月份通过 params.default 保存；所有查询显式绑定，不按最新期回退。月度指标取报告当月；趋势展示所在全年、上月、近12个月和年初至报告月份。沿用演示查询定义，实际取数需数据服务支持对应字段与指标口径。"
   },
   "dataSources": {
     "flow-kpis": {
@@ -969,6 +969,295 @@
           }
         }
       }
+    },
+    "flow-previous-month": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "queryField": "month"
+        },
+        "captured-at": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "采集时间",
+          "queryField": "captured-at"
+        },
+        "core-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-actual"
+        },
+        "communication-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-actual"
+        },
+        "core-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-forecast"
+        },
+        "communication-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-forecast"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month",
+                  "captured-at"
+                ],
+                "output_metrics": [
+                  "core-actual",
+                  "communication-actual",
+                  "core-forecast",
+                  "communication-forecast"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "representative-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "period",
+                "unit": "month",
+                "offset": -1
+              }
+            }
+          }
+        }
+      }
+    },
+    "flow-last-12-months": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "queryField": "month"
+        },
+        "captured-at": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "采集时间",
+          "queryField": "captured-at"
+        },
+        "core-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-actual"
+        },
+        "communication-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-actual"
+        },
+        "core-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-forecast"
+        },
+        "communication-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-forecast"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month",
+                  "captured-at"
+                ],
+                "output_metrics": [
+                  "core-actual",
+                  "communication-actual",
+                  "core-forecast",
+                  "communication-forecast"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "representative-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "lastN",
+                "unit": "month",
+                "n": 12
+              }
+            }
+          }
+        }
+      }
+    },
+    "flow-year-to-date": {
+      "fields": {
+        "month": {
+          "type": "string",
+          "role": "dimension",
+          "label": "月份",
+          "queryField": "month"
+        },
+        "captured-at": {
+          "type": "datetime",
+          "role": "dimension",
+          "label": "采集时间",
+          "queryField": "captured-at"
+        },
+        "core-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-actual"
+        },
+        "communication-actual": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-actual"
+        },
+        "core-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "Core流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "core-forecast"
+        },
+        "communication-forecast": {
+          "type": "money",
+          "role": "measure",
+          "currency": "CNY",
+          "label": "云通信流水(预测)",
+          "defaultFormat": "cny-adaptive",
+          "nullable": true,
+          "queryField": "communication-forecast"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month",
+                  "captured-at"
+                ],
+                "output_metrics": [
+                  "core-actual",
+                  "communication-actual",
+                  "core-forecast",
+                  "communication-forecast"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          },
+          "paramBindings": {
+            "representative-office": {
+              "target": "dimension",
+              "queryField": "代表处"
+            },
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "yearToDate"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "sections": [
@@ -994,7 +1283,7 @@
                 "param": "report-month"
               }
             },
-            "subtitle": "<p>本报告按指定代表处和报告月份查询。月度指标取报告当月，月度趋势覆盖报告所在全年；指定期间无数据时显示空结果。</p>",
+            "subtitle": "<p>本报告按指定代表处和报告月份查询。月度指标取报告当月，全年趋势覆盖所在自然年；时间范围对照另展示上月、近12个月（含报告月份）、年初至报告月份。指定期间无数据时显示空结果。</p>",
             "subtitleFormat": "semanticHtml",
             "decoration": "shortBar"
           }
@@ -1243,6 +1532,162 @@
                 "stackOrder": 1
               }
             ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-previous-month",
+      "title": "上月流水趋势",
+      "container": "panel",
+      "components": [
+        {
+          "id": "flow-previous-month-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-previous-month"
+          },
+          "props": {
+            "variant": "reportForecast",
+            "categoryField": "month",
+            "stacked": true,
+            "rounded": true,
+            "showSegmentLabels": true,
+            "showStackTotalLabels": true,
+            "series": [
+              {
+                "field": "core-actual",
+                "label": "Core流水",
+                "role": "actual",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-actual",
+                "label": "云通信流水",
+                "role": "actual",
+                "stackOrder": 1
+              },
+              {
+                "field": "core-forecast",
+                "label": "Core流水(预测)",
+                "role": "forecast",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-forecast",
+                "label": "云通信流水(预测)",
+                "role": "forecast",
+                "stackOrder": 1
+              }
+            ],
+            "title": "上月流水趋势"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-last-12-months",
+      "title": "近12个月流水趋势（含报告月份）",
+      "container": "panel",
+      "components": [
+        {
+          "id": "flow-last-12-months-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-last-12-months"
+          },
+          "props": {
+            "variant": "reportForecast",
+            "categoryField": "month",
+            "stacked": true,
+            "rounded": true,
+            "showSegmentLabels": true,
+            "showStackTotalLabels": true,
+            "series": [
+              {
+                "field": "core-actual",
+                "label": "Core流水",
+                "role": "actual",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-actual",
+                "label": "云通信流水",
+                "role": "actual",
+                "stackOrder": 1
+              },
+              {
+                "field": "core-forecast",
+                "label": "Core流水(预测)",
+                "role": "forecast",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-forecast",
+                "label": "云通信流水(预测)",
+                "role": "forecast",
+                "stackOrder": 1
+              }
+            ],
+            "title": "近12个月流水趋势（含报告月份）"
+          }
+        }
+      ]
+    },
+    {
+      "id": "flow-year-to-date",
+      "title": "年初至报告月份流水趋势",
+      "container": "panel",
+      "components": [
+        {
+          "id": "flow-year-to-date-chart",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-year-to-date"
+          },
+          "props": {
+            "variant": "reportForecast",
+            "categoryField": "month",
+            "stacked": true,
+            "rounded": true,
+            "showSegmentLabels": true,
+            "showStackTotalLabels": true,
+            "series": [
+              {
+                "field": "core-actual",
+                "label": "Core流水",
+                "role": "actual",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-actual",
+                "label": "云通信流水",
+                "role": "actual",
+                "stackOrder": 1
+              },
+              {
+                "field": "core-forecast",
+                "label": "Core流水(预测)",
+                "role": "forecast",
+                "stackOrder": 2
+              },
+              {
+                "field": "communication-forecast",
+                "label": "云通信流水(预测)",
+                "role": "forecast",
+                "stackOrder": 1
+              }
+            ],
+            "title": "年初至报告月份流水趋势"
           }
         }
       ]

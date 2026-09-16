@@ -196,6 +196,9 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
+    if int(value["schemaVersion"].split(".")[1]) < 4:
+        paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
+        issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
     if int(value["schemaVersion"].split(".")[1]) < 3:
         paths = [f"/params/{i}" for i, p in enumerate(value.get("params", [])) if p["type"] == "time"]
         paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("target") == "time" for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
@@ -2246,7 +2249,7 @@ def _matches_time_value(value: Any, granularity: Any) -> bool:
 def _time_window_compatible(granularity: str, window: Mapping[str, Any]) -> bool:
     if window["kind"] == "lastN":
         return window["unit"] == ("month" if granularity == "month" else "day")
-    return granularity != "month" or window["unit"] != "day"
+    return window["kind"] != "period" or granularity != "month" or window["unit"] != "day"
 
 
 def _valid_default_time_window(declaration: Mapping[str, Any], window: Mapping[str, Any]) -> bool:

@@ -110,7 +110,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
-  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '7.0']) {
+  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '6.4', '7.0']) {
     for (const declaration of [
       {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
       { layout: 'report' }, { layout: 'dashboard' },
@@ -153,6 +153,16 @@ async function buildProductOutputs(): Promise<OutputMap> {
     timeCases.push({name, input, expected: normalizePageDocument(input)});
   };
   timeCase('month-windows', () => {});
+  timeCase('named-window-old-version', p => { p.schemaVersion = '6.3'; });
+  timeCase('month-to-date', p => { p.dataSources.current.source.query.paramBindings['report-month'].window = {kind:'monthToDate'}; });
+  timeCase('named-window-extra-unit', p => { p.dataSources.current.source.query.paramBindings['report-month'].window = {kind:'yearToDate',unit:'year'}; });
+  timeCase('legacy-to-date', p => {
+    p.schemaVersion = '6.3';
+    for (const source of Object.values(p.dataSources) as any[]) {
+      const binding = source.source.query.paramBindings['report-month'];
+      if (binding.window.kind === 'yearToDate' || binding.window.kind === 'monthToDate') binding.window = {kind:'toDate',unit:binding.window.kind === 'yearToDate' ? 'year' : 'month'};
+    }
+  });
   timeCase('required-no-default', p => { delete p.params[0].default; });
   timeCase('date-windows', p => {
     p.params[0].granularity = 'date'; p.params[0].default = '2024-02-29';

@@ -33,6 +33,8 @@ interface CustomerActivityInspectionFixture {
 }
 
 interface FlowAnalysisQueryFixture {
+  /** 趋势行的实际年月；独立于月份显示文字。 */
+  rowMonths?: string[];
   output_dims: string[];
   output_metrics: string[];
   time: DqeTimeRange;
@@ -296,7 +298,15 @@ function executeFlowAnalysisReport(
     }
     const normalizeMonth = (v: string) => /^\d{6}$/.test(v) ? `${v.slice(0,4)}-${v.slice(4)}` : v;
     const hasSample = office === '北京代表处' && time.start === normalizeMonth(query.time.start) && time.end === normalizeMonth(query.time.end);
-    return successResult(item, hasSample ? query.rows.map(row => ({...row})) : [], flowAnalysisMetadata(query));
+    const { start, end } = time;
+    // 非聚合趋势按显式年月筛选已有行；跨年和缺失月份不补造、不换期。
+    const rows = office === '北京代表处' && query.time.is_aggregate === false && query.rowMonths
+      ? query.rows.filter((_, index) => {
+          const rowMonth = query.rowMonths?.[index];
+          return rowMonth !== undefined && rowMonth >= start && rowMonth <= end;
+        })
+      : hasSample ? query.rows : [];
+    return successResult(item, rows.map(row => ({...row})), flowAnalysisMetadata(query));
   }
   if (!equalJson(item.filter.dims, expectedDims)) {
     return unsupported('流水分析报告 filter.dims 与已验证查询不一致');

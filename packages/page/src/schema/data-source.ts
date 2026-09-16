@@ -34,6 +34,8 @@ const dslItemZ = z.record(z.string(), z.unknown());
 export const timeWindowZ = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('period'), unit: z.enum(['day', 'month', 'year']), offset: z.int().optional() }).strict(),
   z.object({ kind: z.literal('lastN'), unit: z.enum(['day', 'month']), n: z.int().min(1) }).strict(),
+  z.object({ kind: z.literal('yearToDate') }).strict(),
+  z.object({ kind: z.literal('monthToDate') }).strict(),
   z.object({ kind: z.literal('toDate'), unit: z.enum(['month', 'year']) }).strict()
 ]).meta({ id: 'timeWindow' });
 

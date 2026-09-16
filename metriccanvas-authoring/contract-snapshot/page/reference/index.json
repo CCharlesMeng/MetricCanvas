@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.3",
-  "schemaSha256": "716d55d27e8ac6026ed8c3f2174eb0b98c80dc9f52a582aa377354e098615c96",
+  "schemaVersion": "6.4",
+  "schemaSha256": "658115448330391be3903ba7bae6968d91b202e9df23c456506d3c28ec67cb09",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "9f9a788e095252632ef23c23613ea44ed969cb76387873a0d921f25c15785515"
+      "sha256": "2060bfb874e448b9a6e64577592d62d38a2fe4b33e6062299f21927c63174c19"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -116,7 +116,7 @@
     },
     {
       "file": "packages/page/src/time-param.ts",
-      "sha256": "9198a71d56f401860c2f4c7242d3c38169be7e8c17981d7e9d852dc1c0f46aba"
+      "sha256": "d567d0457111b52d8f854c26e7ba7434470ef9111436082ad85e1816b77dfacb"
     },
     {
       "file": "packages/page/src/validate.ts",
@@ -1050,12 +1050,13 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\",\"6.3\"]",
+      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\"]",
       "enum": [
         "6.0",
         "6.1",
         "6.2",
-        "6.3"
+        "6.3",
+        "6.4"
       ]
     },
     {
@@ -3672,7 +3673,7 @@
       "required": "独立分支（不合并required）",
       "module": "params-and-text-values.md",
       "type": "\"object\"",
-      "constraints": "required=[\"kind\",\"unit\"]; additionalProperties=false"
+      "constraints": "required=[\"kind\"]; additionalProperties=false"
     },
     {
       "pointer": "#/definitions/timeWindow/oneOf/2/properties/kind",
@@ -3680,12 +3681,46 @@
       "required": "本分支必填",
       "module": "params-and-text-values.md",
       "type": "\"string\"",
+      "constraints": "const=\"yearToDate\"",
+      "const": "yearToDate"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/3",
+      "path": "@timeWindow · oneOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"kind\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/3/properties/kind",
+      "path": "@timeWindow · oneOf[3].kind",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "const=\"monthToDate\"",
+      "const": "monthToDate"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/4",
+      "path": "@timeWindow · oneOf[4]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"kind\",\"unit\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/timeWindow/oneOf/4/properties/kind",
+      "path": "@timeWindow · oneOf[4].kind",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
       "constraints": "const=\"toDate\"",
       "const": "toDate"
     },
     {
-      "pointer": "#/definitions/timeWindow/oneOf/2/properties/unit",
-      "path": "@timeWindow · oneOf[2].unit",
+      "pointer": "#/definitions/timeWindow/oneOf/4/properties/unit",
+      "path": "@timeWindow · oneOf[4].unit",
       "required": "本分支必填",
       "module": "params-and-text-values.md",
       "type": "\"string\"",
@@ -10136,6 +10171,18 @@
       "module": "params-and-text-values.md",
       "file": "examples/time-params-page.json",
       "pointer": "#/dataSources/to-date/source/query/paramBindings/report-month/window"
+    },
+    {
+      "schemaPointer": "#/definitions/timeWindow/oneOf/3",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/month-to-date/source/query/paramBindings/report-month/window"
+    },
+    {
+      "schemaPointer": "#/definitions/timeWindow/oneOf/4",
+      "module": "params-and-text-values.md",
+      "file": "examples/time-params-page.json",
+      "pointer": "#/dataSources/legacy-to-date/source/query/paramBindings/report-month/window"
     },
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",

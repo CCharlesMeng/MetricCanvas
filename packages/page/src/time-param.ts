@@ -3,6 +3,7 @@ export type TimeParamGranularity = 'month' | 'date';
 export type TimeWindow =
   | { kind: 'period'; unit: 'day' | 'month' | 'year'; offset?: number }
   | { kind: 'lastN'; unit: 'day' | 'month'; n: number }
+  | { kind: 'yearToDate' | 'monthToDate' }
   | { kind: 'toDate'; unit: 'month' | 'year' };
 
 /** 只接受 0001—9999 年的规范日历值，UTC 仅用于日历算术，不代表业务时区。 */
@@ -17,7 +18,7 @@ export function matchesTimeValue(value: unknown, granularity: TimeParamGranulari
 
 export function timeWindowCompatible(granularity: TimeParamGranularity, window: TimeWindow): boolean {
   if (window.kind === 'lastN') return window.unit === (granularity === 'month' ? 'month' : 'day');
-  return granularity !== 'month' || window.unit !== 'day';
+  return window.kind !== 'period' || granularity !== 'month' || window.unit !== 'day';
 }
 
 /** 起止包含；不访问系统时钟，不查询最新期，不改变指标口径。 */
@@ -43,7 +44,7 @@ export function resolveTimeWindow(value: string, window: TimeWindow): { start: s
     if (!Number.isSafeInteger(window.n) || window.n < 1) throw new Error('滚动周期数量必须为正安全整数');
     start = window.unit === 'month' ? calendarDate(year, month - window.n + 1, 1) : calendarDate(year, month, day - window.n + 1);
   } else {
-    start = calendarDate(year, window.unit === 'year' ? 1 : month, 1);
+    start = calendarDate(year, (window.kind === 'yearToDate' || (window.kind === 'toDate' && window.unit === 'year')) ? 1 : month, 1);
   }
   return { start: serialize(start, granularity), end: serialize(end, granularity) };
 }

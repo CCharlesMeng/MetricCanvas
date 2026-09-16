@@ -3,6 +3,10 @@ import { resolveTimeWindow } from '../src/time-param';
 
 describe('确定性日历窗口，不读取系统日期或最新数据期', () => {
   it.each([
+    ['2026-03', { kind: 'yearToDate' }, '2026-01', '2026-03'],
+    ['2024-02-29', { kind: 'yearToDate' }, '2024-01-01', '2024-02-29'],
+    ['2024-02-29', { kind: 'monthToDate' }, '2024-02-01', '2024-02-29'],
+    ['2026-03', { kind: 'monthToDate' }, '2026-03', '2026-03'],
     ['2026-03', { kind: 'period', unit: 'month' }, '2026-03', '2026-03'],
     ['2026-01', { kind: 'period', unit: 'month', offset: -1 }, '2025-12', '2025-12'],
     ['2026-03', { kind: 'period', unit: 'year', offset: -1 }, '2025-01', '2025-12'],

@@ -3,7 +3,7 @@ import { expect, it } from 'vitest';
 import { validate } from '../src';
 
 const document = () => JSON.parse(readFileSync('packages/page/fixtures/contract-valid/time-params-page.json','utf8'));
-it('6.3 时间参数及五种实际查询窗口通过完整校验', () => expect(validate(document())).toEqual([]));
+it('6.4 时间参数及具名、兼容查询窗口通过完整校验', () => expect(validate(document())).toEqual([]));
 it.each([
   ['版本下限', (p: any) => { p.schemaVersion = '6.2'; }],
   ['非法月份', (p: any) => { p.params[0].default = '2026-13'; }],
@@ -23,4 +23,23 @@ it.each([
 ])('%s被拒绝', (_, mutate) => {
   const raw = document(); mutate(raw);
   expect(validate(raw).length).toBeGreaterThan(0);
+});
+
+it.each(['yearToDate', 'monthToDate'])('%s 从6.4引入且不接受unit', kind => {
+  const raw = document();
+  raw.dataSources.current.source.query.paramBindings['report-month'].window = {kind};
+  expect(validate(raw)).toEqual([]);
+  raw.schemaVersion = '6.3';
+  expect(validate(raw).some(e => e.path.endsWith('/paramBindings'))).toBe(true);
+  raw.schemaVersion = '6.4';
+  raw.dataSources.current.source.query.paramBindings['report-month'].window.unit = 'year';
+  expect(validate(raw).length).toBeGreaterThan(0);
+});
+it('6.3 旧toDate写法保持兼容', () => {
+  const raw = document(); raw.schemaVersion = '6.3';
+  for (const d of Object.values(raw.dataSources) as any[]) {
+    const b = d.source.query.paramBindings['report-month'];
+    if (b.window.kind === 'yearToDate' || b.window.kind === 'monthToDate') b.window = {kind:'toDate',unit:b.window.kind === 'yearToDate' ? 'year' : 'month'};
+  }
+  expect(validate(raw)).toEqual([]);
 });

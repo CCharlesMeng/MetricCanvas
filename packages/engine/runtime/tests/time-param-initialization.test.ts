@@ -12,11 +12,15 @@ function parse(raw: unknown): Page {
   return parsed.page;
 }
 
-it('月份与代表处进入全部9个最终查询；跨年、空结果均不回退，模板不变', async () => {
+it('月份与代表处进入12个数据源，等价查询复用；跨年、空结果均不回退，模板不变', async () => {
   const raw = document();
   const before = JSON.stringify(raw);
   const parsed = parse(raw);
-  for (const month of ['2026-03', '2027-01', '2099-12']) {
+  for (const [month, previous, rollingStart, yearStart, queryCount] of [
+    ['2026-03', '2026-02', '2025-04', '2026-01', 12],
+    ['2027-01', '2026-12', '2026-02', '2027-01', 12],
+    ['2099-12', '2099-11', '2099-01', '2099-01', 10]
+  ] as const) {
     const inputs = resolvePageParams(`?report-month=${month}&representative-office=上海代表处`, parsed.params ?? []);
     expect(inputs.missing).toEqual([]);
     const loaded = initializePageParams(parsed, inputs.values);
@@ -28,12 +32,22 @@ it('月份与代表处进入全部9个最终查询；跨年、空结果均不回
     }}, createFilterState());
     const dispose = stream.subscribe(value => { snapshots = value; });
     try {
-      await vi.waitFor(() => expect(queries).toHaveLength(9));
+      await vi.waitFor(() => expect(queries).toHaveLength(queryCount));
       await vi.waitFor(() => expect([...snapshots.values()].every(s => s.status === 'empty')).toBe(true));
       const items = queries.map(effectiveDqeItem);
       const times = items.map(item => item.filter as {time: {start: string; end: string}}).map(f => f.time);
-      expect(times.filter(t => t.start === month && t.end === month)).toHaveLength(7);
-      expect(times.filter(t => t.start === `${month.slice(0,4)}-01` && t.end === `${month.slice(0,4)}-12`)).toHaveLength(2);
+      expect(times.filter(t => t.start === month && t.end === month).length).toBeGreaterThanOrEqual(7);
+      expect(times.filter(t => t.start === `${month.slice(0,4)}-01` && t.end === `${month.slice(0,4)}-12`).length).toBeGreaterThanOrEqual(2);
+      for (const [id, start, end] of [
+        ['flow-previous-month', previous, previous],
+        ['flow-last-12-months', rollingStart, month],
+        ['flow-year-to-date', yearStart, month]
+      ]) {
+        const source = loaded.dataSources[id].source;
+        if (source.type !== 'query') throw new Error('expected query');
+        expect(source.query.body.dsl_list[0].filter).toMatchObject({time: {start, end}});
+        expect(times).toContainEqual(expect.objectContaining({start, end}));
+      }
       for (const item of items) expect(item.filter).toMatchObject({dims:[{dim_name:'代表处',dim_value_list:['上海代表处']}]});
     } finally { dispose(); }
   }

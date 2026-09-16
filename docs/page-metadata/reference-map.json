@@ -1146,8 +1146,11 @@
     "yellowCard": "黄牌呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "period": "时间窗口：基准所在完整周期；offset按指定unit移动周期。",
     "lastN": "含基准期的最近N期；时间参数窗口按自身日期/月精度计数。",
-    "toDate": "基准所在月/年的起点至基准期，包含基准期。",
-    "6.3": "当前作者写出版本，增加确定性日期/月参数与查询时间窗口绑定。"
+    "yearToDate": "自然年起点至绑定参数的报告基准期，不读取系统今天（6.4）。",
+    "monthToDate": "自然月起点至绑定参数的报告基准期，不读取系统今天（6.4）。",
+    "toDate": "兼容6.3的旧写法，新文档优先使用yearToDate或monthToDate。",
+    "6.3": "增加确定性日期/月参数与查询时间窗口绑定。",
+    "6.4": "当前作者写出版本，新增yearToDate和monthToDate具名窗口，终点为报告基准期。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

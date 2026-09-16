@@ -59,8 +59,8 @@
 | `{kind:"period",unit:"day",offset:-1}` | 基准日前一天 | 日参数2024-03-01→2024-02-29 |
 | `{kind:"lastN",unit:"month",n:12}` | 含基准月的最近12个月 | 2026-03→2025-04至2026-03 |
 | `{kind:"lastN",unit:"day",n:7}` | 含基准日的最近7天 | 2024-03-01→2024-02-24至2024-03-01 |
-| `{kind:"toDate",unit:"year"}` | 自然年起点至基准期 | 月参数2026-03→2026-01至03 |
-| `{kind:"toDate",unit:"month"}` | 自然月起点至基准期 | 日参数2026-03-15→2026-03-01至15 |
+| `{kind:"yearToDate"}` | 自然年起点至基准期 | 月参数2026-03→2026-01至03 |
+| `{kind:"monthToDate"}` | 自然月起点至基准期 | 日参数2026-03-15→2026-03-01至15 |
 
 `period.offset` 为整数，缺省0；移动的是完整周期，不进行月底日期猜测。`lastN.n` 为正整数；单位与输入精度一致。月参数不能使用day窗口。起止包含；日历算术不读取系统时间，也不受进程时区影响。派生窗口越出年份范围即拒绝。
 
@@ -79,3 +79,7 @@
 `pages/flow-analysis-report-params.json` 保存代表处与报告月份。7个月度查询使用当月窗口，2个月度趋势查询使用所在完整自然年；保留各指标与查询聚合设置。该页沿用已有演示查询字段，生产取数仍依赖数据服务支持相应契约。
 
 验证见 `packages/page/tests/time-params.test.ts`、`time-param-bindings.test.ts` 与 `packages/engine/runtime/tests/time-param-initialization.test.ts`。跨语言静态校验矩阵由 `tools/scripts/export-authoring-contracts.ts` 输出至 `contracts/metriccanvas/page/conformance/time-param-bindings.json`。
+
+## 6.4 窗口命名
+
+新页面优先使用 `yearToDate` / `monthToDate`，不带 `unit`，声明版本至少6.4。终点是绑定参数的报告基准期。旧 `toDate + unit` 继续兼容6.3。

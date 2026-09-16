@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.3**，公开读取兼容6.0/6.1/6.2/6.3。结构事实由 `packages/page/src/schema/` 单向导出；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.4**，公开读取兼容6.0/6.1/6.2/6.3/6.4。结构事实由 `packages/page/src/schema/` 单向导出；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -20,7 +20,7 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.3和layout；6.0的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.4和layout；6.0的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
 页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/plan/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
 
@@ -283,3 +283,5 @@ Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面�
 13. 校验与错误 → [模块参考](contracts/metriccanvas/page/reference/validation.md)。
 
 6.3 新增确定性时间参数与查询窗口绑定。日期/月取值固定于初始化，按指定时间查询，不回退最新期；结构、窗口边界与实施限制见[时间参数](docs/page-metadata/time-parameters.md)。
+
+6.4新增 `yearToDate` / `monthToDate` 具名窗口，不带unit，终点为绑定参数的报告基准期；保留6.3旧窗口写法兼容。

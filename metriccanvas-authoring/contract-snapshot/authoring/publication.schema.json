@@ -787,9 +787,10 @@
             "6.0",
             "6.1",
             "6.2",
-            "6.3"
+            "6.3",
+            "6.4"
           ],
-          "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3"
+          "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3 / 6.4"
         },
         "id": {
           "type": "string",
@@ -2406,6 +2407,32 @@
                 "kind",
                 "unit",
                 "n"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "yearToDate"
+                }
+              },
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "const": "monthToDate"
+                }
+              },
+              "required": [
+                "kind"
               ],
               "additionalProperties": false
             },

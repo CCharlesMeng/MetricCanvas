@@ -8,7 +8,7 @@ import { initializePageParams, resolvePageParams } from '../../../packages/engin
 it('参数报告接受代表处与时间条件；未配置样本的期间返回空结果且不回退', () => {
   const parsed = parsePage(JSON.parse(readFileSync('pages/flow-analysis-report-params.json','utf8')));
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
-  for (const [search, nonempty] of [['',8], ['report-month=2099-01',0], ['representative-office=上海代表处',0]] as const) {
+  for (const [search, nonempty] of [['',11], ['report-month=2099-01',0], ['representative-office=上海代表处',0]] as const) {
     const values = resolvePageParams(search, parsed.page.params ?? []).values;
     const page = initializePageParams(parsed.page,values);
     const results = Object.values(page.dataSources).map(source => {
@@ -17,6 +17,23 @@ it('参数报告接受代表处与时间条件；未配置样本的期间返回�
     });
     expect(results.every(r => r.code === 'SUCCESS')).toBe(true);
     expect(results.filter(r => r.data.length > 0)).toHaveLength(nonempty);
+  }
+});
+
+it('时间范围趋势返回范围内已有月份，不要求与全年样本范围完全相等', () => {
+  const parsed = parsePage(JSON.parse(readFileSync('pages/flow-analysis-report-params.json','utf8')));
+  if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
+  const page = initializePageParams(parsed.page, resolvePageParams('', parsed.page.params ?? []).values);
+  for (const [id, months] of [
+    ['flow-previous-month', ['1月']],
+    ['flow-last-12-months', ['1月', '2月']],
+    ['flow-year-to-date', ['1月', '2月']]
+  ] as const) {
+    const source = page.dataSources[id].source;
+    if (source.type !== 'query') throw new Error('expected query');
+    const result = executeDqeItem(source.query.body.dsl_list[0]);
+    expect(result.code).toBe('SUCCESS');
+    expect(result.data.map(row => row.month), id).toEqual(months);
   }
 });
 

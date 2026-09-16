@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.3",
+  "schemaVersion": "6.4",
   "layout": "report",
   "id": "time-params-page",
   "params": [
@@ -282,6 +282,114 @@
             "report-month": {
               "target": "time",
               "window": {
+                "kind": "yearToDate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "month-to-date": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          "paramBindings": {
+            "report-month": {
+              "target": "time",
+              "window": {
+                "kind": "monthToDate"
+              }
+            }
+          }
+        }
+      }
+    },
+    "legacy-to-date": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          },
+          "paramBindings": {
+            "report-month": {
+              "target": "time",
+              "window": {
                 "kind": "toDate",
                 "unit": "year"
               }
@@ -399,6 +507,46 @@
           },
           "data": {
             "main": "to-date"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "month-to-date",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "month-to-date"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "legacy-to-date",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "legacy-to-date"
           },
           "props": {
             "columns": [
