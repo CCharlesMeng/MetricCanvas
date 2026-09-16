@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createPageAssetsClient } from '../src/lib/page-assets-client';
+import { createAuthoringCoordinator, confirmedPageAssetCapabilities } from '../src/lib/workbench/authoring-coordinator';
 import { installRuntimeConfig } from '../src/lib/runtime-config';
 
 const config = {
@@ -178,10 +179,60 @@ it('rejects malformed CommonRsp and sends an explicit resource ID without redisc
   installRuntimeConfig(config);
   const malformed = createPageAssetsClient({ fetchImpl: async () => Response.json({ ...providerRevision, retCode: 0 }) });
   await expect(malformed.getLatest('report')).rejects.toMatchObject({ code: 'PAGE_ASSETS_RESPONSE_ERROR' });
-  const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(Response.json(providerRevision));
+  const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(Response.json({ ...providerRevision, page_metadata_id: 'metadata-exact' }));
   const client = createPageAssetsClient({ fetchImpl });
   await client.saveRevision('report', { ...command, baseRevisionId: 'rev-0', resourceId: 'metadata-exact' });
   expect(fetchImpl).toHaveBeenCalledTimes(1);
   expect(String(fetchImpl.mock.calls[0][0])).toContain('/user-page-metadata/metadata-exact');
   expect(fetchImpl.mock.calls[0][1]?.method).toBe('PUT');
+});
+
+it.each([
+  ['resource', { page_metadata_id: 'other-resource' }],
+  ['page', { page_id: 'other-page' }],
+  ['document', { page_metadata_definition: JSON.stringify({ ...document, id: 'other-page' }) }]
+])('rejects mismatched %s identity from current detail and update receipts', async (_field, mismatch) => {
+  installRuntimeConfig(config);
+  const fetchImpl = vi.fn<typeof fetch>(async (input) => String(input).includes('?')
+    ? Response.json({ retCode: '0', page_metadata_list: [providerRevision], total: 1 })
+    : Response.json({ ...providerRevision, ...mismatch }));
+  const client = createPageAssetsClient({ fetchImpl });
+  await expect(client.getLatest('report')).rejects.toMatchObject({ code: 'PAGE_ASSETS_RESPONSE_ERROR' });
+  await expect(client.saveRevision('report', { ...command, baseRevisionId: 'rev-0', resourceId: 'metadata-1' }))
+    .rejects.toMatchObject({ code: 'PAGE_ASSETS_RESPONSE_ERROR' });
+});
+
+it.each([
+  { page_id: 'other-page' },
+  { page_metadata_definition: JSON.stringify({ ...document, id: 'other-page' }) }
+])('rejects wrong-page creation receipts', async (mismatch) => {
+  installRuntimeConfig(config);
+  const client = createPageAssetsClient({ fetchImpl: async () => Response.json({ ...providerRevision, ...mismatch }) });
+  await expect(client.saveRevision('report', command)).rejects.toMatchObject({ code: 'PAGE_ASSETS_RESPONSE_ERROR' });
+});
+
+
+it('keeps a mismatched HTTP success unknown and prevents resubmission through the workbench', async () => {
+  installRuntimeConfig(config);
+  const page = { schemaVersion: '6.1', layout: 'report', id: 'report', dataSources: {}, sections: [
+    { id: 's', title: 's', container: 'panel', components: [
+      { id: 't', type: 'text', layout: { span: 12 }, props: { title: '标题', body: '正文' } }
+    ] }
+  ] };
+  const fetchImpl = vi.fn<typeof fetch>(async (input, init) => String(input).includes('?')
+    ? Response.json({ retCode: '0', page_metadata_list: [providerRevision], total: 1 })
+    : Response.json({ ...providerRevision, page_metadata_definition: JSON.stringify(page),
+        page_metadata_id: init?.method === 'PUT' ? 'wrong-resource' : 'metadata-1' }));
+  const client = createPageAssetsClient({ fetchImpl });
+  const coordinator = createAuthoringCoordinator({
+    port: { ...client, capabilities: confirmedPageAssetCapabilities },
+    identity: () => ({ actorId: 'operator-1', workspaceId: 'ws-1' }), operationId: () => 'save-1'
+  });
+  await coordinator.load('report');
+  await expect(coordinator.save()).resolves.toMatchObject({ status: 'unknown' });
+  await coordinator.save();
+  expect(fetchImpl.mock.calls.filter(([, init]) => init?.method === 'PUT')).toHaveLength(1);
+  expect(coordinator.snapshot().ref?.resourceId).toBe('metadata-1');
+  expect(coordinator.snapshot().draft?.pageDocument).toEqual(page);
+  coordinator.dispose();
 });

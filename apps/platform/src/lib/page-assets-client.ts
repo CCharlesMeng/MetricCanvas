@@ -157,15 +157,7 @@ export function createPageAssetsClient({
       config,
       { signal }
     );
-    const revision = revisionOf(payload, null);
-    if (revision.pageId !== pageId) {
-      throw new PageAssetsError(
-        'PAGE_ID_MISMATCH',
-        `页面目录与详情的 page_id 不一致:${pageId} != ${revision.pageId}`,
-        409
-      );
-    }
-    return revision;
+    return revisionOf(payload, null, pageId, metadataId);
   }
 
   return {
@@ -224,7 +216,7 @@ export function createPageAssetsClient({
             page_metadata_definition: command.document
           }
         });
-        return revisionOf(payload, null);
+        return revisionOf(payload, null, pageId);
       }
       const metadataId = command.resourceId ?? (await findRecord(pageId, config)).metadataId;
       const payload = await request(
@@ -238,21 +230,34 @@ export function createPageAssetsClient({
           }
         }
       );
-      return revisionOf(payload, command.baseRevisionId);
+      return revisionOf(payload, command.baseRevisionId, pageId, metadataId);
     }
   };
 }
 
 function revisionOf(
   payload: ProviderPageMetadata,
-  baseRevisionId: string | null
+  baseRevisionId: string | null,
+  expectedPageId: string,
+  expectedResourceId?: string
 ): PageRevision {
+  // A successful HTTP response with the wrong identity is an unknown write
+  // outcome, not a provider rejection that permits another submission.
+  const document = pageDocumentOf(payload.page_metadata_definition);
+  const pageId = requiredString(payload.page_id, 'page_id');
+  const resourceId = requiredString(payload.page_metadata_id, 'page_metadata_id');
+  if (pageId !== expectedPageId || document.id !== expectedPageId) {
+    throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产响应与请求的页面 ID 不一致。', 200);
+  }
+  if (expectedResourceId !== undefined && resourceId !== expectedResourceId) {
+    throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产响应与请求的资源 ID 不一致。', 200);
+  }
   return {
-    resourceId: requiredString(payload.page_metadata_id, 'page_metadata_id'),
-    pageId: requiredString(payload.page_id, 'page_id'),
+    resourceId,
+    pageId,
     revisionId: requiredString(payload.revision_id, 'revision_id'),
     revisionNumber: providerRevisionNumber(payload),
-    document: pageDocumentOf(payload.page_metadata_definition),
+    document,
     baseRevisionId,
     contentHash: '',
     dataContextVersion: null,
