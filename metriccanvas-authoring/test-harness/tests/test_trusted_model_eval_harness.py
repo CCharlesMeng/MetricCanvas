@@ -147,6 +147,95 @@ class TrustedTransportTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result['reason'],'RELAY_ROUTING_UNAVAILABLE')
             self.assertEqual(transport.calls,0)
 
+    async def test_error_reference_injection_and_explicit_examples_reach_shared_payload(self):
+        case=next(c for c in scenarios() if c['id']=='missing-data')
+        case['includeExamples']=True
+        class Recording(ScriptedTransport):
+            def __init__(self,turns):super().__init__(turns);self.requests=[]
+            async def complete(self,request):self.requests.append(deepcopy(request));return await super().complete(request)
+        transport=Recording(case['turns'])
+        with tempfile.TemporaryDirectory() as t:
+            folder=Path(t)/'run';result=await run_case(case,folder,transport)
+            self.assertEqual(result['modelRequests'],0)
+            events=json.loads((folder/'injection.json').read_text())['events']
+            errors=[e for e in events if e['path'].endswith('/errors.md')]
+            examples=[e for e in events if e['path'].endswith('/examples.md')]
+            self.assertEqual(len(errors),1);self.assertEqual(errors[0]['phase'],'first-tool-issue')
+            self.assertEqual(len(examples),1);self.assertEqual(examples[0]['phase'],'startup')
+            root=EVALS.parents[2]
+            error_text=(root/errors[0]['path']).read_text()
+            self.assertNotIn(error_text,json.dumps(transport.requests[0],ensure_ascii=False))
+            self.assertTrue(any(error_text in m['content'] for m in transport.requests[1]['messages'] if m['role']=='system'))
+            # Same fully prepared payload reaches mock HTTP; no credential read or network.
+            client=MockHttpClient({'model':'mock-only','usage':{'total_tokens':1},'choices':[{'message':{'role':'assistant','content':'mock'}}]})
+            http=HttpTransport(CONFIG,client_factory=lambda **kw:client)
+            payload=http.prepare_request({'messages':transport.requests[1]['messages'],'tools':transport.requests[1]['tools']})
+            await http.complete(payload)
+            self.assertIs(client.requests[0][1]['json'],payload)
+            self.assertTrue(any(error_text in m['content'] for m in client.requests[0][1]['json']['messages'] if m['role']=='system'))
+
+    async def test_preflight_without_config_never_reads_credentials(self):
+        from preflight import inspect
+        with patch('run_local.config',side_effect=AssertionError('Credential access forbidden')) as config_reader:
+            report=await inspect(EVALS.parents[2],surface='unified-content')
+        config_reader.assert_not_called()
+        self.assertEqual(report['modelRequests'],0)
+        self.assertTrue(report['configuration'].startswith('not-inspected'))
+        self.assertEqual(report['introspection']['status'],'pass')
+
+    def test_reference_availability_is_explicit_and_missing_errors_fails_closed(self):
+        from reference_injection import ReferenceInjection
+        case={'workflow':None,'expected':{}}
+        root=EVALS.parents[2];loader=ReferenceInjection(root,case)
+        loader.initial()
+        self.assertFalse(any(e['path'].endswith('/examples.md') for e in loader.events))
+        self.assertIn('not-available',loader.policy['examples'])
+        self.assertIsNone(loader.after_tools([{'ok':True}],1,0))
+        with tempfile.TemporaryDirectory() as t:
+            with self.assertRaisesRegex(ValueError,'ERROR_REFERENCE_UNAVAILABLE'):ReferenceInjection(Path(t),case).initial()
+
+    async def test_versioned_readonly_mapping_keeps_old_score_and_requires_semantic_evidence(self):
+        from protocol_acceptance import MAPPING
+        from trusted_scenarios import action
+        case={'id':'heldout-config','workflow':None,'mode':'existing','expected':{'noTools':True},
+              'prompts':['Explain the selected configuration without changing it.'],
+              'turns':[[action('read_page_context',use_selection=True)]]}
+        with tempfile.TemporaryDirectory() as t:
+            folder=Path(t)/'run';await run_case(case,folder,ScriptedTransport(case['turns']))
+            original=score(case,folder)
+            self.assertEqual(original['checks']['noTools']['status'],'inconclusive')
+            mapped=original['protocolAssessment'];self.assertEqual(mapped['mappingVersion'],'unified-content-readonly-v1')
+            for name in ['noMutationTools','noDiscovery','unchangedProgramDocument','successfulCurrentTargetRead']:
+                self.assertEqual(mapped['checks'][name]['status'],'pass',mapped)
+            self.assertEqual(mapped['checks']['configurationAnswerGrounded']['status'],'inconclusive')
+            evidence={p.name:sha(p) for p in folder.glob('program-tool-*.json')}
+            evidence.update({p.name:sha(p) for p in folder.glob('response-*.json')})
+            # Reviewer decision is a test fixture, never a real semantic/model score.
+            decision={'resultSha256':sha(folder/'result.json'),'mappingSha256':sha(MAPPING),'reviewer':'unit-test-only','reason':'Synthetic review fixture',
+                      'evidenceFiles':evidence,'criteria':{k:{'status':'pass','reason':'Synthetic test decision'} for k in ['configurationAnswerGrounded','noFalsePersistenceClaim']}}
+            review={'protocolReviews':{'unified-content-readonly-v1':decision}}
+            mapped=score(case,folder,review)['protocolAssessment']
+            self.assertEqual(mapped['checks']['configurationAnswerGrounded']['status'],'pass')
+            self.assertEqual(mapped['status'],'blocked')  # Scripted evidence can never become model success.
+            malformed=deepcopy(review);malformed['protocolReviews']['unified-content-readonly-v1']['criteria']=None
+            self.assertEqual(score(case,folder,malformed)['protocolAssessment']['checks']['configurationAnswerGrounded']['status'],'inconclusive')
+            decision['evidenceFiles']['response-1-1.json']='0'*64
+            mapped=score(case,folder,review)['protocolAssessment']
+            self.assertEqual(mapped['checks']['configurationAnswerGrounded']['status'],'inconclusive')
+            raw=json.loads((folder/'result.json').read_text())
+            raw['turns'][0]['calls'][0]['tools'].append({'name':'discover_data_context'})
+            (folder/'result.json').write_text(json.dumps(raw))
+            mapped=score(case,folder)['protocolAssessment']
+            self.assertEqual(mapped['checks']['noDiscovery']['status'],'fail')
+            raw['turns'][0]['calls'][0]['tools'].append({'name':'edit_page'})
+            (folder/'result.json').write_text(json.dumps(raw))
+            self.assertEqual(score(case,folder)['protocolAssessment']['checks']['noMutationTools']['status'],'fail')
+            first=raw['turns'][0]['calls'][0]['tools'][0]
+            output_path=folder/first['programFile'];output=json.loads(output_path.read_text())
+            output['range']['offset']=2;first['summary']=output
+            output_path.write_text(json.dumps(output));(folder/'result.json').write_text(json.dumps(raw))
+            self.assertEqual(score(case,folder)['protocolAssessment']['checks']['successfulCurrentTargetRead']['status'],'fail')
+
     def test_model_view_rejects_complete_artifact_and_source_records(self):
         with self.assertRaises(ValueError):model_view({'artifactEnvelope':{'document':{}},'ok':True})
         with self.assertRaises(ValueError):model_view({'modelSummary':{'artifactEnvelope':{}}})

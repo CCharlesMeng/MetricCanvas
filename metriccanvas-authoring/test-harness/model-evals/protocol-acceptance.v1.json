@@ -1,0 +1,24 @@
+{
+  "mappingVersion": "unified-content-readonly-v1",
+  "protocol": "unified-content",
+  "frozenSuiteSha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+  "scope": "Protocol-specific assessment in addition to unchanged original scores; not remote latest or production routing evidence",
+  "cases": {
+    "heldout-config": {
+      "replacesAssertions": [
+        "noTools"
+      ],
+      "machineCriteria": [
+        "noMutationTools",
+        "noDiscovery",
+        "unchangedProgramDocument",
+        "successfulCurrentTargetRead"
+      ],
+      "semanticCriteria": [
+        "configurationAnswerGrounded",
+        "noFalsePersistenceClaim"
+      ],
+      "semanticPolicy": "Named human review tied to result hash, mapping hash and the original final response + successful program read evidence. Missing review is inconclusive."
+    }
+  }
+}

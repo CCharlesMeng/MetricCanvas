@@ -1,39 +1,68 @@
-# 需要用户具体批准的真实模型评测
+# 当前统一协议的真实模型外发授权稿（2026-09-16）
 
-状态：blocked。尚未执行本轮真实模型请求。2026-09-15 的自动审批拒绝原理由：
+**状态：待用户明确批准；本稿不是批准。** 本轮准备不读取密钥、不发外部模型请求。当前基线 main `7583d806130723d857d3032779ffab650501e422`；执行前再固定集成HEAD、suite、工具Schema、注入策略与文件hash。
+
+## 历史拒绝事实
+
+2026-09-15 自动审批拒绝了使用工作区外既有配置的真实模型外发：
 
 > This invokes a real external model using a configuration outside the workspace and may transmit project-derived prompt/context data; the user authorized bounded real evaluation generally but did not specifically authorize this payload to this destination.
 
-## 具体请求
+原 S1 四工具授权稿与旧token样例保留在 `approval-request.s1-20260915.md`，仅供历史追溯，不能当当前协议或批准凭据。
 
-是否批准向 **DeepSeek / api.deepseek.com** 发送以下范围，用既有配置执行隔离的本地内容评测？使用已核验的历史 `/chat/completions` 协议，配置只从本机既有 `.env` 内存读取；不复制密钥。
+## 本次拟请求的明确范围
 
-- 请求模型：`deepseek-v4-flash`；历史返回 `deepseek-flash`，服务端固定版本无法核实。temperature=0，max_tokens=4096，thinking disabled，无网络重试。
-- 发送数据：项目 Skill Markdown 原文及本场景流程/布局参考、由实际内容 MCP 注册生成的工具说明与 JSON 输入 Schema（属于项目派生接口信息）、人工编写的中文任务、程序夹具的组件 ID/类型/标题、布局、基线引用/哈希、必要目标配置、模型自己的历史消息与内容工具安全摘要。
-- 包含 **Skill 文本、夹具摘要、从源码生成的工具 Schema**；不直接发送 Python/TypeScript 实现源码。静态 Skill 本身是项目内容，不能视为完全不出项目数据。
-- 不发送：API 密钥、Authorization 头的日志副本、其他环境变量、真实业务数据、完整页面、数据行、原始查询、完整产物、模型隐藏推理请求、Java/Relay/盘古凭据。网络认证本身仍须把 API 密钥通过 HTTPS Authorization 发送给 DeepSeek。
-- 9 场景 × 3 次独立会话；旧/新 Skill 各跑全工具诊断及生产配置，共最多 108 次场景执行、720 次模型请求。生产四工具与诊断四工具当前相同，仍分开记账，不宣称差异来自工具删减。
-- 每批最多 600,000 token，共四批最多 2,400,000 token；采用输入 UTF-8 字节数＋协议预留＋4096 输出的保守准入估算，实耗以 API usage 计数。若当前批预算不足，不运行余例，不自动追加预算。费用未知：没有核实本账号当前价格/折扣，API 历史未返回金额，不能提供可靠金额上限。
-- 每轮最多 6 模型请求、12 工具调用；配置/HTTP/协议错误、缺 usage、泄漏检测、超预算或工具越界立即停止批次并标 blocked，无重试。内容服务无保存/发布能力。
-- 缺数据服务的创建场景仍须明确 blocked；只读/局部编辑产物可离线校验。主实现 commit 和注入哈希冻结后才运行新 Skill；留出输出不反馈提示改写。
+是否批准以下 **当前五工具协议的两批模型评测**？
 
-## 脱敏代表样例
+| 项目 | 范围 |
+|---|---|
+| 目的服务 | DeepSeek，域名 `api.deepseek.com`，HTTPS `/chat/completions`；不含敏感URL参数 |
+| 请求模型/参数 | `deepseek-v4-flash`；temperature=0，max_tokens=4096，thinking disabled，无重试；历史响应名 `deepseek-flash`，固定服务端版本未核实 |
+| 内容服务 | 本机生产统一工厂 `metriccanvas-platform-content`，`read_page_context / discover_data_context / compose_page / create_content_page / edit_page` |
+| 可信输入 | 测试程序注入local-synthetic身份、scope/current-turn、源描述和内存候选存储；模型只持有opaque `context_ref`，续编使用 `candidate_ref` |
+| 场景 | 原冻结9例，10个用户轮次/一遍 × 每例3次 × diagnostic/production两批 = **54次场景执行、60用户轮次** |
+| 请求上限 | 每轮6模型请求、12工具调用；两批合计最多 **360模型请求、720本地工具调用** |
+| token上限 | 每批共享600,000 token，两批最多 **1,200,000 token**；不足时停批，不追加预算 |
+| 成本 | 未核实账号当前价格/折扣，历史API没有返回金额，无法可靠给出金额上限；此稿请求的是调用/token范围 |
+| 参考策略 | SKILL/tools及场景workflow/layout启动注入；实际工具issues首次出现后宿主注入errors；examples默认不可用，若本批预先选 `--include-examples` 则启动注入，模式必须固定记账 |
 
-以下结构展示会发送的类别，真实引用由程序当次生成：
+当前diagnostic与production都使用同一五工具集合，分开记录但不声称工具集差异或真实生产路由已经验证。**旧四工具baseline网络重跑不包含在本次请求范围**；旧runner及历史结果保留，如另需旧侧真实重跑，应单列载荷和追加预算。
+
+## 将发送的内容
+
+- **包含项目Skill Markdown原文**、本次实际注入的流程/布局/错误/可选例子；包含从实现生成的真实五工具说明和完整JSON输入Schema，属于项目派生接口内容。
+- 中文任务、local-synthetic夹具经 `read_page_context` 输出的配置投影（组件ID/类型、标题、列宽、布局、字段绑定、基线/候选引用和哈希等受控内容）。发现工具会返回合成源的业务域、版本、指标/维度匹配和解析结果；不是实际公司数据。
+- 模型自己的历史user/assistant/tool消息；内容工具仅modelSummary，读取工具仅安全投影，发现工具仅其受控结果。候选续写会包含opaque candidate_ref/version/hash。
+- 不直接发送Python/TypeScript实现源码；但Skill和工具Schema确实是项目内容。完整页面、数据行、原始查询、完整候选record、rootBinding、source_description_evidence、真实业务数据和其他环境变量留本机程序通道。
+- 密钥未来仅由批准后的HTTP分支从既有配置内存读取，作为HTTPS Authorization发送给DeepSeek；不写入模型messages、日志或manifest。不会发送Java/Relay/盘古凭据，也不请求隐藏推理。
+
+## 当前真实载荷的脱敏结构样例
 
 ```json
 {
   "trustedContext": {
-    "entry": "platform",
-    "page_id": "eval-random-id",
-    "baseline_token": "baseline-random-token",
-    "baselineRef": {"pageId": "edit-example", "revisionId": "fixture-r1", "resourceId": "isolated-eval"},
-    "documentSha256": "<fixture-hash>",
-    "layout": "report",
-    "sections": [{"id": "main", "components": [{"id": "table", "type": "table", "title": "Table"}]}]
+    "context_ref": "local-context-<random>",
+    "mode": "existing",
+    "baselineAuthority": "local-synthetic; remote latest unverified; next local turn uses last admitted candidate"
   },
   "userRequest": "把 table 的标题改为地域明细。"
 }
 ```
 
-另有系统消息携带实际 Skill 及已声明参考文本；工具定义含实际 `edit_page(baseline_token, request)` 输入 Schema；工具返回仅 `modelSummary`。完整 fixture 和候选仅写本机受限目录。这里展示的截短样例不替代实际注入 hash 清单。
+读取调用示例：`read_page_context({"context_ref":"local-context-<random>","use_selection":true})`。编辑调用示例：
+
+```json
+{
+  "context_ref": "local-context-<random>",
+  "candidate_ref": "candidate-<same-turn-reference-if-continuing>",
+  "request": {"operations": [{"id":"rename","type":"set_title","componentId":"table","title":"地域明细"}]}
+}
+```
+
+根基线首次编辑不传candidate_ref。模型不传page_id、baseline_token、source_token或身份scope；创建身份由可信程序决定。样例是结构说明，最终以逐请求完整payload、实际Schema与注入hash为准。
+
+## 停止与验收边界
+
+HTTP/配置/协议错误、缺usage、泄漏检测、预算不足或工具越界立即停批，无重试；失败请求attempt计数保留。输入按UTF-8字节数＋协议余量＋4096输出保守预留，费用/实耗以提供方实际响应为准。
+
+内容工具无save/publish路径；local-synthetic数据成功不等于真实数据服务可用。真实latest、Relay路由、生产身份、保存/发布/重启恢复仍blocked。原九例分数保留；当前配置问答另按`unified-content-readonly-v1`映射评分，正确回答与未冒称保存需要逐次人工语义审阅。scripted/HTTP mock证据始终不是模型成绩。

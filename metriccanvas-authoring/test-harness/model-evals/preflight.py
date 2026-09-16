@@ -49,16 +49,18 @@ def surface_evidence(surface, definitions):
             'latest':'blocked: introspection does not verify provider latest semantics'}
 
 
-async def inspect(root, config_path, surface='legacy-content'):
+async def inspect(root, config_path=None, surface='legacy-content'):
     from run_local import config
     from fastmcp import Client
     folder=Path(__file__).parent
     provenance=json.loads((folder/'history/first-round.provenance.json').read_text())
     raw=Path(provenance['rawEvidencePath'])
     mismatches=verify_hashes(raw,provenance['rawFileHashes'])
-    configuration='available'
-    try:config(config_path)
-    except (OSError,ValueError):configuration='missing-or-incompatible'
+    configuration='not-inspected: no model configuration requested'
+    if config_path is not None:
+        configuration='available'
+        try:config(config_path)
+        except (OSError,ValueError):configuration='missing-or-incompatible'
     suite=json.loads((folder/'unified-authoring.cases.json').read_text())
     missing={arm:sorted({str(p.relative_to(root)) for c in suite['cases'] for p in injection_paths(root,c,arm) if not p.is_file()}) for arm in ['baseline','unified']}
     client_config=client_configuration(root, surface)
@@ -76,7 +78,7 @@ async def inspect(root, config_path, surface='legacy-content'):
 
 
 async def main():
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,required=True);p.add_argument('--output',type=Path,required=True);p.add_argument('--surface',choices=sorted(SURFACES),default='legacy-content');a=p.parse_args()
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument('--config',type=Path,help='Optional credential/configuration check; omit for key-free stdio introspection');p.add_argument('--output',type=Path,required=True);p.add_argument('--surface',choices=sorted(SURFACES),default='legacy-content');a=p.parse_args()
     report=await inspect(Path(__file__).resolve().parents[3],a.config,a.surface)
     with a.output.open('x') as f:json.dump(report,f,ensure_ascii=False,indent=2);f.write('\n')
     print(json.dumps({'modelRequests':0,'configuration':report['configuration'],'tools':list(report['registeredTools']),'historicalHashMismatches':report['historicalHashMismatches']}))

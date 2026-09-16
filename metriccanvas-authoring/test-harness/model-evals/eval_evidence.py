@@ -232,11 +232,13 @@ def score(case, folder, review=None):
         checks['semanticReview']={k:review[k] for k in ['status','reason']}
     else:
         checks['semanticReview']={'status':'inconclusive','reason':'Needs reviewer, reason and exact resultSha256; no canned semantic pass'}
+    from protocol_acceptance import protocol_assessment
+    assessment=protocol_assessment(case,folder,raw,checks,review)
     return {'id':case['id'],'repeat':raw.get('repeat'),'status':'blocked' if non_model else status(checks),'checks':checks,'evidenceKind':raw.get('evidenceKind'),'modelRequests':raw.get('modelRequests',len(calls)),'simulatedModelCalls':raw.get('simulatedModelCalls',0),
             'resultSha256':digest,'models':sorted({c.get('model','unknown') for c in calls}),
             'modelCalls':len(calls),'toolCalls':len(tools),'seconds':raw.get('seconds'),
             'usage':dict(sum((Counter({k:v for k,v in (c.get('usage') or {}).items() if isinstance(v,(int,float))}) for c in calls),Counter())),
-            'routing':'blocked','latestGuarantee':'blocked'}
+            'routing':'blocked','latestGuarantee':'blocked','protocolAssessment':assessment}
 
 
 def main():
@@ -254,7 +256,7 @@ def main():
             if not (folder/'result.json').is_file():
                 results.append({'id':case['id'],'repeat':repeat,'status':'inconclusive','reason':'Missing repetition'})
             else:results.append(score(case,folder,reviews.get(f"{case['id']}/{repeat}")))
-    report={'arm':manifest['arm'],'profile':manifest['toolProfile'],'manifestSha256':sha(a.raw/'manifest.json'),'rawFileHashes':{str(f.relative_to(a.raw)):sha(f) for f in sorted(a.raw.rglob('*.json'))},'counts':dict(Counter(r['status'] for r in results)),'results':results}
+    report={'arm':manifest['arm'],'profile':manifest['toolProfile'],'manifestSha256':sha(a.raw/'manifest.json'),'rawFileHashes':{str(f.relative_to(a.raw)):sha(f) for f in sorted(a.raw.rglob('*.json'))},'counts':dict(Counter(r['status'] for r in results)),'results':results,'protocolCounts':dict(Counter(r['protocolAssessment']['status'] for r in results if r.get('protocolAssessment')))}
     with a.output.open('x') as f:json.dump(report,f,ensure_ascii=False,indent=2);f.write('\n')
     print(json.dumps(report['counts']))
 

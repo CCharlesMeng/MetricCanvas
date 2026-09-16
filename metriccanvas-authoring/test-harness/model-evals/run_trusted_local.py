@@ -24,6 +24,7 @@ from preflight import surface_evidence
 from run_local import baseline, config, diff, dump, PARAMS, MAX_CALLS
 from model_transport import ScriptedTransport, HttpTransport, deny_network
 from trusted_scenarios import scenarios
+from reference_injection import ReferenceInjection
 from test_authoring_turns import Turns
 from metriccanvas_authoring.application.authoring_turns import SCOPE_KEYS
 from metriccanvas_authoring.application.edit_page import document_sha256
@@ -147,11 +148,11 @@ async def run_case(case, folder, transport):
     after=deepcopy(before);records={};summaries=[];contexts=[];messages=[];calls=[]
     dump(folder/'trusted-state.json',state)
     if before:dump(folder/'before.json',before)
-    sources=injection_paths(ROOT,case,'unified')
+    references=ReferenceInjection(ROOT,case,case.get('includeExamples',False))
     # No legacy aliases here: source/identity are trusted-process inputs only.
-    system='Local synthetic content evaluation. No tool saves or publishes. '+ '\n\n'.join(p.read_text() for p in sources)
+    system='Local synthetic content evaluation. No tool saves or publishes. '+references.initial()
     messages=[{'role':'system','content':system}]
-    dump(folder/'injection.json',{str(p.relative_to(ROOT)):sha(p) for p in sources})
+    dump(folder/'injection.json',{'policy':references.policy,'events':references.events})
     mcp={'mcpServers':{'content':{'command':sys.executable,'args':[str(HERE/'trusted_fixture_server.py'),str(folder/'trusted-state.json')],
          'env':{'PYTHONDONTWRITEBYTECODE':'1','PYTHONPATH':str(ROOT/'metriccanvas-authoring/tool')}}}}
     attempted_before=transport.calls
@@ -186,6 +187,7 @@ async def run_case(case, folder, transport):
                     calls.append(call);turn_calls.append(call)
                     message=response['choices'][0]['message'];messages.append(message)
                     if not message.get('tool_calls'):break
+                    step_results=[]
                     for invocation in message['tool_calls']:
                         tool_count+=1
                         if tool_count>12:raise ValueError('Tool budget exhausted')
@@ -196,7 +198,7 @@ async def run_case(case, folder, transport):
                         output=(await client.call_tool(name,args,raise_on_error=False)).structured_content
                         if not isinstance(output,dict):raise ValueError('Missing structured tool output')
                         record=admit_candidate(output,state,records,args.get('candidate_ref'))
-                        safe=model_view(output,name);summaries.append(safe)
+                        safe=model_view(output,name);summaries.append(safe);step_results.append(safe)
                         index=f'{turn}-{step}-{tool_count}'
                         dump(folder/f'program-tool-{index}.json',output)
                         if record:
@@ -205,6 +207,9 @@ async def run_case(case, folder, transport):
                         if record:trace['artifactSha256']=record['documentSha256']
                         call['tools'].append(trace)
                         messages.append({'role':'tool','tool_call_id':invocation['id'],'content':json.dumps(safe,ensure_ascii=False)})
+                    supplement=references.after_tools(step_results,turn,step)
+                    if supplement:messages.append(supplement)
+                    dump(folder/'injection.json',{'policy':references.policy,'events':references.events})
                 else:raise ValueError('Model step budget exhausted')
                 audit_messages(messages);dump(folder/f'model-messages-{turn}.json',messages)
         if after:dump(folder/'after.json',after)
@@ -246,6 +251,7 @@ async def main():
     p.add_argument('--profile',choices=['diagnostic','production'],default='diagnostic')
     p.add_argument('--suite',choices=['local-smoke','frozen'],default='local-smoke')
     p.add_argument('--scenario',nargs='+',default=['all']);p.add_argument('--repetitions',type=int,default=3)
+    p.add_argument('--include-examples',action='store_true',help='Explicitly inject authored parameter examples before the task')
     p.add_argument('--output',type=Path,required=True);p.add_argument('--config',type=Path)
     p.add_argument('--allow-real-model',action='store_true');p.add_argument('--token-budget',type=int,default=600000)
     a=p.parse_args()
@@ -257,16 +263,16 @@ async def main():
     os.umask(0o077);a.output.mkdir(parents=True,mode=0o700,exist_ok=False)
     shared_http=HttpTransport(config(a.config),a.token_budget) if a.transport=='http' else None
     manifest=source_manifest(ROOT,suite_path,Path(__file__),cases,'unified')
-    for source in [HERE/'trusted_fixture_server.py',HERE/'model_transport.py',HERE/'trusted_scenarios.py',HERE/'preflight.py',*sorted((ROOT/'metriccanvas-authoring/test-harness/tests').rglob('*.py')),*sorted((ROOT/'metriccanvas-authoring/test-harness/adapters').rglob('*.py')),*sorted((ROOT/'metriccanvas-authoring/test-harness/fixtures').glob('*.json'))]:
+    for source in [HERE/'trusted_fixture_server.py',HERE/'model_transport.py',HERE/'trusted_scenarios.py',HERE/'preflight.py',HERE/'reference_injection.py',HERE/'protocol_acceptance.py',HERE/'protocol-acceptance.v1.json',ROOT/'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md',*([ROOT/'metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/examples.md'] if a.include_examples else []),*sorted((ROOT/'metriccanvas-authoring/test-harness/tests').rglob('*.py')),*sorted((ROOT/'metriccanvas-authoring/test-harness/adapters').rglob('*.py')),*sorted((ROOT/'metriccanvas-authoring/test-harness/fixtures').glob('*.json'))]:
         manifest['sourceHashes'][str(source.relative_to(ROOT))]=sha(source)
     manifest.update(arm='unified',toolProfile=a.profile,protocol='unified-content',transport=a.transport,suite=a.suite,repetitions=a.repetitions,evidenceKind='non-model-evidence' if a.transport=='scripted' else 'real-model-local-fixture',
-                    limitations=LIMITATIONS,parameters=PARAMS,tokenBudget=a.token_budget,maxModelStepsPerTurn=MAX_CALLS,maxToolCallsPerTurn=12,
+                    referencePolicy=ReferenceInjection(ROOT,cases[0],a.include_examples).policy,limitations=LIMITATIONS,parameters=PARAMS,tokenBudget=a.token_budget,maxModelStepsPerTurn=MAX_CALLS,maxToolCallsPerTurn=12,
                     dependencies={n:importlib.metadata.version(n) for n in ['fastmcp','httpx','jsonschema']})
     dump(a.output/'manifest.json',manifest);results=[]
     for case in cases:
         for repeat in range(1,a.repetitions+1):
             transport=shared_http or ScriptedTransport(case['turns'])
-            result=await run_case(dict(case,repeat=repeat,toolProfile=a.profile),a.output/case['id']/str(repeat),transport)
+            result=await run_case(dict(case,repeat=repeat,toolProfile=a.profile,includeExamples=a.include_examples),a.output/case['id']/str(repeat),transport)
             results.append({'id':case['id'],'repeat':repeat,**{k:result[k] for k in ['status','deterministicStatus','modelRequests','simulatedModelCalls','toolCalls','candidateCount']}})
             print(json.dumps(results[-1]),flush=True)
             if result['deterministicStatus']=='fail':break

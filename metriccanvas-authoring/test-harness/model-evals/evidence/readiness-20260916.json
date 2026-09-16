@@ -1,0 +1,198 @@
+{
+  "head": "7583d806130723d857d3032779ffab650501e422",
+  "date": "2026-09-16",
+  "evidenceKind": "non-model-evidence",
+  "modelRequests": 0,
+  "credentialsRead": false,
+  "tests": {
+    "count": 34,
+    "status": "pass",
+    "command": "PYTHONDONTWRITEBYTECODE=1 /private/tmp/metriccanvas-unified-s1-20260915/work/venv/bin/python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*model_eval_harness.py'",
+    "logSha256": "abd382d02402e0c1b764c4b2988d7efbf5bbecc703193f6bf999341f23a6c2c6"
+  },
+  "preflight": {
+    "status": "pass",
+    "configuration": "not-inspected: no model configuration requested",
+    "tools": {
+      "read_page_context": "60c6902d7e02cd9591a1011eb4877844171ae3543840d303f7e5c92e07e26e41",
+      "discover_data_context": "2d38346c6155d5319f8bdfef216e2678d8c3a6dbabb65e1e920e04d5b9479d6c",
+      "compose_page": "f31d7a6426618c1999f9e80c3782fc46d0a76da70139a5bbc6a1365b85dbf42d",
+      "create_content_page": "701838a566c50de039de49582e0192d6ef3a8e8e8fc319dd283211264541f7c9",
+      "edit_page": "b96890fb4d4fc4f31aa4f9f7192ea34a428e4bed204c7ae2fa896c7388457895"
+    }
+  },
+  "injection": {
+    "policy": {
+      "errors": "host-inject-on-first-tool-issue",
+      "examples": "preinjected-explicit-parameter-help",
+      "filesystemTool": false
+    },
+    "events": [
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+        "sha256": "b79061edc37684bfa395d758efc1168b25a637392b7ff0f4f46f5dfe31bd3a80",
+        "phase": "startup",
+        "turn": 0,
+        "step": 0
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+        "sha256": "fb9fa8e644162a7225f7c0b8d6be777c9f8022bb9c858df057c5c576108bc824",
+        "phase": "startup",
+        "turn": 0,
+        "step": 0
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+        "sha256": "c1b1c1a4a6ea278589eeeaede92c86608b28016e1dfbabdd3742bac6b74b544e",
+        "phase": "startup",
+        "turn": 0,
+        "step": 0
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+        "sha256": "942913a74019dba809ad72a10d5c0f9e954651385b8dbf839ee8f6c8d2e79bfd",
+        "phase": "startup",
+        "turn": 0,
+        "step": 0
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/examples.md",
+        "sha256": "f49f105cc9522442aa9c065a91983c37d644de8023c2c13bf51431066860d2eb",
+        "phase": "startup",
+        "turn": 0,
+        "step": 0
+      },
+      {
+        "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+        "sha256": "fa135f7189a9eaecae7b2be8f1f9185721245ed862323d919b152a769e69221f",
+        "phase": "first-tool-issue",
+        "turn": 1,
+        "step": 0
+      }
+    ]
+  },
+  "localInjectionRun": {
+    "rawPath": "/private/tmp/metriccanvas-unified-evals-readiness-20260916/metriccanvas-authoring/test-harness/model-evals/local-runs/readiness-injection",
+    "reportSha256": "aa1a3e08984ddc9d3d60594d9163aaa9cb8d115f76962779d7135b8ae65d40bf",
+    "manifestSha256": "75aac743b96689bdb36879d299a4215a52acc663bb18a5e3c16909ef131a1ec5",
+    "results": [
+      {
+        "id": "missing-data",
+        "repeat": 1,
+        "status": "blocked",
+        "deterministicStatus": "pass",
+        "modelRequests": 0,
+        "simulatedModelCalls": 2,
+        "toolCalls": 1,
+        "candidateCount": 0
+      }
+    ]
+  },
+  "protocolAssessment": {
+    "mappingVersion": "unified-content-readonly-v1",
+    "mappingSha256": "79cb777f5a23d0c7b19078685d653dfcb9ec62fac91671795a985f29d9eb32fc",
+    "frozenSuiteSha256": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+    "status": "blocked",
+    "checks": {
+      "evidenceKind": {
+        "status": "blocked",
+        "reason": "Scripted transport is non-model-evidence regardless of review"
+      },
+      "execution": {
+        "status": "blocked",
+        "reason": "Runtime unavailable"
+      },
+      "rawTrace": {
+        "status": "blocked",
+        "reason": "No real model transport"
+      },
+      "loopCompleted": {
+        "status": "pass",
+        "reason": "Every requested turn completed within budget"
+      },
+      "trustedCandidateEvidence": {
+        "status": "pass",
+        "reason": "Trusted local turn bytes and production candidate records, not remote latest"
+      },
+      "readOnlyContentBoundary": {
+        "status": "pass",
+        "reason": "No discovery or mutation in configuration answer"
+      },
+      "noMutationTools": {
+        "status": "pass",
+        "reason": "No content creation/edit calls"
+      },
+      "noDiscovery": {
+        "status": "pass",
+        "reason": "No business-data discovery for configuration explanation"
+      },
+      "unchangedProgramDocument": {
+        "status": "pass",
+        "reason": "Full local document unchanged and no candidates"
+      },
+      "successfulCurrentTargetRead": {
+        "status": "pass",
+        "reason": "Completed bounded target configuration read matches program evidence and current context"
+      },
+      "configurationAnswerGrounded": {
+        "status": "inconclusive",
+        "reason": "Requires hash-bound human review of final answer and successful read; no automatic semantic pass"
+      },
+      "noFalsePersistenceClaim": {
+        "status": "inconclusive",
+        "reason": "Requires hash-bound human review of final answer and successful read; no automatic semantic pass"
+      },
+      "modelEvidence": {
+        "status": "blocked",
+        "reason": "Scripted/mock/unclassified traces are not real model evidence"
+      }
+    },
+    "scope": "Protocol-specific assessment in addition to unchanged original scores; not remote latest or production routing evidence"
+  },
+  "originalNoTools": {
+    "status": "inconclusive",
+    "reason": "Original S1 noTools assertion not applicable unchanged: S2 requires read_page_context; frozen expectation retained"
+  },
+  "frozenFilesUnchanged": {
+    "metriccanvas-authoring/test-harness/model-evals/unified-authoring.cases.json": "b86b0ddff9ff000a79bc96cf20720be5030221b07fb411f13ef8707f5a7be5e4",
+    "metriccanvas-authoring/test-harness/model-evals/platform-authoring.cases.json": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1",
+    "metriccanvas-authoring/test-harness/model-evals/history/score_local.py": "904ac909bb6c93851e45dde59f86723b8f2b06a280c94b05d35897bf03f8b0de",
+    "metriccanvas-authoring/test-harness/model-evals/history/verify_evidence.py": "838e309a20f814ab3cccda6d0d2feac6c8ddd957175f80f51661fc51660f3605",
+    "metriccanvas-authoring/test-harness/model-evals/history/first-round.results.json": "2246f9e057322a0f86fefdec733b4f12bafabd8dc167d76f2dc75e8269768be5",
+    "metriccanvas-authoring/test-harness/model-evals/history/platform-authoring.cases.json": "2a3750a1eb5aa65db4144232e81e9383ca7c6f1597d42052b5baa1bc35d745a1",
+    "metriccanvas-authoring/test-harness/model-evals/history/run_local.py": "62d207fdeee5c80eb371fed18d687d7d6189548cd5471e94f8e8ff2b1bf8fda8",
+    "metriccanvas-authoring/test-harness/model-evals/history/first-round.provenance.json": "50f8b0c779ce4caba756a7909aae4693f0874a5f286f1bb752264147c3d786ec"
+  },
+  "sourceHashes": {
+    "metriccanvas-authoring/test-harness/model-evals/run_trusted_local.py": "3aee6a214a1db69291cba93705b292a5b09698a1860637fc549f2fe4537529f7",
+    "metriccanvas-authoring/test-harness/model-evals/preflight.py": "17e5799adc57a8c7d7f5e8c09ebf1175e8d038046a291249154262fdedc40661",
+    "metriccanvas-authoring/test-harness/model-evals/eval_evidence.py": "0b1c08427381d1cee62a5445f2d65d94da5bcbd66d08a6869972691386de955b",
+    "metriccanvas-authoring/test-harness/model-evals/protocol_acceptance.py": "584fde5d48db77f95d52384f6a38e687224f57a0bc5310d55493c75be77aa714",
+    "metriccanvas-authoring/test-harness/model-evals/protocol-acceptance.v1.json": "79cb777f5a23d0c7b19078685d653dfcb9ec62fac91671795a985f29d9eb32fc",
+    "metriccanvas-authoring/test-harness/model-evals/reference_injection.py": "3498010aee3b83a643b2e00b918eed66d133a836b1b5da9a666d4d538e49a7d4",
+    "metriccanvas-authoring/test-harness/model-evals/README.md": "4197e61479f5837ff2af73e16c6877f6d57f20960f60f3bff3e373018cf0a20b",
+    "metriccanvas-authoring/test-harness/model-evals/evidence/approval-request.md": "04388f36369d02e5e772c4a0a4b524a1fbd9f616b7146c8ebebbe61c04982623",
+    "metriccanvas-authoring/test-harness/tests/test_trusted_model_eval_harness.py": "cd785f20dc41678044015cb81b75f02c91edaf4e9744e0b5546451c2c78d8dc2"
+  },
+  "localReadOnlyRawPath": "/private/tmp/metriccanvas-unified-evals-readiness-20260916/metriccanvas-authoring/test-harness/model-evals/local-runs/readiness-readonly",
+  "localReadOnlyRawHashes": {
+    "after.json": "fc0e33dd948dea9c01ec173fa0d93a8af8c2a231c9d239b287798ed0284e3642",
+    "before.json": "fc0e33dd948dea9c01ec173fa0d93a8af8c2a231c9d239b287798ed0284e3642",
+    "injection.json": "fb3de86337301273f8387ae135d72b0313b3b93ffddbb72490df39039a516096",
+    "model-messages-1.json": "0aa6e11a15c489f9b82efa560cfc6ce64303fe055e92444cc01e289f00d4c51f",
+    "program-tool-1-0-1.json": "436eee7f051d44837752e17f989b4dec6cf24b2c1d1d11fa546e0f44ae1ea103",
+    "request-1-0.json": "742317202207c9e7c921bd542d9a3ec024f3c3771e474091f39e13b86e331d18",
+    "request-1-1.json": "fbd16c71adc29eeaa967e9aa21590f8e433b433b65c212c8d21e79000208580e",
+    "response-1-0.json": "84a33efcc944da54cba7b6cbc0adf8d9d4d242804819d8a338ee243ef99e5ab1",
+    "response-1-1.json": "fe300ec762b770012e2b85f0cf4992e236a08f27ac4625c39c374b006bbe1a1a",
+    "result.json": "46b053a6c07d49d43305f5b5571a0afe47aa1aefce464514043628ca5e90191b",
+    "tools.json": "5c62a5c52b713e9c97b9cdf1a0e14f1de80605cf922bd2eaf7c326363419829d",
+    "trusted-state.json": "c88851c95899f5f1a500e9e0e220cc8d2d2e4d3ec6ee975e183d57d13c100874",
+    "trusted-turn-1.json": "c88851c95899f5f1a500e9e0e220cc8d2d2e4d3ec6ee975e183d57d13c100874"
+  },
+  "externalAuthorization": "pending; neither script flags nor this readiness work constitute approval",
+  "validationScope": "Targeted production stdio / scripted / HTTP mock; prior 36-scenario batch not repeated",
+  "frozenSuiteExecuted": false,
+  "protocolExerciseNote": "The local read-only trace exercises the mapping with a synthetic transport; it is not an execution/result of the frozen model benchmark."
+}
