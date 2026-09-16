@@ -1,5 +1,5 @@
 import type { DialogueAdapter } from '../dialogue/port';
-import type { PageRevision } from '../page-assets-client';
+import type { PageRevision } from '../page-assets/contract';
 import { confirmedPageAssetCapabilities, type AuthoringPort } from './authoring-coordinator';
 import { APPLY_PAGE_EVENT } from './apply-page';
 

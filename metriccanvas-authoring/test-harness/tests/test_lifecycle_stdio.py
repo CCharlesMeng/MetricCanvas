@@ -47,4 +47,4 @@ class LifecycleStdioTest(unittest.IsolatedAsyncioTestCase):
                 result=await client.call_tool('save_draft',{'request_token':'production-token'})
                 self.assertEqual(result.data['code'],'CAPABILITY_UNAVAILABLE')
                 result=await client.call_tool('get_save_result',{'request_token':'production-token'})
-                self.assertEqual(result.data['code'],'CAPABILITY_UNAVAILABLE')
+                self.assertEqual(result.data['status'],'unknown')

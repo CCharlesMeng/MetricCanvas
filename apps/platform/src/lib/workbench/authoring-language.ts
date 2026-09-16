@@ -1,5 +1,5 @@
 import { validateAuthoringTurn, type AuthoringTurnBinding } from '../../../../../metriccanvas-authoring/contracts/authored/authoring-turn-contract';
-import type { PageRevision } from '../page-assets-client';
+import type { PageRevision } from '../page-assets/contract';
 import { canonicalizeJson, validate } from '@metriccanvas/page';
 import { listenForSavedDrafts, DRAFT_SAVED_EVENT, draftIdOf, type SavedDraft } from '../dialogue/port';
 import { createAnalysisPageState } from './analysis-page-state';
@@ -13,7 +13,7 @@ export interface LanguageContext {
 }
 export interface LanguageOperation { id: string; status: string }
 export type LanguageResult =
-  | { status: 'saved'; draftId: string; operations: LanguageOperation[] }
+  | { status: 'saved'; draftId: string; operations: LanguageOperation[]; delivery?: {binding: LanguageContext; draft: SavedDraft} }
   | { status: 'text' | 'waiting' | 'failed' | 'not-applied'; operations: LanguageOperation[] }
   | { status: 'unknown' | 'pending'; operations: LanguageOperation[] };
 export interface PrepareLanguageRequest {
@@ -87,6 +87,9 @@ export function createAuthoringLanguage(options: {
   async function trustedRead(turn: NonNullable<typeof active>, draftId: string, signal: AbortSignal) {
     if (!current(turn) || turn.context.binding.access === 'read') throw Error('语言操作身份、权限或工作范围已变化。');
     const result = await options.port.read(draftId, signal);
+    return validateDelivery(turn, draftId, result, signal);
+  }
+  function validateDelivery(turn: NonNullable<typeof active>, draftId: string, result: {binding:LanguageContext;draft:SavedDraft}, signal: AbortSignal) {
     if (signal.aborted || !current(turn) || !sameBinding(result.binding, turn.context) ||
         result.draft.draftId !== draftId || !result.draft.ref || result.draft.ref.pageId !== turn.context.binding.pageId || ![result.draft.ref.pageId, result.draft.ref.revisionId, result.draft.ref.resourceId].every((value) => draftIdOf({ draftId: value })) ||
         validate(result.draft.document).length > 0 || result.draft.document.id !== result.draft.ref.pageId ||
@@ -119,10 +122,15 @@ export function createAuthoringLanguage(options: {
     emit({ operations: result.operations.map(({ id, status }) => ({ id, status })) });
     if (result.status === 'saved') {
       if (turn.context.binding.access === 'read') { emit({ phase: 'unknown', message: 'RESPONSE_MISMATCH：只读轮次收到写入回执，需核实服务结果。' }); return; }
-      emit({ phase: 'reading', message: '已保存，正在鉴权读取精确修订。' });
+      if (result.delivery) {
+        const draft = validateDelivery(turn,result.draftId,result.delivery,new AbortController().signal);
+        if (pageState.acceptVerifiedPage(turn.handle,draft.document) !== 'accepted' || !turn.lease.accept(draft)) throw Error('保存回执不能应用到当前工作副本。');
+        emit({phase:'saved',message:'已核对保存回执并更新页面。'});finish(turn);return;
+      }
+      emit({ phase: 'reading', message: '已保存，正在读取可信程序回执。' });
       options.target.dispatchEvent(new CustomEvent(DRAFT_SAVED_EVENT, { detail: { draftId: result.draftId } }));
     } else if (result.status === 'unknown' || result.status === 'pending') {
-      emit({ phase: 'unknown', message: '保存结果待确认，请查询原操作；当前页面保留。' });
+      emit({ phase: 'unknown', message: '保存结果未确认，当前页面与程序候选保留；不会自动重发。' });
     } else {
       if (result.status === 'waiting') pageState.waitForConfirmation(turn.handle);
       else pageState.finishWithoutPage(turn.handle, result.status === 'text' ? 'text' : 'failed');
@@ -174,7 +182,7 @@ export function createAuthoringLanguage(options: {
           onpage(draft) {
             if (!current(turn) || turn.cancelled || pageState.acceptVerifiedPage(turn.handle, draft.document) !== 'accepted') return false;
             if (!lease.accept(draft)) return false;
-            emit({ phase: 'saved', message: '已保存并读回精确修订。' }); finish(turn); return true;
+            emit({ phase: 'saved', message: '已核对保存结果并更新页面。' }); finish(turn); return true;
           },
           onerror(error) { if (current(turn) && !turn.cancelled) emit({ phase: 'unknown', message: error }); }
         });
@@ -202,7 +210,7 @@ export function createAuthoringLanguage(options: {
         if (!current(turn)) return;
         if (!turn.cancelled) await outcome(turn, result);
         else if (result.status === 'saved') {
-          const draft = await trustedRead(turn, result.draftId, controller.signal);
+          const draft = result.delivery ? validateDelivery(turn,result.draftId,result.delivery,controller.signal) : await trustedRead(turn, result.draftId, controller.signal);
           if (pageState.snapshot().phase !== 'cancelled') return;
           emit({ phase: 'recovered', recovery: draft.ref, message: '取消后服务已保存；当前页面保留，可查看该精确修订。' });
           // Keep the lease: the service head advanced, so old local content is not a synchronized base.

@@ -2,6 +2,12 @@
 
 状态：目标架构，2026-09-15。正式编码依据为[统一创作 Skill 规格](../specs/2026-09-15-unified-authoring-skill.md)及 [Issue #150](https://github.com/CCharlesMeng/MetricCanvas/issues/150)。替代此前《统一 Platform 创作 Skill：整体方案》的架构提案；旧文保留调查与讨论历史。本文描述目标，不代表产品、Skill 或外部接口已实施，也不把内部报告的静态代码描述当成端到端验证。
 
+## Java 接入的后续裁决（2026-09-16）
+
+本文保留 9 月 15 日目标设计与迁移调查。当前 Java 接入以 [ADR-0080](../adr/0080-java-assets-single-attempt-save-and-status-publication.md) 和[资产架构方案](2026-09-16-java-page-assets-architecture.md)为准：按资源当前读取并固定创作基线；单次提交，验证成功回执；未知结果保留工作并停止；发布由工作台更新当前资源状态。下文 §4 的强最新读取、§6 的 Java 幂等/远端操作查询/精确回读/模板发布，以及 §9–§11 对这些能力的迁移和验收要求，不再是本期前置。身份、候选门禁、内容合法性和迟到结果隔离继续生效。
+
+当前源码职责见 [创作架构与维护导航](../../metriccanvas-authoring/ARCHITECTURE.md)，完成项与测试证据见[实施记录](2026-09-16-java-page-assets-implementation.md)。外部 Relay 注入与真实服务联调不因本仓实现完成而视为已验收。
+
 ## 实施对照（2026-09-16）
 
 本轮实现及可信评测 runner 已合入 main `d5aa4be`。本文仍保留目标设计；当前代码维护入口是 [metriccanvas-authoring/ARCHITECTURE.md](../../metriccanvas-authoring/ARCHITECTURE.md)，实际验收见[交付就绪清单](2026-09-15-unified-authoring-release-readiness.md)。S0–S7 的本仓实现与确定性验证已交付，S7 内部真实迁移和 S8 仍未完成；真实模型新请求为0。已推送代码不代表已接通或切换生产。
@@ -9,9 +15,9 @@
 | 本文目标职责 | 已落地位置（相对 metriccanvas-authoring/） | 边界 |
 |---|---|---|
 | 统一 Skill | `skill/metriccanvas-platform-authoring/` | 一个作者、create/edit 流程、按需参考；普通问数保留 |
-| runtime / 上下文与交接 | `tool/metriccanvas_authoring/application/authoring_turns.py`；仓库 `apps/platform/src/lib/workbench/` | 最新读取是可信端口前置，真实提供方待接 |
+| runtime / 上下文与交接 | `tool/metriccanvas_authoring/application/authoring_turns.py`；仓库 `apps/platform/src/lib/workbench/` | 当前读取与固定创作基线；真实提供方接线另验 |
 | prepare / inspect 内容工具 | `tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py` | 实际五工具：read_page_context、discover_data_context、compose_page、create_content_page、edit_page |
-| 候选与提交恢复 | `application/authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`（均在实际 Python 包内） | SQLite 提供本地持久实现，远端原子性由真实服务证明 |
+| 候选与提交恢复 | `application/authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`（均在实际 Python 包内） | SQLite 提供本地持久实现，Java 单次保存以已验证回执确认 |
 | metadata_mapping / 组合 | Python 包内 `domain/source_mapping.py`、`application/unified_edit_page.py`、`unified_composition.py` | 新建及已有页新增均贯通；未支持转换明确拒绝 |
 | extensions / bootstrap | Python 包内 `application/authoring_deployment.py`、`business_interpretation.py`、`component_policy.py`、包顶层 `authoring_bootstrap.py` | data/business/component/system 均有受控消费者；内部实现未迁移 |
 | tests / evals | `test-harness/tests/`、`test-harness/model-evals/` | 可信 runner 已适配；本地模拟不计真实模型成绩 |

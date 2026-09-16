@@ -4,6 +4,7 @@ export {
   installLocalDevRuntimeConfig,
   installRuntimeConfig,
   readRuntimeConfig,
+  readPageAssetsRuntimeConfig,
   readPageMetadataBaseUrl,
   MISSING_RUNTIME_CONFIG_MESSAGE,
   type InjectedRuntimeConfig

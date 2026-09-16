@@ -49,7 +49,7 @@ it('recovery resends an issued command only after authoritative not-applied and 
 it('rejects damaged, future, cross-identity and injected operational fields without writing', () => {
   const f = fixture();
   const changes: ((record: any) => void)[] = [
-    (r) => r.value.format = 2, (r) => r.value.scope.actorId = 'bob', (r) => r.value.draft.pageDocument.schemaVersion = '6.4',
+    (r) => r.value.format = 999, (r) => r.value.scope.actorId = 'bob', (r) => r.value.draft.pageDocument.schemaVersion = '6.999',
     (r) => r.value.queue[0].command.context.token = 'credential', (r) => r.value.queue[0].command.base = { ...base, revisionId: 'other' },
     (r) => r.value.queue[0].operationId = 'different', (r) => r.value.draft.authoringSections = []
   ];

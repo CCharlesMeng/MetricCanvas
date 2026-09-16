@@ -221,6 +221,12 @@ class AuthoringRecoveryCoordinator:
             if current['record']['status'] == 'not-applied' and 'retrySafe' in (current['record']['result'] or {}) else {}))
 
     async def recover(self, key, attempt_id):
+        if self.lifecycle.service.capabilities.single_save:
+            snapshot = await self._load(key)
+            await self._authorize(snapshot)
+            if snapshot['record']['status'] in {'saved', 'rejected', 'unchanged'}:
+                return deepcopy(snapshot['record']['result'])
+            return self._result(snapshot, 'unknown', code='MANUAL_RECONCILIATION_REQUIRED')
         reservation = await self.reserve_attempt(key, attempt_id)
         if reservation['status'] == 'budget-exhausted': return reservation
         snapshot = await self._load(key)

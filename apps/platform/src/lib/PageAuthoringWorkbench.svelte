@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { readAuthoringIntegration } from './dialogue/authoring-integration';
   import { createAuthoringLanguageRecovery, type TrustedLanguageRecoveryPort } from './workbench/authoring-language-recovery';
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
   import PublicationReview from './workbench/PublicationReview.svelte';
@@ -6,7 +7,7 @@
   import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
   import { resolve } from '$app/paths';
-  import { pageAuthoringPort } from '$lib/page-assets';
+  import { pageAuthoringPort, pageSavePort } from '$lib/page-assets';
   import { createAuthoringCoordinator, type AuthoringPort, type DraftRef } from './workbench/authoring-coordinator';
   import { MetricCanvas, type AuthoringIntent } from '@metriccanvas/metric-canvas';
   import { createWorkbenchDqeGateway } from './workbench/data-gateway';
@@ -22,11 +23,11 @@
   import RevisionPreview from './RevisionPreview.svelte';
   import PanguDialogue from './dialogue/PanguDialogue.svelte';
   import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
-  import { readRuntimeConfig } from './runtime-config';
+  import { readPageAssetsRuntimeConfig as readRuntimeConfig } from './runtime-config';
   import { listenForApplyPage } from './workbench/apply-page';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = readAuthoringIntegration()?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
     publicationPort?: PublicationPort; humanConfirmation?: HumanConfirmationPort;
     languageRecoveryPort?: TrustedLanguageRecoveryPort; onLanguageRecoveryReady?: (api: ReturnType<typeof createAuthoringLanguageRecovery>) => void;
     languagePort?: LanguagePort; onLanguageReady?: (api: ReturnType<typeof createAuthoringLanguage>) => void;
@@ -80,7 +81,7 @@
       syncEnabled = true;
       coordinator.enableAutoSync({ storage: createIndexedAuthoringStorage<DurableAuthoringState>(), port: stableSavePort });
     };
-    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId); };
+    const resume = async (targetPageId: string | null) => { enableSync(); if (targetPageId) await coordinator.load(targetPageId, {resourceId:new URLSearchParams(window.location.search).get('resource') ?? undefined}); };
     if (languageRecoveryPort) {
       languageRecovery = createAuthoringLanguageRecovery({ coordinator, port: languageRecoveryPort,
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; },
@@ -93,9 +94,10 @@
     const online = () => coordinator.setOnline(true);
     const offline = () => coordinator.setOnline(false);
     window.addEventListener('online', online); window.addEventListener('offline', offline);
-    publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
-    publication.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
+    if (publicationPort.available) publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
+    publication?.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
     const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); });
+    let disconnectAuthoring: void | (() => void);
     if (languagePort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
         selection: () => currentDocument && selectedComponent ? { pageId: String(currentDocument.id), componentId: selectedComponent.componentId } : null,
@@ -108,6 +110,7 @@
         identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
       language.subscribe((value) => { languageState = value; });
       onLanguageReady?.(language);
+      disconnectAuthoring = readAuthoringIntegration()?.connect?.(language);
     }
     const stop = languagePort ? () => {} : listenForSavedDrafts({
       target: window, read: coordinator.readSavedDraft,
@@ -139,7 +142,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -291,11 +294,12 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
-      <button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
+      {#if publicationPort.available}<button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
+      {:else}<button class="btn" disabled={!authoring.ref || authoring.dirty || saveBlocked || authoring.sync?.phase === 'saving'} onclick={async () => { if (!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。')) return; try { await coordinator.publish(); } catch (error) { saveError = String(error); } }}>发布页面</button>{/if}
       <button class="btn" disabled={!authoring.sync?.canUndo || loading || savePending} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
-      <button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>
+      {#if authoringPort.assets && authoring.ref}<a class="btn" href={`${resolve('/manage/pages/[pageId]', {pageId:authoring.ref.pageId})}?resource=${encodeURIComponent(authoring.ref.resourceId)}`}>页面历史</a>{:else}<button class="btn" disabled={!authoring.ref} onclick={() => historyOpen = !historyOpen}>页面历史</button>{/if}
       {#if baseRevisionId}
-        <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>精确修订预览</button>
+        <button class="btn" onclick={() => { previewRef = authoring.ref ? { ...authoring.ref } : null; previewOpen = !previewOpen; }}>当前修订预览</button>
       {/if}
       <button
         type="button"
@@ -310,8 +314,8 @@
       </button>
       {#if pageModel && !pageModel.transient}
         {#if authoring.sync}
-          <label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>
-          {#if authoring.sync.pending > 0}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
+          {#if stableSavePort.delivery !== 'single'}<label class="stat"><input type="checkbox" bind:checked={retainDimensionValues} disabled={savePending} onchange={(event) => coordinator.setRetainDimensionValues(event.currentTarget.checked)} />保存时保留维度取值</label>{/if}
+          {#if authoring.sync.pending > 0 && stableSavePort.delivery !== 'single'}<button type="button" class="btn" disabled={authoring.sync.phase === 'saving'} onclick={() => coordinator.retrySync()}>核实并重试同步</button>{/if}
         {:else}
           <button type="button" class="btn" disabled={saveBlocked} onclick={saveRevision}>
             {savePending ? '保存中…' : baseRevisionId ? '保存新修订' : '保存首个修订'}
@@ -323,6 +327,7 @@
 
   <aside class="chat" aria-label="分析会话" data-testid="workbench-track">
     <PanguDialogue adapter={dialogueAdapter} />
+
   </aside>
 
   <main class="canvas" aria-label="页面画布" data-testid="workbench-track">
@@ -346,6 +351,7 @@
       {#if languageState.recovery}<button class="btn" onclick={() => { previewRef = languageState!.recovery; previewOpen = true; }}>查看取消后已保存修订</button><a class="linkish" href={resolve('/manage')}>返回页面目录重新打开</a>{/if}
     {/if}
     {#if saveNotice}<p class="notice">{saveNotice}</p>{/if}
+    {#if authoring.sync?.lastSaved?.revision?.isDraft === false}<p role="status">当前页面已发布。</p>{/if}
     {#if authoring.sync}
       {#if authoring.sync.protection === 'failed'}
         <p class="error" role="alert">浏览器保护失败，请勿关闭页面。{authoring.sync.message}</p>
@@ -364,7 +370,7 @@
       {#if publicationOpen && publication}
         <PublicationReview {publication} />
       {:else if previewOpen && previewRef}
-        <p class="notice">正在预览已保存修订；再次点击“精确修订预览”返回工作副本。</p>
+        <p class="notice">正在预览已保存修订；再次点击“当前内容预览”返回工作副本。</p>
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
           readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />
       {:else if currentDocument}

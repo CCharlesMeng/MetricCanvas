@@ -123,6 +123,13 @@ class AuthoringSubmissionCoordinator:
     async def _verify_saved(self, response, record, candidate, prepared, identity):
         command = record['command']
         # Reuse Lifecycle receipt validation, then independently read its exact revision.
+        if self.lifecycle.service.capabilities.single_save:
+            envelope = await self.lifecycle.programs.load(response['programToken'], identity)
+            require(envelope.get('context') == command['context'] and envelope.get('base') == command['base'])
+            receipt = self.lifecycle.saved(envelope['receipt'], command)
+            require(receipt['ref'] == response.get('ref'))
+            await self._current(prepared, identity)
+            return self._result(record, 'saved', ref=deepcopy(receipt['ref']), programToken=response['programToken'])
         receipt = self.lifecycle.saved(response, command)
         require(receipt['status'] == 'saved')
         base = command['base']
@@ -163,7 +170,7 @@ class AuthoringSubmissionCoordinator:
         require(self.candidates is not None and self.records is not None and self.lifecycle is not None and
                 self.lifecycle.programs is not None, 'CAPABILITY_UNAVAILABLE')
         caps = self.lifecycle.service.capabilities
-        require(caps.stable_save and caps.operation_lookup and caps.exact_read, 'CAPABILITY_UNAVAILABLE')
+        require(caps.single_save or caps.stable_save and caps.operation_lookup and caps.exact_read, 'CAPABILITY_UNAVAILABLE')
         prepared = await self.turns.require(context_ref, write=True)
         identity = self.lifecycle.identity()
         binding = prepared.binding
@@ -215,7 +222,7 @@ class AuthoringSubmissionCoordinator:
                             canonical_json(snapshot['record']['command']) == canonical_json(record['command']))
                     await self._current(prepared, identity)
             scoped = Lifecycle(_TurnScopedService(self.lifecycle.service, lambda: self._current(prepared, identity), persisted_send_permission),
-                               self.lifecycle.programs, self.lifecycle.identities)
+                               self.lifecycle.programs, self.lifecycle.identities, allow_single_submit=created)
             # Duplicates can only query the frozen operation. No automatic resubmission.
             response = await scoped.call('save_draft' if created else 'get_save_result', record['programToken'])
             return await self._outcome(response, key, record, candidate, prepared, identity)

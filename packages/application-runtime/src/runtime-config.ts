@@ -65,6 +65,19 @@ export function readRuntimeConfig(): InjectedRuntimeConfig | null {
     ...(cftk ? { cftk } : {}) };
 }
 
+/** Page asset reads do not require a DQE endpoint. */
+export function readPageAssetsRuntimeConfig(): InjectedRuntimeConfig | null {
+  const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
+  if (!raw || typeof raw !== 'object') return null;
+  const pageMetadataBaseUrl = trimmedField(raw, 'pageMetadataBaseUrl');
+  const authToken = trimmedField(raw, 'authToken');
+  const operatorId = trimmedField(raw, 'operatorId');
+  const workspaceId = trimmedField(raw, 'workspaceId');
+  if (!pageMetadataBaseUrl || !authToken || !operatorId || !workspaceId) return null;
+  const cftk = trimmedField(raw, 'cftk');
+  return {pageMetadataBaseUrl, authToken, operatorId, workspaceId, dqeEndpoint: trimmedField(raw,'dqeEndpoint') ?? '', ...(cftk ? {cftk} : {})};
+}
+
 /** 读取页面元数据基址；静态平台不再提供同源 Node 回退。 */
 export function readPageMetadataBaseUrl(): string | null {
   const raw = holder()[RUNTIME_CONFIG_SOURCE_KEY];
@@ -82,7 +95,7 @@ export function installRuntimeConfig(config: InjectedRuntimeConfig | null): void
 
 /** 仅应由本地开发入口在 DEV 下调用；已有注入时不覆盖。 */
 export function installLocalDevRuntimeConfig(overrides: Partial<InjectedRuntimeConfig> = {}): void {
-  if (readRuntimeConfig()) return;
+  if (holder()[RUNTIME_CONFIG_SOURCE_KEY]) return;
   installRuntimeConfig({
     dqeEndpoint: trimmedField(overrides, 'dqeEndpoint') ?? `http://127.0.0.1:18228${DEFAULT_DQE_ENDPOINT}`,
     pageMetadataBaseUrl: trimmedField(overrides, 'pageMetadataBaseUrl') ?? 'http://127.0.0.1:8080/rest/cdi/cdinl2databuilderservice/v1',

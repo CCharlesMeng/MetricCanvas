@@ -27,8 +27,9 @@ def require(condition, code='RESPONSE_MISMATCH'):
 
 
 class Lifecycle:
-    def __init__(self, service: LifecycleServicePort, programs: LifecycleProgramPort, identities: LifecycleIdentityPort):
+    def __init__(self, service: LifecycleServicePort, programs: LifecycleProgramPort, identities: LifecycleIdentityPort, *, allow_single_submit=False):
         self.service, self.programs, self.identities = service, programs, identities
+        self.allow_single_submit = allow_single_submit
 
     def identity(self):
         identity = self.identities.current()
@@ -70,6 +71,16 @@ class Lifecycle:
                 result['retryable'] = False
                 result['message'] = result['code']
             return result
+        if self.service.capabilities.single_save:
+            from metriccanvas_authoring.domain.idempotency import canonical_json
+            require(valid_ref(response.get('ref')) and response['ref']['pageId'] == command['pageId'])
+            require(response.get('base') == command['base'] and response.get('assurance') == 'provider-response')
+            require(type(response.get('revisionNumber')) is int and response['revisionNumber'] > 0)
+            require(response.get('isDraft') is True)
+            require(command['base'] is None or response['ref']['resourceId'] == command['base']['resourceId'] and response['ref']['revisionId'] != command['base']['revisionId'])
+            require(isinstance(response.get('document'),dict) and not validate_page_document(response['document']))
+            require(canonical_json(response['document']) == canonical_json(command['document']))
+            return {k:deepcopy(response[k]) for k in ('status','operationId','ref','base','revisionNumber','isDraft','document','assurance')}
         require({'ref','base','contentHash','canonicalization','revisionNumber'} <= set(response))
         require(isinstance(response['contentHash'], str) and re.fullmatch('[a-f0-9]{64}', response['contentHash']))
         require(isinstance(response['canonicalization'], str) and bool(response['canonicalization']))
@@ -85,6 +96,10 @@ class Lifecycle:
         identity = self.identity()
         command = await self.request(token, 'save', identity)
         caps = self.service.capabilities
+        if caps.single_save:
+            if lookup: return {'status':'unknown','operationId':command['context']['operationId']}
+            require(self.allow_single_submit, 'CAPABILITY_UNAVAILABLE')
+            return await self._single_save(identity, command)
         require(caps.operation_lookup if lookup else caps.stable_save and caps.operation_lookup and caps.exact_read, 'CAPABILITY_UNAVAILABLE')
         try:
             response = await self.service.lookup(identity, deepcopy(command))
@@ -118,6 +133,23 @@ class Lifecycle:
                 # Program delivery can fail after the service transaction committed.
                 return {'status':'unknown', 'operationId':command['context']['operationId'], 'code':'PROGRAM_DELIVERY_FAILED'}
         return result
+
+    async def _single_save(self, identity, command):
+        operation = command['context']['operationId']
+        try:
+            self.still_current(identity)
+            response = await self.service.save(identity, deepcopy(command))
+            self.still_current(identity)
+            result = self.saved(response, command)
+            if result['status'] == 'saved':
+                token = await self.programs.store({'receipt':deepcopy(result), 'context':command['context'], 'base':command['base']}, identity)
+                self.still_current(identity)
+                # Never put the full document into model-visible tool output.
+                result.pop('document')
+                result['programToken'] = token
+            return result
+        except Exception:
+            return {'status':'unknown','operationId':operation}
 
     async def read(self, token):
         identity = self.identity()

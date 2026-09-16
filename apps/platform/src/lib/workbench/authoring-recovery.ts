@@ -20,7 +20,8 @@ export function validateAuthoringRecord(input: unknown, scope: StorageScope): St
   if (![scope.actorId, scope.workspaceId, scope.pageId].every(text)) return fail();
   if (!record(input) || !keys(input, ['version', 'value']) || !Number.isSafeInteger(input.version) || Number(input.version) < 1) return fail();
   const value = input.value;
-  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue', 'undoDraft']) || value.format !== 1 || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
+  if (!record(value) || !keys(value, ['format', 'scope', 'base', 'draft', 'queue', 'undoDraft', 'confirmed']) || ![1, 2].includes(Number(value.format)) || stable(value.scope) !== stable(scope) || !ref(value.base, scope.pageId) || !Array.isArray(value.queue)) return fail();
+  if (value.confirmed !== undefined && (!record(value.confirmed) || value.confirmed.pageId !== scope.pageId || !text(value.confirmed.resourceId) || (scope.resourceId !== undefined && value.confirmed.resourceId !== scope.resourceId) || !text(value.confirmed.revisionId) || !Number.isSafeInteger(value.confirmed.revisionNumber) || Number(value.confirmed.revisionNumber) < 1 || !record(value.confirmed.document) || value.confirmed.document.id !== scope.pageId || validate(value.confirmed.document).length)) return fail();
   if (!record(value.draft) || !keys(value.draft, ['canvasDocument', 'pageDocument', 'authoringSections'])) return fail();
   const draft = restoreCanvasAuthoringDraft(value.draft);
   if (!draft.ok || draft.draft.pageDocument.id !== scope.pageId) return fail();
@@ -31,11 +32,12 @@ export function validateAuthoringRecord(input: unknown, scope: StorageScope): St
   }
   const ids = new Set<string>();
   for (const [index, operation] of value.queue.entries()) {
-    if (!record(operation) || !keys(operation, ['operationId', 'document', 'description', 'retainDimensionValues', 'command', 'outcome']) || !text(operation.operationId) || ids.has(operation.operationId) || typeof operation.description !== 'string' || typeof operation.retainDimensionValues !== 'boolean' || !record(operation.document) || operation.document.id !== scope.pageId || validate(operation.document).length) return fail();
+    if (!record(operation) || !keys(operation, ['operationId', 'document', 'description', 'retainDimensionValues', 'command', 'outcome', 'intent']) || !text(operation.operationId) || ids.has(operation.operationId) || typeof operation.description !== 'string' || typeof operation.retainDimensionValues !== 'boolean' || !record(operation.document) || operation.document.id !== scope.pageId || validate(operation.document).length) return fail();
+    if (operation.intent !== undefined && !['saveDraft', 'publish'].includes(String(operation.intent))) return fail();
     ids.add(operation.operationId);
     if (operation.command !== undefined) {
       const command = operation.command;
-      if (index !== 0 || !record(command) || !keys(command, ['context', 'base', 'pageId', 'document', 'description', 'retainDimensionValues']) || command.pageId !== scope.pageId || stable(command.base) !== stable(value.base) || stable(command.document) !== stable(operation.document) || command.description !== operation.description || command.retainDimensionValues !== operation.retainDimensionValues) return fail();
+      if (index !== 0 || !record(command) || !keys(command, ['context', 'base', 'pageId', 'document', 'description', 'retainDimensionValues', 'intent']) || command.pageId !== scope.pageId || stable(command.base) !== stable(value.base) || stable(command.document) !== stable(operation.document) || command.description !== operation.description || command.retainDimensionValues !== operation.retainDimensionValues || command.intent !== operation.intent) return fail();
       if (stable(command.context) !== stable({ operationId: operation.operationId, actorId: scope.actorId, workspaceId: scope.workspaceId, origin: { kind: 'manual' } })) return fail();
     }
     if (operation.outcome !== undefined) {

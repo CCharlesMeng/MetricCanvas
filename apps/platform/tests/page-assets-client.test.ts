@@ -143,7 +143,7 @@ describe('静态平台页面资产客户端', () => {
 
     await client.saveRevision('report', command);
     await expect(client.saveRevision('report', { ...command, baseRevisionId: 'rev-1' }))
-      .resolves.toMatchObject({ revisionId: 'rev-2', revisionNumber: 2, baseRevisionId: 'rev-1' });
+      .resolves.toMatchObject({ revisionId: 'rev-2', revisionNumber: 2 });
 
     expect(calls.map(({ url, init }) => [init?.method, url])).toEqual([
       ['POST', `${config.pageMetadataBaseUrl}user-page-metadata`],

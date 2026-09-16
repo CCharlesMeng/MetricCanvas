@@ -280,3 +280,26 @@ for (const interruption of ['identity', 'cancel'] as const) it(`does not send a 
     expect(f.port.prepare).not.toHaveBeenCalled(); expect(f.port.run).not.toHaveBeenCalled();
   } finally { spy.mockRestore(); }
 });
+
+it('accepts a bound saved receipt directly without reading or saving the asset again', async () => {
+  const f = await setup();
+  const save = vi.spyOn(f.authoringPort, 'saveRevision');
+  const run = f.language.start('edit'); await flush();
+  const result = f.deliver();
+  f.resolve({...result, delivery: f.deliveries.get(result.draftId)!});
+  await run; await flush();
+  expect(f.language.snapshot().phase).toBe('saved');
+  expect(f.coordinator.snapshot().ref?.revisionId).toBe('opaque-new');
+  expect(f.port.read).not.toHaveBeenCalled();
+  expect(save).not.toHaveBeenCalled();
+});
+
+it('rejects an inline saved receipt bound to another resource', async () => {
+  const f = await setup();const run=f.language.start('edit');await flush();
+  const result=f.deliver();const delivery=f.deliveries.get(result.draftId)!;
+  delivery.draft.ref.resourceId='another-resource';
+  f.resolve({...result,delivery});await run;await flush();
+  expect(f.language.snapshot().phase).toBe('unknown');
+  expect(f.coordinator.snapshot().ref).toEqual(base);
+  expect(f.port.read).not.toHaveBeenCalled();
+});

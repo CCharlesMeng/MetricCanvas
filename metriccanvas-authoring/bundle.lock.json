@@ -4,7 +4,7 @@
   "artifacts": [
     {
       "file": "ARCHITECTURE.md",
-      "sha256": "c6d32d1f9a7dbdf5c70b579de9e8f8619acad9b6754486a7caab478771526e3a"
+      "sha256": "bbf9e1e2c7bf2b2b1018e4e40a24585e1070b8b82244341ffd24160c84652578"
     },
     {
       "file": "bundle.json",
@@ -3156,7 +3156,7 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/errors.md",
-      "sha256": "fa135f7189a9eaecae7b2be8f1f9185721245ed862323d919b152a769e69221f"
+      "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/examples.md",
@@ -3172,11 +3172,11 @@
     },
     {
       "file": "skill/metriccanvas-platform-authoring/references/tools.md",
-      "sha256": "fb9fa8e644162a7225f7c0b8d6be777c9f8022bb9c858df057c5c576108bc824"
+      "sha256": "72ddb5670fbd785ad5af6e0e60b2db1d38a8c5904e0f52e5252affda67cdbb01"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/SKILL.md",
-      "sha256": "b79061edc37684bfa395d758efc1168b25a637392b7ff0f4f46f5dfe31bd3a80"
+      "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40"
     },
     {
       "file": "skill/metriccanvas-platform-authoring/workflows/create.md",
@@ -3209,6 +3209,10 @@
     {
       "file": "test-harness/fixtures/data-context.json",
       "sha256": "a3c0d131723d0695892eafbd4ebd61932de720a6df06d42057d03b4efdd3d1f0"
+    },
+    {
+      "file": "test-harness/fixtures/java-page-assets.json",
+      "sha256": "c8b0aa012a152a1ec2071a614368b9231f5f78a2ef74aa2eb450e98dcd558a7d"
     },
     {
       "file": "test-harness/fixtures/page-build-execution.json",
@@ -3495,8 +3499,12 @@
       "sha256": "2cc8a54331405eaab007403652e8c3d66ba6bd7d8c407f7a4e064ae4cb509615"
     },
     {
+      "file": "test-harness/tests/test_java_single_submission.py",
+      "sha256": "c649cff3e019bdced9f1f202d9bb2affa6d8336c3c85dcde2be7a48b6256e984"
+    },
+    {
       "file": "test-harness/tests/test_lifecycle_http.py",
-      "sha256": "e32a76e8ac0ecdd235fc6de1b94bfaac88cfbdd90a5bca9e4811720aa7316315"
+      "sha256": "c6e7938ba131924b5a43b2ee8e72d8abb94572582fecf9fc66545bcec1631a53"
     },
     {
       "file": "test-harness/tests/test_lifecycle_publish.py",
@@ -3504,7 +3512,7 @@
     },
     {
       "file": "test-harness/tests/test_lifecycle_stdio.py",
-      "sha256": "30158ad9f3bf2e28945a783601ae267ef7633f9a8df12ef7018743419babaf34"
+      "sha256": "369c90c943394f371b6038c1504c55963fd87cbd10e95b97e28c6213cc4c150d"
     },
     {
       "file": "test-harness/tests/test_lifecycle.py",
@@ -3652,7 +3660,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/adapters/outbound/lifecycle_http.py",
-      "sha256": "9d6545c5ef506f2e91deb9b8e7cafa559a5299355f058790883c679cdf41971a"
+      "sha256": "e0b1ab9cd65d363d74b71d20a6c516125f6a506ca815ddf8ec7643303276ec2a"
     },
     {
       "file": "tool/metriccanvas_authoring/adapters/outbound/lifecycle_spool.py",
@@ -3680,11 +3688,11 @@
     },
     {
       "file": "tool/metriccanvas_authoring/application/authoring_recovery.py",
-      "sha256": "0c772ead6ec325ac686a5814969f7e03bd45cbf48e2db713ab669dee103f4813"
+      "sha256": "64db091d2af407c223f1e26730a98a78794d951a32e66fb6043292afecd948da"
     },
     {
       "file": "tool/metriccanvas_authoring/application/authoring_submission.py",
-      "sha256": "8fdcbf7d4181ca9fb4f09f4d797065978301bcf5f5cca7f28d04de05c918347d"
+      "sha256": "835440978efaacfe87da9a07bd33013bab8a839e47fd9c34794ef778f4a70d24"
     },
     {
       "file": "tool/metriccanvas_authoring/application/authoring_turns.py",
@@ -3728,7 +3736,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/application/lifecycle_ports.py",
-      "sha256": "e16cab702224276ecf2b874a10024c503a7234f04ccf0316654dca93913365c0"
+      "sha256": "691c317bde5e037b3e668611918a047125e71656c8a4344693342144fce2a628"
     },
     {
       "file": "tool/metriccanvas_authoring/application/lifecycle_publish.py",
@@ -3736,7 +3744,7 @@
     },
     {
       "file": "tool/metriccanvas_authoring/application/lifecycle.py",
-      "sha256": "a58609826198de62fd31654b9b615f29c4afbd51325bbcb83e8d334a40be22a6"
+      "sha256": "f1b4dbf6a33ca12e7df805e5b645a3fd5a8ee9352dbc546b2aabea38c3e1a6db"
     },
     {
       "file": "tool/metriccanvas_authoring/application/ports.py",

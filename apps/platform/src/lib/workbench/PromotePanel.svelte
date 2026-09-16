@@ -90,7 +90,7 @@
         document: preview.document,
         revisionId: revision.revisionId,
         revisionNumber: revision.revisionNumber,
-        dataContextVersion: revision.dataContextVersion
+        dataContextVersion: revision.dataContextVersion ?? null
       });
     } catch (cause) {
       saveError = cause instanceof Error ? cause.message : String(cause);

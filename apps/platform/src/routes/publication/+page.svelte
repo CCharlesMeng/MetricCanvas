@@ -4,7 +4,7 @@
  import PageAuthoringWorkbench from '$lib/PageAuthoringWorkbench.svelte';
  import type { createPublicationFixture } from '$lib/workbench/publication-fixture';
  import { confirmedPageAssetCapabilities, type AuthoringPort } from '$lib/workbench/authoring-coordinator';
- import type { PageRevision } from '$lib/page-assets-client';
+ import type { PageRevision } from '$lib/page-assets/contract';
  import PublicationReview from '$lib/workbench/PublicationReview.svelte';
  import {createAuthoringPublication} from '$lib/workbench/authoring-publication';
  let publication=$state<ReturnType<typeof createAuthoringPublication>|null>(null);

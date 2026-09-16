@@ -1,5 +1,5 @@
 /** Durable, identity-scoped snapshots. Credentials are not part of this contract. */
-export interface StorageScope { actorId: string; workspaceId: string; pageId: string }
+export interface StorageScope { actorId: string; workspaceId: string; pageId: string; resourceId?: string; channel?: 'management' }
 export interface StoredRecord<T> { version: number; value: T }
 export interface AuthoringStorage<T> {
   read(scope: StorageScope): Promise<StoredRecord<T> | null>;
@@ -8,7 +8,7 @@ export interface AuthoringStorage<T> {
 export class AuthoringStorageConflict extends Error {
   constructor() { super('其他窗口或先前工作已更新本地记录，已暂停同步并保留当前内容。'); this.name = 'AuthoringStorageConflict'; }
 }
-const keyOf = (scope: StorageScope) => JSON.stringify([scope.actorId, scope.workspaceId, scope.pageId]);
+const keyOf = (scope: StorageScope) => JSON.stringify([scope.actorId, scope.workspaceId, scope.pageId, ...(scope.resourceId ? [scope.resourceId] : []), ...(scope.channel ? [scope.channel] : [])]);
 export function createIndexedAuthoringStorage<T>(factory?: IDBFactory): AuthoringStorage<T> {
   let connection: Promise<IDBDatabase> | undefined;
   function open() {

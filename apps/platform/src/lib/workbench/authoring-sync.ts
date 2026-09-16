@@ -5,11 +5,12 @@ import type { AuthoringStorage, StorageScope } from './authoring-storage';
 
 export interface DurableSaveCommand {
   context: OperationContext; base: DraftRef | null; pageId: string; document: PageDocument;
-  description: string; retainDimensionValues: boolean;
+  description: string; retainDimensionValues: boolean; intent?: 'saveDraft' | 'publish';
 }
 export interface StrongSaved {
   status: 'saved'; operationId: string; ref: DraftRef; base: DraftRef | null;
   contentHash: string; canonicalization: string; revisionNumber: number;
+  revision?: import('../page-assets/contract').PageRevision;
 }
 export type StrongSaveOutcome = StrongSaved
   | { status: 'pending' | 'unknown'; operationId: string; message?: string }
@@ -18,6 +19,7 @@ export type OperationLookup = StrongSaveOutcome | { status: 'not-applied'; opera
 /** All methods are proposed service ports. No speculative production URL is installed. */
 export interface StableSavePort {
   stableSave: boolean;
+  delivery?: 'single';
   save(command: DurableSaveCommand): Promise<StrongSaveOutcome>;
   lookup(context: OperationContext): Promise<OperationLookup>;
   verifySaved(command: DurableSaveCommand, saved: StrongSaved): Promise<boolean>;
@@ -29,13 +31,14 @@ export const unavailableStableSave: StableSavePort = {
   async verifySaved() { return false; }
 };
 interface QueuedOperation {
-  operationId: string; document: PageDocument; description: string; retainDimensionValues: boolean;
+  operationId: string; document: PageDocument; description: string; retainDimensionValues: boolean; intent?: 'saveDraft' | 'publish';
   command?: DurableSaveCommand; outcome?: StrongSaveOutcome;
 }
 export interface DurableAuthoringState {
-  format: 1; scope: StorageScope; base: DraftRef | null; draft: CanvasAuthoringDraft;
+  format: 1 | 2; scope: StorageScope; base: DraftRef | null; draft: CanvasAuthoringDraft;
   queue: QueuedOperation[];
   undoDraft?: CanvasAuthoringDraft;
+  confirmed?: import('../page-assets/contract').PageRevision;
 }
 export interface SyncSnapshot {
   canUndo?: boolean; pending: number; protection: 'pending' | 'protected' | 'failed';
@@ -61,6 +64,8 @@ export function createAuthoringSync(options: {
   retryDelays?: readonly number[];
 }) {
   let state = structuredClone(options.initial);
+  if (options.port.delivery === 'single' && state.format !== 2 && state.queue.length) throw Error('旧版未决工作已保留，不能自动重放，请先人工核实。');
+  if (options.port.delivery === 'single') state.format = 2;
   let storageVersion = options.restoredVersion ?? 0;
   let durable = options.restoredVersion !== undefined, disposed = false, running = false;
   // A durable command may have crossed the network even when no outcome was stored.
@@ -99,6 +104,7 @@ export function createAuthoringSync(options: {
     serial = result.catch(() => {}); return result;
   }
   function scheduleRetry() {
+    if (options.port.delivery === 'single') return;
     if (timer || disposed || running || !online || !durable || retryBlocked || !options.port.stableSave || !state.queue.length || state.queue[0].outcome?.status === 'rejected' || !identityMatches() || attempts >= delays.length) return;
     timer = setTimeout(() => { timer = undefined; attempts++; void api.retry(false); }, delays[attempts]);
   }
@@ -109,7 +115,7 @@ export function createAuthoringSync(options: {
     if (outcome.status === 'saved') {
       const matching = !!outcome.ref && typeof outcome.ref === 'object' && same(outcome.base, command.base) && outcome.ref.pageId === command.pageId &&
         Number.isInteger(outcome.revisionNumber) && outcome.revisionNumber > 0 &&
-        [outcome.ref.revisionId, outcome.ref.resourceId, outcome.contentHash, outcome.canonicalization].every((value) => typeof value === 'string' && value.length > 0) &&
+        [outcome.ref.revisionId, outcome.ref.resourceId, ...(options.port.delivery === 'single' ? [] : [outcome.contentHash, outcome.canonicalization])].every((value) => typeof value === 'string' && value.length > 0) &&
         (!command.base || (outcome.ref.resourceId === command.base.resourceId && outcome.ref.revisionId !== command.base.revisionId));
       let verified = false;
       try { verified = matching && await options.port.verifySaved(command, outcome); } catch { /* uncertain verification never acknowledges a save */ }
@@ -119,14 +125,14 @@ export function createAuthoringSync(options: {
     if (!identityMatches()) { pause('identity-changed', '身份已变化，原已发操作等待原身份重新打开后核实。'); return false; }
     // Persist only the declared receipt fields, never arbitrary transport metadata.
     const result: StrongSaveOutcome = outcome.status === 'saved'
-      ? { status: 'saved', operationId: outcome.operationId, ref: { pageId: outcome.ref.pageId, revisionId: outcome.ref.revisionId, resourceId: outcome.ref.resourceId }, base: command.base, contentHash: outcome.contentHash, canonicalization: outcome.canonicalization, revisionNumber: outcome.revisionNumber }
+      ? { status: 'saved', operationId: outcome.operationId, ref: { pageId: outcome.ref.pageId, revisionId: outcome.ref.revisionId, resourceId: outcome.ref.resourceId }, base: command.base, contentHash: outcome.contentHash, canonicalization: outcome.canonicalization, revisionNumber: outcome.revisionNumber, ...(outcome.revision ? {revision:outcome.revision} : {}) }
       : outcome.status === 'rejected'
         ? { status: 'rejected', operationId: outcome.operationId, code: outcome.code, message: outcome.message, retryable: outcome.retryable === true }
         : { status: outcome.status, operationId: outcome.operationId, message: outcome.message };
     const protectedResult = await transaction(() => {
       const head = state.queue[0];
       if (!head || head.operationId !== command.context.operationId) return;
-      if (result.status === 'saved') { state.base = result.ref; state.queue.shift(); status.lastSaved = result; }
+      if (result.status === 'saved') { state.base = result.ref; if (result.revision) state.confirmed = result.revision; state.queue.shift(); status.lastSaved = result; }
       else head.outcome = result;
     });
     if (!protectedResult) return false;
@@ -137,7 +143,7 @@ export function createAuthoringSync(options: {
   async function pump() {
     if (running || disposed || !durable || !state.queue.length || !online) return;
     if (!identityMatches()) { pause('identity-changed', '身份已变化，已暂停同步。'); return; }
-    if (!options.port.stableSave) { pause('unavailable', '服务尚未确认稳定幂等保存，工作已在浏览器保护。'); return; }
+    if (!options.port.stableSave && options.port.delivery !== 'single') { pause('unavailable', '服务尚未确认稳定幂等保存，工作已在浏览器保护。'); return; }
     if (state.queue[0].outcome || status.phase === 'identity-changed') return;
     running = true;
     try {
@@ -148,7 +154,7 @@ export function createAuthoringSync(options: {
           const protectedCommand = await transaction(() => {
             operation.command = { context: { operationId: operation.operationId, actorId: state.scope.actorId, workspaceId: state.scope.workspaceId, origin: { kind: 'manual' } },
               base: structuredClone(state.base), pageId: state.scope.pageId, document: operation.document,
-              description: operation.description, retainDimensionValues: operation.retainDimensionValues };
+              description: operation.description, retainDimensionValues: operation.retainDimensionValues, ...(operation.intent ? {intent:operation.intent} : {}) };
           });
           if (!protectedCommand || disposed || !identityMatches()) break;
         }
@@ -161,7 +167,7 @@ export function createAuthoringSync(options: {
       }
     } finally {
       running = false;
-      if (!disposed && durable && online && state.queue.length && !state.queue[0].outcome && identityMatches() && options.port.stableSave) queueMicrotask(() => void pump());
+      if (!disposed && durable && online && state.queue.length && !state.queue[0].outcome && identityMatches() && (options.port.stableSave || options.port.delivery === 'single')) queueMicrotask(() => void pump());
       else scheduleRetry();
     }
   }
@@ -178,7 +184,7 @@ export function createAuthoringSync(options: {
     },
     subscribe(listener: (value: SyncSnapshot) => void) { listeners.add(listener); listener(snapshot()); return () => { listeners.delete(listener); }; },
     /** Exactly one call for one committed edit, never an input/drag intermediate. */
-    async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean, forceOperation = false): Promise<void> {
+    async enqueue(draft: CanvasAuthoringDraft, description: string, retainDimensionValues: boolean, forceOperation = false, intent?: 'saveDraft' | 'publish'): Promise<void> {
       if (!identityMatches()) { pause('identity-changed', '身份已变化，编辑未写入旧用户记录，请重新打开页面。'); return; }
       const parsed = normalizePageDocument(draft.pageDocument);
       if (!parsed.ok || parsed.document.id !== state.scope.pageId) throw new Error('无效页面操作，未加入保存队列。');
@@ -187,7 +193,7 @@ export function createAuthoringSync(options: {
         if (!forceOperation && same(state.draft.pageDocument, parsed.document)) { state.draft = structuredClone(draft); return; }
         state.undoDraft = structuredClone(state.draft);
         state.draft = structuredClone(draft);
-        state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues });
+        state.queue.push({ operationId, document: parsed.document, description, retainDimensionValues, ...(intent ? {intent} : {}) });
       });
       if (persisted) void pump();
     },
@@ -225,7 +231,8 @@ export function createAuthoringSync(options: {
       if (!durable && !await transaction(() => {})) return;
       const head = state.queue[0];
       if (!head) return;
-      if (!options.port.stableSave) { void pump(); return; }
+      if (options.port.delivery === 'single' && (head.command || head.outcome)) { pause(head.outcome?.status === 'rejected' ? 'rejected' : 'unknown', head.outcome?.status === 'rejected' ? head.outcome.message : '原保存结果未确认，已停止重发，请保留工作并核实。'); return; }
+      if (!options.port.stableSave && options.port.delivery !== 'single') { void pump(); return; }
       if (!head.command || !head.outcome) { void pump(); return; }
       if (head.outcome.status === 'rejected') return;
       running = true;

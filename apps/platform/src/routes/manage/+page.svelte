@@ -1,30 +1,21 @@
 <script lang="ts">
   import { resolve } from '$app/paths';
   import { onMount } from 'svelte';
-
   import { pageAssets } from '$lib/page-assets';
-  import type { PageListItem } from '$lib/page-assets-client';
-
-  let pages = $state<PageListItem[]>([]);
-  let loading = $state(true);
-  let error = $state('');
-
-  onMount(() => {
-    void loadPages();
-  });
-
+  import type { AssetSummary } from '$lib/page-assets/contract';
+  let pages = $state<AssetSummary[]>([]);
+  let loading = $state(true), error = $state(''), pageNo = $state(1), total = $state(0);
+  let statusFilter = $state<'' | 'draft' | 'published'>('');
+  let request = 0;
+  onMount(() => { void loadPages(); });
   async function loadPages() {
-    loading = true;
-    error = '';
+    const id = ++request; loading = true; error = '';
     try {
-      pages = (await pageAssets.listPages()).pages;
-    } catch (cause) {
-      error = cause instanceof Error ? cause.message : '页面目录加载失败';
-    } finally {
-      loading = false;
-    }
+      const result = await pageAssets.list({page:pageNo,pageSize:20,...(statusFilter ? {state:statusFilter} : {})});
+      if (id === request) { pages = result.items; total = result.total; }
+    } catch (cause) { if(id === request) error = cause instanceof Error ? cause.message : '目录加载失败'; }
+    finally { if(id === request) loading = false; }
   }
-
 </script>
 
 <svelte:head>
@@ -36,9 +27,11 @@
     <div>
       <p class="eyebrow">管理</p>
       <h1>页面</h1>
-      <p class="muted">查看页面修订、审计信息、差异与统一运行时预览。</p>
+      <p class="muted">查看已保存页面，继续创作或管理草稿。</p>
     </div>
     <div class="heading-actions">
+      <a href={`${resolve('/')}?new=1`}>创建新页面</a>
+      <select aria-label="页面状态" bind:value={statusFilter} onchange={() => {pageNo=1;void loadPages();}}><option value="">全部</option><option value="draft">草稿</option><option value="published">已发布</option></select>
       <button onclick={loadPages} disabled={loading}>刷新目录</button>
     </div>
   </div>
@@ -55,30 +48,31 @@
   {:else if pages.length === 0}
     <div class="empty">
       <h2>暂无页面</h2>
-      <p>页面资产服务当前未返回页面。公共 Chat 尚未接通，暂不提供对话创建页面。</p>
+      <p>当前筛选下没有页面，可创建新页面。</p>
       <a href={resolve('/')}>打开页面搭建工作台</a>
     </div>
   {:else}
     <ul class="page-list">
-      {#each pages as page (page.pageId)}
+      {#each pages as page (page.resourceId)}
         <li>
-          <a class="page-link" href={resolve('/manage/pages/[pageId]', { pageId: page.pageId })}>
+          <a class="page-link" href={`${resolve('/manage/pages/[pageId]', { pageId: page.pageId })}?resource=${encodeURIComponent(page.resourceId)}`}>
             <span class="page-id">{page.pageId}</span>
             <span class="summary">
               <span>
                 最新页面修订
-                <code>{page.latestRevision?.revisionId ?? '尚无修订'}</code>
+                <code>{page.revisionId}</code>
               </span>
               <span>
-                当前发布修订
-                <code>{page.publishedRevision?.revisionId ?? '未发布'}</code>
+                状态
+                <code>{page.state === 'published' ? '已发布' : page.state === 'draft' ? '草稿' : '状态未知'}</code>
               </span>
-              <span>{page.visibility === 'visible' ? '可见' : '隐藏'}</span>
+              <span>{page.description || page.pageId} · {page.updatedAt}</span>
             </span>
           </a>
         </li>
       {/each}
     </ul>
+    <nav aria-label="目录分页"><button disabled={pageNo === 1 || loading} onclick={() => {pageNo--;void loadPages();}}>上一页</button><span>第 {pageNo} 页 · 共 {total} 条</span><button disabled={pageNo * 20 >= total || loading} onclick={() => {pageNo++;void loadPages();}}>下一页</button></nav>
   {/if}
 </section>
 

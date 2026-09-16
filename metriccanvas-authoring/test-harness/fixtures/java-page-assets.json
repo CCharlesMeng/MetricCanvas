@@ -1,0 +1,5 @@
+{
+  "successCodes": ["CBC.0000", "0"],
+  "rejectedHttp": [{"status": 400, "code": "INVALID_REQUEST"}, {"status": 401, "code": "UNAUTHENTICATED"}, {"status": 403, "code": "FORBIDDEN"}, {"status": 404, "code": "REVISION_NOT_FOUND"}, {"status": 409, "code": "REVISION_CONFLICT"}],
+  "unknownHttp": [302, 500, 502, 503]
+}

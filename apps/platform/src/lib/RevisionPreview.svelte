@@ -2,7 +2,7 @@
   import { canonicalizeJson, normalizePageDocument } from '@metriccanvas/page';
   import type { ExecutionBootstrap } from '@metriccanvas/engine';
   import { RuntimeView } from '@metriccanvas/engine/ui';
-  import type { PageRevision } from './page-assets-client';
+  import type { PageRevision } from './page-assets/contract';
   import { createInjectedDqeGateway } from './runtime-config';
   import { pageAssets } from './page-assets';
 

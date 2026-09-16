@@ -1,8 +1,8 @@
-# ADR 基线:77 份决策记录的当前生效结论
+# ADR 基线：80 份决策记录的当前生效结论
 
-`docs/adr/` 现有 79 份 ADR(0001–0079)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+`docs/adr/` 现有 80 份 ADR(0001–0080)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0080`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0081`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
 
 **关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
 
@@ -21,7 +21,7 @@
 | [0005](./0005-build-over-open-source-bi.md) | 自研运行时,不魔改开源 BI | 现行(“数据服务唯一入口”前提已由 0014 修订,其余理由不变) |
 | [0006](./0006-metadomain-layering-and-naming.md) | 包按 DDD 分层围绕聚合根“看板页面”命名 | 现行(取数边界已由 0014 修订;第 3 条“包名 `widgets` 取自规格字段”的前提已被 0017 推翻,欠账记于 0025 待决) |
 | [0007](./0007-demote-spec-to-document-form.md) | 领域词汇只保留聚合根“看板页面”,“规格”降级为文档形态 | 现行 |
-| [0008](./0008-immutable-page-revisions-and-publish-leases.md) | 不可变线性修订 + 15 分钟发布租约 | 现行 |
+| [0008](./0008-immutable-page-revisions-and-publish-leases.md) | 不可变线性修订 + 15 分钟发布租约 | 当前 Java 保存与发布范围由 0080 部分替代 |
 | [0009](./0009-node-postgres-platform-beside-runtime.md) | 平台用独立 SvelteKit Node + PostgreSQL,运行时保持独立 | 已被 0060 取代(仍描述当前待迁移实现) |
 | [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布修订,不复制文档 | 现行 |
 | [0011](./0011-derive-query-fields-from-catalog.md) | query 字段由结构化查询与元数据快照解析 | 已被 0014 取代 |
@@ -92,8 +92,9 @@
 | [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | #95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
 
 | [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古只替换现有左侧对话，每轮 ask 有结果并保留旧页 | 已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
-| [0078](./0078-dimension-values-templates-and-page-instances.md) | 草稿经维度取值提取发布为模板，执行产生页面实例 | 新版设计已确认，协议与服务未实现；在 Platform 创作范围内部分调整 0010/0064 |
-| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次、latest前置与受门禁统一内容工厂 | S2实施依据；真实提供方保证另验 |
+| [0078](./0078-dimension-values-templates-and-page-instances.md) | 草稿经维度取值提取发布为模板，执行产生页面实例 | 后续设计；当前 Java 发布不以模板/参数提取为前置，见 0080 |
+| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次、latest前置与受门禁统一内容工厂 | 本轮身份与固定基线现行；强 latest/精确回读前置由 0080 调整 |
+| [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) | Java 页面资产单次保存与状态发布 | 当前 Java 接入依据；本仓实现已落地，真实联调另验 |
 
 ## IOC 作战地图批次(0045–0051)
 
@@ -123,7 +124,7 @@
 
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
-部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已切换为 `adapter-static` 的纯前端 SPA，删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。历史修订精确读取尚待提供方契约与内网联调，真实部署载体及盘古接线仍属 #104/#106–#108 未完成项。
+部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已切换为 `adapter-static` 的纯前端 SPA，删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。当前资产接线按 ADR-0080 使用单次保存和回执确认，历史精确读取不作为接入前置；真实部署载体及盘古接线仍需提供方验收。
 
 ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 是锁步发布容器,内部的 Skill 与 Python Tool 是两个平级 Module,只通过 MCP Tool Interface 协作;Authoring contracts 只拥有 Page Build Spec 等 Skill↔Tool 接口,产品中立契约则由仓根 `contracts/metriccanvas` 承载,Bundle 携带摘要锁定的只读快照。FastMCP 只作为入站 Adapter,Fake 与 fixture 只属于 Test Harness。TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成 Page Build Spec,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。
 
@@ -249,9 +250,11 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 
 ## 页面生命周期与发布治理
 
-**现行结论:** 本节描述的是**资产态**;问数与探索的临时页面态不进入这套治理(见上一节)。页面保持稳定身份,每次成功保存产生不可变页面修订,修订历史只能以前一最新修订为基线线性前进;发布只能针对当前最新修订发起并原子取得 15 分钟页面级发布租约,人工确认时按最新元数据复验,批准/拒绝/取消/超时均释放租约;所有写入口自首次提供起支持幂等重试。页面模板的模板修订只保存发现元数据和精确的已发布页面修订引用,不复制页面文档,来源页面后续的新修订不影响既有模板修订。
+**现行结论：** 本节描述资产态，普通问数与探索的临时页面态不因此自动保存。[ADR-0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 是当前 Java 接入依据：资源 ID 定位记录，修订 ID 作为更新基线；人工保存与 AI 提交各自只有一个发送者，成功以经验证的服务回执确认。冲突或未知结果保留工作并停止，程序只核对已有记录，不以新操作重发，也不要求远端幂等查询或历史精确读取。
 
-来源:[ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md)、[ADR-0010](./0010-page-templates-reference-published-revisions.md)。
+发布经工作台人工确认，将当前资源改为发布态；普通保存改为草稿态，不承诺独立发布副本。草稿历史只展示服务摘要，回退显式指定版本，不承诺回退一定追加修订或提供跨窗口基线检查。发布租约、模板候选和参数提取不作为本期前置。
+
+历史设计：[ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md)、[ADR-0010](./0010-page-templates-reference-published-revisions.md)、[ADR-0078](./0078-dimension-values-templates-and-page-instances.md)。0008/0078 的本期保存与发布前置、0079 的强 latest 与精确回读前置按 0080 的范围替代；原文保留设计背景，不作当前服务保证。
 
 ## AI 总结组件
 
@@ -289,3 +292,8 @@ ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方�
 ## 页面试验场的开发工具定位（0075）
 
 [ADR-0075](./0075-page-playground-as-development-tool.md)：原 Canvas 应用更名为**页面试验场（Page Playground）**，目录 `apps/playground`、包名 `playground`。保留仓库页面浏览与 JSON 即时预览，移除旧平台 API 来源；按需启动和构建，不参加默认产品启动与交付，测试与类型检查继续覆盖。平台、搭建画布 `MetricCanvas` 与渲染引擎的职责不变。此条补齐 #102 的去留单项；其余旧服务与静态化由 #125/#104 接续。
+
+
+## Java 页面资产单次提交（0080）
+
+[ADR-0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 是当前 Platform Java 接入裁决：资源 ID 定位、单次保存、可信成功回执确认，未知写入保留工作并停止；发布更新当前资源草稿/发布状态。本期不以幂等操作查询、强 latest、历史精确读取、参数提取候选或发布租约作为接入前置，不承诺编辑与独立发布副本隔离。它部分替代本索引 0008/0078/0079 对上述范围的描述，普通问数边界不变。

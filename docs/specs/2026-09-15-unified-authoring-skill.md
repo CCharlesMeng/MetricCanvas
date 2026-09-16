@@ -1,5 +1,7 @@
 # Spec：统一创作 Skill 的执行逻辑、结构与体积优化
 
+> 2026-09-16 更新：Platform 的 Java 保存、历史读取和发布接入以 [ADR-0080](../adr/0080-java-assets-single-attempt-save-and-status-publication.md) 为准。下文原幂等恢复、强 latest、历史精确回读及模板候选发布不再是本期接入前置；身份、候选校验及工作保护仍保留。
+
 日期：2026-09-15。状态：正式实施规格，已发布为 [Issue #150](https://github.com/CCharlesMeng/MetricCanvas/issues/150)，标记 ready-for-agent。来源：本轮完整 grill、内部 define-report 调查、统一 Agent 架构，以及数据源映射补充。用户已确认验收入口：真实 Skill 任务评测、公开内容工具完整流程、构建交付检查；外部服务用可替换 Adapter 做契约验证，真实内网联调独立验收。
 
 ## Problem Statement

@@ -44,7 +44,7 @@ class KnownHttpTest(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(caught.exception.code,code)
         self.assertEqual(len(self.requests),5)
     async def test_future_capabilities_make_no_http_request(self):
-        for operation in ['save','lookup','read','history']:
+        for operation in ['lookup','read','history']:
             with self.assertRaises(LifecycleError) as caught: await getattr(self.adapter,operation)(Identities().current(),{})
             self.assertEqual(caught.exception.code,'CAPABILITY_UNAVAILABLE')
         self.assertFalse(self.requests)

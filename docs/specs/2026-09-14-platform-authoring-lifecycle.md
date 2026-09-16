@@ -1,5 +1,7 @@
 # Spec：Platform 创作生命周期与盘古助手独立集成
 
+> 2026-09-16 更新：Platform 的 Java 保存、历史读取和发布接入以 [ADR-0080](../adr/0080-java-assets-single-attempt-save-and-status-publication.md) 为准。下文原幂等恢复、强 latest、历史精确回读及模板候选发布不再是本期接入前置；身份、候选校验及工作保护仍保留。
+
 日期：2026-09-14。来源：本轮完整创作生命周期 grill 及最终结构、架构裁决。状态：规格已综合，用户已确认验证边界；作为 GitHub 规格事项发布，后续拆分实施任务。本规格描述目标能力，不代表当前代码或外部服务已经支持。
 
 ## Problem Statement

@@ -8,6 +8,9 @@ export interface SavedDraft {
   draftId: string;
   ref: { pageId: string; revisionId: string; resourceId: string };
   document: PageDocument;
+  /** Provider receipt metadata; required by the Java asset integration. */
+  revisionNumber?: number;
+  isDraft?: boolean;
 }
 export type ReadSavedDraft = (draftId: string, signal: AbortSignal) => Promise<SavedDraft>;
 export const unavailableDraftReader: ReadSavedDraft = async () => {

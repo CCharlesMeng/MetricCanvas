@@ -27,6 +27,7 @@ class LifecycleCapabilities:
     history: bool = False
     operation_lookup: bool = False
     current_read: bool = False
+    single_save: bool = False
 
 
 class LifecycleServicePort(Protocol):
