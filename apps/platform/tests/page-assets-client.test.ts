@@ -12,7 +12,7 @@ const config = {
 };
 const document = { id: 'report', schemaVersion: '6.0', title: '报告' };
 const providerRevision = {
-  retCode: '0',
+  retCode: 'CBC.0000',
   retDesc: '',
   page_metadata_id: 'metadata-1',
   page_id: 'report',
@@ -54,6 +54,30 @@ it('页面元数据读写携带跨源凭据，cftk 随运行配置更新且可�
   installRuntimeConfig({ ...config, cftk: ' ' });
   await client.listPages();
   expect(new Headers(fetchImpl.mock.calls.at(-1)?.[1]?.headers).has('cftk')).toBe(false);
+});
+
+it('uses YAML publication state and sends explicit state and draft comments', async () => {
+  installRuntimeConfig(config);
+  const fetchImpl = vi.fn<typeof fetch>(async (input, init) => {
+    if (init?.method === 'GET') return Response.json({
+      retCode: 'CBC.0000', page_metadata_list: [{ ...providerRevision, is_draft: false }], total: 1
+    });
+    return Response.json({ ...providerRevision, is_draft: false });
+  });
+  const client = createPageAssetsClient({ fetchImpl });
+  expect((await client.listPages()).pages[0].publishedRevision).toEqual({ revisionId: 'rev-1' });
+  await expect(client.saveRevision('report', {
+    ...command, resourceId: 'metadata-1', baseRevisionId: 'rev-0', isDraft: false
+  })).resolves.toMatchObject({ isDraft: false });
+  expect(JSON.parse(String(fetchImpl.mock.calls[1][1]?.body))).toEqual({
+    page_metadata_definition: document, base_revision_id: 'rev-0', is_draft: false
+  });
+  await client.saveRevision('report', {
+    ...command, resourceId: 'metadata-1', baseRevisionId: 'rev-1', comment: '调整标题'
+  });
+  expect(JSON.parse(String(fetchImpl.mock.calls[2][1]?.body))).toEqual({
+    page_metadata_definition: document, base_revision_id: 'rev-1', is_draft: true, comment: '调整标题'
+  });
 });
 
 describe('静态平台页面资产客户端', () => {
@@ -128,11 +152,13 @@ describe('静态平台页面资产客户端', () => {
     ]);
     expect(JSON.parse(String(calls[0]?.init?.body))).toEqual({
       page_id: 'report',
-      page_metadata_definition: document
+      page_metadata_definition: document,
+      is_draft: true
     });
     expect(JSON.parse(String(calls[2]?.init?.body))).toEqual({
       page_metadata_definition: document,
-      base_revision_id: 'rev-1'
+      base_revision_id: 'rev-1',
+      is_draft: true
     });
   });
 

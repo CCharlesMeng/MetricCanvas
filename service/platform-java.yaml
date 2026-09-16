@@ -1,0 +1,787 @@
+# Page Metadata 管理服务接口定义文件
+swagger: '2.0'
+info:
+  version: v1
+  title: CDINL2DataBuilderService
+  description: |
+    Page Metadata 管理服务，提供用户页面级 page metadata 的保存、查询、修改、删除能力。
+
+    ** 服务SLA：**
+
+    |SLA项|定义|
+    |-----|-----|
+    |请求成功率| >=99.9%|
+    |可用性|Tair1|
+    |数据一致性|最终一致，不一致时长<1分钟|
+    |吞吐量|4000tps|
+    |TP50请求时延|2ms|
+    |TP99.9请求时延|5ms|
+schemes:
+  - https
+basePath: /
+x-yamlfile: model/src/main/resources/rest-services-page-metadata.yaml
+paths:
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata:
+    get:
+      summary: '查询用户名下 page metadata 列表'
+      description: '|场景描述：查询当前登录用户名下的全部 page metadata|
+                    |功能描述：按用户查询 page metadata 列表，支持分页与按需返回 definition|'
+      tags:
+        - CDIPageMetadataService
+      operationId: listPageMetadata
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: pageNo
+          in: query
+          type: integer
+          x-allowNull: true
+          required: false
+          minimum: 1
+          description: '页码，从 1 开始；不传或小于 1 时不分页'
+        - name: pageSize
+          in: query
+          type: integer
+          x-allowNull: true
+          required: false
+          maximum: 1000
+          description: '每页数量，最大 1000；不传或小于 1 时不分页'
+        - name: needDefinition
+          in: query
+          type: boolean
+          required: false
+          default: false
+          description: '是否返回 page_metadata_definition，默认 false'
+        - name: isDraft
+          in: query
+          type: boolean
+          x-allowNull: true
+          required: false
+          description: '按草稿态过滤：true-仅草稿，false-仅发布；不传查全部'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataListResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+    post:
+      summary: '保存 page metadata'
+      description: '|场景描述：保存用户页面级 page metadata|
+                    |功能描述：新增 page metadata 记录，返回 page_metadata_id 与初始 revision|'
+      tags:
+        - CDIPageMetadataService
+      operationId: savePageMetadata
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: savePageMetadataReq
+          in: body
+          required: true
+          description: '保存 page metadata 请求体'
+          schema:
+            $ref: '#/definitions/SavePageMetadataRequest'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        409:
+          description: '|修订冲突|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata/{page_metadata_id}:
+    get:
+      summary: '查询 page metadata 详情'
+      description: '|场景描述：查询指定 page_metadata_id 的详情|
+                    |功能描述：返回 page_metadata_definition 等详情信息|'
+      tags:
+        - CDIPageMetadataService
+      operationId: getPageMetadata
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+        - name: isDraft
+          in: query
+          type: boolean
+          x-allowNull: true
+          required: false
+          description: '按草稿态过滤：true-仅草稿，false-仅发布；不传不做过滤，状态不匹配返回 404'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataResponse'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        404:
+          description: '|page metadata 不存在|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+    put:
+      summary: '修改 page metadata'
+      description: '|场景描述：修改指定 page_metadata_id 的 page_metadata_definition|
+                    |功能描述：更新 page_metadata_definition，revision_number 递增|'
+      tags:
+        - CDIPageMetadataService
+      operationId: updatePageMetadata
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+        - name: updatePageMetadataReq
+          in: body
+          required: true
+          description: '修改 page metadata 请求体'
+          schema:
+            $ref: '#/definitions/UpdatePageMetadataRequest'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        404:
+          description: '|page metadata 不存在|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        409:
+          description: '|修订冲突|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+    delete:
+      summary: '删除 page metadata'
+      description: '|场景描述：删除指定 page_metadata_id 的记录|
+                    |功能描述：删除 page metadata，返回 204|'
+      tags:
+        - CDIPageMetadataService
+      operationId: deletePageMetadata
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+      responses:
+        204:
+          description: '|删除成功|'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        404:
+          description: '|page metadata 不存在|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata/{page_metadata_id}/history:
+    get:
+      summary: '查询 page metadata 草稿历史列表'
+      description: '|场景描述：查询指定 page_metadata_id 的草稿历史版本|
+                    |功能描述：返回草稿版本列表，按 draft_version 降序|'
+      tags:
+        - CDIPageMetadataService
+      operationId: listDraftHistory
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataHistoryListResponse'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        404:
+          description: '|page metadata 不存在|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata/{page_metadata_id}/rollback:
+    post:
+      summary: '回退 page metadata 草稿版本'
+      description: '|场景描述：回退指定 page_metadata_id 的草稿到目标版本|
+                    |功能描述：不传 target_draft_version 则回退到上一个版本|'
+      tags:
+        - CDIPageMetadataService
+      operationId: rollbackDraft
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+        - name: rollbackDraftReq
+          in: body
+          required: false
+          description: '回退草稿版本请求体'
+          schema:
+            $ref: '#/definitions/RollbackDraftRequest'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/PageMetadataResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+        403:
+          description: '|无权操作|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        404:
+          description: '|page metadata 不存在|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata/{page_metadata_id}/filter-history:
+    put:
+      summary: '保存过滤历史'
+      description: '|场景描述：用户筛选后保存最后一次过滤条件|
+                    |功能描述：按 (metadata_id, user_id) upsert，不校验 metadata 状态|'
+      tags:
+        - CDIPageMetadataService
+      operationId: saveFilterHistory
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+        - name: saveFilterHistoryReq
+          in: body
+          required: true
+          description: '过滤条件请求体'
+          schema:
+            $ref: '#/definitions/SaveFilterHistoryRequest'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/FilterHistoryResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+    get:
+      summary: '查询过滤历史'
+      description: '|场景描述：查询当前用户对指定 metadata 的最后一次过滤条件|
+                    |功能描述：无记录返回空 body，不校验 metadata 状态|'
+      tags:
+        - CDIPageMetadataService
+      operationId: getFilterHistory
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/FilterHistoryResponse'
+        401:
+          description: '|鉴权失败|'
+  /rest/cdi/cdinl2databuilderservice/v1/user-page-metadata/{page_metadata_id}/execute:
+    post:
+      summary: '执行 metadata（查数）'
+      description: '|场景描述：IOC 首屏初始化 / dataAgent 召回时按 metadata_id 查数|
+                    |功能描述：读取 metadata.json，将 globalParams 注入各 dataSource 的 DSL，查数后填充 initial，返回完整 metadata.json。globalParams 三级递进：入参 > last filter history > 不注入。不校验属主，数据权限由下层 DSL 执行按 X-Operator-Id 校验|'
+      tags:
+        - CDIPageMetadataService
+      operationId: executePageMetadata
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: X-Auth-Token
+          in: header
+          required: true
+          type: string
+          description: 'token'
+        - name: X-Operator-Id
+          in: header
+          type: string
+          required: true
+          maxLength: 64
+          minLength: 1
+          description: '当前登录用户ID'
+        - name: page_metadata_id
+          in: path
+          required: true
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: 'page metadata ID'
+        - name: executeMetadataReq
+          in: body
+          required: true
+          description: '执行请求体（global_params 可选）'
+          schema:
+            $ref: '#/definitions/ExecuteMetadataRequest'
+      responses:
+        200:
+          description: resp
+          schema:
+            $ref: '#/definitions/ExecuteMetadataResponse'
+        400:
+          description: '|格式非法|'
+          schema:
+            $ref: '#/definitions/PageMetadataErrorResponse'
+        401:
+          description: '|鉴权失败|'
+definitions:
+  CommonRsp:
+    type: object
+    properties:
+      retCode:
+        description: '返回码|处理结果,包括返回码和返回信息|CBC.0000: 成功|'
+        type: string
+      retDesc:
+        description: '错误信息'
+        type: string
+  SavePageMetadataRequest:
+    description: '保存 page metadata 请求体'
+    type: object
+    required:
+      - page_id
+      - page_metadata_definition
+    properties:
+      page_id:
+        description: '页面ID'
+        type: string
+        minLength: 1
+        maxLength: 128
+      page_metadata_definition:
+        description: 'page metadata 定义内容'
+        type: object
+      base_revision_id:
+        description: '基础修订ID（可选，用于乐观锁）'
+        type: string
+        maxLength: 64
+      is_draft:
+        description: '是否草稿态：true-草稿（默认），false-已发布'
+        type: boolean
+        x-allowNull: true
+  UpdatePageMetadataRequest:
+    description: '修改 page metadata 请求体'
+    type: object
+    required:
+      - page_metadata_definition
+      - base_revision_id
+      - is_draft
+    properties:
+      page_metadata_definition:
+        description: 'page metadata 定义内容'
+        type: object
+      base_revision_id:
+        description: '基础修订ID（用于乐观锁冲突检测）'
+        type: string
+        maxLength: 64
+      is_draft:
+        description: '是否草稿态：true-草稿，false-已发布'
+        type: boolean
+        x-allowNull: true
+      comment:
+        description: '版本备注（可选，仅草稿更新时生效）'
+        type: string
+        x-allowNull: true
+        maxLength: 255
+  PageMetadataResponse:
+    description: 'page metadata 响应体'
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          page_metadata_id:
+            description: 'page metadata ID'
+            type: string
+          page_id:
+            description: '页面ID'
+            type: string
+          revision_id:
+            description: '修订ID'
+            type: string
+          revision_number:
+            description: '修订号'
+            type: integer
+          page_metadata_definition:
+            description: 'page metadata 定义内容（JSON 字符串）'
+            type: string
+          description:
+            description: '页面描述（从 definition.meta.description 提取）'
+            type: string
+            x-allowNull: true
+          supported_fields:
+            description: '支持的指标与维度 JSON（{"metrics":[...],"dimensions":[...]}，从 definition.dataSources.fields 提取）'
+            type: string
+            x-allowNull: true
+          is_draft:
+            description: '是否草稿态：true-草稿，false-已发布'
+            type: boolean
+            x-allowNull: true
+          created_at:
+            description: '创建时间'
+            type: string
+          updated_at:
+            description: '更新时间'
+            type: string
+  PageMetadataListResponse:
+    description: 'page metadata 列表响应体'
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          page_metadata_list:
+            description: 'page metadata 列表'
+            type: array
+            items:
+              $ref: '#/definitions/PageMetadataItem'
+          total:
+            description: '符合条件的记录总数'
+            type: integer
+          page_no:
+            description: '当前页码（不分页时为0）'
+            type: integer
+          page_size:
+            description: '每页数量（不分页时为0）'
+            type: integer
+  PageMetadataItem:
+    description: 'page metadata 列表项'
+    type: object
+    properties:
+      page_metadata_id:
+        description: 'page metadata ID'
+        type: string
+      page_id:
+        description: '页面ID'
+        type: string
+      revision_id:
+        description: '修订ID'
+        type: string
+      revision_number:
+        description: '修订号'
+        type: integer
+      page_metadata_definition:
+        description: 'page metadata 定义内容（needDefinition=true 时返回）'
+        type: string
+      description:
+        description: '页面描述（从 definition.meta.description 提取）'
+        type: string
+        x-allowNull: true
+      supported_fields:
+        description: '支持的指标与维度 JSON（{"metrics":[...],"dimensions":[...]}，从 definition.dataSources.fields 提取）'
+        type: string
+        x-allowNull: true
+      is_draft:
+        description: '是否草稿态：true-草稿，false-已发布'
+        type: boolean
+        x-allowNull: true
+      created_at:
+        description: '创建时间'
+        type: string
+      updated_at:
+        description: '更新时间'
+        type: string
+  PageMetadataErrorResponse:
+    description: 'page metadata 错误响应体'
+    type: object
+    properties:
+      code:
+        description: '错误码'
+        type: string
+      message:
+        description: '错误信息'
+        type: string
+      request_id:
+        description: '请求ID'
+        type: string
+  RollbackDraftRequest:
+    description: '回退草稿版本请求体'
+    type: object
+    properties:
+      target_draft_version:
+        description: '目标草稿版本号，不传则回退到上一个版本'
+        type: integer
+        x-allowNull: true
+        minimum: 1
+  PageMetadataHistoryListResponse:
+    description: 'page metadata 草稿历史列表响应体'
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          history_list:
+            description: '草稿历史列表（按 draft_version 降序）'
+            type: array
+            items:
+              $ref: '#/definitions/PageMetadataHistoryItem'
+          total:
+            description: '历史记录总数'
+            type: integer
+  PageMetadataHistoryItem:
+    description: 'page metadata 草稿历史记录项'
+    type: object
+    properties:
+      history_id:
+        description: '历史记录ID'
+        type: string
+      page_metadata_id:
+        description: 'page metadata ID'
+        type: string
+      draft_version:
+        description: '草稿版本号'
+        type: integer
+      created_by:
+        description: '创建人'
+        type: string
+      created_at:
+        description: '创建时间'
+        type: string
+      comment:
+        description: '版本备注'
+        type: string
+        x-allowNull: true
+      description:
+        description: '页面描述（从 definition.meta.description 提取）'
+        type: string
+        x-allowNull: true
+      supported_fields:
+        description: '支持的指标与维度 JSON（{"metrics":[...],"dimensions":[...]}，从 definition.dataSources.fields 提取）'
+        type: string
+        x-allowNull: true
+  SaveFilterHistoryRequest:
+    description: '保存过滤历史请求体'
+    type: object
+    required:
+      - filter_conditions
+    properties:
+      filter_conditions:
+        description: '过滤条件（globalParams：dims 维度 map + time 时间范围）'
+        type: object
+  FilterHistoryResponse:
+    description: '过滤历史响应体'
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          page_metadata_id:
+            description: 'page metadata ID'
+            type: string
+          filter_conditions:
+            description: '过滤条件（globalParams：dims 维度 map + time 时间范围）'
+            type: object
+            x-allowNull: true
+          created_at:
+            description: '创建时间'
+            type: string
+          updated_at:
+            description: '更新时间'
+            type: string
+  ExecuteMetadataRequest:
+    description: '执行 metadata（查数）请求体'
+    type: object
+    properties:
+      global_params:
+        description: '本次筛选条件（globalParams：dims 维度 map + time 时间范围），可选；不传则读 last filter history'
+        type: object
+        x-allowNull: true
+  ExecuteMetadataResponse:
+    description: '执行 metadata 响应体'
+    allOf:
+      - $ref: '#/definitions/CommonRsp'
+      - type: object
+        properties:
+          metadata_json:
+            description: '完整 metadata.json（dataSources 已填充 initial，sections 原样）'
+            type: object
+            x-allowNull: true

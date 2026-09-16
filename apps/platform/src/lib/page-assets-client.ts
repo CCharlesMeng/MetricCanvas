@@ -10,6 +10,7 @@ const PAGE_SIZE = 1000;
 const HISTORY_UNAVAILABLE = '当前页面资产接口只支持目录与当前修订，尚未开放历史修订读取。';
 
 export interface PageRevision {
+  isDraft?: boolean | null;
   resourceId?: string;
   pageId: string;
   revisionId: string;
@@ -30,6 +31,9 @@ export interface PageListItem {
 }
 
 export interface SavePageRevision {
+  /** Ordinary saves create/update drafts; publication must be explicit. */
+  isDraft?: boolean;
+  comment?: string;
   resourceId?: string;
   baseRevisionId: string | null;
   document: PageDocument | Record<string, unknown>;
@@ -39,6 +43,7 @@ export interface SavePageRevision {
 }
 
 interface ProviderPageMetadata {
+  is_draft?: unknown;
   page_metadata_id?: unknown;
   page_id?: unknown;
   revision_id?: unknown;
@@ -116,7 +121,8 @@ export function createPageAssetsClient({
     if (typeof payload.retCode !== 'string') {
       throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产返回缺少 retCode', response.status);
     }
-    if (payload.retCode !== '0') {
+    // The YAML uses CBC.0000; retain the previously deployed string code during rollout.
+    if (payload.retCode !== 'CBC.0000' && payload.retCode !== '0') {
       throw providerError(payload, response.status);
     }
     return payload;
@@ -179,7 +185,9 @@ export function createPageAssetsClient({
           latestRevision: typeof record.revision_id === 'string'
             ? { revisionId: record.revision_id }
             : null,
-          publishedRevision: null,
+          publishedRevision: record.is_draft === false && typeof record.revision_id === 'string'
+            ? { revisionId: record.revision_id }
+            : null,
           visibility: 'visible'
         })),
         nextPageId: null
@@ -214,7 +222,8 @@ export function createPageAssetsClient({
         const payload = await request('POST', collection, config, {
           body: {
             page_id: pageId,
-            page_metadata_definition: command.document
+            page_metadata_definition: command.document,
+            is_draft: command.isDraft ?? true
           }
         });
         return revisionOf(payload, null, pageId);
@@ -227,7 +236,9 @@ export function createPageAssetsClient({
         {
           body: {
             page_metadata_definition: command.document,
-            base_revision_id: command.baseRevisionId
+            base_revision_id: command.baseRevisionId,
+            is_draft: command.isDraft ?? true,
+            ...(command.comment === undefined ? {} : { comment: command.comment })
           }
         }
       );
@@ -254,6 +265,8 @@ function revisionOf(
     throw new PageAssetsError('PAGE_ASSETS_RESPONSE_ERROR', '页面资产响应与请求的资源 ID 不一致。', 200);
   }
   return {
+    ...(typeof payload.is_draft === 'boolean' || payload.is_draft === null
+      ? { isDraft: payload.is_draft } : {}),
     resourceId,
     pageId,
     revisionId: requiredString(payload.revision_id, 'revision_id'),

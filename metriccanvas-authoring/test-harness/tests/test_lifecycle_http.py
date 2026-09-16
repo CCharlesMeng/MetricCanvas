@@ -13,7 +13,7 @@ from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
 class KnownHttpTest(unittest.IsolatedAsyncioTestCase):
     def setUp(self):
         self.ref={'pageId':'lifecycle-page','revisionId':'r1','resourceId':'opaque/resource'}
-        self.response={'retCode':'0','page_id':'lifecycle-page','revision_id':'r1','page_metadata_id':'opaque/resource','page_metadata_definition':json.dumps(document())}
+        self.response={'retCode':'CBC.0000','page_id':'lifecycle-page','revision_id':'r1','page_metadata_id':'opaque/resource','page_metadata_definition':json.dumps(document())}
         self.requests=[]; self.status=200
         def handle(request):
             self.requests.append(request)
@@ -34,6 +34,9 @@ class KnownHttpTest(unittest.IsolatedAsyncioTestCase):
             with self.assertRaises(LifecycleError): await self.adapter.current_match(Identities().current(),self.ref)
         self.response={k:v for k,v in original.items() if k!='retCode'}
         with self.assertRaises(LifecycleError): await self.adapter.current_match(Identities().current(),self.ref)
+    async def test_previous_deployment_success_code_remains_compatible(self):
+        self.response['retCode']='0'
+        self.assertEqual((await self.adapter.current_match(Identities().current(),self.ref))['document'],document())
     async def test_http_authorization_and_redirect_do_not_forward_credentials(self):
         for status,code in [(401,'UNAUTHENTICATED'),(403,'FORBIDDEN'),(404,'REVISION_NOT_FOUND'),(302,'RESPONSE_MISMATCH'),(500,'RESPONSE_MISMATCH')]:
             self.status=status
