@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { sveltekit } from '@sveltejs/kit/vite';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import { defineConfig } from 'vite';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
@@ -28,7 +29,7 @@ export default defineConfig(() => {
   const localHuaweiPort = Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443');
 
   return {
-    plugins: [sveltekit()],
+    plugins: [sveltekit(), basicSsl()],
     server: {
       // HTTPS 使本地环境可测试 Secure Cookie；macOS 的 `:443` 入口须以管理员权限启动。
       // 必须使用相对路径 `/aiknow/...`，由 Vite 转发后浏览器才不会发生跨域请求。
