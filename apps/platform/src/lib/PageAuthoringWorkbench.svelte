@@ -23,6 +23,7 @@
   import PanguDialogue from './dialogue/PanguDialogue.svelte';
   import { listenForSavedDrafts, unavailableDraftReader, type ReadSavedDraft, type DialogueAdapter } from './dialogue/port';
   import { readRuntimeConfig } from './runtime-config';
+  import { listenForApplyPage } from './workbench/apply-page';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
   let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = unavailableStableSave, languagePort, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
@@ -122,7 +123,23 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
+    const stopApplyPage = listenForApplyPage({
+      target: window,
+      captureIdentity: () => {
+        const config = readRuntimeConfig();
+        return JSON.stringify([config?.operatorId, config?.workspaceId]);
+      },
+      onapply: async (pageId) => {
+        if (languagePort || publicationBusy || languageRecoveryPort) {
+          saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
+        }
+        saveError = '';
+        await coordinator.load(pageId, { refreshCurrent: true });
+        if (!coordinator.snapshot().error) { previewOpen = false; relocateSelection(); }
+      },
+      onerror: (message) => { saveError = message; }
+    });
+    return () => { window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);

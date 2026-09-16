@@ -226,7 +226,15 @@ export function createAuthoringCoordinator(options: {
       if (sync) void sync.enqueue(draft, description, retainDimensionValues, forceOperation).catch((error: unknown) => { state = { ...state, error: messageOf(error) }; emit(); });
       return true;
     },
-    async load(pageId: string): Promise<void> {
+    async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean } = {}): Promise<void> {
+      const refreshCurrent = optionsForLoad.refreshCurrent === true;
+      if (refreshCurrent && (preparation || languageLease || disposed || unresolved() || state.dirty ||
+          (owner !== null && owner !== identityKey()) || (state.ref && state.ref.pageId !== pageId))) {
+        state = { ...state, error: '当前页面有未完成工作、身份已变化或通知属于其他页面，保留当前页面。' }; emit(); return;
+      }
+      if (refreshCurrent && !options.port.capabilities.currentRead) {
+        state = { ...state, error: 'CAPABILITY_UNAVAILABLE：当前页面读取未接通。' }; emit(); return;
+      }
       if (preparation || languageLease || disposed || unresolved()) return;
       epoch++; read?.abort(); read = new AbortController();
       const signal = read.signal, expected = scope();
@@ -239,7 +247,8 @@ export function createAuthoringCoordinator(options: {
           const raw = await syncConfig.storage.read(storageScope);
           if (disposed || signal.aborted || scope() !== expected) return;
           stored = raw === null ? null : validateAuthoringRecord(raw, storageScope);
-          if (stored) {
+          if (refreshCurrent && stored && stored.value.queue.length > 0) throw new Error('本地仍有未同步修改，保留当前页面。');
+          if (stored && !refreshCurrent) {
             owner = identityKey();
             change(stored.value.draft); state = { ...state, ref: stored.value.base, dirty: stored.value.queue.length > 0, save: null };
             await attachSync(stored); return;
@@ -252,7 +261,7 @@ export function createAuthoringCoordinator(options: {
         const parsed = createCanvasAuthoringDraft({ ...revision.document });
         if (!parsed.ok) throw new Error(parsed.message);
         owner = identityKey();
-        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; await attachSync(null); emit();
+        change(parsed.draft); state = { ...state, ref, dirty: false, save: null }; await attachSync(refreshCurrent ? stored : null, refreshCurrent); emit();
       } catch (cause) {
         if (!disposed && !signal.aborted && scope() === expected) { state = { ...state, error: String(cause) }; }
       } finally {
