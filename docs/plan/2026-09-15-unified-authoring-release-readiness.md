@@ -88,3 +88,7 @@ dfd9fce feat(authoring): compose mixed pages and select verified data extensions
 - e526358：集成评测资产生成锁；30定向测试、12本地场景、导出及分发检查通过。
 
 可信本地runner适配已完成，不再列作本仓待实现项；真实外发授权与实际提供方验收仍分别阻塞。
+
+## 2026-09-16 本地页面回退兼容补充
+
+固定实施前9d4f444与当前0e740ec，完成新版公开MCP创建→旧版独立进程读取/编辑→新版公开MCP继续编辑，report/dashboard两条完整结构无损往返通过。页面协议/渲染器源码树在两组间一致，详见[新旧消费者证据](2026-09-16-page-compatibility-evidence.md)。该文档兼容项已有本地证据；真实内部扩展、持久化操作、远端发布与整组部署回退仍待验收，不能混成同一个“回退通过”。

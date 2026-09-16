@@ -1,0 +1,41 @@
+{
+  "scope": "offline page round-trip only",
+  "realModelRequests": 0,
+  "providerWrites": 0,
+  "baselineRuntimeSha256": "aca5286a045f7ada8cc8e1c45b2047ce745a5721479da875b14262cf24aec777",
+  "currentRuntimeSha256": "0c2a629bc4d08c72ed1ad37ed680db4aa4887d35038694514560e84f63e085f8",
+  "cases": [
+    {
+      "layout": "report",
+      "schemaVersion": "6.3",
+      "newDocumentSha256": "206ea7e4d045d5a0fe9e70e4cf4e9ec44fd7d201760131358d8748150e0b6281",
+      "oldEditedSha256": "e0e1747c2198447ca788fdc83c9c2c03d60ee1b5b1c2944f7baf8e68b4007eb7",
+      "newReeditedSha256": "2dffcbc1cd0f8e2f82625607c7d40bcb62631dce4f3864a281680381f9b81011",
+      "status": "passed",
+      "checks": [
+        "old-normalization-exact",
+        "old-controlled-edit",
+        "unrelated-content-preserved",
+        "new-normalization-exact",
+        "new-public-edit",
+        "future-protocol-rejected"
+      ]
+    },
+    {
+      "layout": "dashboard",
+      "schemaVersion": "6.3",
+      "newDocumentSha256": "27c3b698c0dd8f906cbc6c68faec2c60faa122e06170d472e32c67fd02d165ce",
+      "oldEditedSha256": "43b04a679d46083fef2df3d5badd2a753e130bd3794ec05dee2998360438154e",
+      "newReeditedSha256": "b991e8d72901b6f5dfc1c7ce7b0ca665eb5c37ccac15c1642e18b1bcf38b635f",
+      "status": "passed",
+      "checks": [
+        "old-normalization-exact",
+        "old-controlled-edit",
+        "unrelated-content-preserved",
+        "new-normalization-exact",
+        "new-public-edit",
+        "future-protocol-rejected"
+      ]
+    }
+  ]
+}
