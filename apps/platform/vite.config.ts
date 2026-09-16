@@ -6,7 +6,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 import { defineConfig } from 'vite';
 
 const appRoot = dirname(fileURLToPath(import.meta.url));
-const localHuaweiHost = 'local.ulanqab.huawei.com';
+const localHuaweiHost = 'ioc.huawei.com';
 
 function localHuaweiTls() {
   const certificateDirectory = resolve(appRoot, '.local-tls');
@@ -25,7 +25,6 @@ function localHuaweiTls() {
 }
 
 export default defineConfig(() => {
-  const localHuaweiDevelopment = process.env.METRICCANVAS_LOCAL_HUAWEI === '1';
   const localHuaweiPort = Number(process.env.METRICCANVAS_LOCAL_HUAWEI_PORT ?? '443');
 
   return {
@@ -33,11 +32,10 @@ export default defineConfig(() => {
     server: {
       // HTTPS 使本地环境可测试 Secure Cookie；macOS 的 `:443` 入口须以管理员权限启动。
       // 必须使用相对路径 `/aiknow/...`，由 Vite 转发后浏览器才不会发生跨域请求。
-      host: localHuaweiDevelopment ? '127.0.0.1' : undefined,
-      port: localHuaweiDevelopment ? localHuaweiPort : 5174,
+      host: localHuaweiHost,
+      port: localHuaweiPort,
       strictPort: true,
-      allowedHosts: localHuaweiDevelopment ? [localHuaweiHost] : undefined,
-      https: localHuaweiDevelopment ? localHuaweiTls() : undefined,
+      allowedHosts: [localHuaweiHost],
       proxy: {
         '/aiknow': {
           target: 'https://aiknow.huawei.com',
