@@ -48,6 +48,7 @@ class ComposePageDependencies:
     require_source_description: bool = False
     business_interpretation: Any = None
     component_policy: Any = None
+    metric_relations: Any = None
 
 
 @dataclass(frozen=True, slots=True)

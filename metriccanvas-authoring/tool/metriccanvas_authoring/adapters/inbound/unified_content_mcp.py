@@ -17,9 +17,11 @@ from metriccanvas_authoring.application.unified_edit_page import edit_unified_pa
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextDependencies, DiscoverDataContextCommand, create_discover_data_context
 from metriccanvas_authoring.application.unified_composition import compose_unified_content, COMPOSITION_SCHEMA
+from metriccanvas_authoring.application.metric_relations import load_relations
+from metriccanvas_authoring.application.structure_revision import REVISION_SCHEMA, revise_structure
 
 
-UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema(UNIFIED_EDIT_SCHEMA)]
+UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema({'oneOf': [UNIFIED_EDIT_SCHEMA, REVISION_SCHEMA]})]
 CompositionRequest = Annotated[dict[str, Any], WithJsonSchema(COMPOSITION_SCHEMA)]
 
 def create_unified_content_mcp_server(dependencies, current_turns=None, *, summary_config=None, candidate_store=None):
@@ -50,14 +52,34 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             if name == 'discover_data_context':
                 discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context,
                     business_interpretation=dependencies.business_interpretation))
-                found = await discover(DiscoverDataContextCommand(args['query'], args['limit']))
+                found = await discover(DiscoverDataContextCommand(**args))
                 await gate.unchanged(prepared)
                 payload = {'ok': found.ok, 'dataContextVersion': found.data_context_version,
                     'businessDomains': list(found.business_domains), 'matches': list(found.matches),
                     'resolution': found.resolution, 'time': found.time, 'intent': found.intent, 'structureOperation': found.structure_operation,
                     'issues': [{'code': issue.code, 'path': issue.path, 'stage': issue.stage} for issue in found.issues]}
+                if found.page_range is not None:
+                    payload['range'] = found.page_range
+                if found.ok:
+                    domains = [args['business_domain']] if args.get('business_domain') else []
+                    relation_items, relation_status = [], 'unknown'
+                    for domain in domains:
+                        items, relation_status = await load_relations(dependencies.metric_relations, dict(prepared.binding),
+                                                                     found.data_context_version, domain)
+                        relation_items.extend(items)
+                    payload['metricRelations'] = {'status': relation_status, 'entries': relation_items[:50],
+                                                   'truncated': max(0, len(relation_items)-50)}
+                    payload['coverage'] = {'businessDomain': args.get('business_domain'), 'returned': len(found.matches),
+                                           'snapshot': found.data_context_version, 'bounded': True}
+                    from metriccanvas_authoring.domain.structure_presentation import capabilities
+                    payload['structureCapabilities'] = capabilities()
+                    payload['structureVersions'] = payload['structureCapabilities']['versions']
+                    await gate.unchanged(prepared)
                 return ToolResult(content=payload, structured_content=payload)
             if name == 'create_content_page':
+                if not isinstance(args['title'], str) or not args['title'].strip():
+                    summary={'status':'rejected','operations':[], 'issues':[{'code':'CREATION_TITLE_REQUIRED','path':'/title','rule':'required'}]}
+                    return ToolResult(content=summary, structured_content={'ok':False,'artifactEnvelope':None,'modelSummary':summary})
                 edited = await compose_unified_content(prepared.binding['pageId'], args['title'], args['layout'], args['request'],
                     scoped_dependencies, summary_enabled=summary_configured(summary_config),
                     current=lambda: gate.unchanged(prepared, write=True))
@@ -65,11 +87,20 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
                 source_descriptions = edited.get('sourceDescriptions', [])
                 output = {'ok': document is not None, 'artifactEnvelope': None,
                           'modelSummary': {key: edited[key] for key in ('status', 'operations', 'issues')}}
+                output['modelSummary'].update({key: edited[key] for key in ('appliedAdjustments', 'overlapFindings', 'truncation', 'queryCounts') if key in edited})
             elif name == 'edit_page':
                 baseline = parent['document'] if parent is not None else prepared.baseline.document
-                edited = await edit_unified_page(baseline, args['request'], scoped_dependencies,
-                    summary_enabled=summary_configured(summary_config), current=lambda: gate.unchanged(prepared, write=True))
+                if 'structureRevision' in args['request']:
+                    edited = await revise_structure(parent, args['request'], scoped_dependencies,
+                        current=lambda: gate.unchanged(prepared, write=True))
+                else:
+                    prior = [o['state'] for o in parent['operations'] if o.get('type') == 'structure_state'] if parent else []
+                    edited = await edit_unified_page(baseline, args['request'], scoped_dependencies,
+                        summary_enabled=summary_configured(summary_config), current=lambda: gate.unchanged(prepared, write=True),
+                        structure_state=prior[-1] if prior else None)
+                    if prior: edited['structureState'] = deepcopy(prior[-1])
                 summary = {key: edited[key] for key in ('status', 'operations', 'issues')}
+                summary.update({key: edited[key] for key in ('appliedAdjustments', 'overlapFindings', 'queryCounts', 'truncation') if key in edited})
                 document = edited['document']
                 source_descriptions = edited.get('sourceDescriptions', [])
                 output = {'ok': edited['status'] in {'changed', 'partial', 'unchanged'}, 'artifactEnvelope': None, 'modelSummary': summary}
@@ -94,6 +125,10 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             record = None
             if document is not None:
                 record_operations = deepcopy(args.get('request', {}).get('operations', []))
+                if 'plan' in args.get('request', {}):
+                    record_operations.append({'type': 'structure_plan', 'plan': deepcopy(args['request']['plan'])})
+                if name in {'create_content_page', 'edit_page'} and edited.get('structureState'):
+                    record_operations.append({'type': 'structure_state', 'state': deepcopy(edited['structureState'])})
                 if source_descriptions:
                     record_operations.append({'type': 'source_description_evidence', 'descriptors': deepcopy(source_descriptions)})
                 record = await candidates.put(prepared, document, record_operations, candidate_ref)
@@ -141,21 +176,36 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             return failure(error)
 
     @mcp.tool
-    async def discover_data_context(context_ref: str, query: str, limit: Annotated[int, Field(ge=1, le=50)] = 10) -> ToolResult:
-        """Discover governed business data in the current trusted turn."""
-        return await invoke('discover_data_context', context_ref, {'query': query, 'limit': limit})
+    async def discover_data_context(context_ref: str, query: str = '', limit: Annotated[int, Field(ge=1, le=50)] = 10,
+                                    business_domain: str | None = None,
+                                    offset: Annotated[int, Field(ge=0)] = 0,
+                                    data_context_version: str | None = None) -> ToolResult:
+        """Search governed data, or enumerate metrics/dimensions with exact business_domain.
+        For domain pagination pass range.end as offset and the returned dataContextVersion.
+        This reads business metadata, not Skill references or files.
+        """
+        return await invoke('discover_data_context', context_ref, {'query': query, 'limit': limit,
+            'business_domain': business_domain, 'offset': offset, 'data_context_version': data_context_version})
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
     async def compose_page(context_ref: str, spec: PageBuildSpec, layout: Literal['report', 'dashboard'] = 'report') -> ToolResult:
-        """Compose a new page for the trusted new-page identity; never replace an existing baseline."""
+        """Quick query-driven assembly grouped by scope. For a business report with authored
+        sections and reusable data, use create_content_page request.plan instead.
+        Never replace an existing baseline.
+        """
         return await invoke('compose_page', context_ref, {'spec': spec, 'layout': layout}, write=True, mode='new')
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
-    async def create_content_page(context_ref: str, title: str, request: CompositionRequest,
+    async def create_content_page(context_ref: str, request: CompositionRequest, title: str | None = None,
                                   layout: Literal['report', 'dashboard'] = 'report') -> ToolResult:
         """Create mixed governed data and static content on a new page.
 
-        Operations run in order with explicit dependencies. Target section main;
+        For full reports use request.plan: governed dataRequests plus explicit business
+        sections/blocks. Patterns are defaults; custom allows supported combinations.
+        Reuse a source across blocks without another query. Different scopes may share
+        a section. Field references use discovered names, not guessed IDs. First-phase
+        text is supplied explanation, not invented numerical analysis.
+        Legacy request.operations runs in order with dependencies. Target section main;
         page-header is protected. Set span/order with controlled layout/move
         operations. Explicit unsupported components fail; no source tokens or raw
         rows/query/page payloads. Independent success may produce a partial candidate.

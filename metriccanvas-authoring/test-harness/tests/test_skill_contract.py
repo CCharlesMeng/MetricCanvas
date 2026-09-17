@@ -171,9 +171,14 @@ class UnifiedSkillContractTest(unittest.TestCase):
         examples = [json.loads(value) for value in re.findall(
             r"```json\n(.*?)\n```", (folder / "references/examples.md").read_text(), re.DOTALL)]
         schema = json.loads((BUNDLE_ROOT / "contracts/authored/page-edit-request.schema.json").read_text())
-        self.assertEqual(len(examples), 2)
+        plan_schema = json.loads((BUNDLE_ROOT / "contracts/authored/page-structure-plan.schema.json").read_text())
+        block_schema = plan_schema['oneOf'][2]['properties']['sections']['items']['properties']['blocks']['items']
+        self.assertEqual(len(examples), 4)
         for example in examples:
-            self.assertEqual(list(Draft202012Validator(schema).iter_errors(example["request"])), [])
+            if 'request' in example:
+                self.assertEqual(list(Draft202012Validator(schema).iter_errors(example["request"])), [])
+            else:
+                self.assertEqual(list(Draft202012Validator(block_schema).iter_errors(example)), [])
         frontmatter = yaml.safe_load((folder / "SKILL.md").read_text().split("---", 2)[1])
         self.assertEqual(set(frontmatter["allowed-tools"]), {
             "read_page_context", "discover_data_context", "compose_page", "create_content_page", "edit_page"})

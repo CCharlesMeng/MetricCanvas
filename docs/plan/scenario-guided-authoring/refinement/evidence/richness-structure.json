@@ -1,0 +1,1520 @@
+{
+  "evidenceKind": "trace-derived-structural-review",
+  "visualAcceptance": "user-owned",
+  "arms": {
+    "v2": {
+      "runs": [
+        {
+          "id": "richness-basic",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "fa29c72315e44545c6a1bb89dc72f949e87bfecb8814a565502712f1f39f49c0",
+          "modelRequests": 6,
+          "toolCalls": 9,
+          "candidateCount": 2,
+          "dataQueries": 3,
+          "seconds": 23.7113,
+          "prompt_tokens": 187416,
+          "completion_tokens": 4632,
+          "total_tokens": 192048,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "STRUCTURE_MATCH_UNSUPPORTED",
+              "path": "/sections/4/blocks/0/match",
+              "objectIds": [
+                "target-panel"
+              ],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PREFLIGHT_BLOCKED",
+              "path": "/sections/4/blocks/0",
+              "objectIds": [
+                "target-panel"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "PINNED_COMPONENT_REJECTED",
+              "path": "/sections/0/blocks/0",
+              "objectIds": [
+                "target-panel"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 6,
+          "compactCards": 6,
+          "changeBindings": 12,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "整体规模与变化",
+              "businessQuestion": "业务整体当前规模多大、相比上期如何变化？",
+              "businessObject": "整体流水（scope=total）",
+              "distinctFrom": "只回答整体口径，不拆分具体业务对象",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "objects",
+              "title": "业务对象规模对照",
+              "businessQuestion": "各业务对象当前规模与变化分别是多少？",
+              "businessObject": "Core、云通信、公有区域、稳定、一次性（scope 各取值）",
+              "distinctFrom": "把整体拆到具体对象并排比较，回答增长来自哪些对象",
+              "blocks": [
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "stable-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "one-off-card",
+                  "purpose": "primary-value",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "objects-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "月度走势：实际与预测",
+              "businessQuestion": "Core 与云通信的月度实际与预测走势如何？",
+              "businessObject": "Core、云通信（流水趋势来源）",
+              "distinctFrom": "按月份展开时间维度，回答规模随时间的变化，而非单期快照",
+              "blocks": [
+                {
+                  "id": "trend-chart",
+                  "purpose": "trend",
+                  "source": "trend-month"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "结构走势：稳定与一次性",
+              "businessQuestion": "稳定流水与一次性流水的月度实际与预测走势如何？",
+              "businessObject": "稳定、一次性（流水结构来源）",
+              "distinctFrom": "从流水构成角度展开，与 Core/云通信的对象视角互补",
+              "blocks": [
+                {
+                  "id": "structure-chart",
+                  "purpose": "trend",
+                  "source": "structure-month"
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "target",
+              "title": "目标与推演规模对照",
+              "businessQuestion": "年度推演规模与目标支撑率如何对照？",
+              "businessObject": "整体推演口径（scope=projection）",
+              "distinctFrom": "回答目标与当前/推演规模的对照，而非实际规模本身",
+              "blocks": [
+                {
+                  "id": "target-panel",
+                  "purpose": "reconciliation",
+                  "source": "kpi-scope"
+                },
+                {
+                  "id": "target-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "risk",
+              "title": "风险复核",
+              "businessQuestion": "哪些客户需要风险复核？",
+              "businessObject": "客户（当前数据上下文未提供）",
+              "distinctFrom": "回答风险复核对象，与规模、趋势、目标章节均不同",
+              "blocks": [
+                {
+                  "id": "risk-gap",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "richness-basic",
+          "repeat": 2,
+          "runnerStatus": "inconclusive",
+          "runnerError": null,
+          "runnerReason": null,
+          "pageOrigin": "completed-run",
+          "completedRun": true,
+          "modelResponses": 4,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "35f2abc9cef7d0635c1f7778f72cb016622122adff9ded6a4fa9ea21a76708b1",
+          "modelRequests": 4,
+          "toolCalls": 6,
+          "candidateCount": 1,
+          "dataQueries": 3,
+          "seconds": 21.2844,
+          "prompt_tokens": 114688,
+          "completion_tokens": 4542,
+          "total_tokens": 119230,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [],
+          "cards": 7,
+          "compactCards": 6,
+          "changeBindings": 12,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "scope-note",
+              "title": "样例与口径说明",
+              "businessQuestion": "读者在解读本页前需要知道哪些前提？",
+              "businessObject": "本页整体",
+              "distinctFrom": "不承载任何指标，仅说明样例性质与口径边界",
+              "blocks": [
+                {
+                  "id": "note-body",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "scale-overview",
+              "title": "当前业务规模与变化",
+              "businessQuestion": "整体、Core、云通信、公有区域、稳定、一次性等对象当前规模多大、变化如何？",
+              "businessObject": "流水概览中的各 scope 对象",
+              "distinctFrom": "只回答当前规模与变化，不解释增长来源，也不做目标对照",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "stable-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "one-off-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                }
+              ]
+            },
+            {
+              "id": "growth-sources",
+              "title": "增长来自哪些对象",
+              "businessQuestion": "Core 与云通信两条主线的月度走势如何，增长出现在哪些月份？",
+              "businessObject": "Core 与云通信的月度实际流水",
+              "distinctFrom": "用月度序列定位变化发生的月份，不计算贡献率或增长原因",
+              "blocks": [
+                {
+                  "id": "overall-trend-chart",
+                  "purpose": "trend",
+                  "source": "overall-trend"
+                },
+                {
+                  "id": "overall-trend-table",
+                  "purpose": "reconciliation",
+                  "source": "overall-trend"
+                }
+              ]
+            },
+            {
+              "id": "structure-sources",
+              "title": "稳定与一次性的月度结构",
+              "businessQuestion": "稳定流水与一次性流水在月度上如何分布？",
+              "businessObject": "稳定与一次性流水",
+              "distinctFrom": "从流水结构来源看稳定/一次性构成，与上一章的对象主线不同源、不互算",
+              "blocks": [
+                {
+                  "id": "structure-trend-chart",
+                  "purpose": "distribution",
+                  "source": "structure-trend"
+                },
+                {
+                  "id": "structure-trend-table",
+                  "purpose": "reconciliation",
+                  "source": "structure-trend"
+                }
+              ]
+            },
+            {
+              "id": "target-comparison",
+              "title": "目标与当前/推演规模对照",
+              "businessQuestion": "年度推演规模与推演目标支撑率处于什么水平？",
+              "businessObject": "整体（total）的年度推演与目标支撑率",
+              "distinctFrom": "只呈现推演与目标支撑率本身，不计算差额或达成率",
+              "blocks": [
+                {
+                  "id": "projection-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "projection-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "risk-review",
+              "title": "风险复核对象",
+              "businessQuestion": "哪些客户需要风险复核？",
+              "businessObject": "客户维度",
+              "distinctFrom": "说明该问题在当前已发现能力下的证据缺口",
+              "blocks": [
+                {
+                  "id": "risk-gap",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "richness-basic",
+          "repeat": 3,
+          "runnerStatus": "inconclusive",
+          "runnerError": null,
+          "runnerReason": null,
+          "pageOrigin": "completed-run",
+          "completedRun": true,
+          "modelResponses": 5,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "63207e0e73814c4f787bc5ce780660c910f56835c00a517e896db91a24579e74",
+          "modelRequests": 5,
+          "toolCalls": 7,
+          "candidateCount": 1,
+          "dataQueries": 3,
+          "seconds": 24.1721,
+          "prompt_tokens": 145689,
+          "completion_tokens": 4671,
+          "total_tokens": 150360,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [],
+          "cards": 5,
+          "compactCards": 5,
+          "changeBindings": 8,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "scope-note",
+              "title": "样例与口径说明",
+              "businessQuestion": "读者在解读数字前需要知道哪些前提？",
+              "businessObject": "本报告整体",
+              "distinctFrom": "不承载任何指标，只声明样例性质与口径边界。",
+              "blocks": [
+                {
+                  "id": "note-sample",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "note-scope",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "current-scale",
+              "title": "当前业务规模与变化",
+              "businessQuestion": "整体业务当前规模多大，同比与环比表现如何？",
+              "businessObject": "整体（scope=total）",
+              "distinctFrom": "只回答整体规模与变化，不拆分对象、不涉及目标对照。",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "total-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "growth-objects",
+              "title": "增长来自哪些对象",
+              "businessQuestion": "整体变化由哪些业务对象构成，各自规模与变化如何？",
+              "businessObject": "Core、云通信、公有云区域等 scope 对象",
+              "distinctFrom": "与上一章的整体视角不同，本章按对象并排比较，用于定位变化来源。",
+              "blocks": [
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "object-note",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "overall-trend",
+                  "purpose": "trend",
+                  "source": "overall-trend"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "target-check",
+              "title": "目标与当前、推演规模对照",
+              "businessQuestion": "当前规模与年度推演相对目标处于什么位置？",
+              "businessObject": "整体目标与推演（scope=projection）",
+              "distinctFrom": "前两章看现状与对象构成，本章引入目标与推演口径做对照。",
+              "blocks": [
+                {
+                  "id": "projection-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "target-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "risk-review",
+              "title": "风险复核对象",
+              "businessQuestion": "哪些对象需要风险复核？",
+              "businessObject": "客户 / 风险对象",
+              "distinctFrom": "本章不重复规模与趋势，只处理风险复核诉求及其证据缺口。",
+              "blocks": [
+                {
+                  "id": "risk-gap",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "structure-card",
+                  "purpose": "trend",
+                  "source": "structure-trend"
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "richness-rich",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "RuntimeError",
+          "runnerReason": "TOKEN_BUDGET_EXHAUSTED",
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 5,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "inconclusive",
+            "reason": "Missing or incomplete original request/response trace"
+          },
+          "resultSha256": "24ad7efb8b2fa4b78c7ca82f6a66eaec60e19537fee31cfc9572f8e7a43ecea7",
+          "modelRequests": 5,
+          "toolCalls": 12,
+          "candidateCount": 1,
+          "dataQueries": 4,
+          "seconds": 33.1073,
+          "prompt_tokens": 171176,
+          "completion_tokens": 9111,
+          "total_tokens": 180287,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": false,
+            "modelChannelAudit": false
+          },
+          "issues": [
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/1/blocks/1",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/3/blocks/1",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/1/blocks/1",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/3/blocks/1",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            }
+          ],
+          "cards": 4,
+          "compactCards": 4,
+          "changeBindings": 8,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "当前业务规模与变化",
+              "businessQuestion": "业务当前规模多大，年累计与本月相对各自基期如何变化？",
+              "businessObject": "整体流水及 Core、云通信、公网 Region 等范围",
+              "distinctFrom": "只回答规模与变化，不解释增长来源，也不涉及目标对照与风险复核。",
+              "blocks": [
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "overview-total",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "overview-core",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "overview-communication",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "overview-region",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                }
+              ]
+            },
+            {
+              "id": "growth-objects",
+              "title": "增长来自哪些对象",
+              "businessQuestion": "本月流水增长集中在哪些客户对象上？",
+              "businessObject": "增长客户入选清单中的客户",
+              "distinctFrom": "只呈现入选清单内的客户及其本月流水与环比，不计算整体增长贡献，也不解释增长原因。",
+              "blocks": [
+                {
+                  "id": "growth-note",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "growth-table",
+                  "purpose": "reconciliation",
+                  "source": "customer-growth"
+                }
+              ]
+            },
+            {
+              "id": "target-vs-projection",
+              "title": "目标与当前/推演规模对照",
+              "businessQuestion": "各赛道的年目标与年推演流水、当前流水如何并列对照？",
+              "businessObject": "赛道（泛互联网、泛政企、车企、商业市场、海外）",
+              "distinctFrom": "只做并列核对，不提供计算后的完成率，也不把较年初推演增长量当作目标差额。",
+              "blocks": [
+                {
+                  "id": "target-note",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "target-table",
+                  "purpose": "reconciliation",
+                  "source": "track-target"
+                }
+              ]
+            },
+            {
+              "id": "risk-review",
+              "title": "需要风险复核的客户",
+              "businessQuestion": "哪些客户进入风险复核清单，其样例流水列如何？",
+              "businessObject": "风险复核入选清单中的客户",
+              "distinctFrom": "只列出复核清单与样例流水列，不提供风险原因明细，也不拼成连续时间序列。",
+              "blocks": [
+                {
+                  "id": "risk-note",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "risk-table",
+                  "purpose": "reconciliation",
+                  "source": "customer-risk"
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "richness-rich",
+          "repeat": 2,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "none",
+          "completedRun": false,
+          "modelResponses": 5,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "b82e8b5ae539a0c1f440aea67124408263c5335c3c5a67f4e3de6f9dc3a1c73e",
+          "modelRequests": 5,
+          "toolCalls": 12,
+          "candidateCount": 0,
+          "dataQueries": 0,
+          "seconds": 33.4665,
+          "prompt_tokens": 173735,
+          "completion_tokens": 9157,
+          "total_tokens": 182892,
+          "checks": {
+            "validPage": false,
+            "v2Plan": true,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/dataRequests/5/metrics",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            },
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/4/blocks/0",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            }
+          ],
+          "cards": 0,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "整体规模与变化",
+              "businessQuestion": "当前业务规模有多大，年累计与本月相对各自基期如何变化？",
+              "businessObject": "整体流水（scope=total）",
+              "distinctFrom": "只回答整体规模与变化，不拆分对象、不涉及目标或客户。",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "scale-change",
+              "title": "规模构成与月度走势",
+              "businessQuestion": "整体规模由哪些对象构成，各对象年累计/本月表现如何，月度走势怎样？",
+              "businessObject": "Core、云通信、公网Region、稳定、一次性等对象",
+              "distinctFrom": "在整体规模之后，按对象并列比较并给出月度走势，不涉及目标或客户明细。",
+              "blocks": [
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "stable-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "one-off-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "core-trend",
+                  "purpose": "trend",
+                  "source": "flow-trend"
+                },
+                {
+                  "id": "structure-trend",
+                  "purpose": "trend",
+                  "source": "flow-structure"
+                },
+                {
+                  "id": "scale-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "growth-objects",
+              "title": "增长来自哪些对象",
+              "businessQuestion": "本月流水增长集中在哪些客户对象？",
+              "businessObject": "增长客户入选清单（样例客户）",
+              "distinctFrom": "聚焦客户级增长清单，不解释增长原因，也不代表完整客户群体。",
+              "blocks": [
+                {
+                  "id": "growth-table",
+                  "purpose": "detail",
+                  "source": "customer-growth"
+                },
+                {
+                  "id": "growth-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "target-vs-projection",
+              "title": "目标与当前/推演规模对照",
+              "businessQuestion": "各赛道年目标与年推演流水、当前规模如何并列对照？",
+              "businessObject": "赛道（泛互联网、泛政企、车企、商业市场、海外）",
+              "distinctFrom": "以赛道为对象并列年目标与年推演，不计算完成率或目标差额。",
+              "blocks": [
+                {
+                  "id": "track-table",
+                  "purpose": "reconciliation",
+                  "source": "track-analysis"
+                },
+                {
+                  "id": "target-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "risk-review",
+              "title": "需要风险复核的客户",
+              "businessQuestion": "哪些客户进入风险复核清单，其样例流水列如何？",
+              "businessObject": "风险复核入选清单（样例客户）",
+              "distinctFrom": "仅呈现风险复核清单与样例流水列，不提供风险原因明细。",
+              "blocks": [
+                {
+                  "id": "risk-table",
+                  "purpose": "detail",
+                  "source": "customer-risk"
+                },
+                {
+                  "id": "risk-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "richness-rich",
+          "repeat": 3,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "none",
+          "completedRun": false,
+          "modelResponses": 5,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "59a85abfccd6fde635b1a7a541a45e23b4a418771ec6c6c762059cf58d117c90",
+          "modelRequests": 5,
+          "toolCalls": 11,
+          "candidateCount": 0,
+          "dataQueries": 0,
+          "seconds": 29.1359,
+          "prompt_tokens": 169562,
+          "completion_tokens": 7529,
+          "total_tokens": 177091,
+          "checks": {
+            "validPage": false,
+            "v2Plan": true,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "STRUCTURE_PLAN_INVALID",
+              "path": "/sections/1/blocks/4",
+              "objectIds": [],
+              "blocking": true,
+              "options": [
+                "revise-reference",
+                "remove-block"
+              ]
+            }
+          ],
+          "cards": 0,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "整体规模与变化",
+              "businessQuestion": "当前业务规模有多大，同比环比如何变化？",
+              "businessObject": "整体流水（total 范围）",
+              "distinctFrom": "只回答整体规模与变化，不拆分对象、不涉及目标或风险。",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "total-trend",
+                  "purpose": "trend",
+                  "source": "flow-trend"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "growth-objects",
+              "title": "增长来自哪些对象",
+              "businessQuestion": "增长集中在哪些业务对象与客户？",
+              "businessObject": "范围对象（core、communication、public-region、stable、one-off）与增长客户清单",
+              "distinctFrom": "从对象维度定位增长来源，区别于整体规模与目标对照。",
+              "blocks": [
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "structure-trend",
+                  "purpose": "trend",
+                  "source": "flow-structure"
+                },
+                {
+                  "id": "growth-table",
+                  "purpose": "detail",
+                  "source": "customer-growth"
+                },
+                {
+                  "id": "growth-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "target-check",
+              "title": "目标与当前/推演规模对照",
+              "businessQuestion": "年目标与年推演流水、当前流水如何并列对照？",
+              "businessObject": "赛道（泛互联网、泛政企、车企、商业市场、海外）",
+              "distinctFrom": "并列呈现目标与推演，不做完成率计算，区别于规模与增长来源章节。",
+              "blocks": [
+                {
+                  "id": "track-table",
+                  "purpose": "reconciliation",
+                  "source": "track-target"
+                },
+                {
+                  "id": "target-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "risk-review",
+              "title": "需要风险复核的客户",
+              "businessQuestion": "哪些客户进入风险复核清单？",
+              "businessObject": "风险复核入选客户",
+              "distinctFrom": "仅呈现复核清单与样例列，不解释风险原因，区别于增长清单。",
+              "blocks": [
+                {
+                  "id": "risk-table",
+                  "purpose": "reconciliation",
+                  "source": "customer-risk"
+                },
+                {
+                  "id": "risk-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        }
+      ],
+      "groups": {
+        "richness-basic": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 5,
+            "toolCalls": 7,
+            "dataQueries": 3,
+            "prompt_tokens": 145689,
+            "completion_tokens": 4632,
+            "total_tokens": 150360,
+            "seconds": 23.7113
+          }
+        },
+        "richness-rich": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 5,
+            "toolCalls": 12,
+            "dataQueries": 0,
+            "prompt_tokens": 171176,
+            "completion_tokens": 9111,
+            "total_tokens": 180287,
+            "seconds": 33.1073
+          }
+        }
+      }
+    },
+    "v1": {
+      "status": "not-executed",
+      "runs": []
+    }
+  }
+}

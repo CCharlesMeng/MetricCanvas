@@ -21,7 +21,8 @@ class ReferenceInjection:
     def load(self,path,phase,turn=0,step=0):
         if path in self.loaded:return ''
         content=path.read_text()  # Missing required author source must stop, never substitute discovery.
-        self.events.append({'path':str(path.relative_to(self.root)),'sha256':sha(path),'phase':phase,'turn':turn,'step':step})
+        self.events.append({'path':str(path.relative_to(self.root)),'sha256':sha(path),'phase':phase,'turn':turn,'step':step,
+                            'characters':len(content),'utf8Bytes':len(content.encode('utf-8'))})
         self.loaded.add(path)
         return content
     def initial(self):

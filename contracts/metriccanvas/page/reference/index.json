@@ -1,6 +1,6 @@
 {
   "schemaVersion": "6.4",
-  "schemaSha256": "658115448330391be3903ba7bae6968d91b202e9df23c456506d3c28ec67cb09",
+  "schemaSha256": "eba4e60b84fce7271971b06cd704b44b0de2baa906c0734914a731bf6695db46",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -120,7 +120,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b04634c5a3a06f550222f1dc3da698649a562fa141de30cdfbe286e227c11f5b"
+      "sha256": "4949798205bc08da98562ce6f275d36191aa78dd947df3397742d27805afc63b"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -1050,8 +1050,13 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\"]",
+      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\"]",
       "enum": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
         "6.0",
         "6.1",
         "6.2",

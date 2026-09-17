@@ -83,6 +83,15 @@ function flattenedInCardScope(): Map<string, string> {
 }
 
 describe('组合卡的卡内表面压平', () => {
+  it('独立指标面板使用白色内容底，嵌入组合卡时仍允许压平', () => {
+    const metric = source('metric-card/MetricCard.svelte');
+    const panel = /\.metric-panel\s*\{([^}]*)\}/.exec(metric)?.[1] ?? '';
+    expect(panel).toContain(
+      'background: var(--mc-metric-panel-surface, var(--mc-color-surface, #fff));'
+    );
+    expect(flattenedInCardScope().get('--mc-metric-panel-surface')).toBe('transparent');
+  });
+
   it('压平清单覆盖白名单里每一个有自己表面的子组件，一个不漏', () => {
     const flattened = flattenedInCardScope();
     const missing: string[] = [];

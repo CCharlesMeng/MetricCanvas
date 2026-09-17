@@ -1,0 +1,2182 @@
+{
+  "evidenceKind": "trace-derived-structural-review",
+  "visualAcceptance": "user-owned",
+  "arms": {
+    "v2": {
+      "runs": [
+        {
+          "id": "business-neutral",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "ConnectError",
+          "runnerReason": null,
+          "pageOrigin": "none",
+          "completedRun": false,
+          "modelResponses": 2,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "inconclusive",
+            "reason": "Missing or incomplete original request/response trace"
+          },
+          "resultSha256": "fcde651c6edf4803eb738f5bb903f62655336b13de281cd4d55df650fcf6b49d",
+          "modelRequests": 3,
+          "toolCalls": 2,
+          "candidateCount": 0,
+          "dataQueries": 0,
+          "seconds": 3.8385,
+          "prompt_tokens": 49837,
+          "completion_tokens": 195,
+          "total_tokens": 50032,
+          "checks": {
+            "validPage": false,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": false,
+            "modelChannelAudit": false
+          },
+          "issues": [],
+          "cards": 0,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 0,
+          "sections": [],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "business-neutral",
+          "repeat": 2,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "3deffc2dc644e267dadbab380011a35387d74e40cc0a8e7dcdf46b6ea4f3656f",
+          "modelRequests": 6,
+          "toolCalls": 8,
+          "candidateCount": 2,
+          "dataQueries": 1,
+          "seconds": 20.8082,
+          "prompt_tokens": 172690,
+          "completion_tokens": 3842,
+          "total_tokens": 176532,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "overall-trend-chart"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [
+                "structure-chart"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 5,
+          "compactCards": 4,
+          "changeBindings": 8,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "scale-overview",
+              "title": "当前业务规模与变化",
+              "businessQuestion": "各业务对象当前的流水规模有多大，同比与环比变化如何？",
+              "businessObject": "整体、Core、云通信等流水范围",
+              "distinctFrom": "只回答当前规模与变化，不展开时间序列走势。",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": "primary-value",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "projection-card",
+                  "purpose": "change",
+                  "source": "overview-kpis"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "trend-forecast",
+              "title": "流水走势与预测",
+              "businessQuestion": "Core 与云通信的流水随时间如何变化，后续预测走势如何？",
+              "businessObject": "Core 流水与云通信流水",
+              "distinctFrom": "回答时间序列走势与预测，而非当前单点规模。",
+              "blocks": [
+                {
+                  "id": "overall-trend-chart",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "流水结构：稳定与一次性",
+              "businessQuestion": "流水在稳定与一次性之间的构成随时间如何变化？",
+              "businessObject": "稳定流水与一次性流水",
+              "distinctFrom": "从构成角度补充走势，而非重复 Core/云通信口径。",
+              "blocks": [
+                {
+                  "id": "structure-chart",
+                  "purpose": "explanation",
+                  "source": null
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "business-neutral",
+          "repeat": 3,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "14146d37b616aa1b522917485da09beec9408e121b25f5252bf13d2a06a02d4c",
+          "modelRequests": 6,
+          "toolCalls": 8,
+          "candidateCount": 1,
+          "dataQueries": 3,
+          "seconds": 18.0371,
+          "prompt_tokens": 171239,
+          "completion_tokens": 3289,
+          "total_tokens": 174528,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "STRUCTURE_REVISION_RESULT_INVALID",
+              "path": "/structureRevision"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "trend-chart"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [
+                "structure-chart"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 3,
+          "compactCards": 3,
+          "changeBindings": 6,
+          "missingBlocks": 2,
+          "sections": [
+            {
+              "id": "scale-and-change",
+              "title": "当前规模与变化",
+              "businessQuestion": "各业务对象当前规模多大，同比环比变化如何？",
+              "businessObject": "整体、Core、云通信三个流水对象",
+              "distinctFrom": "只回答当前规模与变化，不涉及时间走势与结构拆分",
+              "blocks": [
+                {
+                  "id": "total-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "core-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": "primary-value",
+                  "source": "flow-overview"
+                },
+                {
+                  "id": "scale-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "流水走势",
+              "businessQuestion": "Core 与云通信流水随时间如何变化，后续走势如何？",
+              "businessObject": "Core 流水与云通信流水",
+              "distinctFrom": "按月份展开时间走势，区别于上一章的当前时点规模",
+              "blocks": [
+                {
+                  "id": "trend-chart",
+                  "purpose": "trend",
+                  "source": "flow-trend"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "流水结构",
+              "businessQuestion": "稳定流水与一次性流水随时间如何分布？",
+              "businessObject": "稳定流水与一次性流水",
+              "distinctFrom": "按流水性质拆分，区别于按业务对象划分的走势章",
+              "blocks": [
+                {
+                  "id": "structure-chart",
+                  "purpose": "distribution",
+                  "source": "flow-structure"
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/business-report.md",
+                "sha256": "9061888fa62bd3e1ef92ea35632fcd32856ba4a0104077d33ecf2f44c26656dc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 280,
+                "utf8Bytes": 782
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "b78c417fa95e3cd026eb76cf4c7b1284d8391693724cb30d7ab3c485a33aa859",
+          "modelRequests": 6,
+          "toolCalls": 7,
+          "candidateCount": 1,
+          "dataQueries": 1,
+          "seconds": 17.1893,
+          "prompt_tokens": 163064,
+          "completion_tokens": 2571,
+          "total_tokens": 165635,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [
+                "tokens-trend"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 3,
+          "compactCards": 3,
+          "changeBindings": 6,
+          "missingBlocks": 1,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "当前资源使用规模与变化",
+              "businessQuestion": "当前整体资源使用规模是多少，同比变化如何？",
+              "businessObject": "全部资源对象（scope=all）",
+              "distinctFrom": "只回答整体规模与变化，不拆分具体对象，也不涉及历史走势。",
+              "blocks": [
+                {
+                  "id": "all-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "by-object",
+              "title": "各资源对象用量对比",
+              "businessQuestion": "各资源对象（model-a、model-b）的用量规模与同比变化分别是多少？",
+              "businessObject": "各资源对象（scope=model-a、model-b）",
+              "distinctFrom": "从整体下钻到具体对象，用于比较对象间差异，不重复整体合计。",
+              "blocks": [
+                {
+                  "id": "model-a-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "model-b-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "Tokens 使用走势",
+              "businessQuestion": "Tokens 用量在样例月份间如何变化？",
+              "businessObject": "Tokens 用量按月（month=1月、2月）",
+              "distinctFrom": "使用独立的历史来源展示时间走势，不与用量来源互算，也不拆分对象。",
+              "blocks": [
+                {
+                  "id": "tokens-trend",
+                  "purpose": "trend",
+                  "source": "usage-trend"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/usage-report.md",
+                "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 179,
+                "utf8Bytes": 523
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 2,
+          "runnerStatus": "blocked",
+          "runnerError": "ConnectError",
+          "runnerReason": null,
+          "pageOrigin": "none",
+          "completedRun": false,
+          "modelResponses": 3,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "inconclusive",
+            "reason": "Missing or incomplete original request/response trace"
+          },
+          "resultSha256": "5f5fad0db67a55ee5ec2cff8b41a4f5c79f93a43df344e34aa2a582ddc2851f8",
+          "modelRequests": 4,
+          "toolCalls": 4,
+          "candidateCount": 0,
+          "dataQueries": 0,
+          "seconds": 5.8823,
+          "prompt_tokens": 75124,
+          "completion_tokens": 394,
+          "total_tokens": 75518,
+          "checks": {
+            "validPage": false,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": false,
+            "modelChannelAudit": false
+          },
+          "issues": [],
+          "cards": 0,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 0,
+          "sections": [],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/usage-report.md",
+                "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 179,
+                "utf8Bytes": 523
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 3,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "a83ca87e4bfa2abcf171e744307411c6f18106329a6d939b82d39d42bfd5baed",
+          "modelRequests": 6,
+          "toolCalls": 8,
+          "candidateCount": 2,
+          "dataQueries": 2,
+          "seconds": 15.8672,
+          "prompt_tokens": 163101,
+          "completion_tokens": 2728,
+          "total_tokens": 165829,
+          "checks": {
+            "validPage": true,
+            "v2Plan": true,
+            "objectCardSurface": true,
+            "mainChangeHierarchy": true,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "tokens-trend"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 3,
+          "compactCards": 3,
+          "changeBindings": 6,
+          "missingBlocks": 0,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "当前资源使用规模",
+              "businessQuestion": "当前整体及各资源对象的用量规模如何，同比变化怎样？",
+              "businessObject": "全部资源对象（all）及 model-a、model-b",
+              "distinctFrom": "只回答当前账期的规模与变化，不涉及跨月走势",
+              "blocks": [
+                {
+                  "id": "all-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "model-a-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "model-b-summary",
+                  "purpose": "primary-value",
+                  "source": "usage-kpis"
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "Tokens 使用走势",
+              "businessQuestion": "Tokens 用量在已提供的月份间如何变化？",
+              "businessObject": "Tokens 用量（按月）",
+              "distinctFrom": "按月份维度展示走势，而非当前账期的对象规模对比",
+              "blocks": [
+                {
+                  "id": "tokens-trend",
+                  "purpose": "trend",
+                  "source": "usage-trend"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": "explanation",
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "ca93b17f0b9ce4df1165242da1b87d1045d2f43013b26fb8a1c336f1e3e608b4",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2969,
+                "utf8Bytes": 5841
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "b3c0bc6870940485e5552a5b7861b59881b0bdf9cd3f978b8729825be3c675bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 877,
+                "utf8Bytes": 1807
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "6964d5053517142f70d3e7d06c99322765dedd1be122ca3c8dad89deec08c2bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 815,
+                "utf8Bytes": 1867
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "2c230eb5b1e5528c257b0bbf78d88e00a0a207b8bd1ba71fc4cc9785e41471bc",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1284,
+                "utf8Bytes": 2620
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios/usage-report.md",
+                "sha256": "59d9389be99fd4c51c56879f84e3d0859af9ca345dca7c1e84de461c44767e55",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 179,
+                "utf8Bytes": 523
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        }
+      ],
+      "groups": {
+        "business-neutral": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 6,
+            "toolCalls": 8,
+            "dataQueries": 1,
+            "prompt_tokens": 171239,
+            "completion_tokens": 3289,
+            "total_tokens": 174528,
+            "seconds": 18.0371
+          }
+        },
+        "usage-neutral": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 6,
+            "toolCalls": 7,
+            "dataQueries": 1,
+            "prompt_tokens": 163064,
+            "completion_tokens": 2571,
+            "total_tokens": 165635,
+            "seconds": 15.8672
+          }
+        }
+      }
+    },
+    "v1": {
+      "runs": [
+        {
+          "id": "business-neutral",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "8870d1ae80e5935ffa930ed80d2f733eb755b5fccf040f49728917db58a62ac8",
+          "modelRequests": 6,
+          "toolCalls": 9,
+          "candidateCount": 2,
+          "dataQueries": 2,
+          "seconds": 19.3183,
+          "prompt_tokens": 183018,
+          "completion_tokens": 3411,
+          "total_tokens": 186429,
+          "checks": {
+            "validPage": true,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "core-trend"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/1",
+              "objectIds": [
+                "communication-trend"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [
+                "stable-trend"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/1",
+              "objectIds": [
+                "one-off-trend"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 3,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 4,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "业务规模概览",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "total-annual-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "total-month-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "projection-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "流水走势",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "core-trend",
+                  "purpose": null,
+                  "source": "overall-monthly-trend"
+                },
+                {
+                  "id": "communication-trend",
+                  "purpose": null,
+                  "source": "overall-monthly-trend"
+                },
+                {
+                  "id": "trend-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "流水结构",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "stable-trend",
+                  "purpose": null,
+                  "source": "region-monthly-trend"
+                },
+                {
+                  "id": "one-off-trend",
+                  "purpose": null,
+                  "source": "region-monthly-trend"
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "scope-detail",
+              "title": "分范围明细",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "scope-table",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "detail-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "business-neutral",
+          "repeat": 2,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "e5e67509de26ce97290ecc6e6be9d85cb3d9ec6da66db933741141f7ad21260c",
+          "modelRequests": 6,
+          "toolCalls": 9,
+          "candidateCount": 2,
+          "dataQueries": 3,
+          "seconds": 17.6657,
+          "prompt_tokens": 173969,
+          "completion_tokens": 3246,
+          "total_tokens": 177215,
+          "checks": {
+            "validPage": true,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/0/blocks/3",
+              "objectIds": [
+                "overview-trend"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/2/blocks/0",
+              "objectIds": [
+                "structure-trend"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 6,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 2,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "业务规模概览",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "total-annual-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "total-month-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "projection-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "overview-trend",
+                  "purpose": null,
+                  "source": "overall-monthly-trend"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "segments",
+              "title": "业务板块规模与变化",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "core-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "communication-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "region-card",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "segments-table",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "流水结构走势",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "structure-trend",
+                  "purpose": null,
+                  "source": "region-monthly-trend"
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "business-neutral",
+          "repeat": 3,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "7dcc3e795b35eef2849eae4eded439946583654fddc8d6b5fb25d1dd27c02fc4",
+          "modelRequests": 6,
+          "toolCalls": 8,
+          "candidateCount": 1,
+          "dataQueries": 1,
+          "seconds": 19.3863,
+          "prompt_tokens": 172360,
+          "completion_tokens": 3332,
+          "total_tokens": 175692,
+          "checks": {
+            "validPage": true,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/0/blocks/3",
+              "objectIds": [
+                "trend-overall"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "trend-structure"
+              ],
+              "blocking": true
+            },
+            {
+              "code": "OPERATION_INVALID",
+              "path": "/operations/0"
+            },
+            {
+              "code": "OPERATION_INVALID",
+              "path": "/operations/1"
+            }
+          ],
+          "cards": 3,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 2,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "业务规模与变化",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "card-annual-total",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "card-current-month",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "card-projection",
+                  "purpose": null,
+                  "source": "flow-kpis"
+                },
+                {
+                  "id": "trend-overall",
+                  "purpose": null,
+                  "source": "overall-monthly-trend"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "structure",
+              "title": "流水结构",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "trend-structure",
+                  "purpose": null,
+                  "source": "region-monthly-trend"
+                },
+                {
+                  "id": "structure-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "caveats",
+              "title": "样例说明与局限",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "caveat-body",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 1,
+          "runnerStatus": "blocked",
+          "runnerError": "ValueError",
+          "runnerReason": null,
+          "pageOrigin": "unfinished-run-last-admitted-candidate",
+          "completedRun": false,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "aa54d2a9f6ce76cca49b024678df436521527c74773bf7b8620d9c841b188b66",
+          "modelRequests": 6,
+          "toolCalls": 7,
+          "candidateCount": 1,
+          "dataQueries": 1,
+          "seconds": 13.1129,
+          "prompt_tokens": 161866,
+          "completion_tokens": 1694,
+          "total_tokens": 163560,
+          "checks": {
+            "validPage": true,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "COMPONENT_TARGET_NOT_FOUND",
+              "path": ""
+            },
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/0/blocks/2",
+              "objectIds": [
+                "trend-chart"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 2,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 1,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "总体规模与变化",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "tokens-card",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "requests-card",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "trend-chart",
+                  "purpose": null,
+                  "source": "usage-trend"
+                },
+                {
+                  "id": "overview-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            },
+            {
+              "id": "objects",
+              "title": "资源对象分布",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "object-table",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 3,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 2,
+          "runnerStatus": "blocked",
+          "runnerError": "JSONDecodeError",
+          "runnerReason": null,
+          "pageOrigin": "none",
+          "completedRun": false,
+          "modelResponses": 4,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "3a8d53e8f616e82cc0f54861f83d5db865d12a78150e1fc150dd35f0186613f2",
+          "modelRequests": 4,
+          "toolCalls": 4,
+          "candidateCount": 0,
+          "dataQueries": 0,
+          "seconds": 11.2141,
+          "prompt_tokens": 103391,
+          "completion_tokens": 1865,
+          "total_tokens": 105256,
+          "checks": {
+            "validPage": false,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": false,
+            "modelChannelAudit": true
+          },
+          "issues": [],
+          "cards": 0,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 0,
+          "sections": [],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        },
+        {
+          "id": "usage-neutral",
+          "repeat": 3,
+          "runnerStatus": "inconclusive",
+          "runnerError": null,
+          "runnerReason": null,
+          "pageOrigin": "completed-run",
+          "completedRun": true,
+          "modelResponses": 6,
+          "models": [
+            "deepseek-flash"
+          ],
+          "traceAudit": {
+            "status": "pass",
+            "reason": "Original requests/responses present and model-channel artifact check passed"
+          },
+          "resultSha256": "06acc0b55fb99df0cfe24e760b027aa56d96eca9bc5ce3a3f8ec72f1138d2139",
+          "modelRequests": 6,
+          "toolCalls": 7,
+          "candidateCount": 1,
+          "dataQueries": 1,
+          "seconds": 17.7308,
+          "prompt_tokens": 169277,
+          "completion_tokens": 2724,
+          "total_tokens": 172001,
+          "checks": {
+            "validPage": true,
+            "v2Plan": false,
+            "objectCardSurface": false,
+            "mainChangeHierarchy": false,
+            "sameObjectChanges": true,
+            "oneCreate": true,
+            "modelChannelAudit": true
+          },
+          "issues": [
+            {
+              "code": "DQE_QUERY_REJECTED",
+              "path": "/units/0"
+            },
+            {
+              "code": "STRUCTURE_SOURCE_FAILED",
+              "path": "/sections/1/blocks/0",
+              "objectIds": [
+                "tokens-trend"
+              ],
+              "blocking": true
+            }
+          ],
+          "cards": 2,
+          "compactCards": 0,
+          "changeBindings": 0,
+          "missingBlocks": 1,
+          "sections": [
+            {
+              "id": "overview",
+              "title": "当前使用规模与变化",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "tokens-all",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "requests-all",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "tokens-by-scope",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                },
+                {
+                  "id": "scope-detail",
+                  "purpose": null,
+                  "source": "usage-kpis"
+                }
+              ]
+            },
+            {
+              "id": "trend",
+              "title": "使用走势",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "tokens-trend",
+                  "purpose": null,
+                  "source": "usage-trend"
+                }
+              ]
+            },
+            {
+              "id": "notes",
+              "title": "口径与说明",
+              "businessQuestion": null,
+              "businessObject": null,
+              "distinctFrom": null,
+              "blocks": [
+                {
+                  "id": "sample-note",
+                  "purpose": null,
+                  "source": null
+                },
+                {
+                  "id": "caliber-note",
+                  "purpose": null,
+                  "source": null
+                }
+              ]
+            }
+          ],
+          "injection": {
+            "policy": {
+              "errors": "host-inject-on-first-tool-issue",
+              "examples": "not-available; rerun with --include-examples if parameter examples are required",
+              "filesystemTool": false
+            },
+            "events": [
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/SKILL.md",
+                "sha256": "1758de60ee5579a8c851ccee1a8a07368f34aa34c0ef5928413d6bc31df5ae40",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1763,
+                "utf8Bytes": 3857
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/tools.md",
+                "sha256": "2bd6fce4de260d5c1b4d004699ea9b16ffca80bf0c2d5042627f542b1d2453c5",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2736,
+                "utf8Bytes": 5386
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/create.md",
+                "sha256": "e8c5c5f570b01d7b02074ac1e41899e313d5a9eb31558b73fe7cf88533549a98",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 1207,
+                "utf8Bytes": 2263
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/layouts/report.md",
+                "sha256": "47e74cec450c49182d993b5c3d1e00f3502abd2a27981d7b0f0cfd6e39a5f114",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 675,
+                "utf8Bytes": 1541
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/scenarios.md",
+                "sha256": "1cb37183976fba3944ef01ec08b36f7461c09bae66e1923ffb05d3e5f2d7b5c2",
+                "phase": "startup",
+                "turn": 0,
+                "step": 0,
+                "characters": 2288,
+                "utf8Bytes": 4528
+              },
+              {
+                "path": "metriccanvas-authoring/skill/metriccanvas-platform-authoring/references/errors.md",
+                "sha256": "57421804c4d94dce01dcb8d4eab490efc090f2b60ddfdfeaccc9809311384475",
+                "phase": "first-tool-issue",
+                "turn": 1,
+                "step": 2,
+                "characters": 453,
+                "utf8Bytes": 1193
+              }
+            ]
+          },
+          "businessReview": "pending-human-review",
+          "visualReview": "user-owned"
+        }
+      ],
+      "groups": {
+        "business-neutral": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 6,
+            "toolCalls": 9,
+            "dataQueries": 2,
+            "prompt_tokens": 173969,
+            "completion_tokens": 3332,
+            "total_tokens": 177215,
+            "seconds": 19.3183
+          }
+        },
+        "usage-neutral": {
+          "runs": 3,
+          "medians": {
+            "modelRequests": 6,
+            "toolCalls": 7,
+            "dataQueries": 1,
+            "prompt_tokens": 161866,
+            "completion_tokens": 1865,
+            "total_tokens": 163560,
+            "seconds": 13.1129
+          }
+        }
+      }
+    }
+  },
+  "toolSchemaComparison": {
+    "identical": true,
+    "newHashes": [
+      "5bd66e2f8706d2d226431ecfe4ece7cf9dd2612ada4d3f2605314e3ca493266e"
+    ],
+    "baselineHashes": [
+      "5bd66e2f8706d2d226431ecfe4ece7cf9dd2612ada4d3f2605314e3ca493266e"
+    ]
+  },
+  "comparisonConclusion": "requires-runtime-origin-verification; never infer full-version isolation from reference hashes"
+}
