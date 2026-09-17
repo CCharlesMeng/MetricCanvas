@@ -1,4 +1,4 @@
-/** Card confirmation requests a fresh provider read, not an exact saved artifact. */
+/** Apply supplied metadata directly, or request a fresh provider read by pageId. */
 export const APPLY_PAGE_EVENT = 'metriccanvas:apply-page';
 export function pageIdOf(detail: unknown): string | null {
   if (!detail || typeof detail !== 'object' || Array.isArray(detail)) return null;
@@ -10,6 +10,7 @@ export function pageIdOf(detail: unknown): string | null {
 export function listenForApplyPage(options: {
   target: EventTarget;
   onapply(pageId: string): Promise<void>;
+  onpreview(previewJson: unknown): void | Promise<void>;
   onerror(message: string): void;
   captureIdentity(): string;
 }): () => void {
@@ -17,10 +18,16 @@ export function listenForApplyPage(options: {
   let disposed = false;
   const listener = (event: Event) => {
     if (disposed || identity !== options.captureIdentity()) return;
-    const id = pageIdOf((event as CustomEvent<unknown>).detail);
-    if (!id) { options.onerror('应用通知无效：只接受非空的 pageId。'); return; }
+    const detail = (event as CustomEvent<unknown>).detail;
+    const hasPreview = !!detail && typeof detail === 'object' && !Array.isArray(detail) &&
+      Object.prototype.hasOwnProperty.call(detail, 'previewJson');
+    const id = hasPreview ? null : pageIdOf(detail);
+    if (!hasPreview && !id) { options.onerror('应用通知无效：需要 previewJson 或非空的 pageId。'); return; }
     void Promise.resolve().then(() => {
-      if (!disposed && identity === options.captureIdentity()) return options.onapply(id);
+      if (!disposed && identity === options.captureIdentity()) {
+        if (hasPreview) return options.onpreview((detail as Record<string, unknown>).previewJson);
+        return options.onapply(id!);
+      }
     }).catch((error: unknown) => {
       if (!disposed && identity === options.captureIdentity()) options.onerror(error instanceof Error ? error.message : String(error));
     });

@@ -10,7 +10,7 @@ it('validates event payloads and removes the listener on disposal', async () => 
   expect(pageIdOf({ pageId: 'p' })).toBe('p');
   const target = new EventTarget(), onapply = vi.fn(async () => {}), onerror = vi.fn();
   let identity = 'a';
-  const stop = listenForApplyPage({ target, onapply, onerror, captureIdentity: () => identity });
+  const stop = listenForApplyPage({ target, onapply, onpreview: vi.fn(), onerror, captureIdentity: () => identity });
   const send = () => target.dispatchEvent(new CustomEvent(APPLY_PAGE_EVENT, { detail: { pageId: 'p' } }));
   send(); await Promise.resolve(); send(); await Promise.resolve();
   expect(onapply).toHaveBeenCalledTimes(2);
@@ -60,4 +60,30 @@ it('preserves the page on foreign notifications, failed reads and unsaved edits'
   expect(port.getLatest).toHaveBeenCalledTimes(1);
   expect(coordinator.snapshot().dirty).toBe(true);
   coordinator.dispose();
+});
+
+it('applies previewJson without reading or saving and gives it precedence over pageId', async () => {
+  const target = new EventTarget();
+  const { port } = createApplyPageFixture(target);
+  const { document } = await port.getLatest('mock-page-001');
+  port.getLatest = vi.fn(); port.saveRevision = vi.fn();
+  const coordinator = createAuthoringCoordinator({ port, identity: () => ({ actorId: 'a', workspaceId: 'w' }) });
+  const onapply = vi.fn(async () => {}), onerror = vi.fn();
+  const stop = listenForApplyPage({ target, onapply, onpreview: value => { coordinator.applyPreview(value); }, onerror, captureIdentity: () => 'a' });
+  for (const previewJson of [document, JSON.stringify(document)]) {
+    target.dispatchEvent(new CustomEvent(APPLY_PAGE_EVENT, { detail: { pageId: 'ignored', previewJson } }));
+    await Promise.resolve();
+    expect(coordinator.snapshot().draft?.pageDocument).toEqual(document);
+  }
+  expect(onapply).not.toHaveBeenCalled();
+  expect(port.getLatest).not.toHaveBeenCalled();
+  expect(port.saveRevision).not.toHaveBeenCalled();
+  expect(coordinator.snapshot().ref).toBeNull();
+  for (const previewJson of [null, undefined, '{invalid', {}]) {
+    target.dispatchEvent(new CustomEvent(APPLY_PAGE_EVENT, { detail: { pageId: 'fallback', previewJson } }));
+  }
+  await vi.waitFor(() => expect(onerror).toHaveBeenCalledTimes(4));
+  expect(onapply).not.toHaveBeenCalled();
+  expect(coordinator.snapshot().draft?.pageDocument).toEqual(document);
+  stop(); coordinator.dispose();
 });

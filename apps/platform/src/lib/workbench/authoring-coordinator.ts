@@ -227,6 +227,23 @@ export function createAuthoringCoordinator(options: {
       if (sync) void sync.enqueue(draft, description, retainDimensionValues, forceOperation).catch((error: unknown) => { state = { ...state, error: messageOf(error) }; emit(); });
       return true;
     },
+    /** Supplied metadata has no saved-revision receipt; apply locally without provider requests. */
+    applyPreview(previewJson: unknown): boolean {
+      if (preparation || languageLease || recoveryLocked() || disposed ||
+          (state.sync?.pending ?? 0) > 0 || (owner !== null && owner !== identityKey())) {
+        throw new Error('当前有未完成操作或身份已变化，暂不能应用页面文档。');
+      }
+      const document: unknown = typeof previewJson === 'string' ? JSON.parse(previewJson) : previewJson;
+      if (!document || typeof document !== 'object' || Array.isArray(document)) throw new Error('previewJson 必须是有效的页面文档。');
+      const parsed = createCanvasAuthoringDraft(document as Record<string, unknown>);
+      if (!parsed.ok) throw new Error(parsed.message);
+      sync?.dispose(); sync = null;
+      owner = identityKey();
+      change(parsed.draft);
+      state = { ...state, ref: null, dirty: true, save: null, sync: null };
+      emit();
+      return true;
+    },
     async load(pageId: string, optionsForLoad: { refreshCurrent?: boolean; resourceId?: string } = {}): Promise<void> {
       const refreshCurrent = optionsForLoad.refreshCurrent === true;
       if (refreshCurrent && (preparation || languageLease || disposed || unresolved() || state.dirty ||

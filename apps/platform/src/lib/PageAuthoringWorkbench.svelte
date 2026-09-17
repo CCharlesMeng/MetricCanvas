@@ -132,6 +132,14 @@
         const config = readRuntimeConfig();
         return JSON.stringify([config?.operatorId, config?.workspaceId]);
       },
+      onpreview: (previewJson) => {
+        if (languagePort || publicationBusy || languageRecoveryPort) {
+          saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
+        }
+        if (coordinator.applyPreview(previewJson)) {
+          previewOpen = false; saveError = ''; editError = ''; relocateSelection();
+        }
+      },
       onapply: async (pageId) => {
         if (languagePort || publicationBusy || languageRecoveryPort) {
           saveError = '当前受控操作尚未完成，暂不能应用页面通知。'; return;
