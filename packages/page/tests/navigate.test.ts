@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { parsePage } from '../src/internal';
 import { migrateURLNavigation } from '../../../tools/scripts/migrate-url-navigation';
 const source = () => JSON.parse(readFileSync(new URL('../fixtures/contract-valid/params-page.json',import.meta.url),'utf8'));
-it('拒绝旧导航结构与旧协议，而不是静默解析', () => {
+it('5.4 作为兼容读取版本可进入当前解析边界', () => {
   const doc = source(); doc.schemaVersion = '5.4';
-  expect(parsePage(doc).ok).toBe(false);
+  expect(parsePage(doc).ok).toBe(true);
 });
 describe('源侧导航校验', () => {
   it('合法外部 URL 不要求目标在本仓', () => {

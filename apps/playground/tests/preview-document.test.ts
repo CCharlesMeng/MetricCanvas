@@ -53,3 +53,15 @@ it('旧页面预览只向后续流程交规范文档，保留文本引用及数�
   expect(result).toMatchObject({ status: 'valid', document: { ...content, schemaVersion: '6.1', layout: 'dashboard' } });
   if (result.status === 'valid') expect(result.document).not.toHaveProperty('layoutForm');
 });
+
+it.each(['5.0', '5.1', '5.2', '5.3', '5.4'])('%s 页面可由页面试验场预览，并规范化为 6.x 运行态文档', (schemaVersion) => {
+  const { layout: _layout, ...content } = DEFAULT_PREVIEW_PAGE;
+  const result = parsePreviewDocument(
+    JSON.stringify({ ...content, schemaVersion }),
+    validate
+  );
+  expect(result).toMatchObject({
+    status: 'valid',
+    document: { ...content, schemaVersion: '6.1', layout: 'report' }
+  });
+});

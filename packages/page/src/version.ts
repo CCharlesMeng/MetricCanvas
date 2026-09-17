@@ -17,6 +17,11 @@ import { walkDocumentComponents } from './component-walk';
 
 export const PAGE_SCHEMA_MAJOR = 6;
 const CURRENT_MINOR = 4;
+/**
+ * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
+ * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
+ */
+export const LEGACY_READABLE_PAGE_SCHEMA_VERSIONS = ['5.0', '5.1', '5.2', '5.3', '5.4'] as const;
 
 export interface PageCapabilityDefinition {
   /** 引入该能力的次版本。 */
@@ -425,12 +430,18 @@ export const versionPolicy: VersionPolicy = {
   ) as Record<PageCapability, number>
 };
 
-/** 当前主版本内已发布的次版本列表,由低到高。 */
+/**
+ * 运行时可读取的版本列表。5.0–5.4 是跨主版本的兼容例外；其余条目为当前
+ * 主版本内由低到高的次版本。新文档只能使用 `versionPolicy.current`。
+ */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  return Array.from(
+  const currentMajor = Array.from(
     { length: policy.minor + 1 },
     (_unused, minor) => `${policy.major}.${minor}`
   );
+  return policy.major === PAGE_SCHEMA_MAJOR
+    ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
+    : currentMajor;
 }
 
 export function versionErrors(
@@ -440,7 +451,12 @@ export function versionErrors(
   const version = schemaVersionOf(document);
   if (version === undefined) return [];
   const parsed = parseVersion(version);
-  if (parsed !== undefined && parsed.major === policy.major && parsed.minor <= policy.minor) {
+  if (parsed !== undefined && (
+    (parsed.major === policy.major && parsed.minor <= policy.minor) ||
+    (policy.major === PAGE_SCHEMA_MAJOR && LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.includes(
+      version as (typeof LEGACY_READABLE_PAGE_SCHEMA_VERSIONS)[number]
+    ))
+  )) {
     return [];
   }
   return [
@@ -452,7 +468,7 @@ export function versionErrors(
           ? `文档格式版本 ${version} 高于运行时当前次版本 ${policy.current}`
           : `不支持的文档格式版本 ${version}:` +
             `运行时只接受 ${supportedVersions(policy).join(' / ')}，` +
-            '跨主版本不提供自动迁移'
+            '兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移'
     }
   ];
 }

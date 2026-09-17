@@ -246,6 +246,6 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 - [时间参数合法夹具](packages/page/fixtures/contract-valid/time-params-page.json)：多查询使用不同窗口。
 - [Schema真源](packages/page/src/schema/)与[时间窗口实现](packages/page/src/time-param.ts)：结构与执行规则的实现依据。
 
-版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容6.0—6.4，旧版本声明不能使用高于其版本的能力。
+版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.4；5.x只走读取规范化，新文档仍写当前6.x版本。
 
 显式日期/月区间参数尚未实现，建议结构另见[时间区间参数提案](docs/plan/time-range-parameters.md)，不属于本文现行协议。

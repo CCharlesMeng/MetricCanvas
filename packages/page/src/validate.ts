@@ -55,6 +55,7 @@ import { barForecastBoundaryIssues } from './bar-forecast-boundary';
 import { pageSchema } from './schema';
 import { capabilityFloorErrors, versionErrors } from './version';
 import { layoutCompatibilityErrors, canonicalLayoutDocument } from './layout-compatibility';
+import { adaptLegacyPageDocument } from './legacy-compatibility';
 import type { PageDocument } from './page-document';
 
 const ajv = new Ajv({ allErrors: true, strict: false });
@@ -77,9 +78,10 @@ export function parsePage(
   document: unknown,
   options: PageParseOptions = {}
 ): PageParseResult {
-  if (!validateStructure(document)) {
+  const compatibleDocument = adaptLegacyPageDocument(document);
+  if (!validateStructure(compatibleDocument)) {
     const structural = (validateStructure.errors ?? []).map(toTypedError);
-    const guided = [...versionErrors(document), ...compositeCardStructureErrors(document)];
+    const guided = [...versionErrors(compatibleDocument), ...compositeCardStructureErrors(compatibleDocument)];
     if (guided.length > 0) {
       return { ok: false, errors: [...guided, ...withoutGuidedPaths(structural, guided)] };
     }
@@ -88,20 +90,20 @@ export function parsePage(
 
   // 能力下限与页面参数判定都必须跑在文本取值替换之前:替换会把引用消解掉,
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
-  const declarations = pageParamDeclarations(document);
+  const declarations = pageParamDeclarations(compatibleDocument);
   const documentErrors = [
-    ...capabilityFloorErrors(document),
-    ...layoutCompatibilityErrors(document),
-    ...paramBindingErrors(document),
+    ...capabilityFloorErrors(compatibleDocument),
+    ...layoutCompatibilityErrors(compatibleDocument),
+    ...paramBindingErrors(compatibleDocument),
     ...pageParamErrors(
       declarations,
-      new Set(filterDeclarations(document).map((filter) => filter.id)),
-      document
+      new Set(filterDeclarations(compatibleDocument).map((filter) => filter.id)),
+      compatibleDocument
     )
   ];
   if (documentErrors.length > 0) return { ok: false, errors: documentErrors };
 
-  const materialized = materializePageDocument(document, options.textValues);
+  const materialized = materializePageDocument(compatibleDocument, options.textValues);
   if (materialized.errors.length > 0) {
     return { ok: false, errors: materialized.errors };
   }
@@ -129,10 +131,11 @@ export function parsePage(
 export function normalizePageDocument(document: unknown):
   | { ok: true; document: PageDocument; errors: [] }
   | { ok: false; errors: TypedError[] } {
-  const parsed = parsePage(document);
+  const compatibleDocument = adaptLegacyPageDocument(document);
+  const parsed = parsePage(compatibleDocument);
   if (!parsed.ok) return parsed;
   // JSON 文档也可能是 Svelte Proxy，使用 JSON 树复制，不使用 structuredClone。
-  const cloned = JSON.parse(JSON.stringify(document)) as PageDocument;
+  const cloned = JSON.parse(JSON.stringify(compatibleDocument)) as PageDocument;
   return { ok: true, document: canonicalLayoutDocument(cloned), errors: [] };
 }
 

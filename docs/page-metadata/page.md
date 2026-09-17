@@ -2,7 +2,7 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-当前作者写出6.2。公开读取兼容6.0/6.1/6.2；6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+当前作者写出6.4。公开读取兼容5.0—5.4及6.0—6.4；5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
 report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 

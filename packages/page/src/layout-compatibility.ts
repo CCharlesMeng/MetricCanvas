@@ -17,5 +17,7 @@ export function canonicalLayoutDocument<T extends {
   schemaVersion: string; layout?: PageLayoutForm; layoutForm?: PageLayoutForm
 }>(document: T): Omit<T, 'layoutForm'> & { layout: PageLayoutForm } {
   const { layoutForm, ...rest } = document;
-  return { ...rest, schemaVersion: `${versionPolicy.major}.${Math.max(1, Number(document.schemaVersion.split('.')[1]))}`, layout: document.layout ?? layoutForm ?? 'report' };
+  const [major, minor] = document.schemaVersion.split('.').map(Number);
+  const canonicalMinor = major === versionPolicy.major ? Math.max(1, minor) : 1;
+  return { ...rest, schemaVersion: `${versionPolicy.major}.${canonicalMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
 }

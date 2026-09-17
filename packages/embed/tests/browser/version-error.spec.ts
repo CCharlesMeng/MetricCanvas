@@ -40,10 +40,11 @@ for (const mode of ['classic', 'esm'] as const) {
       });
     await expect(host.getByRole('table')).toHaveCount(0);
 
-    // Recover the example's declared version and the current protocol. Do not
-    // downgrade newer document features by only changing schemaVersion.
+    // Recover the example's declared version, every compatible 5.x input, and
+    // the current protocol. 5.x is normalized by the shared runtime before
+    // it renders; do not use this as a way to author newer capabilities.
     const originalVersion = await page.evaluate(() => window.queryPageDocument.schemaVersion);
-    for (const schemaVersion of new Set([originalVersion, versionPolicy.current])) {
+    for (const schemaVersion of new Set([originalVersion, '5.0', '5.1', '5.2', '5.3', '5.4', versionPolicy.current])) {
       await page.evaluate((schemaVersion) => {
         window.queryEvents = [];
         window.queryCalls = [];
@@ -58,7 +59,7 @@ for (const mode of ['classic', 'esm'] as const) {
       expect(await page.evaluate(() => window.queryEvents.some((event) => event.type === 'ready'))).toBe(true);
     }
 
-    for (const schemaVersion of [futureMinor, `${major - 1}.4`]) {
+    for (const schemaVersion of [futureMinor, `${major - 2}.4`]) {
       await page.evaluate((schemaVersion) => {
         window.queryEvents = [];
         window.queryCalls = [];
