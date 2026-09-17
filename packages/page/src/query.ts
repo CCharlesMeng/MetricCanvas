@@ -1,6 +1,7 @@
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
 import { resolveTimeWindow, type TimeWindow } from './time-param';
+import type { PageParamValue, TimeRangeParamValue } from './page-param';
 
 export type JsonValue =
   | string
@@ -47,6 +48,61 @@ export interface DqeQueryDefinition {
     | { target: 'dimension'; queryField: string }
     | { target: 'time'; window: TimeWindow }
   >;
+}
+
+/** Query references are accepted only at DQE dim values and time bounds. */
+export type QueryParamReference = { param: string; part?: 'start' | 'end'; window?: TimeWindow };
+
+export function isQueryParamReference(value: unknown): value is QueryParamReference {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  const item = value as Record<string, unknown>;
+  return typeof item.param === 'string' && Object.keys(item).every(k => ['param', 'part', 'window'].includes(k)) &&
+    (item.part === undefined || item.part === 'start' || item.part === 'end');
+}
+
+/** Produces a DQE-safe copy; the saved Page keeps its references. */
+export function resolveInlineQueryParams(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): PageQuery {
+  const result = structuredClone(query);
+  const item = result.body.dsl_list[0] as Record<string, unknown>;
+  const filter = item.filter;
+  if (!filter || typeof filter !== 'object' || Array.isArray(filter)) return result;
+  const body = filter as Record<string, unknown>;
+  if (Array.isArray(body.dims)) for (const dim of body.dims) {
+    if (!dim || typeof dim !== 'object' || Array.isArray(dim)) continue;
+    const target = dim as Record<string, unknown>;
+    const reference = target.dim_value_list;
+    if (!isQueryParamReference(reference) || 'part' in reference) continue;
+    const value = values.get(reference.param);
+    if (typeof value === 'string') target.dim_value_list = [value];
+    else if (Array.isArray(value)) target.dim_value_list = [...value];
+    else throw new Error(`维度引用缺少有效参数:${reference.param}`);
+  }
+  const time = body.time;
+  if (time && typeof time === 'object' && !Array.isArray(time)) for (const part of ['start', 'end'] as const) {
+    const target = time as Record<string, unknown>;
+    const reference = target[part];
+    if (!isQueryParamReference(reference) || reference.part !== part) continue;
+    const value = values.get(reference.param);
+    if (reference.window) {
+      if (typeof value !== 'string') throw new Error(`时间引用缺少有效参数:${reference.param}`);
+      target[part] = resolveTimeWindow(value, reference.window)[part];
+    } else {
+      if (!isTimeRangeValue(value)) throw new Error(`时间区间引用缺少有效参数:${reference.param}`);
+      target[part] = value[part];
+    }
+  }
+  // A dimension initialized through a filter is now owned solely by filter state.
+  if (Array.isArray(body.dims)) body.dims = body.dims.filter(dim => {
+    if (!dim || typeof dim !== 'object' || Array.isArray(dim)) return true;
+    const original = query.body.dsl_list[0].filter;
+    if (!original || typeof original !== 'object' || Array.isArray(original) || !Array.isArray(original.dims)) return true;
+    return !original.dims.some(d => d && typeof d === 'object' && !Array.isArray(d) && d.dim_name === dim.dim_name && isQueryParamReference(d.dim_value_list) && Object.values(query.filterBindings ?? {}).some(b => b.target === 'dimension' && b.queryField === dim.dim_name));
+  });
+  return result;
+}
+
+function isTimeRangeValue(value: PageParamValue | undefined): value is TimeRangeParamValue {
+  return !!value && typeof value === 'object' && !Array.isArray(value) && 'start' in value && 'end' in value && 'granularity' in value;
 }
 
 /**
@@ -152,5 +208,5 @@ export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<stri
     const dims = Array.isArray(filter.dims) ? filter.dims : [];
     item.filter = { ...filter, dims: [...dims, { dim_name: binding.queryField, dim_value_list: Array.isArray(value) ? [...value] : [String(value)] }] };
   }
-  return initialized;
+  return resolveInlineQueryParams(initialized, values);
 }

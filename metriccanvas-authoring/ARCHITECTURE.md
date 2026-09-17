@@ -12,6 +12,8 @@
 
 ## 1. 两条消费链与三个职责
 
+6.5 参数模板另有可信程序接缝：TS Page 包负责 extract/applySelection/resolve，Python `application.parameter_preparation` 消费完整程序产物并投影安全摘要，工作台经 `parameterSourcePort` 取得最终验真基线后提供选择、预览和单次保存。没有新增模型工具；没有为 Java 补造 lookup/lease。接口、可运行示例与外部缺口见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
+
 | 消费链 | Skill / 服务 | 状态与保存边界 |
 |---|---|---|
 | Platform 创建、当前页修改、配置问答 | [metriccanvas-platform-authoring](./skill/metriccanvas-platform-authoring/SKILL.md) / `metriccanvas-platform-content` | 同一入口，可信上下文门禁；内容工具只产生候选，可信程序提交最终草稿；发布由工作台人工确认后更新资产状态 |

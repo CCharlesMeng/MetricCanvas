@@ -7,6 +7,7 @@ import type {
 declare global {
   const MetricCanvas: {
     mount(target: string | HTMLElement, options: MountOptions): RuntimeHandle;
+    createDqeGateway: typeof import('../../src/index').createDqeGateway;
   };
 
   interface Window {

@@ -1,4 +1,4 @@
-import { initializeQueryParams, matchesParamDeclaration, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
+import { initializeQueryParams, matchesParamDeclaration, materializePageParams, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
 
 /** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -18,6 +18,12 @@ export function resolvePageParams(
   const missing: string[] = [];
 
   for (const declaration of declarations) {
+    if (declaration.value !== undefined || declaration.type === 'timeRange') {
+      const value = declaration.value;
+      if (value !== undefined && matchesParamDeclaration(value, declaration)) values.set(declaration.id, structuredClone(value));
+      else if (value !== undefined || declaration.required !== false) missing.push(declaration.id);
+      continue;
+    }
     if (declaration.type === 'time') {
       // 显式非法输入不回退默认月份，防止展示了另一统计期却看似成功。
       const value = query.has(declaration.id) ? query.get(declaration.id) : declaration.default;
@@ -25,7 +31,7 @@ export function resolvePageParams(
         missing.push(declaration.id);
       } else if (value !== undefined) {
         values.set(declaration.id, value);
-      } else if (declaration.required) {
+      } else if (declaration.required !== false) {
         missing.push(declaration.id);
       }
       continue;
@@ -38,7 +44,7 @@ export function resolvePageParams(
     const value = valid ?? declaration.default;
     if (value !== undefined) {
       values.set(declaration.id, value);
-    } else if (declaration.required) {
+    } else if (declaration.required !== false) {
       missing.push(declaration.id);
     }
   }
@@ -56,6 +62,7 @@ export function pageParamSearch(values: PageParamValues): string {
 }
 
 export function serializePageParam(value: PageParamValue): string {
+  if (typeof value === 'object' && !Array.isArray(value)) throw new Error('timeRange 参数须经程序通道传递，尚无 URL 编码协议');
   return String(value);
 }
 
@@ -81,9 +88,16 @@ function stripQuestionMark(search: string): string {
 
 /** 运行态副本：参数只写入未受筛选控制的查询目标及筛选初值，模板不变。 */
 export function initializePageParams(page: import('@metriccanvas/page').Page, values: PageParamValues): import('@metriccanvas/page').Page {
+  // 6.5 inline values are resolved once at the Page boundary.  In particular,
+  // a missing template value never reaches the gateway as an object or as an
+  // accidentally unfiltered query.
+  const materialized = page.schemaVersion === '6.5';
+  if (materialized) {
+    page = materializePageParams(page, values);
+  }
   for (const declaration of page.params ?? []) {
     const value = values.get(declaration.id);
-    if ((value === undefined && declaration.required) || (value !== undefined && !matchesParamDeclaration(value, declaration))) throw new Error(`参数取值缺失或类型错误:${declaration.id}`);
+    if ((value === undefined && declaration.required !== false) || (value !== undefined && !matchesParamDeclaration(value, declaration))) throw new Error(`参数取值缺失或类型错误:${declaration.id}`);
   }
   const initialized = structuredClone(page);
   for (const declaration of initialized.filters ?? []) {
@@ -97,7 +111,7 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
         // 内嵌行没有当前参数的执行凭据；已核验的执行回执另由 execution 接管。
         delete source.source.initial;
       }
-      source.source.query = initializeQueryParams(source.source.query, values);
+      if (!materialized) source.source.query = initializeQueryParams(source.source.query, values);
     }
   }
   return initialized;

@@ -57,7 +57,7 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
     if capability_issues:
         return capability_issues
     # 与页面包相同：先验证原始参数契约，再物化文本做第二次结构校验。
-    param_issues = [*_param_binding_issues(value), *_page_param_issues(value)]
+    param_issues = [*_inline_param_issues(value), *_param_binding_issues(value), *_page_param_issues(value)]
     if param_issues:
         return param_issues
     optional_materialized = _materialize_validation_text_values(value)
@@ -167,7 +167,7 @@ def _materialize_validation_text_values(value: Any) -> Any:
         return value
     declarations = value.get("params", [])
     required = {
-        declaration.get("id"): declaration.get("required") is True
+        declaration.get("id"): declaration.get("required", True) is True
         for declaration in declarations
         if isinstance(declarations, list)
         and isinstance(declaration, Mapping)
@@ -196,6 +196,12 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
+    if value['schemaVersion'] != '6.5':
+        for i, p in enumerate(value.get('params', [])):
+            if 'required' not in p or 'value' in p or p['type'] == 'timeRange':
+                issues.append(PageContractIssue('SCHEMA_ERROR', f'/params/{i}', 'value、timeRange与required缺省由6.5引入'))
+        for path, _ in _inline_references(value):
+            issues.append(PageContractIssue('SCHEMA_ERROR', path, '查询原位引用由6.5引入'))
     if int(value["schemaVersion"].split(".")[1]) < 4:
         paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
         issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
@@ -283,8 +289,13 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
         if "default" in declaration and not _matches_param_default(declaration):
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
+        if 'value' in declaration and 'default' in declaration:
+            issues.append(PageContractIssue('SCHEMA_ERROR', f'{path}/value', 'value与default互斥'))
+        if 'value' in declaration and not _matches_param_default({**declaration, 'default': declaration['value']}):
+            issues.append(PageContractIssue('SCHEMA_ERROR', f'{path}/value', '实际参数类型不匹配'))
 
     consumed: set[str] = set()
+    consumed.update(ref['param'] for _, ref in _inline_references(value) if isinstance(ref.get('param'), str))
     for source in value.get("dataSources", {}).values():
         consumed.update(source.get("source", {}).get("query", {}).get("paramBindings", {}))
     consumed.update(f["initialParam"] for f in raw_filters if "initialParam" in f)
@@ -308,7 +319,8 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
         if (
             isinstance(display_format, str)
             and (
-                (display_format in NUMERIC_FORMATS and param_type != "number")
+                param_type == 'timeRange'
+                or (display_format in NUMERIC_FORMATS and param_type != "number")
                 or (display_format in DATE_FORMATS and param_type != "string")
             )
         ):
@@ -2226,6 +2238,11 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
 
 def _matches_param_default(declaration: Mapping[str, Any]) -> bool:
     value = declaration.get("default")
+    if declaration['type'] == 'timeRange':
+        return (isinstance(value, dict) and set(value) == {'start', 'end', 'granularity'}
+                and value['granularity'] == declaration.get('granularity')
+                and _matches_time_value(value['start'], value['granularity'])
+                and _matches_time_value(value['end'], value['granularity']) and value['start'] <= value['end'])
     if declaration["type"] == "time":
         return _matches_time_value(value, declaration.get("granularity"))
     if declaration["type"] != "dimension":
@@ -2290,6 +2307,20 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
         if source["source"]["type"] != "query" or not query:
             continue
         owners = {}
+        raw_filter = query['body']['dsl_list'][0].get('filter', {})
+        for dim in raw_filter.get('dims', []) if isinstance(raw_filter, dict) else []:
+            ref = dim.get('dim_value_list') if isinstance(dim, dict) else None
+            if not isinstance(ref, dict) or not isinstance(ref.get('param'), str):
+                continue
+            owners[dim.get('dim_name')] = ref['param']
+            matching = [(k, b) for k, b in query.get('filterBindings', {}).items() if b.get('target') == 'dimension' and b.get('queryField') == dim.get('dim_name')]
+            if len(matching) > 1:
+                error(f'/dataSources/{source_id}', '多个筛选控制同一参数目标')
+            for filter_id, _ in matching:
+                if filters.get(filter_id, {}).get('initialParam') != ref['param']:
+                    error(f'/dataSources/{source_id}', '筛选与查询必须引用相同参数')
+                else:
+                    consumed.add(filter_id)
         time_owner = None
         for param_id, binding in query.get("paramBindings", {}).items():
             path = f"/dataSources/{_escape_pointer(source_id)}/source/query/paramBindings/{_escape_pointer(param_id)}"
@@ -2351,4 +2382,74 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
             error(path, "第一版参数初始化只支持平面维度筛选")
         if declaration["id"] not in consumed:
             error(path, "参数初始化筛选必须具有匹配的显式查询目标")
+    return issues
+
+
+def _inline_references(page: Mapping[str, Any]) -> list[tuple[str, dict]]:
+    refs = []
+    def walk(v, path):
+        if isinstance(v, list):
+            for i, item in enumerate(v): walk(item, f'{path}/{i}')
+        elif isinstance(v, dict):
+            if 'param' in v: refs.append((path, v))
+            for k, item in v.items(): walk(item, f'{path}/{_escape_pointer(k)}')
+    for source_id, ds in page.get('dataSources', {}).items():
+        if ds.get('source', {}).get('type') == 'query':
+            walk(ds['source']['query']['body'], f'/dataSources/{_escape_pointer(source_id)}/source/query/body')
+    return refs
+
+
+def _inline_param_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
+    issues = []
+    params = {p['id']: p for p in page.get('params', [])}
+    allowed = set()
+    def error(path, message): issues.append(PageContractIssue('SCHEMA_ERROR', path, message))
+    def valid_ref(v, part=None):
+        if not isinstance(v, dict) or not isinstance(v.get('param'), str) or not re.fullmatch(r'[a-z0-9][a-z0-9-]*', v['param']): return False
+        if part is None: return set(v) == {'param'}
+        if not set(v).issubset({'param', 'part', 'window'}) or v.get('part') != part: return False
+        if 'window' not in v: return True
+        w = v['window']
+        if not isinstance(w, dict): return False
+        kind = w.get('kind')
+        keys = {'period': {'kind', 'unit', 'offset'}, 'lastN': {'kind', 'unit', 'n'}, 'yearToDate': {'kind'}, 'monthToDate': {'kind'}, 'toDate': {'kind', 'unit'}}
+        if kind not in keys or not set(w).issubset(keys[kind]): return False
+        if kind in ('yearToDate', 'monthToDate'): return True
+        if kind == 'period': return w.get('unit') in ('day', 'month', 'year') and type(w.get('offset', 0)) is int
+        if kind == 'lastN': return w.get('unit') in ('day', 'month') and type(w.get('n')) is int and w['n'] > 0
+        return w.get('unit') in ('month', 'year')
+    all_refs = _inline_references(page)
+    for source_id, ds in page.get('dataSources', {}).items():
+        q = ds.get('source', {}).get('query')
+        if not q: continue
+        base = f'/dataSources/{_escape_pointer(source_id)}/source/query'
+        f = q['body']['dsl_list'][0].get('filter', {})
+        if not isinstance(f, dict): continue
+        dims = f.get('dims', [])
+        if isinstance(dims, list):
+            for i, d in enumerate(dims):
+                if not isinstance(d, dict) or not isinstance(d.get('dim_value_list'), dict): continue
+                path = f'{base}/body/dsl_list/0/filter/dims/{i}/dim_value_list'
+                allowed.add(path)
+                ref = d['dim_value_list']
+                if not valid_ref(ref): error(path, '维度引用仅允许param'); continue
+                p = params.get(ref['param'], {})
+                if p.get('type') != 'dimension' or p.get('required', True) is False: error(path, '维度引用须匹配必需参数')
+                if not isinstance(d.get('dim_name'), str) or not d['dim_name'] or sum(isinstance(x, dict) and x.get('dim_name') == d['dim_name'] for x in dims) != 1: error(path, '同一维度只能有一个条件来源')
+        t = f.get('time', {})
+        if isinstance(t, dict) and (isinstance(t.get('start'), dict) or isinstance(t.get('end'), dict)):
+            path = f'{base}/body/dsl_list/0/filter/time'
+            allowed.update([path+'/start', path+'/end'])
+            a, b = t.get('start'), t.get('end')
+            if not valid_ref(a, 'start') or not valid_ref(b, 'end') or a['param'] != b['param'] or a.get('window') != b.get('window'):
+                error(path, '时间双端引用必须同源同规则')
+            else:
+                p = params.get(a['param'], {})
+                if p.get('type') != ('time' if 'window' in a else 'timeRange') or p.get('required', True) is False: error(path, '时间类型或必填不匹配')
+                if t.get('period') != ('month' if p.get('granularity') == 'month' else 'day'): error(path, '时间精度不相容')
+                if 'window' in a and p.get('granularity') and not _time_window_compatible(p['granularity'], a['window']): error(path, '时间窗口不相容')
+                if any(x.get('target') == 'time' for x in q.get('filterBindings', {}).values()): error(path, '时间筛选与参数冲突')
+        if q.get('paramBindings') and any(path.startswith(base+'/body/') for path, _ in all_refs): error(base, '原位引用与旧绑定不得混用')
+    for path, ref in all_refs:
+        if path not in allowed: error(path, '此DQE位置不允许参数引用')
     return issues

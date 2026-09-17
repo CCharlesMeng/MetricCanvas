@@ -1,4 +1,4 @@
-import { normalizePageDocument } from '@metriccanvas/page';
+import { normalizePageDocument, canonicalizeJson, type PageDocument } from '@metriccanvas/page';
 import { createAuthoringSync, type DurableAuthoringState, type StableSavePort, type SyncSnapshot } from './authoring-sync';
 import { validateHistoryPage, type ListRevisions } from './authoring-history';
 import { validateAuthoringRecord } from './authoring-recovery';
@@ -325,6 +325,14 @@ export function createAuthoringCoordinator(options: {
       coordinator.requireSynchronizedRef();
       if (!sync || !state.draft) throw Error('工作尚未保护。');
       await sync.enqueue(state.draft, '发布页面', true, true, 'publish');
+    },
+    async publishTemplate(document:PageDocument, expectedSource:string, selectedIds:readonly string[]):Promise<void> {
+      const ref=coordinator.requireSynchronizedRef();
+      if(expectedSource!==canonicalizeJson({ref,scope:coordinator.scope()}))throw Error('发布来源已变化');
+      if(!sync||!state.draft||document.id!==ref.pageId)throw Error('工作尚未保护或页面不匹配');
+      if(selectedIds.some(id=>!document.params?.some(p=>p.id===id))||(document.params??[]).some(p=>selectedIds.includes(p.id)&&(p.value!==undefined||p.default!==undefined))||selectedIds.length&&Object.values(document.dataSources).some(ds=>ds.source.type==='query'&&ds.source.initial))throw Error('模板不得保存所选参数实际值或旧初始行');
+      const draft=createCanvasAuthoringDraft({...document});if(!draft.ok)throw Error(draft.message);
+      await sync.enqueue(draft.draft,'发布参数模板',false,true,'publish');
     },
     async listHistory(cursor: string | null = null, expectedSnapshot?: DraftRef, signal?: AbortSignal) {
       if (disposed || !state.ref || owner !== identityKey()) throw Error('当前工作副本不能读取历史。');

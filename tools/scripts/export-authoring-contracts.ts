@@ -13,6 +13,7 @@ import {
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
+import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../packages/page/src/index.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
 const pagePackage = JSON.parse(await readFile(path.join(repoRoot, 'packages/page/package.json'), 'utf8')) as { version: string };
@@ -185,6 +186,40 @@ async function buildProductOutputs(): Promise<OutputMap> {
   timeCase('window-out-of-range', p => { p.params[0].default = '0001-01'; });
   timeCase('filter-conflict', p => { p.filters = [{id:'date-filter',type:'timeRange'}]; p.dataSources.current.source.query.filterBindings = {'date-filter':{target:'time'}}; });
   outputs.set('page/conformance/time-param-bindings.json', json({cases:timeCases}));
+
+  const inlineCases: Array<{name:string;input:unknown;expected:unknown}>=[];
+  function inlineCase(name:string, change:(p:any)=>void) {
+    const input=structuredClone(fixtures.get('inline-params-page'));
+    change(input);inlineCases.push({name,input,expected:normalizePageDocument(input)});
+  }
+  inlineCase('unfilled-template',()=>{});
+  inlineCase('filled-range',p=>{p.params[0].value='中国区';p.params[1].value={start:'2026-01',end:'2026-06',granularity:'month'};});
+  inlineCase('old-version',p=>{p.schemaVersion='6.4';});
+  inlineCase('optional-query-input',p=>{p.params[0].required=false;});
+  inlineCase('value-default-conflict',p=>{p.params[0].value='中国区';p.params[0].default='全球';});
+  inlineCase('duplicate-values',p=>{p.params[0].multiple=true;p.params[0].value=['中国区','中国区'];});
+  inlineCase('invalid-day',p=>{p.params[1].granularity='date';p.params[1].value={start:'2026-02-29',end:'2026-03-01',granularity:'date'};});
+  inlineCase('reversed-range',p=>{p.params[1].value={start:'2026-06',end:'2026-01',granularity:'month'};});
+  inlineCase('uncontrolled-reference',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].output_metrics=[{param:'region'}];});
+  inlineCase('wrong-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list={param:'report_period'};});
+  inlineCase('extra-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list.extra=1;});
+  inlineCase('mixed-time-endpoints',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end='2026-06';});
+  inlineCase('mixed-binding-model',p=>{p.dataSources.tokens.source.query.paramBindings={region:{target:'dimension',queryField:'other'}};});
+  const anchorReference=(p:any)=>{p.params[1]={id:'report-period',type:'time',granularity:'month',value:'2026-03'};const t=p.dataSources.tokens.source.query.body.dsl_list[0].filter.time;t.start.window={kind:'lastN',unit:'month',n:12};t.end.window={kind:'lastN',unit:'month',n:12};};
+  inlineCase('anchor-window',anchorReference);
+  inlineCase('mismatched-windows',p=>{anchorReference(p);p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end.window.n=6;});
+  outputs.set('page/conformance/inline-params.json',json({cases:inlineCases}));
+
+  const tokensInput=JSON.parse(await readFile(path.join(repoRoot,'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json'),'utf8'));
+  const extractionContext={baseline:'tokens-local-verified-fixture',dimensionIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,{'区域':'region'}]))};
+  const extraction=extractPageParams(tokensInput,extractionContext);
+  if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
+  const selection=extraction.candidates.map(c=>c.id);
+  const selected=applyPageParamSelection(extraction,selection);
+  if(!selected.ok)throw Error(JSON.stringify(selected.issues));
+  const resolved=resolvePageParams(selected.document,selected.originalValues);
+  if(!resolved.ok)throw Error(JSON.stringify(resolved.issues));
+  outputs.set('page/conformance/parameter-extraction.json',json({input:tokensInput,context:extractionContext,candidates:extraction.candidates,selectedIds:selection,template:selected.document,originalValues:selected.originalValues,filled:resolved.document,execution:resolved.resolvedPage}));
 
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {

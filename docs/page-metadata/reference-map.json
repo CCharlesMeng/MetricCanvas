@@ -41,7 +41,9 @@
       "examples": [
         "dimension-params-page",
         "reference-branches-page",
-        "time-params-page"
+        "time-params-page",
+        "inline-params-page",
+        "inline-params-values-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -838,6 +840,8 @@
     }
   },
   "fieldNotes": {
+    "start": "闭区间的规范起点，与声明输入精度一致。",
+    "end": "闭区间的规范终点，不早于起点。",
     "id": "稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。",
     "title": "展示标题；是否必需由此处Schema分支决定，不能推断为空时的行为。",
     "type": "选择所属结构的类型分支。",
@@ -1038,6 +1042,12 @@
     "offset": "完整周期偏移量，按window.unit计数；缺省0，负数表示以前的周期。"
   },
   "enumNotes": {
+    "5.0": "兼容读取的历史主版本。",
+    "5.1": "兼容读取的历史主版本。",
+    "5.2": "兼容读取的历史主版本。",
+    "5.3": "兼容读取的历史主版本。",
+    "5.4": "兼容读取的历史主版本。",
+    "6.5": "参数value、timeRange与查询值位置的原位引用。",
     "6.0": "布局使用layoutForm的兼容旧文档；不能声明layout或6.2参数能力。",
     "6.1": "支持layout的增量布局协议；不能使用6.2维度参数能力。",
     "6.2": "维度单/多值参数及显式初始化绑定；不能使用6.3时间参数。",

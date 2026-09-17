@@ -1,6 +1,34 @@
 # 页面参数：维度与时间的现行方案
 
-本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.4**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
+本文是 MetricCanvas 页面参数的现行说明。当前协议为 **6.5**。先读本节的新文档规则；后续编号章节保留 6.2—6.4 的 `default / paramBindings / URL` 兼容路径和时间窗口说明，不作为新模板的生成方式。
+
+## 6.5：同一页面的无值模板与填值文档
+
+模板和填值页面使用同一 Page Schema。模板的所选参数省略 `value/default`；填值页面只增加 `params[].value`，查询引用、组件、字段与布局保持不变。结构合法不代表输入完整：无值模板可保存，执行前必须补齐必需参数。
+
+| 位置 | 当前规则 |
+|---|---|
+| `params[].required` | 6.5 可省略，等价于 true；旧版本仍要求显式声明 |
+| `params[].value` | 本次实际值，与 default 互斥；显式 suppliedValues 优先，非法显式值失败而不回退 |
+| `dimension` | 单值非空字符串，multiple=true 时为非空、无重复字符串数组 |
+| `timeRange` | 声明 granularity=month/date；value 为同精度的 `{start,end,granularity}` 闭区间，校验真实日历与先后顺序 |
+| DQE 维度 | `filter.dims[].dim_value_list: {param:"region"}`；查询引用必须必填 |
+| DQE 时间 | `filter.time.start/end: {param:"report-period",part:"start"/"end"}`；双端同源，保留 period 与 is_aggregate |
+| 基准期窗口 | `time` 参数的双端引用须携带相同 window，继续支持下文的 period/lastN/yearToDate 等规则 |
+
+只允许上述 DQE 取值位置；原字段 `dim_value_list/is_aggregate` 不改拼写。单查询不得混用原位引用和旧 paramBindings。普通业务数据不参与引用替换。参数 ID 精确匹配，`report-period` 与 `report_period` 不兼容。
+
+独立入口 `resolvePageParams(document, suppliedValues?)` 返回保留引用的填值 `document`、供执行的 `resolvedPage`、`effectiveInputs`，或带 code/path/param/message 的 issues。输入原对象不变；模块不取数、不读 URL/历史、不保存。外部可先填写 value 再调用，也可把值单独传入。timeRange 尚无 URL 编码协议，应走程序通道；普通维度/标量旧 URL 路径保留，已填 value 不被 URL 覆盖。
+
+运行时共用同一物化逻辑，缺值先阻止请求；参数化页面的 query initial 不作为本次数据。关联 initialParam 的维度只初始化筛选，后续清空不复活固定条件；同参数的未绑定查询仍保持本次固定值。已确认输入初始化的筛选不受旧 URL 覆盖。按指定期间返回空结果，不找最近有数据期。
+
+创作期用 `extractPageParams` 读取可信已验真的精确基线；跨源共享需要提供维度身份，无依据时分开。`applyPageParamSelection` 按人工选择提取简单维度与固定区间，保留原值/覆盖摘要，原值回填逐查询等价才成功。复合字面文本必须显式审阅替换。只有覆盖超过半数且多于一个查询的候选默认勾选。所选参数保存无值，预览值及 query initial 不保存。
+
+旧绑定通过 `migrateParamBindings` 显式迁移，窗口不变；不能证明等价的可选查询绑定拒绝迁移。新发布接现有 Java 单次提交路径，queued/unknown 不是发布成功，未知结果不重写。真实提供方仍需单独接入。
+
+完整例子：[无值模板](packages/page/fixtures/contract-valid/inline-params-page.json)、[填值页面](packages/page/fixtures/contract-valid/inline-params-values-page.json)、[Tokens 五查询](packages/page/fixtures/parameter-extraction/tokens-parameter-source.json)。程序交接与调用示例见[外部接入](docs/plan/page-parameter-inlining/external-integration.md)。
+
+## 旧版本兼容路径（以下编号章节）
 
 ## 1. 一句话理解
 
@@ -246,6 +274,6 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 - [时间参数合法夹具](packages/page/fixtures/contract-valid/time-params-page.json)：多查询使用不同窗口。
 - [Schema真源](packages/page/src/schema/)与[时间窗口实现](packages/page/src/time-param.ts)：结构与执行规则的实现依据。
 
-版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.4；5.x只走读取规范化，新文档仍写当前6.x版本。
+版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.5；5.x只走读取规范化，新文档写6.5。
 
-显式日期/月区间参数尚未实现，建议结构另见[时间区间参数提案](docs/plan/time-range-parameters.md)，不属于本文现行协议。
+显式日期/月区间已在6.5实现，以本文首节及生成契约为准；[旧提案](docs/plan/time-range-parameters.md)仅为历史设计资料。

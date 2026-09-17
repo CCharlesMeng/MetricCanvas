@@ -1,14 +1,22 @@
 # @metriccanvas/page
 
 ## .
+ExtractionContext
 Page
 PageDocument
+PageParamExtraction
+ParameterCandidate
+ResolvePageParamsResult
 TypedError
+applyPageParamSelection
 canonicalizeJson
 componentCatalog
+extractPageParams
+migrateParamBindings
 normalizePageDocument
 pageSchema
 parsePage
+resolvePageParams
 supportedVersions
 validate
 versionPolicy
@@ -88,6 +96,7 @@ JsonValue
 KeyValuePanelComponent
 KeyValuePanelItem
 KeyValuePanelProps
+LEGACY_READABLE_PAGE_SCHEMA_VERSIONS
 LineChartComponent
 LineChartProps
 MAX_DETAIL_RECORDS
@@ -125,6 +134,7 @@ PageParseOptions
 PageParseResult
 PageQuery
 PageSection
+ParamResolutionIssue
 PieChartComponent
 PieChartProps
 PivotColumn
@@ -140,6 +150,7 @@ QueryErrorDisposition
 QueryFieldDefinition
 QueryLanguage
 QueryMoneyFieldDefinition
+QueryParamReference
 QueryRecordListFieldDefinition
 QueryRowNormalizationIssue
 QueryRowsNormalizationResult
@@ -160,6 +171,7 @@ RelativeTimeRange
 RelativeTimeUnit
 ReportHeaderComponent
 ReportHeaderProps
+ResolvePageParamsResult
 ResolvedFieldDefinition
 Row
 RowContractIssue
@@ -195,6 +207,7 @@ TextValueReferenceUsage
 TextValueResolution
 TimePointFilterDeclaration
 TimeRangeFilterDeclaration
+TimeRangeParamValue
 TimeRangePrecision
 TimeRangePreset
 TimeRangeValue
@@ -203,6 +216,7 @@ ValueFormatPreset
 VersionPolicy
 WriteFilterAction
 ZeroDenominatorSemantics
+assertNoQueryParamReferences
 barForecastBoundaryIssues
 canonicalizeJson
 capabilityFloorErrors
@@ -237,12 +251,14 @@ isNavigationHref
 isQueryDataSource
 isQueryErrorCode
 isQueryLanguage
+isQueryParamReference
 isRelativeTimeExpression
 isTextValueReference
 isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
 matchesParamDeclaration
+materializePageParams
 navigationErrors
 normalizePageDocument
 normalizeQueryRows
@@ -254,6 +270,8 @@ parsePage
 queryErrorDisposition
 requiredMinorVersion
 resolveDataSourceFields
+resolveInlineQueryParams
+resolvePageParams
 resolveRelativeTime
 resolveTextValues
 rowKinds

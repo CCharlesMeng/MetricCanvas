@@ -5,13 +5,19 @@
     "schemaVersion": {
       "type": "string",
       "enum": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
         "6.0",
         "6.1",
         "6.2",
         "6.3",
-        "6.4"
+        "6.4",
+        "6.5"
       ],
-      "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3 / 6.4"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5"
     },
     "id": {
       "type": "string",
@@ -235,12 +241,24 @@
                   "type": "boolean"
                 }
               ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
             }
           },
           "required": [
             "id",
-            "type",
-            "required"
+            "type"
           ],
           "additionalProperties": false
         },
@@ -280,12 +298,27 @@
                   }
                 }
               ]
+            },
+            "value": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              ]
             }
           },
           "required": [
             "id",
-            "type",
-            "required"
+            "type"
           ],
           "additionalProperties": false
         },
@@ -316,18 +349,77 @@
             },
             "default": {
               "type": "string"
+            },
+            "value": {
+              "type": "string"
             }
           },
           "required": [
             "id",
             "type",
-            "granularity",
-            "required"
+            "granularity"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9][a-z0-9-]*$"
+            },
+            "type": {
+              "type": "string",
+              "const": "timeRange"
+            },
+            "granularity": {
+              "type": "string",
+              "enum": [
+                "month",
+                "date"
+              ]
+            },
+            "required": {
+              "type": "boolean"
+            },
+            "label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "value": {
+              "type": "object",
+              "properties": {
+                "start": {
+                  "type": "string"
+                },
+                "end": {
+                  "type": "string"
+                },
+                "granularity": {
+                  "type": "string",
+                  "enum": [
+                    "month",
+                    "date"
+                  ]
+                }
+              },
+              "required": [
+                "start",
+                "end",
+                "granularity"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "id",
+            "type",
+            "granularity"
           ],
           "additionalProperties": false
         }
       ],
-      "description": "页面参数：打开页面时由 URL 确定、此后不可改变的具名输入"
+      "description": "页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取"
     },
     "dataSource": {
       "anyOf": [
@@ -4783,5 +4875,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.4"
+  "$id": "https://metriccanvas/page/v6.5"
 }

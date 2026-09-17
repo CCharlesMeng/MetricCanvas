@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 4;
+const CURRENT_MINOR = 5;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -38,6 +38,16 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'inline-page-params': {
+    minor: 5,
+    description: '页面参数 value、timeRange 与 DQE 取值位置的受控原位引用',
+    usedAt: (document) => {
+      const raw = record(document);
+      const params = Array.isArray(raw?.params) ? raw.params : [];
+      const paths = params.flatMap((p, i) => record(p)?.type === 'timeRange' || has(record(p), 'value') ? [`/params/${i}`] : []);
+      return [...paths, ...dataSourcePaths(document, d => containsInlineParam(record(record(d.source)?.query)?.body)).map(p => `${p}/source/query/body`)];
+    }
+  },
   'named-to-date-windows': {
     minor: 4, description: '具名年初/月初至报告基准期窗口',
     usedAt: (document) => dataSourcePaths(document, d =>
@@ -529,6 +539,14 @@ function record(value: unknown): Json | undefined {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
     ? (value as Json)
     : undefined;
+}
+
+function containsInlineParam(value: unknown): boolean {
+  if (Array.isArray(value)) return value.some(containsInlineParam);
+  const item = record(value);
+  if (!item) return false;
+  if (typeof item.param === 'string' && Object.keys(item).every(key => ['param', 'part', 'window'].includes(key))) return true;
+  return Object.values(item).some(containsInlineParam);
 }
 
 function has(value: Json | undefined, key: string): boolean {

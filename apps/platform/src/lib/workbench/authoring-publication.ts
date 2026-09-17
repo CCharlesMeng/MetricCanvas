@@ -1,4 +1,4 @@
-import { canonicalizeJson, normalizePageDocument, validate } from '@metriccanvas/page';
+import { canonicalizeJson, normalizePageDocument, validate, resolvePageParams } from '@metriccanvas/page';
 import { loadExecution, type ExecutionBootstrap, type ExecutionPort } from '@metriccanvas/engine';
 import {
   validatePublicationStructure, validateCandidateRelations, validateConfirmationRelations,
@@ -130,7 +130,9 @@ export function createAuthoringPublication(options: {
         const result=await loadExecution({target:{kind:'candidate',ref:candidate.ref},operationId:context().operationId,explicitInputs},options.port.execution,signal);
         requireCurrent();
         const original=normalizePageDocument(candidate.document),rendered=normalizePageDocument(result.document);
-        if(!original.ok||!rendered.ok||!equal(original.document,rendered.document))throw Error('候选预览内容与评审版本不一致。');
+        const expectedPreview = candidate.document.schemaVersion === '6.5' ? resolvePageParams(candidate.document,Object.fromEntries(result.params)) : null;
+        const expectedDocument = expectedPreview?.ok ? normalizePageDocument(expectedPreview.document) : original;
+        if(!original.ok||!rendered.ok||!expectedDocument.ok||expectedPreview && !expectedPreview.ok||!equal(expectedDocument.document,rendered.document))throw Error('候选预览内容与评审版本不一致。');
         if(expected===generation)emit({phase:'review',preview:result,message:'已预览当前候选；请再次确认是否保留具体维度取值。'});
       });
     },

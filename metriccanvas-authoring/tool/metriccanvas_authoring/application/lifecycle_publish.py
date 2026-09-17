@@ -213,11 +213,21 @@ def validate_publication_value(kind, value):
 
 
 def parameter_targets(document, parameter_id):
-    return {(source_id, query['paramBindings'][parameter_id]['queryField'])
+    targets = {(source_id, query['paramBindings'][parameter_id].get('queryField', 'time'))
             for source_id, source in document['dataSources'].items()
             if source['source']['type'] == 'query'
             and (query := source['source']['query']).get('language') == 'dqe'
             and parameter_id in query.get('paramBindings', {})}
+    for source_id, source in document['dataSources'].items():
+        if source['source']['type'] != 'query': continue
+        f = source['source']['query']['body']['dsl_list'][0].get('filter', {})
+        if not isinstance(f, dict): continue
+        for d in f.get('dims', []):
+            if isinstance(d, dict) and isinstance(d.get('dim_value_list'), dict) and d['dim_value_list'].get('param') == parameter_id:
+                targets.add((source_id, d['dim_name']))
+        t = f.get('time', {})
+        if isinstance(t, dict) and isinstance(t.get('start'), dict) and t['start'].get('param') == parameter_id: targets.add((source_id, 'time'))
+    return targets
 
 
 def validate_candidate_parameters(candidate, source=None):
@@ -227,15 +237,20 @@ def validate_candidate_parameters(candidate, source=None):
     verify source.ref and original content integrity before supplying source.
     """
     document = candidate['document']
+    inline = document.get('schemaVersion') == '6.5'
+    if inline:
+        require(not candidate['retainDimensionValues'])
+        require(not any('initial' in ds['source'] for ds in document['dataSources'].values() if ds['source']['type'] == 'query'))
     require(not validate_page_document(document), 'INVALID_PAGE')
     if source is not None:
         require(source['ref'] == candidate['ref']['source'] and source['document']['id'] == source['ref']['pageId'])
         require(not validate_page_document(source['document']), 'INVALID_PAGE')
-        non_dimensions = lambda doc: {p['id']: p for p in doc.get('params', []) if p['type'] != 'dimension'}
+        extracted_types = ('dimension', 'time', 'timeRange') if inline else ('dimension',)
+        non_dimensions = lambda doc: {p['id']: p for p in doc.get('params', []) if p['type'] not in extracted_types}
         require(non_dimensions(document) == non_dimensions(source['document']))
     require(document['id'] == candidate['ref']['source']['pageId'])
     parameters = {p['id']: p for p in document.get('params', [])}
-    dimensions = {key: p for key, p in parameters.items() if p['type'] == 'dimension'}
+    dimensions = {key: p for key, p in parameters.items() if p['type'] == 'dimension' or inline and p['type'] in ('time', 'timeRange')}
     summaries = candidate['parameterSummary']
     ids = [p['parameterId'] for p in summaries]
     require(len(ids) == len(set(ids)))
@@ -259,16 +274,17 @@ def validate_candidate_parameters(candidate, source=None):
         if summary['extractionKind'] is None:
             require(source is not None and source['ref'] == candidate['ref']['source'])
             old = {p['id']: p for p in source['document'].get('params', [])}.get(parameter_id)
-            require(old is not None and old['type'] == 'dimension' and dimensions.get(parameter_id) == old)
+            require(old is not None and dimensions.get(parameter_id) == old)
             require(parameter_targets(source['document'], parameter_id) == set(targets))
         else:
-            require(summary['extractionKind'] in {'dimension-eq', 'dimension-in'} and bool(targets), 'UNSUPPORTED_EXTRACTION')
+            require(summary['extractionKind'] in {'dimension-eq', 'dimension-in', 'time-range'} and bool(targets), 'UNSUPPORTED_EXTRACTION')
             require(candidate['retainDimensionValues'] or summary['valueState'] != 'retained')
-            require(summary['extractionKind'] == ('dimension-in' if dimensions[parameter_id].get('multiple', False) else 'dimension-eq'))
+            require(summary['extractionKind'] == ('time-range' if dimensions[parameter_id]['type'] == 'timeRange' else 'dimension-in' if dimensions[parameter_id].get('multiple', False) else 'dimension-eq'))
         require(len(targets) <= 1 or summary['sharing'] == 'identical-values')
         parameter = dimensions[parameter_id]
-        require(summary['valueType'] == ('string[]' if parameter.get('multiple', False) else 'string'))
-        require(summary['required'] == parameter['required'])
+        require(summary['valueType'] == (parameter['type'] if parameter['type'] in ('time', 'timeRange') else 'string[]' if parameter.get('multiple', False) else 'string'))
+        require(summary['required'] == parameter.get('required', True))
+        if inline: require('value' not in parameter and 'default' not in parameter)
         require(set(targets) == parameter_targets(document, parameter_id))
         if 'default' in parameter:
             require(summary['valueState'] == 'retained' and summary.get('defaultValue') == parameter['default'])

@@ -1,0 +1,1998 @@
+{
+  "cases": [
+    {
+      "name": "unfilled-template",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.5",
+          "id": "inline-params-page",
+          "layout": "report",
+          "params": [
+            {
+              "id": "region",
+              "type": "dimension"
+            },
+            {
+              "id": "report-period",
+              "type": "timeRange",
+              "granularity": "month"
+            }
+          ],
+          "dataSources": {
+            "tokens": {
+              "fields": {
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "tokens"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "tokens"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "sections": [
+            {
+              "id": "overview",
+              "components": [
+                {
+                  "id": "region-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "region"
+                    }
+                  }
+                },
+                {
+                  "id": "period-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "report-period"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "filled-range",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension",
+            "value": "中国区"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month",
+            "value": {
+              "start": "2026-01",
+              "end": "2026-06",
+              "granularity": "month"
+            }
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.5",
+          "id": "inline-params-page",
+          "layout": "report",
+          "params": [
+            {
+              "id": "region",
+              "type": "dimension",
+              "value": "中国区"
+            },
+            {
+              "id": "report-period",
+              "type": "timeRange",
+              "granularity": "month",
+              "value": {
+                "start": "2026-01",
+                "end": "2026-06",
+                "granularity": "month"
+              }
+            }
+          ],
+          "dataSources": {
+            "tokens": {
+              "fields": {
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "tokens"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "tokens"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "sections": [
+            {
+              "id": "overview",
+              "components": [
+                {
+                  "id": "region-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "region"
+                    }
+                  }
+                },
+                {
+                  "id": "period-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "report-period"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "old-version",
+      "input": {
+        "schemaVersion": "6.4",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/1",
+            "message": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用 由 6.5 引入，文档声明的是 6.4"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body",
+            "message": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用 由 6.5 引入，文档声明的是 6.4"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0/required",
+            "message": "旧版本必须显式声明required"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/1/required",
+            "message": "旧版本必须显式声明required"
+          }
+        ]
+      }
+    },
+    {
+      "name": "optional-query-input",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension",
+            "required": false
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
+            "message": "维度原位引用必须引用必需的dimension参数"
+          }
+        ]
+      }
+    },
+    {
+      "name": "value-default-conflict",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension",
+            "value": "中国区",
+            "default": "全球"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0/value",
+            "message": "value 与 default 互斥"
+          }
+        ]
+      }
+    },
+    {
+      "name": "duplicate-values",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension",
+            "multiple": true,
+            "value": [
+              "中国区",
+              "中国区"
+            ]
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/0/value",
+            "message": "实际值不符合参数类型 dimension"
+          }
+        ]
+      }
+    },
+    {
+      "name": "invalid-day",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "date",
+            "value": {
+              "start": "2026-02-29",
+              "end": "2026-03-01",
+              "granularity": "date"
+            }
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
+            "message": "时间引用精度与period不相容"
+          },
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/1/value",
+            "message": "实际值不符合参数类型 timeRange"
+          }
+        ]
+      }
+    },
+    {
+      "name": "reversed-range",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month",
+            "value": {
+              "start": "2026-06",
+              "end": "2026-01",
+              "granularity": "month"
+            }
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/params/1/value",
+            "message": "实际值不符合参数类型 timeRange"
+          }
+        ]
+      }
+    },
+    {
+      "name": "uncontrolled-reference",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        {
+                          "param": "region"
+                        }
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/output_metrics/0",
+            "message": "此DQE位置不允许参数引用"
+          }
+        ]
+      }
+    },
+    {
+      "name": "wrong-reference-key",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "report_period"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
+            "message": "维度引用仅允许 {param:Id}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "extra-reference-key",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region",
+                              "extra": 1
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/dims/0/dim_value_list",
+            "message": "维度引用仅允许 {param:Id}"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mixed-time-endpoints",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": "2026-06"
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
+            "message": "时间原位引用必须成对使用同一参数、相同window和start/end"
+          }
+        ]
+      }
+    },
+    {
+      "name": "mixed-binding-model",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "timeRange",
+            "granularity": "month"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start"
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                },
+                "paramBindings": {
+                  "region": {
+                    "target": "dimension",
+                    "queryField": "other"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query",
+            "message": "同一查询不得混用原位引用和paramBindings"
+          }
+        ]
+      }
+    },
+    {
+      "name": "anchor-window",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "time",
+            "granularity": "month",
+            "value": "2026-03"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start",
+                            "window": {
+                              "kind": "lastN",
+                              "unit": "month",
+                              "n": 12
+                            }
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end",
+                            "window": {
+                              "kind": "lastN",
+                              "unit": "month",
+                              "n": 12
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": true,
+        "document": {
+          "schemaVersion": "6.5",
+          "id": "inline-params-page",
+          "layout": "report",
+          "params": [
+            {
+              "id": "region",
+              "type": "dimension"
+            },
+            {
+              "id": "report-period",
+              "type": "time",
+              "granularity": "month",
+              "value": "2026-03"
+            }
+          ],
+          "dataSources": {
+            "tokens": {
+              "fields": {
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "tokens"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "tokens"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "start": {
+                              "param": "report-period",
+                              "part": "start",
+                              "window": {
+                                "kind": "lastN",
+                                "unit": "month",
+                                "n": 12
+                              }
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end",
+                              "window": {
+                                "kind": "lastN",
+                                "unit": "month",
+                                "n": 12
+                              }
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "sections": [
+            {
+              "id": "overview",
+              "components": [
+                {
+                  "id": "region-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "region"
+                    }
+                  }
+                },
+                {
+                  "id": "period-text",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": {
+                      "param": "report-period"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "errors": []
+      }
+    },
+    {
+      "name": "mismatched-windows",
+      "input": {
+        "schemaVersion": "6.5",
+        "id": "inline-params-page",
+        "layout": "report",
+        "params": [
+          {
+            "id": "region",
+            "type": "dimension"
+          },
+          {
+            "id": "report-period",
+            "type": "time",
+            "granularity": "month",
+            "value": "2026-03"
+          }
+        ],
+        "dataSources": {
+          "tokens": {
+            "fields": {
+              "tokens": {
+                "type": "number",
+                "role": "measure",
+                "queryField": "tokens"
+              }
+            },
+            "source": {
+              "type": "query",
+              "query": {
+                "language": "dqe",
+                "body": {
+                  "dsl_list": [
+                    {
+                      "output_dims": [],
+                      "output_metrics": [
+                        "tokens"
+                      ],
+                      "filter": {
+                        "dims": [
+                          {
+                            "dim_name": "区域",
+                            "dim_value_list": {
+                              "param": "region"
+                            }
+                          }
+                        ],
+                        "time": {
+                          "period": "month",
+                          "is_aggregate": true,
+                          "start": {
+                            "param": "report-period",
+                            "part": "start",
+                            "window": {
+                              "kind": "lastN",
+                              "unit": "month",
+                              "n": 12
+                            }
+                          },
+                          "end": {
+                            "param": "report-period",
+                            "part": "end",
+                            "window": {
+                              "kind": "lastN",
+                              "unit": "month",
+                              "n": 6
+                            }
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "sections": [
+          {
+            "id": "overview",
+            "components": [
+              {
+                "id": "region-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "region"
+                  }
+                }
+              },
+              {
+                "id": "period-text",
+                "type": "text",
+                "layout": {
+                  "span": 12
+                },
+                "props": {
+                  "body": {
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "expected": {
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/dataSources/tokens/source/query/body/dsl_list/0/filter/time",
+            "message": "时间原位引用必须成对使用同一参数、相同window和start/end"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -3,6 +3,7 @@ import type { PageParamDeclaration } from './page-param';
 import type { FilterDeclaration } from './filter';
 import type { DqeQueryDefinition } from './query';
 import { resolveTimeWindow, timeWindowCompatible } from './time-param';
+import { inspectInlineQuery } from './inline-query-params';
 
 /** 结构校验后的参数绑定不变量；不从字段名猜目标，不解释任意表达式。 */
 export function paramBindingErrors(document: unknown): TypedError[] {
@@ -16,6 +17,19 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     const query = source.source.query;
     if (source.source.type !== 'query' || !query) continue;
     const owners = new Map<string, string>();
+    const inline = inspectInlineQuery(query, page.params ?? [], `/dataSources/${pointer(sourceId)}/source/query`);
+    errors.push(...inline.errors);
+    for (const usage of inline.usages) {
+      if (usage.target !== 'dimension' || !usage.queryField) continue;
+      owners.set(usage.queryField, usage.param);
+      const matching = Object.entries(query.filterBindings ?? {}).filter(([, b]) => b.target === 'dimension' && b.queryField === usage.queryField);
+      if (matching.length > 1) error(usage.path, '参数目标不得由多个筛选器控制');
+      for (const [filterId] of matching) {
+        const f = filters.get(filterId);
+        if (f?.type !== 'dimension' || f.initialParam !== usage.param) error(usage.path, '筛选与查询必须引用相同参数');
+        else filterConsumers.add(filterId);
+      }
+    }
     let timeOwner: string | undefined;
     for (const [id, binding] of Object.entries(query.paramBindings ?? {})) {
       const path = `/dataSources/${pointer(sourceId)}/source/query/paramBindings/${pointer(id)}`;

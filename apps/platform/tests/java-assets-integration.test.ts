@@ -6,12 +6,39 @@ import {createSingleSavePort} from '../src/lib/page-assets/single-save';
 import {createAuthoringSync, type DurableAuthoringState} from '../src/lib/workbench/authoring-sync';
 import {createCanvasAuthoringDraft} from '../src/lib/workbench/document-edit';
 import type {PageDocument} from '@metriccanvas/page';
+import {extractPageParams,applyPageParamSelection,canonicalizeJson} from '@metriccanvas/page';
+import tokensSource from '../../../packages/page/fixtures/parameter-extraction/tokens-parameter-source.json';
+import {createAuthoringCoordinator,confirmedPageAssetCapabilities} from '../src/lib/workbench/authoring-coordinator';
 
 const document:PageDocument={schemaVersion:'6.2',id:'test-page',layout:'report',dataSources:{},sections:[{id:'main',components:[{id:'t',type:'text',layout:{span:12},props:{body:'内容'}}]}]};
 const config={dqeEndpoint:'',pageMetadataBaseUrl:'https://java.test/rest/cdi/cdinl2databuilderservice/v1',authToken:'test-token',operatorId:'user',workspaceId:'ws'};
 const receipt={retCode:'CBC.0000',page_id:document.id,page_metadata_id:'resource/1',revision_id:'r2',revision_number:2,is_draft:true,page_metadata_definition:JSON.stringify(document)};
 const asset={resourceId:'resource/1',pageId:document.id};
 afterEach(()=>installRuntimeConfig(null));
+
+it('publishes an extracted 6.5 template through the actual coordinator and single-save Java adapter',async()=>{
+ installRuntimeConfig(config);const writes:any[]=[];
+ const api=createPageAssetsClient({fetchImpl:async(_url,init)=>{
+  if(init?.method==='PUT'){
+   const body=JSON.parse(String(init.body));writes.push(body);
+   return Response.json({...receipt,page_id:tokensSource.id,is_draft:false,page_metadata_definition:body.page_metadata_definition});
+  }
+  return Response.json({...receipt,page_id:tokensSource.id,revision_id:'r1',revision_number:1,page_metadata_definition:JSON.stringify(tokensSource)});
+ }});
+ const coordinator=createAuthoringCoordinator({port:{capabilities:confirmedPageAssetCapabilities,assets:api,getLatest:async()=>api.read({...asset,pageId:tokensSource.id}),getRevision:async()=>api.read({...asset,pageId:tokensSource.id}),saveRevision:async()=>{throw Error('legacy save must not be called');}},identity:()=>({actorId:'user',workspaceId:'ws'})});
+ let stored:DurableAuthoringState|undefined,version=0;
+ coordinator.enableAutoSync({storage:{read:async()=>stored?{version,value:structuredClone(stored)}:null,write:async(_scope,_version,value)=>{stored=structuredClone(value);return ++version;}},port:createSingleSavePort(api)});
+ await coordinator.load(tokensSource.id,{resourceId:asset.resourceId});expect(coordinator.snapshot().error).toBe('');await vi.waitFor(()=>expect(coordinator.snapshot().sync?.protection).toBe('protected'));
+ const baseline=canonicalizeJson({ref:coordinator.requireSynchronizedRef(),scope:coordinator.scope()});
+ const e=extractPageParams(tokensSource,{baseline,dimensionIdentities:Object.fromEntries(Object.keys(tokensSource.dataSources).map(id=>[id,{'区域':'region'}]))});if(!e.ok)throw Error('fixture');
+ const selected=applyPageParamSelection(e,e.candidates.map(c=>c.id));if(!selected.ok)throw Error('fixture');
+ await expect(coordinator.publishTemplate(selected.document,'stale',['region','report-period'])).rejects.toThrow('来源');expect(writes).toHaveLength(0);
+ await coordinator.publishTemplate(selected.document,baseline,['region','report-period']);
+ await vi.waitFor(()=>expect(coordinator.snapshot().sync?.lastSaved?.revision?.isDraft).toBe(false));
+ expect(writes).toHaveLength(1);expect(writes[0].is_draft).toBe(false);
+ expect(writes[0].page_metadata_definition).toEqual(selected.document);
+ await coordinator.retrySync();expect(writes).toHaveLength(1);coordinator.dispose();
+});
 
 describe('Java YAML assets boundary',()=>{
  it('lists distinct resources, encodes direct reads, and needs no DQE configuration',async()=>{

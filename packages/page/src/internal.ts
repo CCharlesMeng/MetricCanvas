@@ -16,6 +16,8 @@ export * from './compute';
 export * from './bar-forecast-boundary';
 export * from './component-catalog';
 export * from './errors';
+export * from './resolve-page-params';
+export { assertNoQueryParamReferences } from './inline-query-params';
 export { pageSchema } from './schema';
 export { compositeCardChildTypes } from './schema/component';
 export {

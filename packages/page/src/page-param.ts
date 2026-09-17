@@ -8,18 +8,21 @@ import { matchesTimeValue, type TimeParamGranularity } from './time-param';
  * 改变的是筛选器,不能改变的是页面参数,换一个取值意味着打开另一个页面实例。
  */
 
-export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time';
-export type PageParamValue = string | number | boolean | string[];
+export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time' | 'timeRange';
+export interface TimeRangeParamValue { start: string; end: string; granularity: TimeParamGranularity; }
+export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
 
 export interface PageParamDeclaration {
   id: string;
   type: PageParamType;
-  required: boolean;
+  required?: boolean;
   /** 仅维度参数支持多值；缺省单值。 */
   multiple?: boolean;
   granularity?: TimeParamGranularity;
   label?: string;
-  default?: PageParamValue;
+  default?: Exclude<PageParamValue, TimeRangeParamValue>;
+  /** Filled inputs are persisted only on an instantiated page, never on a template. */
+  value?: PageParamValue;
 }
 
 /**
@@ -74,6 +77,7 @@ export function formatSuitsParamType(
   format: ValueFormatPreset,
   type: PageParamType
 ): boolean {
+  if (type === 'timeRange') return false;
   if (NUMERIC_FORMATS.has(format)) return type === 'number';
   if (DATE_FORMATS.has(format)) return type === 'string';
   return true;
@@ -135,6 +139,7 @@ export function pageParamErrors(
 
   declarations.forEach((declaration, index) => {
     const path = `/params/${index}`;
+    if ((document as {schemaVersion?:string}).schemaVersion !== '6.5' && declaration.required === undefined) errors.push(schemaError(`${path}/required`, '旧版本必须显式声明required'));
     if (byId.has(declaration.id)) {
       errors.push(schemaError(`${path}/id`, `页面参数 id 重复:${declaration.id}`));
     }
@@ -149,16 +154,36 @@ export function pageParamErrors(
         )
       );
     }
+    if (declaration.default !== undefined && declaration.value !== undefined) {
+      errors.push(schemaError(`${path}/value`, 'value 与 default 互斥'));
+    }
     if (declaration.default !== undefined && !matchesParamDeclaration(declaration.default, declaration)) {
       errors.push(
         schemaError(`${path}/default`, `默认值不符合参数类型 ${declaration.type}`)
       );
     }
+    if (declaration.value !== undefined && !matchesParamDeclaration(declaration.value, declaration)) {
+      errors.push(schemaError(`${path}/value`, `实际值不符合参数类型 ${declaration.type}`));
+    }
   });
 
   const consumed = new Set<string>();
-  const raw = document as { dataSources?: Record<string, {source?: {query?: {paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
+  const raw = document as { dataSources?: Record<string, {source?: {query?: {paramBindings?: Record<string, unknown>; body?: { dsl_list?: Array<{ filter?: unknown }> }}}}>; filters?: Array<{initialParam?: string}> };
   for (const source of Object.values(raw.dataSources ?? {})) for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
+  for (const source of Object.values(raw.dataSources ?? {})) {
+    const filter = source.source?.query?.body?.dsl_list?.[0]?.filter;
+    if (!filter || typeof filter !== 'object' || Array.isArray(filter)) continue;
+    const node = filter as Record<string, unknown>;
+    if (Array.isArray(node.dims)) for (const dim of node.dims) {
+      const reference = dim && typeof dim === 'object' && !Array.isArray(dim) ? (dim as Record<string, unknown>).dim_value_list : undefined;
+      if (isInlineReference(reference)) consumed.add(reference.param);
+    }
+    const time = node.time;
+    if (time && typeof time === 'object' && !Array.isArray(time)) for (const part of ['start', 'end']) {
+      const reference = (time as Record<string, unknown>)[part];
+      if (isInlineReference(reference)) consumed.add(reference.param);
+    }
+  }
   for (const filter of raw.filters ?? []) if (filter.initialParam) consumed.add(filter.initialParam);
   function navigationConsumers(value: unknown): void {
     if (!value || typeof value !== 'object') return;
@@ -200,6 +225,14 @@ export function pageParamErrors(
 
 export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
   if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
+  if (declaration.type === 'timeRange') {
+    return typeof value === 'object' && value !== null && !Array.isArray(value) &&
+      Object.keys(value).length === 3 && Object.keys(value).every(k => ['start','end','granularity'].includes(k)) &&
+      (value as TimeRangeParamValue).granularity === declaration.granularity &&
+      matchesTimeValue((value as TimeRangeParamValue).start, declaration.granularity) &&
+      matchesTimeValue((value as TimeRangeParamValue).end, declaration.granularity) &&
+      (value as TimeRangeParamValue).start <= (value as TimeRangeParamValue).end;
+  }
   if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
   return declaration.multiple
     ? Array.isArray(value) && value.length > 0 && value.every(item => typeof item === 'string' && item.length > 0) && new Set(value).size === value.length
@@ -212,4 +245,9 @@ function schemaError(path: string, message: string): TypedError {
 
 function escapePointer(segment: string): string {
   return segment.replaceAll('~', '~0').replaceAll('/', '~1');
+}
+
+function isInlineReference(value: unknown): value is { param: string } {
+  return !!value && typeof value === 'object' && !Array.isArray(value) &&
+    typeof (value as { param?: unknown }).param === 'string';
 }

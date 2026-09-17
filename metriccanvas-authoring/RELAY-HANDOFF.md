@@ -14,6 +14,8 @@
 
 ## 0. 先看五个阻断事实
 
+6.5 参数模板交接采用 TS 确定性程序与 Python ParameterProgram 接缝，完整页面/候选原值留在程序通道；Relay 只编排创作期、展示安全摘要和引导人工确认。它不是新增 MCP 工具，也不接管外部召回及临时渲染。接线、版本、错误和完整例子见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)；现有发布强协议不得代替当前 Java 单次写入。
+
 > [!WARNING]
 > `Page Artifact Adapter` 未安装前，不得向真实模型开放
 > `METRICCANVAS_TOOL_SURFACE=relay`。当前 Relay 会把 MCP 完整结果送回模型，
