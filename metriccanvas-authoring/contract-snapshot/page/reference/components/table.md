@@ -9,7 +9,7 @@ columns区分普通字段列和kind:group递归列，分组列children保持层�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.5。结构真源为本册[schema.json](../schema.json)，SHA256 `6ef401964cd74ad2805a8257e75f43ae5cb6b20f3f3479bb2ad49b481ed3ba60`。字段表自动生成；可选不等于有默认值。
+页面协议 6.5。结构真源为本册[schema.json](../schema.json)，SHA256 `74d191638111da2be8353b210093f832ed2babed21b3e93cacd8a41b996f17c0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -268,6 +268,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "million-formats-page",
         "compute-page",
         "reference-branches-page"
       ],
@@ -1047,7 +1048,7 @@
     "5.2": "历史5.2文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.3": "历史5.3文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
     "5.4": "历史5.4文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
-    "6.5": "6.x唯一支持版本；参数value、timeRange与查询值位置的原位引用。",
+    "6.5": "6.x唯一支持版本；参数value、timeRange与查询值位置的原位引用。 支持compact-million-0/1/2按百万显示。",
     "6.0": "布局使用layoutForm的兼容旧文档；不能声明layout或6.2参数能力。",
     "6.1": "支持layout的增量布局协议；不能使用6.2维度参数能力。",
     "6.2": "维度单/多值参数及显式初始化绑定；不能使用6.3时间参数。",
@@ -1160,7 +1161,10 @@
     "monthToDate": "自然月起点至绑定参数的报告基准期，不读取系统今天（6.4）。",
     "toDate": "兼容6.3的旧写法，新文档优先使用yearToDate或monthToDate。",
     "6.3": "增加确定性日期/月参数与查询时间窗口绑定。",
-    "6.4": "当前作者写出版本，新增yearToDate和monthToDate具名窗口，终点为报告基准期。"
+    "6.4": "当前作者写出版本，新增yearToDate和monthToDate具名窗口，终点为报告基准期。",
+    "compact-million-0": "按百万缩放，0位小数，附加百万后缀（6.5）。",
+    "compact-million-1": "按百万缩放，1位小数，附加百万后缀（6.5）。",
+    "compact-million-2": "按百万缩放，2位小数，附加百万后缀（6.5）。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

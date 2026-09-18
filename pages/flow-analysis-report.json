@@ -25,7 +25,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年累计",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "annual-total"
         },
@@ -42,7 +42,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "本月",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "current-month"
         },
@@ -59,7 +59,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年度推演",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "annual-projection"
         },
@@ -202,7 +202,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "Core流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "core-actual"
         },
@@ -211,7 +211,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "云通信流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "communication-actual"
         },
@@ -220,7 +220,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "Core流水(预测)",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "core-forecast"
         },
@@ -229,7 +229,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "云通信流水(预测)",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "communication-forecast"
         }
@@ -389,7 +389,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "稳定流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "stable-actual"
         },
@@ -398,7 +398,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "一次性流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "one-off-actual"
         },
@@ -407,7 +407,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "稳定流水(预测)",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "stable-forecast"
         },
@@ -416,7 +416,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "一次性流水(预测)",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "nullable": true,
           "queryField": "one-off-forecast"
         }
@@ -594,7 +594,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "本月流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "amount"
         },
         "change": {
@@ -769,7 +769,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "公有云流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "公有云流水"
         },
         "change": {
@@ -784,7 +784,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "公有云流水月变化",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "公有云流水月变化"
         },
         "attribution-details": {
@@ -1019,7 +1019,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "1月流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "january-amount"
         },
         "previous-month-amount": {
@@ -1027,7 +1027,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "上月流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "previous-month-amount"
         },
         "current-month-amount": {
@@ -1035,7 +1035,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "本月流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "current-month-amount"
         }
       },
@@ -1200,7 +1200,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年目标",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "annual-target"
         },
         "flow-amount": {
@@ -1208,7 +1208,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "flow-amount"
         },
         "public-region-amount": {
@@ -1216,7 +1216,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "公网Region流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "public-region-amount"
         },
         "current-month-amount": {
@@ -1224,7 +1224,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "2月",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "current-month-amount"
         },
         "month-over-month": {
@@ -1254,7 +1254,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年推演流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "annual-projection"
         },
         "projection-growth": {
@@ -1262,7 +1262,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "较年初推演增长量",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "projection-growth"
         }
       },
@@ -1395,7 +1395,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年目标",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "annual-target"
         },
         "flow-amount": {
@@ -1403,7 +1403,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "flow-amount"
         },
         "public-region-amount": {
@@ -1411,7 +1411,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "公网Region流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "public-region-amount"
         },
         "current-month-amount": {
@@ -1419,7 +1419,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "2月",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "current-month-amount"
         },
         "month-over-month": {
@@ -1449,7 +1449,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "年推演流水",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "annual-projection"
         },
         "projection-growth": {
@@ -1457,7 +1457,7 @@
           "role": "measure",
           "currency": "CNY",
           "label": "较年初推演增长量",
-          "defaultFormat": "cny-adaptive",
+          "defaultFormat": "compact-million-2",
           "queryField": "projection-growth"
         }
       },
@@ -2254,7 +2254,7 @@
                 "field": {
                   "data": "main",
                   "field": "reason",
-                  "format": "cny-adaptive"
+                  "format": "compact-million-2"
                 },
                 "title": "掉量原因",
                 "width": 410,
@@ -2292,7 +2292,7 @@
                 "field": {
                   "data": "main",
                   "field": "risk-type",
-                  "format": "cny-adaptive"
+                  "format": "compact-million-2"
                 },
                 "title": "风险分类",
                 "width": 180,

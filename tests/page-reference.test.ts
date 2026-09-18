@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { gunzipSync } from 'node:zlib';
 import { describe, expect, it } from 'vitest';
 import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
@@ -20,8 +21,10 @@ describe('页面参考手册生成与分发', () => {
   it('退役参考全部保留在冻结来源', async () => {
     const manifest = JSON.parse(await readFile('docs/plan/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
     expect(manifest.files).toHaveLength(275);
+    // Generated contract paths continue to evolve; verify the original bytes archived from sourceCommit.
+    const frozen = JSON.parse(gunzipSync(await readFile('docs/plan/2026-09-15-unified-authoring-s0-frozen.json.gz')).toString('utf8'));
     for (const entry of manifest.files) {
-      const bytes = await readFile(entry.retainedSource ?? entry.source);
+      const bytes = entry.retainedSource ? await readFile(entry.retainedSource) : Buffer.from(frozen[entry.source], 'utf8');
       expect(createHash('sha256').update(bytes).digest('hex'), entry.reference).toBe(entry.sha256);
     }
   });

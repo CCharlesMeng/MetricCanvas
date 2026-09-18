@@ -1,6 +1,6 @@
 import {expect,test} from '@playwright/test';
 import {readFileSync} from 'node:fs';
-import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../../page/src/index';
+import {extractPageParams,applyPageParamSelection,resolvePageParams} from '@metriccanvas/page';
 
 test('6.5 Tokens: HTTP requests, authoritative values, missing inputs and empty periods',async({page})=>{
   const raw=JSON.parse(readFileSync(new URL('../../../page/fixtures/parameter-extraction/tokens-parameter-source.json',import.meta.url),'utf8'));
