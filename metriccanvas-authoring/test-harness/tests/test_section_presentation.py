@@ -43,7 +43,7 @@ class SectionPresentationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(c['props']['variant'],'compactSummary'); self.assertEqual(c['layout']['span'],4)
             self.assertEqual(len(c['props']['rows']),2)
             for row in c['props']['rows']:
-                self.assertEqual(row['valueField']['format'],'cny-adaptive')
+                self.assertEqual(row['valueField']['format'],'compact-million-2')
                 for change in row['changes']:
                     self.assertEqual(change['field']['format'],'percent-1')
                     self.assertEqual(change['field']['match'],row['valueField']['match'])
