@@ -86,7 +86,7 @@ def normalize_page_document(value: Any) -> dict[str, Any]:
     if issues:
         return {"ok": False, "errors": [issue.as_dict() for issue in issues]}
     document = deepcopy(value)
-    document["schemaVersion"] = "6." + str(max(1, int(document["schemaVersion"].split(".")[1])))
+    document["schemaVersion"] = "6.5"
     document["layout"] = document.get("layout", document.get("layoutForm", "report"))
     document.pop("layoutForm", None)
     return {"ok": True, "document": document, "errors": []}

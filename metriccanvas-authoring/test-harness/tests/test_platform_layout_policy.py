@@ -50,7 +50,7 @@ class PlatformLayoutPolicyTest(unittest.TestCase):
 
     def test_backdrop_tracks_and_toolbar_are_preserved_across_legal_forms(self):
         original = json.loads((ROOT/'packages/page/fixtures/contract-valid/composite-page.json').read_text())
-        original['schemaVersion'] = '6.2';original['dashboardToolbar'] = 'hidden'
+        original['schemaVersion'] = '6.5';original['dashboardToolbar'] = 'hidden'
         original['layout'] = 'dashboard'
         changed = edit(original, {'id':'switch','type':'set_page_layout','layout':'report'})
         self.assertEqual(changed['document'], dict(original, layout='report'))

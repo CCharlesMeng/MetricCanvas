@@ -33,7 +33,7 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 describe('ioc-opportunity-analysis 页面契约', () => {
   it('声明 5.4 看板、紧凑只读页头和七个原型筛选位', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.1');
+    expect(page.schemaVersion).toBe('6.5');
     expect(requiredMinorVersion(document)).toBe(1);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({

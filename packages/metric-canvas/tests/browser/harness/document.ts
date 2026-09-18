@@ -2,7 +2,7 @@ import { normalizePageDocument } from '@metriccanvas/page';
 import type { RuntimeDataGateway } from '@metriccanvas/engine';
 
 export const document = {
-  schemaVersion: '6.1', layout: 'report', id: 'authoring-isolation',
+  schemaVersion: '6.5', layout: 'report', id: 'authoring-isolation',
   dataSources: {
     sales: {
       fields: {

@@ -237,7 +237,16 @@ def validate_candidate_parameters(candidate, source=None):
     verify source.ref and original content integrity before supplying source.
     """
     document = candidate['document']
-    inline = document.get('schemaVersion') == '6.5'
+    def has_inline_reference(ds):
+        query = ds.get('source', {}).get('query', {})
+        for dsl in query.get('body', {}).get('dsl_list', []):
+            f = dsl.get('filter', {})
+            start = f.get('time', {}).get('start')
+            if isinstance(start, dict) and 'param' in start: return True
+            if any(isinstance(d.get('dim_value_list'), dict) and 'param' in d['dim_value_list'] for d in f.get('dims', [])): return True
+        return False
+    inline = any(p.get('type') == 'timeRange' or 'value' in p for p in document.get('params', [])) or any(
+        has_inline_reference(ds) for ds in document.get('dataSources', {}).values())
     if inline:
         require(not candidate['retainDimensionValues'])
         require(not any('initial' in ds['source'] for ds in document['dataSources'].values() if ds['source']['type'] == 'query'))

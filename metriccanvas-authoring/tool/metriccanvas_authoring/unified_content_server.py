@@ -11,14 +11,15 @@ from metriccanvas_authoring.application.compose_page import ComposePageDependenc
 from metriccanvas_authoring.server import configure_data_context, configure_dqe
 
 
-def create_production_unified_content_server(*, current_turns=None):
+def create_production_unified_content_server(*, current_turns=None, candidate_store=None, parameter_dependencies=None):
     try:
         summary_config = json.loads(os.environ.get('METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG', 'null'))
     except ValueError:
         summary_config = None
     return create_unified_content_mcp_server(
         ComposePageDependencies(configure_data_context(), configure_dqe()),
-        current_turns, summary_config=summary_config)
+        current_turns, summary_config=summary_config, candidate_store=candidate_store,
+        parameter_dependencies=parameter_dependencies)
 
 
 def main():

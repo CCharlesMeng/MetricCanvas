@@ -3,7 +3,12 @@ import { expect, it, vi } from 'vitest';
 import { parsePage } from '@metriccanvas/page';
 import { createFilterState, initializePageParams, loadExecution, orchestrate, prepareExecution, type ExecutionRequest } from '../src';
 const fixtures = JSON.parse(readFileSync('docs/plan/authoring-tickets-126/t04-contract-examples.json','utf8'));
-const scenario = (id: string) => structuredClone(fixtures.cases.find((c: any)=>c.id === id).steps[0]);
+// Preserve the historical T04 source; derive the current-version execution fixture explicitly.
+const scenario = (id: string) => {
+  const value = structuredClone(fixtures.cases.find((c: any)=>c.id === id).steps[0]);
+  if (value.response?.document) value.response.document.schemaVersion = '6.5';
+  return value;
+};
 const flush = () => new Promise(r=>setTimeout(r,0));
 for (const id of ['execute-success','execute-partial','execute-empty','execute-missing-source','execute-wrong-conditions','execute-no-access']) {
   it(`消费T04 ${id}`, async () => {
@@ -60,7 +65,7 @@ it.each(['explicit','history','default','permission-fallback'])('权威%s取值�
   // 外部边界固定回执：只验证消费，不在替身实现提取或权限算法。
   const document = dimensionDocument();
   const actual = origin === 'explicit' ? ['EU'] : origin === 'history' ? ['NA'] : origin === 'default' ? ['APAC'] : ['ALLOWED'];
-  const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'operation',explicitInputs:{regions:['FORBIDDEN']}};
+  const request: ExecutionRequest = {target:{kind:'draft',ref:{pageId:document.id,revisionId:'r1',resourceId:'metadata'}},operationId:'operation',explicitInputs:origin === 'explicit' ? {regions:actual} : {}};
   const response = {status:'success',target:request.target,operationId:request.operationId,executionId:'execution',conditionKey:'conditions',document,appliedInputs:{regions:actual,heading:'Actual'},filterValues:{'region-filter':{type:'dimension',dimension:'region',values:actual}},dataSources:Object.fromEntries(Object.keys(document.dataSources).map(id=>[id,{status:'success',rows:[{region:actual[0],gmv:1}],totalCount:1,conditionKey:'conditions'}]))};
   const bootstrap = prepareExecution(request,response);
   const parsed = parsePage(document,{textValues:{values:bootstrap.params}}); if(!parsed.ok) throw new Error('invalid');

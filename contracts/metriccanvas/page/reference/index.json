@@ -1,10 +1,10 @@
 {
   "schemaVersion": "6.5",
-  "schemaSha256": "1bf8de8d30f1440785aac3c696ea6a2f13b14628a986038bbd1eee92dfb34b99",
+  "schemaSha256": "6ef401964cd74ad2805a8257e75f43ae5cb6b20f3f3479bb2ad49b481ed3ba60",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
-      "sha256": "d88ae5158fb922507acc0fc2e07cf4cfa1ea169d507a051d5d378f6251b35f5f"
+      "sha256": "0dec1983e162eec1b8d0477593bc4d996883aa5ab2cd4fb48235307a35c0ef1f"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -124,7 +124,7 @@
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "6ed4e363a90be30db8963d89e728f9ff07b28d4804075e6cc427f3d54685db04"
+      "sha256": "8ad82ab3c3ff2b4a3ed9ffabc7f2de2b4f947712b084b36702c3678c06e0cea2"
     }
   ],
   "modules": {
@@ -1052,18 +1052,13 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\"]",
+      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.5\"]",
       "enum": [
         "5.0",
         "5.1",
         "5.2",
         "5.3",
         "5.4",
-        "6.0",
-        "6.1",
-        "6.2",
-        "6.3",
-        "6.4",
         "6.5"
       ]
     },

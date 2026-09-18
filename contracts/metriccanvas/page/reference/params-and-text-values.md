@@ -24,7 +24,7 @@
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
 
-页面协议 6.5。结构真源为本册[schema.json](schema.json)，SHA256 `1bf8de8d30f1440785aac3c696ea6a2f13b14628a986038bbd1eee92dfb34b99`。字段表自动生成；可选不等于有默认值。
+页面协议 6.5。结构真源为本册[schema.json](schema.json)，SHA256 `6ef401964cd74ad2805a8257e75f43ae5cb6b20f3f3479bb2ad49b481ed3ba60`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

@@ -88,7 +88,7 @@ class DeploymentTest(unittest.IsolatedAsyncioTestCase):
             turns, candidates = Turns(mode='new'), MemoryCandidates()
             async with Client(create_unified_content_mcp_server(deployed.dependencies, turns, candidate_store=candidates)) as client:
                 self.assertEqual({t.name for t in await client.list_tools()},
-                    {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'})
+                    {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page', 'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'})
                 discovery = (await client.call_tool('discover_data_context', {'context_ref': 'current-context', 'query': 'Tokens'})).structured_content
                 self.assertTrue(discovery['ok'], discovery)
                 stale = (await client.call_tool('compose_page', {'context_ref': 'current-context',

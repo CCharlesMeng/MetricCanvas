@@ -4,7 +4,7 @@ import { pageListEntry } from '../src/internal';
 
 function page(): Page {
   return {
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'inventory-overview',
     meta: { description: '库存经营看板' },
     dataSources: {},

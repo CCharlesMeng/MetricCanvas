@@ -27,7 +27,7 @@ test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都�
   await expect(page.locator('.runtime-view')).toBeVisible();
   await page.evaluate(() => {
     window.runtime.update({
-      document:{schemaVersion:'6.0',id:'links',params:[{id:'month',type:'string',required:true}],filters:[{id:'region',type:'dimension',dimension:'region',default:['SH','BJ']}],dataSources:{},sections:[{id:'main',components:[{id:'links',type:'text',layout:{span:12},props:{links:[
+      document:{schemaVersion:'6.5',id:'links',params:[{id:'month',type:'string',required:true}],filters:[{id:'region',type:'dimension',dimension:'region',default:['SH','BJ']}],dataSources:{},sections:[{id:'main',components:[{id:'links',type:'text',layout:{span:12},props:{links:[
         {label:'相对',href:'ioc-project-detail?tab=sales#history',query:{mtime:{source:'param',id:'month'},region:{source:'filter',id:'region'}}},
         {label:'绝对',href:location.origin+'/pages/ioc-opportunity-list?tab=one#list'},
         {label:'缺值',href:'/pages/ioc-project-detail',query:{region:{source:'filter',id:'empty'}}}
@@ -37,7 +37,7 @@ test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都�
   // 源引用必须合法；缺值与未声明是两件事。修正声明后测试未选择值。
   await expect(page.locator('.runtime-view')).toContainText('未声明的筛选器:empty');
   await page.evaluate(() => {
-    window.runtime.update({document:{schemaVersion:'6.0',id:'links',params:[{id:'month',type:'string',required:true}],filters:[{id:'region',type:'dimension',dimension:'region',default:['SH','BJ']},{id:'empty',type:'dimension',dimension:'region'}],dataSources:{},sections:[{id:'main',components:[{id:'links',type:'text',layout:{span:12},props:{links:[
+    window.runtime.update({document:{schemaVersion:'6.5',id:'links',params:[{id:'month',type:'string',required:true}],filters:[{id:'region',type:'dimension',dimension:'region',default:['SH','BJ']},{id:'empty',type:'dimension',dimension:'region'}],dataSources:{},sections:[{id:'main',components:[{id:'links',type:'text',layout:{span:12},props:{links:[
       {label:'相对',href:'ioc-project-detail?tab=sales#history',query:{mtime:{source:'param',id:'month'},region:{source:'filter',id:'region'}}},
       {label:'绝对',href:location.origin+'/pages/ioc-opportunity-list?tab=one#list'},
       {label:'缺值',href:'/pages/ioc-project-detail',query:{region:{source:'filter',id:'empty'}}}
@@ -60,7 +60,7 @@ test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都�
 test('图表直接点击执行默认导航，不依赖宿主回调', async ({page}) => {
   await page.goto('/pages/ioc-project-overview');
   await expect(page.locator('.runtime-view')).toBeVisible();
-  await page.evaluate(() => window.runtime.update({document:{schemaVersion:'6.0',id:'chart-link',dataSources:{values:{fields:{category:{type:'string',role:'dimension'},amount:{type:'number',role:'measure'}},source:{type:'inline',rows:[{category:'A001',amount:10}]}}},sections:[{id:'main',components:[{id:'chart',type:'barChart',layout:{span:12},data:{main:'values'},props:{categoryField:'category',series:[{field:'amount',label:'金额'}],actions:[{on:'click',navigate:{href:'/pages/ioc-project-detail',query:{'opportunity-code':{source:'row',field:'category'}}}}]}}]}]}}));
+  await page.evaluate(() => window.runtime.update({document:{schemaVersion:'6.5',id:'chart-link',dataSources:{values:{fields:{category:{type:'string',role:'dimension'},amount:{type:'number',role:'measure'}},source:{type:'inline',rows:[{category:'A001',amount:10}]}}},sections:[{id:'main',components:[{id:'chart',type:'barChart',layout:{span:12},data:{main:'values'},props:{categoryField:'category',series:[{field:'amount',label:'金额'}],actions:[{on:'click',navigate:{href:'/pages/ioc-project-detail',query:{'opportunity-code':{source:'row',field:'category'}}}}]}}]}]}}));
   const chart=page.locator('canvas').first();
   await expect(chart).toBeVisible();
   const box=await chart.boundingBox();
@@ -72,7 +72,7 @@ test('宿主可选接管，同文档更换初始参数重新初始化，省略�
   await page.goto('/pages/ioc-project-overview');
   await expect(page.locator('.runtime-view')).toBeVisible();
   await page.evaluate(() => {
-    window.pageDocument = { schemaVersion: '6.0', id: 'same-page', params: [{ id: 'code', type: 'string', required: true }], dataSources: {}, sections: [{ id: 'main', components: [{ id: 'link', type: 'text', layout: { span: 12 }, props: { body: { param: 'code' }, links: [{ label: '更换参数', href: '?code=B#next', query: { previous: { source: 'param', id: 'code' } } }] } }] }] };
+    window.pageDocument = { schemaVersion: '6.5', id: 'same-page', params: [{ id: 'code', type: 'string', required: true }], dataSources: {}, sections: [{ id: 'main', components: [{ id: 'link', type: 'text', layout: { span: 12 }, props: { body: { param: 'code' }, links: [{ label: '更换参数', href: '?code=B#next', query: { previous: { source: 'param', id: 'code' } } }] } }] }] };
     window.runtime.update({ document: window.pageDocument, initialSearch: 'code=A', navigation: {
       navigate(target) {
         const url = new URL(target.href, document.baseURI);

@@ -10,7 +10,7 @@ const config = {
   operatorId: 'operator-1',
   workspaceId: 'ws-1'
 };
-const document = { id: 'report', schemaVersion: '6.0', title: '报告' };
+const document = { id: 'report', schemaVersion: '6.5', title: '报告' };
 const providerRevision = {
   retCode: 'CBC.0000',
   retDesc: '',
@@ -265,7 +265,7 @@ it.each([
 
 it('keeps a mismatched HTTP success unknown and prevents resubmission through the workbench', async () => {
   installRuntimeConfig(config);
-  const page = { schemaVersion: '6.1', layout: 'report', id: 'report', dataSources: {}, sections: [
+  const page = { schemaVersion: '6.5', layout: 'report', id: 'report', dataSources: {}, sections: [
     { id: 's', title: 's', container: 'panel', components: [
       { id: 't', type: 'text', layout: { span: 12 }, props: { title: '标题', body: '正文' } }
     ] }

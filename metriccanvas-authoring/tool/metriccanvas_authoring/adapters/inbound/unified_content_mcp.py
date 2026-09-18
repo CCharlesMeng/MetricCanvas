@@ -5,7 +5,8 @@ from dataclasses import replace
 
 from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
-from pydantic import Field, WithJsonSchema
+from pydantic import Field, WithJsonSchema, BaseModel, ConfigDict
+from metriccanvas_authoring.application.page_parameters import PageParameters, parameter_summary
 
 from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server, RESULT_SCHEMA
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
@@ -22,9 +23,18 @@ from metriccanvas_authoring.application.unified_composition import compose_unifi
 UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema(UNIFIED_EDIT_SCHEMA)]
 CompositionRequest = Annotated[dict[str, Any], WithJsonSchema(COMPOSITION_SCHEMA)]
 
-def create_unified_content_mcp_server(dependencies, current_turns=None, *, summary_config=None, candidate_store=None):
+class ParameterTextChoice(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    slot_id: Annotated[str, Field(min_length=1, max_length=128)]
+    kind: Literal['parameter', 'literal']
+    candidate_id: Annotated[str, Field(min_length=1, max_length=128)] | None = None
+    text: Annotated[str, Field(max_length=4096)] | None = None
+
+
+def create_unified_content_mcp_server(dependencies, current_turns=None, *, summary_config=None, candidate_store=None, parameter_dependencies=None):
     gate = AuthoringTurnGate(current_turns)
     candidates = AuthoringCandidates(candidate_store)
+    parameters = PageParameters(gate, candidates, parameter_dependencies)
     mcp = FastMCP('metriccanvas-platform-content', instructions=(
         'All tools require the current trusted context_ref. No file baseline tokens are accepted. '
         'read_page_context exposes bounded configuration; explicit target_component_id takes precedence over selection. '
@@ -133,6 +143,9 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
                                           use_selection=use_selection, offset=offset, limit=limit, cursor=cursor)
             result.update(view='root' if record is None else 'candidate', candidateRef=candidate_ref,
                           candidateVersion=record['candidateVersion'] if record else None)
+            declarations = parameter_summary(view.baseline.document) if view.baseline else []
+            result['parameters'] = declarations[:100]
+            result['parametersOmitted'] = max(0, len(declarations) - 100)
             if record is not None: result['documentSha256'] = record['documentSha256']
             if result['nextCursor'] is not None: result['nextCursor'] = cursor_scope + result['nextCursor']
             await gate.unchanged(prepared)
@@ -167,5 +180,46 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
         """Apply controlled operations to the complete trusted current baseline, without saving."""
         return await invoke('edit_page', context_ref, {'request': request}, write=True,
                             mode=None if candidate_ref is not None else 'existing', candidate_ref=candidate_ref)
+
+    async def parameter_call(operation):
+        try:
+            output = await operation
+            return ToolResult(content=output['modelSummary'], structured_content=output)
+        except ContentBaselineError as error:
+            return failure(error)
+
+    @mcp.tool(output_schema=RESULT_SCHEMA)
+    async def extract_page_parameters(context_ref: str, candidate_ref: str | None = None) -> ToolResult:
+        """Extract choices from a trusted DQE-verified page; no execution or asset save.
+
+        Baseline and dimension identities come from the provider, not model input.
+        Returned choice IDs differ from page parameter IDs. Values are omitted.
+        """
+        return await parameter_call(parameters.extract(context_ref, candidate_ref))
+
+    @mcp.tool(output_schema=RESULT_SCHEMA)
+    async def apply_page_parameter_selection(context_ref: str, extraction_ref: str,
+            selected_ids: Annotated[list[str], Field(max_length=100)],
+            text_choices: Annotated[list[ParameterTextChoice], Field(max_length=200)] = []) -> ToolResult:
+        """Build an unfilled template candidate from selected choice IDs and text slots.
+
+        A parameter choice has candidate_id only; a literal choice has text only.
+        This never confirms or publishes. Source changes invalidate extraction.
+        """
+        choices = [c.model_dump(exclude_none=True) for c in text_choices]
+        if any((c['kind'] == 'parameter' and set(c) != {'slot_id', 'kind', 'candidate_id'}) or
+               (c['kind'] == 'literal' and set(c) != {'slot_id', 'kind', 'text'}) for c in choices):
+            return failure(ContentBaselineError('PARAMETER_TEXT_CHOICE_INVALID'))
+        return await parameter_call(parameters.apply(context_ref, extraction_ref, selected_ids, choices))
+
+    @mcp.tool(output_schema=RESULT_SCHEMA)
+    async def resolve_page_parameters(context_ref: str, values: dict[str, Any],
+                                      candidate_ref: str | None = None) -> ToolResult:
+        """Fill a trusted page with canonical typed inputs; return a temporary instance.
+
+        No DQE execution or save. Missing/invalid input fails, never falls back.
+        The host consumes instance_ref through the trusted program channel.
+        """
+        return await parameter_call(parameters.resolve(context_ref, values, candidate_ref))
 
     return mcp

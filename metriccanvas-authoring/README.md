@@ -121,7 +121,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## Platform 创建与修改 Skill、布局基线
 
-Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md 与按需参考；安装完整目录即可引用闭合。S2统一工具需求为 metriccanvas-platform-content 的五个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。部署须注入可信 current-turn 端口并核实 list_tools、摘要/完整产物分流及 latest 保证，缺能力明确不可用。真实 Relay 路由和 latest 提供方仍需实证。
+Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md、workflows/parameters.md 与按需参考；安装完整目录即可引用闭合。统一服务 metriccanvas-platform-content 有八个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。三个参数工具为 `extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`。参数能力须注入 `ParameterDependencies`（程序、持久记录、提取验真提供方），缺能力明确不可用。部署须核实可信 current-turn、摘要/完整产物分流、临时实例只读交付及 latest 保证；真实 Relay 路由和提供方仍需实证。见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
 
 Bundle registry 的 referenceProjection 声明生成器所有权：普通问数仅 references/page-metadata 为生成子树，统一作者使用 none，生成器不覆盖任何作者参考。完整产品 Schema、正反例仍保留在 contract-snapshot；旧共享文本的基线副本和哈希见 docs/plan 的 S0 记录，不参与部署。参考注入/文件补读方式按统一 Skill 的 references/tools.md 声明。
 

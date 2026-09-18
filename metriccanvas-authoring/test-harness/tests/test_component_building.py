@@ -36,7 +36,7 @@ class ComponentBuildingConformanceTest(unittest.TestCase):
                         self.assertEqual(built["props"], case["expectedProps"])
                         for layout in ("report", "dashboard"):
                             page = {
-                                "schemaVersion": "6.1", "layout": layout,
+                                "schemaVersion": "6.5", "layout": layout,
                                 "id": "component-building",
                                 "dataSources": {"result": {
                                     "fields": {

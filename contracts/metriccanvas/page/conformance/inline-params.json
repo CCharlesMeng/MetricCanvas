@@ -513,23 +513,8 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/1",
-            "message": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用 由 6.5 引入，文档声明的是 6.4"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/tokens/source/query/body",
-            "message": "页面参数 value、timeRange 与 DQE 取值位置的受控原位引用 由 6.5 引入，文档声明的是 6.4"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/params/0/required",
-            "message": "旧版本必须显式声明required"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/params/1/required",
-            "message": "旧版本必须显式声明required"
+            "path": "/schemaVersion",
+            "message": "不支持的文档格式版本 6.4:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }

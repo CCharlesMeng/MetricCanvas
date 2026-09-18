@@ -1,5 +1,5 @@
 /** Explicit service/confirmation substitute; dev lab dynamically imports this module. */
-import { canonicalizeJson, type PageDocument } from '@metriccanvas/page';
+import { canonicalizeJson, resolvePageParams, type PageDocument } from '@metriccanvas/page';
 import vectors from '../../../../../metriccanvas-authoring/contracts/authored/publication-conformance.json';
 import { candidateReviewPayload, type Candidate, type Confirmation, type LookupOutcome, type MutationRequest } from '../../../../../metriccanvas-authoring/contracts/authored/publication-contract';
 import type { HumanConfirmationPort, PublicationPort } from './authoring-publication';
@@ -49,8 +49,10 @@ export function createPublicationFixture(){
    const declarations=candidate.document.params as {id:string;required:boolean;default?:unknown}[];
    if(declarations.some(p=>p.required&&req.explicitInputs[p.id]===undefined&&p.default===undefined))return{status:'rejected',code:'EXECUTION_REJECTED'};
    const appliedInputs=Object.fromEntries(declarations.filter(p=>req.explicitInputs[p.id]!==undefined||p.default!==undefined).map(p=>[p.id,req.explicitInputs[p.id]??p.default]));
+   const resolved=resolvePageParams(candidate.document,appliedInputs);
+   if(!resolved.ok)return{status:'rejected',code:'EXECUTION_REJECTED'};
    const sources=Object.entries(candidate.document.dataSources as Record<string,any>).filter(([,ds])=>ds.source.type==='query');
-   return{status:'success',target:clone(req.target),operationId:req.operationId,executionId:'fixture-execution',conditionKey:'fixture-condition',document:clone(candidate.document),appliedInputs,
+   return{status:'success',target:clone(req.target),operationId:req.operationId,executionId:'fixture-execution',conditionKey:'fixture-condition',document:resolved.document,appliedInputs,
     filterValues:{'region-filter':{type:'dimension',dimension:'region',values:appliedInputs.regions??[]}},dataSources:Object.fromEntries(sources.map(([id])=>[id,{status:'success',rows:[],totalCount:0,conditionKey:'fixture-condition'}]))};
   }}
  };

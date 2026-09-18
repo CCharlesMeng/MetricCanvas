@@ -14,7 +14,7 @@ export function createApplyPageFixture(target: EventTarget) {
     return {
       pageId, resourceId: 'mock-resource', revisionId: `mock-r${version}`, revisionNumber: version,
       baseRevisionId: null, contentHash: '', dataContextVersion: null, createdBy: 'mock', createdAt: '',
-      document: { schemaVersion: '6.1', layout: 'report', id: pageId, dataSources: {},
+      document: { schemaVersion: '6.5', layout: 'report', id: pageId, dataSources: {},
         sections: [{ id: 'main', title: '确认结果', container: 'panel', components: [
           { id: 'summary', type: 'text', layout: { span: 12 }, props: { title: `模拟页面第 ${version} 版`, body: '确认卡片后，工作台重新读取当前页面。此内容使用 inline 场景，不请求业务数据。' } }
         ] }] }

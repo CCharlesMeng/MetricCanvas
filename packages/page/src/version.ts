@@ -5,14 +5,8 @@ import { walkDocumentComponents } from './component-walk';
 /**
  * 页面协议版本策略(ADR-0051):`schemaVersion` 是 `MAJOR.MINOR`。
  *
- * 次版本只承载纯增量变更(新增可选字段、判别联合新增分支、封闭闭集新增
- * 成员、放宽既有约束),因此当前主版本内最新的 schema 是该主版本全部次
- * 版本的超集,单份 schema 即可校验所有次版本。主版本递增用于破坏性变更,
- * 每次都必须写独立 ADR 并论证为什么无法增量表达。
- *
- * 声明的版本是能力下限:下面的能力表记录每个能力由哪个次版本引入,
- * `capabilityFloorErrors` 从文档实际结构推算所需的最低次版本,高于声明
- * 值即报错。没有这条,`schemaVersion` 会退化成谁都可以随便填的字段。
+ * 2026-09-18 用户确认收窄读取策略：6.x 只支持 6.5，5.x 只读例外不变。
+ * 能力表保留协议演进信息，不再表示旧 6.x 版本获得读取支持。
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
@@ -441,14 +435,11 @@ export const versionPolicy: VersionPolicy = {
 };
 
 /**
- * 运行时可读取的版本列表。5.0–5.4 是跨主版本的兼容例外；其余条目为当前
- * 主版本内由低到高的次版本。新文档只能使用 `versionPolicy.current`。
+ * 6.x 只接受当前版本；5.0–5.4 保留为只读输入例外。
+ * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = Array.from(
-    { length: policy.minor + 1 },
-    (_unused, minor) => `${policy.major}.${minor}`
-  );
+  const currentMajor = [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
@@ -462,7 +453,7 @@ export function versionErrors(
   if (version === undefined) return [];
   const parsed = parseVersion(version);
   if (parsed !== undefined && (
-    (parsed.major === policy.major && parsed.minor <= policy.minor) ||
+    version === policy.current ||
     (policy.major === PAGE_SCHEMA_MAJOR && LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.includes(
       version as (typeof LEGACY_READABLE_PAGE_SCHEMA_VERSIONS)[number]
     ))
@@ -474,7 +465,7 @@ export function versionErrors(
       type: 'SCHEMA_ERROR',
       path: '/schemaVersion',
       message:
-        parsed?.major === policy.major
+        parsed?.major === policy.major && parsed.minor > policy.minor
           ? `文档格式版本 ${version} 高于运行时当前次版本 ${policy.current}`
           : `不支持的文档格式版本 ${version}:` +
             `运行时只接受 ${supportedVersions(policy).join(' / ')}，` +

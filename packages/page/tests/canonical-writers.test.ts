@@ -10,10 +10,10 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
       const normalized = normalizePageDocument(raw);
       expect(normalized.ok, name).toBe(true);
       if (name.startsWith('legacy-layout-')) {
-        expect(raw.schemaVersion).toBe('6.0');
+        expect(raw.schemaVersion).toBe('6.5');
         expect(raw).toHaveProperty('layoutForm');
       } else {
-        expect(['6.1', '6.2', '6.3', '6.4', '6.5'], name).toContain(raw.schemaVersion);
+        expect(raw.schemaVersion, name).toBe('6.5');
         expect(raw, name).not.toHaveProperty('layoutForm');
         if (normalized.ok) expect(normalized.document, name).toEqual(raw);
       }
@@ -21,9 +21,9 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
   }
 });
 
-it('48项黄金矩阵保留原始旧输入，包括缺省和双字段', () => {
+it('72项黄金矩阵保留原始版本输入，包括被拒绝的6.0—6.4', () => {
   const matrix = JSON.parse(readFileSync('contracts/metriccanvas/page/conformance/layout-compatibility.json', 'utf8'));
-  expect(matrix.cases).toHaveLength(48);
+  expect(matrix.cases).toHaveLength(72);
   for (const item of matrix.cases) expect(normalizePageDocument(item.input)).toEqual(item.expected);
   const legacy = matrix.cases.filter((item: {input:{schemaVersion:string}}) => item.input.schemaVersion === '6.0');
   expect(legacy).toHaveLength(8);

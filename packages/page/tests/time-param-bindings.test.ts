@@ -30,13 +30,13 @@ it.each(['yearToDate', 'monthToDate'])('%s 从6.4引入且不接受unit', kind =
   raw.dataSources.current.source.query.paramBindings['report-month'].window = {kind};
   expect(validate(raw)).toEqual([]);
   raw.schemaVersion = '6.3';
-  expect(validate(raw).some(e => e.path.endsWith('/paramBindings'))).toBe(true);
-  raw.schemaVersion = '6.4';
+  expect(validate(raw).some(e => e.path === '/schemaVersion')).toBe(true);
+  raw.schemaVersion = '6.5';
   raw.dataSources.current.source.query.paramBindings['report-month'].window.unit = 'year';
   expect(validate(raw).length).toBeGreaterThan(0);
 });
-it('6.3 旧toDate写法保持兼容', () => {
-  const raw = document(); raw.schemaVersion = '6.3';
+it('6.5 保留toDate窗口语义', () => {
+  const raw = document(); raw.schemaVersion = '6.5';
   for (const d of Object.values(raw.dataSources) as any[]) {
     const b = d.source.query.paramBindings['report-month'];
     if (b.window.kind === 'yearToDate' || b.window.kind === 'monthToDate') b.window = {kind:'toDate',unit:b.window.kind === 'yearToDate' ? 'year' : 'month'};

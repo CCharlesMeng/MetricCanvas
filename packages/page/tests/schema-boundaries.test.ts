@@ -38,7 +38,7 @@ interface GroupedPageTestDocument {
 
 function groupedPage(): GroupedPageTestDocument {
   return structuredClone({
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'grouped',
     dataSources: {
       current: {
@@ -194,7 +194,7 @@ describe('当前 page schema 边界行为', () => {
 
   it('筛选器闭集六类与层级、级联有效', () => {
     const base: any = structuredClone(queryDashboard);
-    base.schemaVersion = '6.0';
+    base.schemaVersion = '6.5';
     base.filters = [
       { id: 'flag', type: 'boolean', label: '仅看重点国代' },
       { id: 'month', type: 'timePoint', granularity: 'month', default: '2026-04' },

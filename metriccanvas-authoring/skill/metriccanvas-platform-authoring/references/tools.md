@@ -2,7 +2,7 @@
 
 ## 实际统一工具
 
-服务名 metriccanvas-platform-content，CLI同名；部署用 list_tools 核实五工具。Bundle将统一Skill绑定到受门禁工厂；旧metriccanvas-content只服务兼容消费者，不能注册为统一入口或失败降级。
+服务名 metriccanvas-platform-content，CLI同名；部署用 list_tools 核实八工具。Bundle将统一Skill绑定到受门禁工厂；旧metriccanvas-content只服务兼容消费者，不能注册为统一入口或失败降级。
 
 | 工具 | 输入 | 结果/职责 |
 |---|---|---|
@@ -11,8 +11,11 @@
 | compose_page | context_ref, spec, layout | new上下文的取数装配候选 |
 | create_content_page | context_ref, title, request, layout | new上下文的受控数据/静态组合候选，自动reportHeader |
 | edit_page | context_ref, request, 可选candidate_ref | 根基线或同轮候选上的受控operations及逐项结果 |
+| extract_page_parameters | context_ref, 可选candidate_ref | 提取候选、extraction_ref 与受控文本位置；不返回原值或查询 |
+| apply_page_parameter_selection | context_ref, extraction_ref, selected_ids, text_choices | 无值模板候选；必须人工预览/发布，不自动保存 |
+| resolve_page_parameters | context_ref, values, 可选candidate_ref | instance_ref 与输入状态摘要；不执行、不保存 |
 
-每个调用都核对可信current-turn端口的身份、请求/运行/轮次、页、ref/hash、能力版本和active状态；access=read只能读取/发现，不能生成内容。模型不传page_id、baseline_token或source_token。身份与完整文档不由模型提供，旧引用不能变成新轮次。
+每个调用都核对可信current-turn端口的身份、请求/运行/轮次、页、ref/hash、能力版本和active状态；access=read可读取/发现/提取/解析，不能生成或修改创作候选。模型不传page_id、baseline_token或source_token。身份与完整文档不由模型提供，旧引用不能变成新轮次。参数工具还依赖可信参数程序和过程记录存储，提取/选择需要查询验真与维度身份提供方。
 
 spec为Page Build Spec：question、可选description、dataContextVersion、units；单元为稳定dataSourceId及受治理businessDomain/metrics/groupBy/filters/time/intent，以实际输入Schema为准。歧义先消解；页面JSON、DQE和rows不属于输入。
 
@@ -20,7 +23,7 @@ spec为Page Build Spec：question、可选description、dataContextVersion、uni
 
 ## 加载与通道
 
-安装整个Skill目录。启动注入SKILL.md和本文件、五工具实际Schema及可信contextRef；工作流/布局/错误/例子按入口指示注入，或明确提供真实文件读取能力。完整协议由工具/校验器消费，不要求模型从源码仓加载。
+安装整个Skill目录。启动注入SKILL.md和本文件、八工具实际Schema及可信contextRef；工作流/布局/错误/例子按入口指示注入，或明确提供真实文件读取能力。完整协议由工具/校验器消费，不要求模型从源码仓加载。
 
 程序先锁新人工输入、flush已有输入、同步，再通过明确支持latest的提供方读取并注册本轮完整快照。new由程序分配页面身份和空基线。当前真实提供方未接通时统一工厂返回CURRENT_TURN_UNAVAILABLE；兼容文件token不是补偿路径。
 

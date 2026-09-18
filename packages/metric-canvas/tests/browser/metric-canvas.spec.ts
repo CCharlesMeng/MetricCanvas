@@ -123,7 +123,7 @@ for (const schemaVersion of ['6.0', '6.1']) {
         await expect(page.locator(`${host} [data-component="main/note"]`)).toHaveCSS('grid-column-start', 'span 12');
       }
       const original = JSON.parse(await page.locator('[data-document]').textContent() ?? '{}');
-      expect(original).toMatchObject({ schemaVersion: '6.1', layout });
+      expect(original).toMatchObject({ schemaVersion: '6.5', layout });
       expect(original).not.toHaveProperty('layoutForm');
       await page.locator(cell).getByRole('heading', { name: '说明' }).click();
       const input = page.locator(cell).getByRole('textbox');
@@ -131,7 +131,7 @@ for (const schemaVersion of ['6.0', '6.1']) {
       await input.press('Tab');
       await expect(page.locator('#runtime').getByRole('heading', { name: '布局迁移后的修改' })).toBeVisible();
       const edited = JSON.parse(await page.locator('[data-document]').textContent() ?? '{}');
-      expect(edited).toMatchObject({ schemaVersion: '6.1', layout, dataSources: original.dataSources });
+      expect(edited).toMatchObject({ schemaVersion: '6.5', layout, dataSources: original.dataSources });
       expect(edited).not.toHaveProperty('layoutForm');
     });
   }

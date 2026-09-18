@@ -10,7 +10,7 @@ import {extractPageParams,applyPageParamSelection,canonicalizeJson} from '@metri
 import tokensSource from '../../../packages/page/fixtures/parameter-extraction/tokens-parameter-source.json';
 import {createAuthoringCoordinator,confirmedPageAssetCapabilities} from '../src/lib/workbench/authoring-coordinator';
 
-const document:PageDocument={schemaVersion:'6.2',id:'test-page',layout:'report',dataSources:{},sections:[{id:'main',components:[{id:'t',type:'text',layout:{span:12},props:{body:'内容'}}]}]};
+const document:PageDocument={schemaVersion:'6.5',id:'test-page',layout:'report',dataSources:{},sections:[{id:'main',components:[{id:'t',type:'text',layout:{span:12},props:{body:'内容'}}]}]};
 const config={dqeEndpoint:'',pageMetadataBaseUrl:'https://java.test/rest/cdi/cdinl2databuilderservice/v1',authToken:'test-token',operatorId:'user',workspaceId:'ws'};
 const receipt={retCode:'CBC.0000',page_id:document.id,page_metadata_id:'resource/1',revision_id:'r2',revision_number:2,is_draft:true,page_metadata_definition:JSON.stringify(document)};
 const asset={resourceId:'resource/1',pageId:document.id};

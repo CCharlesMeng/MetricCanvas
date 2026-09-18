@@ -6,7 +6,7 @@ import type { DurableAuthoringState, StableSavePort } from '../../src/lib/workbe
 import type { AuthoringStorage } from '../../src/lib/workbench/authoring-storage';
 import type { PageRevision } from '../../src/lib/page-assets-client';
 
-const document: PageRevision['document'] = { schemaVersion: '6.2', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Saved title', body: 'body' } }] }] };
+const document: PageRevision['document'] = { schemaVersion: '6.5', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Saved title', body: 'body' } }] }] };
 const ref = { pageId: 'p', resourceId: 'resource', revisionId: 'saved-r2' };
 const pending: RecoverySummary = { formatVersion: '1.0', recoveryRef: 'private-recovery', actorId: 'actor', workspaceId: 'workspace', pageId: 'p', operationId: 'private-operation', status: 'unknown', cancelRequested: false, ref: null, previewState: 'not-requested' };
 const saved: RecoverySummary = { ...pending, status: 'saved', ref };

@@ -46,7 +46,7 @@ class PageContractConformanceTest(unittest.TestCase):
         matrix = json.loads(
             (CONTRACT_ROOT / "page/conformance/layout-compatibility.json").read_text()
         )
-        self.assertEqual(len(matrix["cases"]), 48)
+        self.assertEqual(len(matrix["cases"]), 72)
         for index, case in enumerate(matrix["cases"]):
             with self.subTest(case=index):
                 original = deepcopy(case["input"])

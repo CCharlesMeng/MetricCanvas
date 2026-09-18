@@ -8,7 +8,7 @@ from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 
 def interaction_page():
-    document=content_page();document['schemaVersion']='6.2'
+    document=content_page();document['schemaVersion']='6.5'
     fixture=json.loads((Path(__file__).resolve().parents[3]/'packages/page/fixtures/contract-valid/dimension-params-page.json').read_text())
     source=deepcopy(fixture['dataSources']['sales'])
     source['source']['query'].pop('filterBindings',None);source['source']['query'].pop('paramBindings',None)

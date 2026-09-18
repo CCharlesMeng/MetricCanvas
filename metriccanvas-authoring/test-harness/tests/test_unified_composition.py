@@ -28,7 +28,7 @@ class UnifiedCompositionTest(unittest.IsolatedAsyncioTestCase):
     async def test_public_schema_exposes_exact_creation_allowlist(self):
         async with Client(create_unified_content_mcp_server(dependencies(), Turns('new'), candidate_store=MemoryCandidates())) as client:
             tools = {tool.name: tool for tool in await client.list_tools()}
-            self.assertEqual(len(tools), 5)
+            self.assertEqual(len(tools), 8)
             schema = tools['create_content_page'].inputSchema['properties']['request']
             operations = schema['properties']['operations']
             self.assertEqual({op['properties']['type']['const'] for op in operations['items']['oneOf']}, CREATION_OPERATIONS)

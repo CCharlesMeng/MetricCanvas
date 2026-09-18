@@ -45,7 +45,24 @@ node --import tsx packages/page/examples/resolve-page-params.ts
 
 跨语言示例 [parameter-program.ts](../../../packages/page/examples/parameter-program.ts) 接收 stdin JSON，返回 stdout JSON；action=prepare 携带完整 document/context/selectedIds?/textReplacements?，action=resolve 携带 document/suppliedValues?。Python 的 `application.parameter_preparation.prepare_page_parameters` 调用部署方注入的 ParameterProgram，完整 artifact 仅返回程序，relay_summary 仅带基线、候选数量、所选 ID 和待人工确认状态。测试确实启动 Node 子进程，不是另写 Python 提取算法。
 
-该适配并未注册为新增 MCP 工具；现有 compose_page/内容 MCP 的工具权限保持不变。调用方需保存程序产物并分配真实产物引用，按修订和身份绑定人类确认。旧 publish_mcp / PublicationServicePort 为强协议兼容面，不作为当前 Java 缺失 lookup/lease 的替代。
+统一 `metriccanvas-platform-content` 已注册三个独立 MCP 工具：`extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`。它们复用确定性程序，不接受模型传入 baseline、维度身份或完整页面。旧 publish_mcp / PublicationServicePort 为强协议兼容面，不作为当前 Java 缺失 lookup/lease 的替代。
+
+## MCP 部署与工作台临时运行
+
+部署组合入口接收 `parameter_dependencies=ParameterDependencies(...)`，须由宿主注入：
+
+- `program`：`SubprocessParameterProgram`，命令及 cwd 只能来自宿主配置，不接受模型输入。开发环境可运行上述 TS stdin/stdout 示例；生产安装构建后的 `@metriccanvas/page`，驱动调用 `@metriccanvas/page/internal` 的 `runPageParameterProgram`。Python 包不包含 Node 运行时，部署者需锁定两端产物版本。适配器限制输入/输出大小和超时。
+- `store`：`SqliteParameterRecords` 或满足相同契约的持久存储。SQLite 使用宿主配置的绝对路径、私有目录（0700）与私有文件（0600）；存储不可变提取记录和实例记录。默认 TTL 30 分钟，最大 24 小时；到期拒绝消费，宿主负责定期清理、备份与加密。记录绑定当前身份、工作区、轮次、页面及来源，不能跨轮次复用。
+- `verified_context`：实现 `VerifiedParameterContext.verify`，从真实 DQE 验真记录确认精确页面，并返回 `sourceSha256`、baseline、受治理维度身份。hash 或任意 baseline 字符串不是验真证明；提取及应用选择均重新核对。缺提供方时提取明确不可用，不能使用测试替身上线。
+- 既有可信 current-turn 与候选存储：应用选择需写权限；提取和赋值可在只读上下文调用，不授予保存权限。
+
+模型先提取获得 `extraction_ref`、`choice-N` 候选和 `text-N` 槽位，再提交选择。候选 ID 与 Page 的参数 ID 不同；文本选择只接受已返回的槽位，不能提交任意 JSON Pointer。工具摘要不展示原始参数值。
+
+`apply_page_parameter_selection` 返回 `metriccanvas.parameter-template` 信封和同轮 candidate_ref，模板及其后续编辑都被禁止自动保存，必须经过现有人工发布。`resolve_page_parameters` 返回 `metriccanvas.parameter-instance` 信封和 instance_ref，不进入候选存储、不执行 DQE、不保存资产。
+
+工作台宿主提供 `parameterInstancePort`、`parameterContextRef`，通过 `onParameterInstanceReady` 获得临时会话控制器，再调用 `open(instance_ref)`。端口须调用服务端 `PageParameters.read_instance`（或同等可信协议），重新验证授权、轮次、有效期及来源，不能直接信任 Relay 的 JSON。浏览器再核对当前身份、页面、来源及引用，使用 RuntimeView 渲染填值后的 document；来源改变、关闭、到期或迟到返回均使实例失效。它不写 coordinator、不进入保存队列。真实模板召回、Relay 路由和服务端到浏览器的端口桥接由提供方接入，当前仓库测试不构成生产部署证据。
+
+详细信封与存储约束见[参数协议](../../../metriccanvas-authoring/contracts/authored/page-parameters-protocol.md)，模型调用顺序见[参数工作流](../../../metriccanvas-authoring/skill/metriccanvas-platform-authoring/workflows/parameters.md)。
 
 ## E1：提供方仍需完成
 

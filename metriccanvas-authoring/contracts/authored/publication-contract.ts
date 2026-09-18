@@ -147,7 +147,10 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
   if(!context.validatePage(document))return issue('/document','PAGE_INVALID');
   if(document.id!==value.ref.source.pageId)fail('/ref/source/pageId');
   const params=new Map<string,any>((document.params??[]).map((param:any)=>[param.id,param]));
-  const inline=document.schemaVersion==='6.5';
+  const inline=[...params.values()].some(p=>p.type==='timeRange'||own(p,'value'))||Object.values(document.dataSources??{}).some((ds:any)=>{
+    const filter=ds.source?.query?.body?.dsl_list?.[0]?.filter;
+    return filter?.time?.start?.param!==undefined||filter?.dims?.some((d:any)=>d.dim_value_list?.param!==undefined);
+  });
   const dimensions=new Map([...params].filter(([,param])=>param.type==='dimension'||inline&&['time','timeRange'].includes(param.type)));
   if(inline&&(value.retainDimensionValues||Object.values(document.dataSources??{}).some((ds:any)=>ds.source.type==='query'&&own(ds.source,'initial'))))fail('/document');
   const summaries=new Map<string,Value<typeof parameter>>();

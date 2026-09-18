@@ -90,6 +90,17 @@ class SubmissionFixture:
 
 
 class AuthoringSubmissionTest(unittest.IsolatedAsyncioTestCase):
+    async def test_parameter_templates_and_descendants_cannot_auto_save(self):
+        f = await SubmissionFixture.create()
+        template = await f.candidates.put(f.prepared, f.prepared.baseline.document,
+            [{'type': 'parameter_selection', 'requiresHumanConfirmation': True}])
+        child = await f.candidate('edited template', parent=template['candidateRef'])
+        for candidate in (template, child):
+            with self.assertRaisesRegex(LifecycleError, 'TEMPLATE_REQUIRES_HUMAN_PUBLICATION'):
+                await f.finalize(candidate)
+        self.assertEqual(f.service.save_calls, 0)
+        self.assertEqual(f.records.records, {})
+
     async def test_saved_requires_atomic_selection_frozen_payload_and_exact_read(self):
         f = await SubmissionFixture.create()
         candidate = await f.candidate()

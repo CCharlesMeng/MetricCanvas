@@ -52,7 +52,7 @@ try {
   await manual.addInitScript(() => {
     window.__METRICCANVAS__ = { dqeEndpoint: '/fixture-dqe', pageMetadataBaseUrl: '/fixture-assets', authToken: 'fixture', operatorId: 'alice', workspaceId: 'workspace' };
   });
-  let stored = { schemaVersion: '6.0', layoutForm: 'report', id: 'manual-page', dataSources: {}, sections: [{ id: 's', title: '页面', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: '固定内容' } }] }] };
+  let stored = { schemaVersion: '6.5', layoutForm: 'report', id: 'manual-page', dataSources: {}, sections: [{ id: 's', title: '页面', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: '固定内容' } }] }] };
   let revision = 1, writes = 0, fail = false;
   const response = () => ({ retCode: '0', page_metadata_id: 'metadata-7', page_id: 'manual-page', revision_id: `r${revision}`, revision_number: revision, page_metadata_definition: JSON.stringify(stored) });
   await manual.route('**/fixture-assets/user-page-metadata**', async (route) => {

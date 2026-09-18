@@ -12,7 +12,7 @@
 
 ## 1. 两条消费链与三个职责
 
-6.5 参数模板另有可信程序接缝：TS Page 包负责 extract/applySelection/resolve，Python `application.parameter_preparation` 消费完整程序产物并投影安全摘要，工作台经 `parameterSourcePort` 取得最终验真基线后提供选择、预览和单次保存。没有新增模型工具；没有为 Java 补造 lookup/lease。接口、可运行示例与外部缺口见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
+6.5 参数由 TS Page 包负责 extract/applySelection/resolve，Python `application.page_parameters` 管理可信来源、提取记录、选择与临时实例，并通过三个独立 MCP 工具投影安全摘要。工作台保留 `parameterSourcePort` 人工发布通道，新增 `parameterInstancePort` 只读临时运行通道；没有为 Java 补造 lookup/lease。接口、可运行示例与外部缺口见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
 
 | 消费链 | Skill / 服务 | 状态与保存边界 |
 |---|---|---|
@@ -34,7 +34,7 @@ flowchart TD
   UI["工作台：锁新输入 → flush → 同步"] --> L["可信程序：当前资源读取 + 固定修订基线 + 身份"]
   L --> T["authoring_turns：本轮完整基线与门禁"]
   T -->|"context_ref + 有界摘要"| M["模型 + 统一 Skill"]
-  M --> C["统一 MCP 五工具"]
+  M --> C["统一 MCP 八工具"]
   C --> T
   C --> A["Application / Domain：发现、构造、编辑、映射、校验"]
   A --> K["不可变候选存储"]
@@ -49,7 +49,7 @@ flowchart TD
   P -->|"Relay Adapter 交付 binding + draft"| UI
 ```
 
-图中本仓程序、端口与本地替身均有实现；真实身份、Relay 产物分流/回执交接与 Java YAML 行为仍待接入验证；远端幂等查询和历史精确回读不属于本期前置。独立启动统一 CLI 可列出五工具，未注入可信 current-turn 提供方时返回 `CURRENT_TURN_UNAVAILABLE`，不读取旧 token 代替最新页面。
+图中本仓程序、端口与本地替身均有实现；真实身份、Relay 产物分流/回执交接与 Java YAML 行为仍待接入验证；远端幂等查询和历史精确回读不属于本期前置。独立启动统一 CLI 可列出八工具，未注入可信 current-turn 提供方时返回 `CURRENT_TURN_UNAVAILABLE`，不读取旧 token 代替最新页面。
 
 ### 每轮与跨轮
 
@@ -64,7 +64,7 @@ flowchart TD
 
 ## 3. 模型工具与程序接口
 
-五工具的实际作者是 [unified_content_mcp.py](./tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py)，均要求 `context_ref`：
+八工具的实际作者是 [unified_content_mcp.py](./tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py)，均要求 `context_ref`：
 
 | 工具 | 职责 |
 |---|---|
@@ -73,10 +73,13 @@ flowchart TD
 | `compose_page` | 新建上下文中按 Page Build Spec 装配数据候选 |
 | `create_content_page` | 新建上下文中组合数据、静态内容及受控布局操作 |
 | `edit_page` | 在根基线或同轮候选上应用局部操作，支持原子新增数据依赖组 |
+| `extract_page_parameters` | 从可信验真来源提取，保存有时效的提取记录，返回候选与文本槽位摘要 |
+| `apply_page_parameter_selection` | 按受控候选/槽位选择形成无值模板候选，必须人工发布 |
+| `resolve_page_parameters` | 确定性赋值，产生只读临时实例，不执行查询、不保存 |
 
 `compose_page` 与 `create_content_page` 分别保留取数规格装配与显式混合组合能力，不是两个可竞争的 Skill。实际输入 Schema 由工具注册生成；模型不填写 `page_id`、旧 `baseline_token`、完整页面、DQE 或数据行。
 
-完整候选保留在 `structuredContent.artifactEnvelope` 程序通道，只向模型提供 `modelSummary`。生命周期保存、候选最终选择与执行记录核对由可信程序调用；本期发布由工作台明确发起，不作为这五个内容工具的直接写入权限。详见唯一模型侧说明[工具与部署约定](./skill/metriccanvas-platform-authoring/references/tools.md)。
+完整候选保留在 `structuredContent.artifactEnvelope` 程序通道，只向模型提供 `modelSummary`。生命周期保存、候选最终选择与执行记录核对由可信程序调用；本期发布由工作台明确发起，不作为这八个内容工具的直接写入权限。参数模板及其后续编辑不能走普通候选自动保存；临时实例不进入候选存储。详见唯一模型侧说明[工具与部署约定](./skill/metriccanvas-platform-authoring/references/tools.md)。
 
 ## 4. 修改功能时从哪里进入
 

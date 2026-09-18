@@ -3,7 +3,7 @@
     {
       "name": "multiple-partial-sharing",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -299,7 +299,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -598,7 +598,7 @@
     {
       "name": "single-dimension",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -892,7 +892,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -1189,7 +1189,7 @@
     {
       "name": "required-no-default",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -1482,7 +1482,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -2076,28 +2076,8 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/params/0",
-            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/params/1",
-            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/filters/0/initialParam",
-            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/sales/source/query/paramBindings",
-            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/shared/source/query/paramBindings",
-            "message": "维度参数、查询目标与筛选初值绑定 由 6.2 引入，文档声明的是 6.1"
+            "path": "/schemaVersion",
+            "message": "不支持的文档格式版本 6.1:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -2105,7 +2085,7 @@
     {
       "name": "wrong-default-shape",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -2410,7 +2390,7 @@
     {
       "name": "duplicate-default",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -2718,7 +2698,7 @@
     {
       "name": "filter-two-defaults",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -3028,7 +3008,7 @@
     {
       "name": "unknown-initial-param",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -3350,7 +3330,7 @@
     {
       "name": "query-two-defaults",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -3664,7 +3644,7 @@
     {
       "name": "mismatched-filter-target",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -3976,7 +3956,7 @@
     {
       "name": "duplicate-target",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -4283,7 +4263,7 @@
     {
       "name": "scalar-query-binding",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {
@@ -4590,7 +4570,7 @@
     {
       "name": "unknown-query-param",
       "input": {
-        "schemaVersion": "6.2",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "dimension-params-page",
         "dataSources": {

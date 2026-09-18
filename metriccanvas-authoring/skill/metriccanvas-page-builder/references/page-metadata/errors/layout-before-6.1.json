@@ -76,8 +76,8 @@
   "expected": [
     {
       "type": "SCHEMA_ERROR",
-      "path": "/layout",
-      "message": "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0"
+      "path": "/schemaVersion",
+      "message": "不支持的文档格式版本 6.0:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
     }
   ]
 }

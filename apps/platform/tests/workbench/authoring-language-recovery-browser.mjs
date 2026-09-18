@@ -4,7 +4,7 @@ const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
 const errors = []; page.on('pageerror', error => errors.push(error.message));
 const ref = { pageId: 'recovery-page', revisionId: 'saved-r2', resourceId: 'resource' };
-const document = { schemaVersion: '6.2', layout: 'report', id: ref.pageId, dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Recovered title', body: 'Recovered body' } }] }] };
+const document = { schemaVersion: '6.5', layout: 'report', id: ref.pageId, dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Recovered title', body: 'Recovered body' } }] }] };
 let summary = { formatVersion: '1.0', recoveryRef: 'private-recovery-ref', actorId: 'developer-1', workspaceId: 'local', pageId: ref.pageId, operationId: 'private-operation-id', status: 'unknown', cancelRequested: false, ref: null, previewState: 'not-requested' };
 const calls = [], attempts = []; let badRead = true, failCheck = false;
 await page.route('**/__fixtures/language-recovery/**', async route => {

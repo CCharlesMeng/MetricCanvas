@@ -3,7 +3,7 @@ import { createAuthoringLanguage, authoringDocumentHash, type LanguagePort, type
 import { createAuthoringCoordinator, confirmedPageAssetCapabilities, type AuthoringPort } from '../../src/lib/workbench/authoring-coordinator';
 import { DRAFT_SAVED_EVENT, type SavedDraft } from '../../src/lib/dialogue/port';
 import type { PageRevision } from '../../src/lib/page-assets-client';
-const document: PageRevision['document'] = { schemaVersion: '6.2', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Original', body: 'Private body' } }] }] };
+const document: PageRevision['document'] = { schemaVersion: '6.5', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 'main', components: [{ id: 'text', type: 'text', layout: { span: 12 }, props: { title: 'Original', body: 'Private body' } }] }] };
 const base = { pageId: 'p', revisionId: 'opaque-old', resourceId: 'resource' };
 const flush = () => new Promise((resolve) => setTimeout(resolve, 10));
 const cleanups: (() => void)[] = [];

@@ -1,12 +1,15 @@
 ---
 name: metriccanvas-platform-authoring
-description: 在 MetricCanvas Platform 新建或修改页面，或回答当前组件配置问题。已有页新增内容属于修改；普通业务问数沿用问数入口。
+description: 在 MetricCanvas Platform 新建或修改页面、提取参数模板、为已打开模板赋值，或回答当前组件配置问题。已有页新增内容属于修改；普通业务问数沿用问数入口。
 allowed-tools:
   - read_page_context
   - discover_data_context
   - compose_page
   - create_content_page
   - edit_page
+  - extract_page_parameters
+  - apply_page_parameter_selection
+  - resolve_page_parameters
 metadata:
   mcp_servers:
     - metriccanvas-platform-content
@@ -21,6 +24,7 @@ metadata:
 - **新建或明确另建页面**：读取[创建流程](workflows/create.md)。需要可信程序分配的新建上下文 contextRef。
 - **修改当前页面，包括新增组件**：读取[修改流程](workflows/edit.md)。需要本轮可信上下文 contextRef。
 - **询问当前组件配置**：直接使用下方只读规则；不加载创建/修改流程。
+- **提取模板或为已打开模板赋值**：读取[参数流程](workflows/parameters.md)。模板检索由外部提供方完成，收到本轮可信上下文后再调用。
 - **普通问数**：沿部署的普通问数入口处理，不把临时页面态当作当前页面的编辑基线。
 
 新增或改变取数需求时才使用 discover_data_context。标题、列宽、布局与配置问答只消费当前配置和操作能力。
@@ -45,7 +49,7 @@ metadata:
 
 ## 结果与交接
 
-参数模板评审由平台的可信程序入口提供：程序提取维度与固定时间区间，展示原值/覆盖范围，经用户选择和预览后保存无值 Page。6.5 协议可表达不等于此入口已部署；当前五工具未新增提取/召回工具。只有实际收到程序候选摘要才报告已准备，并引导用户在平台确认，不让模型转抄页面或替代人工确认。
+参数工具只准备模板候选或临时运行产物。模板候选走独立人工预览/发布，不进入普通自动保存；instance_ref 走临时只读渲染，不是候选或资源 ID。工具返回 resolved 不代表已经执行，template_prepared 不代表已经发布。缺少可信提供方时报告不可用。
 
 模型只接收 modelSummary；完整页面、原始查询、数据行和凭据留在可信程序通道。缺少产物分流 Adapter 时停止内容调用并报告部署未就绪。
 

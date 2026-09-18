@@ -28,7 +28,7 @@ try{
  await page.goto(base+'/publication?page=dimension-params-page');await page.getByLabel('嵌入工作台').check();await page.getByRole('button',{name:'发布评审',exact:true}).click();await prepare();await preview();await acknowledged.check();await publish.scrollIntoViewIfNeeded();await expect(publish).toBeInViewport();await publish.click();await expect(page.getByTestId('published-reference')).toBeVisible();
  const workbench=await browser.newPage();workbench.on('pageerror',error=>errors.push(error.message));let writes=0;
  await workbench.addInitScript(()=>{window.__METRICCANVAS__={dqeEndpoint:'/fixture-dqe',pageMetadataBaseUrl:'/fixture-assets',authToken:'fixture',operatorId:'alice',workspaceId:'workspace'};});
- const doc={schemaVersion:'6.2',layout:'report',id:'publication-default',dataSources:{},sections:[{id:'main',components:[{id:'t',type:'text',layout:{span:12},props:{title:'保留工作副本',body:'原文'}}]}]};
+ const doc={schemaVersion:'6.5',layout:'report',id:'publication-default',dataSources:{},sections:[{id:'main',components:[{id:'t',type:'text',layout:{span:12},props:{title:'保留工作副本',body:'原文'}}]}]};
  const row={retCode:'0',page_metadata_id:'metadata-pub',page_id:doc.id,revision_id:'r1',revision_number:1,page_metadata_definition:JSON.stringify(doc)};
  await workbench.route('**/fixture-assets/user-page-metadata**',async route=>{if(route.request().method()!=='GET')writes++;await route.fulfill({json:route.request().url().includes('?')?{retCode:'0',total:1,page_metadata_list:[row]}:row});});
  await workbench.goto(base+'/?page=publication-default');await expect(workbench.getByRole('main',{name:'页面画布'}).getByText('保留工作副本')).toBeVisible();

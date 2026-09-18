@@ -300,12 +300,12 @@ describe('临时指标扫描:文档是唯一真源,留痕只补充问题原文',
 describe('沉淀输出使用规范布局文档', () => {
   for (const promote of [promoteToDataApp, promoteToReport]) {
     it.each(['report', 'dashboard'])(`${promote.name} 兼容旧 %s 且不改原文`, (layoutForm) => {
-      const input: Record<string, unknown> = { ...inlineTransientPage, schemaVersion: '6.0', layoutForm };
+      const input: Record<string, unknown> = { ...inlineTransientPage, schemaVersion: '6.5', layoutForm };
       const before = structuredClone(input);
       const result = promote({ document: input, pageId: 'canonical-layout' });
       expect(result.ok).toBe(true);
       if (!result.ok) return;
-      expect(result.document).toMatchObject({ schemaVersion: '6.1', layout: layoutForm });
+      expect(result.document).toMatchObject({ schemaVersion: '6.5', layout: layoutForm });
       expect(result.document).not.toHaveProperty('layoutForm');
       expect(result.document.dataSources).toEqual(input.dataSources);
       expect(result.document.sections).toEqual(input.sections);

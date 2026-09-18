@@ -3,7 +3,7 @@
     {
       "name": "month-windows",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -570,7 +570,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.4",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "time-params-page",
           "params": [
@@ -1709,13 +1709,8 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/dataSources/to-date/source/query/paramBindings",
-            "message": "具名年初/月初至报告基准期窗口 由 6.4 引入，文档声明的是 6.3"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/month-to-date/source/query/paramBindings",
-            "message": "具名年初/月初至报告基准期窗口 由 6.4 引入，文档声明的是 6.3"
+            "path": "/schemaVersion",
+            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -1723,7 +1718,7 @@
     {
       "name": "month-to-date",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -2289,7 +2284,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.4",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "time-params-page",
           "params": [
@@ -2858,7 +2853,7 @@
     {
       "name": "named-window-extra-unit",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -4223,581 +4218,20 @@
         ]
       },
       "expected": {
-        "ok": true,
-        "document": {
-          "schemaVersion": "6.3",
-          "layout": "report",
-          "id": "time-params-page",
-          "params": [
-            {
-              "id": "report-month",
-              "type": "time",
-              "granularity": "month",
-              "required": true,
-              "label": "报告月份",
-              "default": "2026-03"
-            }
-          ],
-          "dataSources": {
-            "current": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "period",
-                        "unit": "month"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "rolling": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "lastN",
-                        "unit": "month",
-                        "n": 12
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "year": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "period",
-                        "unit": "year"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "previous-year": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "period",
-                        "unit": "year",
-                        "offset": -1
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "to-date": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "toDate",
-                        "unit": "year"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "month-to-date": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "toDate",
-                        "unit": "month"
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            "legacy-to-date": {
-              "fields": {
-                "region": {
-                  "queryField": "region",
-                  "type": "string",
-                  "role": "dimension",
-                  "nullable": false
-                },
-                "gmv": {
-                  "queryField": "gmv",
-                  "type": "number",
-                  "role": "measure",
-                  "nullable": false
-                }
-              },
-              "source": {
-                "type": "query",
-                "query": {
-                  "language": "dqe",
-                  "body": {
-                    "dsl_list": [
-                      {
-                        "output_dims": [
-                          "region"
-                        ],
-                        "output_metrics": [
-                          "gmv"
-                        ],
-                        "filter": {
-                          "dims": [],
-                          "metrics": [],
-                          "time": {
-                            "period": "month",
-                            "is_aggregate": false
-                          }
-                        },
-                        "order": {
-                          "offset": 0,
-                          "limit": 20
-                        }
-                      }
-                    ]
-                  },
-                  "paramBindings": {
-                    "report-month": {
-                      "target": "time",
-                      "window": {
-                        "kind": "toDate",
-                        "unit": "year"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "sections": [
-            {
-              "id": "main",
-              "components": [
-                {
-                  "id": "heading",
-                  "type": "reportHeader",
-                  "layout": {
-                    "span": 12
-                  },
-                  "props": {
-                    "title": "时间参数示例",
-                    "asOf": {
-                      "label": "报告月份",
-                      "value": {
-                        "param": "report-month"
-                      }
-                    }
-                  }
-                },
-                {
-                  "id": "current",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "current"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "rolling",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "rolling"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "year",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "year"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "previous-year",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "previous-year"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "to-date",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "to-date"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "month-to-date",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "month-to-date"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                },
-                {
-                  "id": "legacy-to-date",
-                  "type": "table",
-                  "layout": {
-                    "span": 12
-                  },
-                  "data": {
-                    "main": "legacy-to-date"
-                  },
-                  "props": {
-                    "columns": [
-                      {
-                        "field": "region"
-                      },
-                      {
-                        "field": "gmv"
-                      }
-                    ]
-                  }
-                }
-              ]
-            }
-          ]
-        },
-        "errors": []
+        "ok": false,
+        "errors": [
+          {
+            "type": "SCHEMA_ERROR",
+            "path": "/schemaVersion",
+            "message": "不支持的文档格式版本 6.3:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
+          }
+        ]
       }
     },
     {
       "name": "required-no-default",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -5363,7 +4797,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.4",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "time-params-page",
           "params": [
@@ -5932,7 +5366,7 @@
     {
       "name": "date-windows",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -6499,7 +5933,7 @@
       "expected": {
         "ok": true,
         "document": {
-          "schemaVersion": "6.4",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "time-params-page",
           "params": [
@@ -7638,53 +7072,8 @@
         "errors": [
           {
             "type": "SCHEMA_ERROR",
-            "path": "/dataSources/to-date/source/query/paramBindings",
-            "message": "具名年初/月初至报告基准期窗口 由 6.4 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/month-to-date/source/query/paramBindings",
-            "message": "具名年初/月初至报告基准期窗口 由 6.4 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/params/0",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/current/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/rolling/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/year/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/previous-year/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/to-date/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/month-to-date/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
-          },
-          {
-            "type": "SCHEMA_ERROR",
-            "path": "/dataSources/legacy-to-date/source/query/paramBindings",
-            "message": "确定性日期/月参数与查询时间窗口绑定 由 6.3 引入，文档声明的是 6.2"
+            "path": "/schemaVersion",
+            "message": "不支持的文档格式版本 6.2:运行时只接受 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.5，兼容读取 5.0–5.4，其他跨主版本文档不提供自动迁移"
           }
         ]
       }
@@ -7692,7 +7081,7 @@
     {
       "name": "invalid-month",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -8305,7 +7694,7 @@
     {
       "name": "optional-time",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -8913,7 +8302,7 @@
     {
       "name": "unknown-param",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -9566,7 +8955,7 @@
     {
       "name": "scalar-time",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -10208,7 +9597,7 @@
     {
       "name": "duplicate-time",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -10801,7 +10190,7 @@
     {
       "name": "static-boundary",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -11380,7 +10769,7 @@
     {
       "name": "missing-period",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -11954,7 +11343,7 @@
     {
       "name": "wrong-period",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -12532,7 +11921,7 @@
     {
       "name": "wrong-window-unit",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -13115,7 +12504,7 @@
     {
       "name": "window-out-of-range",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [
@@ -13698,7 +13087,7 @@
     {
       "name": "filter-conflict",
       "input": {
-        "schemaVersion": "6.4",
+        "schemaVersion": "6.5",
         "layout": "report",
         "id": "time-params-page",
         "params": [

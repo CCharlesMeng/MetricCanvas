@@ -111,7 +111,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
-  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '6.4', '7.0']) {
+  for (const schemaVersion of ['5.0', '5.4', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '7.0']) {
     for (const declaration of [
       {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
       { layout: 'report' }, { layout: 'dashboard' },
@@ -348,7 +348,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   // 历史预期仍冻结并核验摘要；当前契约只派生版本/布局升级，
   // 不从 Python 或浏览器构造器的输出反向更新业务预期。
   const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
-  const normalizedBuildPage = normalizePageDocument(buildPageVector.expected.document);
+  const normalizedBuildPage = normalizePageDocument({ ...buildPageVector.expected.document, schemaVersion: versionPolicy.current });
   if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
   buildPageVector.expected.document = { ...normalizedBuildPage.document, schemaVersion: versionPolicy.current };
   const buildPageConformance = json(buildPageVector);

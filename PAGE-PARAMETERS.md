@@ -1,185 +1,795 @@
-# 页面参数：维度与时间的现行方案
+# 页面参数使用指南（6.5）
 
-本文是 MetricCanvas 页面参数的现行说明。当前协议为 **6.5**。先读本节的新文档规则；后续编号章节保留 6.2—6.4 的 `default / paramBindings / URL` 兼容路径和时间窗口说明，不作为新模板的生成方式。
+## 1. 版本与使用原则
 
-## 6.5：同一页面的无值模板与填值文档
+**6.5 是 6.x 唯一支持的版本。** 本文只说明 `schemaVersion: "6.5"`，不再提供 6.0—6.4 的兼容或迁移用法；5.x 的读取政策不在本文调整范围内。
 
-模板和填值页面使用同一 Page Schema。模板的所选参数省略 `value/default`；填值页面只增加 `params[].value`，查询引用、组件、字段与布局保持不变。结构合法不代表输入完整：无值模板可保存，执行前必须补齐必需参数。
+页面参数回答「这次看什么」。一次页面实例初始化后参数固定；换一组值需要重新初始化另一个页面实例。页内可交互修改的是筛选状态，不是页面参数。参数不会自动影响全页，查询和文本必须显式引用它。
 
-| 位置 | 当前规则 |
-|---|---|
-| `params[].required` | 6.5 可省略，等价于 true；旧版本仍要求显式声明 |
-| `params[].value` | 本次实际值，与 default 互斥；显式 suppliedValues 优先，非法显式值失败而不回退 |
-| `dimension` | 单值非空字符串，multiple=true 时为非空、无重复字符串数组 |
-| `timeRange` | 声明 granularity=month/date；value 为同精度的 `{start,end,granularity}` 闭区间，校验真实日历与先后顺序 |
-| DQE 维度 | `filter.dims[].dim_value_list: {param:"region"}`；查询引用必须必填 |
-| DQE 时间 | `filter.time.start/end: {param:"report-period",part:"start"/"end"}`；双端同源，保留 period 与 is_aggregate |
-| 基准期窗口 | `time` 参数的双端引用须携带相同 window，继续支持下文的 period/lastN/yearToDate 等规则 |
+本文贯穿同一个需求：生成「中国区、2026 年上半年 Tokens 用量报告」→ 提取模板 → 用原值运行 → 召回后改为「欧洲区、2026 年第三季度」。
 
-只允许上述 DQE 取值位置；原字段 `dim_value_list/is_aggregate` 不改拼写。单查询不得混用原位引用和旧 paramBindings。普通业务数据不参与引用替换。参数 ID 精确匹配，`report-period` 与 `report_period` 不兼容。
+### 先看重点：哪些属于页面 JSON，哪些只是过程数据？
 
-独立入口 `resolvePageParams(document, suppliedValues?)` 返回保留引用的填值 `document`、供执行的 `resolvedPage`、`effectiveInputs`，或带 code/path/param/message 的 issues。输入原对象不变；模块不取数、不读 URL/历史、不保存。外部可先填写 value 再调用，也可把值单独传入。timeRange 尚无 URL 编码协议，应走程序通道；普通维度/标量旧 URL 路径保留，已填 value 不被 URL 覆盖。
+**最终保存的页面 JSON 以 `schemaVersion / id / params / dataSources / sections` 等页面字段为主体。`baseline`、`dimensionIdentities`、候选列表和文本替换指令都不是页面字段，不要加进页面 JSON。** 能用 JSON 表示一个对象，不代表它就是页面协议的一部分。
 
-运行时共用同一物化逻辑，缺值先阻止请求；参数化页面的 query initial 不作为本次数据。关联 initialParam 的维度只初始化筛选，后续清空不复活固定条件；同参数的未绑定查询仍保持本次固定值。已确认输入初始化的筛选不受旧 URL 覆盖。按指定期间返回空结果，不找最近有数据期。
-
-创作期用 `extractPageParams` 读取可信已验真的精确基线；跨源共享需要提供维度身份，无依据时分开。`applyPageParamSelection` 按人工选择提取简单维度与固定区间，保留原值/覆盖摘要，原值回填逐查询等价才成功。复合字面文本必须显式审阅替换。只有覆盖超过半数且多于一个查询的候选默认勾选。所选参数保存无值，预览值及 query initial 不保存。
-
-旧绑定通过 `migrateParamBindings` 显式迁移，窗口不变；不能证明等价的可选查询绑定拒绝迁移。新发布接现有 Java 单次提交路径，queued/unknown 不是发布成功，未知结果不重写。真实提供方仍需单独接入。
-
-完整例子：[无值模板](packages/page/fixtures/contract-valid/inline-params-page.json)、[填值页面](packages/page/fixtures/contract-valid/inline-params-values-page.json)、[Tokens 五查询](packages/page/fixtures/parameter-extraction/tokens-parameter-source.json)。程序交接与调用示例见[外部接入](docs/plan/page-parameter-inlining/external-integration.md)。
-
-## 旧版本兼容路径（以下编号章节）
-
-## 1. 一句话理解
-
-**页面参数保存“这次看什么”的输入；每个查询明确声明如何使用这些输入。**
-
-例如，一份流水分析报告保存两个参数：“代表处＝北京代表处”“报告月份＝2026-02”。打开时可以传入另一组值，得到另一个页面实例：
-
-- 代表处参数让绑定它的查询增加代表处条件。
-- 报告月份让绑定它的查询生成当月、全年或其他声明的查询时间窗口。
-- 页头可引用同一组值，显示本次实例的代表处与报告月份。
-
-声明参数不会自动影响全页。**只有显式绑定的查询或引用它的文本才受影响。**
-
-## 2. 四个位置分别做什么
-
-| 位置 | 职责 | 可以理解为 |
+| 名称 | 所属位置 | 是否进入最终页面 JSON |
 |---|---|---|
-| 页面顶层 `params` | 声明参数名称、类型、必需性和保存的默认值 | 输入清单 |
-| 查询中的 `paramBindings` | 指定参数如何作用于这个查询 | 输入的使用说明 |
-| 文本位置的 `{ "param": "参数id" }` | 显示该参数的实际值 | 页面上的取值引用 |
-| `filters` 与查询的 `filterBindings` | 管理页面打开后的可变筛选状态 | 页内交互 |
+| `params`、`dataSources`、`sections` | 页面结构 | 是；参数声明、查询引用和文本引用放在这些字段内 |
+| `params[].value` | 填值文档中的本次输入 | 填值文档有，无值模板没有 |
+| `verifiedPage`、`template` | 示例程序的变量名，变量里装的是完整页面 | 保存变量所持有的页面对象，不把变量名当作 JSON 外层字段 |
+| `trustedContext.baseline` | 提取函数的第二个参数：来源标识 | 否；用于关联提取依据的精确页面状态 |
+| `trustedContext.dimensionIdentities` | 同一个过程对象：维度身份映射 | 否；帮助程序判断哪些查询条件可合并为共享参数 |
+| `extraction.candidates`、`selectedIds` | 程序返回的候选、人工确认的候选 ID 列表 | 否；选中候选才转成页面内的 params 和引用 |
+| `textReplacements` | 提取确认时的文本修改指令 | 指令映射不保存；修改结果进入 sections 等对应位置 |
+| `prepared.document` | 提取函数返回结果中的无值模板 | 保存这里面的页面对象，不保存整个 prepared |
+| `prepared.originalValues`、`suppliedValues` | 原值核对/预览、本次赋值使用的输入映射 | 映射本身不是页面字段；解析后值进入填值文档的 params[].value |
+| `result.document` | 解析函数返回的填值文档 | 可作为本次页面文档传递；持久化仍需显式保存 |
+| `result.resolvedPage`、`result.effectiveInputs` | 解析后的执行副本、生效输入 Map | 不写回无值模板，也不作为页面外层字段 |
 
-参数在一次初始化后固定。修改页内筛选不会反向修改参数；使用另一组参数，需要打开另一实例或由宿主重新初始化。跨页链接可以显式携带参数。
+只关心页面格式时，看各场景的「完整页面/模板/填值文档 JSON」。下面标有「过程数据」的内容只供程序接入使用。
 
-## 3. 参数怎样保存
+| 产物 | 参数与查询形态 | 用途 |
+|---|---|---|
+| 具体页面 | 无参数声明，查询条件是具体值 | 创作期验真后直接运行 |
+| 无值模板 | 有参数声明，没有本次值，查询保留引用 | 保存与召回复用；必需输入未补齐前不能运行 |
+| 填值文档 document | 参数含 value，查询和文本仍保留引用 | 初始化本次页面实例 |
+| 执行副本 resolvedPage | 查询引用解析为具体条件，文本引用解析为显示值 | 供本次执行消费，不覆盖模板 |
 
-以下是页面顶层的局部片段，不是完整页面：
+### 参数相关位置单独说明
+
+| 位置 | 内容与约束 |
+|---|---|
+| `params[].id` | 稳定参数 ID；引用与输入精确匹配，report-period 与 report_period 不等价 |
+| `params[].type` | dimension 表示维度，timeRange 表示明确区间，time 表示报告基准期；另有 string/number/boolean |
+| `params[].required` | 可省略，等价于 true；查询引用的参数必须必填，每个声明必须有消费者 |
+| `params[].value` | 本次输入。模板省略 value/default，填值用 value；value 与 default 不能同时声明 |
+| `params[].label` | 人可读的输入名称，不参与匹配，不自动生成控件或标题 |
+| `params[].multiple` | 维度多值声明；单值为非空字符串，多值为非空、无重复字符串数组 |
+| `params[].granularity` | 时间精度为 month/date；timeRange 的 value 也须携带相同精度 |
+| `query.body.dsl_list[0].filter.dims[].dim_value_list` | 用 `{"param":"region"}` 引用维度，执行时单值也变为 DQE 数组 |
+| `query.body.dsl_list[0].filter.time.start/end` | 双端引用同一参数，分别声明 part=start/end；保留 period 与 is_aggregate |
+| 文本属性，例如 `props.body` | 用 `{"param":"region"}` 展示本次值；是整个属性引用，不是字符串插值 |
+| `filters[].initialParam` | 可用维度参数初始化筛选，之后由筛选状态管理相关查询 |
+
+引用只出现在协议允许的位置，不做任意 JSON 字符串替换，也不改变指标口径。本文统一使用查询原位引用，不使用 `paramBindings`。
+
+## 2. 场景一：初次生成并运行
+
+用户请求「中国区 2026 年上半年 Tokens 用量」。创作期先确认真实维度取值、指标和查询时间窗口，完成查询验真，再装配页面。此时不必先提取参数，可以直接生成确定查询条件的页面。
+
+下面是完整的最小页面 JSON：仅保留一个查询、两个说明文本和一个结果表格。业务报告的其他查询、样式、图表不纳入示例，不在 JSON 中放不合法的省略号。后续模板和填值文档保持相同页面结构。
 
 ```json
 {
-  "schemaVersion": "6.4",
-  "params": [
+  "schemaVersion": "6.5",
+  "id": "tokens-report",
+  "layout": "report",
+  "dataSources": {
+    "tokens": {
+      "fields": {
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "区域",
+                      "dim_value_list": [
+                        "中国区"
+                      ]
+                    }
+                  ],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": "2026-01",
+                    "end": "2026-06"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
     {
-      "id": "representative-office",
-      "type": "dimension",
-      "required": true,
-      "label": "代表处",
-      "default": "北京代表处"
-    },
-    {
-      "id": "report-month",
-      "type": "time",
-      "granularity": "month",
-      "required": true,
-      "label": "报告月份",
-      "default": "2026-02"
+      "id": "overview",
+      "components": [
+        {
+          "id": "region-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "中国区"
+          }
+        },
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "2026-01 至 2026-06"
+          }
+        },
+        {
+          "id": "tokens-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "tokens"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "tokens",
+                "title": "Tokens 用量"
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }
 ```
 
-| 字段 | 含义 | 必需性 |
-|---|---|---|
-| `id` | 稳定标识；URL、查询绑定、文本引用通过它找参数 | 必填；页面内唯一，不与筛选器id重复 |
-| `type` | 参数类型：维度为 `dimension`，时间为 `time`；也保留 `string/number/boolean` 标量类型 | 必填 |
-| `required` | 初始化时是否必须得到有效值；默认值也可以满足要求 | 必填 |
-| `label` | 人能读懂的参数名称，用于缺值提示等 | 可选 |
-| `default` | 没有外部输入时采用的保存值；非法输入的处理见第7节 | 可选 |
-| `multiple` | 维度参数是否多值；缺省为单值 | 仅维度参数可用 |
-| `granularity` | 时间输入精度，`month` 或 `date` | 时间参数必填 |
+参数相关说明：
 
-`label` 不参与查询、不生成筛选控件，也不自动成为页头标签。“代表处”是参数名称，“北京代表处”是取值，两者用途不同。删掉 `label` 不影响正常查询，但缺值提示更难理解。
+- 此时没有 params，区域和起止月份都是查询中的具体值。
+- 两个文本也保存具体值，不会因为查询条件变化自动变化。
+- 字段映射和表格提供结果消费位置，不是要提取的参数。
+- 页面可直接交给统一运行时；首次运行不等于保存或发布模板。
 
-`required` 和 `default` 不重复：前者要求“必须有值”，后者提供“未传值时用什么”。每个声明参数必须至少有一个消费者，不能只声明而不使用。
+若生成时已经明确使用参数化文档，也可直接生成第 4 节的完整「填值文档」：声明参数、提供本次 value、在查询与文本中引用它，经校验和查询验真后运行。不要只生成无值模板就尝试执行。
 
-### 维度的值
+## 3. 场景二：提取参数，形成无值模板
 
-维度值使用数据服务认可的稳定字符串值。若服务使用编码，应保存编码，不能根据中文显示名猜测编码。本报告演示使用“北京代表处”作为取值。
+用户确认「以后允许切换区域和期间」后，从最终已验真的精确创作基线提取。当前提取简单字符串维度条件和固定月/日区间，不推断多个区间之间的同比等业务关系。
 
-多值声明示例：
+### 提取、选择和文本确认（过程数据，不是页面 JSON）
+
+`extractPageParams(document, context)` 返回候选、原值、覆盖/未覆盖查询、跳过原因和默认勾选建议。跨数据源共享维度需要可信身份依据，不能只因字段同名就认定相同。
+
+**这里是在准备 `extractPageParams(页面对象, 提取上下文)` 的第二个参数，不是在给页面增加字段。** 第一个参数 verifiedPage 是上一节的完整页面；第二个参数 trustedContext 由可信调用方提供：
+
+```ts
+// 过程变量：只传给提取函数，不放入页面 JSON。
+const trustedContext = {
+  baseline: 'verified-revision-example', // 占位值，实际使用已确认的来源标识
+  dimensionIdentities: {
+    tokens: {        // 页面数据源 ID：对应 dataSources.tokens
+      区域: 'region' // 查询的 dim_name → 该维度的稳定业务身份
+    }
+  }
+};
+```
+
+这两个字段解决不同问题：
+
+- **baseline：这次提取基于哪一份页面状态？** 用于防止从修订 A 提取、预览的结果被拿去发布修订 B。提取函数只检查它非空并随结果返回，不凭字符串判断页面已验真；工作台检查来源是否与当前状态一致，可信调用方负责保证页面确实来自该基线并已经完成查询验真。它不是 schemaVersion，不是业务参数，也不参与 DQE 查询。
+- **dimensionIdentities：哪些查询字段其实是同一个业务维度？** 此处表示 dataSources.tokens 的“区域”维度，业务身份为 region。若另一个数据源的“地区”也被可信调用方映射到 region，且原取值相同，就可合并为一个参数候选。没有映射时按“数据源 ID + 维度名称”分开处理，不因同名自动合并。
+
+注意三个不同概念：这里的 `region` 是**维度业务身份**；后面 `params[].id` 中的 `region` 是**页面参数 ID**；`中国区` 是**参数取值**。本例前两者文字相同，是程序参考身份生成候选 ID 的结果，不代表身份映射直接指定参数 ID，也不代表两者是同一个字段。实际使用返回的候选 ID，不自行猜测。
+
+本例候选 ID 为 region 与 report-period，实际调用以程序返回值为准。因为这里只有一个查询，候选都不默认勾选；用户可明确选择这两个候选。默认勾选仅适用于覆盖超过半数且多于一个查询的候选。
+
+原页面文本仍含实例值，必须显式确认替换。下面是 **textReplacements 过程对象**，不是页面 JSON：键是“要改哪里”的 JSON Pointer，值是“改成什么”。映射本身不会保存，应用后的 `{ "param": "region" }` 才会出现在页面对应的 props.body 中。路径对应第 2 节完整页面：
 
 ```json
 {
-  "id": "regions",
-  "type": "dimension",
-  "multiple": true,
-  "required": true,
-  "default": ["EU", "APAC"]
+  "/sections/0/components/0/props/body": {
+    "param": "region"
+  },
+  "/sections/0/components/1/props/body": {
+    "param": "report-period"
+  }
 }
 ```
 
-多值不能包含重复值、空字符串，也不能用空数组表示有效默认值。可选参数无值时，应省略 `default`；对应查询不增加该参数条件。权限限制仍由数据服务执行。
+程序调用（verifiedPage 是第 2 节完整页面，trustedContext 来自可信提供方）：
 
-### 时间的值
+```ts
+import { extractPageParams, applyPageParamSelection } from '@metriccanvas/page';
 
-- `granularity: "month"`：月份，例如 `2026-03`。
-- `granularity: "date"`：日期，例如 `2024-02-29`，会校验日期与闰日是否合法。
-- 年份范围为0001—9999；时间参数为单值。
+const extraction = extractPageParams(verifiedPage, trustedContext);
+if (!extraction.ok) throw new Error(JSON.stringify(extraction.issues));
 
-输入精度只说明“输入的是月份还是日期”，不决定指标如何计算或多久刷新。
+// 过程变量：用户确认选择的候选 ID，不是页面 JSON 字段。
+const selectedIds = ['region', 'report-period'];
+const textReplacements = {
+  '/sections/0/components/0/props/body': { param: 'region' },
+  '/sections/0/components/1/props/body': { param: 'report-period' }
+};
+const prepared = applyPageParamSelection(extraction, selectedIds, textReplacements);
+if (!prepared.ok) throw new Error(JSON.stringify(prepared.issues));
 
-## 4. 查询怎样消费参数
+const template = prepared.document; // 这才是下方完整模板 JSON。
+// 保存时使用 template，不是 { template: ... }，也不是整个 prepared。
+// prepared.originalValues 留在过程里，只用于核对与预览。
+```
 
-绑定位于 `dataSources.<数据源id>.source.query.paramBindings`。以下是一个查询的局部片段：
+调用关系：完整页面 + trustedContext → 提取候选 → 人工确认 selectedIds/textReplacements → prepared.document（无值模板）。只有最后这个页面对象进入模板保存流程。
+
+### 提取后的完整模板 JSON
 
 ```json
 {
-  "paramBindings": {
-    "representative-office": {
-      "target": "dimension",
-      "queryField": "代表处"
+  "schemaVersion": "6.5",
+  "id": "tokens-report",
+  "layout": "report",
+  "params": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "label": "区域"
     },
-    "report-month": {
-      "target": "time",
-      "window": { "kind": "period", "unit": "month" }
+    {
+      "id": "report-period",
+      "type": "timeRange",
+      "label": "报告期间",
+      "granularity": "month"
     }
-  }
+  ],
+  "dataSources": {
+    "tokens": {
+      "fields": {
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "区域",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "region-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "region"
+            }
+          }
+        },
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "report-period"
+            }
+          }
+        },
+        {
+          "id": "tokens-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "tokens"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "tokens",
+                "title": "Tokens 用量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
 }
 ```
 
-映射的键是参数 `id`，值是它在这个查询中的用途：
+参数相关变化：
 
-- `target: "dimension"`：生成 `queryField` 指定的维度条件。例如北京代表处变成 `dim_name: "代表处"`、`dim_value_list: ["北京代表处"]`。
-- `target: "time"`：根据参数和 `window` 计算查询起止期间。
+- 新增 params 声明，不保留 value/default，避免把中国区、上半年作为下次默认输入。
+- 查询维度值和时间端点改为引用；指标、分组、聚合、字段与表格配置不变。
+- 两个文本也改为引用，避免数据切换后还显示旧区域或期间。不支持 `"${region}报告"` 插值，复合标题需改为通用标题或拆出独立参数文本。
+- 程序用原值回填检查所选候选覆盖查询的查询体等价，失败则拒绝提取。这是确定性结构检查，不是重新向 DQE 取数。
+- 原值单独返回供预览；选中参数后清除查询的内嵌初始行，不把上次数据当作下次结果。
 
-它是结构化绑定，不是把字符串任意插入SQL。不同数据源可绑定同一参数；同一查询中的同一维度目标只能有一个参数来源。
+模板结构合法不代表可执行：必需输入未补齐时阻止执行。
 
-### 时间查询的原始声明和执行结果
+### 预览与发布
 
-绑定前，查询体保留时间粒度和聚合设置，不写固定起止：
+工作台接入可信 parameterSourcePort 后，用户审阅候选、输入和文本修正，预览后明确确认发布。来源、选择或输入变化都会使旧确认失效。保存的是无值模板，不是预览时的填值文档。
 
-```json
-{ "filter": { "time": { "period": "month", "is_aggregate": true } } }
-```
+发布走既有 Java 单次保存路径：queued 只是入队，成功以可信回执为准，unknown 不重新发送。没有可信源端口时，不应宣称该生产链路已接通。
 
-当实际参数为 `2026-03`，当月窗口生成：
+## 4. 场景三：赋值运行，或直接运行填值文档
+
+### 本次输入与调用
+
+模板和本次值可以分开传递。以下是 **suppliedValues 过程对象，不是页面 JSON**。输入映射的键与模板参数 ID 一致，解析后这些值才进入下方填值文档的 params[].value：
 
 ```json
 {
-  "filter": {
-    "time": {
-      "period": "month",
-      "is_aggregate": true,
-      "start": "2026-03",
-      "end": "2026-03"
+  "region": "中国区",
+  "report-period": {
+    "start": "2026-01",
+    "end": "2026-06",
+    "granularity": "month"
+  }
+}
+```
+
+```ts
+import { resolvePageParams } from '@metriccanvas/page';
+
+const result = resolvePageParams(template, suppliedValues);
+if (!result.ok) throw new Error(JSON.stringify(result.issues));
+
+// 文档已有 value 时，可以直接解析，不再提供第二个参数。
+const again = resolvePageParams(result.document);
+if (!again.ok) throw new Error(JSON.stringify(again.issues));
+```
+
+解析函数不修改输入、不取数、不渲染、不保存。失败返回 issues；成功返回 document、resolvedPage 和只读 Map effectiveInputs。
+
+### 填值文档的完整 JSON（result.document）
+
+```json
+{
+  "schemaVersion": "6.5",
+  "id": "tokens-report",
+  "layout": "report",
+  "params": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "label": "区域",
+      "value": "中国区"
+    },
+    {
+      "id": "report-period",
+      "type": "timeRange",
+      "label": "报告期间",
+      "granularity": "month",
+      "value": {
+        "start": "2026-01",
+        "end": "2026-06",
+        "granularity": "month"
+      }
+    }
+  ],
+  "dataSources": {
+    "tokens": {
+      "fields": {
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "区域",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "region-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "region"
+            }
+          }
+        },
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "report-period"
+            }
+          }
+        },
+        {
+          "id": "tokens-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "tokens"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "tokens",
+                "title": "Tokens 用量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+参数相关变化只有 params[].value。查询引用、文本引用、字段和组件保持不变；将此文档交给统一运行时初始化即可消费本次值。不要把执行副本中的确定条件写回模板。
+
+### 执行时的确定查询 JSON
+
+以下是 `result.resolvedPage.dataSources.tokens.source.query.body` 的完整内容，只省略执行副本的其他字段；它不是另一份页面文档：
+
+```json
+{
+  "dsl_list": [
+    {
+      "output_dims": [],
+      "output_metrics": [
+        "Tokens消耗量"
+      ],
+      "filter": {
+        "dims": [
+          {
+            "dim_name": "区域",
+            "dim_value_list": [
+              "中国区"
+            ]
+          }
+        ],
+        "time": {
+          "period": "month",
+          "is_aggregate": true,
+          "start": "2026-01",
+          "end": "2026-06"
+        }
+      }
+    }
+  ]
+}
+```
+
+维度条件变为数组，中国区对应 `["中国区"]`；时间闭区间为 2026-01 至 2026-06，period 和 is_aggregate 不变。两处文本引用也解析为中国区和区间显示文本。发送 DQE 时不能残留 param 对象。
+
+### 运行前必须检查
+
+- 显式 suppliedValues 优先于文档 value，不传该键则采用文档保存值。当前解析器也接受 default 作为后备，但本文流程不用它；模板不得携带默认实例值，value/default 不得同时出现。
+- 必需参数缺值返回 MISSING_INPUT；未知键返回 UNKNOWN_INPUT；非法值返回 INVALID_VALUE；结构非法返回 INVALID_PAGE 等。非法显式值不能回退旧值，失败后不能继续请求。
+- timeRange 值必须是完整的 start/end/granularity 对象。月用 YYYY-MM，日用 YYYY-MM-DD；检查真实日历、精度和起止顺序。日精度 DQE 的 period 用 day。
+- 参数化页面不能使用旧 query initial 兜底；指定期间无数据就显示空结果，不切换到最近有数据期。
+- timeRange 没有 URL 编码协议，通过 value 或程序输入传值；已确认输入不应再被 URL、global_params 或筛选历史覆盖。
+- 运行实例不自动成为持久化页面资产，保存需另行明确操作。
+
+## 5. 场景四：召回模板，赋予另一组值
+
+用户后续说「用这份报告看欧洲区第三季度」。外部服务召回第 3 节模板，读取参数声明，确认区域实际值与年份，再生成规范输入。年份没有已确认上下文时先追问，不能由解析器猜测。
+
+假设确认的是 2026 年第三季度，以下仍是 **suppliedValues 过程对象，不是页面 JSON**：
+
+```json
+{
+  "region": "欧洲区",
+  "report-period": {
+    "start": "2026-07",
+    "end": "2026-09",
+    "granularity": "month"
+  }
+}
+```
+
+调用 `resolvePageParams(recalledTemplate, suppliedValues)`，成功后得到以下完整填值文档：
+
+```json
+{
+  "schemaVersion": "6.5",
+  "id": "tokens-report",
+  "layout": "report",
+  "params": [
+    {
+      "id": "region",
+      "type": "dimension",
+      "label": "区域",
+      "value": "欧洲区"
+    },
+    {
+      "id": "report-period",
+      "type": "timeRange",
+      "label": "报告期间",
+      "granularity": "month",
+      "value": {
+        "start": "2026-07",
+        "end": "2026-09",
+        "granularity": "month"
+      }
+    }
+  ],
+  "dataSources": {
+    "tokens": {
+      "fields": {
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "Tokens消耗量"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "区域",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "region-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "region"
+            }
+          }
+        },
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "report-period"
+            }
+          }
+        },
+        {
+          "id": "tokens-table",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "tokens"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "tokens",
+                "title": "Tokens 用量"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+参数相关变化：
+
+- 只更新 region.value 和 report-period.value，原模板不变。
+- 相同引用现在解析为欧洲区、2026-07 至 2026-09，文本同步显示本次输入。
+- 不重新生成图表，不更改指标和聚合，不把这组值写回共享模板。
+- 若召回的是上次的填值文档，未提供的键会沿用旧值。调用方必须核对并向用户明确全部生效输入，不能悄悄沿用旧区域或期间。
+- 参数 ID 以实际召回文档为准，不能把 report-period 改写成 report_period。
+
+召回检索、自然语言规范化、缺值追问和真实 Java/Relay 服务接入由外部提供方负责。参数解析函数不承担这些能力，本地验证也不等于 E1 真实联调完成。参见[程序接入与外部联调边界](docs/plan/page-parameter-inlining/external-integration.md)。
+
+## 6. 报告基准期与时间窗口
+
+「查看 1—6 月」使用 timeRange，查询消费明确端点。「以 6 月为基准，同时看当月和近 12 个月」使用 time，各查询显式声明自己的 window，两者不能直接互换。
+
+下面把时间相关的参数声明与查询位置放在同一份 JSON 中。这是有意省略页面 ID、字段、组件和区域条件的局部示例，不可独立运行；实际替换前例时，还须将期间文本引用改为 report-month：
+
+```json
+{
+  "params": [
+    {
+      "id": "report-month",
+      "type": "time",
+      "granularity": "month",
+      "value": "2026-06"
+    }
+  ],
+  "dataSources": {
+    "tokens": {
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "Tokens消耗量"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false,
+                    "start": {
+                      "param": "report-month",
+                      "part": "start",
+                      "window": {
+                        "kind": "lastN",
+                        "unit": "month",
+                        "n": 12
+                      }
+                    },
+                    "end": {
+                      "param": "report-month",
+                      "part": "end",
+                      "window": {
+                        "kind": "lastN",
+                        "unit": "month",
+                        "n": 12
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
     }
   }
 }
 ```
 
-运行时只把起止写入副本，保留原有聚合设置与指标。当前接入要求：月参数对应查询 `period=month`，日参数对应 `period=day`；不隐式转换查询粒度。
-
-## 5. 时间窗口与指标口径的分界
-
-| 概念 | 回答的问题 | 示例 |
-|---|---|---|
-| 报告基准期 | 本次看哪一期？ | 2026年3月 |
-| 查询时间窗口 | 读取哪些期间？ | 当月、最近12个月、所在全年 |
-| 指标统计周期与计算口径 | 一个值代表什么、如何计算？ | 月流水、年累计流水、月同比 |
-
-**窗口不改变指标口径。** 如果数据服务在3月分区中已经返回年累计值，查询3月即可；不能因名称含“年累计”就改查1—3月再求和。同比、环比、预测版本也不会因时间绑定而自动计算。
+结果为 2025-07 至 2026-06，双端必须引用同一参数、使用相同窗口。窗口只决定读取哪些期间，不改变指标口径：若 6 月分区已返回年累计指标，不应因其名称再查 1—6 月求和。
 
 ### 已支持的窗口
 
@@ -208,72 +818,87 @@
 
 当前能力不包含最新可用期自动获取、财年/周规则、Tab切换查询粒度或历史预测版本选择。物理分区、年度目标字段和财经接口参数的映射仍由数据服务契约确定；年度目标值不等于全年时间窗口。
 
-## 6. 参数与页内筛选怎样配合
 
-维度参数可以只负责打开时的初始选择：
+## 7. 参数与页内筛选
 
-1. 筛选器用 `initialParam` 引用参数，不再另写 `default`。
-2. 查询同时声明该参数的 `paramBindings` 和该筛选器的 `filterBindings`，两者指向同一维度目标。
-3. 初始化后，由筛选状态控制查询。用户修改或清空筛选，不会恢复参数默认值，也不会修改参数。
+维度参数可通过 filters[].initialParam 初始化维度筛选器，该筛选器不再另写 default。查询维度位置保留原位参数引用，同时通过 query.filterBindings 将同一维度交给筛选器。
 
-无筛选器控制的查询，仍保留本次参数确定的维度条件。绑定目标不能同时在查询体里再写一份静态维度条件。
+初始化后，相关查询由筛选状态管理；修改或清空筛选不会恢复参数固定条件，也不会反向修改参数。未被筛选器接管的查询仍使用本次参数值。手动发送查询不能跳过筛选状态组装。
 
-时间参数当前用于固定时间输入：每个查询只允许一个时间参数来源，且不能同时由时间筛选器控制；绑定查询也不能保留静态 `start/end`。
+同一查询不能同时由时间参数和时间筛选器控制，也不能在引用以外另保留一套静态起止值。
 
-## 7. 打开页面、保存页面与显示参数
+## 8. 通过 MCP 调用：不需要模型填写过程证据
 
-### URL初始化规则
+前文 `trustedContext`、`selectedIds`、`textReplacements` 是程序 API 的过程变量。模型调用统一 `metriccanvas-platform-content` 时，使用下面三个独立工具；baseline 和维度身份由可信提供方读取，**不是模型参数，也不是页面 JSON**。服务已注册这些工具，但部署仍需注入可信上下文、参数程序、持久记录和验真提供方。
 
-URL键就是参数 `id`。例如：`?report-month=2026-03`。
+### 第一步：提取候选
 
-| 情况 | 维度参数 | 时间参数 |
-|---|---|---|
-| URL未提供键 | 使用default；无default时按required处理 | 相同 |
-| 显式空值或非法值 | 使用有效default；仍无值时按required处理 | 阻止初始化，不回退default |
-| 重复URL键 | 多值参数接收列表；单值参数视为非法 | 非法，阻止初始化 |
-| 可选参数没有值 | 不添加对应参数条件 | 可用于可选文本；查询时间绑定必须引用必需参数 |
+调用 `extract_page_parameters`：
 
-多值采用重复键，例如 `?regions=EU&regions=APAC`，不按逗号拆分；URL特殊字符应按普通URL规则编码。
+```json
+{"context_ref":"current-context"}
+```
 
-### 保存值与运行值
-
-保存的页面包含参数声明、默认值和查询绑定。通过URL打开另一月份，只改变这次页面实例，不会自动把新月份保存为默认值。要让下次默认打开新月份，必须显式修改并保存页面文档的 `default`。
-
-运行时在副本中生成查询条件。已核验的执行回执若带有实际参数与筛选值，按执行回执消费，不再用URL或模板默认覆盖。
-
-时间绑定查询不会使用无法证明属于当前参数的内嵌旧数据行；经过核验的执行回执仍可提供数据快照。参数确定性指“相同输入生成相同查询条件”，不承诺实时数据服务在不同时间返回相同结果。
-
-### 页面显示
+若来源是同轮创作候选，可额外传 `candidate_ref`。返回的 `modelSummary` 示例（引用仅为示意，实际必须使用工具返回值）：
 
 ```json
 {
-  "title": "流水分析报告",
-  "badge": { "param": "representative-office" },
-  "asOf": {
-    "label": "报告月份",
-    "value": { "param": "report-month" }
-  }
+  "status":"extracted",
+  "extraction_ref":"extraction-example",
+  "candidates":[
+    {"candidate_id":"choice-1","param_id":"region","type":"dimension","label":"区域","multiple":false,"coveredQueries":["tokens"],"uncoveredQueries":[],"defaultSelected":false},
+    {"candidate_id":"choice-2","param_id":"report-period","type":"timeRange","granularity":"month","coveredQueries":["tokens"],"uncoveredQueries":[],"defaultSelected":false}
+  ],
+  "text_slots":[{"slot_id":"text-1","location":"/sections/0/components/0/props/body","candidate_ids":["choice-1"]}],
+  "valuesOmitted":true
 }
 ```
 
-该片段用于报告页头属性，显示实际参数值。引用是整个属性取值，不支持模板字符串拼接。时间参数当前按规范字符串展示；可选参数缺值时，引用所在文本属性按既有规则移除。
+这里只省略有效期、跳过原因等非页面参数字段。`choice-1` 是本次选择用的候选 ID，`region` 才是最终 `params[].id`；`text-1` 是允许修改的文本槽位。它们均由程序返回，不能自行拼造。摘要不含原始取值；完整来源留在程序通道。
 
-## 8. 实际页面与查阅入口
+### 第二步：确认选择和文本
 
-[流水分析报告参数版](pages/flow-analysis-report-params.json)是完整业务演示：
+调用 `apply_page_parameter_selection`：
 
-- 保存“北京代表处”和“2026-02”两个默认值。
-- 12个查询都绑定代表处与报告月份。
-- 7个月度查询取报告当月，2个趋势查询取所在完整自然年；另有3个趋势查询分别取上月、近12个月（含报告月份）、年初至报告月份。
-- 页头引用同一参数。演示数据与真实数据服务接通是不同的验证事项。
+```json
+{
+  "context_ref":"current-context",
+  "extraction_ref":"extraction-example",
+  "selected_ids":["choice-1","choice-2"],
+  "text_choices":[{"slot_id":"text-1","kind":"parameter","candidate_id":"choice-1"}]
+}
+```
 
-进一步查阅：
+此文本选择将整个槽位改为 `{"param":"region"}`。若要改成不含旧值的固定文字，则传 `{"slot_id":"text-1","kind":"literal","text":"Tokens 用量报告"}`。只能修改工具给出的槽位；多处文本必须逐处确认，不能提交任意路径。
 
-- [页面元数据规范](PAGE-METADATA.md)：页面整体结构与版本入口。
-- [生成的参数参考](contracts/metriccanvas/page/reference/params-and-text-values.md)：精确字段、联合分支与合法示例。
-- [时间参数合法夹具](packages/page/fixtures/contract-valid/time-params-page.json)：多查询使用不同窗口。
-- [Schema真源](packages/page/src/schema/)与[时间窗口实现](packages/page/src/time-param.ts)：结构与执行规则的实现依据。
+结果摘要：
 
-版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.5；5.x只走读取规范化，新文档写6.5。
+```json
+{"status":"template_prepared","candidate_ref":"candidate-example","selected_ids":["choice-1","choice-2"],"requiresHumanConfirmation":true,"saved":false}
+```
 
-显式日期/月区间已在6.5实现，以本文首节及生成契约为准；[旧提案](docs/plan/time-range-parameters.md)仅为历史设计资料。
+对应程序信封为 `metriccanvas.parameter-template`。其中 `artifact.document` 才是第 3 节所示的完整无值模板页面；candidate_ref、选择记录、人工确认状态不写入页面。模板和其后续编辑都禁止普通自动保存，须走人工发布。
+
+### 第三步：赋值，交运行时
+
+调用 `resolve_page_parameters`：
+
+```json
+{
+  "context_ref":"current-context",
+  "candidate_ref":"candidate-example",
+  "values":{"region":"欧洲区","report-period":{"start":"2026-07","end":"2026-09","granularity":"month"}}
+}
+```
+
+结果摘要包含 `status: "resolved"`、`instance_ref`、参数声明、有效期，以及 `executed: false`、`saved: false`。完整程序信封为 `metriccanvas.parameter-instance`，其 `artifact.payload.document` 是第 5 节的填值文档；`resolvedPage` 和 `effectiveInputs` 仍是执行过程数据。
+
+**赋值成功不是执行成功。** 可信宿主按 instance_ref 重新验证权限、来源和有效期，再交工作台 RuntimeView 临时运行；不覆盖原模板、不进入保存队列。缺值或非法值不会生成实例。召回场景先由外部服务找到精确模板、装载为新轮次可信上下文，再调用 resolve（可省略 candidate_ref）；不能跨轮次复用旧的候选引用。
+
+## 9. 查阅与验证入口
+
+- [页面元数据规范](PAGE-METADATA.md)：页面整体结构。
+- [完整无值模板夹具](packages/page/fixtures/contract-valid/inline-params-page.json)与[填值页面夹具](packages/page/fixtures/contract-valid/inline-params-values-page.json)：可验证原文。
+- [Tokens 五查询具体页面](packages/page/fixtures/parameter-extraction/tokens-parameter-source.json)：多查询提取示例。
+- [独立解析示例](packages/page/examples/resolve-page-params.ts)：运行 `node --import tsx packages/page/examples/resolve-page-params.ts`，验证两种赋值方式得到相同执行条件，不连接真实数据服务。
+- [提取实现](packages/page/src/extract-page-params.ts)与[解析实现](packages/page/src/resolve-page-params.ts)：接口与失败规则。

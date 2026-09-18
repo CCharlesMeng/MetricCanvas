@@ -4,7 +4,7 @@ import { createAnalysisPageState } from '../../src/lib/workbench/analysis-page-s
 
 function page(id: string): PageDocument {
   return {
-    schemaVersion: '6.0', id, dataSources: {},
+    schemaVersion: '6.5', id, dataSources: {},
     sections: [{
       id: 'main', title: '分析', container: 'panel',
       components: [{ id: 'summary', type: 'text', layout: { span: 12 }, props: { title: '结论', body: id } }]

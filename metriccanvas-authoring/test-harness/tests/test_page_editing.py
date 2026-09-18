@@ -13,7 +13,7 @@ from jsonschema import Draft202012Validator
 
 def page():
     return {
-        "schemaVersion": "6.1", "layout": "report", "id": "edit-example",
+        "schemaVersion": "6.5", "layout": "report", "id": "edit-example",
         "meta": {"description": "manual-description"},
         "dataSources": {"sales": {"fields": {
             "region": {"type": "string", "role": "dimension"},
@@ -83,7 +83,7 @@ class PageEditingTest(unittest.TestCase):
             self.assertIsNone(result["document"])
 
     def test_normalization_alone_is_not_a_content_change(self):
-        baseline = page(); baseline["schemaVersion"] = "6.0"; baseline["layoutForm"] = baseline.pop("layout")
+        baseline = page(); baseline["schemaVersion"] = "6.5"; baseline["layoutForm"] = baseline.pop("layout")
         result = edit(baseline, title(value="Original"))
         self.assertEqual(result["status"], "unchanged")
         self.assertIsNone(result["document"])

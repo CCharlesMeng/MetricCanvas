@@ -14,7 +14,7 @@ it.each(['report', 'dashboard'])('CLI追加迁移%s且原文不变，重复规�
   const output = join(dir, `${layoutForm}.json`);
   execFileSync(process.execPath, ['--import', 'tsx', cli, input, output]);
   const normalized = JSON.parse(readFileSync(output, 'utf8'));
-  expect(normalized).toMatchObject({ schemaVersion: '6.1', layout: layoutForm });
+  expect(normalized).toMatchObject({ schemaVersion: '6.5', layout: layoutForm });
   expect(normalized).not.toHaveProperty('layoutForm');
   expect(normalized.dataSources).toEqual(JSON.parse(before).dataSources);
   expect(readFileSync(input, 'utf8')).toBe(before);

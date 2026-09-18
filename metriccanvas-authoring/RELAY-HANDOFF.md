@@ -14,7 +14,7 @@
 
 ## 0. 先看五个阻断事实
 
-6.5 参数模板交接采用 TS 确定性程序与 Python ParameterProgram 接缝，完整页面/候选原值留在程序通道；Relay 只编排创作期、展示安全摘要和引导人工确认。它不是新增 MCP 工具，也不接管外部召回及临时渲染。接线、版本、错误和完整例子见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)；现有发布强协议不得代替当前 Java 单次写入。
+6.5 参数交接采用 TS 确定性程序与 Python ParameterProgram 接缝，统一服务新增提取、应用选择、赋值解析三个 MCP 工具。完整页面/候选原值留在程序通道；Relay 展示安全摘要并引导人工确认。`metriccanvas.parameter-template` 必须进入人工发布，`metriccanvas.parameter-instance` 通过可信读取进入工作台只读临时运行，两者均不能走普通候选自动保存。模板检索/召回仍由外部提供方负责。接线、版本、错误和完整例子见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)；现有发布强协议不得代替当前 Java 单次写入。
 
 > [!WARNING]
 > `Page Artifact Adapter` 未安装前，不得向真实模型开放

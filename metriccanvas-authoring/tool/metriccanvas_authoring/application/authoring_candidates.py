@@ -90,6 +90,9 @@ class AuthoringCandidates:
                   parent_ref: str | None = None) -> dict:
         self.ensure_available()
         parent = await self.require(parent_ref, prepared) if parent_ref is not None else None
+        operations = deepcopy(operations)
+        if parent and any(op.get('type') == 'parameter_selection' for op in parent['operations']):
+            operations.append({'type': 'parameter_selection', 'requiresHumanConfirmation': True})
         try:
             digest = document_sha256(document)
         except Exception:

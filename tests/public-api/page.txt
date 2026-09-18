@@ -135,6 +135,7 @@ PageParseResult
 PageQuery
 PageSection
 ParamResolutionIssue
+ParameterProgramRequest
 PieChartComponent
 PieChartProps
 PivotColumn
@@ -275,6 +276,7 @@ resolvePageParams
 resolveRelativeTime
 resolveTextValues
 rowKinds
+runPageParameterProgram
 sectionBackdrop
 supportedVersions
 textValueScope
