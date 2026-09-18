@@ -196,6 +196,21 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
+    if int(value["schemaVersion"].split(".")[1]) < 5:
+        def visit(node: Any, path: str, key: str) -> None:
+            if isinstance(node, list):
+                for index, child in enumerate(node):
+                    visit(child, f"{path}/{index}", key)
+            elif isinstance(node, Mapping):
+                for name, child in node.items():
+                    child_path = f"{path}/{_escape_pointer(name)}"
+                    if name == key and isinstance(child, str) and child in ("compact-million-0", "compact-million-1", "compact-million-2"):
+                        issues.append(PageContractIssue("SCHEMA_ERROR", child_path, "百万展示格式由6.5引入"))
+                    else:
+                        visit(child, child_path, key)
+        for source_id, source in value.get("dataSources", {}).items():
+            visit(source.get("fields"), f"/dataSources/{_escape_pointer(source_id)}/fields", "defaultFormat")
+        visit(value.get("sections"), "/sections", "format")
     if value['schemaVersion'] != '6.5':
         for i, p in enumerate(value.get('params', [])):
             if 'required' not in p or 'value' in p or p['type'] == 'timeRange':
@@ -250,6 +265,9 @@ NUMERIC_FORMATS = frozenset(
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",

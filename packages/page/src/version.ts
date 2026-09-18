@@ -32,6 +32,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'million-formats': {
+    minor: 5, description: '按百万呈现数值，支持0/1/2位小数',
+    usedAt: millionFormatPaths
+  },
   'inline-page-params': {
     minor: 5,
     description: '页面参数 value、timeRange 与 DQE 取值位置的受控原位引用',
@@ -752,4 +756,30 @@ function componentPaths(
 
 function escapePointer(segment: string): string {
   return segment.replaceAll('~', '~0').replaceAll('/', '~1');
+}
+
+/** 只检查格式声明；原始数据行中的同名键不声明展示能力。 */
+function millionFormatPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  function visit(value: unknown, path: string, key: string): void {
+    if (Array.isArray(value)) {
+      value.forEach((child, index) => visit(child, `${path}/${index}`, key));
+      return;
+    }
+    const node = record(value);
+    if (!node) return;
+    for (const [name, child] of Object.entries(node)) {
+      const childPath = `${path}/${escapePointer(name)}`;
+      if (name === key && typeof child === 'string' && /^compact-million-[012]$/.test(child)) paths.push(childPath);
+      else visit(child, childPath, key);
+    }
+  }
+  for (const [id, source] of Object.entries(record(record(document)?.dataSources) ?? {})) {
+    visit(record(source)?.fields, `/dataSources/${escapePointer(id)}/fields`, 'defaultFormat');
+  }
+  walkDocumentComponents(document, (component, path) => visit(component.props, `${path}/props`, 'format'));
+  for (const { path, reference } of collectTextValueReferences(document)) {
+    if (reference.format?.startsWith('compact-million-')) paths.push(`${path}/format`);
+  }
+  return [...new Set(paths)];
 }

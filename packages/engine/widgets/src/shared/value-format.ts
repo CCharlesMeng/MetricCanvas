@@ -35,6 +35,12 @@ export function formatValue(
       return `${wanUnits(numeric, 0)}万`;
     case 'compact-wan-1':
       return `${wanUnits(numeric, 1)}万`;
+    case 'compact-million-0':
+      return `${formatNumber(numeric / 1e6, 0, true)}百万`;
+    case 'compact-million-1':
+      return `${formatNumber(numeric / 1e6, 1, true)}百万`;
+    case 'compact-million-2':
+      return `${formatNumber(numeric / 1e6, 2, true)}百万`;
     case 'compact-yi-1':
       return `${formatNumber(numeric / 1e8, 1, true)}亿`;
     case 'cny-adaptive':

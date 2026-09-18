@@ -24,7 +24,7 @@
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
 
-页面协议 6.5。结构真源为本册[schema.json](schema.json)，SHA256 `6ef401964cd74ad2805a8257e75f43ae5cb6b20f3f3479bb2ad49b481ed3ba60`。字段表自动生成；可选不等于有默认值。
+页面协议 6.5。结构真源为本册[schema.json](schema.json)，SHA256 `74d191638111da2be8353b210093f832ed2babed21b3e93cacd8a41b996f17c0`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -86,7 +86,7 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -97,6 +97,9 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀（6.5）。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀（6.5）。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀（6.5）。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "percent-0" | 原数值加百分号，0位小数。 |

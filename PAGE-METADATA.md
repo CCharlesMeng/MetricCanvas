@@ -28,6 +28,51 @@
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 
+## 参数场景索引与使用
+
+[页面参数现行方案](PAGE-PARAMETERS.md)区分页面文档、模板、本次输入和执行副本。下表按用户操作索引完整用法，查询使用原位参数引用。
+
+| 场景 | 使用入口 |
+|---|---|
+| 初次生成并运行具体页面 | [场景一](PAGE-PARAMETERS.md#2-场景一初次生成并运行) |
+| 提取参数，形成无值模板；确认文本、预览与发布 | [场景二](PAGE-PARAMETERS.md#3-场景二提取参数形成无值模板) |
+| 赋值运行或直接运行填值文档 | [场景三](PAGE-PARAMETERS.md#4-场景三赋值运行或直接运行填值文档) |
+| 召回模板，改用另一组值 | [场景四](PAGE-PARAMETERS.md#5-场景四召回模板赋予另一组值) |
+| 用 MCP 提取、确认与赋值 | [MCP 调用流程](PAGE-PARAMETERS.md#8-通过-mcp-调用不需要模型填写过程证据) |
+
+## 维度参数
+
+`type: "dimension"` 确定业务范围，如代表处或地区；用 `value` 保存本次值。查询在 `filter.dims[].dim_value_list` 写 `{ "param": "region" }`，实际维度由同项的 `dim_name` 指定。多值使用 `multiple: true` 与字符串数组。文本属性用同一参数引用显示实际范围。
+
+详见[维度参数](PAGE-PARAMETERS.md#维度参数)。需要打开后可修改范围时，用 `filters[].initialParam` 初始化维度筛选器，再由 `filterBindings` 接管查询，详见[参数与页内筛选](PAGE-PARAMETERS.md#7-参数与页内筛选)。
+
+## 时间参数
+
+时间单独区分“明确区间”和“报告基准期”，不能互换使用。完整声明、查询示例与约束见[时间参数](PAGE-PARAMETERS.md#时间参数)。
+
+| 场景 | 页面元数据怎样使用 |
+|---|---|
+| 查看1—6月这样的明确区间 | `type: "timeRange"`，值为 `start/end/granularity`；查询起止双端引用同一参数的 `part:start/end` |
+| 同一基准月份驱动多种查询窗口 | `type: "time"`、`granularity: "month"`、`value: "2026-06"`；各查询双端引用同一参数并声明一致窗口 |
+| 当月、全年、上期 | `window: {kind:"period",unit:"month"}`；全年用 `year`，上期加 `offset:-1` |
+| 近12个月、近7天 | `lastN` 窗口，月参数用 `unit:"month",n:12`；日参数用 `unit:"day",n:7` |
+| 年初/月初至报告基准期 | `yearToDate` / `monthToDate`，不带 `unit`，不读取系统今天 |
+| 页面显示当前期间 | 文本属性引用同一时间参数，显示与查询输入一致；参见完整填值文档 |
+
+报告基准期决定“本次看哪一期”，窗口决定“读取哪些期间”，指标口径决定“一个值代表什么”。例如6月分区已返回年累计值时，应读取6月，不因“年累计”再查1—6月求和。详细窗口示例见[已支持的窗口](PAGE-PARAMETERS.md#已支持的窗口)。
+
+### 时间初始化、保存与无数据
+
+用 `value` 或 `suppliedValues` 输入本次时间，必需值缺失或非法时先处理解析问题；`timeRange` 没有 URL 编码协议。填值文档保留引用，执行副本解析为具体条件，运行不会自动保存为页面资产。
+
+指定期间无数据就显示空结果，不回退最新期；服务故障与权限错误仍显示查询错误。时间参数不能与时间筛选器同时控制同一查询，不以旧查询初始行兜底。详见[初始化、保存与约束](PAGE-PARAMETERS.md#时间初始化保存与约束)和[无数据处理](PAGE-PARAMETERS.md#无数据如何处理)。
+
+## 百万单位的使用（6.5）
+
+在组件字段绑定中设置 `"format": "compact-million-2"`，例如 `{ "data": "main", "field": "revenue", "format": "compact-million-2" }`，即可将原始值1,234,567呈现为“1.23百万”。另有 `compact-million-0/1`，分别保留0/1位小数；字段 `defaultFormat` 与数值参数文本引用同样支持。原始数据保留基础单位，不能预先除以百万再套用格式。
+
+精确规则、优先级和金额用法见[字段绑定与格式](contracts/metriccanvas/page/reference/field-bindings-and-formats.md#按百万呈现65)。
+
 ## 旧锚点导航
 
 原章节已迁入模块，以下锚点保留旧链接定位；字段表以生成参考为准。
