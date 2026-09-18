@@ -1,0 +1,850 @@
+{
+  "schemaVersion": "6.4",
+  "id": "local-page-9750d0f54fe84f49b28fbee1bc5b1be7",
+  "layout": "report",
+  "dataSources": {
+    "flow-overview": {
+      "fields": {
+        "field-938cc168755ad850046f": {
+          "queryField": "scope",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "范围"
+        },
+        "field-1d293d31e5b788f26c93": {
+          "queryField": "current-month",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "本月",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-a2b73b1a1d9549daa94e": {
+          "queryField": "annual-total",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "年累计",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-25118df383aaefe0fc94": {
+          "queryField": "year-over-year",
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "同比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "field-bd23e98313f6273a2715": {
+          "queryField": "month-over-month",
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "环比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "field-03b4ae958d8dfd3bd369": {
+          "queryField": "annual-projection",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "年度推演",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-8b12408eba3b31e0a383": {
+          "queryField": "target-support-rate",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "推演目标支撑率",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "scope"
+                ],
+                "output_metrics": [
+                  "current-month",
+                  "annual-total",
+                  "year-over-year",
+                  "month-over-month",
+                  "annual-projection",
+                  "target-support-rate"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "scope": "total",
+              "current-month": 11600000,
+              "annual-total": 22900000,
+              "year-over-year": 12.8,
+              "month-over-month": 3.4,
+              "annual-projection": 155400000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "core",
+              "current-month": 8400000,
+              "annual-total": 16600000,
+              "year-over-year": 10.4,
+              "month-over-month": 2.4,
+              "annual-projection": 111600000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "communication",
+              "current-month": 3200000,
+              "annual-total": 6300000,
+              "year-over-year": 18.6,
+              "month-over-month": 3.2,
+              "annual-projection": 43800000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "public-region",
+              "current-month": 8140000,
+              "annual-total": 16010000,
+              "year-over-year": 8.8,
+              "month-over-month": 3.5,
+              "annual-projection": 112260000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "stable",
+              "current-month": 6100000,
+              "annual-total": 12050000,
+              "year-over-year": 7.6,
+              "month-over-month": 2.5,
+              "annual-projection": 81300000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "one-off",
+              "current-month": 2040000,
+              "annual-total": 3960000,
+              "year-over-year": 13.5,
+              "month-over-month": 6.25,
+              "annual-projection": 30960000,
+              "target-support-rate": 80
+            },
+            {
+              "scope": "projection",
+              "current-month": null,
+              "annual-total": null,
+              "year-over-year": null,
+              "month-over-month": null,
+              "annual-projection": 112260000,
+              "target-support-rate": 80
+            }
+          ],
+          "totalCount": 7
+        }
+      }
+    },
+    "flow-trend": {
+      "fields": {
+        "field-6afa4f96a8242ff8d337": {
+          "queryField": "month",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "月份"
+        },
+        "field-74128c4eaf750602163b": {
+          "queryField": "core-actual",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "Core流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-44ae7cc757cdc82060f2": {
+          "queryField": "communication-actual",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "云通信流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-3419fbbdc3153fbe936c": {
+          "queryField": "core-forecast",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "Core流水(预测)",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-da6150c3b4d8406a9620": {
+          "queryField": "communication-forecast",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "云通信流水(预测)",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month"
+                ],
+                "output_metrics": [
+                  "core-actual",
+                  "communication-actual",
+                  "core-forecast",
+                  "communication-forecast"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-12"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "month": "1月",
+              "core-actual": 122000000,
+              "communication-actual": 106000000,
+              "core-forecast": null,
+              "communication-forecast": null
+            },
+            {
+              "month": "2月",
+              "core-actual": 124000000,
+              "communication-actual": 107000000,
+              "core-forecast": null,
+              "communication-forecast": null
+            },
+            {
+              "month": "3月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 126000000,
+              "communication-forecast": 108000000
+            },
+            {
+              "month": "4月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 128000000,
+              "communication-forecast": 109000000
+            },
+            {
+              "month": "5月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 130000000,
+              "communication-forecast": 110000000
+            },
+            {
+              "month": "6月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 132000000,
+              "communication-forecast": 111000000
+            },
+            {
+              "month": "7月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 134000000,
+              "communication-forecast": 112000000
+            },
+            {
+              "month": "8月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 136000000,
+              "communication-forecast": 113000000
+            },
+            {
+              "month": "9月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 138000000,
+              "communication-forecast": 114000000
+            },
+            {
+              "month": "10月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 140000000,
+              "communication-forecast": 115000000
+            },
+            {
+              "month": "11月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 142000000,
+              "communication-forecast": 116000000
+            },
+            {
+              "month": "12月",
+              "core-actual": null,
+              "communication-actual": null,
+              "core-forecast": 144000000,
+              "communication-forecast": 117000000
+            }
+          ],
+          "totalCount": 12
+        }
+      }
+    },
+    "flow-structure": {
+      "fields": {
+        "field-6afa4f96a8242ff8d337": {
+          "queryField": "month",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "月份"
+        },
+        "field-44ca20f73a36b72fee37": {
+          "queryField": "stable-actual",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "稳定流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-e15eb29a17f36b7ee9d1": {
+          "queryField": "one-off-actual",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "一次性流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-674c99cf6edc55258e2a": {
+          "queryField": "stable-forecast",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "稳定流水(预测)",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-fe9edc0c7093396f7622": {
+          "queryField": "one-off-forecast",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "一次性流水(预测)",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month"
+                ],
+                "output_metrics": [
+                  "stable-actual",
+                  "one-off-actual",
+                  "stable-forecast",
+                  "one-off-forecast"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-12"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "month": "1月",
+              "stable-actual": 116500000000,
+              "one-off-actual": 102200000000,
+              "stable-forecast": null,
+              "one-off-forecast": null
+            },
+            {
+              "month": "2月",
+              "stable-actual": 118000000000,
+              "one-off-actual": 103400000000,
+              "stable-forecast": null,
+              "one-off-forecast": null
+            },
+            {
+              "month": "3月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 119500000000,
+              "one-off-forecast": 104600000000
+            },
+            {
+              "month": "4月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 121000000000,
+              "one-off-forecast": 105800000000
+            },
+            {
+              "month": "5月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 122500000000,
+              "one-off-forecast": 107000000000
+            },
+            {
+              "month": "6月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 124000000000,
+              "one-off-forecast": 108200000000
+            },
+            {
+              "month": "7月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 125500000000,
+              "one-off-forecast": 109400000000
+            },
+            {
+              "month": "8月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 127000000000,
+              "one-off-forecast": 110600000000
+            },
+            {
+              "month": "9月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 128500000000,
+              "one-off-forecast": 111800000000
+            },
+            {
+              "month": "10月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 130000000000,
+              "one-off-forecast": 113000000000
+            },
+            {
+              "month": "11月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 131500000000,
+              "one-off-forecast": 114200000000
+            },
+            {
+              "month": "12月",
+              "stable-actual": null,
+              "one-off-actual": null,
+              "stable-forecast": 133000000000,
+              "one-off-forecast": 115400000000
+            }
+          ],
+          "totalCount": 12
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "流水分析报告（本地样例）"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "title": "流水概览",
+      "container": "panel",
+      "components": [
+        {
+          "id": "ov-current",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "本月流水（2026-02）",
+            "rows": [
+              {
+                "label": "本月",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-1d293d31e5b788f26c93",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-annual",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "年累计流水",
+            "rows": [
+              {
+                "label": "年累计",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-a2b73b1a1d9549daa94e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-yoy",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "同比",
+            "rows": [
+              {
+                "label": "同比",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-25118df383aaefe0fc94",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-mom",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "环比",
+            "rows": [
+              {
+                "label": "环比",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-bd23e98313f6273a2715",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-projection",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "年度推演",
+            "rows": [
+              {
+                "label": "年度推演",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-03b4ae958d8dfd3bd369",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "projection"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-support",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "title": "推演目标支撑率",
+            "rows": [
+              {
+                "label": "推演目标支撑率",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-8b12408eba3b31e0a383",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "projection"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-trend"
+          },
+          "props": {
+            "title": "月度流水趋势（1-2月实际，3-12月预测）",
+            "xField": "field-6afa4f96a8242ff8d337",
+            "series": [
+              {
+                "field": "field-74128c4eaf750602163b",
+                "label": "Core流水"
+              },
+              {
+                "field": "field-44ae7cc757cdc82060f2",
+                "label": "云通信流水"
+              },
+              {
+                "field": "field-3419fbbdc3153fbe936c",
+                "label": "Core流水(预测)"
+              },
+              {
+                "field": "field-da6150c3b4d8406a9620",
+                "label": "云通信流水(预测)"
+              }
+            ]
+          }
+        },
+        {
+          "id": "ov-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本页为本地样例数据，非生产数据，仅用于演示页面结构。概览账期为 2026-02；趋势与结构区间为 2026-01 至 2026-12，其中 1-2 月为实际值，3-12 月为已有预测样例，两者在图表中分列展示，不合并。三个来源相互独立，数值不具备跨源对账口径，不做互算或合计。金额与百分比分开展示。",
+            "title": "口径说明"
+          }
+        },
+        {
+          "id": "structure-scope-overview",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope\n流水趋势；2026-01 至 2026-12；month；按month"
+          }
+        }
+      ]
+    },
+    {
+      "id": "structure",
+      "title": "结构分析",
+      "container": "panel",
+      "components": [
+        {
+          "id": "st-trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-structure"
+          },
+          "props": {
+            "title": "稳定与一次性流水月度走势（1-2月实际，3-12月预测）",
+            "xField": "field-6afa4f96a8242ff8d337",
+            "series": [
+              {
+                "field": "field-44ca20f73a36b72fee37",
+                "label": "稳定流水"
+              },
+              {
+                "field": "field-e15eb29a17f36b7ee9d1",
+                "label": "一次性流水"
+              },
+              {
+                "field": "field-674c99cf6edc55258e2a",
+                "label": "稳定流水(预测)"
+              },
+              {
+                "field": "field-fe9edc0c7093396f7622",
+                "label": "一次性流水(预测)"
+              }
+            ]
+          }
+        },
+        {
+          "id": "st-detail",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-structure"
+          },
+          "props": {
+            "title": "结构明细（按月份）",
+            "columns": [
+              {
+                "field": "field-6afa4f96a8242ff8d337",
+                "title": "月份"
+              },
+              {
+                "field": "field-44ca20f73a36b72fee37",
+                "title": "稳定流水"
+              },
+              {
+                "field": "field-e15eb29a17f36b7ee9d1",
+                "title": "一次性流水"
+              },
+              {
+                "field": "field-674c99cf6edc55258e2a",
+                "title": "稳定流水(预测)"
+              },
+              {
+                "field": "field-fe9edc0c7093396f7622",
+                "title": "一次性流水(预测)"
+              }
+            ]
+          }
+        },
+        {
+          "id": "st-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "结构来源与概览、趋势来源相互独立，不可跨源对账。稳定流水与一次性流水按原始维度逐月展示，不做跨行求和；实际与预测分列，避免混淆。",
+            "title": "结构口径说明"
+          }
+        },
+        {
+          "id": "structure-scope-structure",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n流水结构；2026-01 至 2026-12；month；按month"
+          }
+        }
+      ]
+    }
+  ]
+}

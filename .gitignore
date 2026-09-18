@@ -34,3 +34,6 @@ deliverables/
 
 # agent 可视化工具产物,不属于仓库交付内容
 viz/
+
+# 模型评测原始运行目录留在本地；精选页面与汇总说明放在 evidence 顶层交付。
+docs/plan/scenario-guided-authoring/refinement/evidence/*/

@@ -1,68 +1,61 @@
-# MetricCanvas 创作架构与维护导航
+# 当前 Skill 架构与模块说明
 
-更新：2026-09-16，包含 Java 页面资产单次提交改造；此前集成基线为 `d5aa4be`。本文描述实际源码和能力边界；[目标架构](../docs/plan/2026-09-15-authoring-agent-architecture.md)保留设计解释与目标目录。
+更新：2026-09-18。代码基线：`ad96e28`（本次核对的 `origin/main`）。面向 Skill、Python Tool 和平台维护者；Relay 实施步骤见 [对接指南](RELAY-HANDOFF.md)。本文说明实现，不新增协议或部署能力。
 
-当前 Bundle 为 `0.2.0`，状态 `local-core-verified-external-validation-blocked`。**统一创作的本仓实现与确定性验证已完成，真实模型、内部迁移及生产接入尚未验收。** 完整进度见[交付就绪清单](../docs/plan/2026-09-15-unified-authoring-release-readiness.md)。
+## 1. 范围、版本与历史基线
 
-## 当前 Java 接入裁决（2026-09-16）
+当前主体是 `metriccanvas-platform-authoring`：统一处理平台新建页面、修改当前页面和配置问答。它与普通问数的 `metriccanvas-page-builder` 并存，不是把问数链路全部替换掉。
 
-[ADR-0080](../docs/adr/0080-java-assets-single-attempt-save-and-status-publication.md) 规定当前保存流程：新 Java Adapter 的 `single_save` 只供持久执行协调器单次调用；确认回执的完整文档存于程序通道，提交结果返回 programToken，前端消费回执而不重复保存。未知写入不重发；服务没有声明的 lookup/exactRead 保持关闭。裸生命周期 MCP 不能绕开持久执行记录调用单次保存。旧强保存 Adapter 仅供既有兼容消费者与测试，不作为新部署回退。
+| 标识 | 当前值及含义 |
+| --- | --- |
+| 代码基线 | `ad96e28`；部署必须额外固定提交和文件摘要 |
+| Bundle / Python 包 | `0.2.0`；重构前后未更名为另一个主版本，单看此值无法识别实现代际 |
+| Authoring 契约版本 | `0.2.0`；来源为 `contract-lock.json` |
+| 页面 Schema | 当前生成 `6.5`，6.x 仅支持 6.5；页面读取兼容规则由产品契约负责 |
+| 页面结构计划 | 支持 `1` / `2` / `3`，新建优先 `3`；这是创作输入版本，不是页面 Schema |
+| Bundle 状态 | `local-core-verified-external-validation-blocked`；不能解释为生产集成完成 |
 
-前端部署通过 `__METRICCANVAS_AUTHORING__` 注入可信 LanguagePort；其 connect 钩子将既有盘古指令连接到创作协调器，saved 结果可携带程序 delivery（binding + draft）。这是本仓接缝，不是虚构的盘古 SDK 方法或已验收外部事件。完整部署仍需提供方完成该 Adapter。
+主要旧版对照为 `9d4f444`（`2a52f43` 的父提交）：已经完成 Relay/Python 迁移，平台仍拆成 create/edit 两个 Skill。更早的 Relay 问数说明以 `390b2bc` 为基线。另用 `14526fb` 区分“统一创作已存在”与本轮场景化/v3 增量，避免把所有能力都算作本轮新增。参数原位引用与三个参数 MCP 工具已纳入本次集成交付。
 
-## 1. 两条消费链与三个职责
+## 2. 核心分工
 
 6.5 参数由 TS Page 包负责 extract/applySelection/resolve，Python `application.page_parameters` 管理可信来源、提取记录、选择与临时实例，并通过三个独立 MCP 工具投影安全摘要。工作台保留 `parameterSourcePort` 人工发布通道，新增 `parameterInstancePort` 只读临时运行通道；没有为 Java 补造 lookup/lease。接口、可运行示例与外部缺口见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
 
-| 消费链 | Skill / 服务 | 状态与保存边界 |
-|---|---|---|
-| Platform 创建、当前页修改、配置问答 | [metriccanvas-platform-authoring](./skill/metriccanvas-platform-authoring/SKILL.md) / `metriccanvas-platform-content` | 同一入口，可信上下文门禁；内容工具只产生候选，可信程序提交最终草稿；发布由工作台人工确认后更新资产状态 |
-| 普通问数与探索 | [metriccanvas-page-builder](./skill/metriccanvas-page-builder/SKILL.md) / [server.py](./tool/metriccanvas_authoring/server.py) | 保留原受治理发现、页面构建产物、临时页面态与显式沉淀边界；不强制消费统一创作的新端口 |
+Skill 是模型的决策说明；Tool 是可验证的执行能力；Relay 是运行和可信交接的集成方。最终页面仍由同一个统一运行时渲染。
 
-原 `metriccanvas-platform-create` / `metriccanvas-platform-edit` 已退出分发。`define-report` 可作为统一作者的部署注册名，不是第二份 Skill。旧 `content_server`、`build_page` 等兼容入口仍服务存活消费者，不能作为统一部署失败时的回退。
-
-- **模型与 Skill**：理解意图、定位目标、选择按需参考、提出受控请求；不掌握身份、完整页面、任意查询或保存载荷。
-- **可信程序与 Python 用例**：验证当前轮次，读取投影，产生/选择候选，协调提交、取消和恢复。
-- **外部提供方**：Relay 拥有真实模型循环与执行接线，Java 页面资产服务拥有修订和写入结果；本仓端口与 SQLite 实现不证明这些服务已接通。
-
-决策依据：[ADR-0064](../docs/adr/0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)、[ADR-0078](../docs/adr/0078-dimension-values-templates-and-page-instances.md)、[ADR-0079](../docs/adr/0079-trusted-authoring-turns-gate-content-tools.md)、[ADR-0080](../docs/adr/0080-java-assets-single-attempt-save-and-status-publication.md)。
-
-## 2. 当前统一创作调用链
-
-```mermaid
-flowchart TD
-  UI["工作台：锁新输入 → flush → 同步"] --> L["可信程序：当前资源读取 + 固定修订基线 + 身份"]
-  L --> T["authoring_turns：本轮完整基线与门禁"]
-  T -->|"context_ref + 有界摘要"| M["模型 + 统一 Skill"]
-  M --> C["统一 MCP 八工具"]
-  C --> T
-  C --> A["Application / Domain：发现、构造、编辑、映射、校验"]
-  A --> K["不可变候选存储"]
-  K -->|"摘要 + candidateRef"| M
-  K --> S["可信最终候选选择 / authoring_submission"]
-  S --> R["冻结操作及载荷 / 持久执行记录"]
-  R --> LC["Lifecycle：单次保存与回执验证"]
-  LC --> J["Java 页面资产提供方"]
-  R --> RE["authoring_recovery：授权与已有执行记录核对"]
-  RE --> R
-  LC --> P["程序回执存储 / programToken"]
-  P -->|"Relay Adapter 交付 binding + draft"| UI
+```text
+平台用户指令 / 当前页面
+  → 可信程序准备创作轮次、身份与固定基线
+  → Relay 模型 + Skill：业务问题、组件选择、页面结构计划
+  → 统一 MCP 门禁 → Python：取数验真、字段映射、受控装配、整页校验
+  → 不可变候选 ──安全摘要──→ 模型定向修订
+  → 可信程序选定最终候选 → 持久执行记录 → Java 单次保存
+  → 已验证回执 / 页面文档 → 平台与统一运行时
 ```
 
-图中本仓程序、端口与本地替身均有实现；真实身份、Relay 产物分流/回执交接与 Java YAML 行为仍待接入验证；远端幂等查询和历史精确回读不属于本期前置。独立启动统一 CLI 可列出八工具，未注入可信 current-turn 提供方时返回 `CURRENT_TURN_UNAVAILABLE`，不读取旧 token 代替最新页面。
+模型不接收完整查询、数据行、页面基线或保存载荷；允许的静态业务说明和结构计划不等于任意页面 JSON。内容工具不保存、不发布；保存与恢复属于可信程序协调，发布由平台明确操作。普通问数保留临时页面态及用户显式沉淀边界。
 
-### 每轮与跨轮
+## 3. Skill 层：决策与参考如何维护
 
-1. 工作台封闭新人工写入口，收敛正在编辑的输入并等待同步；失败保留本地工作。
-2. 可信程序按资源取得当前文档及其修订基线，注册身份、页、请求/运行/轮次、能力和完整基线；真正新建使用明确空基线。
-3. 模型只获得引用与摘要。工具每次重新验证当前可信轮次；补读绑定同一修订，文字明确目标优先于选中状态。
-4. 内容工具生成不可变候选，同轮续写保留根基线。独立成功操作可组成合法子集，失败依赖不留下悬空组件。
-5. 可信程序只提交选定的最终候选：先持久化冻结操作和载荷，单次调用生命周期，再验证保存响应中的完整文档、资源、修订与草稿状态。无变化、全失败或最终回到原内容不新增修订。
-6. 回执未知时只核对程序已有记录；未收到可信成功回执则保留未知状态并停止。取消、预算耗尽、重启和预览失败不重复写入。恢复重新核实当前身份的权限，不复活旧模型编辑轮次。
+唯一入口：[SKILL.md](skill/metriccanvas-platform-authoring/SKILL.md)。整个目录一起分发；只复制入口文件会丢失工作流及参考。
 
-本轮 hash 校验可信 `documentJson` 的精确 UTF-8 字节，避免 TS/Python 数字重序列化差异；候选 canonical hash 用于完整性检查，不证明 Java 已支持幂等或持久化哈希。结构向量、hash 或引用本身不证明来源或授权。
+| 模块 | 职责与加载条件 |
+| --- | --- |
+| `workflows/create.md` | 明确新建：发现能力，规划业务章节，一次提交完整计划，检查并修订候选 |
+| `workflows/edit.md` | 既有页修改或同轮续写：只改目标设置，保留未触及内容；不套新建默认 |
+| `references/tools.md` | 首次调用前加载：实际服务、参数、通道、可信上下文与交接规则 |
+| `references/reading-design.md` | 完整创建或整体重组：阅读任务、信息层级、组件选型、模块标题、业务文案 |
+| `references/layouts/report.md` / `dashboard.md` | 新建或显式切换布局形态时加载：容器及占位默认，不提供任意 CSS |
+| `references/scenarios.md` / `scenarios/*.md` | 经营报告、用量报告等示例组合；按场景加载，不强制固定章节数量 |
+| `references/examples.md` / `errors.md` | 输入疑问和错误分支按需读取 |
 
-## 3. 模型工具与程序接口
+布局范式分三层维护，不能只往提示词加规则：
+
+1. **阅读决策**在 Skill：多组件业务模块保留分区标题；同层级三张指标卡显式 `width: "third"`，四张显式 `width: "half"`；业务正文不逐章展示执行口径。用户设置和主次层级优先。
+2. **默认值与编译规则**在 [section-patterns.json](contracts/authored/section-patterns.json) 及 Domain：pattern 提供相对占位基线；`custom` 仍受同样的字段、组件和结构约束。
+3. **实际呈现**在产品组件和统一运行时：白底、响应式、格式化、图表高度。报表指标组/图表章节优先 `panel`，纯表格或文字小节可用 `card`；`plain` 是透明容器。指标卡白底由产品组件支持，不靠模型填写颜色。
+
+三卡/四卡和默认模块标题是 Skill 决策约定，不是校验器对所有合法页面的硬限制。结构计划 v3 的可选 `title` 也不意味着创作时默认省略标题。
 
 八工具的实际作者是 [unified_content_mcp.py](./tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py)，均要求 `context_ref`：
 
@@ -77,77 +70,93 @@ flowchart TD
 | `apply_page_parameter_selection` | 按受控候选/槽位选择形成无值模板候选，必须人工发布 |
 | `resolve_page_parameters` | 确定性赋值，产生只读临时实例，不执行查询、不保存 |
 
-`compose_page` 与 `create_content_page` 分别保留取数规格装配与显式混合组合能力，不是两个可竞争的 Skill。实际输入 Schema 由工具注册生成；模型不填写 `page_id`、旧 `baseline_token`、完整页面、DQE 或数据行。
+## 4. 输入、候选与最终页面是不同对象
+
+| 对象 | 谁产生 / 谁消费 | 内容与用途 |
+| --- | --- | --- |
+| 页面构建规格 `spec` | 模型 → `compose_page` | 取数单元驱动的快速装配，按口径组织；兼容普通问数设计 |
+| 页面结构计划 `request.plan` | 模型 → `create_content_page` | `dataRequests` 与 `sections[].blocks[]` 分离；一源多组件、跨口径同章、显式用途与呈现 |
+| 创作候选 | Python → 可信存储/程序 | `rootBinding`、完整 `document`、hash、版本与 operations 审计；可保留结构状态及查询复用证据 |
+| 页面元数据 | Python → 校验器/平台/统一运行时 | 普通页面 Schema；不夹带结构计划或模型推理状态 |
 
 完整候选保留在 `structuredContent.artifactEnvelope` 程序通道，只向模型提供 `modelSummary`。生命周期保存、候选最终选择与执行记录核对由可信程序调用；本期发布由工作台明确发起，不作为这八个内容工具的直接写入权限。参数模板及其后续编辑不能走普通候选自动保存；临时实例不进入候选存储。详见唯一模型侧说明[工具与部署约定](./skill/metriccanvas-platform-authoring/references/tools.md)。
 
-## 4. 修改功能时从哪里进入
+v3 数据块的 `purpose` 表达用途，`component` 选择受控组件，`width` 表达语义宽度；`presentation` 只开放已有实现的呈现族：
 
-Python 包继续位于 `tool/metriccanvas_authoring/`；没有搬到目标架构中的 `src/runtime/ports/`。按实际职责复用现有目录：
+- `metric-summary` → `metricCard`：主值行与有证据的变化值，支持 `compactSummary` / `compactStrip`。
+- `bar-comparison` → `barChart`：横向、堆叠等受控选项。
+- `record-list` → `table`：密度、副标题、列对齐与视觉选项。
 
-| 问题 / 职责 | 实际实现 |
-|---|---|
-| Skill 路由与参考加载 | [SKILL.md](./skill/metriccanvas-platform-authoring/SKILL.md)、[create](./skill/metriccanvas-platform-authoring/workflows/create.md)、[edit](./skill/metriccanvas-platform-authoring/workflows/edit.md) |
-| 统一 CLI 与依赖组装 | [unified_content_server.py](./tool/metriccanvas_authoring/unified_content_server.py)、[authoring_bootstrap.py](./tool/metriccanvas_authoring/authoring_bootstrap.py) |
-| 本轮身份/精确快照/目标/投影 | [authoring_turns.py](./tool/metriccanvas_authoring/application/authoring_turns.py) |
-| 候选根基线、不可变版本与摘要 | [authoring_candidates.py](./tool/metriccanvas_authoring/application/authoring_candidates.py) |
-| 最终一次提交与回执验证 | [authoring_submission.py](./tool/metriccanvas_authoring/application/authoring_submission.py) |
-| 取消、预算、授权与原操作恢复 | [authoring_recovery.py](./tool/metriccanvas_authoring/application/authoring_recovery.py) |
-| 本地持久候选/执行记录/程序产物 | [sqlite_authoring_state.py](./tool/metriccanvas_authoring/adapters/outbound/sqlite_authoring_state.py) |
-| 生命周期保存与端口；兼容发布规则不用于当前 Java | [lifecycle.py](./tool/metriccanvas_authoring/application/lifecycle.py)、[lifecycle_publish.py](./tool/metriccanvas_authoring/application/lifecycle_publish.py)、[lifecycle_ports.py](./tool/metriccanvas_authoring/application/lifecycle_ports.py) |
-| 源描述与稳定字段映射 | [source_description_ports.py](./tool/metriccanvas_authoring/application/source_description_ports.py)、[source_mapping.py](./tool/metriccanvas_authoring/domain/source_mapping.py) |
-| 数据装配、已有页新增、混合组合 | [compose_page.py](./tool/metriccanvas_authoring/application/compose_page.py)、[unified_edit_page.py](./tool/metriccanvas_authoring/application/unified_edit_page.py)、[unified_composition.py](./tool/metriccanvas_authoring/application/unified_composition.py) |
-| 扩展装配、来源/能力检查 | [authoring_deployment.py](./tool/metriccanvas_authoring/application/authoring_deployment.py)、[business_interpretation.py](./tool/metriccanvas_authoring/application/business_interpretation.py)、[component_policy.py](./tool/metriccanvas_authoring/application/component_policy.py) |
-| Java 保存请求与响应映射 | [lifecycle_http.py](./tool/metriccanvas_authoring/adapters/outbound/lifecycle_http.py) |
-| 平台资产契约与 Java Adapter | [contract.ts](../apps/platform/src/lib/page-assets/contract.ts)、[java-adapter.ts](../apps/platform/src/lib/page-assets/java-adapter.ts)、[生产组合入口](../apps/platform/src/lib/page-assets.ts) |
-| 单次人工保存与管理操作保护 | [single-save.ts](../apps/platform/src/lib/page-assets/single-save.ts)、[management.ts](../apps/platform/src/lib/page-assets/management.ts) |
-| Relay 与盘古的部署交接 | [authoring-integration.ts](../apps/platform/src/lib/dialogue/authoring-integration.ts)、[接入契约](../apps/platform/src/lib/dialogue/README.md) |
-| 工作台同步与语言编辑交接 | [authoring-coordinator.ts](../apps/platform/src/lib/workbench/authoring-coordinator.ts)、[authoring-language.ts](../apps/platform/src/lib/workbench/authoring-language.ts) |
-| 工作台启动后的未决操作恢复 | [authoring-language-recovery.ts](../apps/platform/src/lib/workbench/authoring-language-recovery.ts) |
-| 普通问数决策、发现、选型与布局 | [agent_core.py](./tool/metriccanvas_authoring/domain/agent_core.py)、[discover_data_context.py](./tool/metriccanvas_authoring/application/discover_data_context.py)、[component_selection.py](./tool/metriccanvas_authoring/domain/component_selection.py)、[section_layout.py](./tool/metriccanvas_authoring/domain/section_layout.py) |
-| 真实数据协议 | [data_context_http.py](./tool/metriccanvas_authoring/adapters/outbound/data_context_http.py)、[dqe_http.py](./tool/metriccanvas_authoring/adapters/outbound/dqe_http.py) |
-| 整页及跨引用合法性 | [page_validation.py](./tool/metriccanvas_authoring/domain/page_validation.py) |
+能力摘要由 [structure_presentation.py](tool/metriccanvas_authoring/domain/structure_presentation.py) 从当前 Schema 和实现映射派生；精确参数仍以工具 Schema 为准。关系证据来自 `MetricRelationsPort`，不是从字段名含“同比/环比”推断。缺关系可以独立展示字段，但不能伪造主辅关联。
 
-依赖为入站 Adapter → Application → Domain，应用通过端口访问外部能力；包顶层 bootstrap 组合具体实现。Domain 不导入 FastMCP/HTTP，Application 不反向导入入站工厂。普通问数的 Relay 模型决策/临时页面交付说明继续参考 [RELAY-HANDOFF.md](./RELAY-HANDOFF.md)，不能把其中旧工具面当作统一创作部署协议。
+## 5. Python 模块与调用链
 
-## 5. 数据映射与扩展的实际能力
+依赖方向是入站 Adapter → Application → Domain；外部服务经 Port/Adapter 接入，组合根负责装配。源码仍在 `tool/metriccanvas_authoring/`，设计稿中的其他目录不代表已迁移。
 
-源 Adapter 解码外部协议，提供与当前数据上下文版本/查询一致的可信源描述；公共映射生成稳定字段 ID、真实 `queryField`、类型/单位/刻度及展示建议；应用建立查询源与组件依赖组，最终由产品运行时显示。创建与当前页新增消费同一映射；普通属性修改不重新计算全页格式。
+| 层 / 模块 | 当前实现与职责 |
+| --- | --- |
+| 入站 | [unified_content_mcp.py](tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py)：八工具、参数 Schema、轮次门禁、候选封套与安全摘要 |
+| 可信轮次 | [authoring_turns.py](tool/metriccanvas_authoring/application/authoring_turns.py)：身份/请求/运行/轮次/页面绑定，基线完整性，有界配置投影及分页 |
+| 内容路由 | [unified_composition.py](tool/metriccanvas_authoring/application/unified_composition.py)：计划与兼容 operations 分流；[unified_edit_page.py](tool/metriccanvas_authoring/application/unified_edit_page.py)：受控增量操作 |
+| 结构装配 | [structure_composition.py](tool/metriccanvas_authoring/application/structure_composition.py)：预检、可信取数、块装配、合法部分结果、查询计数及程序审计 |
+| 结构修订 | [structure_revision.py](tool/metriccanvas_authoring/application/structure_revision.py)：稳定 ID 补丁、父版本校验、原子失败、受影响查询更新 |
+| 查询复用 | [structure_query_cache.py](tool/metriccanvas_authoring/application/structure_query_cache.py)：限定作用域与数据版本的执行复用；不是跨用户通用缓存 |
+| 数据链 | [discover_data_context.py](tool/metriccanvas_authoring/application/discover_data_context.py)、[compose_page.py](tool/metriccanvas_authoring/application/compose_page.py)：受治理发现、查询派生、DQE 执行与字段物化 |
+| 结构规则 | [page_structure.py](tool/metriccanvas_authoring/domain/page_structure.py)、[structure_preflight.py](tool/metriccanvas_authoring/domain/structure_preflight.py)、[structure_diagnostics.py](tool/metriccanvas_authoring/domain/structure_diagnostics.py)：版本、引用、保留 ID、预算及安全错误定位 |
+| 呈现编译 | [section_presentation.py](tool/metriccanvas_authoring/domain/section_presentation.py)、[structure_presentation.py](tool/metriccanvas_authoring/domain/structure_presentation.py)：指标组、受控呈现、比例装箱及未修改属性保留 |
+| 口径正文 | [structure_scope.py](tool/metriccanvas_authoring/domain/structure_scope.py)：v3 清理旧保留 ID 的自动说明；不自动新增逐章口径文字、不删除显式业务正文 |
+| 字段映射 | [source_mapping.py](tool/metriccanvas_authoring/domain/source_mapping.py)：验证可信源描述并生成字段引用；[page_validation.py](tool/metriccanvas_authoring/domain/page_validation.py)：整页及跨引用校验 |
+| 候选与提交 | [authoring_candidates.py](tool/metriccanvas_authoring/application/authoring_candidates.py)、[authoring_submission.py](tool/metriccanvas_authoring/application/authoring_submission.py)：不可变候选、最终选择、冻结命令、保存回执验证 |
+| 恢复与持久化 | [authoring_recovery.py](tool/metriccanvas_authoring/application/authoring_recovery.py)、[sqlite_authoring_state.py](tool/metriccanvas_authoring/adapters/outbound/sqlite_authoring_state.py)：取消、预算、CAS、原操作与程序回执 |
+| 部署扩展 | [authoring_deployment.py](tool/metriccanvas_authoring/application/authoring_deployment.py)、[authoring_bootstrap.py](tool/metriccanvas_authoring/authoring_bootstrap.py)：可信 registry 选择数据、业务、组件和系统实现 |
 
-当前未支持的规则链和数值转换明确拒绝，例如 fraction→percent 转换与万元再次按元缩放。基础向量和 Schema 合法不代表内部全部旧格式规则等价，也不证明真实源刷新路径已验证。
+创建顺序：计划预检 → 取得同版本数据上下文 → 仅执行被引用的数据需求并复用等价查询 → 核对源描述 → 编译组件与分区 → 整页校验 → 存候选 → 返回安全摘要。`header` / `page-header` 由程序保留。一个块失败可以形成带缺口说明的合法部分候选，不能称为全部成功。
 
-| 扩展类别 | 已有消费者与限制 |
-|---|---|
-| data | DataContext、DQE、SourceDescription 三个端口；替换实现不改共享创建/编辑流程 |
-| business | `propose` 为 discovery 提出有来源且受治理的候选；冲突返回歧义，时间限已声明的 day/month/year；不改写已确认 Spec |
-| component | `choose` 只选产品已有构造/编辑/渲染能力的组件；用户 pinned 优先，未知类型/硬门控失败不降级绕过 |
-| system | 注入 current_turns、candidate_store、execution_records、lifecycle_service/programs/identities、recovery_authority，复用同一提交/恢复协调器 |
+同轮 v2/v3 候选用 `structureRevision` 修订，携带原 `planVersion`、`parentVersion` 与 `candidate_ref`。支持替换块/需求、设置/移动分区、移除/移动块；纯标题和顺序调整不查数。没有结构状态的存量页面走普通受控 operations，不从页面 JSON 猜回原计划。下一轮重新建立基线，旧候选不是永久编辑句柄。
 
-部署 manifest 只能选择可信 registry 中已实现且兼容的能力，不能动态 import 代码、覆盖核心字段或凭配置开启新能力。新增组件仍需产品 Schema、构造/编辑、renderer 与兼容验证配套交付。内部实际规则/端口与 F1–F17 迁移尚未完成。
+## 6. 数据、身份与保存的硬边界
 
-## 6. 契约、分发与维护方式
+- 新建字段 ID 默认是 `{sourceId}-field-{规范化 queryField}`；必要时用可信 logicalId/projectionId 消歧，最终后备为确定性摘要，不引入随机数。原 `queryField` 和 DQE 行键不改；既有页面字段 ID 不迁移。规则真源见 [映射协议](contracts/authored/authoring-data-mapping-protocol.md)。
+- 统一写路径涉及新增查询时要求与数据上下文版本及实际查询一致的 `SourceDescriptionPort`；未知单位/刻度或规则链不靠样例猜测。创建与新增组件共用映射。
+- `context_ref` 是定位引用，不是授权。工具每次从带外端口核验作用域与 active 状态，并在异步结果返回前复核；`access=read` 不能生成内容。
+- 基线的 `documentJson` hash 是精确 UTF-8 字节 hash；候选 hash 沿 Python canonical JSON。两者不可混用，均不能证明 Java 的幂等或授权能力。
+- 当前 Java 按 [ADR-0080](../docs/adr/0080-java-assets-single-attempt-save-and-status-publication.md) 单次保存。内容成功、候选生成、保存成功、发布成功是不同状态；未知写入不重发。历史强保存/精确回读路径只对实际具备能力的提供方适用。
 
-- 产品结构作者在 `packages/page/src/`，语义作者在 `docs/page-metadata/`；经[导出器](../tools/scripts/export-authoring-contracts.ts)单向生成中立契约与完整 `contract-snapshot/`。
-- Authoring 作者在 [contracts/authored/](./contracts/authored/)：turn、candidate、recovery、source-description/data-mapping、composition、extension 协议及共同向量；沿现有生成链消费，不手改生成副本。
-- 统一 Skill 为作者文件，`referenceProjection=none`；普通问数保持 `page-metadata` 投影。生成器仅清理自己拥有的子树，完整产品参考与正反例继续保留。
-- [bundle.json](./bundle.json) 的旧默认 entrypoint 服务普通问数；统一 Skill 显式绑定 `metriccanvas-platform-content`。不可只改旧默认 entrypoint 就宣称统一服务已部署。
-- `contract-lock.json` 与 `bundle.lock.json` 锁定来源。修改本文、Skill、程序或测试资产后运行导出并检查锁，独立安装必须在离开源码树后仍可读取引用及契约。
+## 7. 相对上一个大版本的变化
 
-需要改行为时先确定作者与消费者：共同契约随消费者更改；领域规则改 Domain；源协议改 Adapter；业务差异走受控扩展；保存/恢复改协调及生命周期。整页、候选与原始数据不进入 Skill 分发或模型测试报告。
+| 维度 | Relay 后、统一重构前：`9d4f444` | 当前：`ad96e28` |
+| --- | --- | --- |
+| 平台入口 | create/edit 两个 Skill；混合创建常需登记基线再转修改 | 一个 authoring Skill，内部按创建/修改/问答路由 |
+| 服务与上下文 | `metriccanvas-content`，page_id / baseline_token / source_token | `metriccanvas-platform-content` 八工具，统一 `context_ref` 与带外可信轮次 |
+| 参考分发 | 创建/修改复制共享约定及页面协议参考 | 平台作者参考自有、按需加载；生成器不覆盖；问数保留产品参考投影 |
+| 页面结构 | 取数装配与受控 recipe 为主 | 数据需求与业务章节分离，一源多组件；v3 用途与受控呈现 |
+| 迭代 | 程序重新登记产物为基线后续改 | 同轮不可变候选链、父版本和稳定 ID 结构补丁 |
+| 字段与数据规则 | 旧映射及组件装配 | 可信源描述、可读字段 ID、主辅指标关系证据、作用域内查询复用 |
+| 保存交接 | 内容产物交后续生命周期，模型不能冒称已保存 | 最终候选选择、持久冻结操作、单次提交和可信回执；取消/预算/恢复有程序边界 |
+| 布局质量 | 基本 report/dashboard 默认与继承 | 业务阅读设计、模块标题、指标组白底、三卡一排/四卡两排、减少技术口径正文 |
 
-## 7. 验证、交付与未完成事项
+其中统一入口/轮次/候选/恢复主要来自前一轮统一创作重构，Java 单次保存来自 `b8ab7ef`；本轮 `14526fb → ad96e28` 主要增加结构计划 v1–v3、场景参考、结构修订、可信关系与呈现、字段命名和布局反馈。普通问数的确定性 Agent Core、DQE 验真、双通道原则不是本轮新建，也未被删除。
 
-| 层次 | 已有证据 | 仍不能推导的结论 |
-|---|---|---|
-| S0–S7 本仓代码 | `09982cb`：409 Python、312 TS；真实 Chromium 恢复；类型/Svelte 检查；隔离 sdist 安装 | 真实 Relay/Java/源服务已经接通 |
-| Java 资产改造 | [实施记录](../docs/plan/2026-09-16-java-page-assets-implementation.md)：371 项前端与配置测试、431 项 Python、浏览器 HTTP 替身流程、类型检查与构建 | 真实 Java/Relay 联调已验收；真实 AI 新建入口已部署 |
-| 新版评测 runner | `e526358`：30 定向测试、12 类本地流程；共享 scripted/HTTP 循环，HTTP 仅 mock | 模型任务成功率、成本或稳定性改善 |
-| main 集成 | `d5aa4be`：保留 main 两个测试修正，相关89项测试、导出与1468摘要检查通过，已推送 | 远端 CI 已通过；生产已上线 |
-| 真实验收 / S8 | 就绪矩阵与成组回退步骤已写 | 真实模型请求仍为0；真实接入、内部迁移、单写切换与回退未执行 |
+## 8. 契约真源与维护方法
 
-真实 DeepSeek 评测需用户批准具体目的服务和项目载荷；真实身份/当前读取/产物分流、Java 单次保存响应、源规则/刷新仍需提供方证据；历史 H1–H15 中依赖强保存的项目按 ADR-0080 重新解释，不再等待 YAML 未提供的幂等查询或历史精确回读。缺能力保持明确不可用；本地 SQLite、替身与 scripted 轨迹不得算作生产能力或模型通过率。
+产品页面协议由 `packages/page/src/` 和 `docs/page-metadata/` 维护，导出到 `contracts/metriccanvas/`，再形成 Bundle 的只读 `contract-snapshot/`。创作输入、候选及交接契约在 `contracts/authored/`；Skill 不复制第二套 Schema。
 
-证据入口：
+扩展时按变更归属修改：阅读策略改参考；呈现能力同步输入 Schema、编译器、能力摘要和测试；新组件还必须有产品 Schema 与运行时支持；数据协议改 Adapter。部署 manifest 只能选择已注册实现，不能动态加载任意代码或启用不存在的服务能力。`metric_relations` 当前通过 `ComposePageDependencies` 注入，尚非 registry 的独立可选槽。
 
-- [S0/S1](../docs/plan/2026-09-15-unified-authoring-s0-s1-evidence.md)、[S2](../docs/plan/2026-09-15-unified-authoring-s2-evidence.md)、[S3](../docs/plan/2026-09-15-unified-authoring-s3-evidence.md)、[S4/S5](../docs/plan/2026-09-15-unified-authoring-s4-s5-evidence.md)、[S6/S7](../docs/plan/2026-09-15-unified-authoring-s6-s7-evidence.md)。
-- [runner 验收](../docs/plan/2026-09-15-unified-authoring-runner-evidence.md)、[评测目录](./test-harness/model-evals/)、[交付与剩余门禁](../docs/plan/2026-09-15-unified-authoring-release-readiness.md)。历史证据里的“未 push”描述当时状态；本次代码已于2026-09-16进入 main，不改写历史测试来源。
+仓根验证：
+
+```bash
+pnpm authoring:contracts
+pnpm authoring:contracts:check
+python3 metriccanvas-authoring/scripts/check_bundle.py
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_*.py'
+pnpm exec vitest run packages/engine/widgets/tests/composite-card-surface.test.ts packages/page/tests/metric-card.test.ts
+```
+
+修改 Bundle 内文档也会改变摘要锁。先运行导出再检查，生成副本和锁文件不手改。以上 Python 使用安装了 `tool/requirements.lock` 的 Python 3.12+ 环境。
+
+## 9. 已验证与尚未闭环
+
+`ad96e28` 交付时：485 项 Python、17 项相关组件测试、页面 Schema、契约导出一致性及 1510 项 Bundle 摘要检查通过。已执行真实 DeepSeek 生成并获得本会话人工认可；[最终页面与运行说明](../docs/plan/scenario-guided-authoring/README.md)明确记录最后一轮在候选生成后触发预算保护，不能标为模型整轮正常完成。中间原始轨迹已按用户授权删除，精选页面和汇总结论保留。
+
+这些证据不是生产 Relay/Java/多用户权限联调。当前独立启动统一 CLI 缺可信轮次与候选提供方；新版结构契约的独立打包清单、通用部署装配器的强生命周期能力检查亦有接入限制，详见 [接入限制](RELAY-HANDOFF.md#integration-gaps)。本次文档更新记录事实，不顺带修改这些实现。

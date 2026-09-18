@@ -1,0 +1,1104 @@
+{
+  "evidenceKind": "bound-field-coverage-not-semantic-or-visual-pass",
+  "runs": [
+    {
+      "id": "richness-basic",
+      "repeat": 1,
+      "status": "blocked",
+      "error": "ValueError",
+      "origin": "unfinished-last-candidate",
+      "requests": 6,
+      "toolCalls": 9,
+      "tokens": 192048,
+      "seconds": 23.7113,
+      "createCalls": 1,
+      "sourceCount": 3,
+      "sectionCount": 6,
+      "componentCount": 20,
+      "topics": {
+        "scale": [
+          "total-card",
+          "core-card",
+          "communication-card",
+          "region-card",
+          "stable-card",
+          "one-off-card"
+        ],
+        "growth": [],
+        "target": [],
+        "risk": [],
+        "targetProxy": [
+          "target-panel"
+        ]
+      },
+      "sections": [
+        {
+          "id": "overview",
+          "title": "整体规模与变化",
+          "components": [
+            {
+              "id": "total-card",
+              "type": "metricCard",
+              "title": "整体流水",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "overview-note",
+              "type": "text",
+              "title": "阅读说明",
+              "body": "本页为本地非生产样例，账期为 2026-02（粒度 month），趋势与结构来源覆盖 2026-01 至 2026-12。所有指标只按原始维度展示，不可跨行或跨源求和，不同来源之间不做互算或对账。年累计与本月为不同口径的主值，同比、环比仅作为对应主值的变化参考。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-overview",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "objects",
+          "title": "业务对象规模对照",
+          "components": [
+            {
+              "id": "core-card",
+              "type": "metricCard",
+              "title": "Core",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "communication-card",
+              "type": "metricCard",
+              "title": "云通信",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "region-card",
+              "type": "metricCard",
+              "title": "公有区域",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "stable-card",
+              "type": "metricCard",
+              "title": "稳定流水",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "one-off-card",
+              "type": "metricCard",
+              "title": "一次性流水",
+              "source": "kpi-scope",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "objects-note",
+              "type": "text",
+              "title": "对照说明",
+              "body": "各对象卡片并排展示，便于比较规模与变化方向。样例未提供对象之间的贡献率或差额证据，因此本页不计算某对象对整体的贡献占比，也不推断增长由哪个对象带来；如需归因，请以各对象自身的主值与变化为准。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-objects",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "trend",
+          "title": "月度走势：实际与预测",
+          "components": [
+            {
+              "id": "trend-chart",
+              "type": "lineChart",
+              "title": "Core 与云通信月度流水（实际/预测）",
+              "source": "trend-month",
+              "fields": [
+                "month",
+                "core-actual",
+                "communication-actual",
+                "core-forecast",
+                "communication-forecast"
+              ]
+            },
+            {
+              "id": "trend-note",
+              "type": "text",
+              "title": "实际与预测的区分",
+              "body": "图中带“(预测)”的序列为预测值，其余为实际值，两者在样例中为独立字段，请勿相互替代或合并。该来源覆盖 2026-01 至 2026-12，与概览来源的账期口径不同，本页不对两者做加总或对账。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-trend",
+              "type": "text",
+              "body": "数据口径：\n流水趋势；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "structure",
+          "title": "结构走势：稳定与一次性",
+          "components": [
+            {
+              "id": "structure-chart",
+              "type": "lineChart",
+              "title": "稳定与一次性月度流水（实际/预测）",
+              "source": "structure-month",
+              "fields": [
+                "month",
+                "stable-actual",
+                "one-off-actual",
+                "stable-forecast",
+                "one-off-forecast"
+              ]
+            },
+            {
+              "id": "structure-note",
+              "type": "text",
+              "title": "口径提示",
+              "body": "稳定与一次性为流水结构来源的独立字段，与概览来源中的同名对象口径不同，本页不将两者相加或互相校验。预测序列仅表示样例中的推演值，不代表已实现结果。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-structure",
+              "type": "text",
+              "body": "数据口径：\n流水结构；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "target",
+          "title": "目标与推演规模对照",
+          "components": [
+            {
+              "id": "target-panel",
+              "type": "table",
+              "title": "推演规模与目标支撑率",
+              "source": "kpi-scope",
+              "fields": [
+                "annual-projection",
+                "target-support-rate"
+              ]
+            },
+            {
+              "id": "target-note",
+              "type": "text",
+              "title": "对照说明",
+              "body": "年度推演与推演目标支撑率均来自流水概览来源的 projection 口径，账期 2026-02。样例未提供目标绝对值或缺口字段，因此本页不计算目标差额或达成率；如需判断缺口，请以该口径的原始字段为准。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-target",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "risk",
+          "title": "风险复核",
+          "components": [
+            {
+              "id": "risk-gap",
+              "type": "text",
+              "title": "证据缺口说明",
+              "body": "当前已发现的数据上下文仅包含流水概览、流水趋势、流水结构三个业务域，其维度为 scope、month、captured-at 与统计周期，均不包含客户标识、客户名称或风险等级字段。因此本页无法列出需要风险复核的客户，也不推断任何风险原因。若需该章节，请先提供包含客户维度与风险相关指标的受治理数据来源。",
+              "fields": []
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "code": "STRUCTURE_MATCH_UNSUPPORTED",
+          "path": "/sections/4/blocks/0/match",
+          "objectIds": [
+            "target-panel"
+          ],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PREFLIGHT_BLOCKED",
+          "path": "/sections/4/blocks/0",
+          "objectIds": [
+            "target-panel"
+          ],
+          "blocking": true
+        },
+        {
+          "code": "PINNED_COMPONENT_REJECTED",
+          "path": "/sections/0/blocks/0",
+          "objectIds": [
+            "target-panel"
+          ],
+          "blocking": true
+        }
+      ]
+    },
+    {
+      "id": "richness-basic",
+      "repeat": 2,
+      "status": "inconclusive",
+      "origin": "completed",
+      "requests": 4,
+      "toolCalls": 6,
+      "tokens": 119230,
+      "seconds": 21.2844,
+      "createCalls": 1,
+      "sourceCount": 3,
+      "sectionCount": 6,
+      "componentCount": 18,
+      "topics": {
+        "scale": [
+          "total-card",
+          "core-card",
+          "communication-card",
+          "region-card",
+          "stable-card",
+          "one-off-card"
+        ],
+        "growth": [],
+        "target": [],
+        "risk": [],
+        "targetProxy": [
+          "projection-card"
+        ]
+      },
+      "sections": [
+        {
+          "id": "scope-note",
+          "title": "样例与口径说明",
+          "components": [
+            {
+              "id": "note-body",
+              "type": "text",
+              "title": "非生产样例说明",
+              "body": "本页为本地经营样例（非生产数据），仅用于演示阅读结构，不代表真实业务结论。全部指标只按原始维度展示，不支持聚合、公式或跨来源互算；不同来源之间不做对账。期间与取值以元数据为准：流水概览固定为 2026-02（粒度 month），流水趋势与流水结构固定为 2026-01 至 2026-12（粒度 month）。",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "scale-overview",
+          "title": "当前业务规模与变化",
+          "components": [
+            {
+              "id": "total-card",
+              "type": "metricCard",
+              "title": "整体（total）",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "core-card",
+              "type": "metricCard",
+              "title": "Core",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "communication-card",
+              "type": "metricCard",
+              "title": "云通信",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "region-card",
+              "type": "metricCard",
+              "title": "公有区域",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "stable-card",
+              "type": "metricCard",
+              "title": "稳定",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "one-off-card",
+              "type": "metricCard",
+              "title": "一次性",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "structure-scope-scale-overview",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "growth-sources",
+          "title": "增长来自哪些对象",
+          "components": [
+            {
+              "id": "overall-trend-chart",
+              "type": "lineChart",
+              "title": "Core 与云通信月度流水（实际）",
+              "source": "overall-trend",
+              "fields": [
+                "month",
+                "core-actual",
+                "communication-actual"
+              ]
+            },
+            {
+              "id": "overall-trend-table",
+              "type": "table",
+              "title": "Core 与云通信月度明细（实际与预测）",
+              "source": "overall-trend",
+              "fields": [
+                "month",
+                "core-actual",
+                "communication-actual",
+                "core-forecast",
+                "communication-forecast"
+              ]
+            },
+            {
+              "id": "structure-scope-growth-sources",
+              "type": "text",
+              "body": "数据口径：\n流水趋势；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "structure-sources",
+          "title": "稳定与一次性的月度结构",
+          "components": [
+            {
+              "id": "structure-trend-chart",
+              "type": "lineChart",
+              "title": "稳定与一次性月度流水（实际）",
+              "source": "structure-trend",
+              "fields": [
+                "month",
+                "stable-actual",
+                "one-off-actual"
+              ]
+            },
+            {
+              "id": "structure-trend-table",
+              "type": "table",
+              "title": "稳定与一次性月度明细（实际与预测）",
+              "source": "structure-trend",
+              "fields": [
+                "month",
+                "stable-actual",
+                "one-off-actual",
+                "stable-forecast",
+                "one-off-forecast"
+              ]
+            },
+            {
+              "id": "structure-scope-structure-sources",
+              "type": "text",
+              "body": "数据口径：\n流水结构；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "target-comparison",
+          "title": "目标与当前/推演规模对照",
+          "components": [
+            {
+              "id": "projection-card",
+              "type": "metricCard",
+              "title": "整体年度推演与目标支撑率",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-projection",
+                "target-support-rate"
+              ]
+            },
+            {
+              "id": "projection-note",
+              "type": "text",
+              "title": "对照口径说明",
+              "body": "年度推演与推演目标支撑率均来自流水概览来源，按原始维度展示。本页不计算推演与目标之间的差额、达成率或缺口，也不与其他来源互算；如需差额结论，需由具备相应口径的来源提供。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-target-comparison",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "risk-review",
+          "title": "风险复核对象",
+          "components": [
+            {
+              "id": "risk-gap",
+              "type": "text",
+              "title": "证据缺口说明",
+              "body": "当前已发现的三个业务域（流水概览、流水趋势、流水结构）只提供 scope 与 month 维度，未发现客户维度、客户标识或任何风险相关指标。因此本页无法列出需要风险复核的客户，也不推断风险原因。若需该结论，请补充具备客户维度与风险口径的数据来源。",
+              "fields": []
+            }
+          ]
+        }
+      ],
+      "issues": []
+    },
+    {
+      "id": "richness-basic",
+      "repeat": 3,
+      "status": "inconclusive",
+      "origin": "completed",
+      "requests": 5,
+      "toolCalls": 7,
+      "tokens": 150360,
+      "seconds": 24.1721,
+      "createCalls": 1,
+      "sourceCount": 3,
+      "sectionCount": 5,
+      "componentCount": 19,
+      "topics": {
+        "scale": [
+          "total-card",
+          "core-card",
+          "communication-card",
+          "region-card"
+        ],
+        "growth": [],
+        "target": [],
+        "risk": [],
+        "targetProxy": [
+          "projection-card"
+        ]
+      },
+      "sections": [
+        {
+          "id": "scope-note",
+          "title": "样例与口径说明",
+          "components": [
+            {
+              "id": "note-sample",
+              "type": "text",
+              "title": "非生产样例声明",
+              "body": "本页数据来自本地经营样例（快照 flow-fixture-20260917），非生产数据，仅用于阅读与结构演示。所有指标均为不可加的原始指标，只按原始维度展示；不同来源之间不能互相求和、相减或对账，本页不做任何跨源计算。",
+              "fields": []
+            },
+            {
+              "id": "note-scope",
+              "type": "text",
+              "title": "期间与口径",
+              "body": "流水概览的固定账期为 2026-02（粒度 month），查询必须显式使用该期间；流水趋势与流水结构的固定期间为 2026-01 至 2026-12（粒度 month）。金额单位为元，同比/环比/推演目标支撑率单位为 %。实际值与预测值在指标名中已区分，本页不将预测当作实际。",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "current-scale",
+          "title": "当前业务规模与变化",
+          "components": [
+            {
+              "id": "total-card",
+              "type": "metricCard",
+              "title": "整体流水概况",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "total-note",
+              "type": "text",
+              "title": "如何读这张卡",
+              "body": "年累计与本月是同一对象（整体）的两个主值行，同比与环比分别作为各自的变化值展示，均来自元数据中已登记的关系证据。年累计与本月口径不同，不可相加或相减。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-current-scale",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "growth-objects",
+          "title": "增长来自哪些对象",
+          "components": [
+            {
+              "id": "core-card",
+              "type": "metricCard",
+              "title": "Core",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "communication-card",
+              "type": "metricCard",
+              "title": "云通信",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "region-card",
+              "type": "metricCard",
+              "title": "公有云区域",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "object-note",
+              "type": "text",
+              "title": "对象比较的边界",
+              "body": "各对象卡片并排展示，便于比较规模与变化方向。样例未提供对象之间的贡献率、差额或增长原因证据，因此本页不计算某对象对整体的贡献占比，也不推断变化由谁驱动；如需归因，需要额外的治理证据。",
+              "fields": []
+            },
+            {
+              "id": "overall-trend",
+              "type": "lineChart",
+              "title": "Core 与云通信月度流水（实际与预测）",
+              "source": "overall-trend",
+              "fields": [
+                "month",
+                "core-actual",
+                "communication-actual",
+                "core-forecast",
+                "communication-forecast"
+              ]
+            },
+            {
+              "id": "trend-note",
+              "type": "text",
+              "title": "实际与预测的区分",
+              "body": "图中实际值与预测值来自不同指标，已在图例中区分。预测段不代表已发生结果，也不与概览中的年累计/本月做对账。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-growth-objects",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope\n流水趋势；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "target-check",
+          "title": "目标与当前、推演规模对照",
+          "components": [
+            {
+              "id": "projection-card",
+              "type": "metricCard",
+              "title": "年度推演与目标支撑",
+              "source": "overview-kpis",
+              "fields": [
+                "scope",
+                "annual-projection",
+                "target-support-rate"
+              ]
+            },
+            {
+              "id": "target-note",
+              "type": "text",
+              "title": "对照口径说明",
+              "body": "年度推演与推演目标支撑率是样例中唯一与目标相关的治理指标，二者同属 projection 范围。样例未提供目标绝对值、缺口金额或达成差额，因此本页不计算差额、缺口或达成率，仅呈现已有指标本身。推演目标支撑率是比率型指标，不可与金额指标相加。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-target-check",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "risk-review",
+          "title": "风险复核对象",
+          "components": [
+            {
+              "id": "risk-gap",
+              "type": "text",
+              "title": "证据缺口：无法给出客户级风险清单",
+              "body": "已发现的三个业务域（流水概览、流水趋势、流水结构）中不存在客户维度，也不存在风险等级、逾期、异常标记等风险指标。因此本页无法列出需要风险复核的客户，也不推断任何风险原因。若需要客户级风险复核，需要先接入包含客户对象与风险口径的治理数据源。",
+              "fields": []
+            },
+            {
+              "id": "structure-card",
+              "type": "lineChart",
+              "title": "稳定流水与一次性流水月度走势（实际与预测）",
+              "source": "structure-trend",
+              "fields": [
+                "month",
+                "stable-actual",
+                "one-off-actual",
+                "stable-forecast",
+                "one-off-forecast"
+              ]
+            },
+            {
+              "id": "structure-note",
+              "type": "text",
+              "title": "可用的替代线索及其局限",
+              "body": "样例中与“结构风险”最接近的治理证据是稳定流水与一次性流水的月度走势：一次性流水占比偏高通常值得关注，但样例未提供占比分母、阈值或客户归属，因此本页只呈现走势，不判定风险、不标注具体对象。该图不能替代客户级风险复核。",
+              "fields": []
+            },
+            {
+              "id": "structure-scope-risk-review",
+              "type": "text",
+              "body": "数据口径：\n流水结构；2026-01 至 2026-12；month；按month",
+              "fields": []
+            }
+          ]
+        }
+      ],
+      "issues": []
+    },
+    {
+      "id": "richness-rich",
+      "repeat": 1,
+      "status": "blocked",
+      "error": "RuntimeError",
+      "origin": "unfinished-last-candidate",
+      "requests": 5,
+      "toolCalls": 12,
+      "tokens": 180287,
+      "seconds": 33.1073,
+      "createCalls": 3,
+      "sourceCount": 4,
+      "sectionCount": 4,
+      "componentCount": 15,
+      "topics": {
+        "scale": [
+          "overview-total",
+          "overview-core",
+          "overview-communication",
+          "overview-region"
+        ],
+        "growth": [
+          "growth-table"
+        ],
+        "target": [
+          "target-table"
+        ],
+        "risk": [
+          "risk-table"
+        ],
+        "targetProxy": []
+      },
+      "sections": [
+        {
+          "id": "overview",
+          "title": "当前业务规模与变化",
+          "components": [
+            {
+              "id": "overview-note",
+              "type": "text",
+              "title": "阅读说明",
+              "body": "本页为本地非生产样例，账期固定为 2026-02（粒度 month），期间与取值以元数据为准。各来源均为独立样例，不可跨源互算或对账；指标不可加，仅按原始维度展示。以下卡片的主值与变化值均来自元数据中已登记的可信关系。",
+              "fields": []
+            },
+            {
+              "id": "overview-total",
+              "type": "metricCard",
+              "title": "整体流水",
+              "source": "flow-overview",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "overview-core",
+              "type": "metricCard",
+              "title": "Core 流水",
+              "source": "flow-overview",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "overview-communication",
+              "type": "metricCard",
+              "title": "云通信流水",
+              "source": "flow-overview",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "overview-region",
+              "type": "metricCard",
+              "title": "公网 Region 流水",
+              "source": "flow-overview",
+              "fields": [
+                "scope",
+                "annual-total",
+                "year-over-year",
+                "current-month",
+                "month-over-month"
+              ]
+            },
+            {
+              "id": "structure-scope-overview",
+              "type": "text",
+              "body": "数据口径：\n流水概览；2026-02 至 2026-02；month；按scope",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "growth-objects",
+          "title": "增长来自哪些对象",
+          "components": [
+            {
+              "id": "growth-note",
+              "type": "text",
+              "title": "口径与局限",
+              "body": "该来源仅是增长客户入选清单，不是完整客户群体，因此不能据此计算整体增长贡献，也不能证明增长原因。环比为样例列，仅按客户维度展示。",
+              "fields": []
+            },
+            {
+              "id": "growth-table",
+              "type": "table",
+              "title": "增长客户清单（本月流水与环比）",
+              "source": "customer-growth",
+              "fields": [
+                "customer-name",
+                "customer-type",
+                "customer-level",
+                "amount",
+                "change"
+              ]
+            },
+            {
+              "id": "structure-scope-growth-objects",
+              "type": "text",
+              "body": "数据口径：\n客户增长样例；2026-02 至 2026-02；month；按customer-name、customer-type、customer-level",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "target-vs-projection",
+          "title": "目标与当前/推演规模对照",
+          "components": [
+            {
+              "id": "target-note",
+              "type": "text",
+              "title": "口径与局限",
+              "body": "年目标与年推演流水可并列核对；较年初推演增长量不是目标差额，本页不提供计算后的完成率。各列为独立样例指标，不可跨源互算。",
+              "fields": []
+            },
+            {
+              "id": "target-table",
+              "type": "table",
+              "title": "赛道目标与推演对照",
+              "source": "track-target",
+              "fields": [
+                "track-name",
+                "annual-target",
+                "annual-projection",
+                "flow-amount",
+                "current-month-amount"
+              ]
+            },
+            {
+              "id": "structure-scope-target-vs-projection",
+              "type": "text",
+              "body": "数据口径：\n赛道经营；2026-02 至 2026-02；month；按track-name",
+              "fields": []
+            }
+          ]
+        },
+        {
+          "id": "risk-review",
+          "title": "需要风险复核的客户",
+          "components": [
+            {
+              "id": "risk-note",
+              "type": "text",
+              "title": "口径与局限",
+              "body": "该来源仅是风险复核入选清单，不提供风险原因明细；1 月流水与上月流水为独立样例列，不能据此拼成连续时间序列，也不构成风险原因判断。",
+              "fields": []
+            },
+            {
+              "id": "risk-table",
+              "type": "table",
+              "title": "风险复核客户清单",
+              "source": "customer-risk",
+              "fields": [
+                "customer-name",
+                "customer-type",
+                "customer-level",
+                "january-amount",
+                "previous-month-amount",
+                "current-month-amount"
+              ]
+            },
+            {
+              "id": "structure-scope-risk-review",
+              "type": "text",
+              "body": "数据口径：\n风险客户样例；2026-02 至 2026-02；month；按customer-name、customer-type、customer-level",
+              "fields": []
+            }
+          ]
+        }
+      ],
+      "issues": [
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/1/blocks/1",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/3/blocks/1",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/1/blocks/1",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/3/blocks/1",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "richness-rich",
+      "repeat": 2,
+      "status": "blocked",
+      "error": "ValueError",
+      "requests": 5,
+      "toolCalls": 12,
+      "tokens": 182892,
+      "seconds": 33.4665,
+      "createCalls": 1,
+      "sourceCount": 0,
+      "sectionCount": 0,
+      "componentCount": 0,
+      "topics": {
+        "scale": [],
+        "growth": [],
+        "target": [],
+        "risk": [],
+        "targetProxy": []
+      },
+      "sections": [],
+      "issues": [
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/dataRequests/5/metrics",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/2/blocks/0",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        },
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/4/blocks/0",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "richness-rich",
+      "repeat": 3,
+      "status": "blocked",
+      "error": "ValueError",
+      "requests": 5,
+      "toolCalls": 11,
+      "tokens": 177091,
+      "seconds": 29.1359,
+      "createCalls": 1,
+      "sourceCount": 0,
+      "sectionCount": 0,
+      "componentCount": 0,
+      "topics": {
+        "scale": [],
+        "growth": [],
+        "target": [],
+        "risk": [],
+        "targetProxy": []
+      },
+      "sections": [],
+      "issues": [
+        {
+          "code": "STRUCTURE_PLAN_INVALID",
+          "path": "/sections/1/blocks/4",
+          "objectIds": [],
+          "blocking": true,
+          "options": [
+            "revise-reference",
+            "remove-block"
+          ]
+        }
+      ]
+    }
+  ]
+}

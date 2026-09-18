@@ -7,6 +7,8 @@ from .compose_page import ComposePageCommand, create_compose_page
 from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA, edit_page_document
 from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.domain.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
+from metriccanvas_authoring.domain.page_structure import StructureError
 
 _ROOT = bundle_root() / 'contracts/authored'
 _SPEC = json.loads((_ROOT/'page-build-spec.schema.json').read_text())
@@ -29,6 +31,7 @@ _DATA['properties']['spec'] = _inline_spec(_SPEC)
 _DATA['properties']['spec']['properties']['units']['maxItems'] = 1
 UNIFIED_EDIT_SCHEMA = deepcopy(EDIT_SCHEMA)
 UNIFIED_EDIT_SCHEMA['properties']['operations']['items']['oneOf'].append(_DATA)
+UNIFIED_EDIT_SCHEMA['properties']['operations']['items']['oneOf'].extend(SECTION_OPERATIONS)
 _OPERATION = Draft202012Validator(UNIFIED_EDIT_SCHEMA['properties']['operations']['items'])
 
 
@@ -68,7 +71,7 @@ async def _add_data(document, op, dependencies, evidence):
     return candidate, []
 
 
-async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current):
+async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current, structure_state=None):
     normalized = normalize_page_document(baseline)
     if not normalized['ok']:
         return {'status':'invalid_baseline','document':None,'operations':[], 'issues':[_issue('BASELINE_INVALID')]}
@@ -95,6 +98,29 @@ async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=
             result['issues'] = issues
             if candidate is not None:
                 result['status'] = 'applied'; document = candidate
+        elif op['type'] in SECTION_TYPES:
+            try:
+                relations=[]
+                if op['type']=='add_source_component' and op['block'].get('presentation') and structure_state:
+                    from metriccanvas_authoring.application.metric_relations import load_relations
+                    plan=structure_state['plan']
+                    source=next((r for r in plan['dataRequests'] if r['dataSourceId']==op['block']['source']),None)
+                    if source:
+                        try: snapshot=await dependencies.data_context.current()
+                        except Exception: raise StructureError('DATA_CONTEXT_UNAVAILABLE') from None
+                        if snapshot.get('version') != plan['dataContextVersion']:
+                            raise StructureError('DATA_CONTEXT_VERSION_CHANGED')
+                        relations,_=await load_relations(dependencies.metric_relations, dependencies.authoring_scope,
+                                                        plan['dataContextVersion'],source['businessDomain'])
+                        period={k:v for k,v in (source.get('time') or {}).items() if k!='providedBy'}
+                        relations=[r for r in relations if r['time']==period]
+                candidate = edit_section(document, op, relations=relations)
+                if validate_page_document(candidate):
+                    raise StructureError('SECTION_RESULT_INVALID')
+                result['status'] = 'unchanged' if candidate == document else 'applied'
+                document = candidate
+            except StructureError as error:
+                result['issues'] = [error.issue()]
         else:
             local = {k:v for k,v in op.items() if k != 'dependsOn'}
             edited = edit_page_document(document, {'operations':[local]}, summary_enabled=summary_enabled)

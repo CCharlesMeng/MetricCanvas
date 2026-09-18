@@ -1,0 +1,21 @@
+{
+  "evidenceKind": "offline-public-tool-preflight",
+  "beforePaidRuns": true,
+  "new": {
+    "root": "/Users/moon/.codex/worktrees/a1c0/DataDashboard",
+    "runtime": "/Users/moon/.codex/worktrees/a1c0/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/__init__.py",
+    "schemaHash": "557c542091933ffa2a7f2751275710a1e291b831fdc0bbf0e83049935a145f43",
+    "supportsV2": true,
+    "periodVisible": true
+  },
+  "baseline": {
+    "root": "/Users/moon/Documents/Code/公司项目/DataDashboard",
+    "runtime": "/Users/moon/Documents/Code/公司项目/DataDashboard/metriccanvas-authoring/tool/metriccanvas_authoring/__init__.py",
+    "schemaHash": "17d2549b90038a04e7b436e5dc624305011306b77e81403fd7afc4581d177e03",
+    "supportsV2": false,
+    "periodVisible": true
+  },
+  "hashEncoding": "sha256(json.dumps([tool.inputSchema for tool in client.list_tools()], sort_keys=True).encode())",
+  "periodCheck": "Every returned 流水趋势 metric description contains 2026-01 and 2026-12.",
+  "regression": "test_scenario_eval_isolation.py: 2 tests OK"
+}

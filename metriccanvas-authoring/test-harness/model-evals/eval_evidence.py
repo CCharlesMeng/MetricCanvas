@@ -24,6 +24,12 @@ def injection_paths(root, case, arm):
     if case['workflow'] == 'create' or case['expected'].get('operation') == 'set_page_layout':
         layout = case['expected'].get('layout', 'report')
         paths.append(folder/'references/layouts'/f'{layout}.md')
+    if case['workflow'] == 'create':
+        paths.append(folder/'references/scenarios.md')
+        design = folder/'references/reading-design.md'
+        if design.is_file(): paths.append(design)  # Frozen pre-v3 arms have no such reference.
+        if case.get('scene') in {'business-report', 'usage-report'}:
+            paths.append(folder/'references/scenarios'/f"{case['scene']}.md")
     return paths
 
 

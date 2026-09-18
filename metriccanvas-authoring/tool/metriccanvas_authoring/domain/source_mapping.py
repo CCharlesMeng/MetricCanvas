@@ -4,6 +4,8 @@ from dataclasses import replace
 import hashlib
 import json
 import math
+import re
+from collections import Counter
 from collections.abc import Mapping
 from jsonschema import Draft202012Validator, FormatChecker
 
@@ -31,6 +33,36 @@ def _require(condition, code):
     if not condition: raise SourceMappingError(code)
 
 
+def _id_part(value):
+    # Do not silently discard Chinese text or invent a translation.
+    if not value.isascii(): return ''
+    return re.sub(r'[^a-z0-9]+', '-', value.lower()).strip('-')
+
+
+def _new_field_ids(source_id, description):
+    """Allocate readable IDs for a new source, never migrate existing documents."""
+    prefix = source_id if re.match(r'^[A-Za-z_]', source_id) else 'source-' + source_id
+    entries = description['fields']
+    identities = [canonical_json([description['providerNamespace'], f['logicalId'], f['projectionId']]) for f in entries]
+    _require(len(set(identities)) == len(identities), 'SOURCE_FIELD_IDENTITY_DUPLICATE')
+    digests = [hashlib.sha256(identity.encode('utf-8')).hexdigest() for identity in identities]
+    bases = [prefix + '-field-' + (_id_part(f['queryField']) or _id_part(f['logicalId']) or 'identity-' + digest[:10])
+             for f, digest in zip(entries, digests)]
+    names = list(bases)
+    for key in ('logicalId', 'projectionId'):
+        counts = Counter(names)
+        names = [name + '-' + part if counts[name] > 1 and (part := _id_part(f[key])) else name
+                 for name, f in zip(names, entries)]
+    # Check the entire namespace, including collisions with another field's base.
+    for length in (10, 20, 64):
+        counts = Counter(names)
+        if max(counts.values()) == 1: break
+        names = [name + '-' + digest[:length] if counts[name] > 1 else name
+                 for name, digest in zip(names, digests)]
+    _require(len(set(names)) == len(names), 'SOURCE_FIELD_IDENTITY_DUPLICATE')
+    return {f['semanticName']: name for f, name in zip(entries, names)}
+
+
 def map_source_description(unit, description, data_context_version):
     _require(_DESCRIPTOR.is_valid(description), 'SOURCE_DESCRIPTION_INVALID')
     _require(description['querySha256'] == query_sha256(unit.effective_query()), 'SOURCE_QUERY_MISMATCH')
@@ -40,6 +72,7 @@ def map_source_description(unit, description, data_context_version):
     provided = [value['semanticName'] for value in description['fields']]
     _require(len(set(selected)) == len(selected) and len(set(provided)) == len(provided) and set(selected) == set(provided), 'SOURCE_SEMANTIC_MAPPING_MISMATCH')
     descriptors = {field['semanticName']: field for field in description['fields']}
+    field_ids = _new_field_ids(unit.data_source_id, description)
     fields = {}
     query_names = set()
     for original in unit.fields.values():
@@ -59,8 +92,7 @@ def map_source_description(unit, description, data_context_version):
                 _require(numeric, 'SOURCE_FORMAT_UNSUPPORTED')
             elif fmt in {'date', 'date-month-day'}:
                 _require(kind in {'date', 'datetime'}, 'SOURCE_FORMAT_UNSUPPORTED')
-        identity = [description['providerNamespace'], field['logicalId'], field['projectionId']]
-        field_id = 'field-' + hashlib.sha256(canonical_json(identity).encode('utf-8')).hexdigest()[:20]
+        field_id = field_ids[field['semanticName']]
         _require(field_id not in fields and field['queryField'] not in query_names, 'SOURCE_FIELD_IDENTITY_DUPLICATE')
         page_field = {key: deepcopy(field[key]) for key in ('queryField', 'type', 'role', 'nullable', 'label', 'unit', 'currency', 'defaultFormat') if key in field}
         if 'label' not in page_field: page_field['label'] = original.get('label', original['queryField'])

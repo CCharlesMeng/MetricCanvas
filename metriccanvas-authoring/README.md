@@ -129,4 +129,27 @@ Platform 内容入口新建报告沿用章节布局；看板页头采用 plain�
 
 修改默认继承布局。显式 `set_page_layout` 保留原标题、容器、轨道/span、数据与手工设置，报告可用宽度、工具栏、标题归属和铺底窄屏回流影响；沿用整页校验拒绝非法候选，不重套创建模板或静默丢弃设置。
 
-四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。`test-harness/model-evals/` 单独提供14个真实模型评测用例与运行约定；当前全部未运行，缺真实 Relay/模型环境、身份与预算，不能将工具测试视为模型准确度成绩。
+四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。模型运行记录按批次维护：已有 v2 中性对照与丰富数据评测，不能再用“全部未运行”概括，也不能将这些历史成绩归给 v3。当前 v3 的本地实现、离线回归和外部验收缺口见[实施记录](../docs/plan/scenario-guided-authoring/refinement/architecture-implementation-results.md)。
+
+### v3 页面创作架构与范式维护
+
+新建完整页面在工具声明支持时使用结构计划 v3；已有 v1/v2 候选不迁移，结构修订沿用原 planVersion。结构计划版本、页面 Schema 版本与 Bundle 版本是三件事，不能互换。
+
+Skill 负责业务问题、阅读层级与组件选型；工具负责能力检查、可信数据绑定和确定性装配；统一运行时负责实际呈现。创建与修订共用呈现规则，仍使用原五工具入口，不增加模型编排阶段。架构依据见[调整方案](../docs/plan/scenario-guided-authoring/refinement/authoring-architecture-proposal.md)。
+
+| 要维护的内容 | 修改真源 | 配套验证 |
+| --- | --- | --- |
+| 阅读顺序、选型、场景适用条件 | [reading-design.md](skill/metriccanvas-platform-authoring/references/reading-design.md) 与场景参考 | 差异场景前向检查，不以固定卡数或图数评分 |
+| 创作输入与版本 | `contracts/authored/page-structure-plan.schema.json`、`structure-revision.schema.json` | 新旧版本、创建/修订块契约一致性与安全错误测试 |
+| 默认占位、受控呈现、说明 | `contracts/authored/section-patterns.json`、`tool/metriccanvas_authoring/domain/` 下的 section_presentation、structure_presentation、structure_scope | 公开 create/edit 回归；保护人工设置和查询复用 |
+| 页面协议、组件与响应式 | 仓库 `packages/page/src/schema/` 与统一运行时/组件实现 | 页面 Schema、组件及呈现测试，不由 Skill 覆盖 CSS |
+
+pattern 是默认组合占位，不是整页模板或自动选型算法。结构分区仍为平面组合；新能力须同时有合法输入和可执行装配路径，再进入 structureCapabilities。
+
+报表反馈修订：v3 不再自动生成查询范围正文，structure_scope 只清理旧版保留 ID 的自动说明；查询事实仍留在数据源与审计中，必要业务边界由显式标题/副标题表达。report 指标组与图表章节优先用 panel 的白色内容区，表格小节可用 card，不能把所有章节默认设为透明 plain。见[修订结果](../docs/plan/scenario-guided-authoring/refinement/report-surface-feedback-results.md)。
+
+维护顺序：先更新所属真源及回归用例，再同步 Skill 说明和部署加载路径，最后从仓库根运行 `pnpm authoring:contracts` 与 `pnpm authoring:contracts:check`，并在 Bundle 目录运行 `python3 scripts/check_bundle.py`。生成副本和锁文件不手改；只改参考也需要更新 Bundle 摘要。
+
+完整创建必须能够读取或被注入工作流、布局参考、scenarios.md、reading-design.md 及适用场景。局部编辑不例行加载新建参考；整体重组时再加载阅读设计。独立分发链接闭合不等于外部宿主已完成注入，部署状态仍需单独验证。
+
+当前证据：v3 本地全量离线回归 480 项通过，A/B/C 分别覆盖经营阅读、用量监控、宽表局部核对。该数字是一次冻结实现的记录，不是永久测试数量承诺。工具直接生成的 JSON 通过结构校验；模型自主设计稳定性与该新产物视觉验收仍未完成。

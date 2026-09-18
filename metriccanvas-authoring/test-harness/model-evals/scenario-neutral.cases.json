@@ -1,0 +1,16 @@
+{
+  "cases": [
+    {
+      "id": "business-neutral", "scene": "business-report", "workflow": "create", "mode": "new",
+      "context": {"entry": "platform", "baseline": null}, "expected": {"layout": "report", "creation": true},
+      "includeExamples": false, "toolProfile": "diagnostic",
+      "prompts": ["请使用已提供的本地流水样例，为业务负责人制作一份便于阅读的 report 页面，帮助了解当前业务规模、变化及后续走势。请自行发现相关业务能力、选择对象和阅读顺序，实际创建页面，并说明这是非生产样例。只读样例只能选择原始指标和维度及维度筛选，不支持聚合或公式；不同来源不能互算。所需期间及合法取值以发现的元数据为准。无需补齐所有可用数据或视角。"]
+    },
+    {
+      "id": "usage-neutral", "scene": "usage-report", "workflow": "create", "mode": "new",
+      "context": {"entry": "platform", "baseline": null}, "expected": {"layout": "report", "creation": true},
+      "includeExamples": false, "toolProfile": "diagnostic",
+      "prompts": ["请使用已提供的本地资源用量样例，为资源负责人制作一份便于阅读的 report 页面，帮助了解当前资源使用规模、变化及使用走势。请自行发现相关业务能力、选择对象和阅读顺序，实际创建页面，并说明这是非生产样例。只读样例只能选择原始指标和维度及维度筛选，不支持聚合或公式；不同来源不能互算。所需期间及合法取值以发现的元数据为准。无需补齐所有可用数据或视角。"]
+    }
+  ]
+}

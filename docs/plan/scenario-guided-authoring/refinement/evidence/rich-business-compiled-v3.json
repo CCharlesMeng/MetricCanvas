@@ -1,0 +1,1012 @@
+{
+  "schemaVersion": "6.4",
+  "id": "edit-example",
+  "layout": "report",
+  "dataSources": {
+    "flow-overview": {
+      "fields": {
+        "field-938cc168755ad850046f": {
+          "queryField": "scope",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "范围"
+        },
+        "field-a2b73b1a1d9549daa94e": {
+          "queryField": "annual-total",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "年累计",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-25118df383aaefe0fc94": {
+          "queryField": "year-over-year",
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "同比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "field-1d293d31e5b788f26c93": {
+          "queryField": "current-month",
+          "type": "money",
+          "role": "measure",
+          "nullable": true,
+          "label": "本月",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-bd23e98313f6273a2715": {
+          "queryField": "month-over-month",
+          "type": "number",
+          "role": "measure",
+          "nullable": true,
+          "label": "环比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "scope"
+                ],
+                "output_metrics": [
+                  "annual-total",
+                  "year-over-year",
+                  "current-month",
+                  "month-over-month"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "scope": "total",
+              "annual-total": 22900000,
+              "year-over-year": 12.8,
+              "current-month": 11600000,
+              "month-over-month": 3.4
+            },
+            {
+              "scope": "core",
+              "annual-total": 16600000,
+              "year-over-year": 10.4,
+              "current-month": 8400000,
+              "month-over-month": 2.4
+            },
+            {
+              "scope": "communication",
+              "annual-total": 6300000,
+              "year-over-year": 18.6,
+              "current-month": 3200000,
+              "month-over-month": 3.2
+            },
+            {
+              "scope": "public-region",
+              "annual-total": 16010000,
+              "year-over-year": 8.8,
+              "current-month": 8140000,
+              "month-over-month": 3.5
+            },
+            {
+              "scope": "stable",
+              "annual-total": 12050000,
+              "year-over-year": 7.6,
+              "current-month": 6100000,
+              "month-over-month": 2.5
+            },
+            {
+              "scope": "one-off",
+              "annual-total": 3960000,
+              "year-over-year": 13.5,
+              "current-month": 2040000,
+              "month-over-month": 6.25
+            },
+            {
+              "scope": "projection",
+              "annual-total": null,
+              "year-over-year": null,
+              "current-month": null,
+              "month-over-month": null
+            }
+          ],
+          "totalCount": 7
+        }
+      }
+    },
+    "customer-growth": {
+      "fields": {
+        "field-4cc4e1170c2a5c149587": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户名称"
+        },
+        "field-8817ee44e1827871258c": {
+          "queryField": "customer-type",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户类型"
+        },
+        "field-abe678dc9b0f4045b488": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户级别"
+        },
+        "field-355d1a283bd65cacdf05": {
+          "queryField": "amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "本月流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-cbfb1ac5f23e419ca14a": {
+          "queryField": "change",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "环比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "customer-name",
+                  "customer-type",
+                  "customer-level"
+                ],
+                "output_metrics": [
+                  "amount",
+                  "change"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "customer-name": "样例客户-01",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "amount": 5000000,
+              "change": 18.5
+            },
+            {
+              "customer-name": "样例客户-02",
+              "customer-type": "SMB",
+              "customer-level": "战略",
+              "amount": 4600000,
+              "change": 15.2
+            },
+            {
+              "customer-name": "样例客户-03",
+              "customer-type": "KA",
+              "customer-level": "核心",
+              "amount": 4200000,
+              "change": 12.8
+            },
+            {
+              "customer-name": "样例客户-04",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "amount": 3800000,
+              "change": 10.6
+            },
+            {
+              "customer-name": "样例客户-05",
+              "customer-type": "KA",
+              "customer-level": "战略",
+              "amount": 3400000,
+              "change": 8.4
+            },
+            {
+              "customer-name": "样例客户-06",
+              "customer-type": "SMB",
+              "customer-level": "核心",
+              "amount": 3000000,
+              "change": 7.2
+            },
+            {
+              "customer-name": "样例客户-07",
+              "customer-type": "KA",
+              "customer-level": "卓越",
+              "amount": 2700000,
+              "change": 6.5
+            },
+            {
+              "customer-name": "样例客户-08",
+              "customer-type": "SMB",
+              "customer-level": "战略",
+              "amount": 2400000,
+              "change": 5.8
+            },
+            {
+              "customer-name": "样例客户-09",
+              "customer-type": "KA",
+              "customer-level": "核心",
+              "amount": 2100000,
+              "change": 4.9
+            },
+            {
+              "customer-name": "样例客户-10",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "amount": 1800000,
+              "change": 4.2
+            }
+          ],
+          "totalCount": 10
+        }
+      }
+    },
+    "track-target": {
+      "fields": {
+        "field-4427785b5215fda13daa": {
+          "queryField": "track-name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "赛道名称"
+        },
+        "field-79a9d6878b0de112cf71": {
+          "queryField": "annual-target",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "年目标",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-03b4ae958d8dfd3bd369": {
+          "queryField": "annual-projection",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "年推演流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-09fc83ac6f9243fb5fb7": {
+          "queryField": "flow-amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-298fe3875c5e3a99a770": {
+          "queryField": "current-month-amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "2月",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "track-name"
+                ],
+                "output_metrics": [
+                  "annual-target",
+                  "annual-projection",
+                  "flow-amount",
+                  "current-month-amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "track-name": "泛互联网",
+              "annual-target": 60000000,
+              "annual-projection": 65000000,
+              "flow-amount": 12000000,
+              "current-month-amount": 6200000
+            },
+            {
+              "track-name": "泛政企",
+              "annual-target": 55000000,
+              "annual-projection": 58000000,
+              "flow-amount": 10800000,
+              "current-month-amount": 5600000
+            },
+            {
+              "track-name": "车企",
+              "annual-target": 50000000,
+              "annual-projection": 52000000,
+              "flow-amount": 9600000,
+              "current-month-amount": 5000000
+            },
+            {
+              "track-name": "商业市场",
+              "annual-target": 45000000,
+              "annual-projection": 46000000,
+              "flow-amount": 8400000,
+              "current-month-amount": 4400000
+            },
+            {
+              "track-name": "海外",
+              "annual-target": 40000000,
+              "annual-projection": 39500000,
+              "flow-amount": 7200000,
+              "current-month-amount": 3800000
+            }
+          ],
+          "totalCount": 5
+        }
+      }
+    },
+    "customer-risk": {
+      "fields": {
+        "field-4cc4e1170c2a5c149587": {
+          "queryField": "customer-name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户名称"
+        },
+        "field-8817ee44e1827871258c": {
+          "queryField": "customer-type",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户类型"
+        },
+        "field-abe678dc9b0f4045b488": {
+          "queryField": "customer-level",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "客户级别"
+        },
+        "field-68acb140dd6d7b85fac5": {
+          "queryField": "january-amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "1月流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-ca9b3c550bc35d977f90": {
+          "queryField": "previous-month-amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "上月流水",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        },
+        "field-298fe3875c5e3a99a770": {
+          "queryField": "current-month-amount",
+          "type": "money",
+          "role": "measure",
+          "nullable": false,
+          "label": "2月",
+          "unit": "元",
+          "currency": "CNY",
+          "defaultFormat": "cny-adaptive"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "customer-name",
+                  "customer-type",
+                  "customer-level"
+                ],
+                "output_metrics": [
+                  "january-amount",
+                  "previous-month-amount",
+                  "current-month-amount"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "customer-name": "样例客户-01",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "january-amount": 6000000,
+              "previous-month-amount": 5500000,
+              "current-month-amount": 5000000
+            },
+            {
+              "customer-name": "样例客户-02",
+              "customer-type": "KA",
+              "customer-level": "战略",
+              "january-amount": 5500000,
+              "previous-month-amount": 5000000,
+              "current-month-amount": 4500000
+            },
+            {
+              "customer-name": "样例客户-03",
+              "customer-type": "SMB",
+              "customer-level": "核心",
+              "january-amount": 5000000,
+              "previous-month-amount": 4500000,
+              "current-month-amount": 4000000
+            },
+            {
+              "customer-name": "样例客户-04",
+              "customer-type": "KA",
+              "customer-level": "卓越",
+              "january-amount": 4500000,
+              "previous-month-amount": 4000000,
+              "current-month-amount": 3500000
+            },
+            {
+              "customer-name": "样例客户-05",
+              "customer-type": "SMB",
+              "customer-level": "战略",
+              "january-amount": 4000000,
+              "previous-month-amount": 3500000,
+              "current-month-amount": 3000000
+            },
+            {
+              "customer-name": "样例客户-06",
+              "customer-type": "KA",
+              "customer-level": "核心",
+              "january-amount": 3500000,
+              "previous-month-amount": 3000000,
+              "current-month-amount": 2500000
+            },
+            {
+              "customer-name": "样例客户-07",
+              "customer-type": "SMB",
+              "customer-level": "卓越",
+              "january-amount": 3000000,
+              "previous-month-amount": 2500000,
+              "current-month-amount": 2000000
+            },
+            {
+              "customer-name": "样例客户-08",
+              "customer-type": "KA",
+              "customer-level": "战略",
+              "january-amount": 2500000,
+              "previous-month-amount": 2000000,
+              "current-month-amount": 1500000
+            },
+            {
+              "customer-name": "样例客户-09",
+              "customer-type": "SMB",
+              "customer-level": "核心",
+              "january-amount": 2000000,
+              "previous-month-amount": 1500000,
+              "current-month-amount": 1000000
+            },
+            {
+              "customer-name": "样例客户-10",
+              "customer-type": "KA",
+              "customer-level": "卓越",
+              "january-amount": 1500000,
+              "previous-month-amount": 1000000,
+              "current-month-amount": 500000
+            }
+          ],
+          "totalCount": 10
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "经营概览（非生产样例）"
+          }
+        },
+        {
+          "id": "structure-scope-page",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "查询范围：2026年2月（按月）。指标统计期间以各指标标签及说明为准。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "container": "plain",
+      "components": [
+        {
+          "id": "overview-total",
+          "type": "metricCard",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "variant": "compactStrip",
+            "rows": [
+              {
+                "label": "年累计",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-a2b73b1a1d9549daa94e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-25118df383aaefe0fc94",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "total"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-1d293d31e5b788f26c93",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "total"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-bd23e98313f6273a2715",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "total"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "整体流水"
+          }
+        },
+        {
+          "id": "overview-core",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "年累计",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-a2b73b1a1d9549daa94e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "core"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-25118df383aaefe0fc94",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "core"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-1d293d31e5b788f26c93",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "core"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-bd23e98313f6273a2715",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "core"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "Core 流水"
+          }
+        },
+        {
+          "id": "overview-communication",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "年累计",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-a2b73b1a1d9549daa94e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "communication"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-25118df383aaefe0fc94",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "communication"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-1d293d31e5b788f26c93",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "communication"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-bd23e98313f6273a2715",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "communication"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "云通信流水"
+          }
+        },
+        {
+          "id": "overview-region",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "flow-overview"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "年累计",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-a2b73b1a1d9549daa94e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "public-region"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-25118df383aaefe0fc94",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "public-region"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "本月",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-1d293d31e5b788f26c93",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "public-region"
+                  },
+                  "format": "cny-adaptive"
+                },
+                "changes": [
+                  {
+                    "label": "环比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-bd23e98313f6273a2715",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "public-region"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "公网 Region 流水"
+          }
+        }
+      ]
+    },
+    {
+      "id": "target-vs-projection",
+      "container": "plain",
+      "components": [
+        {
+          "id": "target-comparison",
+          "type": "barChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "track-target"
+          },
+          "props": {
+            "title": "各赛道年度目标与推演",
+            "categoryField": "field-4427785b5215fda13daa",
+            "series": [
+              {
+                "field": "field-79a9d6878b0de112cf71",
+                "label": "年目标"
+              },
+              {
+                "field": "field-03b4ae958d8dfd3bd369",
+                "label": "年推演流水"
+              }
+            ],
+            "horizontal": true,
+            "stacked": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "customer-focus",
+      "container": "plain",
+      "components": [
+        {
+          "id": "growth-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customer-growth"
+          },
+          "props": {
+            "title": "增长客户观察",
+            "columns": [
+              {
+                "field": "field-4cc4e1170c2a5c149587",
+                "title": "客户名称"
+              },
+              {
+                "field": "field-355d1a283bd65cacdf05",
+                "title": "本月流水",
+                "align": "right"
+              },
+              {
+                "field": "field-cbfb1ac5f23e419ca14a",
+                "title": "环比",
+                "align": "right",
+                "visual": "signed"
+              }
+            ],
+            "variant": "reportCompact",
+            "subtitle": "仅含入选客户，不代表整体增长贡献。"
+          }
+        },
+        {
+          "id": "risk-table",
+          "type": "table",
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customer-risk"
+          },
+          "props": {
+            "title": "风险复核名单",
+            "columns": [
+              {
+                "field": "field-4cc4e1170c2a5c149587",
+                "title": "客户名称"
+              },
+              {
+                "field": "field-8817ee44e1827871258c",
+                "title": "客户类型"
+              },
+              {
+                "field": "field-298fe3875c5e3a99a770",
+                "title": "2月",
+                "align": "right"
+              }
+            ],
+            "variant": "reportCompact",
+            "subtitle": "仅展示入选对象，不提供风险原因或等级判断。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "reading-notes",
+      "container": "plain",
+      "components": [
+        {
+          "id": "reading-notes-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "非生产样例。各数据源独立，不跨源加总或对账；年度推演不是实际完成额。两份客户名单分别匿名化，同名不代表同一对象。风险来源的“1月”与“上月”口径待核对，不作为连续趋势展示。",
+            "title": "阅读说明"
+          }
+        }
+      ]
+    }
+  ]
+}

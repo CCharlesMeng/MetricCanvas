@@ -1,5 +1,7 @@
 # 修改当前页面
 
+v2/v3 结构候选可提交 request.structureRevision={planVersion:原计划版本,parentVersion:上次candidateVersion,patches:[...]} 并传 candidate_ref。稳定 ID 补丁支持 replace-block、replace-request、set-section、move-section、remove-block、move-block，以实际 Schema 为准。v3 可用 set-section 的 title:null 去掉可见分区标题。标题/顺序修改零查询；修改指标需求只执行受影响的有效查询。任何修订冲突原子失败，原候选不变。整体重组阅读结构时再读[阅读层级与表达](../references/reading-design.md)，局部设置不套场景默认。
+
 1. 确认本轮mode=existing 的本轮 contextRef及可信完整基线、唯一目标稳定 ID 和任务相关配置。文字明确目标优先；目标缺失/歧义先澄清。读取失败保留原页，不能用创建工具重建基线。
 2. 将请求映射到 edit_page 的受控操作，仅提交用户涉及的设置；每项具有唯一 id，依赖前序新增组件/筛选的项用 dependsOn。字段、绑定、结构用专用操作，输入 Schema 决定是否可执行。
 3. 普通属性修改沿用已有数据和布局，不发现数据、不重新装配整页。新增数据需求先发现受治理能力，再用 add_data_component 提交单单元 spec、目标 sectionId 与新 componentId；可信源映射和查询验证通过后才将源与图表一起加入当前候选。源冲突、刻度不支持或映射缺失使该组失败，不能用 compose_page 重建已有页。已有可信源支持的 add recipe 可直接编辑。

@@ -117,7 +117,8 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       rmSync(file);
       const result = runExport();
       expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain('Broken reference link: workflows/create.md -> ../references/layouts/report.md');
+      // Both workflows may reference the layout; traversal order is not the contract.
+      expect(result.stderr).toMatch(/Broken reference link: workflows\/(?:create|edit)\.md -> \.\.\/references\/layouts\/report\.md/);
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 
