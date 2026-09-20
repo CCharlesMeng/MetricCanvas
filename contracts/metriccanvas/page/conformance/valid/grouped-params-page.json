@@ -1,0 +1,622 @@
+{
+  "schemaVersion": "6.6",
+  "layout": "report",
+  "id": "grouped-params-page",
+  "params": {
+    "dimensions": [
+      {
+        "id": "region",
+        "dim_name": "region",
+        "dim_value_list": [
+          "中国地区部"
+        ]
+      }
+    ],
+    "times": [
+      {
+        "id": "report-period",
+        "granularity": "month",
+        "start": "2026-01",
+        "end": "2026-06"
+      },
+      {
+        "id": "comparison-period",
+        "granularity": "month",
+        "start": "2025-01",
+        "end": "2025-06"
+      }
+    ]
+  },
+  "dataSources": {
+    "current": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "rolling": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false,
+                    "start": {
+                      "param": "comparison-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "comparison-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "year": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "previous-year": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false,
+                    "start": {
+                      "param": "comparison-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "comparison-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "to-date": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "month-to-date": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": false,
+                    "start": {
+                      "param": "comparison-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "comparison-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "legacy-to-date": {
+      "fields": {
+        "region": {
+          "queryField": "region",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure",
+          "nullable": false
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "region"
+                ],
+                "output_metrics": [
+                  "gmv"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "region",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "metrics": [],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "start": {
+                      "param": "report-period",
+                      "part": "start"
+                    },
+                    "end": {
+                      "param": "report-period",
+                      "part": "end"
+                    }
+                  }
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "heading",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "时间参数示例",
+            "asOf": {
+              "label": "报告月份",
+              "value": {
+                "param": "report-period"
+              }
+            }
+          }
+        },
+        {
+          "id": "current",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "current"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "rolling",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "rolling"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "year",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "year"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "previous-year",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "previous-year"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "to-date",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "to-date"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "month-to-date",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "month-to-date"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        },
+        {
+          "id": "legacy-to-date",
+          "type": "table",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "legacy-to-date"
+          },
+          "props": {
+            "columns": [
+              {
+                "field": "region"
+              },
+              {
+                "field": "gmv"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

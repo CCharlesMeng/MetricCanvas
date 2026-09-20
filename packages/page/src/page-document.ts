@@ -1,3 +1,4 @@
+import type { GroupedPageParams, PageParamDeclaration } from './page-param';
 import type {
   InlineDataSource,
   QueryDataSource,
@@ -61,8 +62,9 @@ export type PageDataSourcesDocument = Record<string, PageDataSourceDocument>;
  * 页面修订中持久化的自包含文档。query 页面数据源可以使用按角色
  * 分组的局部显式形式；跨过统一运行时接缝前必须解析为 Page。
  */
-export interface PageDocument extends Omit<Page, 'dataSources'> {
+export interface PageDocument extends Omit<Page, 'dataSources' | 'params'> {
   /** 仅兼容旧文档输入；normalizePageDocument 写出删除此字段，运行态 Page 不含它。 */
   layoutForm?: PageLayoutForm;
   dataSources: PageDataSourcesDocument;
+  params?: PageParamDeclaration[] | GroupedPageParams;
 }

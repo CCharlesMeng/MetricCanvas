@@ -87,6 +87,7 @@ GrandTotalOperator
 GroupSubtotalOperator
 GroupedDimensionQueryFieldDefinition
 GroupedMeasureQueryFieldDefinition
+GroupedPageParams
 GroupedQueryDataSource
 GroupedQueryFields
 InlineDataSource
@@ -241,6 +242,7 @@ filterURLKeys
 flattenPageComponents
 formatSuitsParamType
 hasQueryFieldMapping
+hasQueryParamReferences
 hierarchyLevelOf
 initializeQueryParams
 isChartComponent
@@ -265,6 +267,7 @@ normalizePageDocument
 normalizeQueryRows
 pageCapabilities
 pageListEntry
+pageParamDeclarations
 pageParamErrors
 pageSchema
 parsePage

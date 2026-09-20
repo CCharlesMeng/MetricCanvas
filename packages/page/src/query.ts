@@ -102,7 +102,7 @@ export function resolveInlineQueryParams(query: PageQuery, values: ReadonlyMap<s
 }
 
 function isTimeRangeValue(value: PageParamValue | undefined): value is TimeRangeParamValue {
-  return !!value && typeof value === 'object' && !Array.isArray(value) && 'start' in value && 'end' in value && 'granularity' in value;
+  return !!value && typeof value === 'object' && !Array.isArray(value) && 'start' in value && 'end' in value;
 }
 
 /**

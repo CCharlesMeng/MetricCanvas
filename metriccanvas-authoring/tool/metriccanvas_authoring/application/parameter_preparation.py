@@ -1,4 +1,5 @@
 """Trusted authoring program handoff. This module does not implement extraction or recall."""
+from metriccanvas_authoring.domain.grouped_params import declarations as _param_declarations, clear_values
 from copy import deepcopy
 import json
 from typing import Protocol
@@ -35,7 +36,7 @@ async def prepare_page_parameters(document: dict, context: dict, program: Parame
     if not same_source or (selected_ids is not None and sorted(result.get('selectedIds', [])) != sorted(selected_ids)):
         raise ValueError('PROGRAM_RESULT_MISMATCH')
     selected = set(result.get('selectedIds', []))
-    for param in result['document'].get('params', []):
+    for param in _param_declarations(result['document']):
         if param['id'] in selected and ('value' in param or 'default' in param):
             raise ValueError('TEMPLATE_CONTAINS_INPUT')
     if selected and any('initial' in ds['source'] for ds in result['document']['dataSources'].values() if ds['source']['type'] == 'query'):

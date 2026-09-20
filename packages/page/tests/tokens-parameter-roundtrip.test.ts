@@ -17,7 +17,7 @@ it('Tokens: all five verified queries round-trip, changed region/period changes 
   expect(Object.values(s.document.dataSources).every(d=>!('initial' in d.source))).toBe(true);
   for(const inputs of [s.originalValues,{region:'欧洲区','report-period':{start:'2026-07',end:'2026-12',granularity:'month'}}]){
     const r=resolvePageParams(s.document,inputs);expect(r.ok).toBe(true);if(!r.ok)throw Error(JSON.stringify(r.issues));
-    const stripped=structuredClone(r.document);stripped.params?.forEach(p=>delete p.value);expect(stripped).toEqual(s.document);
+    const stripped=structuredClone(r.document);if(!Array.isArray(stripped.params))throw Error('expected legacy array');stripped.params.forEach(p=>delete p.value);expect(stripped).toEqual(s.document);
     expect(resolvePageParams(s.document,inputs)).toEqual(r);
     for(const [id,ds] of Object.entries(r.resolvedPage.dataSources)){
       if(ds.source.type!=='query')throw Error('query');

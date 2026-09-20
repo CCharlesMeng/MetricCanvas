@@ -1,4 +1,14 @@
-# 页面参数使用指南（6.5）
+# 页面参数使用指南（6.6）
+
+## 6.6 分组参数（新页面）
+
+新结构为 `params: { dimensions: [...], times: [...], scalars?: [...] }`。每组均为数组，报告期和对比期通过不同 ID 独立填写。dimensions 使用 `id/dim_name/dim_value_list`；times 使用 `id/granularity/start/end`；scalars 保留标题等 string/number/boolean 输入并用 value 保存实际值。各组可省略，至少声明一个参数。
+
+新参数不使用 default；required 缺省 true。模板省略实际值，时间起止必须成对填写。查询在 `dim_value_list` 和 `time.start/end` 原位引用参数；period 与 is_aggregate 留在查询侧。多个查询可分别引用不同时间，也可共享一个时间参数。值不全时不能执行，原始文档保持不变。
+
+完整字段、引用、URL 与兼容规则见[已实现方案](docs/plan/2026-09-20-grouped-page-params.md)，完整页面见[多时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 时间值为编码后的 `{start,end}` JSON，维度仍使用重复键；显式非法输入不回退保存值。
+
+以下章节说明**兼容的旧参数数组与基准期窗口能力**。其中 default、multiple、paramBindings 和单值 time 的限制只适用于旧数组分支，不限制新 times 数组。
 
 ## 分类阅读入口
 
@@ -8,7 +18,7 @@
 
 ## 1. 版本与使用原则
 
-**6.5 是 6.x 唯一支持的版本。** 本文只说明 `schemaVersion: "6.5"`，不再提供 6.0—6.4 的兼容或迁移用法；5.x 的读取政策不在本文调整范围内。
+**6.x 支持 6.5 和 6.6。** 上节说明 6.6 分组参数；下文保留 6.5 数组参数的操作示例与提取、填值流程。6.0—6.4 不再支持；5.x 的读取政策不在本文调整范围内。
 
 页面参数回答「这次看什么」。一次页面实例初始化后参数固定；换一组值需要重新初始化另一个页面实例。页内可交互修改的是筛选状态，不是页面参数。参数不会自动影响全页，查询和文本必须显式引用它。
 

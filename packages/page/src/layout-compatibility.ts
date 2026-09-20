@@ -17,6 +17,6 @@ export function canonicalLayoutDocument<T extends {
   schemaVersion: string; layout?: PageLayoutForm; layoutForm?: PageLayoutForm
 }>(document: T): Omit<T, 'layoutForm'> & { layout: PageLayoutForm } {
   const { layoutForm, ...rest } = document;
-  const canonicalMinor = versionPolicy.minor;
+  const canonicalMinor = document.schemaVersion === '6.5' ? 5 : versionPolicy.minor;
   return { ...rest, schemaVersion: `${versionPolicy.major}.${canonicalMinor}`, layout: document.layout ?? layoutForm ?? 'report' };
 }

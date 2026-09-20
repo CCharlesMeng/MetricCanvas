@@ -35,6 +35,7 @@ it('initializes filter-owned targets once and keeps unbound targets fixed after 
   const fixed=(initialized.dataSources.fixed.source as any).query;
   expect((effectiveDqeItem({...controlled,fieldMappings:{},filterValues:[]}).filter as any).dims).toEqual([]);
   expect((effectiveDqeItem({...fixed,fieldMappings:{},filterValues:[]}).filter as any).dims[0].dim_value_list).toEqual(['中国区']);
-  const params=resolvePageParams('?region=全球',resolved.document.params!);
+  if(!Array.isArray(resolved.document.params))throw Error('expected legacy array');
+  const params=resolvePageParams('?region=全球',resolved.document.params);
   expect(params.values.get('region')).toBe('中国区');
 });

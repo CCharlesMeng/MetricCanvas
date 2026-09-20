@@ -18,6 +18,22 @@ export function resolvePageParams(
   const missing: string[] = [];
 
   for (const declaration of declarations) {
+    if (declaration.path) {
+      // 分组参数的保存值就是实际值。显式非法 URL 输入不回退到另一份报告。
+      let value: unknown = declaration.value;
+      if (query.has(declaration.id)) {
+        const entries = query.getAll(declaration.id);
+        if (declaration.type === 'dimension') value = entries;
+        else if (entries.length !== 1) value = undefined;
+        else if (declaration.type === 'timeRange') {
+          try { value = JSON.parse(entries[0]); } catch { value = undefined; }
+        } else value = parseParamValue(entries[0], declaration);
+      }
+      if (matchesParamDeclaration(value, declaration)) values.set(declaration.id, value);
+      else if (value !== undefined || query.has(declaration.id) || declaration.required) missing.push(declaration.id);
+      continue;
+    }
+
     if (declaration.value !== undefined || declaration.type === 'timeRange') {
       const value = declaration.value;
       if (value !== undefined && matchesParamDeclaration(value, declaration)) values.set(declaration.id, structuredClone(value));
@@ -62,7 +78,10 @@ export function pageParamSearch(values: PageParamValues): string {
 }
 
 export function serializePageParam(value: PageParamValue): string {
-  if (typeof value === 'object' && !Array.isArray(value)) throw new Error('timeRange 参数须经程序通道传递，尚无 URL 编码协议');
+  if (typeof value === 'object' && !Array.isArray(value)) {
+    if (value.granularity !== undefined) throw new Error('旧timeRange参数仍通过程序通道传递');
+    return JSON.stringify(value);
+  }
   return String(value);
 }
 
@@ -91,7 +110,7 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
   // 6.5 inline values are resolved once at the Page boundary.  In particular,
   // a missing template value never reaches the gateway as an object or as an
   // accidentally unfiltered query.
-  const materialized = page.schemaVersion === '6.5';
+  const materialized = ['6.5', '6.6'].includes(page.schemaVersion);
   if (materialized) {
     page = materializePageParams(page, values);
   }

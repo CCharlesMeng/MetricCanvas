@@ -1,6 +1,6 @@
 import { isNavigationHref, type NavigationTarget, type Row } from '@metriccanvas/page/internal';
 import type { FilterValue, FilterValues } from './filter-state';
-import type { PageParamValues } from './page-params';
+import { serializePageParam, type PageParamValues } from './page-params';
 
 /** 只按显式绑定构造普通 URL；相对路径留给承载文档解析。 */
 export function navigationHref(target: NavigationTarget, filters: FilterValues, params: PageParamValues, row: Row = {}): string {
@@ -15,6 +15,10 @@ export function navigationHref(target: NavigationTarget, filters: FilterValues, 
     const value = binding.source === 'row' ? row[binding.field]
       : binding.source === 'param' ? params.get(binding.id)
       : filterPart(filters.get(binding.id), binding.part ?? 'value');
+    if (binding.source === 'param' && value && typeof value === 'object' && !Array.isArray(value) && !('granularity' in value) && 'start' in value && typeof value.start === 'string' && 'end' in value && typeof value.end === 'string') {
+      query.set(key, serializePageParam({start: value.start, end: value.end}));
+      continue;
+    }
     const values = (Array.isArray(value) ? value : [value]).filter(isQueryValue);
     if (!values.length) continue;
     query.delete(key);

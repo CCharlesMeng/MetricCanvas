@@ -18,7 +18,8 @@ it('extracts identical trusted dimension identity/range, selects explicitly and 
   expect(extraction.candidates.every(c=>c.defaultSelected)).toBe(true);
   const selected=applyPageParamSelection(extraction,extraction.candidates.map(c=>c.id));
   expect(selected.ok).toBe(true);if(!selected.ok)throw Error(JSON.stringify(selected.issues));
-  expect(selected.document.params?.every(p=>p.value===undefined&&p.default===undefined)).toBe(true);
+  if (!Array.isArray(selected.document.params)) throw Error('expected legacy array');
+  expect(selected.document.params.every(p=>p.value===undefined&&p.default===undefined)).toBe(true);
   const result=resolvePageParams(selected.document,selected.originalValues);
   expect(result.ok).toBe(true);if(!result.ok)return;
   for(const id of Object.keys(p.dataSources))expect((result.resolvedPage.dataSources[id].source as any).query.body).toEqual(p.dataSources[id].source.query.body);

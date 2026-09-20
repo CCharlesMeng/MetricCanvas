@@ -17,7 +17,7 @@
 `t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
 
-页面协议 6.5。结构真源为本册[schema.json](schema.json)，SHA256 `74d191638111da2be8353b210093f832ed2babed21b3e93cacd8a41b996f17c0`。字段表自动生成；可选不等于有默认值。
+页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `a421c583a35d98c6d01d1a47965f13984e4d6ec1aab62779b4d5ec78b7c8cf8f`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

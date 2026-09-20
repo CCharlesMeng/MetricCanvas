@@ -5,12 +5,12 @@ import { walkDocumentComponents } from './component-walk';
 /**
  * 页面协议版本策略(ADR-0051):`schemaVersion` 是 `MAJOR.MINOR`。
  *
- * 2026-09-18 用户确认收窄读取策略：6.x 只支持 6.5，5.x 只读例外不变。
+ * 2026-09-18 用户确认收窄读取策略：6.x 支持 6.5 与 6.6，5.x 只读例外不变。
  * 能力表保留协议演进信息，不再表示旧 6.x 版本获得读取支持。
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 5;
+const CURRENT_MINOR = 6;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -32,6 +32,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'grouped-params': {
+    minor: 6, description: '分组参数、多个独立时间区间与查询原位引用',
+    usedAt: (document) => record(record(document)?.params) ? ['/params'] : []
+  },
   'million-formats': {
     minor: 5, description: '按百万呈现数值，支持0/1/2位小数',
     usedAt: millionFormatPaths
@@ -439,11 +443,11 @@ export const versionPolicy: VersionPolicy = {
 };
 
 /**
- * 6.x 只接受当前版本；5.0–5.4 保留为只读输入例外。
+ * 6.x 接受 6.5 兼容版本及当前版本；5.0–5.4 保留为只读输入例外。
  * 能力引入历史仍可查询，但不代表旧 6.x 文档可读。
  */
 export function supportedVersions(policy: VersionPolicy = versionPolicy): string[] {
-  const currentMajor = [policy.current];
+  const currentMajor = policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 ? ['6.5', policy.current] : [policy.current];
   return policy.major === PAGE_SCHEMA_MAJOR
     ? [...LEGACY_READABLE_PAGE_SCHEMA_VERSIONS, ...currentMajor]
     : currentMajor;
@@ -457,7 +461,7 @@ export function versionErrors(
   if (version === undefined) return [];
   const parsed = parseVersion(version);
   if (parsed !== undefined && (
-    version === policy.current ||
+    version === policy.current || (policy.major === PAGE_SCHEMA_MAJOR && policy.minor >= 6 && version === '6.5') ||
     (policy.major === PAGE_SCHEMA_MAJOR && LEGACY_READABLE_PAGE_SCHEMA_VERSIONS.includes(
       version as (typeof LEGACY_READABLE_PAGE_SCHEMA_VERSIONS)[number]
     ))

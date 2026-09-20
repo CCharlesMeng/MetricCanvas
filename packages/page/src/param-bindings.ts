@@ -1,5 +1,5 @@
 import type { TypedError } from './errors';
-import type { PageParamDeclaration } from './page-param';
+import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { FilterDeclaration } from './filter';
 import type { DqeQueryDefinition } from './query';
 import { resolveTimeWindow, timeWindowCompatible } from './time-param';
@@ -7,8 +7,8 @@ import { inspectInlineQuery } from './inline-query-params';
 
 /** 结构校验后的参数绑定不变量；不从字段名猜目标，不解释任意表达式。 */
 export function paramBindingErrors(document: unknown): TypedError[] {
-  const page = document as { params?: PageParamDeclaration[]; filters?: FilterDeclaration[]; dataSources: Record<string, {source: {type: string; query?: DqeQueryDefinition}}> };
-  const params = new Map((page.params ?? []).map(p => [p.id, p]));
+  const page = document as { params?: PageParamDeclaration[] | GroupedPageParams; filters?: FilterDeclaration[]; dataSources: Record<string, {source: {type: string; query?: DqeQueryDefinition}}> };
+  const params = new Map(pageParamDeclarations(page.params).map(p => [p.id, p]));
   const filters = new Map((page.filters ?? []).map(f => [f.id, f]));
   const errors: TypedError[] = [];
   const error = (path: string, message: string) => errors.push({ type: 'SCHEMA_ERROR', path, message });
@@ -17,7 +17,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     const query = source.source.query;
     if (source.source.type !== 'query' || !query) continue;
     const owners = new Map<string, string>();
-    const inline = inspectInlineQuery(query, page.params ?? [], `/dataSources/${pointer(sourceId)}/source/query`);
+    const inline = inspectInlineQuery(query, pageParamDeclarations(page.params), `/dataSources/${pointer(sourceId)}/source/query`);
     errors.push(...inline.errors);
     for (const usage of inline.usages) {
       if (usage.target !== 'dimension' || !usage.queryField) continue;

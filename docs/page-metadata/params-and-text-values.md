@@ -1,6 +1,6 @@
 # 页面参数与文本取值
 
-页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
+旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
 
 文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。
 
@@ -22,3 +22,13 @@
 窗口：`{kind:"period",unit:"day"|"month"|"year",offset?:整数}` 表示完整周期（offset缺省0）；`{kind:"lastN",unit:"day"|"month",n:正整数}` 表示含基准期的最近N期；6.4新增 `{kind:"monthToDate"}` / `{kind:"yearToDate"}` 表示自然月/年起点至基准期，不读取系统今天，无需unit。旧 `{kind:"toDate",unit:"month"|"year"}` 保持兼容。月参数不能推断某一天；lastN单位须与输入精度一致（month→month、date→day）。日期计算为确定性日历算术，不读取时钟，不受进程时区影响；起止包含。生成窗口越出0001—9999年时报错。
 
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
+
+## 6.6 分组参数与多个时间区间
+
+params 增加对象分支：dimensions、times、scalars 均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；scalars 每项为 id、type 与可选 value。所有组的 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
+
+维度统一非空去重字符串数组。时间精度 month/date，校验真实日历及起止顺序。多个 times 是独立输入，查询显式按 ID 选择；period 与 is_aggregate 留在查询侧。未填值模板允许校验与保存，但必需输入不全不能执行。
+
+原位引用限于 DQE filter.dims[].dim_value_list 的 {param:id} 和 filter.time.start/end 的 {param:id,part:start/end}。时间两端同源、精度兼容，维度 dim_name 匹配声明；禁止与筛选/旧参数绑定双控或引用其他请求位置。执行前在副本解析，带引用的查询不消费未经核验的 initial 旧行。
+
+文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度重复键、时间值用编码后的 {start,end} JSON；未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分组改写为数组。

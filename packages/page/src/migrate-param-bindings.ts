@@ -1,3 +1,4 @@
+import { pageParamDeclarations } from './page-param';
 import { parsePage } from './validate';
 import type { PageDocument } from './page-document';
 import { record } from './inline-query-params';
@@ -8,8 +9,8 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
   const parsed=parsePage(input);
   if(!parsed.ok)return {ok:false,issues:parsed.errors.map(e=>({code:'INVALID_PAGE',path:e.path,message:e.message}))};
   const document=JSON.parse(JSON.stringify(input)) as PageDocument;
-  document.schemaVersion='6.5';
-  for(const p of document.params??[]) {
+  document.schemaVersion=document.schemaVersion === '6.6' ? '6.6' : '6.5';
+  for(const p of pageParamDeclarations(document.params)) {
     if(p.default!==undefined){p.value=p.default;delete p.default;}
   }
   for(const ds of Object.values(document.dataSources)) {
@@ -20,7 +21,7 @@ export function migrateParamBindings(input:unknown):{ok:true;document:PageDocume
     item.filter=filter;
     for(const [id,b] of Object.entries(q.paramBindings??{})) {
       if(b.target==='dimension') {
-        const p=document.params?.find(p=>p.id===id);
+        const p=pageParamDeclarations(document.params).find(p=>p.id===id);
         if(p?.required===false)return {ok:false,issues:[{code:'INVALID_PAGE',path:'/params',param:id,message:'可选旧查询绑定无法证明与必填原位引用等价'}]};
         filter.dims=[...(filter.dims??[]),{dim_name:b.queryField,dim_value_list:{param:id}}];
       } else {

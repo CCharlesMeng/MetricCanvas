@@ -9,8 +9,34 @@ import { matchesTimeValue, type TimeParamGranularity } from './time-param';
  */
 
 export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time' | 'timeRange';
-export interface TimeRangeParamValue { start: string; end: string; granularity: TimeParamGranularity; }
+export interface TimeRangeParamValue { start: string; end: string; granularity?: TimeParamGranularity; }
 export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
+
+export interface GroupedPageParams {
+  dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
+  times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
+  scalars?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
+}
+
+/** 只归一化运行态声明；保存文档维持原来的分组结构。 */
+export function pageParamDeclarations(params: readonly PageParamDeclaration[] | GroupedPageParams | undefined): PageParamDeclaration[] {
+  if (!params) return [];
+  if (Array.isArray(params)) return [...params];
+  const groups = params as GroupedPageParams;
+  return [
+    ...(groups.dimensions ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: 'dimension', required: p.required ?? true, multiple: true,
+      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/dimensions/${i}`
+    })),
+    ...(groups.times ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: 'timeRange', required: p.required ?? true, granularity: p.granularity,
+      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/times/${i}`
+    })),
+    ...(groups.scalars ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/scalars/${i}`
+    }))
+  ];
+}
 
 export interface PageParamDeclaration {
   id: string;
@@ -23,6 +49,8 @@ export interface PageParamDeclaration {
   default?: Exclude<PageParamValue, TimeRangeParamValue>;
   /** Filled inputs are persisted only on an instantiated page, never on a template. */
   value?: PageParamValue;
+  path?: string;
+  dimName?: string;
 }
 
 /**
@@ -141,8 +169,8 @@ export function pageParamErrors(
   const byId = new Map<string, PageParamDeclaration>();
 
   declarations.forEach((declaration, index) => {
-    const path = `/params/${index}`;
-    if ((document as {schemaVersion?:string}).schemaVersion !== '6.5' && declaration.required === undefined) errors.push(schemaError(`${path}/required`, '旧版本必须显式声明required'));
+    const path = declaration.path ?? `/params/${index}`;
+    if (!['6.5', '6.6'].includes((document as {schemaVersion?:string}).schemaVersion ?? '') && declaration.required === undefined) errors.push(schemaError(`${path}/required`, '旧版本必须显式声明required'));
     if (byId.has(declaration.id)) {
       errors.push(schemaError(`${path}/id`, `页面参数 id 重复:${declaration.id}`));
     }
@@ -166,7 +194,7 @@ export function pageParamErrors(
       );
     }
     if (declaration.value !== undefined && !matchesParamDeclaration(declaration.value, declaration)) {
-      errors.push(schemaError(`${path}/value`, `实际值不符合参数类型 ${declaration.type}`));
+      errors.push(schemaError(declaration.path ?? `${path}/value`, `实际值不符合参数类型 ${declaration.type}`));
     }
   });
 
@@ -217,7 +245,7 @@ export function pageParamErrors(
     if (consumed.has(declaration.id)) return;
     errors.push(
       schemaError(
-        `/params/${index}/id`,
+        `${declaration.path ?? `/params/${index}`}/id`,
         `页面参数 ${declaration.id} 没有任何消费者;未被消费的参数通常意味着绑错了位置`
       )
     );
@@ -229,12 +257,12 @@ export function pageParamErrors(
 export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
   if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
   if (declaration.type === 'timeRange') {
-    return typeof value === 'object' && value !== null && !Array.isArray(value) &&
-      Object.keys(value).length === 3 && Object.keys(value).every(k => ['start','end','granularity'].includes(k)) &&
-      (value as TimeRangeParamValue).granularity === declaration.granularity &&
-      matchesTimeValue((value as TimeRangeParamValue).start, declaration.granularity) &&
-      matchesTimeValue((value as TimeRangeParamValue).end, declaration.granularity) &&
-      (value as TimeRangeParamValue).start <= (value as TimeRangeParamValue).end;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const range = value as TimeRangeParamValue;
+    const keys = declaration.path ? ['start', 'end'] : ['start', 'end', 'granularity'];
+    return Object.keys(value).length === keys.length && Object.keys(value).every(k => keys.includes(k)) &&
+      (declaration.path !== undefined || range.granularity === declaration.granularity) &&
+      matchesTimeValue(range.start, declaration.granularity) && matchesTimeValue(range.end, declaration.granularity) && range.start <= range.end;
   }
   if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
   return declaration.multiple

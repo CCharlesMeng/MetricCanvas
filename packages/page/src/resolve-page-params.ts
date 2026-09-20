@@ -1,4 +1,4 @@
-import { matchesParamDeclaration, type PageParamValue } from './page-param';
+import { matchesParamDeclaration, pageParamDeclarations, type PageParamValue } from './page-param';
 import { initializeQueryParams } from './query';
 import { parsePage } from './validate';
 import type { Page } from './page';
@@ -16,7 +16,7 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   if(!structural.ok)return {ok:false,issues:structural.errors.map(e=>issue(e))};
   if(!suppliedValues||typeof suppliedValues!=='object'||Array.isArray(suppliedValues))return {ok:false,issues:[{code:'INVALID_VALUE',path:'/params',message:'输入必须是id到值的映射'}]};
   const document=JSON.parse(JSON.stringify(page)) as PageDocument;
-  const declarations=document.params??[];
+  const declarations=pageParamDeclarations(document.params);
   const byId=new Map(declarations.map(p=>[p.id,p]));
   const issues:ParamResolutionIssue[]=[];
   const values=new Map<string,PageParamValue>();
@@ -24,11 +24,19 @@ export function resolvePageParams(page:unknown, suppliedValues:Readonly<Record<s
   for(const [i,p] of declarations.entries()) {
     const explicit=Object.hasOwn(suppliedValues,p.id);
     const value=explicit?suppliedValues[p.id]:p.value??p.default;
-    if((explicit||value!==undefined)&&!matchesParamDeclaration(value,p))issues.push({code:'INVALID_VALUE',path:`/params/${i}/value`,param:p.id,message:`输入不符合参数类型:${p.id}`});
-    else if(value===undefined) {if(p.required!==false)issues.push({code:'MISSING_INPUT',path:`/params/${i}/value`,param:p.id,message:`缺少必需参数:${p.id}`});}
+    if((explicit||value!==undefined)&&!matchesParamDeclaration(value,p))issues.push({code:'INVALID_VALUE',path:p.path ?? `/params/${i}/value`,param:p.id,message:`输入不符合参数类型:${p.id}`});
+    else if(value===undefined) {if(p.required!==false)issues.push({code:'MISSING_INPUT',path:p.path ?? `/params/${i}/value`,param:p.id,message:`缺少必需参数:${p.id}`});}
     else {
       values.set(p.id,structuredClone(value));
-      if(document.schemaVersion==='6.5'){delete p.default;p.value=structuredClone(value);}
+      if (document.params && !Array.isArray(document.params)) {
+        const groups = document.params;
+        const dimension = groups.dimensions?.find(d => d.id === p.id);
+        const time = groups.times?.find(t => t.id === p.id);
+        const scalar = groups.scalars?.find(s => s.id === p.id);
+        if (dimension && Array.isArray(value)) dimension.dim_value_list = [...value];
+        else if (time && typeof value === 'object' && !Array.isArray(value)) { time.start = value.start; time.end = value.end; }
+        else if (scalar && typeof value !== 'object') scalar.value = value;
+      } else if (['6.5', '6.6'].includes(document.schemaVersion)) { delete p.default; p.value=structuredClone(value); }
     }
   }
   if(issues.length)return {ok:false,issues};

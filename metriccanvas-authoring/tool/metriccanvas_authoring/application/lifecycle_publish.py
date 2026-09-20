@@ -3,6 +3,7 @@
 The shared contract is authored by S2. This module does not extract parameters,
 issue human proofs, implement service transactions or choose a hash algorithm.
 """
+from metriccanvas_authoring.domain.grouped_params import declarations as _param_declarations, clear_values
 from copy import deepcopy
 from functools import lru_cache
 import json
@@ -245,7 +246,7 @@ def validate_candidate_parameters(candidate, source=None):
             if isinstance(start, dict) and 'param' in start: return True
             if any(isinstance(d.get('dim_value_list'), dict) and 'param' in d['dim_value_list'] for d in f.get('dims', [])): return True
         return False
-    inline = any(p.get('type') == 'timeRange' or 'value' in p for p in document.get('params', [])) or any(
+    inline = any(p.get('type') == 'timeRange' or 'value' in p for p in _param_declarations(document)) or any(
         has_inline_reference(ds) for ds in document.get('dataSources', {}).values())
     if inline:
         require(not candidate['retainDimensionValues'])
@@ -255,10 +256,10 @@ def validate_candidate_parameters(candidate, source=None):
         require(source['ref'] == candidate['ref']['source'] and source['document']['id'] == source['ref']['pageId'])
         require(not validate_page_document(source['document']), 'INVALID_PAGE')
         extracted_types = ('dimension', 'time', 'timeRange') if inline else ('dimension',)
-        non_dimensions = lambda doc: {p['id']: p for p in doc.get('params', []) if p['type'] not in extracted_types}
+        non_dimensions = lambda doc: {p['id']: p for p in _param_declarations(doc) if p['type'] not in extracted_types}
         require(non_dimensions(document) == non_dimensions(source['document']))
     require(document['id'] == candidate['ref']['source']['pageId'])
-    parameters = {p['id']: p for p in document.get('params', [])}
+    parameters = {p['id']: p for p in _param_declarations(document)}
     dimensions = {key: p for key, p in parameters.items() if p['type'] == 'dimension' or inline and p['type'] in ('time', 'timeRange')}
     summaries = candidate['parameterSummary']
     ids = [p['parameterId'] for p in summaries]
@@ -282,7 +283,7 @@ def validate_candidate_parameters(candidate, source=None):
             continue
         if summary['extractionKind'] is None:
             require(source is not None and source['ref'] == candidate['ref']['source'])
-            old = {p['id']: p for p in source['document'].get('params', [])}.get(parameter_id)
+            old = {p['id']: p for p in _param_declarations(source['document'])}.get(parameter_id)
             require(old is not None and dimensions.get(parameter_id) == old)
             require(parameter_targets(source['document'], parameter_id) == set(targets))
         else:

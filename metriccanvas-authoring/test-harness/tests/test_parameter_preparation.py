@@ -57,3 +57,25 @@ class ParameterPreparationTest(unittest.IsolatedAsyncioTestCase):
             async def prepare(self, request): return {'ok': True, 'baseline': 'stale', 'document': source}
         with self.assertRaisesRegex(ValueError, 'PROGRAM_RESULT_MISMATCH'):
             await prepare_page_parameters(source, {'baseline': 'current'}, BadProgram())
+
+    async def test_grouped_resolution_preserves_shape_and_summary_never_contains_values(self):
+        from copy import deepcopy
+        from metriccanvas_authoring.application.page_parameters import parameter_summary
+        from metriccanvas_authoring.domain.grouped_params import clear_values
+        source = json.loads((ROOT / 'packages/page/fixtures/contract-valid/grouped-params-page.json').read_text())
+        template = deepcopy(source)
+        clear_values(template)
+        summary = parameter_summary(template)
+        self.assertEqual([p['id'] for p in summary], ['region', 'report-period', 'comparison-period'])
+        self.assertTrue(all(not p['hasValue'] for p in summary))
+        values = {'region': ['欧洲地区部'], 'report-period': {'start': '2026-07', 'end': '2026-09'},
+                  'comparison-period': {'start': '2025-07', 'end': '2025-09'}}
+        result = await NodeProgram().prepare({'action': 'resolve', 'document': template, 'suppliedValues': values})
+        self.assertTrue(result['ok'], result)
+        self.assertIsInstance(result['document']['params'], dict)
+        self.assertTrue(all(p['hasValue'] for p in parameter_summary(result['document'])))
+        self.assertNotIn('欧洲地区部', json.dumps(parameter_summary(result['document']), ensure_ascii=False))
+        stripped = deepcopy(result['document'])
+        clear_values(stripped)
+        self.assertEqual(stripped, template)
+        self.assertEqual(result['resolvedPage']['dataSources']['current']['source']['query']['body']['dsl_list'][0]['filter']['time']['start'], '2026-07')

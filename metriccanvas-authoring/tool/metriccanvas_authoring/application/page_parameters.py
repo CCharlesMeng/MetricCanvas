@@ -3,6 +3,7 @@
 No page execution, asset writes or human-confirmation authority live here.
 Stores must be immutable and durable; references expire and remain scoped to a turn.
 """
+from metriccanvas_authoring.domain.grouped_params import declarations as _param_declarations, clear_values
 from copy import deepcopy
 from dataclasses import dataclass
 import time
@@ -48,7 +49,7 @@ def parameter_summary(document):
     """Declaration-only projection. Values and defaults never leak via context reads."""
     return [{**{k: p[k] for k in ('id', 'type', 'label', 'multiple', 'granularity') if k in p},
              'required': p.get('required', True), 'hasValue': 'value' in p or 'default' in p}
-            for p in document.get('params', [])]
+            for p in _param_declarations(document)]
 
 
 class PageParameters:
@@ -220,8 +221,7 @@ class PageParameters:
         # Only values may change in the reference document, never queries or layout.
         before, after = deepcopy(document), deepcopy(filled)
         for d in (before, after):
-            for p in d.get('params', []):
-                p.pop('value', None); p.pop('default', None)
+            clear_values(d)
         if before != after or not isinstance(result.get('resolvedPage'), dict):
             raise ContentBaselineError('PARAMETER_PROGRAM_MISMATCH')
         instance = await self.put('instance', prepared, {'document': filled,

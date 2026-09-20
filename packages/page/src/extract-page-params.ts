@@ -1,7 +1,7 @@
 import { parsePage } from './validate';
 import { canonicalizeJson } from './canonical-json';
 import { record, pointer } from './inline-query-params';
-import { matchesParamDeclaration, type PageParamDeclaration, type PageParamValue, type TextValue } from './page-param';
+import { matchesParamDeclaration, pageParamDeclarations, type PageParamDeclaration, type PageParamValue, type TextValue } from './page-param';
 import { resolvePageParams, type ParamResolutionIssue } from './resolve-page-params';
 import type { PageDocument } from './page-document';
 
@@ -57,7 +57,7 @@ export function extractPageParams(input:unknown, context:ExtractionContext):Page
       else skipped.push({path:`${base}/time`,reason:'只提取明确合法的固定月/日区间，不推断窗口关系'});
     }
   }
-  const occupied=new Set(source.params?.map(p=>p.id));
+  const occupied=new Set(pageParamDeclarations(source.params).map(p=>p.id));
   const candidates=[...groups.values()].sort((a,b)=>a.identity.localeCompare(b.identity,'en'));
   for(const c of candidates) {
     const previous=context.previousCandidates?.find(p=>p.identity===c.identity&&canonicalizeJson(p.locations)===canonicalizeJson(c.locations));
@@ -75,10 +75,21 @@ export function applyPageParamSelection(extraction:PageParamExtraction, selected
   if(canonicalizeJson(extraction.source)!==extraction.sourceKey)return fail('提取来源已改变，须重新提取');
   if(new Set(selectedIds).size!==selectedIds.length||selectedIds.some(id=>!extraction.candidates.some(c=>c.id===id)))return fail('选择包含未知或重复参数');
   const selected=extraction.candidates.filter(c=>selectedIds.includes(c.id));
-  const document=structuredClone(extraction.source);document.schemaVersion='6.5';
+  const document=structuredClone(extraction.source);document.schemaVersion=extraction.source.schemaVersion === '6.6' ? '6.6' : '6.5';
   const originalValues:Record<string,PageParamValue>={};
   for(const c of selected) {
-    (document.params??=[]).push(structuredClone(c.declaration));originalValues[c.id]=structuredClone(c.originalValue);
+    if (document.params && !Array.isArray(document.params)) {
+      if (c.declaration.type === 'dimension') {
+        const names = new Set(c.locations.map(l => l.queryField));
+        if (names.size !== 1 || !c.locations[0].queryField) return fail('分组维度参数的查询字段必须一致');
+        if (c.locations.some(l => { const ds=document.dataSources[l.dataSourceId]; return ds.source.type === 'query' && Object.values(ds.source.query.filterBindings ?? {}).some(b => b.target === 'dimension' && b.queryField === l.queryField); })) return fail('分组维度不能与页内筛选共同控制');
+        (document.params.dimensions ??= []).push({id:c.id, dim_name:c.locations[0].queryField, label:c.declaration.label});
+        originalValues[c.id]=Array.isArray(c.originalValue) ? [...c.originalValue] : [String(c.originalValue)];
+      } else if (c.declaration.type === 'timeRange' && c.declaration.granularity && typeof c.originalValue === 'object' && !Array.isArray(c.originalValue)) {
+        (document.params.times ??= []).push({id:c.id, granularity:c.declaration.granularity, label:c.declaration.label});
+        originalValues[c.id]={start:c.originalValue.start,end:c.originalValue.end};
+      } else return fail('分组参数不支持此提取类型');
+    } else { const params=document.params ?? []; if (!Array.isArray(params)) return fail('参数结构不匹配'); params.push(structuredClone(c.declaration)); document.params=params;originalValues[c.id]=structuredClone(c.originalValue); }
     for(const location of c.locations) {
       if(c.declaration.type==='dimension') {
         setAt(document,location.path,{param:c.id});
