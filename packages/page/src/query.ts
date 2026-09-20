@@ -1,3 +1,4 @@
+import { resolveQueryParamReferences } from './query-param-references';
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
 import { resolveTimeWindow, type TimeWindow } from './time-param';
@@ -131,6 +132,7 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
 /** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
   const initialized = structuredClone(query);
+  resolveQueryParamReferences(initialized, values);
   for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
     if (binding.target === 'time') {
       const value = values.get(id);

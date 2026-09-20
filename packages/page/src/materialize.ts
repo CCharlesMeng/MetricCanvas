@@ -5,7 +5,7 @@ import type {
 } from './field';
 import type { GroupedQueryFields } from './page-document';
 import type { TypedError } from './errors';
-import type { PageParamDeclaration } from './page-param';
+import { pageParamDeclarations, type GroupedPageParams } from './page-param';
 import {
   normalizeQueryRows,
   type QueryRowNormalizationIssue
@@ -36,7 +36,7 @@ export function materializePageDocument(
   // Svelte 等宿主可能把不可信页面文档包成 Proxy；structuredClone 不能复制 Proxy。
   // 页面已经通过结构校验，此处按 JSON 树逐层复制，仍保持不修改输入的纯计算边界。
   const cloned = cloneJsonTree(input) as Record<string, unknown>;
-  const declarations = (cloned.params ?? []) as PageParamDeclaration[];
+  const declarations = pageParamDeclarations(cloned.params as GroupedPageParams | undefined);
   const document = resolveTextValues(
     cloned,
     textValues ?? validationResolution(declarations)

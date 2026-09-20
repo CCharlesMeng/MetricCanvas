@@ -1,3 +1,4 @@
+import { queryParamReferenceErrors } from './query-param-references';
 import { paramBindingErrors } from './param-bindings';
 import { navigationErrors, urlInputErrors } from './navigate';
 import { Ajv, type ErrorObject } from 'ajv';
@@ -44,7 +45,7 @@ import {
 } from './component-walk';
 import { compositeCardChildTypes } from './schema/component';
 import { materializePageDocument } from './materialize';
-import { pageParamErrors, type PageParamDeclaration } from './page-param';
+import { pageParamErrors, pageParamDeclarations as normalizeParams, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { TextValueResolution } from './text-value';
 import {
   matchesFieldValue,
@@ -92,9 +93,11 @@ export function parsePage(
   // 拿解析产物去判会漏掉「声明 5.0 却引用了页面参数」这类文档。
   const declarations = pageParamDeclarations(compatibleDocument);
   const documentErrors = [
+    ...(typeof (compatibleDocument as PageDocument).params === 'object' && !Array.isArray((compatibleDocument as PageDocument).params) && declarations.length === 0 ? [schemaError('/params', '分组参数至少声明一个参数')] : []),
     ...capabilityFloorErrors(compatibleDocument),
     ...layoutCompatibilityErrors(compatibleDocument),
     ...paramBindingErrors(compatibleDocument),
+    ...queryParamReferenceErrors(compatibleDocument),
     ...pageParamErrors(
       declarations,
       new Set(filterDeclarations(compatibleDocument).map((filter) => filter.id)),
@@ -118,6 +121,7 @@ export function parsePage(
   }
 
   const page = canonicalLayoutDocument(materialized.document as Page);
+  if (page.params) page.params = JSON.parse(JSON.stringify(declarations)) as PageParamDeclaration[];
   const errors = [...invariantErrors(page), ...navigationErrors(page), ...urlInputErrors(page)];
   return errors.length === 0
     ? { ok: true, page, errors: [] }
@@ -230,7 +234,7 @@ function optionalParamHint(): TypedError {
 
 function pageParamDeclarations(document: unknown): PageParamDeclaration[] {
   const params = (document as { params?: unknown } | null)?.params;
-  return Array.isArray(params) ? (params as PageParamDeclaration[]) : [];
+  return normalizeParams(params as GroupedPageParams | PageParamDeclaration[] | undefined);
 }
 
 function filterDeclarations(document: unknown): FilterDeclaration[] {

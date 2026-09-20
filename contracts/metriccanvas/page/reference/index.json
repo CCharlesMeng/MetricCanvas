@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.4",
-  "schemaSha256": "658115448330391be3903ba7bae6968d91b202e9df23c456506d3c28ec67cb09",
+  "schemaVersion": "6.6",
+  "schemaSha256": "724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -24,11 +24,11 @@
     },
     {
       "file": "packages/page/src/param-bindings.ts",
-      "sha256": "c4ba1118ddad7d7affc66c8e3863705af7fb658be901943c44c09e99878e38ab"
+      "sha256": "b3f17bcc0b35120be96bfeb458d76803b4ea095a598ed943156647d34119b188"
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "8abb02510e80e694b6b6c081337c8d71f21479c3b01a3563bc28cb9ee4428ceb"
+      "sha256": "502a075666b9ec9754ed68e76274183c221b3e28cd6f8fc5df4225e382f1326d"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -108,11 +108,11 @@
     },
     {
       "file": "packages/page/src/schema/page.ts",
-      "sha256": "b2a972b4d73604ceea1db4ab8b00bbcb0cebd66bc34ffa2eba342248a0efad0c"
+      "sha256": "d3e87a9e92792584f1b92432dc980b764eebfed595bfdeedd0cda072418334b5"
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "f8eb503a330147ba34ae845921b426c10d29b8135bd463f8c593b1414c860ee6"
+      "sha256": "fda51595ee6a1ea84818949ef3cabcc399c08d996cc5d2d6237fa79a854da666"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -120,7 +120,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "b04634c5a3a06f550222f1dc3da698649a562fa141de30cdfbe286e227c11f5b"
+      "sha256": "7526beb403f2db24675aa32c6c0160351ae1fd1e842bf36c93cc063a8ea33e50"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -160,6 +160,7 @@
         "textValueReference",
         "textValue",
         "pageParam",
+        "groupedPageParams",
         "timeWindow"
       ],
       "keywords": [
@@ -169,7 +170,9 @@
       "examples": [
         "dimension-params-page",
         "reference-branches-page",
-        "time-params-page"
+        "time-params-page",
+        "grouped-params-page",
+        "grouped-scalar-params-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1050,13 +1053,20 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\"]",
+      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\",\"6.6\"]",
       "enum": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
         "6.0",
         "6.1",
         "6.2",
         "6.3",
-        "6.4"
+        "6.4",
+        "6.5",
+        "6.6"
       ]
     },
     {
@@ -1287,12 +1297,20 @@
       "path": "$.params",
       "required": "本分支可选",
       "module": "page.md",
+      "type": "anyOf联合",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/properties/params/anyOf/0",
+      "path": "$.params · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
       "type": "\"array\"",
       "constraints": "minItems=1"
     },
     {
-      "pointer": "#/properties/params/items",
-      "path": "$.params[]",
+      "pointer": "#/properties/params/anyOf/0/items",
+      "path": "$.params · anyOf[0][]",
       "required": "每个数组项",
       "module": "page.md",
       "type": "引用 #/definitions/pageParam",
@@ -1525,6 +1543,240 @@
       "module": "params-and-text-values.md",
       "type": "\"string\"",
       "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/properties/params/anyOf/1",
+      "path": "$.params · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "page.md",
+      "type": "引用 #/definitions/groupedPageParams",
+      "constraints": "无额外结构约束",
+      "ref": "#/definitions/groupedPageParams"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams",
+      "path": "@groupedPageParams",
+      "required": "类型/分支",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions",
+      "path": "@groupedPageParams.dimensions",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"array\"",
+      "constraints": "minItems=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items",
+      "path": "@groupedPageParams.dimensions[]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"id\",\"dim_name\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/id",
+      "path": "@groupedPageParams.dimensions[].id",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "pattern=\"^[a-z0-9][a-z0-9-]*$\""
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_name",
+      "path": "@groupedPageParams.dimensions[].dim_name",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_value_list",
+      "path": "@groupedPageParams.dimensions[].dim_value_list",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"array\"",
+      "constraints": "minItems=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/dim_value_list/items",
+      "path": "@groupedPageParams.dimensions[].dim_value_list[]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/required",
+      "path": "@groupedPageParams.dimensions[].required",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"boolean\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/dimensions/items/properties/label",
+      "path": "@groupedPageParams.dimensions[].label",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times",
+      "path": "@groupedPageParams.times",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"array\"",
+      "constraints": "minItems=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items",
+      "path": "@groupedPageParams.times[]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"id\",\"granularity\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/id",
+      "path": "@groupedPageParams.times[].id",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "pattern=\"^[a-z0-9][a-z0-9-]*$\""
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/granularity",
+      "path": "@groupedPageParams.times[].granularity",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"month\",\"date\"]",
+      "enum": [
+        "month",
+        "date"
+      ]
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/start",
+      "path": "@groupedPageParams.times[].start",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/end",
+      "path": "@groupedPageParams.times[].end",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/required",
+      "path": "@groupedPageParams.times[].required",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"boolean\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/times/items/properties/label",
+      "path": "@groupedPageParams.times[].label",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars",
+      "path": "@groupedPageParams.scalars",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"array\"",
+      "constraints": "minItems=1"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items",
+      "path": "@groupedPageParams.scalars[]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"id\",\"type\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/id",
+      "path": "@groupedPageParams.scalars[].id",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "pattern=\"^[a-z0-9][a-z0-9-]*$\""
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/type",
+      "path": "@groupedPageParams.scalars[].type",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"string\",\"number\",\"boolean\"]",
+      "enum": [
+        "string",
+        "number",
+        "boolean"
+      ]
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value",
+      "path": "@groupedPageParams.scalars[].value",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "anyOf联合",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/0",
+      "path": "@groupedPageParams.scalars[].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/1",
+      "path": "@groupedPageParams.scalars[].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"number\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/2",
+      "path": "@groupedPageParams.scalars[].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md",
+      "type": "\"boolean\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/required",
+      "path": "@groupedPageParams.scalars[].required",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"boolean\"",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/label",
+      "path": "@groupedPageParams.scalars[].label",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
     },
     {
       "pointer": "#/properties/dataSources",
@@ -9909,6 +10161,12 @@
       "pointer": "#/dashboardToolbar"
     },
     {
+      "schemaPointer": "#/properties/params/anyOf/0",
+      "module": "page.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params"
+    },
+    {
       "schemaPointer": "#/definitions/pageParam/anyOf/0",
       "module": "params-and-text-values.md",
       "file": "examples/reference-branches-page.json",
@@ -9955,6 +10213,30 @@
       "module": "params-and-text-values.md",
       "file": "examples/time-params-page.json",
       "pointer": "#/params/0"
+    },
+    {
+      "schemaPointer": "#/properties/params/anyOf/1",
+      "module": "page.md",
+      "file": "examples/grouped-params-page.json",
+      "pointer": "#/params"
+    },
+    {
+      "schemaPointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/grouped-scalar-params-page.json",
+      "pointer": "#/params/scalars/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/grouped-scalar-params-page.json",
+      "pointer": "#/params/scalars/1/value"
+    },
+    {
+      "schemaPointer": "#/definitions/groupedPageParams/properties/scalars/items/properties/value/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/grouped-scalar-params-page.json",
+      "pointer": "#/params/scalars/2/value"
     },
     {
       "schemaPointer": "#/definitions/dataSource/anyOf/0",

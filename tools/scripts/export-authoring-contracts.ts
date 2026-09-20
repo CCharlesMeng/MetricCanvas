@@ -110,7 +110,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
-  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '6.4', '7.0']) {
+  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {
     for (const declaration of [
       {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
       { layout: 'report' }, { layout: 'dashboard' },
@@ -123,6 +123,29 @@ async function buildProductOutputs(): Promise<OutputMap> {
     }
   }
   outputs.set('page/conformance/layout-compatibility.json', json({ cases: layoutCases }));
+
+  const groupedCases: Array<{name: string; input: unknown; expected: unknown}> = [];
+  function groupedCase(name: string, change: (page: any) => void) {
+    const input = structuredClone(fixtures.get('grouped-params-page'));
+    change(input);
+    groupedCases.push({name, input, expected: normalizePageDocument(input)});
+  }
+  groupedCase('multiple-times', () => {});
+  groupedCase('unfilled-template', p => {
+    delete p.params.dimensions[0].dim_value_list;
+    for (const t of p.params.times) { delete t.start; delete t.end; }
+  });
+  groupedCase('old-version', p => { p.schemaVersion = '6.5'; });
+  groupedCase('duplicate-id', p => { p.params.times[0].id = 'region'; });
+  groupedCase('partial-range', p => { delete p.params.times[0].end; });
+  groupedCase('reversed-range', p => { p.params.times[0].start = '2027-01'; });
+  groupedCase('invalid-calendar', p => { p.params.times[0].start = '2026-13'; });
+  groupedCase('duplicate-dim-values', p => { p.params.dimensions[0].dim_value_list = ['A','A']; });
+  groupedCase('dimension-mismatch', p => { p.params.dimensions[0].dim_name = 'other'; });
+  groupedCase('mixed-time-sources', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.end.param = 'comparison-period'; });
+  groupedCase('uncontrolled-reference', p => { p.dataSources.current.source.query.body.dsl_list[0].output_dims = [{param:'region'}]; });
+  groupedCase('filter-conflict', p => { p.dataSources.current.source.query.filterBindings = {other:{target:'time'}}; });
+  outputs.set('page/conformance/grouped-params.json', json({cases: groupedCases}));
 
   const parameterTemplate = fixtures.get('dimension-params-page');
   const parameterCases: Array<{name: string; input: unknown; expected: unknown}> = [];

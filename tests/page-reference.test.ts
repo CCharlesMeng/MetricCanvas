@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { pageSchema, componentCatalog, validate } from '../packages/page/src/internal';
+import { pageSchema, componentCatalog, validate, versionPolicy } from '../packages/page/src/internal';
 import { atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
 
 const root = process.cwd();
@@ -14,7 +14,7 @@ const inputs = new Map<string,string>();
 for (const file of await readdir('packages/page/fixtures/contract-valid')) if (file.endsWith('.json')) inputs.set(`page/conformance/valid/${file}`, await readFile(`packages/page/fixtures/contract-valid/${file}`, 'utf8'));
 inputs.set('page/conformance/coverage.json',await readFile('contracts/metriccanvas/page/conformance/coverage.json','utf8'));
 for(const file of await readdir('contracts/metriccanvas/page/conformance/invalid')) inputs.set(`page/conformance/invalid/${file}`,await readFile(`contracts/metriccanvas/page/conformance/invalid/${file}`,'utf8'));
-const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, '6.3');
+const reference = await buildPageReference(root, pageSchema, componentCatalog, inputs, versionPolicy.current);
 
 describe('页面参考手册生成与分发', () => {
   it('退役参考全部保留在冻结来源', async () => {

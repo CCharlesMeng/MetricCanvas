@@ -1,4 +1,4 @@
-import { initializeQueryParams, matchesParamDeclaration, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
+import { initializeQueryParams, hasQueryParamReferences, matchesParamDeclaration, type PageParamDeclaration, type PageParamValue } from '@metriccanvas/page/internal';
 
 /** 普通查询参数按接收页面的声明解释，URL 层仅编码一次。 */
 export type PageParamValues = ReadonlyMap<string, PageParamValue>;
@@ -18,6 +18,21 @@ export function resolvePageParams(
   const missing: string[] = [];
 
   for (const declaration of declarations) {
+    if (declaration.path) {
+      // 分组参数的保存值就是实际值。显式非法 URL 输入不回退到另一份报告。
+      let value: unknown = declaration.value;
+      if (query.has(declaration.id)) {
+        const entries = query.getAll(declaration.id);
+        if (declaration.type === 'dimension') value = entries;
+        else if (entries.length !== 1) value = undefined;
+        else if (declaration.type === 'timeRange') {
+          try { value = JSON.parse(entries[0]); } catch { value = undefined; }
+        } else value = parseParamValue(entries[0], declaration);
+      }
+      if (matchesParamDeclaration(value, declaration)) values.set(declaration.id, value);
+      else if (value !== undefined || query.has(declaration.id) || declaration.required) missing.push(declaration.id);
+      continue;
+    }
     if (declaration.type === 'time') {
       // 显式非法输入不回退默认月份，防止展示了另一统计期却看似成功。
       const value = query.has(declaration.id) ? query.get(declaration.id) : declaration.default;
@@ -56,7 +71,7 @@ export function pageParamSearch(values: PageParamValues): string {
 }
 
 export function serializePageParam(value: PageParamValue): string {
-  return String(value);
+  return typeof value === 'object' && !Array.isArray(value) ? JSON.stringify(value) : String(value);
 }
 
 function parseParamValue(
@@ -93,7 +108,7 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
   }
   for (const source of Object.values(initialized.dataSources)) {
     if (source.source.type === 'query') {
-      if (Object.values(source.source.query.paramBindings ?? {}).some(binding => binding.target === 'time')) {
+      if (hasQueryParamReferences(source.source.query) || Object.values(source.source.query.paramBindings ?? {}).some(binding => binding.target === 'time')) {
         // 内嵌行没有当前参数的执行凭据；已核验的执行回执另由 execution 接管。
         delete source.source.initial;
       }

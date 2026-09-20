@@ -8,8 +8,35 @@ import { matchesTimeValue, type TimeParamGranularity } from './time-param';
  * 改变的是筛选器,不能改变的是页面参数,换一个取值意味着打开另一个页面实例。
  */
 
-export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time';
-export type PageParamValue = string | number | boolean | string[];
+export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time' | 'timeRange';
+export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
+
+export interface TimeRangeParamValue { start: string; end: string; }
+export interface GroupedPageParams {
+  dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
+  times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
+  scalars?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
+}
+
+/** 只归一化运行态声明；保存文档维持原来的分组结构。 */
+export function pageParamDeclarations(params: readonly PageParamDeclaration[] | GroupedPageParams | undefined): PageParamDeclaration[] {
+  if (!params) return [];
+  if (Array.isArray(params)) return [...params];
+  const groups = params as GroupedPageParams;
+  return [
+    ...(groups.dimensions ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: 'dimension', required: p.required ?? true, multiple: true,
+      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/dimensions/${i}`
+    })),
+    ...(groups.times ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: 'timeRange', required: p.required ?? true, granularity: p.granularity,
+      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/times/${i}`
+    })),
+    ...(groups.scalars ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/scalars/${i}`
+    }))
+  ];
+}
 
 export interface PageParamDeclaration {
   id: string;
@@ -20,6 +47,10 @@ export interface PageParamDeclaration {
   granularity?: TimeParamGranularity;
   label?: string;
   default?: PageParamValue;
+  value?: PageParamValue;
+  /** 运行态携带原声明位置和业务维度，不回写文档。 */
+  path?: string;
+  dimName?: string;
 }
 
 /**
@@ -134,7 +165,7 @@ export function pageParamErrors(
   const byId = new Map<string, PageParamDeclaration>();
 
   declarations.forEach((declaration, index) => {
-    const path = `/params/${index}`;
+    const path = declaration.path ?? `/params/${index}`;
     if (byId.has(declaration.id)) {
       errors.push(schemaError(`${path}/id`, `页面参数 id 重复:${declaration.id}`));
     }
@@ -149,6 +180,9 @@ export function pageParamErrors(
         )
       );
     }
+    if (declaration.value !== undefined && !matchesParamDeclaration(declaration.value, declaration)) {
+      errors.push(schemaError(path, `实际值不符合参数类型 ${declaration.type}`));
+    }
     if (declaration.default !== undefined && !matchesParamDeclaration(declaration.default, declaration)) {
       errors.push(
         schemaError(`${path}/default`, `默认值不符合参数类型 ${declaration.type}`)
@@ -157,8 +191,18 @@ export function pageParamErrors(
   });
 
   const consumed = new Set<string>();
-  const raw = document as { dataSources?: Record<string, {source?: {query?: {paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
-  for (const source of Object.values(raw.dataSources ?? {})) for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
+  function queryConsumers(value: unknown): void {
+    if (!value || typeof value !== 'object') return;
+    if (Array.isArray(value)) { value.forEach(queryConsumers); return; }
+    const node = value as Record<string, unknown>;
+    if (typeof node.param === 'string') consumed.add(node.param);
+    Object.values(node).forEach(queryConsumers);
+  }
+  const raw = document as { dataSources?: Record<string, {source?: {query?: {body?: unknown; paramBindings?: Record<string, unknown>}}}>; filters?: Array<{initialParam?: string}> };
+  for (const source of Object.values(raw.dataSources ?? {})) {
+    queryConsumers(source.source?.query?.body);
+    for (const id of Object.keys(source.source?.query?.paramBindings ?? {})) consumed.add(id);
+  }
   for (const filter of raw.filters ?? []) if (filter.initialParam) consumed.add(filter.initialParam);
   function navigationConsumers(value: unknown): void {
     if (!value || typeof value !== 'object') return;
@@ -189,7 +233,7 @@ export function pageParamErrors(
     if (consumed.has(declaration.id)) return;
     errors.push(
       schemaError(
-        `/params/${index}/id`,
+        `${declaration.path ?? `/params/${index}`}/id`,
         `页面参数 ${declaration.id} 没有任何消费者;未被消费的参数通常意味着绑错了位置`
       )
     );
@@ -199,6 +243,12 @@ export function pageParamErrors(
 }
 
 export function matchesParamDeclaration(value: unknown, declaration: PageParamDeclaration): value is PageParamValue {
+  if (declaration.type === 'timeRange') {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+    const range = value as TimeRangeParamValue;
+    return Object.keys(value).every(k => k === 'start' || k === 'end') &&
+      matchesTimeValue(range.start, declaration.granularity) && matchesTimeValue(range.end, declaration.granularity) && range.start <= range.end;
+  }
   if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);
   if (declaration.type !== 'dimension') return typeof value === declaration.type && (typeof value !== 'number' || Number.isFinite(value));
   return declaration.multiple

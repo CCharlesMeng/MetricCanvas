@@ -2,7 +2,7 @@
 
 页面元数据是统一运行时消费的声明式文档；数据上下文、会话、修订和执行身份由宿主管理。页面id、字段id、组件id分别属于自己的命名空间，组件id在整页唯一。
 
-当前作者写出6.2。公开读取兼容6.0/6.1/6.2；6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
+当前作者写出6.6。公开读取兼容5.0—5.4及6.0—6.6；5.x在读取边界转换为6.x运行态文档。6.0使用layoutForm，6.1起允许layout。双字段同时出现即拒绝；缺布局默认report。normalizePageDocument只进行已声明的兼容规范化并保留文档原始字段，不将运行时参数替换结果保存。历史修订先核验原文hash再规范化。
 
 report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible；hidden用于页面已有自有页头；compact对象表达紧凑工具栏，readOnly只影响呈现，不是服务权限。meta.title是页面级标题，缺席时消费方可回退页头再回退页面id。
 
@@ -11,7 +11,7 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.4。结构真源为本册[schema.json](schema.json)，SHA256 `658115448330391be3903ba7bae6968d91b202e9df23c456506d3c28ec67cb09`。字段表自动生成；可选不等于有默认值。
+页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -33,15 +33,22 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["6.0","6.1","6.2","6.3","6.4"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3 / 6.4 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.0","6.1","6.2","6.3","6.4","6.5","6.6"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
+| "5.0" | 历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
+| "5.1" | 历史5.1文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
+| "5.2" | 历史5.2文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
+| "5.3" | 历史5.3文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
+| "5.4" | 历史5.4文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。 |
 | "6.0" | 布局使用layoutForm的兼容旧文档；不能声明layout或6.2参数能力。 |
 | "6.1" | 支持layout的增量布局协议；不能使用6.2维度参数能力。 |
 | "6.2" | 维度单/多值参数及显式初始化绑定；不能使用6.3时间参数。 |
 | "6.3" | 增加确定性日期/月参数与查询时间窗口绑定。 |
-| "6.4" | 当前作者写出版本，新增yearToDate和monthToDate具名窗口，终点为报告基准期。 |
+| "6.4" | 新增yearToDate和monthToDate具名窗口，终点为报告基准期。 |
+| "6.5" | 读取兼容的6.x次版本；能力仍由具体结构与引入版本决定。 |
+| "6.6" | 当前作者写出版本，新增分组参数与多个独立时间区间。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -245,17 +252,37 @@ Schema位置：`#/properties/params`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "array" | 本分支可选 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 一次初始化的不可变页面参数声明。 |
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 一次初始化的不可变页面参数声明。 |
 
-<a id="schema-232f70726f706572746965732f706172616d732f6974656d73"></a>
+<a id="schema-232f70726f706572746965732f706172616d732f616e794f662f30"></a>
 
-### `$.params[]`
+### `$.params · anyOf[0]`
 
-Schema位置：`#/properties/params/items`。目标：[#/definitions/pageParam](params-and-text-values.md#schema-232f646566696e6974696f6e732f70616765506172616d)。
+Schema位置：`#/properties/params/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 独立分支（不合并required） | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f706172616d732f616e794f662f302f6974656d73"></a>
+
+### `$.params · anyOf[0][]`
+
+Schema位置：`#/properties/params/anyOf/0/items`。目标：[#/definitions/pageParam](params-and-text-values.md#schema-232f646566696e6974696f6e732f70616765506172616d)。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | 引用 #/definitions/pageParam | 每个数组项 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f70726f706572746965732f706172616d732f616e794f662f31"></a>
+
+### `$.params · anyOf[1]`
+
+Schema位置：`#/properties/params/anyOf/1`。目标：[#/definitions/groupedPageParams](params-and-text-values.md#schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d73)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/groupedPageParams | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f70726f706572746965732f64617461536f7572636573"></a>
 
@@ -405,6 +432,8 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 
 - `#/definitions/dashboardToolbar/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dashboardToolbar`。
 - `#/definitions/dashboardToolbar/anyOf/1`：[合法完整页面](examples/component-pieChart.json)，JSON Pointer `#/dashboardToolbar`。
+- `#/properties/params/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params`。
+- `#/properties/params/anyOf/1`：[合法完整页面](examples/grouped-params-page.json)，JSON Pointer `#/params`。
 - `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
 - `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/4`。

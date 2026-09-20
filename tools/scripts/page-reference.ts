@@ -88,8 +88,16 @@ function minimalExample(document: any, component: any): any | undefined {
     Object.values(value).forEach(references);
   }
   references(candidate.sections); references(candidate.dataSources); references(candidate.filters);
-  if (candidate.params) candidate.params = candidate.params.filter((p:any)=>params.has(p.id));
-  if (!candidate.params?.length) delete candidate.params;
+  if (Array.isArray(candidate.params)) {
+    candidate.params = candidate.params.filter((p:any)=>params.has(p.id));
+    if (!candidate.params.length) delete candidate.params;
+  } else if (candidate.params) {
+    for (const group of Object.keys(candidate.params)) {
+      candidate.params[group] = candidate.params[group].filter((p:any) => params.has(p.id));
+      if (!candidate.params[group].length) delete candidate.params[group];
+    }
+    if (!Object.keys(candidate.params).length) delete candidate.params;
+  }
   const clean = JSON.parse(JSON.stringify(candidate));
   if (validate(clean).length) return undefined;
   // 每步都需完整校验，保留语义依赖；不以删除错误字段强行通过。
@@ -97,7 +105,7 @@ function minimalExample(document: any, component: any): any | undefined {
     const attempt = structuredClone(clean); delete attempt.dataSources[id];
     if (!validate(attempt).length) delete clean.dataSources[id];
   }
-  for (const key of ['filters','params']) if (clean[key]) {
+  for (const key of ['filters','params']) if (Array.isArray(clean[key])) {
     for (let i=clean[key].length-1;i>=0;i--) {
       const attempt=structuredClone(clean);attempt[key].splice(i,1);if(!attempt[key].length)delete attempt[key];
       if (!validate(attempt).length) clean[key]=attempt[key];

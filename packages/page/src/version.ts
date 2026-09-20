@@ -16,7 +16,7 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 4;
+const CURRENT_MINOR = 6;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -38,6 +38,10 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'grouped-params': {
+    minor: 6, description: '分组参数、多个独立时间区间与查询原位引用',
+    usedAt: (document) => record(record(document)?.params) ? ['/params'] : []
+  },
   'named-to-date-windows': {
     minor: 4, description: '具名年初/月初至报告基准期窗口',
     usedAt: (document) => dataSourcePaths(document, d =>

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "6.6",
+  "layout": "report",
+  "id": "grouped-scalar-params-page",
+  "params": {
+    "scalars": [
+      {
+        "id": "heading",
+        "type": "string",
+        "value": "对比报告"
+      },
+      {
+        "id": "target",
+        "type": "number",
+        "value": 100
+      },
+      {
+        "id": "confirmed",
+        "type": "boolean",
+        "value": false
+      }
+    ]
+  },
+  "dataSources": {},
+  "sections": [
+    {
+      "id": "main",
+      "components": [
+        {
+          "id": "heading",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "heading"
+            }
+          }
+        },
+        {
+          "id": "target",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "target"
+            }
+          }
+        },
+        {
+          "id": "confirmed",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "confirmed"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

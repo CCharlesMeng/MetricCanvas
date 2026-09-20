@@ -784,13 +784,20 @@
         "schemaVersion": {
           "type": "string",
           "enum": [
+            "5.0",
+            "5.1",
+            "5.2",
+            "5.3",
+            "5.4",
             "6.0",
             "6.1",
             "6.2",
             "6.3",
-            "6.4"
+            "6.4",
+            "6.5",
+            "6.6"
           ],
-          "description": "页面文档契约版本；当前支持 6.0 / 6.1 / 6.2 / 6.3 / 6.4"
+          "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6"
         },
         "id": {
           "type": "string",
@@ -834,11 +841,18 @@
           ]
         },
         "params": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "$ref": "#/$defs/Page/definitions/pageParam"
-          }
+          "anyOf": [
+            {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/Page/definitions/pageParam"
+              }
+            },
+            {
+              "$ref": "#/$defs/Page/definitions/groupedPageParams"
+            }
+          ]
         },
         "dataSources": {
           "type": "object",
@@ -1107,6 +1121,134 @@
             }
           ],
           "description": "页面参数：打开页面时由 URL 确定、此后不可改变的具名输入"
+        },
+        "groupedPageParams": {
+          "type": "object",
+          "properties": {
+            "dimensions": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "dim_name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "dim_value_list": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "dim_name"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "times": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "granularity": {
+                    "type": "string",
+                    "enum": [
+                      "month",
+                      "date"
+                    ]
+                  },
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "granularity"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "scalars": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "string",
+                      "number",
+                      "boolean"
+                    ]
+                  },
+                  "value": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "number"
+                      },
+                      {
+                        "type": "boolean"
+                      }
+                    ]
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "type"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "additionalProperties": false,
+          "description": "按 dimensions、times、scalars 分组的页面输入；各组共享唯一参数 ID 空间。"
         },
         "dataSource": {
           "anyOf": [

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { supportedVersions } from '../version';
-import { idZ, nonEmptyTextValueZ, pageParamZ } from './primitives';
+import { idZ, nonEmptyTextValueZ, pageParamZ, groupedPageParamsZ } from './primitives';
 import { componentZ } from './component';
 import { filterDeclarationZ } from './filter';
 import { dataSourceDocumentZ } from './data-source';
@@ -104,7 +104,7 @@ export const pageDocumentSchemaZ = z
     layout: pageLayoutFormZ.optional(),
     layoutForm: pageLayoutFormZ.optional(),
     dashboardToolbar: dashboardToolbarZ.optional(),
-    params: z.array(pageParamZ).min(1).optional(),
+    params: z.union([z.array(pageParamZ).min(1), groupedPageParamsZ]).optional(),
     dataSources: z.record(idZ, dataSourceDocumentZ),
     filters: z.array(filterDeclarationZ).optional(),
     sections: z.array(sectionZ).min(1)

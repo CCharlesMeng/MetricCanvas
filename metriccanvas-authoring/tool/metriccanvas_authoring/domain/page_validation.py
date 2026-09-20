@@ -12,6 +12,7 @@ from jsonschema import Draft202012Validator
 from jsonschema.exceptions import ValidationError
 
 from metriccanvas_authoring.runtime_assets import bundle_root
+from .grouped_params import declarations as _param_declarations, query_reference_issues
 
 
 BUNDLE_ROOT = bundle_root()
@@ -53,11 +54,15 @@ def validate_page_document(value: Any) -> list[PageContractIssue]:
             ]
             issues = [*guided, *issues]
         return sorted(issues, key=lambda issue: (issue.path, issue.message))
+    if isinstance(value.get("params"), Mapping) and not value["params"]:
+        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs cannot be empty")]
+    if isinstance(value.get("params"), Mapping) and int(value["schemaVersion"].split(".")[1]) < 6:
+        return [PageContractIssue("SCHEMA_ERROR", "/params", "grouped inputs require 6.6")]
     capability_issues = _capability_floor_issues(value)
     if capability_issues:
         return capability_issues
     # 与页面包相同：先验证原始参数契约，再物化文本做第二次结构校验。
-    param_issues = [*_param_binding_issues(value), *_page_param_issues(value)]
+    param_issues = [*_param_binding_issues(value), *_page_param_issues(value), *[PageContractIssue("SCHEMA_ERROR", path, message) for path, message in query_reference_issues(value)]]
     if param_issues:
         return param_issues
     optional_materialized = _materialize_validation_text_values(value)
@@ -165,7 +170,7 @@ _MISSING_TEXT_VALUE = object()
 def _materialize_validation_text_values(value: Any) -> Any:
     if not isinstance(value, Mapping):
         return value
-    declarations = value.get("params", [])
+    declarations = _param_declarations(value)
     required = {
         declaration.get("id"): declaration.get("required") is True
         for declaration in declarations
@@ -200,7 +205,7 @@ def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
         paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
         issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
     if int(value["schemaVersion"].split(".")[1]) < 3:
-        paths = [f"/params/{i}" for i, p in enumerate(value.get("params", [])) if p["type"] == "time"]
+        paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "time"]
         paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("target") == "time" for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
         issues.extend(PageContractIssue("SCHEMA_ERROR", path, "确定性时间参数绑定由6.3引入") for path in paths)
     if value["schemaVersion"] == "6.0" and "layout" in value:
@@ -209,7 +214,7 @@ def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
             "顶层 layout:页面布局形态的规范字段 由 6.1 引入，文档声明的是 6.0",
         ))
     if int(value["schemaVersion"].split(".")[1]) < 2:
-        paths = [f"/params/{i}" for i, p in enumerate(value.get("params", [])) if p["type"] == "dimension"]
+        paths = [f"/params/{i}" for i, p in enumerate(_param_declarations(value)) if p["type"] == "dimension"]
         paths += [f"/filters/{i}/initialParam" for i, f in enumerate(value.get("filters", [])) if "initialParam" in f]
         paths += [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if "paramBindings" in source.get("source", {}).get("query", {})]
         issues.extend(PageContractIssue("SCHEMA_ERROR", path, "维度参数绑定由6.2引入") for path in paths)
@@ -256,7 +261,7 @@ DATE_FORMATS = frozenset({"date", "date-month-day"})
 
 
 def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
-    declarations = value.get("params", [])
+    declarations = _param_declarations(value)
     if not isinstance(declarations, list):
         return []
     raw_filters = value.get("filters", [])
@@ -275,17 +280,24 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
         param_id = declaration.get("id")
         if not isinstance(param_id, str):
             continue
-        path = f"/params/{index}"
+        path = declaration.get("path", f"/params/{index}")
         if param_id in by_id:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "duplicate page parameter"))
         by_id[param_id] = declaration
         if param_id in filter_ids:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
         if "default" in declaration and not _matches_param_default(declaration):
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
+            issues.append(PageContractIssue("SCHEMA_ERROR", path if "path" in declaration else f"{path}/default", "page parameter default type mismatch"))
 
     consumed: set[str] = set()
+    def query_consumers(node):
+        if isinstance(node, list):
+            for child in node: query_consumers(child)
+        elif isinstance(node, Mapping):
+            if isinstance(node.get("param"), str): consumed.add(node["param"])
+            for child in node.values(): query_consumers(child)
     for source in value.get("dataSources", {}).values():
+        query_consumers(source.get("source", {}).get("query", {}).get("body", {}))
         consumed.update(source.get("source", {}).get("query", {}).get("paramBindings", {}))
     consumed.update(f["initialParam"] for f in raw_filters if "initialParam" in f)
     def navigation_consumers(node: Any) -> None:
@@ -319,7 +331,7 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
             continue
         param_id = declaration.get("id")
         if isinstance(param_id, str) and param_id not in consumed:
-            issues.append(PageContractIssue("SCHEMA_ERROR", f"/params/{index}/id", "page parameter is unused"))
+            issues.append(PageContractIssue("SCHEMA_ERROR", f"{declaration.get('path', f'/params/{index}')}/id", "page parameter is unused"))
     return issues
 
 
@@ -2170,7 +2182,7 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     from urllib.parse import urlsplit, urljoin
     issues: list[PageContractIssue] = []
     filters = {f["id"]: f for f in page.get("filters", [])}
-    params = {p["id"] for p in page.get("params", [])}
+    params = {p["id"] for p in _param_declarations(page)}
     def fail(path: str, message: str) -> None:
         issues.append(PageContractIssue("SCHEMA_ERROR", path, message))
     for section_index, section in enumerate(page.get("sections", [])):
@@ -2226,6 +2238,8 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
 
 def _matches_param_default(declaration: Mapping[str, Any]) -> bool:
     value = declaration.get("default")
+    if declaration["type"] == "timeRange":
+        return isinstance(value, Mapping) and set(value) == {"start", "end"} and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
     if declaration["type"] == "time":
         return _matches_time_value(value, declaration.get("granularity"))
     if declaration["type"] != "dimension":
@@ -2279,7 +2293,7 @@ def _valid_default_time_window(declaration: Mapping[str, Any], window: Mapping[s
 
 
 def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
-    params = {p["id"]: p for p in page.get("params", [])}
+    params = {p["id"]: p for p in _param_declarations(page)}
     filters = {f["id"]: f for f in page.get("filters", [])}
     issues = []
     consumed = set()

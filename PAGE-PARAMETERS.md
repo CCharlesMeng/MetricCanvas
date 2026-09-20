@@ -1,6 +1,16 @@
 # 页面参数：维度与时间的现行方案
 
-本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.4**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
+本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.6**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
+
+## 6.6 分组参数（新页面）
+
+新结构为 `params: { dimensions: [...], times: [...], scalars?: [...] }`。每组均为数组，报告期和对比期通过不同 ID 独立填写。dimensions 使用 `id/dim_name/dim_value_list`；times 使用 `id/granularity/start/end`；scalars 保留标题等 string/number/boolean 输入并用 value 保存实际值。各组可省略，至少声明一个参数。
+
+新参数不使用 default；required 缺省 true。模板省略实际值，时间起止必须成对填写。查询在 `dim_value_list` 和 `time.start/end` 原位引用参数；period 与 is_aggregate 留在查询侧。多个查询可分别引用不同时间，也可共享一个时间参数。值不全时不能执行，原始文档保持不变。
+
+完整字段、引用、URL 与兼容规则见[已实现方案](docs/plan/2026-09-20-grouped-page-params.md)，完整页面见[多时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 时间值为编码后的 `{start,end}` JSON，维度仍使用重复键；显式非法输入不回退保存值。
+
+以下章节说明**兼容的旧参数数组与基准期窗口能力**。其中 default、multiple、paramBindings 和单值 time 的限制只适用于旧数组分支，不限制新 times 数组。
 
 ## 1. 一句话理解
 
@@ -246,6 +256,6 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 - [时间参数合法夹具](packages/page/fixtures/contract-valid/time-params-page.json)：多查询使用不同窗口。
 - [Schema真源](packages/page/src/schema/)与[时间窗口实现](packages/page/src/time-param.ts)：结构与执行规则的实现依据。
 
-版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.4；5.x只走读取规范化，新文档仍写当前6.x版本。
+版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.6；5.x只走读取规范化，新文档仍写当前6.x版本。
 
-显式日期/月区间参数尚未实现，建议结构另见[时间区间参数提案](docs/plan/time-range-parameters.md)，不属于本文现行协议。
+6.6 分组 times 已支持区间；历史讨论另见[时间区间参数提案](docs/plan/time-range-parameters.md)，不属于本文现行协议。

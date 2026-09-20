@@ -38,7 +38,7 @@ class PageContractConformanceTest(unittest.TestCase):
         matrix = json.loads(
             (CONTRACT_ROOT / "page/conformance/layout-compatibility.json").read_text()
         )
-        self.assertEqual(len(matrix["cases"]), 48)
+        self.assertEqual(len(matrix["cases"]), 64)
         for index, case in enumerate(matrix["cases"]):
             with self.subTest(case=index):
                 original = deepcopy(case["input"])
@@ -55,6 +55,20 @@ class PageContractConformanceTest(unittest.TestCase):
                         {(e["type"], e["path"]) for e in actual["errors"]},
                         {(e["type"], e["path"]) for e in expected["errors"]},
                     )
+
+    def test_grouped_params_match_typescript_contract(self) -> None:
+        matrix = json.loads((CONTRACT_ROOT / "page/conformance/grouped-params.json").read_text())
+        for case in matrix["cases"]:
+            with self.subTest(case=case["name"]):
+                before = deepcopy(case["input"])
+                actual = normalize_page_document(case["input"])
+                expected = case["expected"]
+                self.assertEqual(actual["ok"], expected["ok"])
+                if expected["ok"]:
+                    self.assertEqual(actual, expected)
+                else:
+                    self.assertEqual({(e["type"], e["path"]) for e in actual["errors"]}, {(e["type"], e["path"]) for e in expected["errors"]})
+                self.assertEqual(case["input"], before)
 
     def test_dimension_param_bindings_match_shared_contract(self) -> None:
         matrix = json.loads((CONTRACT_ROOT / "page/conformance/param-bindings.json").read_text())

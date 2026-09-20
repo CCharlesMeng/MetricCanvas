@@ -35,3 +35,5 @@ export {
   walkDocumentComponents,
   walkPageComponents
 } from './component-walk';
+
+export { hasQueryParamReferences } from './query-param-references';
