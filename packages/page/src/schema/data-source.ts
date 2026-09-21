@@ -68,7 +68,26 @@ export const dqeQueryZ = z
                   .meta({ minProperties: 2 })
               })
               .strict(),
-            z.object({ target: z.literal('time') }).strict()
+            z.object({ target: z.literal('time') }).strict(),
+            // 非维度筛选器的三支谓词(ADR-0085)。
+            z
+              .object({
+                target: z.literal('timePoint'),
+                queryField: z.string().min(1),
+                valueFormat: z.enum(['iso', 'compact']).optional()
+              })
+              .strict(),
+            z
+              .object({
+                target: z.literal('boolean'),
+                queryField: z.string().min(1),
+                whenTrue: z.array(z.string().min(1)).min(1),
+                whenFalse: z.array(z.string().min(1)).min(1).optional()
+              })
+              .strict(),
+            z
+              .object({ target: z.literal('numberRange'), metric: z.string().min(1) })
+              .strict()
           ])
       )
       .optional()

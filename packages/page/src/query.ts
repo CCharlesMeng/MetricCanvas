@@ -49,7 +49,48 @@ export type DqeDimensionFilterBinding =
   | { target: 'dimension'; queryField: string }
   | { target: 'dimension'; levelQueryFields: Record<string, string> };
 
-export type DqeFilterBinding = DqeDimensionFilterBinding | { target: 'time' };
+/**
+ * 非维度筛选器的绑定目标(ADR-0085)。三类各自的谓词形状不同,因此各是一支,
+ * 不共用 `queryField` 一个字段名就算完:
+ * - `timePoint` 是时间点等值,落在维度谓词上;取值格式必须显式声明,
+ *   因为筛选状态写的是 `YYYY-MM`,而数据列常是 `YYYYMM`。
+ * - `boolean` 勾选与否不对称:勾上加条件,不勾默认无条件;要筛"为假"必须
+ *   显式声明 `whenFalse`,不由运行时取反。
+ * - `numberRange` 落在 `filter.metrics` 上,两端各自可缺席。
+ */
+export type DqeTimePointFilterBinding = {
+  target: 'timePoint';
+  queryField: string;
+  /** iso 原样送 YYYY-MM / YYYY-MM-DD(默认);compact 去掉分隔符。 */
+  valueFormat?: 'iso' | 'compact';
+};
+
+export type DqeBooleanFilterBinding = {
+  target: 'boolean';
+  queryField: string;
+  whenTrue: string[];
+  whenFalse?: string[];
+};
+
+export type DqeNumberRangeFilterBinding = {
+  target: 'numberRange';
+  metric: string;
+};
+
+export type DqeFilterBinding =
+  | DqeDimensionFilterBinding
+  | { target: 'time' }
+  | DqeTimePointFilterBinding
+  | DqeBooleanFilterBinding
+  | DqeNumberRangeFilterBinding;
+
+/** 时间点取值按绑定声明的格式落到谓词上;不猜数据列用的是哪种写法。 */
+export function timePointPredicateValue(
+  value: string,
+  format: DqeTimePointFilterBinding['valueFormat']
+): string {
+  return format === 'compact' ? value.replaceAll('-', '') : value;
+}
 
 export function isLevelDimensionBinding(
   binding: DqeFilterBinding
@@ -113,6 +154,10 @@ export interface DqeEffectiveQuery {
     offset: number;
     limit: number;
   };
+  /**
+   * 生效查询携带的是**已解析的谓词**,不是绑定声明:timePoint 与 boolean
+   * 在编排层就化成维度谓词,因此这里只比页面协议多一支数值区间。
+   */
   filterValues: Array<
     | {
         target: 'dimension';
@@ -122,6 +167,12 @@ export interface DqeEffectiveQuery {
     | {
         target: 'time';
         value: TimeRangeValue;
+      }
+    | {
+        target: 'metricRange';
+        metric: string;
+        from?: number;
+        to?: number;
       }
   >;
 }

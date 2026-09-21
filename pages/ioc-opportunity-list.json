@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.7",
+  "schemaVersion": "6.9",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -952,6 +952,18 @@
             ]
           },
           "filterBindings": {
+            "mtime": {
+              "target": "timePoint",
+              "queryField": "mtime",
+              "valueFormat": "compact"
+            },
+            "key-office": {
+              "target": "boolean",
+              "queryField": "is_key_office",
+              "whenTrue": [
+                "true"
+              ]
+            },
             "industry-type": {
               "target": "dimension",
               "queryField": "cloud_class"
@@ -983,6 +995,10 @@
             "opportunity-stage": {
               "target": "dimension",
               "queryField": "opportunity_step"
+            },
+            "bidding-amount": {
+              "target": "numberRange",
+              "metric": "bidding_amount"
             }
           }
         }

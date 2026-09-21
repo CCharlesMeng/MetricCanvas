@@ -37,6 +37,29 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   }
 });
 
+// timePoint / boolean / numberRange 此前协议上无处可绑，页面上拉了不动数
+// (ADR-0085)。三类谓词形状各不相同，各用一个能区分的取值验。
+test('时间点、布尔与数值区间筛选各自下推到查询', async ({ page }) => {
+  const rows = page.locator('[data-component="list/opportunity-table"] tbody tr');
+  // 数据列是 202604，筛选值是 2026-04：格式声明错了就一行都取不到。
+  await page.goto('/pages/ioc-opportunity-list?mtime=2026-04');
+  await expect(rows).toHaveCount(10);
+  await page.goto('/pages/ioc-opportunity-list?mtime=2026-05');
+  await expect(rows).toHaveCount(0);
+  // 勾上才加条件；不勾等于无条件，不是筛「为假」。
+  await page.goto('/pages/ioc-opportunity-list?key-office=true');
+  await expect(rows).toHaveCount(5);
+  await page.goto('/pages/ioc-opportunity-list');
+  await expect(rows).toHaveCount(10);
+  // 两端各自可缺席。
+  await page.goto('/pages/ioc-opportunity-list?bidding-amount.from=50000000');
+  await expect(rows).toHaveCount(4);
+  await page.goto(
+    '/pages/ioc-opportunity-list?bidding-amount.from=15000000&bidding-amount.to=54000000'
+  );
+  await expect(rows).toHaveCount(4);
+});
+
 // 级联的「按上游收窄」此前整条空转：清空下游、重拉候选都做了，但适配器把
 // constraints 丢了，拉回来的仍是全量。这里选一级行业后数下游候选项。
 test('云行业选定后云子行业候选按上游收窄', async ({ page }) => {

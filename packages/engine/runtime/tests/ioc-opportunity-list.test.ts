@@ -42,7 +42,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.7');
+    expect(page.schemaVersion).toBe('6.9');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)
@@ -78,23 +78,47 @@ describe('ioc-opportunity-list 骨架', () => {
     expect(values.get('mtime')).toMatchObject({ value: '2026-04' });
   });
 
-  it('明细走受控查询，扁平维度筛选器绑定到 DQE 字段', () => {
+  // 十一个筛选器里十个下推到查询；只剩 search 没有绑定目标，仍走客户端。
+  it('明细走受控查询，各类筛选器按各自的谓词形状绑定', () => {
     const page = loadPage();
     const source = page.dataSources['opportunity-list'];
     if (source?.source.type !== 'query') throw new Error('明细数据源应为受控查询');
     expect(source.source.query.language).toBe('dqe');
-    expect(Object.keys(source.source.query.filterBindings ?? {})).toEqual([
+    const bindings = source.source.query.filterBindings ?? {};
+    expect(Object.keys(bindings)).toEqual([
+      'mtime',
+      'key-office',
       'industry-type',
       'region',
       'na-type',
       'industry-l1',
       'industry-l2',
       'overdue',
-      'opportunity-stage'
+      'opportunity-stage',
+      'bidding-amount'
     ]);
-    expect(source.source.query.filterBindings?.['industry-l2']).toEqual({
+    expect((page.filters ?? []).filter((f) => !(f.id in bindings)).map((f) => f.id)).toEqual([
+      'keyword'
+    ]);
+    expect(bindings['industry-l2']).toEqual({
       target: 'dimension',
       queryField: 'sub_industry_level2'
+    });
+    // 数据列写的是 202604，筛选状态写的是 2026-04：格式必须显式声明。
+    expect(bindings.mtime).toEqual({
+      target: 'timePoint',
+      queryField: 'mtime',
+      valueFormat: 'compact'
+    });
+    // 勾选才加条件，没有 whenFalse 就是不勾等于无条件。
+    expect(bindings['key-office']).toEqual({
+      target: 'boolean',
+      queryField: 'is_key_office',
+      whenTrue: ['true']
+    });
+    expect(bindings['bidding-amount']).toEqual({
+      target: 'numberRange',
+      metric: 'bidding_amount'
     });
   });
 

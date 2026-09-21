@@ -595,6 +595,8 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
   for (const filter of query.filterValues) {
     if (filter.target === 'dimension') {
       setDimensionFilter(item, filter.queryField, filter.values);
+    } else if (filter.target === 'metricRange') {
+      setMetricRangeFilter(item, filter.metric, filter.from, filter.to);
     } else {
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
@@ -626,6 +628,30 @@ function setDimensionFilter(
     else existing.push(next);
   }
   filter.dims = existing;
+}
+
+/**
+ * 数值区间落在 `filter.metrics` 上,两端各自成一条比较谓词(ADR-0085)。
+ * 端点缺席即那一侧无界;重写前先清掉同名指标的既有条目,避免同一指标
+ * 在多轮筛选后堆出互相矛盾的比较。
+ */
+function setMetricRangeFilter(
+  item: JsonObject,
+  metric: string,
+  from: number | undefined,
+  to: number | undefined
+): void {
+  const filter = ensureRecord(item, 'filter');
+  const existing = Array.isArray(filter.metrics)
+    ? filter.metrics.filter(isRecord).filter((entry) => entry.metric_name !== metric)
+    : [];
+  if (from !== undefined) {
+    existing.push({ metric_name: metric, metric_value_list: [from], operator: '>=' });
+  }
+  if (to !== undefined) {
+    existing.push({ metric_name: metric, metric_value_list: [to], operator: '<=' });
+  }
+  filter.metrics = existing;
 }
 
 function setTimeFilter(item: JsonObject, start: string, end: string): void {

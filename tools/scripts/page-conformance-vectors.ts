@@ -9,8 +9,13 @@
  * 结构错误由 ajv 产出，这里也登记少量结构反例，用来钉住 Java 侧对 ajv 文案与顺序的复现。
  */
 
+import { versionPolicy } from '../../packages/page/src/version.ts';
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Doc = any;
+
+/** 恰好领先当前次版本一位；写死的版本号会在每次次版本递增时失效。 */
+const minorAheadOfCurrent = `${versionPolicy.major}.${versionPolicy.minor + 1}`;
 
 export interface ConformanceCase {
   case: string;
@@ -146,7 +151,7 @@ export const invariants: InvariantDefinition[] = [
         base: 'query-dashboard',
         expect: /高于运行时当前次版本/,
         mutate: (document) => {
-          document.schemaVersion = '6.9';
+          document.schemaVersion = minorAheadOfCurrent;
         }
       }
     ]
@@ -1061,6 +1066,40 @@ export const invariants: InvariantDefinition[] = [
           document.dataSources.regions.source.query.filterBindings.area = {
             target: 'dimension',
             queryField: 'code'
+          };
+        }
+      },
+      {
+        case: 'time-point-target-not-time-point',
+        base: 'non-dimension-bindings-page',
+        expect: /timePoint 目标必须绑定 timePoint 筛选器:only-key/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings['only-key'] = {
+            target: 'timePoint',
+            queryField: 'stat_month'
+          };
+        }
+      },
+      {
+        case: 'boolean-target-not-boolean',
+        base: 'non-dimension-bindings-page',
+        expect: /boolean 目标必须绑定 boolean 筛选器:amount-range/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings['amount-range'] = {
+            target: 'boolean',
+            queryField: 'is_key',
+            whenTrue: ['true']
+          };
+        }
+      },
+      {
+        case: 'number-range-target-not-number-range',
+        base: 'non-dimension-bindings-page',
+        expect: /numberRange 目标必须绑定 numberRange 筛选器:month/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings.month = {
+            target: 'numberRange',
+            metric: 'amount'
           };
         }
       },

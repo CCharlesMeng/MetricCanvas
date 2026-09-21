@@ -37,6 +37,7 @@ function listResult(item) {
   if (!isRecord(item.filter) || !Array.isArray(item.filter.dims)) {
     return unsupported('机会点清单缺少 filter.dims');
   }
+  if (!Array.isArray(fixture.filterableDims)) return unsupported('夹具缺少 filterableDims');
   const filterable = new Set(fixture.filterableDims);
   let rows = fixture.rows;
   for (const entry of item.filter.dims) {
@@ -50,6 +51,35 @@ function listResult(item) {
     if (!values) return unsupported(`维度筛选 ${entry.dim_name} 必须是字符串数组`);
     if (values.length === 0) continue;
     rows = rows.filter((row) => values.includes(String(row[entry.dim_name] ?? '')));
+  }
+  const metrics = item.filter.metrics;
+  if (metrics !== undefined) {
+    if (!Array.isArray(metrics)) return unsupported('filter.metrics 必须是数组');
+    const compare = {
+      '>=': (left, right) => left >= right,
+      '<=': (left, right) => left <= right,
+      '>': (left, right) => left > right,
+      '<': (left, right) => left < right
+    };
+    const known = new Set(fixture.output_metrics);
+    for (const entry of metrics) {
+      if (!isRecord(entry) || typeof entry.metric_name !== 'string') {
+        return unsupported('指标筛选格式无效');
+      }
+      if (!known.has(entry.metric_name)) {
+        return unsupported(`不支持的指标筛选:${entry.metric_name}`);
+      }
+      const operator = compare[entry.operator];
+      if (!operator) return unsupported(`不支持的比较算子:${String(entry.operator)}`);
+      const bounds = Array.isArray(entry.metric_value_list) ? entry.metric_value_list : [];
+      if (bounds.length !== 1 || typeof bounds[0] !== 'number') {
+        return unsupported(`指标筛选 ${entry.metric_name} 需要单个数值端点`);
+      }
+      rows = rows.filter((row) => {
+        const value = row[entry.metric_name];
+        return typeof value === 'number' && operator(value, bounds[0]);
+      });
+    }
   }
   const outputs = [...fixture.output_dims, ...fixture.output_metrics];
   return success(

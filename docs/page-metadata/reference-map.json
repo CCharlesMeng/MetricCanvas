@@ -146,7 +146,8 @@
       ],
       "examples": [
         "dimension-params-page",
-        "hierarchy-binding-page"
+        "hierarchy-binding-page",
+        "non-dimension-bindings-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -1047,7 +1048,11 @@
     "scalars": "纯展示等标量参数数组，实际取值用 value 保存。",
     "#/definitions/groupedPageParams/properties/times/items/properties/start": "包含的区间起点，与 end 同时填写或省略。",
     "#/definitions/groupedPageParams/properties/times/items/properties/end": "包含的区间终点，不早于 start。",
-    "levelQueryFields": "层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。"
+    "levelQueryFields": "层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。",
+    "valueFormat": "时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。",
+    "whenTrue": "布尔筛选器勾选时下推的取值；不勾选默认无条件。",
+    "whenFalse": "布尔筛选器显式为假时下推的取值；缺席即不勾选不加条件。",
+    "metric": "数值区间谓词作用的DQE指标名，不等于页面字段id。"
   },
   "enumNotes": {
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -1133,7 +1138,7 @@
     "100": "ratio输出乘100，匹配百分比原值展示。",
     "activityProgress": "活动进展呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "analysisStack": "分析纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
-    "compact": "紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
+    "compact": "时间点去掉分隔符后送出，例如 202604。",
     "compactStack": "紧凑纵向堆叠呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "compactStrip": "紧凑横条呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
     "compactSummary": "紧凑摘要呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。",
@@ -1174,7 +1179,9 @@
     "6.5": "新增按百万呈现的0/1/2位小数格式。",
     "6.6": "新增分组参数与多个独立时间区间。",
     "6.7": "新增层级维度筛选绑定逐级声明谓词字段。",
-    "6.8": "当前作者写出版本；层级维度筛选器不再允许恒定queryField，必须逐级声明。"
+    "6.8": "层级维度筛选器不再允许恒定queryField，必须逐级声明。",
+    "6.9": "当前作者写出版本，新增timePoint/boolean/numberRange筛选器的查询绑定目标。",
+    "iso": "时间点原样送 YYYY-MM / YYYY-MM-DD。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

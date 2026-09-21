@@ -751,6 +751,20 @@ function queryContractErrors(
       );
     } else if (binding.target === 'dimension' && filter.type === 'dimension') {
       errors.push(...levelBindingErrors(binding, filter, path));
+    } else if (
+      (binding.target === 'timePoint' ||
+        binding.target === 'boolean' ||
+        binding.target === 'numberRange') &&
+      filter.type !== binding.target
+    ) {
+      // 目标名即筛选器类型:绑错类型的筛选器,取值形状对不上谓词形状。
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          path,
+          `${binding.target} 目标必须绑定 ${binding.target} 筛选器:${filterId}`
+        )
+      );
     }
   }
   return errors;

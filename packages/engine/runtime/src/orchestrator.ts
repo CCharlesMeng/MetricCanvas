@@ -3,6 +3,7 @@ import type { Page } from '@metriccanvas/page';
 import {
   bindingQueryField,
   declaredPaginationLimit,
+  timePointPredicateValue,
   type DataRow,
   type DataSnapshot,
   type DataSource,
@@ -465,6 +466,32 @@ function composeEffectiveQuery(
         target: 'time',
         value: { from: value.from, to: value.to }
       });
+    } else if (binding.target === 'timePoint' && value?.type === 'timePoint') {
+      // 时间点是等值谓词,按绑定声明的格式落到维度字段上(ADR-0085)。
+      filterValues.push({
+        target: 'dimension',
+        queryField: binding.queryField,
+        values: [timePointPredicateValue(value.value, binding.valueFormat)]
+      });
+    } else if (binding.target === 'boolean' && value?.type === 'boolean') {
+      // 勾选与否不对称:不勾且未声明 whenFalse 即无条件,不由运行时取反。
+      const values = value.value ? binding.whenTrue : binding.whenFalse;
+      if (values !== undefined) {
+        filterValues.push({
+          target: 'dimension',
+          queryField: binding.queryField,
+          values: [...values]
+        });
+      }
+    } else if (binding.target === 'numberRange' && value?.type === 'numberRange') {
+      if (value.from !== undefined || value.to !== undefined) {
+        filterValues.push({
+          target: 'metricRange',
+          metric: binding.metric,
+          ...(value.from !== undefined ? { from: value.from } : {}),
+          ...(value.to !== undefined ? { to: value.to } : {})
+        });
+      }
     }
   }
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。

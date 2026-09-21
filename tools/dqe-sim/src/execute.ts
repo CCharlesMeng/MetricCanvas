@@ -277,6 +277,50 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
   );
 }
 
+/**
+ * 数值区间谓词:`filter.metrics` 上的比较条目(ADR-0085)。只认封闭的四个
+ * 比较算子与单值列表;算子看不懂、指标不在输出里都拒答,不静默放行。
+ */
+function applyMetricRangeFilters(
+  rows: JsonRecord[],
+  metrics: unknown,
+  known: ReadonlySet<string>
+): { rows: JsonRecord[] } | { error: DqeSimItemResult } {
+  if (metrics === undefined) return { rows };
+  if (!Array.isArray(metrics)) {
+    return { error: unsupported('filter.metrics 必须是数组') };
+  }
+  const compare: Record<string, (left: number, right: number) => boolean> = {
+    '>=': (left, right) => left >= right,
+    '<=': (left, right) => left <= right,
+    '>': (left, right) => left > right,
+    '<': (left, right) => left < right
+  };
+  let filtered = rows;
+  for (const entry of metrics) {
+    if (!isRecord(entry) || typeof entry.metric_name !== 'string') {
+      return { error: unsupported('指标筛选格式无效') };
+    }
+    if (!known.has(entry.metric_name)) {
+      return { error: unsupported(`不支持的指标筛选:${entry.metric_name}`) };
+    }
+    const operator = typeof entry.operator === 'string' ? compare[entry.operator] : undefined;
+    if (!operator) {
+      return { error: unsupported(`不支持的比较算子:${String(entry.operator)}`) };
+    }
+    const bounds = Array.isArray(entry.metric_value_list) ? entry.metric_value_list : [];
+    if (bounds.length !== 1 || typeof bounds[0] !== 'number') {
+      return { error: unsupported(`指标筛选 ${entry.metric_name} 需要单个数值端点`) };
+    }
+    const bound = bounds[0];
+    filtered = filtered.filter((row) => {
+      const value = row[entry.metric_name as string];
+      return typeof value === 'number' && operator(value, bound);
+    });
+  }
+  return { rows: filtered };
+}
+
 /** 候选值查询的级联约束:形状不合法直接拒答,不静默丢弃一条约束。 */
 function dimensionValueConstraints(
   dims: unknown
@@ -419,9 +463,6 @@ function executeIocOpportunityList(
     return undefined;
   }
   if (!isRecord(item.filter)) return unsupported('机会点清单缺少 filter 对象');
-  if (!equalJson(item.filter.metrics, [])) {
-    return unsupported('机会点清单仅支持 filter.metrics=[]');
-  }
   if (!Array.isArray(item.filter.dims)) {
     return unsupported('filter.dims 必须是数组');
   }
@@ -444,6 +485,13 @@ function executeIocOpportunityList(
     if (values.length === 0) continue;
     rows = rows.filter((row) => values.includes(String(row[entry.dim_name as string] ?? '')));
   }
+  const metricFiltered = applyMetricRangeFilters(
+    rows,
+    item.filter.metrics,
+    new Set(fixture.output_metrics)
+  );
+  if ('error' in metricFiltered) return metricFiltered.error;
+  rows = metricFiltered.rows;
   const projected = rows.map((row) =>
     Object.fromEntries(
       [...fixture.output_dims, ...fixture.output_metrics].map((field) => [field, row[field] ?? null])
