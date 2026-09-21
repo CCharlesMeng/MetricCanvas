@@ -20,6 +20,21 @@ describe('formatValue', () => {
   });
 
   it.each([
+    [1_234_567, 'compact-million-0', '1百万'],
+    [1_234_567, 'compact-million-1', '1.2百万'],
+    [1_234_567, 'compact-million-2', '1.23百万'],
+    [-1_235_000, 'compact-million-2', '-1.24百万'],
+    [1_234_567_890, 'compact-million-2', '1,234.57百万'],
+    [0, 'compact-million-2', '0.00百万'],
+    [500_000, 'compact-million-1', '0.5百万'],
+    ['2500000', 'compact-million-2', '2.50百万'],
+    [null, 'compact-million-2', '—'],
+    ['暂无', 'compact-million-2', '暂无']
+  ] as const)('百万格式 %s / %s → %s', (value, format, expected) => {
+    expect(formatValue(value, format)).toBe(expected);
+  });
+
+  it.each([
     [9_999, '9,999元'],
     [10_000, '1.00万'],
     [99_999, '10.00万'],
