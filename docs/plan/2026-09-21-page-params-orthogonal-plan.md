@@ -2,6 +2,7 @@
 
 - 日期：2026-09-21
 - 形状规格在 `docs/plan/2026-09-21-page-params-orthogonal-shape.md`（提案 A / B 的字段形状、校验逐条、改动面清单、spike 结果）。**本文记录来龙去脉、已拍板的结论、当前工作区状态与剩余计划**，两份配套读。
+- **状态更新（2026-09-21 晚）**：提案 A 与提案 B 都已落地，决策记进 [ADR-0088](../adr/0088-orthogonal-page-parameters-window-on-the-reference-and-layers-by-purpose.md)。第 4 节阶段一 A1–A8 全部完成，阶段三（提案 B）随同一次改动完成。**剩余的是阶段二（旧页处置）与 IOC 四张页的公共 params**，后者卡在一个协议缺口上，见第 6 节末尾。
 - 本文写作时**工作区里已有未提交的 spike 改动**，清单见第 3 节。
 
 ---
@@ -160,9 +161,9 @@ paramBindings[id] = {target:'time', window}   （在查询 Q 上）
 | `ioc-project-detail.json` | 6.1、8 个旧数组参数全是 `type: string`，只给文本用不进查询 | 优先级最低，纯换写法无功能收益。小疑点：`mtime` 默认 `"202604"` 其实是个月份，哪天它要驱动查询就得改成 times |
 | `demo.json` / `sales-detail.json` / `region-map.json` | 硬编码整年日区间、无参数、展示用 | 倾向不动 |
 
-### 阶段三：提案 B（待批准）
+### 阶段三：提案 B（已批准，已随阶段一落地）
 
-未获批准，不启动。真要做，动的是同一批文件和同一批夹具，**搭阶段一的车最省**；单独走要再付一次形状变更的成本。任务面见形状规格第 4 节 B 列。
+`params` 改成 `{query:{dimensions,times}, display}`，`scalars` 退役。「能不能进查询」从类型判定加了一条位置判定（`/params/query/` 前缀），错误信息从「类型不对」变成「引用的参数不在 params.query 下」；类型判定本身没有消失。两份夹具、`groupedCase` 向量、Python `declarations()` 与文档同批改完。
 
 ---
 
@@ -183,7 +184,19 @@ paramBindings[id] = {target:'time', window}   （在查询 Q 上）
 - **「改 6.6 定义」依赖一个前提**：6.6 确实没有外部消费者。仓内已核实（无 Java 侧、无生产页面、无发布标签），仓外需要你确认。
 - **带 window 的引用配非点区间，未填值模板要到取值期才报。** 这是结论 2 的明牌代价。
 - **并发会话。** 见第 3 节末尾。
-- **能力探测的一个缺口**：`named-to-date-windows` 能力按 `paramBindings` 里的 window 探测，新形状把 window 放到了 `filter.time`，那条探测不会命中。当前无害（用新形状必然是分组参数，floor 已经是 6.6 ≥ 6.4），但阶段一收尾时应一并处理，避免日后按 minor 推算版本下限时出错。
+- ~~**能力探测的一个缺口**：`named-to-date-windows` 能力按 `paramBindings` 里的 window 探测，新形状把 window 放到了 `filter.time`，那条探测不会命中。~~ 已补第二个落点。
+
+### IOC 四张页上公共 params 卡在哪
+
+四张页共用的关键输入是 `mtime`（数据月份）与 `as-of-date`（日期）。两者现在都是 **`timePoint` 筛选器**，带字面量默认值（`2026-04` / `2026-03-26`），并通过 6.9 的 `filterBindings` 非维度目标下推成 `mtime = '202604'` 这类谓词；`ioc-project-detail` 则把同一个 `mtime` 写成旧数组里的 `type: "string"`、默认 `"202604"`。
+
+要把它们提成公共 params，协议上只有三条路，且都不是纯改写：
+
+1. **删掉筛选器，改成 `params.query.dimensions`**（`dim_name: "mtime"`，查询里 `filter.dims[].dim_value_list` 原位引用）。页内的「数据月份」「日期」两个控件随之消失——页面参数按 ADR-0047 定义就是打开后不可变的。同时丢掉 `valueFormat: "compact"` 这层 `2026-04 → 202604` 的转换，参数得直接保存 `202604`。
+2. **扩 `initialParam` 到非维度筛选器**。现在 `param-bindings.ts` 显式只接平面 dimension 筛选器（拒绝 `hierarchy`、拒绝其它 type），所以「参数给初值、筛选器仍可改」这个既有模式对 `timePoint` 用不了。扩它是第三次协议改动。
+3. **只迁 `ioc-project-detail`**。它没有筛选器，8 个旧数组参数全是纯展示，迁到 `params.display` 是无损改写——但按计划自己的排序，这是优先级最低、无功能收益的一项。
+
+路线 1 改产品行为，路线 2 是新的协议面，两者都要人拍板，因此没有自行选定。
 
 ---
 

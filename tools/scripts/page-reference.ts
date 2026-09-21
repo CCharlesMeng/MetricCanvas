@@ -92,10 +92,13 @@ function minimalExample(document: any, component: any): any | undefined {
     candidate.params = candidate.params.filter((p:any)=>params.has(p.id));
     if (!candidate.params.length) delete candidate.params;
   } else if (candidate.params) {
-    for (const group of Object.keys(candidate.params)) {
-      candidate.params[group] = candidate.params[group].filter((p:any) => params.has(p.id));
-      if (!candidate.params[group].length) delete candidate.params[group];
+    const keep = (list:any[]) => list.filter((p:any) => params.has(p.id));
+    for (const [owner, group] of [[candidate.params.query, 'dimensions'], [candidate.params.query, 'times'], [candidate.params, 'display']] as const) {
+      if (!owner?.[group]) continue;
+      owner[group] = keep(owner[group]);
+      if (!owner[group].length) delete owner[group];
     }
+    if (candidate.params.query && !Object.keys(candidate.params.query).length) delete candidate.params.query;
     if (!Object.keys(candidate.params).length) delete candidate.params;
   }
   const clean = JSON.parse(JSON.stringify(candidate));

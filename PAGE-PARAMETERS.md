@@ -2,13 +2,30 @@
 
 本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.6**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
 
-## 6.6 分组参数（新页面）
+## 6.6 分层参数（新页面）
 
-新结构为 `params: { dimensions: [...], times: [...], scalars?: [...] }`。每组均为数组，报告期和对比期通过不同 ID 独立填写。dimensions 使用 `id/dim_name/dim_value_list`；times 使用 `id/granularity/start/end`；scalars 保留标题等 string/number/boolean 输入并用 value 保存实际值。各组可省略，至少声明一个参数。
+新结构为 `params: { query?: { dimensions?: [...], times?: [...] }, display?: [...] }`。分层依据是**消费位置**：`params.query` 下的输入落进 DQE 请求体，`params.display` 下的只被文本取值和导航消费，哪儿也不落。两层共享同一个 ID 空间，引用处只写 id，不写所在层。各层可省略，至少声明一个参数。
 
-新参数不使用 default；required 缺省 true。模板省略实际值，时间起止必须成对填写。查询在 `dim_value_list` 和 `time.start/end` 原位引用参数；period 与 is_aggregate 留在查询侧。多个查询可分别引用不同时间，也可共享一个时间参数。值不全时不能执行，原始文档保持不变。
+`query.dimensions` 使用 `id/dim_name/dim_value_list`；`query.times` 使用 `id/granularity/start/end`；`display` 每项为 `id/type/value`，保留标题等 string/number/boolean 输入。
 
-完整字段、引用、URL 与兼容规则见[已实现方案](docs/plan/2026-09-20-grouped-page-params.md)，完整页面见[多时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 时间值为编码后的 `{start,end}` JSON，维度仍使用重复键；显式非法输入不回退保存值。
+新参数不使用 default；required 缺省 true。模板省略实际值，时间起止必须成对填写。值不全时不能执行，原始文档保持不变。
+
+### 时间输入怎样被查询消费
+
+**一个时间输入就是一个包含区间，单点写成 `start` 与 `end` 相同。** 查询侧在 `filter.time` 上整段引用它，是否派生由引用决定：
+
+```json
+"time": { "period": "month", "is_aggregate": false, "param": "report-period" }
+
+"time": { "period": "month", "is_aggregate": true, "param": "report-month",
+          "window": { "kind": "lastN", "unit": "month", "n": 12 } }
+```
+
+不写 `window` 就原样用参数值的起止；写了 `window` 就以参数值为基准点派生区间，此时被引用的输入必须是单点。「点 / 区间」与「派生 / 原样用」是两条独立的轴，同一个页面里两种写法可以共存，一个基准月因此仍能驱动整份报告的多个窗口。窗口取值见下文「窗口」一节，两条路共用同一套日历算术。
+
+维度在 `filter.dims[].dim_value_list` 上原位引用 `{param: id}`；`period` 与 `is_aggregate` 始终留在查询侧。引用不得与筛选绑定或旧 `paramBindings` 共同控制同一条件，也不得与查询体里的字面量起止并存。
+
+完整字段、引用、URL 与兼容规则见[正交化形状](docs/plan/2026-09-21-page-params-orthogonal-shape.md)，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
 
 以下章节说明**兼容的旧参数数组与基准期窗口能力**。其中 default、multiple、paramBindings 和单值 time 的限制只适用于旧数组分支，不限制新 times 数组。
 

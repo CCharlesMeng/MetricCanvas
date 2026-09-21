@@ -12,30 +12,45 @@ export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'tim
 export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
 
 export interface TimeRangeParamValue { start: string; end: string; }
+/**
+ * 参数按用途分层:`query` 下的输入落进 DQE 请求体,`display` 下的只被文本
+ * 取值和导航消费。分的是消费位置,不是数据类型——同一个 ID 空间由两层共享,
+ * 引用处只写 id,不写所在层。
+ */
 export interface GroupedPageParams {
-  dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
-  times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
-  scalars?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
+  query?: {
+    dimensions?: Array<{ id: string; dim_name: string; dim_value_list?: string[]; required?: boolean; label?: string }>;
+    times?: Array<{ id: string; granularity: TimeParamGranularity; start?: string; end?: string; required?: boolean; label?: string }>;
+  };
+  display?: Array<{ id: string; type: 'string' | 'number' | 'boolean'; value?: string | number | boolean; required?: boolean; label?: string }>;
 }
 
-/** 只归一化运行态声明；保存文档维持原来的分组结构。 */
+/** 声明位置:查询输入带此前缀,展示输入不带。 */
+const QUERY_PARAM_PATH_PREFIX = '/params/query/';
+
+/** 只归一化运行态声明；保存文档维持原来的分层结构。 */
 export function pageParamDeclarations(params: readonly PageParamDeclaration[] | GroupedPageParams | undefined): PageParamDeclaration[] {
   if (!params) return [];
   if (Array.isArray(params)) return [...params];
   const groups = params as GroupedPageParams;
   return [
-    ...(groups.dimensions ?? []).map((p, i): PageParamDeclaration => ({
+    ...(groups.query?.dimensions ?? []).map((p, i): PageParamDeclaration => ({
       id: p.id, type: 'dimension', required: p.required ?? true, multiple: true,
-      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/dimensions/${i}`
+      label: p.label, dimName: p.dim_name, value: p.dim_value_list, path: `/params/query/dimensions/${i}`
     })),
-    ...(groups.times ?? []).map((p, i): PageParamDeclaration => ({
+    ...(groups.query?.times ?? []).map((p, i): PageParamDeclaration => ({
       id: p.id, type: 'timeRange', required: p.required ?? true, granularity: p.granularity,
-      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/times/${i}`
+      label: p.label, value: p.start === undefined && p.end === undefined ? undefined : {start: p.start!, end: p.end!}, path: `/params/query/times/${i}`
     })),
-    ...(groups.scalars ?? []).map((p, i): PageParamDeclaration => ({
-      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/scalars/${i}`
+    ...(groups.display ?? []).map((p, i): PageParamDeclaration => ({
+      id: p.id, type: p.type, required: p.required ?? true, label: p.label, value: p.value, path: `/params/display/${i}`
     }))
   ];
+}
+
+/** 声明能否被查询消费:按声明位置判,不按数据类型判。 */
+export function isQueryInputDeclaration(declaration: PageParamDeclaration): boolean {
+  return declaration.path?.startsWith(QUERY_PARAM_PATH_PREFIX) ?? false;
 }
 
 export interface PageParamDeclaration {

@@ -56,12 +56,18 @@ it('月份与代表处进入12个数据源，等价查询复用；跨年、空�
 
 it('缺省使用保存值；显式非法时间不改用默认值；日期URL可往返', () => {
   const declarations = parse(document()).params ?? [];
-  expect(resolvePageParams('', declarations).values.get('report-month')).toBe('2026-02');
-  for (const value of ['202602', '2026-13', '', '2026-02&report-month=2026-03']) {
+  expect(resolvePageParams('', declarations).values.get('report-month')).toEqual({start:'2026-02',end:'2026-02'});
+  expect(resolvePageParams('report-month=2026-03', declarations).values.get('report-month')).toEqual({start:'2026-03',end:'2026-03'});
+  expect(pageParamSearch(new Map([['report-month',{start:'2026-01',end:'2026-06'}]]))).toBe('report-month=2026-01..2026-06');
+  for (const value of ['202602', '2026-13', '', '2026-06..2026-01', '2026-01..2026-03..2026-06', '2026-02&report-month=2026-03']) {
     const result = resolvePageParams(`report-month=${value}`, declarations);
     expect(result.missing).toContain('report-month');
     expect(result.values.has('report-month')).toBe(false);
   }
+  // 窗口派生要求基准是单点;未填值模板没有起止可判,因此留到取值代入时才报。
+  const spread = resolvePageParams('report-month=2026-01..2026-06', declarations);
+  expect(spread.missing).toEqual([]);
+  expect(() => initializePageParams(parse(document()), spread.values)).toThrow(/单点/);
   const date = [{id:'as-of',type:'time',granularity:'date',required:true}] as const;
   const values = new Map([['as-of','2024-02-29']]);
   expect(resolvePageParams(pageParamSearch(values), date).values).toEqual(values);

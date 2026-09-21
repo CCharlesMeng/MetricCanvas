@@ -130,19 +130,32 @@ async function buildProductOutputs(): Promise<OutputMap> {
     change(input);
     groupedCases.push({name, input, expected: normalizePageDocument(input)});
   }
-  groupedCase('multiple-times', () => {});
+  groupedCase('range-and-derived', () => {});
   groupedCase('unfilled-template', p => {
-    delete p.params.dimensions[0].dim_value_list;
-    for (const t of p.params.times) { delete t.start; delete t.end; }
+    delete p.params.query.dimensions[0].dim_value_list;
+    for (const t of p.params.query.times) { delete t.start; delete t.end; }
   });
   groupedCase('old-version', p => { p.schemaVersion = '6.5'; });
-  groupedCase('duplicate-id', p => { p.params.times[0].id = 'region'; });
-  groupedCase('partial-range', p => { delete p.params.times[0].end; });
-  groupedCase('reversed-range', p => { p.params.times[0].start = '2027-01'; });
-  groupedCase('invalid-calendar', p => { p.params.times[0].start = '2026-13'; });
-  groupedCase('duplicate-dim-values', p => { p.params.dimensions[0].dim_value_list = ['A','A']; });
-  groupedCase('dimension-mismatch', p => { p.params.dimensions[0].dim_name = 'other'; });
-  groupedCase('mixed-time-sources', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.end.param = 'comparison-period'; });
+  groupedCase('duplicate-id', p => { p.params.query.times[0].id = 'region'; });
+  groupedCase('legacy-flat-groups', p => { p.params = {dimensions: p.params.query.dimensions, times: p.params.query.times}; });
+  groupedCase('partial-range', p => { delete p.params.query.times[0].end; });
+  groupedCase('reversed-range', p => { p.params.query.times[0].start = '2027-01'; });
+  groupedCase('invalid-calendar', p => { p.params.query.times[0].start = '2026-13'; });
+  groupedCase('duplicate-dim-values', p => { p.params.query.dimensions[0].dim_value_list = ['A','A']; });
+  groupedCase('dimension-mismatch', p => { p.params.query.dimensions[0].dim_name = 'other'; });
+  groupedCase('retired-endpoint-form', p => {
+    p.dataSources.current.source.query.body.dsl_list[0].filter.time = {
+      period: 'month', is_aggregate: true,
+      start: {param: 'report-period', part: 'start'}, end: {param: 'report-period', part: 'end'}
+    };
+  });
+  groupedCase('reference-with-literal-range', p => { p.dataSources.current.source.query.body.dsl_list[0].filter.time.start = '2026-01'; });
+  groupedCase('window-precision-mismatch', p => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.window = {kind:'lastN',unit:'day',n:7}; });
+  groupedCase('window-on-range', p => { p.dataSources.rolling.source.query.body.dsl_list[0].filter.time.param = 'report-period'; });
+  groupedCase('display-input-in-query', p => {
+    p.params.display = [{id:'note', type:'string', value:'中国地区部'}];
+    p.dataSources.current.source.query.body.dsl_list[0].filter.dims[0].dim_value_list = {param:'note'};
+  });
   groupedCase('uncontrolled-reference', p => { p.dataSources.current.source.query.body.dsl_list[0].output_dims = [{param:'region'}]; });
   groupedCase('filter-conflict', p => { p.dataSources.current.source.query.filterBindings = {other:{target:'time'}}; });
   outputs.set('page/conformance/grouped-params.json', json({cases: groupedCases}));

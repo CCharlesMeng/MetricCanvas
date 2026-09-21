@@ -73,10 +73,17 @@ export const pageCapabilities = {
   },
   'named-to-date-windows': {
     minor: 4, description: '具名年初/月初至报告基准期窗口',
-    usedAt: (document) => dataSourcePaths(document, d =>
-      Object.values(record(record(record(d.source)?.query)?.paramBindings) ?? {}).some(b =>
-        ['yearToDate', 'monthToDate'].includes(String(record(record(b)?.window)?.kind))
-      )).map(p => `${p}/source/query/paramBindings`)
+    // 窗口有两个落点:旧参数绑定,和 6.6 的查询时间引用。只探一处会让
+    // 后者按 minor 推算出偏低的版本下限。
+    usedAt: (document) => [
+      ...dataSourcePaths(document, d =>
+        Object.values(record(record(record(d.source)?.query)?.paramBindings) ?? {}).some(b =>
+          ['yearToDate', 'monthToDate'].includes(String(record(record(b)?.window)?.kind))
+        )).map(p => `${p}/source/query/paramBindings`),
+      ...dataSourcePaths(document, d =>
+        ['yearToDate', 'monthToDate'].includes(String(record(queryTimeReference(d)?.window)?.kind))
+      ).map(p => `${p}/source/query/body/dsl_list/0/filter/time/window`)
+    ]
   },
   'time-params': {
     minor: 3, description: '确定性日期/月参数与查询时间窗口绑定',
@@ -574,6 +581,14 @@ function nonEmptyArray(value: unknown): boolean {
 
 function props(component: Json): Json | undefined {
   return record(component.props);
+}
+
+/** 6.6 起时间引用连同窗口写在查询体里；未用引用形状时为 undefined。 */
+function queryTimeReference(dataSource: Json): Json | undefined {
+  const body = record(record(record(dataSource.source)?.query)?.body);
+  const first = Array.isArray(body?.dsl_list) ? record(body.dsl_list[0]) : undefined;
+  const time = record(record(first?.filter)?.time);
+  return typeof time?.param === 'string' ? time : undefined;
 }
 
 function dataSourcePaths(

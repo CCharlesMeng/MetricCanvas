@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 87 份 ADR（0001–0087）：现行 80、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 88 份 ADR（0001–0088）：现行 81、提议中 4、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -105,6 +105,7 @@
 | [0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 各有自己的查询绑定目标 | 现行；补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交付页面协议 6.9 |
 | [0086](./0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游执行排序与表头筛选 | 现行；解除 ADR-0049 查询分页与排序/表头筛选的互斥；排序编码待真实环境复验 |
 | [0087](./0087-in-page-detail-overlay-as-a-third-component-action.md) | 页内详情浮层作为第三支组件动作 | 现行；组件动作闭集从两支扩到三支；交付页面协议 6.10 |
+| [0088](./0088-orthogonal-page-parameters-window-on-the-reference-and-layers-by-purpose.md) | 页面参数正交化：窗口挂在引用上，参数按消费位置分层 | 现行；就地改写 6.6 的 params 形状——window 挪到查询侧时间引用，params 按消费位置分层；不另开次版本 |
 
 <!-- adr-index:end -->
 
@@ -128,6 +129,6 @@
 | [未决事项](./topics/open-questions.md) | 已登记但尚未裁决的问题，以及在裁决前不得做的事。**这里记的是没定的事，不要当成结论读。** | 0015 0024 0025 0030 0032 0033 0034 0037 0043 0044 0045 0046 0048 0060 0063 |
 | [编号与历史记录说明](./topics/numbering-and-history.md) | 编号冲突重编、纯清理类 ADR、已被替换的历史实现描述，以及本基线自身的整理记录。 | 0068 |
 
-**结论尚未落进任何主题页：** [0087](./0087-in-page-detail-overlay-as-a-third-component-action.md)。新 ADR 落盘后要把结论并进对应主题页，这一行才会消失。
+**结论尚未落进任何主题页：** [0087](./0087-in-page-detail-overlay-as-a-third-component-action.md)、[0088](./0088-orthogonal-page-parameters-window-on-the-reference-and-layers-by-purpose.md)。新 ADR 落盘后要把结论并进对应主题页，这一行才会消失。
 
 <!-- adr-topics:end -->

@@ -25,9 +25,8 @@ export function resolvePageParams(
         const entries = query.getAll(declaration.id);
         if (declaration.type === 'dimension') value = entries;
         else if (entries.length !== 1) value = undefined;
-        else if (declaration.type === 'timeRange') {
-          try { value = JSON.parse(entries[0]); } catch { value = undefined; }
-        } else value = parseParamValue(entries[0], declaration);
+        else if (declaration.type === 'timeRange') value = parseTimeRange(entries[0]);
+        else value = parseParamValue(entries[0], declaration);
       }
       if (matchesParamDeclaration(value, declaration)) values.set(declaration.id, value);
       else if (value !== undefined || query.has(declaration.id) || declaration.required) missing.push(declaration.id);
@@ -70,8 +69,16 @@ export function pageParamSearch(values: PageParamValues): string {
   return query.toString();
 }
 
+/** 时间区间在 URL 里是纯文本:单点写 `2026-03`,区间写 `2026-01..2026-06`。 */
 export function serializePageParam(value: PageParamValue): string {
-  return typeof value === 'object' && !Array.isArray(value) ? JSON.stringify(value) : String(value);
+  if (typeof value !== 'object' || Array.isArray(value)) return String(value);
+  return value.start === value.end ? value.start : `${value.start}..${value.end}`;
+}
+
+function parseTimeRange(raw: string): PageParamValue | undefined {
+  const parts = raw.split('..');
+  if (parts.length === 1) return { start: parts[0], end: parts[0] };
+  return parts.length === 2 ? { start: parts[0], end: parts[1] } : undefined;
 }
 
 function parseParamValue(

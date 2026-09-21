@@ -23,12 +23,12 @@
 
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
-## 6.6 分组参数与多个时间区间
+## 6.6 分层参数与查询侧时间窗口
 
-params 增加对象分支：dimensions、times、scalars 均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；scalars 每项为 id、type 与可选 value。所有组的 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
+params 增加对象分支，按消费位置分两层：params.query.{dimensions,times} 落进 DQE 请求体，params.display 只被文本取值与导航消费。三个数组均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；display 每项为 id、type 与可选 value。两层 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
 
-维度统一非空去重字符串数组。时间精度 month/date，校验真实日历及起止顺序。多个 times 是独立输入，查询显式按 ID 选择；period 与 is_aggregate 留在查询侧。未填值模板允许校验与保存，但必需输入不全不能执行。
+维度统一非空去重字符串数组。时间精度 month/date，校验真实日历及起止顺序。一个 times 项就是一个包含区间，单点写成 start 与 end 相同；多个 times 是独立输入，查询显式按 ID 选择；period 与 is_aggregate 留在查询侧。未填值模板允许校验与保存，但必需输入不全不能执行。
 
-原位引用限于 DQE filter.dims[].dim_value_list 的 {param:id} 和 filter.time.start/end 的 {param:id,part:start/end}。时间两端同源、精度兼容，维度 dim_name 匹配声明；禁止与筛选/旧参数绑定双控或引用其他请求位置。执行前在副本解析，带引用的查询不消费未经核验的 initial 旧行。
+原位引用限于 DQE filter.dims[].dim_value_list 的 {param:id} 和 filter.time 的 {period,is_aggregate?,param,window?}。时间引用不写 window 时原样取参数起止，写 window 时以参数值为基准点派生，此时被引用输入必须是单点——已填值的在声明期判，未填值模板留到取值代入时报。window 的取值与语义同上一节，单位须与输入精度相容。引用的参数必须声明在 params.query 下；引用不得与筛选/旧参数绑定双控、不得与查询体字面量起止并存、不得出现在其他请求位置。执行前在副本解析，带引用的查询不消费未经核验的 initial 旧行。
 
-文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度重复键、时间值用编码后的 {start,end} JSON；未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分组改写为数组。
+文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度用重复键；时间是纯文本，单点写 2026-03，区间写 2026-01..2026-06，未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分层结构改写为数组。

@@ -22,7 +22,7 @@
 
 新文档写6.6和layout；6.0的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.dimensions/times/scalars` 分组声明：多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达。新结构规则见[分组参数](PAGE-PARAMETERS.md#66-分组参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/plan/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
+页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#66-分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/plan/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 

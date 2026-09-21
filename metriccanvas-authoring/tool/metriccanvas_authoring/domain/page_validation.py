@@ -286,8 +286,11 @@ def _page_param_issues(value: Mapping[str, Any]) -> list[PageContractIssue]:
         by_id[param_id] = declaration
         if param_id in filter_ids:
             issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/id", "page parameter duplicates filter id"))
-        if "default" in declaration and not _matches_param_default(declaration):
-            issues.append(PageContractIssue("SCHEMA_ERROR", path if "path" in declaration else f"{path}/default", "page parameter default type mismatch"))
+        # 实际值报在声明本身，默认值报在 /default —— 与 TS 侧两条判定一一对应。
+        if "value" in declaration and not _matches_param_value(declaration, declaration["value"]):
+            issues.append(PageContractIssue("SCHEMA_ERROR", path, "page parameter value type mismatch"))
+        if "default" in declaration and not _matches_param_value(declaration, declaration["default"]):
+            issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/default", "page parameter default type mismatch"))
 
     consumed: set[str] = set()
     def query_consumers(node):
@@ -2236,8 +2239,7 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
     return issues
 
 
-def _matches_param_default(declaration: Mapping[str, Any]) -> bool:
-    value = declaration.get("default")
+def _matches_param_value(declaration: Mapping[str, Any], value: Any) -> bool:
     if declaration["type"] == "timeRange":
         return isinstance(value, Mapping) and set(value) == {"start", "end"} and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
     if declaration["type"] == "time":
