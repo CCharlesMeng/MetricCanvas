@@ -142,7 +142,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
 
             contents = await client.read_resource("metriccanvas://bundle-info")
             info = json.loads(contents[0].text)
-            self.assertEqual(info["bundleVersion"], "0.2.0")
+            self.assertEqual(info["bundleVersion"], "0.3.0")
             self.assertEqual(info["transport"], "stdio")
 
     async def test_discovery_exposes_governed_details_and_term_resolution(
@@ -416,9 +416,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
         from metriccanvas_authoring.application.build_page import (  # noqa: PLC0415
             BuildPageDependencies,
         )
-        from metriccanvas_authoring.application.ports import (  # noqa: PLC0415
-            SavedRevision,
-        )
+        from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: PLC0415
 
         class DqeFailure(Exception):
             def __init__(self, code: str) -> None:

@@ -3,7 +3,7 @@ from copy import deepcopy
 from typing import Any
 
 from metriccanvas_authoring.domain.page_building import (
-    ExecutableUnit, UnitScope, PageBuildingIssue, _component_for,
+    ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component,
 )
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 from metriccanvas_authoring.domain.page_validation import _resolved_fields
@@ -167,7 +167,7 @@ def change_component_type(page, op):
     execution = DqeExecutionResult(rows=evidence["rows"], total_count=evidence.get("totalCount"))
     unit = ExecutableUnit(source_id, None, field_map, {}, "detail", op["componentType"], UnitScope("", (), "", "", ()), ())
     try:
-        built = _component_for(unit, execution, 0)
+        built = build_data_component(unit, execution, 0)
     except PageBuildingIssue:
         raise EditFailure("COMPONENT_SHAPE_MISMATCH", "/componentType") from None
     # Retain all universally meaningful display values and original binding formats.

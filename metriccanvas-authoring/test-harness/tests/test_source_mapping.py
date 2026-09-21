@@ -14,7 +14,7 @@ from metriccanvas_authoring.domain.source_mapping import map_source_description,
 from metriccanvas_authoring.domain.page_building import derive_executable_units
 from metriccanvas_authoring.domain.data_context import parse_data_context
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies, ComposePageCommand, create_compose_page
-from metriccanvas_authoring.application.ports import DqeExecutionResult
+from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
 
 def fixture(name): return json.loads((ROOT / 'test-harness/fixtures' / name).read_text())
@@ -150,7 +150,7 @@ class SourceMappingTest(unittest.IsolatedAsyncioTestCase):
         execution = DqeExecutionResult(rows=[{'区域': 'East', 'actual_amount': 0.42}], captured_at='2026-09-15T00:00:00Z')
         deps = ComposePageDependencies(FakeDataContextPort(fixture('data-context.json')), FakeDqeExecutionPort(execution),
                                        descriptor, Turns().binding, True)
-        with patch('metriccanvas_authoring.application.compose_page.derive_executable_units', return_value=[aliased_unit]):
+        with patch('metriccanvas_authoring.data.query.derive_executable_units', return_value=[aliased_unit]):
             result = await create_compose_page(deps)(ComposePageCommand('test-page', self.spec))
             self.assertTrue(result.ok, result.issues)
             source = result.artifact.document['dataSources']['result']

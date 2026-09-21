@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "metriccanvas-authoring"
-version = "0.2.0"
+version = "0.3.0"
 description = "Deterministic MetricCanvas authoring MCP tool"
 requires-python = ">=3.12"
 dependencies = [
@@ -18,7 +18,8 @@ dependencies = [
 [project.scripts]
 metriccanvas-authoring = "metriccanvas_authoring.server:main"
 metriccanvas-content = "metriccanvas_authoring.content_server:main"
-metriccanvas-platform-content = "metriccanvas_authoring.unified_content_server:main"
+metriccanvas-platform-content = "metriccanvas_authoring.platform_server:main"
+metriccanvas-platform-content-v1 = "metriccanvas_authoring.unified_content_server:main"
 metriccanvas-lifecycle = "metriccanvas_authoring.lifecycle_server:main"
 
 [tool.hatch.build.targets.wheel]
@@ -28,9 +29,12 @@ packages = ["metriccanvas_authoring"]
 include = [
   "/metriccanvas_authoring",
   "/pyproject.toml",
+  "/hatch_build.py",
 ]
 
 [tool.hatch.build.targets.sdist.force-include]
+"../contracts" = "metriccanvas_authoring/_bundle/contracts"
+"../contract-snapshot" = "metriccanvas_authoring/_bundle/contract-snapshot"
 "../contract-snapshot/page/map-regions.json" = "metriccanvas_authoring/_bundle/contract-snapshot/page/map-regions.json"
 "../bundle.json" = "metriccanvas_authoring/_bundle/bundle.json"
 "../contract-lock.json" = "metriccanvas_authoring/_bundle/contract-lock.json"
@@ -48,3 +52,6 @@ include = [
 "../contracts/authored/authoring-candidate.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-candidate.schema.json"
 "../contracts/authored/source-description.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json"
 "../contracts/authored/add-data-component.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/add-data-component.schema.json"
+
+[tool.hatch.build.hooks.custom]
+path = "hatch_build.py"

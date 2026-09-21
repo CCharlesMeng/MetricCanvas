@@ -1,4 +1,8 @@
-"""Closed, host-owned dependency selection; never imports or opens manifest input.
+"""Compatibility v1 deployment selection for immutable candidate consumers.
+
+Target v2 uses platform_server.create_platform_server and single_save capability.
+This v1 manifest must not be used as a v2 readiness gate.
+Closed, host-owned dependency selection; never imports or opens manifest input.
 
 The host verifies source digests before constructing registrations. Assembly compares
 those facts; a digest supplied by the manifest is not code authorization. The slots select

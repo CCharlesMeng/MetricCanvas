@@ -30,6 +30,11 @@ class UnifiedCompositionTest(unittest.IsolatedAsyncioTestCase):
             tools = {tool.name: tool for tool in await client.list_tools()}
             self.assertEqual(len(tools), 5)
             schema = tools['create_content_page'].inputSchema['properties']['request']
+            self.assertEqual(len(schema['oneOf']), 2)
+            plan_schema = schema['oneOf'][1]
+            self.assertEqual(plan_schema['required'], ['plan'])
+            self.assertFalse(plan_schema['additionalProperties'])
+            schema = schema['oneOf'][0]
             operations = schema['properties']['operations']
             self.assertEqual({op['properties']['type']['const'] for op in operations['items']['oneOf']}, CREATION_OPERATIONS)
             self.assertEqual(operations['maxItems'], 50)

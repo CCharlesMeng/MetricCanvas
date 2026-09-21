@@ -42,10 +42,11 @@ class ScriptedTransport:
 
 class HttpTransport:
     evidence_kind = 'real-model-local-fixture'
-    def __init__(self, configuration, token_budget=600000, client_factory=None):
+    def __init__(self, configuration, token_budget=600000, client_factory=None, message_auditor=audit_messages):
         if not 4096 <= token_budget <= 600000: raise ValueError('Invalid token budget')
         self.configuration=configuration; self.token_budget=token_budget; self.tokens=0; self.calls=0
         self.client_factory=client_factory
+        self.message_auditor=message_auditor
     def begin_turn(self): pass
     def prepare_request(self, request):
         return {'model':self.configuration['DEEPSEEK_MODEL'],**PARAMS,'messages':request['messages'],'tools':request['tools']}
@@ -55,7 +56,7 @@ class HttpTransport:
         payload=request
         if payload.get('model')!=cfg['DEEPSEEK_MODEL'] or any(payload.get(k)!=v for k,v in PARAMS.items()):
             raise ValueError('Request was not prepared with frozen model parameters')
-        audit_messages(payload['messages'],cfg['DEEPSEEK_API_KEY'])
+        self.message_auditor(payload['messages'],cfg['DEEPSEEK_API_KEY'])
         reserve=len(json.dumps(payload,ensure_ascii=False).encode())+8192+PARAMS['max_tokens']
         if self.tokens+reserve>self.token_budget: raise RuntimeError('TOKEN_BUDGET_EXHAUSTED')
         factory=self.client_factory or httpx.AsyncClient

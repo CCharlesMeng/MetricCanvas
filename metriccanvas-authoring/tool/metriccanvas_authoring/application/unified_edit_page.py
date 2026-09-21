@@ -1,12 +1,15 @@
 """Unified async edit scheduler; data dependencies apply as one validated group."""
 from copy import deepcopy
 import json
-from jsonschema import Draft202012Validator
 
-from .compose_page import ComposePageCommand, create_compose_page
-from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA, edit_page_document
-from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
+from metriccanvas_authoring.data.query import create_query_data
+from metriccanvas_authoring.application.component_policy import apply_component_policy
+from metriccanvas_authoring.domain.page_building import build_query_source, build_data_component, PageBuildingIssue
+from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA, apply_page_operation
+from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.domain.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
+from metriccanvas_authoring.domain.page_structure import StructureError
 
 _ROOT = bundle_root() / 'contracts/authored'
 _SPEC = json.loads((_ROOT/'page-build-spec.schema.json').read_text())
@@ -29,7 +32,7 @@ _DATA['properties']['spec'] = _inline_spec(_SPEC)
 _DATA['properties']['spec']['properties']['units']['maxItems'] = 1
 UNIFIED_EDIT_SCHEMA = deepcopy(EDIT_SCHEMA)
 UNIFIED_EDIT_SCHEMA['properties']['operations']['items']['oneOf'].append(_DATA)
-_OPERATION = Draft202012Validator(UNIFIED_EDIT_SCHEMA['properties']['operations']['items'])
+UNIFIED_EDIT_SCHEMA['properties']['operations']['items']['oneOf'].extend(SECTION_OPERATIONS)
 
 
 def _issue(code, path=''):
@@ -43,14 +46,21 @@ async def _add_data(document, op, dependencies, evidence):
         return None, [_issue('COMPONENT_ID_CONFLICT')]
     position = op.get('position', len(sections[0]['components']))
     if position > len(sections[0]['components']): return None, [_issue('COMPONENT_POSITION_INVALID')]
-    built = await create_compose_page(dependencies)(ComposePageCommand(document['id'], op['spec']))
-    if not built.ok or built.artifact is None:
+    base = op['spec'].get('baseRevision')
+    if isinstance(base, dict) and base.get('pageId') != document['id']:
+        return None, [_issue('BASE_REVISION_PAGE_ID_MISMATCH', '/baseRevision/pageId')]
+    built = await create_query_data(dependencies)(op['spec'])
+    if not built.ok:
         return None, [_issue(i.code, i.path) for i in built.issues]
-    produced = built.artifact.document
-    components = [c for s in produced['sections'] for c in s['components'] if c['type'] != 'reportHeader']
-    if len(components) != 1: return None, [_issue('DATA_COMPONENT_COUNT_UNSUPPORTED')]
+    if len(built.units) != 1: return None, [_issue('DATA_COMPONENT_COUNT_UNSUPPORTED')]
+    try:
+        units = await apply_component_policy(built.units, built.executions, dependencies.component_policy, dependencies.authoring_scope)
+        component = build_data_component(units[0], built.executions[0], 0)
+    except PageBuildingIssue as error:
+        return None, [_issue(error.code, error.path)]
+    sources = {units[0].data_source_id: build_query_source(units[0], built.executions[0])}
     candidate = deepcopy(document)
-    for source_id, source in produced['dataSources'].items():
+    for source_id, source in sources.items():
         if source_id in candidate['dataSources']:
             existing = candidate['dataSources'][source_id]
             # Reuse only a proven identical query+field contract; never replace old rows.
@@ -59,52 +69,36 @@ async def _add_data(document, op, dependencies, evidence):
                     existing['source'].get('query') == source['source'].get('query'))
             if not same: return None, [_issue('DATA_SOURCE_CONFLICT')]
         else: candidate['dataSources'][source_id] = deepcopy(source)
-    component = deepcopy(components[0]); component['id'] = op['componentId']
+    component = deepcopy(component); component['id'] = op['componentId']
+    # A standalone addition retains the former single-unit full-row layout.
+    component['layout']['span'] = 12
     target = next(s for s in candidate['sections'] if s['id'] == op['sectionId'])
     target['components'].insert(position, component)
     errors = validate_page_document(candidate)
     if errors: return None, [_issue(e.type, e.path) for e in errors]
-    evidence.extend(deepcopy(built.artifact.source_descriptions))
+    evidence.extend(deepcopy(built.source_descriptions))
     return candidate, []
 
 
 async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current):
-    normalized = normalize_page_document(baseline)
-    if not normalized['ok']:
-        return {'status':'invalid_baseline','document':None,'operations':[], 'issues':[_issue('BASELINE_INVALID')]}
-    if (not isinstance(request, dict) or set(request) != {'operations'} or
-            not isinstance(request['operations'], list) or not 1 <= len(request['operations']) <= 50):
-        return {'status':'invalid_request','document':None,'operations':[], 'issues':[_issue('EDIT_REQUEST_INVALID')]}
-    operations = request['operations']
-    ids = [op.get('id') if isinstance(op, dict) else None for op in operations]
-    if any(not isinstance(i,str) or not 0 < len(i) <= 128 for i in ids) or len(set(ids)) != len(ids):
-        return {'status':'invalid_request','document':None,'operations':[], 'issues':[_issue('OPERATION_IDS_INVALID')]}
-    original = normalized['document']; document = deepcopy(original)
-    results, states = [], {}
+    from metriccanvas_authoring.pages.editing import operation_batch
+    batch = operation_batch(baseline, request, UNIFIED_EDIT_SCHEMA['properties']['operations']['items'])
+    result = None
     source_descriptions = []
-    for index, op in enumerate(operations):
+    while True:
         await current()
-        result = {'id':op['id'], 'status':'failed', 'issues':[], 'adjustments':[]}
-        if not _OPERATION.is_valid(op):
-            result['issues'] = [_issue('OPERATION_INVALID', f'/operations/{index}')]
-        elif any(states.get(dep) not in {'applied','unchanged'} for dep in op.get('dependsOn', [])):
-            result.update(status='skipped', issues=[_issue('DEPENDENCY_NOT_SUCCEEDED', f'/operations/{index}/dependsOn')])
-        elif op['type'] == 'add_data_component':
+        try:
+            document, op = batch.send(result)
+        except StopIteration as completed:
+            return {**completed.value, 'sourceDescriptions': source_descriptions}
+        if op['type'] == 'add_data_component':
             candidate, issues = await _add_data(document, op, dependencies, source_descriptions)
             await current()
-            result['issues'] = issues
-            if candidate is not None:
-                result['status'] = 'applied'; document = candidate
+            result = candidate, issues, []
+        elif op['type'] in SECTION_TYPES:
+            try:
+                result = edit_section(document, op), [], []
+            except StructureError as error:
+                result = None, [error.issue()], []
         else:
-            local = {k:v for k,v in op.items() if k != 'dependsOn'}
-            edited = edit_page_document(document, {'operations':[local]}, summary_enabled=summary_enabled)
-            if edited['operations']: result = edited['operations'][0]
-            else: result['issues'] = edited['issues']
-            if edited['document'] is not None: document = edited['document']
-        results.append(result); states[op['id']] = result['status']
-    changed = document != original
-    failed = any(r['status'] in {'failed','skipped'} for r in results)
-    status = ('partial' if failed else 'changed') if changed else ('failed' if all(r['status'] in {'failed','skipped'} for r in results) else 'unchanged')
-    if validate_page_document(document):
-        return {'status':'failed','document':None,'operations':[], 'issues':[_issue('EDIT_RESULT_INVALID')]}
-    return {'status':status, 'document':document if changed else None, 'operations':results, 'issues':[], 'sourceDescriptions':source_descriptions}
+            result = apply_page_operation(document, op, summary_enabled=summary_enabled)

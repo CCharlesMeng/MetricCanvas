@@ -134,10 +134,10 @@ class RelaySkillContractTest(unittest.TestCase):
         self.assertIn("retrySafe: false", body)
         self.assertIn("completedStages", body)
 
-    def test_skill_documents_executable_agent_core_and_rich_tool_contracts(self) -> None:
+    def test_skill_documents_executable_ask_rules_and_rich_tool_contracts(self) -> None:
         body = SKILL_PATH.read_text(encoding="utf-8")
         for fact in (
-            "domain/agent_core.py",
+            "ask/rules.py",
             "resolution.candidates[]",
             "resolution.selected[]",
             "resolution.ambiguities[]",
@@ -165,20 +165,26 @@ class RelaySkillContractTest(unittest.TestCase):
         self.assertIn("如果模型直接看到 `artifactEnvelope.artifact`", body)
 
 
-class UnifiedSkillContractTest(unittest.TestCase):
-    def test_examples_conform_to_actual_controlled_request_schema(self) -> None:
-        folder = BUNDLE_ROOT / "skill/metriccanvas-platform-authoring"
+class UnifiedSkillContractTest(unittest.IsolatedAsyncioTestCase):
+    async def test_examples_and_allowed_tools_match_actual_target_registration(self):
+        from fastmcp import Client
+        from metriccanvas_authoring.adapters.inbound.platform_mcp import create_platform_mcp_server
+        from metriccanvas_authoring.application.platform_authoring import PlatformAuthoring
+        from test_unified_content_mcp import dependencies
+        folder = BUNDLE_ROOT / 'skill/metriccanvas-platform-authoring'
         examples = [json.loads(value) for value in re.findall(
-            r"```json\n(.*?)\n```", (folder / "references/examples.md").read_text(), re.DOTALL)]
-        schema = json.loads((BUNDLE_ROOT / "contracts/authored/page-edit-request.schema.json").read_text())
-        self.assertEqual(len(examples), 2)
+            r'```json\n(.*?)\n```', (folder / 'references/examples.md').read_text(), re.DOTALL)]
+        async with Client(create_platform_mcp_server(PlatformAuthoring(dependencies(), None, None))) as client:
+            tools = {tool.name: tool for tool in await client.list_tools()}
+        frontmatter = yaml.safe_load((folder / 'SKILL.md').read_text().split('---', 2)[1])
+        self.assertEqual(set(frontmatter['allowed-tools']), set(tools))
+        self.assertEqual(frontmatter['metadata']['mcp_servers'], ['metriccanvas-platform-content'])
+        self.assertGreaterEqual(len(examples), 4)
         for example in examples:
-            self.assertEqual(list(Draft202012Validator(schema).iter_errors(example["request"])), [])
-        frontmatter = yaml.safe_load((folder / "SKILL.md").read_text().split("---", 2)[1])
-        self.assertEqual(set(frontmatter["allowed-tools"]), {
-            "read_page_context", "discover_data_context", "compose_page", "create_content_page", "edit_page"})
-        self.assertEqual(frontmatter["metadata"]["mcp_servers"], ["metriccanvas-platform-content"])
+            self.assertEqual(list(Draft202012Validator(tools[example['tool']].inputSchema).iter_errors(example['arguments'])), [])
+        old = yaml.safe_load((BUNDLE_ROOT / 'skill-compat/platform-authoring-v1/SKILL.md').read_text().split('---', 2)[1])
+        self.assertEqual(set(old['allowed-tools']), {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'})
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     unittest.main()

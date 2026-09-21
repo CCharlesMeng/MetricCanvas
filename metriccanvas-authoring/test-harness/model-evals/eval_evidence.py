@@ -24,6 +24,8 @@ def injection_paths(root, case, arm):
     if case['workflow'] == 'create' or case['expected'].get('operation') == 'set_page_layout':
         layout = case['expected'].get('layout', 'report')
         paths.append(folder/'references/layouts'/f'{layout}.md')
+    if case['workflow'] == 'create':
+        paths.append(folder/'references/scenarios.md')
     return paths
 
 

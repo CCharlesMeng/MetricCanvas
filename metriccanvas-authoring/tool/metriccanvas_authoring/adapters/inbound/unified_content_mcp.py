@@ -7,9 +7,10 @@ from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
-from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server, RESULT_SCHEMA
+from metriccanvas_authoring.adapters.inbound.content_mcp import RESULT_SCHEMA
+from metriccanvas_authoring.application.compose_content import compose_content
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
-from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, TurnBaselines, read_page_projection
+from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, read_page_projection
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
 from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.application.summary_capability import summary_configured
@@ -50,12 +51,14 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             if name == 'discover_data_context':
                 discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context,
                     business_interpretation=dependencies.business_interpretation))
-                found = await discover(DiscoverDataContextCommand(args['query'], args['limit']))
+                found = await discover(DiscoverDataContextCommand(**args))
                 await gate.unchanged(prepared)
                 payload = {'ok': found.ok, 'dataContextVersion': found.data_context_version,
                     'businessDomains': list(found.business_domains), 'matches': list(found.matches),
                     'resolution': found.resolution, 'time': found.time, 'intent': found.intent, 'structureOperation': found.structure_operation,
                     'issues': [{'code': issue.code, 'path': issue.path, 'stage': issue.stage} for issue in found.issues]}
+                if found.page_range is not None:
+                    payload['range'] = found.page_range
                 return ToolResult(content=payload, structured_content=payload)
             if name == 'create_content_page':
                 edited = await compose_unified_content(prepared.binding['pageId'], args['title'], args['layout'], args['request'],
@@ -76,17 +79,7 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             else:
                 output = None
             if output is None:
-                if name in {'compose_page', 'create_content_page'}:
-                    args['page_id'] = prepared.binding['pageId']
-                if name == 'edit_page': args['baseline_token'] = context_ref
-                # Existing content algorithms remain private, never registered as a bypass.
-                legacy = create_content_mcp_server(scoped_dependencies, TurnBaselines(prepared), summary_config=summary_config)
-                tool = await legacy.get_tool(name)
-                result = await tool.run(args)
-                if not write:
-                    await gate.unchanged(prepared)
-                    return result
-                output = deepcopy(result.structured_content)
+                output = await compose_content(scoped_dependencies, prepared.binding['pageId'], args['spec'], args['layout'])
                 envelope = output['artifactEnvelope']
                 document = envelope['artifact']['document'] if envelope else None
                 source_descriptions = envelope['artifact'].get('sourceDescriptions', []) if envelope else []
@@ -94,6 +87,8 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             record = None
             if document is not None:
                 record_operations = deepcopy(args.get('request', {}).get('operations', []))
+                if 'plan' in args.get('request', {}):
+                    record_operations.append({'type': 'structure_plan', 'plan': deepcopy(args['request']['plan'])})
                 if source_descriptions:
                     record_operations.append({'type': 'source_description_evidence', 'descriptors': deepcopy(source_descriptions)})
                 record = await candidates.put(prepared, document, record_operations, candidate_ref)
@@ -141,13 +136,23 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
             return failure(error)
 
     @mcp.tool
-    async def discover_data_context(context_ref: str, query: str, limit: Annotated[int, Field(ge=1, le=50)] = 10) -> ToolResult:
-        """Discover governed business data in the current trusted turn."""
-        return await invoke('discover_data_context', context_ref, {'query': query, 'limit': limit})
+    async def discover_data_context(context_ref: str, query: str = '', limit: Annotated[int, Field(ge=1, le=50)] = 10,
+                                    business_domain: str | None = None,
+                                    offset: Annotated[int, Field(ge=0)] = 0,
+                                    data_context_version: str | None = None) -> ToolResult:
+        """Search governed data, or enumerate metrics/dimensions with exact business_domain.
+        For domain pagination pass range.end as offset and the returned dataContextVersion.
+        This reads business metadata, not Skill references or files.
+        """
+        return await invoke('discover_data_context', context_ref, {'query': query, 'limit': limit,
+            'business_domain': business_domain, 'offset': offset, 'data_context_version': data_context_version})
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
     async def compose_page(context_ref: str, spec: PageBuildSpec, layout: Literal['report', 'dashboard'] = 'report') -> ToolResult:
-        """Compose a new page for the trusted new-page identity; never replace an existing baseline."""
+        """Quick query-driven assembly grouped by scope. For a business report with authored
+        sections and reusable data, use create_content_page request.plan instead.
+        Never replace an existing baseline.
+        """
         return await invoke('compose_page', context_ref, {'spec': spec, 'layout': layout}, write=True, mode='new')
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
@@ -155,7 +160,12 @@ def create_unified_content_mcp_server(dependencies, current_turns=None, *, summa
                                   layout: Literal['report', 'dashboard'] = 'report') -> ToolResult:
         """Create mixed governed data and static content on a new page.
 
-        Operations run in order with explicit dependencies. Target section main;
+        For full reports use request.plan: governed dataRequests plus explicit business
+        sections/blocks. Patterns are defaults; custom allows supported combinations.
+        Reuse a source across blocks without another query. Different scopes may share
+        a section. Field references use discovered names, not guessed IDs. First-phase
+        text is supplied explanation, not invented numerical analysis.
+        Legacy request.operations runs in order with dependencies. Target section main;
         page-header is protected. Set span/order with controlled layout/move
         operations. Explicit unsupported components fail; no source tokens or raw
         rows/query/page payloads. Independent success may produce a partial candidate.

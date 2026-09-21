@@ -1,41 +1,29 @@
-# 最小受控例子
+# v2 调用示例
 
-仅在参数结构需要例子时读取。以下 contextRef/组件 ID 都必须替换为当前可信上下文值。
+context_ref、resultRef 和 artifactRef 均来自当前可信上下文/工具；示例引用为占位值，不可直接复用。
 
-## 修改已知组件标题
-
-```json
-{
-  "context_ref": "trusted-context",
-  "request": {
-    "operations": [
-      {"id": "rename", "type": "set_title", "componentId": "sales", "title": "销售概览"}
-    ]
-  }
-}
-```
-
-只影响该标题。反例：为改标题先发现业务数据，或 compose_page 重建当前页。
-
-## 新建静态说明
+纯文本创建不取数：
 
 ```json
-{
-  "context_ref": "trusted-new-context",
-  "title": "说明",
-  "layout": "report",
-  "request": {
-    "operations": [
-      {"id": "intro", "type": "add_text", "componentId": "intro", "sectionId": "main", "body": "本页说明统计口径。"}
-    ]
-  }
-}
+{"tool":"compose_page","arguments":{"context_ref":"current-context","expected_version":0,"request":{"title":"说明","sources":{},"sections":[{"id":"main","title":"说明","pattern":"custom","blocks":[{"id":"note","type":"text","body":"本页说明操作流程。"}]}]}}}
 ```
 
-使用 create_content_page；静态正文不需数据发现。反例：因为标题有“AI”就创建运行时流式摘要。
+读取已取得的有界证据，不重复查询：
 
-## 配置问答与数据创建
+```json
+{"tool":"query_data","arguments":{"context_ref":"current-context","result_ref":"result-from-this-turn"}}
+```
 
-“这张图怎么配置”：用 read_page_context(context_ref, target_component_id) 按本轮目标稳定 ID 读取并回答绑定、格式及布局；省略项通过同修订cursor补读，不调用编辑或数据发现。
+纯标题修改不发现、不取数；版本先从 read_page_context 读取：
 
-“新建销售趋势页”：先发现受治理指标、时间和维度，消歧后用其版本构建 Page Build Spec 并调用 compose_page，显式传 layout。反例：把未验证字段或样例数据塞入页面 JSON。
+```json
+{"tool":"edit_page","arguments":{"context_ref":"current-context","expected_version":1,"request":{"operations":[{"id":"rename","type":"set_title","componentId":"table","title":"区域明细"}]}}}
+```
+
+保存成功后只准备匹配产物的预览：
+
+```json
+{"tool":"page_metadata_emit_preview","arguments":{"context_ref":"current-context","artifact_ref":"artifact-from-save-result"}}
+```
+
+首批足够就 compose；需要补查时 query_data(request) 的 reason 说明缺口和改变的条件。若辅助查询失败，结构中保留缺失说明并报告 partial；核心证据不足不生成核心结论。保存未知停止，不能换参数重复 compose。

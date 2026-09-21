@@ -8,7 +8,7 @@ from pathlib import Path
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 from metriccanvas_authoring.domain.page_building import (  # noqa: E402
-    ExecutableUnit, UnitScope, PageBuildingIssue, _component_for,
+    ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component,
 )
 from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
 from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
@@ -31,7 +31,7 @@ class ComponentBuildingConformanceTest(unittest.TestCase):
                     )
                     execution = DqeExecutionResult(rows=case["rows"], total_count=case.get("totalCount"))
                     if accepted:
-                        built = _component_for(unit, execution, 0)
+                        built = build_data_component(unit, execution, 0)
                         self.assertEqual(built["type"], case["type"])
                         self.assertEqual(built["props"], case["expectedProps"])
                         for layout in ("report", "dashboard"):
@@ -50,4 +50,4 @@ class ComponentBuildingConformanceTest(unittest.TestCase):
                             self.assertEqual(validate_page_document(page), [], layout)
                     else:
                         with self.assertRaises(PageBuildingIssue):
-                            _component_for(unit, execution, 0)
+                            build_data_component(unit, execution, 0)

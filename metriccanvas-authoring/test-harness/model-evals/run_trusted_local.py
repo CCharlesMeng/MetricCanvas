@@ -72,7 +72,7 @@ def reject_program_evidence(value):
 def model_view(output, name=None):
     if 'modelSummary' in output:
         safe=output['modelSummary']
-    elif name=='discover_data_context' and {'ok','matches','dataContextVersion'} <= output.keys() and set(output) <= {'ok','dataContextVersion','businessDomains','matches','resolution','time','intent','structureOperation','issues'}:
+    elif name=='discover_data_context' and {'ok','matches','dataContextVersion'} <= output.keys() and set(output) <= {'ok','dataContextVersion','businessDomains','matches','resolution','time','intent','structureOperation','issues','range'}:
         safe=output
     elif name=='read_page_context' and output.get('ok') is True and output.get('view') in ['root','candidate']:
         safe=output  # Production bounded read_page_context projection.

@@ -1,0 +1,13 @@
+{
+  "version": "1",
+  "scenes": ["business-report", "usage-report", "custom"],
+  "patterns": {
+    "overview-with-trend": {"description": "概况卡后接趋势；按实际内容裁剪", "metricSpan": 4, "defaultSpan": 12},
+    "comparison": {"description": "两个或多个独立对照内容，非隐式合并计算", "metricSpan": 6, "defaultSpan": 6},
+    "distribution": {"description": "结构、排名及相邻说明", "metricSpan": 6, "defaultSpan": 6},
+    "focus-objects": {"description": "重点对象说明、排名和明细", "metricSpan": 6, "defaultSpan": 6},
+    "detail": {"description": "通栏明细核对", "metricSpan": 12, "defaultSpan": 12},
+    "explanation": {"description": "口径、范围、已有受信结论", "metricSpan": 12, "defaultSpan": 12},
+    "custom": {"description": "受控组件自由组合，显式宽度优先", "metricSpan": 4, "defaultSpan": 12}
+  }
+}

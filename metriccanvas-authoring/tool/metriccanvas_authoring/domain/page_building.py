@@ -165,6 +165,21 @@ def _component_title(
     return visible_title if marker in visible_title else f"{visible_title}{marker}"
 
 
+def build_query_source(unit: ExecutableUnit, execution: DqeExecutionResult) -> dict[str, Any]:
+    """Project an executed unit to a source, retaining preview rows when available."""
+    source: dict[str, Any] = {
+        "type": "query",
+        "query": {"language": "dqe", "body": unit.query_body},
+    }
+    if execution.captured_at is not None:
+        source["initial"] = {
+            "capturedAt": execution.captured_at,
+            "rows": [dict(row) for row in execution.sample_rows],
+            "totalCount": execution.effective_total_count,
+        }
+    return {"fields": unit.fields, "source": source}
+
+
 def assemble_page_document(
     *,
     page_id: str,
@@ -180,22 +195,9 @@ def assemble_page_document(
     for unit_index, (unit, execution) in enumerate(
         zip(units, executions, strict=True)
     ):
-        source: dict[str, Any] = {
-            "type": "query",
-            "query": {"language": "dqe", "body": unit.query_body},
-        }
-        if execution.captured_at is not None:
-            source["initial"] = {
-                "capturedAt": execution.captured_at,
-                "rows": [dict(row) for row in execution.sample_rows],
-                "totalCount": execution.effective_total_count,
-            }
-        data_sources[unit.data_source_id] = {
-            "fields": unit.fields,
-            "source": source,
-        }
+        data_sources[unit.data_source_id] = build_query_source(unit, execution)
         try:
-            components.append(_component_for(unit, execution, unit_index))
+            components.append(build_data_component(unit, execution, unit_index))
         except PageBuildingIssue as issue:
             issues.append(issue)
 
@@ -407,7 +409,7 @@ def _output_metric(
     return {"formula": str(metric["expression"]), "alias": str(metric["label"])}
 
 
-def _component_for(
+def build_data_component(
     unit: ExecutableUnit,
     execution: DqeExecutionResult,
     unit_index: int,

@@ -2,7 +2,7 @@
 from copy import deepcopy
 from metriccanvas_authoring.domain.component_editing import EditFailure, walk_components
 from metriccanvas_authoring.domain.text_map_building import _target_section, _component, _source, remove_component
-from metriccanvas_authoring.domain.page_building import ExecutableUnit, UnitScope, PageBuildingIssue, _component_for
+from metriccanvas_authoring.domain.page_building import ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
 COMPOSITE_TYPES = {'metricCard', 'pieChart', 'gauge', 'keyValuePanel', 'categoryBreakdown'}
@@ -20,7 +20,7 @@ def _children(page, recipes, allowed):
         fields, rows, total = _source(page, recipe['dataSourceId'])
         unit = ExecutableUnit(recipe['dataSourceId'], None, fields, {}, 'detail', recipe['componentType'], UnitScope('', (), '', '', ()), ())
         try:
-            component = _component_for(unit, DqeExecutionResult(rows=rows,total_count=total), 0)
+            component = build_data_component(unit, DqeExecutionResult(rows=rows,total_count=total), 0)
         except PageBuildingIssue:
             raise EditFailure('CONTAINER_CHILD_SHAPE_MISMATCH', '/children') from None
         component['id'] = recipe['componentId']

@@ -1,9 +1,9 @@
-# 创建页面
+# 新建页面
 
-1. 确认用户要新建或另建，以及可信程序分配、mode=new 的 contextRef。已有页追加转本 Skill 的[修改流程](edit.md)。
-2. 按用户明确选择使用 report/dashboard；阅读分析报告采用 [report](../references/layouts/report.md)，持续监控采用 [dashboard](../references/layouts/dashboard.md)。用途不明确则澄清；说明选择并始终显式传 layout。
-3. 数据页面：discover_data_context(context_ref, query) 核对业务域、指标/维度、口径、时间及 dataContextVersion。消歧完成后把取数单元交 compose_page(context_ref, spec, layout)。缺能力说明缺口，不造字段、查询或数据行。
-4. 完整组合或静态正文：create_content_page(context_ref, title, request, layout) 接收受控操作数组。用 add_data_component 添加单单元数据图表，用 add_text 等添加正文，用 set_component_layout/move_component 明确占位和顺序；目标为 main，自动 page-header 不可修改。静态 text 不需发现；字段型内容须引用该候选中真实存在的源/字段，不能提交 source_token 或伪造数据。具体支持面见[工具约定](../references/tools.md)。
-5. 普通摘要用 text；只有用户明确要求运行时流式摘要，且 prompt/relatedData 与部署 AiSummaryConfig 齐备时才用 aiSummary。标题含“AI”不决定组件类型。
-6. 混合内容可在一个 create_content_page 请求中完成，依赖前序操作用 dependsOn；数据失败时独立正文仍可成功，依赖项跳过。如需先核实生成的字段ID，先取得数据候选，再用 read_page_context/ edit_page 与 candidate_ref 补充内容。模型只传引用与受控操作，完整页面由程序保留。
-7. 以 modelSummary 和真实交接结果结束：生成、部分成功、失败分别说明，未完成项明确。生成产物不等于已保存。
+可信上下文 mode=new 才新建。纯文本页面直接 compose_page，sources={}，不发现、不取数。
+
+数据页面先按[数据分析](data-analysis.md)审核计划并取得结果引用。随后 compose_page(request)：title、layout、sources（页面源 ID 到 resultRef）、sections。同一来源可支持多块内容，章节按阅读问题组织；参考[场景](../references/scenarios.md)。数据块的字段只引用工具证据，不能猜字段或造数据。
+
+检查生成 status、operations 与 saveStatus。合法 partial 会内部保存，明确未完成项；核心结论仍须有证据。最多一次定向修复，受程序共享预算约束；先读取 workVersion，使用 edit_page 修复当前工作稿，不重新创建整页。
+
+已保存则按主 Skill 调用匹配 artifactRef 的预览工具并原样输出两个标记。保存未知、冲突或被拒绝时停止；完整产物由程序保留，模型不调用独立保存工具。

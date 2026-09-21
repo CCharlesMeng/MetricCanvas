@@ -59,6 +59,8 @@ def _inline_local_refs(value: Any, root: dict[str, Any]) -> Any:
 RUNTIME_PAGE_BUILD_SPEC_SCHEMA = _inline_local_refs(
     PAGE_BUILD_SPEC_SCHEMA, PAGE_BUILD_SPEC_SCHEMA
 )
+RUNTIME_PAGE_BUILD_SPEC_SCHEMA['properties']['units']['items']['properties']['intent']['enum'] = json.loads(
+    (BUNDLE_ROOT / 'contracts/exported/analysis-intents.json').read_text())['intents']
 # The Tool advertises the authored contract, while the application validator
 # remains the enforcement point so failures keep stable MetricCanvas code/path.
 PageBuildSpec = Annotated[

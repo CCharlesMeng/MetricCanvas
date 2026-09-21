@@ -48,7 +48,7 @@ const authoredAgentConformance = path.join(
   authoringContractRoot,
   'authored/agent-conformance.schema.json'
 );
-const authoringContractVersion = '0.2.0';
+const authoringContractVersion = '0.3.0';
 const snapshotRoot = path.join(bundleRoot, 'contract-snapshot');
 // 旧接口仅供退场中的客户端对照；提供方新接口以 #105 为准。
 const legacyContractRoot = path.join(repoRoot, 'tools/fixtures/legacy-contracts');
@@ -349,7 +349,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
-        ...await Promise.all(['publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
+        ...await Promise.all(['platform-v2-protocol.md', 'publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json', 'section-patterns.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },
@@ -482,7 +482,8 @@ async function buildSkillProjections(productOutputs: OutputMap): Promise<Array<{
         entry.entrypoint !== `skill/${entry.id}/SKILL.md` || seen.has(entry.id)) throw new Error('Invalid or duplicate Skill entry');
     if (entry.id === 'metriccanvas-platform-authoring' &&
         (entry.mcpServer !== 'metriccanvas-platform-content' ||
-         bundle.toolServices?.['metriccanvas-platform-content']?.module !== 'metriccanvas_authoring.unified_content_server')) {
+         bundle.toolServices?.['metriccanvas-platform-content']?.module !== 'metriccanvas_authoring.platform_server' ||
+         bundle.toolServices?.['metriccanvas-platform-content']?.platformProtocolVersion !== '2.0')) {
       throw new Error('Unified Platform deployment requires gated content service');
     }
     seen.add(entry.id);

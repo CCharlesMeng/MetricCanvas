@@ -6,7 +6,7 @@ from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
-from metriccanvas_authoring.application.ports import DataContextError, DataContextPort
+from metriccanvas_authoring.data.ports import DataContextError, DataContextPort
 from metriccanvas_authoring.application.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
 from metriccanvas_authoring.domain.business_terms import (
     MetricTermResolution,
@@ -25,6 +25,9 @@ def _utc_now() -> datetime:
 class DiscoverDataContextCommand:
     query: str
     limit: int = 10
+    business_domain: str | None = None
+    offset: int = 0
+    data_context_version: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -53,6 +56,7 @@ class DiscoverDataContextResult:
     intent: str | None = None
     structure_operation: str | None = None
     issues: tuple[DiscoverDataContextIssue, ...] = ()
+    page_range: Mapping[str, int] | None = None
 
 
 DiscoverDataContext = Callable[
@@ -99,6 +103,19 @@ def create_discover_data_context(
             dimension_entries=data_context.dimension_entries,
             now=current_time,
         )
+        if command.business_domain is not None:
+            if command.offset and command.data_context_version != data_context.version:
+                return DiscoverDataContextResult(ok=False, issues=(DiscoverDataContextIssue('DATA_CONTEXT_VERSION_CHANGED', '', 'Continue the same snapshot version'),))
+            schemas = {(c.match.get('environmentId'), c.match.get('schemaId')) for c in data_context.search_candidates
+                       if c.match.get('kind') == 'schema' and c.match.get('name') == command.business_domain}
+            if not schemas:
+                return DiscoverDataContextResult(ok=False, issues=(DiscoverDataContextIssue('BUSINESS_DOMAIN_NOT_FOUND', '', command.business_domain),))
+            entries = [c.match for c in data_context.search_candidates if c.match.get('kind') in {'metric', 'field'}
+                       and (c.match.get('environmentId'), c.match.get('schemaId')) in schemas]
+            end = min(command.offset + command.limit, len(entries))
+            return DiscoverDataContextResult(ok=True, data_context_version=data_context.version,
+                business_domains=business_domains, matches=tuple(entries[command.offset:end]),
+                page_range={'offset': command.offset, 'end': end, 'total': len(entries)})
         matches = data_context.search(command.query, command.limit)
         if not matches:
             matches = _fallback_sentence_search(

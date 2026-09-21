@@ -1,21 +1,19 @@
 """Independent content MCP; full artifacts stay on the trusted program channel."""
 from typing import Annotated, Any, Literal
-from dataclasses import replace
 
 from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
 from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
-from metriccanvas_authoring.application.compose_page import ComposePageCommand, ComposePageDependencies, create_compose_page
+from metriccanvas_authoring.application.compose_page import ComposePageDependencies
+from metriccanvas_authoring.application.compose_content import compose_content
 from metriccanvas_authoring.application.create_content_page import create_content_page as make_content_page
 from metriccanvas_authoring.application.content_ports import ContentBaselinePort
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextCommand, DiscoverDataContextDependencies, create_discover_data_context
-from metriccanvas_authoring.application.edit_page import create_edit_page, document_sha256
+from metriccanvas_authoring.application.edit_page import create_edit_page
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA
-from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
 
 PageEditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_SCHEMA)]
 RESULT_SCHEMA = {
@@ -28,7 +26,6 @@ RESULT_SCHEMA = {
 
 
 def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: ContentBaselinePort, *, summary_config=None) -> FastMCP:
-    compose = create_compose_page(dependencies)
     edit = create_edit_page(baselines, summary_config)
     create_content = make_content_page(baselines, summary_config)
     discover = create_discover_data_context(DiscoverDataContextDependencies(dependencies.data_context))
@@ -56,30 +53,8 @@ def create_content_mcp_server(dependencies: ComposePageDependencies, baselines: 
     @mcp.tool(output_schema=RESULT_SCHEMA)
     async def compose_page(page_id: str, spec: PageBuildSpec, layout: Literal["report", "dashboard"] = "report") -> ToolResult:
         """Create using existing discovery/DQE/building; return a save-free artifact."""
-        result = await compose(ComposePageCommand(page_id, spec))
-        if result.artifact is not None:
-            document = apply_creation_layout(result.artifact.document, layout)
-            errors = validate_page_document(document)
-            if errors:
-                summary = {"status": "failed", "issues": [{"code": e.type, "path": e.path} for e in errors]}
-                return ToolResult(content=summary, structured_content={"ok": False, "artifactEnvelope": None, "modelSummary": summary})
-            result = replace(result, artifact=replace(result.artifact, document=document, document_sha256=document_sha256(document)))
-        summary = {"status": "created" if result.ok else "failed",
-            "completedStages": list(result.completed_stages),
-            "issues": [{"code": i.code, "path": i.path, "stage": i.stage} for i in result.issues]}
-        envelope = None
-        if result.artifact is not None:
-            document = result.artifact.document
-            summary = {"status": "page_composed", "pageId": page_id,
-                "unitCount": len(spec["units"]),
-                "topLevelComponentCount": sum(len(s["components"]) for s in document["sections"]),
-                "dataContextVersion": result.artifact.data_context_version,
-                "bundleVersion": result.artifact.bundle_version,
-                "documentSha256": result.artifact.document_sha256}
-            envelope = {"kind": "metriccanvas.page-build-artifact", "formatVersion": "1.0",
-                "artifact": result.artifact.to_payload(), "modelSummary": summary}
-        output = {"ok": result.ok, "artifactEnvelope": envelope, "modelSummary": summary}
-        return ToolResult(content=summary, structured_content=output)
+        output = await compose_content(dependencies, page_id, spec, layout)
+        return ToolResult(content=output['modelSummary'], structured_content=output)
 
     @mcp.tool(output_schema=RESULT_SCHEMA)
     async def edit_page(baseline_token: str, request: PageEditRequest) -> ToolResult:
