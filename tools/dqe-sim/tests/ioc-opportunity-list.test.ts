@@ -2,7 +2,11 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import fixture from '../fixtures/ioc-opportunity-list.json';
 import { executeDqeItem } from '../src/execute';
-import { executeFixtureItem } from '../../../packages/embed/tests/dqe-fixture-endpoint.mjs';
+import {
+  DQE_EXECUTE_PATH,
+  executeFixtureItem
+} from '../../../packages/embed/tests/dqe-fixture-endpoint.mjs';
+import { DEFAULT_DQE_ENDPOINT } from '../../../packages/engine/data-gateway/src/dqe';
 import { parsePage } from '../../../packages/page/src';
 
 const page = JSON.parse(readFileSync('pages/ioc-opportunity-list.json', 'utf8'));
@@ -56,6 +60,11 @@ describe('DQE Sim 机会点清单', () => {
     );
     expect(result.code).toBe('DQE_SIM_UNSUPPORTED_QUERY');
     expect(result.retDesc).toContain('unsupported_dim');
+  });
+
+  // 宿主在 DQE 默认端点上应答，浏览器侧 createDqeGateway() 才能不写死路径。
+  it('嵌入测试宿主应答的路径就是网关的默认端点', () => {
+    expect(DQE_EXECUTE_PATH).toBe(DEFAULT_DQE_ENDPOINT);
   });
 
   it('嵌入测试宿主的纯 node 端点与本仿真对同一请求给出同一结果', () => {

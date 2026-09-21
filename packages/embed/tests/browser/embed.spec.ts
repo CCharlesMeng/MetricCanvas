@@ -66,9 +66,7 @@ async function runtimeShellSnapshot(page: Page) {
  * DQE 端点。函数体在页面里求值，因此走 addInitScript 注入而不是闭包捕获。
  */
 const INSTALL_IOC_GATEWAY = `window.iocGateway = function () {
-  return (window.__iocGateway ??= MetricCanvas.createDqeGateway({
-    endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
-  }));
+  return (window.__iocGateway ??= MetricCanvas.createDqeGateway());
 };`;
 
 test.beforeEach(async ({ page }) => {

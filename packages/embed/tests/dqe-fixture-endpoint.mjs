@@ -11,6 +11,12 @@ import { resolve } from 'node:path';
  * 两侧对同一请求给出相同结果由 `tools/dqe-sim/tests/embed-host-parity.test.ts` 钉住。
  */
 
+/**
+ * 与 `@metriccanvas/engine` 的 `DEFAULT_DQE_ENDPOINT` 同一个路径——宿主在
+ * 默认端点上同源应答，浏览器侧 `createDqeGateway()` 因此不必写死路径。
+ * 这里只能写字面量（本文件要在纯 node 下跑，不引工作区包），两侧相等由
+ * `tools/dqe-sim/tests/ioc-opportunity-list.test.ts` 钉住。
+ */
 export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 

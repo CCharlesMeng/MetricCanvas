@@ -1,4 +1,4 @@
-import { createReadStream } from 'node:fs';
+import { createReadStream, readdirSync } from 'node:fs';
 import { stat } from 'node:fs/promises';
 import { createServer } from 'node:http';
 import { extname, resolve, sep } from 'node:path';
@@ -50,7 +50,24 @@ createServer(async (request, response) => {
   } catch {
     response.writeHead(404).end('Not found');
   }
-}).listen(4175, '127.0.0.1');
+}).listen(4175, '127.0.0.1', () => {
+  const origin = 'http://127.0.0.1:4175';
+  console.log(`嵌入示例内容服务已启动：${origin}（Ctrl+C 停止）`);
+  console.log(`  DQE 端点：${origin}${DQE_EXECUTE_PATH}`);
+  for (const id of pageIds()) console.log(`  页面：${origin}/pages/${id}`);
+});
+
+/** 启动时列出可直接打开的页面，省得对着一个没有回显的进程猜它起没起。 */
+function pageIds() {
+  try {
+    return readdirSync(pagesRoot)
+      .filter((name) => name.endsWith('.json'))
+      .map((name) => name.slice(0, -'.json'.length))
+      .sort();
+  } catch {
+    return [];
+  }
+}
 
 async function respondDqe(request, response) {
   if (request.method !== 'POST') {
