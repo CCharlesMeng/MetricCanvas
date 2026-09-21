@@ -67,7 +67,7 @@ uvx --from <metriccanvas-authoring-sdist.tar.gz> metriccanvas-authoring
 
 sdist 内嵌运行时契约，不依赖宿主 Bundle 源码目录。Data Context 治理配置样例见 [`relay/data-context-projection.example.json`](./relay/data-context-projection.example.json)。DQE Adapter 只调用 `POST .../v1/dsl/execute`，不直连 Lab 执行查询。
 
-当前 Data Context、DQE 和兼容 Java Adapter 共用 [`EnvIdentityPort`](./tool/metriccanvas_authoring/adapters/outbound/env_identity.py) 从 Relay MCP config 读取的服务态 `operator/token`。这不是按用户身份，不能当作生产权限证据。
+当前 Data Context、DQE 和兼容 Java Adapter 共用 [`EnvIdentityPort`](./tool/metriccanvas_authoring/adapters/relay/env_identity.py) 从 Relay MCP config 读取的服务态 `operator/token`。这不是按用户身份，不能当作生产权限证据。
 
 ## 还未在本仓闭环的内容
 

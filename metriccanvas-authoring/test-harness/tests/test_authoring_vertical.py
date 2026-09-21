@@ -19,7 +19,7 @@ from metriccanvas_authoring.application.authoring_candidates import AuthoringCan
 from metriccanvas_authoring.application.authoring_submission import AuthoringSubmissionCoordinator
 from metriccanvas_authoring.application.content_ports import ContentBaseline
 from metriccanvas_authoring.application.lifecycle import Lifecycle
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 
 class RoundtripPrograms:

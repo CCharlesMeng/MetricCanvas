@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
-from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
+from metriccanvas_authoring.entrypoints.compat.fastmcp import PageBuildSpec
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.compose_content import compose_content
 from metriccanvas_authoring.application.create_content_page import create_content_page as make_content_page

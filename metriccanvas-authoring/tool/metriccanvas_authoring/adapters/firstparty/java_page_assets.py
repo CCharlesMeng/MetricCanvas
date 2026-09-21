@@ -9,7 +9,7 @@ from collections.abc import Callable
 from typing import Any
 
 from metriccanvas_authoring.assets.ports import PageAssetError, SavedRevision, JsonObject
-from metriccanvas_authoring.adapters.outbound.service_identity import IdentityPort
+from metriccanvas_authoring.adapters.service_identity import IdentityPort
 
 
 # Interface base URL including the `{service}` prefix, e.g.

@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.application.edit_page import create_edit_page, document_sha256
-from metriccanvas_authoring.adapters.outbound.content_baselines import FileContentBaselines
+from metriccanvas_authoring.adapters.relay.content_baselines import FileContentBaselines
 from test_page_editing import page, title
 
 TOKEN = "trusted-baseline-token"

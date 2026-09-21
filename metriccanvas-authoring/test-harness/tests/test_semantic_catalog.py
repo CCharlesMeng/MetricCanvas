@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 from metriccanvas_authoring.data.semantic_catalog import metric_card, SemanticCatalog
-from metriccanvas_authoring.adapters.outbound.platform_state import SqlitePlatformState
+from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.application.content_ports import ContentBaselineError
 
 

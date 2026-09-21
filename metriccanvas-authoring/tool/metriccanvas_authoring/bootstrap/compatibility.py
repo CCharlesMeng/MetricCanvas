@@ -5,11 +5,11 @@ its own tools and failure behaviour. They take adapters from the same
 environment selection as the target surface; none of them is a fallback for
 it, and the target surface never assembles from here.
 """
-from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_mcp_server
-from metriccanvas_authoring.adapters.inbound.fastmcp import create_mcp_server
-from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.adapters.outbound.publish_unavailable import (
+from metriccanvas_authoring.entrypoints.compat.content_mcp import create_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.fastmcp import create_mcp_server
+from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.adapters.firstparty.publish_unavailable import (
     UnavailableHumanConfirmations,
     UnavailablePublicationService,
 )

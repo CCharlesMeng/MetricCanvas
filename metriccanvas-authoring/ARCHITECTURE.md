@@ -8,7 +8,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 - `metriccanvas-platform-content-v1` → `unified_content_server`：旧候选协议与兼容 Skill，既有记录不转换、不删除。不是 v2 缺依赖时的回退。
 - `metriccanvas-authoring` → `server`：普通问数/探索，临时页面态不自动保存；两工具 Skill 保持原协议。
 
-入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/ports.py`、`assets/ports.py`、`adapters/outbound/service_identity.py`），不再有汇总的 `application/ports.py`。
+入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/ports.py`、`assets/ports.py`、`adapters/service_identity.py`），不再有汇总的 `application/ports.py`。
 
 宿主通过同一次请求注入可信上下文和提供方。默认独立 CLI 不能凭模型输入制造身份、计划确认或保存权限；缺依赖明确不可用。
 
@@ -26,8 +26,8 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `assets/drafts.py` | 冻结提交、单次保存、回执核对、无需候选的恢复 |
 | `delivery/preview.py` | 定义/预览分离、精确产物关联、Relay 准备预览 |
 | `application/platform_authoring.py` | 平台用例编排；业务规则不复制到 MCP 入站 |
-| `adapters/inbound/platform_mcp.py` | 参数 Schema 与模型/程序通道投影 |
-| `adapters/outbound/platform_state.py` | SQLite 原子 CAS；新表与兼容记录共存 |
+| `entrypoints/mcp/platform_mcp.py` | 参数 Schema 与模型/程序通道投影 |
+| `adapters/storage/platform_state.py` | SQLite 原子 CAS；新表与兼容记录共存 |
 | `bootstrap/environment.py` | 由环境一次性选择出站适配器；未配置的能力返回说明原因的端口，不降级替换 |
 | `bootstrap/platform.py` | 目标组合根，选择显式注入能力；无需旧候选存储或强保存能力 |
 | `bootstrap/compatibility.py` | 旧入口的装配，与目标入口共用同一份适配器选择；不是 v2 的回退 |

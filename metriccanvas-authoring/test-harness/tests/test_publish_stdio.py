@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from publish_stdio_server import Programs, Identities, PublicationSources, PublicationProvider, HumanEvents, prepare_request, context
 from metriccanvas_authoring.application.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
+from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 
 NAMES = {'save_draft', 'get_save_result', 'read_revision', 'list_revisions', 'prepare_candidate',
          'read_candidate', 'revise_candidate', 'confirm_publish', 'get_publish_operation_result'}

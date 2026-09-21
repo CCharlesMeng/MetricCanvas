@@ -10,7 +10,7 @@ sys.path[:0] = [os.environ.get('S4_LIFECYCLE_INSTALLED_ROOT') or str(ROOT / 'too
 from lifecycle_stdio_server import Identities, Programs, ProposedService, digest
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.application.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
+from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 
 REVIEW_KEYS = ('ref', 'contentHash', 'canonicalization', 'diff', 'affectedDataSources',
                'parameterSummary', 'retainDimensionValues', 'validation', 'expiresAt',

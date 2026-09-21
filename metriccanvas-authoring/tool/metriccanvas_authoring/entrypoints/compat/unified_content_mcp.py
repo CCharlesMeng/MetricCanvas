@@ -7,9 +7,9 @@ from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
-from metriccanvas_authoring.adapters.inbound.content_mcp import RESULT_SCHEMA
+from metriccanvas_authoring.entrypoints.compat.content_mcp import RESULT_SCHEMA
 from metriccanvas_authoring.application.compose_content import compose_content
-from metriccanvas_authoring.adapters.inbound.fastmcp import PageBuildSpec
+from metriccanvas_authoring.entrypoints.compat.fastmcp import PageBuildSpec
 from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, read_page_projection
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
 from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates

@@ -410,7 +410,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
             FakeDqeExecutionPort,
             FakePageAssetPort,
         )
-        from metriccanvas_authoring.adapters.inbound.fastmcp import (  # noqa: PLC0415
+        from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: PLC0415
             create_mcp_server,
         )
         from metriccanvas_authoring.application.build_page import (  # noqa: PLC0415

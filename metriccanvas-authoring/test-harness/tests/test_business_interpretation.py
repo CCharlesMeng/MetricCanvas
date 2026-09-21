@@ -14,7 +14,7 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_unified_content_mcp import dependencies
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.application.authoring_deployment import RegisteredExtension, assemble_deployment
 from metriccanvas_authoring.application.discover_data_context import create_discover_data_context, DiscoverDataContextDependencies, DiscoverDataContextCommand
 

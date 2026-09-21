@@ -14,7 +14,7 @@ from adapters.fakes import FakeDataContextPort
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
 from metriccanvas_authoring.domain.execution import DqeExecutionResult
 from metriccanvas_authoring.domain.execution import DqeExecutionError
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 FIXTURE = json.loads((ROOT / 'tools/dqe-sim/fixtures/flow-analysis-report.json').read_text())
 PAGE = json.loads((ROOT / 'pages/flow-analysis-report.json').read_text())

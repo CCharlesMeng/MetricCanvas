@@ -12,10 +12,10 @@ import httpx
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.adapters.outbound.dqe_http import (  # noqa: E402
+from metriccanvas_authoring.adapters.firstparty.dqe_http import (  # noqa: E402
     DqeHttpExecutionPort,
 )
-from metriccanvas_authoring.adapters.outbound.service_identity import ServiceIdentity  # noqa: E402
+from metriccanvas_authoring.adapters.service_identity import ServiceIdentity  # noqa: E402
 from metriccanvas_authoring.domain.execution import (  # noqa: E402
     DqeExecutionError,
     DqeExecutionResult,

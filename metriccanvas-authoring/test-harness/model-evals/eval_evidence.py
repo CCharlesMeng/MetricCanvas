@@ -71,7 +71,7 @@ def source_manifest(root, suite, runner, cases, arm):
     files = {suite, runner, Path(__file__)}
     for case in cases:
         files.update(injection_paths(root, case, arm))
-    for relative in ['bundle.lock.json', 'contract-lock.json', 'tool/requirements.lock', 'tool/metriccanvas_authoring/adapters/inbound/content_mcp.py', 'tool/metriccanvas_authoring/content_server.py']:
+    for relative in ['bundle.lock.json', 'contract-lock.json', 'tool/requirements.lock', 'tool/metriccanvas_authoring/entrypoints/compat/content_mcp.py', 'tool/metriccanvas_authoring/content_server.py']:
         files.add(root/'metriccanvas-authoring'/relative)
     files.update((root/'metriccanvas-authoring/tool/metriccanvas_authoring').rglob('*.py'))
     files.add(root/'metriccanvas-authoring/test-harness/tests/test_page_editing.py')

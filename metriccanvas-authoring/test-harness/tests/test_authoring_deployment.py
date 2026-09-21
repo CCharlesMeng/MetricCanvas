@@ -16,7 +16,7 @@ from test_authoring_candidates import MemoryCandidates
 from metriccanvas_authoring.application.authoring_deployment import (
     RegisteredExtension, DeploymentError, assemble_deployment, AUTHOR, SKILL_PATH, SERVICE,
 )
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.bootstrap.compatibility import create_deployment_content_server
 
 
@@ -112,7 +112,7 @@ class DeploymentTest(unittest.IsolatedAsyncioTestCase):
         import tempfile
         from test_authoring_submission import SubmissionFixture
         from test_authoring_recovery import RecoveryAuthority
-        from metriccanvas_authoring.adapters.outbound.sqlite_authoring_state import (
+        from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import (
             SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms)
         from metriccanvas_authoring.application.authoring_deployment import SystemDependencies
         f = await SubmissionFixture.create()

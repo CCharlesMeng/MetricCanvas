@@ -12,9 +12,9 @@ import os
 from pathlib import Path
 from typing import cast
 
-from metriccanvas_authoring.adapters.inbound.fastmcp import ToolSurface
-from metriccanvas_authoring.adapters.outbound.content_baselines import FileContentBaselines
-from metriccanvas_authoring.adapters.outbound.data_context_http import (
+from metriccanvas_authoring.entrypoints.compat.fastmcp import ToolSurface
+from metriccanvas_authoring.adapters.relay.content_baselines import FileContentBaselines
+from metriccanvas_authoring.adapters.firstparty.data_context_http import (
     APP_CODE_ENV,
     DATASETS_URL_TEMPLATE_ENV,
     DETAIL_URL_TEMPLATE_ENV,
@@ -24,19 +24,19 @@ from metriccanvas_authoring.adapters.outbound.data_context_http import (
     LabDataContextHttpPort,
     load_projection_config,
 )
-from metriccanvas_authoring.adapters.outbound.dqe_http import (
+from metriccanvas_authoring.adapters.firstparty.dqe_http import (
     DQE_BASE_URL_ENV,
     DQE_FORBIDDEN_HINT_ENV,
     DQE_WORKSPACE_ID_ENV,
     DqeHttpExecutionPort,
 )
-from metriccanvas_authoring.adapters.outbound.env_identity import EnvIdentityPort
-from metriccanvas_authoring.adapters.outbound.java_page_assets import (
+from metriccanvas_authoring.adapters.relay.env_identity import EnvIdentityPort
+from metriccanvas_authoring.adapters.firstparty.java_page_assets import (
     PAGE_ASSETS_BASE_URL_ENV,
     JavaPageAssetPort,
 )
-from metriccanvas_authoring.adapters.outbound.lifecycle_http import KnownLifecycleHttp
-from metriccanvas_authoring.adapters.outbound.lifecycle_spool import (
+from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from metriccanvas_authoring.adapters.relay.lifecycle_spool import (
     FileLifecyclePrograms,
     InjectedLifecycleIdentity,
 )

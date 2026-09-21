@@ -11,7 +11,7 @@ from typing import Any, Mapping
 import httpx
 
 from metriccanvas_authoring.data.ports import JsonObject
-from metriccanvas_authoring.adapters.outbound.service_identity import IdentityPort
+from metriccanvas_authoring.adapters.service_identity import IdentityPort
 from metriccanvas_authoring.domain.execution import (
     DqeExecutionError,
     DqeExecutionResult,

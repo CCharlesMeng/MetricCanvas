@@ -7,7 +7,7 @@ from copy import deepcopy
 from pathlib import Path
 sys.path.insert(0, os.environ.get('S4_LIFECYCLE_INSTALLED_ROOT') or str(Path(__file__).resolve().parents[1] / 'tool'))
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity, LifecycleError
-from metriccanvas_authoring.adapters.inbound.lifecycle_mcp import create_lifecycle_mcp_server
+from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 
 
 def digest(value):

@@ -16,7 +16,7 @@ from adapters.fakes import (  # noqa: E402
     FakeDqeExecutionPort,
     FakePageAssetPort,
 )
-from metriccanvas_authoring.adapters.inbound.fastmcp import (  # noqa: E402
+from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: E402
     create_mcp_server,
 )
 from metriccanvas_authoring.application.build_page import (  # noqa: E402

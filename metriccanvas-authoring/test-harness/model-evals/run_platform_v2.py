@@ -19,8 +19,8 @@ from test_platform_v2 import Authorization, Identities, Service, Preview, query_
 from test_authoring_turns import Turns
 from test_unified_content_mcp import dependencies
 from metriccanvas_authoring.application.platform_authoring import PlatformAuthoring
-from metriccanvas_authoring.adapters.inbound.platform_mcp import create_platform_mcp_server
-from metriccanvas_authoring.adapters.outbound.platform_state import SqlitePlatformState
+from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
+from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.work.state import Limits
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from model_transport import HttpTransport

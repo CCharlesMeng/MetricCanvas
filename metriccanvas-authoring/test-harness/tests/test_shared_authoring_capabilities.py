@@ -15,7 +15,7 @@ from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.application.structure_composition import compose_structure
 from metriccanvas_authoring.application.unified_edit_page import edit_unified_page
 from metriccanvas_authoring.domain.page_editing import edit_page_document
-from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 
 async def current():
@@ -51,7 +51,7 @@ class SharedAuthoringCapabilitiesTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_unified_entry_does_not_construct_a_compatibility_server(self):
         deps = replace(dependencies(), authoring_scope=Turns().binding)
-        with patch('metriccanvas_authoring.adapters.inbound.content_mcp.create_content_mcp_server', side_effect=AssertionError('nested MCP')):
+        with patch('metriccanvas_authoring.entrypoints.compat.content_mcp.create_content_mcp_server', side_effect=AssertionError('nested MCP')):
             async with Client(create_unified_content_mcp_server(deps, Turns('new'), candidate_store=MemoryCandidates())) as client:
                 output = (await client.call_tool('compose_page', {'context_ref': 'current-context', 'spec': spec()})).structured_content
         self.assertTrue(output['ok'], output)

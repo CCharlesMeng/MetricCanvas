@@ -16,7 +16,7 @@ from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate
 from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleError
 from metriccanvas_authoring.application.content_ports import ContentBaselineError
-from metriccanvas_authoring.adapters.outbound.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
+from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
 
 
 def process_mutation(path, key, record, snapshot, barrier, queue):
@@ -173,7 +173,7 @@ class SqliteAuthoringStateTest(unittest.IsolatedAsyncioTestCase):
         with self.assertRaisesRegex(LifecycleError, 'FILE_UNSAFE'): SqliteLifecyclePrograms(self.path)
         with self.assertRaisesRegex(LifecycleError, 'FILE_UNSAFE'): await records.get(self.key)
         os.chmod(self.path, 0o600)
-        with patch('metriccanvas_authoring.adapters.outbound.sqlite_authoring_state.os.getuid', return_value=os.getuid() + 1):
+        with patch('metriccanvas_authoring.adapters.storage.sqlite_authoring_state.os.getuid', return_value=os.getuid() + 1):
             with self.assertRaisesRegex(LifecycleError, 'FILE_UNSAFE'): SqliteLifecyclePrograms(self.path)
 
     async def test_not_applied_cas_evidence_and_guarded_retry(self):
