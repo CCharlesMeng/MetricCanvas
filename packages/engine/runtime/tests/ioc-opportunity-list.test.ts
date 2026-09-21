@@ -49,7 +49,7 @@ describe('ioc-opportunity-list 骨架', () => {
       .find((component) => component.type === 'table');
     if (!table || table.type !== 'table') throw new Error('缺少清单表格');
     expect(table.props.columns).toHaveLength(40);
-    expect(table.props.pagination).toEqual({ mode: 'local', pageSize: 10, numbered: true });
+    expect(table.props.pagination).toEqual({ mode: 'none' });
     const initial = initialFilterValues(page.filters ?? []);
     expect(initial.get('mtime')).toEqual({
       type: 'timePoint',
@@ -78,6 +78,27 @@ describe('ioc-opportunity-list 骨架', () => {
     expect(values.get('mtime')).toMatchObject({ value: '2026-04' });
   });
 
+  // 层级维度筛选器不绑定：composeEffectiveQuery 只读 filterBindings 里的静态
+  // queryField，不跟随当前层级，绑上去在地区部/代表处层会发出错误的查询条件。
+  it('明细走受控查询，扁平维度筛选器绑定到 DQE 字段', () => {
+    const page = loadPage();
+    const source = page.dataSources['opportunity-list'];
+    if (source?.source.type !== 'query') throw new Error('明细数据源应为受控查询');
+    expect(source.source.query.language).toBe('dqe');
+    expect(Object.keys(source.source.query.filterBindings ?? {})).toEqual([
+      'industry-type',
+      'na-type',
+      'industry-l1',
+      'industry-l2',
+      'overdue',
+      'opportunity-stage'
+    ]);
+    expect(source.source.query.filterBindings?.['industry-l2']).toEqual({
+      target: 'dimension',
+      queryField: 'sub_industry_level2'
+    });
+  });
+
   it('行点击 navigate 用 query 带上详情页参数，不进筛选状态', () => {
     const page = loadPage();
     const table = page.sections
@@ -87,9 +108,8 @@ describe('ioc-opportunity-list 骨架', () => {
     const action = table.props.actions?.[0];
     if (!action || !('navigate' in action)) throw new Error('缺少 navigate');
 
-    const row = page.dataSources['opportunity-list']?.source.type === 'inline'
-      ? page.dataSources['opportunity-list'].source.rows[0]!
-      : {};
+    const source = page.dataSources['opportunity-list'];
+    const row = source?.source.type === 'query' ? (source.source.initial?.rows[0] ?? {}) : {};
     const search = new URL(navigationHref(action.navigate, new Map(), new Map(), row), 'https://host.example').search;
     const params = new URLSearchParams(search);
     expect(action.navigate.href).toBe('/pages/ioc-project-detail');
