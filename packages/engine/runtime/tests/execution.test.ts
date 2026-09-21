@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { expect, it, vi } from 'vitest';
 import { parsePage } from '@metriccanvas/page';
 import { createFilterState, initializePageParams, loadExecution, orchestrate, prepareExecution, type ExecutionRequest } from '../src';
-const fixtures = JSON.parse(readFileSync('docs/plan/authoring-tickets-126/t04-contract-examples.json','utf8'));
+const fixtures = JSON.parse(readFileSync('docs/archive/authoring-tickets-126/t04-contract-examples.json','utf8'));
 const scenario = (id: string) => structuredClone(fixtures.cases.find((c: any)=>c.id === id).steps[0]);
 const flush = () => new Promise(r=>setTimeout(r,0));
 for (const id of ['execute-success','execute-partial','execute-empty','execute-missing-source','execute-wrong-conditions','execute-no-access']) {

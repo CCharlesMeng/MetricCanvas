@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 名称层闭集，formula 为有意保留的开放面
 ---
 
 # 创作期查询必须经清单校验与真实执行验真

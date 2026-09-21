@@ -173,7 +173,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | `pages/` | 页面 |
 | `docs/design-facts/` | 设计稿字面量取证产物(设计稿本身不随仓交付) |
 
-旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](./docs/reviews/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
+旧对话、会话存储、MCP、模板库及其播种、旧 Java 源码、TypeScript 页面生命周期、Postgres 持久化、compose 与纵切命令已退出主线。完整历史见 [固定基线](docs/evidence/2026-09-08-legacy-baseline.md)。Platform 已是静态 SPA，目录、详情、保存和更新由浏览器直接消费外部 Java 页面资产接口；未确认的历史修订与差异能力显式不可用。
 
 公共 Chat 尚未接通，问数入口显示不可用。页面目录中的已保存页面可打开页面搭建工作台，进行十类组件切换、文档编辑、布局、保存和当前修订预览。本版不提供历史修订、发布治理、模板与 ACL 界面；上方发布模型描述治理目标，保存修订不等于人工确认发布。
 
@@ -190,4 +190,7 @@ pnpm test:embed   # 嵌入运行时浏览器测试
 | [创作 Agent 架构](./metriccanvas-authoring/ARCHITECTURE.md) | Relay、Skill、Python Tool、外部 Adapter 与维护定位 |
 | [运行态架构](./docs/runtime-architecture.md) | 页面加载、查询和渲染 |
 | [嵌入运行时](./packages/embed/README.md) | 浏览器接入契约 |
-| [架构决策记录](./docs/adr/README.md) | 64 份 ADR 按主题聚合的当前生效结论(基线);原始决策记录见 `docs/adr/000N-*.md` |
+| [架构决策记录](./docs/adr/README.md) | ADR 基线入口:速查表给每份 ADR 的当前状态,[主题页](./docs/adr/topics/)按问题域聚合现行结论;原始决策记录见 `docs/adr/000N-*.md` |
+| [在执行中的计划](./docs/plan/README.md) | 还在做的计划,以及过程文档四层寿命的判据 |
+| [证据附件](./docs/evidence/README.md) | 被 ADR 正文或代码当论据引用的报告与基线 |
+| [归档](./docs/archive/README.md) | 已收口批次,每个批次一页结论页;探索时默认不读 |

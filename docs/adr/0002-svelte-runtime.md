@@ -1,3 +1,9 @@
+---
+status: accepted
+revised-by: [0066]
+note: shadcn-svelte 选型未落地，当前自建组件是实现事实
+---
+
 # 统一运行时采用 Svelte + shadcn-svelte
 
 运行时是一个渲染封闭 BI 组件集的引擎,不是开放生态的应用开发框架。团队从 Angular 迁移,在评估 React(看板生态最厚、shadcn 原版、AI 辅助开发语料最多)后,选择 Svelte + shadcn-svelte,取其代码简洁、性能和包体优势、迁移心智负担小。

@@ -1,5 +1,6 @@
 ---
-status: superseded by ADR-0014
+status: superseded
+superseded-by: [0014]
 ---
 
 # query 字段契约由结构化查询与元数据快照解析

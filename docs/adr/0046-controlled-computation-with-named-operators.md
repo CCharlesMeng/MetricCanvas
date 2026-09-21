@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 第一批算子；第二批 joinAggregate 形状未定
 ---
 
 # 受控计算以封闭具名算子分两批进入页面数据源

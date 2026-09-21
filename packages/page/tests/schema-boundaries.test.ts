@@ -7,7 +7,7 @@ import { pageSchema } from '../src/internal';
 /**
  * 当前页面 JSON Schema 的边界行为回归(继承自已删除的等价性安全网):
  * 原「阶段三A 安全网」以 912 行手写 legacy snapshot 为对照,其迁移使命
- * 已完成且副本已实证漂移(见 docs/reviews/2026-08-packages-architecture-review.md
+ * 已完成且副本已实证漂移(见 docs/evidence/2026-08-packages-architecture-review.md
  * 与 issue #73)。这里保留其中对当前 Schema 仍有价值的边界用例,改为
  * 直接断言有效/无效,不再维护第二份 Schema 真源。
  */

@@ -4,7 +4,7 @@ status: accepted
 
 # 派生度量模板视同公司口径
 
-环比、同比、占比是问数最高频的一类诉求，但它们不是语义面里的指标条目。按 ADR-0036，这类计算只能由模型现场生成 formula 走临时口径：每次阻塞确认、琥珀标注、登记缺口。这个待遇错配了它们的性质——环比的公式是业务通则，不是模型的发明；让用户每次为一个恒定公式点确认，是把治理成本转嫁给了使用者。竞品研究（`docs/reviews/2026-08-chat-bi-competitive-research.md`）显示声明化派生度量已是行业共识：Databricks metric views 以 `window.offset: -12 month` 声明同比，dbt MetricFlow 把 ratio/derived/cumulative 做成封闭指标类型。
+环比、同比、占比是问数最高频的一类诉求，但它们不是语义面里的指标条目。按 ADR-0036，这类计算只能由模型现场生成 formula 走临时口径：每次阻塞确认、琥珀标注、登记缺口。这个待遇错配了它们的性质——环比的公式是业务通则，不是模型的发明；让用户每次为一个恒定公式点确认，是把治理成本转嫁给了使用者。竞品研究（`docs/evidence/2026-08-chat-bi-competitive-research.md`）显示声明化派生度量已是行业共识：Databricks metric views 以 `window.offset: -12 month` 声明同比，dbt MetricFlow 把 ratio/derived/cumulative 做成封闭指标类型。
 
 ## 决策
 

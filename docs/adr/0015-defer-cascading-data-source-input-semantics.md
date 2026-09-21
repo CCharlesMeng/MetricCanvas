@@ -1,5 +1,6 @@
 ---
 status: proposed
+note: 未实现，暂不接受相关 schema 改动
 ---
 
 # 挂起级联页面数据源的输入绑定语义

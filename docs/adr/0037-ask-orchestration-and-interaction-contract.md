@@ -1,5 +1,7 @@
 ---
 status: accepted
+revised-by: [0077]
+note: 首版实时分步暂未实现，确认仍保留
 ---
 
 # 问数编排与交互契约

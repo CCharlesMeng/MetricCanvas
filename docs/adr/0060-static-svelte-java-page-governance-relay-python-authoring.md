@@ -1,5 +1,7 @@
 ---
 status: accepted
+revised-by: [0064]
+note: 目标架构，尚未完成迁移；Python 直接保存修订已退出
 ---
 
 # 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台

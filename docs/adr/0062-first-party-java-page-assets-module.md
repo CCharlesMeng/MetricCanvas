@@ -1,5 +1,7 @@
 ---
 status: accepted
+revised-by: [0070]
+note: J1–J4 已完成：校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 pnpm slice:page-assets；CloudBuild Testcontainers 探针与并入宿主时机待用户；目标宿主 CDINL2DataBuilderService
 ---
 
 # 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界

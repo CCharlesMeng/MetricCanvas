@@ -1,5 +1,7 @@
 ---
 status: accepted
+revised-by: [0064]
+note: 迁移实施基线；build_page 保存职责已退出
 ---
 
 # 自包含创作 Bundle 与中立契约单向导出

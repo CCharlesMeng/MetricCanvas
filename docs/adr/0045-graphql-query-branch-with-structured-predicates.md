@@ -1,5 +1,6 @@
 ---
 status: proposed
+note: 5.1 批次，未落地
 ---
 
 # GraphQL 查询分支以结构化谓词表达，不透传 WHERE 模板

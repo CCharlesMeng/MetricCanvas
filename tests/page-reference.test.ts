@@ -18,7 +18,7 @@ const reference = await buildPageReference(root, pageSchema, componentCatalog, i
 
 describe('页面参考手册生成与分发', () => {
   it('退役参考全部保留在冻结来源', async () => {
-    const manifest = JSON.parse(await readFile('docs/plan/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
+    const manifest = JSON.parse(await readFile('docs/archive/unified-authoring/2026-09-15-unified-authoring-s0-sources.json', 'utf8'));
     expect(manifest.files).toHaveLength(275);
     for (const entry of manifest.files) {
       const bytes = await readFile(entry.retainedSource ?? entry.source);

@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 交付时的版本号是 v3，versionPolicy.current 此后持续演进
 ---
 
 # 页面 Schema v3 一次性删除旧结构化查询

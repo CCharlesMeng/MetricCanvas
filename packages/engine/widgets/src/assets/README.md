@@ -42,7 +42,7 @@
 | 红牌 | `#D92D20` | 足球罚牌通行红 | `penalty-card.svg` 的默认值 |
 | 黄牌 | `#F5C518` | 足球罚牌通行黄 | 设 `--penalty-card-color` |
 
-真值寻源条目见 `docs/plan/ioc-legacy-handoff.md` D.6。拿到后只改这两个文件的 `color` 属性与本表。
+真值寻源条目见 `docs/archive/ioc-operation-map/ioc-legacy-handoff.md` D.6。拿到后只改这两个文件的 `color` 属性与本表。
 
 写法是根节点 `color="<占位色>"` 加上形状 `fill="var(--<名>-color, currentColor)"`，三种消费方式下的行为：
 

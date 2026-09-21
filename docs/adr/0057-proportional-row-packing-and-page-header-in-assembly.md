@@ -1,5 +1,6 @@
 ---
 status: accepted
+note: 装箱纯函数与页头均已实现；defaultSpan 重新表述为比例基线
 ---
 
 # 装配期按比例装箱铺满行宽,并产出页面级页头
