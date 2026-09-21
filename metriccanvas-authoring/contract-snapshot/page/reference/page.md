@@ -11,7 +11,7 @@ report定宽居中，dashboard占满宿主宽度。dashboardToolbar缺省visible
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.9。结构真源为本册[schema.json](schema.json)，SHA256 `713ff3962d43fc1aaa1ae42728c6fde5982d197556c1ea5a5d934c653a09e431`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -33,7 +33,7 @@ Schema位置：`#/properties/schemaVersion`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.0","6.1","6.2","6.3","6.4","6.5","6.6","6.7","6.8"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 |
+| "string" | 本分支必填 | enum=["5.0","5.1","5.2","5.3","5.4","6.0","6.1","6.2","6.3","6.4","6.5","6.6","6.7","6.8","6.9"] | Schema未设默认；装配/运行时默认见语义说明 | 页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -50,7 +50,8 @@ Schema位置：`#/properties/schemaVersion`。
 | "6.5" | 新增按百万呈现的0/1/2位小数格式。 |
 | "6.6" | 新增分组参数与多个独立时间区间。 |
 | "6.7" | 新增层级维度筛选绑定逐级声明谓词字段。 |
-| "6.8" | 当前作者写出版本；层级维度筛选器不再允许恒定queryField，必须逐级声明。 |
+| "6.8" | 层级维度筛选器不再允许恒定queryField，必须逐级声明。 |
+| "6.9" | 当前作者写出版本，新增timePoint/boolean/numberRange筛选器的查询绑定目标。 |
 
 <a id="schema-232f70726f706572746965732f6964"></a>
 
@@ -224,7 +225,7 @@ Schema位置：`#/definitions/dashboardToolbar/anyOf/1/properties/variant`。
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "compact" | 紧凑工具栏呈现；仅适用于声明该枚举的组件/字段分支，不改变数据契约。 |
+| "compact" | 时间点去掉分隔符后送出，例如 202604。 |
 
 <a id="schema-232f646566696e6974696f6e732f64617368626f617264546f6f6c6261722f616e794f662f312f70726f706572746965732f726561644f6e6c79"></a>
 
@@ -438,7 +439,7 @@ Schema位置：`#/properties/sections/items`。目标：[#/definitions/section](
 - `#/properties/params/anyOf/1`：[合法完整页面](examples/grouped-params-page.json)，JSON Pointer `#/params`。
 - `#/properties/filters/items/oneOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/filters/0`。
 - `#/properties/filters/items/oneOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/filters/1`。
-- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/4`。
-- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/7`。
-- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/6`。
+- `#/properties/filters/items/oneOf/2`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/0`。
+- `#/properties/filters/items/oneOf/3`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/1`。
+- `#/properties/filters/items/oneOf/4`：[合法完整页面](examples/non-dimension-bindings-page.json)，JSON Pointer `#/filters/2`。
 - `#/properties/filters/items/oneOf/5`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/filters/8`。

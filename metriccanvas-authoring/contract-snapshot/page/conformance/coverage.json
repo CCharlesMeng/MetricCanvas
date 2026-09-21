@@ -504,6 +504,9 @@
         "level-query-fields-missing-level",
         "level-query-fields-undeclared-level",
         "hierarchy-filter-flat-query-field",
+        "time-point-target-not-time-point",
+        "boolean-target-not-boolean",
+        "number-range-target-not-number-range",
         "unknown-filter-binding",
         "filter-binding-time-target-not-time-range",
         "filter-binding-dimension-target-not-dimension"

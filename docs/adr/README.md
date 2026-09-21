@@ -14,7 +14,7 @@
 
 <!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
 
-共 84 份 ADR（0001–0084）：现行 76、提议中 5、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+共 85 份 ADR（0001–0085）：现行 77、提议中 5、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
 
 | 编号 | 标题 | 现状 |
 |---|---|---|
@@ -102,6 +102,7 @@
 | [0082](./0082-explicit-business-sections-in-platform-authoring.md) | 完整页面创作以业务章节组织，口径组不强制决定分区 | 现行；计划不进入渲染协议；首期不含自动分析结论 |
 | [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
 | [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段 | 现行；补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新增分支，6.8 按 ADR-0051 例外收紧 |
+| [0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 各有自己的查询绑定目标 | 现行；补齐 ADR-0050 闭集里三类筛选器在查询侧的绑定目标；交付页面协议 6.9 |
 
 <!-- adr-index:end -->
 
@@ -125,6 +126,6 @@
 | [未决事项](./topics/open-questions.md) | 已登记但尚未裁决的问题，以及在裁决前不得做的事。**这里记的是没定的事，不要当成结论读。** | 0015 0024 0025 0030 0032 0033 0034 0037 0043 0044 0045 0046 0048 0060 0063 |
 | [编号与历史记录说明](./topics/numbering-and-history.md) | 编号冲突重编、纯清理类 ADR、已被替换的历史实现描述，以及本基线自身的整理记录。 | 0068 |
 
-**结论尚未落进任何主题页：** [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md)。新 ADR 落盘后要把结论并进对应主题页，这一行才会消失。
+**结论尚未落进任何主题页：** [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md)、[0085](./0085-query-binding-targets-for-the-non-dimension-filter-types.md)。新 ADR 落盘后要把结论并进对应主题页，这一行才会消失。
 
 <!-- adr-topics:end -->

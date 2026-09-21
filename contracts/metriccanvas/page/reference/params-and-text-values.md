@@ -34,7 +34,7 @@ params 增加对象分支：dimensions、times、scalars 均为可选非空数�
 文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度重复键、时间值用编码后的 {start,end} JSON；未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分组改写为数组。
 
 
-页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
+页面协议 6.9。结构真源为本册[schema.json](schema.json)，SHA256 `713ff3962d43fc1aaa1ae42728c6fde5982d197556c1ea5a5d934c653a09e431`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 

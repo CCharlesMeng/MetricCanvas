@@ -52,11 +52,14 @@ DeltaOperator
 DetailRecord
 DetailRecordList
 DimensionFilterDeclaration
+DqeBooleanFilterBinding
 DqeDimensionFilterBinding
 DqeEffectiveQuery
 DqeFilterBinding
+DqeNumberRangeFilterBinding
 DqeQueryDefinition
 DqeRequestBody
+DqeTimePointFilterBinding
 ERROR_TYPES
 EffectiveQuery
 EmbeddedInitialRows
@@ -269,6 +272,7 @@ rowKinds
 sectionBackdrop
 supportedVersions
 textValueScope
+timePointPredicateValue
 toLocalDate
 toLocalTime
 urlInputErrors
