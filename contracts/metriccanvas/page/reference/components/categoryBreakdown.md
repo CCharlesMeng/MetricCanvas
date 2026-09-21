@@ -11,7 +11,7 @@
 categoryLabel缺省使用字段label，字符串覆盖列头，false明确隐藏列头。swatches按类别取值从共享配色取色，需要同页饼图绑定相同类别字段；不是按行序猜颜色。带色点的完整例子保留这一依赖。
 
 
-页面协议 6.10。结构真源为本册[schema.json](../schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -219,7 +219,7 @@ Schema位置：`#/definitions/categoryBreakdownComponent/properties/props/proper
 
 ## 语义规则与反例（生成）
 
-- `category-swatches-need-pie`：分类明细开启色点要求同页有饼图绑定同一类别字段。反例：[category-swatches-without-pie](../errors/category-swatches-without-pie.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `category-swatches-need-pie`：分类明细开启色点要求同页有饼图绑定同一类别字段。反例：[category-swatches-without-pie](../errors/category-swatches-without-pie.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

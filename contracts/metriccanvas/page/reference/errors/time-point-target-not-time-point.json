@@ -1,0 +1,30 @@
+{
+  "case": "time-point-target-not-time-point",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "timePoint 目标必须绑定 timePoint 筛选器:only-key",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/only-key"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "only-key": {
+                "target": "timePoint",
+                "queryField": "stat_month"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/time-point-target-not-time-point.json"
+}

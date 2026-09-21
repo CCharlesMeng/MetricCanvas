@@ -1,0 +1,21 @@
+{
+  "case": "time-point-initial-param-without-query-target",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "参数初始化筛选必须具有匹配的显式查询目标",
+      "paths": [
+        "/filters/0/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "initialParam": "report-month"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-initial-param-without-query-target.json"
+}

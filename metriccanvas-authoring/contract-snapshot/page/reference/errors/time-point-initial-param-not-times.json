@@ -1,0 +1,21 @@
+{
+  "case": "time-point-initial-param-not-times",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点筛选初值必须引用必需的 times 参数",
+      "paths": [
+        "/filters/0/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "initialParam": "report-month"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-initial-param-not-times.json"
+}

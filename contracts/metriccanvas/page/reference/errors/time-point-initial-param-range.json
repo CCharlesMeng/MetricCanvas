@@ -1,0 +1,21 @@
+{
+  "case": "time-point-initial-param-range",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点筛选初值要求参数是单点",
+      "paths": [
+        "/filters/0/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "initialParam": "report-month"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-initial-param-range.json"
+}

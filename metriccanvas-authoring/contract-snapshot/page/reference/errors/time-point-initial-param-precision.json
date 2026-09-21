@@ -1,0 +1,21 @@
+{
+  "case": "time-point-initial-param-precision",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "SCHEMA_ERROR",
+      "message": "时间点筛选初值的参数精度必须与筛选器一致",
+      "paths": [
+        "/filters/0/initialParam"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "filters": [
+      {
+        "initialParam": "report-month"
+      }
+    ]
+  },
+  "fullInput": "page/conformance/invalid/time-point-initial-param-precision.json"
+}

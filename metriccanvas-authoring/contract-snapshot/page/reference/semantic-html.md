@@ -9,7 +9,7 @@ semanticHtml是声明白名单语义标签/类和内嵌值的字段类型，不�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.10。结构真源为本册[schema.json](schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -141,7 +141,7 @@ Schema位置：`#/definitions/querySemanticHtmlField/properties/nullable`。
 
 ## 语义规则与反例（生成）
 
-- `ranking-detail-semantic-description`：语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段。反例：[ranking-semantic-description-not-detail](errors/ranking-semantic-description-not-detail.json)、[ranking-semantic-description-record-list](errors/ranking-semantic-description-record-list.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `ranking-detail-semantic-description`：语义 HTML 说明必须绑定 semanticHtml 类型的 detail 字段。反例：[ranking-semantic-description-not-detail](errors/ranking-semantic-description-not-detail.json)、[ranking-semantic-description-record-list](errors/ranking-semantic-description-record-list.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

@@ -3337,12 +3337,12 @@
           {
             "type": "SCHEMA_ERROR",
             "path": "/filters/0/initialParam",
-            "message": "筛选初值必须引用已声明的dimension参数"
+            "message": "参数初始化筛选必须具有匹配的显式查询目标"
           },
           {
             "type": "SCHEMA_ERROR",
             "path": "/filters/0/initialParam",
-            "message": "参数初始化筛选必须具有匹配的显式查询目标"
+            "message": "筛选初值必须引用已声明的dimension参数"
           }
         ]
       }

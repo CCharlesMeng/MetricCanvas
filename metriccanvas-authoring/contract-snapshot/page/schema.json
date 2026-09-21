@@ -20,9 +20,10 @@
         "6.7",
         "6.8",
         "6.9",
-        "6.10"
+        "6.10",
+        "6.11"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9 / 6.10"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9 / 6.10 / 6.11"
     },
     "id": {
       "type": "string",
@@ -353,82 +354,88 @@
     "groupedPageParams": {
       "type": "object",
       "properties": {
-        "dimensions": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "pattern": "^[a-z0-9][a-z0-9-]*$"
-              },
-              "dim_name": {
-                "type": "string",
-                "minLength": 1
-              },
-              "dim_value_list": {
-                "minItems": 1,
-                "type": "array",
-                "items": {
-                  "type": "string",
-                  "minLength": 1
-                }
-              },
-              "required": {
-                "type": "boolean"
-              },
-              "label": {
-                "type": "string",
-                "minLength": 1
+        "query": {
+          "type": "object",
+          "properties": {
+            "dimensions": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "dim_name": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "dim_value_list": {
+                    "minItems": 1,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "dim_name"
+                ],
+                "additionalProperties": false
               }
             },
-            "required": [
-              "id",
-              "dim_name"
-            ],
-            "additionalProperties": false
-          }
-        },
-        "times": {
-          "minItems": 1,
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "pattern": "^[a-z0-9][a-z0-9-]*$"
-              },
-              "granularity": {
-                "type": "string",
-                "enum": [
-                  "month",
-                  "date"
-                ]
-              },
-              "start": {
-                "type": "string"
-              },
-              "end": {
-                "type": "string"
-              },
-              "required": {
-                "type": "boolean"
-              },
-              "label": {
-                "type": "string",
-                "minLength": 1
+            "times": {
+              "minItems": 1,
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "pattern": "^[a-z0-9][a-z0-9-]*$"
+                  },
+                  "granularity": {
+                    "type": "string",
+                    "enum": [
+                      "month",
+                      "date"
+                    ]
+                  },
+                  "start": {
+                    "type": "string"
+                  },
+                  "end": {
+                    "type": "string"
+                  },
+                  "required": {
+                    "type": "boolean"
+                  },
+                  "label": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                },
+                "required": [
+                  "id",
+                  "granularity"
+                ],
+                "additionalProperties": false
               }
-            },
-            "required": [
-              "id",
-              "granularity"
-            ],
-            "additionalProperties": false
-          }
+            }
+          },
+          "additionalProperties": false
         },
-        "scalars": {
+        "display": {
           "minItems": 1,
           "type": "array",
           "items": {
@@ -476,7 +483,7 @@
         }
       },
       "additionalProperties": false,
-      "description": "按 dimensions、times、scalars 分组的页面输入；各组共享唯一参数 ID 空间。"
+      "description": "按用途分层的页面输入：params.query 落进查询，params.display 只供呈现；两层共享唯一参数 ID 空间。"
     },
     "dataSource": {
       "anyOf": [
@@ -2277,6 +2284,10 @@
         },
         "default": {
           "type": "string"
+        },
+        "initialParam": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$"
         }
       },
       "required": [
@@ -5122,5 +5133,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.10"
+  "$id": "https://metriccanvas/page/v6.11"
 }

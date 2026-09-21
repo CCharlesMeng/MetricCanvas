@@ -9,7 +9,7 @@ metricGrid、compactSummary、analysisStack等变体决定卡内结构；子组�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.10。结构真源为本册[schema.json](../schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -211,7 +211,7 @@ Schema位置：`#/definitions/compositeCardChild/oneOf/4`。目标：[#/definiti
 
 ## 语义规则与反例（生成）
 
-- `composite-card-pure-container`：组合卡是纯容器：不声明 data / actions、至少一个子组件、不嵌套容器、子组件在白名单内。反例：[composite-card-with-data](../errors/composite-card-with-data.json)、[composite-card-with-actions](../errors/composite-card-with-actions.json)、[composite-card-empty](../errors/composite-card-empty.json)、[composite-card-nested-container](../errors/composite-card-nested-container.json)、[composite-card-child-not-whitelisted](../errors/composite-card-child-not-whitelisted.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `composite-card-pure-container`：组合卡是纯容器：不声明 data / actions、至少一个子组件、不嵌套容器、子组件在白名单内。反例：[composite-card-with-data](../errors/composite-card-with-data.json)、[composite-card-with-actions](../errors/composite-card-with-actions.json)、[composite-card-empty](../errors/composite-card-empty.json)、[composite-card-nested-container](../errors/composite-card-nested-container.json)、[composite-card-child-not-whitelisted](../errors/composite-card-child-not-whitelisted.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

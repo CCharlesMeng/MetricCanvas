@@ -507,6 +507,11 @@
         "time-point-target-not-time-point",
         "boolean-target-not-boolean",
         "number-range-target-not-number-range",
+        "time-point-initial-param-not-times",
+        "time-point-initial-param-precision",
+        "time-point-initial-param-range",
+        "time-point-initial-param-and-default",
+        "time-point-initial-param-without-query-target",
         "unknown-filter-binding",
         "filter-binding-time-target-not-time-range",
         "filter-binding-dimension-target-not-dimension"

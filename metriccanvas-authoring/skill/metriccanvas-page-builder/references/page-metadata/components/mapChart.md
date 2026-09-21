@@ -9,7 +9,7 @@ map限定china/world，区域名称须与底图名称或显式nameMap匹配；�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.10。结构真源为本册[schema.json](../schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](../schema.json)，SHA256 `064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -568,9 +568,9 @@ Schema位置：`#/definitions/mapChartComponent/properties/props/properties/acti
 
 ## 语义规则与反例（生成）
 
-- `map-legend-bands-increasing`：地图图例档位下界严格递增。反例：[map-legend-bands-not-increasing](../errors/map-legend-bands-not-increasing.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `map-pinned-summary`：固定地域摘要只用于 regionalOverview，匹配值符合类型，标签不重复。反例：[map-pinned-summary-wrong-variant](../errors/map-pinned-summary-wrong-variant.json)、[map-pinned-summary-match-value-type](../errors/map-pinned-summary-match-value-type.json)、[map-pinned-summary-duplicate-label](../errors/map-pinned-summary-duplicate-label.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `map-hierarchy`：地图下钻字段只与 hierarchyFilter 一起使用，目标是声明了 hierarchy 的维度筛选器。反例：[map-level-fields-without-hierarchy-filter](../errors/map-level-fields-without-hierarchy-filter.json)、[map-hierarchy-filter-undeclared](../errors/map-hierarchy-filter-undeclared.json)、[map-hierarchy-filter-not-hierarchical](../errors/map-hierarchy-filter-not-hierarchical.json)、[map-level-maps-unknown-level](../errors/map-level-maps-unknown-level.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `map-legend-bands-increasing`：地图图例档位下界严格递增。反例：[map-legend-bands-not-increasing](../errors/map-legend-bands-not-increasing.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `map-pinned-summary`：固定地域摘要只用于 regionalOverview，匹配值符合类型，标签不重复。反例：[map-pinned-summary-wrong-variant](../errors/map-pinned-summary-wrong-variant.json)、[map-pinned-summary-match-value-type](../errors/map-pinned-summary-match-value-type.json)、[map-pinned-summary-duplicate-label](../errors/map-pinned-summary-duplicate-label.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
+- `map-hierarchy`：地图下钻字段只与 hierarchyFilter 一起使用，目标是声明了 hierarchy 的维度筛选器。反例：[map-level-fields-without-hierarchy-filter](../errors/map-level-fields-without-hierarchy-filter.json)、[map-hierarchy-filter-undeclared](../errors/map-hierarchy-filter-undeclared.json)、[map-hierarchy-filter-not-hierarchical](../errors/map-hierarchy-filter-not-hierarchical.json)、[map-level-maps-unknown-level](../errors/map-level-maps-unknown-level.json)。反例文件给出触发点片段与预期type/path，完整页面见其fullInput指向的契约夹具；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 

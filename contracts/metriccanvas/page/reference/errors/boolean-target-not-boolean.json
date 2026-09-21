@@ -1,0 +1,33 @@
+{
+  "case": "boolean-target-not-boolean",
+  "invariant": "filter-binding",
+  "expected": [
+    {
+      "type": "FILTER_BINDING_ERROR",
+      "message": "boolean 目标必须绑定 boolean 筛选器:amount-range",
+      "paths": [
+        "/dataSources/sales/source/query/filterBindings/amount-range"
+      ]
+    }
+  ],
+  "inputExcerpt": {
+    "dataSources": {
+      "sales": {
+        "source": {
+          "query": {
+            "filterBindings": {
+              "amount-range": {
+                "target": "boolean",
+                "queryField": "is_key",
+                "whenTrue": [
+                  "true"
+                ]
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "fullInput": "page/conformance/invalid/boolean-target-not-boolean.json"
+}
