@@ -27,8 +27,8 @@ function loadPage(): Page {
 describe('ioc-project-overview 骨架', () => {
   it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.1');
-    expect(requiredMinorVersion(document)).toBe(1);
+    expect(page.schemaVersion).toBe('6.9');
+    expect(requiredMinorVersion(document)).toBe(9);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {
@@ -254,10 +254,10 @@ describe('ioc-project-overview 骨架', () => {
         onZeroDenominator: 'null'
       })
     ]);
-    expect(kpi?.source.type).toBe('inline');
+    expect(kpi?.source.type).toBe('query');
     expect(kpi?.fields['pipeline-support-rate']?.type).toBe('number');
     for (const source of Object.values(page.dataSources)) {
-      expect(source.source.type).toBe('inline');
+      expect(source.source.type).toBe('query');
       expect(source.compute ?? []).not.toEqual(
         expect.arrayContaining([expect.objectContaining({ op: 'joinAggregate' })])
       );
@@ -269,7 +269,7 @@ describe('ioc-project-overview 骨架', () => {
     let snapshots: PageDataSnapshots = new Map();
     orchestrate(page, {
       async fetchData() {
-        throw new Error('概览页骨架全部使用 inline 数据源');
+        throw new Error('默认筛选下不应发起查询');
       }
     }).subscribe((next) => {
       snapshots = next;
@@ -354,10 +354,11 @@ describe('ioc-project-overview 骨架', () => {
       .toBe(true);
 
     const overviewSource = page.dataSources['overview-by-office'];
-    if (overviewSource?.source.type !== 'inline') throw new Error('概览数据必须是 inline');
-    expect(overviewSource.source.rows).toHaveLength(8);
-    expect(overviewSource.source.rows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
-    const officeCodes = overviewSource.source.rows.map((row) => row['rep-office-code']);
+    if (overviewSource?.source.type !== 'query') throw new Error('概览数据必须是受控查询');
+    const overviewRows = overviewSource.source.initial?.rows ?? [];
+    expect(overviewRows).toHaveLength(8);
+    expect(overviewRows.map((row) => row.rank)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    const officeCodes = overviewRows.map((row) => row['rep-office-code']);
     expect(new Set(officeCodes).size).toBe(8);
     expect(officeCodes).toEqual([
       'SH-01', 'BJ-01', 'GD-01', 'SZ-01', 'HZ-01', 'CD-01', 'SG-01', 'TJ-01'
@@ -415,8 +416,9 @@ describe('ioc-project-overview 骨架', () => {
     if (!initiated || initiated.type !== 'table') throw new Error('缺少 TOP 表');
     const action = initiated.props.actions?.[0];
     if (!action || !('navigate' in action)) throw new Error('缺少 TOP navigate');
-    const row = page.dataSources['top-initiated']?.source.type === 'inline'
-      ? page.dataSources['top-initiated'].source.rows[0]!
+    const topInitiated = page.dataSources['top-initiated'];
+    const row = topInitiated?.source.type === 'query'
+      ? topInitiated.source.initial?.rows[0] ?? {}
       : {};
     const search = new URL(navigationHref(action.navigate, new Map(), new Map(), row), 'https://host.example').search;
     const params = new URLSearchParams(search);

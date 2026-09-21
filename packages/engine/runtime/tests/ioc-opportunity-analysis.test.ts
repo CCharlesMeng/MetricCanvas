@@ -21,8 +21,9 @@ function loadPage(): Page {
 function snapshotsOf(page: Page): PageDataSnapshots {
   let snapshots: PageDataSnapshots = new Map();
   orchestrate(page, {
+    // 默认筛选下编排器直接用 source.initial 的内嵌行，不发请求。
     async fetchData() {
-      throw new Error('机会点分析页首版全部使用 inline 合成数据');
+      throw new Error('默认筛选下不应发起查询');
     }
   }).subscribe((next) => {
     snapshots = next;
@@ -33,8 +34,8 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 describe('ioc-opportunity-analysis 页面契约', () => {
   it('声明 5.4 看板、紧凑只读页头和七个原型筛选位', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.1');
-    expect(requiredMinorVersion(document)).toBe(1);
+    expect(page.schemaVersion).toBe('6.9');
+    expect(requiredMinorVersion(document)).toBe(9);
     expect(page.layout).toBe('dashboard');
     expect(page.meta).toMatchObject({
       title: '机会点数',
@@ -50,12 +51,12 @@ describe('ioc-opportunity-analysis 页面契约', () => {
     ]);
   });
 
-  it('页面数据源全部 inline，不声称生产查询或远程依赖', () => {
+  it('页面数据源全部走受控查询，默认筛选下用内嵌初始行渲染', () => {
     const page = loadPage();
     expect(Object.keys(page.dataSources)).toEqual([
       'opportunity-metrics', 'region-analysis', 'office-analysis'
     ]);
-    expect(Object.values(page.dataSources).every((source) => source.source.type === 'inline')).toBe(true);
+    expect(Object.values(page.dataSources).every((source) => source.source.type === 'query')).toBe(true);
 
     const snapshots = snapshotsOf(page);
     for (const sourceId of Object.keys(page.dataSources)) {

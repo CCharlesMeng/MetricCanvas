@@ -3,6 +3,7 @@ import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import iocOpportunityListFixtureJson from '../fixtures/ioc-opportunity-list.json';
+import iocPageDatasetsJson from '../fixtures/ioc-page-datasets.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
 import {
   dimensionValuesFor,
@@ -93,8 +94,17 @@ const customerActivityInspectionFixture =
   customerActivityInspectionFixtureJson as CustomerActivityInspectionFixture;
 const flowAnalysisReportFixture =
   flowAnalysisReportFixtureJson as FlowAnalysisReportFixture;
-const iocOpportunityListFixture =
-  iocOpportunityListFixtureJson as IocOpportunityListFixture;
+/**
+ * IOC 四张页面的数据源夹具。机会点清单单独一份(它先落地、且被嵌入测试
+ * 宿主直接读),其余三张页面的十四个数据源合在一份里;执行分支对它们
+ * 一视同仁,按 output_dims/output_metrics 精确匹配认领。
+ */
+const iocDatasets: readonly IocOpportunityListFixture[] = [
+  iocOpportunityListFixtureJson as IocOpportunityListFixture,
+  ...Object.values(
+    (iocPageDatasetsJson as { datasets: Record<string, IocOpportunityListFixture> }).datasets
+  )
+];
 const inspectionProgressMetrics = [
   'NA客户数',
   '无公司考察客户数',
@@ -504,13 +514,12 @@ function executeFlowAnalysisReport(
 function executeIocOpportunityList(
   item: JsonRecord
 ): DqeSimItemResult | undefined {
-  const fixture = iocOpportunityListFixture;
-  if (
-    !equalStrings(item.output_dims, fixture.output_dims) ||
-    !equalStrings(item.output_metrics, fixture.output_metrics)
-  ) {
-    return undefined;
-  }
+  const fixture = iocDatasets.find(
+    (candidate) =>
+      equalStrings(item.output_dims, candidate.output_dims) &&
+      equalStrings(item.output_metrics, candidate.output_metrics)
+  );
+  if (!fixture) return undefined;
   if (!isRecord(item.filter)) return unsupported('机会点清单缺少 filter 对象');
   if (!Array.isArray(item.filter.dims)) {
     return unsupported('filter.dims 必须是数组');

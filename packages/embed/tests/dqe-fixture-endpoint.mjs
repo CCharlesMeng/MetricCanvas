@@ -15,7 +15,10 @@ export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 
 const simFixtures = resolve(import.meta.dirname, '../../../tools/dqe-sim/fixtures');
-const fixture = readJson('ioc-opportunity-list.json');
+const datasets = [
+  readJson('ioc-opportunity-list.json'),
+  ...Object.values(readJson('ioc-page-datasets.json').datasets)
+];
 const dimensionValues = readJson('ioc-dimension-values.json').dimensions;
 
 function readJson(name) {
@@ -28,12 +31,12 @@ export function executeFixtureItem(item) {
 }
 
 function listResult(item) {
-  if (
-    !equalStrings(item.output_dims, fixture.output_dims) ||
-    !equalStrings(item.output_metrics, fixture.output_metrics)
-  ) {
-    return undefined;
-  }
+  const fixture = datasets.find(
+    (candidate) =>
+      equalStrings(item.output_dims, candidate.output_dims) &&
+      equalStrings(item.output_metrics, candidate.output_metrics)
+  );
+  if (!fixture) return undefined;
   if (!isRecord(item.filter) || !Array.isArray(item.filter.dims)) {
     return unsupported('机会点清单缺少 filter.dims');
   }

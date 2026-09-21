@@ -11,6 +11,9 @@ declare global {
     createDqeGateway(config?: DqeGatewayConfig): RuntimeDataGateway;
   };
 
+  /** 由 addInitScript 注入到页面里；只在 page.evaluate 的函数体内可用。 */
+  function iocGateway(): RuntimeDataGateway;
+
   interface Window {
     pageDocument: any;
     runtime: RuntimeHandle;
@@ -19,7 +22,8 @@ declare global {
     queryCalls: Array<{ pagination?: { offset: number; limit: number } }>;
     queryRuntime: RuntimeHandle;
     /** IOC 页面在 query.html 宿主里改走内容服务的 DQE 端点。 */
-    iocGateway?: RuntimeDataGateway;
+    iocGateway?: () => RuntimeDataGateway;
+    __iocGateway?: RuntimeDataGateway;
     missingRuntime: RuntimeHandle;
     failingRuntime: RuntimeHandle;
     aiSummaryRuntime: RuntimeHandle;
