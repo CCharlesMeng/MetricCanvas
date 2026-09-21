@@ -1,10 +1,10 @@
 {
-  "schemaVersion": "6.6",
-  "schemaSha256": "724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7",
+  "schemaVersion": "6.8",
+  "schemaSha256": "78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
-      "sha256": "d88ae5158fb922507acc0fc2e07cf4cfa1ea169d507a051d5d378f6251b35f5f"
+      "sha256": "b300522540d3edcc0965731ae925983250f9b592816328d3834053b1bfffb118"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -24,11 +24,11 @@
     },
     {
       "file": "packages/page/src/param-bindings.ts",
-      "sha256": "b3f17bcc0b35120be96bfeb458d76803b4ea095a598ed943156647d34119b188"
+      "sha256": "d0dc715c1301b67cb8170e45447746ef8bd65e1682411bee1a63384e2a188d05"
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "502a075666b9ec9754ed68e76274183c221b3e28cd6f8fc5df4225e382f1326d"
+      "sha256": "990ebdff902fbd6d70f6770c4ab689f4979eda3c1cc9a127253a547146544905"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -100,7 +100,7 @@
     },
     {
       "file": "packages/page/src/schema/data-source.ts",
-      "sha256": "2060bfb874e448b9a6e64577592d62d38a2fe4b33e6062299f21927c63174c19"
+      "sha256": "912991c6411db7a162b6f1605d03df21459e2c4143d276530bfe9fdc3852c30f"
     },
     {
       "file": "packages/page/src/schema/filter.ts",
@@ -120,11 +120,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "7526beb403f2db24675aa32c6c0160351ae1fd1e842bf36c93cc063a8ea33e50"
+      "sha256": "377db999c0d62f8d5e7053f7651fdb038f3f86a04fd6ea2c4da87fe188946898"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "6ed4e363a90be30db8963d89e728f9ff07b28d4804075e6cc427f3d54685db04"
+      "sha256": "2be42fa91e76dce7471ca65ece11c2e447e089190e2c69a2bdc3f3e4bed5fb50"
     }
   ],
   "modules": {
@@ -273,7 +273,8 @@
         "查询定义与显式绑定"
       ],
       "examples": [
-        "dimension-params-page"
+        "dimension-params-page",
+        "hierarchy-binding-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -397,6 +398,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "million-formats-page",
         "compute-page",
         "reference-branches-page"
       ],
@@ -1053,7 +1055,7 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\",\"6.6\"]",
+      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\",\"6.6\",\"6.7\",\"6.8\"]",
       "enum": [
         "5.0",
         "5.1",
@@ -1066,7 +1068,9 @@
         "6.3",
         "6.4",
         "6.5",
-        "6.6"
+        "6.6",
+        "6.7",
+        "6.8"
       ]
     },
     {
@@ -1149,7 +1153,7 @@
       "required": "本分支可选",
       "module": "params-and-text-values.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -1158,6 +1162,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -1944,7 +1951,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -1953,6 +1960,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -2036,7 +2046,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -2045,6 +2055,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -2900,7 +2913,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -2909,6 +2922,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -3000,7 +3016,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -3009,6 +3025,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -3306,7 +3325,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -3315,6 +3334,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -3435,7 +3457,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -3444,6 +3466,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -3526,7 +3551,7 @@
       "required": "本分支可选",
       "module": "fields.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -3535,6 +3560,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -4037,11 +4065,52 @@
       "required": "独立分支（不合并required）",
       "module": "queries-and-bindings.md",
       "type": "\"object\"",
-      "constraints": "required=[\"target\"]; additionalProperties=false"
+      "constraints": "required=[\"target\",\"levelQueryFields\"]; additionalProperties=false"
     },
     {
       "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/target",
       "path": "@dqeQuery.filterBindings{key} · anyOf[1].target",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "type": "\"string\"",
+      "constraints": "const=\"dimension\"",
+      "const": "dimension"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields",
+      "required": "本分支必填",
+      "module": "queries-and-bindings.md",
+      "type": "\"object\"",
+      "constraints": "propertyNames={\"type\":\"string\",\"pattern\":\"^[a-z0-9][a-z0-9-]*$\"}; minProperties=2"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/additionalProperties",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields{key}",
+      "required": "动态键的值",
+      "module": "queries-and-bindings.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/propertyNames",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields · propertyNames",
+      "required": "条件结构",
+      "module": "queries-and-bindings.md",
+      "type": "\"string\"",
+      "constraints": "pattern=\"^[a-z0-9][a-z0-9-]*$\""
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "queries-and-bindings.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"target\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/target",
+      "path": "@dqeQuery.filterBindings{key} · anyOf[2].target",
       "required": "本分支必填",
       "module": "queries-and-bindings.md",
       "type": "\"string\"",
@@ -5611,7 +5680,7 @@
       "required": "本分支可选",
       "module": "field-bindings-and-formats.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -5620,6 +5689,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -9182,7 +9254,7 @@
       "required": "本分支可选",
       "module": "components/rankingDetailCard.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
+      "constraints": "enum=[\"text\",\"number\",\"number-1\",\"number-2\",\"number-grouped\",\"compact-wan-0\",\"compact-wan-1\",\"compact-million-0\",\"compact-million-1\",\"compact-million-2\",\"compact-yi-1\",\"cny-adaptive\",\"percent-0\",\"percent-1\",\"percent-2\",\"percent-2-signed\",\"date\",\"date-month-day\"]",
       "enum": [
         "text",
         "number",
@@ -9191,6 +9263,9 @@
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -10469,11 +10544,17 @@
     {
       "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0",
       "module": "queries-and-bindings.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/dataSources/sales/source/query/filterBindings/region-filter"
+    },
+    {
+      "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
+      "module": "queries-and-bindings.md",
       "file": "examples/component-mapChart.json",
       "pointer": "#/dataSources/regions/source/query/filterBindings/area"
     },
     {
-      "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1",
+      "schemaPointer": "#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2",
       "module": "queries-and-bindings.md",
       "file": "examples/filters-page.json",
       "pointer": "#/dataSources/orders/source/query/filterBindings/period"

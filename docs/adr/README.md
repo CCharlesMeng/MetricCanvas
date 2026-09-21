@@ -1,300 +1,130 @@
-# ADR 基线：81 份决策记录的当前生效结论
+# ADR 基线：按主题聚合的当前生效结论
 
-`docs/adr/` 现有 81 份 ADR(0001–0081)。多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独阅读任意一份都无法确认它在今天是否仍然生效。本文件按主题聚合这些 ADR 追踪到的**当前生效结论**,不是新决策,也不改写或删除任何原文。
+多份后出 ADR 部分或全部取代了早前 ADR 的前提,单独读任意一份都无法确认它在今天是否仍然生效。本目录的入口就是这一页:**速查表**给出每份 ADR 今天的状态,**主题页**按问题域聚合当前生效结论。两者都不是新决策,也不改写或删除任何原文。
 
-**怎么用这份文件:** 遇到具体问题,先在下方按主题定位现行结论和它引用的 ADR 编号;需要背景、权衡或被否决的选项时,再打开对应 ADR 原文。反过来,新决策仍然是新增一份编号 ADR(当前下一编号为 `0082`，落盘前须重新扫描),再回来更新本文件对应主题段落的引用——本文件本身不承载决策,只承载"当前哪份 ADR 说了算"。
+**怎么用:** 先在速查表按编号定位状态,再进对应主题页读现行结论;需要背景、权衡或被否决的选项时,才打开 ADR 原文。
 
-**关于 0045–0053:** 这九份是 IOC 作战地图多页应用批次的决策。其中 [ADR-0046](./0046-controlled-computation-with-named-operators.md)(具名算子第一批)、[ADR-0047](./0047-first-class-page-parameters.md)(页面参数与文本取值)、[ADR-0048](./0048-navigation-intent-and-host-routing.md)(导航意图与宿主路由)、[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md)(筛选闭集与层级维度)、[ADR-0051](./0051-additive-minor-versions-for-page-schema.md)(增量次版本)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)(布局形态、铺底层与运行时安全区)和 [ADR-0053](./0053-composite-card-component-level-grouping-container.md)(组合卡与分类明细)已 accepted,进入当前实现。仍为 `proposed` 的两份:[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) GraphQL 谓词未做;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 行类别/合并/新组件已落地,查询分页下排序与表头筛选的拒绝仍在。页面协议变更全部为纯增量:5.1 交付 IOC 基础能力,5.2 交付组合卡、分类明细、地图分档图例与提示扩展、`ratio.scale` 和单列键值面板。评审与落地记录见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) 与 [`docs/plan/ioc-project-map-wip-closeout.md`](../plan/ioc-project-map-wip-closeout.md)。
+**状态真源是每份 ADR 自己的 frontmatter**(`status` / `superseded-by` / `revised-by` / `note`)。速查表与主题索引由 `tools/scripts/adr-index.py` 从 frontmatter 和主题页生成,`pnpm adr:index:check` 守门,**两块生成区之间不要手改**。主题页正文是人写的,它做的补充判断(例如"实际已被后续 ADR 取代但原文未标注")会在原地说明理由和依据。
 
-当前状态说明(current/superseded/proposed)以 ADR 正文和 frontmatter 为准;本文件的补充判断(例如"实际已被后续 ADR 取代但原文未标注")会明确说明理由和依据。
+**新决策怎么落:** 新增一份编号 ADR(当前下一编号 `0084`,落盘前须重新扫描目录),在它自己的 frontmatter 写清状态与关系,跑 `pnpm adr:index` 刷新两张表,再把结论**并进对应主题页**。不要在任何地方追加「某某 ADR」单独一段——文末附录段正是 0075/0080/0082/0083 漂成孤岛的成因,已于 2026-09-21 清理并入主题页。
 
 **术语演进:** 聚合根已由「看板页面」改称**页面**,「看板」与「报表」降为它的两种布局形态([ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md))。**0052 以前的 ADR 正文里出现的「看板页面」,指的就是现在的「页面」**;历史正文不改写。本文件转述现行结论时使用新称呼,引用 ADR 标题与原文措辞时保留原词。同理,「静态页面」一词已退休为**仅内联页面**([ADR-0022](./0022-page-data-sources.md) 正文已按新不变量改写)。[ADR-0056](./0056-metric-centric-terminology.md) 把问数术语围绕指标谱系规整:「临时口径」改称**临时指标**、「派生度量模板」改称**派生指标模板**、「口径卡」改称**取数核对**;0056 以前的 ADR 正文里出现的旧词按此映射理解,历史正文不改写,治理边界(临时指标不进语义面、须视觉标注)不随改名松动。
 
 ## 速查表
 
+<!-- adr-index:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
+
+共 84 份 ADR（0001–0084）：现行 76、提议中 5、已取代 3。状态真源是每份 ADR 自己的 frontmatter，本表由 `tools/scripts/adr-index.py` 生成。
+
 | 编号 | 标题 | 现状 |
 |---|---|---|
-| [0001](./0001-domain-dsl-over-a2ui.md) | 自研领域 DSL,不用 A2UI | 现行 |
-| [0002](./0002-svelte-runtime.md) | 统一运行时用 Svelte + shadcn-svelte | Svelte 现行；shadcn-svelte 未落地，宿主消费边界见 0066 |
-| [0003](./0003-strict-declarative-spec.md) | 页面规格严格声明式,禁表达式与脚本 | 现行(数据语义前提已由 0014 修订) |
-| [0004](./0004-git-storage-first-platform-later.md) | 一期规格存 Git,`PageRepository` 端口先行 | 现行(作为二期平台之外的离线/静态实现,与 0009 并存) |
-| [0005](./0005-build-over-open-source-bi.md) | 自研运行时,不魔改开源 BI | 现行(“数据服务唯一入口”前提已由 0014 修订,其余理由不变) |
-| [0006](./0006-metadomain-layering-and-naming.md) | 包按 DDD 分层围绕聚合根“看板页面”命名 | 现行(取数边界已由 0014 修订;第 3 条“包名 `widgets` 取自规格字段”的前提已被 0017 推翻,欠账记于 0025 待决) |
-| [0007](./0007-demote-spec-to-document-form.md) | 领域词汇只保留聚合根“看板页面”,“规格”降级为文档形态 | 现行 |
-| [0008](./0008-immutable-page-revisions-and-publish-leases.md) | 不可变线性修订 + 15 分钟发布租约 | 当前 Java 保存与发布范围由 0080 部分替代 |
-| [0009](./0009-node-postgres-platform-beside-runtime.md) | 平台用独立 SvelteKit Node + PostgreSQL,运行时保持独立 | 已被 0060 取代(仍描述当前待迁移实现) |
-| [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布修订,不复制文档 | 现行 |
-| [0011](./0011-derive-query-fields-from-catalog.md) | query 字段由结构化查询与元数据快照解析 | 已被 0014 取代 |
-| [0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md) | 指标履约查 DP 并向数据服务验真 | 已被 0014 取代 |
-| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定,不属于数据源 | 现行 |
-| [0014](./0014-query-artifacts-replace-metrics.md) | 查询产物取代预定义指标 | 现行(“仅提交查询执行引用、禁止提交查询原文”的边界已被 0016 推翻,其余结论有效) |
-| [0015](./0015-defer-cascading-data-source-input-semantics.md) | 级联页面数据源输入语义 | 提议中,未实现,暂不接受相关 schema 改动 |
+| [0001](./0001-domain-dsl-over-a2ui.md) | 页面规格采用自研领域 DSL,不以 A2UI 为资产格式 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订 |
+| [0002](./0002-svelte-runtime.md) | 统一运行时采用 Svelte + shadcn-svelte | 现行；部分由 [0066](./0066-self-contained-rendering-engine-host-boundary.md) 修订；shadcn-svelte 选型未落地，当前自建组件是实现事实 |
+| [0003](./0003-strict-declarative-spec.md) | 页面规格采用严格声明式,禁止表达式与脚本 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订 |
+| [0004](./0004-git-storage-first-platform-later.md) | 一期规格存 Git,平台后端与可视化管理延后 | 现行；作为二期平台之外的离线/静态实现，与 0009 并存 |
+| [0005](./0005-build-over-open-source-bi.md) | 自研看板运行时,不采用/魔改 Grafana、Superset、Rill 等开源 BI | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md) 修订；“数据服务唯一入口”前提已失效，其余理由不变 |
+| [0006](./0006-metadomain-layering-and-naming.md) | 领域层建模为规格语言(元领域),包按 DDD 分层围绕聚合根"看板页面"命名 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md)、[0017](./0017-page-schema-v3-hard-cutover.md) 修订；取数边界与第 3 条“包名 widgets 取自规格字段”的前提均已失效，欠账记于 0025 待决 |
+| [0007](./0007-demote-spec-to-document-form.md) | "页面规格"降级为文档形态,领域词汇只保留聚合根"看板页面" | 现行 |
+| [0008](./0008-immutable-page-revisions-and-publish-leases.md) | 看板页面使用不可变线性修订与限时发布租约 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 修订；当前 Java 保存与发布范围已被部分替代 |
+| [0009](./0009-node-postgres-platform-beside-runtime.md) | 平台采用独立 SvelteKit Node + PostgreSQL,统一运行时保持独立 | 已取代，见 [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)；仍描述当前待迁移实现 |
+| [0010](./0010-page-templates-reference-published-revisions.md) | 页面模板引用已发布页面修订而不复制页面文档 | 现行 |
+| [0011](./0011-derive-query-fields-from-catalog.md) | query 字段契约由结构化查询与元数据快照解析 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
+| [0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md) | 指标履约只查询 DP 并以数据服务目录验真 | 已取代，见 [0014](./0014-query-artifacts-replace-metrics.md) |
+| [0013](./0013-format-belongs-to-component-field-binding.md) | 展示格式属于组件字段绑定 | 现行 |
+| [0014](./0014-query-artifacts-replace-metrics.md) | 查询产物取代指标成为页面的数据基础 | 现行；部分由 [0016](./0016-send-embedded-query-definitions.md) 修订；“仅提交查询执行引用、禁止提交查询原文”的边界已被推翻，其余结论有效 |
+| [0015](./0015-defer-cascading-data-source-input-semantics.md) | 挂起级联页面数据源的输入绑定语义 | 提议中；未实现，暂不接受相关 schema 改动 |
 | [0016](./0016-send-embedded-query-definitions.md) | 看板页面内嵌并直接提交查询定义 | 现行 |
-| [0017](./0017-page-schema-v3-hard-cutover.md) | 页面 Schema v3 一次性删除旧结构化查询 | 现行(交付时的具体版本号是 v3,当前 `versionPolicy.current` 已演进到 4.0,见下文说明) |
-| [0018](./0018-keep-page-metadata-locally-explicit.md) | 页面元数据保持局部显式,不做跨引用默认值/字段集 | 现行 |
-| [0019](./0019-internalize-ai-summary-generation.md) | AI 总结内化为垂直组件 Module | 现行 |
-| [0020](./0020-embedded-initial-rows-and-query-pagination.md) | 查询数据源内嵌初始行 + 查询分页 | 现行 |
+| [0017](./0017-page-schema-v3-hard-cutover.md) | 页面 Schema v3 一次性删除旧结构化查询 | 现行；交付时的版本号是 v3，versionPolicy.current 此后持续演进 |
+| [0018](./0018-keep-page-metadata-locally-explicit.md) | 页面元数据保持局部显式 | 现行 |
+| [0019](./0019-internalize-ai-summary-generation.md) | AI 总结采用垂直组件 Module 内化生成 | 现行 |
+| [0020](./0020-embedded-initial-rows-and-query-pagination.md) | 查询数据源以内嵌初始行启动并支持查询分页 | 现行 |
 | [0021](./0021-page-id-is-not-a-rendering-switch.md) | 页面 id 不作为渲染分支条件 | 现行 |
-| [0022](./0022-page-data-sources.md) | 公开页面用命名数据源,统一 inline 与 query 取数 | 现行(结构性基线;query 的字段模型与内嵌初始行细节已由 0014/0016/0017/0020 修订,"静态页面"约束已于 2026-08-25 改写为仅内联页面的不变量,原文首部有说明) |
-| [0023](./0023-remove-metric-fulfillment-and-catalog-packages.md) | 删除指标履约与目录发现的空壳包 | 历史记录,清理已完成 |
-| [0024](./0024-converge-authoring-time-packages.md) | 创作期包边界收敛,agent-runner/data-context 不再是一级包 | 现行(模板发布治理强度留有待决事项,见下文) |
-| [0025](./0025-converge-runtime-presentation-packages.md) | 表现层包边界按纯渲染职责收敛,widgets 只留页面组件 | 现行(包名与 `WidgetHost` 术语、`Table.svelte` 拆分留有待决与遗留,见下文) |
+| [0022](./0022-page-data-sources.md) | 公开页面采用命名数据源,统一 inline 与 query 取数 | 现行；部分由 [0014](./0014-query-artifacts-replace-metrics.md)、[0016](./0016-send-embedded-query-definitions.md)、[0017](./0017-page-schema-v3-hard-cutover.md)、[0020](./0020-embedded-initial-rows-and-query-pagination.md) 修订；结构性基线；query 的字段模型与内嵌初始行细节已被修订，“静态页面”约束已于 2026-08-25 改写为仅内联页面的不变量，原文首部有说明 |
+| [0023](./0023-remove-metric-fulfillment-and-catalog-packages.md) | 删除指标履约与目录发现的空壳包,完成 ADR-0014 迁移 | 现行；历史记录，清理已完成 |
+| [0024](./0024-converge-authoring-time-packages.md) | 创作期包边界按领域收敛，agent-runner 与 data-context 不再是一级包 | 现行；模板发布治理强度留有待决事项 |
+| [0025](./0025-converge-runtime-presentation-packages.md) | 表现层包边界按纯渲染职责收敛，widgets 只留页面组件 | 现行；包名与 WidgetHost 术语、Table.svelte 拆分留有待决与遗留 |
 | [0026](./0026-controlled-nested-detail-fields.md) | 结果字段契约支持受控的一层嵌套明细 | 现行 |
-| [0027](./0027-default-summary-to-text-unless-sse-explicit.md) | 摘要默认由页面文档返回，SSE 必须明确声明 | 现行 |
+| [0027](./0027-default-summary-to-text-unless-sse-explicit.md) | 摘要默认由页面文档返回，SSE 生成必须明确声明 | 现行 |
 | [0028](./0028-controlled-semantic-html-detail-fields.md) | DQE 明细支持受控语义 HTML，样式仍由前端拥有 | 现行 |
 | [0029](./0029-share-controlled-semantic-html-rendering.md) | 摘要与排行详情共用受控语义 HTML 渲染 Module | 现行 |
-| [0030](./0030-transient-page-state-for-ask-and-explore.md) | 问数与探索用临时页面态与轻量会话,沉淀才产生页面修订 | 现行(会话从只存事件扩展为最新检查点已由 0058 部分修订) |
-| [0031](./0031-metrics-as-data-context-discovery-anchor.md) | 指标作为数据上下文发现锚点,不回页面协议 | 现行 |
-| [0032](./0032-authoring-time-query-verification.md) | 创作期查询必须经清单校验与真实执行验真 | 现行(名称层闭集,formula 为有意保留的开放面) |
-| [0033](./0033-suspend-dataset-runtime.md) | 挂起服务端计算数据集,派生计算交给 DQE formula | 提议中,未实现,恢复条件见原文 |
-| [0034](./0034-graphql-rest-as-data-gateway-adapters.md) | GraphQL/数据接口以数据网关适配器接入,组件不直连 | 现行 |
+| [0030](./0030-transient-page-state-for-ask-and-explore.md) | 问数与探索使用临时页面态与轻量会话，沉淀才产生页面修订 | 现行；部分由 [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) 修订；会话从只存事件扩展为最新检查点 |
+| [0031](./0031-metrics-as-data-context-discovery-anchor.md) | 指标作为数据上下文的发现锚点，不回到页面协议 | 现行 |
+| [0032](./0032-authoring-time-query-verification.md) | 创作期查询必须经清单校验与真实执行验真 | 现行；名称层闭集，formula 为有意保留的开放面 |
+| [0033](./0033-suspend-dataset-runtime.md) | 挂起服务端计算数据集，问数期计算由 DQE formula 承担 | 提议中；未实现，恢复条件见原文 |
+| [0034](./0034-graphql-rest-as-data-gateway-adapters.md) | GraphQL 与数据接口以数据网关适配器接入，不由组件直连 | 现行 |
 | [0035](./0035-structured-relative-time-expressions.md) | 页面时间范围支持结构化相对时间表达 | 现行 |
-| [0036](./0036-metric-gap-non-blocking-exit.md) | 指标缺口不阻塞问数,临时口径可见、计数并在沉淀处设闸 | 现行 |
-| [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排顺序与人机分工:域回显、候选消歧、条件确认、分步流式 | 现行；0077 允许首版实时分步暂未实现，确认仍保留 |
-| [0038](./0038-section-container-and-row-alignment-invariant.md) | 分区容器 `container` 单一真源,行对齐为运行时不变量,Schema 5.0 硬切换 | 现行 |
-| [0039](./0039-derived-measure-templates-as-company-definitions.md) | 派生度量模板(环比/同比/占比)视同公司口径,本地确定性计算 | 现行 |
-| [0040](./0040-scope-card-as-control-panel.md) | 口径卡升级为控制面板:token 行、要素就地修改落事件、已验证查询快路径、消歧预选 | 现行 |
-| [0041](./0041-governance-inbox-unified-growth-loop.md) | 治理收件箱统一三条候选流,采纳不自动写回;评审回执走会话事件 | 现行 |
-| [0042](./0042-money-fields-and-semantic-embedded-values.md) | 人民币金额专用结果字段、五档自适应格式与语义内嵌值 | 现行 |
-| [0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md) | 归因诊断作为与问数并列的分析形态 | 提议中,未实现,设计基线见原文 |
-| [0044](./0044-first-class-metric-entries.md) | 指标条目一等化,Schema 元数据 1.1 | 现行 |
-| [0045](./0045-graphql-query-branch-with-structured-predicates.md) | GraphQL 查询分支以结构化谓词表达,不透传 WHERE 模板 | 提议中(5.1 批次,未落地) |
-| [0046](./0046-controlled-computation-with-named-operators.md) | 受控计算以封闭具名算子分两批进入页面数据源 | 现行(第一批算子;第二批 `joinAggregate` 形状未定) |
-| [0047](./0047-first-class-page-parameters.md) | 页面参数一等化,与筛选器按可变性分界 | 现行 |
-| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由,运行时只上抛导航意图 | 导航目标/强制宿主接管已由 0067/0068 取代并完成 #109 迁移；导航栈与回跳所有权仍有效 |
-| [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格服务端能力按数据源模式整体下推 | 提议中(呈现已落地,服务端排序筛选未解除) |
-| [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展,层级维度承载地图下钻 | 现行 |
-| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进,主版本递增须论证 | 现行(2026-08-25 补了"零使用开放面可按次版本收紧"的例外) |
-| [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行(协议与运行时安全区通道已实现) |
-| [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行(协议、widget 与统一运行时已实现;同批附带叶子组件「分类明细」) |
-| [0054](./0054-section-weighted-column-tracks.md) | 内容分区可声明受控权重列轨 | 现行(Schema 5.3，部分修订 0038 的恒定等权列前提) |
-| [0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md) | 口径组作为问数答案的分区边界 | 现行(首轮多单元、口径组分区、三处可见、按单元意图与单元数上限均已实现;2026-08-27 补记对话轨呈现:选用指标改集合、按单元重复的步骤折叠;跨口径月报改作空态默认入口) |
-| [0056](./0056-metric-centric-terminology.md) | 术语围绕指标谱系规整:临时指标、派生指标模板、取数核对 | 现行(词汇表已切换,代码与 UI 文案批量替换进行中) |
-| [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行(装箱纯函数与页头均已实现;`defaultSpan` 重新表述为比例基线) |
-| [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点,恢复临时页面态 | 现行(部分修订 0030 的会话内容边界;不产生页面修订) |
-| [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行(不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁) |
-| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte + Java 页面治理 + Relay/Python 创作期 | 现行目标架构(尚未完成迁移；Python 直接保存修订已被 0064 取代) |
-| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle + 中立契约单向导出 | 现行(迁移实施基线；`build_page` 保存职责已被 0064 取代) |
-| [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行(J1–J4 已完成:校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 `pnpm slice:page-assets`;CloudBuild Testcontainers 探针与并入宿主时机待用户;目标宿主 `CDINL2DataBuilderService`) |
-| [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行(身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已被 0064 取代) |
-| [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行目标(Agent 不保存页面；Relay 需新增模型摘要/完整 artifact 双通道) |
-| [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行边界(#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决) |
-| [0066](./0066-self-contained-rendering-engine-host-boundary.md) | 渲染引擎提供固定呈现与 JS 挂载入口，应用集成归宿主 | 已裁决宿主边界；#100 发布门禁、#103 真实集成、#101 身份接线分别落实 |
-| [0067](./0067-url-navigation-with-explicit-parameter-bindings.md) | 页面声明 URL 与显式参数绑定，跨页链接无需宿主地址解析 | 现行目标，尚未实现；#109 承接协议/运行时迁移，部分取代 0048 |
-| [0068](./0068-plain-url-navigation-protocol.md) | URL 导航使用普通查询参数，页面协议切到 6.0 | #109 的后续裁决；实现与验收状态由 #109 记录 |
-| [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版采用真实 Java 与内存存储、DQE HTTP 仿真，请求凭据归宿主 | #99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
-| [0070](./0070-consume-host-java-page-assets-api.md) | Java 页面资产由宿主提供，本仓负责接口消费 | 用户修正 #105 范围；部分取代 0062 的第一方 Java 建设前提 |
-| [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | #100 已裁决；发布门禁与目录重组待执行票 |
-| [0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) | 「宿主」改称集成应用，创作期与渲染期确立为对立时段 | 词汇表已补齐；ADR 正文与 `docs/plan/` 保留「宿主」原措辞 |
-| [0073](./0073-static-platform-direct-access-with-injected-runtime-config.md) | 静态平台直连外部服务，运行配置由集成应用注入 | #101 已裁决；接线与静态化归 #104，应用外壳归 #110 |
-| [0074](./0074-browser-component-building-and-isolated-legacy-baseline.md) | 人工组件切换在浏览器完成，旧服务链隔离为可复现历史基线 | #122–#125 已建立基线并完成主体解耦清理；新页面资产消费验证后退出旧适配器 |
-| [0075](./0075-page-playground-as-development-tool.md) | 页面试验场作为按需使用的开发工具保留 | 原 canvas 改名；退出默认产品启动、构建和产物上传，保留测试与类型检查 |
-| [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | #95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
-
-| [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古只替换现有左侧对话，每轮 ask 有结果并保留旧页 | 已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
-| [0078](./0078-dimension-values-templates-and-page-instances.md) | 草稿经维度取值提取发布为模板，执行产生页面实例 | 后续设计；当前 Java 发布不以模板/参数提取为前置，见 0080 |
-| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次、latest前置与受门禁统一内容工厂 | 本轮身份与固定基线现行；强 latest/精确回读前置由 0080 调整 |
-| [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) | Java 页面资产单次保存与状态发布 | 当前 Java 接入依据；本仓实现已落地，真实联调另验 |
-| [0081](./0081-read-schema-5-x-with-6-x-runtime.md) | 6.x运行时兼容读取Schema 5.x | 现行；平台与页面试验场读取5.0—5.4后规范化为6.x |
-
-## IOC 作战地图批次(0045–0051)
-
-触发这一批的是一个与既有场景形状不同的需求:一个多页数据应用,包含"概览 → 清单 → 详情"三级下钻,取数协议全部是 GraphQL 而非 DQE,应用外壳由已有门户提供。
-
-**已生效:** [ADR-0046](./0046-controlled-computation-with-named-operators.md) 在页面数据源上引入封闭具名算子(第一批),**这是对 ADR-0003 措辞的一次修订与对 ADR-0033 的部分恢复**,但不恢复计算数据集聚合根;[ADR-0047](./0047-first-class-page-parameters.md) 新增顶层 `params`,按"页面打开后还能不能变"把 URL 输入与筛选器分开;[ADR-0048](./0048-navigation-intent-and-host-routing.md) 把跨页路由交给宿主,运行时只上抛导航意图,Canvas 用 sessionStorage 记来源并画返回;[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) 把筛选器闭集从两类扩到六类并引入层级维度,顺带偿还 ADR-0035 的落地欠账;[ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进定为增量次版本,本批交付 5.1。
-
-**仍为提议:** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 补齐 ADR-0034 留白的 GraphQL 分支形状,关键是把来源实现里的 WHERE 字符串模板换成结构化谓词,守住 ADR-0003——**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`**;[ADR-0049](./0049-table-server-side-and-presentation-capabilities.md) 解除查询分页下的排序与列头筛选限制、改为按数据源模式整体下推(呈现已落地,拒绝规则未删)。
-
-**驱动这批决策的三条业务裁决**(见 [`docs/plan/ioc-operation-map.md`](../plan/ioc-operation-map.md) §1):取数协议全部走 GraphQL,因此 DQE 的 `formula` 与 `total_count` 都不可用;前端计算进页面协议而非下推数据侧,因为改表要走完整数据开发链路、周期不可控;应用外壳归已有门户,因此本批**没有**引入"多页应用"一等概念——[ADR-0048](./0048-navigation-intent-and-host-routing.md) 明确把它留给第二个多页应用出现时再裁决。
-
-## 技术栈与建设策略
-
-**现行结论:** 页面协议是自研的封闭领域 DSL,不采用 A2UI 或其他通用 agent→UI 协议;统一运行时基于 Svelte 自建,不采用或魔改 Grafana/Superset/Rill 等开源 BI;页面规格保持严格声明式,禁止表达式、脚本和自定义样式,复杂计算不进入页面层。ADR-0002 中 shadcn-svelte 的选型未落地，当前自建组件是实现事实；ADR-0066 明确它不是宿主消费前置，也不为文档对账引入该依赖。
-
-这四份决策的共同前提是"页面协议的可控性是核心诉求":只有封闭、紧凑、可被 JSON Schema 完整校验的领域 DSL,才能让 AI 生成结果可控、可自动修复。0005 论证自建运行时的理由中,"数据服务是唯一数据入口"这一条已被 0014 的查询产物模型修订(现在的数据入口是数据网关,按查询产物分发到 SQL/DQE/组合执行适配器),但"规格可控性""避免长期跟随开源上游演进""内网部署与身份整合成本"等其余理由不变。
-
-**已生效的修订:** [ADR-0046](./0046-controlled-computation-with-named-operators.md) 把 ADR-0003 的"复杂计算不进入页面层"修订为"计算只以封闭算子表达,开放语法面不进入页面层"。它不推翻 ADR-0003 的判据——禁的仍是可任意求值、语法面开放、无法被 JSON Schema 完整校验的东西——但承认封闭具名算子与 [ADR-0035](./0035-structured-relative-time-expressions.md) 的结构化相对时间同类,是声明式数据而非表达式。第一批算子(`ratio` / `delta` / `groupSubtotal` / `grandTotal` / `pivot`)已进入页面协议 5.1;第二批 `joinAggregate` 形状未定。
-
-来源:[ADR-0001](./0001-domain-dsl-over-a2ui.md)、[ADR-0002](./0002-svelte-runtime.md)、[ADR-0003](./0003-strict-declarative-spec.md)、[ADR-0005](./0005-build-over-open-source-bi.md)。
-
-## 领域建模、包边界与部署形态
-
-**形式化架构的范围与门禁([ADR-0076](./0076-formal-architecture-contract-scope-and-enforcement.md))：** 用户确认以概念、关系、公理和操作语义检查设计自洽性，并通过模块、接口、执行环境和交付物映射验证实现符合性。第一版覆盖 #95 主干，提供声明、校验和架构图，不生成业务代码。模型规范与源码/构建事实分开；新增或扩大的违规阻断开发检查，既存违规精确登记退出条件和执行票，目标交付不允许旧代码混入的迁移豁免。`CONTEXT.md` 的当前术语真源身份不变；具体表达方式、维护来源与行为验证深度仍待模型草案收口，不能把该方向裁决当作检查器已实现。
-
-**人工搭建与旧链路隔离的后续裁决([ADR-0074](./0074-browser-component-building-and-isolated-legacy-baseline.md)，#102)：** 人工组件切换和沉淀的最小能力归页面搭建工作台，浏览器与 Python 同步支持全部可装配组件（当前十类），共享用例约束共同规则；AI 整页装配仍归 Python，搭建画布不接管文档与业务规则。旧服务链以完整仓库提交和固定 tag 保存为可复现历史基线，按需在仓外检出；主线完成活能力、客户端和契约生成解耦后移除相应旧实现，依赖可达性与实际构建产物共同验证隔离。旧基线不进入默认安装、开发、测试、构建或 CI，主线保留有来源的验收用例。生产门槛继续保留，但不再要求为等待它们而把旧代码留在主线。旧 Java 停止交付，旧适配器待新客户端验证后退场；`ioc-data-dev/` 退主线，页面资产与 DQE 仿真保留，顶层模板播种随模板库退场。#122–#125 已建立基线并完成主体解耦清理，以下早期条目须按此边界理解。
-
-**现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
-
-部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已切换为 `adapter-static` 的纯前端 SPA，删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。当前资产接线按 ADR-0080 使用单次保存和回执确认，历史精确读取不作为接入前置；真实部署载体及盘古接线仍需提供方验收。
-
-ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 是锁步发布容器,内部的 Skill 与 Python Tool 是两个平级 Module,只通过 MCP Tool Interface 协作;Authoring contracts 只拥有 Page Build Spec 等 Skill↔Tool 接口,产品中立契约则由仓根 `contracts/metriccanvas` 承载,Bundle 携带摘要锁定的只读快照。FastMCP 只作为入站 Adapter,Fake 与 fixture 只属于 Test Harness。TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成 Page Build Spec,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。
-
-ADR-0062 把 Java 页面资产落为仓根 `metriccanvas-page-assets/` 的第一方 Maven module 组(`model` / `service` / `bootstrap`),形状按"可被 `CDINL2DataBuilderService` 整体吸收"设计:挂 `cbcbi-parent`,包根 `com.huawei.cdi.pageassets`,MyBatis XML + Druid + MariaDB 驱动,Swagger 2.0 + `dfs-codegen` spec-first(作者文件在 Java,副本导出到 `contracts/metriccanvas/page-assets/`),Flyway 启动迁移且独立历史表,`/rest/cdi/{service}/v1/` 路径与 `X-Operator-Id` 作为 actorId,tar.gz + Docker 交付。有意分歧:JUnit 5、无 Redis(`GET_LOCK`)、`utf8mb4`、HTTP 状态语义信封。Java 完整复验页面(JSON Schema + 全部跨引用不变式,共享向量为门禁),`(operation, actorId, idempotencyKey)` 指纹幂等,固定锁序,首批不建发布/租约/审计表。**前端接线只接 `apps/platform`**:一个 Java HTTP Adapter 实现完整 `PageLifecycle`,四接口真实调用,其余返回 `NOT_SUPPORTED`;`apps/canvas` 定位为示例与参考宿主,只读 `pages/`。由此,ADR-0060 的"唯一产品界面、生产不运行 Node"指向的是 platform,"platform 去 Node 服务端"成为已登记、待单独裁决的必经轨道。
-
-ADR-0063 用 Relay 与 DQE 的真实接口修正了创作期的四个前提:Relay 无 Run 概念,`source.relay` 改为 `{ sessionId?, runId?, skillVersion }` 且 `skillVersion` 由 Tool 从 `bundle.json` 提供;`build_page` 幂等键由 Tool 派生 `hash(pageId, baseRevisionId, canonical(spec))` 以吸收模型与 Planner 重试;Tool 以 sdist 交付供 Relay `uvx` stdio 拉起(修正 0061 "不发布 wheel");Relay 的 MCP 路径不传用户身份,第一阶段以 MCP config `env` 的服务态身份调 DQE——**这是对 0060 "不以后台身份替用户验真"的明确偏离**,收敛在 `IdentityPort` 后面,生产门禁是经 Relay Plugin `on_tool_execute_before` 注入按用户身份。DQE 只经 `CDINL2DataBuilderService` 的 `dsl/execute`,永不直连 Lab;元数据发现接受全量、执行按身份(放宽 0060 的按身份过滤);`metric_code` 只用于鉴权、DQE 用中文名的关系至此确认。当时的 Chat 调查是 WebSocket + `role_name`，现已不作为浏览器接线依据：按 [ADR-0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 使用盘古实例 API + adapter，受控 skill 字段和回调语义仍待 #106 实证。
-
-ADR-0064 再把页面装配与持久化拆开:Python Authoring Core 的目标 Interface 是
-`compose(PageBuildSpec) -> PageBuildArtifact`,不拥有 `PageAssetPort`;Relay 保存分析会话、
-步骤事件与最新检查点,Svelte 只在用户显式沉淀时以平台身份调用 Java 页面资产 Interface。
-Relay 当前会把 MCP 完整返回值送回模型,所以目标接线必须在 MCPToolProxy/observer seam 增加
-双通道 Adapter:完整页面构建产物写 Relay 最新检查点并供 Svelte 按身份读取,模型只接收不含页面
-文档和数据行的摘要。`compose_page` 在该 Adapter 完成前不得向真实模型开放。0063 的 Python
-保存幂等键与取消后仍可能落修订因此退出目标架构,但身份、DQE 和 sdist 事实继续生效。
-
-包边界方面,治理对象从"预定义指标"整体转为"可执行查询"后(见下节),配套的指标履约与目录发现包已确认为空壳并物理删除;当前 TypeScript 创作期一侧(`agent-runner`、`data-context`)按同一套 DDD 标准做了进一步收敛,`agent-runner` 解散进 `apps/platform`,`data-context` 并入 `packages/server/mcp`,并修正了一处因两个包各自定义同名 `DataContextProvider` 而产生的真元归一违规。该结构仍是迁移前代码的行为基线;目标形态不在 Java 或 Node 重建 Agent Runner,而由 Relay 承担 Agent 运行、Python Tool 承担页面装配、Java 承担页面资产治理。
-
-表现层一侧随后按同一套判据做了包内收敛:`widgets` 的职责收紧为"页面组件的纯渲染实现",三组在包内零消费者、只服务包外的文件迁入 `runtime-ui`——快照态外壳 `WidgetHost`、筛选控件(职责表本就把"筛选控件"判给 `runtime-ui`,此前是实现与文档漂移)、以及只服务 AI 总结正文的 `SafeMarkdown`(迁入后 ADR-0019 的垂直组件目录首次完整)。`widgets/src` 同时从平铺改为按组件类型分目录,与 `page/src/schema/components/` 对齐;受控语义 HTML 在 `rankingDetailCard` 与 `text` 出现两个真实消费者后提升为共享 Module,Interface 只接收原始字符串,安全解析、失败关闭、节点渲染和颜色映射全部由其 Implementation 独占。**`aiSummary` 刻意不进 `widgets`**:它是生成型垂直组件,搬入会给纯渲染包引入 `runtime` 依赖与网络代码,`components/` 的完整性由"纯渲染"而非"schema 组件类型全集"定义。
-
-来源:[ADR-0006](./0006-metadomain-layering-and-naming.md)、[ADR-0007](./0007-demote-spec-to-document-form.md)、[ADR-0004](./0004-git-storage-first-platform-later.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0023](./0023-remove-metric-fulfillment-and-catalog-packages.md)、[ADR-0024](./0024-converge-authoring-time-packages.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md)、[ADR-0062](./0062-first-party-java-page-assets-module.md)、[ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)、[ADR-0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)。
-
-**创作与正式渲染的交付切口([ADR-0065](./0065-separate-metric-canvas-authoring-package.md))：** 创作覆盖层拆为独立包，对外组件名为 `MetricCanvas`，正式渲染使用 `RuntimeView`；创作包依赖渲染包，纯渲染的安装依赖与产物均不含创作专用代码。两种入口共用布局与渲染，文档、属性面板、保存和撤销历史仍由宿主管理。platform 一次性迁移并删除旧 `authoring` 参数与创作专用导出，不设兼容入口。该边界已由 #56 实现并完成专项回归，不再以 #55 的运行时会话提取为硬前置；包名、版本策略和跨包导出的公开契约由 #100 对账。本决策不重开 ADR-0060～0064 的目标架构。
-
-**宿主与嵌入交付([ADR-0066](./0066-self-contained-rendering-engine-host-boundary.md))：** 引擎固定提供视觉呈现，宿主不指定字体、主题或其他样式。宿主获取并传入页面文档，提供数据网关并负责端点、凭据、登录恢复与重试；不新增页面仓储/身份端口。Svelte 使用 npm 入口，异构/普通 HTML 使用 JS 地址 + `mount`，`embed` 是包而非应用，不新增自定义元素、iframe 或引擎微前端协议。IOC 子应用与 platform 自行承担应用集成。`update` 为完整输入替换，运行依赖变化按原语义初始化；`filter-change` 只通知宿主，URL 同步可选且不得原样回灌重启会话。
-
-**导航目标的新裁决([ADR-0067](./0067-url-navigation-with-explicit-parameter-bindings.md)，由 #109 / ADR-0068 实施）：** 页面声明绝对/相对 URL 与显式参数绑定，默认普通链接，宿主地址解析和点击接管不再必需。参数来源可以是当前行、当前页面参数、当前筛选值；内容提供方负责部署地址正确性。页面资产身份与修订归属保留，导航栈和回跳仍归应用。该目标部分取代 ADR-0048；下文提及 5.1 的 pageId 导航时描述的是已替换的历史实现，不是新的接入要求。#56 已交付且不重开，#100 对账公开 API，#103 最终验收依赖 #109。
-
-**本地首版的替代边界([ADR-0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md)，#99)：** 使用真实 Java HTTP 服务与已有内存存储，接受重启清空；页面校验、修订与幂等逻辑保持真实，不以 Node offline lifecycle 绕过 Java。DQE 沿用 HTTP 仿真，只承诺有依据的协议和明确测试场景，未知能力明确失败，不代表真实 DQE/MySQL 验收。所有宿主数据请求的头和相关 Cookie 由宿主决定，本仓不新增身份适配器或用户切换器，也不补默认用户；服务端既有必填项与权限校验保留。旧 scripted/lexical 模型仅作测试与迁移对照，公共 Chat 未接通时显示不可用，其删除时机由 #102 与 #107/#108 对账；不可用状态不能满足 #95/#104 的完整终点线。
-
-**发布形态与公开面门禁([ADR-0071](./0071-four-release-artifacts-with-standalone-page-protocol.md)，#100)：** 渲染引擎按四个交付物锁步同版发布——`@metriccanvas/page`(协议/校验，无 Svelte) + `@metriccanvas/engine`(`runtime`+`widgets`+`runtime-ui`+`data-gateway` 收入一个包，另给 `./widgets`/`./ui`/`./dqe` 子路径) + `@metriccanvas/metric-canvas`(创作) + `@metriccanvas/embed`(JS 挂载，ESM+IIFE 自包含)。**页面协议必须独立成包**：服务端六包依赖 `page` 且不依赖任何渲染包，并入会让持久化与 MCP 包装上 ECharts 与 Svelte。`page` 主入口收窄为协议契约面并上快照门禁，组件属性类型移入 `./internal`；**组件属性类型不得迁往 `widgets`**——它们是 Zod schema 投影即协议本身，迁移会造成依赖成环并让三语言共享契约需 Svelte 包参与生成。`schemaVersion` 超区间不进 `ERROR_TYPES`(跨语言闭集无「引擎版本」概念)，走独立引擎级失败关闭通道。开发期查询明细实现移入 platform，不得随包发出。Svelte 区间统一 `>=5.29.0 <6` 且须以最低版本真实验证；`runtime` 的虚假 Svelte peer 删除但不因此拆包。目录按交付物分组；`engine` 一名为词汇表已有词条「统一运行时(Runtime，又称渲染引擎)」的缩写，命名依据在裁决时即已就位(该 ADR 原先声称词条缺失并把补齐列为发包前置，已按 [ADR-0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) 更正)。
-
-**领域语言的一次改名与一次澄清([ADR-0072](./0072-integrating-application-rename-and-authoring-render-time-split.md)，#95 同批)：** 「宿主」在本仓重载了三个意思，**只有「装载渲染引擎的应用」改称集成应用，英文保留 `Host`**；Java 宿主服务 `CDINL2DataBuilderService` 与包内技术容器(`WidgetHost`、「ECharts 宿主」)不在改名范围，代码标识符与 ADR 文件名零改动。改名范围限词汇表加七份活文档共 72 处，**ADR 正文与 `docs/plan/` 保留原措辞**，靠词条 `_Avoid_: 宿主（旧称）` 导航。**创作期与渲染期是一对对立时段，创作期同时容纳 AI 装配与人工页面搭建**——ADR-0043 的下钻对立与 ADR-0032 的「人机分工」是依据，因此 ADR-0065 的「创作包」「创作画布」用词全部成立。**问数不拆形态**：「一次性看数」与「用 AI 起页面」是同一次问数的两种结局，系统在沉淀之前分不出来，platform 收窄的是入口语义而非能力，问数留在 platform。「画布」一词归搭建画布，页面外框视觉面改称外观／底色。新增词条：创作期、渲染期、页面搭建、搭建画布、页面搭建工作台、平台、集成应用；「改版」立词条但进提议段——**该能力当前不存在**，建成前不得在设计中假定它已存在。
-
-**Java 接入责任的新裁决([ADR-0070](./0070-consume-host-java-page-assets-api.md)，#105)：** Java 服务由外部宿主提供，本仓只负责接口消费与前端验证，不设计或实现 Java 服务。上文 ADR-0062 的第一方 Module 建设是历史背景；现有 Java 代码/旧 Swagger 不再自动充当宿主接口真源。POST/PUT/DELETE、资源身份、响应形状与 SLA 按提供方资料对接；本轮未确认的四项后端方案作废。接口资料缺口作为待确认事实，不猜能力，也不删除现有 Java 代码。
-
-**静态平台的数据与身份通路([ADR-0073](./0073-static-platform-direct-access-with-injected-runtime-config.md)，#101)：** 平台以纯前端静态产物部署，浏览器直连 DQE 与 Java 页面资产两条通路。**推翻两条前提**：一、DQE 认的是**用户态 header token**(`X-Auth-Token` + `X-Operator-Id`，见 ADR-0063 的实地调查)，不是 SSO Cookie，地图 #95 的「CORS + 内网 SSO」按此更正；二、现有取数通路从未按该契约接过线(`createServerDataGateway` 丢弃 `actor`，`createDqeGateway` 默认空 `headers` + `same-origin`)，浏览器直连是这三个身份头的第一次真实接线。**平台只认「挂在集成门户里」一种真形态**，凭据由门户给；独立 URL 只是开发与演示形态且不接真实 DQE——否则本仓要自建换 token 逻辑，违反 ADR-0069。**平台不实现微前端协议**，是自包含静态 SPA，装载方式属部署期决定。**运行配置由集成应用注入**：一个本仓定义的全局对象，五个扁平字段(`dqeEndpoint` / `pageMetadataBaseUrl` / `authToken` / `operatorId` / `workspaceId`)，**全应用只有一个模块碰注入源，每次请求现读不快照**——散读会让将来改从 qiankun `props` 取值变成散弹式修改。缺配置照常启动、取数时失败且明说是未注入配置。`dqeEndpoint` 填相对路径即同源反代、填绝对地址即 CORS 直连，地图「不走反代」收窄为「**不由本仓提供反代**」。`X-Operator-Id` 是声明值不是验证值，**前端不做任何校验**，可信性由 token 承担，服务端应在二者不一致时拒绝(归 #105)；重登不归平台。**一并删除** `/api/data/*`、`createPlatformDataGateway` 与 mock 用户切换器；`apps/canvas` 数据网关改用同一注入面。**为 qiankun 预留四条接缝**(配置读取点、路由 base、视口尺寸与固定定位、`:root` 全局样式)，生命周期导出/public path/卸载清理三条不预留。已知未验证风险：SvelteKit 的 `paths.base` 是构建期常量而 qiankun 前缀由宿主运行时分配，且静态产物不是 UMD 库入口。注入契约见 [`docs/host-contract.md`](../host-contract.md)「平台的运行配置注入」段。
-
-## 页面文档结构与书写原则
-
-**现行结论:** 页面文档局部、顺序地自描述:每个页面数据源在当前位置声明完整的结果字段契约,每个表格在当前组件中声明完整列;不提供 `fieldDefaults`、`fieldSets`、`columnSets` 或顶层 `definitions` 这类需要跳转才能理解含义的机制。`query` 数据源的标量字段可按 `dimensions`/`measures` 分组作为角色简写,结构化明细字段使用 `recordList/detail` 并就地声明项字段契约,DQE 已完成内容组合的受控富内容使用 `semanticHtml/detail`;查询字段须就地声明 `queryField`、`type` 等完整信息,具名算子产出字段就地声明类型与角色但不声明 `queryField`,不引入默认值、模板插值或表达式。
-
-展示格式(`format`)始终归属组件字段绑定,不归属数据源;数据源和元数据快照只提供可被组件覆盖的 `defaultFormat` 展示建议。这样同一字段在指标卡、表格、图表中可以有不同格式,格式化实现仍集中在统一运行时。人民币金额以 `money/CNY` 表达结果字段语义、以 `cny-adaptive` 表达可覆盖的展示策略；受控语义 HTML 中无属性 `<data>` 标记的规范数字也由当前组件字段绑定格式化，Table 只作为显式消费者处理该能力。
-
-页面 `id` 只用于文件命名、页面仓储加载、路由和修订归属,统一运行时不得按某个正式页面 `id` 选择样式、组件或交互;两份除 `id` 外相同的页面元数据必须产生相同的 DOM 结构和计算样式。正式页面 `id` 不得以字面量出现在产品源码中,由自动化门禁校验。
-
-内容分区的外观自 Schema 5.0 起由可选的 `section.container` 单一声明(封闭三档:`plain`/`panel`/`card`,缺省为通用看板外观);`section.variant` 与 `section.layout` 已删除。内容分区缺省是 12 列等权 Grid；Schema 5.3 起，真实结构无法表达时可声明最多 12 条受控正整数权重轨，不开放 CSS、坐标或像素宽高([ADR-0054](./0054-section-weighted-column-tracks.md))。统一运行时不得按组件组合或子组件 `props.variant` 推断分区外观。同一视觉行内同类型、同 `props.variant` 且具备行对齐能力的组件由统一运行时自动对齐行轨高度,这是运行时不变量而非页面声明;对齐通过显式契约协作,统一运行时不出现组件内部选择器。新增 `container` 档位必须证明"结构上不可区分且视觉上必须不同"。
-
-**响应式宽度所有权([ADR-0059](./0059-direct-component-box-responsive-ownership.md)):** `RuntimeView` 的 `mc-runtime` 只负责页面级与跨组件排布；`RuntimeSection` 顶层单元、组合卡 slot 与 Tab 活动面板以 `mc-component-box` 给直接 Page Component 提供可用 inline-size；组件内部只使用最近的直接布局盒或匿名 self container。旧 viewport 数值不得机械迁移为容器阈值，优先用流式 CSS；组件根填满直接盒，固有内容尺寸必须有收缩或内部 overflow owner。该边界不进入 Page Metadata，不新增响应字段或生产态断点注册表。
-
-**组件能力目录的 `defaultSpan` 是相对比例,不是绝对宽度([ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md))。** 依据是人工搭的看板对它的用法:33 个分区里 14 个覆盖了 `defaultSpan`,但覆盖后的宽度几乎都保持了默认值之间的比例(指标卡 3 配柱状图 6 写成 4 + 8,三张指标卡各 3 写成 4 + 4 + 4)。创作期装配据此在**每个分区内**按比例贪心分行、每行缩放到恰好占满整行,因此视觉行的 span 之和恒等于分区列数;装箱不跨分区搬动组件,ADR-0055 的一组一分区不动。装箱是装配期的确定性纯函数(`packages/server/mcp/src/authoring/section-layout.ts`),模型不参与 span 决策——span 是纯几何,模型只会带来方差。分行判断只在比例空间里做,受控权重列轨只改变最终整数分配。手写页面继续显式声明 `span`,不受影响;目录没有「宽度上限」概念,装配因此会把独占分区的饼图与排行卡拉到通栏,该现象留待有真实产物证据后单独裁决。
-
-**页面外框与分区内层次([ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)):** 顶层可选 `layoutForm` 封闭两档 `report`(缺省)/`dashboard`,是页面外框几何与画布外观的唯一真源,`dashboard` 要求宿主交出全部宽度(见 [`docs/host-contract.md`](../host-contract.md));组件 `layout.layer: "backdrop"` 让组件铺满分区并置于同分区其余组件之下,其余组件仍走该分区当前列轨的自动流(缺省为 12 列),页面不写坐标、宽高或 z-index。三个声明各管一层:`layoutForm` 管页面外框、`container` 管分区外壳、`layer` 管分区内层次,唯一硬冲突是 `backdrop` 要求 `container: "plain"`。铺底组件的未遮挡矩形(**安全区**)由 `RuntimeSection` 计算并经 CSS 自定义属性下发,**明确不进页面 schema**——那会把布局结果写进页面元数据；该通道已经实现并覆盖加载、字体变化、窗口缩放与窄屏回流。`dashboard` + `panel` 与 `report` + `backdrop` 两个组合合法但没有设计过观感,决定不禁、以测试钉住现状。同一份 ADR 把聚合根改称**页面**,「看板」与「报表」降为布局形态。
-
-**组件级分组容器([ADR-0053](./0053-composite-card-component-level-grouping-container.md)):** 新增组件类型 `compositeCard`(**组合卡**)——一张卡框住若干组件,自身不承载数据,子组件是五种的白名单(`metricCard`、`pieChart`、`gauge`、`keyValuePanel`、`categoryBreakdown`)、禁止递归、卡内复用同一条 12 列自动流,分隔线是容器上的一位布尔信息且位置由结构派生。同批附带一个叶子组件 `categoryBreakdown`(**分类明细**,按类别逐行、按度量逐列的紧凑明细)——按仓里先例新增叶子组件不单写 ADR,因此它登记在这份 ADR 的白名单里;它与并排饼图之间有一条硬约束:**颜色按类别取值决定,不按行序决定**,该约束不进页面文档,只能由测试钉住。它与 `section.container: "card"` 的判据是层次而不是功能:`container` 是**分区级**、卡与卡只能纵向堆叠;组合卡是**组件级**、进 12 列栅格、可以横向并排若干张。`container` 仍是分区外观的唯一真源,组合卡不改变也不推断分区外观,因此 ADR-0038 那条「新增 `container` 档位必须证明结构上不可区分且视觉上必须不同」不被触发。该 ADR **推翻了 ADR-0038 否决「`group` 层级」时的前提**——「当前没有需要独立 DOM 所有权的场景」已不成立——但只放开一层非递归的组件级容器,不引入 `rows`/`stack` 递归布局语言。按 ADR-0051 是纯增量,登记为 **5.2**;协议、widget 与统一运行时已经实现,概览页已迁移为三张并排组合卡。编辑器仍原子化处理组合卡,嵌套子组件创作明确延期。
-
-`timeRange` 筛选器的 `default` 除既有天级预设与绝对区间外,新增**结构化相对时间**分支(粒度单位 + 区间描述 + 锚点,并显式承载是否包含当前未完成周期);它是声明式数据而不是表达式字符串,求值发生在服务端取数编排期且一次页面加载内共享同一求值时刻,0003 的"禁表达式与脚本"原样成立。页面另需一处可表达"本页面含 N 个临时指标"及其已被显式接受的声明(ADR-0036),使这一风险在后续查看与审计中始终可见。
-
-**已生效的 5.1 增量:** [ADR-0047](./0047-first-class-page-parameters.md) 顶层新增可选的 `params`,文本属性取值从 `string` 放宽为「字面量或页面参数引用」;物化后领域类型仍是 `string`。[ADR-0048](./0048-navigation-intent-and-host-routing.md) 跨页下钻只上抛导航意图,路由与回跳属宿主。[ADR-0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) 筛选器闭集从两类扩到六类并支持层级与级联,**ADR-0035 的结构化相对时间欠账已随 0050 偿还**。[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) 新增顶层 `layoutForm` 与组件 `layout.layer`(见上一段)。**仍为提议的 5.1 增量:** [ADR-0049](./0049-table-server-side-and-presentation-capabilities.md)——表格的排序与列头筛选按数据源模式整体下推或整体本地化,查询分页下的拒绝规则尚未解除。全部为纯增量,存量页面不迁移。
-
-ADR-0018 的局部显式在这批中被反复援引为边界依据,但守法方式是**限制间接的形态而不是限制它出现的位置**:页面参数引用只允许整值替换、不允许模板插值,取值只能是标量,格式复用 ADR-0013 的既有闭集;计算产出字段必须就地声明在结果字段契约里;层级到谓词字段的映射写在查询里而不是网关配置里。按组件类型限制参数消费面的方案已被 ADR-0047 否决——那会让页面为了显示一个值而被迫引入某个组件。
-
-来源:[ADR-0017](./0017-page-schema-v3-hard-cutover.md)、[ADR-0018](./0018-keep-page-metadata-locally-explicit.md)、[ADR-0013](./0013-format-belongs-to-component-field-binding.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0026](./0026-controlled-nested-detail-fields.md)、[ADR-0028](./0028-controlled-semantic-html-detail-fields.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0038](./0038-section-container-and-row-alignment-invariant.md)、[ADR-0042](./0042-money-fields-and-semantic-embedded-values.md)、[ADR-0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md)、[ADR-0053](./0053-composite-card-component-level-grouping-container.md)、[ADR-0054](./0054-section-weighted-column-tracks.md)、[ADR-0059](./0059-direct-component-box-responsive-ownership.md)。
-
-## 数据获取与查询模型
-
-这是 37 份 ADR 里演进链条最长、也最容易读错现状的一组决策,按时间顺序梳理如下,**只有最后给出的"当前实际生效模型"可直接采信**:
-
-1. `schemaVersion 2.0`([ADR-0011](./0011-derive-query-fields-from-catalog.md)、[ADR-0012](./0012-query-dp-and-verify-data-service-for-metric-fulfillment.md)):页面引用预定义指标/维度,`query` 字段由结构化查询 + 元数据目录解析,指标履约需要查 DP 并向数据服务验真。**已被 0014 完全取代。**
-2. [ADR-0014](./0014-query-artifacts-replace-metrics.md):治理对象从"预定义指标"改为"可执行且可复现的查询"。此时的模型是页面只持有精确**查询执行引用**,不提交 SQL/DQE 原文,原文由服务端解析已验真的"查询产物"修订。
-3. [ADR-0015](./0015-defer-cascading-data-source-input-semantics.md)(status: proposed):在"只提交查询执行引用"的前提下设计级联数据源语义,因找不到能覆盖实际后端能力的输入绑定方式,**保持提议状态,未实现**。
-4. [ADR-0016](./0016-send-embedded-query-definitions.md):**推翻 0014 和 0015 "只提交查询执行引用,不得提交查询原文"的边界**,改为页面直接内嵌 DQE 查询定义(`{ language: "dqe", body }`),浏览器直接提交原文,服务端每次执行时校验权限与安全边界。"查询产物"作为独立修订资产的模型至此不再是当前实现。
-5. [ADR-0017](./0017-page-schema-v3-hard-cutover.md):把 0016 的内嵌查询定义落地为 `schemaVersion: "3.0"`,一次性删除旧结构化查询、指标目录和指标履约的全部代码路径,字段角色改为 `dimension`/`measure`,新增 `queryField` 显式映射和 `filterBindings` 显式筛选绑定。
-6. [ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md):在 0017 的 `query` 数据源上补充可选的内嵌初始行(`source.initial`,字段键用 DQE 原始输出名)用于首屏免查询呈现,以及基于 DQE `order.offset/limit` 和 `total_count` 的查询分页。
-7. [ADR-0026](./0026-controlled-nested-detail-fields.md):在不放开任意 JSON 的前提下,以 `recordList/detail` 支持项字段契约与查询字段映射均就地显式的一层嵌套明细。
-8. [ADR-0028](./0028-controlled-semantic-html-detail-fields.md):对 DQE 已完成内容组合的明细,以 `semanticHtml/detail` 传递受控标签、文本和语义类;数据网关保持字符串不透明,显式前端消费者负责白名单解析、节点渲染和样式映射。
-9. [ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md) 与 [ADR-0032](./0032-authoring-time-query-verification.md):补齐查询**怎么被形成**这一段。指标以发现条目与口径锚点身份进入数据上下文快照(Schema 元数据升到 `1.1`,条目含业务名、别名、口径说明、单位、是否比率、**可加性与时间聚合方式**、可用维度与所属业务域),但不回到页面协议、不作为建页或问数的强制前置,0014 拒绝预定义指标的结论未被推翻;业务域只是路由标签,各域共用同一个数仓与同一个 DQE 执行环境,不产生第二套端点或凭据;发现层描述的是 DQE 语义面(中文指标名、维度名、维度取值域、时间粒度能力、指标维度可组合性)而非 ADS 物理表与字段,检索按名称/别名精确匹配加口径说明向量匹配的混合方式进行。创作期的操作对象是**取数单元**(业务语言描述的指标 × 维度 × 时间 × 筛选,暂命名),查询定义与结果字段契约是它经真实执行后的派生物;取数单元是随分析会话存在的创作期状态,不产生独立 id、修订与发布治理,因此不构成 ADR-0033 拒绝的第二个聚合根。任何进入页面文档的 `query` 数据源,其查询定义必须先经清单校验 → 真实执行 → 结果字段契约物化;闭集是**分层**的:指标名、维度名、维度取值与时间粒度必须取自数据上下文闭集,而 `output_metrics` 内嵌 `formula` 是**有意保留的开放面**,允许模型自由生成,代价由留痕、可加性校验与沉淀设闸承担而非事前禁止。契约的字段名来自真实执行输出,类型与语义来自数据上下文,不以样例值推断,`origin.md` 的"不从查询返回样例推断字段契约"继续成立。
-10. [ADR-0033](./0033-suspend-dataset-runtime.md)(status: proposed):曾设计服务端**计算数据集**(Transform 层 join/lookup/group/timeAlign/rank + Compute 层 `ratio`/`pctChange`/`cagr` 等具名算子)来补齐 DQE 表达不了的 30%–40% 派生计算,**挂起**。挂起理由是它要求领域层出现第二个聚合根(实质修订 0006/0007)、它的 Transform 边界语义正是 0015 挂起的那一批、且其正确性依赖尚未在真实数据侧补齐的可加性与时间聚合方式。派生计算改由 DQE formula 承担;结论"不提供通用 `arithmetic`,只提供具名算子"被保留以备恢复。
-11. [ADR-0034](./0034-graphql-rest-as-data-gateway-adapters.md):DQE 表达不了的取数场景经 GraphQL/REST **数据网关适配器**接入,组件与浏览器不得直连,0014 的"新增执行环境必须接入数据网关"原样适用。`query.language` 从字面量 `'dqe'` 升级为判别联合,`dqe` 分支形状不变、存量页面无需迁移;端点与凭据不进页面文档;响应到行集的摊平路径必须显式声明,不按样例推断。这些路径的发现面是操作名、参数与响应字段,需另备一份发现描述,缺失时只能人工建页。
-
-12. [ADR-0044](./0044-first-class-metric-entries.md):补齐 0031 从未落地的那一半。指标条目成为**业务域级一等结构**(`schema.metrics`),不再是 `roleHints: ['measure']` 的字段,`roleHints` 闭集收窄为 `dimension | time`;可加性与时间聚合方式由 `description` 里的受控中文散文变为结构化闭集,`formatVersion` 一次性切到 `1.1`。可加性维持三档,但 `不可加` 的含义明确为"不得折叠已返回的数据行,可在目标粒度重新查询"(本仓的粒度变化在架构上永远是一次重新查询,不存在客户端折叠)。语义面投影 `SemanticSurfaceMetric` 的既有字段一个未动,故问数链路未受影响;可加性的**消费**留给 ADR-0039 的实现批次。
-
-**当前实际生效模型:** `query` 页面数据源直接内嵌 DQE 查询定义并可选内嵌首屏初始行,标量字段角色为 `dimension`/`measure`,受控的一层对象数组使用 `recordList/detail`,受控语义 HTML 使用 `semanticHtml/detail`,通过外层、必要时项级 `queryField` 以及 `filterBindings` 显式声明与外部协议的对应关系;页面数据源可另有封闭具名算子阶段,算子产出字段就地声明在同一份结果字段契约里但不带 `queryField`。不存在需要提前注册的预定义指标或独立版本化的"查询产物"资产;数据网关按查询定义分发执行并归一化返回,算子在归一化之后作用于行集。[ADR-0022](./0022-page-data-sources.md)(原编号 0008)记录的是这条演进链之前的"命名数据源 + `inline`/`query` 判别式取数"结构性基线,这部分结构仍然有效,但其正文对 `query` 字段模型和首查语义的具体描述已经过时,读它时必须结合本节时间线,不要单独采信。该 ADR 原先把"仅含 inline 数据源的页面"称为静态页面并禁止其 `filters` 与 action,**这条约束已按新不变量改写**:不变量是**交互必须在页面自己能观察到的状态上产生可见效果**,而不是"inline 页面不许有交互"。因此**仅内联页面**可以声明筛选器(含驱动地图下钻的层级维度筛选器)与 `navigate`,被拒的只有 `writeFilter`(没有生效查询可以响应它)与远程分页。
-
-级联数据源输入语义(上游查询结果作为下游查询受控输入)仍是[ADR-0015](./0015-defer-cascading-data-source-input-semantics.md)记录的未决问题,当前页面 schema、校验器和数据网关不支持这类依赖。IOC 作战地图的项目详情页曾是这类依赖的一个真实实例(客户活动查询依赖项目详情返回的 `party_number`),但 [ADR-0047](./0047-first-class-page-parameters.md) 改由上游页面下钻时以页面参数传入绕开,**ADR-0015 因此没有被这个需求推动解冻**。
-
-**已生效的扩展:** [ADR-0046](./0046-controlled-computation-with-named-operators.md) 在数据源上引入计算阶段,第一批是单数据源内的 `ratio`/`delta`/`groupSubtotal`/`grandTotal`/`pivot`;query 字段契约放宽为「查询字段或算子产出字段」。0046 对 ADR-0033 是部分恢复:采纳其"不提供通用 arithmetic,只提供具名算子"的保留结论,不恢复其计算数据集聚合根与 Transform/Compute 分层,**因此 ADR-0033 的三条恢复条件仍然未满足,挂起未解除**。第二批的跨数据源 `joinAggregate` **本轮不定形状**。
-
-**仍为提议的扩展:** [ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) 落地 ADR-0034 留白的 GraphQL 分支,筛选条件以结构化谓词(封闭算子 + 绑定筛选器或页面参数 + 空值省略)表达,排序以排序绑定表达,总条数由计数声明复用主查询谓词。**本批未落地,`QUERY_LANGUAGES` 仍只有 `dqe`。**
-
-当前 `versionPolicy.current` 是 `6.4`（[ADR-0068](./0068-plain-url-navigation-protocol.md)：URL 导航与普通查询值的显式主版本切换，5.x 能力进入 6.0 基线；5.x 读取兼容由 ADR-0081 恢复；以下 5.x 为历史演进）(见 `packages/page/src/version.ts`)。主版本 5 由 [ADR-0038](./0038-section-container-and-row-alignment-invariant.md) 记录(分区容器 `container` 取代 `section.variant`/`section.layout` 的硬切换);5.1 是 [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 策略下的第一次次版本递增。历史上 3.0→4.0 的切换没有专门 ADR——4.0 版本内新增的能力(AI 总结组件、内嵌初始行与查询分页等)由 [ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md) 分别承载,未触发新的整版本切换记录。那是 ADR 记录里的一处已知空白,不是本文件的误读。**5.4 历史能力**（当前 `supportedVersions()` 返回5.0—5.4及6.0—6.4）:[ADR-0053](./0053-composite-card-component-level-grouping-container.md) 的 `compositeCard` 与 `categoryBreakdown` 是 5.2 能力,同批还有地图分档图例与 tooltip 扩展字段、`ratio.scale` 与 `keyValuePanel.columns: 1`;[ADR-0054](./0054-section-weighted-column-tracks.md) 的受控权重列轨，以及同批的筛选 `emptyLabel`、紧凑/嵌入式呈现闭集、指标短上下文、键值单位与地域固定摘要是 5.3 增量能力；指标行值级导航、多表 Tab、`analysisStack`、紧凑只读页头与 `compositeCard.metricGrid` 是 5.4 增量能力。5.x 时期采用同主版本兼容；6.0 的导航迁移与当前读取例外分别由ADR-0068/0081记录。
-
-**已生效的版本策略:** [ADR-0051](./0051-additive-minor-versions-for-page-schema.md) 把版本演进规则正式化——次版本递增只用于纯增量变更(新增可选字段、判别联合新增分支、闭集新增成员、放宽既有约束),主版本递增用于破坏性变更且**必须单独写 ADR 论证为什么无法以增量表达**。理由是硬切换与本仓自己的生命周期模型冲突:页面修订不可变([ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md))、模板引用精确的已发布修订([ADR-0010](./0010-page-templates-reference-published-revisions.md))、报告冻结在采集时点([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)),三者都要求旧文档长期可读,而「迁移一份不可变修订」的产物是一个新修订,模板与报告指向的仍是旧那个。ADR-0017 与 ADR-0038 在各自时点可行,是因为当时没有生产内容;该策略不追溯改写它们。上一段记为「已知空白」的 3.0→4.0 版本内增长,事后看正是这条策略描述的行为。当前 `versionPolicy` 接受5.0—5.4及6.0—6.4；5.x按[ADR-0081](./0081-read-schema-5-x-with-6-x-runtime.md)在读取边界转换为6.x，其他旧主版本仍由原引擎读取或显式迁移为新修订。
-
-该策略有**一条例外**(2026-08-25 补入 ADR-0051):**从未被任何存量文档行使的开放面,可以按次版本收紧。** 判据是零使用、可证(测试或脚本随收紧一并落地)、并承认形式超集让位于真实文档集合上的超集。它被刻意限定得很死——"很少使用"不是判据,只有"零使用且可证"才是——否则它就是绕过版本策略的后门。第一个适用对象是组件 `layout` 对象补 `.strict()`(每个组件的 `props` 都是 strict,`layout` 不是,写错键名会静默通过),该收紧已随 5.2 行使,零使用证明是 `packages/page/tests/layout-strict-zero-usage.test.ts`。
-
-## 产品形态谱系与两速生命周期
-
-**现行结论:** 产品形态不只有看板。问数(Ask)、探索(Explore)、报告(Report)、Data App(App)与未来的监测(Monitor)共用**同一份页面文档表达**,页面文档同时是 Data Agent 与 Data App 的**汇合点**(0033 挂起计算数据集后,汇合点从计算数据集回落到页面文档)。生命周期分两速:问数与探索产生**临时页面态**——一份通过页面校验、由现有统一运行时直接渲染的页面文档,不进入页面仓储、不产生页面修订、不占页面目录、不参与发布治理,并使用临时页面 id;只有用户显式要求沉淀时才进入资产态。
-
-沉淀分两个方向,时间语义相反:沉淀为 App 走 `saveRevision`,页面时间必须是结构化相对时间(ADR-0035)才会随周期滚动,且若含临时指标需过 ADR-0036 的门槛;沉淀为 Report 则**保留查询定义与内嵌初始行、不声明筛选绑定**——按 ADR-0020,默认状态下存在内嵌初始行且无筛选变化时统一运行时不重新查询,报告因此天然冻结在采集时点,同时保住口径溯源。Report 不新增数据源类型或渲染路径。
-
-问数的 NL2DQE 发生在创作期,统一运行时收到的始终是已经确定的页面文档,因此"统一运行时不执行 NL2DQE"这条不变式原样成立,并未因新增形态而放宽。当前实现由 Platform 承载,ADR-0060 的目标形态改由 Relay/Skill 与 Python Tool 承载,但创作期/运行期分界不变。**分析会话已裁决为服务端一等概念:** 保存 `sessionId`、追加式步骤事件流与一份最新**会话检查点**;步骤事件解释过程,检查点恢复已校验临时页面态、结构化续跑状态、组件钉住结果与待确认交互。它不是页面修订,不进页面仓储或发布治理;不保存完整对话文本、模型 prompt 或原始 `outcome.messages`。会话按 90 天保留,仅平台管理员与本人可见;身份当前允许 mock,但 mock 必须提供多个可切换用户且按 `actorId` 的可见性过滤必须真实执行,接入真实身份是上生产的前置条件。**ADR-0064 已把目标所有权裁决给 Relay Session:** Relay 保存步骤事件和最新检查点,完整页面构建产物经双通道 Adapter 写检查点并供 Svelte 读取,模型只见摘要;Java 不复制会话。Monitor 当前不建设,其依赖(调度、基线、稳定指标口径)已记录,其中稳定口径由 ADR-0031 承载、每期重算由 ADR-0035 承载。
-
-来源:[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0058](./0058-latest-session-checkpoint-restores-transient-page-state.md)、[ADR-0009](./0009-node-postgres-platform-beside-runtime.md)、[ADR-0021](./0021-page-id-is-not-a-rendering-switch.md)、[ADR-0020](./0020-embedded-initial-rows-and-query-pagination.md)、[ADR-0022](./0022-page-data-sources.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)、[ADR-0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md)。
-
-## 问数编排与口径治理
-
-**盘古接入与第一版反馈边界（[ADR-0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md)）：** 保留 platform 全局导航、文档工具栏、页面画布和右侧检查器，只将原左侧对话区整体替换为盘古；所有问答、确认、口径说明、进度、错误与历史都在盘古，不新增自有对话反馈面或独立页面切换。每次 ask 都返回本轮结果，结果可以是确认问题，分析仍可等待并在回应后继续。缺少可靠实时事件时首版允许整体处理中，不伪造分步状态；失败、取消、等待或文本答复均保留并标识上轮页面，新合格产物才替换。0037/0040 的确认与确定性校准目标、0055 的页面口径分区、0058/0064 的检查点与双通道继续有效；接口兑现仍待实证。细项见[接入基线](../plan/wayfinder-107-pangu-integration-baseline.md)。下列历史实现描述不能当成盘古已经接通。
-
-**现行结论:** 编排顺序固定为域路由 → 指标与维度检索 → 候选消歧 → 口径成形 → 清单校验 → 真实执行 → 意图判定与组件选择 → 呈现,全部发生在创作期;当前由 Platform 实现,目标由 Relay/Skill 调度与 Python 确定性页面装配 Module 协作实现。域路由由模型分类但**结果必须可见且可改**(静默路由错域会产出看起来完全正常的错数);检索返回排序候选与口径差异说明,取数核对是一次**消歧**而不是一次确认;执行前展示完整生效范围卡,但只在候选歧义、使用自由 formula、命中临时指标、时间口径由模型补全或预估成本超阈值时阻塞等待确认;每步中间结果分步流式呈现,既处理延迟也充当纠错锚点。Answer 允许由多个组件组成,就是一份完整的临时页面文档。组件选择以能力目录、字段角色、维度基数与时间粒度为**硬闸**,在允许范围内按分析意图排序,意图回显且用户可钉住,不把可视化决策外包给提问者。多轮修改是定向增量 patch,允许一轮同时改多层,原则是**用户未提及的显式设置保持不变**。
-
-口径治理承认一处开放面:指标检索不到时**尽力回答而不阻塞**(不恢复 0012 的 `METRIC_GAP` 状态),但临时指标必须在界面上与公司口径视觉可区分、缺口落库为带出现次数的指标需求条目、且沉淀为长期 App 时必须显式接受"本页面含无人负责的口径"并把该事实**持久化在页面上**。冷启动依赖人工构造的 30–50 条黄金问题集(存量页面可反向抽取的真实 DQE 查询体只有 4 个),配额为直答 60%、需澄清 20%、无指标缺口 10%、跨域近义易混 10%,且 few-shot 样本与评测样本必须切开。
-
-问数增强批次(2026-08,PRD #85)在上述框架内补三笔:**派生指标模板**(环比/同比/占比)的公式预先声明在数据上下文层,派生指标视同公司口径,收窄 0036 的临时指标边界(模板外仍走临时指标);**取数核对升级为控制面板**——非阻塞轮次 token 行呈现,时间与筛选要素就地修改为不经模型的数据校准并落步骤事件,已验证查询词面高度命中时跳过口径成形(验真不可跳),消歧候选按用户本人历史默认预选但永远阻塞确认;**治理收件箱**统一别名候选、指标需求候选与已验证查询提名为单列待办,采纳不自动写回,评审回执走会话事件流。问数的口语时间(「上个月」)由**相对时间词表**(数据上下文层闭集)映射为 0035 的结构化相对时间表达,词表外如实拒答——0035「不允许模型直接写死日期」的要求由此落实。
-
-**一句问题铺开整页,跨口径也允许,但差异必须一直可见。** ADR-0037 的「Answer 允许由多个组件组成」此前被首轮提示词收窄为单个取数单元,现已放开:首轮识别出多个视角时口径成形直接输出多个新增操作,一个视角一个单元、一个单元一个组件(实测一句「Tokens 运营月报」得 6 个单元 6 个组件),多单元缺省标题按各单元指标派生。这些单元的口径往往并不相同(分组维度分别是无、统计周期、区域、模型),这不是模型跑偏而是报表的本来形状。[ADR-0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md)裁决:**允许跨口径页面且不为它新增阻塞**——跨口径不是会算出错数的口径风险,而是数都对但比不了的**对照风险**,按 ADR-0036 处理临时指标的同一套办法处理(不阻塞、但必须一直可见);差异靠**口径组**(取数单元按域 + 分组维度 + 时间窗口与粒度 + 维度筛选取的等价类)一组一个内容分区来承载,分区标题只写各组之间真正不同的那几项,并同时在取数核对(补分组维度)与助手回复(按组汇总并明说不能横向对照)上可见。装配出口形状改变但页面协议不动,**不触发 ADR-0051 的版本递增**。同批两条配套约束:分析意图按单元判定且输入收窄到该单元自己的口径(否则整句里的「走势」会把按行业切分的单元也判成趋势),一轮至多 6 个取数单元且由编排侧确定性拒绝超出部分(成本与延迟随单元数线性增长,而成本预估能力至今不存在)。该 ADR 同时给尚未建设的「问数结果页交互式筛选条」预设了硬约束:筛选器只能作用于共享该维度的口径组。
-
-**同一条判据接着推出两笔布局与页头决策([ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md))。** 组件形态多样之后产物仍摆不成一页,因为装配无条件取目录 `defaultSpan` 当绝对宽度,而多数口径组只有一个组件,于是每个分区各留一段空白、右边缘参差。修法是按比例装箱铺满行宽(见「页面元数据与布局」段)。同时,装配开始产出**页面级页头**:独立首个分区、`container: "plain"`,标题取各单元业务域的去重拼接,全页共用同一时间窗口时以 `asOf` 写出该窗口,任一单元缺口径时不产页头。理由正是 ADR-0055 自己那条——页面会被沉淀、被分享、在别的宿主里打开,只有写在文档里的事实才跟着走;而此前「这一页覆盖哪个业务域与时间窗口」在页面文档里一个字都没有(问题原文进了 `meta.description` 却没有页面内渲染消费者,时间窗口被分区标题按「全页共用即为噪声」剔掉)。**页头不用问题原文当标题**:部分可答时问句里含缺口指标,拿它作标题等于让页面承诺自己没有的数字,与 ADR-0036 的边界冲突。页头不承载取数单元,因此不经 `auto-visualize` 的硬闸、也不放宽硬闸对 `bindsData: false` 的拒绝;`text` 与 `aiSummary` 不产出(前者内容无可信来源,后者在手写看板里出现 0 次)。出口形状变化同样不触发 ADR-0051 的版本递增,但消费装配产物的代码从此不能假定每个组件都有 `data.main`。
-
-**归因诊断([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed)不改变上述编排,而是与它并列。** 本节描述的固定顺序状态机回答"是多少";"为什么变了"是结果驱动的多阶段过程,由 `AgentRunner` 的第二个实现承担,与问数共享步骤事件落库、SSE、临时页面态与页面校验准入,**不共享编排状态机**。归因逻辑只面向分析证据 Port 编程,生产侧适配器复用 ADR-0032 的验真链路,因此 0032 与 0037 的全部约束原样适用于归因取到的每一份证据。该 ADR 目前是设计基线,未实现;读本节时不要把它当作已生效的编排分支。
-
-来源:[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md)、[ADR-0031](./0031-metrics-as-data-context-discovery-anchor.md)、[ADR-0032](./0032-authoring-time-query-verification.md)、[ADR-0036](./0036-metric-gap-non-blocking-exit.md)、[ADR-0030](./0030-transient-page-state-for-ask-and-explore.md)、[ADR-0035](./0035-structured-relative-time-expressions.md)、[ADR-0039](./0039-derived-measure-templates-as-company-definitions.md)、[ADR-0040](./0040-scope-card-as-control-panel.md)、[ADR-0041](./0041-governance-inbox-unified-growth-loop.md)、[ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md)、[ADR-0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md)、[ADR-0057](./0057-proportional-row-packing-and-page-header-in-assembly.md)。
-
-## 页面生命周期与发布治理
-
-**现行结论：** 本节描述资产态，普通问数与探索的临时页面态不因此自动保存。[ADR-0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 是当前 Java 接入依据：资源 ID 定位记录，修订 ID 作为更新基线；人工保存与 AI 提交各自只有一个发送者，成功以经验证的服务回执确认。冲突或未知结果保留工作并停止，程序只核对已有记录，不以新操作重发，也不要求远端幂等查询或历史精确读取。
-
-发布经工作台人工确认，将当前资源改为发布态；普通保存改为草稿态，不承诺独立发布副本。草稿历史只展示服务摘要，回退显式指定版本，不承诺回退一定追加修订或提供跨窗口基线检查。发布租约、模板候选和参数提取不作为本期前置。
-
-历史设计：[ADR-0008](./0008-immutable-page-revisions-and-publish-leases.md)、[ADR-0010](./0010-page-templates-reference-published-revisions.md)、[ADR-0078](./0078-dimension-values-templates-and-page-instances.md)。0008/0078 的本期保存与发布前置、0079 的强 latest 与精确回读前置按 0080 的范围替代；原文保留设计背景，不作当前服务保证。
-
-## AI 总结组件
-
-**现行结论:** 页面摘要默认使用 `text`,由后端随页面文档在 `props.body` 中返回正文;正文默认按纯文本渲染,需要分色时显式声明 `bodyFormat: "semanticHtml"`,并与排行详情共用受控语义 HTML Module。只有需求明确声明运行时 SSE 动态生成时才选择 `aiSummary`,不得根据标题、已有数据或 AI 文案自动推断。显式声明的 AI 总结是内化执行的生成型垂直组件 Module,不是第三种页面数据源。`aiSummary` 组件只声明可选标题、纯文本 `promptTemplate` 和必填的 `relatedData`(对既有页面数据源字段的显式只读引用),不声明 `data`,不暴露端点、Header 或 SSE 协议参数。Host、请求组装、私有 SSE Adapter、会话管理与纯渲染 View 在组件目录内高内聚地分工;数据网关不为此新增 AI/Prompt/SSE 方法。只有出现真实的多组件共享生成能力时,才从当前的单一垂直组件中提取公共 Module。正文的受限 Markdown 渲染此前隔在 `widgets` 包,已由 0025 迁入同一组件目录,该垂直模块至此完整;同一份决策也说明了为什么 `aiSummary` 不该有 `widgets` 侧实现。
-
-来源:[ADR-0019](./0019-internalize-ai-summary-generation.md)、[ADR-0025](./0025-converge-runtime-presentation-packages.md)、[ADR-0027](./0027-default-summary-to-text-unless-sse-explicit.md)、[ADR-0029](./0029-share-controlled-semantic-html-rendering.md)。
-
-## 未决事项
-
-- **GraphQL 路径的发现描述**([ADR-0034](./0034-graphql-rest-as-data-gateway-adapters.md) 决策节、[ADR-0045](./0045-graphql-query-branch-with-structured-predicates.md) Consequences):ADR-0034 要求 GraphQL/REST 路径补一份以操作名、参数与响应字段为可枚举面的发现描述,并明确"缺少这层描述时该路径只能由人工构造查询,不进入问数的自动生成范围"。ADR-0045 本批不交付它。当时的假设是 GraphQL 只承载 DQE 表达不了的少数场景,而 IOC 作战地图让 GraphQL 成为某个完整应用的**唯一**取数协议,这条下限的实际代价随之放大。**在补齐之前,不得宣称该类应用可由 AI 生成。**
-- **跨数据源聚合算子的形状**([ADR-0046](./0046-controlled-computation-with-named-operators.md) 决策节):`joinAggregate`(按组合键把另一个数据源聚合后并入)被推迟到第二批,形状未定。它要回答的正是 [ADR-0015](./0015-defer-cascading-data-source-input-semantics.md) 列为"恢复设计前需依次确定"的五项——空集与失败传播、输入集合上限、循环依赖校验、缓存键、取消语义。推迟是为了用第一批算子的实战经验去定它;代价是概览页的核心指标(管道支撑率)在此之前无法实现。
-- **多页应用是否需要成为一等概念**([ADR-0048](./0048-navigation-intent-and-host-routing.md) Considered Options):IOC 作战地图的应用外壳归已有门户,因此本批只定义了导航意图与宿主路由契约,没有引入导航树、页面成员或面包屑规则。第二个多页应用出现时需要重新裁决;届时要注意,面包屑的真正难点(回跳要恢复来源页的筛选、搜索、分页与排序状态)本就不是静态导航树能表达的。
-- **级联页面数据源输入语义**([ADR-0015](./0015-defer-cascading-data-source-input-semantics.md),proposed):恢复设计前需要依次确定空集与失败传播、输入集合上限、循环依赖校验、缓存键和取消语义;在明确 SQL 与 DQE 共同支持的受控参数模型之前,不得向页面 schema 加入临时 `inputs`、表达式或任意结果转换能力。
-- **模板发布的治理强度**([ADR-0024](./0024-converge-authoring-time-packages.md) 待决节):`template-library` 当前的发布流程没有租约过期、审计事件或拒绝/取消/强制释放,治理强度明显弱于页面发布(ADR-0008 的 7 态 + 全量审计),但没有 ADR 说明这是刻意的产品裁决还是实现漂移。在这一点被显式裁决(写新 ADR)之前,不应该以此为由抽取页面/模板共享的发布内核。
-- **真实身份接入是外部生产前置输入，不纳入当前规划**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节、[ADR-0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md)):会话内容含问题原文(客户名、代表处、业务黑话),但当前身份仍是 mock；在接入真实身份之前不得把会话数据用于跨用户的推荐、评测或对外分享。后续内网对接方式由外部方案提供,当前架构讨论、规划与独立创作 Bundle 不设计鉴权机制,也不以本仓 mock 身份宣称生产链路已完成。归因诊断的自动下钻限制在真实内网对接落实前继续有效。
-- **查询成本、配额与成本预估**([ADR-0032](./0032-authoring-time-query-verification.md) Consequences、[ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):创作期真实执行与每轮问数都产生真实数仓成本,按身份的次数与资源限制策略尚未确定;ADR-0037 取数核对的"预估成本超阈值才阻塞确认"依赖尚不存在的成本预估能力,在其具备之前该条件退化为按域或按粒度的粗略阈值。
-- **计算数据集的恢复条件**([ADR-0033](./0033-suspend-dataset-runtime.md),proposed):需同时满足指标条目的可加性与时间聚合方式在目标域真实可用、ADR-0015 的五项级联语义有确定答案、且 formula 的口径复制成本已实际发生(同一口径在多个页面各持副本并已漂移)。第一条的**契约侧已由 [ADR-0044](./0044-first-class-metric-entries.md) 打通,数据侧未补齐**,因此该条件仍未满足;后两条未动。在此之前不得以任何名义在服务端或页面协议中引入 Transform/Compute 层,也不得提供通用 `arithmetic`。三个条件与外部 Dataset Runtime 提案的逐条对账见 [`docs/dataset-reconciliation.md`](../dataset-reconciliation.md)。
-- **Explore 是否需要独立于 Ask 的构造能力**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):当前 Explore 被视为 Ask 的多轮延续,共用同一份临时页面态与同一套编排。若出现并排对比、分叉比较或跨会话拼装这类 Ask 编排无法表达的需求,才需单独裁决;在此之前不要为 Explore 建立第二套状态模型。
-- **首个落地域与黄金问题集的业务输入**([ADR-0037](./0037-ask-orchestration-and-interaction-contract.md) Consequences):黄金问题集需要域清单与一句话描述、每域高频指标 top 20 与常见口头说法、时间口径的默认约定("本月"是否到昨天、"同比"比同月还是同期累计)、以及哪些指标是存量哪些是流量。后两项无法从数据推断,必须由业务侧给出;在拿到之前,问数的准确率数字不具备可比较的基线。
-- **英文 `metric_code` 与 DQE 中文指标名的关系——已关闭**([ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)):调查确认 DQE 查询体使用中文 `name`,`metric_code` 只用于权限中心鉴权,对应关系由 NL2SQL 服务内部维护。指标条目同时携带两者,本仓仍不推断名称转换规则。
-- **创作期按用户身份到达 Tool**([ADR-0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md)):Relay 的 MCP 路径不传用户身份,第一阶段以服务态身份调 DQE,偏离 ADR-0060。生产前必须经 Relay Plugin `on_tool_execute_before` 注入或 Relay `MCPToolProxy` 改造替换为按用户身份;在此之前不得宣称创作期已按用户鉴权,也不得把服务态阶段的取数核对结果用于跨用户评测或分享。
-- **Monitor 的调度与通知归属**([ADR-0030](./0030-transient-page-state-for-ask-and-explore.md) 决策节):主动洞察需要调度、基线与通知,当前都在系统边界之外,且尚未确定由本平台承担还是由数据侧承担。在这一点被裁决前,不要为此在统一运行时或平台内引入定时任务、订阅或消息通道。
-- **指标条目的可加性仍需数据侧逐个声明**([ADR-0044](./0044-first-class-metric-entries.md) Consequences):Schema 元数据 `1.1` 与一等指标条目的**工程欠账已偿还**(指标迁出字段、`roleHints` 收窄为 `dimension | time`、可加性与时间聚合方式成为结构化闭集),但 0044 只让这些语义变得**可表达**,没有让它们变得**可用**——真实业务域里每个指标取什么可加性,是必须由数据侧给出的业务输入。在目标域真实补齐之前,不得认为 ADR-0033 的恢复条件一已满足。另需注意 0044 只交付了承载结构:ADR-0039 的派生指标模板、ADR-0035 的相对时间词表与 ADR-0043 的指标归因定义仍未挂上去,它们各自的字段形状尚未设计,落地时仍需继续递增 `formatVersion`(但届时是往指标条目上追加字段,而不是重建概念)。
-- **归因诊断的受控业务规则与第一期落地输入**([ADR-0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md),proposed):承载归因规则的概念已定名为**指标归因定义**并进入 `CONTEXT.md`,但它的字段集、与派生指标模板的关系,以及是否需要独立版本化仍未定,留给后续 ADR;它挂载的位置已由 [ADR-0044](./0044-first-class-metric-entries.md) 的指标条目提供。首个真实切片为公有云流水,阻塞于两项必须由数据侧给出的输入——指标条目所需的可加性与**维度层级关系**(当前快照里每个业务域只有 2 个非时间维度、零层级,下钻深度在数据里表达不出来),以及一个业务认可的黄金案例。此外分析会话当前是进程内存储(Postgres 等 #52),不足以支撑 0043 要求的诊断复跑与事后审计。
-- **表现层包名与 `WidgetHost` 的术语归属**([ADR-0025](./0025-converge-runtime-presentation-packages.md) 待决节):ADR-0006 第 3 条把包名 `widgets` 的理由写为"取自规格字段",但该字段自 ADR-0017 硬切换后已是 `sections[].components`,根级 `widgets` 现被校验器作为旧版遗留字段拒绝,`CONTEXT.md` 亦无 `widget` 词条。ADR-0006 的 Consequences 要求"词汇表术语变更需评估包/端口命名级联",故这是一笔由 0006 自己规定要偿还的欠账;改名波及 `package.json`、跨包 import 与公开符号,应作为独立的命名决策处理,在此之前不要以"顺手"为由局部改名。
-
-## 编号与历史记录说明
-
-- **ADR-0022 曾编号为 ADR-0008**,与"不可变页面修订与发布租约"的 ADR-0008 编号冲突,已于 2026-08-05 重编号,标题与正文未改动;外部文档若引用旧编号"ADR-0008(命名数据源)",指的是当前的 ADR-0022。
-- **ADR-0023** 记录的是一次纯粹的仓库清理(删除已经零源文件、零消费者的空壳包目录),不引入新的架构决策,列在此处仅为完整性。
-
-**#109 实施基线（2026-09-07）：** [ADR-0068](./0068-plain-url-navigation-protocol.md) 已实现 6.0 的 `href + query` 导航、三种动态来源与普通查询值。旧 pageId 导航和私有前缀不再是当前接口；本索引中 ADR-0047/0048 与 5.x 描述仅记录历史。默认浏览器跳转，宿主可选接管，图表直接点击；不可变旧修订不原地迁移。
-
-
-## 页面试验场的开发工具定位（0075）
-
-[ADR-0075](./0075-page-playground-as-development-tool.md)：原 Canvas 应用更名为**页面试验场（Page Playground）**，目录 `apps/playground`、包名 `playground`。保留仓库页面浏览与 JSON 即时预览，移除旧平台 API 来源；按需启动和构建，不参加默认产品启动与交付，测试与类型检查继续覆盖。平台、搭建画布 `MetricCanvas` 与渲染引擎的职责不变。此条补齐 #102 的去留单项；其余旧服务与静态化由 #125/#104 接续。
-
-
-## Java 页面资产单次提交（0080）
-
-[ADR-0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 是当前 Platform Java 接入裁决：资源 ID 定位、单次保存、可信成功回执确认，未知写入保留工作并停止；发布更新当前资源草稿/发布状态。本期不以幂等操作查询、强 latest、历史精确读取、参数提取候选或发布租约作为接入前置，不承诺编辑与独立发布副本隔离。它部分替代本索引 0008/0078/0079 对上述范围的描述，普通问数边界不变。
+| [0036](./0036-metric-gap-non-blocking-exit.md) | 指标缺口不阻塞问数，临时口径可见、计数并在沉淀处设闸 | 现行 |
+| [0037](./0037-ask-orchestration-and-interaction-contract.md) | 问数编排与交互契约 | 现行；部分由 [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) 修订；首版实时分步暂未实现，确认仍保留 |
+| [0038](./0038-section-container-and-row-alignment-invariant.md) | 分区容器单一真源与行对齐运行时不变量 | 现行；部分由 [0054](./0054-section-weighted-column-tracks.md) 修订 |
+| [0039](./0039-derived-measure-templates-as-company-definitions.md) | 派生度量模板视同公司口径 | 现行 |
+| [0040](./0040-scope-card-as-control-panel.md) | 口径卡升级为控制面板：token 行呈现、要素就地修改与已验证查询快路径 | 现行 |
+| [0041](./0041-governance-inbox-unified-growth-loop.md) | 治理收件箱：语义面成长回路的统一呈现与评审回执 | 现行 |
+| [0042](./0042-money-fields-and-semantic-embedded-values.md) | 人民币金额使用专用结果字段语义，受控语义 HTML 用 data 标记内嵌值 | 现行 |
+| [0043](./0043-attribution-diagnosis-as-a-sibling-analysis-form.md) | 归因诊断作为与问数并列的分析形态 | 提议中；未实现，设计基线见原文 |
+| [0044](./0044-first-class-metric-entries.md) | 指标条目一等化,Schema 元数据升到 1.1 | 现行 |
+| [0045](./0045-graphql-query-branch-with-structured-predicates.md) | GraphQL 查询分支以结构化谓词表达，不透传 WHERE 模板 | 提议中；5.1 批次，未落地 |
+| [0046](./0046-controlled-computation-with-named-operators.md) | 受控计算以封闭具名算子分两批进入页面数据源 | 现行；第一批算子；第二批 joinAggregate 形状未定 |
+| [0047](./0047-first-class-page-parameters.md) | 页面参数一等化，与筛选器按可变性分界 | 现行 |
+| [0048](./0048-navigation-intent-and-host-routing.md) | 跨页下钻由宿主路由，统一运行时只上抛导航意图 | 现行；部分由 [0067](./0067-url-navigation-with-explicit-parameter-bindings.md)、[0068](./0068-plain-url-navigation-protocol.md) 修订；导航目标与强制宿主接管已完成 #109 迁移；导航栈与回跳所有权仍有效 |
+| [0049](./0049-table-server-side-and-presentation-capabilities.md) | 表格的服务端能力按数据源模式整体下推，呈现能力只识别不计算 | 提议中；呈现已落地，服务端排序筛选未解除 |
+| [0050](./0050-filter-type-closure-and-hierarchical-dimensions.md) | 筛选器类型闭集扩展，层级维度成为地图下钻的声明式来源 | 现行 |
+| [0051](./0051-additive-minor-versions-for-page-schema.md) | 页面协议改为增量次版本演进，主版本递增须论证无法增量表达 | 现行；2026-08-25 补了“零使用开放面可按次版本收紧”的例外 |
+| [0052](./0052-dashboard-layout-form-backdrop-and-safe-area.md) | 看板形态的满幅布局、铺底层与安全区通道 | 现行；协议与运行时安全区通道已实现 |
+| [0053](./0053-composite-card-component-level-grouping-container.md) | 组件级分组容器「组合卡」,与分区容器按层次分工 | 现行；协议、widget 与统一运行时已实现；同批附带叶子组件「分类明细」 |
+| [0054](./0054-section-weighted-column-tracks.md) | 内容分区可声明受控权重列轨 | 现行；Schema 5.3，部分修订 0038 的恒定等权列前提 |
+| [0055](./0055-scope-groups-as-section-boundaries-in-ask-answers.md) | 口径组作为问数答案的分区边界 | 现行；首轮多单元、口径组分区、三处可见、按单元意图与单元数上限均已实现；2026-08-27 补记对话轨呈现：选用指标改集合、按单元重复的步骤折叠；跨口径月报改作空态默认入口 |
+| [0056](./0056-metric-centric-terminology.md) | 术语围绕指标谱系规整：临时指标、派生指标模板、取数核对 | 现行；词汇表已切换，代码与 UI 文案批量替换进行中 |
+| [0057](./0057-proportional-row-packing-and-page-header-in-assembly.md) | 装配期按比例装箱铺满行宽,并产出页面级页头 | 现行；装箱纯函数与页头均已实现；defaultSpan 重新表述为比例基线 |
+| [0058](./0058-latest-session-checkpoint-restores-transient-page-state.md) | 分析会话保存最新检查点以恢复临时页面态 | 现行；部分修订 0030 的会话内容边界；不产生页面修订 |
+| [0059](./0059-direct-component-box-responsive-ownership.md) | 响应式布局按统一运行时、直接组件布局盒与组件内部三层拥有 | 现行；不改页面协议；17 种组件与 53 个 variant 已纳入响应契约门禁 |
+| [0060](./0060-static-svelte-java-page-governance-relay-python-authoring.md) | 静态 Svelte、Java 页面治理与 Relay/Python 创作期取代 Node 平台 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；目标架构，尚未完成迁移；Python 直接保存修订已退出 |
+| [0061](./0061-self-contained-authoring-bundle-and-neutral-contract-export.md) | 自包含创作 Bundle 与中立契约单向导出 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；迁移实施基线；build_page 保存职责已退出 |
+| [0062](./0062-first-party-java-page-assets-module.md) | 第一方 Java 页面资产 Module 的工程、Interface 与持久化边界 | 现行；部分由 [0070](./0070-consume-host-java-page-assets-api.md) 修订；J1–J4 已完成：校验器、四个 Interface、内存与 MySQL 仓储、Python / platform Java Adapter 与一键纵切 pnpm slice:page-assets；CloudBuild Testcontainers 探针与并入宿主时机待用户；目标宿主 CDINL2DataBuilderService |
+| [0063](./0063-relay-dqe-facts-revise-authoring-boundaries.md) | Relay 与 DQE 真实接口对创作期边界的修正 | 现行；部分由 [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) 修订；身份、DQE 与打包事实继续生效；Python 保存幂等与取消后修订语义已退出 |
+| [0064](./0064-agent-returns-page-artifact-relay-and-java-own-persistence.md) | Agent 返回页面构建产物，Relay 会话与 Java 页面资产分别持久化 | 现行；现行目标；Agent 不保存页面，Relay 需新增模型摘要/完整 artifact 双通道 |
+| [0065](./0065-separate-metric-canvas-authoring-package.md) | 独立创作包提供 MetricCanvas，RuntimeView 保持正式渲染 | 现行；#56 已实现并完成专项回归；不再等待 #55；发布策略由 #100 裁决 |
+| [0066](./0066-self-contained-rendering-engine-host-boundary.md) | 渲染引擎提供固定呈现与 JS 挂载入口，应用集成归宿主 | 现行；已裁决宿主边界；#100 发布门禁、#103 真实集成、#101 身份接线分别落实 |
+| [0067](./0067-url-navigation-with-explicit-parameter-bindings.md) | 页面声明 URL 与显式参数绑定，跨页链接无需宿主地址解析 | 现行；目标裁决，尚未实现；#109 承接协议/运行时迁移，部分取代 0048 |
+| [0068](./0068-plain-url-navigation-protocol.md) | URL 导航使用普通查询参数，页面协议切到 6.0 | 现行；#109 的后续裁决；实现与验收状态由 #109 记录 |
+| [0069](./0069-local-boundary-substitutes-and-host-owned-credentials.md) | 本地首版在存储与 HTTP 边界替代外部依赖，请求凭据归宿主 | 现行；#99 已裁决；#101/#102/#104/#105 分别落实接线、删除、验收与接口对账 |
+| [0070](./0070-consume-host-java-page-assets-api.md) | Java 页面资产由宿主提供，本仓负责接口消费 | 现行；用户修正 #105 范围；部分取代 0062 的第一方 Java 建设前提 |
+| [0071](./0071-four-release-artifacts-with-standalone-page-protocol.md) | 渲染引擎按四个交付物发布，页面协议独立成包 | 现行；#100 已裁决；发布门禁与目录重组待执行票 |
+| [0072](./0072-integrating-application-rename-and-authoring-render-time-split.md) | 「宿主」改称集成应用，创作期与渲染期确立为一对对立时段 | 现行；词汇表已补齐；ADR 正文与 docs/plan/ 保留「宿主」原措辞 |
+| [0073](./0073-static-platform-direct-access-with-injected-runtime-config.md) | 静态平台以自包含 SPA 直连外部服务，运行配置由集成应用注入 | 现行；#101 已裁决；接线与静态化归 #104，应用外壳归 #110 |
+| [0074](./0074-browser-component-building-and-isolated-legacy-baseline.md) | 人工组件切换在浏览器完成，旧服务链隔离为可复现历史基线 | 现行；#122–#125 已建立基线并完成主体解耦清理；新页面资产消费验证后退出旧适配器 |
+| [0075](./0075-page-playground-as-development-tool.md) | 页面试验场作为按需使用的开发工具保留 | 现行；原 canvas 改名；退出默认产品启动、构建和产物上传，保留测试与类型检查 |
+| [0076](./0076-formal-architecture-contract-scope-and-enforcement.md) | 以概念、关系和约束形式化架构，并对照代码与交付事实 | 现行；#95 主干范围及 CI 约束方向已确认；模型草案待收口，校验器尚未实现 |
+| [0077](./0077-pangu-dialogue-in-existing-workbench-and-ask-turn-outcomes.md) | 盘古接管现有左侧对话，每轮 ask 返回结果并保留已有页面 | 现行；已确认布局与首版反馈边界；接口及页面交付仍待 #106–#108 实证 |
+| [0078](./0078-dimension-values-templates-and-page-instances.md) | 创作草稿经维度取值提取发布为模板，执行产生页面实例 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 修订；后续设计；当前 Java 发布不以模板/参数提取为前置 |
+| [0079](./0079-trusted-authoring-turns-gate-content-tools.md) | 可信创作轮次约束内容工具，最新页面与模型上下文分通道 | 现行；部分由 [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) 修订；本轮身份与固定基线现行；强 latest/精确回读前置已调整 |
+| [0080](./0080-java-assets-single-attempt-save-and-status-publication.md) | 按外部 Java 契约单次保存，发布更新页面状态 | 现行；当前 Java 接入依据；本仓实现已落地，真实联调另验 |
+| [0081](./0081-read-schema-5-x-with-6-x-runtime.md) | 6.x 运行时兼容读取 Schema 5.x | 现行；平台与页面试验场读取 5.0—5.4 后规范化为 6.x |
+| [0082](./0082-explicit-business-sections-in-platform-authoring.md) | 完整页面创作以业务章节组织，口径组不强制决定分区 | 现行；计划不进入渲染协议；首期不含自动分析结论 |
+| [0083](./0083-platform-evidence-work-and-internal-draft-save.md) | 平台创作先取证据，维护单份工作稿并在内容工具内保存草稿 | 现行；部分替代 0064/0079 的平台不保存与候选选择；单份工作稿加工具内保存草稿 |
+| [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段 | 现行；补齐 ADR-0050 层级维度筛选器在查询侧的绑定形状；6.7 新增分支，6.8 按 ADR-0051 例外收紧 |
+
+<!-- adr-index:end -->
+
+## 主题索引
+
+<!-- adr-topics:start 由 tools/scripts/adr-index.py 生成，不要手改 -->
+
+主题页是**人写的现行结论**；「覆盖的 ADR」由 `tools/scripts/adr-index.py` 从主题页正文实际引用的编号推出，不是手写的。编号点开见上面的速查表。
+
+| 主题 | 讲什么 | 覆盖的 ADR |
+|---|---|---|
+| [IOC 作战地图批次（0045–0053）](./topics/ioc-operation-map-batch.md) | 一个多页 GraphQL 数据应用触发的九份决策：哪些已生效、哪些仍是提议、以及驱动它们的三条业务裁决。 | 0045 0046 0047 0048 0049 0050 0051 0052 0053 |
+| [技术栈与建设策略](./topics/tech-stack-and-strategy.md) | 为什么自研封闭领域 DSL 与 Svelte 运行时，而不是 A2UI 或开源 BI；严格声明式的边界在哪。 | 0001 0002 0003 0005 0035 0046 |
+| [领域建模、包边界与部署形态](./topics/domain-modeling-and-package-boundaries.md) | 聚合根只有「页面」；包按 DDD 分层命名；从 Node 平台迁到静态 Svelte + Java 页面资产 + Relay/Python 的目标形态。 | 0004 0006 0007 0009 0023 0024 0025 0029 0060 0061 0062 0063 0064 0065 0066 0067 0069 0070 0071 0072 0073 0074 0075 0076 0077 |
+| [页面文档结构与书写原则](./topics/page-document-structure.md) | 局部显式、就地声明；格式归组件字段绑定；分区容器、权重列轨、响应式宽度与布局形态的所有权划分。 | 0013 0017 0018 0021 0026 0028 0035 0036 0038 0042 0047 0048 0049 0050 0052 0053 0054 0057 0059 |
+| [数据获取与查询模型](./topics/data-fetching-and-query-model.md) | 演进链条最长、最容易读错现状的一组：从预定义指标到内嵌 DQE 查询定义，当前实际生效模型与版本策略。 | 0008 0010 0011 0012 0014 0015 0016 0017 0019 0020 0022 0026 0028 0030 0031 0032 0033 0034 0038 0044 0045 0046 0047 0051 0053 0054 0068 0081 |
+| [产品形态谱系与两速生命周期](./topics/product-forms-and-lifecycle.md) | 问数、探索、报告、Data App 共用一份页面文档；临时页面态与资产态的两速生命周期，以及分析会话的归属。 | 0009 0020 0021 0022 0030 0035 0036 0058 0060 0064 0079 0083 |
+| [问数编排与口径治理](./topics/ask-orchestration-and-scope-governance.md) | 创作期编排的固定顺序、临时指标的非阻塞边界、口径组与业务章节如何决定分区、盘古接入的第一版边界。 | 0030 0031 0032 0035 0036 0037 0039 0040 0041 0043 0055 0057 0077 0082 |
+| [页面生命周期与发布治理](./topics/page-lifecycle-and-publish-governance.md) | 资产态的保存与发布：当前 Java 接入按单次保存与回执确认，哪些治理能力明确不作为本期前置。 | 0008 0010 0078 0079 0080 |
+| [AI 总结组件](./topics/ai-summary-component.md) | 摘要默认走 `text`，只有明确声明 SSE 动态生成才用 `aiSummary`；它是垂直组件而不是第三种数据源。 | 0019 0025 0027 0029 |
+| [未决事项](./topics/open-questions.md) | 已登记但尚未裁决的问题，以及在裁决前不得做的事。**这里记的是没定的事，不要当成结论读。** | 0015 0024 0025 0030 0032 0033 0034 0037 0043 0044 0045 0046 0048 0060 0063 |
+| [编号与历史记录说明](./topics/numbering-and-history.md) | 编号冲突重编、纯清理类 ADR、已被替换的历史实现描述，以及本基线自身的整理记录。 | 0068 |
+
+**结论尚未落进任何主题页：** [0084](./0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md)。新 ADR 落盘后要把结论并进对应主题页，这一行才会消失。
+
+<!-- adr-topics:end -->

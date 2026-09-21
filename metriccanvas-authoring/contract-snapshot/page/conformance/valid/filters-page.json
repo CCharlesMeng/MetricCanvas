@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.1",
+  "schemaVersion": "6.7",
   "layout": "report",
   "id": "filters-page",
   "meta": {
@@ -64,16 +64,40 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["region", "city", "stat_date"],
-                "output_metrics": ["amount", { "name": "订单数", "alias": "order_cnt" }],
-                "filter": { "dims": [], "metrics": [] },
-                "order": { "offset": 0, "limit": 20 }
+                "output_dims": [
+                  "region",
+                  "city",
+                  "stat_date"
+                ],
+                "output_metrics": [
+                  "amount",
+                  {
+                    "name": "订单数",
+                    "alias": "order_cnt"
+                  }
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
               }
             ]
           },
           "filterBindings": {
-            "region": { "target": "dimension", "queryField": "region" },
-            "period": { "target": "time" }
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "region-level": "region",
+                "city-level": "city"
+              }
+            },
+            "period": {
+              "target": "time"
+            }
           }
         }
       }
@@ -97,8 +121,14 @@
           "capturedAt": "2026-08-01T00:00:00Z",
           "totalCount": 2,
           "rows": [
-            { "sku": "A", "qty": 1 },
-            { "sku": "B", "qty": 2 }
+            {
+              "sku": "A",
+              "qty": 1
+            },
+            {
+              "sku": "B",
+              "qty": 2
+            }
           ]
         },
         "query": {
@@ -106,10 +136,20 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["sku"],
-                "output_metrics": ["qty"],
-                "filter": { "dims": [], "metrics": [] },
-                "order": { "offset": 0, "limit": 20 }
+                "output_dims": [
+                  "sku"
+                ],
+                "output_metrics": [
+                  "qty"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {
+                  "offset": 0,
+                  "limit": 20
+                }
               }
             ]
           }
@@ -126,10 +166,20 @@
       "emptyLabel": "全部区域",
       "hierarchyPicker": "tabs",
       "display": "tabs",
-      "default": ["华东"],
+      "default": [
+        "华东"
+      ],
       "hierarchy": [
-        { "id": "region-level", "dimension": "region", "label": "区域" },
-        { "id": "city-level", "dimension": "city", "label": "城市" }
+        {
+          "id": "region-level",
+          "dimension": "region",
+          "label": "区域"
+        },
+        {
+          "id": "city-level",
+          "dimension": "city",
+          "label": "城市"
+        }
       ],
       "defaultLevel": "city-level"
     },
@@ -143,14 +193,20 @@
       "id": "period",
       "type": "timeRange",
       "precision": "date",
-      "default": { "from": "2026-07-01", "to": "2026-07-31" }
+      "default": {
+        "from": "2026-07-01",
+        "to": "2026-07-31"
+      }
     },
     {
       "id": "window",
       "type": "timeRange",
       "default": {
         "unit": "month",
-        "range": { "kind": "lastN", "n": 3 },
+        "range": {
+          "kind": "lastN",
+          "n": 3
+        },
         "includeCurrent": false,
         "anchor": "2026-07-31"
       }
@@ -170,7 +226,10 @@
     {
       "id": "amount-range",
       "type": "numberRange",
-      "default": { "from": 10, "to": 1000 }
+      "default": {
+        "from": 10,
+        "to": 1000
+      }
     },
     {
       "id": "only-active",
@@ -190,27 +249,56 @@
         {
           "id": "orders-table",
           "type": "table",
-          "layout": { "span": 12 },
-          "data": { "main": "orders" },
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "orders"
+          },
           "props": {
             "columns": [
               {
                 "field": "region",
-                "filterable": { "mode": "select" },
+                "filterable": {
+                  "mode": "select"
+                },
                 "selection": {
                   "writes": {
-                    "region": { "field": "region" },
-                    "city": { "value": "上海" }
+                    "region": {
+                      "field": "region"
+                    },
+                    "city": {
+                      "value": "上海"
+                    }
                   }
                 }
               },
-              { "field": "city", "secondaryField": "region", "badgeField": "region" },
-              { "field": "stat-date", "sortable": true },
-              { "field": { "data": "main", "field": "amount", "format": "cny-adaptive" } },
-              { "field": "orders" }
+              {
+                "field": "city",
+                "secondaryField": "region",
+                "badgeField": "region"
+              },
+              {
+                "field": "stat-date",
+                "sortable": true
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "amount",
+                  "format": "cny-adaptive"
+                }
+              },
+              {
+                "field": "orders"
+              }
             ],
             "actions": [
-              { "on": "click", "writeFilter": "region", "field": "region" },
+              {
+                "on": "click",
+                "writeFilter": "region",
+                "field": "region"
+              },
               {
                 "on": "click",
                 "navigate": {
@@ -248,11 +336,24 @@
         {
           "id": "paged-table",
           "type": "table",
-          "layout": { "span": 12 },
-          "data": { "main": "paged" },
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "paged"
+          },
           "props": {
-            "columns": [{ "field": "sku" }, { "field": "qty" }],
-            "pagination": { "mode": "query" }
+            "columns": [
+              {
+                "field": "sku"
+              },
+              {
+                "field": "qty"
+              }
+            ],
+            "pagination": {
+              "mode": "query"
+            }
           }
         }
       ]

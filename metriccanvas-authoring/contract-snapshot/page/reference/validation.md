@@ -11,7 +11,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -54,7 +54,7 @@ SCHEMA_ERROR对应结构和页面语义；FIELD_CONTRACT_ERROR对应结果字段
 - `detail-list-max-items`：嵌套明细最多 100 项；由 Page Schema 的 maxItems 在结构层拒绝，语义层的同名判定因此不可达。反例：[initial-row-detail-list-too-large](errors/initial-row-detail-list-too-large.json)、[inline-row-detail-list-too-large](errors/inline-row-detail-list-too-large.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `captured-at-valid`：内嵌初始行的 capturedAt 须为有效的 RFC 3339 日期时间。反例：[captured-at-invalid-month](errors/captured-at-invalid-month.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `query-field-mapping`：query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射。反例：[query-field-without-mapping](errors/query-field-without-mapping.json)、[query-field-duplicate-mapping](errors/query-field-duplicate-mapping.json)、[query-field-not-output](errors/query-field-not-output.json)、[query-detail-item-duplicate-mapping](errors/query-detail-item-duplicate-mapping.json)、[query-dimension-role-mismatch](errors/query-dimension-role-mismatch.json)、[query-role-mismatch](errors/query-role-mismatch.json)、[query-output-unmapped](errors/query-output-unmapped.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `filter-binding`：筛选绑定引用已声明筛选器，且 time / dimension 目标类型匹配。反例：[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `filter-binding`：筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段。反例：[level-query-fields-on-flat-filter](errors/level-query-fields-on-flat-filter.json)、[level-query-fields-missing-level](errors/level-query-fields-missing-level.json)、[level-query-fields-undeclared-level](errors/level-query-fields-undeclared-level.json)、[hierarchy-filter-flat-query-field](errors/hierarchy-filter-flat-query-field.json)、[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `compute-operator-inputs`：算子引用的字段已声明、角色相容、数值算子输入为数值类型。反例：[compute-undeclared-field](errors/compute-undeclared-field.json)、[compute-role-mismatch](errors/compute-role-mismatch.json)、[compute-non-numeric-input](errors/compute-non-numeric-input.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `compute-operator-outputs`：算子产出字段已声明、不重名、不来自外部响应。反例：[compute-duplicate-output](errors/compute-duplicate-output.json)、[compute-output-with-query-field](errors/compute-output-with-query-field.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `compute-folding-collapsible`：折叠算子只能作用于显式声明 collapsible 的度量字段。反例：[compute-fold-non-collapsible](errors/compute-fold-non-collapsible.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。

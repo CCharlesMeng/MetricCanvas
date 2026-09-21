@@ -16,9 +16,11 @@
         "6.3",
         "6.4",
         "6.5",
-        "6.6"
+        "6.6",
+        "6.7",
+        "6.8"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8"
     },
     "id": {
       "type": "string",
@@ -156,6 +158,9 @@
             "number-grouped",
             "compact-wan-0",
             "compact-wan-1",
+            "compact-million-0",
+            "compact-million-1",
+            "compact-million-2",
             "compact-yi-1",
             "cny-adaptive",
             "percent-0",
@@ -574,6 +579,9 @@
                 "number-grouped",
                 "compact-wan-0",
                 "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
                 "percent-0",
@@ -630,6 +638,9 @@
                 "number-grouped",
                 "compact-wan-0",
                 "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
                 "percent-0",
@@ -1139,6 +1150,9 @@
                 "number-grouped",
                 "compact-wan-0",
                 "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
                 "percent-0",
@@ -1200,6 +1214,9 @@
                 "number-grouped",
                 "compact-wan-0",
                 "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
                 "percent-0",
@@ -1386,6 +1403,9 @@
               "number-grouped",
               "compact-wan-0",
               "compact-wan-1",
+              "compact-million-0",
+              "compact-million-1",
+              "compact-million-2",
               "compact-yi-1",
               "cny-adaptive",
               "percent-0",
@@ -1454,6 +1474,9 @@
                   "number-grouped",
                   "compact-wan-0",
                   "compact-wan-1",
+                  "compact-million-0",
+                  "compact-million-1",
+                  "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
                   "percent-0",
@@ -1510,6 +1533,9 @@
                   "number-grouped",
                   "compact-wan-0",
                   "compact-wan-1",
+                  "compact-million-0",
+                  "compact-million-1",
+                  "compact-million-2",
                   "compact-yi-1",
                   "cny-adaptive",
                   "percent-0",
@@ -1691,6 +1717,32 @@
                 "required": [
                   "target",
                   "queryField"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "target": {
+                    "type": "string",
+                    "const": "dimension"
+                  },
+                  "levelQueryFields": {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9-]*$"
+                    },
+                    "additionalProperties": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "minProperties": 2
+                  }
+                },
+                "required": [
+                  "target",
+                  "levelQueryFields"
                 ],
                 "additionalProperties": false
               },
@@ -2852,6 +2904,9 @@
                 "number-grouped",
                 "compact-wan-0",
                 "compact-wan-1",
+                "compact-million-0",
+                "compact-million-1",
+                "compact-million-2",
                 "compact-yi-1",
                 "cny-adaptive",
                 "percent-0",
@@ -4561,6 +4616,9 @@
                         "number-grouped",
                         "compact-wan-0",
                         "compact-wan-1",
+                        "compact-million-0",
+                        "compact-million-1",
+                        "compact-million-2",
                         "compact-yi-1",
                         "cny-adaptive",
                         "percent-0",
@@ -4925,5 +4983,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.6"
+  "$id": "https://metriccanvas/page/v6.8"
 }

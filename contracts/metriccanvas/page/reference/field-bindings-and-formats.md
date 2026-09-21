@@ -6,12 +6,27 @@ format优先于字段defaultFormat；未设置时走组件/类型的既有格式
 
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
+
+## 按百万呈现（6.5）
+
+数值格式 `compact-million-0`、`compact-million-1`、`compact-million-2` 将原始值除以1,000,000，分别保留0、1、2位小数，使用千分位并附加“百万”。例如1,234,567分别显示“1百万”“1.2百万”“1.23百万”。仅改变展示，不改写数据源、查询或计算输入；小值仍按百万显示，不自动切回万/亿。空值显示“—”。
+
+字段绑定示例（组件的 `main` 数据槽需绑定含 `revenue` 字段的数据源）：
+
+```json
+{ "data": "main", "field": "revenue", "format": "compact-million-2" }
+```
+
+也可在结果字段声明 `defaultFormat: "compact-million-2"`，由支持字段默认格式的组件继承；显式 `format` 优先。数值参数的文本引用可写 `{ "param": "target", "format": "compact-million-2" }`。使用以上任一格式时，页面的 `schemaVersion` 至少为 `"6.5"`。
+
+原始值必须以基础单位提供：金额字段若存人民币元，1,234,567元显示“1.23百万”，货币含义由字段标签或标题说明。不要把已经换算为百万的数据再次应用该格式；`unit: "百万"` 只是单位描述，不执行换算。`cny-adaptive` 保持原有自适应规则。
+
 ## 查阅方式
 
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -113,7 +128,7 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 只控制当前组件中这一次字段绑定的展示格式 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -124,6 +139,9 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀（6.5）。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀（6.5）。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀（6.5）。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "percent-0" | 原数值加百分号，0位小数。 |
@@ -272,6 +290,7 @@ Schema位置：`#/definitions/tableData/propertyNames`。
 
 ## 示例与溯源（生成）
 
+- [million-formats-page](examples/million-formats-page.json)：完整合法页面；查询仅为静态契约证据。
 - [compute-page](examples/compute-page.json)：完整合法页面；查询仅为静态契约证据。
 - [reference-branches-page](examples/reference-branches-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.1",
+  "schemaVersion": "6.7",
   "id": "map-page",
   "layout": "dashboard",
   "meta": {
@@ -8,19 +8,52 @@
   "dataSources": {
     "regions": {
       "fields": {
-        "name": { "queryField": "name", "type": "string", "role": "dimension", "nullable": false },
-        "code": { "queryField": "code", "type": "string", "role": "dimension" },
-        "level": { "queryField": "level", "type": "string", "role": "dimension" },
-        "parent": { "queryField": "parent", "type": "string", "role": "dimension", "nullable": true },
-        "gmv": { "queryField": "gmv", "type": "number", "role": "measure" },
-        "growth": { "queryField": "growth", "type": "number", "role": "measure" }
+        "name": {
+          "queryField": "name",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "code": {
+          "queryField": "code",
+          "type": "string",
+          "role": "dimension"
+        },
+        "level": {
+          "queryField": "level",
+          "type": "string",
+          "role": "dimension"
+        },
+        "parent": {
+          "queryField": "parent",
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        },
+        "gmv": {
+          "queryField": "gmv",
+          "type": "number",
+          "role": "measure"
+        },
+        "growth": {
+          "queryField": "growth",
+          "type": "number",
+          "role": "measure"
+        }
       },
       "source": {
         "type": "query",
         "initial": {
           "capturedAt": "2026-08-01T00:00:00Z",
           "rows": [
-            { "name": "上海", "code": "310000", "level": "province", "parent": null, "gmv": 120, "growth": 0.1 }
+            {
+              "name": "上海",
+              "code": "310000",
+              "level": "province",
+              "parent": null,
+              "gmv": 120,
+              "growth": 0.1
+            }
           ]
         },
         "query": {
@@ -28,15 +61,32 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["name", "code", "level", "parent"],
-                "output_metrics": ["gmv", "growth"],
-                "filter": { "dims": [], "metrics": [] },
+                "output_dims": [
+                  "name",
+                  "code",
+                  "level",
+                  "parent"
+                ],
+                "output_metrics": [
+                  "gmv",
+                  "growth"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
                 "order": {}
               }
             ]
           },
           "filterBindings": {
-            "area": { "target": "dimension", "queryField": "code" }
+            "area": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "province": "code",
+                "city": "city_code"
+              }
+            }
           }
         }
       }
@@ -49,11 +99,20 @@
       "dimension": "code",
       "hierarchyPicker": "hidden",
       "hierarchy": [
-        { "id": "province", "dimension": "code" },
-        { "id": "city", "dimension": "city_code" }
+        {
+          "id": "province",
+          "dimension": "code"
+        },
+        {
+          "id": "city",
+          "dimension": "city_code"
+        }
       ]
     },
-    { "id": "keyword", "type": "search" }
+    {
+      "id": "keyword",
+      "type": "search"
+    }
   ],
   "sections": [
     {
@@ -62,8 +121,12 @@
         {
           "id": "china-map",
           "type": "mapChart",
-          "layout": { "span": 12 },
-          "data": { "main": "regions" },
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "regions"
+          },
           "props": {
             "variant": "regionalOverview",
             "nameField": "name",
@@ -73,28 +136,65 @@
             "levelField": "level",
             "parentField": "parent",
             "codeField": "code",
-            "levelMaps": { "province": "china" },
+            "levelMaps": {
+              "province": "china"
+            },
             "legend": {
               "title": "GMV",
               "bands": [
-                { "label": "低", "from": 0 },
-                { "label": "高", "from": 100 }
+                {
+                  "label": "低",
+                  "from": 0
+                },
+                {
+                  "label": "高",
+                  "from": 100
+                }
               ]
             },
             "tooltipFields": [
-              { "label": "增长", "field": { "data": "main", "field": "growth", "format": "percent-1" } }
+              {
+                "label": "增长",
+                "field": {
+                  "data": "main",
+                  "field": "growth",
+                  "format": "percent-1"
+                }
+              }
             ],
             "pinnedSummary": {
               "matchField": "code",
               "matchValue": "310000",
               "titleField": "name",
               "fields": [
-                { "label": "GMV", "field": "gmv" },
-                { "label": "增长", "field": "growth" }
+                {
+                  "label": "GMV",
+                  "field": "gmv"
+                },
+                {
+                  "label": "增长",
+                  "field": "growth"
+                }
               ]
             },
             "actions": [
-              { "on": "click", "navigate": {"href": "/pages/map-page", "query": {"area": {"source": "filter", "id": "area"}, "area.level": {"source": "filter", "id": "area", "part": "level"}}} }
+              {
+                "on": "click",
+                "navigate": {
+                  "href": "/pages/map-page",
+                  "query": {
+                    "area": {
+                      "source": "filter",
+                      "id": "area"
+                    },
+                    "area.level": {
+                      "source": "filter",
+                      "id": "area",
+                      "part": "level"
+                    }
+                  }
+                }
+              }
             ]
           }
         }

@@ -52,6 +52,7 @@ DeltaOperator
 DetailRecord
 DetailRecordList
 DimensionFilterDeclaration
+DqeDimensionFilterBinding
 DqeEffectiveQuery
 DqeFilterBinding
 DqeQueryDefinition
@@ -79,6 +80,7 @@ GrandTotalOperator
 GroupSubtotalOperator
 GroupedDimensionQueryFieldDefinition
 GroupedMeasureQueryFieldDefinition
+GroupedPageParams
 GroupedQueryDataSource
 GroupedQueryFields
 InlineDataSource
@@ -88,6 +90,7 @@ JsonValue
 KeyValuePanelComponent
 KeyValuePanelItem
 KeyValuePanelProps
+LEGACY_READABLE_PAGE_SCHEMA_VERSIONS
 LineChartComponent
 LineChartProps
 MAX_DETAIL_RECORDS
@@ -195,6 +198,7 @@ TextValueReferenceUsage
 TextValueResolution
 TimePointFilterDeclaration
 TimeRangeFilterDeclaration
+TimeRangeParamValue
 TimeRangePrecision
 TimeRangePreset
 TimeRangeValue
@@ -204,6 +208,8 @@ VersionPolicy
 WriteFilterAction
 ZeroDenominatorSemantics
 barForecastBoundaryIssues
+bindingQueryField
+bindingQueryFields
 canonicalizeJson
 capabilityFloorErrors
 collectTextValueReferences
@@ -226,6 +232,7 @@ filterURLKeys
 flattenPageComponents
 formatSuitsParamType
 hasQueryFieldMapping
+hasQueryParamReferences
 hierarchyLevelOf
 initializeQueryParams
 isChartComponent
@@ -233,6 +240,7 @@ isDataComponent
 isDqeQueryDefinition
 isFoldingOperator
 isInlineDataSource
+isLevelDimensionBinding
 isNavigationHref
 isQueryDataSource
 isQueryErrorCode
@@ -248,6 +256,7 @@ normalizePageDocument
 normalizeQueryRows
 pageCapabilities
 pageListEntry
+pageParamDeclarations
 pageParamErrors
 pageSchema
 parsePage

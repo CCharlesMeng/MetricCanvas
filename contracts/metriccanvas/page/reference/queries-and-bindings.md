@@ -9,7 +9,7 @@
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -267,7 +267,7 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["target"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["target","levelQueryFields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f746172676574"></a>
 
@@ -277,11 +277,65 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalPrope
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
+| "string" | 本分支必填 | const="dimension" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "dimension" | 分类维度或维度目标；不是数值度量。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c6473"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | propertyNames={"type":"string","pattern":"^[a-z0-9][a-z0-9-]*$"}; minProperties=2 | Schema未设默认；装配/运行时默认见语义说明 | 层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c64732f6164646974696f6e616c50726f70657274696573"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields{key}`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/additionalProperties`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 动态键的值 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f312f70726f706572746965732f6c6576656c51756572794669656c64732f70726f70657274794e616d6573"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[1].levelQueryFields · propertyNames`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1/properties/levelQueryFields/propertyNames`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 条件结构 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f32"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2]`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["target"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f6164646974696f6e616c50726f706572746965732f616e794f662f322f70726f706572746965732f746172676574"></a>
+
+### `@dqeQuery.filterBindings{key} · anyOf[2].target`
+
+Schema位置：`#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2/properties/target`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
 | "string" | 本分支必填 | const="time" | Schema未设默认；装配/运行时默认见语义说明 | 写回目标或查询绑定目标，按所在结构明确类型。 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
-| "time" | 用于选择@dqeQuery.filterBindings{key} · anyOf[1].target分支；同分支其它约束同时成立。 |
+| "time" | 用于选择@dqeQuery.filterBindings{key} · anyOf[2].target分支；同分支其它约束同时成立。 |
 
 <a id="schema-232f646566696e6974696f6e732f64716551756572792f70726f706572746965732f66696c74657242696e64696e67732f70726f70657274794e616d6573"></a>
 
@@ -296,11 +350,12 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/propertyNames`�
 ## 语义规则与反例（生成）
 
 - `query-field-mapping`：query 数据源字段与 DQE 输出字段之间的显式、唯一、角色相容映射。反例：[query-field-without-mapping](errors/query-field-without-mapping.json)、[query-field-duplicate-mapping](errors/query-field-duplicate-mapping.json)、[query-field-not-output](errors/query-field-not-output.json)、[query-detail-item-duplicate-mapping](errors/query-detail-item-duplicate-mapping.json)、[query-dimension-role-mismatch](errors/query-dimension-role-mismatch.json)、[query-role-mismatch](errors/query-role-mismatch.json)、[query-output-unmapped](errors/query-output-unmapped.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `filter-binding`：筛选绑定引用已声明筛选器，且 time / dimension 目标类型匹配。反例：[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
+- `filter-binding`：筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段。反例：[level-query-fields-on-flat-filter](errors/level-query-fields-on-flat-filter.json)、[level-query-fields-missing-level](errors/level-query-fields-missing-level.json)、[level-query-fields-undeclared-level](errors/level-query-fields-undeclared-level.json)、[hierarchy-filter-flat-query-field](errors/hierarchy-filter-flat-query-field.json)、[unknown-filter-binding](errors/unknown-filter-binding.json)、[filter-binding-time-target-not-time-range](errors/filter-binding-time-target-not-time-range.json)、[filter-binding-dimension-target-not-dimension](errors/filter-binding-dimension-target-not-dimension.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 
 ## 示例与溯源（生成）
 
 - [dimension-params-page](examples/dimension-params-page.json)：完整合法页面；查询仅为静态契约证据。
+- [hierarchy-binding-page](examples/hierarchy-binding-page.json)：完整合法页面；查询仅为静态契约证据。
 - 源码/验证定位：`packages/page/src/validate.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`packages/page/src/query.ts`（仓库路径，非分发依赖）。
 - 源码/验证定位：`tools/scripts/page-conformance-vectors.ts`（仓库路径，非分发依赖）。
@@ -310,5 +365,6 @@ Schema位置：`#/definitions/dqeQuery/properties/filterBindings/propertyNames`�
 - `#/definitions/pageQuery/oneOf/0`：[合法完整页面](examples/component-barChart.json)，JSON Pointer `#/dataSources/monthly/source/query`。
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/paramBindings/regions`。
 - `#/definitions/dqeQuery/properties/paramBindings/additionalProperties/oneOf/1`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/dataSources/current/source/query/paramBindings/report-month`。
-- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/dataSources/regions/source/query/filterBindings/area`。
-- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/source/query/filterBindings/period`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/dataSources/sales/source/query/filterBindings/region-filter`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/1`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/dataSources/regions/source/query/filterBindings/area`。
+- `#/definitions/dqeQuery/properties/filterBindings/additionalProperties/anyOf/2`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/dataSources/orders/source/query/filterBindings/period`。

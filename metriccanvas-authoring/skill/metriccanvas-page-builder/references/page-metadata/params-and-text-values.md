@@ -34,7 +34,7 @@ params 增加对象分支：dimensions、times、scalars 均为可选非空数�
 文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度重复键、时间值用编码后的 {start,end} JSON；未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分组改写为数组。
 
 
-页面协议 6.6。结构真源为本册[schema.json](schema.json)，SHA256 `724a223b61ed116ed3a542b273a0235b6778f87196f289a2a19d1c9feb5a24e7`。字段表自动生成；可选不等于有默认值。
+页面协议 6.8。结构真源为本册[schema.json](schema.json)，SHA256 `78606c1cea35ee7975d7a8cbd3349f71ee2fb271fb38fdfce399ea10432e83f4`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -96,7 +96,7 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
+| "string" | 本分支可选 | enum=["text","number","number-1","number-2","number-grouped","compact-wan-0","compact-wan-1","compact-million-0","compact-million-1","compact-million-2","compact-yi-1","cny-adaptive","percent-0","percent-1","percent-2","percent-2-signed","date","date-month-day"] | Schema未设默认；装配/运行时默认见语义说明 | 引用处的展示格式；复用组件字段绑定的同一套封闭闭集 |
 
 | 允许值 | 解释与适用条件 |
 |---|---|
@@ -107,6 +107,9 @@ Schema位置：`#/definitions/textValueReference/properties/format`。
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀（6.5）。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀（6.5）。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀（6.5）。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "percent-0" | 原数值加百分号，0位小数。 |

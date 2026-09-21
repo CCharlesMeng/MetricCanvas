@@ -2,7 +2,7 @@
   "case": "map-hierarchy-filter-undeclared",
   "invariant": "map-hierarchy",
   "input": {
-    "schemaVersion": "6.1",
+    "schemaVersion": "6.7",
     "id": "map-page",
     "layout": "dashboard",
     "meta": {
@@ -85,7 +85,10 @@
             "filterBindings": {
               "area": {
                 "target": "dimension",
-                "queryField": "code"
+                "levelQueryFields": {
+                  "province": "code",
+                  "city": "city_code"
+                }
               }
             }
           }

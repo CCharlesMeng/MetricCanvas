@@ -2,7 +2,7 @@
   "case": "default-level-unknown",
   "invariant": "default-level-declared",
   "input": {
-    "schemaVersion": "6.1",
+    "schemaVersion": "6.7",
     "layout": "report",
     "id": "filters-page",
     "meta": {
@@ -93,7 +93,10 @@
             "filterBindings": {
               "region": {
                 "target": "dimension",
-                "queryField": "region"
+                "levelQueryFields": {
+                  "region-level": "region",
+                  "city-level": "city"
+                }
               },
               "period": {
                 "target": "time"

@@ -2,7 +2,7 @@
   "case": "initial-row-null-not-allowed",
   "invariant": "query-initial-rows-normalize",
   "input": {
-    "schemaVersion": "6.1",
+    "schemaVersion": "6.7",
     "layout": "report",
     "id": "filters-page",
     "meta": {
@@ -93,7 +93,10 @@
             "filterBindings": {
               "region": {
                 "target": "dimension",
-                "queryField": "region"
+                "levelQueryFields": {
+                  "region-level": "region",
+                  "city-level": "city"
+                }
               },
               "period": {
                 "target": "time"
