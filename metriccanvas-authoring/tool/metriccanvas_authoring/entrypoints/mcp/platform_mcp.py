@@ -5,7 +5,7 @@ from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 from metriccanvas_authoring.data.results import QUERY_SCHEMA
 from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA, EDIT_RESULT_SCHEMA
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 
 QueryRequest = Annotated[dict[str, Any], WithJsonSchema(QUERY_SCHEMA)]

@@ -2,7 +2,7 @@
 from copy import deepcopy
 
 from metriccanvas_authoring.application.summary_capability import summary_configured
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import read_verified_baseline, document_sha256
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.editing.page_editing import edit_page_document

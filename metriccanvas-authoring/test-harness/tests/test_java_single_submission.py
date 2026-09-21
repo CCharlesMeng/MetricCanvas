@@ -52,7 +52,7 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
         f=await self.configured(failure=True);candidate=await f.candidate()
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
-        from metriccanvas_authoring.application.authoring_submission import AuthoringSubmissionCoordinator
+        from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator
         f.coordinator=AuthoringSubmissionCoordinator(f.candidates,f.records,f.gate,f.lifecycle)
         self.assertEqual((await f.finalize(candidate))['status'],'unknown')
         self.assertEqual(len(self.calls),1)

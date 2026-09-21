@@ -41,7 +41,7 @@
 | 7b ✓ | `edit_page.py`、`unified_edit_page.py`、`component_policy.py`、`domain/{page_editing,section_editing,component_editing,interaction_editing}.py` | `pages/editing/`、`pages/components/`（2026-09-21 已完成；原 `pages/editing.py` 改名 `pages/editing/operation_batch.py`） |
 | 7c ✓ | `domain/{page_building,page_structure,container_building,layout_policy,section_layout,text_map_building,component_selection}.py` | `pages/composition/`（page_building、page_structure、layout_policy、section_layout）、`pages/components/`（container_building、text_map_building、component_selection）（2026-09-21 已完成） |
 | 7d | `discover_data_context.py`、`business_interpretation.py`、`source_description_ports.py`、`domain/{data_context,business_terms,execution,source_mapping,page_build_spec,grouped_params}.py` | `data/` |
-| 7e | `authoring_turns.py`、`authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`、`content_ports.py` | `work/` |
+| 7e ✓ | `authoring_turns.py`、`authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`、`content_ports.py` | `work/`（2026-09-21 已完成，先于 7d） |
 | 7f | `lifecycle.py`、`lifecycle_ports.py`、`lifecycle_publish.py`、`publish_ports.py`、`authoring_deployment.py` | `assets/`（草稿保存与发布兼容） |
 | 7g | `build_page.py` | `ask/`（普通问数/探索用例） |
 | 7h | `platform_authoring.py`、`summary_capability.py`、`bundle_info.py` | 平台用例进 `pages/` 应用入口；摘要配置进 `delivery/`；bundle 元信息进 `bootstrap/` |

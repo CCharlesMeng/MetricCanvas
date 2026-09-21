@@ -94,7 +94,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_real_line_chart_binding_projection_excludes_business_payload(self):
         import hashlib
-        from metriccanvas_authoring.application.content_ports import ContentBaseline
+        from metriccanvas_authoring.work.content_ports import ContentBaseline
         from metriccanvas_authoring.pages.editing.edit_page import document_sha256
         turns = Turns()
         document = json.loads((ROOT / 'contract-snapshot/page/conformance/valid/mixed-page.json').read_text())
@@ -127,7 +127,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
             self.assertNotIn('业务保密', json.dumps(entries, ensure_ascii=False))
             self.assertNotIn('private-dqe-body', json.dumps(entries))
             self.assertNotIn('dataSources', json.dumps(entries))
-        from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate
+        from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
         verified = await AuthoringTurnGate(turns).require('current-context')
         self.assertEqual(verified.baseline.document, json.loads(turns.document_json))
         self.assertEqual(verified.baseline.document['dataSources']['private-evidence']['source']['rows'][0],
@@ -211,7 +211,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
                     self.assertEqual(result['modelSummary']['issues'][0]['code'], 'CANDIDATE_BINDING_MISMATCH')
                 turns.binding = deepcopy(binding); turns.scope = deepcopy(scope)
             # A valid newer baseline in this same turn is still a different root.
-            from metriccanvas_authoring.application.content_ports import ContentBaseline
+            from metriccanvas_authoring.work.content_ports import ContentBaseline
             turns.binding['baseRef']['revisionId'] = 'r2'
             turns.baseline = ContentBaseline(deepcopy(turns.binding['baseRef']), turns.baseline.document, turns.baseline.document_sha256)
             result = (await client.call_tool('read_page_context', {'context_ref': 'current-context', 'candidate_ref': ref})).structured_content

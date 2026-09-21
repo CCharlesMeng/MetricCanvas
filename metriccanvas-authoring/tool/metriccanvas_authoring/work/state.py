@@ -3,7 +3,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 import time
 from typing import Protocol
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.domain.canonical import canonical_sha256 as digest
 
 

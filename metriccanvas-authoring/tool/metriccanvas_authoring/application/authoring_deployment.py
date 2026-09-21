@@ -77,7 +77,7 @@ class Deployment:
 
 
     def _system_parts(self):
-        from .authoring_candidates import AuthoringCandidates
+        from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
         from .lifecycle import Lifecycle
         if self.system is None: raise DeploymentError('System dependencies unavailable')
         system = self.system
@@ -85,14 +85,14 @@ class Deployment:
                 Lifecycle(system.lifecycle_service, system.lifecycle_programs, system.lifecycle_identities))
 
     def create_submission(self, *, operation_id=None):
-        from .authoring_submission import AuthoringSubmissionCoordinator
-        from .authoring_turns import AuthoringTurnGate
+        from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator
+        from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
         candidates, records, lifecycle = self._system_parts()
         return AuthoringSubmissionCoordinator(candidates, records,
             AuthoringTurnGate(self.system.current_turns), lifecycle, operation_id=operation_id)
 
     def create_recovery(self, *, clock_ms):
-        from .authoring_recovery import AuthoringRecoveryCoordinator
+        from metriccanvas_authoring.work.authoring_recovery import AuthoringRecoveryCoordinator
         candidates, records, lifecycle = self._system_parts()
         return AuthoringRecoveryCoordinator(candidates, records, lifecycle,
                                             self.system.recovery_authority, clock_ms=clock_ms)

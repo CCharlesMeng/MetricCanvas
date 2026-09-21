@@ -11,12 +11,12 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from lifecycle_stdio_server import ProposedService, Identities, digest
-from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
-from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
-from metriccanvas_authoring.application.authoring_submission import AuthoringSubmissionCoordinator, semantic_equal
+from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
+from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator, semantic_equal
 from metriccanvas_authoring.application.lifecycle import Lifecycle
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 
 
 class MemoryExecutions:

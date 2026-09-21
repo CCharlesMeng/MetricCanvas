@@ -16,7 +16,7 @@ from metriccanvas_authoring.application.platform_authoring import PlatformAuthor
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
 from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.work.state import Limits, digest
 
 

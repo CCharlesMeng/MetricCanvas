@@ -10,9 +10,9 @@ from pydantic import Field, WithJsonSchema
 from metriccanvas_authoring.entrypoints.compat.content_mcp import RESULT_SCHEMA
 from metriccanvas_authoring.pages.composition.compose_content import compose_content
 from metriccanvas_authoring.entrypoints.compat.fastmcp import PageBuildSpec
-from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, read_page_projection
-from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
-from metriccanvas_authoring.application.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, read_page_projection
+from metriccanvas_authoring.work.content_ports import ContentBaselineError, ContentBaseline
+from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.pages.editing.unified_edit_page import edit_unified_page, UNIFIED_EDIT_SCHEMA
 from metriccanvas_authoring.application.bundle_info import load_bundle_info

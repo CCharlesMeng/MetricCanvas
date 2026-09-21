@@ -88,7 +88,7 @@ async def edit(baseline, request, resolve, current, summary_enabled=False):
         try: document, op = batch.send(result)
         except StopIteration as completed: return completed.value
         if op['type'] == 'add_result_component':
-            from metriccanvas_authoring.application.content_ports import ContentBaselineError
+            from metriccanvas_authoring.work.content_ports import ContentBaselineError
             try:
                 record = await resolve(op['resultRef'])
                 source_id = op['block']['source']

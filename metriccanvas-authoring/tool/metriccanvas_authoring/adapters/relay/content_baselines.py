@@ -9,7 +9,7 @@ import re
 import stat
 from pathlib import Path
 
-from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
+from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 
 TOKEN_PATTERN = re.compile(r"^[A-Za-z0-9_-]{16,128}$")
 MAX_BASELINE_BYTES = 20 * 1024 * 1024

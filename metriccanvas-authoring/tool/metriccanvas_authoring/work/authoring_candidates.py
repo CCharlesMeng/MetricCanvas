@@ -7,8 +7,8 @@ from uuid import uuid4
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 
-from metriccanvas_authoring.application.authoring_turns import PreparedAuthoringTurn
-from metriccanvas_authoring.application.content_ports import ContentBaselineError
+from metriccanvas_authoring.work.authoring_turns import PreparedAuthoringTurn
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
