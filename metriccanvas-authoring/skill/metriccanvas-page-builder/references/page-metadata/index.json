@@ -1,6 +1,6 @@
 {
-  "schemaVersion": "6.9",
-  "schemaSha256": "713ff3962d43fc1aaa1ae42728c6fde5982d197556c1ea5a5d934c653a09e431",
+  "schemaVersion": "6.10",
+  "schemaSha256": "acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
@@ -32,7 +32,7 @@
     },
     {
       "file": "packages/page/src/schema/actions.ts",
-      "sha256": "05c340b24c6bf34ed8015a0853219ce18377020368f5c69b8428d52c56a107bf"
+      "sha256": "c897b517b8fa02c3f86a3f708851b3fbd27bc636ae7e12ce0aa83ac85a140703"
     },
     {
       "file": "packages/page/src/schema/components/ai-summary.ts",
@@ -120,7 +120,7 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "c9644f137183ea44e47143f52ef0d78accdb0d4bcb9542bb407d55ab43006913"
+      "sha256": "d811550bb515cd6fe7c73095015fbd63df7afb6c7f15043921f95d1aa5ae773d"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
@@ -1054,7 +1054,7 @@
       "required": "本分支必填",
       "module": "page.md",
       "type": "\"string\"",
-      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\",\"6.6\",\"6.7\",\"6.8\",\"6.9\"]",
+      "constraints": "enum=[\"5.0\",\"5.1\",\"5.2\",\"5.3\",\"5.4\",\"6.0\",\"6.1\",\"6.2\",\"6.3\",\"6.4\",\"6.5\",\"6.6\",\"6.7\",\"6.8\",\"6.9\",\"6.10\"]",
       "enum": [
         "5.0",
         "5.1",
@@ -1070,7 +1070,8 @@
         "6.6",
         "6.7",
         "6.8",
-        "6.9"
+        "6.9",
+        "6.10"
       ]
     },
     {
@@ -6402,6 +6403,93 @@
       "constraints": "minLength=1"
     },
     {
+      "pointer": "#/definitions/componentAction/anyOf/2",
+      "path": "@componentAction · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"on\",\"openDetail\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/on",
+      "path": "@componentAction · anyOf[2].on",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "\"string\"",
+      "constraints": "const=\"click\"",
+      "const": "click"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail",
+      "path": "@componentAction · anyOf[2].openDetail",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"surface\",\"fields\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/surface",
+      "path": "@componentAction · anyOf[2].openDetail.surface",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "\"string\"",
+      "constraints": "enum=[\"modal\",\"drawer\"]",
+      "enum": [
+        "modal",
+        "drawer"
+      ]
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/titleField",
+      "path": "@componentAction · anyOf[2].openDetail.titleField",
+      "required": "本分支可选",
+      "module": "actions-and-navigation.md",
+      "type": "allOf交集",
+      "constraints": "无额外结构约束"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/titleField/allOf/0",
+      "path": "@componentAction · anyOf[2].openDetail.titleField · allOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "actions-and-navigation.md",
+      "type": "引用 #/definitions/fieldReference",
+      "constraints": "无额外结构约束",
+      "ref": "#/definitions/fieldReference"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields",
+      "path": "@componentAction · anyOf[2].openDetail.fields",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "\"array\"",
+      "constraints": "minItems=1"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items",
+      "path": "@componentAction · anyOf[2].openDetail.fields[]",
+      "required": "每个数组项",
+      "module": "actions-and-navigation.md",
+      "type": "\"object\"",
+      "constraints": "required=[\"label\",\"field\"]; additionalProperties=false"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items/properties/label",
+      "path": "@componentAction · anyOf[2].openDetail.fields[].label",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "\"string\"",
+      "constraints": "minLength=1"
+    },
+    {
+      "pointer": "#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items/properties/field",
+      "path": "@componentAction · anyOf[2].openDetail.fields[].field",
+      "required": "本分支必填",
+      "module": "actions-and-navigation.md",
+      "type": "引用 #/definitions/fieldReference",
+      "constraints": "无额外结构约束",
+      "ref": "#/definitions/fieldReference"
+    },
+    {
       "pointer": "#/definitions/section/properties/components/items/oneOf/2",
       "path": "@section.components[] · oneOf[2]",
       "required": "独立分支（不合并required）",
@@ -10845,6 +10933,12 @@
       "module": "actions-and-navigation.md",
       "file": "examples/component-mapChart.json",
       "pointer": "#/sections/0/components/0/props/actions/0/navigate/query/area"
+    },
+    {
+      "schemaPointer": "#/definitions/componentAction/anyOf/2",
+      "module": "actions-and-navigation.md",
+      "file": "examples/url-navigation-page.json",
+      "pointer": "#/sections/0/components/0/props/actions/1"
     },
     {
       "schemaPointer": "#/definitions/section/properties/components/items/oneOf/2",

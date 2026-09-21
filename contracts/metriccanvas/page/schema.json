@@ -19,9 +19,10 @@
         "6.6",
         "6.7",
         "6.8",
-        "6.9"
+        "6.9",
+        "6.10"
       ],
-      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9"
+      "description": "页面文档契约版本；当前支持 5.0 / 5.1 / 5.2 / 5.3 / 5.4 / 6.0 / 6.1 / 6.2 / 6.3 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9 / 6.10"
     },
     "id": {
       "type": "string",
@@ -3153,6 +3154,65 @@
             "navigate"
           ],
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "on": {
+              "type": "string",
+              "const": "click"
+            },
+            "openDetail": {
+              "type": "object",
+              "properties": {
+                "surface": {
+                  "type": "string",
+                  "enum": [
+                    "modal",
+                    "drawer"
+                  ]
+                },
+                "titleField": {
+                  "allOf": [
+                    {
+                      "$ref": "#/definitions/fieldReference"
+                    }
+                  ]
+                },
+                "fields": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "field": {
+                        "$ref": "#/definitions/fieldReference"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "field"
+                    ],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "surface",
+                "fields"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "on",
+            "openDetail"
+          ],
+          "additionalProperties": false
         }
       ]
     },
@@ -5062,5 +5122,5 @@
       "additionalProperties": false
     }
   },
-  "$id": "https://metriccanvas/page/v6.9"
+  "$id": "https://metriccanvas/page/v6.10"
 }

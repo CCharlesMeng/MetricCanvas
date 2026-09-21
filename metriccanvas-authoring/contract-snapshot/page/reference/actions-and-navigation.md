@@ -14,10 +14,10 @@
 
 表格链接可定位Tab子树/分组列；必须显式给出安全href及非空row/param/filter映射。selection抢占、多navigate歧义或共享目标不一致会拒绝；删除最后链接时清导航并保留其它动作。它不是通用actions或表头筛选编辑器。
 
-`t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
+`t11-evidence.md`记录两形态真实Chrome→createDqeGateway→本地HTTP，选择/清空raw_region、未绑定表格保留，以及真实anchor跳转携row/param/filter/fixed/hash。实际外部DQE、权限及目标业务页仍待独立联调。源码定位：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/interaction_editing.py`、`page_editing.py`，公开回归`test_content_interactions.py`。
 
 
-页面协议 6.9。结构真源为本册[schema.json](schema.json)，SHA256 `713ff3962d43fc1aaa1ae42728c6fde5982d197556c1ea5a5d934c653a09e431`。字段表自动生成；可选不等于有默认值。
+页面协议 6.10。结构真源为本册[schema.json](schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -288,6 +288,115 @@ Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/proper
 |---|---|---|---|---|
 | "string" | 条件结构 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f32"></a>
+
+### `@componentAction · anyOf[2]`
+
+Schema位置：`#/definitions/componentAction/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["on","openDetail"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f6e"></a>
+
+### `@componentAction · anyOf[2].on`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/on`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="click" | Schema未设默认；装配/运行时默认见语义说明 | 触发动作的受控事件。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "click" | 用于选择@componentAction · anyOf[2].on分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c"></a>
+
+### `@componentAction · anyOf[2].openDetail`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支必填 | required=["surface","fields"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 点击在页内打开详情浮层，读被点那一行，不离开当前页。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f73757266616365"></a>
+
+### `@componentAction · anyOf[2].openDetail.surface`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/surface`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["modal","drawer"] | Schema未设默认；装配/运行时默认见语义说明 | 浮层形态：modal居中、drawer右侧贴边；尺寸与层级由渲染引擎决定。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "modal" | 居中模态浮层。 |
+| "drawer" | 右侧贴边抽屉。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f7469746c654669656c64"></a>
+
+### `@componentAction · anyOf[2].openDetail.titleField`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/titleField`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| allOf交集 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 详情浮层标题取被点行的该字段；省略时用组件标题。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f7469746c654669656c642f616c6c4f662f30"></a>
+
+### `@componentAction · anyOf[2].openDetail.titleField · allOf[0]`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/titleField/allOf/0`。目标：[#/definitions/fieldReference](field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c645265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldReference | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f6669656c6473"></a>
+
+### `@componentAction · anyOf[2].openDetail.fields`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 本分支必填 | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 结果字段契约；对象键就是页面字段id。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f6669656c64732f6974656d73"></a>
+
+### `@componentAction · anyOf[2].openDetail.fields[]`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 每个数组项 | required=["label","field"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f6669656c64732f6974656d732f70726f706572746965732f6c6162656c"></a>
+
+### `@componentAction · anyOf[2].openDetail.fields[].label`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f636f6d706f6e656e74416374696f6e2f616e794f662f322f70726f706572746965732f6f70656e44657461696c2f70726f706572746965732f6669656c64732f6974656d732f70726f706572746965732f6669656c64"></a>
+
+### `@componentAction · anyOf[2].openDetail.fields[].field`
+
+Schema位置：`#/definitions/componentAction/anyOf/2/properties/openDetail/properties/fields/items/properties/field`。目标：[#/definitions/fieldReference](field-bindings-and-formats.md#schema-232f646566696e6974696f6e732f6669656c645265666572656e6365)。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| 引用 #/definitions/fieldReference | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面字段引用或字段绑定。 |
+
 ## 语义规则与反例（生成）
 
 - `url-navigation-source-contract`：URL 与来源绑定可校验，目标存在性与必填项由目标负责。反例：[navigation-invalid-authority](errors/navigation-invalid-authority.json)、[navigation-invalid-port](errors/navigation-invalid-port.json)、[navigation-scheme-without-authority](errors/navigation-scheme-without-authority.json)、[navigation-unsafe-url](errors/navigation-unsafe-url.json)、[navigation-missing-row-field](errors/navigation-missing-row-field.json)、[navigation-unknown-param](errors/navigation-unknown-param.json)、[navigation-wrong-filter-part](errors/navigation-wrong-filter-part.json)、[navigation-text-row-source](errors/navigation-text-row-source.json)、[navigation-text-unsafe-url](errors/navigation-text-unsafe-url.json)、[navigation-url-input-collision](errors/navigation-url-input-collision.json)、[navigation-url-input-wrong-part](errors/navigation-url-input-wrong-part.json)、[navigation-clicked-slot-missing-field](errors/navigation-clicked-slot-missing-field.json)、[navigation-legacy-target-rejected](errors/navigation-legacy-target-rejected.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
@@ -310,3 +419,4 @@ Schema位置：`#/definitions/componentAction/anyOf/1/properties/navigate/proper
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/0`：[合法完整页面](examples/filters-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1/navigate/query/city`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/1`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/project`。
 - `#/definitions/componentAction/anyOf/1/properties/navigate/properties/query/additionalProperties/oneOf/2`：[合法完整页面](examples/component-mapChart.json)，JSON Pointer `#/sections/0/components/0/props/actions/0/navigate/query/area`。
+- `#/definitions/componentAction/anyOf/2`：[合法完整页面](examples/url-navigation-page.json)，JSON Pointer `#/sections/0/components/0/props/actions/1`。

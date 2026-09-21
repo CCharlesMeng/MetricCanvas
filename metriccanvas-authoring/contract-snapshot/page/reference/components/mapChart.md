@@ -9,7 +9,7 @@ map限定china/world，区域名称须与底图名称或显式nameMap匹配；�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](../README.md)。
 
 
-页面协议 6.9。结构真源为本册[schema.json](../schema.json)，SHA256 `713ff3962d43fc1aaa1ae42728c6fde5982d197556c1ea5a5d934c653a09e431`。字段表自动生成；可选不等于有默认值。
+页面协议 6.10。结构真源为本册[schema.json](../schema.json)，SHA256 `acdf73a9335b0aa6bd56e65fcb9d05bcb82642361a27212987ad0f2c82b2870e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -524,7 +524,7 @@ Schema位置：`#/definitions/mapPinnedSummary/properties/titleField`。目标�
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 标题内容绑定字段。 |
+| 引用 #/definitions/fieldBinding | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 详情浮层标题取被点行的该字段；省略时用组件标题。 |
 
 <a id="schema-232f646566696e6974696f6e732f6d617050696e6e656453756d6d6172792f70726f706572746965732f6669656c6473"></a>
 
