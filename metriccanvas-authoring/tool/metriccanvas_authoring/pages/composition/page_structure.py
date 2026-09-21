@@ -4,7 +4,7 @@ import json
 from jsonschema import Draft202012Validator
 
 from metriccanvas_authoring.runtime_assets import bundle_root
-from metriccanvas_authoring.domain.page_building import (
+from metriccanvas_authoring.pages.composition.page_building import (
     ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component, ASSEMBLED_COMPONENT_TYPES,
 )
 from metriccanvas_authoring.domain.execution import DqeExecutionResult

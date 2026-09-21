@@ -3,8 +3,8 @@ from copy import deepcopy
 from dataclasses import replace
 from types import MappingProxyType
 
-from metriccanvas_authoring.domain.component_selection import recommend_components
-from metriccanvas_authoring.domain.page_building import ASSEMBLED_COMPONENT_TYPES, PageBuildingIssue
+from metriccanvas_authoring.pages.components.component_selection import recommend_components
+from metriccanvas_authoring.pages.composition.page_building import ASSEMBLED_COMPONENT_TYPES, PageBuildingIssue
 
 
 async def apply_component_policy(units, executions, policy, scope):

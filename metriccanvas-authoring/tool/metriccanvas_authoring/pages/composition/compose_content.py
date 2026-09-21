@@ -5,7 +5,7 @@ Both compatibility transports call this use case directly.
 from dataclasses import replace
 from .compose_page import ComposePageCommand, create_compose_page
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
+from metriccanvas_authoring.pages.composition.layout_policy import apply_creation_layout
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 

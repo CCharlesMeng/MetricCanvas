@@ -3,13 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence
 
-from metriccanvas_authoring.domain.component_selection import (
+from metriccanvas_authoring.pages.components.component_selection import (
     component_default_span,
     recommend_components,
 )
 from metriccanvas_authoring.domain.data_context import DataContext, SemanticSurface
 from metriccanvas_authoring.domain.execution import DqeExecutionResult, FormulaTrace
-from metriccanvas_authoring.domain.section_layout import pack_section_spans
+from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
 
 
 ASSEMBLED_COMPONENT_TYPES = frozenset({

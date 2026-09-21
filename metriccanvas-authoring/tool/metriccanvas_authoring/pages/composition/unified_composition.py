@@ -3,9 +3,9 @@ from copy import deepcopy
 
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.editing.unified_edit_page import UNIFIED_EDIT_SCHEMA, edit_unified_page
-from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
+from metriccanvas_authoring.pages.composition.layout_policy import apply_creation_layout
 from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.domain.page_structure import PLAN_SCHEMA
+from metriccanvas_authoring.pages.composition.page_structure import PLAN_SCHEMA
 from metriccanvas_authoring.pages.composition.structure_composition import compose_structure
 
 CREATION_OPERATIONS = frozenset({'add_text', 'add_field_text', 'add_map_chart', 'add_tab_container',

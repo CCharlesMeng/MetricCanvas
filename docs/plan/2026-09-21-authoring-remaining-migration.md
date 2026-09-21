@@ -39,7 +39,7 @@
 |---|---|---|
 | 7a ✓ | `compose_page.py`、`compose_content.py`、`unified_composition.py`、`structure_composition.py`、`create_content_page.py` | `pages/composition/`（2026-09-21 已完成） |
 | 7b ✓ | `edit_page.py`、`unified_edit_page.py`、`component_policy.py`、`domain/{page_editing,section_editing,component_editing,interaction_editing}.py` | `pages/editing/`、`pages/components/`（2026-09-21 已完成；原 `pages/editing.py` 改名 `pages/editing/operation_batch.py`） |
-| 7c | `domain/{page_building,page_structure,container_building,layout_policy,section_layout,text_map_building,component_selection}.py` | `pages/composition/`、`pages/components/` |
+| 7c ✓ | `domain/{page_building,page_structure,container_building,layout_policy,section_layout,text_map_building,component_selection}.py` | `pages/composition/`（page_building、page_structure、layout_policy、section_layout）、`pages/components/`（container_building、text_map_building、component_selection）（2026-09-21 已完成） |
 | 7d | `discover_data_context.py`、`business_interpretation.py`、`source_description_ports.py`、`domain/{data_context,business_terms,execution,source_mapping,page_build_spec,grouped_params}.py` | `data/` |
 | 7e | `authoring_turns.py`、`authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`、`content_ports.py` | `work/` |
 | 7f | `lifecycle.py`、`lifecycle_ports.py`、`lifecycle_publish.py`、`publish_ports.py`、`authoring_deployment.py` | `assets/`（草稿保存与发布兼容） |
@@ -48,6 +48,11 @@
 | 7i | `domain/page_validation.py` | `pages/validation/`。**排在最后**，等 6.7 的 Python 对等校验落完再动 |
 
 约束：每轮只搬位置与更新引用，不顺手改行为；`domain/` 清空后删除该包，不留空目录；不新建 `common/utils/helpers`。
+
+7a–7c 做完后补记两点（2026-09-21）：
+
+- 上表没有给第三批新增的 `domain/canonical.py`（确定性 JSON 编码与 sha256）和 `domain/java_save_fingerprint.py`（旧 Java 幂等键）安排落点，`domain/` 因此清不空。方案第 5 节允许保留“确有多个消费者且语义相同的技术函数”，但没说放哪；7d 动手前先定：`java_save_fingerprint` 只服务 v1 保存路径，可随 `authoring_deployment` 一起进 `assets/`；`canonical` 被 data / work / assets / pages 四处共用，候选是留在包根或进 `work/`，需要拍板。
+- `data/query.py`、`data/results.py` 直接 import `pages.composition.page_building`（`derive_executable_units`、`build_query_source`、`ExecutableUnit`），与方案第 6 节“`data` 不调用页面装配”相悖。这是搬迁前就有的依赖，7c 只把路径搬了过去；单元派生与查询源构造到底归 `data` 还是 `pages`，放到第八批（A03 尾巴）一起看，不在搬迁轮次里顺手改。
 
 ## 3. 第八批 · A03 尾巴：三种组件能力的关系显式化
 

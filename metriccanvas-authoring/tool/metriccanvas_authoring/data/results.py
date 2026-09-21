@@ -5,8 +5,8 @@ import asyncio
 import json
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.data.query import create_query_data
-from metriccanvas_authoring.domain.page_building import build_query_source
-from metriccanvas_authoring.domain.page_structure import DATA_REQUEST, NAME, TEXT, obj
+from metriccanvas_authoring.pages.composition.page_building import build_query_source
+from metriccanvas_authoring.pages.composition.page_structure import DATA_REQUEST, NAME, TEXT, obj
 from metriccanvas_authoring.work.state import digest, require
 
 QUERY_SCHEMA = obj({'question': TEXT, 'dataContextVersion': NAME,

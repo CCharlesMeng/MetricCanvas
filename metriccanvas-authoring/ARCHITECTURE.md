@@ -21,7 +21,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `data/semantic_catalog.py` | 相关 Lab 指标精简投影、calculate_conf 识别、缺失/冲突与精确详情身份；不输出 SQL |
 | `pages/referenced.py` | 消费结果引用后的章节装配与局部新增组件；不执行 DQE |
 | `pages/editing/operation_batch.py` | 同步/异步共用的批次、依赖、回滚和 partial/unchanged 规则 |
-| `domain/page_building.py` | 明确的 build_query_source/build_data_component 接口；产品可渲染与创作准入保持不同能力 |
+| `pages/composition/page_building.py` | 明确的 build_query_source/build_data_component 接口；产品可渲染与创作准入保持不同能力 |
 | `work/state.py` | 单份工作稿、版本竞争和跨调用预算 |
 | `assets/drafts.py` | 冻结提交、单次保存、回执核对、无需候选的恢复 |
 | `delivery/preview.py` | 定义/预览分离、精确产物关联、Relay 准备预览 |

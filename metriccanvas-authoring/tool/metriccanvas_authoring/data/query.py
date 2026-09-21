@@ -19,7 +19,7 @@ from metriccanvas_authoring.domain.execution import (
     failure_from_execution_error,
 )
 from metriccanvas_authoring.domain.page_build_spec import validate_page_build_spec
-from metriccanvas_authoring.domain.page_building import (
+from metriccanvas_authoring.pages.composition.page_building import (
     PageBuildingIssue,
     ExecutableUnit,
     derive_executable_units,

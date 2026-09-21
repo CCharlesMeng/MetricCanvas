@@ -12,7 +12,7 @@ from metriccanvas_authoring.domain.execution import (
     FormulaTrace,
 )
 from metriccanvas_authoring.domain.canonical import canonical_json
-from metriccanvas_authoring.domain.page_building import (
+from metriccanvas_authoring.pages.composition.page_building import (
     PageBuildingIssue,
     PageBuildingIssues,
     assemble_page_document,

@@ -4,8 +4,8 @@ from typing import Any
 
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
 from metriccanvas_authoring.pages.editing.interaction_editing import INTERACTION_HANDLERS
-from metriccanvas_authoring.domain.container_building import CONTAINER_HANDLERS, add_ai_summary
-from metriccanvas_authoring.domain.text_map_building import TEXT_MAP_HANDLERS
+from metriccanvas_authoring.pages.components.container_building import CONTAINER_HANDLERS, add_ai_summary
+from metriccanvas_authoring.pages.components.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 EDIT_SCHEMA = json.loads((bundle_root() / "contracts/authored/page-edit-request.schema.json").read_text())

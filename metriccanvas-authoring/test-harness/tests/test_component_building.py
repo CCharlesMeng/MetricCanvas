@@ -7,7 +7,7 @@ from pathlib import Path
 
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
-from metriccanvas_authoring.domain.page_building import (  # noqa: E402
+from metriccanvas_authoring.pages.composition.page_building import (  # noqa: E402
     ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component,
 )
 from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402

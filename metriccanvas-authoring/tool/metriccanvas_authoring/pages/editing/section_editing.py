@@ -1,6 +1,6 @@
 """Bounded structural edits on the complete candidate; never re-run queries."""
 from copy import deepcopy
-from metriccanvas_authoring.domain.page_structure import obj, ID, TEXT, DATA_BLOCK, BLOCK, StructureError, block_component
+from metriccanvas_authoring.pages.composition.page_structure import obj, ID, TEXT, DATA_BLOCK, BLOCK, StructureError, block_component
 
 COMMON = {'id': ID, 'sectionId': ID, 'dependsOn': {'type': 'array', 'items': ID}}
 CONTAINER = {'enum': ['plain', 'panel', 'card']}

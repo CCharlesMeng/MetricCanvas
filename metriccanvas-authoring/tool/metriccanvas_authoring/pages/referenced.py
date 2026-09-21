@@ -2,12 +2,12 @@
 from copy import deepcopy
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.domain.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, scope_note, StructureError
+from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, scope_note, StructureError
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
-from metriccanvas_authoring.domain.section_layout import pack_section_spans
+from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
 
 SOURCE_REFS = {'type': 'object', 'propertyNames': ID, 'maxProperties': 6, 'additionalProperties': NAME}
 COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}, 'sources': SOURCE_REFS,
