@@ -327,7 +327,7 @@ export async function buildPageReference(root: string, schema: Schema, catalog: 
   const missingFields = nodes.filter(n => /\/properties\/[^/]+$/.test(n.pointer) && !map.fieldNotes[n.pointer] && !n.schema.description && !map.fieldNotes[n.path.split('.').at(-1)!]).map(n => n.pointer);
   const semanticGaps = {fields:missingFields,enums:missingEnums,examples:exampleCoverage.filter(e=>!e.file),branches:documentedBranches.filter(b=>!b.file&&!b.negativeWitness)};
   if (Object.values(semanticGaps).some(gaps=>gaps.length)) throw new Error(`Incomplete page reference: ${json(semanticGaps)}`);
-  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,type:typeOf(s),constraints:constraints(s),enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
+  output.set('index.json', json({schemaVersion:version,schemaSha256:schemaHash,semanticSources,modules:map.modules,components:catalog.map(c=>({type:c.type,file:`components/${c.type}.md`})),nodes:nodes.map(({schema:s,...n})=>({...n,enum:s.enum,const:s.const,ref:s.$ref})),exampleCoverage,branchCoverage:documentedBranches,semanticGaps}));
   for (const component of catalog) if (!output.has(`components/${component.type}.md`)) throw new Error(`Undocumented component: ${component.type}`);
   validateReferenceLinks(output);
   return output;
