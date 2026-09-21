@@ -186,17 +186,13 @@ paramBindings[id] = {target:'time', window}   （在查询 Q 上）
 - **并发会话。** 见第 3 节末尾。
 - ~~**能力探测的一个缺口**：`named-to-date-windows` 能力按 `paramBindings` 里的 window 探测，新形状把 window 放到了 `filter.time`，那条探测不会命中。~~ 已补第二个落点。
 
-### IOC 四张页上公共 params 卡在哪
+### IOC 四张页上公共 params：已按路线 2 做完
 
-四张页共用的关键输入是 `mtime`（数据月份）与 `as-of-date`（日期）。两者现在都是 **`timePoint` 筛选器**，带字面量默认值（`2026-04` / `2026-03-26`），并通过 6.9 的 `filterBindings` 非维度目标下推成 `mtime = '202604'` 这类谓词；`ioc-project-detail` 则把同一个 `mtime` 写成旧数组里的 `type: "string"`、默认 `"202604"`。
+四张页共用的关键输入是 `mtime`（数据月份）与 `as-of-date`（日期），两者都是 `timePoint` 筛选器、带字面量默认值。曾有三条路：删掉筛选器改成 `params.query.dimensions`（改产品行为，还丢掉 `valueFormat: "compact"` 的 `2026-04 → 202604` 转换）、扩 `initialParam` 到非维度筛选器、或只迁 `ioc-project-detail`。
 
-要把它们提成公共 params，协议上只有三条路，且都不是纯改写：
+**选的是第二条，见 [ADR-0089](../adr/0089-page-parameters-can-seed-time-point-and-hierarchical-filters.md)**：6.11 把 `initialParam` 扩到时间点筛选器与层级维度筛选器，页内那两个控件照旧可改，口径日期同时有了声明形态。概览页声明 `report-month` 与 `report-as-of-date`，清单页声明前者，分析页声明后者；`ioc-project-detail` 的 8 个旧数组参数一并迁进 `params.display`。
 
-1. **删掉筛选器，改成 `params.query.dimensions`**（`dim_name: "mtime"`，查询里 `filter.dims[].dim_value_list` 原位引用）。页内的「数据月份」「日期」两个控件随之消失——页面参数按 ADR-0047 定义就是打开后不可变的。同时丢掉 `valueFormat: "compact"` 这层 `2026-04 → 202604` 的转换，参数得直接保存 `202604`。
-2. **扩 `initialParam` 到非维度筛选器**。现在 `param-bindings.ts` 显式只接平面 dimension 筛选器（拒绝 `hierarchy`、拒绝其它 type），所以「参数给初值、筛选器仍可改」这个既有模式对 `timePoint` 用不了。扩它是第三次协议改动。
-3. **只迁 `ioc-project-detail`**。它没有筛选器，8 个旧数组参数全是纯展示，迁到 `params.display` 是无损改写——但按计划自己的排序，这是优先级最低、无功能收益的一项。
-
-路线 1 改产品行为，路线 2 是新的协议面，两者都要人拍板，因此没有自行选定。
+注意它的 `mtime` 与前三张页同名但不是同一个东西——那个值来自清单页 navigate 的 `source: "row"`，是行数据里的紧凑月份串，不是页面口径输入。
 
 ---
 
