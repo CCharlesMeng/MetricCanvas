@@ -38,6 +38,35 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   }
 });
 
+// 页内详情浮层（ADR-0087）：动作闭集此前只有 writeFilter 与 navigate，
+// 详情只能靠跳页。丢单表的丢单原因在页内看才合理——丢掉的项目往往没有
+// 项目详情页可跳。
+test('丢单表点击在页内打开详情抽屉，不离开当前页', async ({ page }) => {
+  await page.goto('/pages/ioc-project-overview');
+  const host = page.locator('[data-metriccanvas-runtime]');
+  const panel = host.locator('[data-detail-panel]');
+  await expect(panel).toHaveCount(0);
+
+  await host.getByRole('tab', { name: '丢单项目' }).click();
+  const cell = host.locator('a.link-cell').first();
+  await expect(cell).toBeVisible();
+  const url = page.url();
+  await cell.click();
+
+  await expect(panel).toBeVisible();
+  expect(page.url()).toBe(url);
+  await expect(host.locator('[data-detail-title]')).toHaveText('海外节点扩容');
+  await expect(host.locator('[data-detail-item]')).toHaveCount(7);
+  await expect(host.locator('[data-detail-item]').last()).toContainText('价格竞争力不足');
+  await expect(host.locator('[data-detail-backdrop], .detail-backdrop')).toHaveAttribute(
+    'data-detail-surface',
+    'drawer'
+  );
+
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveCount(0);
+});
+
 // 查询分页此前与排序、表头筛选互斥（ADR-0086）。分页下本地排序只能排到
 // 当前页，所以排序必须由上游执行——按金额降序后第一页第一行必须是全表
 // 最大值，而不是首页那 5 行里的最大值。

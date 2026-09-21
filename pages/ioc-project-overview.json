@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.9",
+  "schemaVersion": "6.10",
   "id": "ioc-project-overview",
   "layout": "dashboard",
   "meta": {
@@ -2204,42 +2204,39 @@
                     "actions": [
                       {
                         "on": "click",
-                        "navigate": {
-                          "href": "/pages/ioc-project-detail",
-                          "query": {
-                            "page-title": {
-                              "source": "row",
-                              "field": "page-title"
-                            },
-                            "opportunity-code": {
-                              "source": "row",
+                        "openDetail": {
+                          "surface": "drawer",
+                          "titleField": "opportunity-name",
+                          "fields": [
+                            {
+                              "label": "机会点编码",
                               "field": "opportunity-code"
                             },
-                            "mtime": {
-                              "source": "row",
-                              "field": "mtime"
+                            {
+                              "label": "客户",
+                              "field": "party-number"
                             },
-                            "ati-status-label": {
-                              "source": "row",
-                              "field": "ati-status-label"
-                            },
-                            "project-initiation-level": {
-                              "source": "row",
-                              "field": "project-initiation-level"
-                            },
-                            "public-cloud-na-level-name": {
-                              "source": "row",
+                            {
+                              "label": "NA 类型",
                               "field": "public-cloud-na-level-name"
                             },
-                            "sub-industry-level1-name": {
-                              "source": "row",
+                            {
+                              "label": "云行业",
                               "field": "sub-industry-level1-name"
                             },
-                            "party-number": {
-                              "source": "row",
-                              "field": "party-number"
+                            {
+                              "label": "立项等级",
+                              "field": "project-initiation-level"
+                            },
+                            {
+                              "label": "预签金额",
+                              "field": "bidding-amount"
+                            },
+                            {
+                              "label": "丢单原因",
+                              "field": "lost-order-reason"
                             }
-                          }
+                          ]
                         }
                       }
                     ]

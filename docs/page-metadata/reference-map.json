@@ -1021,7 +1021,7 @@
     "tags": "标签集合。",
     "target": "写回目标或查询绑定目标，按所在结构明确类型。",
     "term": "关联字段对应的业务术语。",
-    "titleField": "标题内容绑定字段。",
+    "titleField": "详情浮层标题取被点行的该字段；省略时用组件标题。",
     "titleIcon": "标题前受控图标。",
     "to": "范围终点；与from的顺序和精度须匹配。",
     "tone": "受控内容语气/正负语义。",
@@ -1050,7 +1050,9 @@
     "valueFormat": "时间点取值送进谓词的写法：iso原样YYYY-MM，compact去掉分隔符。",
     "whenTrue": "布尔筛选器勾选时下推的取值；不勾选默认无条件。",
     "whenFalse": "布尔筛选器显式为假时下推的取值；缺席即不勾选不加条件。",
-    "metric": "数值区间谓词作用的DQE指标名，不等于页面字段id。"
+    "metric": "数值区间谓词作用的DQE指标名，不等于页面字段id。",
+    "openDetail": "点击在页内打开详情浮层，读被点那一行，不离开当前页。",
+    "surface": "浮层形态：modal居中、drawer右侧贴边；尺寸与层级由渲染引擎决定。"
   },
   "enumNotes": {
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -1178,8 +1180,11 @@
     "6.6": "新增分组参数与多个独立时间区间。",
     "6.7": "新增层级维度筛选绑定逐级声明谓词字段。",
     "6.8": "层级维度筛选器不再允许恒定queryField，必须逐级声明。",
-    "6.9": "当前作者写出版本，新增timePoint/boolean/numberRange筛选器的查询绑定目标。",
-    "iso": "时间点原样送 YYYY-MM / YYYY-MM-DD。"
+    "6.9": "新增timePoint/boolean/numberRange筛选器的查询绑定目标。",
+    "iso": "时间点原样送 YYYY-MM / YYYY-MM-DD。",
+    "6.10": "当前作者写出版本，新增页内详情浮层动作。",
+    "modal": "居中模态浮层。",
+    "drawer": "右侧贴边抽屉。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {

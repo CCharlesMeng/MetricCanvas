@@ -30,7 +30,7 @@ import {
   type TableSelectionWrite
 } from './schema/component';
 import { componentLayoutZ, mainDataZ, metricDataZ, tableDataZ } from './schema/primitives';
-import { writeFilterActionZ, navigateActionZ } from './schema/actions';
+import { writeFilterActionZ, navigateActionZ, openDetailActionZ } from './schema/actions';
 import {
   dashboardToolbarZ,
   pageLayoutFormZ,
@@ -184,7 +184,8 @@ export type ChartComponent =
 
 export type WriteFilterAction = z.infer<typeof writeFilterActionZ>;
 export type NavigateAction = z.infer<typeof navigateActionZ>;
-export type ComponentAction = WriteFilterAction | NavigateAction;
+export type OpenDetailAction = z.infer<typeof openDetailActionZ>;
+export type ComponentAction = WriteFilterAction | NavigateAction | OpenDetailAction;
 
 export type PageMeta = z.infer<typeof pageMetaZ>;
 export type PageLayoutForm = z.infer<typeof pageLayoutFormZ>;
@@ -343,6 +344,8 @@ export function deriveComponentCapabilities(
     component.type === 'table' &&
     component.props.columns.some((column) => tableColumnHasSelection(column));
   const hasNavigate = (props.actions ?? []).some((action) => 'navigate' in action);
+  // 页内详情与 navigate 同理:读当前行、不依赖 query 重跑,inline 组件也可声明。
+  const hasOpenDetail = (props.actions ?? []).some((action) => 'openDetail' in action);
   const hasMapHierarchy =
     component.type === 'mapChart' && component.props.hierarchyFilter !== undefined;
   return {
@@ -357,6 +360,7 @@ export function deriveComponentCapabilities(
     actions:
       (hasQuery && ((props.actions?.length ?? 0) > 0 || tableSelection)) ||
       hasNavigate ||
+      hasOpenDetail ||
       hasMapHierarchy,
     remotePagination:
       component.type === 'table' && component.props.pagination?.mode === 'query'

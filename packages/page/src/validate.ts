@@ -1900,12 +1900,12 @@ function actionErrors(
   if (!actions) return [];
   const errors: TypedError[] = [];
   if (!deriveComponentCapabilities(page, component).live) {
-    const hasNonNavigate = actions.some((action) => !('navigate' in action));
-    if (hasNonNavigate) {
+    const hasWriteFilter = actions.some((action) => 'writeFilter' in action);
+    if (hasWriteFilter) {
       errors.push(
         schemaError(
           `${componentPath}/props/actions`,
-          'writeFilter 只允许绑定 query 数据源的组件；navigate 可以挂在 inline 组件上'
+          'writeFilter 只允许绑定 query 数据源的组件；navigate 与 openDetail 可以挂在 inline 组件上'
         )
       );
     }
@@ -1926,7 +1926,15 @@ function actionErrors(
       check(action.field, `${path}/field`, 'dimension');
       return;
     }
-
+    if ('openDetail' in action) {
+      // 详情浮层读被点那一行,因此每个字段都要能在组件自己的数据槽里解析。
+      if (action.openDetail.titleField !== undefined) {
+        check(action.openDetail.titleField, `${path}/openDetail/titleField`);
+      }
+      action.openDetail.fields.forEach((item, fieldIndex) => {
+        check(item.field, `${path}/openDetail/fields/${fieldIndex}/field`);
+      });
+    }
   });
   return errors;
 }

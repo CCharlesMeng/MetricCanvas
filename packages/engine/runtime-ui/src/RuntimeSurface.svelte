@@ -18,7 +18,9 @@
     type Component,
     type ComponentCapabilities,
     type DataSnapshot,
+    type FieldReference,
     type FilterDeclaration,
+    type OpenDetailAction,
     type PageParamDeclaration,
     type Row,
     type TableColumn,
@@ -640,12 +642,66 @@
 
   function handleTableLink(component: TableComponent, row: Row, event: MouseEvent) {
     const href = componentHref(component, row);
-    if (href) navigate(href, event);
+    if (href) {
+      navigate(href, event);
+      return;
+    }
+    // 没有 navigate 的链接列：点击进入页内详情（ADR-0087），不跳走。
+    const detail = componentOpenDetail(component);
+    if (detail) {
+      event.preventDefault();
+      openDetailFor(component, detail, row);
+    }
   }
 
   function handleMetricLink(component: Component, row: Row, event: MouseEvent) {
     const href = componentHref(component, row);
     if (href) navigate(href, event);
+  }
+
+  function componentOpenDetail(component: Component): OpenDetailAction | undefined {
+    if (!componentCapability(component)?.actions || !('actions' in component.props)) {
+      return undefined;
+    }
+    return component.props.actions?.find(
+      (action): action is OpenDetailAction => 'openDetail' in action
+    );
+  }
+
+  /**
+   * 页内详情浮层（ADR-0087）：读被点那一行，不离开当前页。同时只存在一个，
+   * 因此是单个状态而不是按组件归集。
+   */
+  let openDetail = $state<
+    | {
+        surface: 'modal' | 'drawer';
+        title: string;
+        items: Array<{ label: string; value: string }>;
+      }
+    | undefined
+  >(undefined);
+
+  function detailValue(row: Row, reference: FieldReference): string {
+    return formatValue(row[fieldName(reference)]);
+  }
+
+  function openDetailFor(component: Component, action: OpenDetailAction, row: Row) {
+    const detail = action.openDetail;
+    openDetail = {
+      surface: detail.surface,
+      title: detail.titleField
+        ? detailValue(row, detail.titleField)
+        : componentTitle(component) ?? '详情',
+      items: detail.fields.map((item) => ({
+        label: item.label,
+        value: detailValue(row, item.field)
+      }))
+    };
+  }
+
+  function componentTitle(component: Component): string | undefined {
+    const title = (component.props as { title?: unknown }).title;
+    return typeof title === 'string' ? title : undefined;
   }
 
   function handleChartClick(component: ChartComponent, row: Row) {
@@ -671,6 +727,10 @@
     for (const action of component.props.actions ?? []) {
       if ('navigate' in action) {
         navigate(navigationHref(action.navigate, filterValues, pageParams, row));
+        return;
+      }
+      if ('openDetail' in action) {
+        openDetailFor(component, action, row);
         return;
       }
       const code = fieldName(action.field);
@@ -1094,7 +1154,47 @@
     </div>
     </div>
   {/if}
+  {#if openDetail}
+    <!-- 页内详情浮层（ADR-0087）：不离开当前页，Esc 与背板关闭。 -->
+    <div
+      class="detail-backdrop"
+      data-detail-surface={openDetail.surface}
+      role="presentation"
+      onclick={(event) => {
+        if (event.target === event.currentTarget) openDetail = undefined;
+      }}
+    >
+      <div
+        class="detail-panel {openDetail.surface}"
+        role="dialog"
+        aria-modal="true"
+        aria-label={openDetail.title}
+        data-detail-panel
+      >
+        <header>
+          <h2 data-detail-title>{openDetail.title}</h2>
+          <button type="button" data-detail-close aria-label="关闭" onclick={() => (openDetail = undefined)}>
+            ×
+          </button>
+        </header>
+        <dl>
+          {#each openDetail.items as item (item.label)}
+            <div class="detail-item" data-detail-item>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          {/each}
+        </dl>
+      </div>
+    </div>
+  {/if}
 </div>
+
+<svelte:window
+  onkeydown={(event) => {
+    if (event.key === 'Escape' && openDetail) openDetail = undefined;
+  }}
+/>
 
 <style>
   .runtime-view {
@@ -1364,5 +1464,78 @@
   .path {
     color: var(--mc-color-muted);
     font-size: 13px;
+  }
+  .detail-backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    background: rgb(15 23 42 / 45%);
+  }
+  .detail-backdrop[data-detail-surface='modal'] {
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .detail-backdrop[data-detail-surface='drawer'] {
+    justify-content: flex-end;
+  }
+  .detail-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: auto;
+    background: #fff;
+    box-shadow: 0 12px 32px rgb(15 23 42 / 18%);
+  }
+  .detail-panel.modal {
+    width: min(560px, 100%);
+    max-height: 100%;
+    padding: 20px 24px;
+    border-radius: 12px;
+  }
+  .detail-panel.drawer {
+    width: min(420px, 100%);
+    height: 100%;
+    padding: 20px 24px;
+  }
+  .detail-panel header {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .detail-panel h2 {
+    margin: 0;
+    font-size: 16px;
+  }
+  .detail-panel header button {
+    padding: 0 6px;
+    color: var(--mc-color-muted);
+    font-size: 20px;
+    line-height: 1;
+    background: none;
+    border: 0;
+    cursor: pointer;
+  }
+  .detail-panel dl {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+  }
+  .detail-item {
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+    font-size: 13px;
+  }
+  .detail-item dt {
+    color: var(--mc-color-muted);
+    white-space: nowrap;
+  }
+  .detail-item dd {
+    margin: 0;
+    text-align: right;
   }
 </style>
