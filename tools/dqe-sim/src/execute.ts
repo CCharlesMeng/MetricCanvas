@@ -2,6 +2,7 @@ import customerActivityRiskFixtureJson from '../fixtures/customer-activity-risk.
 import customerActivityRiskTop100FixtureJson from '../fixtures/customer-activity-risk-top100.json';
 import customerActivityInspectionFixtureJson from '../fixtures/customer-activity-inspection.json';
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
+import iocOpportunityListFixtureJson from '../fixtures/ioc-opportunity-list.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
 import { dimensionValuesFor } from './dimension-value-surface';
 import { runSemanticSurface } from './semantic-surface-execute';
@@ -51,6 +52,15 @@ interface FlowAnalysisReportFixture {
   queries: Record<string, FlowAnalysisQueryFixture>;
 }
 
+interface IocOpportunityListFixture {
+  capturedAt: string;
+  output_dims: string[];
+  output_metrics: string[];
+  /** 可参与 `filter.dims` 谓词的列;行里的其余列只作为投影输出。 */
+  filterableDims: string[];
+  rows: JsonRecord[];
+}
+
 export interface DqeSimItemResult {
   code: 'SUCCESS' | 'DQE_SIM_UNSUPPORTED_QUERY';
   data: JsonRecord[];
@@ -78,6 +88,8 @@ const customerActivityInspectionFixture =
   customerActivityInspectionFixtureJson as CustomerActivityInspectionFixture;
 const flowAnalysisReportFixture =
   flowAnalysisReportFixtureJson as FlowAnalysisReportFixture;
+const iocOpportunityListFixture =
+  iocOpportunityListFixtureJson as IocOpportunityListFixture;
 const inspectionProgressMetrics = [
   'NA客户数',
   '无公司考察客户数',
@@ -140,6 +152,8 @@ function executeExactScenarios(item: unknown): DqeSimItemResult {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
   const flowAnalysisResult = executeFlowAnalysisReport(item);
   if (flowAnalysisResult) return flowAnalysisResult;
+  const iocOpportunityResult = executeIocOpportunityList(item);
+  if (iocOpportunityResult) return iocOpportunityResult;
   const fixture = customerActivityRiskFixtures.find(
     (candidate) =>
       equalJson(item.output_metrics, candidate.query.output_metrics) &&
@@ -324,6 +338,77 @@ function executeFlowAnalysisReport(
     query.rows.map((row) => ({ ...row })),
     flowAnalysisMetadata(query)
   );
+}
+
+/**
+ * IOC 机会点清单:页面数据源把筛选器下推为 `filter.dims` 谓词后走这一支。
+ *
+ * 行存放的是采集副本,另带各级区域编码等谓词列;返回只投影
+ * `output_dims`/`output_metrics`,谓词列不外溢。层级区域筛选器按当前层级
+ * 送来不同的 `dim_name`(geo_pc_code / region_dept_code / rep_office_code),
+ * 这里据此各自命中——这正是层级绑定逐级声明谓词字段要验的东西。
+ */
+function executeIocOpportunityList(
+  item: JsonRecord
+): DqeSimItemResult | undefined {
+  const fixture = iocOpportunityListFixture;
+  if (
+    !equalStrings(item.output_dims, fixture.output_dims) ||
+    !equalStrings(item.output_metrics, fixture.output_metrics)
+  ) {
+    return undefined;
+  }
+  if (!isRecord(item.filter)) return unsupported('机会点清单缺少 filter 对象');
+  if (!equalJson(item.filter.metrics, [])) {
+    return unsupported('机会点清单仅支持 filter.metrics=[]');
+  }
+  if (!Array.isArray(item.filter.dims)) {
+    return unsupported('filter.dims 必须是数组');
+  }
+  if (!validOrder(item.order)) {
+    return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
+  }
+  const filterable = new Set(fixture.filterableDims);
+  let rows = fixture.rows;
+  for (const entry of item.filter.dims) {
+    if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
+      return unsupported('维度筛选格式无效');
+    }
+    if (!filterable.has(entry.dim_name)) {
+      return unsupported(`机会点清单不支持的维度筛选:${entry.dim_name}`);
+    }
+    const values = stringArray(entry.dim_value_list);
+    if (!values) {
+      return unsupported(`维度筛选 ${entry.dim_name} 必须是字符串数组`);
+    }
+    if (values.length === 0) continue;
+    rows = rows.filter((row) => values.includes(String(row[entry.dim_name as string] ?? '')));
+  }
+  const projected = rows.map((row) =>
+    Object.fromEntries(
+      [...fixture.output_dims, ...fixture.output_metrics].map((field) => [field, row[field] ?? null])
+    )
+  );
+  return successResult(item, projected, {
+    columns: [
+      ...fixture.output_dims.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'STRING' as const,
+        type: 'dimension' as const
+      })),
+      ...fixture.output_metrics.map((caption) => ({
+        id: `dqe-sim.${caption}`,
+        caption,
+        data_type: 'NUMBER' as const,
+        type: 'metric' as const
+      }))
+    ],
+    orders: [],
+    limit: -1,
+    offset: -1,
+    sql: null
+  });
 }
 
 function flowAnalysisMetadata(

@@ -22,7 +22,12 @@ describe('DQE Sim 维度候选值闭集', () => {
     expect(dimensionValuesFor('region-dept-code')).toEqual([
       { value: 'CN-BJ', label: '北京' },
       { value: 'CN-SH', label: '上海' },
-      { value: 'CN-GD', label: '广东' }
+      { value: 'CN-GD', label: '广东' },
+      { value: 'CN-EAST', label: '华东地区部' },
+      { value: 'CN-NORTH', label: '华北地区部' },
+      { value: 'CN-SOUTH', label: '华南地区部' },
+      { value: 'CN-WEST', label: '西部地区部' },
+      { value: 'APAC', label: '亚太地区部' }
     ]);
     expect(dimensionValuesFor('rep-office-code')).toEqual([
       { value: 'SH-01', label: '上海代表处' },
@@ -32,7 +37,27 @@ describe('DQE Sim 维度候选值闭集', () => {
       { value: 'HZ-01', label: '杭州代表处' },
       { value: 'CD-01', label: '成都代表处' },
       { value: 'SG-01', label: '新加坡代表处' },
-      { value: 'TJ-01', label: '天津代表处' }
+      { value: 'TJ-01', label: '天津代表处' },
+      { value: 'XA-01', label: '西安代表处' },
+      { value: 'GZ-01', label: '广州代表处' },
+      { value: 'NJ-01', label: '南京代表处' }
+    ]);
+  });
+
+  it('机会点清单的业务维度编码即名称，取值域与清单夹具自洽', () => {
+    expect(dimensionValuesFor('overdue-status')).toEqual(
+      ['正常', '超期'].map((value) => ({ value, label: value }))
+    );
+    expect(dimensionValuesFor('opportunity-step')).toEqual(
+      ['初步接洽', '需求确认', '技术方案', '商务谈判'].map((value) => ({
+        value,
+        label: value
+      }))
+    );
+    expect(dimensionValuesFor('public-cloud-na-level')?.map((c) => c.value)).toEqual([
+      '战略客户',
+      '重要客户',
+      '普通客户'
     ]);
   });
 

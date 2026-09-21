@@ -22,6 +22,21 @@ test('无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览
   await expect(page.locator('.runtime-view')).toContainText('XX 云迁移项目');
 });
 
+// 层级维度筛选绑定逐级下推谓词字段(ADR-0084)。同一个区域筛选器在三层各
+// 命中不同的 DQE 字段,夹具里三层的行数互不相同;恒定字段或忽略 level 的
+// 实现会让三次断言塌到同一个数字。
+test('层级区域筛选按当前层级选谓词字段，三层各自命中', async ({ page }) => {
+  const rows = page.locator('[data-component="list/opportunity-table"] tbody tr');
+  for (const [level, code, expected] of [
+    ['geo', 'R99', 9],
+    ['region-dept', 'CN-EAST', 3],
+    ['office', 'SH-01', 1]
+  ] as const) {
+    await page.goto(`/pages/ioc-opportunity-list?region.level=${level}&region=${code}`);
+    await expect(rows).toHaveCount(expected);
+  }
+});
+
 test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor', async ({page, context}) => {
   await page.goto('/pages/ioc-project-overview');
   await expect(page.locator('.runtime-view')).toBeVisible();

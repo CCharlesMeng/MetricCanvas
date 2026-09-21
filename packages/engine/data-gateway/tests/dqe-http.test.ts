@@ -181,7 +181,12 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
       'region-dept-code': [
         { value: 'CN-BJ', label: '北京' },
         { value: 'CN-SH', label: '上海' },
-        { value: 'CN-GD', label: '广东' }
+        { value: 'CN-GD', label: '广东' },
+        { value: 'CN-EAST', label: '华东地区部' },
+        { value: 'CN-NORTH', label: '华北地区部' },
+        { value: 'CN-SOUTH', label: '华南地区部' },
+        { value: 'CN-WEST', label: '西部地区部' },
+        { value: 'APAC', label: '亚太地区部' }
       ],
       'rep-office-code': [
         { value: 'SH-01', label: '上海代表处' },
@@ -191,7 +196,10 @@ describe('DQE 数据网关真实 HTTP 集成', () => {
         { value: 'HZ-01', label: '杭州代表处' },
         { value: 'CD-01', label: '成都代表处' },
         { value: 'SG-01', label: '新加坡代表处' },
-        { value: 'TJ-01', label: '天津代表处' }
+        { value: 'TJ-01', label: '天津代表处' },
+        { value: 'XA-01', label: '西安代表处' },
+        { value: 'GZ-01', label: '广州代表处' },
+        { value: 'NJ-01', label: '南京代表处' }
       ]
     } as const;
     for (const [dimension, candidates] of Object.entries(iocDimensions)) {

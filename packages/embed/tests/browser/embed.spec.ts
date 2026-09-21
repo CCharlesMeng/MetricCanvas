@@ -192,8 +192,12 @@ test('四个 IOC 页面在 1980px 视口占满宿主且没有页面级横向溢�
   ];
   for (const pageId of pageIds) {
     const pageDocument = await iocPageDocument(pageId);
+    // IOC 清单已是 query 页面，要真网关才渲染得出来；内容服务同源提供 DQE 端点。
     await page.evaluate((pageDocument) => {
-      window.queryRuntime.update({ document: pageDocument });
+      window.iocGateway ??= MetricCanvas.createDqeGateway({
+        endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
+      });
+      window.queryRuntime.update({ document: pageDocument, dataGateway: window.iocGateway });
     }, pageDocument);
 
     const host = page.locator('[data-metriccanvas-runtime]');
@@ -235,7 +239,10 @@ test('机会点清单使用单一标准页头并把密集筛选收纳到更多�
   ]) {
     await page.setViewportSize(viewport);
     await page.evaluate((document) => {
-      window.queryRuntime.update({ document });
+      window.iocGateway ??= MetricCanvas.createDqeGateway({
+        endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
+      });
+      window.queryRuntime.update({ document, dataGateway: window.iocGateway });
     }, opportunityList);
 
     const host = page.locator('[data-metriccanvas-runtime]');

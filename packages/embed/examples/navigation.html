@@ -15,8 +15,13 @@
     if (!response.ok) throw new Error(`页面加载失败: ${response.status}`);
     window.pageDocument = await response.json();
     window.queryEvents = [];
+    // query 数据源要真往返：内容服务同源提供 DQE 端点，宿主注入真实网关。
+    window.dataGateway = MetricCanvas.createDqeGateway({
+      endpoint: '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute'
+    });
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: window.pageDocument,
+      dataGateway: window.dataGateway,
       initialSearch: location.search,
       onEvent(event) {
         window.queryEvents.push(event);

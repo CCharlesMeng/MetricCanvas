@@ -25,7 +25,12 @@ const iocDimensionValues: Readonly<Record<string, readonly DimensionValueCandida
   'region-dept-code': [
     candidate('CN-BJ', '北京'),
     candidate('CN-SH', '上海'),
-    candidate('CN-GD', '广东')
+    candidate('CN-GD', '广东'),
+    candidate('CN-EAST', '华东地区部'),
+    candidate('CN-NORTH', '华北地区部'),
+    candidate('CN-SOUTH', '华南地区部'),
+    candidate('CN-WEST', '西部地区部'),
+    candidate('APAC', '亚太地区部')
   ],
   'rep-office-code': [
     candidate('SH-01', '上海代表处'),
@@ -35,8 +40,24 @@ const iocDimensionValues: Readonly<Record<string, readonly DimensionValueCandida
     candidate('HZ-01', '杭州代表处'),
     candidate('CD-01', '成都代表处'),
     candidate('SG-01', '新加坡代表处'),
-    candidate('TJ-01', '天津代表处')
-  ]
+    candidate('TJ-01', '天津代表处'),
+    candidate('XA-01', '西安代表处'),
+    candidate('GZ-01', '广州代表处'),
+    candidate('NJ-01', '南京代表处')
+  ],
+  // 机会点清单的业务维度:源数据里编码即名称,不另立代码表。
+  'public-cloud-na-level': ['战略客户', '重要客户', '普通客户'].map((v) => candidate(v)),
+  'sub-industry-level1': [
+    '运营商', '政府', '制造', '金融', '零售', '互联网', '教育', '能源', '医疗'
+  ].map((v) => candidate(v)),
+  'sub-industry-level2': [
+    '运营商-核心网', '政府-电子政务', '制造-离散', '金融-银行', '零售-连锁',
+    '互联网-跨境', '教育-高校', '能源-电力', '医疗-三甲', '零售-外贸'
+  ].map((v) => candidate(v)),
+  'overdue-status': ['正常', '超期'].map((v) => candidate(v)),
+  'opportunity-step': [
+    '初步接洽', '需求确认', '技术方案', '商务谈判'
+  ].map((v) => candidate(v))
 };
 
 export function dimensionValuesFor(

@@ -110,7 +110,7 @@ for (const version of versions) {
   assert.equal(json(engineRequire.resolve('svelte/package.json')).version, version);
   for (const name of names) assert(realpathSync(join(consumer, 'node_modules/@metriccanvas', name)).startsWith(consumer + '/'), 'Installed package points back into workspace');
 
-  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'pages']) {
+  for (const path of ['packages/metric-canvas/tests/browser', 'packages/embed/tests/browser', 'packages/embed/examples', 'packages/embed/tests/serve.mjs', 'packages/embed/tests/dqe-fixture-endpoint.mjs', 'tools/dqe-sim/fixtures/ioc-opportunity-list.json', 'packages/page/fixtures/contract-valid/url-navigation-page.json', 'packages/page/fixtures/contract-valid/dimension-params-page.json', 'pages']) {
     cpSync(join(source, path), join(consumer, path), { recursive: true });
   }
   // 既有浏览器用例与断言不变；类型导入改为已安装包，不能读取本仓 src。
