@@ -201,6 +201,21 @@ def _materialize_validation_text_values(value: Any) -> Any:
 def _capability_floor_issues(value: Any) -> list[PageContractIssue]:
     # Structure (including the supported-version enum) has already been checked.
     issues = []
+    if int(value["schemaVersion"].split(".")[1]) < 5:
+        def visit(node: Any, path: str, key: str) -> None:
+            if isinstance(node, list):
+                for index, child in enumerate(node):
+                    visit(child, f"{path}/{index}", key)
+            elif isinstance(node, Mapping):
+                for name, child in node.items():
+                    child_path = f"{path}/{_escape_pointer(name)}"
+                    if name == key and isinstance(child, str) and child in ("compact-million-0", "compact-million-1", "compact-million-2"):
+                        issues.append(PageContractIssue("SCHEMA_ERROR", child_path, "百万展示格式由6.5引入"))
+                    else:
+                        visit(child, child_path, key)
+        for source_id, source in value.get("dataSources", {}).items():
+            visit(source.get("fields"), f"/dataSources/{_escape_pointer(source_id)}/fields", "defaultFormat")
+        visit(value.get("sections"), "/sections", "format")
     if int(value["schemaVersion"].split(".")[1]) < 4:
         paths = [f"/dataSources/{_escape_pointer(k)}/source/query/paramBindings" for k, source in value.get("dataSources", {}).items() if any(b.get("window", {}).get("kind") in ("yearToDate", "monthToDate") for b in source.get("source", {}).get("query", {}).get("paramBindings", {}).values())]
         issues.extend(PageContractIssue("SCHEMA_ERROR", path, "具名年初/月初至报告基准期窗口由6.4引入") for path in paths)
@@ -249,6 +264,9 @@ NUMERIC_FORMATS = frozenset(
         "number-grouped",
         "compact-wan-0",
         "compact-wan-1",
+        "compact-million-0",
+        "compact-million-1",
+        "compact-million-2",
         "compact-yi-1",
         "cny-adaptive",
         "percent-0",
@@ -827,6 +845,70 @@ def _query_mapping_issues(
                         f"dimension target requires dimension filter: {filter_id}",
                     )
                 )
+            elif target == "dimension" and filter_type == "dimension":
+                issues.extend(_level_binding_issues(raw_binding, declared, path))
+            elif target in ("timePoint", "boolean", "numberRange") and filter_type != target:
+                # 目标名即筛选器类型:绑错类型的筛选器,取值形状对不上谓词形状。
+                issues.append(
+                    PageContractIssue(
+                        "FILTER_BINDING_ERROR",
+                        path,
+                        f"{target} target requires {target} filter: {filter_id}",
+                    )
+                )
+    return issues
+
+
+def _level_binding_issues(
+    binding: Mapping[str, Any], declared: Mapping[str, Any], path: str
+) -> list[PageContractIssue]:
+    """层级维度绑定的逐级完备判定(ADR-0084),与 packages/page levelBindingErrors 对等。
+
+    层级筛选器一律要求 levelQueryFields(恒定 queryField 会把下层取值下推到上层字段);
+    扁平筛选器没有层级可选,levelQueryFields 无从取值;层级绑定必须逐级写全且只能
+    引用已声明的层级 id。
+    """
+    hierarchy = declared.get("hierarchy")
+    levels = [level for level in hierarchy if isinstance(level, Mapping)] if isinstance(hierarchy, list) else []
+    level_fields = binding.get("levelQueryFields")
+    if not isinstance(level_fields, Mapping):
+        if not levels:
+            return []
+        return [
+            PageContractIssue(
+                "FILTER_BINDING_ERROR",
+                f"{path}/queryField",
+                f"hierarchy filter must declare levelQueryFields per level: {declared.get('id')}",
+            )
+        ]
+    if not levels:
+        return [
+            PageContractIssue(
+                "FILTER_BINDING_ERROR",
+                f"{path}/levelQueryFields",
+                f"levelQueryFields only binds hierarchy dimension filters: {declared.get('id')}",
+            )
+        ]
+    issues: list[PageContractIssue] = []
+    declared_ids = {str(level.get("id")) for level in levels}
+    for level in levels:
+        if level.get("id") not in level_fields:
+            issues.append(
+                PageContractIssue(
+                    "FILTER_BINDING_ERROR",
+                    f"{path}/levelQueryFields",
+                    f"level {level.get('id')} has no query field; level bindings must cover every level",
+                )
+            )
+    for level_id in level_fields:
+        if str(level_id) not in declared_ids:
+            issues.append(
+                PageContractIssue(
+                    "FILTER_BINDING_ERROR",
+                    f"{path}/levelQueryFields/{_escape_pointer(level_id)}",
+                    f"filter {declared.get('id')} does not declare level: {level_id}",
+                )
+            )
     return issues
 
 
@@ -1392,7 +1474,8 @@ def _action_issues(
         and isinstance(main_source.get("source"), Mapping)
         and main_source["source"].get("type") == "query"
     )
-    if not live and any(isinstance(action, Mapping) and "navigate" not in action for action in actions):
+    # 只有 writeFilter 要求 query 数据源;navigate 与 openDetail 可以挂在 inline 组件上。
+    if not live and any(isinstance(action, Mapping) and "writeFilter" in action for action in actions):
         issues.append(PageContractIssue("SCHEMA_ERROR", f"{path}/props/actions", "writeFilter needs a live query source"))
     for index, action in enumerate(actions):
         if not isinstance(action, Mapping):
