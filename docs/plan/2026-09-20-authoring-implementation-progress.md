@@ -172,3 +172,17 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - `export-authoring-contracts.ts --check` **current（505 product / 4 authoring / 1 interface）**，`check_bundle.py` **1634 项摘要校验通过**，`git diff --check` 通过，改动文件无 lint 报错。
 - 7f–7h：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c、7d、7e 完全相同（全部 `test_page_validation`）。本轮额外在 `/tmp` 的 detached worktree 上跑了同一命令核对：干净 HEAD（`b02f6146`，不含任何工作区改动）本身就是 478 项 / 36 失败且全部在 `test_page_validation`，说明这条红线在本轮之前已经存在于 HEAD，工作区里另一处进行中的改动再加 6 项。除 `test_page_validation` 外无任何失败。逐个 import 六个入口模块、两个 `bootstrap` 组合根与四个搬迁目标模块，全部可用。`check_bundle.py` **1605 项摘要校验通过**，`export-authoring-contracts.ts --check` **current（495 product / 4 authoring / 1 interface）**，`git diff --check` 通过。本轮期间另一处在同一工作区重跑了生成器，`bundle.lock.json` 已含本轮的新路径，本轮未手改任何派生产物。
 - 7d：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c、7e 完全相同。生成器重跑后 `check_bundle.py` **1590 项通过**，`--check` current，`git diff --check` 通过。本轮生成器顺带把另一处上一条提交（`chore(embed)`，改了 `packages/embed/tests/browser/embed.spec.ts`）漏再生的产品参考 `index.json`、`contract-lock.json` 与两份 manifest 更新到与 HEAD 一致，一并带入本轮提交；它们对应的源文件都已在 HEAD 里。
+
+## 页面校验对等收口：42 红归零（2026-09-21）
+
+上面各批反复出现的 `test_page_validation` 红线在本轮归零（`25fee0fd`）。42 项全部在 `PageContractConformanceTest`，两个根因，均只改 `domain/page_validation.py`，未改任何契约夹具——`packages/page` 是真源，`contracts/**` 是导出物。
+
+- **`actions-live-only` 用了过期判别式（26 项）**：实现把「动作不含 `navigate`」当成「就是 `writeFilter`」，6.10 引入 `openDetail` 后误伤——12 个 `navigation-*` 反例各多报一条 `SCHEMA_ERROR …/props/actions`，合法页 `url-navigation-page` 被误拒。改成与 TS `validate.ts` 一致的 `"writeFilter" in action`。下方逐条校验查的是回写目标类型（`…/writeFilter` 路径），语义与路径都不同，不构成重复报。
+- **6.7 筛选绑定不变式 Python 侧缺失（16 项）**：补非维度目标的类型匹配（`boolean` / `numberRange` / `timePoint` 目标必须绑定同名类型筛选器），并新增 `_level_binding_issues` 对等 TS `levelBindingErrors`（ADR-0084）：层级筛选器必须用 `levelQueryFields`，扁平筛选器不得用，缺层报 `…/levelQueryFields`，未声明层级报 `…/levelQueryFields/{levelId}`。`duplicate-hierarchy-level-id` 不需要额外规则——重复 id 由既有 `SCHEMA_ERROR` 报，多出的层级落在「未声明」分支。
+
+### 验证
+
+- venv 全量 **485 项全绿**；`page-conformance-pending.json` 两张清单保持为空，没有靠豁免过关。
+- `page_validation.py` 摘要变了，重跑生成器后 `check_bundle.py` **1634 项通过**，`export-authoring-contracts.ts --check` current（505 product / 4 authoring / 1 interface）。
+- `tests/page-reference.test.ts` 6/6；`git diff --check` 通过。
+- 同批把 7f–7h、第八批、A03 与契约重生拆成 5 笔提交（`d58cb9f9` 百万格式 → `a70bd727` 模块归位 → `25fee0fd` 校验对等 → `24fd2e64` 契约重生 → `f2a92c4e` 文档）。契约重生放在所有源码改动之后，因为 `bundle.lock.json` 覆盖 `tool/` 与 `skill/` 的摘要；中间提交点 `check_bundle.py` 会报漂移，HEAD 全过。
