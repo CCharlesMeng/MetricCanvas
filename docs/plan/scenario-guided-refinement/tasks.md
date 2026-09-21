@@ -14,7 +14,7 @@
 - [ ] 保留 v1/operations/compose_page 行为，并确定新版本能力如何被部署和模型发现。
 - [ ] 记录每个验收用例的实现位置和预期失败点，冻结中性模型提示；避免用后续产物反推测试题。
 
-文件：本目录 design.md、acceptance.md（细化）；`metriccanvas-authoring/contracts/authored/page-structure-plan.schema.json`（新建，v1/v2 输入真源）；`metriccanvas-authoring/contracts/authored/section-patterns.json`（修改）；`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_structure.py`（后续消费契约）；`docs/adr/0082-explicit-business-sections-in-platform-authoring.md`（实施时补充版本/边界说明）。
+文件：本目录 design.md、acceptance.md（细化）；`metriccanvas-authoring/contracts/authored/page-structure-plan.schema.json`（新建，v1/v2 输入真源）；`metriccanvas-authoring/contracts/authored/section-patterns.json`（修改）；`metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py`（后续消费契约）；`docs/adr/0082-explicit-business-sections-in-platform-authoring.md`（实施时补充版本/边界说明）。
 
 完成条件：Schema 无重复 required、悬空引用；兼容行为及所有模型字段可审查。覆盖 A01、A02、A06、A12。
 
@@ -25,7 +25,7 @@
 - [ ] 规范化查询与展示引用，输出精确重叠事实；跨快照/口径不误判相同，字段相同但不同用途只提示。
 - [ ] 批量摘要按阻断、非阻断提示和确定性展开分类，保留稳定对象 ID 与修订路径；控制摘要大小并提供明确截断信息。
 
-文件：`application/discover_data_context.py`、`adapters/inbound/unified_content_mcp.py`（修改，均在 `metriccanvas-authoring/tool/metriccanvas_authoring/`）；同目录 `domain/structure_preflight.py`（新建）；`metriccanvas-authoring/test-harness/tests/test_structure_preflight.py`（新建）。
+文件：`data/discover_data_context.py`、`entrypoints/compat/unified_content_mcp.py`（修改，均在 `metriccanvas-authoring/tool/metriccanvas_authoring/`）；`pages/composition/structure_preflight.py`（新建）；`metriccanvas-authoring/test-harness/tests/test_structure_preflight.py`（新建）。
 
 验证：公共 discover/create 调用验证边界，预检单测验证纯函数；运行 `python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_structure_preflight.py'`。覆盖 A02、A03、A06、A10。
 
@@ -36,7 +36,7 @@
 - [ ] 复用既有格式、布局与响应式规则。无受信关系时保留可独立展示指标或返回需判断的问题，不自动把名称相似字段关联。
 - [ ] 统一创建和复用数据源新增组件的展开逻辑，避免两条路径样式或绑定规则不同。
 
-文件：`metriccanvas-authoring/tool/metriccanvas_authoring/domain/page_structure.py`（修改）；同目录 `domain/section_presentation.py`（新建）；`metriccanvas-authoring/contracts/authored/section-patterns.json`（修改）；`metriccanvas-authoring/test-harness/tests/test_section_presentation.py`（新建）。产品 `packages/page/src/schema/components/metric-card.ts` 与 `packages/engine/widgets/src/components/metric-card/MetricCard.svelte` 为读取的能力真源，默认不改。
+文件：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/page_structure.py`（修改）；同目录 `section_presentation.py`（新建）；`metriccanvas-authoring/contracts/authored/section-patterns.json`（修改）；`metriccanvas-authoring/test-harness/tests/test_section_presentation.py`（新建）。产品 `packages/page/src/schema/components/metric-card.ts` 与 `packages/engine/widgets/src/components/metric-card/MetricCard.svelte` 为读取的能力真源，默认不改。
 
 验证：对公开创建产物断言 variant、rows/changes、唯一行、格式及合法性；同对象错误关联有负例。运行 `python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_section_presentation.py'`。覆盖 A04、A05、A07。
 
@@ -47,7 +47,7 @@
 - [ ] 口径说明由程序按结构化签名去重并稳定更新；保留差异口径及人工正文，不做模糊文本删除。
 - [ ] 结果摘要一次返回当前阶段全部问题、已完成项与确定性调整；安全投影不能泄露数据行/查询/凭据。
 
-文件：`metriccanvas-authoring/tool/metriccanvas_authoring/application/structure_composition.py`、`application/unified_composition.py`、`adapters/inbound/unified_content_mcp.py`（修改）；`metriccanvas-authoring/test-harness/tests/test_structure_plan.py`（修改）。
+文件：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/composition/structure_composition.py`、`pages/composition/unified_composition.py`、`entrypoints/compat/unified_content_mcp.py`（修改）；`metriccanvas-authoring/test-harness/tests/test_structure_plan.py`（修改）。
 
 验证：一个 create 请求生成合法完整候选；多错误同批返回；独立正文/图表保留；协议安全回归。运行 `python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_structure*.py'`。覆盖 A01、A03、A08、A10。
 
@@ -58,7 +58,7 @@
 - [ ] 保留未触及人工配置和扩展；源引用清理、跨章节移动、删除冲突、过期候选分别验证，失败不破坏原候选。
 - [ ] 保留旧编辑操作行为，不要求历史页面先迁移到 v2。
 
-文件：`metriccanvas-authoring/tool/metriccanvas_authoring/application/unified_edit_page.py`、`domain/section_editing.py`（修改）；候选存储接口沿现有实现复用，只有 S0 证实缺少计划/查询证据承载时再在该接口增加程序私有字段并测试；`metriccanvas-authoring/test-harness/tests/test_structure_revision.py`（新建）。
+文件：`metriccanvas-authoring/tool/metriccanvas_authoring/pages/editing/unified_edit_page.py`、`pages/editing/section_editing.py`（修改）；候选存储接口沿现有实现复用，只有 S0 证实缺少计划/查询证据承载时再在该接口增加程序私有字段并测试；`metriccanvas-authoring/test-harness/tests/test_structure_revision.py`（新建）。
 
 验证：使用计数查询适配器、不可变候选链和人工编辑基线；运行 `python -m unittest discover -s metriccanvas-authoring/test-harness/tests -p 'test_structure_revision.py'`。覆盖 A09、A10、A12。
 

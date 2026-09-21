@@ -84,6 +84,18 @@
 - **7e** `work/`：`authoring_turns.py`、`authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`、`content_ports.py` 从 `application/` 迁入，与 `state.py`、`submission_records.py` 同处。三个模块之间的相对导入随包一起走；`authoring_submission` / `authoring_recovery` 对留在 `application/` 的 `lifecycle`、`lifecycle_ports` 改绝对导入，`authoring_deployment` 里四处延迟导入同样改绝对。仓内 30 个消费者（含 `adapters/relay/content_baselines.py`、`adapters/storage/sqlite_authoring_state.py`、`entrypoints/mcp/platform_mcp.py`、13 个测试、模型评测三份脚本、`apps/platform` 夹具）同批更新。先于 7d 做，因为它不依赖 `canonical` 的落点。
 - **7d** `data/` 与两处用户拍板的落点：`discover_data_context.py`、`business_interpretation.py`、`source_description_ports.py`（原 `application/`）与 `data_context.py`、`business_terms.py`、`execution.py`、`source_mapping.py`、`page_build_spec.py`（原 `domain/`）迁入 `data/`；`domain/canonical.py` 按用户决定留在包根 `metriccanvas_authoring/canonical.py`；`domain/java_save_fingerprint.py` 随 `authoring_deployment.py` 一起进 `assets/`（后者原列在 7f，提前完成）。`authoring_deployment` 对留在 `application/` 的 `lifecycle`、`lifecycle_ports` 改绝对导入。**`domain/grouped_params.py` 没有随 7d 走**：它唯一的消费者是 `domain/page_validation.py`（相对导入）与 `test_page_validation.py`，两者都是另一处正在改的文件，按跨会话约定留到 7i 一起搬，落点也应改为 `pages/validation/` 而不是 `data/`。至此 `domain/` 只剩 `page_validation.py` 与 `grouped_params.py`；`application/` 剩 `build_page`、`bundle_info`、`lifecycle`、`lifecycle_ports`、`lifecycle_publish`、`platform_authoring`、`publish_ports`、`summary_capability`（7f–7h）。
 
+- **7f–7h** `application/` 清空并删除：`lifecycle.py`、`lifecycle_ports.py`、`lifecycle_publish.py`、`publish_ports.py` 进 `assets/`（与 7d 已迁入的 `authoring_deployment.py`、`java_save_fingerprint.py` 同处，v2 单次保存的 `ports.py` 与 v1 生命周期端口各自保留文件，未合并）；`build_page.py` 进 `ask/`，与 `rules.py` 同处；`platform_authoring.py` 进 `pages/platform_authoring.py`，`summary_capability.py` 进 `delivery/`，`bundle_info.py` 进 `bootstrap/`。仓内 48 个消费者同批更新（4 个 adapter、3 个 `work/` 模块、2 个 `bootstrap/`、6 个 `entrypoints/`、6 个 `pages/`、5 个 test-harness 夹具与 stdio 入口、18 个测试、`apps/platform/tests/workbench/language-relay-fixture.py`），ARCHITECTURE.md 的 `platform_authoring` 行与端口归属句、ARCHITECTURE-V1.md 的三个 lifecycle 链接同步更新。`docs/plan/2026-09-18-authoring-architecture.md` 与 `model-evals/history/` 是历史记录，路径不改。
+- `bundle_info` 先按剩余迁移计划第 2 节的落点进了 `bootstrap/`，结果是 `pages/`、`entrypoints/` 共 9 个模块 import `bootstrap.bundle_info`，形成模块反向依赖组合根的方向。该落点已在第八批改掉，见下。
+
+## 第八批：两条依赖方向
+
+对应[模块架构方案](2026-09-20-authoring-module-architecture.md)第 6 节的依赖约束。A03 尾巴（可渲染 / 可自动构造 / 允许编辑三种组件能力的一致性检查）不在本批，仍未做。
+
+- **`data` 不再 import `pages.composition.page_building`。** 把取数单元一侧从 `page_building.py`（787 行）拆到 `data/executable_units.py`：`ExecutableUnit`、`UnitScope`、`ScopeFilter`、`derive_executable_units`、`build_query_source` 及其私有推导与校验（`_field_contracts`、`_query_body`、`_scope_of` 等）。依据是 CONTEXT.md 的「取数单元」定义——查询定义与结果字段契约是取数单元经真实执行后的派生物，本来就属 `data`。`pages/composition/page_building.py` 只留整页与数据组件装配（`assemble_page_document`、`build_data_component`、章节分组与布局），反过来 import `data/executable_units`。
+- 两侧都会抛的 `PageBuildingIssue` / `PageBuildingIssues` 移到包根 `build_issues.py`，与 `canonical.py` 同一类处理（多消费者、语义相同的技术类型），避免为了消除方向问题在 `data` 里放一个叫 `PageBuilding*` 的类型。**类名没改**，捕获方一处未动；名字与所在模块不符是已知债，留给命名批次。
+- **`bundle_info` 从 `bootstrap/` 改到包根 `metriccanvas_authoring/bundle_info.py`**，与它依赖的 `runtime_assets.py` 同层。它只读打包进来的 `bundle.json` 与 `contract-lock.json`，没有装配逻辑；放组合根会让 9 个业务模块反向 import `bootstrap`。13 个引用同批更新。
+- 本批未解决、也不在方案原文里的一条：`data/results.py` 仍 import `pages.composition.page_structure` 的 `DATA_REQUEST`、`obj`、`NAME`、`TEXT`。这四个是 JSON-Schema 构造原语与 Page Build Spec 的取数单元 schema，`page_structure.py` 里它们和结构计划 schema 混在一起，`DATA_REQUEST` 还依赖从页面 schema 取的 `ID` pattern。拆它等于再定一次「schema 原语真源放哪」，属于 A11 的范围，未顺手做。
+
 ## 后续依赖与明确未完成项
 
 1. P0/P1：真实 Lab 语义摘要访问、详情身份映射、实际 Tokens 请求与响应贯穿对账；不能用其他指标详情补单位。
@@ -141,4 +153,22 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - 7b：全量 479 项，**463 通过 / 16 失败**，失败集合与 7a 完全相同。生成器由另一处（页面 schema 6.10）在本轮搬迁后重跑，`bundle.lock.json` 连同 7b 的新路径随对方的 `chore(contracts): regenerate exports for page schema 6.10` 提交进入；`check_bundle.py` **1590 项通过**，`--check` current，`git diff --check` 通过。
 - 7c：全量 479 项，**437 通过 / 42 失败**。42 项仍全部在 `test_page_validation`：另一处的 6.10（`openDetail`）提交改写了 13 个 `navigation-*` 反例、两个版本反例与合法样例，Python 对等校验尚未跟上，与本轮无关（本轮未触碰 `page_validation.py` 与任何契约夹具）。生成器重跑后 `check_bundle.py` **1590 项通过**，`--check` current，`git diff --check` 通过；`bundle.lock.json` 的差异只含本轮 7 个搬迁模块、其消费者与两份参考文档的摘要。
 - 7e：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c 完全相同（全部 `test_page_validation`）。生成器重跑后 `check_bundle.py` **1590 项通过**，`--check` current，`git diff --check` 通过；`bundle.lock.json` 差异只含本轮五个模块、其消费者与 `authoring_deployment`。
+- 第八批（两条方向）：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c–7h 完全相同。逐个 import 十二个受影响模块与三个入口均可用；`git diff --check` 通过；改动文件无 lint 报错。拆分只搬函数与改 import，函数体逐字未改。
+- 派生产物一度收不了口：生成器在另一处正在写的反例 `number-range-target-not-number-range` 上抛错（TS 校验器当时还没发出对应的 `FILTER_BINDING_ERROR`），期间没有代改对方源码。对方落完后重跑生成器即恢复，见下方 A03 批次的验证数字。
+
+## A03 尾巴：三种组件能力各自的唯一维护点
+
+对应[模块架构方案](2026-09-20-authoring-module-architecture.md)A03 与第 7 节真源表。目标不是合并成一个清单——可渲染、可自动构造、允许编辑是三种能力——而是各有唯一维护点，并用一致性检查表达关系。
+
+- 新增 `pages/components/capabilities.py`：**可渲染**由产品目录 `contract-snapshot/page/component-catalog.json` 决定，本仓不另写一份，`product_catalog()` 是唯一读取点；**可自动构造**与**允许编辑数据依赖**由 `AUTHORING_CAPABILITIES` 一张表显式声明，`ASSEMBLED_COMPONENT_TYPES` 与 `DATA_COMPONENTS` 从它派生，不再手写两份同样的十项。
+- 关系用覆盖检查表达，且在 import 时就跑：产品目录里的每个组件都必须在表里表态（哪怕两项都是 False），声明了产品不可渲染的组件同样报错。这样产品新增组件而创作侧没配套会直接失败，而不是静默漏掉；反过来也拦住了创作侧声明幽灵组件。
+- 原 `page_building.ASSEMBLED_COMPONENT_TYPES` 与 `component_editing.DATA_COMPONENTS` 两处硬编码删除，四个消费者（`page_building`、`page_structure`、`component_policy`、`component_editing`）与一个测试改为从 `capabilities` 取。`component_selection.py` 自己那份 catalog 读取也并了进去，可渲染事实只剩一个加载点。
+- 派生集合与原硬编码逐项相同（各十项），没有顺带增删任何组件能力。`PROPERTY_WHITELIST`（允许编辑哪些属性）是第四种事实，本批没有并进去，只加了「它的键必须可渲染」的检查。
+- 新增 `test_component_capabilities.py` 六项：全覆盖、两条子集关系、三种能力不塌缩成一个清单、以及故意抽掉一项/多声明一项时检查确实会失败。
+
+### A03 尾巴验证（2026-09-21）
+
+- 全量 **485 项（新增 6 项），442 通过 / 43 失败**。43 项仍全部在 `test_page_validation`：比第八批多的那一项是 `test_million_formats_require_65`，在本批期间由另一处改 `domain/page_validation.py` 与重跑契约导致，本批未触碰该文件与任何契约夹具。
+- `export-authoring-contracts.ts --check` **current（505 product / 4 authoring / 1 interface）**，`check_bundle.py` **1634 项摘要校验通过**，`git diff --check` 通过，改动文件无 lint 报错。
+- 7f–7h：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c、7d、7e 完全相同（全部 `test_page_validation`）。本轮额外在 `/tmp` 的 detached worktree 上跑了同一命令核对：干净 HEAD（`b02f6146`，不含任何工作区改动）本身就是 478 项 / 36 失败且全部在 `test_page_validation`，说明这条红线在本轮之前已经存在于 HEAD，工作区里另一处进行中的改动再加 6 项。除 `test_page_validation` 外无任何失败。逐个 import 六个入口模块、两个 `bootstrap` 组合根与四个搬迁目标模块，全部可用。`check_bundle.py` **1605 项摘要校验通过**，`export-authoring-contracts.ts --check` **current（495 product / 4 authoring / 1 interface）**，`git diff --check` 通过。本轮期间另一处在同一工作区重跑了生成器，`bundle.lock.json` 已含本轮的新路径，本轮未手改任何派生产物。
 - 7d：全量 479 项，**437 通过 / 42 失败**，失败集合与 7c、7e 完全相同。生成器重跑后 `check_bundle.py` **1590 项通过**，`--check` current，`git diff --check` 通过。本轮生成器顺带把另一处上一条提交（`chore(embed)`，改了 `packages/embed/tests/browser/embed.spec.ts`）漏再生的产品参考 `index.json`、`contract-lock.json` 与两份 manifest 更新到与 HEAD 一致，一并带入本轮提交；它们对应的源文件都已在 HEAD 里。

@@ -13,7 +13,7 @@
 | 事实 | 来源 | 本次处理 |
 |---|---|---|
 | 原示例按整体/Core/云通信组织卡片，卡内主值带同比/环比 | `pages/flow-analysis-report.json` | 参考业务对象组合，不复制样例数字或固定章节 |
-| 新路径只装配 title/rows，没有展开 compactSummary 和 changes | `domain/page_structure.py`、`domain/page_building.py` | 增加受控指标组合与确定性呈现展开 |
+| 新路径只装配 title/rows，没有展开 compactSummary 和 changes | `pages/composition/page_structure.py`、`pages/composition/page_building.py` | 增加受控指标组合与确定性呈现展开 |
 | section-patterns 当前主要声明默认 span | `contracts/authored/section-patterns.json` | 补充组合的能力与呈现规则，仍允许 custom |
 | 原测试提示已经指定概览、趋势、结构分析，并给出同名业务域 | `test-harness/model-evals/scenario-flow.case.json` | 保留旧证据，新增不预设章节的中性测试组 |
 | “结构分析”实际上是稳定/一次性流水的趋势和同源明细 | 首期生成 JSON | 要求章节说明业务问题；检查信息重叠，不能靠名称判定分析成立 |

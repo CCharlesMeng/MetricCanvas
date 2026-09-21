@@ -42,21 +42,27 @@
 | 7c ✓ | `domain/{page_building,page_structure,container_building,layout_policy,section_layout,text_map_building,component_selection}.py` | `pages/composition/`（page_building、page_structure、layout_policy、section_layout）、`pages/components/`（container_building、text_map_building、component_selection）（2026-09-21 已完成） |
 | 7d ✓ | `discover_data_context.py`、`business_interpretation.py`、`source_description_ports.py`、`domain/{data_context,business_terms,execution,source_mapping,page_build_spec}.py` | `data/`（2026-09-21 已完成）。`grouped_params.py` 只被 `page_validation` 消费，改随 7i 进 `pages/validation/` |
 | 7e ✓ | `authoring_turns.py`、`authoring_candidates.py`、`authoring_submission.py`、`authoring_recovery.py`、`content_ports.py` | `work/`（2026-09-21 已完成，先于 7d） |
-| 7f | `lifecycle.py`、`lifecycle_ports.py`、`lifecycle_publish.py`、`publish_ports.py`（`authoring_deployment.py` 已随 7d 进 `assets/`） | `assets/`（草稿保存与发布兼容） |
-| 7g | `build_page.py` | `ask/`（普通问数/探索用例） |
-| 7h | `platform_authoring.py`、`summary_capability.py`、`bundle_info.py` | 平台用例进 `pages/` 应用入口；摘要配置进 `delivery/`；bundle 元信息进 `bootstrap/` |
+| 7f ✓ | `lifecycle.py`、`lifecycle_ports.py`、`lifecycle_publish.py`、`publish_ports.py`（`authoring_deployment.py` 已随 7d 进 `assets/`） | `assets/`（草稿保存与发布兼容）（2026-09-21 已完成） |
+| 7g ✓ | `build_page.py` | `ask/`（普通问数/探索用例）（2026-09-21 已完成） |
+| 7h ✓ | `platform_authoring.py`、`summary_capability.py`、`bundle_info.py` | 平台用例进 `pages/platform_authoring.py`；摘要配置进 `delivery/`；bundle 元信息进 `bootstrap/`（2026-09-21 已完成，`application/` 包随之删除） |
 | 7i | `domain/page_validation.py` | `pages/validation/`。**排在最后**，等 6.7 的 Python 对等校验落完再动 |
 
-约束：每轮只搬位置与更新引用，不顺手改行为；`domain/` 清空后删除该包，不留空目录；不新建 `common/utils/helpers`。
+约束：每轮只搬位置与更新引用，不顺手改行为；`domain/` 清空后删除该包，不留空目录；不新建 `common/utils/helpers`。`application/` 已在 7h 清空并删除，`domain/` 要等 7i 才空。
 
 7a–7c 做完后补记两点（2026-09-21）：
 
 - 上表没有给第三批新增的 `domain/canonical.py`（确定性 JSON 编码与 sha256）和 `domain/java_save_fingerprint.py`（旧 Java 幂等键）安排落点。用户已拍板（2026-09-21）：`canonical.py` 留在包根 `metriccanvas_authoring/canonical.py`；`java_save_fingerprint.py` 随 `authoring_deployment.py` 进 `assets/`。两者已在 7d 落地。
-- `data/query.py`、`data/results.py` 直接 import `pages.composition.page_building`（`derive_executable_units`、`build_query_source`、`ExecutableUnit`），与方案第 6 节“`data` 不调用页面装配”相悖。这是搬迁前就有的依赖，7c 只把路径搬了过去；单元派生与查询源构造到底归 `data` 还是 `pages`，放到第八批（A03 尾巴）一起看，不在搬迁轮次里顺手改。
+- ~~`data/query.py`、`data/results.py` 直接 import `pages.composition.page_building`~~（2026-09-21 第八批已解决：取数单元一侧拆到 `data/executable_units.py`，共同的 `PageBuildingIssue` 进包根 `build_issues.py`）。同批把 `bundle_info.py` 从 `bootstrap/` 改到包根。剩 `data/results.py` → `pages.composition.page_structure` 的四个 schema 原语未解，归 A11。
 
-## 3. 第八批 · A03 尾巴：三种组件能力的关系显式化
+## 3. 第八批 · 依赖方向与 A03 尾巴
 
-`component_selection.py` 已读产品 catalog 做准入，但 `page_building.ASSEMBLED_COMPONENT_TYPES` 与 `component_editing.DATA_COMPONENTS` 仍各自维护。目标不是合并成一个列表——可渲染、可自动构造、允许编辑是三种能力——而是：三者各有唯一维护点，且用一致性检查表达关系（可自动构造 ⊆ 可渲染、允许编辑 ⊆ 可渲染），新增产品组件时缺配套会失败而不是静默漏掉。
+依赖方向两条已于 2026-09-21 完成（见[实施记录](2026-09-20-authoring-implementation-progress.md)第八批）。下面的 A03 尾巴仍未做。
+
+### A03 尾巴：三种组件能力的关系显式化 ✓
+
+2026-09-21 已完成：新增 `pages/components/capabilities.py`，可渲染由产品目录决定（唯一读取点），可自动构造与允许编辑由一张显式声明表派生，覆盖检查在 import 时执行。原 `page_building.ASSEMBLED_COMPONENT_TYPES` 与 `component_editing.DATA_COMPONENTS` 两处硬编码删除。
+
+至此第八批只剩本文第 5 节的 A11 与第 4 节的 A12 两批未做。
 
 ## 4. 第九批 · A12：test-harness 按验证层次分类
 
