@@ -32,7 +32,7 @@ function snapshotsOf(page: Page): PageDataSnapshots {
 }
 
 describe('ioc-opportunity-analysis 页面契约', () => {
-  it('声明 5.4 看板、紧凑只读页头和七个原型筛选位', () => {
+  it('声明 5.4 看板、紧凑可操作页头和七个已下推的筛选位', () => {
     const page = loadPage();
     expect(page.schemaVersion).toBe('6.11');
     expect(requiredMinorVersion(document)).toBe(11);
@@ -43,8 +43,7 @@ describe('ioc-opportunity-analysis 页面契约', () => {
     });
     expect(page.dashboardToolbar).toEqual({
       variant: 'compact',
-      readOnly: true,
-      note: '合成演示数据，非生产口径，筛选尚未接入'
+      note: '合成演示数据，非生产口径；七个筛选位均已下推到查询'
     });
     expect(page.filters?.map((filter) => filter.id)).toEqual([
       'key-office', 'as-of-date', 'industry', 'region', 'customer-category', 'trade', 'pre-sign-amount'
