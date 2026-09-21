@@ -1,0 +1,4512 @@
+{
+  "artifactKind": "semantic-panorama-evidence-v2",
+  "status": "discussion-only-not-production-contract",
+  "sourceFiles": [
+    "调查报告/数据/语义层查询结果.json",
+    "调查报告/数据/metric-detail.md",
+    "调查报告/已有指标信息.md"
+  ],
+  "notes": [
+    "两个新文件主题不同，未建立机会点到Tokens的映射",
+    "所有ref为本文件使用的来源限定引用，不宣称全局稳定ID",
+    "包含可追溯关系样例，不是运行接口或全量语义模型",
+    "不复制人员标识、审核全文和物理SQL到模型投影；原始定义保留来源引用"
+  ],
+  "statistics": {
+    "semanticModels": 1,
+    "physicalSqlTables": 1,
+    "measures": 10,
+    "modelDimensions": 9,
+    "semanticMetrics": 23,
+    "formulaMetrics": 9,
+    "derivedConfigMetrics": 14,
+    "businessDimensions": 6,
+    "technicalRelatedColumns": 18,
+    "expandedTableColumns": 2,
+    "nonemptyAssociatedDimensionIds": 1
+  },
+  "entities": {
+    "businessMetrics": [
+      {
+        "ref": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+        "identity": {
+          "namespace": "metric-asset",
+          "assetGuid": "478ea220-e4ce-4f68-a4d9-2428596506a8",
+          "code": "ZB0000233",
+          "qualifiedName": "ZB0000233@metric"
+        },
+        "meaning": {
+          "name": "机会点数",
+          "definition": "某线索或客户具有购买意向的商机数",
+          "objective": "评估销售在拓展华为云的机会点数量规模",
+          "measurement": "个",
+          "function": "机会点编号去重计数",
+          "statisticalDescription": "1）仅统计外部机会点，仅针对公有云机会点；\n2）机会点数：机会点创建时间在当前统计周期内的机会点数",
+          "statisticalPeriod": "天/月/年",
+          "statisticalDimension": "业务部/机会点把握度/渠道伙伴/机会点销售阶段/销售纵队L1/代表处",
+          "operationObject": "客户",
+          "refreshFrequency": "天"
+        },
+        "states": {
+          "assetStatus": "ACTIVE",
+          "businessStatus": "已上线",
+          "publishStatus": ""
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "technicalMetrics": [
+      {
+        "ref": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+        "id": "bde41dd17a28432f889d5a80626332fb",
+        "businessMetricIdRaw": "878434f0fda1455e8af53012fc2ad35f",
+        "name": "机会点数",
+        "typeRaw": "ATOMIC",
+        "versionRaw": 1,
+        "advanceConfigRaw": {
+          "scene": null,
+          "config": "{}",
+          "dimensions_can_use": {
+            "ids": []
+          }
+        },
+        "expressionRaw": null,
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "semanticModels": [
+      {
+        "ref": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "id": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "caption": "助手-现网-作战地图-产品地图-Tokens流水",
+        "versionRaw": "2.0",
+        "updatedAtRaw": 1787061418250,
+        "sourceType": "DWS",
+        "domainIdRaw": "10e4fa8ca1ff4477affcaa5a3ffd9596",
+        "descriptionDecoded": {
+          "updateTimeColumn": "账期",
+          "area": "CDI",
+          "datasourceName": "cbc_wl_dws_05",
+          "dataTypes": "income",
+          "serviceCodes": [
+            "v_t_customer_map_indicator_summary"
+          ]
+        },
+        "declaredRelations": [],
+        "permissionConfigRaw": {
+          "is_open_row_permission": 0,
+          "is_open_col_permission": 0,
+          "dataset_permission_config": null,
+          "routing_strategy": "Direct",
+          "permission_list": [
+            "edit",
+            "use"
+          ]
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "semanticMetrics": [
+      {
+        "ref": "semantic-metric:10920258-bfd8-4c96-82ad-63bd2176a2fd",
+        "id": "10920258-bfd8-4c96-82ad-63bd2176a2fd",
+        "name": "Tokens消耗量日变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+              "classification": "DAY-DAY-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "QUANTITY",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/0",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:1c4eec37-cb46-42da-949c-846ec5d598fa",
+        "id": "1c4eec37-cb46-42da-949c-846ec5d598fa",
+        "name": "Tokens流水月变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "MONTH-MONTH-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/1",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:30a6e937-35ee-45d4-8a3f-e2ce2a9a0e73",
+        "id": "30a6e937-35ee-45d4-8a3f-e2ce2a9a0e73",
+        "name": "近30天tokens流水环比",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "case when sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org])=0 then null else (sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org]))/sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org]) end ",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": []
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/2",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:4137d731-821c-40d1-bcbf-e1578ca63d1d",
+        "id": "4137d731-821c-40d1-bcbf-e1578ca63d1d",
+        "name": "近30天tokens流水变化",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org])",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "date_ranges",
+            "level": "dayLevel",
+            "setting_conf": null,
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-2"
+            },
+            "end_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-1"
+            }
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/3",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:439d6139-5b38-481f-81ac-b778480170d3",
+        "id": "439d6139-5b38-481f-81ac-b778480170d3",
+        "name": "Tokens流水年变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "YEAR-YEAR-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/4",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:62056eb3-7b9b-463f-83eb-9ac44ef00902",
+        "id": "62056eb3-7b9b-463f-83eb-9ac44ef00902",
+        "name": "Tokens流水月环比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "MONTH-MONTH-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/5",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:65cd9f14-cf0d-4d0f-a2ad-e7cf2976e73f",
+        "id": "65cd9f14-cf0d-4d0f-a2ad-e7cf2976e73f",
+        "name": "近7天tokens流水环比",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "case when sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org])=0 then null else (sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org]))/sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org]) end ",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": []
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/6",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:6d45403d-9544-4f4c-a884-6ea7cefa4468",
+        "id": "6d45403d-9544-4f4c-a884-6ea7cefa4468",
+        "name": "Tokens流水日环比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "DAY-DAY-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/7",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:70f8c34b-5797-4795-94a9-6d5a3a6332e9",
+        "id": "70f8c34b-5797-4795-94a9-6d5a3a6332e9",
+        "name": "Tokens消耗量年变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+              "classification": "YEAR-YEAR-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "QUANTITY",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/8",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:72df8edc-2b29-4ab7-9be9-efb3dba0ed81",
+        "id": "72df8edc-2b29-4ab7-9be9-efb3dba0ed81",
+        "name": "Tokens流水占比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERCENT",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc"
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "dataFilters": [
+              93,
+              45
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/9",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:7c60c389-c7be-44a0-bee2-55a17e95551f",
+        "id": "7c60c389-c7be-44a0-bee2-55a17e95551f",
+        "name": "近90天tokens流水变化",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org])",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "date_ranges",
+            "level": "dayLevel",
+            "setting_conf": null,
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-2"
+            },
+            "end_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-1"
+            }
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/10",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:86370b0d-dc59-4bc8-880d-925a07547d09",
+        "id": "86370b0d-dc59-4bc8-880d-925a07547d09",
+        "name": "Tokens流水周环比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "WEEK-WEEK-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/11",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:90179ee2-9b16-4504-a718-381222ceb8a0",
+        "id": "90179ee2-9b16-4504-a718-381222ceb8a0",
+        "name": "Tokens消耗量日环比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+              "classification": "DAY-DAY-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "dataFilters": [
+              93,
+              45,
+              51
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/12",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+        "id": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+        "name": "Tokens流水",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "SUM([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "date_ranges",
+            "level": "dayLevel",
+            "setting_conf": null,
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-2"
+            },
+            "end_time": {
+              "level": "dayLevel",
+              "value": "time/relative/0"
+            }
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/13",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:91483552-ee34-4e73-abab-220df23f8b2c",
+        "id": "91483552-ee34-4e73-abab-220df23f8b2c",
+        "name": "Tokens消耗量占比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERCENT",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16"
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "dataFilters": [
+              93,
+              45
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/14",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+        "id": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+        "name": "Tokens消耗量",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org])",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "QUANTITY",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "expression",
+            "level": "dayLevel",
+            "setting_conf": "relationOperator=EQUAL-TO",
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-1"
+            },
+            "end_time": null
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/15",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:acd682e7-edf5-44e9-8ff0-7efc632bcef4",
+        "id": "acd682e7-edf5-44e9-8ff0-7efc632bcef4",
+        "name": "近90天tokens流水环比",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "case when sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org])=0 then null else (sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org]))/sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org]) end ",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": []
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 4,
+            "currencyFlag": 0,
+            "dataFilters": [
+              93,
+              18
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/16",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:b960c56d-0ff7-4cd6-ae68-4f775c6b6da3",
+        "id": "b960c56d-0ff7-4cd6-ae68-4f775c6b6da3",
+        "name": "近7天tokens消耗量环比",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "case when sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org])=0 then null ELSE (sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org]))/sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org]) end ",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "expression",
+            "level": "dayLevel",
+            "setting_conf": "relationOperator=EQUAL-TO",
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-1"
+            },
+            "end_time": null
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "dataFilters": [
+              93,
+              45,
+              51
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/17",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:b98e61ec-a960-41e3-9733-5dd1ef43f2d8",
+        "id": "b98e61ec-a960-41e3-9733-5dd1ef43f2d8",
+        "name": "Tokens流水周变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "WEEK-WEEK-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/18",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:bcd843cb-341c-4d2a-8259-6d24a9e0cf7c",
+        "id": "bcd843cb-341c-4d2a-8259-6d24a9e0cf7c",
+        "name": "近7天tokens流水变化",
+        "classificationRaw": "atomic",
+        "calculation": {
+          "kind": "expression",
+          "formulaRaw": "sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org])-sum([8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org])",
+          "derivedConfigRaw": null,
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": [
+          {
+            "caption": null,
+            "column_id": "visualization_level",
+            "data_type": null,
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          },
+          {
+            "caption": "账期",
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "data_type": "DATETIME",
+            "filter_type": "STANDARD",
+            "group_type": "STANDARD"
+          }
+        ],
+        "defaultTimeFiltersRaw": {
+          "sub_conditions": [],
+          "time_limit": {
+            "column_id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+            "caption": "账期",
+            "option": "date_ranges",
+            "level": "dayLevel",
+            "setting_conf": null,
+            "start_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-2"
+            },
+            "end_time": {
+              "level": "dayLevel",
+              "value": "time/relative/-1"
+            }
+          }
+        },
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/19",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:c0f3cfa1-f175-42f1-9678-27d2a71dc5fa",
+        "id": "c0f3cfa1-f175-42f1-9678-27d2a71dc5fa",
+        "name": "Tokens流水日变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+              "classification": "DAY-DAY-MOM",
+              "time_limit": null
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "AMOUNT",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "currencyFlag": 0,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006258"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/20",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:c344b362-6708-4521-b91a-8fbeeeb8ecc8",
+        "id": "c344b362-6708-4521-b91a-8fbeeeb8ecc8",
+        "name": "Tokens消耗量月变化",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+              "classification": "MONTH-MONTH-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "QUANTITY",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "displayOrder": 3,
+            "dataFilters": [
+              92,
+              1
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/21",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-metric:f888f535-fbdc-4f46-a587-d2638d58bf2c",
+        "id": "f888f535-fbdc-4f46-a587-d2638d58bf2c",
+        "name": "Tokens消耗量月环比",
+        "classificationRaw": "derivative",
+        "calculation": {
+          "kind": "derivedConfig",
+          "formulaRaw": null,
+          "derivedConfigRaw": {
+            "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+            "conf": {
+              "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+              "classification": "MONTH-MONTH-MOM",
+              "time_limit": {
+                "type": "RELATIVE",
+                "relative": "/time/relative_-1_day"
+              }
+            }
+          },
+          "calculateLogicRaw": "CUSTOM_FORMULA",
+          "semanticDecodingStatus": "not_fully_verified"
+        },
+        "quantity": {
+          "unitRaw": null,
+          "measureTypeRaw": "RATIOS",
+          "businessUnitState": "unknown"
+        },
+        "declaredDimensionsRaw": null,
+        "defaultTimeFiltersRaw": null,
+        "presentation": {
+          "descriptionDecoded": {
+            "dataFilters": [
+              93,
+              45,
+              51
+            ],
+            "metricCode": "ZB0006257"
+          },
+          "formatRaw": {
+            "type": "NONE",
+            "language": "en-us",
+            "unit": "",
+            "currency": "",
+            "use_unit_conversion": false,
+            "decimal_place": 0,
+            "use_thousand_separator": false,
+            "use_percent_conversion": false
+          }
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/metrics/22",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "measures": [
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-1天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-1天前_org",
+        "caption": "tokens流水金额-1天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens流水金额-1天前_org",
+        "originColumnName": "tokens流水金额-1天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/0",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org",
+        "caption": "tokens流水金额-30天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens流水金额-30天前_org",
+        "originColumnName": "tokens流水金额-30天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/1",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+        "caption": "tokens流水金额-7天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens流水金额-7天前_org",
+        "originColumnName": "tokens流水金额-7天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/2",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+        "caption": "tokens流水金额-90天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens流水金额-90天前_org",
+        "originColumnName": "tokens流水金额-90天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/3",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+        "caption": "tokens流水金额-当日_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens流水金额-当日_org",
+        "originColumnName": "tokens流水金额-当日_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/4",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-1天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-1天前_org",
+        "caption": "tokens消耗量-1天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens消耗量-1天前_org",
+        "originColumnName": "tokens消耗量-1天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/5",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-30天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-30天前_org",
+        "caption": "tokens消耗量-30天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens消耗量-30天前_org",
+        "originColumnName": "tokens消耗量-30天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/6",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org",
+        "caption": "tokens消耗量-7天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens消耗量-7天前_org",
+        "originColumnName": "tokens消耗量-7天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/7",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-90天前_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-90天前_org",
+        "caption": "tokens消耗量-90天前_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens消耗量-90天前_org",
+        "originColumnName": "tokens消耗量-90天前_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/8",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+        "caption": "tokens消耗量-当日_org",
+        "aggregatorRaw": "SUM",
+        "fieldExpressionRaw": "tokens消耗量-当日_org",
+        "originColumnName": "tokens消耗量-当日_org",
+        "dataType": "NUMBER",
+        "visibleRaw": false,
+        "hasColPermissionRaw": true,
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/measures/9",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "businessDimensions": [
+      {
+        "ref": "business-dimension:8c69e71cb23911ecb81bfa163eea8101",
+        "id": "8c69e71cb23911ecb81bfa163eea8101",
+        "code": "DIM0000075",
+        "name": "销售纵队L1",
+        "description": "华为云销售纵队是华为云的作战组织，也是重要的分析管理维度，分2层，其中，\nL1层枚举值：公有云NA、赋能云、政务云、中长尾、电网销、运营商公有云、华为云stack、伙伴云",
+        "attributes": [],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/0"
+        }
+      },
+      {
+        "ref": "business-dimension:8c6a6672b23911ecb81bfa163eea8101",
+        "id": "8c6a6672b23911ecb81bfa163eea8101",
+        "code": "DIM0000076",
+        "name": "代表处",
+        "description": "代表处是区域组织的第三层，代表处向所属地区部总裁汇报。\r\n枚举值：例如中国总部、北京代表处、广东代表处、上海代表处、浙江代表处、江苏代表处、福建代表处、湖南代表处、湖北代表处、四川代表处、陕西代表处、天津代表处、",
+        "attributes": [],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/1"
+        }
+      },
+      {
+        "ref": "business-dimension:8c6ae840b23911ecb81bfa163eea8101",
+        "id": "8c6ae840b23911ecb81bfa163eea8101",
+        "code": "DIM0000077",
+        "name": "业务部",
+        "description": "华为公有云业务部、伙伴云业务部、HCS业务部、",
+        "attributes": [
+          {
+            "id": "0e41872e9bb8459088ef48d36a5f8af6",
+            "code": "ATTR000000173",
+            "name": "组织目录L2ID",
+            "category": "ID",
+            "datatype": "string",
+            "parent_attribute_id": null
+          },
+          {
+            "id": "ea5b739be5c2443f88c173aa298f3a45",
+            "code": "ATTR000000174",
+            "name": "组织目录L2名称",
+            "category": "CUSTOM",
+            "datatype": "string",
+            "parent_attribute_id": null
+          },
+          {
+            "id": "c3ae2eee19554489b18fd6e11d995ad5",
+            "code": "ATTR000000175",
+            "name": "组织目录L2中文名称",
+            "category": "CUSTOM",
+            "datatype": "string",
+            "parent_attribute_id": null
+          },
+          {
+            "id": "c2333dc5aa344011a668fc991a3bc343",
+            "code": "ATTR000000176",
+            "name": "组织目录L2英文名称",
+            "category": "CUSTOM",
+            "datatype": "string",
+            "parent_attribute_id": null
+          },
+          {
+            "id": "2347747acc724f519078ded5df5f9d3f",
+            "code": "ATTR000000177",
+            "name": "组织目录L2简称",
+            "category": "CUSTOM",
+            "datatype": "string",
+            "parent_attribute_id": null
+          }
+        ],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/2"
+        }
+      },
+      {
+        "ref": "business-dimension:8c70b68db23911ecb81bfa163eea8101",
+        "id": "8c70b68db23911ecb81bfa163eea8101",
+        "code": "DIM0000086",
+        "name": "渠道伙伴",
+        "description": "中软，祥云，一森等等",
+        "attributes": [],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/3"
+        }
+      },
+      {
+        "ref": "business-dimension:8c713933b23911ecb81bfa163eea8101",
+        "id": "8c713933b23911ecb81bfa163eea8101",
+        "code": "DIM0000087",
+        "name": "机会点销售阶段",
+        "description": "枚举值：CSS1 机会点识别与验证、CSS2 方案开发与报价、CSS3 合同签约、CSS4 方案实施、CSS5 业务上线、CSSA 华为取消、CSSB 客户取消、CSSC 华为输单、",
+        "attributes": [],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/4"
+        }
+      },
+      {
+        "ref": "business-dimension:8c71e232b23911ecb81bfa163eea8101",
+        "id": "8c71e232b23911ecb81bfa163eea8101",
+        "code": "DIM0000088",
+        "name": "机会点把握度",
+        "description": "25%、50%、75%、100%",
+        "attributes": [],
+        "hierarchyRaw": [],
+        "recordsRaw": [],
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/attributes/metricDimension",
+          "kind": "source_declared",
+          "decodedPath": "/5"
+        }
+      }
+    ],
+    "modelDimensions": [
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.代表处",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.代表处",
+        "caption": "代表处",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": "城市,归属地",
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.代表处",
+            "caption": "代表处",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "代表处",
+            "origin_column_name": "代表处"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/0",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.内外部客户类别",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.内外部客户类别",
+        "caption": "内外部客户类别",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.内外部客户类别",
+            "caption": "内外部客户类别",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "内外部客户类别",
+            "origin_column_name": "内外部客户类别"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/1",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.华为云账号",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.华为云账号",
+        "caption": "华为云账号",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.华为云账号",
+            "caption": "华为云账号",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "华为云账号",
+            "origin_column_name": "华为云账号"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/2",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.地区部",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.地区部",
+        "caption": "地区部",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": "区域 ",
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.地区部",
+            "caption": "地区部",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "地区部",
+            "origin_column_name": "地区部"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/3",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.客户名称",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.客户名称",
+        "caption": "客户名称",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": "户头名称,户名称,用户名称,客户名目,户头名目,户名目,用户名目,客户名号,户头名号,户名号,公司",
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.客户名称",
+            "caption": "客户名称",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "客户名称",
+            "origin_column_name": "客户名称"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/4",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.数据截止日期",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.数据截止日期",
+        "caption": "数据截止日期",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.数据截止日期",
+            "caption": "数据截止日期",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "数据截止日期",
+            "origin_column_name": "数据截止日期"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/5",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.是否重点国代",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.是否重点国代",
+        "caption": "是否重点国代",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.是否重点国代",
+            "caption": "是否重点国代",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "是否重点国代",
+            "origin_column_name": "是否重点国代"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/6",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.模型服务",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.模型服务",
+        "caption": "模型服务",
+        "typeRaw": "StandardDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.模型服务",
+            "caption": "模型服务",
+            "level_type": null,
+            "visible": true,
+            "data_type": "STRING",
+            "column_formula": "模型服务",
+            "origin_column_name": "模型服务"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/7",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+        "caption": "账期",
+        "typeRaw": "StrDateTypeDimension",
+        "publicSynonymsRaw": null,
+        "levels": [
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.year",
+            "caption": "账期(year)",
+            "level_type": "yearLevel",
+            "visible": true,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.quarter",
+            "caption": "账期(quarter)",
+            "level_type": "quarterLevel",
+            "visible": true,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.month",
+            "caption": "账期(month)",
+            "level_type": "monthLevel",
+            "visible": true,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.week",
+            "caption": "账期(week)",
+            "level_type": "weekLevel",
+            "visible": true,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.day",
+            "caption": "账期(day)",
+            "level_type": "dayLevel",
+            "visible": true,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.hour",
+            "caption": "账期(hour)",
+            "level_type": "hourLevel",
+            "visible": false,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.minute",
+            "caption": "账期(minute)",
+            "level_type": "minuteLevel",
+            "visible": false,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.second",
+            "caption": "账期(second)",
+            "level_type": "secondLevel",
+            "visible": false,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          },
+          {
+            "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d.账期.ymdhms",
+            "caption": "账期(ymdhms)",
+            "level_type": "ymdhmsLevel",
+            "visible": false,
+            "data_type": "DATETIME",
+            "column_formula": "账期",
+            "origin_column_name": "账期"
+          }
+        ],
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/logical_schema/field_schema/dimensions/8",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "physicalSources": [
+      {
+        "ref": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+        "sourceKind": "asset-table",
+        "guid": "1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+        "name": "ads_t_sales_na_customer_cnt_m",
+        "database": "ads_sales/cbc-cloudbi_mrs01_analyze_d3c",
+        "typeRaw": "HIVE",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+        "sourceKind": "sql-virtual-table",
+        "id": "8513a4cd-12fa-4613-97ee-cb985692bb6d",
+        "database": "bidb",
+        "schema": "adm_apollo",
+        "name": "t_sql_8df748a9e9e34e199b1f874c40c49f29",
+        "isFactTableRaw": true,
+        "sqlTextRef": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/physical_schema/tables/0/sql_text",
+          "sha256": "dc066f7f8526c3cf833ee2f207481961894cae915840102f59936be85be652c6"
+        },
+        "evidence": {
+          "sourceFile": "调查报告/数据/语义层查询结果.json",
+          "rawPath": "/physical_schema/tables/0",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "physicalFields": [
+      {
+        "ref": "asset-column:cfee2323-40eb-452c-a3e2-bcdf787ab11d",
+        "name": "industry_level3_id",
+        "description": "产业目录L3ID",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/0",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:d6f3058b-736b-4c14-8237-44b9bde4ddb1",
+        "name": "mtime",
+        "description": "统计时间",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/1",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:9bc56b1b-b521-4eb7-b407-c3fad3671ca3",
+        "name": "sub_industry_level2_code",
+        "description": "子行业编码",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/2",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:c74ea420-5d81-41fb-8524-f4b6ff7b1332",
+        "name": "industry_level3_name_zh",
+        "description": "产业目录L3名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/3",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:f86b264f-4ebe-4955-bc24-30ecbfe95598",
+        "name": "business_dept_name",
+        "description": "业务部名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "8c6ae840b23911ecb81bfa163eea8101",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/4",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:dcfa129f-e433-4d91-9112-b6506348a94a",
+        "name": "rep_office_name",
+        "description": "代表处名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/5",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:f677760a-7ef9-45cd-8dbe-62409f76740b",
+        "name": "public_cloud_na_type",
+        "description": "公有云NA类型",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/6",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:236b95a6-6735-4acf-a78a-241398462514",
+        "name": "opportunity_custcnt_y",
+        "description": "机会点数（年）",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/7",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:0846d8a7-691e-4255-ac2c-71a7e2b37cfc",
+        "name": "sub_industry_level3_code",
+        "description": " L3子行业CODE",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/8",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:7933fac9-4a21-4fa5-9ac8-d70cfe373fb5",
+        "name": "business_dept_id",
+        "description": "业务部id",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/9",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:58e92aa2-df33-4a68-9291-efe6c416b00f",
+        "name": "rep_office_code",
+        "description": "代表处编码",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/10",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:e6f33184-4caf-476e-aa59-9ea0bdcff564",
+        "name": "opportunity_custcnt_m",
+        "description": "机会点数（月）",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/11",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:54f9e592-e984-4a2d-b5fb-0afa147b48ab",
+        "name": "sub_industry_level2_name",
+        "description": " L2子行业名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/12",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:d817e94b-b6b2-41e7-a653-05dc59227e5c",
+        "name": "sub_industry_level1_name",
+        "description": "行业名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/13",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:c6147d7d-b571-4521-abdc-f091ac20ce52",
+        "name": "sub_industry_level1_code",
+        "description": "行业编码",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/14",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:ef840d76-4600-4b01-90c4-ef2e3a2748bb",
+        "name": "sub_industry_level3_name",
+        "description": " L3子行业名称",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/15",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:c049daa4-7bfa-46cb-a5fc-7fb8164dc4b2",
+        "name": "rep_office_id",
+        "description": "代表处id",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/16",
+          "kind": "source_declared"
+        }
+      },
+      {
+        "ref": "asset-column:9efb377a-9fb8-4013-93d5-749dde4504f3",
+        "name": "business_dept_code",
+        "description": "业务部编码",
+        "dataTypeRaw": "",
+        "associatedEntityIdRaw": "",
+        "evidence": {
+          "sourceFile": "调查报告/数据/metric-detail.md",
+          "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/17",
+          "kind": "source_declared"
+        }
+      }
+    ],
+    "discoveryEntries": [
+      {
+        "ref": "discovery-entry:2",
+        "name": "Tokens消耗量日变化",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/2"
+      },
+      {
+        "ref": "discovery-entry:18",
+        "name": "Tokens流水周环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/18"
+      },
+      {
+        "ref": "discovery-entry:22",
+        "name": "Tokens消耗量月环比",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/22"
+      },
+      {
+        "ref": "discovery-entry:25",
+        "name": "近7天tokens流水变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/25"
+      },
+      {
+        "ref": "discovery-entry:33",
+        "name": "Tokens消耗量占比",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/33"
+      },
+      {
+        "ref": "discovery-entry:36",
+        "name": "Tokens消耗量年变化",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/36"
+      },
+      {
+        "ref": "discovery-entry:50",
+        "name": "Tokens流水占比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/50"
+      },
+      {
+        "ref": "discovery-entry:53",
+        "name": "近90天tokens流水变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/53"
+      },
+      {
+        "ref": "discovery-entry:66",
+        "name": "Tokens消耗量",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/66"
+      },
+      {
+        "ref": "discovery-entry:80",
+        "name": "近7天tokens流水环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/80"
+      },
+      {
+        "ref": "discovery-entry:94",
+        "name": "Tokens流水年变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/94"
+      },
+      {
+        "ref": "discovery-entry:99",
+        "name": "Tokens流水",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/99"
+      },
+      {
+        "ref": "discovery-entry:102",
+        "name": "Tokens流水日环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/102"
+      },
+      {
+        "ref": "discovery-entry:110",
+        "name": "近30天tokens流水环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/110"
+      },
+      {
+        "ref": "discovery-entry:112",
+        "name": "Tokens流水月环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/112"
+      },
+      {
+        "ref": "discovery-entry:115",
+        "name": "近7天tokens消耗量环比",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/115"
+      },
+      {
+        "ref": "discovery-entry:123",
+        "name": "Tokens流水周变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/123"
+      },
+      {
+        "ref": "discovery-entry:139",
+        "name": "Tokens流水日变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/139"
+      },
+      {
+        "ref": "discovery-entry:142",
+        "name": "Tokens消耗量日环比",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/142"
+      },
+      {
+        "ref": "discovery-entry:155",
+        "name": "Tokens消耗量月变化",
+        "metricCodeRaw": "ZB0006257",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/155"
+      },
+      {
+        "ref": "discovery-entry:157",
+        "name": "近90天tokens流水环比",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/157"
+      },
+      {
+        "ref": "discovery-entry:161",
+        "name": "近30天tokens流水变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/161"
+      },
+      {
+        "ref": "discovery-entry:163",
+        "name": "Tokens流水月变化",
+        "metricCodeRaw": "ZB0006258",
+        "datasetId": "e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/163"
+      }
+    ]
+  },
+  "relationships": [
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "relation": "containsTechnicalRealization",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric",
+        "kind": "source_declared"
+      },
+      "note": "来源嵌套关系；assetGuid不等于businessMetricId"
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c69e71cb23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/0"
+      }
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c6a6672b23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/1"
+      }
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c6ae840b23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/2"
+      }
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c70b68db23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/3"
+      }
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c713933b23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/4"
+      }
+    },
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "to": "business-dimension:8c71e232b23911ecb81bfa163eea8101",
+      "relation": "declaresStatisticalDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/attributes/metricDimension",
+        "kind": "source_declared",
+        "decodedPath": "/5"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "relation": "implementedOnSource",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:cfee2323-40eb-452c-a3e2-bcdf787ab11d",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:cfee2323-40eb-452c-a3e2-bcdf787ab11d",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/0",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:d6f3058b-736b-4c14-8237-44b9bde4ddb1",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/1",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:d6f3058b-736b-4c14-8237-44b9bde4ddb1",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/1",
+        "kind": "source_declared"
+      },
+      "roleRaw": "COUNTPERIOD"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:9bc56b1b-b521-4eb7-b407-c3fad3671ca3",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/2",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:9bc56b1b-b521-4eb7-b407-c3fad3671ca3",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/2",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:c74ea420-5d81-41fb-8524-f4b6ff7b1332",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/3",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:c74ea420-5d81-41fb-8524-f4b6ff7b1332",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/3",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:f86b264f-4ebe-4955-bc24-30ecbfe95598",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/4",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:f86b264f-4ebe-4955-bc24-30ecbfe95598",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/4",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-column:f86b264f-4ebe-4955-bc24-30ecbfe95598",
+      "to": "business-dimension:8c6ae840b23911ecb81bfa163eea8101",
+      "relation": "associatedBusinessDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/4/associatedEntityId",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:dcfa129f-e433-4d91-9112-b6506348a94a",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/5",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:dcfa129f-e433-4d91-9112-b6506348a94a",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/5",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:f677760a-7ef9-45cd-8dbe-62409f76740b",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/6",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:f677760a-7ef9-45cd-8dbe-62409f76740b",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/6",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:236b95a6-6735-4acf-a78a-241398462514",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/7",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:236b95a6-6735-4acf-a78a-241398462514",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/7",
+        "kind": "source_declared"
+      },
+      "roleRaw": "MEASURE"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:0846d8a7-691e-4255-ac2c-71a7e2b37cfc",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/8",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:0846d8a7-691e-4255-ac2c-71a7e2b37cfc",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/8",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:7933fac9-4a21-4fa5-9ac8-d70cfe373fb5",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/9",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:7933fac9-4a21-4fa5-9ac8-d70cfe373fb5",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/9",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:58e92aa2-df33-4a68-9291-efe6c416b00f",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/10",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:58e92aa2-df33-4a68-9291-efe6c416b00f",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/10",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:e6f33184-4caf-476e-aa59-9ea0bdcff564",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/11",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:e6f33184-4caf-476e-aa59-9ea0bdcff564",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/11",
+        "kind": "source_declared"
+      },
+      "roleRaw": "MEASURE"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:54f9e592-e984-4a2d-b5fb-0afa147b48ab",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/12",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:54f9e592-e984-4a2d-b5fb-0afa147b48ab",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/12",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:d817e94b-b6b2-41e7-a653-05dc59227e5c",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/13",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:d817e94b-b6b2-41e7-a653-05dc59227e5c",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/13",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:c6147d7d-b571-4521-abdc-f091ac20ce52",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/14",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:c6147d7d-b571-4521-abdc-f091ac20ce52",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/14",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:ef840d76-4600-4b01-90c4-ef2e3a2748bb",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/15",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:ef840d76-4600-4b01-90c4-ef2e3a2748bb",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/15",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:c049daa4-7bfa-46cb-a5fc-7fb8164dc4b2",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/16",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:c049daa4-7bfa-46cb-a5fc-7fb8164dc4b2",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/16",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "asset-source:1f8d82b5-2a32-4d7c-b2c8-6322d147e3a3",
+      "to": "asset-column:9efb377a-9fb8-4013-93d5-749dde4504f3",
+      "relation": "listsRelatedColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/17",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "technical-metric:bde41dd17a28432f889d5a80626332fb",
+      "to": "asset-column:9efb377a-9fb8-4013-93d5-749dde4504f3",
+      "relation": "usesColumn",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/metric-detail.md",
+        "rawPath": "/metric/techMetric/techMetricRelatedSourceList/0/techMetricRelatedColumnList/17",
+        "kind": "source_declared"
+      },
+      "roleRaw": "DIMENSION"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "declaresPhysicalSource",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/physical_schema/tables/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-1天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-1天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/0/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/1",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/1/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/2",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/2/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/3",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/3/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/4",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/4/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-1天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/5",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-1天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/5/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-30天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/6",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-30天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/6/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/7",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/7/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-90天前_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/8",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-90天前_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/8/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+      "relation": "declaresMeasure",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/9",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/measures/9/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.代表处",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.代表处",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/0/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.内外部客户类别",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/1",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.内外部客户类别",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/1/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.华为云账号",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/2",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.华为云账号",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/2/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.地区部",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/3",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.地区部",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/3/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.客户名称",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/4",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.客户名称",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/4/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.数据截止日期",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/5",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.数据截止日期",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/5/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.是否重点国代",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/6",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.是否重点国代",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/6/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.模型服务",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/7",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.模型服务",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/7/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+      "relation": "declaresDimension",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/8",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "model-dimension:8513a4cd-12fa-4613-97ee-cb985692bb6d.账期",
+      "to": "semantic-table:8513a4cd-12fa-4613-97ee-cb985692bb6d",
+      "relation": "boundToTable",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/dimensions/8/cube_id",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:10920258-bfd8-4c96-82ad-63bd2176a2fd",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/0",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:10920258-bfd8-4c96-82ad-63bd2176a2fd",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/0/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+          "classification": "DAY-DAY-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:1c4eec37-cb46-42da-949c-846ec5d598fa",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/1",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:1c4eec37-cb46-42da-949c-846ec5d598fa",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/1/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "MONTH-MONTH-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:30a6e937-35ee-45d4-8a3f-e2ce2a9a0e73",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/2",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:30a6e937-35ee-45d4-8a3f-e2ce2a9a0e73",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-30天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/2/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:30a6e937-35ee-45d4-8a3f-e2ce2a9a0e73",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/2/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:4137d731-821c-40d1-bcbf-e1578ca63d1d",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/3",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:4137d731-821c-40d1-bcbf-e1578ca63d1d",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/3/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:4137d731-821c-40d1-bcbf-e1578ca63d1d",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/3/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:439d6139-5b38-481f-81ac-b778480170d3",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/4",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:439d6139-5b38-481f-81ac-b778480170d3",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/4/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "YEAR-YEAR-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:62056eb3-7b9b-463f-83eb-9ac44ef00902",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/5",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:62056eb3-7b9b-463f-83eb-9ac44ef00902",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/5/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "MONTH-MONTH-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:65cd9f14-cf0d-4d0f-a2ad-e7cf2976e73f",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/6",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:65cd9f14-cf0d-4d0f-a2ad-e7cf2976e73f",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/6/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:65cd9f14-cf0d-4d0f-a2ad-e7cf2976e73f",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/6/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:6d45403d-9544-4f4c-a884-6ea7cefa4468",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/7",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:6d45403d-9544-4f4c-a884-6ea7cefa4468",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/7/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "DAY-DAY-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:70f8c34b-5797-4795-94a9-6d5a3a6332e9",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/8",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:70f8c34b-5797-4795-94a9-6d5a3a6332e9",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/8/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+          "classification": "YEAR-YEAR-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:72df8edc-2b29-4ab7-9be9-efb3dba0ed81",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/9",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:72df8edc-2b29-4ab7-9be9-efb3dba0ed81",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/9/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERCENT",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc"
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:7c60c389-c7be-44a0-bee2-55a17e95551f",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/10",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:7c60c389-c7be-44a0-bee2-55a17e95551f",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/10/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:7c60c389-c7be-44a0-bee2-55a17e95551f",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/10/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:86370b0d-dc59-4bc8-880d-925a07547d09",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/11",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:86370b0d-dc59-4bc8-880d-925a07547d09",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/11/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "WEEK-WEEK-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:90179ee2-9b16-4504-a718-381222ceb8a0",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/12",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:90179ee2-9b16-4504-a718-381222ceb8a0",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/12/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+          "classification": "DAY-DAY-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/13",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/13/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:91483552-ee34-4e73-abab-220df23f8b2c",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/14",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:91483552-ee34-4e73-abab-220df23f8b2c",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/14/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERCENT",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16"
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/15",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/15/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:acd682e7-edf5-44e9-8ff0-7efc632bcef4",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/16",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:acd682e7-edf5-44e9-8ff0-7efc632bcef4",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-90天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/16/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:acd682e7-edf5-44e9-8ff0-7efc632bcef4",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/16/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:b960c56d-0ff7-4cd6-ae68-4f775c6b6da3",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/17",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:b960c56d-0ff7-4cd6-ae68-4f775c6b6da3",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/17/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:b960c56d-0ff7-4cd6-ae68-4f775c6b6da3",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens消耗量-7天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/17/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:b98e61ec-a960-41e3-9733-5dd1ef43f2d8",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/18",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:b98e61ec-a960-41e3-9733-5dd1ef43f2d8",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/18/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "WEEK-WEEK-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:bcd843cb-341c-4d2a-8259-6d24a9e0cf7c",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/19",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:bcd843cb-341c-4d2a-8259-6d24a9e0cf7c",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-7天前_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/19/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-metric:bcd843cb-341c-4d2a-8259-6d24a9e0cf7c",
+      "to": "semantic-measure:8513a4cd-12fa-4613-97ee-cb985692bb6d.tokens流水金额-当日_org",
+      "relation": "expressionReferencesMeasure",
+      "state": "derived",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/19/formula",
+        "kind": "extracted_exact_identifier"
+      },
+      "note": "仅提取并验证方括号字段引用，不解析SQL语义"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:c0f3cfa1-f175-42f1-9678-27d2a71dc5fa",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/20",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:c0f3cfa1-f175-42f1-9678-27d2a71dc5fa",
+      "to": "semantic-metric:91329da3-b632-4833-b0fd-4e7c72c1eedc",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/20/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "91329da3-b632-4833-b0fd-4e7c72c1eedc",
+          "classification": "DAY-DAY-MOM",
+          "time_limit": null
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:c344b362-6708-4521-b91a-8fbeeeb8ecc8",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/21",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:c344b362-6708-4521-b91a-8fbeeeb8ecc8",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/21/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+          "classification": "MONTH-MONTH-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "to": "semantic-metric:f888f535-fbdc-4f46-a587-d2638d58bf2c",
+      "relation": "declaresQueryableMetric",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/22",
+        "kind": "source_declared"
+      }
+    },
+    {
+      "from": "semantic-metric:f888f535-fbdc-4f46-a587-d2638d58bf2c",
+      "to": "semantic-metric:94ab5de9-f552-4a9a-a720-626a4decfd16",
+      "relation": "derivedFrom",
+      "state": "source_declared",
+      "evidence": {
+        "sourceFile": "调查报告/数据/语义层查询结果.json",
+        "rawPath": "/logical_schema/field_schema/metrics/22/calculate_conf/conf/from",
+        "kind": "source_declared"
+      },
+      "ruleRaw": {
+        "type": "PERIOD_ON_PERIOD_GROWTH_RATE",
+        "conf": {
+          "from": "94ab5de9-f552-4a9a-a720-626a4decfd16",
+          "classification": "MONTH-MONTH-MOM",
+          "time_limit": {
+            "type": "RELATIVE",
+            "relative": "/time/relative_-1_day"
+          }
+        }
+      }
+    },
+    {
+      "from": "discovery-entry:2",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/2/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:18",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/18/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:22",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/22/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:25",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/25/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:33",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/33/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:36",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/36/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:50",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/50/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:53",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/53/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:66",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/66/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:80",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/80/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:94",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/94/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:99",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/99/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:102",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/102/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:110",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/110/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:112",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/112/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:115",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/115/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:123",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/123/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:139",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/139/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:142",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/142/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:155",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/155/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:157",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/157/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:161",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/161/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    },
+    {
+      "from": "discovery-entry:163",
+      "to": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "relation": "listedDatasetMatchesModelId",
+      "state": "observed_id_match",
+      "evidence": {
+        "sourceFile": "调查报告/已有指标信息.md",
+        "pathAfterFenceRemoval": "/metric_list/163/dataset_list"
+      },
+      "note": "仅本样例精确ID匹配，不构成全局映射契约"
+    }
+  ],
+  "representationChecks": [
+    {
+      "sourceFile": "调查报告/数据/metric-detail.md",
+      "rawPath": "/metric/attributes/techMetric",
+      "decodedEqualsPath": "/metric/techMetric",
+      "equal": true
+    }
+  ],
+  "unresolvedLinks": [
+    {
+      "from": "business-asset:478ea220-e4ce-4f68-a4d9-2428596506a8",
+      "toKind": "semantic-metric",
+      "reason": "未提供对应机会点语义模型实例；不能绑定到Tokens"
+    },
+    {
+      "from": "semantic-model:e6bfa3ac-e561-4e95-8da0-74e992f5ff8e",
+      "toKind": "dqe-execution",
+      "reason": "旧Tokens执行样例model_id不同；字段结构相似不证明同一实例"
+    },
+    {
+      "fromKind": "discovery-entry",
+      "toKind": "semantic-metric",
+      "reason": "模型ID匹配已记录；指标名/code对应规则仍需提供方确认"
+    }
+  ],
+  "qualityFindings": [
+    {
+      "kind": "name_formula_conflict",
+      "metricName": "近30天tokens流水变化",
+      "observation": "名称为30天，但formula/display_formula引用7天前字段",
+      "state": "needs_provider_confirmation"
+    },
+    {
+      "kind": "coverage_unknown",
+      "observation": "技术关联列18项，tables.columns仅展开2项；不能认定物理表仅2列",
+      "state": "unknown"
+    },
+    {
+      "kind": "capability_not_proven",
+      "observation": "业务统计维度、技术关联列、模型维度、指标dimensions、dimensions_can_use不是同一集合",
+      "state": "needs_provider_definition"
+    }
+  ]
+}

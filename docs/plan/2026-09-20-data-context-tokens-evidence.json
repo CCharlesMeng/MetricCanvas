@@ -1,0 +1,510 @@
+{
+  "artifactKind": "discussion-evidence-example",
+  "status": "draft-not-production-contract",
+  "sourceFile": "调查报告/数据/tokens的dqe查询结果.json",
+  "scope": "仅整理给定执行响应；未核验真实服务；未与初次匹配清单建立身份映射",
+  "observedMetric": {
+    "name": "Tokens流量",
+    "synonymsRaw": "Tokens总流量",
+    "providerIdentifiers": {
+      "measureId": "1a2b3c4d-0001-4000-8000-000000000001",
+      "modelId": "5e6f7a8b-5678-4def-9abc-000000000003",
+      "metricCode": "ZB0000001",
+      "catalogDatasetId": null
+    },
+    "definitionRaw": "Tokens流量",
+    "formulaRaw": "SUM([1f2a3b4c-1234-4abc-8def-000000000002.tokens流量金额-当日_org])",
+    "displayFormulaRaw": "SUM([tokens流量金额-当日_org])",
+    "classificationRaw": "atomic",
+    "measureTypeRaw": "AMOUNT",
+    "isAggRaw": true,
+    "aggregatorRaw": null,
+    "unitRaw": null,
+    "formatRaw": {
+      "type": "NONE",
+      "language": "en-us",
+      "unit": "",
+      "currency": "",
+      "use_unit_conversion": false,
+      "decimal_place": 0,
+      "use_thousand_separator": false,
+      "use_percent_conversion": false
+    },
+    "descriptionRaw": {
+      "displayOrder": 3,
+      "currencyFlag": 0,
+      "dataFilters": [
+        92,
+        1
+      ],
+      "metricCode": "ZB0000001"
+    },
+    "defaultTimeFiltersRaw": {
+      "sub_conditions": [],
+      "time_limit": {
+        "column_id": "1f2a3b4c-1234-4abc-8def-000000000002.周期",
+        "caption": "周期",
+        "option": "date_ranges",
+        "level": "dayLevel",
+        "setting_conf": null,
+        "start_time": {
+          "level": "dayLevel",
+          "value": "time/relative/-2"
+        },
+        "end_time": {
+          "level": "dayLevel",
+          "value": "time/relative/0"
+        }
+      }
+    },
+    "dimensionUsesRaw": [
+      {
+        "caption": null,
+        "column_id": "visualization_level",
+        "data_type": null,
+        "filter_type": "STANDARD",
+        "group_type": "STANDARD"
+      },
+      {
+        "caption": "周期",
+        "column_id": "1f2a3b4c-1234-4abc-8def-000000000002.周期",
+        "data_type": "DATETIME",
+        "filter_type": "STANDARD",
+        "group_type": "STANDARD"
+      }
+    ],
+    "metadataUpdatedAtRaw": 1732537268152
+  },
+  "observedTimeDimension": {
+    "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.month",
+    "modelId": "5e6f7a8b-5678-4def-9abc-000000000003",
+    "cubeId": "1f2a3b4c-1234-4abc-8def-000000000002",
+    "fusionDimensionId": "9c8d7e6f-9abc-4def-8fed-000000000004",
+    "hierarchiesRaw": [
+      {
+        "name": "1f2a3b_周期",
+        "levels": [
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.year",
+            "caption": "周期(year)",
+            "visible": true,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "yearLevel",
+            "column_formula": "周期",
+            "ordinal_column": "1",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.quarter",
+            "caption": "周期(quarter)",
+            "visible": true,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "quarterLevel",
+            "column_formula": "周期",
+            "ordinal_column": "2",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.month",
+            "caption": "周期(month)",
+            "visible": true,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "monthLevel",
+            "column_formula": "周期",
+            "ordinal_column": "3",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.week",
+            "caption": "周期(week)",
+            "visible": true,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "weekLevel",
+            "column_formula": "周期",
+            "ordinal_column": "4",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.day",
+            "caption": "周期(day)",
+            "visible": true,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "dayLevel",
+            "column_formula": "周期",
+            "ordinal_column": "5",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.hour",
+            "caption": "周期(hour)",
+            "visible": false,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "hourLevel",
+            "column_formula": "周期",
+            "ordinal_column": "6",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.minute",
+            "caption": "周期(minute)",
+            "visible": false,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "minuteLevel",
+            "column_formula": "周期",
+            "ordinal_column": "7",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.second",
+            "caption": "周期(second)",
+            "visible": false,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "secondLevel",
+            "column_formula": "周期",
+            "ordinal_column": "8",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          },
+          {
+            "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.ymdhms",
+            "caption": "周期(ymdhms)",
+            "visible": false,
+            "sql": null,
+            "expression": null,
+            "description": null,
+            "formatter": null,
+            "origin_column_name": "周期",
+            "origin_column_type": "timestamp",
+            "origin_data_type": "DATETIME",
+            "converted_data_type": null,
+            "data_type": "DATETIME",
+            "level_type": "ymdhmsLevel",
+            "column_formula": "周期",
+            "ordinal_column": "9",
+            "icon_skin": "DATETIME",
+            "origin_data_format": null,
+            "complex_filter": null,
+            "column_bound_filters": null,
+            "default_filters": null,
+            "time_limit": null,
+            "is_expansion": 0,
+            "expansion_type": 0,
+            "has_col_permission": true
+          }
+        ],
+        "caption": "周期"
+      }
+    ]
+  },
+  "observedExecution": {
+    "statusRaw": "SUCCESS",
+    "filtersRaw": {
+      "dimFilters": null,
+      "meaFilters": null,
+      "query_filters": {
+        "logic_operator": "AND",
+        "sub_conditions": [
+          {
+            "logic_operator": null,
+            "condition_node": {
+              "column_id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.month",
+              "column_name": "周期(month)",
+              "type": null,
+              "formula": null,
+              "enum_need_verify": 0,
+              "relation_operator": "BETWEEN",
+              "data_type": "DATETIME",
+              "value": {
+                "formula": null,
+                "values": [
+                  "2024-05",
+                  "2024-10"
+                ],
+                "value_type": "CONDITION"
+              }
+            },
+            "sub_conditions": []
+          },
+          {
+            "logic_operator": null,
+            "condition_node": {
+              "column_id": "1f2a3b4c-1234-4abc-8def-000000000002.区域部",
+              "column_name": "区域部",
+              "type": null,
+              "formula": null,
+              "enum_need_verify": 0,
+              "relation_operator": "EQUAL-TO",
+              "data_type": "STRING",
+              "value": {
+                "formula": null,
+                "values": [
+                  "华东区域部"
+                ],
+                "value_type": "CONDITION"
+              }
+            },
+            "sub_conditions": []
+          }
+        ],
+        "condition_node": null
+      },
+      "having_filters": null
+    },
+    "ordersRaw": [
+      {
+        "caption": "周期(month)",
+        "formula": null,
+        "order": "ASC"
+      }
+    ],
+    "limitRaw": -1,
+    "offsetRaw": -1,
+    "columnsRaw": [
+      {
+        "alias": "Tokens流量",
+        "caption": "Tokens流量",
+        "cell_converted_values": [],
+        "cell_raw_value_date_format": null,
+        "cell_raw_values": [],
+        "cell_type": "colH",
+        "cell_value_data_format": "{\"type\":\"NONE\",\"language\":\"en-us\",\"unit\":\"\",\"currency\":\"\",\"useThousandSeparator\":false,\"usePercentConversion\":false,\"decimalPlace\":0,\"pattern\":null,\"use_unit_conversion\":false}",
+        "cell_values": [],
+        "data_type": "NUMBER",
+        "description": "{\"displayOrder\": 3,\"currencyFlag\": 0,\"dataFilters\":[92,1],\"metricCode\": \"ZB0000001\"}",
+        "id": "1a2b3c4d-0001-4000-8000-000000000001",
+        "level_type": null,
+        "model_type": "metric",
+        "permission_category": null
+      },
+      {
+        "alias": "周期(month)",
+        "caption": "周期(month)",
+        "cell_converted_values": [],
+        "cell_raw_value_date_format": "%Y-%m",
+        "cell_raw_values": [],
+        "cell_type": "rowH",
+        "cell_value_data_format": null,
+        "cell_values": [],
+        "data_type": "DATETIME",
+        "description": null,
+        "id": "1f2a3b4c-1234-4abc-8def-000000000002.周期.month",
+        "level_type": "monthLevel",
+        "model_type": "dimension",
+        "permission_category": null
+      }
+    ],
+    "rowsRaw": [
+      {
+        "Tokens流量": 9154567.884,
+        "周期(month)": "2024-05"
+      },
+      {
+        "Tokens流量": 7710324.522,
+        "周期(month)": "2024-06"
+      },
+      {
+        "Tokens流量": 11825711.62,
+        "周期(month)": "2024-07"
+      },
+      {
+        "Tokens流量": 19634201.78,
+        "周期(month)": "2024-08"
+      },
+      {
+        "Tokens流量": 23164873.34,
+        "周期(month)": "2024-09"
+      },
+      {
+        "Tokens流量": 25231420.13,
+        "周期(month)": "2024-10"
+      }
+    ],
+    "returnedRows": 6,
+    "totalCountRaw": 0,
+    "matchedRows": null,
+    "truncated": null,
+    "dataCutoff": null,
+    "replayability": "unknown"
+  },
+  "presentationInterpretation": {
+    "sourceFile": "调查报告/数据/DataFilter说明.md",
+    "orderedRules": [
+      {
+        "code": 92,
+        "name": "COPILOT_PC"
+      },
+      {
+        "code": 1,
+        "name": "THOUSAND_SIGN"
+      }
+    ],
+    "currencyFlagMeaning": "unknown",
+    "formatPrecedence": "unknown",
+    "note": "只按提供说明解释编号；未核验原组件源码或执行格式转换；不由这些规则推断业务单位和币种"
+  },
+  "unknowns": [
+    {
+      "field": "metricIdentityMapping",
+      "reason": "执行ID与初次匹配条目的映射尚未导出核对"
+    },
+    {
+      "field": "businessUnitAndCurrency",
+      "reason": "unit为空且format单位与币种为空；measure_type与展示规则不足以确认"
+    },
+    {
+      "field": "additivity",
+      "reason": "SUM表达式与is_agg不构成跨维度或时间可加性声明"
+    },
+    {
+      "field": "completeSupportedDimensions",
+      "reason": "本次过滤含区域部，但展开的dimension_columns仅有周期"
+    },
+    {
+      "field": "supportedTimeGranularities",
+      "reason": "列出时间层级及visible不等于每个粒度都执行验证通过"
+    },
+    {
+      "field": "resultCompleteness",
+      "reason": "有6行数据但total_count为0，且limit为-1；计数语义需确认"
+    },
+    {
+      "field": "dataFreshness",
+      "reason": "create_date/update_date描述元数据，不能当数据截止日"
+    },
+    {
+      "field": "effectiveAccessScope",
+      "reason": "字段权限标记不等于当前用户所有行列权限证明"
+    },
+    {
+      "field": "replayableQuery",
+      "reason": "存在dqe回显，但未核对可提交请求契约及刷新保证"
+    }
+  ]
+}
