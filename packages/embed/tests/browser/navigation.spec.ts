@@ -27,8 +27,9 @@ test('无导航适配的 HTML 宿主完成 IOC 概览→清单→详情及浏览
 // 实现会让三次断言塌到同一个数字。
 test('层级区域筛选按当前层级选谓词字段，三层各自命中', async ({ page }) => {
   const rows = page.locator('[data-component="list/opportunity-table"] tbody tr');
+  // 每页 5 行，geo 的 9 行因此只显示 5；三个数字仍互不相同。
   for (const [level, code, expected] of [
-    ['geo', 'R99', 9],
+    ['geo', 'R99', 5],
     ['region-dept', 'CN-EAST', 3],
     ['office', 'SH-01', 1]
   ] as const) {
@@ -37,20 +38,45 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   }
 });
 
+// 查询分页此前与排序、表头筛选互斥（ADR-0086）。分页下本地排序只能排到
+// 当前页，所以排序必须由上游执行——按金额降序后第一页第一行必须是全表
+// 最大值，而不是首页那 5 行里的最大值。
+test('查询分页与服务端排序共存，排序作用于全表而不是当前页', async ({ page }) => {
+  await page.goto('/pages/ioc-opportunity-list');
+  const table = page.locator('[data-component="list/opportunity-table"]');
+  const firstCode = table.locator('tbody tr').first().locator('td').first();
+  await expect(table.locator('tbody tr')).toHaveCount(5);
+  await expect(firstCode).toHaveText('OPP202604001');
+
+  const amountHeader = table.locator('th[data-column-field="bidding-amount"] .sort-toggle');
+  await amountHeader.click();
+  // 升序最小值在第二页，本地排序取不到它。
+  await expect(firstCode).toHaveText('OPP202604010');
+  await amountHeader.click();
+  await expect(firstCode).toHaveText('OPP202604004');
+  await expect(table.locator('tbody tr')).toHaveCount(5);
+});
+
 // timePoint / boolean / numberRange 此前协议上无处可绑，页面上拉了不动数
 // (ADR-0085)。三类谓词形状各不相同，各用一个能区分的取值验。
 test('时间点、布尔与数值区间筛选各自下推到查询', async ({ page }) => {
-  const rows = page.locator('[data-component="list/opportunity-table"] tbody tr');
+  const table = page.locator('[data-component="list/opportunity-table"]');
+  const rows = table.locator('tbody tr');
+  // 每页 5 行，所以用页码数读总量：10 行两页、5 行一页、0 行没有行。
+  const pages = table.locator('.page-button');
   // 数据列是 202604，筛选值是 2026-04：格式声明错了就一行都取不到。
   await page.goto('/pages/ioc-opportunity-list?mtime=2026-04');
-  await expect(rows).toHaveCount(10);
+  await expect(pages).toHaveCount(2);
   await page.goto('/pages/ioc-opportunity-list?mtime=2026-05');
   await expect(rows).toHaveCount(0);
   // 勾上才加条件；不勾等于无条件，不是筛「为假」。
   await page.goto('/pages/ioc-opportunity-list?key-office=true');
   await expect(rows).toHaveCount(5);
+  // 只剩一页时整个页码器不渲染；取反的实现会得到另外 5 行、页码器同样消失，
+  // 所以下一条断言的是「不勾等于全都看」。
+  await expect(pages).toHaveCount(0);
   await page.goto('/pages/ioc-opportunity-list');
-  await expect(rows).toHaveCount(10);
+  await expect(pages).toHaveCount(2);
   // 两端各自可缺席。
   await page.goto('/pages/ioc-opportunity-list?bidding-amount.from=50000000');
   await expect(rows).toHaveCount(4);

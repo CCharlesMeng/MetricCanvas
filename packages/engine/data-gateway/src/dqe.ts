@@ -597,14 +597,27 @@ export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
       setDimensionFilter(item, filter.queryField, filter.values);
     } else if (filter.target === 'metricRange') {
       setMetricRangeFilter(item, filter.metric, filter.from, filter.to);
+    } else if (filter.target === 'dimensionRange') {
+      setDimensionRangeFilter(item, filter.queryField, filter.from, filter.to);
     } else {
       setTimeFilter(item, filter.value.from, filter.value.to);
     }
   }
-  if (query.pagination) {
+  if (query.pagination || query.sort) {
     const order = isRecord(item.order) ? { ...item.order } : {};
-    order.offset = query.pagination.offset;
-    order.limit = query.pagination.limit;
+    if (query.pagination) {
+      order.offset = query.pagination.offset;
+      order.limit = query.pagination.limit;
+    }
+    if (query.sort) {
+      // 排序编码沿用中间层文档的 @order(type, priority) 语义(ADR-0086):
+      // asc/desc 加优先级，数组序即优先级。真实环境协议复验归 issue #3。
+      order.by = query.sort.map((rule, index) => ({
+        field: rule.queryField,
+        type: rule.direction,
+        priority: index + 1
+      }));
+    }
     item.order = order;
   }
   return item;
@@ -626,6 +639,29 @@ function setDimensionFilter(
     const next = { dim_name: queryField, dim_value_list: values } satisfies JsonObject;
     if (index >= 0) existing[index] = { ...existing[index], ...next };
     else existing.push(next);
+  }
+  filter.dims = existing;
+}
+
+/**
+ * 表头区间筛选:同一维度上的两条比较谓词(ADR-0086)。维度谓词带 operator
+ * 的写法本仓既有页面已在用,这里沿用同一形状。
+ */
+function setDimensionRangeFilter(
+  item: JsonObject,
+  queryField: string,
+  from: string | undefined,
+  to: string | undefined
+): void {
+  const filter = ensureRecord(item, 'filter');
+  const existing = Array.isArray(filter.dims)
+    ? filter.dims.filter(isRecord).filter((entry) => entry.dim_name !== queryField)
+    : [];
+  if (from !== undefined) {
+    existing.push({ dim_name: queryField, dim_value_list: [from], operator: '>=' });
+  }
+  if (to !== undefined) {
+    existing.push({ dim_name: queryField, dim_value_list: [to], operator: '<=' });
   }
   filter.dims = existing;
 }

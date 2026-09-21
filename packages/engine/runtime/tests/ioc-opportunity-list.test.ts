@@ -49,7 +49,7 @@ describe('ioc-opportunity-list 骨架', () => {
       .find((component) => component.type === 'table');
     if (!table || table.type !== 'table') throw new Error('缺少清单表格');
     expect(table.props.columns).toHaveLength(40);
-    expect(table.props.pagination).toEqual({ mode: 'none' });
+    expect(table.props.pagination).toEqual({ mode: 'query' });
     const initial = initialFilterValues(page.filters ?? []);
     expect(initial.get('mtime')).toEqual({
       type: 'timePoint',

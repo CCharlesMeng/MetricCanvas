@@ -401,6 +401,10 @@
 
   function handleTableSort(component: TableComponent, sort: TableViewState['sort']) {
     pushTableView(component, { ...tableViewOf(component), sort, pageIndex: 0 });
+    // 查询分页下本地排序只能排到当前页，必须由上游执行（ADR-0086）。
+    if (component.props.pagination?.mode === 'query') {
+      stream?.setQuerySort(component.data.main, sort);
+    }
   }
 
   function handleTableHeaderFilter(
@@ -425,6 +429,9 @@
     };
     const next = { ...draft, pageIndex: 0 };
     setTableView(component, next);
+    if (component.props.pagination?.mode === 'query') {
+      stream?.setQueryHeaderFilters(component.data.main, applied);
+    }
   }
 
   function tableSelectedCell(component: TableComponent): TableSelectedCell | undefined {

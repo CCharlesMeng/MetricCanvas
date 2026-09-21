@@ -1625,7 +1625,6 @@ function queryPaginationErrors(page: Page): TypedError[] {
           );
         }
       }
-      rejectQueryTableViewColumns(component.props.columns, componentPath, errors);
   });
 
   for (const { sourceId, componentPath } of queryTables) {
@@ -1640,28 +1639,6 @@ function queryPaginationErrors(page: Page): TypedError[] {
     }
   }
   return errors;
-}
-
-function rejectQueryTableViewColumns(
-  columns: TableColumnNode[],
-  componentPath: string,
-  errors: TypedError[]
-): void {
-  const visit = (column: TableColumnNode, path: string) => {
-    if (column.kind === 'group') {
-      column.children.forEach((child, index) => visit(child, `${path}/children/${index}`));
-      return;
-    }
-    if (column.sortable) {
-      errors.push(schemaError(`${path}/sortable`, '查询分页暂不支持排序'));
-    }
-    if (column.filterable) {
-      errors.push(schemaError(`${path}/filterable`, '查询分页暂不支持表头筛选'));
-    }
-  };
-  columns.forEach((column, index) =>
-    visit(column, `${componentPath}/props/columns/${index}`)
-  );
 }
 
 function jsonRecord(value: unknown): Record<string, unknown> | undefined {

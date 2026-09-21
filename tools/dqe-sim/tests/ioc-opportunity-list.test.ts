@@ -8,8 +8,11 @@ import { parsePage } from '../../../packages/page/src';
 const page = JSON.parse(readFileSync('pages/ioc-opportunity-list.json', 'utf8'));
 const pageItem = page.dataSources['opportunity-list'].source.query.body.dsl_list[0];
 
-function query(dims: Array<{ dim_name: string; dim_value_list: string[] }> = []) {
-  return { ...pageItem, filter: { dims, metrics: [] }, order: {} };
+function query(
+  dims: Array<Record<string, unknown>> = [],
+  order: Record<string, unknown> = {}
+) {
+  return { ...pageItem, filter: { dims, metrics: [] }, order };
 }
 
 describe('DQE Sim 机会点清单', () => {
@@ -64,6 +67,31 @@ describe('DQE Sim 机会点清单', () => {
     ]) {
       expect(executeFixtureItem(query(dims))).toEqual(executeDqeItem(query(dims)));
     }
+  });
+
+  // 服务端排序与表头区间筛选(ADR-0086)：分页下本地排序只能排到当前页。
+  it('order.by 按优先级排序，表头区间筛选走带 operator 的维度谓词', () => {
+    const descending = executeDqeItem(
+      query([], { by: [{ field: 'bidding_amount', type: 'desc', priority: 1 }] })
+    );
+    expect(descending.code).toBe('SUCCESS');
+    expect(descending.data.map((row) => row.bidding_amount)).toEqual(
+      [...descending.data.map((row) => row.bidding_amount as number)].sort((a, b) => b - a)
+    );
+    expect(descending.data[0]!.opportunity_code).toBe('OPP202604004');
+
+    const ranged = executeDqeItem(
+      query([{ dim_name: 'create_time', dim_value_list: ['2025-12'], operator: '>=' }])
+    );
+    expect(ranged.code).toBe('SUCCESS');
+    expect(
+      ranged.data.every((row) => String(row.create_time) >= '2025-12')
+    ).toBe(true);
+    expect(ranged.total_count).toBeLessThan(10);
+
+    expect(
+      executeDqeItem(query([], { by: [{ field: 'bidding_amount', type: '随便', priority: 1 }] })).code
+    ).toBe('DQE_SIM_UNSUPPORTED_QUERY');
   });
 
   it('候选值查询两侧也一致，含级联收窄与越界约束的拒答', () => {

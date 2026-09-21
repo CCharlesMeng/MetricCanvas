@@ -1916,29 +1916,6 @@ export const invariants: InvariantDefinition[] = [
     ]
   },
   {
-    id: 'pagination-no-view-columns',
-    description: '查询分页暂不支持排序与表头筛选',
-    valid: ['query-dashboard', 'filters-page'],
-    cases: [
-      {
-        case: 'pagination-sortable-column',
-        base: 'query-dashboard',
-        expect: /查询分页暂不支持排序/,
-        mutate: (document) => {
-          firstComponent(document).props.columns[1].sortable = true;
-        }
-      },
-      {
-        case: 'pagination-filterable-column',
-        base: 'query-dashboard',
-        expect: /查询分页暂不支持表头筛选/,
-        mutate: (document) => {
-          firstComponent(document).props.columns[0].filterable = { mode: 'select' };
-        }
-      }
-    ]
-  },
-  {
     id: 'pagination-exclusive-source',
     description: '查询分页表格必须独占页面数据源',
     valid: ['query-dashboard', 'filters-page'],

@@ -38,20 +38,35 @@ function listResult(item) {
     return unsupported('机会点清单缺少 filter.dims');
   }
   if (!Array.isArray(fixture.filterableDims)) return unsupported('夹具缺少 filterableDims');
-  const filterable = new Set(fixture.filterableDims);
+  const filterable = new Set([...fixture.filterableDims, ...fixture.output_dims]);
   let rows = fixture.rows;
   for (const entry of item.filter.dims) {
     if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
       return unsupported('维度筛选格式无效');
     }
-    if (!filterable.has(entry.dim_name)) {
-      return unsupported(`机会点清单不支持的维度筛选:${entry.dim_name}`);
-    }
+    const name = entry.dim_name;
+    if (!filterable.has(name)) return unsupported(`机会点清单不支持的维度筛选:${name}`);
     const values = stringArray(entry.dim_value_list);
-    if (!values) return unsupported(`维度筛选 ${entry.dim_name} 必须是字符串数组`);
+    if (!values) return unsupported(`维度筛选 ${name} 必须是字符串数组`);
     if (values.length === 0) continue;
-    rows = rows.filter((row) => values.includes(String(row[entry.dim_name] ?? '')));
+    if (entry.operator !== undefined) {
+      if (values.length !== 1) return unsupported(`维度区间筛选 ${name} 需要单个端点`);
+      const bound = values[0];
+      const passes =
+        entry.operator === '>='
+          ? (value) => value >= bound
+          : entry.operator === '<='
+            ? (value) => value <= bound
+            : undefined;
+      if (!passes) return unsupported(`不支持的维度比较算子:${String(entry.operator)}`);
+      rows = rows.filter((row) => passes(String(row[name] ?? '')));
+      continue;
+    }
+    rows = rows.filter((row) => values.includes(String(row[name] ?? '')));
   }
+  const sorted = sortRows(rows, item.order);
+  if (sorted.error) return sorted.error;
+  rows = sorted.rows;
   const metrics = item.filter.metrics;
   if (metrics !== undefined) {
     if (!Array.isArray(metrics)) return unsupported('filter.metrics 必须是数组');
@@ -135,6 +150,46 @@ function candidatesResult(item) {
       }
     ]
   );
+}
+
+/** 服务端排序：order.by 按 @order(type, priority) 语义，priority 小者先比。 */
+function sortRows(rows, order) {
+  if (!isRecord(order) || order.by === undefined) return { rows };
+  if (!Array.isArray(order.by)) return { error: unsupported('order.by 必须是数组') };
+  const rules = [];
+  for (const entry of order.by) {
+    if (!isRecord(entry) || typeof entry.field !== 'string') {
+      return { error: unsupported('排序项格式无效') };
+    }
+    if (entry.type !== 'asc' && entry.type !== 'desc') {
+      return { error: unsupported(`不支持的排序方向:${String(entry.type)}`) };
+    }
+    if (!Number.isInteger(entry.priority) || entry.priority < 1) {
+      return { error: unsupported('排序优先级必须是正整数') };
+    }
+    rules.push({ field: entry.field, descending: entry.type === 'desc', priority: entry.priority });
+  }
+  rules.sort((left, right) => left.priority - right.priority);
+  return {
+    rows: [...rows].sort((left, right) => {
+      for (const rule of rules) {
+        const a = left[rule.field];
+        const b = right[rule.field];
+        const comparison =
+          a === b
+            ? 0
+            : a === null || a === undefined
+              ? -1
+              : b === null || b === undefined
+                ? 1
+                : a < b
+                  ? -1
+                  : 1;
+        if (comparison !== 0) return rule.descending ? -comparison : comparison;
+      }
+      return 0;
+    })
+  };
 }
 
 function columns(dimensions, metrics) {

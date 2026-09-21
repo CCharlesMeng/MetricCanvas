@@ -3,6 +3,7 @@ import type { Page } from '@metriccanvas/page';
 import {
   bindingQueryField,
   declaredPaginationLimit,
+  hasQueryFieldMapping,
   timePointPredicateValue,
   type DataRow,
   type DataSnapshot,
@@ -28,9 +29,23 @@ export interface Subscribable<T> {
   subscribe(run: (value: T) => void): () => void;
 }
 
+/** 表头筛选的当前值,按页面字段 id 归集;形状与表格视图状态同源。 */
+export type QueryHeaderFilters = Readonly<
+  Record<
+    string,
+    { mode: 'select'; values: readonly string[] } | { mode: 'dateRange'; from: string; to: string }
+  >
+>;
+
 export interface PageSnapshotStream extends Subscribable<PageDataSnapshots> {
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
+  /** 服务端排序;数组序即优先级,空数组表示恢复查询定义自带的顺序。 */
+  setQuerySort(
+    dataSourceId: string,
+    sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>
+  ): void;
+  setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
 }
 
 interface DataSourceBinding {
@@ -88,6 +103,12 @@ export function orchestrate(
     },
     setQueryPageSize(dataSourceId, pageSize) {
       session?.setQueryPageSize(dataSourceId, pageSize);
+    },
+    setQuerySort(dataSourceId, sort) {
+      session?.setQuerySort(dataSourceId, sort);
+    },
+    setQueryHeaderFilters(dataSourceId, filters) {
+      session?.setQueryHeaderFilters(dataSourceId, filters);
     }
   };
 }
@@ -96,6 +117,11 @@ interface Session {
   current(): PageDataSnapshots;
   setQueryPage(dataSourceId: string, pageIndex: number): void;
   setQueryPageSize(dataSourceId: string, pageSize: number): void;
+  setQuerySort(
+    dataSourceId: string,
+    sort: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>
+  ): void;
+  setQueryHeaderFilters(dataSourceId: string, filters: QueryHeaderFilters): void;
   dispose(): void;
 }
 
@@ -254,6 +280,10 @@ function startSession(
       .filter((binding) => binding.pagination)
       .map((binding) => [binding.sourceId, 0])
   );
+  // 排序与表头筛选是会话态,不进页面文档:它们是用户当下的看法,
+  // 不是页面的声明。
+  const sortRules = new Map<string, Array<{ field: string; direction: 'asc' | 'desc' }>>();
+  const headerFilters = new Map<string, QueryHeaderFilters>();
   let disposed = false;
   let inFlight = 0;
   const waiters: Array<() => void> = [];
@@ -323,7 +353,9 @@ function startSession(
       const query = composeEffectiveQuery(
         binding,
         values,
-        pageIndexes.get(binding.sourceId) ?? 0
+        pageIndexes.get(binding.sourceId) ?? 0,
+        sortRules.get(binding.sourceId) ?? [],
+        headerFilters.get(binding.sourceId) ?? {}
       );
       const key = JSON.stringify(query);
       const group = groups.get(key) ?? { query, members: [] };
@@ -427,6 +459,25 @@ function startSession(
       pageIndexes.set(dataSourceId, 0);
       refetch([binding], true);
     },
+    // 排序与表头筛选都改变结果集的组成,页码一律回到第一页:停在第 5 页
+    // 看新排序的第 5 页是没有意义的。
+    setQuerySort(dataSourceId, sort) {
+      const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
+      if (!binding) return;
+      const next = sort.map((rule) => ({ ...rule }));
+      if (JSON.stringify(sortRules.get(dataSourceId) ?? []) === JSON.stringify(next)) return;
+      sortRules.set(dataSourceId, next);
+      pageIndexes.set(dataSourceId, 0);
+      refetch([binding], true);
+    },
+    setQueryHeaderFilters(dataSourceId, filters) {
+      const binding = queryBindings.find((candidate) => candidate.sourceId === dataSourceId);
+      if (!binding) return;
+      if (JSON.stringify(headerFilters.get(dataSourceId) ?? {}) === JSON.stringify(filters)) return;
+      headerFilters.set(dataSourceId, filters);
+      pageIndexes.set(dataSourceId, 0);
+      refetch([binding], true);
+    },
     dispose() {
       disposed = true;
       waiters.length = 0;
@@ -440,10 +491,21 @@ function startSession(
   };
 }
 
+/** 页面字段 id 对应的上游查询字段;计算产出等本地字段没有映射。 */
+function mappedQueryField(
+  dataSource: QueryDataSource,
+  fieldId: string
+): string | undefined {
+  const field = dataSource.fields[fieldId];
+  return field && hasQueryFieldMapping(field) ? field.queryField : undefined;
+}
+
 function composeEffectiveQuery(
   binding: QueryBinding,
   values: FilterValues,
-  pageIndex: number
+  pageIndex: number,
+  sortRules: ReadonlyArray<{ field: string; direction: 'asc' | 'desc' }>,
+  headerFilters: QueryHeaderFilters
 ): EffectiveQuery {
   const dataSource = binding.dataSource;
   const query = dataSource.source.query;
@@ -494,11 +556,34 @@ function composeEffectiveQuery(
       }
     }
   }
+  // 表头筛选按列字段落到维度谓词上(ADR-0086)。字段没有 queryField 映射
+  // 说明它不是上游取来的列,整条跳过而不是拿字段 id 冒充查询字段。
+  for (const [fieldId, filter] of Object.entries(headerFilters)) {
+    const queryField = mappedQueryField(dataSource, fieldId);
+    if (queryField === undefined) continue;
+    if (filter.mode === 'select') {
+      if (filter.values.length > 0) {
+        filterValues.push({ target: 'dimension', queryField, values: [...filter.values] });
+      }
+    } else if (filter.from.length > 0 || filter.to.length > 0) {
+      filterValues.push({
+        target: 'dimensionRange',
+        queryField,
+        ...(filter.from.length > 0 ? { from: filter.from } : {}),
+        ...(filter.to.length > 0 ? { to: filter.to } : {})
+      });
+    }
+  }
+  const sort = sortRules.flatMap((rule) => {
+    const queryField = mappedQueryField(dataSource, rule.field);
+    return queryField === undefined ? [] : [{ queryField, direction: rule.direction }];
+  });
   // language 与查询体按数据源的查询定义分支原样透传,编排层不合成协议细节。
   return {
     language: query.language,
     body: query.body,
     fieldMappings: dataSource.fields,
+    ...(sort.length > 0 ? { sort } : {}),
     ...(binding.pagination
       ? {
           pagination: {

@@ -155,6 +155,11 @@ export interface DqeEffectiveQuery {
     limit: number;
   };
   /**
+   * 服务端排序(ADR-0086):数组序即优先级。分页开启时排序必须由上游执行,
+   * 本地排序只能排到当前页,那是错的语义而不是降级。
+   */
+  sort?: Array<{ queryField: string; direction: 'asc' | 'desc' }>;
+  /**
    * 生效查询携带的是**已解析的谓词**,不是绑定声明:timePoint 与 boolean
    * 在编排层就化成维度谓词,因此这里只比页面协议多一支数值区间。
    */
@@ -173,6 +178,13 @@ export interface DqeEffectiveQuery {
         metric: string;
         from?: number;
         to?: number;
+      }
+    /** 表头筛选:区间端点各自可缺席,`>=` / `<=` 由端点存在与否决定。 */
+    | {
+        target: 'dimensionRange';
+        queryField: string;
+        from?: string;
+        to?: string;
       }
   >;
 }

@@ -278,6 +278,55 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
 }
 
 /**
+ * 服务端排序:`order.by` 按中间层文档的 `@order(type, priority)` 语义
+ * (ADR-0086),priority 小者先比。缺席即保持夹具原序。
+ */
+function applyDqeSort(
+  rows: JsonRecord[],
+  order: unknown
+): { rows: JsonRecord[] } | { error: DqeSimItemResult } {
+  if (!isRecord(order) || order.by === undefined) return { rows };
+  if (!Array.isArray(order.by)) return { error: unsupported('order.by 必须是数组') };
+  const rules: Array<{ field: string; descending: boolean; priority: number }> = [];
+  for (const entry of order.by) {
+    if (!isRecord(entry) || typeof entry.field !== 'string') {
+      return { error: unsupported('排序项格式无效') };
+    }
+    if (entry.type !== 'asc' && entry.type !== 'desc') {
+      return { error: unsupported(`不支持的排序方向:${String(entry.type)}`) };
+    }
+    if (!Number.isInteger(entry.priority) || Number(entry.priority) < 1) {
+      return { error: unsupported('排序优先级必须是正整数') };
+    }
+    rules.push({
+      field: entry.field,
+      descending: entry.type === 'desc',
+      priority: Number(entry.priority)
+    });
+  }
+  rules.sort((left, right) => left.priority - right.priority);
+  const sorted = [...rows].sort((left, right) => {
+    for (const rule of rules) {
+      const a = left[rule.field];
+      const b = right[rule.field];
+      const comparison =
+        a === b
+          ? 0
+          : a === null || a === undefined
+            ? -1
+            : b === null || b === undefined
+              ? 1
+              : a < b
+                ? -1
+                : 1;
+      if (comparison !== 0) return rule.descending ? -comparison : comparison;
+    }
+    return 0;
+  });
+  return { rows: sorted };
+}
+
+/**
  * 数值区间谓词:`filter.metrics` 上的比较条目(ADR-0085)。只认封闭的四个
  * 比较算子与单值列表;算子看不懂、指标不在输出里都拒答,不静默放行。
  */
@@ -469,22 +518,40 @@ function executeIocOpportunityList(
   if (!validOrder(item.order)) {
     return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
-  const filterable = new Set(fixture.filterableDims);
+  const filterable = new Set([...fixture.filterableDims, ...fixture.output_dims]);
   let rows = fixture.rows;
   for (const entry of item.filter.dims) {
     if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
       return unsupported('维度筛选格式无效');
     }
-    if (!filterable.has(entry.dim_name)) {
-      return unsupported(`机会点清单不支持的维度筛选:${entry.dim_name}`);
+    const name = entry.dim_name;
+    if (!filterable.has(name)) {
+      return unsupported(`机会点清单不支持的维度筛选:${name}`);
     }
     const values = stringArray(entry.dim_value_list);
     if (!values) {
-      return unsupported(`维度筛选 ${entry.dim_name} 必须是字符串数组`);
+      return unsupported(`维度筛选 ${name} 必须是字符串数组`);
     }
     if (values.length === 0) continue;
-    rows = rows.filter((row) => values.includes(String(row[entry.dim_name as string] ?? '')));
+    // 带 operator 的维度谓词是表头区间筛选(ADR-0086);不带即集合包含。
+    if (entry.operator !== undefined) {
+      if (values.length !== 1) return unsupported(`维度区间筛选 ${name} 需要单个端点`);
+      const bound = values[0]!;
+      const passes =
+        entry.operator === '>='
+          ? (value: string) => value >= bound
+          : entry.operator === '<='
+            ? (value: string) => value <= bound
+            : undefined;
+      if (!passes) return unsupported(`不支持的维度比较算子:${String(entry.operator)}`);
+      rows = rows.filter((row) => passes(String(row[name] ?? '')));
+      continue;
+    }
+    rows = rows.filter((row) => values.includes(String(row[name] ?? '')));
   }
+  const sorted = applyDqeSort(rows, item.order);
+  if ('error' in sorted) return sorted.error;
+  rows = sorted.rows;
   const metricFiltered = applyMetricRangeFilters(
     rows,
     item.filter.metrics,
@@ -1025,9 +1092,14 @@ function successResult(
   };
 }
 
+/**
+ * `order` 承载分页与排序两件事(ADR-0086):分页要么整体缺席,要么 offset
+ * 与 limit 成对且合法;排序 `by` 的形状由 `applyDqeSort` 单独判定。
+ */
 function validOrder(value: unknown): boolean {
   if (!isRecord(value)) return false;
-  if (Object.keys(value).length === 0) return true;
+  const paginated = Object.hasOwn(value, 'offset') || Object.hasOwn(value, 'limit');
+  if (!paginated) return true;
   return (
     Number.isInteger(value.offset) &&
     Number(value.offset) >= 0 &&
@@ -1040,7 +1112,8 @@ function pageOrder(
   value: unknown,
   rowCount: number
 ): { offset: number; limit: number; paginated: boolean } {
-  if (!isRecord(value) || Object.keys(value).length === 0) {
+  // 只声明了排序没声明分页时,整份结果都要返回(ADR-0086)。
+  if (!isRecord(value) || !Object.hasOwn(value, 'limit')) {
     return { offset: 0, limit: rowCount, paginated: false };
   }
   return {
