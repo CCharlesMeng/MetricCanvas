@@ -925,18 +925,6 @@
       ]
     },
     {
-      "id": "pagination-no-view-columns",
-      "description": "查询分页暂不支持排序与表头筛选",
-      "valid": [
-        "query-dashboard",
-        "filters-page"
-      ],
-      "invalid": [
-        "pagination-sortable-column",
-        "pagination-filterable-column"
-      ]
-    },
-    {
       "id": "pagination-exclusive-source",
       "description": "查询分页表格必须独占页面数据源",
       "valid": [

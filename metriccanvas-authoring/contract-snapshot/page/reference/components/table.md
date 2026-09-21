@@ -769,7 +769,6 @@ Schema位置：`#/definitions/tableComponent/properties/props/properties/actions
 - `pagination-query-source`：pagination.mode='query' 只允许绑定 query 数据源。反例：[pagination-query-on-inline](../errors/pagination-query-on-inline.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `pagination-query-order`：查询分页要求 DQE order.offset 为 0 且 limit 为正整数。反例：[pagination-offset-not-zero](../errors/pagination-offset-not-zero.json)、[pagination-limit-not-positive](../errors/pagination-limit-not-positive.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `pagination-initial-rows`：查询分页的内嵌初始行必须声明 totalCount 且是完整第一页。反例：[pagination-initial-without-total-count](../errors/pagination-initial-without-total-count.json)、[pagination-initial-not-full-page](../errors/pagination-initial-not-full-page.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
-- `pagination-no-view-columns`：查询分页暂不支持排序与表头筛选。反例：[pagination-sortable-column](../errors/pagination-sortable-column.json)、[pagination-filterable-column](../errors/pagination-filterable-column.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 - `pagination-exclusive-source`：查询分页表格必须独占页面数据源。反例：[pagination-shared-source](../errors/pagination-shared-source.json)。反例文件包含完整input及预期type/path；修复后须重新完整校验。
 
 ## 示例与溯源（生成）

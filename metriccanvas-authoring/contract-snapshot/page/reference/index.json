@@ -28,7 +28,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "f49fc8dd153d52e8d2cdf88d4c5eca03ca24319596d645c432a929a651d08fcf"
+      "sha256": "878473bd1a926d6a4152823d9a201d042b812201f1a502663c131886e5fed936"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -120,11 +120,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "5d792f836a94d9721ef84d9e375c6e56845f2714037d39a16821612be7b37015"
+      "sha256": "c9644f137183ea44e47143f52ef0d78accdb0d4bcb9542bb407d55ab43006913"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "1e298bfdb619e6fca372d89f63247bbe28f156f0b2068a29bb2ef81ce7e65f71"
+      "sha256": "cfc22157e81b8b358ab771138cffa45067cdedaea29524dbf5908f7ec3d895c2"
     }
   ],
   "modules": {
@@ -552,7 +552,6 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-no-view-columns",
         "pagination-exclusive-source"
       ]
     },
@@ -705,7 +704,6 @@
         "pagination-query-source",
         "pagination-query-order",
         "pagination-initial-rows",
-        "pagination-no-view-columns",
         "pagination-exclusive-source"
       ]
     },
