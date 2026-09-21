@@ -9,16 +9,16 @@ from dataclasses import dataclass
 from copy import deepcopy
 from typing import Any, Mapping
 
-from metriccanvas_authoring.application.source_description_ports import SourceDescriptionPort
-from metriccanvas_authoring.domain.source_mapping import map_source_description, validate_mapped_rows, SourceMappingError
+from metriccanvas_authoring.data.source_description_ports import SourceDescriptionPort
+from metriccanvas_authoring.data.source_mapping import map_source_description, validate_mapped_rows, SourceMappingError
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort, DqeExecutionPort
-from metriccanvas_authoring.domain.data_context import parse_data_context
-from metriccanvas_authoring.domain.execution import (
+from metriccanvas_authoring.data.data_context import parse_data_context
+from metriccanvas_authoring.data.execution import (
     FailureStage,
     DqeExecutionResult,
     failure_from_execution_error,
 )
-from metriccanvas_authoring.domain.page_build_spec import validate_page_build_spec
+from metriccanvas_authoring.data.page_build_spec import validate_page_build_spec
 from metriccanvas_authoring.pages.composition.page_building import (
     PageBuildingIssue,
     ExecutableUnit,

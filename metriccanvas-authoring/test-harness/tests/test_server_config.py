@@ -11,7 +11,7 @@ BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
 from metriccanvas_authoring.data.ports import DataContextError  # noqa: E402
-from metriccanvas_authoring.domain.execution import DqeExecutionError  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionError  # noqa: E402
 from metriccanvas_authoring.bootstrap.environment import (  # noqa: E402
     configure_data_context,
     configure_dqe,

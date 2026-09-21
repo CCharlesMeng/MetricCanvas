@@ -12,8 +12,8 @@ from test_authoring_candidates import MemoryCandidates
 from test_source_mapping import DescriptorFixture
 from adapters.fakes import FakeDataContextPort
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
-from metriccanvas_authoring.domain.execution import DqeExecutionError
+from metriccanvas_authoring.data.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionError
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 FIXTURE = json.loads((ROOT / 'tools/dqe-sim/fixtures/flow-analysis-report.json').read_text())

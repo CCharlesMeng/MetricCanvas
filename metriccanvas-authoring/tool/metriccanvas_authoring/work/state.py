@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import time
 from typing import Protocol
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
-from metriccanvas_authoring.domain.canonical import canonical_sha256 as digest
+from metriccanvas_authoring.canonical import canonical_sha256 as digest
 
 
 def require(condition, code):

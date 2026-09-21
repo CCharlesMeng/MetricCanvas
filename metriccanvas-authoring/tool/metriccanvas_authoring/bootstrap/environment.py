@@ -46,7 +46,7 @@ from metriccanvas_authoring.data.ports import (
     DataContextPort,
     DqeExecutionPort,
 )
-from metriccanvas_authoring.domain.execution import DqeExecutionError, DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionError, DqeExecutionResult
 
 TOOL_SURFACE_ENV = "METRICCANVAS_TOOL_SURFACE"
 CONTENT_BASELINES_DIRECTORY_ENV = "METRICCANVAS_CONTENT_BASELINES_DIR"

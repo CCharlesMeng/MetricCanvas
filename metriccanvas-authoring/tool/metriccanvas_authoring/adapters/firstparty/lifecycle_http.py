@@ -68,7 +68,7 @@ class KnownLifecycleHttp:
             require(base is None or ref['resourceId'] == base['resourceId'] and ref['revisionId'] != base['revisionId'])
             require(value.get('is_draft') is True and type(value.get('revision_number')) is int and value['revision_number'] > 0)
             require(isinstance(document,dict) and not validate_page_document(document))
-            from metriccanvas_authoring.domain.canonical import canonical_json
+            from metriccanvas_authoring.canonical import canonical_json
             require(canonical_json(document) == canonical_json(command['document']))
             return {'status':'saved','operationId':operation,'ref':ref,'base':base,
                     'revisionNumber':value['revision_number'],'isDraft':value['is_draft'],'document':document,'assurance':'provider-response'}

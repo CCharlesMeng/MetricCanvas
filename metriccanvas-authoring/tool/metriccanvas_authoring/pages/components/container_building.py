@@ -3,7 +3,7 @@ from copy import deepcopy
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, walk_components
 from metriccanvas_authoring.pages.components.text_map_building import _target_section, _component, _source, remove_component
 from metriccanvas_authoring.pages.composition.page_building import ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 COMPOSITE_TYPES = {'metricCard', 'pieChart', 'gauge', 'keyValuePanel', 'categoryBreakdown'}
 

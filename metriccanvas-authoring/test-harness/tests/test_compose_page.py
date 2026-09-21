@@ -21,7 +21,7 @@ from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: E40
     ComposePageDependencies,
     create_compose_page,
 )
-from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 
 
 class ConcurrentDqePort:

@@ -7,8 +7,8 @@ from metriccanvas_authoring.pages.components.component_selection import (
     component_default_span,
     recommend_components,
 )
-from metriccanvas_authoring.domain.data_context import DataContext, SemanticSurface
-from metriccanvas_authoring.domain.execution import DqeExecutionResult, FormulaTrace
+from metriccanvas_authoring.data.data_context import DataContext, SemanticSurface
+from metriccanvas_authoring.data.execution import DqeExecutionResult, FormulaTrace
 from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
 
 

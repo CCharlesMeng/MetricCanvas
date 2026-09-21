@@ -18,12 +18,12 @@ from metriccanvas_authoring.pages.composition.compose_page import (
     ComposePageDependencies,
     create_compose_page,
 )
-from metriccanvas_authoring.application.discover_data_context import (
+from metriccanvas_authoring.data.discover_data_context import (
     DiscoverDataContextCommand,
     DiscoverDataContextDependencies,
     create_discover_data_context,
 )
-from metriccanvas_authoring.domain.execution import retry_safe_for_code
+from metriccanvas_authoring.data.execution import retry_safe_for_code
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 

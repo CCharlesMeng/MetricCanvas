@@ -12,7 +12,7 @@ import httpx
 
 from metriccanvas_authoring.data.ports import JsonObject
 from metriccanvas_authoring.adapters.service_identity import IdentityPort
-from metriccanvas_authoring.domain.execution import (
+from metriccanvas_authoring.data.execution import (
     DqeExecutionError,
     DqeExecutionResult,
 )

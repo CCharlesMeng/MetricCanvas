@@ -15,7 +15,7 @@ from adapters.fakes import (  # noqa: E402
     FakePageAssetPort,
 )
 from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
-from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 
 
 class SemanticPortFakeTest(unittest.IsolatedAsyncioTestCase):

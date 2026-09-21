@@ -10,7 +10,7 @@ sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 from metriccanvas_authoring.pages.composition.page_building import (  # noqa: E402
     ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component,
 )
-from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
 
 

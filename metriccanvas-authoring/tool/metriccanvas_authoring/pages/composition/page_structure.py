@@ -7,7 +7,7 @@ from metriccanvas_authoring.runtime_assets import bundle_root
 from metriccanvas_authoring.pages.composition.page_building import (
     ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component, ASSEMBLED_COMPONENT_TYPES,
 )
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 ROOT = bundle_root()
 PATTERNS = json.loads((ROOT / 'contracts/authored/section-patterns.json').read_text())

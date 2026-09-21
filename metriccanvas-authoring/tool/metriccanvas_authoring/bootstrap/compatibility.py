@@ -13,7 +13,7 @@ from metriccanvas_authoring.adapters.firstparty.publish_unavailable import (
     UnavailableHumanConfirmations,
     UnavailablePublicationService,
 )
-from metriccanvas_authoring.application.authoring_deployment import Deployment
+from metriccanvas_authoring.assets.authoring_deployment import Deployment
 from metriccanvas_authoring.application.build_page import BuildPageDependencies
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.publish_ports import PublicationDependencies

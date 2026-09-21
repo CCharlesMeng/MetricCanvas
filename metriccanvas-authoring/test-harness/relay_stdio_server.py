@@ -23,7 +23,7 @@ from metriccanvas_authoring.application.build_page import (  # noqa: E402
     BuildPageDependencies,
 )
 from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
-from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 
 
 def fixture(name: str) -> dict[str, object]:

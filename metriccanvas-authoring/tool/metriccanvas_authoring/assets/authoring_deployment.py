@@ -78,7 +78,7 @@ class Deployment:
 
     def _system_parts(self):
         from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
-        from .lifecycle import Lifecycle
+        from metriccanvas_authoring.application.lifecycle import Lifecycle
         if self.system is None: raise DeploymentError('System dependencies unavailable')
         system = self.system
         return (AuthoringCandidates(system.candidate_store), system.execution_records,
@@ -102,7 +102,7 @@ def _port(slot, port, methods):
     if any(not callable(getattr(port, method, None)) for method in methods):
         raise DeploymentError('Implementation does not provide claimed port')
     if slot == 'lifecycle_service':
-        from .lifecycle_ports import LifecycleCapabilities
+        from metriccanvas_authoring.application.lifecycle_ports import LifecycleCapabilities
         caps = getattr(port, 'capabilities', None)
         if not isinstance(caps, LifecycleCapabilities) or any(
             getattr(caps, key) is not True for key in ('stable_save', 'exact_read', 'operation_lookup')):

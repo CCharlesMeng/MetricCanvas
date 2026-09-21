@@ -11,8 +11,8 @@ from metriccanvas_authoring.pages.composition.compose_page import (
 )
 from metriccanvas_authoring.data.ports import DataContextPort, DqeExecutionPort
 from metriccanvas_authoring.assets.ports import PageAssetPort, SavedRevision
-from metriccanvas_authoring.domain.execution import FailureStage
-from metriccanvas_authoring.domain.java_save_fingerprint import derive_idempotency_key
+from metriccanvas_authoring.data.execution import FailureStage
+from metriccanvas_authoring.assets.java_save_fingerprint import derive_idempotency_key
 
 
 @dataclass(frozen=True, slots=True)

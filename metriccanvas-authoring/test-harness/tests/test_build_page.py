@@ -21,9 +21,9 @@ from metriccanvas_authoring.application.build_page import (  # noqa: E402
     create_build_page,
 )
 from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: E402
-from metriccanvas_authoring.domain.execution import DqeExecutionResult  # noqa: E402
+from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
 from metriccanvas_authoring.application.bundle_info import load_bundle_info  # noqa: E402
-from metriccanvas_authoring.domain.java_save_fingerprint import derive_idempotency_key  # noqa: E402
+from metriccanvas_authoring.assets.java_save_fingerprint import derive_idempotency_key  # noqa: E402
 from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
 
 

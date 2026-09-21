@@ -7,14 +7,14 @@ from datetime import datetime, timezone
 from typing import Any, Mapping
 
 from metriccanvas_authoring.data.ports import DataContextError, DataContextPort
-from metriccanvas_authoring.application.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
-from metriccanvas_authoring.domain.business_terms import (
+from metriccanvas_authoring.data.business_interpretation import BusinessInterpretationPort, BusinessInterpretationError, extend_interpretation
+from metriccanvas_authoring.data.business_terms import (
     MetricTermResolution,
     ResolvedBusinessTerms,
     resolve_business_terms,
     resolve_metric_terms,
 )
-from metriccanvas_authoring.domain.data_context import DataContext, parse_data_context
+from metriccanvas_authoring.data.data_context import DataContext, parse_data_context
 
 
 def _utc_now() -> datetime:

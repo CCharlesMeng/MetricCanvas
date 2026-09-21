@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, Sequence
 
-from metriccanvas_authoring.domain.data_context import DimensionEntry, MetricEntry
+from metriccanvas_authoring.data.data_context import DimensionEntry, MetricEntry
 
 
 NAME_HIT_SCORE = 100

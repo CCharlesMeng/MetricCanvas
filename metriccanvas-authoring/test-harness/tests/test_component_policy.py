@@ -14,7 +14,7 @@ from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.application.authoring_deployment import RegisteredExtension, assemble_deployment
+from metriccanvas_authoring.assets.authoring_deployment import RegisteredExtension, assemble_deployment
 
 
 class Policy:

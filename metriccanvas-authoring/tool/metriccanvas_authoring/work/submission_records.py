@@ -11,7 +11,7 @@ import re
 from metriccanvas_authoring.work.authoring_turns import TURN_VALIDATOR
 from metriccanvas_authoring.application.lifecycle import VALIDATOR as COMMAND_VALIDATOR, valid_ref
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
-from metriccanvas_authoring.domain.canonical import canonical_sha256
+from metriccanvas_authoring.canonical import canonical_sha256
 
 RECORD_KEYS = {'candidateRef', 'rootBinding', 'operationId', 'command', 'programToken', 'status', 'result'}
 SNAPSHOT_KEYS = {'formatVersion', 'recordVersion', 'commandSha256', 'record', 'control', 'saveReceipt', 'verificationState', 'previewState'}

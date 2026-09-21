@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Protocol, Sequence
 
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 JsonObject = Mapping[str, Any]
 

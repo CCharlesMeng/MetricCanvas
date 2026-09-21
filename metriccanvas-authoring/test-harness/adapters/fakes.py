@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import Any
 
 from metriccanvas_authoring.assets.ports import SavedRevision, JsonObject
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 
 class FakeDataContextPort:

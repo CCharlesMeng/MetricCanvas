@@ -16,7 +16,7 @@ import httpx
 
 from metriccanvas_authoring.data.ports import DataContextError, DimensionValuePort, JsonObject
 from metriccanvas_authoring.adapters.service_identity import IdentityPort
-from metriccanvas_authoring.domain.data_context import parse_data_context
+from metriccanvas_authoring.data.data_context import parse_data_context
 
 
 DATASETS_URL_TEMPLATE_ENV = "METRICCANVAS_DATA_CONTEXT_DATASETS_URL_TEMPLATE"

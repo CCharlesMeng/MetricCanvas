@@ -14,7 +14,7 @@ from metriccanvas_authoring.runtime_assets import bundle_root
 
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import read_verified_baseline
-from metriccanvas_authoring.domain.canonical import canonical_json
+from metriccanvas_authoring.canonical import canonical_json
 
 SCOPE_KEYS = ('actorId', 'workspaceId', 'requestId', 'runId', 'turnId', 'pageId', 'capabilityVersion')
 TURN_VALIDATOR = Draft202012Validator(json.loads((bundle_root() / 'contracts/authored/authoring-turn.schema.json').read_text()))

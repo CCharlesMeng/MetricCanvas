@@ -15,8 +15,8 @@ from test_unified_content_mcp import dependencies
 from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.application.authoring_deployment import RegisteredExtension, assemble_deployment
-from metriccanvas_authoring.application.discover_data_context import create_discover_data_context, DiscoverDataContextDependencies, DiscoverDataContextCommand
+from metriccanvas_authoring.assets.authoring_deployment import RegisteredExtension, assemble_deployment
+from metriccanvas_authoring.data.discover_data_context import create_discover_data_context, DiscoverDataContextDependencies, DiscoverDataContextCommand
 
 
 class SyntheticBusiness:
@@ -43,7 +43,7 @@ class BusinessInterpretationTest(unittest.IsolatedAsyncioTestCase):
                 bundle_version='test', skill_source_sha256='b'*64, contracts_source_sha256='c'*64, contract_version='1.0')
             deps = deployed.dependencies
             self.assertIs(deps.business_interpretation, extension)
-            with patch('metriccanvas_authoring.application.discover_data_context.datetime') as clock:
+            with patch('metriccanvas_authoring.data.discover_data_context.datetime') as clock:
                 clock.now.return_value = fixed
                 async with Client(create_unified_content_mcp_server(deps, Turns('new'), candidate_store=MemoryCandidates())) as client:
                     result = (await client.call_tool('discover_data_context', {'context_ref': 'current-context', 'query': '合成期各区域吞吐口径'})).structured_content

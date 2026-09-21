@@ -180,7 +180,7 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
             await self.make(limits=Limits(calls=1)).read('current-context')
 
     async def test_bounded_evidence_keeps_truncation_and_does_not_leak_query(self):
-        from metriccanvas_authoring.domain.execution import DqeExecutionResult
+        from metriccanvas_authoring.data.execution import DqeExecutionResult
         async def many(query):
             return DqeExecutionResult(rows=[{'区域': '区域' + str(i), 'Tokens请求量': i} for i in range(40)], total_count=100, captured_at='2026-09-20T00:00:00Z')
         self.deps.dqe.execute = many
@@ -192,7 +192,7 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         self.assertNotIn('dsl_list', json.dumps(result)); self.assertNotIn('queryField', json.dumps(result))
 
     async def test_failure_empty_and_zero_are_distinct_and_failure_is_not_retried(self):
-        from metriccanvas_authoring.domain.execution import DqeExecutionResult, DqeExecutionError
+        from metriccanvas_authoring.data.execution import DqeExecutionResult, DqeExecutionError
         async def fail(query):
             self.deps.dqe.calls.append(query)
             raise DqeExecutionError('DQE_QUERY_REJECTED', 'not for model')
@@ -305,7 +305,7 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         result = await self.app.query('current-context', query_request())
         request = query_request(); request['requests'][0]['dataSourceId'] = 'other'; request['requests'][0]['filters'] = [{'dimension':'区域','values':['unknown']}]
         # Use a separately scoped failed query with a legitimate request shape.
-        from metriccanvas_authoring.domain.execution import DqeExecutionError
+        from metriccanvas_authoring.data.execution import DqeExecutionError
         async def rejected(query): raise DqeExecutionError('DQE_QUERY_REJECTED', 'rejected')
         self.deps.dqe.execute = rejected
         failed = await self.app.query('current-context', request)

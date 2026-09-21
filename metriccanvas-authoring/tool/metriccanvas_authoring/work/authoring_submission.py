@@ -12,7 +12,7 @@ from .authoring_turns import AuthoringTurnGate, PreparedAuthoringTurn
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.application.lifecycle import Lifecycle, VALIDATOR, require
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
-from metriccanvas_authoring.domain.canonical import canonical_json
+from metriccanvas_authoring.canonical import canonical_json
 from metriccanvas_authoring.work.submission_records import validate_record, validate_terminal_result
 
 

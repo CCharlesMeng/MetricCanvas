@@ -14,7 +14,7 @@ from test_source_mapping import DescriptorFixture
 from test_page_editing import title
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 

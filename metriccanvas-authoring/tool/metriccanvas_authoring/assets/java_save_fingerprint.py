@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib
 from typing import Any, Mapping
 
-from .canonical import canonical_json
+from metriccanvas_authoring.canonical import canonical_json
 
 
 def derive_idempotency_key(

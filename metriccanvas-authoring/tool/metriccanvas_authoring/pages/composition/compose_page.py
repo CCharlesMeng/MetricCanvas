@@ -7,11 +7,11 @@ from copy import deepcopy
 from typing import Any, Mapping
 
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.domain.execution import (
+from metriccanvas_authoring.data.execution import (
     FailureStage,
     FormulaTrace,
 )
-from metriccanvas_authoring.domain.canonical import canonical_json
+from metriccanvas_authoring.canonical import canonical_json
 from metriccanvas_authoring.pages.composition.page_building import (
     PageBuildingIssue,
     PageBuildingIssues,

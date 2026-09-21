@@ -120,7 +120,7 @@ class QueryResults:
         _, record = await self.state.store.read('query', ref)
         require(record is not None and record['binding'] == dict(prepared.binding), 'RESULT_SCOPE_MISMATCH')
         snapshot = await self.dependencies.data_context.current()
-        from metriccanvas_authoring.domain.data_context import parse_data_context
+        from metriccanvas_authoring.data.data_context import parse_data_context
         context, issues = parse_data_context(snapshot)
         require(not issues and context.version == record['dataContextVersion'], 'RESULT_VERSION_STALE')
         await self.authorize(prepared, record['request'], record['dataContextVersion'])

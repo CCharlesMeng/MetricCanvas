@@ -5,7 +5,7 @@ from typing import Any
 from metriccanvas_authoring.pages.composition.page_building import (
     ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component,
 )
-from metriccanvas_authoring.domain.execution import DqeExecutionResult
+from metriccanvas_authoring.data.execution import DqeExecutionResult
 from metriccanvas_authoring.domain.page_validation import _resolved_fields
 from metriccanvas_authoring.pages.composition.layout_policy import layout_transition_impacts
 
