@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.1",
+  "schemaVersion": "6.7",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -955,6 +955,14 @@
             "industry-type": {
               "target": "dimension",
               "queryField": "cloud_class"
+            },
+            "region": {
+              "target": "dimension",
+              "levelQueryFields": {
+                "geo": "geo_pc_code",
+                "region-dept": "region_dept_code",
+                "office": "rep_office_code"
+              }
             },
             "na-type": {
               "target": "dimension",

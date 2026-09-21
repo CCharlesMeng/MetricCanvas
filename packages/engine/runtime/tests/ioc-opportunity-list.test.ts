@@ -42,7 +42,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.1');
+    expect(page.schemaVersion).toBe('6.7');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)
@@ -78,8 +78,6 @@ describe('ioc-opportunity-list 骨架', () => {
     expect(values.get('mtime')).toMatchObject({ value: '2026-04' });
   });
 
-  // 层级维度筛选器不绑定：composeEffectiveQuery 只读 filterBindings 里的静态
-  // queryField，不跟随当前层级，绑上去在地区部/代表处层会发出错误的查询条件。
   it('明细走受控查询，扁平维度筛选器绑定到 DQE 字段', () => {
     const page = loadPage();
     const source = page.dataSources['opportunity-list'];
@@ -87,6 +85,7 @@ describe('ioc-opportunity-list 骨架', () => {
     expect(source.source.query.language).toBe('dqe');
     expect(Object.keys(source.source.query.filterBindings ?? {})).toEqual([
       'industry-type',
+      'region',
       'na-type',
       'industry-l1',
       'industry-l2',
@@ -97,6 +96,27 @@ describe('ioc-opportunity-list 骨架', () => {
       target: 'dimension',
       queryField: 'sub_industry_level2'
     });
+  });
+
+  // 层级区域筛选器逐级声明谓词字段(ADR-0084)：三层各自一个 DQE 字段，
+  // 与 hierarchy 的层级 id 一一对应；少一级会被页面校验拒绝。
+  it('层级区域筛选器逐级绑定，覆盖 hierarchy 声明的全部层级', () => {
+    const page = loadPage();
+    const source = page.dataSources['opportunity-list'];
+    if (source?.source.type !== 'query') throw new Error('明细数据源应为受控查询');
+    const binding = source.source.query.filterBindings?.region;
+    expect(binding).toEqual({
+      target: 'dimension',
+      levelQueryFields: {
+        geo: 'geo_pc_code',
+        'region-dept': 'region_dept_code',
+        office: 'rep_office_code'
+      }
+    });
+    const region = page.filters?.find((filter) => filter.id === 'region');
+    if (region?.type !== 'dimension') throw new Error('region 应为维度筛选器');
+    expect(Object.keys(binding && 'levelQueryFields' in binding ? binding.levelQueryFields : {}))
+      .toEqual(region.hierarchy?.map((level) => level.id));
   });
 
   it('行点击 navigate 用 query 带上详情页参数，不进筛选状态', () => {
