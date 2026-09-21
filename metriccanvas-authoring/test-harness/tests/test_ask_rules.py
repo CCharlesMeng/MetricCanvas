@@ -12,7 +12,7 @@ from jsonschema import Draft202012Validator
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.agent_core import (  # noqa: E402
+from metriccanvas_authoring.ask.rules import (  # noqa: E402
     AgentCoreError,
     ad_hoc_gap_key,
     apply_presentation_request,

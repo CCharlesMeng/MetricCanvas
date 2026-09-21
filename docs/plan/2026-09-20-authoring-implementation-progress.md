@@ -27,6 +27,18 @@
 - `data/query.py`、`data/results.py`、`data/semantic_catalog.py` 提供受授权的有界证据与结果引用；`pages/referenced.py` 按结果引用装配与局部编辑。
 - 入站 `adapters/inbound/platform_mcp.py` 与组合根 `platform_server.py`，存储 `adapters/outbound/platform_state.py`；协议说明 `contracts/authored/platform-v2-protocol.md`；v1 Skill 冻结在 `skill-compat/platform-authoring-v1/`。
 
+## 第三批：规则所有权收敛与命名归位
+
+对应模块架构方案 A06、A09，以及第 10 节“先做公共能力和规则收敛，再做物理归位”。
+
+- 修复接手时的派生产物漂移：`bundle.lock.json` 对 `pages/referenced.py` 与 `test_platform_v2.py` 已过期，用既有生成器重新导出，不手改锁文件。
+- 新增 `work/submission_records.py`，集中候选协议提交记录的字段集合、状态集合、终态集合、不可变字段、记录与轮次绑定的一致性、终态结果形状、快照不变量与合法迁移。SQLite Adapter 只保留文件安全、事务、原子读写与序列化，不再自带状态机。
+- `authoring_recovery` 不再构造 `AuthoringSubmissionCoordinator` 去调它的私有 `_validate_record`；改为与 submission 共用公开的 `validate_submission_record`。
+- 拆分 `domain/idempotency.py`：通用确定性编码归 `domain/canonical.py`（`canonical_json` + `canonical_sha256`，拒绝 NaN/Infinity），旧 Java 指纹幂等键归 `domain/java_save_fingerprint.py`，文档明确单次保存不得复用该键。原先四处各自实现的“canonical JSON 的 sha256”（`edit_page.document_sha256`、`work.state.digest`、SQLite `_hash`、recovery 内联）统一到一个实现。
+- `domain/agent_core.py` 迁到 `ask/rules.py`（命名与目标 `ask` 模块一致），同步更新 page-builder SKILL.md、README 与测试；测试改名 `test_ask_rules.py`。导出符号仍叫 `AgentCore*`，本批未改公开符号名。
+
+本批不改模型协议、工具注册面与保存策略；候选协议记录仍为其兼容消费者保留。
+
 ## 后续依赖与明确未完成项
 
 1. P0/P1：真实 Lab 语义摘要访问、详情身份映射、实际 Tokens 请求与响应贯穿对账；不能用其他指标详情补单位。
@@ -46,3 +58,13 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - 使用现有生成器 `node --import tsx tools/scripts/export-authoring-contracts.ts` 更新派生产物；导出检查为 481 product / 4 authoring / 1 interface。
 - Bundle 完整性检查、`git diff --check` 通过。完整测试日志：`/private/tmp/metriccanvas-implementation-tests.log`。
 - 未进行真实模型、Lab、Java 或 Relay 联调，也没有以测试夹具替代业务/视觉验收。
+
+### 第三批验证（2026-09-21）
+
+同一命令基线：`PYTHONPATH=metriccanvas-authoring/tool python -m unittest discover -s metriccanvas-authoring/test-harness/tests`（Python 3.12.13）。
+
+- 改动前基线 479 项通过（34.4 秒）；A06/A09 改动后 479 项通过（32.5 秒）；`agent_core` 迁移与文档同步后再次 479 项通过（33.7 秒）。
+- `python metriccanvas-authoring/scripts/check_bundle.py`：接手时报 2 处漂移，重新导出后 1542 项摘要校验通过。
+- `node --import tsx tools/scripts/export-authoring-contracts.ts --check`：接手时报 `bundle.lock.json: stale`，重新导出后 current（481 product / 4 authoring / 1 interface）。
+- `git diff --check` 通过。
+- 仍未运行真实 Lab/DQE/Java/Relay 联调；本批只证明本仓行为不变，不证明外部接线。

@@ -5,30 +5,29 @@ remote save idempotency, or durability guarantees of the page service.
 """
 from contextlib import contextmanager
 from copy import deepcopy
-import hashlib
 import json
 import os
 from pathlib import Path
 import sqlite3
 import stat
-import re
 from jsonschema import Draft202012Validator
 from referencing import Registry, Resource
 from uuid import uuid4
 
 from metriccanvas_authoring.application.content_ports import ContentBaselineError
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
-from metriccanvas_authoring.application.authoring_turns import TURN_VALIDATOR
-from metriccanvas_authoring.application.lifecycle import VALIDATOR as COMMAND_VALIDATOR
-from metriccanvas_authoring.domain.idempotency import canonical_json
+from metriccanvas_authoring.domain.canonical import canonical_json, canonical_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
+from metriccanvas_authoring.work.submission_records import (
+    FORMAT_VERSION,
+    text as _text,
+    validate_record,
+    validate_scope,
+    validate_snapshot,
+    validate_transition,
+)
 
-_RECORD_KEYS = {'candidateRef', 'rootBinding', 'operationId', 'command', 'programToken', 'status', 'result'}
-_SNAPSHOT_KEYS = {'formatVersion', 'recordVersion', 'commandSha256', 'record', 'control', 'saveReceipt', 'verificationState', 'previewState'}
-_STATUSES = {'selected', 'sending', 'unknown', 'pending', 'saved', 'rejected', 'not-applied', 'unchanged'}
-_TERMINAL = {'saved', 'rejected', 'not-applied', 'unchanged'}
-_IMMUTABLE = ('candidateRef', 'rootBinding', 'operationId', 'command')
 _CONTRACTS = bundle_root() / 'contracts/authored'
 _TURN_SCHEMA = json.loads((_CONTRACTS / 'authoring-turn.schema.json').read_text())
 _CANDIDATE_VALIDATOR = Draft202012Validator(json.loads((_CONTRACTS / 'authoring-candidate.schema.json').read_text()),
@@ -39,16 +38,9 @@ def _require(condition, code='EXECUTION_RECORD_INVALID'):
     if not condition: raise LifecycleError(code)
 
 
-def _text(value):
-    return isinstance(value, str) and bool(value) and len(value) <= 256
-
-
 def _dump(value):
-    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False)
-
-
-def _hash(value):
-    return hashlib.sha256(canonical_json(value).encode('utf-8')).hexdigest()
+    """Persisted bytes: canonical, so a stored row reads back as the same value."""
+    return canonical_json(value)
 
 
 def _key(key):
@@ -57,64 +49,15 @@ def _key(key):
 
 
 def _record(key, value):
-    _require(isinstance(value, dict) and set(value) == _RECORD_KEYS)
-    b = value['rootBinding']
-    _require(TURN_VALIDATOR.is_valid(b))
-    _require(tuple(b[k] for k in ('actorId', 'workspaceId', 'runId', 'turnId', 'pageId')) == key)
-    command = value['command']
-    _require(COMMAND_VALIDATOR.is_valid(command) and command['kind'] == 'save')
-    _require(command['context']['operationId'] == value['operationId'] and _text(value['candidateRef']))
-    _require(command['context']['actorId'] == b['actorId'] and command['context']['workspaceId'] == b['workspaceId'])
-    _require(command['context']['origin'].get('runId') == b['runId'] and command['pageId'] == b['pageId'] and command['base'] == b['baseRef'])
-    _require(value['status'] in _STATUSES and (value['programToken'] is None or _text(value['programToken'])))
-    _require(value['result'] is None or isinstance(value['result'], dict))
+    _require(isinstance(value, dict) and 'rootBinding' in value)
+    validate_scope(value, key, invalid='EXECUTION_RECORD_INVALID')
+    validate_record(value, value['rootBinding'], invalid='EXECUTION_RECORD_INVALID')
     _dump(value)
 
 
 def _snapshot(key, value):
-    _require(isinstance(value, dict) and set(value) == _SNAPSHOT_KEYS)
-    _require(value['formatVersion'] == '1.0', 'EXECUTION_FORMAT_UNSUPPORTED')
-    _require(type(value['recordVersion']) is int and value['recordVersion'] >= 1)
-    _record(key, value['record'])
-    _require(value['commandSha256'] == _hash(value['record']['command']))
-    control = value['control']
-    _require(isinstance(control, dict) and set(control) == {'cancelRequested', 'attemptIds', 'maxAttempts', 'deadlineEpochMs'})
-    _require(type(control['cancelRequested']) is bool and type(control['maxAttempts']) is int and control['maxAttempts'] > 0)
-    _require(control['deadlineEpochMs'] is None or type(control['deadlineEpochMs']) is int and control['deadlineEpochMs'] >= 0)
-    attempts = control['attemptIds']
-    _require(isinstance(attempts, list) and all(_text(v) for v in attempts) and len(attempts) == len(set(attempts)) and len(attempts) <= control['maxAttempts'])
-    _require(value['verificationState'] in {'pending', 'verified'} and value['previewState'] in {'not-requested', 'failed', 'ready'})
-    receipt = value['saveReceipt']
-    _require(receipt is None or isinstance(receipt, dict))
-    if receipt is not None:
-        _require(receipt.get('operationId') == value['record']['operationId'] and receipt.get('status') == 'saved')
-        ref = receipt.get('ref')
-        _require(isinstance(ref, dict) and set(ref) == {'pageId', 'revisionId', 'resourceId'} and all(_text(v) for v in ref.values()))
-        _require(ref['pageId'] == value['record']['rootBinding']['pageId'])
-        _require('base' in receipt and receipt['base'] == value['record']['command']['base'])
-        _require(isinstance(receipt.get('contentHash'), str) and re.fullmatch('[a-f0-9]{64}', receipt['contentHash']))
-        _require(_text(receipt.get('canonicalization')) and type(receipt.get('revisionNumber')) is int and receipt['revisionNumber'] > 0)
-    _require(value['verificationState'] != 'verified' or receipt is not None)
+    validate_snapshot(value, key, invalid='EXECUTION_RECORD_INVALID', unsupported='EXECUTION_FORMAT_UNSUPPORTED')
     _dump(value)
-
-
-def _transition(old, new, *, compatibility=False):
-    a, b = old['record'], new['record']
-    _require(all(a[k] == b[k] for k in _IMMUTABLE) and old['commandSha256'] == new['commandSha256'], 'EXECUTION_IMMUTABLE')
-    _require(a['programToken'] is None or a['programToken'] == b['programToken'], 'EXECUTION_IMMUTABLE')
-    if a['status'] in _TERMINAL:
-        retry = (not compatibility and a['status'] == 'not-applied' and b['status'] == 'sending'
-                 and not new['control']['cancelRequested'] and isinstance(a['result'], dict) and a['result'].get('retrySafe') is True)
-        evidence = not compatibility and a['status'] == 'not-applied' and b['status'] in {'not-applied', 'pending', 'unknown', 'saved', 'rejected'}
-        _require(retry or evidence or (b['status'] == a['status'] and b['result'] == a['result']), 'EXECUTION_TERMINAL')
-    x, y = old['control'], new['control']
-    _require(x['maxAttempts'] == y['maxAttempts'] and x['deadlineEpochMs'] == y['deadlineEpochMs'], 'EXECUTION_IMMUTABLE')
-    _require(not x['cancelRequested'] or y['cancelRequested'], 'EXECUTION_CONTROL_REGRESSION')
-    _require(y['attemptIds'][:len(x['attemptIds'])] == x['attemptIds'], 'EXECUTION_CONTROL_REGRESSION')
-    _require(old['saveReceipt'] is None or old['saveReceipt'] == new['saveReceipt'], 'EXECUTION_RECEIPT_IMMUTABLE')
-    _require(old['verificationState'] != 'verified' or new['verificationState'] == 'verified', 'EXECUTION_VERIFICATION_REGRESSION')
-    if new['saveReceipt'] is not None:
-        _require(b['status'] not in {'selected', 'sending', 'rejected', 'not-applied', 'unchanged'}, 'EXECUTION_RECEIPT_IMMUTABLE')
 
 
 class _Database:
@@ -172,7 +115,7 @@ class SqliteCandidateStore(_Database):
         try:
             valid = (_CANDIDATE_VALIDATOR.is_valid(record)
                      and record['document'].get('id') == record['rootBinding']['pageId']
-                     and _hash(record['document']) == record['documentSha256']
+                     and canonical_sha256(record['document']) == record['documentSha256']
                      and not validate_page_document(record['document']))
             if not valid: raise ValueError()
             return _dump(record)
@@ -217,7 +160,7 @@ class SqliteExecutionRecords(_Database):
         with self._transaction() as db:
             current = self._read(db, key)
             if current is not None: return deepcopy(current['record']), False
-            snapshot = {'formatVersion': '1.0', 'recordVersion': 1, 'commandSha256': _hash(record['command']),
+            snapshot = {'formatVersion': FORMAT_VERSION, 'recordVersion': 1, 'commandSha256': canonical_sha256(record['command']),
                         'record': deepcopy(record), 'control': {'cancelRequested': False, 'attemptIds': [],
                         'maxAttempts': self.max_attempts, 'deadlineEpochMs': self.deadline_epoch_ms},
                         'saveReceipt': None, 'verificationState': 'pending', 'previewState': 'not-requested'}
@@ -233,7 +176,7 @@ class SqliteExecutionRecords(_Database):
             previous = self._read(db, key)
             _require(previous is not None, 'EXECUTION_NOT_FOUND')
             value = deepcopy(previous); value['record'] = deepcopy(record)
-            _snapshot(key, value); _transition(previous, value, compatibility=True)
+            _snapshot(key, value); validate_transition(previous, value, compatibility=True)
             value['recordVersion'] += 1
             db.execute('UPDATE executions SET payload=? WHERE key=?', (_dump(value), _key(key)))
 
@@ -245,7 +188,7 @@ class SqliteExecutionRecords(_Database):
             value = deepcopy(replacement_snapshot)
             _snapshot(key, value)
             _require(value['recordVersion'] == expected_version, 'EXECUTION_VERSION_CONFLICT')
-            _transition(previous, value)
+            validate_transition(previous, value)
             value['recordVersion'] += 1
             db.execute('UPDATE executions SET payload=? WHERE key=?', (_dump(value), _key(key)))
             return value

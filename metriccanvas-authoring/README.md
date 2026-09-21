@@ -18,7 +18,7 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 ## 当前已具备的可执行能力
 
 - `discover_data_context` 保留受治理 `matches`，同时返回全量规范业务域闭集 `businessDomains`、`resolution {candidates, selected, ambiguities}`、`time`、`intent`、`structureOperation` 和 `dataContextVersion`。Relay 应先发现完整问题，再从这个闭集做业务域路由。
-- [`domain/agent_core.py`](./tool/metriccanvas_authoring/domain/agent_core.py) 已实现稳定 `dataSourceId`、单调序号、`add/modify/replace/remove` 多轮 reducer、target 定向、结构 guard、组件话语、基于 `businessDomains` 闭集的用户覆盖与模型路由验真/零命中重路由/消歧、按取数单元意图降级，以及部分可答与 Metric Gap 确认。Scope Card 选择同时接受 discovery `canonicalName` 与事件 `metricName` 形状；Metric Gap 只投影 metric 候选，忽略 resolution 中的 time/intent/structure 候选。
+- [`ask/rules.py`](./tool/metriccanvas_authoring/ask/rules.py) 已实现稳定 `dataSourceId`、单调序号、`add/modify/replace/remove` 多轮 reducer、target 定向、结构 guard、组件话语、基于 `businessDomains` 闭集的用户覆盖与模型路由验真/零命中重路由/消歧、按取数单元意图降级，以及部分可答与 Metric Gap 确认。Scope Card 选择同时接受 discovery `canonicalName` 与事件 `metricName` 形状；Metric Gap 只投影 metric 候选，忽略 resolution 中的 time/intent/structure 候选。
 - 结构 guard 可直接消费 discovery 的 `structureOperation`，并以问句解析兜底；模型首次静默忽略结构操作时要求修正，第二次仍忽略则拒绝。
 - Page Build Spec 必须携带发现阶段的 `dataContextVersion` 和每个取数单元的 `dataSourceId`，ID 格式满足 Page key 约束；`compose_page` 在 DQE 之前拒绝过期版本或重复 ID。
 - `compose_page` 对最多 6 个取数单元有序并发执行 DQE，按单元序号稳定装配或归因失败，无保存副作用。
@@ -57,7 +57,7 @@ Relay 工具面的完整 `artifact` 含页面文档和 DQE 初始行，不能作
 
 ## 生产组合与分发
 
-`metriccanvas_authoring.server` 是可安装包的生产组合根，`tool/server.py` 是源码检出兼容入口。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
+`metriccanvas_authoring.server` 是可安装包的 CLI 入口，`tool/server.py` 是源码检出兼容入口；装配住在 `bootstrap/`。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
 
 Relay 配置见 [`relay/mcp_configs/metriccanvas-authoring.json`](./relay/mcp_configs/metriccanvas-authoring.json)：
 
@@ -83,7 +83,7 @@ python3 scripts/check_bundle.py
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s test-harness/tests -p 'test_*.py'
 ```
 
-根仓另提供 `pnpm authoring:contracts:check`，检查产品契约、Bundle 快照、Authoring manifest 与锁文件是否漂移。页面预检的全量证据位于 [`test_page_validation.py`](./test-harness/tests/test_page_validation.py) 和 [`page-conformance-pending.json`](./test-harness/fixtures/page-conformance-pending.json)；Agent Core、目录级组件选型和布局性质证据分别位于 [`test_agent_core.py`](./test-harness/tests/test_agent_core.py)、[`test_component_selection.py`](./test-harness/tests/test_component_selection.py) 与 [`test_section_layout.py`](./test-harness/tests/test_section_layout.py)。
+根仓另提供 `pnpm authoring:contracts:check`，检查产品契约、Bundle 快照、Authoring manifest 与锁文件是否漂移。页面预检的全量证据位于 [`test_page_validation.py`](./test-harness/tests/test_page_validation.py) 和 [`page-conformance-pending.json`](./test-harness/fixtures/page-conformance-pending.json)；Ask/Explore 确定性规则、目录级组件选型和布局性质证据分别位于 [`test_ask_rules.py`](./test-harness/tests/test_ask_rules.py)、[`test_component_selection.py`](./test-harness/tests/test_component_selection.py) 与 [`test_section_layout.py`](./test-harness/tests/test_section_layout.py)。
 
 构建并验证 Relay 可安装包：
 
@@ -93,7 +93,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
   uvx --from dist/metriccanvas_authoring-0.2.0.tar.gz metriccanvas-authoring
 ```
 
-完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/plan/metriccanvas-agent-full-migration.md`](../docs/plan/metriccanvas-agent-full-migration.md)。
+完整迁移状态、F01–F14 等价矩阵与硬切换门禁见 [`docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md`](../docs/archive/metriccanvas-agent-migration/metriccanvas-agent-full-migration.md)。
 
 ## 独立生命周期 MCP（#138）
 

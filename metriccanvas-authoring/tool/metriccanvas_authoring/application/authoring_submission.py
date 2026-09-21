@@ -10,9 +10,10 @@ from uuid import uuid4
 
 from .authoring_turns import AuthoringTurnGate, PreparedAuthoringTurn
 from .edit_page import document_sha256
-from .lifecycle import Lifecycle, VALIDATOR, require, valid_ref
+from .lifecycle import Lifecycle, VALIDATOR, require
 from .lifecycle_ports import LifecycleError
-from metriccanvas_authoring.domain.idempotency import canonical_json
+from metriccanvas_authoring.domain.canonical import canonical_json
+from metriccanvas_authoring.work.submission_records import validate_record, validate_terminal_result
 
 
 class CandidateReader(Protocol):
@@ -40,6 +41,21 @@ def semantic_equal(left, right):
     if isinstance(left, (int, float)) and isinstance(right, (int, float)):
         return left == right
     return type(left) is type(right) and left == right
+
+
+async def validate_submission_record(record, prepared, candidates: CandidateReader):
+    """Check one stored record against its turn and the candidate it submits.
+
+    Submission and recovery both judge a record they did not write, so this is
+    the shared entrypoint rather than one use case reaching into the other.
+    """
+    validate_record(record, prepared.binding, invalid='RESPONSE_MISMATCH', command_invalid='INVALID_REQUEST')
+    original = await candidates.require(record['candidateRef'], prepared)
+    document = record['command']['document']
+    require(document_sha256(document) == original['documentSha256'] and
+            canonical_json(document) == canonical_json(original['document']))
+    validate_terminal_result(record, invalid='RESPONSE_MISMATCH')
+    return original
 
 
 class _TurnScopedService:
@@ -89,36 +105,6 @@ class AuthoringSubmissionCoordinator:
         updated['status'], updated['result'] = status, deepcopy(result)
         await self.records.update(key, deepcopy(updated))
         record.update(updated)
-
-    async def _validate_record(self, record, prepared):
-        require(isinstance(record, dict) and set(record) == {
-            'candidateRef', 'rootBinding', 'operationId', 'command', 'programToken', 'status', 'result'})
-        require(record['rootBinding'] == prepared.binding)
-        original = await self.candidates.require(record['candidateRef'], prepared)
-        command = record['command']
-        require(VALIDATOR.is_valid(command) and command['kind'] == 'save', 'INVALID_REQUEST')
-        context = command['context']
-        require(context['operationId'] == record['operationId'] and
-                context['actorId'] == prepared.binding['actorId'] and
-                context['workspaceId'] == prepared.binding['workspaceId'] and
-                context['origin'].get('runId') == prepared.binding['runId'])
-        require(command['pageId'] == prepared.binding['pageId'] and
-                command['base'] == prepared.binding['baseRef'] and
-                document_sha256(command['document']) == original['documentSha256'] and
-                canonical_json(command['document']) == canonical_json(original['document']))
-        require(record['status'] in {'selected', 'sending', 'unknown', 'pending', 'saved', 'rejected', 'not-applied', 'unchanged'})
-        require(record['programToken'] is None or isinstance(record['programToken'], str) and bool(record['programToken']))
-        if record['status'] in {'saved', 'rejected', 'not-applied', 'unchanged'}:
-            result = record['result']
-            require(isinstance(result, dict) and result.get('status') == record['status'] and
-                    result.get('candidateRef') == record['candidateRef'] and result.get('operationId') == record['operationId'])
-            if record['status'] == 'saved':
-                ref, base = result.get('ref'), command['base']
-                require(valid_ref(ref) and ref['pageId'] == command['pageId'] and
-                        (base is None or ref['resourceId'] == base['resourceId'] and ref['revisionId'] != base['revisionId']))
-            else:
-                require('ref' not in result)
-        return original
 
     async def _verify_saved(self, response, record, candidate, prepared, identity):
         command = record['command']
@@ -193,7 +179,7 @@ class AuthoringSubmissionCoordinator:
         record, created = await self.records.claim(key, deepcopy(proposed))
         record = deepcopy(record)
         require(type(created) is bool and (not created or record == proposed))
-        candidate = await self._validate_record(record, prepared)
+        candidate = await validate_submission_record(record, prepared, self.candidates)
         await self._current(prepared, identity)
         if record['status'] in {'saved', 'rejected', 'not-applied', 'unchanged'}:
             require(isinstance(record['result'], dict) and record['result'].get('status') == record['status'])

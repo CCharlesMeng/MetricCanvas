@@ -9,14 +9,10 @@ from metriccanvas_authoring.application.compose_page import (
     ComposePageDependencies,
     create_compose_page,
 )
-from metriccanvas_authoring.application.ports import (
-    DataContextPort,
-    DqeExecutionPort,
-    PageAssetPort,
-    SavedRevision,
-)
+from metriccanvas_authoring.data.ports import DataContextPort, DqeExecutionPort
+from metriccanvas_authoring.assets.ports import PageAssetPort, SavedRevision
 from metriccanvas_authoring.domain.execution import FailureStage
-from metriccanvas_authoring.domain.idempotency import derive_idempotency_key
+from metriccanvas_authoring.domain.java_save_fingerprint import derive_idempotency_key
 
 
 @dataclass(frozen=True, slots=True)

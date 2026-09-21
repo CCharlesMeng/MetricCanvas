@@ -1,17 +1,16 @@
 """No save or publish dependency: return a trusted artifact and a bounded summary."""
-import hashlib
 import re
 from typing import Any
 
 from metriccanvas_authoring.application.summary_capability import summary_configured
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaselinePort
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.domain.idempotency import canonical_json
+from metriccanvas_authoring.domain.canonical import canonical_json, canonical_sha256
 from metriccanvas_authoring.domain.page_editing import edit_page_document
 
 
 def document_sha256(document: Any) -> str:
-    return hashlib.sha256(canonical_json(document).encode("utf-8")).hexdigest()
+    return canonical_sha256(document)
 
 
 async def read_verified_baseline(baselines: ContentBaselinePort, token: str):

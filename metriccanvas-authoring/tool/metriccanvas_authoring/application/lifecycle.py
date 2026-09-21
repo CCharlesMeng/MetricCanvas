@@ -72,7 +72,7 @@ class Lifecycle:
                 result['message'] = result['code']
             return result
         if self.service.capabilities.single_save:
-            from metriccanvas_authoring.domain.idempotency import canonical_json
+            from metriccanvas_authoring.domain.canonical import canonical_json
             require(valid_ref(response.get('ref')) and response['ref']['pageId'] == command['pageId'])
             require(response.get('base') == command['base'] and response.get('assurance') == 'provider-response')
             require(type(response.get('revisionNumber')) is int and response['revisionNumber'] > 0)

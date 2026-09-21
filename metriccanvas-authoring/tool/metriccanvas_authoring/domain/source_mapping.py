@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from jsonschema import Draft202012Validator, FormatChecker
 
 from metriccanvas_authoring.runtime_assets import bundle_root
-from metriccanvas_authoring.domain.idempotency import canonical_json
+from metriccanvas_authoring.domain.canonical import canonical_json
 
 _ROOT = bundle_root()
 _DESCRIPTOR = Draft202012Validator(json.loads((_ROOT / 'contracts/authored/source-description.schema.json').read_text()))

@@ -1,14 +1,13 @@
 """Recover frozen operations without reviving an old model turn's authority."""
 from copy import deepcopy
-import hashlib
 from typing import Protocol
 
-from .authoring_submission import AuthoringSubmissionCoordinator
+from .authoring_submission import validate_submission_record
 from .authoring_turns import PreparedAuthoringTurn, TURN_VALIDATOR
 from .edit_page import document_sha256
 from .lifecycle import Lifecycle, require
 from .lifecycle_ports import LifecycleError
-from metriccanvas_authoring.domain.idempotency import canonical_json
+from metriccanvas_authoring.domain.canonical import canonical_json, canonical_sha256
 
 
 class RecoveryAuthorityPort(Protocol):
@@ -68,10 +67,9 @@ class AuthoringRecoveryCoordinator:
         record = snapshot['record']; binding = record['rootBinding']
         require(TURN_VALIDATOR.is_valid(binding), 'INVALID_REQUEST')
         require(tuple(key) == tuple(binding[k] for k in ('actorId', 'workspaceId', 'runId', 'turnId', 'pageId')), 'FORBIDDEN')
-        require(snapshot['commandSha256'] == hashlib.sha256(canonical_json(record['command']).encode()).hexdigest())
+        require(snapshot['commandSha256'] == canonical_sha256(record['command']))
         await self._authorize(snapshot)
-        validator = AuthoringSubmissionCoordinator(self.candidates, self.records, None, self.lifecycle)
-        await validator._validate_record(record, PreparedAuthoringTurn(binding, None))
+        await validate_submission_record(record, PreparedAuthoringTurn(binding, None), self.candidates)
         await self._authorize(snapshot)
         return snapshot
 
