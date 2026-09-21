@@ -109,9 +109,17 @@ export function initializePageParams(page: import('@metriccanvas/page').Page, va
   }
   const initialized = structuredClone(page);
   for (const declaration of initialized.filters ?? []) {
-    if (declaration.type !== 'dimension' || !declaration.initialParam) continue;
+    if (declaration.type !== 'dimension' && declaration.type !== 'timePoint') continue;
+    if (!declaration.initialParam) continue;
     const value = values.get(declaration.initialParam);
-    declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+    if (declaration.type === 'dimension') {
+      declaration.default = value === undefined ? [] : Array.isArray(value) ? [...value] : [String(value)];
+    } else if (declaration.type === 'timePoint') {
+      // 单点 times 输入的两端相同，取哪一端都一样；缺值时不写初值＝不筛。
+      const point = value as { start?: string } | undefined;
+      if (typeof point?.start === 'string') declaration.default = point.start;
+      else delete declaration.default;
+    }
   }
   for (const source of Object.values(initialized.dataSources)) {
     if (source.source.type === 'query') {

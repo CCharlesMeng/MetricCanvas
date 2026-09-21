@@ -8,6 +8,8 @@ import {
   navigationHref,
   initialFilterValues,
   orchestrate,
+  initializePageParams,
+  resolvePageParams,
   type PageDataSnapshots
 } from '../src';
 
@@ -24,11 +26,16 @@ function loadPage(): Page {
   return parsed.page;
 }
 
+/** 页面实例:不传 URL 取参数保存值，参数值写进筛选器初值。 */
+function instantiate(page: Page): Page {
+  return initializePageParams(page, resolvePageParams('', page.params ?? []).values);
+}
+
 describe('ioc-project-overview 骨架', () => {
   it('声明 5.4，能力下限覆盖唯一指标值入口', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.10');
-    expect(requiredMinorVersion(document)).toBe(10);
+    expect(page.schemaVersion).toBe('6.11');
+    expect(requiredMinorVersion(document)).toBe(11);
   });
 
   it('五个可见筛选按设计顺序声明，跨页 mtime 仍以 month 隐藏保留', () => {
@@ -38,10 +45,10 @@ describe('ioc-project-overview 骨架', () => {
       .toEqual(['key-office', 'as-of-date', 'region', 'project-level', 'industry-type']);
 
     expect(filters.find((filter) => filter.id === 'mtime')).toMatchObject({
-      type: 'timePoint', granularity: 'month', default: '2026-04', visible: false
+      type: 'timePoint', granularity: 'month', initialParam: 'report-month', visible: false
     });
     expect(filters.find((filter) => filter.id === 'as-of-date')).toMatchObject({
-      type: 'timePoint', granularity: 'date', default: '2026-03-26'
+      type: 'timePoint', granularity: 'date', initialParam: 'report-as-of-date'
     });
     expect(filters.find((filter) => filter.id === 'project-level')).toMatchObject({
       type: 'dimension', dimension: 'project-initiation-level', emptyLabel: '全部项目等级'
@@ -374,7 +381,8 @@ describe('ioc-project-overview 骨架', () => {
     const mapAction = map.props.actions?.[0];
     if (!mapAction || !('navigate' in mapAction)) throw new Error('缺少地图 navigate');
 
-    const filters = createFilterState(initialFilterValues(page.filters ?? []));
+    const instance = instantiate(page);
+    const filters = createFilterState(initialFilterValues(instance.filters ?? []));
     filters.write('region', {
       type: 'dimension',
       dimension: 'rep-office-code',
@@ -394,7 +402,7 @@ describe('ioc-project-overview 骨架', () => {
     expect(listSearch).not.toContain('p:');
 
     const restored = createFilterState();
-    restored.fromURL(listSearch, page.filters ?? []);
+    restored.fromURL(listSearch, instance.filters ?? []);
     let restoredValues = new Map();
     restored.subscribe((next) => {
       restoredValues = new Map(next);

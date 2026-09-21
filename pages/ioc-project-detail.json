@@ -1,66 +1,65 @@
 {
-  "schemaVersion": "6.1",
+  "schemaVersion": "6.11",
   "id": "ioc-project-detail",
   "meta": {
     "description": "IOC 作战地图项目详情页。页面参数来自 URL，业务数据全部是 inline 合成演示数据，不来自真实系统。页面按有效设计源收口为 450:1168 的项目基本信息与项目规范性双卡，规范性两组矩阵同时展示；销售预测展示一至七月并保留小计、总计和合并逻辑；项目叙事收口为六块。原始业务长文本字段全部保留，latest-analysis-meeting-display 与 risk-management-display 仅为 inline 展示合成字段，不构成未来 GraphQL 契约。"
   },
-  "params": [
-    {
-      "id": "page-title",
-      "type": "string",
-      "required": true,
-      "label": "页面标题",
-      "default": "XX 云迁移项目"
-    },
-    {
-      "id": "opportunity-code",
-      "type": "string",
-      "required": true,
-      "label": "机会点编码",
-      "default": "OPP202604001"
-    },
-    {
-      "id": "mtime",
-      "type": "string",
-      "required": true,
-      "label": "数据月份",
-      "default": "202604"
-    },
-    {
-      "id": "ati-status-label",
-      "type": "string",
-      "required": false,
-      "label": "立项状态",
-      "default": "已立项"
-    },
-    {
-      "id": "project-initiation-level",
-      "type": "string",
-      "required": false,
-      "label": "立项级别",
-      "default": "L1"
-    },
-    {
-      "id": "public-cloud-na-level-name",
-      "type": "string",
-      "required": false,
-      "label": "客户级别",
-      "default": "战略客户"
-    },
-    {
-      "id": "sub-industry-level1-name",
-      "type": "string",
-      "required": false,
-      "label": "行业",
-      "default": "运营商"
-    },
-    {
-      "id": "party-number",
-      "type": "string",
-      "required": false,
-      "label": "客户编号"
-    }
-  ],
+  "params": {
+    "display": [
+      {
+        "id": "page-title",
+        "type": "string",
+        "value": "XX 云迁移项目",
+        "label": "页面标题"
+      },
+      {
+        "id": "opportunity-code",
+        "type": "string",
+        "value": "OPP202604001",
+        "label": "机会点编码"
+      },
+      {
+        "id": "mtime",
+        "type": "string",
+        "value": "202604",
+        "label": "数据月份"
+      },
+      {
+        "id": "ati-status-label",
+        "type": "string",
+        "value": "已立项",
+        "required": false,
+        "label": "立项状态"
+      },
+      {
+        "id": "project-initiation-level",
+        "type": "string",
+        "value": "L1",
+        "required": false,
+        "label": "立项级别"
+      },
+      {
+        "id": "public-cloud-na-level-name",
+        "type": "string",
+        "value": "战略客户",
+        "required": false,
+        "label": "客户级别"
+      },
+      {
+        "id": "sub-industry-level1-name",
+        "type": "string",
+        "value": "运营商",
+        "required": false,
+        "label": "行业"
+      },
+      {
+        "id": "party-number",
+        "type": "string",
+        "required": false,
+        "label": "客户编号"
+      }
+    ]
+  },
   "dataSources": {
     "project-detail": {
       "fields": {

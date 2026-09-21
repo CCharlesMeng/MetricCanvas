@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { parsePage, type Page } from '@metriccanvas/page';
-import { createFilterState, navigationHref, initialFilterValues } from '../src';
+import { createFilterState, navigationHref, initialFilterValues, initializePageParams, resolvePageParams } from '../src';
 
 const document = JSON.parse(
   readFileSync(
@@ -15,6 +15,11 @@ function loadPage(): Page {
   const parsed = parsePage(document);
   if (!parsed.ok) throw new Error(JSON.stringify(parsed.errors));
   return parsed.page;
+}
+
+/** 页面实例:不传 URL 取参数保存值，参数值写进筛选器初值。 */
+function instantiate(page: Page): Page {
+  return initializePageParams(page, resolvePageParams('', page.params ?? []).values);
 }
 
 describe('ioc-opportunity-list 骨架', () => {
@@ -42,7 +47,7 @@ describe('ioc-opportunity-list 骨架', () => {
 
   it('页面通过解析，筛选状态可往返', () => {
     const page = loadPage();
-    expect(page.schemaVersion).toBe('6.9');
+    expect(page.schemaVersion).toBe('6.11');
     expect(page.filters).toHaveLength(11);
     const table = page.sections
       .flatMap((section) => section.components)
@@ -50,7 +55,10 @@ describe('ioc-opportunity-list 骨架', () => {
     if (!table || table.type !== 'table') throw new Error('缺少清单表格');
     expect(table.props.columns).toHaveLength(40);
     expect(table.props.pagination).toEqual({ mode: 'query' });
-    const initial = initialFilterValues(page.filters ?? []);
+    // 数据月份是页面参数,筛选器只拿它当初值:不实例化参数就没有初值。
+    expect(initialFilterValues(page.filters ?? []).has('mtime')).toBe(false);
+    const instance = instantiate(page);
+    const initial = initialFilterValues(instance.filters ?? []);
     expect(initial.get('mtime')).toEqual({
       type: 'timePoint',
       granularity: 'month',
@@ -67,7 +75,7 @@ describe('ioc-opportunity-list 骨架', () => {
       level: 'region-dept'
     });
     const restored = createFilterState();
-    restored.fromURL(state.toURL(page.filters), page.filters ?? []);
+    restored.fromURL(state.toURL(instance.filters), instance.filters ?? []);
     let values: ReturnType<typeof initialFilterValues> = new Map();
     restored.subscribe((next) => {
       values = new Map(next);

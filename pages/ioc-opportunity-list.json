@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.9",
+  "schemaVersion": "6.11",
   "id": "ioc-opportunity-list",
   "meta": {
     "title": "机会点清单",
@@ -11,7 +11,7 @@
       "type": "timePoint",
       "granularity": "month",
       "label": "数据月份",
-      "default": "2026-04"
+      "initialParam": "report-month"
     },
     {
       "id": "key-office",
@@ -90,6 +90,19 @@
       "label": "搜索机会点 / 客户"
     }
   ],
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-month",
+          "granularity": "month",
+          "start": "2026-04",
+          "end": "2026-04",
+          "label": "数据月份"
+        }
+      ]
+    }
+  },
   "dataSources": {
     "opportunity-list": {
       "fields": {

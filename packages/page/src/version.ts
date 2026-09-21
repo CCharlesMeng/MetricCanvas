@@ -20,7 +20,7 @@ export const PAGE_SCHEMA_MAJOR = 6;
  * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
  * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
  */
-const CURRENT_MINOR = 10;
+const CURRENT_MINOR = 11;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -42,6 +42,12 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'initial-param-beyond-flat-dimensions': {
+    minor: 11, description: '时间点筛选器与层级维度筛选器的参数初值',
+    usedAt: (document) => filterPaths(document, f =>
+      has(f, 'initialParam') && (f.type === 'timePoint' || Array.isArray(f.hierarchy))
+    ).map((path) => `${path}/initialParam`)
+  },
   'open-detail-action': {
     minor: 10, description: '组件点击在页内打开详情浮层',
     usedAt: (document) => componentPaths(document, (component) =>

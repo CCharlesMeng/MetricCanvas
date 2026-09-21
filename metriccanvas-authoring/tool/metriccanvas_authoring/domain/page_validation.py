@@ -2353,18 +2353,38 @@ def _param_binding_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
                     consumed.add(filter_id)
         for filter_id, binding in query.get("filterBindings", {}).items():
             declaration = filters.get(filter_id, {})
-            if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(binding.get("queryField")) != declaration["initialParam"]):
+            if declaration.get("type") == "dimension" and declaration.get("initialParam") and (binding["target"] != "dimension" or owners.get(_initial_query_field(declaration, binding)) != declaration["initialParam"]):
                 error(f"/dataSources/{_escape_pointer(source_id)}/source/query/filterBindings/{_escape_pointer(filter_id)}", "参数初始化筛选的每个查询目标都必须显式绑定同一参数")
+            if declaration.get("type") == "timePoint" and declaration.get("initialParam") and binding["target"] == "timePoint":
+                consumed.add(filter_id)
     for index, declaration in enumerate(page.get("filters", [])):
-        if declaration["type"] != "dimension" or "initialParam" not in declaration:
+        if declaration["type"] not in ("dimension", "timePoint") or "initialParam" not in declaration:
             continue
         path = f"/filters/{index}/initialParam"
-        if params.get(declaration["initialParam"], {}).get("type") != "dimension":
-            error(path, "筛选初值必须引用已声明的dimension参数")
+        param = params.get(declaration["initialParam"], {})
         if "default" in declaration:
             error(path, "参数初始化与筛选default互斥，默认来源只能声明一次")
-        if declaration.get("hierarchy"):
-            error(path, "第一版参数初始化只支持平面维度筛选")
         if declaration["id"] not in consumed:
             error(path, "参数初始化筛选必须具有匹配的显式查询目标")
+        if declaration["type"] == "dimension":
+            if param.get("type") != "dimension":
+                error(path, "筛选初值必须引用已声明的dimension参数")
+            continue
+        value = param.get("value")
+        if param.get("type") != "timeRange" or not param.get("required"):
+            error(path, "时间点筛选初值必须引用必需的 times 参数")
+        elif param.get("granularity") != declaration.get("granularity"):
+            error(path, "时间点筛选初值的参数精度必须与筛选器一致")
+        elif isinstance(value, Mapping) and value.get("start") != value.get("end"):
+            error(path, "时间点筛选初值要求参数是单点")
     return issues
+
+
+def _initial_query_field(declaration: Mapping[str, Any], binding: Mapping[str, Any]) -> str:
+    """参数初始化落到哪个查询字段：层级绑定取缺省层，恒定绑定取那一个字段。"""
+    levels = binding.get("levelQueryFields")
+    if not isinstance(levels, Mapping):
+        return binding.get("queryField")
+    hierarchy = declaration.get("hierarchy") or [{}]
+    level = declaration.get("defaultLevel") or hierarchy[0].get("id")
+    return levels.get(level, "")

@@ -1095,12 +1095,56 @@ export const invariants: InvariantDefinition[] = [
       {
         case: 'number-range-target-not-number-range',
         base: 'non-dimension-bindings-page',
-        expect: /numberRange 目标必须绑定 numberRange 筛选器:month/,
+        expect: /numberRange 目标必须绑定 numberRange 筛选器:only-key/,
         mutate: (document) => {
-          document.dataSources.sales.source.query.filterBindings.month = {
+          document.dataSources.sales.source.query.filterBindings['only-key'] = {
             target: 'numberRange',
             metric: 'amount'
           };
+        }
+      },
+      {
+        case: 'time-point-initial-param-not-times',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值必须引用必需的 times 参数/,
+        mutate: (document) => {
+          document.params = { display: [{ id: 'report-month', type: 'string', value: '2026-07' }] };
+        }
+      },
+      {
+        case: 'time-point-initial-param-precision',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值的参数精度必须与筛选器一致/,
+        mutate: (document) => {
+          Object.assign(document.params.query.times[0], {
+            granularity: 'date',
+            start: '2026-07-01',
+            end: '2026-07-01'
+          });
+        }
+      },
+      {
+        case: 'time-point-initial-param-range',
+        base: 'non-dimension-bindings-page',
+        expect: /时间点筛选初值要求参数是单点/,
+        mutate: (document) => {
+          document.params.query.times[0].end = '2026-09';
+        }
+      },
+      {
+        case: 'time-point-initial-param-and-default',
+        base: 'non-dimension-bindings-page',
+        expect: /参数初始化与筛选default互斥/,
+        mutate: (document) => {
+          document.filters[0].default = '2026-07';
+        }
+      },
+      {
+        case: 'time-point-initial-param-without-query-target',
+        base: 'non-dimension-bindings-page',
+        expect: /参数初始化筛选必须具有匹配的显式查询目标/,
+        mutate: (document) => {
+          delete document.dataSources.sales.source.query.filterBindings.month;
         }
       },
       {

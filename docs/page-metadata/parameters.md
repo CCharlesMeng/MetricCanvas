@@ -45,7 +45,7 @@ URL键为参数id，多值用重复键，如`regions=EU&regions=NA`；值不按�
 
 query.paramBindings为可选映射：键是声明的dimension参数id；值必须且仅含`target:"dimension"`与非空`queryField:string`。不从参数id、页面字段名或筛选器dimension猜测查询目标。一个数据源的同一queryField只能有一个参数来源；不同数据源可以显式绑定同一参数，未声明绑定的数据源保持不变。
 
-维度筛选器的可选`initialParam`为参数id字符串，只支持平面维度；与filter.default互斥。绑定参数的查询目标不能再在DQE `filter.dims`声明该目标的静态条件。已有filterBindings指向同目标时，必须且仅有一个筛选器，并且其initialParam引用相同参数。该筛选器消费的每个查询目标都须明确声明相同paramBindings，不能一半参数控制、一半另有默认。初值引用无查询消费者会被拒绝。非dimension参数不得用作这些绑定。
+维度与时间点筛选器的可选`initialParam`为参数id字符串，与filter.default互斥。维度筛选器引用dimension参数；层级维度筛选器的初值落在defaultLevel那一层，查询侧必须显式绑定该层的谓词字段。时间点筛选器引用必需的times参数，且该参数必须是单点（start与end相同）、精度与筛选器granularity一致；它在paramBindings里没有对应目标，显式查询目标就是那条timePoint筛选绑定。绑定参数的查询目标不能再在DQE `filter.dims`声明该目标的静态条件。已有filterBindings指向同目标时，必须且仅有一个筛选器，并且其initialParam引用相同参数。该筛选器消费的每个查询目标都须明确声明相同paramBindings，不能一半参数控制、一半另有默认。初值引用无查询消费者会被拒绝。非dimension参数不得用作这些绑定。
 
 ## 运行时顺序
 

@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.9",
+  "schemaVersion": "6.11",
   "id": "ioc-opportunity-analysis",
   "meta": {
     "title": "机会点数",
@@ -22,7 +22,7 @@
       "type": "timePoint",
       "granularity": "date",
       "label": "日期",
-      "default": "2026-03-26"
+      "initialParam": "report-as-of-date"
     },
     {
       "id": "industry",
@@ -60,6 +60,19 @@
       "emptyLabel": "请选择预签金额"
     }
   ],
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-as-of-date",
+          "granularity": "date",
+          "start": "2026-03-26",
+          "end": "2026-03-26",
+          "label": "数据截止日"
+        }
+      ]
+    }
+  },
   "dataSources": {
     "opportunity-metrics": {
       "fields": {

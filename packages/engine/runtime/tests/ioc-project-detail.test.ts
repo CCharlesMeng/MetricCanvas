@@ -54,8 +54,9 @@ describe('ioc-project-detail 骨架', () => {
   it('声明 5.3 看板形态并关闭统一工具栏，基本信息与项目规范性按冻结轨道并排', () => {
     const page = loadPage('');
     // 详情页没有筛选器，也就用不到任何新能力：声明的是它真实的能力下限。
-    expect(page.schemaVersion).toBe('6.1');
-    expect(requiredMinorVersion(document)).toBe(1);
+    expect(page.schemaVersion).toBe('6.11');
+    // 声明当前版本,但实际只用到 6.6 的分层参数:这一页没有筛选器可初始化。
+    expect(requiredMinorVersion(document)).toBe(6);
     expect(page.layout).toBe('dashboard');
     expect(page.dashboardToolbar).toBe('hidden');
     expect(page.sections.map((section) => section.id)).toEqual([

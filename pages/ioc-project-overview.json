@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.10",
+  "schemaVersion": "6.11",
   "id": "ioc-project-overview",
   "layout": "dashboard",
   "meta": {
@@ -12,8 +12,8 @@
       "type": "timePoint",
       "granularity": "month",
       "label": "数据月份",
-      "default": "2026-04",
-      "visible": false
+      "visible": false,
+      "initialParam": "report-month"
     },
     {
       "id": "key-office",
@@ -25,7 +25,7 @@
       "type": "timePoint",
       "granularity": "date",
       "label": "日期",
-      "default": "2026-03-26"
+      "initialParam": "report-as-of-date"
     },
     {
       "id": "region",
@@ -68,6 +68,26 @@
       "emptyLabel": "全部产业"
     }
   ],
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-month",
+          "granularity": "month",
+          "start": "2026-04",
+          "end": "2026-04",
+          "label": "数据月份"
+        },
+        {
+          "id": "report-as-of-date",
+          "granularity": "date",
+          "start": "2026-03-26",
+          "end": "2026-03-26",
+          "label": "数据截止日"
+        }
+      ]
+    }
+  },
   "dataSources": {
     "kpi-summary": {
       "fields": {

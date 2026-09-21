@@ -1,9 +1,22 @@
 {
-  "schemaVersion": "6.9",
+  "schemaVersion": "6.11",
   "id": "non-dimension-bindings-page",
   "layout": "dashboard",
   "meta": {
-    "description": "timePoint / boolean / numberRange 三类筛选器各自的查询绑定目标契约样例"
+    "description": "timePoint / boolean / numberRange 三类筛选器各自的查询绑定目标契约样例；时间点筛选器的初值取自单点 times 参数"
+  },
+  "params": {
+    "query": {
+      "times": [
+        {
+          "id": "report-month",
+          "granularity": "month",
+          "start": "2026-07",
+          "end": "2026-07",
+          "label": "数据月份"
+        }
+      ]
+    }
   },
   "dataSources": {
     "sales": {
@@ -95,7 +108,7 @@
       "type": "timePoint",
       "granularity": "month",
       "label": "数据月份",
-      "default": "2026-07"
+      "initialParam": "report-month"
     },
     {
       "id": "only-key",
