@@ -1,0 +1,38 @@
+{
+  "evidenceKind": "real-model-local-fixture",
+  "model": "deepseek-flash",
+  "modelRequests": 3,
+  "toolCalls": 4,
+  "tokens": 73656,
+  "dataExecutions": 3,
+  "candidateCount": 1,
+  "autonomousLoopCompleted": true,
+  "manualJsonRepair": false,
+  "rawHarnessStatus": "inconclusive",
+  "rawHarnessStatusExplanation": "通用 runner 没有场景评分器，默认 inconclusive；下列专项验收另行记录。",
+  "sourceCount": 3,
+  "sectionCount": 3,
+  "componentCount": 14,
+  "pageSha256": "a7da95bddcea726931351a1d19531e764593b333fc11eac0c89d0d335f2cc911",
+  "browser": {
+    "pageErrors": [],
+    "viewports": [
+      {
+        "width": 1440,
+        "clientWidth": 1390,
+        "scrollWidth": 1390
+      },
+      {
+        "width": 768,
+        "clientWidth": 718,
+        "scrollWidth": 718
+      }
+    ]
+  },
+  "limitations": [
+    "本地既有合成样例投影，不是生产数据服务",
+    "未验证生产身份、刷新、保存或发布",
+    "此前失败轮次保留在 .scratch/flow-report-connected/scenario-guided-01..05；最终验收不将它们隐去",
+    "资源用量场景已跑公开工具回归，未另外做真实模型专项评测"
+  ]
+}

@@ -148,7 +148,7 @@ tests/fixtures/   机器证据：测试夹具与契约样例，不算文档
 
 否则半年后原样重来一遍：
 
-- ~~新建 `docs/plan/README.md`，写清四层判据，以及**批次收口时必须做的三件事**：抽结论进 ADR / 正式文档 → 写结论页 → 整批移入 `docs/archive/`。~~ **已建**，另配 [`docs/evidence/README.md`](../evidence/README.md) 与 [`docs/archive/README.md`](../archive/README.md)，三层各自说清「什么进来、什么不进来」。
+- ~~新建 `docs/plan/README.md`，写清四层判据，以及**批次收口时必须做的三件事**：抽结论进 ADR / 正式文档 → 写结论页 → 整批移入 `docs/archive/`。~~ **已建**，另配 [`docs/evidence/README.md`](../../evidence/README.md) 与 [`docs/archive/README.md`](../README.md)，三层各自说清「什么进来、什么不进来」。
 - ~~`docs/agents/domain.md` 的"探索前先读"补一句：默认不读 `docs/archive/`，需要历史背景时由结论页导航进入。~~ **已补**，根 `README.md` 的文档导航同步改了。
 - 可选门禁：短脚本检查 `docs/plan/` 中超过 30 天未修改的文件，CI 输出 warning，不阻塞。**未做**——判据已经写进 `docs/plan/README.md`，先看规矩本身管不管用，管不住再加机器约束。
 
@@ -264,7 +264,19 @@ S1（机器证据出文档目录）**已关闭为不做**。两条理由，第�
 
 **三、顺带否掉了 `tests/fixtures/` 这个落点本身**（§6 第 2 问）。仓里根本没有这个目录，既有写法是**夹具跟着消费者走**：`packages/page/fixtures/`、`apps/platform/tests/workbench/fixtures/`、`tools/dqe-sim/fixtures/`、跨包共享的 `tools/fixtures/legacy-contracts/`。为两个文件新造一个全仓级 `tests/fixtures/`，是在既有约定之外再加一条约定。
 
-**代价说清楚**：`docs/archive/` 的定位是「只读、探索时默认不读」，而 CI 真的依赖里面两个文件。这个别扭没有消除，只是**标注出来了**——两处批次结论页和 [`docs/plan/README.md`](./README.md) 都写明它们是 CI 的真实输入、删改前先跑 `pnpm test`。留着的风险是有人清归档导致测试红，那是**响亮的失败**（测试直接挂），不是静默错误，可以接受。新产生的夹具照判据直接放消费者旁边，不走这条例外。
+**代价说清楚**：`docs/archive/` 的定位是「只读、探索时默认不读」，而 CI 真的依赖里面两个文件。这个别扭没有消除，只是**标注出来了**——两处批次结论页和 [`docs/plan/README.md`](../../plan/README.md) 都写明它们是 CI 的真实输入、删改前先跑 `pnpm test`。留着的风险是有人清归档导致测试红，那是**响亮的失败**（测试直接挂），不是静默错误，可以接受。新产生的夹具照判据直接放消费者旁边，不走这条例外。
+
+### 4.7 同日续做：第一批退场与新 ADR 归位
+
+S1–S5 结清之后逐份复核 `docs/plan/` 剩下的 31 份，当天又办了两件事。
+
+**一、10 份退场，分两个批次。** [`archive/page-params-inline-spec/`](../page-params-inline-spec/README.md) 收 2026-09-17 的参数原位引用 Spec 与它从未开工的 P1–P7 计划、验收用例——那份 Spec 自己第三行就写着形状已被 6.6 替代；[`archive/scenario-guided-authoring-phase1/`](../scenario-guided-authoring-phase1/README.md) 收场景参考驱动创作的首期方案与七件实证，首期已实现并验收，改进期（`scenario-guided-refinement/`）留在 `docs/plan/`。`docs/plan/` 从 31 降到 21。
+
+**链接改写这次补上了 §4.4 说的那个盲区**：不再因为「目标当前不存在」就跳过一条链接，而是**对所有相对链接一律做路径算术**（按旧位置解析 → 套移动表 → 按新位置重新相对化），只在结果与原文不同时才写回。这样既修好了会漂的，也不会把没搬动的链接顺手改成另一种写法——第一版脚本没加后半个条件，一次动了 162 个文件，全是无意义的格式归一。
+
+**二、三份新 ADR 归位，守门器当场验证有效。** `docs/adr/README.md` 的索引末尾当时列着「结论尚未落进任何主题页：0084、0085、0086」——这正是 §4.3 那条防复发要抓的情形，它在真实的新 ADR 上响了。0084/0085（筛选器在查询侧的绑定形状）并进[数据获取与查询模型](../../adr/topics/data-fetching-and-query-model.md)，0086（查询分页下由上游执行排序与表头筛选）并进[页面文档结构与书写原则](../../adr/topics/page-document-structure.md)，顺带把那页里「ADR-0049 查询分页下的拒绝规则尚未解除」改写为已解除。
+
+**归位时撞上两处状态漂移，一并修了**：0049 的 frontmatter 还是 `proposed`、note 写「服务端排序筛选未解除」，而 0086 已经解除了它——改为 `accepted` 加 `revised-by: [0086]`；0050 没有任何反向链接，单读它不会知道六类筛选器的查询绑定形状后来由 0084/0085 补齐、层级筛选器已不许写恒定 `queryField`——补 `revised-by: [0084, 0085]`。**这两笔正是「单份 ADR 自洽」的实际用途：不补，读者只能靠通读全部 86 份才能发现自己读的那份已经不作数了。**
 
 ## 5. 预期结果
 

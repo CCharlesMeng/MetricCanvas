@@ -7,7 +7,8 @@
 - 页面 Schema:`PAGE-METADATA.md`
 - Schema 元数据规则与示例:`docs/schema-metadata.md`
 - 领域词汇表:`CONTEXT.md`(输出中涉及领域概念时,必须使用词汇表定义的术语)
-- 关键决策记录:`docs/adr/`(先读 [`docs/adr/README.md`](docs/adr/README.md) 基线,再按需展开具体 ADR)
+- 关键决策记录:`docs/adr/`(先读 [`docs/adr/README.md`](docs/adr/README.md) 的速查表定位状态,再进 [`docs/adr/topics/`](docs/adr/topics/) 读现行结论,最后才按需展开具体 ADR 原文)
+- 过程性文档分三层:`docs/plan/`(在做的)、`docs/evidence/`(被 ADR 或代码当论据的)、`docs/archive/`(已收口批次,**探索时默认不读**,从批次结论页进)。判据见 [`docs/plan/README.md`](docs/plan/README.md)
 
 ## Agent skills
 

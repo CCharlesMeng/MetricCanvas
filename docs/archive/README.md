@@ -19,6 +19,9 @@
 | [`unified-authoring/`](./unified-authoring/README.md) | 2026-09-14 ~ 16 | 统一 Platform 创作 Skill：一个入口取代创建/修改两套流程 | 30 |
 | [`authoring-tickets-126/`](./authoring-tickets-126/README.md) | 2026-09-14 起 | #126 的 20 张实施票与逐票实证 | 75 |
 | [`page-time-range-proposal/`](./page-time-range-proposal/README.md) | 2026-09-16 | 显式时间区间参数提案，已被 6.6 分组参数取代 | 1 |
+| [`page-params-inline-spec/`](./page-params-inline-spec/README.md) | 2026-09-17 | 参数原位引用与模板化 Spec，形状被 6.6 分组参数取代，计划从未开工 | 3 |
+| [`scenario-guided-authoring-phase1/`](./scenario-guided-authoring-phase1/README.md) | 2026-09-17 | 场景参考驱动创作首期：结构与呈现已实现并验收，产出 ADR-0082 | 7 |
+| [`docs-consolidation/`](./docs-consolidation/README.md) | 2026-09-21 | 过程性文档聚合瘦身：本目录、`docs/evidence/` 与 ADR 主题页都是它的产物 | 1 |
 
 ## 什么时候往这里加东西
 
