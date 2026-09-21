@@ -5,13 +5,11 @@ from dataclasses import dataclass
 from functools import lru_cache
 from typing import Any, Mapping, Sequence
 
+from metriccanvas_authoring.pages.components.capabilities import product_catalog
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 
 BUNDLE_ROOT = bundle_root()
-COMPONENT_CATALOG = (
-    BUNDLE_ROOT / "contract-snapshot" / "page" / "component-catalog.json"
-)
 ANALYSIS_INTENTS_CONTRACT = (
     BUNDLE_ROOT / "contracts" / "exported" / "analysis-intents.json"
 )
@@ -52,7 +50,7 @@ def recommend_components(
 ) -> tuple[ComponentCandidate, ...]:
     """Apply the machine-readable product catalog gate, then intent ordering."""
     shape = _result_shape(fields, row_count)
-    catalog = _component_catalog()
+    catalog = product_catalog()
     evaluated = [
         ComponentCandidate(
             component_type=str(entry["type"]),
@@ -101,7 +99,7 @@ def component_default_span(component_type: str) -> int:
     entry = next(
         (
             entry
-            for entry in _component_catalog()
+            for entry in product_catalog()
             if entry["type"] == component_type
         ),
         None,
@@ -219,12 +217,6 @@ def _candidate_score(
     if shape.has_time_dimension and "date" in str(entry["dataShape"]).lower():
         score += 1
     return score
-
-
-@lru_cache(maxsize=1)
-def _component_catalog() -> tuple[Mapping[str, Any], ...]:
-    raw = json.loads(COMPONENT_CATALOG.read_text(encoding="utf-8"))
-    return tuple(_mapping(entry) for entry in _sequence(raw))
 
 
 @lru_cache(maxsize=1)

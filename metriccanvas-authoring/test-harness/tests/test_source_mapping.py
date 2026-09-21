@@ -11,7 +11,7 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort
 from test_authoring_turns import Turns
 from metriccanvas_authoring.data.source_mapping import map_source_description, query_sha256, validate_mapped_rows, SourceMappingError
-from metriccanvas_authoring.pages.composition.page_building import derive_executable_units
+from metriccanvas_authoring.data.executable_units import derive_executable_units
 from metriccanvas_authoring.data.data_context import parse_data_context
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies, ComposePageCommand, create_compose_page
 from metriccanvas_authoring.data.execution import DqeExecutionResult

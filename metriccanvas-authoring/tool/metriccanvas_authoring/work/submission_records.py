@@ -9,8 +9,8 @@ use case. This is the compatibility protocol; the v2 work document in
 import re
 
 from metriccanvas_authoring.work.authoring_turns import TURN_VALIDATOR
-from metriccanvas_authoring.application.lifecycle import VALIDATOR as COMMAND_VALIDATOR, valid_ref
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.assets.lifecycle import VALIDATOR as COMMAND_VALIDATOR, valid_ref
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.canonical import canonical_sha256
 
 RECORD_KEYS = {'candidateRef', 'rootBinding', 'operationId', 'command', 'programToken', 'status', 'result'}

@@ -9,7 +9,7 @@ from fastmcp.client.transports import StdioTransport
 ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from publish_stdio_server import Programs, Identities, PublicationSources, PublicationProvider, HumanEvents, prepare_request, context
-from metriccanvas_authoring.application.publish_ports import PublicationDependencies
+from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
 from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 
 NAMES = {'save_draft', 'get_save_result', 'read_revision', 'list_revisions', 'prepare_candidate',

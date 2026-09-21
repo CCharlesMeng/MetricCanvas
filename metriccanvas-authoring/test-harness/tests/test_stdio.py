@@ -413,7 +413,7 @@ class FastMcpStdioTest(unittest.IsolatedAsyncioTestCase):
         from metriccanvas_authoring.entrypoints.compat.fastmcp import (  # noqa: PLC0415
             create_mcp_server,
         )
-        from metriccanvas_authoring.application.build_page import (  # noqa: PLC0415
+        from metriccanvas_authoring.ask.build_page import (  # noqa: PLC0415
             BuildPageDependencies,
         )
         from metriccanvas_authoring.assets.ports import SavedRevision  # noqa: PLC0415

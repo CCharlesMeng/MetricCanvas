@@ -5,7 +5,7 @@ import re
 import secrets
 import stat
 from pathlib import Path
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError, LifecycleIdentity
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError, LifecycleIdentity
 
 TOKEN = re.compile(r'^[A-Za-z0-9_-]{16,128}$')
 MAX_BYTES = 20 * 1024 * 1024

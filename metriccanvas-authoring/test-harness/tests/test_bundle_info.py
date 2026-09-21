@@ -9,7 +9,7 @@ from pathlib import Path
 BUNDLE_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.application.bundle_info import load_bundle_info  # noqa: E402
+from metriccanvas_authoring.bundle_info import load_bundle_info  # noqa: E402
 
 
 class BundleInfoTest(unittest.TestCase):

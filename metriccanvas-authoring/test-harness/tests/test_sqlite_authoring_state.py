@@ -14,7 +14,7 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_authoring_turns import Turns
 from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
 from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleError
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity, LifecycleError
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
 

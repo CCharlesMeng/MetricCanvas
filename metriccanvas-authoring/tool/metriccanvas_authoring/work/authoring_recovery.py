@@ -5,8 +5,8 @@ from typing import Protocol
 from .authoring_submission import validate_submission_record
 from .authoring_turns import PreparedAuthoringTurn, TURN_VALIDATOR
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.application.lifecycle import Lifecycle, require
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.assets.lifecycle import Lifecycle, require
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.canonical import canonical_json, canonical_sha256
 
 

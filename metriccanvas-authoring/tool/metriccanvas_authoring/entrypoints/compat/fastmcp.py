@@ -7,12 +7,12 @@ from fastmcp import Context, FastMCP
 from pydantic import Field, WithJsonSchema
 from typing_extensions import TypedDict
 
-from metriccanvas_authoring.application.build_page import (
+from metriccanvas_authoring.ask.build_page import (
     BuildPageCommand,
     BuildPageDependencies,
     create_build_page,
 )
-from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.composition.compose_page import (
     ComposePageCommand,
     ComposePageDependencies,

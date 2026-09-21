@@ -18,7 +18,7 @@ from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
 from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator
 from metriccanvas_authoring.work.content_ports import ContentBaseline
-from metriccanvas_authoring.application.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 

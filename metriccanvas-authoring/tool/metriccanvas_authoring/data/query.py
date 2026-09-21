@@ -19,8 +19,8 @@ from metriccanvas_authoring.data.execution import (
     failure_from_execution_error,
 )
 from metriccanvas_authoring.data.page_build_spec import validate_page_build_spec
-from metriccanvas_authoring.pages.composition.page_building import (
-    PageBuildingIssue,
+from metriccanvas_authoring.build_issues import PageBuildingIssue
+from metriccanvas_authoring.data.executable_units import (
     ExecutableUnit,
     derive_executable_units,
 )

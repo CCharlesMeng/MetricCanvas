@@ -28,7 +28,7 @@
 | 消费链 | Skill / 服务 | 状态与保存边界 |
 |---|---|---|
 | Platform 创建、当前页修改、配置问答 | [metriccanvas-platform-authoring](./skill/metriccanvas-platform-authoring/SKILL.md) / `metriccanvas-platform-content` | 同一入口，可信上下文门禁；内容工具只产生候选，可信程序提交最终草稿；发布由工作台人工确认后更新资产状态 |
-| 普通问数与探索 | [metriccanvas-page-builder](./skill/metriccanvas-page-builder/SKILL.md) / [server.py](./tool/metriccanvas_authoring/server.py) | 保留原受治理发现、页面构建产物、临时页面态与显式沉淀边界；不强制消费统一创作的新端口 |
+| 普通问数与探索 | [metriccanvas-page-builder](./skill/metriccanvas-page-builder/SKILL.md) / [server.py](./tool/metriccanvas_authoring/entrypoints/compat/server.py) | 保留原受治理发现、页面构建产物、临时页面态与显式沉淀边界；不强制消费统一创作的新端口 |
 
 原 `metriccanvas-platform-create` / `metriccanvas-platform-edit` 已退出分发。`define-report` 可作为统一作者的部署注册名，不是第二份 Skill。旧 `content_server`、`build_page` 等兼容入口仍服务存活消费者，不能作为统一部署失败时的回退。
 
@@ -75,7 +75,7 @@ flowchart TD
 
 ## 3. 模型工具与程序接口
 
-五工具的实际作者是 [unified_content_mcp.py](./tool/metriccanvas_authoring/adapters/inbound/unified_content_mcp.py)，均要求 `context_ref`：
+五工具的实际作者是 [unified_content_mcp.py](./tool/metriccanvas_authoring/entrypoints/compat/unified_content_mcp.py)，均要求 `context_ref`：
 
 | 工具 | 职责 |
 |---|---|
@@ -96,24 +96,24 @@ Python 包继续位于 `tool/metriccanvas_authoring/`；没有搬到目标架构
 | 问题 / 职责 | 实际实现 |
 |---|---|
 | Skill 路由与参考加载 | [SKILL.md](./skill/metriccanvas-platform-authoring/SKILL.md)、[create](./skill/metriccanvas-platform-authoring/workflows/create.md)、[edit](./skill/metriccanvas-platform-authoring/workflows/edit.md) |
-| 统一 CLI 与依赖组装 | [unified_content_server.py](./tool/metriccanvas_authoring/unified_content_server.py)；组装已迁入 [bootstrap/compatibility.py](./tool/metriccanvas_authoring/bootstrap/compatibility.py)（原 `authoring_bootstrap.py`） |
-| 本轮身份/精确快照/目标/投影 | [authoring_turns.py](./tool/metriccanvas_authoring/application/authoring_turns.py) |
-| 候选根基线、不可变版本与摘要 | [authoring_candidates.py](./tool/metriccanvas_authoring/application/authoring_candidates.py) |
-| 最终一次提交与回执验证 | [authoring_submission.py](./tool/metriccanvas_authoring/application/authoring_submission.py) |
-| 取消、预算、授权与原操作恢复 | [authoring_recovery.py](./tool/metriccanvas_authoring/application/authoring_recovery.py) |
-| 本地持久候选/执行记录/程序产物 | [sqlite_authoring_state.py](./tool/metriccanvas_authoring/adapters/outbound/sqlite_authoring_state.py) |
-| 生命周期保存与端口；兼容发布规则不用于当前 Java | [lifecycle.py](./tool/metriccanvas_authoring/application/lifecycle.py)、[lifecycle_publish.py](./tool/metriccanvas_authoring/application/lifecycle_publish.py)、[lifecycle_ports.py](./tool/metriccanvas_authoring/application/lifecycle_ports.py) |
-| 源描述与稳定字段映射 | [source_description_ports.py](./tool/metriccanvas_authoring/application/source_description_ports.py)、[source_mapping.py](./tool/metriccanvas_authoring/domain/source_mapping.py) |
-| 数据装配、已有页新增、混合组合 | [compose_page.py](./tool/metriccanvas_authoring/application/compose_page.py)、[unified_edit_page.py](./tool/metriccanvas_authoring/application/unified_edit_page.py)、[unified_composition.py](./tool/metriccanvas_authoring/application/unified_composition.py) |
-| 扩展装配、来源/能力检查 | [authoring_deployment.py](./tool/metriccanvas_authoring/application/authoring_deployment.py)、[business_interpretation.py](./tool/metriccanvas_authoring/application/business_interpretation.py)、[component_policy.py](./tool/metriccanvas_authoring/application/component_policy.py) |
-| Java 保存请求与响应映射 | [lifecycle_http.py](./tool/metriccanvas_authoring/adapters/outbound/lifecycle_http.py) |
+| 统一 CLI 与依赖组装 | [unified_content_server.py](./tool/metriccanvas_authoring/entrypoints/compat/unified_content_server.py)；组装已迁入 [bootstrap/compatibility.py](./tool/metriccanvas_authoring/bootstrap/compatibility.py)（原 `authoring_bootstrap.py`） |
+| 本轮身份/精确快照/目标/投影 | [authoring_turns.py](./tool/metriccanvas_authoring/work/authoring_turns.py) |
+| 候选根基线、不可变版本与摘要 | [authoring_candidates.py](./tool/metriccanvas_authoring/work/authoring_candidates.py) |
+| 最终一次提交与回执验证 | [authoring_submission.py](./tool/metriccanvas_authoring/work/authoring_submission.py) |
+| 取消、预算、授权与原操作恢复 | [authoring_recovery.py](./tool/metriccanvas_authoring/work/authoring_recovery.py) |
+| 本地持久候选/执行记录/程序产物 | [sqlite_authoring_state.py](./tool/metriccanvas_authoring/adapters/storage/sqlite_authoring_state.py) |
+| 生命周期保存与端口；兼容发布规则不用于当前 Java | [lifecycle.py](./tool/metriccanvas_authoring/assets/lifecycle.py)、[lifecycle_publish.py](./tool/metriccanvas_authoring/assets/lifecycle_publish.py)、[lifecycle_ports.py](./tool/metriccanvas_authoring/assets/lifecycle_ports.py) |
+| 源描述与稳定字段映射 | [source_description_ports.py](./tool/metriccanvas_authoring/data/source_description_ports.py)、[source_mapping.py](./tool/metriccanvas_authoring/data/source_mapping.py) |
+| 数据装配、已有页新增、混合组合 | [compose_page.py](./tool/metriccanvas_authoring/pages/composition/compose_page.py)、[unified_edit_page.py](./tool/metriccanvas_authoring/pages/editing/unified_edit_page.py)、[unified_composition.py](./tool/metriccanvas_authoring/pages/composition/unified_composition.py) |
+| 扩展装配、来源/能力检查 | [authoring_deployment.py](./tool/metriccanvas_authoring/assets/authoring_deployment.py)、[business_interpretation.py](./tool/metriccanvas_authoring/data/business_interpretation.py)、[component_policy.py](./tool/metriccanvas_authoring/pages/components/component_policy.py) |
+| Java 保存请求与响应映射 | [lifecycle_http.py](./tool/metriccanvas_authoring/adapters/firstparty/lifecycle_http.py) |
 | 平台资产契约与 Java Adapter | [contract.ts](../apps/platform/src/lib/page-assets/contract.ts)、[java-adapter.ts](../apps/platform/src/lib/page-assets/java-adapter.ts)、[生产组合入口](../apps/platform/src/lib/page-assets.ts) |
 | 单次人工保存与管理操作保护 | [single-save.ts](../apps/platform/src/lib/page-assets/single-save.ts)、[management.ts](../apps/platform/src/lib/page-assets/management.ts) |
 | Relay 与盘古的部署交接 | [authoring-integration.ts](../apps/platform/src/lib/dialogue/authoring-integration.ts)、[接入契约](../apps/platform/src/lib/dialogue/README.md) |
 | 工作台同步与语言编辑交接 | [authoring-coordinator.ts](../apps/platform/src/lib/workbench/authoring-coordinator.ts)、[authoring-language.ts](../apps/platform/src/lib/workbench/authoring-language.ts) |
 | 工作台启动后的未决操作恢复 | [authoring-language-recovery.ts](../apps/platform/src/lib/workbench/authoring-language-recovery.ts) |
-| 普通问数决策、发现、选型与布局 | [agent_core.py](./tool/metriccanvas_authoring/domain/agent_core.py)、[discover_data_context.py](./tool/metriccanvas_authoring/application/discover_data_context.py)、[component_selection.py](./tool/metriccanvas_authoring/domain/component_selection.py)、[section_layout.py](./tool/metriccanvas_authoring/domain/section_layout.py) |
-| 真实数据协议 | [data_context_http.py](./tool/metriccanvas_authoring/adapters/outbound/data_context_http.py)、[dqe_http.py](./tool/metriccanvas_authoring/adapters/outbound/dqe_http.py) |
+| 普通问数决策、发现、选型与布局 | [rules.py](./tool/metriccanvas_authoring/ask/rules.py)（原 `domain/agent_core.py`）、[discover_data_context.py](./tool/metriccanvas_authoring/data/discover_data_context.py)、[component_selection.py](./tool/metriccanvas_authoring/pages/components/component_selection.py)、[section_layout.py](./tool/metriccanvas_authoring/pages/composition/section_layout.py) |
+| 真实数据协议 | [data_context_http.py](./tool/metriccanvas_authoring/adapters/firstparty/data_context_http.py)、[dqe_http.py](./tool/metriccanvas_authoring/adapters/firstparty/dqe_http.py) |
 | 整页及跨引用合法性 | [page_validation.py](./tool/metriccanvas_authoring/domain/page_validation.py) |
 
 依赖为入站 Adapter → Application → Domain，应用通过端口访问外部能力；包顶层 bootstrap 组合具体实现。Domain 不导入 FastMCP/HTTP，Application 不反向导入入站工厂。普通问数的 Relay 模型决策/临时页面交付说明继续参考 [RELAY-HANDOFF.md](./RELAY-HANDOFF.md)，不能把其中旧工具面当作统一创作部署协议。

@@ -7,7 +7,7 @@ from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, Prepa
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.data.discover_data_context import create_discover_data_context, DiscoverDataContextDependencies, DiscoverDataContextCommand
-from metriccanvas_authoring.application.summary_capability import summary_configured
+from metriccanvas_authoring.delivery.summary_capability import summary_configured
 from metriccanvas_authoring.work.state import TurnState, Limits, require, digest
 from metriccanvas_authoring.data.results import QueryResults
 from metriccanvas_authoring.assets.drafts import DraftSaver

@@ -14,8 +14,8 @@ from lifecycle_stdio_server import ProposedService, Identities, digest
 from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate, SCOPE_KEYS
 from metriccanvas_authoring.work.authoring_submission import AuthoringSubmissionCoordinator, semantic_equal
-from metriccanvas_authoring.application.lifecycle import Lifecycle
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 
 

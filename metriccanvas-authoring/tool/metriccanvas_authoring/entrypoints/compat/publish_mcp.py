@@ -1,5 +1,5 @@
 """Publication tools added only to the independent lifecycle MCP."""
-from metriccanvas_authoring.application.lifecycle_publish import Publication
+from metriccanvas_authoring.assets.lifecycle_publish import Publication
 
 
 def register_publication_tools(mcp, dependencies, programs, identities, sources):

@@ -6,15 +6,14 @@ from dataclasses import dataclass
 from copy import deepcopy
 from typing import Any, Mapping
 
-from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.data.execution import (
     FailureStage,
     FormulaTrace,
 )
 from metriccanvas_authoring.canonical import canonical_json
+from metriccanvas_authoring.build_issues import PageBuildingIssue, PageBuildingIssues
 from metriccanvas_authoring.pages.composition.page_building import (
-    PageBuildingIssue,
-    PageBuildingIssues,
     assemble_page_document,
 )
 from metriccanvas_authoring.domain.page_validation import validate_page_document

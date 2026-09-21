@@ -12,7 +12,7 @@ from metriccanvas_authoring.pages.composition.create_content_page import create_
 from metriccanvas_authoring.work.content_ports import ContentBaselinePort
 from metriccanvas_authoring.data.discover_data_context import DiscoverDataContextCommand, DiscoverDataContextDependencies, create_discover_data_context
 from metriccanvas_authoring.pages.editing.edit_page import create_edit_page
-from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA
 
 PageEditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_SCHEMA)]

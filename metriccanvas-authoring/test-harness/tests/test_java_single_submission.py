@@ -8,7 +8,7 @@ sys.path[:0]=[str(ROOT/'tool'),str(ROOT/'test-harness')]
 from test_authoring_submission import SubmissionFixture
 from lifecycle_stdio_server import save_command, Identities
 from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
-from metriccanvas_authoring.application.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
 
 VECTORS=json.loads((ROOT/'test-harness/fixtures/java-page-assets.json').read_text())
 

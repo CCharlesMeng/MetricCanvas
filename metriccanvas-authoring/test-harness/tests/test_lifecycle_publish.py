@@ -8,9 +8,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from publish_stdio_server import PublicationProvider, HumanEvents, candidate, signed, context, prepare_request, SOURCE, PublicationSources
 from lifecycle_stdio_server import Identities, Programs, ProposedService
-from metriccanvas_authoring.application.lifecycle_publish import Publication, validate_candidate_parameters
-from metriccanvas_authoring.application.publish_ports import PublicationDependencies
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleError
+from metriccanvas_authoring.assets.lifecycle_publish import Publication, validate_candidate_parameters
+from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity, LifecycleError
 
 
 class PublicationTest(unittest.IsolatedAsyncioTestCase):
@@ -257,7 +257,7 @@ class PublicationTest(unittest.IsolatedAsyncioTestCase):
 class SharedPublicationConformanceTest(unittest.TestCase):
     def test_shared_structure_and_application_relations(self):
         from jsonschema import Draft202012Validator
-        from metriccanvas_authoring.application.lifecycle_publish import (
+        from metriccanvas_authoring.assets.lifecycle_publish import (
             validate_confirmation_relations, validate_corrections_relations, validate_result_relations)
         schema = json.loads((ROOT / 'contract-snapshot/authoring/publication.schema.json').read_text())
         vectors = json.loads((ROOT / 'contract-snapshot/authoring/publication-conformance.json').read_text())

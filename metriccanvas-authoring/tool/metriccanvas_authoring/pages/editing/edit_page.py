@@ -2,9 +2,9 @@
 import re
 from typing import Any
 
-from metriccanvas_authoring.application.summary_capability import summary_configured
+from metriccanvas_authoring.delivery.summary_capability import summary_configured
 from metriccanvas_authoring.work.content_ports import ContentBaselineError, ContentBaselinePort
-from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.canonical import canonical_json, canonical_sha256
 from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
 

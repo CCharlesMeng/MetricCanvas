@@ -1,5 +1,5 @@
 """No confirmed Java publication endpoints or human proof integration exist yet."""
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 
 
 class UnavailablePublicationService:

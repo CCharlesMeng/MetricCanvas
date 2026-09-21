@@ -15,7 +15,7 @@ from referencing import Registry, Resource
 from uuid import uuid4
 
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
 from metriccanvas_authoring.canonical import canonical_json, canonical_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root

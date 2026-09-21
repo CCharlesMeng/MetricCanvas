@@ -4,7 +4,8 @@ from dataclasses import replace
 from types import MappingProxyType
 
 from metriccanvas_authoring.pages.components.component_selection import recommend_components
-from metriccanvas_authoring.pages.composition.page_building import ASSEMBLED_COMPONENT_TYPES, PageBuildingIssue
+from metriccanvas_authoring.build_issues import PageBuildingIssue
+from metriccanvas_authoring.pages.components.capabilities import ASSEMBLED_COMPONENT_TYPES
 
 
 async def apply_component_policy(units, executions, policy, scope):

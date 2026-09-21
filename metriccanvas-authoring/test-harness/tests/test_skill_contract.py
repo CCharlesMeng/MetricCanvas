@@ -169,7 +169,7 @@ class UnifiedSkillContractTest(unittest.IsolatedAsyncioTestCase):
     async def test_examples_and_allowed_tools_match_actual_target_registration(self):
         from fastmcp import Client
         from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
-        from metriccanvas_authoring.application.platform_authoring import PlatformAuthoring
+        from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
         from test_unified_content_mcp import dependencies
         folder = BUNDLE_ROOT / 'skill/metriccanvas-platform-authoring'
         examples = [json.loads(value) for value in re.findall(

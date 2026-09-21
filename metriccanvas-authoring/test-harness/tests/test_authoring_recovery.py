@@ -12,8 +12,8 @@ from test_authoring_submission import SubmissionFixture
 from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteCandidateStore, SqliteExecutionRecords, SqliteLifecyclePrograms
 from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
 from metriccanvas_authoring.work.authoring_recovery import AuthoringRecoveryCoordinator
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleError, LifecycleIdentity
-from metriccanvas_authoring.application.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError, LifecycleIdentity
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
 
 
 class RecoveryAuthority:

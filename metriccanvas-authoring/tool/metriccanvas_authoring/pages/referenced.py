@@ -1,7 +1,7 @@
 """Page expression from verified results; this module never executes DQE."""
 from copy import deepcopy
 from jsonschema import Draft202012Validator
-from metriccanvas_authoring.application.bundle_info import load_bundle_info
+from metriccanvas_authoring.bundle_info import load_bundle_info
 from metriccanvas_authoring.pages.composition.page_structure import SECTION, ID, NAME, TEXT, DATA_BLOCK, obj, block_component, scope_note, StructureError
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation

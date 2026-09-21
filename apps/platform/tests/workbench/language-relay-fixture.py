@@ -19,7 +19,7 @@ from metriccanvas_authoring.pages.composition.compose_page import ComposePageDep
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleError
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleIdentity, LifecycleError
 from lifecycle_stdio_server import ProposedService, Programs, Identities
 from content_stdio_server import server, fixture, FakeDataContextPort, FakeDqeExecutionPort, DqeExecutionResult, execution
 

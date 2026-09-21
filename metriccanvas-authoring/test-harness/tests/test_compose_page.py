@@ -15,7 +15,7 @@ sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 sys.path.insert(0, str(BUNDLE_ROOT / "test-harness"))
 
 from adapters.fakes import FakeDataContextPort, FakeDqeExecutionPort  # noqa: E402
-from metriccanvas_authoring.application.bundle_info import load_bundle_info  # noqa: E402
+from metriccanvas_authoring.bundle_info import load_bundle_info  # noqa: E402
 from metriccanvas_authoring.pages.composition.compose_page import (  # noqa: E402
     ComposePageCommand,
     ComposePageDependencies,

@@ -1,6 +1,6 @@
 """Independent lifecycle tool surface; even structuredContent contains no full page."""
 from fastmcp import FastMCP
-from metriccanvas_authoring.application.lifecycle import Lifecycle
+from metriccanvas_authoring.assets.lifecycle import Lifecycle
 from .publish_mcp import register_publication_tools
 
 

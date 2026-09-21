@@ -4,7 +4,9 @@ import json
 
 from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.pages.components.component_policy import apply_component_policy
-from metriccanvas_authoring.pages.composition.page_building import build_query_source, build_data_component, PageBuildingIssue
+from metriccanvas_authoring.build_issues import PageBuildingIssue
+from metriccanvas_authoring.data.executable_units import build_query_source
+from metriccanvas_authoring.pages.composition.page_building import build_data_component
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root

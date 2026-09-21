@@ -2,7 +2,7 @@
 from copy import deepcopy
 from uuid import uuid4
 import asyncio
-from metriccanvas_authoring.application.lifecycle import Lifecycle, VALIDATOR
+from metriccanvas_authoring.assets.lifecycle import Lifecycle, VALIDATOR
 from metriccanvas_authoring.work.state import require, digest
 
 

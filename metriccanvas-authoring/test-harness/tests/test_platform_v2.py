@@ -12,10 +12,10 @@ from test_authoring_turns import Turns
 from test_unified_content_mcp import dependencies
 from test_structure_plan import plan
 from test_page_editing import title
-from metriccanvas_authoring.application.platform_authoring import PlatformAuthoring
+from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
 from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
-from metriccanvas_authoring.application.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleCapabilities, LifecycleIdentity
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.work.state import Limits, digest
 

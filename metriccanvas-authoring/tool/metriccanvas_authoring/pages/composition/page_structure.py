@@ -4,9 +4,10 @@ import json
 from jsonschema import Draft202012Validator
 
 from metriccanvas_authoring.runtime_assets import bundle_root
-from metriccanvas_authoring.pages.composition.page_building import (
-    ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component, ASSEMBLED_COMPONENT_TYPES,
-)
+from metriccanvas_authoring.build_issues import PageBuildingIssue
+from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitScope
+from metriccanvas_authoring.pages.components.capabilities import ASSEMBLED_COMPONENT_TYPES
+from metriccanvas_authoring.pages.composition.page_building import build_data_component
 from metriccanvas_authoring.data.execution import DqeExecutionResult
 
 ROOT = bundle_root()
