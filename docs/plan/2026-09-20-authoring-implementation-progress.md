@@ -55,6 +55,15 @@
 
 本批不改工具注册名、参数 Schema、保存策略与 Relay 标记。
 
+## 第五批：入口物理归位
+
+对应第 10 节第 6 步的第一段。Adapter 与 test-harness 的归位按用户要求另列批次，本批不做。
+
+- 入口迁入 `entrypoints/`：目标入口为 `entrypoints/mcp/platform_server.py`，四个旧入口为 `entrypoints/compat/{server,content_server,unified_content_server,lifecycle_server}.py`，目录本身表达“这是兼容面”。
+- CLI 名称全部不变（`metriccanvas-authoring` / `-content` / `-platform-content` / `-platform-content-v1` / `-lifecycle`）。部署按 console script 启动（`uvx --from <sdist> metriccanvas-authoring`），模块路径对部署不可见，因此四个旧模块路径直接退役，不留根级别名。
+- 根级只保留 `platform_server.py` 一个委托：`bundle.json` 的 toolServices、`check_bundle.py`、导出器断言与 Relay 接入文档都点名这个导入路径，属于对宿主已发布的名字，本批不改。
+- 仓内消费者同批更新：pyproject 五个脚本、`tool/server.py`、README 三处、6 个测试、模型评测 `preflight.py` / `run_local.py`、两个浏览器检查脚本。`docs/archive/authoring-tickets-126/*-evidence.md` 与 `model-evals/history/` 是历史证据，未改。
+
 ## 后续依赖与明确未完成项
 
 1. P0/P1：真实 Lab 语义摘要访问、详情身份映射、实际 Tokens 请求与响应贯穿对账；不能用其他指标详情补单位。
@@ -91,3 +100,10 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - 逐个 import 五个入口模块与三个 `bootstrap` 模块，并实际装配 lifecycle、content 两个兼容 Server，确认委托链可用。
 - 生成器一度不可用：页面 schema 6.7（`levelQueryFields`）缺参考文档时 `export-authoring-contracts.ts` 直接抛错。那是同一工作区里另一处进行中的改动，未代为修改；其文档于 15:08 补齐后重跑生成器，见第五批验证。
 - 未运行真实 Lab/DQE/Java/Relay 联调，未做工作台视觉验收。
+
+### 第五批验证（2026-09-21）
+
+- 全量创作测试 479 项，**473 通过 / 6 失败**。6 项失败全部是 `test_page_validation` 的 `level-query-fields-*` 契约夹具：TypeScript 校验器与 schema 已实现 6.7 的逐级谓词字段规则（`validate.ts` 7 处），Python 对等校验器 `domain/page_validation.py` 里一处都没有。夹具于 15:08 由另一处进行中的改动写入，与入口归位无关，也不在本批范围内，未代为补写。
+- 入口归位前的同一命令基线是 479 项全通过；归位后失败集合与归位前的差异只有上述 6 项夹具，`test_distribution`、`test_lifecycle_stdio`、`test_publish_stdio`、`test_model_eval_harness`、`test_content_mcp`、`test_unified_content_mcp` 等直接受影响的用例全部通过。
+- 生成器恢复可用后重跑：`check_bundle.py` **1571 项摘要校验通过**，`export-authoring-contracts.ts --check` **current（489 product / 4 authoring / 1 interface）**。第三、四、五批的源码变更已一并进入 `bundle.lock.json`。
+- `git diff --check` 通过。

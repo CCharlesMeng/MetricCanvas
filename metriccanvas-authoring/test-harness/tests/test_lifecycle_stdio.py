@@ -40,7 +40,7 @@ class LifecycleStdioTest(unittest.IsolatedAsyncioTestCase):
             env={'PYTHONPATH':installed or str(ROOT/'tool'),'METRICCANVAS_OPERATOR_ID':'actor-a','METRICCANVAS_WORKSPACE_ID':'workspace-a','METRICCANVAS_AUTH_TOKEN':'secret-token','METRICCANVAS_LIFECYCLE_INPUTS_DIR':directory,'METRICCANVAS_LIFECYCLE_OUTPUTS_DIR':directory}
             # Invalid compatibility/content settings must never be initialized.
             env['METRICCANVAS_TOOL_SURFACE']='invalid-unused'
-            args=[str(Path(installed)/'bin/metriccanvas-lifecycle')] if installed else ['-m','metriccanvas_authoring.lifecycle_server']
+            args=[str(Path(installed)/'bin/metriccanvas-lifecycle')] if installed else ['-m','metriccanvas_authoring.entrypoints.compat.lifecycle_server']
             transport=StdioTransport(command=sys.executable,args=args,env=env,cwd=directory)
             async with Client(transport) as client:
                 self.assertEqual(len(await client.list_tools()),9)

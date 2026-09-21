@@ -115,7 +115,7 @@ async def run_case(case, cfg, output, phase):
     result = {'id':case['id'],'phase':phase,'manuallyAssignedSkill':skill,'status':'inconclusive','turns':[], 'assertions':{}, 'repeat':case['repeat'], 'arm':cfg['arm'], 'toolProfile':cfg['profile'], 'routing':'blocked', 'latestGuarantee':'blocked', 'modelVersionVerified':False}
     messages = [{'role':'system','content':system}]
     child_env = {'PYTHONPATH':str(AUTHORING/'tool'), 'PYTHONDONTWRITEBYTECODE':'1', 'METRICCANVAS_CONTENT_BASELINES_DIR':str(folder)}
-    mcp_config = {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':child_env}}}
+    mcp_config = {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':child_env}}}
     new_id = 'eval-'+uuid.uuid4().hex
     start = time.monotonic()
     async with Client(mcp_config) as client, httpx.AsyncClient(timeout=120) as http:

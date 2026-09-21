@@ -16,11 +16,11 @@ dependencies = [
 ]
 
 [project.scripts]
-metriccanvas-authoring = "metriccanvas_authoring.server:main"
-metriccanvas-content = "metriccanvas_authoring.content_server:main"
+metriccanvas-authoring = "metriccanvas_authoring.entrypoints.compat.server:main"
+metriccanvas-content = "metriccanvas_authoring.entrypoints.compat.content_server:main"
 metriccanvas-platform-content = "metriccanvas_authoring.platform_server:main"
-metriccanvas-platform-content-v1 = "metriccanvas_authoring.unified_content_server:main"
-metriccanvas-lifecycle = "metriccanvas_authoring.lifecycle_server:main"
+metriccanvas-platform-content-v1 = "metriccanvas_authoring.entrypoints.compat.unified_content_server:main"
+metriccanvas-lifecycle = "metriccanvas_authoring.entrypoints.compat.lifecycle_server:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["metriccanvas_authoring"]

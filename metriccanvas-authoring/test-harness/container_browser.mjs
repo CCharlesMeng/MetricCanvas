@@ -36,7 +36,7 @@ def publish(token,doc):
  (feed/(token+'.json')).write_text(json.dumps({'ref':{'pageId':doc['id'],'revisionId':'r1','resourceId':'resource1'},'document':doc,'documentSha256':document_sha256(doc)}))
 publish('trusted-content-source',content_page())
 async def main():
- config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed),'METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG':json.dumps({'conversationBaseUrl':sys.argv[2]})}}}}
+ config={'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':{'PYTHONPATH':str(Path('metriccanvas-authoring/tool').resolve()),'METRICCANVAS_CONTENT_BASELINES_DIR':str(feed),'METRICCANVAS_CONTENT_AI_SUMMARY_CONFIG':json.dumps({'conversationBaseUrl':sys.argv[2]})}}}}
  async with Client(config) as client:
   for layout in ['report','dashboard']:
    op=composite(title='组合经营指标',children=[child(title='总额指标'),child('pieChart','nested-pie','sales',title='地域占比')])

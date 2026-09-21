@@ -30,7 +30,7 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.entrypoints.compat.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
 
 `create_content_page` 用 `page_id/title/layout` 与 `request.operations` 创建新页。允许 `add_text/add_field_text/add_map_chart/add_tab_container/add_composite_card/add_ai_summary`，目标分区为 `main`（panel）；静态正文直接声明，字段长文本与地图仅从可信 `source_token` 对应完整页面复用数据源。创建产物 `metriccanvas.content-page-artifact` 包含新 document/hash、可空 sourceRef 和 Bundle 版本，不包含保存结果，也不将创建冒充既有页修改。
 
@@ -57,7 +57,7 @@ Relay 工具面的完整 `artifact` 含页面文档和 DQE 初始行，不能作
 
 ## 生产组合与分发
 
-`metriccanvas_authoring.server` 是可安装包的 CLI 入口，`tool/server.py` 是源码检出兼容入口；装配住在 `bootstrap/`。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
+`metriccanvas_authoring.entrypoints.compat.server` 是可安装包的 CLI 入口，`tool/server.py` 是源码检出兼容入口；装配住在 `bootstrap/`。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
 
 Relay 配置见 [`relay/mcp_configs/metriccanvas-authoring.json`](./relay/mcp_configs/metriccanvas-authoring.json)：
 
@@ -97,7 +97,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## 独立生命周期 MCP（#138）
 
-`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
+`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.entrypoints.compat.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
 
 受信任 Relay 适配器在调用之前把完整请求写到独立用户/工作区进程的 `METRICCANVAS_LIFECYCLE_INPUTS_DIR/<token>.json`。目录权限须 0700、文件 0600，令牌为 16–128 位字母/数字/下划线/连字符；文件内容 `{actorId,workspaceId,request}`，request 按该 schema 的 save/read/history 分支。目录不可由模型写入；调用方必须保证同一逻辑操作的请求文件不可变并持久保留，禁止在重试时换 operationId 或修改原载荷。token 只定位受信任请求，不代替服务鉴权；保存指纹、基线原子比较、去重期限与授权仍由服务裁决。
 

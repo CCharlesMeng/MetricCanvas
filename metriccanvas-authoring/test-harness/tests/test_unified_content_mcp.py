@@ -60,8 +60,8 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
             self.assertFalse(output.structured_content['ok'])
 
     async def test_production_does_not_fallback_to_old_factory_or_tokens(self):
-        from metriccanvas_authoring.unified_content_server import create_production_unified_content_server
-        with patch('metriccanvas_authoring.content_server.create_production_content_server', side_effect=AssertionError('legacy bypass')), patch.dict(os.environ, {'METRICCANVAS_CONTENT_BASELINES_DIR': '/tmp/old-tokens'}):
+        from metriccanvas_authoring.entrypoints.compat.unified_content_server import create_production_unified_content_server
+        with patch('metriccanvas_authoring.entrypoints.compat.content_server.create_production_content_server', side_effect=AssertionError('legacy bypass')), patch.dict(os.environ, {'METRICCANVAS_CONTENT_BASELINES_DIR': '/tmp/old-tokens'}):
             async with Client(create_production_unified_content_server()) as client:
                 for ref in ('current-context', 'trusted-baseline-token'):
                     result = await client.call_tool('edit_page', {'context_ref': ref, 'request': {'operations': [title()]}})

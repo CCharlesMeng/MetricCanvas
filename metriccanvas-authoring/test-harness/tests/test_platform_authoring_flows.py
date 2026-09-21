@@ -22,7 +22,7 @@ def publish(directory, token, document):
 
 class PlatformAuthoringFlowsTest(unittest.IsolatedAsyncioTestCase):
     def config(self, folder):
-        return {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.content_server'],'env':{'PYTHONPATH':os.environ.get('METRICCANVAS_TEST_INSTALLED_CONTENT',str(ROOT/'tool')),'METRICCANVAS_CONTENT_BASELINES_DIR':folder,'PYTHONDONTWRITEBYTECODE':'1'}}}}
+        return {'mcpServers':{'content':{'command':sys.executable,'args':['-m','metriccanvas_authoring.entrypoints.compat.content_server'],'env':{'PYTHONPATH':os.environ.get('METRICCANVAS_TEST_INSTALLED_CONTENT',str(ROOT/'tool')),'METRICCANVAS_CONTENT_BASELINES_DIR':folder,'PYTHONDONTWRITEBYTECODE':'1'}}}}
 
     def artifact(self, result):
         payload = result.structured_content

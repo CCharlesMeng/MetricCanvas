@@ -21,11 +21,11 @@ class DistributionContractTest(unittest.TestCase):
         self.assertEqual(project["project"]["version"], "0.3.0")
         self.assertEqual(
             project["project"]["scripts"]["metriccanvas-authoring"],
-            "metriccanvas_authoring.server:main",
+            "metriccanvas_authoring.entrypoints.compat.server:main",
         )
         self.assertEqual(
             project["project"]["scripts"]["metriccanvas-content"],
-            "metriccanvas_authoring.content_server:main",
+            "metriccanvas_authoring.entrypoints.compat.content_server:main",
         )
         self.assertEqual(project["project"]["scripts"]["metriccanvas-platform-content"], "metriccanvas_authoring.platform_server:main")
         requirements = {

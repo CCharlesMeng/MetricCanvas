@@ -73,7 +73,7 @@ class PublishStdioTest(unittest.IsolatedAsyncioTestCase):
         with tempfile.TemporaryDirectory() as directory:
             installed = os.environ.get('S4_LIFECYCLE_INSTALLED_ROOT')
             env = {'PYTHONPATH': installed or str(ROOT / 'tool'), 'METRICCANVAS_TOOL_SURFACE': 'invalid-unused'}
-            args = [str(Path(installed) / 'bin/metriccanvas-lifecycle')] if installed else ['-m', 'metriccanvas_authoring.lifecycle_server']
+            args = [str(Path(installed) / 'bin/metriccanvas-lifecycle')] if installed else ['-m', 'metriccanvas_authoring.entrypoints.compat.lifecycle_server']
             async with Client(StdioTransport(command=sys.executable, args=args, env=env, cwd=directory)) as client:
                 self.assertEqual({t.name for t in await client.list_tools()}, NAMES)
                 for name in NAMES - {'save_draft', 'get_save_result', 'read_revision', 'list_revisions'}:

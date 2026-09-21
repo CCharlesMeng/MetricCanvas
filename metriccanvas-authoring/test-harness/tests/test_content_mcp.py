@@ -72,7 +72,7 @@ class ContentMcpTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_content_server_has_no_compatibility_initialization_or_save_port(self):
         from metriccanvas_authoring.bootstrap import compatibility, environment
-        from metriccanvas_authoring.content_server import create_production_content_server
+        from metriccanvas_authoring.entrypoints.compat.content_server import create_production_content_server
         with patch.object(compatibility, "create_production_server", side_effect=AssertionError("must not initialize")), patch.object(environment, "configure_page_assets", side_effect=AssertionError("must not configure saves")), patch.dict(os.environ, {"METRICCANVAS_TOOL_SURFACE": "invalid-unused-value"}):
             server = create_production_content_server()
             async with Client(server) as client:
