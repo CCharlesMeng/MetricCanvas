@@ -14,12 +14,8 @@ from typing import Any, Mapping, Sequence
 
 import httpx
 
-from metriccanvas_authoring.application.ports import (
-    DataContextError,
-    DimensionValuePort,
-    IdentityPort,
-    JsonObject,
-)
+from metriccanvas_authoring.data.ports import DataContextError, DimensionValuePort, JsonObject
+from metriccanvas_authoring.adapters.outbound.service_identity import IdentityPort
 from metriccanvas_authoring.domain.data_context import parse_data_context
 
 

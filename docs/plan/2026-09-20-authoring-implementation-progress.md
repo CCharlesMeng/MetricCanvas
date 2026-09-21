@@ -39,6 +39,22 @@
 
 本批不改模型协议、工具注册面与保存策略；候选协议记录仍为其兼容消费者保留。
 
+## 第四批：组合根收敛与端口按消费方归属
+
+对应模块架构方案 A08，是第 10 节第 6 步“物理归位”之前的最后一项所有权收敛。入口与 Adapter 的物理归位（`entrypoints/{mcp,compat}`、`adapters/{java,relay,storage}`）按用户要求另列一批，本批不做。
+
+接手时工作区被截断，先修复再实施：一次批量写入把九个文件清零，其中五个是上一会话已写入但未完成接线的 A08 首段源码，`bundle.lock.json` 被退回 11:46 的旧版本。恢复清单与事后核对见[截断与恢复记录](2026-09-21-workspace-truncation-recovery.md)。
+
+本批改动：
+
+- 装配集中到 `bootstrap/`：`environment.py` 一次性从环境选择出站适配器（含内容基线目录、摘要配置、lifecycle 三项，原先散在各入口模块）；`platform.py` 是目标组合根；`compatibility.py` 显式承载 `server` / `content_server` / `unified_content_server` / `lifecycle_server` 与部署装配。
+- 入口模块只剩 CLI 委托与文档化的公开名。`platform_server.create_platform_server`、`server.create_production_server` 等既有导入路径保持可用；`platform_server` 不再从兼容 `server` 取适配器。
+- 未配置的能力改为公开工厂 `unconfigured_data_context` / `unconfigured_dqe`，本地模型评测夹具不再 import 另一个模块的私有类。
+- 端口按消费方归属：`data/ports.py`（治理元数据与执行）、`assets/ports.py`（保存回执）、`adapters/outbound/service_identity.py`（服务态身份）；删除汇总的 `application/ports.py`。
+- 删除 `authoring_bootstrap.py`，`create_deployment_content_server` 归入 `bootstrap/compatibility.py`；同步更新 ARCHITECTURE.md 与 V1 归档中的路径。
+
+本批不改工具注册名、参数 Schema、保存策略与 Relay 标记。
+
 ## 后续依赖与明确未完成项
 
 1. P0/P1：真实 Lab 语义摘要访问、详情身份映射、实际 Tokens 请求与响应贯穿对账；不能用其他指标详情补单位。
@@ -68,3 +84,10 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - `node --import tsx tools/scripts/export-authoring-contracts.ts --check`：接手时报 `bundle.lock.json: stale`，重新导出后 current（481 product / 4 authoring / 1 interface）。
 - `git diff --check` 通过。
 - 仍未运行真实 Lab/DQE/Java/Relay 联调；本批只证明本仓行为不变，不证明外部接线。
+
+### 第四批验证（2026-09-21）
+
+- 恢复截断文件后先跑基线：479 项中 51 error / 1 failure，全部由上一会话未完成的接线造成（`application.ports` 拆分后 `DqeExecutionResult`、`DataContextError`、`PageAssetError` 三个名字在 6 个测试/夹具文件里漏接，模型评测夹具引用已迁走的私有类）。补齐后 A08 改动完成，同一命令再次 **479 项通过（31.7 秒）**。
+- 逐个 import 五个入口模块与三个 `bootstrap` 模块，并实际装配 lifecycle、content 两个兼容 Server，确认委托链可用。
+- 生成器一度不可用：页面 schema 6.7（`levelQueryFields`）缺参考文档时 `export-authoring-contracts.ts` 直接抛错。那是同一工作区里另一处进行中的改动，未代为修改；其文档于 15:08 补齐后重跑生成器，见第五批验证。
+- 未运行真实 Lab/DQE/Java/Relay 联调，未做工作台视觉验收。

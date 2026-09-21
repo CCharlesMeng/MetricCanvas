@@ -17,7 +17,7 @@ from metriccanvas_authoring.application.authoring_deployment import (
     RegisteredExtension, DeploymentError, assemble_deployment, AUTHOR, SKILL_PATH, SERVICE,
 )
 from metriccanvas_authoring.adapters.inbound.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.authoring_bootstrap import create_deployment_content_server
+from metriccanvas_authoring.bootstrap.compatibility import create_deployment_content_server
 
 
 class DeploymentTest(unittest.IsolatedAsyncioTestCase):

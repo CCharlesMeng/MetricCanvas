@@ -19,11 +19,8 @@ from metriccanvas_authoring.adapters.outbound.env_identity import (  # noqa: E40
 from metriccanvas_authoring.adapters.outbound.java_page_assets import (  # noqa: E402
     JavaPageAssetPort,
 )
-from metriccanvas_authoring.application.ports import (  # noqa: E402
-    PageAssetError,
-    SavedRevision,
-    ServiceIdentity,
-)
+from metriccanvas_authoring.assets.ports import PageAssetError, SavedRevision  # noqa: E402
+from metriccanvas_authoring.adapters.outbound.service_identity import ServiceIdentity  # noqa: E402
 
 
 class StaticIdentity:

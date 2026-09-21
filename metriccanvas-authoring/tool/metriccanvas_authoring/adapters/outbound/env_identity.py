@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from collections.abc import Mapping
 
-from metriccanvas_authoring.application.ports import ServiceIdentity
+from metriccanvas_authoring.adapters.outbound.service_identity import ServiceIdentity
 
 
 OPERATOR_ID_ENV = "METRICCANVAS_OPERATOR_ID"

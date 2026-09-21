@@ -71,9 +71,9 @@ class ContentMcpTest(unittest.IsolatedAsyncioTestCase):
                 self.assertIsNone(response.structured_content["artifactEnvelope"])
 
     async def test_content_server_has_no_compatibility_initialization_or_save_port(self):
-        import metriccanvas_authoring.server as compatibility
+        from metriccanvas_authoring.bootstrap import compatibility, environment
         from metriccanvas_authoring.content_server import create_production_content_server
-        with patch.object(compatibility, "create_production_server", side_effect=AssertionError("must not initialize")), patch.object(compatibility, "configure_page_assets", side_effect=AssertionError("must not configure saves")), patch.dict(os.environ, {"METRICCANVAS_TOOL_SURFACE": "invalid-unused-value"}):
+        with patch.object(compatibility, "create_production_server", side_effect=AssertionError("must not initialize")), patch.object(environment, "configure_page_assets", side_effect=AssertionError("must not configure saves")), patch.dict(os.environ, {"METRICCANVAS_TOOL_SURFACE": "invalid-unused-value"}):
             server = create_production_content_server()
             async with Client(server) as client:
                 self.assertEqual({t.name for t in await client.list_tools()}, {"discover_data_context", "compose_page", "edit_page", "create_content_page"})

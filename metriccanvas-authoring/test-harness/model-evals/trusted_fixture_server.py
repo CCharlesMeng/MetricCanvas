@@ -36,9 +36,9 @@ def fixture_server(state_path):
     deps = dependencies()  # Existing explicitly synthetic Data Context/DQE/descriptor fixtures.
     if state.get('dataProvider') == 'missing-source': deps = replace(deps, source_description=None)
     if state.get('dataProvider') == 'unavailable':
-        from metriccanvas_authoring.server import _UnconfiguredDataContextPort, _UnconfiguredDqeExecutionPort
-        deps = replace(deps, data_context=_UnconfiguredDataContextPort('Local fixture intentionally unavailable'),
-                       dqe=_UnconfiguredDqeExecutionPort('Local fixture intentionally unavailable'), source_description=None)
+        from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
+        deps = replace(deps, data_context=unconfigured_data_context('Local fixture intentionally unavailable'),
+                       dqe=unconfigured_dqe('Local fixture intentionally unavailable'), source_description=None)
     return create_unified_content_mcp_server(deps,
         None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path),
         candidate_store=None if state.get('candidateProvider') == 'unavailable' else MemoryCandidates())

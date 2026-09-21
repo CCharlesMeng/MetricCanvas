@@ -14,7 +14,7 @@ from metriccanvas_authoring.adapters.inbound.content_mcp import create_content_m
 from metriccanvas_authoring.application.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.application.edit_page import document_sha256
-from metriccanvas_authoring.application.ports import DqeExecutionResult
+from metriccanvas_authoring.domain.execution import DqeExecutionResult
 
 
 class Baselines:
