@@ -51,7 +51,8 @@ describe('ioc-project-overview 骨架', () => {
       type: 'timePoint', granularity: 'date', initialParam: 'report-as-of-date'
     });
     expect(filters.find((filter) => filter.id === 'project-level')).toMatchObject({
-      type: 'dimension', dimension: 'project-initiation-level', emptyLabel: '全部项目等级'
+      // 项目等级取公司特级/公司级/… 那套词汇；按机会点的立项级别 L1–L4 是另一个维度。
+      type: 'dimension', dimension: 'project-level', emptyLabel: '全部项目等级'
     });
     expect(filters.find((filter) => filter.id === 'industry-type')).toMatchObject({
       type: 'dimension', dimension: 'cloud-class', emptyLabel: '全部产业'
@@ -69,7 +70,7 @@ describe('ioc-project-overview 骨架', () => {
     expect([...candidateDimensions].sort()).toEqual([
       'cloud-class',
       'geo-pc-code',
-      'project-initiation-level',
+      'project-level',
       'region-dept-code',
       'rep-office-code'
     ]);

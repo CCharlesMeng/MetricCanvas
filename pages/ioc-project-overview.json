@@ -56,7 +56,7 @@
     {
       "id": "project-level",
       "type": "dimension",
-      "dimension": "project-initiation-level",
+      "dimension": "project-level",
       "label": "项目等级",
       "emptyLabel": "全部项目等级"
     },
@@ -354,7 +354,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -634,7 +634,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -858,7 +858,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -1040,7 +1040,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -1210,7 +1210,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -1314,7 +1314,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",
@@ -1423,7 +1423,7 @@
             },
             "project-level": {
               "target": "dimension",
-              "queryField": "project_initiation_level"
+              "queryField": "project_level"
             },
             "industry-type": {
               "target": "dimension",

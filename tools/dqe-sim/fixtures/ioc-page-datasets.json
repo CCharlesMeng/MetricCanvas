@@ -32,7 +32,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -62,7 +62,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         }
       ]
     },
@@ -86,7 +87,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -104,7 +105,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司特级"
         },
         {
           "map_level": "geo",
@@ -120,7 +122,8 @@
           "geo_pc_code": "R99",
           "is_key_office": true,
           "mtime": "202604",
-          "region_dept_code": "APAC"
+          "region_dept_code": "APAC",
+          "project_level": "公司级"
         },
         {
           "map_level": "geo",
@@ -135,7 +138,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "地区部级"
         },
         {
           "map_level": "geo",
@@ -150,7 +154,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "代表处级"
         },
         {
           "map_level": "geo",
@@ -166,7 +171,8 @@
           "geo_pc_code": "R99",
           "is_key_office": true,
           "mtime": "202604",
-          "region_dept_code": "CN-EAST"
+          "region_dept_code": "CN-EAST",
+          "project_level": "公司特级"
         },
         {
           "map_level": "geo",
@@ -181,7 +187,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         },
         {
           "map_level": "geo",
@@ -196,7 +203,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "地区部级"
         },
         {
           "map_level": "geo",
@@ -211,7 +219,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "代表处级"
         },
         {
           "map_level": "region-dept",
@@ -226,7 +235,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司特级"
         },
         {
           "map_level": "region-dept",
@@ -241,7 +251,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         },
         {
           "map_level": "region-dept",
@@ -256,7 +267,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "地区部级"
         },
         {
           "map_level": "office",
@@ -271,7 +283,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "代表处级"
         }
       ]
     },
@@ -296,7 +309,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -316,7 +329,8 @@
           "geo_pc_code": "R99",
           "is_key_office": true,
           "mtime": "202604",
-          "region_dept_code": "CN-EAST"
+          "region_dept_code": "CN-EAST",
+          "project_level": "公司特级"
         },
         {
           "rep_office_name": "北京代表处",
@@ -333,7 +347,8 @@
           "geo_pc_code": "R99",
           "is_key_office": true,
           "mtime": "202604",
-          "region_dept_code": "CN-EAST"
+          "region_dept_code": "CN-EAST",
+          "project_level": "公司级"
         },
         {
           "rep_office_name": "广州代表处",
@@ -350,7 +365,8 @@
           "geo_pc_code": "R99",
           "is_key_office": true,
           "mtime": "202604",
-          "region_dept_code": "CN-EAST"
+          "region_dept_code": "CN-EAST",
+          "project_level": "地区部级"
         },
         {
           "rep_office_name": "深圳代表处",
@@ -367,7 +383,8 @@
           "geo_pc_code": "R99",
           "is_key_office": false,
           "mtime": "202604",
-          "region_dept_code": "CN-SOUTH"
+          "region_dept_code": "CN-SOUTH",
+          "project_level": "代表处级"
         },
         {
           "rep_office_name": "杭州代表处",
@@ -384,7 +401,8 @@
           "geo_pc_code": "R99",
           "is_key_office": false,
           "mtime": "202604",
-          "region_dept_code": "CN-EAST"
+          "region_dept_code": "CN-EAST",
+          "project_level": "公司特级"
         },
         {
           "rep_office_name": "成都代表处",
@@ -401,7 +419,8 @@
           "geo_pc_code": "R99",
           "is_key_office": false,
           "mtime": "202604",
-          "region_dept_code": "CN-WEST"
+          "region_dept_code": "CN-WEST",
+          "project_level": "公司级"
         },
         {
           "rep_office_name": "新加坡代表处",
@@ -418,7 +437,8 @@
           "geo_pc_code": "R99",
           "is_key_office": false,
           "mtime": "202604",
-          "region_dept_code": "APAC"
+          "region_dept_code": "APAC",
+          "project_level": "地区部级"
         },
         {
           "rep_office_name": "天津代表处",
@@ -435,7 +455,8 @@
           "geo_pc_code": "R99",
           "is_key_office": false,
           "mtime": "202604",
-          "region_dept_code": "CN-NORTH"
+          "region_dept_code": "CN-NORTH",
+          "project_level": "代表处级"
         }
       ]
     },
@@ -463,7 +484,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -484,7 +505,8 @@
           "as_of_date": "2026-03-26",
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
-          "is_key_office": true
+          "is_key_office": true,
+          "project_level": "公司级"
         },
         {
           "project_initiation_name": "政务云一期",
@@ -502,7 +524,8 @@
           "as_of_date": "2026-03-26",
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
-          "is_key_office": true
+          "is_key_office": true,
+          "project_level": "公司级"
         }
       ]
     },
@@ -529,7 +552,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -549,7 +572,8 @@
           "as_of_date": "2026-03-26",
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
-          "is_key_office": true
+          "is_key_office": true,
+          "project_level": "公司级"
         },
         {
           "opportunity_name": "行业云试点",
@@ -566,7 +590,8 @@
           "as_of_date": "2026-03-26",
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
-          "is_key_office": true
+          "is_key_office": true,
+          "project_level": "公司级"
         }
       ]
     },
@@ -585,7 +610,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -598,7 +623,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         },
         {
           "tier_name": "战略",
@@ -608,7 +634,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         },
         {
           "tier_name": "核心",
@@ -618,7 +645,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         }
       ]
     },
@@ -637,7 +665,7 @@
         "geo_pc_code",
         "is_key_office",
         "mtime",
-        "project_initiation_level",
+        "project_level",
         "region_dept_code",
         "rep_office_code"
       ],
@@ -650,7 +678,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司特级"
         },
         {
           "level_name": "公司级",
@@ -660,7 +689,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "公司级"
         },
         {
           "level_name": "地区部级",
@@ -670,7 +700,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "地区部级"
         },
         {
           "level_name": "代表处级",
@@ -680,7 +711,8 @@
           "cloud_class": "公有云",
           "geo_pc_code": "R99",
           "is_key_office": true,
-          "mtime": "202604"
+          "mtime": "202604",
+          "project_level": "代表处级"
         }
       ]
     },
@@ -741,7 +773,12 @@
           "stale_count": 918,
           "stale_amount": 63,
           "as_of_date": "2026-03-26",
-          "is_key_office": true
+          "is_key_office": true,
+          "industry_code": "云服务",
+          "region_code": "GLOBAL",
+          "customer_category": "NA客户",
+          "trade_code": "金融",
+          "pre_sign_band": "100万-1000万"
         }
       ]
     },
@@ -943,7 +980,12 @@
           "forecast_11": 4.0,
           "forecast_12": 4.3,
           "as_of_date": "2026-03-26",
-          "is_key_office": true
+          "is_key_office": true,
+          "industry_code": "云服务",
+          "region_code": "GLOBAL",
+          "customer_category": "NA客户",
+          "trade_code": "金融",
+          "pre_sign_band": "100万-1000万"
         }
       ]
     },
