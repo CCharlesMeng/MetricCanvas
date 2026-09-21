@@ -2,26 +2,38 @@
 
 四张 IOC 页面现在全部跑在受控查询上（inline 静态行只作为 `source.initial` 的首屏）。本文记录怎么把它们在本地跑起来，以及每项能力该看到什么数字——**每条都挑了一个能区分「做对了」和「看起来像做对了」的取值**。
 
-## 起服务
+## 三个进程分别是什么
+
+| 部件 | 起法 | 端口 | 是什么 |
+| --- | --- | --- | --- |
+| **页面试验场**（preview） | `pnpm dev:playground` | 5173 | 开发期看页面的地方（ADR-0075），路由 `/pages/<id>`。dev 下自动注入本机运行配置，DQE 指向 18228 |
+| **DQE 仿真** | `pnpm sim:dqe` | 18228 | 数据来源。IOC 四张页面的行在 `tools/dqe-sim/fixtures/ioc-*.json` |
+| **平台** | `pnpm dev:platform` | 见 `apps/platform/vite.config.ts` | 创作工作台，不是看页面用的 |
+
+`pnpm dev` 是平台 + DQE 仿真，**不含试验场**。要手工验收 IOC 页面，起的是前两个：
 
 ```bash
-cd <仓库根>
-pnpm --filter @metriccanvas/embed build      # 改过引擎代码才需要
-pnpm --filter @metriccanvas/embed preview:examples
+pnpm sim:dqe          # 一个终端
+pnpm dev:playground   # 另一个终端
 ```
 
-启动后终端会打印监听地址、DQE 端点和全部可打开的页面 URL。打不开时先看这几行有没有出现——服务没起来和页面出错是两件事。
+四张页面全部是 query 数据源，**不起 DQE 仿真就只能看到内嵌初始行的首屏，动筛选会报网关错**。
 
 | 页面 | 地址 |
 | --- | --- |
-| 项目概览 | http://127.0.0.1:4175/pages/ioc-project-overview |
-| 机会点清单 | http://127.0.0.1:4175/pages/ioc-opportunity-list |
-| 机会点分析 | http://127.0.0.1:4175/pages/ioc-opportunity-analysis |
-| 项目详情 | http://127.0.0.1:4175/pages/ioc-project-detail |
+| 项目概览 | http://127.0.0.1:5173/pages/ioc-project-overview |
+| 机会点清单 | http://127.0.0.1:5173/pages/ioc-opportunity-list |
+| 机会点分析 | http://127.0.0.1:5173/pages/ioc-opportunity-analysis |
+| 项目详情 | http://127.0.0.1:5173/pages/ioc-project-detail |
 
-这个宿主用的是**真实的** `createDqeGateway`，不是抓的假网关；数据由同源的 DQE 端点应答，行来自 `tools/dqe-sim/fixtures/ioc-*.json`（页面内嵌初始行的同源副本）。它按 ADR-0074 的隔离约束写成纯 node，不引工作区包。
+### 另一条路：嵌入示例宿主
 
-需要完整仿真（问数语义面、AI 总结流式）时另起 `pnpm sim:dqe`，那是 `tools/dqe-sim` 的独立服务。
+```bash
+pnpm --filter @metriccanvas/embed build      # 改过引擎代码才需要
+pnpm --filter @metriccanvas/embed preview:examples   # 4175
+```
+
+它是浏览器证据用的**测试宿主**，页面同样在 `/pages/<id>`，好处是单进程、DQE 端点同源内置、启动时会把全部页面 URL 打印出来。按 ADR-0074 的隔离约束写成纯 node，不引工作区包，因此数据只覆盖夹具里有的那些查询。日常验收用试验场，要复现浏览器用例时用它。
 
 ## 验收清单
 
@@ -32,9 +44,9 @@ pnpm --filter @metriccanvas/embed preview:examples
 | 点列头「预签金额」升序 | 第一行是 `OPP202604010` | 它金额最小、**原本在第二页**；本地排序只排当前页，排不出它 |
 | 再点一次转降序 | 第一行是 `OPP202604004` | |
 | 「更多筛选」→ 云行业选「零售」 | 云子行业候选从 10 项收到 2 项 | 级联约束没下推的话仍是 10 项 |
-| `?mtime=2026-05` | 0 行 | 数据只有 `202604`；格式声明错则 `?mtime=2026-04` 也会变 0 行 |
-| `?key-office=true` | 5 行且页码器消失 | 取反的实现会给出**另外** 5 行 |
-| `?bidding-amount.from=50000000` | 4 行 | |
+| `…/ioc-opportunity-list?mtime=2026-05` | 0 行 | 数据只有 `202604`；格式声明错则 `?mtime=2026-04` 也会变 0 行 |
+| `…?key-office=true` | 5 行且页码器消失 | 取反的实现会给出**另外** 5 行 |
+| `…?bidding-amount.from=50000000` | 4 行 | |
 
 ### 项目概览
 
