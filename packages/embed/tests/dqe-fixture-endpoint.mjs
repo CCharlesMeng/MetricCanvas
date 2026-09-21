@@ -14,12 +14,13 @@ import { resolve } from 'node:path';
 export const DQE_EXECUTE_PATH =
   '/rest/cdi/cdinl2databuilderservice/v1/dsl/execute';
 
-const fixture = JSON.parse(
-  readFileSync(
-    resolve(import.meta.dirname, '../../../tools/dqe-sim/fixtures/ioc-opportunity-list.json'),
-    'utf8'
-  )
-);
+const simFixtures = resolve(import.meta.dirname, '../../../tools/dqe-sim/fixtures');
+const fixture = readJson('ioc-opportunity-list.json');
+const dimensionValues = readJson('ioc-dimension-values.json').dimensions;
+
+function readJson(name) {
+  return JSON.parse(readFileSync(resolve(simFixtures, name), 'utf8'));
+}
 
 export function executeFixtureItem(item) {
   if (!isRecord(item)) return unsupported('查询项必须是 JSON 对象');
@@ -58,7 +59,11 @@ function listResult(item) {
   );
 }
 
-/** 候选值查询：恰好一个输出维度、不取指标；取值域从夹具行去重得到。 */
+/**
+ * 候选值查询：恰好一个输出维度、不取指标。取值域来自维度闭集夹具，级联
+ * 约束按 parent/of 收窄；约束的维度不是登记过的上游就拒答，不忽略约束把
+ * 全量候选冒充成收窄结果。
+ */
 function candidatesResult(item) {
   const dimensions = stringArray(item.output_dims);
   const metrics = stringArray(item.output_metrics);
@@ -66,12 +71,39 @@ function candidatesResult(item) {
     return undefined;
   }
   const name = dimensions[0];
-  if (!fixture.filterableDims.includes(name)) return undefined;
-  const values = [...new Set(fixture.rows.map((row) => String(row[name] ?? '')))].filter(Boolean);
+  const declaration = Object.hasOwn(dimensionValues, name) ? dimensionValues[name] : undefined;
+  if (!declaration) return undefined;
+  let values = declaration.values;
+  const dims = isRecord(item.filter) && item.filter.dims !== undefined ? item.filter.dims : [];
+  if (!Array.isArray(dims)) return unsupported('候选值查询的 filter.dims 必须是数组');
+  for (const entry of dims) {
+    if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
+      return unsupported('候选值查询的级联约束格式无效');
+    }
+    const parentValues = stringArray(entry.dim_value_list);
+    if (!parentValues) return unsupported(`级联约束 ${entry.dim_name} 必须是字符串数组`);
+    if (parentValues.length === 0) continue;
+    if (declaration.parent !== entry.dim_name) {
+      return unsupported(`维度 ${name} 不接受来自 ${entry.dim_name} 的级联约束`);
+    }
+    const allowed = new Set(parentValues);
+    values = values.filter((candidate) => allowed.has(candidate.of));
+  }
   return success(
     item,
-    values.map((value) => ({ [name]: value, [`${name}__label`]: value })),
-    columns([name, `${name}__label`], [])
+    values.map((candidate) => ({
+      [name]: candidate.value,
+      [`${name}__label`]: candidate.label ?? candidate.value
+    })),
+    [
+      { id: `dqe-sim.${name}`, caption: name, data_type: 'STRING', type: 'dimension' },
+      {
+        id: `dqe-sim.${name}__label`,
+        caption: `${name}显示名`,
+        data_type: 'STRING',
+        type: 'dimension'
+      }
+    ]
   );
 }
 

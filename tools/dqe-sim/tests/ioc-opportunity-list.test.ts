@@ -65,4 +65,28 @@ describe('DQE Sim 机会点清单', () => {
       expect(executeFixtureItem(query(dims))).toEqual(executeDqeItem(query(dims)));
     }
   });
+
+  it('候选值查询两侧也一致，含级联收窄与越界约束的拒答', () => {
+    const candidates = (dimension: string, dims: unknown[] = []) => ({
+      output_dims: [dimension],
+      output_metrics: [],
+      filter: { dims, metrics: [] },
+      order: {}
+    });
+    for (const item of [
+      candidates('sub-industry-level2'),
+      candidates('sub-industry-level2', [
+        { dim_name: 'sub-industry-level1', dim_value_list: ['零售'] }
+      ]),
+      candidates('rep-office-code', [
+        { dim_name: 'region-dept-code', dim_value_list: ['CN-EAST'] }
+      ]),
+      // 越界约束两侧都拒答，不是一侧静默放行。
+      candidates('sub-industry-level2', [
+        { dim_name: 'cloud-class', dim_value_list: ['公有云'] }
+      ])
+    ]) {
+      expect(executeFixtureItem(item)).toEqual(executeDqeItem(item));
+    }
+  });
 });

@@ -1,3 +1,4 @@
+import iocDimensionValuesJson from '../fixtures/ioc-dimension-values.json';
 import { findDimension, semanticSurface } from './semantic-surface';
 
 export interface DimensionValueCandidate {
@@ -5,60 +6,64 @@ export interface DimensionValueCandidate {
   label: string;
 }
 
+interface IocDimensionValuesFixture {
+  dimensions: Record<
+    string,
+    {
+      /** 级联的唯一上游维度;缺席表示该维度不接受任何约束。 */
+      parent?: string;
+      values: Array<{ value: string; label?: string; of?: string }>;
+    }
+  >;
+}
+
 /**
- * 只服务候选值端口的 IOC 维度闭集。它不属于问数语义面，也不参与指标、
- * 业务域或 Schema 元数据投影；这样本地联调可验真，同时不虚构 IOC 指标口径。
+ * 只服务候选值端口的 IOC 维度闭集，真源是 `fixtures/ioc-dimension-values.json`。
+ * 它不属于问数语义面，也不参与指标、业务域或 Schema 元数据投影；这样本地
+ * 联调可验真，同时不虚构 IOC 指标口径。
+ *
+ * 放在夹具 JSON 而不是这里的字面量，是因为嵌入测试宿主要用纯 node 读同一份
+ * 闭集回答候选值查询（ADR-0074 的隔离基线跑不了 TypeScript）。
  */
-const iocDimensionValues: Readonly<Record<string, readonly DimensionValueCandidate[]>> = {
-  'cloud-class': [candidate('公有云')],
-  'project-initiation-level': ['L1', 'L2', 'L3', 'L4'].map((value) => candidate(value)),
-  'geo-pc-code': [
-    candidate('R05', '欧洲'),
-    candidate('TBD-APAC', '亚太'),
-    candidate('TBD-NAF', '北部非洲'),
-    candidate('TBD-MECA', '中东中亚'),
-    candidate('R99', '中国'),
-    candidate('TBD-LATAM', '拉美'),
-    candidate('TBD-SAF', '南部非洲'),
-    candidate('TBD-RU', '俄罗斯')
-  ],
-  'region-dept-code': [
-    candidate('CN-BJ', '北京'),
-    candidate('CN-SH', '上海'),
-    candidate('CN-GD', '广东'),
-    candidate('CN-EAST', '华东地区部'),
-    candidate('CN-NORTH', '华北地区部'),
-    candidate('CN-SOUTH', '华南地区部'),
-    candidate('CN-WEST', '西部地区部'),
-    candidate('APAC', '亚太地区部')
-  ],
-  'rep-office-code': [
-    candidate('SH-01', '上海代表处'),
-    candidate('BJ-01', '北京代表处'),
-    candidate('GD-01', '广东代表处'),
-    candidate('SZ-01', '深圳代表处'),
-    candidate('HZ-01', '杭州代表处'),
-    candidate('CD-01', '成都代表处'),
-    candidate('SG-01', '新加坡代表处'),
-    candidate('TJ-01', '天津代表处'),
-    candidate('XA-01', '西安代表处'),
-    candidate('GZ-01', '广州代表处'),
-    candidate('NJ-01', '南京代表处')
-  ],
-  // 机会点清单的业务维度:源数据里编码即名称,不另立代码表。
-  'public-cloud-na-level': ['战略客户', '重要客户', '普通客户'].map((v) => candidate(v)),
-  'sub-industry-level1': [
-    '运营商', '政府', '制造', '金融', '零售', '互联网', '教育', '能源', '医疗'
-  ].map((v) => candidate(v)),
-  'sub-industry-level2': [
-    '运营商-核心网', '政府-电子政务', '制造-离散', '金融-银行', '零售-连锁',
-    '互联网-跨境', '教育-高校', '能源-电力', '医疗-三甲', '零售-外贸'
-  ].map((v) => candidate(v)),
-  'overdue-status': ['正常', '超期'].map((v) => candidate(v)),
-  'opportunity-step': [
-    '初步接洽', '需求确认', '技术方案', '商务谈判'
-  ].map((v) => candidate(v))
-};
+const iocFixture = iocDimensionValuesJson as IocDimensionValuesFixture;
+
+const iocDimensionValues: Readonly<Record<string, readonly DimensionValueCandidate[]>> =
+  Object.fromEntries(
+    Object.entries(iocFixture.dimensions).map(([name, declaration]) => [
+      name,
+      declaration.values.map((entry) => candidate(entry.value, entry.label ?? entry.value))
+    ])
+  );
+
+/** 该下游维度声明的上游维度;没有级联关系时返回 undefined。 */
+export function parentDimensionOf(name: string): string | undefined {
+  return Object.hasOwn(iocFixture.dimensions, name)
+    ? iocFixture.dimensions[name]?.parent
+    : undefined;
+}
+
+/**
+ * 按上游取值收窄下游候选值。上游取值为空集合视作不约束;下游取值没有登记
+ * 归属的一律落选,不当作"无从判断所以保留"。
+ */
+export function narrowByParent(
+  name: string,
+  candidates: readonly DimensionValueCandidate[],
+  parentValues: readonly string[]
+): readonly DimensionValueCandidate[] {
+  if (parentValues.length === 0) return candidates;
+  const owners = new Map(
+    (Object.hasOwn(iocFixture.dimensions, name)
+      ? iocFixture.dimensions[name]?.values ?? []
+      : []
+    ).flatMap((entry) => (entry.of === undefined ? [] : [[entry.value, entry.of] as const]))
+  );
+  const allowed = new Set(parentValues);
+  return candidates.filter((item) => {
+    const owner = owners.get(item.value);
+    return owner !== undefined && allowed.has(owner);
+  });
+}
 
 export function dimensionValuesFor(
   name: string

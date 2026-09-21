@@ -37,6 +37,30 @@ test('层级区域筛选按当前层级选谓词字段，三层各自命中', as
   }
 });
 
+// 级联的「按上游收窄」此前整条空转：清空下游、重拉候选都做了，但适配器把
+// constraints 丢了，拉回来的仍是全量。这里选一级行业后数下游候选项。
+test('云行业选定后云子行业候选按上游收窄', async ({ page }) => {
+  await page.goto('/pages/ioc-opportunity-list');
+  const toolbar = page.locator('header[data-dashboard-toolbar]');
+  await expect(toolbar).toBeVisible();
+  await toolbar.locator('[data-dashboard-filter-overflow] > summary').click();
+  const level2 = page.locator('[data-filter-id="industry-l2"]');
+  const level1 = page.locator('[data-filter-id="industry-l1"]');
+  const level2Options = level2.locator('.menu .option');
+
+  await level2.locator('summary').click();
+  await expect(level2Options).toHaveCount(10);
+  await level2.locator('summary').click();
+
+  await level1.locator('summary').click();
+  await level1.locator('.menu .option', { hasText: '零售' }).locator('input').check();
+  await level1.locator('summary').click();
+
+  await level2.locator('summary').click();
+  await expect(level2Options).toHaveCount(2);
+  await expect(level2Options).toHaveText(['零售-连锁', '零售-外贸']);
+});
+
 test('相对/绝对链接、三种绑定、复制地址、新标签和缺值都遵循原生 anchor', async ({page, context}) => {
   await page.goto('/pages/ioc-project-overview');
   await expect(page.locator('.runtime-view')).toBeVisible();

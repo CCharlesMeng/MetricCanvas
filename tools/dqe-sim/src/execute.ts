@@ -4,7 +4,12 @@ import customerActivityInspectionFixtureJson from '../fixtures/customer-activity
 import flowAnalysisReportFixtureJson from '../fixtures/flow-analysis-report.json';
 import iocOpportunityListFixtureJson from '../fixtures/ioc-opportunity-list.json';
 import salesAnalyticsFixture from '../fixtures/sales-analytics.json';
-import { dimensionValuesFor } from './dimension-value-surface';
+import {
+  dimensionValuesFor,
+  narrowByParent,
+  parentDimensionOf,
+  type DimensionValueCandidate
+} from './dimension-value-surface';
 import { runSemanticSurface } from './semantic-surface-execute';
 
 type JsonRecord = Record<string, unknown>;
@@ -228,6 +233,7 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
   const name = dimensions[0]!;
   const values = dimensionValuesFor(name);
   if (!values) return undefined;
+  let constraints: Array<{ dimension: string; values: string[] }> = [];
   if (item.filter !== undefined) {
     if (!isRecord(item.filter)) {
       return unsupported('候选值查询的 filter 必须是对象');
@@ -238,16 +244,18 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
     ) {
       return unsupported('候选值查询仅支持 filter.metrics=[]');
     }
-    if (Object.hasOwn(item.filter, 'dims') && !equalJson(item.filter.dims, [])) {
-      return unsupported('候选值查询仅支持 filter.dims=[]');
-    }
+    const parsed = dimensionValueConstraints(item.filter.dims);
+    if ('error' in parsed) return parsed.error;
+    constraints = parsed.constraints;
   }
   if (item.order !== undefined && !validOrder(item.order)) {
     return unsupported('order 必须为 {} 或包含非负 offset/正整数 limit');
   }
+  const narrowed = narrowDimensionValues(name, values, constraints);
+  if ('error' in narrowed) return narrowed.error;
   return successResult(
     item,
-    values.map((candidate) => ({
+    narrowed.values.map((candidate) => ({
       [name]: candidate.value,
       [`${name}__label`]: candidate.label
     })),
@@ -267,6 +275,58 @@ function executeDimensionValuesQuery(item: JsonRecord): DqeSimItemResult | undef
       sql: null
     }
   );
+}
+
+/** 候选值查询的级联约束:形状不合法直接拒答,不静默丢弃一条约束。 */
+function dimensionValueConstraints(
+  dims: unknown
+):
+  | { constraints: Array<{ dimension: string; values: string[] }> }
+  | { error: DqeSimItemResult } {
+  if (dims === undefined) return { constraints: [] };
+  if (!Array.isArray(dims)) {
+    return { error: unsupported('候选值查询的 filter.dims 必须是数组') };
+  }
+  const constraints: Array<{ dimension: string; values: string[] }> = [];
+  for (const entry of dims) {
+    if (!isRecord(entry) || typeof entry.dim_name !== 'string') {
+      return { error: unsupported('候选值查询的级联约束格式无效') };
+    }
+    const values = stringArray(entry.dim_value_list);
+    if (!values) {
+      return {
+        error: unsupported(`级联约束 ${entry.dim_name} 必须是字符串数组`)
+      };
+    }
+    constraints.push({ dimension: entry.dim_name, values });
+  }
+  return { constraints };
+}
+
+/**
+ * 按级联约束收窄候选值。约束的维度必须是目标维度登记过的上游,否则拒答:
+ * 忽略一条看不懂的约束会把全量候选值当成"收窄后的结果"送回去。
+ */
+function narrowDimensionValues(
+  name: string,
+  values: readonly DimensionValueCandidate[],
+  constraints: Array<{ dimension: string; values: string[] }>
+):
+  | { values: readonly DimensionValueCandidate[] }
+  | { error: DqeSimItemResult } {
+  let narrowed = values;
+  for (const constraint of constraints) {
+    if (constraint.values.length === 0) continue;
+    if (parentDimensionOf(name) !== constraint.dimension) {
+      return {
+        error: unsupported(
+          `维度 ${name} 不接受来自 ${constraint.dimension} 的级联约束`
+        )
+      };
+    }
+    narrowed = narrowByParent(name, narrowed, constraint.values);
+  }
+  return { values: narrowed };
 }
 
 function executeFlowAnalysisReport(

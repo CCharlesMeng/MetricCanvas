@@ -341,7 +341,8 @@ export function createDqeGateway(
    */
   async function fetchDimensionValuesOnce(
     dimension: string,
-    signal?: AbortSignal
+    signal?: AbortSignal,
+    constraints?: Readonly<Record<string, readonly string[]>>
   ): Promise<DimensionValuesResult> {
     if (signal?.aborted) {
       throw new DqeGatewayError('DQE_CANCELLED', '候选值请求已被取消');
@@ -361,7 +362,9 @@ export function createDqeGateway(
         method: 'POST',
         headers: { 'content-type': 'application/json;charset=utf-8', ...headers },
         credentials,
-        body: JSON.stringify({ dsl_list: [dimensionValuesDqeItem(dimension)] }),
+        body: JSON.stringify({
+          dsl_list: [dimensionValuesDqeItem(dimension, constraints)]
+        }),
         signal: controller.signal
       });
       if (!response.ok) {
@@ -463,7 +466,7 @@ export function createDqeGateway(
       });
     },
     fetchDimensionValues(dimension, options) {
-      return fetchDimensionValuesOnce(dimension, options?.signal);
+      return fetchDimensionValuesOnce(dimension, options?.signal, options?.constraints);
     }
   };
 }
@@ -473,11 +476,19 @@ export function createDqeGateway(
  * 枚举,适配器再去重。候选项不做时间收窄——候选值是维度取值域,不是
  * 某时间窗内的出现值;真实环境协议复验归 issue #3。
  */
-export function dimensionValuesDqeItem(dimension: string): JsonObject {
+export function dimensionValuesDqeItem(
+  dimension: string,
+  constraints?: Readonly<Record<string, readonly string[]>>
+): JsonObject {
+  // 级联约束按上游维度 code 编成谓词:上游选了什么，下游候选值就只在
+  // 那个范围里枚举。空选集合等同不约束，不发一条空的 dim_value_list。
+  const dims = Object.entries(constraints ?? {})
+    .filter(([name, values]) => name !== dimension && values.length > 0)
+    .map(([name, values]) => ({ dim_name: name, dim_value_list: [...values] }));
   return {
     output_dims: [dimension],
     output_metrics: [],
-    filter: { dims: [], metrics: [] },
+    filter: { dims, metrics: [] },
     order: {}
   };
 }
