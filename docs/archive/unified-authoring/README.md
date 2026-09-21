@@ -22,7 +22,7 @@
 
 ## 还在被代码引用的一个文件
 
-`2026-09-15-unified-authoring-s0-sources.json` 被 `tests/page-reference.test.ts` 直接读取。它是机器证据而非文档，原方案（S1）打算把它迁出文档树；**2026-09-21 决定不迁**——同批的 [`2026-09-15-unified-authoring-s0-s1-evidence.md`](./2026-09-15-unified-authoring-s0-s1-evidence.md) 正文按同级文件名链接它，迁走就得改已冻结的实证正文。理由与另一份夹具相同，详见 [`docs/plan/2026-09-21-docs-consolidation.md`](../../plan/2026-09-21-docs-consolidation.md) §4.6。**它是 CI 的真实输入，删改前先跑 `pnpm test`。**
+`2026-09-15-unified-authoring-s0-sources.json` 被 `tests/page-reference.test.ts` 直接读取。它是机器证据而非文档，原方案（S1）打算把它迁出文档树；**2026-09-21 决定不迁**——同批的 [`2026-09-15-unified-authoring-s0-s1-evidence.md`](./2026-09-15-unified-authoring-s0-s1-evidence.md) 正文按同级文件名链接它，迁走就得改已冻结的实证正文。理由与另一份夹具相同，详见 [`docs/archive/docs-consolidation/2026-09-21-docs-consolidation.md`](../docs-consolidation/2026-09-21-docs-consolidation.md) §4.6。**它是 CI 的真实输入，删改前先跑 `pnpm test`。**
 
 ## 里面有什么
 
