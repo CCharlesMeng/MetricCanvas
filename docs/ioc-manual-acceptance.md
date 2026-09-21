@@ -19,12 +19,35 @@ pnpm dev:playground   # 另一个终端
 
 四张页面全部是 query 数据源，**不起 DQE 仿真就只能看到内嵌初始行的首屏，动筛选会报网关错**。
 
+试验场的 vite 只监听 IPv6 回环，**要用 `localhost` 不能用 `127.0.0.1`**——后者会直接连不上，看起来和「服务没起」一模一样。分不清时先 `lsof -nP -iTCP:5173 -sTCP:LISTEN` 看它到底绑在哪。
+
 | 页面 | 地址 |
 | --- | --- |
-| 项目概览 | http://127.0.0.1:5173/pages/ioc-project-overview |
-| 机会点清单 | http://127.0.0.1:5173/pages/ioc-opportunity-list |
-| 机会点分析 | http://127.0.0.1:5173/pages/ioc-opportunity-analysis |
-| 项目详情 | http://127.0.0.1:5173/pages/ioc-project-detail |
+| 项目概览 | http://localhost:5173/pages/ioc-project-overview |
+| 机会点清单 | http://localhost:5173/pages/ioc-opportunity-list |
+| 机会点分析 | http://localhost:5173/pages/ioc-opportunity-analysis |
+| 项目详情 | http://localhost:5173/pages/ioc-project-detail |
+
+### 页面参数：口径日期从哪来
+
+6.11 起口径日期不再是筛选器里的字面量默认值，而是**声明出来的页面参数**（ADR-0089）：
+
+| 页面 | 参数 | 保存值 | 驱动的筛选器 |
+| --- | --- | --- | --- |
+| 概览 | `report-month` / `report-as-of-date` | `2026-04` / `2026-03-26` | `mtime` / `as-of-date` |
+| 清单 | `report-month` | `2026-04` | `mtime` |
+| 分析 | `report-as-of-date` | `2026-03-26` | `as-of-date` |
+
+参数只决定**打开那一刻**的选中值，页内两个控件照旧可改。所以同一个月份现在有两个 URL 入口，语义不同：
+
+```
+…/ioc-opportunity-list?report-month=2026-05    # 换一个页面实例（参数）
+…/ioc-opportunity-list?mtime=2026-05           # 同一个实例里换筛选值（筛选器）
+```
+
+两者都该得到 0 行（数据只有 `202604`）。**不传任何键时清单必须是 10 行**——如果是 0 行，说明参数没写进筛选初值，`mtime` 谓词发的是空值。
+
+`ioc-project-detail` 的 8 个输入也迁到了 `params.display`（`?page-title=…&opportunity-code=…`）。它那个 `mtime` 与前三张页同名但不是同一个东西：值来自清单页点行时带的行数据，不是页面口径输入。
 
 ### 另一条路：嵌入示例宿主
 
@@ -60,6 +83,8 @@ pnpm --filter @metriccanvas/embed preview:examples   # 4175
 
 | ADR | 交付 | 缺口原本长什么样 |
 | --- | --- | --- |
+| [0089](adr/0089-page-parameters-can-seed-time-point-and-hierarchical-filters.md) | 页面参数可给时间点与层级维度筛选器做初值（6.11） | 口径日期只能当常量写死在筛选器 `default` 上，跨页传递靠两边筛选器 id 恰好同名 |
+| [0088](adr/0088-orthogonal-page-parameters-window-on-the-reference-and-layers-by-purpose.md) | window 挂到查询侧时间引用、params 按消费位置分层（就地改 6.6） | 「点 / 区间」与「派生 / 原样用」被切成互斥一条路，一个基准月驱动多窗口的页面必须展开成多个字面量 |
 | [0084](adr/0084-hierarchical-filter-bindings-declare-a-query-field-per-level.md) | 层级维度筛选绑定逐级声明谓词字段（6.7 新增分支 / 6.8 收紧） | 切到代表处层选值，发出去的仍是上层字段的谓词，上游照常返回、没有任何一处报错 |
 | [0085](adr/0085-query-binding-targets-for-the-non-dimension-filter-types.md) | timePoint / boolean / numberRange 的绑定目标（6.9） | 这三类在协议上无处可绑，拉了完全不动数 |
 | [0086](adr/0086-server-side-sorting-and-header-filters-under-query-pagination.md) | 查询分页下由上游排序与表头筛选 | 分页与排序二选一；本地排序在分页下是错的语义 |
