@@ -12,7 +12,7 @@ from test_unified_data_addition import add, spec
 from test_structure_plan import plan
 from test_page_editing import title
 from metriccanvas_authoring.data.query import create_query_data
-from metriccanvas_authoring.application.structure_composition import compose_structure
+from metriccanvas_authoring.pages.composition.structure_composition import compose_structure
 from metriccanvas_authoring.application.unified_edit_page import edit_unified_page
 from metriccanvas_authoring.domain.page_editing import edit_page_document
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
@@ -24,7 +24,7 @@ async def current():
 
 class SharedAuthoringCapabilitiesTest(unittest.IsolatedAsyncioTestCase):
     async def test_malformed_legacy_spec_returns_validation_error_without_io(self):
-        from metriccanvas_authoring.application.compose_page import create_compose_page, ComposePageCommand
+        from metriccanvas_authoring.pages.composition.compose_page import create_compose_page, ComposePageCommand
         deps = dependencies()
         result = await create_compose_page(deps)(ComposePageCommand('report', None))
         self.assertFalse(result.ok)
@@ -33,7 +33,7 @@ class SharedAuthoringCapabilitiesTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_query_does_not_select_components_or_assemble_pages(self):
         deps = replace(dependencies(), authoring_scope=Turns().binding)
-        with patch('metriccanvas_authoring.application.compose_page.assemble_page_document', side_effect=AssertionError('whole page')):
+        with patch('metriccanvas_authoring.pages.composition.compose_page.assemble_page_document', side_effect=AssertionError('whole page')):
             result = await create_query_data(deps)(spec())
         self.assertTrue(result.ok, result.issues)
         self.assertEqual(len(result.executions), 1)
@@ -42,7 +42,7 @@ class SharedAuthoringCapabilitiesTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_structure_and_addition_do_not_construct_temporary_pages(self):
         deps = replace(dependencies(), authoring_scope=Turns().binding)
-        with patch('metriccanvas_authoring.application.compose_page.assemble_page_document', side_effect=AssertionError('whole page')):
+        with patch('metriccanvas_authoring.pages.composition.compose_page.assemble_page_document', side_effect=AssertionError('whole page')):
             built = await compose_structure('report', 'Report', 'report', plan(), deps, current=current)
             edited = await edit_unified_page(Turns().baseline.document, {'operations': [add()]}, deps, current=current)
         self.assertEqual(built['status'], 'changed', built)

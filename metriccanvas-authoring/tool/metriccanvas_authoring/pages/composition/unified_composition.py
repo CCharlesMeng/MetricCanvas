@@ -6,7 +6,7 @@ from metriccanvas_authoring.application.unified_edit_page import UNIFIED_EDIT_SC
 from metriccanvas_authoring.domain.layout_policy import apply_creation_layout
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.domain.page_structure import PLAN_SCHEMA
-from metriccanvas_authoring.application.structure_composition import compose_structure
+from metriccanvas_authoring.pages.composition.structure_composition import compose_structure
 
 CREATION_OPERATIONS = frozenset({'add_text', 'add_field_text', 'add_map_chart', 'add_tab_container',
     'add_composite_card', 'add_ai_summary', 'add_data_component', 'set_component_layout', 'move_component'})

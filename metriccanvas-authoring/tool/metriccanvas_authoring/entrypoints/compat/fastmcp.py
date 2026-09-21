@@ -13,7 +13,7 @@ from metriccanvas_authoring.application.build_page import (
     create_build_page,
 )
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.application.compose_page import (
+from metriccanvas_authoring.pages.composition.compose_page import (
     ComposePageCommand,
     ComposePageDependencies,
     create_compose_page,

@@ -8,7 +8,7 @@ from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
 from metriccanvas_authoring.entrypoints.compat.content_mcp import RESULT_SCHEMA
-from metriccanvas_authoring.application.compose_content import compose_content
+from metriccanvas_authoring.pages.composition.compose_content import compose_content
 from metriccanvas_authoring.entrypoints.compat.fastmcp import PageBuildSpec
 from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, read_page_projection
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaseline
@@ -17,7 +17,7 @@ from metriccanvas_authoring.application.summary_capability import summary_config
 from metriccanvas_authoring.application.unified_edit_page import edit_unified_page, UNIFIED_EDIT_SCHEMA
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextDependencies, DiscoverDataContextCommand, create_discover_data_context
-from metriccanvas_authoring.application.unified_composition import compose_unified_content, COMPOSITION_SCHEMA
+from metriccanvas_authoring.pages.composition.unified_composition import compose_unified_content, COMPOSITION_SCHEMA
 
 
 UnifiedEditRequest = Annotated[dict[str, Any], WithJsonSchema(UNIFIED_EDIT_SCHEMA)]

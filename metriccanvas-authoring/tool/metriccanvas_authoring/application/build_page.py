@@ -4,7 +4,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from typing import Any, Mapping
 
-from metriccanvas_authoring.application.compose_page import (
+from metriccanvas_authoring.pages.composition.compose_page import (
     ComposePageCommand,
     ComposePageDependencies,
     create_compose_page,

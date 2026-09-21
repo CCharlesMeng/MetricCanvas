@@ -32,7 +32,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `bootstrap/platform.py` | 目标组合根，选择显式注入能力；无需旧候选存储或强保存能力 |
 | `bootstrap/compatibility.py` | 旧入口的装配，与目标入口共用同一份适配器选择；不是 v2 的回退 |
 
-章节和新增组件不再生成临时整页再拆取。旧新装配调用共享查询内核；统一兼容入口也直接调用 `application/compose_content.py`，不创建 MCP Server 调自己的工具。纯规则不依赖 HTTP、MCP 或 SQLite。
+章节和新增组件不再生成临时整页再拆取。旧新装配调用共享查询内核；统一兼容入口也直接调用 `pages/composition/compose_content.py`，不创建 MCP Server 调自己的工具。纯规则不依赖 HTTP、MCP 或 SQLite。
 
 ## 状态与交付
 

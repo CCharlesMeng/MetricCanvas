@@ -74,6 +74,12 @@
 
 命名上用 `firstparty/` 而不是方案骨架里的 `java/`：Lab 与 DQE 不是 Java 契约，按实际提供方分组更准确。
 
+## 第七批：`application/` 与 `domain/` 按能力归位
+
+对应[剩余迁移计划](2026-09-21-authoring-remaining-migration.md)第 2 节，分轮进行；每轮只搬位置与更新引用，不改行为。第三到第六批已于 2026-09-21 拆成五条提交进入 `codex/grouped-page-params`（第一、二批此前从未提交，作为同系列的基线提交一并落下）。
+
+- **7a** `pages/composition/`：`compose_page.py`、`compose_content.py`、`unified_composition.py`、`structure_composition.py`、`create_content_page.py` 从 `application/` 迁入。`compose_content` 对 `edit_page` 的相对导入改为绝对路径（`edit_page` 到 7b 才搬），`authoring_deployment` 对 `compose_page` 的相对导入同样改绝对。仓内引用同批更新：`bootstrap/{platform,compatibility}.py`、三个兼容 MCP 入站、`build_page.py`、7 个测试与两个 stdio 夹具、`apps/platform/tests/workbench/language-relay-fixture.py`、ARCHITECTURE.md。
+
 ## 后续依赖与明确未完成项
 
 1. P0/P1：真实 Lab 语义摘要访问、详情身份映射、实际 Tokens 请求与响应贯穿对账；不能用其他指标详情补单位。
@@ -124,3 +130,7 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - 其余 469 项全部通过，包含直接受影响的 stdio、Relay、lifecycle、publish、platform v2 与部署装配用例。
 - `check_bundle.py` **1577 项摘要校验通过**；`export-authoring-contracts.ts --check` **current（491 product / 4 authoring / 1 interface）**；`git diff --check` 通过。
 - 一次性批量改写曾误伤归档与历史文档（`docs/archive/**`、几份 09-17/09-18/09-20 分析记录、`ARCHITECTURE-V1.md`），已逐份反向还原为当时的真实路径；历史记录不随重构改写。
+
+### 第七批验证（2026-09-21）
+
+- 7a：全量创作测试 479 项，**463 通过 / 16 失败**。16 项仍全部是 `test_page_validation` 的页面 schema 6.7–6.9 契约夹具（`level-query-fields-*`、`duplicate-hierarchy-level-id`、`hierarchy-filter-flat-query-field`，本轮期间另一处又加了 `boolean-target-not-boolean`、`number-range-target-not-number-range`、`time-point-target-not-time-point`），Python 对等校验未实现，与本轮无关；搬迁前同一命令的失败集合与之完全相同。重跑生成器后 `check_bundle.py` **1588 项摘要校验通过**，`export-authoring-contracts.ts --check` **current（495 product / 4 authoring / 1 interface）**，`git diff --check` 通过。

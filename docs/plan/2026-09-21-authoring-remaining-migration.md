@@ -37,7 +37,7 @@
 
 | 轮次 | 搬什么 | 去哪里 |
 |---|---|---|
-| 7a | `compose_page.py`、`compose_content.py`、`unified_composition.py`、`structure_composition.py`、`create_content_page.py` | `pages/composition/` |
+| 7a ✓ | `compose_page.py`、`compose_content.py`、`unified_composition.py`、`structure_composition.py`、`create_content_page.py` | `pages/composition/`（2026-09-21 已完成） |
 | 7b | `edit_page.py`、`unified_edit_page.py`、`component_policy.py`、`domain/{page_editing,section_editing,component_editing,interaction_editing}.py` | `pages/editing/`、`pages/components/` |
 | 7c | `domain/{page_building,page_structure,container_building,layout_policy,section_layout,text_map_building,component_selection}.py` | `pages/composition/`、`pages/components/` |
 | 7d | `discover_data_context.py`、`business_interpretation.py`、`source_description_ports.py`、`domain/{data_context,business_terms,execution,source_mapping,page_build_spec,grouped_params}.py` | `data/` |

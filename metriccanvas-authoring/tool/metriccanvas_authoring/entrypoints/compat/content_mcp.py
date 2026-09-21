@@ -6,9 +6,9 @@ from fastmcp.tools import ToolResult
 from pydantic import Field, WithJsonSchema
 
 from metriccanvas_authoring.entrypoints.compat.fastmcp import PageBuildSpec
-from metriccanvas_authoring.application.compose_page import ComposePageDependencies
-from metriccanvas_authoring.application.compose_content import compose_content
-from metriccanvas_authoring.application.create_content_page import create_content_page as make_content_page
+from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
+from metriccanvas_authoring.pages.composition.compose_content import compose_content
+from metriccanvas_authoring.pages.composition.create_content_page import create_content_page as make_content_page
 from metriccanvas_authoring.application.content_ports import ContentBaselinePort
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextCommand, DiscoverDataContextDependencies, create_discover_data_context
 from metriccanvas_authoring.application.edit_page import create_edit_page

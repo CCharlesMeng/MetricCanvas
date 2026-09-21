@@ -5,7 +5,7 @@ providers. Standalone stdio advertises the surface and fails closed without
 them; it never falls back to a compatibility surface to obtain them.
 """
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
-from metriccanvas_authoring.application.compose_page import ComposePageDependencies
+from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.bootstrap import environment
 from metriccanvas_authoring.work.state import Limits

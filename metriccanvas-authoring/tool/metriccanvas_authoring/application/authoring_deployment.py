@@ -13,7 +13,7 @@ import re
 from types import MappingProxyType
 from typing import Mapping, Any
 
-from .compose_page import ComposePageDependencies
+from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 
 AUTHOR = 'metriccanvas-platform-authoring'
 SERVICE = 'metriccanvas-platform-content'

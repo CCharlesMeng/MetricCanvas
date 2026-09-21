@@ -155,4 +155,3 @@ metriccanvas-authoring/tool/.venv/bin/python -m unittest
 ```
 
 结果：60 项测试通过。检查 Domain 导入与运行时资源声明；没有执行真实 Relay/Java/DQE 联调，也没有完成全量测试或隔离安装。测试通过证明这些已有行为通过定向回归，不反证本文列出的架构演进风险。
-
