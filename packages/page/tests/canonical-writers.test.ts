@@ -13,7 +13,7 @@ it('当前页面与样例使用受支持版本/layout，旧兼容夹具明确隔
         expect(raw.schemaVersion).toBe('6.0');
         expect(raw).toHaveProperty('layoutForm');
       } else {
-        expect(['6.1', '6.2', '6.3', '6.4', '6.5', '6.6'], name).toContain(raw.schemaVersion);
+        expect(['6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '6.7', '6.8'], name).toContain(raw.schemaVersion);
         expect(raw, name).not.toHaveProperty('layoutForm');
         if (normalized.ok) expect(normalized.document, name).toEqual(raw);
       }

@@ -36,9 +36,47 @@ export interface DqeRequestBody {
   dsl_list: [JsonObject];
 }
 
-export type DqeFilterBinding =
+/**
+ * 维度筛选绑定的两支(ADR-0084):
+ * - `queryField` 服务扁平维度筛选器,谓词字段恒定;
+ * - `levelQueryFields` 服务层级维度筛选器,按当前层级 id 取谓词字段。
+ *
+ * 层级筛选器的取值在不同层级属于不同维度(全球用地理编码、代表处用代表处
+ * 编码),恒定字段会把下层取值下推到上层字段上,产出静默错数据。因此两支
+ * 互斥,层级筛选器必须逐级声明,缺级在校验期就拒绝。
+ */
+export type DqeDimensionFilterBinding =
   | { target: 'dimension'; queryField: string }
-  | { target: 'time' };
+  | { target: 'dimension'; levelQueryFields: Record<string, string> };
+
+export type DqeFilterBinding = DqeDimensionFilterBinding | { target: 'time' };
+
+export function isLevelDimensionBinding(
+  binding: DqeFilterBinding
+): binding is { target: 'dimension'; levelQueryFields: Record<string, string> } {
+  return binding.target === 'dimension' && 'levelQueryFields' in binding;
+}
+
+/**
+ * 绑定在给定层级上生效的谓词字段。层级绑定缺少当前层级时返回 undefined,
+ * 调用方据此整条跳过下推——宁可不筛,也不换个字段冒充。
+ */
+export function bindingQueryField(
+  binding: DqeFilterBinding,
+  levelId?: string
+): string | undefined {
+  if (binding.target !== 'dimension') return undefined;
+  if (!isLevelDimensionBinding(binding)) return binding.queryField;
+  return levelId === undefined ? undefined : binding.levelQueryFields[levelId];
+}
+
+/** 绑定可能下推的全部谓词字段(层级绑定即各级字段),用于与其它绑定查重。 */
+export function bindingQueryFields(binding: DqeFilterBinding): string[] {
+  if (binding.target !== 'dimension') return [];
+  return isLevelDimensionBinding(binding)
+    ? Object.values(binding.levelQueryFields)
+    : [binding.queryField];
+}
 
 export interface DqeQueryDefinition {
   language: 'dqe';
@@ -145,7 +183,7 @@ export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<stri
       filter.time = { ...time, ...resolveTimeWindow(value, binding.window) };
       continue;
     }
-    if (Object.values(initialized.filterBindings ?? {}).some(f => f.target === 'dimension' && f.queryField === binding.queryField)) continue;
+    if (Object.values(initialized.filterBindings ?? {}).some(f => bindingQueryFields(f).includes(binding.queryField))) continue;
     const value = values.get(id);
     if (value === undefined) continue;
     const item = initialized.body.dsl_list[0];

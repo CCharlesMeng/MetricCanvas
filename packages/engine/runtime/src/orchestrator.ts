@@ -1,6 +1,7 @@
 import { executionSourceKey } from './execution';
 import type { Page } from '@metriccanvas/page';
 import {
+  bindingQueryField,
   declaredPaginationLimit,
   type DataRow,
   type DataSnapshot,
@@ -449,11 +450,16 @@ function composeEffectiveQuery(
   for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
     const value = values.get(filterId);
     if (binding.target === 'dimension' && value?.type === 'dimension') {
-      filterValues.push({
-        target: 'dimension',
-        queryField: binding.queryField,
-        values: value.values
-      });
+      // 层级维度取当前层级的谓词字段(ADR-0084);缺级时整条不下推,
+      // 不拿别的层级字段去接收本层取值。
+      const queryField = bindingQueryField(binding, value.level);
+      if (queryField !== undefined) {
+        filterValues.push({
+          target: 'dimension',
+          queryField,
+          values: value.values
+        });
+      }
     } else if (binding.target === 'time' && value?.type === 'timeRange') {
       filterValues.push({
         target: 'time',

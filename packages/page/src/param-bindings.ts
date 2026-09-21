@@ -1,7 +1,7 @@
 import type { TypedError } from './errors';
 import { pageParamDeclarations, type PageParamDeclaration, type GroupedPageParams } from './page-param';
 import type { FilterDeclaration } from './filter';
-import type { DqeQueryDefinition } from './query';
+import { bindingQueryFields, isLevelDimensionBinding, type DqeQueryDefinition } from './query';
 import { resolveTimeWindow, timeWindowCompatible } from './time-param';
 
 /** 结构校验后的参数绑定不变量；不从字段名猜目标，不解释任意表达式。 */
@@ -48,7 +48,7 @@ export function paramBindingErrors(document: unknown): TypedError[] {
       if (filter && typeof filter === 'object' && !Array.isArray(filter) && Array.isArray(filter.dims) && filter.dims.some(d => d && typeof d === 'object' && !Array.isArray(d) && d.dim_name === binding.queryField)) {
         error(path, '参数绑定目标不得另有查询体默认条件');
       }
-      const matching = Object.entries(query.filterBindings ?? {}).filter(([, f]) => f.target === 'dimension' && f.queryField === binding.queryField);
+      const matching = Object.entries(query.filterBindings ?? {}).filter(([, f]) => bindingQueryFields(f).includes(binding.queryField));
       if (matching.length > 1) error(path, '参数绑定目标不得由多个筛选器控制');
       for (const [filterId] of matching) {
         const declaration = filters.get(filterId);
@@ -59,7 +59,8 @@ export function paramBindingErrors(document: unknown): TypedError[] {
     for (const [filterId, binding] of Object.entries(query.filterBindings ?? {})) {
       const declaration = filters.get(filterId);
       if (declaration?.type === 'dimension' && declaration.initialParam &&
-          (binding.target !== 'dimension' || owners.get(binding.queryField) !== declaration.initialParam)) {
+          (binding.target !== 'dimension' || isLevelDimensionBinding(binding) ||
+            owners.get(binding.queryField) !== declaration.initialParam)) {
         error(`/dataSources/${pointer(sourceId)}/source/query/filterBindings/${pointer(filterId)}`, '参数初始化筛选的每个查询目标都必须显式绑定同一参数');
       }
     }

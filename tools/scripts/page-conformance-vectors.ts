@@ -1022,9 +1022,48 @@ export const invariants: InvariantDefinition[] = [
   },
   {
     id: 'filter-binding',
-    description: '筛选绑定引用已声明筛选器，且 time / dimension 目标类型匹配',
-    valid: ['query-dashboard', 'filters-page', 'map-page'],
+    description:
+      '筛选绑定引用已声明筛选器，time / dimension 目标类型匹配，层级绑定逐级声明谓词字段',
+    valid: ['query-dashboard', 'filters-page', 'map-page', 'hierarchy-binding-page'],
     cases: [
+      {
+        case: 'level-query-fields-on-flat-filter',
+        base: 'hierarchy-binding-page',
+        expect: /levelQueryFields 只能绑定层级维度筛选器:area/,
+        mutate: (document) => {
+          delete document.filters[0].hierarchy;
+          delete document.filters[0].defaultLevel;
+        }
+      },
+      {
+        case: 'level-query-fields-missing-level',
+        base: 'hierarchy-binding-page',
+        expect: /层级 office 缺少谓词字段/,
+        mutate: (document) => {
+          delete document.dataSources.sales.source.query.filterBindings.area
+            .levelQueryFields.office;
+        }
+      },
+      {
+        case: 'level-query-fields-undeclared-level',
+        base: 'hierarchy-binding-page',
+        expect: /筛选器 area 未声明层级:country/,
+        mutate: (document) => {
+          document.dataSources.sales.source.query.filterBindings.area.levelQueryFields.country =
+            'country_code';
+        }
+      },
+      {
+        case: 'hierarchy-filter-flat-query-field',
+        base: 'map-page',
+        expect: /层级维度筛选器必须用 levelQueryFields 逐级声明谓词字段:area/,
+        mutate: (document) => {
+          document.dataSources.regions.source.query.filterBindings.area = {
+            target: 'dimension',
+            queryField: 'code'
+          };
+        }
+      },
       {
         case: 'unknown-filter-binding',
         base: 'query-dashboard',

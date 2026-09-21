@@ -27,8 +27,10 @@ import {
   isTimeRangeValue,
   validateCalendarTimeRange,
   validateTimePointValue,
+  type DimensionFilterDeclaration,
   type FilterDeclaration
 } from './filter';
+import { isLevelDimensionBinding, type DqeDimensionFilterBinding } from './query';
 import {
   deriveComponentCapabilities,
   type Component,
@@ -745,6 +747,72 @@ function queryContractErrors(
           'FILTER_BINDING_ERROR',
           path,
           `dimension 目标必须绑定维度筛选器:${filterId}`
+        )
+      );
+    } else if (binding.target === 'dimension' && filter.type === 'dimension') {
+      errors.push(...levelBindingErrors(binding, filter, path));
+    }
+  }
+  return errors;
+}
+
+/**
+ * 层级维度绑定的逐级完备判定(ADR-0084)。
+ *
+ * 层级筛选器的取值在每一层属于不同维度,恒定 `queryField` 会把下层取值
+ * 下推到上层字段,产出静默错数据,因此层级筛选器一律要求 `levelQueryFields`;
+ * 反过来扁平筛选器没有层级可选,`levelQueryFields` 无从取值。两者各自越界都
+ * 在这里拒绝,并要求层级绑定逐级写全——少一级就是那一层悄悄不筛。
+ *
+ * 收紧恒定 `queryField` 按 ADR-0051 的零使用例外在 6.8 行使,判据二的证明是
+ * `packages/page/tests/hierarchy-binding-zero-usage.test.ts`。
+ */
+function levelBindingErrors(
+  binding: DqeDimensionFilterBinding,
+  filter: DimensionFilterDeclaration,
+  path: string
+): TypedError[] {
+  const levels = filter.hierarchy ?? [];
+  if (!isLevelDimensionBinding(binding)) {
+    return levels.length === 0
+      ? []
+      : [
+          typedError(
+            'FILTER_BINDING_ERROR',
+            `${path}/queryField`,
+            `层级维度筛选器必须用 levelQueryFields 逐级声明谓词字段:${filter.id}`
+          )
+        ];
+  }
+  if (levels.length === 0) {
+    return [
+      typedError(
+        'FILTER_BINDING_ERROR',
+        `${path}/levelQueryFields`,
+        `levelQueryFields 只能绑定层级维度筛选器:${filter.id}`
+      )
+    ];
+  }
+  const errors: TypedError[] = [];
+  const declared = new Set(levels.map((level) => level.id));
+  for (const level of levels) {
+    if (binding.levelQueryFields[level.id] === undefined) {
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          `${path}/levelQueryFields`,
+          `层级 ${level.id} 缺少谓词字段;层级绑定必须逐级声明`
+        )
+      );
+    }
+  }
+  for (const levelId of Object.keys(binding.levelQueryFields)) {
+    if (!declared.has(levelId)) {
+      errors.push(
+        typedError(
+          'FILTER_BINDING_ERROR',
+          `${path}/levelQueryFields/${escapePointer(levelId)}`,
+          `筛选器 ${filter.id} 未声明层级:${levelId}`
         )
       );
     }

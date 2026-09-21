@@ -16,7 +16,11 @@ import { walkDocumentComponents } from './component-walk';
  */
 
 export const PAGE_SCHEMA_MAJOR = 6;
-const CURRENT_MINOR = 6;
+/**
+ * 6.8 只承载一次按 ADR-0051 例外行使的收紧(层级筛选器不再允许恒定
+ * `queryField`，ADR-0084)，没有新能力，因此能力表里没有 minor=8 的条目。
+ */
+const CURRENT_MINOR = 8;
 /**
  * 5.x 与 6.0 的主体页面结构兼容，故保留为只读输入版本；读取时只需把
  * 旧导航转换为 6.x 的普通 URL 导航。新文档始终写 6.x。
@@ -38,9 +42,20 @@ export interface PageCapabilityDefinition {
 }
 
 export const pageCapabilities = {
+  'filter-binding-level-query-fields': {
+    minor: 7, description: '层级维度筛选绑定逐级声明谓词字段',
+    usedAt: (document) => dataSourcePaths(document, d =>
+      Object.values(record(record(record(d.source)?.query)?.filterBindings) ?? {}).some(b =>
+        has(record(b), 'levelQueryFields')
+      )).map(p => `${p}/source/query/filterBindings`)
+  },
   'grouped-params': {
     minor: 6, description: '分组参数、多个独立时间区间与查询原位引用',
     usedAt: (document) => record(record(document)?.params) ? ['/params'] : []
+  },
+  'million-formats': {
+    minor: 5, description: '按百万呈现数值，支持0/1/2位小数',
+    usedAt: millionFormatPaths
   },
   'named-to-date-windows': {
     minor: 4, description: '具名年初/月初至报告基准期窗口',
@@ -747,4 +762,30 @@ function componentPaths(
 
 function escapePointer(segment: string): string {
   return segment.replaceAll('~', '~0').replaceAll('/', '~1');
+}
+
+/** 只检查格式声明；原始数据行中的同名键不声明展示能力。 */
+function millionFormatPaths(document: unknown): string[] {
+  const paths: string[] = [];
+  function visit(value: unknown, path: string, key: string): void {
+    if (Array.isArray(value)) {
+      value.forEach((child, index) => visit(child, `${path}/${index}`, key));
+      return;
+    }
+    const node = record(value);
+    if (!node) return;
+    for (const [name, child] of Object.entries(node)) {
+      const childPath = `${path}/${escapePointer(name)}`;
+      if (name === key && typeof child === 'string' && /^compact-million-[012]$/.test(child)) paths.push(childPath);
+      else visit(child, childPath, key);
+    }
+  }
+  for (const [id, source] of Object.entries(record(record(document)?.dataSources) ?? {})) {
+    visit(record(source)?.fields, `/dataSources/${escapePointer(id)}/fields`, 'defaultFormat');
+  }
+  walkDocumentComponents(document, (component, path) => visit(component.props, `${path}/props`, 'format'));
+  for (const { path, reference } of collectTextValueReferences(document)) {
+    if (reference.format?.startsWith('compact-million-')) paths.push(`${path}/format`);
+  }
+  return [...new Set(paths)];
 }

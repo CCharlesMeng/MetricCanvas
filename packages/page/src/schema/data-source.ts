@@ -59,6 +59,15 @@ export const dqeQueryZ = z
             z
               .object({ target: z.literal('dimension'), queryField: z.string().min(1) })
               .strict(),
+            // 层级维度筛选器逐级声明谓词字段(ADR-0084);层级 id 为键。
+            z
+              .object({
+                target: z.literal('dimension'),
+                levelQueryFields: z
+                  .record(idZ, z.string().min(1))
+                  .meta({ minProperties: 2 })
+              })
+              .strict(),
             z.object({ target: z.literal('time') }).strict()
           ])
       )

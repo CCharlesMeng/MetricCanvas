@@ -145,7 +145,8 @@
         "查询定义与显式绑定"
       ],
       "examples": [
-        "dimension-params-page"
+        "dimension-params-page",
+        "hierarchy-binding-page"
       ],
       "sources": [
         "packages/page/src/validate.ts",
@@ -269,6 +270,7 @@
         "数据槽、字段绑定与格式"
       ],
       "examples": [
+        "million-formats-page",
         "compute-page",
         "reference-branches-page"
       ],
@@ -1044,7 +1046,8 @@
     "times": "独立时间区间输入数组，每项由唯一参数 ID 引用。",
     "scalars": "纯展示等标量参数数组，实际取值用 value 保存。",
     "#/definitions/groupedPageParams/properties/times/items/properties/start": "包含的区间起点，与 end 同时填写或省略。",
-    "#/definitions/groupedPageParams/properties/times/items/properties/end": "包含的区间终点，不早于 start。"
+    "#/definitions/groupedPageParams/properties/times/items/properties/end": "包含的区间终点，不早于 start。",
+    "levelQueryFields": "层级维度筛选器逐级声明的谓词字段：键是层级id，值是该层的DQE字段；必须逐级写全。"
   },
   "enumNotes": {
     "5.0": "历史5.0文档兼容读取；新创作输出当前6.x版本，能力仍按引入版本检查。",
@@ -1072,6 +1075,9 @@
     "number-grouped": "千分位数值展示。",
     "compact-wan-0": "按万缩放，0位小数。",
     "compact-wan-1": "按万缩放，1位小数。",
+    "compact-million-0": "按百万缩放，0位小数，附加百万后缀（6.5）。",
+    "compact-million-1": "按百万缩放，1位小数，附加百万后缀（6.5）。",
+    "compact-million-2": "按百万缩放，2位小数，附加百万后缀（6.5）。",
     "compact-yi-1": "按亿缩放，1位小数。",
     "cny-adaptive": "按金额量级使用元/万/亿自适应展示。",
     "percent-0": "原数值加百分号，0位小数。",
@@ -1165,8 +1171,10 @@
     "toDate": "兼容6.3的旧写法，新文档优先使用yearToDate或monthToDate。",
     "6.3": "增加确定性日期/月参数与查询时间窗口绑定。",
     "6.4": "新增yearToDate和monthToDate具名窗口，终点为报告基准期。",
-    "6.5": "读取兼容的6.x次版本；能力仍由具体结构与引入版本决定。",
-    "6.6": "当前作者写出版本，新增分组参数与多个独立时间区间。"
+    "6.5": "新增按百万呈现的0/1/2位小数格式。",
+    "6.6": "新增分组参数与多个独立时间区间。",
+    "6.7": "新增层级维度筛选绑定逐级声明谓词字段。",
+    "6.8": "当前作者写出版本；层级维度筛选器不再允许恒定queryField，必须逐级声明。"
   },
   "branchExceptions": {
     "#/definitions/textComponent/properties/props/properties/links/items/properties/query/additionalProperties/oneOf/0": {
