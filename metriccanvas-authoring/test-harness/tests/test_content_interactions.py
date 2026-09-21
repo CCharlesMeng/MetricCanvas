@@ -4,7 +4,7 @@ from pathlib import Path
 from fastmcp import Client
 from test_interaction_editing import interaction_page,add_filter,link
 from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 ROOT=Path(__file__).resolve().parents[2]
 
 class ContentInteractionsTest(unittest.IsolatedAsyncioTestCase):

@@ -79,6 +79,7 @@
 对应[剩余迁移计划](2026-09-21-authoring-remaining-migration.md)第 2 节，分轮进行；每轮只搬位置与更新引用，不改行为。第三到第六批已于 2026-09-21 拆成五条提交进入 `codex/grouped-page-params`（第一、二批此前从未提交，作为同系列的基线提交一并落下）。
 
 - **7a** `pages/composition/`：`compose_page.py`、`compose_content.py`、`unified_composition.py`、`structure_composition.py`、`create_content_page.py` 从 `application/` 迁入。`compose_content` 对 `edit_page` 的相对导入改为绝对路径（`edit_page` 到 7b 才搬），`authoring_deployment` 对 `compose_page` 的相对导入同样改绝对。仓内引用同批更新：`bootstrap/{platform,compatibility}.py`、三个兼容 MCP 入站、`build_page.py`、7 个测试与两个 stdio 夹具、`apps/platform/tests/workbench/language-relay-fixture.py`、ARCHITECTURE.md。
+- **7b** `pages/editing/` 与 `pages/components/`：先把第一批的批次执行器 `pages/editing.py` 改为 `pages/editing/operation_batch.py`，给包腾出名字（三个消费者的导入同步）；再把 `edit_page.py`、`unified_edit_page.py`、`domain/page_editing.py`、`domain/section_editing.py`、`domain/interaction_editing.py` 迁入 `pages/editing/`，`component_policy.py`、`domain/component_editing.py` 迁入 `pages/components/`。`authoring_submission` / `authoring_recovery` 对 `edit_page` 的相对导入改绝对。产品参考真源 `docs/page-metadata/actions-and-navigation.md` 与 `components/README.md` 里的“源码定位”路径同步更新，派生副本由生成器重生。
 
 ## 后续依赖与明确未完成项
 

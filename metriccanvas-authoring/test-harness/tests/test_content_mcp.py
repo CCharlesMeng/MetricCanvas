@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(ROOT / "tool"), str(ROOT / "test-harness")]
 from test_page_editing import title
 from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 
 
 class ContentMcpTest(unittest.IsolatedAsyncioTestCase):

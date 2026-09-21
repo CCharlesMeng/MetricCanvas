@@ -11,7 +11,7 @@ from test_source_mapping import fixture
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.domain.page_structure import block_component, StructureError
-from metriccanvas_authoring.domain.section_editing import edit_section
+from metriccanvas_authoring.pages.editing.section_editing import edit_section
 
 
 def plan():

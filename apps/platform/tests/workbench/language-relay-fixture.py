@@ -17,7 +17,7 @@ from content_stdio_server import server as content_server
 from metriccanvas_authoring.entrypoints.compat.content_mcp import create_content_mcp_server
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.entrypoints.compat.lifecycle_mcp import create_lifecycle_mcp_server
 from metriccanvas_authoring.application.lifecycle_ports import LifecycleIdentity, LifecycleError
 from lifecycle_stdio_server import ProposedService, Programs, Identities

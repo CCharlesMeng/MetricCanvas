@@ -24,7 +24,7 @@ sys.path[:0] = [str(AUTHORING / 'tool'), str(AUTHORING / 'test-harness/tests')]
 from fastmcp import Client
 import httpx
 from test_page_editing import page
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 PARAMS = {'temperature': 0, 'max_tokens': 4096, 'thinking': {'type': 'disabled'}}

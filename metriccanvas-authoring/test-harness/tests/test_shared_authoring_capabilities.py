@@ -13,8 +13,8 @@ from test_structure_plan import plan
 from test_page_editing import title
 from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.pages.composition.structure_composition import compose_structure
-from metriccanvas_authoring.application.unified_edit_page import edit_unified_page
-from metriccanvas_authoring.domain.page_editing import edit_page_document
+from metriccanvas_authoring.pages.editing.unified_edit_page import edit_unified_page
+from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 

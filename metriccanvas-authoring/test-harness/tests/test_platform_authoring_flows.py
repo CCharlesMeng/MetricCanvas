@@ -7,7 +7,7 @@ from copy import deepcopy
 from pathlib import Path
 from fastmcp import Client
 from test_page_editing import page, title
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[2]

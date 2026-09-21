@@ -11,9 +11,9 @@ from metriccanvas_authoring.pages.composition.compose_content import compose_con
 from metriccanvas_authoring.pages.composition.create_content_page import create_content_page as make_content_page
 from metriccanvas_authoring.application.content_ports import ContentBaselinePort
 from metriccanvas_authoring.application.discover_data_context import DiscoverDataContextCommand, DiscoverDataContextDependencies, create_discover_data_context
-from metriccanvas_authoring.application.edit_page import create_edit_page
+from metriccanvas_authoring.pages.editing.edit_page import create_edit_page
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
-from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA
+from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA
 
 PageEditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_SCHEMA)]
 RESULT_SCHEMA = {

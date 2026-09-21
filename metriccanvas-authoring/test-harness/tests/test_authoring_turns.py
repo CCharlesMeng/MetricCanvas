@@ -10,7 +10,7 @@ sys.path[:0] = [str(ROOT / 'tool'), str(ROOT / 'test-harness')]
 from test_page_editing import page
 from metriccanvas_authoring.application.authoring_turns import AuthoringTurnGate, PreparedAuthoringTurn, SCOPE_KEYS, read_page_projection
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 
 
 class Turns:

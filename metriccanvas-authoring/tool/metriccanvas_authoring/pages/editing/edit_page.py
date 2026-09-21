@@ -6,7 +6,7 @@ from metriccanvas_authoring.application.summary_capability import summary_config
 from metriccanvas_authoring.application.content_ports import ContentBaselineError, ContentBaselinePort
 from metriccanvas_authoring.application.bundle_info import load_bundle_info
 from metriccanvas_authoring.domain.canonical import canonical_json, canonical_sha256
-from metriccanvas_authoring.domain.page_editing import edit_page_document
+from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
 
 
 def document_sha256(document: Any) -> str:

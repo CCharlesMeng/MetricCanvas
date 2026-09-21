@@ -1,6 +1,6 @@
 """Construct complete restricted container subtrees and explicit runtime summaries."""
 from copy import deepcopy
-from metriccanvas_authoring.domain.component_editing import EditFailure, walk_components
+from metriccanvas_authoring.pages.components.component_editing import EditFailure, walk_components
 from metriccanvas_authoring.domain.text_map_building import _target_section, _component, _source, remove_component
 from metriccanvas_authoring.domain.page_building import ExecutableUnit, UnitScope, PageBuildingIssue, build_data_component
 from metriccanvas_authoring.domain.execution import DqeExecutionResult

@@ -3,12 +3,12 @@ from copy import deepcopy
 import json
 
 from metriccanvas_authoring.data.query import create_query_data
-from metriccanvas_authoring.application.component_policy import apply_component_policy
+from metriccanvas_authoring.pages.components.component_policy import apply_component_policy
 from metriccanvas_authoring.domain.page_building import build_query_source, build_data_component, PageBuildingIssue
-from metriccanvas_authoring.domain.page_editing import EDIT_SCHEMA, apply_page_operation
+from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
-from metriccanvas_authoring.domain.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
+from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.domain.page_structure import StructureError
 
 _ROOT = bundle_root() / 'contracts/authored'
@@ -81,7 +81,7 @@ async def _add_data(document, op, dependencies, evidence):
 
 
 async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current):
-    from metriccanvas_authoring.pages.editing import operation_batch
+    from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
     batch = operation_batch(baseline, request, UNIFIED_EDIT_SCHEMA['properties']['operations']['items'])
     result = None
     source_descriptions = []

@@ -17,7 +17,7 @@ from test_authoring_candidates import MemoryCandidates
 from test_unified_content_mcp import dependencies
 from metriccanvas_authoring.application.authoring_turns import PreparedAuthoringTurn
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 
 

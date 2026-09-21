@@ -6,7 +6,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tool"))
-from metriccanvas_authoring.domain.page_editing import edit_page_document, EDIT_SCHEMA
+from metriccanvas_authoring.pages.editing.page_editing import edit_page_document, EDIT_SCHEMA
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 from jsonschema import Draft202012Validator
 
@@ -149,7 +149,7 @@ class PageEditingTest(unittest.TestCase):
 
     def test_nested_component_title_keeps_unrelated_full_document(self):
         baseline = json.loads((ROOT / "contract-snapshot/page/conformance/valid/composite-page.json").read_text())
-        from metriccanvas_authoring.domain.component_editing import walk_components
+        from metriccanvas_authoring.pages.components.component_editing import walk_components
         target = next(c for c in walk_components(baseline) if c["type"] == "metricCard")
         expected = deepcopy(baseline)
         next(c for c in walk_components(expected) if c["id"] == target["id"])["props"]["title"] = "nested"
@@ -163,7 +163,7 @@ class PageEditingTest(unittest.TestCase):
         self.assertEqual([c["id"] for c in result["document"]["sections"][0]["components"]], ["header", "chart", "table", "metric"])
 
     def test_parameter_references_queries_and_original_rows_are_untouched(self):
-        from metriccanvas_authoring.domain.component_editing import walk_components
+        from metriccanvas_authoring.pages.components.component_editing import walk_components
         for name in ("params-page", "grouped-fields-page", "query-dashboard", "filters-page"):
             with self.subTest(page=name):
                 baseline = json.loads((ROOT / f"contract-snapshot/page/conformance/valid/{name}.json").read_text())

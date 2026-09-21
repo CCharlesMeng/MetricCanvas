@@ -2,8 +2,8 @@
 import json
 from typing import Any
 
-from metriccanvas_authoring.domain.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
-from metriccanvas_authoring.domain.interaction_editing import INTERACTION_HANDLERS
+from metriccanvas_authoring.pages.components.component_editing import EditFailure, OPERATION_HANDLERS as COMPONENT_HANDLERS
+from metriccanvas_authoring.pages.editing.interaction_editing import INTERACTION_HANDLERS
 from metriccanvas_authoring.domain.container_building import CONTAINER_HANDLERS, add_ai_summary
 from metriccanvas_authoring.domain.text_map_building import TEXT_MAP_HANDLERS
 from metriccanvas_authoring.runtime_assets import bundle_root
@@ -24,7 +24,7 @@ def apply_page_operation(document, op, *, summary_enabled=False):
 
 
 def edit_page_document(baseline: Any, request: Any, *, summary_enabled: bool = False) -> dict[str, Any]:
-    from metriccanvas_authoring.pages.editing import operation_batch
+    from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
     batch = operation_batch(baseline, request, OPERATION_SCHEMA)
     result = None
     while True:

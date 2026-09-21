@@ -27,14 +27,14 @@ from test_authoring_candidates import MemoryCandidates
 from test_unified_composition import data_op, text_op
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 
 # A separate process prevents current modules/contracts leaking into the old reader.
 OLD_READER = '''
 import json, sys
 from copy import deepcopy
 from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
-from metriccanvas_authoring.domain.page_editing import edit_page_document
+from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
 value = json.load(sys.stdin)
 original = deepcopy(value['document'])
 normalized = normalize_page_document(original)

@@ -27,7 +27,7 @@ from trusted_scenarios import scenarios
 from reference_injection import ReferenceInjection
 from test_authoring_turns import Turns
 from metriccanvas_authoring.application.authoring_turns import SCOPE_KEYS
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from metriccanvas_authoring.domain.page_validation import validate_page_document
 
 

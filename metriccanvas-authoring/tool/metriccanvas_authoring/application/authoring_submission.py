@@ -9,7 +9,7 @@ from typing import Protocol
 from uuid import uuid4
 
 from .authoring_turns import AuthoringTurnGate, PreparedAuthoringTurn
-from .edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from .lifecycle import Lifecycle, VALIDATOR, require
 from .lifecycle_ports import LifecycleError
 from metriccanvas_authoring.domain.canonical import canonical_json

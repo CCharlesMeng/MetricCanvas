@@ -95,7 +95,7 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
     async def test_real_line_chart_binding_projection_excludes_business_payload(self):
         import hashlib
         from metriccanvas_authoring.application.content_ports import ContentBaseline
-        from metriccanvas_authoring.application.edit_page import document_sha256
+        from metriccanvas_authoring.pages.editing.edit_page import document_sha256
         turns = Turns()
         document = json.loads((ROOT / 'contract-snapshot/page/conformance/valid/mixed-page.json').read_text())
         # Use the real governed chart configuration, with secret business evidence in sources.

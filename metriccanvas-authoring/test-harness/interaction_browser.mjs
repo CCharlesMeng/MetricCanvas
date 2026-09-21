@@ -33,7 +33,7 @@ from pathlib import Path
 sys.path[:0]=['metriccanvas-authoring/tool','metriccanvas-authoring/test-harness/tests']
 from fastmcp import Client
 from test_interaction_editing import interaction_page,add_filter,link
-from metriccanvas_authoring.application.edit_page import document_sha256
+from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 out=Path(sys.argv[1]);feed=out/'baselines';feed.mkdir(exist_ok=True);pages=out/'pages';pages.mkdir(exist_ok=True)
 def publish(token,doc):
  (feed/(token+'.json')).write_text(json.dumps({'ref':{'pageId':doc['id'],'revisionId':'r1','resourceId':'resource1'},'document':doc,'documentSha256':document_sha256(doc)}))

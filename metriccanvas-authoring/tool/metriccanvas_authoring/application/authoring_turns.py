@@ -13,7 +13,7 @@ from jsonschema import Draft202012Validator
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 from metriccanvas_authoring.application.content_ports import ContentBaseline, ContentBaselineError
-from metriccanvas_authoring.application.edit_page import read_verified_baseline
+from metriccanvas_authoring.pages.editing.edit_page import read_verified_baseline
 from metriccanvas_authoring.domain.canonical import canonical_json
 
 SCOPE_KEYS = ('actorId', 'workspaceId', 'requestId', 'runId', 'turnId', 'pageId', 'capabilityVersion')

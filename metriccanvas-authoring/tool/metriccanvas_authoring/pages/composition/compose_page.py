@@ -18,7 +18,7 @@ from metriccanvas_authoring.domain.page_building import (
     assemble_page_document,
 )
 from metriccanvas_authoring.domain.page_validation import validate_page_document
-from metriccanvas_authoring.application.component_policy import apply_component_policy
+from metriccanvas_authoring.pages.components.component_policy import apply_component_policy
 
 from metriccanvas_authoring.data.query import (
     QueryDataDependencies,
