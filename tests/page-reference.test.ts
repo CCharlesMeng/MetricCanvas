@@ -47,9 +47,12 @@ describe('页面参考手册生成与分发', () => {
       expect(atPointer(document,example.pointer).type).toBe(example.type);
       if(example.variant!==undefined)expect(atPointer(document,example.pointer).props.variant).toBe(example.variant);
     }
-    for(const [file,content] of reference)if(file.startsWith('errors/')){
+    for(const [file,content] of inputs)if(file.startsWith('page/conformance/invalid/')){
       const vector=JSON.parse(content);
       expect(validate(vector.input).map(({type,path})=>({type,path})),file).toEqual(vector.expected.map(({type,path}:any)=>({type,path})));
+      const excerpt=JSON.parse(reference.get(`errors/${path.posix.basename(file)}`)!);
+      expect(excerpt.fullInput,file).toBe(file);
+      expect(new Set(excerpt.expected.flatMap((issue:any)=>issue.paths)),file).toEqual(new Set(vector.expected.map((issue:any)=>issue.path)));
     }
     for (const definition of Object.keys((pageSchema as Record<string, any>).definitions ?? {})) expect(index.nodes.some((n: any)=>n.pointer===`#/definitions/${definition}`)).toBe(true);
     expect(new Set(index.components.map((c:any)=>c.type))).toEqual(new Set(componentCatalog.map(c=>c.type)));

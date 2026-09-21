@@ -8,7 +8,11 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 - `metriccanvas-platform-content-v1` → `unified_content_server`：旧候选协议与兼容 Skill，既有记录不转换、不删除。不是 v2 缺依赖时的回退。
 - `metriccanvas-authoring` → `server`：普通问数/探索，临时页面态不自动保存；两工具 Skill 保持原协议。
 
+目标工具面固定六项：`read_page_context`、`discover_data_context`、`query_data`、`compose_page`、`edit_page`、`page_metadata_emit_preview`，另有 resource `metriccanvas://bundle-info`。请求体不另写模型，直接以 `WithJsonSchema` 投影领域侧的 `QUERY_SCHEMA`/`COMPOSE_SCHEMA`/`EDIT_RESULT_SCHEMA`；工具面消费契约，不拥有契约。返回恒为 `{ok, modelSummary, artifactEnvelope}`，模型只读 `modelSummary`，程序产物只在 mutation 时产出 `artifactEnvelope`；异常在此收成 `rejected`/`unavailable` 闭集，实现细节不外泄。
+
 入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/ports.py`、`assets/ports.py`、`adapters/service_identity.py`），不再有汇总的 `application/ports.py`。
+
+入站 MCP 是接入点而不是 Adapter：目标工具面在 `entrypoints/mcp/`，旧注册名的工具面与各自启动入口同处 `entrypoints/compat/`。出站按外部系统边界分组而不按方向分组：`adapters/firstparty/`（Lab Data Context、DQE、Java 页面资产、草稿生命周期、未接入的发布；不写作 `java/` 是因为 Lab 与 DQE 不是 Java 契约）、`adapters/relay/`（Relay 注入的只读输入与来自 MCP config 的服务态身份）、`adapters/storage/`（SQLite）。身份端口留在 `adapters/service_identity.py`，由全部出站适配器共用。`bootstrap/` 之外不 import 具体适配器。
 
 宿主通过同一次请求注入可信上下文和提供方。默认独立 CLI 不能凭模型输入制造身份、计划确认或保存权限；缺依赖明确不可用。
 

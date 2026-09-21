@@ -66,6 +66,27 @@
 
 在 `contracts/`、`contract-snapshot/`、Skill references、`bundle.lock.json` 各处写明：哪份是手写真源、哪份是生成物、用哪条命令再生、离线安装为什么需要副本。不删任何离线安装所需副本。
 
+### 5.1 反例投影片段化
+
+`page-reference.ts:191` 现在把 `page/conformance/invalid/*.json` 逐字节搬进 `errors/`，每个用例内嵌一整页 invalid JSON。一棵参考树写到三处（`contracts/metriccanvas/page/reference/`、`contract-snapshot/page/reference/`、Skill references），174 个文件 1482 KiB × 3。
+
+投影规则改为：保留 `case`/`invariant`，`input` 换成 `inputExcerpt`——只留每个 `expected[].path` 的祖先链，命中节点保留 2 层子树，超过 200 字符的字符串截断并标出原长（`*-too-large` 用例的体积全在这里）；`expected` 按 `type + message` 聚合为 `paths[]`，因为同一文案大量重复（`navigation-legacy-target-rejected` 135 条只有 25 句）；另加 `fullInput` 指回 `page/conformance/invalid/<case>.json`。
+
+实测：1482 KiB → 209 KiB（−86%，单文件峰值 72.6K → 10.7K），仓内共省约 3.7 MiB，Skill 参考树 3.6M → 约 2.4M。完整向量原封留在 `page/conformance/invalid/`，不删任何离线安装所需副本，信息不丢。
+
+改动点四处，都不动契约真源：
+
+| 位置 | 改什么 |
+|---|---|
+| `tools/scripts/page-reference.ts:191` | 换成片段化投影 |
+| `tools/scripts/page-reference.ts:220` | 生成的 md 末句「反例文件包含完整input及预期type/path」改成片段措辞并指出完整向量在哪 |
+| `tools/scripts/page-reference.ts:246-255` | `branchExceptions` 改从 `inputs` 取原向量跑 `validate`/`branchWitnesses`，不再读投影产物（当前只有 `navigation-text-row-source` 一条） |
+| `tests/page-reference.test.ts:50-53` | 对每个 `errors/*.json` 重跑 `validate(vector.input)` 的断言改为对 conformance 向量执行 |
+
+已定的两件事（2026-09-21，用户拍板）：一是**验证职责从投影产物移回契约夹具**，反例文件此后只是文档，门禁由 conformance 向量承担；二是 SKILL.md 承诺的「参考目录自包含」收窄为片段自包含，反例的完整页面不再进 Skill，修页面元数据需要的是「哪个 pointer 触发哪条不变式」而不是整页。
+
+本批额外退出条件：`errors/` 投影后每个用例仍能定位到全部 `expected` 路径；`validateReferenceLinks` 无断链；反例相关门禁在 conformance 侧仍然会因为陈旧向量而失败。
+
 ## 6. 明确不做
 
 - 不改 MCP 工具名、参数 Schema、保存策略、两个 Relay 占位符。
