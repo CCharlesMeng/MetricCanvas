@@ -1,15 +1,14 @@
-"""Deterministic acceptance plan through PUBLIC MCP; explicitly not autonomous model evidence."""
+"""Deterministic acceptance plan through the current structure use case; explicitly not autonomous model evidence."""
 import argparse
 import asyncio
 import json
 import os
 from pathlib import Path
-from fastmcp import Client
+from dataclasses import replace
 from scenario_flow_server import dependencies
-from test_section_presentation import plan
+from authoring_fixtures import presentation_plan as plan
 from test_authoring_turns import Turns
-from test_authoring_candidates import MemoryCandidates
-from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.pages.composition.structure_composition import compose_structure
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
@@ -29,18 +28,18 @@ async def main():
             'fields':['month','core-actual','communication-actual','core-forecast','communication-forecast'],
             'purpose':'trend','title':'1–2 月实际 · 3–12 月预测'},
             {'id':'fixture-note','type':'text','purpose':'explanation','body':'本地样例，非生产数据。不同来源口径独立，不跨源对账；预测使用已有样例，不代表业务承诺。'}]})
-    deps=dependencies()
-    async with Client(create_unified_content_mcp_server(deps,Turns('new'),candidate_store=MemoryCandidates())) as client:
-        result=(await client.call_tool('create_content_page',{'context_ref':'current-context','layout':'report','title':'流水分析报告（本地样例）','request':{'plan':authored}})).structured_content
-    if not result['ok'] or result['modelSummary']['status']!='changed': raise RuntimeError(json.dumps(result['modelSummary']))
-    document=result['artifactEnvelope']['artifact']['document']
+    deps=replace(dependencies(), authoring_scope=dict(Turns('new').binding), require_source_description=True)
+    async def current(): pass
+    result=await compose_structure('flow-report', '流水分析报告（本地样例）', 'report', authored, deps, current=current)
+    if result['status'] != 'changed': raise RuntimeError(str(result['issues']))
+    document=result['document']
     errors=validate_page_document(document)
     cards=[c for s in document['sections'] for c in s['components'] if c['type']=='metricCard']
     assert not errors and len(cards)==3 and all(c['props']['variant']=='compactSummary' for c in cards)
-    report={'evidenceKind':'deterministic-public-tool-acceptance','autonomousModel':False,'valid':not errors,
+    report={'evidenceKind':'deterministic-structure-acceptance','autonomousModel':False,'valid':not errors,
         'issues':[], 'queryCount':len(deps.dqe.calls),'objects':len(cards),'primaryRows':sum(len(c['props']['rows']) for c in cards),
         'changeBindings':sum(len(r.get('changes',[])) for c in cards for r in c['props']['rows']),
-        'visualAcceptance':'user-owned-not-executed','modelSummary':result['modelSummary']}
+        'visualAcceptance':'user-owned-not-executed','modelSummary':{'status':result['status']}}
     for name,value in [('page.json',document),('plan.json',authored),('validation.json',report)]:
         (args.output/name).write_text(json.dumps(value,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='modelSummary'},ensure_ascii=False))

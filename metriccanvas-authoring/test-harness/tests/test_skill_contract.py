@@ -166,11 +166,20 @@ class RelaySkillContractTest(unittest.TestCase):
 
 
 class UnifiedSkillContractTest(unittest.IsolatedAsyncioTestCase):
+    def test_retired_platform_entrypoint_is_not_distributed(self):
+        import importlib.util
+        import tomllib
+        scripts = tomllib.loads((BUNDLE_ROOT / 'tool/pyproject.toml').read_text())['project']['scripts']
+        self.assertEqual({name for name in scripts if name.startswith('metriccanvas-platform-')},
+                         {'metriccanvas-platform-content'})
+        self.assertIsNone(importlib.util.find_spec('metriccanvas_authoring.entrypoints.compat.unified_content_server'))
+        self.assertNotIn('compatibility', json.loads((BUNDLE_ROOT / 'bundle.json').read_text()))
+
     async def test_examples_and_allowed_tools_match_actual_target_registration(self):
         from fastmcp import Client
         from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
         from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
-        from test_unified_content_mcp import dependencies
+        from authoring_fixtures import dependencies
         folder = BUNDLE_ROOT / 'skill/metriccanvas-platform-authoring'
         examples = [json.loads(value) for value in re.findall(
             r'```json\n(.*?)\n```', (folder / 'references/examples.md').read_text(), re.DOTALL)]
@@ -182,12 +191,6 @@ class UnifiedSkillContractTest(unittest.IsolatedAsyncioTestCase):
         self.assertGreaterEqual(len(examples), 4)
         for example in examples:
             self.assertEqual(list(Draft202012Validator(tools[example['tool']].inputSchema).iter_errors(example['arguments'])), [])
-        old = yaml.safe_load((BUNDLE_ROOT / 'skill-compat/platform-authoring-v1/SKILL.md').read_text().split('---', 2)[1])
-        self.assertEqual(set(old['allowed-tools']), {
-            'read_page_context', 'discover_data_context', 'compose_page',
-            'create_content_page', 'edit_page', 'extract_page_parameters',
-            'apply_page_parameter_selection', 'resolve_page_parameters',
-        })
 
 
 if __name__ == '__main__':

@@ -1,8 +1,8 @@
 """Target entrypoint; assembly lives in ``metriccanvas_authoring.bootstrap``.
 
-Standalone invocation advertises v2 but fails closed without trusted
-providers. The old unified_content_server remains the v1 compatibility
-entrypoint, not a fallback for this one.
+Standalone invocation advertises the current platform protocol but fails
+closed without trusted providers. Historical candidate entrypoints are not
+part of the production registration and are never a fallback.
 """
 from metriccanvas_authoring.bootstrap.platform import (
     create_platform_server,

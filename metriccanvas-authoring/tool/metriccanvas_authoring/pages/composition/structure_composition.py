@@ -6,7 +6,7 @@ from metriccanvas_authoring.data.query import create_query_data
 from metriccanvas_authoring.data.executable_units import build_query_source
 from metriccanvas_authoring.data.metric_relations import load_relations
 from metriccanvas_authoring.data.structure_query_cache import StructureQueryCache
-from metriccanvas_authoring.pages.composition.page_structure import block_component, scope_notes, StructureError, validate_plan
+from metriccanvas_authoring.pages.composition.page_structure import block_component, StructureError
 from metriccanvas_authoring.pages.composition.structure_preflight import inspect_plan, query_signature
 from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.pages.components.section_presentation import pack_section
@@ -18,11 +18,8 @@ async def compose_structure(page_id, title, layout, plan, dependencies, *, curre
             'appliedAdjustments': [], 'truncation': check['truncation'], 'sourceDescriptions': []}
     def failure(code):
         return {**base, 'status': 'failed', 'document': None, 'issues': [{'code': code, 'path': ''}]}
-    if check['fatal'] or (plan.get('version') == '1' and check['issues']):
+    if check['fatal']:
         return {**base, 'status': 'failed', 'document': None}
-    if plan['version'] == '1':
-        try: validate_plan(plan)
-        except StructureError as error: return failure(error.code)
     try:
         snapshot = await dependencies.data_context.current()
     except Exception:
@@ -66,7 +63,7 @@ async def compose_structure(page_id, title, layout, plan, dependencies, *, curre
     for si, section in enumerate(plan['sections']):
         target = {'id': section['id'], 'container': section.get('container', 'panel'), 'components': []}
         if 'title' in section: target['title'] = section['title']
-        if plan['version']=='3' and 'container' not in section:
+        if 'container' not in section:
             adjustments.append({'rule':'default-section-container','objectId':section['id'],'container':'panel'})
         applied_sources = []
         for bi, block in enumerate(section['blocks']):
@@ -81,7 +78,7 @@ async def compose_structure(page_id, title, layout, plan, dependencies, *, curre
                 if validate_page_document(trial): raise StructureError('STRUCTURE_COMPONENT_INVALID')
                 target['components'].append(component)
                 changes = []
-                if plan['version']=='3' and 'width' not in block:
+                if 'width' not in block:
                     changes.append({'rule':'default-component-width','objectId':block['id'],'span':component['layout']['span']})
                 if block.get('presentation'):
                     changes.append({'rule': 'registered-'+block['presentation']['kind'], 'objectId': block['id'],
@@ -95,12 +92,7 @@ async def compose_structure(page_id, title, layout, plan, dependencies, *, curre
                                 'path': f'/sections/{si}/blocks/{bi}', 'objectIds': [block['id']], 'blocking': True}], 'adjustments': []})
                 target['components'].append({'id': 'structure-missing-' + block['id'], 'type': 'text',
                     'layout': {'span': 12}, 'props': {'body': f'未生成「{block.get("title", block["id"])}」：{error.code}。'}})
-        if plan['version'] in {'2','3'}:
-            adjustments.extend(pack_section(target['components'], section['blocks']))
-        notes = scope_notes(requests[k] for k in applied_sources)
-        if notes and plan['version'] != '3':
-            target['components'].append({'id': 'structure-scope-' + section['id'], 'type': 'text', 'layout': {'span': 12},
-                                         'props': {'body': '数据口径：\n' + '\n'.join(notes)}})
+        adjustments.extend(pack_section(target['components'], section['blocks']))
         document['sections'].append(target)
     bound = {c['data']['main'] for s in document['sections'] for c in s['components'] if 'data' in c}
     document['dataSources'] = {k: v for k, v in sources.items() if k in bound}

@@ -1,6 +1,6 @@
 # 工具与部署契约
 
-本 Skill 只配 platformProtocolVersion=2.0 的 metriccanvas-platform-content。旧版本使用独立兼容 Skill/CLI，不能同轮失败后切换旧入口。
+本 Skill 只配 platformProtocolVersion=2.0 的 metriccanvas-platform-content。旧平台 Skill、CLI 和候选提交链已删除，不提供回退。
 
 | 工具 | 输入与行为 |
 |---|---|
@@ -10,6 +10,9 @@
 | compose_page | context_ref、request、expected_version。request 含 title、layout、sources、sections；新建合法页面并内部保存 |
 | edit_page | context_ref、request.operations、expected_version；局部修改当前工作稿并内部保存 |
 | page_metadata_emit_preview | context_ref、artifact_ref；准备该已保存产物的预览，不查数、不保存 |
+| extract_page_parameters | context_ref，可选 artifact_ref；从当前工作稿或精确产物提取经验证的参数选项，返回 extraction_ref |
+| apply_page_parameter_selection | context_ref、extraction_ref、selected_ids、text_choices；生成临时模板并返回 artifact_ref，需要人工确认，不自动保存或发布 |
+| resolve_page_parameters | context_ref、values，可选 artifact_ref；填充参数并返回 instance_ref，不执行查询、不保存 |
 
 所有写入基于程序注入的身份和基线。工作稿按版本竞争检查，提交 document/base/operationId 冻结。draftId 映射保存回执 ref.resourceId，ref.pageId/ref.revisionId 保持独立；不能互相替代。
 

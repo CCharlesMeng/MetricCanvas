@@ -11,7 +11,7 @@ from typing import Protocol, Callable
 from uuid import uuid4
 
 from metriccanvas_authoring.work.authoring_turns import AuthoringTurnGate
-from metriccanvas_authoring.work.authoring_candidates import AuthoringCandidates
+from metriccanvas_authoring.work.state import TurnState, require
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 from .parameter_preparation import ParameterProgram, prepare_page_parameters
@@ -19,7 +19,7 @@ from metriccanvas_authoring.pages.validation.page_validation import validate_pag
 
 
 class VerifiedParameterContext(Protocol):
-    async def verify(self, prepared, document: dict, candidate_ref: str | None) -> dict:
+    async def verify(self, prepared, document: dict, artifact_ref: str | None) -> dict:
         """Prove exact DQE-verified source; return sourceSha256, baseline, dimensionIdentities.
 
         Hash alone is not evidence. Implementations must consult their verification
@@ -53,9 +53,9 @@ def parameter_summary(document):
 
 
 class PageParameters:
-    def __init__(self, gate: AuthoringTurnGate, candidates: AuthoringCandidates,
+    def __init__(self, gate: AuthoringTurnGate, state: TurnState,
                  dependencies: ParameterDependencies | None):
-        self.gate, self.candidates, self.deps = gate, candidates, dependencies
+        self.gate, self.state, self.deps = gate, state, dependencies
 
     def available(self):
         if self.deps is None:
@@ -63,12 +63,25 @@ class PageParameters:
         if not 1 <= self.deps.ttl_seconds <= 86400:
             raise ContentBaselineError('PARAMETER_CONFIGURATION_INVALID')
 
-    async def source(self, prepared, candidate_ref):
-        if candidate_ref is not None:
-            return (await self.candidates.require(candidate_ref, prepared))['document']
-        if prepared.baseline is None:
-            raise ContentBaselineError('CURRENT_TURN_BASELINE_REQUIRED')
-        return deepcopy(prepared.baseline.document)
+    async def prepare(self, context_ref, write=False):
+        self.available()
+        prepared = await self.gate.require(context_ref, write=write)
+        await self.state.consume(prepared)
+        return prepared
+
+    async def source(self, prepared, artifact_ref):
+        require(self.state.store is not None, 'WORK_STORE_UNAVAILABLE')
+        _, work = await self.state.read(prepared)
+        require(work['active'] is None, 'WORK_BUSY')
+        if artifact_ref is not None:
+            if artifact_ref.startswith('template-'):
+                record = await self.require(artifact_ref, 'template', prepared)
+                return deepcopy(record['payload']['document'])
+            value = work['artifact']
+            require(value is not None and value['artifactRef'] == artifact_ref, 'PARAMETER_REFERENCE_INVALID')
+            return deepcopy(value['previewJson'])
+        require(work['document'] is not None, 'CURRENT_TURN_BASELINE_REQUIRED')
+        return deepcopy(work['document'])
 
     async def program(self, request):
         try:
@@ -82,6 +95,7 @@ class PageParameters:
             raise ContentBaselineError('PARAMETER_PROGRAM_UNAVAILABLE') from None
 
     async def put(self, kind, prepared, payload):
+        await self.state.remaining(prepared)
         record = {'ref': kind + '-' + uuid4().hex, 'kind': kind,
                   'binding': deepcopy(dict(prepared.binding)),
                   'expiresAt': self.deps.clock() + self.deps.ttl_seconds,
@@ -95,6 +109,7 @@ class PageParameters:
         except Exception:
             raise ContentBaselineError('PARAMETER_STORE_UNAVAILABLE') from None
         await self.gate.unchanged(prepared)
+        await self.state.remaining(prepared)
         return record
 
     async def require(self, ref, kind, prepared):
@@ -122,20 +137,21 @@ class PageParameters:
         return {'ok': False, 'artifactEnvelope': None,
                 'modelSummary': {'status': 'rejected', 'issues': issues or [{'code': 'PARAMETER_INVALID'}]}}
 
-    async def extract(self, context_ref, candidate_ref=None):
+    async def extract(self, context_ref, artifact_ref=None):
         self.available()
-        prepared = await self.gate.require(context_ref)
-        document = await self.source(prepared, candidate_ref)
+        prepared = await self.prepare(context_ref)
+        document = await self.source(prepared, artifact_ref)
         if self.deps.verified_context is None:
             raise ContentBaselineError('PARAMETER_VERIFICATION_UNAVAILABLE')
         try:
-            context = await self.deps.verified_context.verify(prepared, deepcopy(document), candidate_ref)
+            context = await self.deps.verified_context.verify(prepared, deepcopy(document), artifact_ref)
             if context.get('sourceSha256') != document_sha256(document) or not context.get('baseline'):
                 raise ValueError()
         except Exception:
             raise ContentBaselineError('PARAMETER_VERIFICATION_UNAVAILABLE') from None
         context = {k: deepcopy(context[k]) for k in ('baseline', 'dimensionIdentities') if k in context}
         result = await self.program({'action': 'extract', 'document': document, 'context': context})
+        await self.state.remaining(prepared)
         await self.gate.unchanged(prepared)
         if not result['ok']: return self.failure(result)
         if result.get('source') != document or result.get('baseline') != context['baseline']:
@@ -144,8 +160,11 @@ class PageParameters:
             raise ContentBaselineError('PARAMETER_SIZE_LIMIT')
         # Distinct opaque candidate IDs vs page parameter IDs, even when spelling could coincide.
         ids = {c['id']: f'choice-{i+1}' for i, c in enumerate(result['candidates'])}
+        state_version, work = await self.state.read(prepared)
+        require(work['active'] is None and await self.source(prepared, artifact_ref) == document, 'PARAMETER_SOURCE_CHANGED')
         record = await self.put('extraction', prepared, {'document': document, 'context': context,
-            'candidateRef': candidate_ref, 'extraction': result, 'candidateIds': ids})
+            'stateVersion': state_version, 'workVersion': work['workVersion'],
+            'artifactRef': artifact_ref, 'extraction': result, 'candidateIds': ids})
         summary = {'status': 'extracted', 'extraction_ref': record['ref'], 'expiresAt': record['expiresAt'],
             'candidates': [{'candidate_id': ids[c['id']], 'param_id': c['id'],
                 **{k: c['declaration'][k] for k in ('type', 'label', 'multiple', 'granularity') if k in c['declaration']},
@@ -158,14 +177,14 @@ class PageParameters:
 
     async def apply(self, context_ref, extraction_ref, selected_ids, text_choices):
         self.available()
-        prepared = await self.gate.require(context_ref, write=True)
+        prepared = await self.prepare(context_ref, write=True)
         record = await self.require(extraction_ref, 'extraction', prepared)
         data = record['payload']
-        source = await self.source(prepared, data['candidateRef'])
+        source = await self.source(prepared, data['artifactRef'])
         if source != data['document']:
             raise ContentBaselineError('PARAMETER_SOURCE_CHANGED')
         try:
-            evidence = await self.deps.verified_context.verify(prepared, deepcopy(source), data['candidateRef'])
+            evidence = await self.deps.verified_context.verify(prepared, deepcopy(source), data['artifactRef'])
             if (evidence.get('sourceSha256') != document_sha256(source) or
                 any(evidence.get(k) != data['context'].get(k) for k in ('baseline', 'dimensionIdentities'))):
                 raise ValueError()
@@ -196,24 +215,31 @@ class PageParameters:
         except Exception:
             raise ContentBaselineError('PARAMETER_PROGRAM_MISMATCH') from None
         await self.gate.unchanged(prepared, write=True)
+        await self.state.remaining(prepared)
         if not result['ok']: return self.failure(result)
-        candidate = await self.candidates.put(prepared, result['artifact']['document'],
-            [{'type': 'parameter_selection', 'extractionRef': extraction_ref, 'selectedIds': selected}],
-            data['candidateRef'])
+        version, work = await self.state.read(prepared)
+        require(version == data['stateVersion'] and work['workVersion'] == data['workVersion'] and
+                work['active'] is None, 'PARAMETER_SOURCE_CHANGED')
+        require(await self.state.store.compare_and_swap('work', self.state.key(prepared), version, work),
+                'WORK_VERSION_CONFLICT')
+        template = await self.put('template', prepared, {'document': result['artifact']['document'],
+            'sourceArtifactRef': data['artifactRef'], 'sourceWorkVersion': work['workVersion'],
+            'extractionRef': extraction_ref, 'selectedIds': selected})
         await self.gate.unchanged(prepared, write=True)
-        # Distinct envelope kind: template candidates require explicit publication,
-        # never the ordinary automatic final-candidate save flow.
+        # A prepared template is a program artifact, not an automatic draft save.
         return {'ok': True, 'artifactEnvelope': {'kind': 'metriccanvas.parameter-template',
-                'formatVersion': '1.0', 'artifact': candidate},
-                'modelSummary': {'status': 'template_prepared', 'candidate_ref': candidate['candidateRef'],
+                'formatVersion': '1.0', 'artifact': template},
+                'modelSummary': {'status': 'template_prepared', 'artifact_ref': template['ref'],
                     'selected_ids': selected_ids, 'requiresHumanConfirmation': True, 'saved': False}}
 
-    async def resolve(self, context_ref, values, candidate_ref=None):
+    async def resolve(self, context_ref, values, artifact_ref=None):
         self.available()
-        prepared = await self.gate.require(context_ref)
-        document = await self.source(prepared, candidate_ref)
+        prepared = await self.prepare(context_ref)
+        document = await self.source(prepared, artifact_ref)
         result = await self.program({'action': 'resolve', 'document': document, 'suppliedValues': values})
+        await self.state.remaining(prepared)
         await self.gate.unchanged(prepared)
+        require(await self.source(prepared, artifact_ref) == document, 'PARAMETER_SOURCE_CHANGED')
         if not result['ok']: return self.failure(result)
         filled = result.get('document')
         if not isinstance(filled, dict) or validate_page_document(filled):
@@ -226,7 +252,7 @@ class PageParameters:
             raise ContentBaselineError('PARAMETER_PROGRAM_MISMATCH')
         instance = await self.put('instance', prepared, {'document': filled,
             'resolvedPage': result['resolvedPage'], 'effectiveInputs': result['effectiveInputs'],
-            'candidateRef': candidate_ref})
+            'artifactRef': artifact_ref})
         return {'ok': True, 'artifactEnvelope': {'kind': 'metriccanvas.parameter-instance',
             'formatVersion': '1.0', 'artifact': instance},
             'modelSummary': {'status': 'resolved', 'instance_ref': instance['ref'],
@@ -236,7 +262,15 @@ class PageParameters:
     async def read_instance(self, context_ref, instance_ref):
         """Trusted host-only consumption. Recheck live identity/turn/expiry before rendering."""
         self.available()
-        prepared = await self.gate.require(context_ref)
+        prepared = await self.prepare(context_ref)
         record = await self.require(instance_ref, 'instance', prepared)
         await self.gate.unchanged(prepared)
+        return deepcopy(record)
+
+    async def read_template(self, context_ref, artifact_ref):
+        """Trusted host-only read; publication still requires explicit human confirmation."""
+        prepared = await self.prepare(context_ref)
+        record = await self.require(artifact_ref, 'template', prepared)
+        await self.gate.unchanged(prepared)
+        await self.state.remaining(prepared)
         return deepcopy(record)

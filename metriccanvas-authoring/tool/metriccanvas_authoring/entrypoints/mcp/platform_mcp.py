@@ -1,8 +1,8 @@
 """Target platform surface. Legacy candidate tools are registered separately."""
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
-from pydantic import Field, WithJsonSchema
+from pydantic import Field, WithJsonSchema, BaseModel, ConfigDict
 from metriccanvas_authoring.data.results import QUERY_SCHEMA
 from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA, EDIT_RESULT_SCHEMA
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
@@ -13,6 +13,14 @@ ComposeRequest = Annotated[dict[str, Any], WithJsonSchema(COMPOSE_SCHEMA)]
 EditRequest = Annotated[dict[str, Any], WithJsonSchema(EDIT_RESULT_SCHEMA)]
 
 
+class ParameterTextChoice(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    slot_id: Annotated[str, Field(min_length=1, max_length=128)]
+    kind: Literal['parameter', 'literal']
+    candidate_id: Annotated[str, Field(min_length=1, max_length=128)] | None = None
+    text: Annotated[str, Field(max_length=4096)] | None = None
+
+
 def create_platform_mcp_server(application):
     mcp = FastMCP('metriccanvas-platform-content', instructions=(
         'Platform v2: query approved analysis plans, compose/edit from result references and save drafts internally. '
@@ -20,9 +28,11 @@ def create_platform_mcp_server(application):
         'authorized bounded query evidence is model-visible. Relay retains artifactEnvelope. '
         'After saved, prepare the exact artifact with page_metadata_emit_preview; preserve Relay placeholders.'))
 
-    async def call(method, *args, mutation=False, **kwargs):
+    async def call(method, *args, mutation=False, parameter=False, **kwargs):
         try:
             result = await method(*args, **kwargs)
+            if parameter:
+                return ToolResult(content=result['modelSummary'], structured_content=result)
             envelope = None
             if mutation:
                 result, value = result
@@ -71,5 +81,24 @@ def create_platform_mcp_server(application):
     async def page_metadata_emit_preview(context_ref: str, artifact_ref: str) -> ToolResult:
         """Prepare the exact saved artifact through Relay. Does not query data or save again."""
         return await call(application.preview, context_ref, artifact_ref)
+
+    @mcp.tool
+    async def extract_page_parameters(context_ref: str, artifact_ref: str | None = None) -> ToolResult:
+        """Extract verified parameter choices from current work or a scoped artifact."""
+        return await call(application.parameters.extract, context_ref, artifact_ref, parameter=True)
+
+    @mcp.tool
+    async def apply_page_parameter_selection(context_ref: str, extraction_ref: str,
+            selected_ids: Annotated[list[str], Field(max_length=100)],
+            text_choices: Annotated[list[ParameterTextChoice], Field(max_length=200)] = []) -> ToolResult:
+        """Prepare an immutable template artifact; does not save or publish."""
+        return await call(application.parameters.apply, context_ref, extraction_ref, selected_ids,
+                          [choice.model_dump() for choice in text_choices], parameter=True)
+
+    @mcp.tool
+    async def resolve_page_parameters(context_ref: str, values: dict[str, Any],
+            artifact_ref: str | None = None) -> ToolResult:
+        """Fill a temporary instance from work or a template artifact; no query or save."""
+        return await call(application.parameters.resolve, context_ref, values, artifact_ref, parameter=True)
 
     return mcp

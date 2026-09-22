@@ -12,8 +12,8 @@ def purpose_intent(purpose):
 
 def capabilities():
     # Derived from the actual input contract and explicit implemented families.
-    from metriccanvas_authoring.pages.composition.page_structure import PLAN_SCHEMA, V3_PLAN_SCHEMA
-    block = V3_PLAN_SCHEMA['properties']['sections']['items']['properties']['blocks']['items']['oneOf'][1]
+    from metriccanvas_authoring.pages.composition.page_structure import PLAN_SCHEMA, CURRENT_PLAN_SCHEMA
+    block = CURRENT_PLAN_SCHEMA['properties']['sections']['items']['properties']['blocks']['items']['oneOf'][1]
     return {'versions':[s['properties']['version']['const'] for s in PLAN_SCHEMA['oneOf']],
             'preferredVersion':'3', 'presentations':[
                 {'kind':s['properties']['kind'].get('const', s['properties']['kind'].get('enum', [None])[0]),

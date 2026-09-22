@@ -13,14 +13,16 @@ from metriccanvas_authoring.data.results import QueryResults
 from metriccanvas_authoring.assets.drafts import DraftSaver
 from metriccanvas_authoring.delivery.preview import definition, artifact, prepare_preview
 from metriccanvas_authoring.pages.referenced import compose, edit
+from metriccanvas_authoring.pages.parameters.page_parameters import PageParameters, parameter_summary
 
 
 class PlatformAuthoring:
     def __init__(self, dependencies, current_turns, store, *, analysis_authorization=None,
                  lifecycle_service=None, lifecycle_identities=None, relay_preview=None,
-                 limits=Limits(), summary_config=None, semantic_catalog=None):
+                 limits=Limits(), summary_config=None, semantic_catalog=None, parameter_dependencies=None):
         self.dependencies, self.gate = dependencies, AuthoringTurnGate(current_turns)
         self.state = TurnState(store, limits)
+        self.parameters = PageParameters(self.gate, self.state, parameter_dependencies)
         self.results = QueryResults(dependencies, self.state, analysis_authorization, semantic_catalog)
         self.saver = DraftSaver(store, lifecycle_service, lifecycle_identities)
         self.relay_preview, self.summary_config = relay_preview, summary_config
@@ -70,6 +72,7 @@ class PlatformAuthoring:
         result.update(workVersion=work['workVersion'], saveStatus=(work['lastResult'] or {}).get('saveStatus', 'not_requested'),
                       busy=work['active'] is not None, ref=deepcopy(work['base']))
         result['documentSha256'] = document_sha256(document) if document else None
+        result['parameters'] = parameter_summary(document) if document else []
         await self.current(prepared)()
         return result
 

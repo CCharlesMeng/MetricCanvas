@@ -8,6 +8,9 @@ allowed-tools:
   - compose_page
   - edit_page
   - page_metadata_emit_preview
+  - extract_page_parameters
+  - apply_page_parameter_selection
+  - resolve_page_parameters
 metadata:
   mcp_servers:
     - metriccanvas-platform-content
@@ -22,6 +25,7 @@ metadata:
 - 明确新建页面：[创建](workflows/create.md)。
 - 修改当前页，包括新增图表：[修改](workflows/edit.md)。
 - 配置问答：read_page_context 读取必要配置，只回答明确返回的内容；省略不代表不存在。文字目标优先于选中目标；同名歧义先澄清。
+- 提取模板参数或填值：[参数流程](workflows/parameters.md)，仅使用工作稿与 artifact_ref，不接收候选引用。
 - 普通业务问数使用独立问数入口，临时页面态不自动保存。
 
 新增取数或改变口径时加载[数据分析](workflows/data-analysis.md)。样式、标题、列宽和配置问答不调用发现或查询。筛选、排序、翻页由渲染期执行已有查询；明确要求修改默认配置或重新分析才进入创作。

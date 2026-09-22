@@ -15,19 +15,17 @@ from metriccanvas_authoring.data.execution import DqeExecutionResult
 ROOT = bundle_root()
 PATTERNS = json.loads((ROOT / 'contracts/authored/section-patterns.json').read_text())
 PLAN_SCHEMA = json.loads((ROOT / 'contracts/authored/page-structure-plan.schema.json').read_text())
-V1_PLAN_SCHEMA, V2_PLAN_SCHEMA, V3_PLAN_SCHEMA = PLAN_SCHEMA['oneOf']
+CURRENT_PLAN_SCHEMA, = PLAN_SCHEMA['oneOf']
 for version_schema in PLAN_SCHEMA['oneOf']:
     version_schema['properties']['scene']['enum'] = list(PATTERNS['scenes'])
     section_schema = version_schema['properties']['sections']['items']
     section_schema['properties']['pattern']['enum'] = list(PATTERNS['patterns'])
-V2_PLAN_SCHEMA['properties']['sections']['items']['properties']['blocks']['items']['oneOf'][1]['properties']['presentation']['properties']['kind']['enum'] = list(PATTERNS['presentations'])
-SECTION = V1_PLAN_SCHEMA['properties']['sections']['items']
+SECTION = CURRENT_PLAN_SCHEMA['properties']['sections']['items']
 BLOCK = SECTION['properties']['blocks']['items']
 TEXT_BLOCK, DATA_BLOCK = BLOCK['oneOf']
-V2_DATA_BLOCK = V2_PLAN_SCHEMA['properties']['sections']['items']['properties']['blocks']['items']['oneOf'][1]
 ID = DATA_BLOCK['properties']['id']
 TEXT = TEXT_BLOCK['properties']['body']
-NAME = V1_PLAN_SCHEMA['properties']['dataContextVersion']
+NAME = CURRENT_PLAN_SCHEMA['properties']['dataContextVersion']
 
 
 def obj(properties, required):

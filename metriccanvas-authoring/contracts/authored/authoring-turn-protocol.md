@@ -16,7 +16,7 @@ binding.documentSha256为可信prepare输入documentJson的**精确UTF-8字节SH
 
 ## 读取与部署
 
-统一工具服务为metriccanvas-platform-content（Python模块unified_content_server），统一Skill只能注册此受门禁服务，缺current-turn提供方时所有工具明确不可用。metriccanvas-content旧服务保留为兼容面，不能作为统一入口的替代或降级；普通问数继续原服务。
+统一工具服务为metriccanvas-platform-content（Python模块platform_server），统一Skill只能注册此受门禁服务，缺current-turn提供方时所有工具明确不可用。metriccanvas-content旧服务保留为兼容面，不能作为统一入口的替代或降级；普通问数继续原服务。
 
 公开统一工具：read_page_context(context_ref,target_component_id?,use_selection?,offset?,limit?,cursor?)；discover_data_context(context_ref,query,limit?)；compose_page(context_ref,spec,layout?)；create_content_page(context_ref,title,request,layout?)；edit_page(context_ref,request)。模型不传page_id/baseline_token/source_token。页面身份和源基线由可信上下文推导。
 

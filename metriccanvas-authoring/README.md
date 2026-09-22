@@ -30,7 +30,7 @@ Skill 与 Tool 只通过 MCP Tool Interface 协作。FastMCP 是入站 Adapter�
 
 ## MCP 工具面
 
-Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `python -m metriccanvas_authoring.entrypoints.compat.content_server`），提供 `discover_data_context`、`compose_page`、`create_content_page`、`edit_page`，没有保存/发布工具。既有下列 compatibility/relay 工具面继续服务原调用方。
+Platform 内容编辑统一使用 `metriccanvas-platform-content`，提供发现、取数、页面装配和编辑能力；保存、发布与预览交付由平台组合根和可信宿主编排。
 
 `create_content_page` 用 `page_id/title/layout` 与 `request.operations` 创建新页。允许 `add_text/add_field_text/add_map_chart/add_tab_container/add_composite_card/add_ai_summary`，目标分区为 `main`（panel）；静态正文直接声明，字段长文本与地图仅从可信 `source_token` 对应完整页面复用数据源。创建产物 `metriccanvas.content-page-artifact` 包含新 document/hash、可空 sourceRef 和 Bundle 版本，不包含保存结果，也不将创建冒充既有页修改。
 
@@ -50,14 +50,14 @@ Platform 内容编辑使用独立入口 `metriccanvas-content`（或源码 `pyth
 
 既有 FastMCP 入口提供两个互斥工具面：
 
-- 默认 `METRICCANVAS_TOOL_SURFACE=compatibility`：`discover_data_context + build_page`。`build_page` 是 compose 后继续调 Java 保存的兼容包装。
+- 默认 `METRICCANVAS_TOOL_SURFACE=compatibility`：`discover_data_context + build_page`。`build_page` 是普通问数/历史兼容包装；平台现行流程不得通过它回退，迁移完成后按消费者清理。
 - `METRICCANVAS_TOOL_SURFACE=relay`：`discover_data_context + compose_page`。成功结果是 `kind=metriccanvas.page-build-artifact` 信封。
 
 Relay 工具面的完整 `artifact` 含页面文档和 DQE 初始行，不能作为普通 MCP 结果回流到模型。外部 Relay Page Artifact Adapter 完成“完整产物写会话检查点、仅 `modelSummary + artifactId + checkpointVersion` 回模型”前，生产不得启用 Relay 工具面。
 
 ## 生产组合与分发
 
-`metriccanvas_authoring.entrypoints.compat.server` 是可安装包的 CLI 入口，`tool/server.py` 是源码检出兼容入口；装配住在 `bootstrap/`。组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和兼容 Java 页面资产 Adapter。
+生产通过 Relay 注册的 MCP stdio server 受控启动；CLI 只是进程启动方式，不是模型可见的通用 shell。装配住在 `bootstrap/`，组合根按环境变量装配 Lab Data Context HTTP Adapter、DQE HTTP Adapter 和页面资产 Adapter。
 
 Relay 配置见 [`relay/mcp_configs/metriccanvas-authoring.json`](./relay/mcp_configs/metriccanvas-authoring.json)：
 
@@ -73,7 +73,7 @@ sdist 内嵌运行时契约，不依赖宿主 Bundle 源码目录。Data Context
 
 本仓已有 Agent Core API，但外部 Relay 还没有固定 Workflow 把它与三类模型决策、调用预算、等待/取消和步骤事件串起来。Relay Page Artifact Adapter、Session 检查点、Svelte/UI 接线、按用户身份注入、真实 Lab/DQE/Relay 联调和 MetricService `DimensionValuePort` Adapter 也仍是外部待办。
 
-最终架构中，Agent/Python 不保存临时页面、会话检查点或正式页面修订。Relay Session 保存步骤事件和最新临时页面检查点；用户显式沉淀时，Svelte/平台以当前用户身份调用 Java 页面资产 Interface。
+平台创作中，内容工具可以提交平台草稿；Java 页面资产服务负责页面定义持久化、权限裁决和发布状态。Relay Session 保存步骤事件和最新临时页面检查点；草稿保存、会话检查点和正式页面发布是不同状态。普通问数/探索仍不自动落库，用户明确沉淀时由平台以当前用户身份调用 Java 页面资产 Interface。
 
 ## 独立验收
 
@@ -121,7 +121,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## Platform 创建与修改 Skill、布局基线
 
-Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md、workflows/parameters.md 与按需参考；安装完整目录即可引用闭合。统一服务 metriccanvas-platform-content 有八个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。三个参数工具为 `extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`。参数能力须注入 `ParameterDependencies`（程序、持久记录、提取验真提供方），缺能力明确不可用。部署须核实可信 current-turn、摘要/完整产物分流、临时实例只读交付及 latest 保证；真实 Relay 路由和提供方仍需实证。见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
+Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md、workflows/parameters.md 与按需参考；安装完整目录即可引用闭合。统一服务 metriccanvas-platform-content 有九个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。三个参数工具为 `extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`。参数能力须注入 `ParameterDependencies`（程序、持久记录、提取验真提供方），缺能力明确不可用。部署须核实可信 current-turn、摘要/完整产物分流、临时实例只读交付及 latest 保证；真实 Relay 路由和提供方仍需实证。见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
 
 Bundle registry 的 referenceProjection 声明生成器所有权：普通问数仅 references/page-metadata 为生成子树，统一作者使用 none，生成器不覆盖任何作者参考。完整产品 Schema、正反例仍保留在 contract-snapshot；旧共享文本的基线副本和哈希见 docs/plan 的 S0 记录，不参与部署。参考注入/文件补读方式按统一 Skill 的 references/tools.md 声明。
 
@@ -129,11 +129,11 @@ Platform 内容入口新建报告沿用章节布局；看板页头采用 plain�
 
 修改默认继承布局。显式 `set_page_layout` 保留原标题、容器、轨道/span、数据与手工设置，报告可用宽度、工具栏、标题归属和铺底窄屏回流影响；沿用整页校验拒绝非法候选，不重套创建模板或静默丢弃设置。
 
-四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。模型运行记录按批次维护：已有 v2 中性对照与丰富数据评测，不能再用“全部未运行”概括，也不能将这些历史成绩归给 v3。当前 v3 的本地实现、离线回归和外部验收缺口见[实施记录](../docs/plan/scenario-guided-authoring/refinement/architecture-implementation-results.md)。
+四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。模型运行记录按批次维护：历史评测须标注其对应的流程和结构计划版本，不能将旧 v2 结果归给现行实现。当前结构计划迁移、离线回归和外部验收缺口见[实施记录](../docs/plan/scenario-guided-authoring/refinement/architecture-implementation-results.md)。
 
-### v3 页面创作架构与范式维护
+### 现行页面结构计划与范式维护
 
-新建完整页面在工具声明支持时使用结构计划 v3；已有 v1/v2 候选不迁移，结构修订沿用原 planVersion。结构计划版本、页面 Schema 版本与 Bundle 版本是三件事，不能互换。
+新建完整页面使用现行页面结构计划；旧平台入口、候选存储/提交/恢复链和结构计划 1/2 解析均已删除；参数工具使用现行工作稿与 artifact_ref。结构计划版本、页面 Schema 版本、Bundle 版本和外部 API 版本是不同序列，必须在文档和契约中分别标注，不能互换。完整决策见 [ADR-0090](../docs/adr/0090-authoring-flow-hard-cutover-and-version-vocabulary.md)。
 
 Skill 负责业务问题、阅读层级与组件选型；工具负责能力检查、可信数据绑定和确定性装配；统一运行时负责实际呈现。创建与修订共用呈现规则，仍使用原五工具入口，不增加模型编排阶段。架构依据见[调整方案](../docs/plan/scenario-guided-authoring/refinement/authoring-architecture-proposal.md)。
 
@@ -146,12 +146,12 @@ Skill 负责业务问题、阅读层级与组件选型；工具负责能力检�
 
 pattern 是默认组合占位，不是整页模板或自动选型算法。结构分区仍为平面组合；新能力须同时有合法输入和可执行装配路径，再进入 structureCapabilities。
 
-报表反馈修订：v3 不再自动生成查询范围正文，structure_scope 只清理旧版保留 ID 的自动说明；查询事实仍留在数据源与审计中，必要业务边界由显式标题/副标题表达。report 指标组与图表章节优先用 panel 的白色内容区，表格小节可用 card，不能把所有章节默认设为透明 plain。见[修订结果](../docs/plan/scenario-guided-authoring/refinement/report-surface-feedback-results.md)。
+报表反馈修订：现行结构计划不自动生成查询范围正文，structure_scope 只清理旧版保留 ID 的自动说明；查询事实仍留在数据源与审计中，必要业务边界由显式标题/副标题表达。report 指标组与图表章节优先用 panel 的白色内容区，表格小节可用 card，不能把所有章节默认设为透明 plain。见[修订结果](../docs/plan/scenario-guided-authoring/refinement/report-surface-feedback-results.md)。
 
 维护顺序：先更新所属真源及回归用例，再同步 Skill 说明和部署加载路径，最后从仓库根运行 `pnpm authoring:contracts` 与 `pnpm authoring:contracts:check`，并在 Bundle 目录运行 `python3 scripts/check_bundle.py`。生成副本和锁文件不手改；只改参考也需要更新 Bundle 摘要。
 
 完整创建必须能够读取或被注入工作流、布局参考、scenarios.md、reading-design.md 及适用场景。局部编辑不例行加载新建参考；整体重组时再加载阅读设计。独立分发链接闭合不等于外部宿主已完成注入，部署状态仍需单独验证。
 
-当前证据：v3 本地全量离线回归 480 项通过，A/B/C 分别覆盖经营阅读、用量监控、宽表局部核对。该数字是一次冻结实现的记录，不是永久测试数量承诺。工具直接生成的 JSON 通过结构校验；模型自主设计稳定性与该新产物视觉验收仍未完成。
+当前证据：历史结构计划实现曾有一次 480 项本地离线回归记录，A/B/C 分别覆盖经营阅读、用量监控、宽表局部核对；该数字不代表现行硬切换已经完成。工具直接生成的 JSON 通过结构校验；模型自主设计稳定性与新产物视觉验收仍待 C5/C6。
 
 维护源与派生副本见 [SOURCES.md](SOURCES.md)；按验证层运行测试见 [test-harness/README.md](test-harness/README.md)。

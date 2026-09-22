@@ -9,8 +9,8 @@ from pathlib import Path
 from fastmcp import Client
 from jsonschema import Draft202012Validator
 from test_authoring_turns import Turns
-from test_unified_content_mcp import dependencies
-from test_structure_plan import plan
+from authoring_fixtures import dependencies
+from authoring_fixtures import plan
 from test_page_editing import title
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
@@ -84,7 +84,7 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
     async def test_registered_tools_schemas_and_public_text_save_preview(self):
         async with Client(create_platform_mcp_server(self.app)) as client:
             tools = await client.list_tools()
-            self.assertEqual({t.name for t in tools}, {'read_page_context','discover_data_context','query_data','compose_page','edit_page','page_metadata_emit_preview'})
+            self.assertEqual({t.name for t in tools}, {'read_page_context','discover_data_context','query_data','compose_page','edit_page','page_metadata_emit_preview','extract_page_parameters','apply_page_parameter_selection','resolve_page_parameters'})
             for tool in tools: Draft202012Validator.check_schema(tool.inputSchema)
             response = (await client.call_tool('compose_page', {'context_ref': 'current-context', 'request': text_request()})).structured_content
             self.assertTrue(response['ok'], response)
