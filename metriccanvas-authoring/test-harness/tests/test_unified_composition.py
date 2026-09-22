@@ -15,7 +15,7 @@ from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
 from metriccanvas_authoring.pages.composition.unified_composition import CREATION_OPERATIONS
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 def spec(): return json.loads((ROOT / 'test-harness/fixtures/page-build-spec.json').read_text())
@@ -28,7 +28,7 @@ class UnifiedCompositionTest(unittest.IsolatedAsyncioTestCase):
     async def test_public_schema_exposes_exact_creation_allowlist(self):
         async with Client(create_unified_content_mcp_server(dependencies(), Turns('new'), candidate_store=MemoryCandidates())) as client:
             tools = {tool.name: tool for tool in await client.list_tools()}
-            self.assertEqual(len(tools), 5)
+            self.assertEqual(len(tools), 8)
             schema = tools['create_content_page'].inputSchema['properties']['request']
             self.assertEqual(len(schema['oneOf']), 2)
             plan_schema = schema['oneOf'][1]

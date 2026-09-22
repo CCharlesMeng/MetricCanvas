@@ -19,7 +19,7 @@ preflight=importlib.util.module_from_spec(spec);spec.loader.exec_module(prefligh
 
 class ModelEvalHarnessTest(unittest.TestCase):
     def test_nested_serialized_page_and_rows_rejected(self):
-        for value in [{'rows':[]},{'schemaVersion':'6.2','dataSources':{},'sections':[]},{'artifactEnvelope':None}]:
+        for value in [{'rows':[]},{'schemaVersion':'6.5','dataSources':{},'sections':[]},{'artifactEnvelope':None}]:
             with self.assertRaises(ValueError):evidence.audit_messages([{'content':json.dumps(value)}])
         evidence.audit_messages({'targetConfig':{'columns':[{'field':'region','width':150}]}})
 
@@ -84,7 +84,7 @@ class ModelEvalHarnessTest(unittest.TestCase):
 
     def test_s2_tool_listing_never_marks_runner_or_latest_ready(self):
         definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
-                     for name in preflight.LEGACY_TOOLS | {'read_page_context'}]
+                     for name in preflight.UNIFIED_TOOLS]
         result=preflight.surface_evidence('unified-content',definitions)
         self.assertEqual(result['introspection']['status'],'pass')
         self.assertEqual(result['modelRunner']['status'],'blocked')
@@ -95,7 +95,7 @@ class ModelEvalHarnessTest(unittest.TestCase):
 
     def test_s2_rejects_legacy_token_and_missing_current_context(self):
         definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
-                     for name in preflight.LEGACY_TOOLS | {'read_page_context'}]
+                     for name in preflight.UNIFIED_TOOLS]
         for legacy_key in ['page_id','baseline_token','source_token']:
             definitions[0].inputSchema['properties'][legacy_key]={'type':'string'}
             self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')

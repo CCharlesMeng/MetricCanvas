@@ -4,6 +4,14 @@
 
 前五批已完成 A01、A02、A04–A10 与迁移六步中的第 1–5 步；第 6 步只走完「入口」这一段。A03 剩尾巴，A11、A12 未做。
 
+## 2026-09-22 续跑状态
+
+已完成结构计划实现收敛与 7i 源码归位；`application/`、`domain/` 的存活模块迁至 `data/`、`pages/composition/`、`pages/components/`、`pages/editing/`、`pages/parameters/`、`pages/validation/`。v1/v2/v3 共用一套结构实现，保留独立取数，不构造临时整页再拆取。`data/results.py` 从 authored 计划契约读取请求 Schema，消除对页面装配模块的依赖。
+
+参数链以 ADR-0088 为准：`params.query`/`params.display`，`filter.time.param/window`；原位 start/end-part 退役。页面包、Python 对等验证、发布消费者与运行时已同步。具体修改、测试与未完成项见[续跑证据](2026-09-22-authoring-resume.md)。
+
+A11 来源矩阵已落到 `metriccanvas-authoring/SOURCES.md`，ARCHITECTURE 与 README 已链接；导出检查 current、Bundle 1683 项摘要检查通过。A12 已采用显式分类清单与统一 runner：69 个测试文件分为 rules 16、adapters 8、delivery 42、evaluation 3，默认全跑，遗漏/删除/重复登记均拒绝运行。保留物理路径以兼容跨文件夹具导入；这是对原目录搬迁方案的实施调整。完整 runner 运行 541 项，538 项通过、3 项受沙箱端口限制报错；不将本计划标为全部验收完成。Git 提交、远端 CI、浏览器与真实外部接线仍未完成。
+
 ## 0. 每批共同的退出条件
 
 一批不算完成，除非下面五项同时成立：

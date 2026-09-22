@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.2",
+  "schemaVersion": "6.5",
   "layout": "report",
   "id": "reference-branches-page",
   "dataSources": {
@@ -298,6 +298,12 @@
           "props": {
             "title": {
               "param": "heading"
+            },
+            "asOf": {
+              "label": "期间",
+              "value": {
+                "param": "period"
+              }
             }
           }
         },
@@ -643,30 +649,49 @@
       "type": "dimension",
       "multiple": false,
       "required": true,
-      "default": "APAC"
+      "default": "APAC",
+      "value": "APAC"
     },
     {
       "id": "segment",
       "type": "dimension",
-      "required": false
+      "required": false,
+      "value": [
+        "APAC"
+      ],
+      "multiple": true
     },
     {
       "id": "heading",
       "type": "string",
       "required": true,
-      "default": "Regional sales"
+      "default": "Regional sales",
+      "value": "Regional sales"
     },
     {
       "id": "quantity",
       "type": "number",
       "required": true,
-      "default": 3
+      "default": 3,
+      "value": 3
     },
     {
       "id": "enabled",
       "type": "boolean",
       "required": true,
-      "default": false
+      "default": false,
+      "value": false
+    },
+    {
+      "id": "period",
+      "type": "timeRange",
+      "granularity": "month",
+      "required": true,
+      "value": {
+        "start": "2026-01",
+        "end": "2026-03",
+        "granularity": "month"
+      }
     }
   ],
   "dashboardToolbar": "visible"

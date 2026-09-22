@@ -54,14 +54,14 @@ class LifecycleTest(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(len(self.service.revisions),1)
     async def test_precise_r1_after_r2_and_original_hash_before_normalization(self):
         command=self.programs.inputs['save-request-token']
-        command['document']['schemaVersion']='6.0'; command['document']['layoutForm']=command['document'].pop('layout')
+        command['document']['schemaVersion']='6.5'; command['document']['layoutForm']=command['document'].pop('layout')
         first=await self.call()
         self.programs.inputs['save-request-token']=save_command('operation-2',first['ref'])
         await self.call()
         self.programs.inputs['read-token']={'kind':'read','ref':first['ref']}
         read=await self.call('read_revision','read-token')
         raw=self.programs.outputs[read['programToken']]['document']
-        self.assertEqual(raw['schemaVersion'],'6.0'); self.assertIn('layoutForm',raw)
+        self.assertEqual(raw['schemaVersion'],'6.5'); self.assertIn('layoutForm',raw)
         self.assertEqual(read['contentHash'],digest(raw)); self.assertEqual(read['ref'],first['ref'])
     async def test_latest_wrong_resource_hash_or_invalid_page_rejected(self):
         first=await self.call(); original=deepcopy(self.service.revisions['r1'])

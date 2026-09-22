@@ -7,6 +7,9 @@ allowed-tools:
   - compose_page
   - create_content_page
   - edit_page
+  - extract_page_parameters
+  - apply_page_parameter_selection
+  - resolve_page_parameters
 metadata:
   mcp_servers:
     - metriccanvas-platform-content

@@ -11,7 +11,7 @@ import { matchesTimeValue, type TimeParamGranularity } from './time-param';
 export type PageParamType = 'string' | 'number' | 'boolean' | 'dimension' | 'time' | 'timeRange';
 export type PageParamValue = string | number | boolean | string[] | TimeRangeParamValue;
 
-export interface TimeRangeParamValue { start: string; end: string; }
+export interface TimeRangeParamValue { start: string; end: string; granularity?: TimeParamGranularity; }
 /**
  * 参数按用途分层:`query` 下的输入落进 DQE 请求体,`display` 下的只被文本
  * 取值和导航消费。分的是消费位置,不是数据类型——同一个 ID 空间由两层共享,
@@ -264,7 +264,9 @@ export function matchesParamDeclaration(value: unknown, declaration: PageParamDe
   if (declaration.type === 'timeRange') {
     if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
     const range = value as TimeRangeParamValue;
-    return Object.keys(value).every(k => k === 'start' || k === 'end') &&
+    const declared = value as TimeRangeParamValue & { granularity?: TimeParamGranularity };
+    return Object.keys(value).every(k => k === 'start' || k === 'end' || k === 'granularity') &&
+      (declared.granularity === undefined || declared.granularity === declaration.granularity) &&
       matchesTimeValue(range.start, declaration.granularity) && matchesTimeValue(range.end, declaration.granularity) && range.start <= range.end;
   }
   if (declaration.type === 'time') return matchesTimeValue(value, declaration.granularity);

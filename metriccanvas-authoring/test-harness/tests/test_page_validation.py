@@ -12,7 +12,7 @@ CONTRACT_ROOT = BUNDLE_ROOT / "contract-snapshot"
 PENDING_PATH = BUNDLE_ROOT / "test-harness" / "fixtures" / "page-conformance-pending.json"
 sys.path.insert(0, str(BUNDLE_ROOT / "tool"))
 
-from metriccanvas_authoring.domain.page_validation import (  # noqa: E402
+from metriccanvas_authoring.pages.validation.page_validation import (  # noqa: E402
     normalize_page_document,
     validate_page_document,
 )
@@ -34,11 +34,19 @@ class PageContractConformanceTest(unittest.TestCase):
     pending 注册表现在为空；新向量必须直接命中，不得通过扩大清单静默豁免。
     """
 
+    def test_inline_parameter_shared_vectors(self) -> None:
+        matrix = json.loads((CONTRACT_ROOT / 'page/conformance/inline-params.json').read_text())
+        for case in matrix['cases']:
+            with self.subTest(case=case['name']):
+                original = deepcopy(case['input'])
+                self.assertEqual(not validate_page_document(case['input']), case['expected']['ok'])
+                self.assertEqual(original, case['input'])
+
     def test_normalizes_all_shared_layout_cases_without_mutating_input(self) -> None:
         matrix = json.loads(
             (CONTRACT_ROOT / "page/conformance/layout-compatibility.json").read_text()
         )
-        self.assertEqual(len(matrix["cases"]), 64)
+        self.assertEqual(len(matrix["cases"]), 80)
         for index, case in enumerate(matrix["cases"]):
             with self.subTest(case=index):
                 original = deepcopy(case["input"])

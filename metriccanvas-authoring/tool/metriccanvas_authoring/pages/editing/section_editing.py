@@ -1,6 +1,6 @@
 """Bounded structural edits on the complete candidate; never re-run queries."""
 from copy import deepcopy
-from metriccanvas_authoring.pages.composition.page_structure import obj, ID, TEXT, DATA_BLOCK, BLOCK, StructureError, block_component
+from metriccanvas_authoring.pages.composition.page_structure import obj, ID, TEXT, DATA_BLOCK, V2_DATA_BLOCK, BLOCK, StructureError, block_component
 
 COMMON = {'id': ID, 'sectionId': ID, 'dependsOn': {'type': 'array', 'items': ID}}
 CONTAINER = {'enum': ['plain', 'panel', 'card']}
@@ -11,12 +11,12 @@ SECTION_OPERATIONS = [
     obj({**COMMON, 'type': {'const': 'move_section'}, 'beforeId': ID}, ['id', 'type', 'sectionId']),
     obj({**COMMON, 'type': {'const': 'remove_section'},
          'componentIds': {'type': 'array', 'uniqueItems': True, 'items': ID}}, ['id', 'type', 'sectionId', 'componentIds']),
-    obj({**COMMON, 'type': {'const': 'add_source_component'}, 'block': DATA_BLOCK}, ['id', 'type', 'sectionId', 'block']),
+    obj({**COMMON, 'type': {'const': 'add_source_component'}, 'block': {'oneOf':[DATA_BLOCK,V2_DATA_BLOCK]}}, ['id', 'type', 'sectionId', 'block']),
 ]
 SECTION_TYPES = {s['properties']['type']['const'] for s in SECTION_OPERATIONS}
 
 
-def edit_section(document, op):
+def edit_section(document, op, *, relations=()):
     candidate = deepcopy(document)
     sections = candidate['sections']
     target = next((s for s in sections if s['id'] == op['sectionId']), None)
@@ -58,5 +58,5 @@ def edit_section(document, op):
         block = op['block']
         if any(c['id'] == block['id'] for s in sections for c in s['components']):
             raise StructureError('COMPONENT_ID_CONFLICT')
-        target['components'].append(block_component(block, candidate['dataSources']))
+        target['components'].append(block_component(block, candidate['dataSources'], relations=relations))
     return candidate

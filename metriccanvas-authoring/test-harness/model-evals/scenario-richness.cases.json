@@ -1,0 +1,44 @@
+{
+  "cases": [
+    {
+      "id": "richness-basic",
+      "scene": "business-report",
+      "dataProfile": "basic",
+      "workflow": "create",
+      "mode": "new",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "expected": {
+        "layout": "report",
+        "creation": true
+      },
+      "includeExamples": false,
+      "toolProfile": "diagnostic",
+      "prompts": [
+        "请使用已提供的本地经营样例，为业务负责人制作一份便于阅读的 report 页面，帮助判断当前业务规模与变化、进一步排查增长来自哪些对象、目标与当前或推演规模如何对照，以及哪些客户需要风险复核。请自行发现能力并选择阅读顺序，不预设章节或要求用完所有来源。只使用已发现的原始指标、维度和维度筛选，不支持聚合或公式，不同来源不能互算或对账。只能展示已有证据；不能编造差额、贡献率、增长原因或风险原因，缺失证据须明确说明。期间与合法取值以元数据为准，说明这是非生产样例，并实际创建页面。"
+      ]
+    },
+    {
+      "id": "richness-rich",
+      "scene": "business-report",
+      "dataProfile": "rich",
+      "workflow": "create",
+      "mode": "new",
+      "context": {
+        "entry": "platform",
+        "baseline": null
+      },
+      "expected": {
+        "layout": "report",
+        "creation": true
+      },
+      "includeExamples": false,
+      "toolProfile": "diagnostic",
+      "prompts": [
+        "请使用已提供的本地经营样例，为业务负责人制作一份便于阅读的 report 页面，帮助判断当前业务规模与变化、进一步排查增长来自哪些对象、目标与当前或推演规模如何对照，以及哪些客户需要风险复核。请自行发现能力并选择阅读顺序，不预设章节或要求用完所有来源。只使用已发现的原始指标、维度和维度筛选，不支持聚合或公式，不同来源不能互算或对账。只能展示已有证据；不能编造差额、贡献率、增长原因或风险原因，缺失证据须明确说明。期间与合法取值以元数据为准，说明这是非生产样例，并实际创建页面。"
+      ]
+    }
+  ]
+}

@@ -2,7 +2,7 @@ export function propertyFixture() {
   const data = { main: 'data' }, layout = { span: 12 };
   const actions = [{ on: 'click', navigate: { href: 'https://example.com/details' } }];
   return {
-    schemaVersion: '6.1', id: 'properties-page', layout: 'report',
+    schemaVersion: '6.5', id: 'properties-page', layout: 'report',
     dataSources: { data: { fields: { category: { type: 'string', role: 'dimension', nullable: false }, value: { type: 'number', role: 'measure', nullable: false }, delta: { type: 'number', role: 'measure', nullable: false } }, source: { type: 'inline', rows: [{ category: '甲', value: 120, delta: 3 }] } } },
     sections: [{ id: 's', components: [
       { id: 'header', type: 'reportHeader', layout, props: { title: '属性测试报告', subtitle: '原副标题', badge: '原徽标', tags: ['原标签'], asOf: { label: '截至', value: '2026-09' }, decoration: 'shortBar' } },

@@ -13,7 +13,7 @@ from metriccanvas_authoring.pages.composition.page_building import (  # noqa: E4
     build_data_component,
 )
 from metriccanvas_authoring.data.execution import DqeExecutionResult  # noqa: E402
-from metriccanvas_authoring.domain.page_validation import validate_page_document  # noqa: E402
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document  # noqa: E402
 
 
 class ComponentBuildingConformanceTest(unittest.TestCase):
@@ -38,7 +38,7 @@ class ComponentBuildingConformanceTest(unittest.TestCase):
                         self.assertEqual(built["props"], case["expectedProps"])
                         for layout in ("report", "dashboard"):
                             page = {
-                                "schemaVersion": "6.1", "layout": layout,
+                                "schemaVersion": "6.5", "layout": layout,
                                 "id": "component-building",
                                 "dataSources": {"result": {
                                     "fields": {

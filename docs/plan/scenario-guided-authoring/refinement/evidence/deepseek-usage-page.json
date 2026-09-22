@@ -1,0 +1,463 @@
+{
+  "schemaVersion": "6.4",
+  "id": "local-page-d4bdef7dc1db407787b411205164c5d8",
+  "layout": "report",
+  "dataSources": {
+    "usage-kpis": {
+      "fields": {
+        "field-938cc168755ad850046f": {
+          "queryField": "scope",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "资源对象"
+        },
+        "field-ffd2cdbb4276f80f4a8e": {
+          "queryField": "tokens",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "Tokens用量",
+          "unit": "个"
+        },
+        "field-e34e98d9d24bca1fd593": {
+          "queryField": "tokens-yoy",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "Tokens同比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        },
+        "field-fb0d4fe54797b90b9b21": {
+          "queryField": "requests",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "请求次数",
+          "unit": "次"
+        },
+        "field-409acd5d2fc48476acc6": {
+          "queryField": "requests-yoy",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "请求同比",
+          "unit": "%",
+          "defaultFormat": "percent-1"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "scope"
+                ],
+                "output_metrics": [
+                  "tokens",
+                  "tokens-yoy",
+                  "requests",
+                  "requests-yoy"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-02",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "scope": "all",
+              "tokens": 1500000,
+              "tokens-yoy": 12,
+              "requests": 30000,
+              "requests-yoy": 8
+            },
+            {
+              "scope": "model-a",
+              "tokens": 900000,
+              "tokens-yoy": 15,
+              "requests": 18000,
+              "requests-yoy": 10
+            },
+            {
+              "scope": "model-b",
+              "tokens": 600000,
+              "tokens-yoy": 8,
+              "requests": 12000,
+              "requests-yoy": 5
+            }
+          ],
+          "totalCount": 3
+        }
+      }
+    },
+    "usage-trend": {
+      "fields": {
+        "field-6afa4f96a8242ff8d337": {
+          "queryField": "month",
+          "type": "string",
+          "role": "dimension",
+          "nullable": false,
+          "label": "月份"
+        },
+        "field-ffd2cdbb4276f80f4a8e": {
+          "queryField": "tokens",
+          "type": "number",
+          "role": "measure",
+          "nullable": false,
+          "label": "Tokens用量",
+          "unit": "个"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [
+                  "month"
+                ],
+                "output_metrics": [
+                  "tokens"
+                ],
+                "filter": {
+                  "time": {
+                    "period": "month",
+                    "start": "2026-01",
+                    "end": "2026-02"
+                  },
+                  "dims": [],
+                  "metrics": []
+                },
+                "order": {}
+              }
+            ]
+          }
+        },
+        "initial": {
+          "capturedAt": "2026-02-28T23:59:59+08:00",
+          "rows": [
+            {
+              "month": "1月",
+              "tokens": 1400000
+            },
+            {
+              "month": "2月",
+              "tokens": 1500000
+            }
+          ],
+          "totalCount": 2
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "header",
+      "container": "plain",
+      "components": [
+        {
+          "id": "page-header",
+          "type": "reportHeader",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "title": "资源用量概览（非生产样例）"
+          }
+        }
+      ]
+    },
+    {
+      "id": "overview",
+      "title": "当前资源使用规模与变化",
+      "container": "panel",
+      "components": [
+        {
+          "id": "all-summary",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "usage-kpis"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "Tokens用量",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-ffd2cdbb4276f80f4a8e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "all"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "Tokens同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-e34e98d9d24bca1fd593",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "all"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "请求次数",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-fb0d4fe54797b90b9b21",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "all"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "请求同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-409acd5d2fc48476acc6",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "all"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "整体用量（all）"
+          }
+        },
+        {
+          "id": "model-a-summary",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "usage-kpis"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "Tokens用量",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-ffd2cdbb4276f80f4a8e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "model-a"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "Tokens同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-e34e98d9d24bca1fd593",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "model-a"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "请求次数",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-fb0d4fe54797b90b9b21",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "model-a"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "请求同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-409acd5d2fc48476acc6",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "model-a"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "model-a 用量"
+          }
+        },
+        {
+          "id": "model-b-summary",
+          "type": "metricCard",
+          "layout": {
+            "span": 4
+          },
+          "data": {
+            "main": "usage-kpis"
+          },
+          "props": {
+            "variant": "compactSummary",
+            "rows": [
+              {
+                "label": "Tokens用量",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-ffd2cdbb4276f80f4a8e",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "model-b"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "Tokens同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-e34e98d9d24bca1fd593",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "model-b"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              },
+              {
+                "label": "请求次数",
+                "valueField": {
+                  "data": "main",
+                  "field": "field-fb0d4fe54797b90b9b21",
+                  "match": {
+                    "field": "field-938cc168755ad850046f",
+                    "equals": "model-b"
+                  }
+                },
+                "changes": [
+                  {
+                    "label": "请求同比",
+                    "field": {
+                      "data": "main",
+                      "field": "field-409acd5d2fc48476acc6",
+                      "match": {
+                        "field": "field-938cc168755ad850046f",
+                        "equals": "model-b"
+                      },
+                      "format": "percent-1"
+                    }
+                  }
+                ]
+              }
+            ],
+            "title": "model-b 用量"
+          }
+        },
+        {
+          "id": "overview-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "本页为本地资源用量样例（非生产数据）。当期规模与同比取自「资源用量」来源，固定账期 2026-02、粒度 month。各指标不可加，仅按原始资源对象（scope）展示，不做跨行或跨源求和。",
+            "title": "口径说明"
+          }
+        },
+        {
+          "id": "structure-scope-overview",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n资源用量；2026-02 至 2026-02；month；按scope"
+          }
+        }
+      ]
+    },
+    {
+      "id": "trend",
+      "title": "Tokens 使用走势",
+      "container": "panel",
+      "components": [
+        {
+          "id": "tokens-trend",
+          "type": "lineChart",
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "usage-trend"
+          },
+          "props": {
+            "title": "Tokens 用量月度走势",
+            "xField": "field-6afa4f96a8242ff8d337",
+            "series": [
+              {
+                "field": "field-ffd2cdbb4276f80f4a8e",
+                "label": "Tokens用量"
+              }
+            ]
+          }
+        },
+        {
+          "id": "trend-note",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "走势取自「资源使用历史」来源，固定期间 2026-01 至 2026-02、粒度 month，仅含 Tokens 用量。该来源与当期规模来源不可互算，故单独成章。",
+            "title": "走势口径"
+          }
+        },
+        {
+          "id": "structure-scope-trend",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": "数据口径：\n资源使用历史；2026-01 至 2026-02；month；按month"
+          }
+        }
+      ]
+    }
+  ]
+}

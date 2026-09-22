@@ -23,7 +23,7 @@ export function createDialogueFixture(target: EventTarget): { adapter: DialogueA
       return {
         draftId, ref: { pageId: 'fixture-page', revisionId: draftId, resourceId: 'fixture-resource' },
         document: {
-          schemaVersion: '6.1', layout: 'report', id: 'fixture-page', dataSources: {},
+          schemaVersion: '6.5', layout: 'report', id: 'fixture-page', dataSources: {},
           sections: draftId === 'invalid' ? [] : [{
             id: 'main', title: '测试', container: 'panel',
             components: [{ id: 'summary', type: 'text', layout: { span: 12 }, props: { title: draftId, body: `页面 ${draftId}` } }]

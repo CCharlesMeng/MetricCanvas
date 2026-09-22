@@ -91,7 +91,9 @@ def normalize_page_document(value: Any) -> dict[str, Any]:
     if issues:
         return {"ok": False, "errors": [issue.as_dict() for issue in issues]}
     document = deepcopy(value)
-    document["schemaVersion"] = "6." + str(max(1, int(document["schemaVersion"].split(".")[1])))
+    schema = json.loads((PRODUCT_CONTRACT_ROOT / "page" / "schema.json").read_text(encoding="utf-8"))
+    versions = schema["properties"]["schemaVersion"]["enum"]
+    document["schemaVersion"] = "6.5" if document["schemaVersion"] == "6.5" else max(versions, key=lambda v: tuple(map(int, v.split("."))))
     document["layout"] = document.get("layout", document.get("layoutForm", "report"))
     document.pop("layoutForm", None)
     return {"ok": True, "document": document, "errors": []}
@@ -2324,7 +2326,7 @@ def _navigation_issues(page: Mapping[str, Any]) -> list[PageContractIssue]:
 
 def _matches_param_value(declaration: Mapping[str, Any], value: Any) -> bool:
     if declaration["type"] == "timeRange":
-        return isinstance(value, Mapping) and set(value) == {"start", "end"} and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
+        return isinstance(value, Mapping) and set(value) in ({"start", "end"}, {"start", "end", "granularity"}) and value.get("granularity", declaration.get("granularity")) == declaration.get("granularity") and _matches_time_value(value["start"], declaration.get("granularity")) and _matches_time_value(value["end"], declaration.get("granularity")) and value["start"] <= value["end"]
     if declaration["type"] == "time":
         return _matches_time_value(value, declaration.get("granularity"))
     if declaration["type"] != "dimension":

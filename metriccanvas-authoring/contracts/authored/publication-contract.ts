@@ -43,10 +43,11 @@ const origin=union(object({kind:choices('manual')},[]),object({kind:choices('rel
 const operationContext=named('OperationContext',object({operationId:text,actorId:text,workspaceId:text,origin},[]));
 const target=named('ParameterTarget',object({dataSourceId:text,queryField:text},[]));
 const parameter=named('ParameterSummary',object({
-  parameterId:text,label:text,valueType:choices('string','string[]'),selected:bool,required:bool,
+  parameterId:text,label:text,valueType:choices('string','string[]','time','timeRange'),selected:bool,required:bool,
   valueState:choices('retained','missing','not-selected'),defaultValue:union(text,array(text)),
-  targets:array(target),extractionKind:choices('dimension-eq','dimension-in',null),sharing:choices('none','identical-values')
-},['defaultValue']));
+  targets:array(target),extractionKind:choices('dimension-eq','dimension-in','time-range',null),sharing:choices('none','identical-values'),
+  originalValue:anyValue,uncoveredQueries:array(text)
+},['defaultValue','originalValue','uncoveredQueries']));
 const diff=named('ReviewDiff',object({summary:text,sourcePath:text,candidatePath:text,parameterId:text,before:anyValue,after:anyValue},['sourcePath','candidatePath','parameterId','before','after']));
 const validationIssue=named('ValidationIssue',object({severity:choices('blocking','warning'),code:text,message:text,parameterId:text,path:text},['parameterId','path']));
 const validation=named('CandidateValidation',object({valid:bool,issues:array(validationIssue)},[]));
@@ -130,10 +131,23 @@ function parameterTargets(document:Record<string,any>,id:string): Array<{dataSou
     const source=(dataSource as any).source;
     const binding=source?.type==='query'?source.query?.paramBindings?.[id]:undefined;
     if(binding)targets.push({dataSourceId,queryField:binding.queryField});
+    const filter=source?.type==='query'?source.query?.body?.dsl_list?.[0]?.filter:undefined;
+    for(const dim of filter?.dims??[])if(dim.dim_value_list?.param===id)targets.push({dataSourceId,queryField:dim.dim_name});
+    if(filter?.time?.param===id)targets.push({dataSourceId,queryField:'time'});
   }
   return targets;
 }
 const sortedTargets=(targets:Array<{dataSourceId:string;queryField:string}>)=>targets.map(canonical).sort();
+
+function declarations(document: Record<string,any>): any[] {
+  const params=document.params??[];
+  if(Array.isArray(params))return params;
+  return [
+    ...(params.query?.dimensions??[]).map((p:any)=>({id:p.id,type:'dimension',multiple:true,required:p.required??true,...(p.dim_value_list===undefined?{}:{value:p.dim_value_list})})),
+    ...(params.query?.times??[]).map((p:any)=>({id:p.id,type:'timeRange',granularity:p.granularity,required:p.required??true,...(p.start===undefined?{}:{value:{start:p.start,end:p.end}})})),
+    ...(params.display??[]).map((p:any)=>({...p,required:p.required??true}))
+  ];
+}
 
 /** Structural/relational checks only. This cannot authenticate a source, review or extraction. */
 export function validateCandidateRelations(value:Candidate,context:CandidateContext): ContractIssue[] {
@@ -142,12 +156,17 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
   const document=value.document as Record<string,any>;
   if(!context.validatePage(document))return issue('/document','PAGE_INVALID');
   if(document.id!==value.ref.source.pageId)fail('/ref/source/pageId');
-  const params=new Map<string,any>((document.params??[]).map((param:any)=>[param.id,param]));
-  const dimensions=new Map([...params].filter(([,param])=>param.type==='dimension'));
+  const params=new Map<string,any>(declarations(document).map((param:any)=>[param.id,param]));
+  const inline=[...params.values()].some(p=>p.type==='timeRange'||own(p,'value'))||Object.values(document.dataSources??{}).some((ds:any)=>{
+    const filter=ds.source?.query?.body?.dsl_list?.[0]?.filter;
+    return filter?.time?.param!==undefined||filter?.dims?.some((d:any)=>d.dim_value_list?.param!==undefined);
+  });
+  const dimensions=new Map([...params].filter(([,param])=>param.type==='dimension'||inline&&['time','timeRange'].includes(param.type)));
+  if(inline&&(value.retainDimensionValues||Object.values(document.dataSources??{}).some((ds:any)=>ds.source.type==='query'&&own(ds.source,'initial'))))fail('/document');
   const summaries=new Map<string,Value<typeof parameter>>();
   const source=context.source;
   if(source && (!same(source.ref,value.ref.source)||source.document.id!==source.ref.pageId||!context.validatePage(source.document)))fail('/ref/source','SOURCE_MISMATCH');
-  const sourceParams=new Map<string,any>((source?.document.params??[]).map((param:any)=>[param.id,param]));
+  const sourceParams=new Map<string,any>(declarations(source?.document??{}).map((param:any)=>[param.id,param]));
   for(const [index,entry] of value.parameterSummary.entries()) {
     const p=`/parameterSummary/${index}`;
     if(summaries.has(entry.parameterId))fail(`${p}/parameterId`);
@@ -163,18 +182,19 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
     }
     const declaration=dimensions.get(entry.parameterId);
     if(!declaration){fail(`${p}/parameterId`);continue;}
-    if(entry.valueType!==(declaration.multiple===true?'string[]':'string'))fail(`${p}/valueType`);
-    if(entry.required!==declaration.required)fail(`${p}/required`);
+    if(entry.valueType!==(['time','timeRange'].includes(declaration.type)?declaration.type:declaration.multiple===true?'string[]':'string'))fail(`${p}/valueType`);
+    if(entry.required!==(declaration.required??true))fail(`${p}/required`);
+    if(inline&&(own(declaration,'value')||own(declaration,'default')))fail(`${p}/valueState`);
     if(!same(targets,sortedTargets(parameterTargets(document,entry.parameterId))))fail(`${p}/targets`);
     if(entry.valueState==='retained') {
       if(!own(entry,'defaultValue')||!own(declaration,'default')||!same(entry.defaultValue,declaration.default))fail(`${p}/defaultValue`);
     } else if(entry.valueState!=='missing'||own(entry,'defaultValue')||own(declaration,'default'))fail(`${p}/valueState`);
     if(entry.extractionKind===null) {
       if(!source)fail(p,'SOURCE_REQUIRED');
-      else if(sourceParams.get(entry.parameterId)?.type!=='dimension'||!same(sourceParams.get(entry.parameterId),declaration)||
+      else if(!dimensions.has(entry.parameterId)||!same(sourceParams.get(entry.parameterId),declaration)||
         !same(sortedTargets(parameterTargets(source.document,entry.parameterId)),targets))fail(p,'EXISTING_PARAMETER_CHANGED');
     } else {
-      if(entry.extractionKind!==(declaration.multiple===true?'dimension-in':'dimension-eq'))fail(`${p}/extractionKind`);
+      if(entry.extractionKind!==(declaration.type==='timeRange'?'time-range':declaration.multiple===true?'dimension-in':'dimension-eq'))fail(`${p}/extractionKind`);
       if(!entry.targets.length)fail(`${p}/targets`);
       if(!value.retainDimensionValues&&entry.valueState==='retained')fail(`${p}/valueState`);
     }
@@ -187,8 +207,9 @@ export function validateCandidateRelations(value:Candidate,context:CandidateCont
   for(const [index,entry] of value.validation.issues.entries())if(entry.parameterId&&!summaries.has(entry.parameterId))fail(`/validation/issues/${index}/parameterId`);
   for(const [index,entry] of value.diff.entries())if(entry.parameterId&&!summaries.has(entry.parameterId))fail(`/diff/${index}/parameterId`);
   if(source) {
-    const existing=[...sourceParams].filter(([,param])=>param.type!=='dimension');
-    const retained=[...params].filter(([,param])=>param.type!=='dimension');
+    const preserved=(param:any)=>inline?!['dimension','time','timeRange'].includes(param.type):param.type!=='dimension';
+    const existing=[...sourceParams].filter(([,param])=>preserved(param));
+    const retained=[...params].filter(([,param])=>preserved(param));
     if(!same(existing.sort(([a],[b])=>a<b?-1:a>b?1:0),retained.sort(([a],[b])=>a<b?-1:a>b?1:0)))fail('/document/params','NON_DIMENSION_PARAMETER_CHANGED');
   }
   return errors;

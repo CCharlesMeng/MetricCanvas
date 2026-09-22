@@ -23,6 +23,7 @@ def declarations(page: Mapping[str, Any]) -> list[dict[str, Any]]:
             else:
                 item["type"] = p["type"]
                 if "value" in p: item["value"] = p["value"]
+            if "label" in p: item["label"] = p["label"]
             result.append(item)
     return result
 
@@ -84,6 +85,8 @@ def query_reference_issues(page: Mapping[str, Any]) -> list[tuple[str, str]]:
                 if "param" in node and path not in allowed: fail(path, "parameter reference in uncontrolled query position")
                 for key, child in node.items(): visit(child, f"{path}/{key.replace('~', '~0').replace('/', '~1')}")
         visit(query["body"], root)
+        if allowed and query.get("paramBindings"):
+            fail(root, "inline references cannot mix with paramBindings")
         if allowed and not layered: fail(root, "inline references require grouped inputs")
     return issues
 
@@ -102,3 +105,17 @@ def _window_compatible(granularity: str, window: Mapping[str, Any]) -> bool:
     if window["kind"] == "lastN":
         return window["unit"] == ("month" if granularity == "month" else "day")
     return window["kind"] != "period" or granularity != "month" or window["unit"] != "day"
+
+
+def clear_values(page: dict) -> None:
+    params = page.get('params', [])
+    if isinstance(params, list):
+        for p in params:
+            p.pop('value', None)
+            p.pop('default', None)
+    else:
+        for p in params.get('query', {}).get('dimensions', []): p.pop('dim_value_list', None)
+        for p in params.get('query', {}).get('times', []):
+            p.pop('start', None)
+            p.pop('end', None)
+        for p in params.get('display', []): p.pop('value', None)

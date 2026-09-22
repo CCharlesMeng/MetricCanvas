@@ -1,14 +1,22 @@
 # @metriccanvas/page
 
 ## .
+ExtractionContext
 Page
 PageDocument
+PageParamExtraction
+ParameterCandidate
+ResolvePageParamsResult
 TypedError
+applyPageParamSelection
 canonicalizeJson
 componentCatalog
+extractPageParams
+migrateParamBindings
 normalizePageDocument
 pageSchema
 parsePage
+resolvePageParams
 supportedVersions
 validate
 versionPolicy
@@ -132,6 +140,8 @@ PageParseOptions
 PageParseResult
 PageQuery
 PageSection
+ParamResolutionIssue
+ParameterProgramRequest
 PieChartComponent
 PieChartProps
 PivotColumn
@@ -167,6 +177,7 @@ RelativeTimeRange
 RelativeTimeUnit
 ReportHeaderComponent
 ReportHeaderProps
+ResolvePageParamsResult
 ResolvedFieldDefinition
 Row
 RowContractIssue
@@ -211,6 +222,7 @@ ValueFormatPreset
 VersionPolicy
 WriteFilterAction
 ZeroDenominatorSemantics
+assertNoQueryParamReferences
 barForecastBoundaryIssues
 bindingQueryField
 bindingQueryFields
@@ -256,6 +268,7 @@ isTimeRangeValue
 isValueFormatPreset
 matchesFieldValue
 matchesParamDeclaration
+materializePageParams
 navigationErrors
 normalizePageDocument
 normalizeQueryRows
@@ -268,9 +281,12 @@ parsePage
 queryErrorDisposition
 requiredMinorVersion
 resolveDataSourceFields
+resolveInlineQueryParams
+resolvePageParams
 resolveRelativeTime
 resolveTextValues
 rowKinds
+runPageParameterProgram
 sectionBackdrop
 supportedVersions
 textValueScope

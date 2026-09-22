@@ -7,7 +7,7 @@ import queryDashboard from '../fixtures/contract-valid/legacy-layout-dashboard.j
 describe('筛选器不变式', () => {
   it('拒绝级联循环与未知上游', () => {
     const cycle: any = structuredClone(queryDashboard);
-    cycle.schemaVersion = '6.0';
+    cycle.schemaVersion = '6.5';
     cycle.filters = [
       { id: 'a', type: 'dimension', dimension: 'region', dependsOn: 'b' },
       { id: 'b', type: 'dimension', dimension: 'city', dependsOn: 'a' }
@@ -17,7 +17,7 @@ describe('筛选器不变式', () => {
     );
 
     const missing: any = structuredClone(queryDashboard);
-    missing.schemaVersion = '6.0';
+    missing.schemaVersion = '6.5';
     missing.filters = [
       { id: 'child', type: 'dimension', dimension: 'city', dependsOn: 'nope' }
     ];
@@ -28,7 +28,7 @@ describe('筛选器不变式', () => {
 
   it('拒绝未知 defaultLevel', () => {
     const page: any = structuredClone(queryDashboard);
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.filters = [
       {
         id: 'region',
@@ -48,7 +48,7 @@ describe('筛选器不变式', () => {
 
   it('层级切换器形态只能用于声明了 hierarchy 的维度筛选器', () => {
     const page: any = structuredClone(queryDashboard);
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.filters = [{
       id: 'region', type: 'dimension', dimension: 'geo', hierarchyPicker: 'hidden'
     }];
@@ -59,7 +59,7 @@ describe('筛选器不变式', () => {
 
   it('隐藏层级切换器时必须由同页地图承担下钻入口', () => {
     const page: any = structuredClone(queryDashboard);
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.filters = [{
       id: 'region',
       type: 'dimension',

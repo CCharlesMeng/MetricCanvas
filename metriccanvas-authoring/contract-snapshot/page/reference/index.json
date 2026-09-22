@@ -1,10 +1,10 @@
 {
   "schemaVersion": "6.11",
-  "schemaSha256": "064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa",
+  "schemaSha256": "6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174",
   "semanticSources": [
     {
       "file": "packages/embed/tests/browser/embed.spec.ts",
-      "sha256": "183a209110a634c413ecce05f1c3a34fa91a785b64b66dc2dad4e16597a647a0"
+      "sha256": "01248c4f77a138669ab34f546a84eccfac6edb8d2ae7f6156e66c4597ba9ad69"
     },
     {
       "file": "packages/engine/widgets/src/components/gauge/Gauge.svelte",
@@ -28,7 +28,7 @@
     },
     {
       "file": "packages/page/src/query.ts",
-      "sha256": "878473bd1a926d6a4152823d9a201d042b812201f1a502663c131886e5fed936"
+      "sha256": "7a4c550bdbcec67bda97424cd159018e0e049e33338a0f4109baa136c382eb8e"
     },
     {
       "file": "packages/page/src/schema/actions.ts",
@@ -112,7 +112,7 @@
     },
     {
       "file": "packages/page/src/schema/primitives.ts",
-      "sha256": "832c8ba49851e61478f2f383e8aa5b1a42121c287f9444ddb41456e2d37d17fe"
+      "sha256": "c1d974e3f1e46072c63b284a19e37c209b30693014a48ff75ff8532fa6a04e5c"
     },
     {
       "file": "packages/page/src/time-param.ts",
@@ -120,11 +120,11 @@
     },
     {
       "file": "packages/page/src/validate.ts",
-      "sha256": "d811550bb515cd6fe7c73095015fbd63df7afb6c7f15043921f95d1aa5ae773d"
+      "sha256": "e9d592951d3f5edd359d410b30a206618f3d3ea5a784fb509481175dff712609"
     },
     {
       "file": "tools/scripts/page-conformance-vectors.ts",
-      "sha256": "1c9d3d04dbe4524ce1a84589bbc5616d2cd237935ad888372f376bf9d45dd4f5"
+      "sha256": "96271f14468b7e11732da2b5b7662449c815e34a96306414c5a15580c51c79a4"
     }
   ],
   "modules": {
@@ -1057,17 +1057,7 @@
         "5.2",
         "5.3",
         "5.4",
-        "6.0",
-        "6.1",
-        "6.2",
-        "6.3",
-        "6.4",
         "6.5",
-        "6.6",
-        "6.7",
-        "6.8",
-        "6.9",
-        "6.10",
         "6.11"
       ]
     },
@@ -1300,7 +1290,7 @@
     {
       "pointer": "#/definitions/pageParam/anyOf/0/properties/required",
       "path": "@pageParam · anyOf[0].required",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "params-and-text-values.md"
     },
     {
@@ -1334,6 +1324,30 @@
       "module": "params-and-text-values.md"
     },
     {
+      "pointer": "#/definitions/pageParam/anyOf/0/properties/value",
+      "path": "@pageParam · anyOf[0].value",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/0",
+      "path": "@pageParam · anyOf[0].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/1",
+      "path": "@pageParam · anyOf[0].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/2",
+      "path": "@pageParam · anyOf[0].value · anyOf[2]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
       "pointer": "#/definitions/pageParam/anyOf/1",
       "path": "@pageParam · anyOf[1]",
       "required": "独立分支（不合并required）",
@@ -1355,7 +1369,7 @@
     {
       "pointer": "#/definitions/pageParam/anyOf/1/properties/required",
       "path": "@pageParam · anyOf[1].required",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "params-and-text-values.md"
     },
     {
@@ -1395,6 +1409,30 @@
       "module": "params-and-text-values.md"
     },
     {
+      "pointer": "#/definitions/pageParam/anyOf/1/properties/value",
+      "path": "@pageParam · anyOf[1].value",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/1/properties/value/anyOf/0",
+      "path": "@pageParam · anyOf[1].value · anyOf[0]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/1/properties/value/anyOf/1",
+      "path": "@pageParam · anyOf[1].value · anyOf[1]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/1/properties/value/anyOf/1/items",
+      "path": "@pageParam · anyOf[1].value · anyOf[1][]",
+      "required": "每个数组项",
+      "module": "params-and-text-values.md"
+    },
+    {
       "pointer": "#/definitions/pageParam/anyOf/2",
       "path": "@pageParam · anyOf[2]",
       "required": "独立分支（不合并required）",
@@ -1426,7 +1464,7 @@
     {
       "pointer": "#/definitions/pageParam/anyOf/2/properties/required",
       "path": "@pageParam · anyOf[2].required",
-      "required": "本分支必填",
+      "required": "本分支可选",
       "module": "params-and-text-values.md"
     },
     {
@@ -1440,6 +1478,81 @@
       "path": "@pageParam · anyOf[2].default",
       "required": "本分支可选",
       "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/2/properties/value",
+      "path": "@pageParam · anyOf[2].value",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3",
+      "path": "@pageParam · anyOf[3]",
+      "required": "独立分支（不合并required）",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/id",
+      "path": "@pageParam · anyOf[3].id",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/type",
+      "path": "@pageParam · anyOf[3].type",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "const": "timeRange"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/granularity",
+      "path": "@pageParam · anyOf[3].granularity",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "enum": [
+        "month",
+        "date"
+      ]
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/required",
+      "path": "@pageParam · anyOf[3].required",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/label",
+      "path": "@pageParam · anyOf[3].label",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/value",
+      "path": "@pageParam · anyOf[3].value",
+      "required": "本分支可选",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/value/properties/start",
+      "path": "@pageParam · anyOf[3].value.start",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/value/properties/end",
+      "path": "@pageParam · anyOf[3].value.end",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md"
+    },
+    {
+      "pointer": "#/definitions/pageParam/anyOf/3/properties/value/properties/granularity",
+      "path": "@pageParam · anyOf[3].value.granularity",
+      "required": "本分支必填",
+      "module": "params-and-text-values.md",
+      "enum": [
+        "month",
+        "date"
+      ]
     },
     {
       "pointer": "#/properties/params/anyOf/1",
@@ -8436,6 +8549,24 @@
       "pointer": "#/params/4/default"
     },
     {
+      "schemaPointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/2/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/3/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pageParam/anyOf/0/properties/value/anyOf/2",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/4/value"
+    },
+    {
       "schemaPointer": "#/definitions/pageParam/anyOf/1",
       "module": "params-and-text-values.md",
       "file": "examples/reference-branches-page.json",
@@ -8454,10 +8585,28 @@
       "pointer": "#/params/0/default"
     },
     {
+      "schemaPointer": "#/definitions/pageParam/anyOf/1/properties/value/anyOf/0",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/0/value"
+    },
+    {
+      "schemaPointer": "#/definitions/pageParam/anyOf/1/properties/value/anyOf/1",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/1/value"
+    },
+    {
       "schemaPointer": "#/definitions/pageParam/anyOf/2",
       "module": "params-and-text-values.md",
       "file": "examples/time-params-page.json",
       "pointer": "#/params/0"
+    },
+    {
+      "schemaPointer": "#/definitions/pageParam/anyOf/3",
+      "module": "params-and-text-values.md",
+      "file": "examples/reference-branches-page.json",
+      "pointer": "#/params/5"
     },
     {
       "schemaPointer": "#/properties/params/anyOf/1",

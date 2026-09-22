@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.6",
+  "schemaVersion": "6.11",
   "layout": "report",
   "id": "grouped-params-page",
   "params": {
@@ -125,12 +125,12 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": false,
-                    "param": "report-month",
                     "window": {
                       "kind": "lastN",
                       "unit": "month",
                       "n": 12
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {
@@ -184,11 +184,11 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": true,
-                    "param": "report-month",
                     "window": {
                       "kind": "period",
                       "unit": "year"
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {
@@ -242,12 +242,12 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": false,
-                    "param": "report-month",
                     "window": {
                       "kind": "period",
                       "unit": "year",
                       "offset": -1
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {
@@ -301,11 +301,11 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": true,
-                    "param": "report-month",
                     "window": {
                       "kind": "toDate",
                       "unit": "year"
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {
@@ -359,10 +359,10 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": false,
-                    "param": "report-month",
                     "window": {
                       "kind": "monthToDate"
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {
@@ -416,10 +416,10 @@
                   "time": {
                     "period": "month",
                     "is_aggregate": true,
-                    "param": "report-month",
                     "window": {
                       "kind": "yearToDate"
-                    }
+                    },
+                    "param": "report-month"
                   }
                 },
                 "order": {

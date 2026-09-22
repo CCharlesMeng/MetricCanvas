@@ -2,7 +2,7 @@ import unittest
 from copy import deepcopy
 from test_text_map_building import content_page, recipe
 from metriccanvas_authoring.pages.editing.page_editing import edit_page_document
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.delivery.summary_capability import summary_configured
 
 

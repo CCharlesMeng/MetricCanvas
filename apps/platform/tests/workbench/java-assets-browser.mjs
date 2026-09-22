@@ -3,7 +3,7 @@ const browser = await chromium.launch({headless:true});
 const page = await browser.newPage({ignoreHTTPSErrors:true});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
 const root=process.env.JAVA_ASSETS_BASE_URL || 'https://127.0.0.1:5196';
-let doc={schemaVersion:'6.4',layout:'report',id:'asset-test',dataSources:{},sections:[{id:'main',components:[{id:'text',type:'text',layout:{span:12},props:{title:'原始标题',body:'页面内容'}}]}]};
+let doc={schemaVersion:'6.5',layout:'report',id:'asset-test',dataSources:{},sections:[{id:'main',components:[{id:'text',type:'text',layout:{span:12},props:{title:'原始标题',body:'页面内容'}}]}]};
 let revision=1,isDraft=true,writes=0;
 const receipt=()=>({retCode:'CBC.0000',page_id:doc.id,page_metadata_id:'metadata-1',revision_id:`r${revision}`,revision_number:revision,is_draft:isDraft,page_metadata_definition:JSON.stringify(doc)});
 try {

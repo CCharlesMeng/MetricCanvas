@@ -235,6 +235,8 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 
 ## 持久化与安全
 
+6.5 协议能表达无值模板、value 与时间区间，但本 Skill 仍只调用现有两工具。模板提取/原值校验由已接通的可信程序完成，用户确认交平台；收到候选摘要仅报告已准备，不能自行遍历改写完整页面或声称已发布。召回填值与临时渲染编排由外部服务负责。
+
 - 仅通过 Relay Interface 使用 `compose_page`。Page Artifact Adapter 将完整页面构建产物保存为最新会话检查点，仅将 `modelSummary` 返回模型。
 - 正式页面持久化只由平台响应用户显式发起的沉淀。禁止调用 Java 页面保存 Interface，也不得声称已经创建页面修订。
 - 进入交互等待或收到取消后立即取消在途 Tool task。生产 Data Context/DQE Adapter 使用可取消的 async HTTP；迟到结果只能丢弃或标记为已取消，不能覆盖更新的会话检查点。

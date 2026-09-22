@@ -1,6 +1,6 @@
 # MetricCanvas 页面元数据规范
 
-页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.6**，公开读取兼容5.0—5.4及6.0—6.6；读取5.x后规范化为6.x运行态文档，新文档仍只写当前6.x版本。结构事实由 `packages/page/src/schema/` 单向导出；未声明属性不被接受。
+页面元数据是统一运行时消费的声明式JSON文档。当前作者协议为 **6.6**，6.x 支持 6.5 和 6.6，公开读取仍兼容5.0—5.4；读取5.x后规范化为6.6运行态文档，读取6.5保留其版本，新分组参数文档写6.6。结构事实由 `packages/page/src/schema/` 单向导出；未声明属性不被接受。
 
 ## 从需求到页面
 
@@ -20,9 +20,11 @@
 
 ## 版本、初始化与持久化
 
-新文档写6.6和layout；6.0的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
+新文档写6.11和layout；已支持版本的layoutForm在输入边界兼容读取，双字段同时出现拒绝。规范化保留已支持版本的能力边界，旧文档迁移另存新修订；先核验历史原文hash，再规范化。详见[布局迁移](docs/page-metadata/layout-migration.md)。
 
-页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#66-分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/archive/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
+当前模板在同一 Page Schema 内以分层 params 与 DQE 取值位置的原位 param 引用表达。无值模板结构合法，输入完整性在执行前验证。6.x 接受 6.5 与当前 6.11，保留 5.0–5.4 兼容读取。提取、解析和旧绑定显式迁移见[页面参数](PAGE-PARAMETERS.md)。
+
+页面参数是一次初始化的不可变输入，筛选器是页内可变状态。6.6 新增 `params.query.{dimensions,times}` 与 `params.display` 分层声明：按消费位置分层，多组时间按 ID 独立引用，实际值用 `dim_value_list`、`start/end`、`value` 表达；查询侧在 `filter.time` 上整段引用时间输入，写 `window` 即以该值为基准点派生区间。新结构规则见[分层参数](PAGE-PARAMETERS.md#当前分层参数新页面)，以下 default/paramBindings 说明保留旧数组兼容语义。6.2维度参数支持单值/多值和显式query.paramBindings/filter.initialParam；实际执行值与URL初始化的边界见[参数与文本](contracts/metriccanvas/page/reference/params-and-text-values.md)及[执行消费契约](docs/archive/authoring-tickets-126/t18-execution-contract.md)。运行时替换后的副本不作为模板原文保存。
 
 Schema元数据另见[数据上下文规则](docs/schema-metadata.md)，页面构建规格与工具能力另见[Authoring Bundle](metriccanvas-authoring/README.md)。
 

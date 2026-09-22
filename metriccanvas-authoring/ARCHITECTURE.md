@@ -10,7 +10,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 
 目标工具面固定六项：`read_page_context`、`discover_data_context`、`query_data`、`compose_page`、`edit_page`、`page_metadata_emit_preview`，另有 resource `metriccanvas://bundle-info`。请求体不另写模型，直接以 `WithJsonSchema` 投影领域侧的 `QUERY_SCHEMA`/`COMPOSE_SCHEMA`/`EDIT_RESULT_SCHEMA`；工具面消费契约，不拥有契约。返回恒为 `{ok, modelSummary, artifactEnvelope}`，模型只读 `modelSummary`，程序产物只在 mutation 时产出 `artifactEnvelope`；异常在此收成 `rejected`/`unavailable` 闭集，实现细节不外泄。
 
-入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/`、`assets/`、`work/` 各自声明，服务态身份在 `adapters/service_identity.py`），不再有汇总的 `application/ports.py`；`application/` 包已随能力归位删除。
+入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/`、`assets/`、`work/` 各自声明，服务态身份在 `adapters/service_identity.py`），不再有汇总的 `application/ports.py`；`application/` 与 `domain/` 源码包已随能力归位删除。
 
 入站 MCP 是接入点而不是 Adapter：目标工具面在 `entrypoints/mcp/`，旧注册名的工具面与各自启动入口同处 `entrypoints/compat/`。出站按外部系统边界分组而不按方向分组：`adapters/firstparty/`（Lab Data Context、DQE、Java 页面资产、草稿生命周期、未接入的发布；不写作 `java/` 是因为 Lab 与 DQE 不是 Java 契约）、`adapters/relay/`（Relay 注入的只读输入与来自 MCP config 的服务态身份）、`adapters/storage/`（SQLite）。身份端口留在 `adapters/service_identity.py`，由全部出站适配器共用。`bootstrap/` 之外不 import 具体适配器。
 
@@ -26,6 +26,9 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `data/semantic_catalog.py` | 相关 Lab 指标精简投影、calculate_conf 识别、缺失/冲突与精确详情身份；不输出 SQL |
 | `pages/referenced.py` | 消费结果引用后的章节装配与局部新增组件；不执行 DQE |
 | `pages/editing/operation_batch.py` | 同步/异步共用的批次、依赖、回滚和 partial/unchanged 规则 |
+| `pages/validation/` | 页面语义校验、分层参数与原位引用；TS 单向导出 Schema，Python 对等验证 |
+| `pages/parameters/` | 模板准备、实例填值与可信程序交付；取值算法由 TS 参数程序拥有 |
+| `pages/composition/page_structure.py` | v1/v2/v3 结构计划的唯一实现，配合 components 呈现规则与 editing 修订 |
 | `pages/composition/page_building.py` | 消费取数单元装配整页与数据组件；产品可渲染与创作准入保持不同能力 |
 | `work/state.py` | 单份工作稿、版本竞争和跨调用预算 |
 | `assets/drafts.py` | 冻结提交、单次保存、回执核对、无需候选的恢复 |
@@ -49,6 +52,8 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 
 ## 真源与分发
 
+完整维护源、再生命令与离线副本边界见 [SOURCES.md](SOURCES.md)。
+
 页面产品事实仍来自 `packages/page` 与产品参考。现有 TypeScript 导出器生成产品契约、bundle snapshot 和安装参考；运行时 v2 输入 Schema 从公共页面结构/编辑输入和 v2 Python 定义注册，Skill 示例针对实际 MCP Schema 验证。Bundle manifest/lock 纳入新源码、协议和兼容资产。
 
 wheel 与 sdist 都携带完整运行契约。`hatch_build.py` 仅在源码构建时收集契约；从 sdist 构建时消费已内嵌的 `_bundle`，不依赖仓外路径。
@@ -57,4 +62,4 @@ wheel 与 sdist 都携带完整运行契约。`hatch_build.py` 仅在源码构�
 
 ## 验证范围
 
-测试分为公共行为与状态/存储、实际 MCP Schema/Skill 契约、打包安装、正式渲染器本地夹具、真实模型轨迹。入口接线和生产回执不由本地替身证明。详见[实施记录](../docs/plan/2026-09-20-authoring-implementation-progress.md)与[Relay 接入](RELAY-HANDOFF.md)。
+测试以 [分类清单与统一入口](test-harness/README.md) 按规则、适配器、交付和评测分层；默认全量运行，漏登记会失败。入口接线和生产回执不由本地替身证明。详见[实施记录](../docs/plan/2026-09-20-authoring-implementation-progress.md)与[Relay 接入](RELAY-HANDOFF.md)。

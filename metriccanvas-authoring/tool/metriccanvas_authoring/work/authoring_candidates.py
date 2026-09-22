@@ -10,7 +10,7 @@ from referencing import Registry, Resource
 from metriccanvas_authoring.work.authoring_turns import PreparedAuthoringTurn
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 _CONTRACTS = bundle_root() / 'contracts/authored'
@@ -90,6 +90,9 @@ class AuthoringCandidates:
                   parent_ref: str | None = None) -> dict:
         self.ensure_available()
         parent = await self.require(parent_ref, prepared) if parent_ref is not None else None
+        operations = deepcopy(operations)
+        if parent and any(op.get('type') == 'parameter_selection' for op in parent['operations']):
+            operations.append({'type': 'parameter_selection', 'requiresHumanConfirmation': True})
         try:
             digest = document_sha256(document)
         except Exception:

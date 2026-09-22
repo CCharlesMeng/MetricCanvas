@@ -162,6 +162,8 @@ class AuthoringSubmissionCoordinator:
         binding = prepared.binding
         require((identity.actor_id, identity.workspace_id) == (binding['actorId'], binding['workspaceId']), 'FORBIDDEN')
         candidate = await self.candidates.require(candidate_ref, prepared)
+        require(not any(op.get('type') == 'parameter_selection' for op in candidate['operations']),
+                'TEMPLATE_REQUIRES_HUMAN_PUBLICATION')
         await self._current(prepared, identity)
         command = {'kind': 'save', 'context': {'operationId': self.operation_id(),
             'actorId': binding['actorId'], 'workspaceId': binding['workspaceId'],

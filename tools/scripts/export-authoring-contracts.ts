@@ -13,6 +13,7 @@ import {
 } from '../../packages/page/src/internal.ts';
 import { buildPageReference, validateReferenceLinks } from './page-reference.ts';
 import { invariants, type InvariantDefinition } from './page-conformance-vectors.ts';
+import {extractPageParams,applyPageParamSelection,resolvePageParams} from '../../packages/page/src/index.ts';
 
 const repoRoot = path.resolve(import.meta.dirname, '../..');
 const pagePackage = JSON.parse(await readFile(path.join(repoRoot, 'packages/page/package.json'), 'utf8')) as { version: string };
@@ -110,7 +111,7 @@ async function buildProductOutputs(): Promise<OutputMap> {
 
   const { layout: _currentLayout, layoutForm: _currentLegacyLayout, ...layoutBase } = fixtures.get('inline-report') as Record<string, unknown>;
   const layoutCases = [];
-  for (const schemaVersion of ['6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {
+  for (const schemaVersion of ['5.0', '5.4', '6.0', '6.1', '6.2', '6.3', '6.4', '6.5', '6.6', '7.0']) {
     for (const declaration of [
       {}, { layoutForm: 'report' }, { layoutForm: 'dashboard' },
       { layout: 'report' }, { layout: 'dashboard' },
@@ -221,6 +222,40 @@ async function buildProductOutputs(): Promise<OutputMap> {
   timeCase('window-out-of-range', p => { p.params[0].default = '0001-01'; });
   timeCase('filter-conflict', p => { p.filters = [{id:'date-filter',type:'timeRange'}]; p.dataSources.current.source.query.filterBindings = {'date-filter':{target:'time'}}; });
   outputs.set('page/conformance/time-param-bindings.json', json({cases:timeCases}));
+
+  const inlineCases: Array<{name:string;input:unknown;expected:unknown}>=[];
+  function inlineCase(name:string, change:(p:any)=>void) {
+    const input=structuredClone(fixtures.get('inline-params-page'));
+    change(input);inlineCases.push({name,input,expected:normalizePageDocument(input)});
+  }
+  inlineCase('unfilled-template',()=>{});
+  inlineCase('filled-range',p=>{p.params.query.dimensions[0].dim_value_list=['中国区'];p.params.query.times[0].start='2026-01';p.params.query.times[0].end='2026-06';});
+  inlineCase('old-version',p=>{p.schemaVersion='6.4';});
+  inlineCase('optional-query-input',p=>{p.params.query.dimensions[0].required=false;});
+  inlineCase('value-default-conflict',p=>{p.params.query.dimensions[0].default='全球';});
+  inlineCase('duplicate-values',p=>{p.params.query.dimensions[0].dim_value_list=['中国区','中国区'];});
+  inlineCase('invalid-day',p=>{p.params.query.times[0].granularity='date';p.params.query.times[0].start='2026-02-29';p.params.query.times[0].end='2026-03-01';});
+  inlineCase('reversed-range',p=>{p.params.query.times[0].start='2026-06';p.params.query.times[0].end='2026-01';});
+  inlineCase('uncontrolled-reference',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].output_metrics=[{param:'region'}];});
+  inlineCase('wrong-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list={param:'report_period'};});
+  inlineCase('extra-reference-key',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.dims[0].dim_value_list.extra=1;});
+  inlineCase('mixed-time-endpoints',p=>{p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end='2026-06';});
+  inlineCase('mixed-binding-model',p=>{p.dataSources.tokens.source.query.paramBindings={region:{target:'dimension',queryField:'other'}};});
+  const anchorReference=(p:any)=>{p.params.query.times[0]={id:'report-period',granularity:'month',start:'2026-03',end:'2026-03'};const t=p.dataSources.tokens.source.query.body.dsl_list[0].filter.time;t.window={kind:'lastN',unit:'month',n:12};};
+  inlineCase('anchor-window',anchorReference);
+  inlineCase('mismatched-windows',p=>{anchorReference(p);p.dataSources.tokens.source.query.body.dsl_list[0].filter.time.end={param:'report-period',part:'end',window:{kind:'lastN',unit:'month',n:6}};});
+  outputs.set('page/conformance/inline-params.json',json({cases:inlineCases}));
+
+  const tokensInput=JSON.parse(await readFile(path.join(repoRoot,'packages/page/fixtures/parameter-extraction/tokens-parameter-source.json'),'utf8'));
+  const extractionContext={baseline:'tokens-local-verified-fixture',dimensionIdentities:Object.fromEntries(Object.keys(tokensInput.dataSources).map(id=>[id,{'区域':'region'}]))};
+  const extraction=extractPageParams(tokensInput,extractionContext);
+  if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
+  const selection=extraction.candidates.map(c=>c.id);
+  const selected=applyPageParamSelection(extraction,selection);
+  if(!selected.ok)throw Error(JSON.stringify(selected.issues));
+  const resolved=resolvePageParams(selected.document,selected.originalValues);
+  if(!resolved.ok)throw Error(JSON.stringify(resolved.issues));
+  outputs.set('page/conformance/parameter-extraction.json',json({input:tokensInput,context:extractionContext,candidates:extraction.candidates,selectedIds:selection,template:selected.document,originalValues:selected.originalValues,filled:resolved.document,execution:resolved.resolvedPage}));
 
   const conformance = buildPageConformance(fixtures, invariants);
   for (const vector of conformance.vectors) {
@@ -349,7 +384,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
   // 历史预期仍冻结并核验摘要；当前契约只派生版本/布局升级，
   // 不从 Python 或浏览器构造器的输出反向更新业务预期。
   const buildPageVector = JSON.parse(await legacyContract('build-page-conformance.json'));
-  const normalizedBuildPage = normalizePageDocument(buildPageVector.expected.document);
+  const normalizedBuildPage = normalizePageDocument({ ...buildPageVector.expected.document, schemaVersion: versionPolicy.current });
   if (!normalizedBuildPage.ok) throw new Error(`历史页面期望无法升级: ${JSON.stringify(normalizedBuildPage.errors)}`);
   buildPageVector.expected.document = { ...normalizedBuildPage.document, schemaVersion: versionPolicy.current };
   const buildPageConformance = json(buildPageVector);
@@ -362,7 +397,7 @@ async function buildAuthoringOutputs(): Promise<OutputMap> {
     json({
       authoringContractVersion,
       files: [
-        ...await Promise.all(['platform-v2-protocol.md', 'publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json', 'section-patterns.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
+        ...await Promise.all(['platform-v2-protocol.md', 'publication-contract.ts', 'publication-conformance.json', 'authoring-turn.schema.json', 'authoring-turn.conformance.json', 'authoring-turn-contract.ts', 'authoring-turn-protocol.md', 'authoring-turn.bytes.json', 'authoring-candidate.schema.json', 'authoring-candidate-protocol.md', 'authoring-candidate.conformance.json', 'authoring-recovery-protocol.md', 'authoring-ui-recovery-protocol.md', 'source-description.schema.json', 'add-data-component.schema.json', 'authoring-data-mapping-protocol.md', 'source-format.conformance.json', 'section-patterns.json', 'page-structure-plan.schema.json', 'structure-revision.schema.json'].map(async name => ({file: `authored/${name}`, sha256: sha256(await readFile(path.join(authoringContractRoot, 'authored', name), 'utf8'))}))),
         { file: 'authored/analysis-intents.json', sha256: sha256(analysisIntents) },
         { file: 'authored/page-edit-request.schema.json', sha256: sha256(authoredEditRequest) },
         { file: 'authored/lifecycle-request.schema.json', sha256: sha256(authoredLifecycleRequest) },

@@ -59,7 +59,7 @@ export const invariants: InvariantDefinition[] = [
     description: '6.1 layout 能力下限与单布局真源；6.0 layoutForm 仍可读取',
     valid: ['legacy-layout-report', 'legacy-layout-dashboard', 'layout-6-1-report', 'layout-6-1-dashboard'],
     cases: [
-      { case: 'layout-before-6.1', base: 'layout-6-1-dashboard', expect: /由 6.1 引入/, mutate: d => { d.schemaVersion = '6.0'; } },
+      { case: 'layout-before-6.1', base: 'layout-6-1-dashboard', expect: /不支持的文档格式版本/, mutate: d => { d.schemaVersion = '6.0'; } },
       { case: 'layout-dual-equal', base: 'layout-6-1-dashboard', expect: /不得同时声明/, mutate: d => { d.layoutForm = 'dashboard'; } },
       { case: 'layout-dual-conflict', base: 'layout-6-1-dashboard', expect: /不得同时声明/, mutate: d => { d.layoutForm = 'report'; } },
       { case: 'layout-invalid-value', base: 'layout-6-1-dashboard', expect: /取值不在允许范围/, mutate: d => { d.layout = 'kiosk'; } }

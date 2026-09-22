@@ -28,7 +28,7 @@ from reference_injection import ReferenceInjection
 from test_authoring_turns import Turns
 from metriccanvas_authoring.work.authoring_turns import SCOPE_KEYS
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 LIMITATIONS={name:'blocked' for name in ['remoteLatest','relayRouting','save','publish','restartRecovery','realDataProvider','productionIdentity']}
@@ -72,7 +72,7 @@ def reject_program_evidence(value):
 def model_view(output, name=None):
     if 'modelSummary' in output:
         safe=output['modelSummary']
-    elif name=='discover_data_context' and {'ok','matches','dataContextVersion'} <= output.keys() and set(output) <= {'ok','dataContextVersion','businessDomains','matches','resolution','time','intent','structureOperation','issues','range'}:
+    elif name=='discover_data_context' and {'ok','matches','dataContextVersion'} <= output.keys() and set(output) <= {'ok','dataContextVersion','businessDomains','matches','resolution','time','intent','structureOperation','issues','range','metricRelations','coverage','structureVersions','structureCapabilities'}:
         safe=output
     elif name=='read_page_context' and output.get('ok') is True and output.get('view') in ['root','candidate']:
         safe=output  # Production bounded read_page_context projection.

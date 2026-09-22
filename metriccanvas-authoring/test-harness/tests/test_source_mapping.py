@@ -55,18 +55,57 @@ class SourceMappingTest(unittest.IsolatedAsyncioTestCase):
         self.unit = derive_executable_units(self.spec, self.context)[0]
         self.descriptor = await DescriptorFixture().describe(Turns().binding, self.context.version, self.unit.effective_query())
 
-    async def test_alias_label_reorder_stable_ids_and_exact_query_field(self):
+    async def test_readable_ids_label_reorder_and_exact_query_field(self):
+        for field, alias in zip(self.descriptor['fields'], ['region', 'tokens_consumed']):
+            field['queryField'] = alias
         first = map_source_description(self.unit, self.descriptor, self.context.version)
         description = deepcopy(self.descriptor)
         description['fields'].reverse()
         for field in description['fields']:
-            field['label'] = 'new display label'; field['queryField'] = 'alias-' + field['logicalId']
+            field['label'] = 'new display label'
         reordered = replace(self.unit, fields=dict(reversed(list(self.unit.fields.items()))))
         second = map_source_description(reordered, description, self.context.version)
         self.assertEqual(set(first.fields), set(second.fields))
         self.assertEqual(second.query_body, first.query_body)
-        self.assertTrue(all(field['queryField'].startswith('alias-') for field in second.fields.values()))
-        self.assertTrue(all(key.startswith('field-') and len(key) == 26 for key in second.fields))
+        self.assertEqual(set(second.fields), {self.unit.data_source_id + '-field-region', self.unit.data_source_id + '-field-tokens-consumed'})
+        self.assertEqual({f['queryField'] for f in second.fields.values()}, {'region', 'tokens_consumed'})
+
+    async def test_chinese_uses_trusted_logical_id_without_translation(self):
+        mapped = map_source_description(self.unit, self.descriptor, self.context.version)
+        self.assertEqual(set(mapped.fields), {self.unit.data_source_id + '-field-test-dimension-001', self.unit.data_source_id + '-field-test-metric-002'})
+
+    async def test_normalization_collision_is_semantic_and_order_independent(self):
+        description = deepcopy(self.descriptor)
+        for field, alias in zip(description['fields'], ['total_amount', 'total-amount']):
+            field['queryField'] = alias
+        first = map_source_description(self.unit, description, self.context.version)
+        description['fields'].reverse()
+        second = map_source_description(self.unit, description, self.context.version)
+        self.assertEqual(first.fields, second.fields)
+        self.assertEqual(set(first.fields), {self.unit.data_source_id + '-field-total-amount-test-dimension-001', self.unit.data_source_id + '-field-total-amount-test-metric-002'})
+
+    async def test_projection_disambiguation_and_last_resort_digest(self):
+        description = deepcopy(self.descriptor)
+        for field, alias, projection in zip(description['fields'], ['x_y', 'x-y'], ['month', 'year']):
+            field.update(queryField=alias, logicalId='amount', projectionId=projection)
+        mapped = map_source_description(self.unit, description, self.context.version)
+        self.assertEqual(set(mapped.fields), {self.unit.data_source_id + '-field-x-y-amount-month', self.unit.data_source_id + '-field-x-y-amount-year'})
+        for field, projection in zip(description['fields'], ['月', '年']):
+            field.update(projectionId=projection)
+        first = map_source_description(self.unit, description, self.context.version)
+        description['fields'].reverse()
+        self.assertEqual(first.fields, map_source_description(self.unit, description, self.context.version).fields)
+        self.assertEqual(len(first.fields), 2)
+        self.assertTrue(all(key.startswith(self.unit.data_source_id + '-field-x-y-amount-') for key in first.fields))
+
+    async def test_numeric_source_id_and_non_ascii_identity_fallback(self):
+        description = deepcopy(self.descriptor)
+        for field, logical in zip(description['fields'], ['区域', '用量']):
+            field.update(queryField=logical, logicalId=logical)
+        unit = replace(self.unit, data_source_id='123')
+        first = map_source_description(unit, description, self.context.version)
+        self.assertTrue(all(key.startswith('source-123-field-identity-') for key in first.fields))
+        self.assertEqual(first.fields, map_source_description(unit, description, self.context.version).fields)
 
     async def test_missing_duplicate_identity_type_context_and_unknown_rules(self):
         variants = []

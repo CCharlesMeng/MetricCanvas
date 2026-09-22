@@ -75,18 +75,18 @@ export function validationResolution(
 ): TextValueResolution {
   const values = new Map<string, PageParamValue>();
   for (const declaration of declarations) {
-    if (!declaration.required) continue;
+    if (declaration.required === false) continue;
     values.set(declaration.id, declaration.value ?? declaration.default ?? placeholderFor(declaration));
   }
   return { values };
 }
 
 function placeholderFor(declaration: PageParamDeclaration): PageParamValue {
-  if (declaration.type === 'timeRange') {
-    const date = declaration.granularity === 'month' ? '2000-01' : '2000-01-01';
-    return {start: date, end: date};
-  }
   if (declaration.type === 'time') return declaration.granularity === 'month' ? '2000-01' : '2000-01-01';
+  if (declaration.type === 'timeRange') {
+    const unit = declaration.granularity === 'month' ? '2000-01' : '2000-01-01';
+    return { start: unit, end: unit, granularity: declaration.granularity ?? 'date' };
+  }
   if (declaration.type === 'number') return 0;
   if (declaration.type === 'boolean') return false;
   return declaration.label ?? declaration.id;

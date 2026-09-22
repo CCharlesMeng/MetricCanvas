@@ -178,7 +178,7 @@ describe('页面参数不变式', () => {
 
 describe('参数化页面的端到端校验', () => {
   const page = (overrides: Record<string, unknown>) => ({
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'detail',
     dataSources: {
       info: {

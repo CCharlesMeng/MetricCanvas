@@ -4,7 +4,7 @@ import { createAuthoringSync, type DurableAuthoringState, type DurableSaveComman
 import type { AuthoringStorage } from '../../src/lib/workbench/authoring-storage';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 function draft(title: string) {
-  const result = createCanvasAuthoringDraft({ schemaVersion: '6.1', layout: 'report', id: 'sync-page', dataSources: {}, sections: [{ id: 's', title: 's', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: 'body' } }] }] });
+  const result = createCanvasAuthoringDraft({ schemaVersion: '6.5', layout: 'report', id: 'sync-page', dataSources: {}, sections: [{ id: 's', title: 's', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: 'body' } }] }] });
   if (!result.ok) throw Error(result.message); return result.draft;
 }
 const hash = (command: DurableSaveCommand) => createHash('sha256').update(JSON.stringify(command.document)).digest('hex');
@@ -62,13 +62,13 @@ describe('durable serial authoring operations', () => {
     port.save = vi.fn<StableSavePort['save']>(async (command) => { commands.push(command); if (commands.length === 1) throw Error('offline'); return saved(command, 2); });
     await sync.enqueue(draft('one'), 'one', true); await settle(); await sync.retry();
     expect(commands).toHaveLength(1);
-    const next = draft('two'); next.pageDocument.schemaVersion = '6.2';
+    const next = draft('two'); next.pageDocument.schemaVersion = '6.5';
     await sync.enqueue(next, 'newer schema operation', false);
-    expect(commands[0].document.schemaVersion).toBe('6.1');
+    expect(commands[0].document.schemaVersion).toBe('6.5');
     port.lookup = async (context) => ({ status: 'not-applied', operationId: context.operationId, retrySafe: false }); await sync.retry(); expect(commands).toHaveLength(1);
     port.lookup = async (context) => ({ status: 'not-applied', operationId: context.operationId, retrySafe: true }); await sync.retry(); await settle();
     expect(commands).toHaveLength(3); expect(commands[1]).toEqual(commands[0]);
-    expect(commands[1].document.schemaVersion).toBe('6.1'); expect(commands[2].document.schemaVersion).toBe('6.2'); sync.dispose();
+    expect(commands[1].document.schemaVersion).toBe('6.5'); expect(commands[2].document.schemaVersion).toBe('6.5'); sync.dispose();
   });
   it('conflict or bad integrity preserves queue and never advances base', async () => {
     for (const kind of ['conflict', 'hash'] as const) {

@@ -10,7 +10,7 @@ it('单/多值参数与部分共享目标合法，规范化保留原文参数', 
   expect(validate(raw)).toEqual([]);
 });
 it.each([
-  ['旧能力下限', (p: any) => { p.schemaVersion = '6.1'; }, '/params/0'],
+  ['旧版本拒绝', (p: any) => { p.schemaVersion = '6.1'; }, '/schemaVersion'],
   ['默认形状', (p: any) => { p.params[0].default = 'APAC'; }, '/params/0/default'],
   ['重复值', (p: any) => { p.params[0].default = ['APAC', 'APAC']; }, '/params/0/default'],
   ['未知参数', (p: any) => { p.filters[0].initialParam = 'missing'; }, '/filters/0/initialParam'],

@@ -9,7 +9,7 @@ from test_authoring_turns import Turns
 from test_authoring_candidates import MemoryCandidates
 from test_source_mapping import fixture
 from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.pages.composition.page_structure import block_component, StructureError
 from metriccanvas_authoring.pages.editing.section_editing import edit_section
 
@@ -55,6 +55,22 @@ class StructurePlanTests(unittest.IsolatedAsyncioTestCase):
         source['source']['initial']['rows'][1]['scope'] = 'total'
         with self.assertRaisesRegex(StructureError, 'STRUCTURE_ROW_SELECTION_AMBIGUOUS'):
             block_component(b, {'result': source})
+
+    def test_v2_compact_summary_requires_trusted_relation(self):
+        source = {'fields': {'amount': {'type': 'number', 'role': 'measure', 'unit': '元'},
+                             'growth': {'type': 'number', 'role': 'measure', 'unit': '%'}},
+                  'source': {'type': 'query', 'initial': {'rows': [{'amount': 20, 'growth': 10}], 'totalCount': 1}}}
+        summary = {**block('summary', 'metricCard'), 'fields': ['amount', 'growth'],
+                   'presentation': {'kind': 'metric-summary', 'metrics': [{'field': 'amount',
+                                    'changes': [{'field': 'growth', 'label': '同比', 'evidenceRef': 'relation-1'}]}]}}
+        relations = [{'evidenceRef': 'relation-1', 'primaryField': 'amount', 'changeField': 'growth'}]
+        component = block_component(summary, {'result': source}, relations=relations)
+        self.assertEqual(component['props']['variant'], 'compactSummary')
+        self.assertEqual(component['props']['rows'][0]['changes'][0]['field']['field'], 'growth')
+        summary['presentation']['metrics'][0]['changes'][0]['evidenceRef'] = 'invented'
+        with self.assertRaises(StructureError) as raised:
+            block_component(summary, {'result': source})
+        self.assertEqual(raised.exception.code, 'STRUCTURE_CHANGE_RELATION_UNVERIFIED')
 
     def test_section_removal_requires_exact_observed_components(self):
         page = {'sections': [{'id': 'main', 'components': [{'id': 'note', 'type': 'text'}]}]}

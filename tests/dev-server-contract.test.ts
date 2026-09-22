@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import playgroundViteConfig from '../apps/playground/vite.config';
@@ -9,13 +9,15 @@ const rootPackage = JSON.parse(
 ) as { scripts: Record<string, string> };
 
 describe('本地开发服务端口契约', () => {
+  afterEach(() => vi.unstubAllEnvs());
   it('页面试验场固定占用 5173，端口冲突时禁止静默漂移', () => {
     expect(playgroundViteConfig).toMatchObject({
       server: { port: 5173, strictPort: true }
     });
   });
 
-  it('Platform 固定占用 5174，端口冲突时禁止静默漂移', () => {
+  it.each([['', 443], ['5174', 5174]] as const)('Platform 使用 HTTPS 默认端口或显式覆盖 %s', (override, expectedPort) => {
+    vi.stubEnv('METRICCANVAS_LOCAL_HUAWEI_PORT', override || undefined);
     const config = typeof platformViteConfig === 'function'
       ? platformViteConfig({
           command: 'serve',
@@ -25,7 +27,7 @@ describe('本地开发服务端口契约', () => {
         })
       : platformViteConfig;
     expect(config).toMatchObject({
-      server: { port: 5174, strictPort: true }
+      server: { port: expectedPort, strictPort: true }
     });
   });
 

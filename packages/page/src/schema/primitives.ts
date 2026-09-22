@@ -70,29 +70,41 @@ export const nonEmptyTextValueZ = z
   .union([z.string().min(1), textValueReferenceZ])
   .meta({ id: 'nonEmptyTextValue' }) as unknown as TextValueSchema;
 
+const parameterValueZ = z.union([z.string(), z.number(), z.boolean()]);
+const dimensionValueZ = z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]);
+const timeRangeValueZ = z.object({
+  start: z.string(), end: z.string(), granularity: z.enum(['month', 'date'])
+}).strict();
+
+/** 6.5 keeps declarations and supplied values in the same Page document. */
 export const pageParamZ = z.union([z
   .object({
     id: idZ,
     type: z.enum(['string', 'number', 'boolean']),
-    required: z.boolean(),
+    required: z.boolean().optional(),
     label: z.string().min(1).optional(),
-    default: z.union([z.string(), z.number(), z.boolean()]).optional()
+    default: parameterValueZ.optional(),
+    value: parameterValueZ.optional()
   })
   .strict(), z.object({
-    id: idZ, type: z.literal('dimension'), required: z.boolean(),
+    id: idZ, type: z.literal('dimension'), required: z.boolean().optional(),
     label: z.string().min(1).optional(), multiple: z.boolean().optional(),
-    default: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional()
+    default: dimensionValueZ.optional(), value: dimensionValueZ.optional()
   }).strict(), z.object({
     id: idZ,
     type: z.literal('time'),
     granularity: z.enum(['month', 'date']),
-    required: z.boolean(),
+    required: z.boolean().optional(),
     label: z.string().min(1).optional(),
-    default: z.string().optional()
+    default: z.string().optional(), value: z.string().optional()
+  }).strict(), z.object({
+    id: idZ, type: z.literal('timeRange'),
+    granularity: z.enum(['month', 'date']), required: z.boolean().optional(),
+    label: z.string().min(1).optional(), value: timeRangeValueZ.optional()
   }).strict()])
   .meta({
     id: 'pageParam',
-    description: '页面参数：打开页面时由 URL 确定、此后不可改变的具名输入'
+    description: '页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取'
   });
 
 /** 6.6：参数按用途分层，实际值可省略以保存未填值模板。 */

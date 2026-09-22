@@ -7,7 +7,7 @@ from metriccanvas_authoring.data.executable_units import ExecutableUnit, UnitSco
 from metriccanvas_authoring.pages.components.capabilities import DATA_COMPONENTS
 from metriccanvas_authoring.pages.composition.page_building import build_data_component
 from metriccanvas_authoring.data.execution import DqeExecutionResult
-from metriccanvas_authoring.domain.page_validation import _resolved_fields
+from metriccanvas_authoring.pages.validation.page_validation import _resolved_fields
 from metriccanvas_authoring.pages.composition.layout_policy import layout_transition_impacts
 
 PROPERTY_WHITELIST = {

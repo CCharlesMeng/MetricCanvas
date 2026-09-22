@@ -209,7 +209,7 @@
     const parsed =
       paramDeclarations.length === 0
         ? declared
-        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? (value.start === value.end ? value.start : `${value.start} 至 ${value.end}`) : formatValue(value, format) } });
+        : parsePage(raw, { textValues: { values: params.values, format: (value, format) => Array.isArray(value) ? value.join('、') : typeof value === 'object' ? value.start === value.end ? value.start : `${value.start} 至 ${value.end}` : formatValue(value, format) } });
     if (!parsed.ok) {
       pageState = { phase: 'invalid', errors: parsed.errors };
       emit?.({ type: 'invalid', errors: parsed.errors });
@@ -238,7 +238,7 @@
     declarations = loaded.filters ?? [];
 
     const fromDeclarations = initialFilterValues(declarations);
-    const fromURL: FilterValues = capabilities.filters
+    const fromURL: FilterValues = capabilities.filters && !paramDeclarations.some(p => p.value !== undefined)
       ? parseFilterURL(search, declarations)
       : new Map();
     const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]));

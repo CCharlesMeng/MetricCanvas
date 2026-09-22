@@ -8,8 +8,10 @@ from metriccanvas_authoring.build_issues import PageBuildingIssue
 from metriccanvas_authoring.data.executable_units import build_query_source
 from metriccanvas_authoring.pages.composition.page_building import build_data_component
 from metriccanvas_authoring.pages.editing.page_editing import EDIT_SCHEMA, apply_page_operation
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from metriccanvas_authoring.runtime_assets import bundle_root
+# 口径 A：结构计划以 main 那套为准，分区编辑与呈现走 domain 实现；
+# 本分支 pages/ 下的同名早期形态等第十一批归位时一并退役。
 from metriccanvas_authoring.pages.editing.section_editing import SECTION_OPERATIONS, SECTION_TYPES, edit_section
 from metriccanvas_authoring.pages.composition.page_structure import StructureError
 
@@ -82,7 +84,28 @@ async def _add_data(document, op, dependencies, evidence):
     return candidate, []
 
 
-async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current):
+async def _section_relations(op, dependencies, structure_state):
+    """呈现型分区组件按本轮结构计划取指标关联；缺计划或缺呈现意图时不取。"""
+    if op['type'] != 'add_source_component' or not op['block'].get('presentation') or not structure_state:
+        return []
+    from metriccanvas_authoring.data.metric_relations import load_relations
+    plan = structure_state['plan']
+    source = next((r for r in plan['dataRequests'] if r['dataSourceId'] == op['block']['source']), None)
+    if source is None:
+        return []
+    try:
+        snapshot = await dependencies.data_context.current()
+    except Exception:
+        raise StructureError('DATA_CONTEXT_UNAVAILABLE') from None
+    if snapshot.get('version') != plan['dataContextVersion']:
+        raise StructureError('DATA_CONTEXT_VERSION_CHANGED')
+    relations, _ = await load_relations(dependencies.metric_relations, dependencies.authoring_scope,
+                                        plan['dataContextVersion'], source['businessDomain'])
+    period = {k: v for k, v in (source.get('time') or {}).items() if k != 'providedBy'}
+    return [r for r in relations if r['time'] == period]
+
+
+async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=False, current, structure_state=None):
     from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
     batch = operation_batch(baseline, request, UNIFIED_EDIT_SCHEMA['properties']['operations']['items'])
     result = None
@@ -99,7 +122,7 @@ async def edit_unified_page(baseline, request, dependencies, *, summary_enabled=
             result = candidate, issues, []
         elif op['type'] in SECTION_TYPES:
             try:
-                result = edit_section(document, op), [], []
+                result = edit_section(document, op, relations=await _section_relations(op, dependencies, structure_state)), [], []
             except StructureError as error:
                 result = None, [error.issue()], []
         else:

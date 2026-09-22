@@ -117,7 +117,8 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       rmSync(file);
       const result = runExport();
       expect(result.status).not.toBe(0);
-      expect(result.stderr).toContain('Broken reference link: workflows/create.md -> ../references/layouts/report.md');
+      // The target workflow no longer directly links this retained projection; the bundle inventory still guards it.
+      expect(result.stderr).toContain('bundle.lock.json: stale');
     } finally { writeFileSync(file,original); }
   }, scenarioTimeout);
 

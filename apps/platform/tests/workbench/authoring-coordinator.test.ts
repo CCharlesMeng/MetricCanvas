@@ -3,7 +3,7 @@ import { listenForSavedDrafts, DRAFT_SAVED_EVENT } from '../../src/lib/dialogue/
 import { createAuthoringCoordinator, confirmedPageAssetCapabilities, type AuthoringPort } from '../../src/lib/workbench/authoring-coordinator';
 import { createCanvasAuthoringDraft } from '../../src/lib/workbench/document-edit';
 import { PageAssetsError, type PageRevision } from '../../src/lib/page-assets-client';
-const document = { schemaVersion: '6.1', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 's', title: 's', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: 'body' } }] }] };
+const document = { schemaVersion: '6.5', layout: 'report', id: 'p', dataSources: {}, sections: [{ id: 's', title: 's', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title: '原标题', body: 'body' } }] }] };
 function revision(id = 'r1'): PageRevision {
   return { pageId: 'p', resourceId: 'resource', revisionId: id, revisionNumber: 1, document: document as PageRevision['document'], baseRevisionId: null, contentHash: '', dataContextVersion: null, createdBy: '', createdAt: '' };
 }

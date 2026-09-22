@@ -22,7 +22,7 @@ from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
 from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.work.state import Limits
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from model_transport import HttpTransport
 from run_local import config
 

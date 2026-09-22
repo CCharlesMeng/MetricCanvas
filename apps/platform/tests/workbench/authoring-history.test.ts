@@ -9,7 +9,7 @@ import type { AuthoringStorage } from '../../src/lib/workbench/authoring-storage
 const scope = { actorId: 'alice', workspaceId: 'w', pageId: 'p' };
 const ref = { pageId: 'p', revisionId: 'r1', resourceId: 'resource' };
 function draft(title: string) {
-  const parsed = createCanvasAuthoringDraft({ schemaVersion: '6.1', id: 'p', layout: 'report', dataSources: {}, sections: [{ id: 's', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: 'preserved' } }] }] });
+  const parsed = createCanvasAuthoringDraft({ schemaVersion: '6.5', id: 'p', layout: 'report', dataSources: {}, sections: [{ id: 's', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: 'preserved' } }] }] });
   if (!parsed.ok) throw Error(parsed.message); return parsed.draft;
 }
 function setup() {

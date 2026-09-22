@@ -21,7 +21,7 @@ const forecastSource = (overrides: Record<string, unknown> = {}) => ({
 });
 
 const page = (tableProps: Record<string, unknown>, source = forecastSource()) => ({
-  schemaVersion: '6.0',
+  schemaVersion: '6.5',
   id: 'forecast',
   dataSources: { forecast: source },
   sections: [
@@ -74,7 +74,7 @@ describe('表格呈现能力', () => {
 
 describe('信息面板与字段长文本', () => {
   const infoPage = (components: unknown[]) => ({
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'detail',
     dataSources: {
       info: {

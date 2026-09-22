@@ -97,7 +97,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## 独立生命周期 MCP（#138）
 
-`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.entrypoints.compat.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `application/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
+`metriccanvas-lifecycle`（或 `python -m metriccanvas_authoring.entrypoints.compat.lifecycle_server`）独立装载，四项草稿工具为 `save_draft`、`get_save_result`、`read_revision`、`list_revisions`，各只接受 `request_token`。不初始化内容 MCP、DQE、旧 `/pages` 保存适配器，也不执行页面编辑或参数提取。公共程序组合入口为 `create_lifecycle_mcp_server(service, programs, identities)`；应用端口位于 `assets/lifecycle_ports.py`，自有输入契约 `contracts/authored/lifecycle-request.schema.json` 沿内部 `authoring-lifecycle-proposal/1`，不是线上 API。
 
 受信任 Relay 适配器在调用之前把完整请求写到独立用户/工作区进程的 `METRICCANVAS_LIFECYCLE_INPUTS_DIR/<token>.json`。目录权限须 0700、文件 0600，令牌为 16–128 位字母/数字/下划线/连字符；文件内容 `{actorId,workspaceId,request}`，request 按该 schema 的 save/read/history 分支。目录不可由模型写入；调用方必须保证同一逻辑操作的请求文件不可变并持久保留，禁止在重试时换 operationId 或修改原载荷。token 只定位受信任请求，不代替服务鉴权；保存指纹、基线原子比较、去重期限与授权仍由服务裁决。
 
@@ -121,7 +121,7 @@ METRICCANVAS_TOOL_SURFACE=relay \
 
 ## Platform 创建与修改 Skill、布局基线
 
-Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md 与按需参考；安装完整目录即可引用闭合。S2统一工具需求为 metriccanvas-platform-content 的五个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。部署须注入可信 current-turn 端口并核实 list_tools、摘要/完整产物分流及 latest 保证，缺能力明确不可用。真实 Relay 路由和 latest 提供方仍需实证。
+Platform 注册唯一 `metriccanvas-platform-authoring`，普通问数继续使用 `metriccanvas-page-builder`。统一作者目录包含 SKILL.md、workflows/create.md、workflows/edit.md、workflows/parameters.md 与按需参考；安装完整目录即可引用闭合。统一服务 metriccanvas-platform-content 有八个实际工具，全部消费 context_ref；registry 与 CLI 校验拒绝路由到旧兼容服务。三个参数工具为 `extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`。参数能力须注入 `ParameterDependencies`（程序、持久记录、提取验真提供方），缺能力明确不可用。部署须核实可信 current-turn、摘要/完整产物分流、临时实例只读交付及 latest 保证；真实 Relay 路由和提供方仍需实证。见[参数接入交付](../docs/plan/page-parameter-inlining/external-integration.md)。
 
 Bundle registry 的 referenceProjection 声明生成器所有权：普通问数仅 references/page-metadata 为生成子树，统一作者使用 none，生成器不覆盖任何作者参考。完整产品 Schema、正反例仍保留在 contract-snapshot；旧共享文本的基线副本和哈希见 docs/plan 的 S0 记录，不参与部署。参考注入/文件补读方式按统一 Skill 的 references/tools.md 声明。
 
@@ -129,4 +129,29 @@ Platform 内容入口新建报告沿用章节布局；看板页头采用 plain�
 
 修改默认继承布局。显式 `set_page_layout` 保留原标题、容器、轨道/span、数据与手工设置，报告可用宽度、工具栏、标题归属和铺底窄屏回流影响；沿用整页校验拒绝非法候选，不重套创建模板或静默丢弃设置。
 
-四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。`test-harness/model-evals/` 单独提供14个真实模型评测用例与运行约定；当前全部未运行，缺真实 Relay/模型环境、身份与预算，不能将工具测试视为模型准确度成绩。
+四组合公开 stdio 与宽窄浏览器证据由 `test-harness/tests/test_platform_authoring_flows.py`、`test-harness/platform_layout_browser.mjs` 提供。模型运行记录按批次维护：已有 v2 中性对照与丰富数据评测，不能再用“全部未运行”概括，也不能将这些历史成绩归给 v3。当前 v3 的本地实现、离线回归和外部验收缺口见[实施记录](../docs/plan/scenario-guided-authoring/refinement/architecture-implementation-results.md)。
+
+### v3 页面创作架构与范式维护
+
+新建完整页面在工具声明支持时使用结构计划 v3；已有 v1/v2 候选不迁移，结构修订沿用原 planVersion。结构计划版本、页面 Schema 版本与 Bundle 版本是三件事，不能互换。
+
+Skill 负责业务问题、阅读层级与组件选型；工具负责能力检查、可信数据绑定和确定性装配；统一运行时负责实际呈现。创建与修订共用呈现规则，仍使用原五工具入口，不增加模型编排阶段。架构依据见[调整方案](../docs/plan/scenario-guided-authoring/refinement/authoring-architecture-proposal.md)。
+
+| 要维护的内容 | 修改真源 | 配套验证 |
+| --- | --- | --- |
+| 阅读顺序、选型、场景适用条件 | [reading-design.md](skill/metriccanvas-platform-authoring/references/reading-design.md) 与场景参考 | 差异场景前向检查，不以固定卡数或图数评分 |
+| 创作输入与版本 | `contracts/authored/page-structure-plan.schema.json`、`structure-revision.schema.json` | 新旧版本、创建/修订块契约一致性与安全错误测试 |
+| 默认占位、受控呈现、说明 | `contracts/authored/section-patterns.json`、`tool/metriccanvas_authoring/pages/components/` 下的 section_presentation、structure_presentation 与 `pages/composition/structure_scope.py` | 公开 create/edit 回归；保护人工设置和查询复用 |
+| 页面协议、组件与响应式 | 仓库 `packages/page/src/schema/` 与统一运行时/组件实现 | 页面 Schema、组件及呈现测试，不由 Skill 覆盖 CSS |
+
+pattern 是默认组合占位，不是整页模板或自动选型算法。结构分区仍为平面组合；新能力须同时有合法输入和可执行装配路径，再进入 structureCapabilities。
+
+报表反馈修订：v3 不再自动生成查询范围正文，structure_scope 只清理旧版保留 ID 的自动说明；查询事实仍留在数据源与审计中，必要业务边界由显式标题/副标题表达。report 指标组与图表章节优先用 panel 的白色内容区，表格小节可用 card，不能把所有章节默认设为透明 plain。见[修订结果](../docs/plan/scenario-guided-authoring/refinement/report-surface-feedback-results.md)。
+
+维护顺序：先更新所属真源及回归用例，再同步 Skill 说明和部署加载路径，最后从仓库根运行 `pnpm authoring:contracts` 与 `pnpm authoring:contracts:check`，并在 Bundle 目录运行 `python3 scripts/check_bundle.py`。生成副本和锁文件不手改；只改参考也需要更新 Bundle 摘要。
+
+完整创建必须能够读取或被注入工作流、布局参考、scenarios.md、reading-design.md 及适用场景。局部编辑不例行加载新建参考；整体重组时再加载阅读设计。独立分发链接闭合不等于外部宿主已完成注入，部署状态仍需单独验证。
+
+当前证据：v3 本地全量离线回归 480 项通过，A/B/C 分别覆盖经营阅读、用量监控、宽表局部核对。该数字是一次冻结实现的记录，不是永久测试数量承诺。工具直接生成的 JSON 通过结构校验；模型自主设计稳定性与该新产物视觉验收仍未完成。
+
+维护源与派生副本见 [SOURCES.md](SOURCES.md)；按验证层运行测试见 [test-harness/README.md](test-harness/README.md)。

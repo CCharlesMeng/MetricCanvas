@@ -6,7 +6,7 @@ partial/unchanged aggregation; operation handlers do not schedule batches.
 """
 from copy import deepcopy
 from jsonschema import Draft202012Validator
-from metriccanvas_authoring.domain.page_validation import normalize_page_document, validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import normalize_page_document, validate_page_document
 
 
 def operation_batch(baseline, request, operation_schema):

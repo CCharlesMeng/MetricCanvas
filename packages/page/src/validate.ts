@@ -116,7 +116,7 @@ export function parsePage(
     const structural = (validateStructure.errors ?? []).map(toTypedError);
     return {
       ok: false,
-      errors: declarations.some((declaration) => !declaration.required)
+      errors: declarations.some((declaration) => declaration.required === false)
         ? [...structural, optionalParamHint()]
         : structural
     };

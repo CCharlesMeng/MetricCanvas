@@ -2,6 +2,7 @@ import { resolveQueryParamReferences } from './query-param-references';
 import type { TimeRangeValue } from './filter';
 import type { QueryDataSourceFieldDefinition } from './field';
 import { resolveTimeWindow, type TimeWindow } from './time-param';
+import type { PageParamValue } from './page-param';
 
 export type JsonValue =
   | string
@@ -129,6 +130,13 @@ export interface DqeQueryDefinition {
   >;
 }
 
+/** Produces a DQE-safe copy; the saved Page keeps its references. */
+export function resolveInlineQueryParams(query: PageQuery, values: ReadonlyMap<string, PageParamValue>): PageQuery {
+  const result = structuredClone(query);
+  resolveQueryParamReferences(result, values);
+  return result;
+}
+
 /**
  * 页面查询定义:以 `language` 为判别符的判别联合(ADR-0034)。
  * 当前闭集仅 dqe 一支;各协议分支自行声明本协议的查询体与筛选绑定形状。
@@ -233,7 +241,6 @@ export function declaredPaginationLimit(query: PageQuery): number | undefined {
 /** 参数对查询定义的协议内初始化；有筛选绑定的目标由筛选状态接管。 */
 export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<string, import('./page-param').PageParamValue>): PageQuery {
   const initialized = structuredClone(query);
-  resolveQueryParamReferences(initialized, values);
   for (const [id, binding] of Object.entries(initialized.paramBindings ?? {})) {
     if (binding.target === 'time') {
       const value = values.get(id);
@@ -255,5 +262,5 @@ export function initializeQueryParams(query: PageQuery, values: ReadonlyMap<stri
     const dims = Array.isArray(filter.dims) ? filter.dims : [];
     item.filter = { ...filter, dims: [...dims, { dim_name: binding.queryField, dim_value_list: Array.isArray(value) ? [...value] : [String(value)] }] };
   }
-  return initialized;
+  return resolveInlineQueryParams(initialized, values);
 }

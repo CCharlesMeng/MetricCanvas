@@ -1056,6 +1056,8 @@
     "#/definitions/groupedPageParams/properties/query/properties/times/items/properties/start": "包含的区间起点，与 end 同时填写或省略。",
     "#/definitions/groupedPageParams/properties/query/properties/times/items/properties/end": "包含的区间终点，不早于 start。",
     "#/definitions/groupedPageParams/properties/display": "只供呈现的输入层：被文本取值和导航消费，不能进入查询；实际取值用 value 保存。",
+    "#/definitions/pageParam/anyOf/3/properties/value/properties/start": "timeRange 参数的包含起点；与 end 一起表达一次页面实例的明确时间区间。",
+    "#/definitions/pageParam/anyOf/3/properties/value/properties/end": "timeRange 参数的包含终点；必须与 start 使用相同粒度且不早于起点。",
     "#/definitions/timePointFilter/properties/initialParam": "初值取自一个单点 times 参数；与 default 互斥，打开后仍可在页内改。"
   },
   "enumNotes": {

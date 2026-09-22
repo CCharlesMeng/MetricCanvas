@@ -34,7 +34,7 @@ params 增加对象分支，按消费位置分两层：params.query.{dimensions,
 文本区间显示 start 至 end，相同起止显示一次，维度多值用顿号连接。URL 维度用重复键；时间是纯文本，单点写 2026-03，区间写 2026-01..2026-06，未传使用保存实际值，显式非法不回退。旧数组/default/time-window 保持兼容，规范化保存不把分层结构改写为数组。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `064fc35affc3504cd66b5e0b8134b11b2a41da36985b28804f00db025207d6fa`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -127,7 +127,7 @@ Schema位置：`#/definitions/pageParam`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面参数：打开页面时由 URL 确定、此后不可改变的具名输入 |
+| anyOf联合 | 类型/分支 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f30"></a>
 
@@ -137,7 +137,7 @@ Schema位置：`#/definitions/pageParam/anyOf/0`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["id","type","required"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f6964"></a>
 
@@ -173,7 +173,7 @@ Schema位置：`#/definitions/pageParam/anyOf/0/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f6c6162656c"></a>
 
@@ -225,6 +225,46 @@ Schema位置：`#/definitions/pageParam/anyOf/0/properties/default/anyOf/2`。
 |---|---|---|---|---|
 | "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f76616c7565"></a>
+
+### `@pageParam · anyOf[0].value`
+
+Schema位置：`#/definitions/pageParam/anyOf/0/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `@pageParam · anyOf[0].value · anyOf[0]`
+
+Schema位置：`#/definitions/pageParam/anyOf/0/properties/value/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `@pageParam · anyOf[0].value · anyOf[1]`
+
+Schema位置：`#/definitions/pageParam/anyOf/0/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "number" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f302f70726f706572746965732f76616c75652f616e794f662f32"></a>
+
+### `@pageParam · anyOf[0].value · anyOf[2]`
+
+Schema位置：`#/definitions/pageParam/anyOf/0/properties/value/anyOf/2`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 独立分支（不合并required） | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f31"></a>
 
 ### `@pageParam · anyOf[1]`
@@ -233,7 +273,7 @@ Schema位置：`#/definitions/pageParam/anyOf/1`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["id","type","required"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["id","type"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f6964"></a>
 
@@ -267,7 +307,7 @@ Schema位置：`#/definitions/pageParam/anyOf/1/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f6c6162656c"></a>
 
@@ -329,6 +369,46 @@ Schema位置：`#/definitions/pageParam/anyOf/1/properties/default/anyOf/1/items
 |---|---|---|---|---|
 | "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f76616c7565"></a>
+
+### `@pageParam · anyOf[1].value`
+
+Schema位置：`#/definitions/pageParam/anyOf/1/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| anyOf联合 | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f30"></a>
+
+### `@pageParam · anyOf[1].value · anyOf[0]`
+
+Schema位置：`#/definitions/pageParam/anyOf/1/properties/value/anyOf/0`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 独立分支（不合并required） | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f31"></a>
+
+### `@pageParam · anyOf[1].value · anyOf[1]`
+
+Schema位置：`#/definitions/pageParam/anyOf/1/properties/value/anyOf/1`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "array" | 独立分支（不合并required） | minItems=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f312f70726f706572746965732f76616c75652f616e794f662f312f6974656d73"></a>
+
+### `@pageParam · anyOf[1].value · anyOf[1][]`
+
+Schema位置：`#/definitions/pageParam/anyOf/1/properties/value/anyOf/1/items`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 每个数组项 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f32"></a>
 
 ### `@pageParam · anyOf[2]`
@@ -337,7 +417,7 @@ Schema位置：`#/definitions/pageParam/anyOf/2`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "object" | 独立分支（不合并required） | required=["id","type","granularity","required"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+| "object" | 独立分支（不合并required） | required=["id","type","granularity"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f322f70726f706572746965732f6964"></a>
 
@@ -386,7 +466,7 @@ Schema位置：`#/definitions/pageParam/anyOf/2/properties/required`。
 
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
-| "boolean" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
 
 <a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f322f70726f706572746965732f6c6162656c"></a>
 
@@ -407,6 +487,130 @@ Schema位置：`#/definitions/pageParam/anyOf/2/properties/default`。
 | 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
 |---|---|---|---|---|
 | "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 作者声明的初始默认；不是运行时随状态变化重新应用的值。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f322f70726f706572746965732f76616c7565"></a>
+
+### `@pageParam · anyOf[2].value`
+
+Schema位置：`#/definitions/pageParam/anyOf/2/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f33"></a>
+
+### `@pageParam · anyOf[3]`
+
+Schema位置：`#/definitions/pageParam/anyOf/3`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 独立分支（不合并required） | required=["id","type","granularity"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 结合本节用途与所在结构解释；引用节点见目标类型。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f6964"></a>
+
+### `@pageParam · anyOf[3].id`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/id`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | pattern="^[a-z0-9][a-z0-9-]*$" | Schema未设默认；装配/运行时默认见语义说明 | 稳定标识符；唯一性范围由所属页面、分区、组件或字段空间决定。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f74797065"></a>
+
+### `@pageParam · anyOf[3].type`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/type`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | const="timeRange" | Schema未设默认；装配/运行时默认见语义说明 | 选择所属结构的类型分支。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "timeRange" | 用于选择@pageParam · anyOf[3].type分支；同分支其它约束同时成立。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f6772616e756c6172697479"></a>
+
+### `@pageParam · anyOf[3].granularity`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/granularity`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["month","date"] | Schema未设默认；装配/运行时默认见语义说明 | 时间值的粒度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f7265717569726564"></a>
+
+### `@pageParam · anyOf[3].required`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/required`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "boolean" | 本分支可选 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | 参数是否必需；缺值时是否阻止初始化。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f6c6162656c"></a>
+
+### `@pageParam · anyOf[3].label`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/label`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支可选 | minLength=1 | Schema未设默认；装配/运行时默认见语义说明 | 人类可读标签，不代替稳定id。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c7565"></a>
+
+### `@pageParam · anyOf[3].value`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/value`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "object" | 本分支可选 | required=["start","end","granularity"]; additionalProperties=false | Schema未设默认；装配/运行时默认见语义说明 | 当前分支的固定值或绑定取值。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c75652f70726f706572746965732f7374617274"></a>
+
+### `@pageParam · anyOf[3].value.start`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/value/properties/start`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | timeRange 参数的包含起点；与 end 一起表达一次页面实例的明确时间区间。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c75652f70726f706572746965732f656e64"></a>
+
+### `@pageParam · anyOf[3].value.end`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/value/properties/end`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | 无额外结构约束 | Schema未设默认；装配/运行时默认见语义说明 | timeRange 参数的包含终点；必须与 start 使用相同粒度且不早于起点。 |
+
+<a id="schema-232f646566696e6974696f6e732f70616765506172616d2f616e794f662f332f70726f706572746965732f76616c75652f70726f706572746965732f6772616e756c6172697479"></a>
+
+### `@pageParam · anyOf[3].value.granularity`
+
+Schema位置：`#/definitions/pageParam/anyOf/3/properties/value/properties/granularity`。
+
+| 类型 | 必填性 | 允许值与约束 | 缺省行为 | 含义 |
+|---|---|---|---|---|
+| "string" | 本分支必填 | enum=["month","date"] | Schema未设默认；装配/运行时默认见语义说明 | 时间值的粒度。 |
+
+| 允许值 | 解释与适用条件 |
+|---|---|
+| "month" | 月粒度；timePoint使用YYYY-MM。 |
+| "date" | 日期值或日期格式；timePoint中表示YYYY-MM-DD粒度。 |
 
 <a id="schema-232f646566696e6974696f6e732f67726f7570656450616765506172616d73"></a>
 
@@ -956,10 +1160,16 @@ Schema位置：`#/definitions/textValue/anyOf/1`。目标：[#/definitions/textV
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/default`。
 - `#/definitions/pageParam/anyOf/0/properties/default/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/default`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/2/value`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/3/value`。
+- `#/definitions/pageParam/anyOf/0/properties/value/anyOf/2`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/4/value`。
 - `#/definitions/pageParam/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0`。
 - `#/definitions/pageParam/anyOf/1/properties/default/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0/default`。
 - `#/definitions/pageParam/anyOf/1/properties/default/anyOf/1`：[合法完整页面](examples/dimension-params-page.json)，JSON Pointer `#/params/0/default`。
+- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/0`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/0/value`。
+- `#/definitions/pageParam/anyOf/1/properties/value/anyOf/1`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/1/value`。
 - `#/definitions/pageParam/anyOf/2`：[合法完整页面](examples/time-params-page.json)，JSON Pointer `#/params/0`。
+- `#/definitions/pageParam/anyOf/3`：[合法完整页面](examples/reference-branches-page.json)，JSON Pointer `#/params/5`。
 - `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/0`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/0/value`。
 - `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/1`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/1/value`。
 - `#/definitions/groupedPageParams/properties/display/items/properties/value/anyOf/2`：[合法完整页面](examples/grouped-scalar-params-page.json)，JSON Pointer `#/params/display/2/value`。

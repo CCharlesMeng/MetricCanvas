@@ -4,7 +4,7 @@ import re
 from copy import deepcopy
 from jsonschema import Draft202012Validator
 from metriccanvas_authoring.runtime_assets import bundle_root
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 from .lifecycle_ports import LifecycleError, LifecycleServicePort, LifecycleProgramPort, LifecycleIdentityPort
 
 REQUEST_SCHEMA = json.loads((bundle_root() / 'contracts/authored/lifecycle-request.schema.json').read_text())

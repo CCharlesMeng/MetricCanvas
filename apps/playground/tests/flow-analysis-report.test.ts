@@ -306,7 +306,7 @@ describe('流水分析报告页面文档', () => {
         type: 'money',
         role: 'measure',
         currency: 'CNY',
-        defaultFormat: 'cny-adaptive'
+        defaultFormat: 'compact-million-2'
       });
     }
 
@@ -338,7 +338,7 @@ describe('流水分析报告页面文档', () => {
       typeof column.field !== 'string' &&
       column.field.field === 'reason'
     )).toMatchObject({
-      field: { data: 'main', field: 'reason', format: 'cny-adaptive' },
+      field: { data: 'main', field: 'reason', format: 'compact-million-2' },
       visual: 'signed'
     });
     expect(risk.props.columns.find((column) =>
@@ -346,7 +346,7 @@ describe('流水分析报告页面文档', () => {
       typeof column.field !== 'string' &&
       column.field.field === 'risk-type'
     )).toMatchObject({
-      field: { data: 'main', field: 'risk-type', format: 'cny-adaptive' },
+      field: { data: 'main', field: 'risk-type', format: 'compact-million-2' },
       width: 180,
       visual: 'signed'
     });

@@ -44,7 +44,7 @@ class ContentBaselinesTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_old_baseline_hash_is_checked_before_normalizing(self):
         with tempfile.TemporaryDirectory() as directory:
-            value = self.envelope(); d = value["document"]; d["schemaVersion"] = "6.0"; d["layoutForm"] = d.pop("layout")
+            value = self.envelope(); d = value["document"]; d["schemaVersion"] = "6.5"; d["layoutForm"] = d.pop("layout")
             value["documentSha256"] = document_sha256(d)
             (Path(directory) / f"{TOKEN}.json").write_text(json.dumps(value))
             result = await create_edit_page(FileContentBaselines(Path(directory)))(TOKEN, {"operations": [title()]})

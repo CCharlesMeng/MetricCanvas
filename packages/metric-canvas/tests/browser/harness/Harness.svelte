@@ -7,8 +7,8 @@
   const layout = params.get('layout') === 'dashboard' ? 'dashboard' : 'report';
   const { layout: _defaultLayout, ...content } = document;
   const initial = params.get('schemaVersion') === '6.0'
-    ? { ...content, schemaVersion: '6.0', layoutForm: layout }
-    : { ...content, schemaVersion: '6.1', layout };
+    ? { ...content, schemaVersion: '6.5', layoutForm: layout }
+    : { ...content, schemaVersion: '6.5', layout };
   let current = $state.raw(validDocument(initial));
   let selected = $state<AuthoringComponentLocator>();
   let enabled = $state(true);

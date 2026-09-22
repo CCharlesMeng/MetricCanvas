@@ -4,7 +4,7 @@ from urllib.parse import quote
 import httpx
 from metriccanvas_authoring.assets.lifecycle_ports import LifecycleCapabilities, LifecycleError
 from metriccanvas_authoring.assets.lifecycle import require, valid_ref
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 class KnownLifecycleHttp:

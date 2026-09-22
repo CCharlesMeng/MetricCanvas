@@ -26,6 +26,10 @@ def injection_paths(root, case, arm):
         paths.append(folder/'references/layouts'/f'{layout}.md')
     if case['workflow'] == 'create':
         paths.append(folder/'references/scenarios.md')
+        design = folder/'references/reading-design.md'
+        if design.is_file(): paths.append(design)  # Frozen pre-v3 arms have no such reference.
+        if case.get('scene') in {'business-report', 'usage-report'}:
+            paths.append(folder/'references/scenarios'/f"{case['scene']}.md")
     return paths
 
 
@@ -71,7 +75,7 @@ def source_manifest(root, suite, runner, cases, arm):
     files = {suite, runner, Path(__file__)}
     for case in cases:
         files.update(injection_paths(root, case, arm))
-    for relative in ['bundle.lock.json', 'contract-lock.json', 'tool/requirements.lock', 'tool/metriccanvas_authoring/entrypoints/compat/content_mcp.py', 'tool/metriccanvas_authoring/entrypoints/compat/content_server.py']:
+    for relative in ['bundle.lock.json', 'contract-lock.json', 'tool/requirements.lock', 'tool/metriccanvas_authoring/adapters/inbound/content_mcp.py', 'tool/metriccanvas_authoring/content_server.py']:
         files.add(root/'metriccanvas-authoring'/relative)
     files.update((root/'metriccanvas-authoring/tool/metriccanvas_authoring').rglob('*.py'))
     files.add(root/'metriccanvas-authoring/test-harness/tests/test_page_editing.py')

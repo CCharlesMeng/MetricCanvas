@@ -48,9 +48,9 @@ describe('Page JSON 即时预览文档', () => {
 
 it('旧页面预览只向后续流程交规范文档，保留文本引用及数据', () => {
   const { layout: _layout, ...content } = DEFAULT_PREVIEW_PAGE;
-  const input = { ...content, schemaVersion: '6.0', layoutForm: 'dashboard' };
+  const input = { ...content, schemaVersion: '6.5', layoutForm: 'dashboard' };
   const result = parsePreviewDocument(JSON.stringify(input), validate);
-  expect(result).toMatchObject({ status: 'valid', document: { ...content, schemaVersion: '6.1', layout: 'dashboard' } });
+  expect(result).toMatchObject({ status: 'valid', document: { ...content, schemaVersion: '6.5', layout: 'dashboard' } });
   if (result.status === 'valid') expect(result.document).not.toHaveProperty('layoutForm');
 });
 
@@ -62,6 +62,6 @@ it.each(['5.0', '5.1', '5.2', '5.3', '5.4'])('%s 页面可由页面试验场预�
   );
   expect(result).toMatchObject({
     status: 'valid',
-    document: { ...content, schemaVersion: '6.1', layout: 'report' }
+    document: { ...content, schemaVersion: '6.11', layout: 'report' }
   });
 });

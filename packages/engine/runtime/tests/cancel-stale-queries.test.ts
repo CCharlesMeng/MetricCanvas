@@ -42,7 +42,7 @@ function dimension(name: string, values: string[]) {
 
 function singleSourcePage(): Page {
   return {
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'cancel-single',
     filters: [{ id: 'fa', type: 'dimension', dimension: 'product', label: '产品' }],
     dataSources: {
@@ -165,7 +165,7 @@ function dedupPaginationPage(): Page {
     }
   });
   return {
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'cancel-dedup',
     dataSources: {
       list: JSON.parse(JSON.stringify(querySource)) as Page['dataSources'][string],

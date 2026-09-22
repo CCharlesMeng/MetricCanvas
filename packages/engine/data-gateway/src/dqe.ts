@@ -1,4 +1,5 @@
 import {
+  assertNoQueryParamReferences,
   normalizeQueryRows,
   type QueryErrorCode,
   type QueryRowNormalizationIssue,
@@ -591,6 +592,7 @@ function classifiedFetchError(
 
 /** 在不改变页面查询定义的前提下，克隆并覆盖当前生效筛选。 */
 export function effectiveDqeItem(query: EffectiveQuery): JsonObject {
+  assertNoQueryParamReferences(query.body);
   const item = cloneJson(query.body.dsl_list[0]);
   for (const filter of query.filterValues) {
     if (filter.target === 'dimension') {

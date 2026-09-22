@@ -1,7 +1,7 @@
 """Atomic dimension-filter bindings and table-link navigation over trusted pages."""
 from copy import deepcopy
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, component_by_id
-from metriccanvas_authoring.domain.page_validation import _resolved_fields
+from metriccanvas_authoring.pages.validation.page_validation import _resolved_fields
 
 FILTER_PROPERTIES = {'dimension','label','emptyLabel','display','visible','default'}
 

@@ -2,7 +2,7 @@ import json
 import unittest
 from copy import deepcopy
 from test_page_editing import page, edit
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 
 def content_page():

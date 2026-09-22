@@ -4,7 +4,7 @@ from copy import deepcopy
 from pathlib import Path
 from test_page_editing import page, edit, title
 from metriccanvas_authoring.pages.composition.layout_policy import apply_creation_layout
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[3]
 
@@ -50,7 +50,7 @@ class PlatformLayoutPolicyTest(unittest.TestCase):
 
     def test_backdrop_tracks_and_toolbar_are_preserved_across_legal_forms(self):
         original = json.loads((ROOT/'packages/page/fixtures/contract-valid/composite-page.json').read_text())
-        original['schemaVersion'] = '6.2';original['dashboardToolbar'] = 'hidden'
+        original['schemaVersion'] = '6.5';original['dashboardToolbar'] = 'hidden'
         original['layout'] = 'dashboard'
         changed = edit(original, {'id':'switch','type':'set_page_layout','layout':'report'})
         self.assertEqual(changed['document'], dict(original, layout='report'))

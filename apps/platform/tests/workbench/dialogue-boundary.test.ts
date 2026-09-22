@@ -3,7 +3,7 @@ import { DRAFT_SAVED_EVENT, draftIdOf, listenForSavedDrafts, type SavedDraft } f
 import { panguResourceUrl, createPanguResourceLoader } from '../../src/lib/dialogue/runtime';
 function draft(id: string): SavedDraft {
   return { draftId: id, ref: { pageId: 'p', revisionId: id, resourceId: 'resource' }, document: {
-    schemaVersion: '6.1', layout: 'report', id: 'p', dataSources: {},
+    schemaVersion: '6.5', layout: 'report', id: 'p', dataSources: {},
     sections: [{ id: 's', title: 's', container: 'panel', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { body: id } }] }]
   } };
 }

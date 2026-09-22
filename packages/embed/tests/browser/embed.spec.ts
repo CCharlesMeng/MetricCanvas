@@ -528,7 +528,7 @@ test('指标卡只从显式声明且非空的值发出导航', async ({ page }) 
     window.queryEvents = [];
     window.queryRuntime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'metric-row-link-example',
         dataSources: {
           overview: {
@@ -594,7 +594,7 @@ test('analysisStack 页签每个选中面板顺序渲染三张表', async ({ pag
     });
     window.queryRuntime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'tab-stack-example',
         dataSources: {
           region: {
@@ -660,7 +660,7 @@ test('compact 工具栏显示七个只读筛选并不伪造返回', async ({ pag
     window.queryRuntime.destroy();
     window.queryRuntime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'compact-toolbar-example',
         meta: { title: '机会点数' },
         layoutForm: 'dashboard',
@@ -734,7 +734,7 @@ test('metricGrid 横排双指标在窄视口保持等分且上下分隔线同轴
     window.queryRuntime.destroy();
     window.queryRuntime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'metric-grid-divider-example',
         meta: { title: '指标分隔线' },
         layoutForm: 'dashboard',
@@ -823,7 +823,7 @@ test('connectPrevious 在任意页面生成白底虚线表格组', async ({ page
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'connected-tables-example',
         dataSources: {
           rows: {
@@ -923,7 +923,7 @@ test('三档分区容器提供扁平外缘，组件自带表面', async ({ page 
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'decorated-sections-example',
         dataSources: {
           metrics: {
@@ -1018,7 +1018,7 @@ test('活动指标卡在窄容器与手机视口不溢出', async ({ page }) => 
   await page.evaluate(() => {
     window.runtime.update({
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'responsive-activity-example',
         dataSources: {
           activity: {
@@ -1283,7 +1283,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'report-summary-surface-browser',
         dataSources: {
           metrics: {
@@ -1417,7 +1417,7 @@ test('指标面板与风险提示随业务内容自然增高', async ({ page }) 
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'adaptive-report-content-browser',
         dataSources: {
           metrics: {
@@ -2313,7 +2313,7 @@ test('详细排行卡可展开受控的嵌套明细字段', async ({ page }) => 
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'nested-detail-browser',
         dataSources: {
           decline: {
@@ -2400,7 +2400,7 @@ test('详细排行卡把 DQE 语义 HTML 直接渲染为说明，并由前端映
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'semantic-html-detail-browser',
         dataSources: {
           decline: {
@@ -2494,7 +2494,7 @@ test('并排的详细排行卡按同一排名的较高内容同步行高', async
     window.runtime.destroy();
     window.runtime = MetricCanvas.mount('#dashboard', {
       document: {
-        schemaVersion: '6.0',
+        schemaVersion: '6.5',
         id: 'ranking-detail-row-height-sync-browser',
         dataSources: {
           growth: source('增长客户', [shortDetail, shortDetail, shortDetail]),

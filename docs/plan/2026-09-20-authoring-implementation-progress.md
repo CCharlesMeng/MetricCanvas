@@ -186,3 +186,8 @@ Relay 的 compose_page_result 注入实现、edit 关联、卡片替换协议尚
 - `page_validation.py` 摘要变了，重跑生成器后 `check_bundle.py` **1634 项通过**，`export-authoring-contracts.ts --check` current（505 product / 4 authoring / 1 interface）。
 - `tests/page-reference.test.ts` 6/6；`git diff --check` 通过。
 - 同批把 7f–7h、第八批、A03 与契约重生拆成 5 笔提交（`d58cb9f9` 百万格式 → `a70bd727` 模块归位 → `25fee0fd` 校验对等 → `24fd2e64` 契约重生 → `f2a92c4e` 文档）。契约重生放在所有源码改动之后，因为 `bundle.lock.json` 覆盖 `tool/` 与 `skill/` 的摘要；中间提交点 `check_bundle.py` 会报漂移，HEAD 全过。
+
+
+## 2026-09-22 续跑更新
+
+结构计划收敛、7i 迁移、data/results 依赖解耦，以及 A11 来源矩阵和 A12 测试分类已实现。最新结果及剩余 Git、端口、浏览器和外部接线门禁以[续跑记录](2026-09-22-authoring-resume.md)为准；本文较早批次的“未完成”保留为当时状态，不代表最新实现。

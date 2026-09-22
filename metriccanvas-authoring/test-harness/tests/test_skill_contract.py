@@ -183,7 +183,11 @@ class UnifiedSkillContractTest(unittest.IsolatedAsyncioTestCase):
         for example in examples:
             self.assertEqual(list(Draft202012Validator(tools[example['tool']].inputSchema).iter_errors(example['arguments'])), [])
         old = yaml.safe_load((BUNDLE_ROOT / 'skill-compat/platform-authoring-v1/SKILL.md').read_text().split('---', 2)[1])
-        self.assertEqual(set(old['allowed-tools']), {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'})
+        self.assertEqual(set(old['allowed-tools']), {
+            'read_page_context', 'discover_data_context', 'compose_page',
+            'create_content_page', 'edit_page', 'extract_page_parameters',
+            'apply_page_parameter_selection', 'resolve_page_parameters',
+        })
 
 
 if __name__ == '__main__':

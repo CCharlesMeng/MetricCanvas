@@ -9,10 +9,12 @@
  let retain=$state(true);
  let acknowledged=$state(false);
  let previewInputs=$state<Record<string,string>>({});
+ let inputError=$state('');
  let candidateKey='';
  onMount(()=>publication.subscribe(value=>{view=value;const key=value.candidate?.reviewHash??'';if(key!==candidateKey){candidateKey=key;acknowledged=false;previewInputs={};retain=value.candidate?.retainDimensionValues??true;}}));
  const busy=$derived(view.phase==='busy'||view.phase==='unknown');
- function inputs(){return Object.fromEntries((view.candidate?.parameterSummary??[]).filter(p=>p.selected&&previewInputs[p.parameterId]).map(p=>[p.parameterId,p.valueType==='string[]'?previewInputs[p.parameterId].split(',').map(v=>v.trim()):previewInputs[p.parameterId]]));}
+ function inputs(){return Object.fromEntries((view.candidate?.parameterSummary??[]).filter(p=>p.selected&&previewInputs[p.parameterId]).map(p=>[p.parameterId,p.valueType==='timeRange'?JSON.parse(previewInputs[p.parameterId]):p.valueType==='string[]'?previewInputs[p.parameterId].split(',').map(v=>v.trim()):previewInputs[p.parameterId]]));}
+ function preview(){acknowledged=false;publication.clearPreview();try{const values=inputs();inputError='';void publication.preview(values);}catch{inputError='时间区间须填写合法 JSON，包含 start、end、granularity。';}}
 </script>
 <section aria-label="发布候选评审" class="review">
  <h2>准备发布</h2><p role="status" data-testid="publication-status">{view.message}</p>
@@ -32,9 +34,10 @@
     <td>{#if p.selected}<input aria-label={`预览取值 ${p.label}`} bind:value={previewInputs[p.parameterId]} placeholder={p.valueType==='string[]'?'多个值用逗号分隔':'本次预览取值'} disabled={busy} oninput={()=>{acknowledged=false;publication.clearPreview();}}/>{/if}</td>
    </tr>{/each}
   </tbody></table>
-  <label><input type="checkbox" checked={candidate.retainDimensionValues} disabled={busy} onchange={event=>publication.revise({retainDimensionValues:event.currentTarget.checked})}/>发布时保留具体维度取值</label>
+  {#if candidate.document.schemaVersion !== '6.5'}<label><input type="checkbox" checked={candidate.retainDimensionValues} disabled={busy} onchange={event=>publication.revise({retainDimensionValues:event.currentTarget.checked})}/>发布时保留具体维度取值</label>{:else}<p>发布保存无值模板；本次预览值不会保存。</p>{/if}
   {#each candidate.validation.issues as issue}<p role={issue.severity==='blocking'?'alert':'status'}>{issue.severity==='blocking'?'阻断':'提示'}：{issue.message} {issue.path??''}</p>{/each}
-  <button disabled={busy} onclick={()=>{acknowledged=false;void publication.preview(inputs());}}>预览当前候选</button>
+  <button disabled={busy} onclick={preview}>预览当前候选</button>
+  {#if inputError}<p role="alert">{inputError}</p>{/if}
   {#if view.preview}<div aria-label="候选执行预览"><RuntimeView document={view.preview.document} execution={view.preview} {dataGateway}/></div>{/if}
   <label><input type="checkbox" bind:checked={acknowledged} disabled={busy||!view.preview||!candidate.validation.valid}/>我已核对当前候选、来源修订及保留取值选择</label>
   <button disabled={busy||!view.preview||!candidate.validation.valid||!acknowledged} onclick={()=>{acknowledged=false;void publication.confirmAndPublish();}}>人工确认并发布</button>

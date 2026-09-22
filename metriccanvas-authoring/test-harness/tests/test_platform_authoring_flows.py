@@ -8,7 +8,7 @@ from pathlib import Path
 from fastmcp import Client
 from test_page_editing import page, title
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.domain.page_validation import validate_page_document
+from metriccanvas_authoring.pages.validation.page_validation import validate_page_document
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -71,7 +71,7 @@ class PlatformAuthoringFlowsTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_backdrop_switch_uses_real_public_entry_and_preserves_all_properties(self):
         original=json.loads((ROOT.parent/'packages/page/fixtures/contract-valid/composite-page.json').read_text())
-        original['schemaVersion']='6.2';original['layout']='dashboard'
+        original['schemaVersion']='6.5';original['layout']='dashboard'
         with tempfile.TemporaryDirectory() as folder:
             publish(folder,'trusted-backdrop-baseline',original)
             async with Client(self.config(folder)) as client:

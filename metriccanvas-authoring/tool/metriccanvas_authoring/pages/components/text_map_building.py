@@ -5,7 +5,7 @@ from copy import deepcopy
 from typing import Any
 
 from metriccanvas_authoring.pages.components.component_editing import EditFailure, walk_components
-from metriccanvas_authoring.domain.page_validation import _resolved_fields
+from metriccanvas_authoring.pages.validation.page_validation import _resolved_fields
 from metriccanvas_authoring.runtime_assets import bundle_root
 
 

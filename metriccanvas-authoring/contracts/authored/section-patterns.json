@@ -1,5 +1,8 @@
 {
-  "version": "1",
+  "version": "2",
+  "presentations": {
+    "metric-summary": {"component": "metricCard", "variant": "compactSummary", "roles": ["primary-value"], "metricSpan": 4, "description": "按业务对象组织主值行及有证据的变化值，各字段独立格式；同卡共用唯一对象选择"}
+  },
   "scenes": ["business-report", "usage-report", "custom"],
   "patterns": {
     "overview-with-trend": {"description": "概况卡后接趋势；按实际内容裁剪", "metricSpan": 4, "defaultSpan": 12},

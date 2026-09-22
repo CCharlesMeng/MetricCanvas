@@ -3,7 +3,7 @@ import { computeOutputFields, isFoldingOperator } from '../src/compute';
 import { validate } from '../src/validate';
 
 const page = (dataSource: Record<string, unknown>) => ({
-  schemaVersion: '6.0',
+  schemaVersion: '6.5',
   id: 'forecast',
   dataSources: { forecast: dataSource },
   sections: [

@@ -14,6 +14,7 @@ SURFACES = {
     'unified-content': ('metriccanvas_authoring.entrypoints.compat.unified_content_server', 'metriccanvas-platform-content'),
 }
 LEGACY_TOOLS = {'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'}
+UNIFIED_TOOLS = LEGACY_TOOLS | {'read_page_context', 'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'}
 
 
 def client_configuration(root, surface='legacy-content'):
@@ -24,7 +25,7 @@ def client_configuration(root, surface='legacy-content'):
 
 def surface_evidence(surface, definitions):
     _, name = SURFACES[surface]
-    expected = LEGACY_TOOLS | ({'read_page_context'} if surface == 'unified-content' else set())
+    expected = UNIFIED_TOOLS if surface == 'unified-content' else LEGACY_TOOLS
     errors = []
     names = [t.name for t in definitions]
     if set(names) != expected or len(names) != len(expected):

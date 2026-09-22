@@ -34,7 +34,7 @@ class StaticIdentity:
 SAVE_COMMAND = {
     "pageId": "tokens-by-region",
     "baseRevisionId": None,
-    "document": {"id": "tokens-by-region", "schemaVersion": "6.0"},
+    "document": {"id": "tokens-by-region", "schemaVersion": "6.5"},
     "idempotencyKey": "k" * 64,
     "pageIdConfirmed": True,
     "source": {"type": "relay", "skillVersion": "0.1.0"},

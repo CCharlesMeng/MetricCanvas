@@ -30,7 +30,8 @@ class UnifiedContentMcpTest(unittest.IsolatedAsyncioTestCase):
         turns = Turns()
         async with Client(create_unified_content_mcp_server(dependencies(), turns, candidate_store=MemoryCandidates())) as client:
             tools = {t.name: t for t in await client.list_tools()}
-            self.assertEqual(set(tools), {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'})
+            self.assertEqual(set(tools), {'read_page_context', 'discover_data_context', 'compose_page', 'create_content_page', 'edit_page',
+                                         'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'})
             self.assertEqual(set(tools['edit_page'].inputSchema['properties']), {'context_ref', 'request', 'candidate_ref'})
             read = await client.call_tool('read_page_context', {'context_ref': 'current-context', 'use_selection': True})
             self.assertTrue(read.structured_content['ok'])

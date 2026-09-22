@@ -31,7 +31,7 @@ interface FlowComponentsFixture {
 
 function flowComponentsPage(): FlowComponentsFixture {
   return {
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'flow-components-contract',
     dataSources: {
       trend: {

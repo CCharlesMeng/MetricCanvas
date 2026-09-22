@@ -219,15 +219,15 @@
     gap: 12px;
     margin-top: 6px;
   }
-  /* 面板表面经 --mc-metric-panel-* 可被页面布局形态覆写,缺省值即报表形态
-     的既有观感;看板形态需要的是白底中性描边,不是报表的淡蓝内容区。 */
+  /* 有效内容统一使用白色表面;布局形态可调整几何量,
+     组合卡仍通过 --mc-metric-panel-surface 压平子面板。 */
   .metric-panel {
     box-sizing: border-box;
     width: 100%;
     min-height: var(--mc-metric-panel-min-height, 136px);
     padding: var(--mc-metric-panel-padding, 10px 12px);
     overflow: visible;
-    background: var(--mc-metric-panel-surface, var(--mc-color-surface-subtle, #f1f4ff));
+    background: var(--mc-metric-panel-surface, var(--mc-color-surface, #fff));
     /* 两档形态取值不同的只有宽度(看板形态无边框),色两档同为报表内容区描边色,
        因此色不设量;只把色改透明达不到「无边框」,会留下 1px 的占位。 */
     border: var(--mc-metric-panel-border-width, 1px) solid

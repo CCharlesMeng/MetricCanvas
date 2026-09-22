@@ -1,0 +1,425 @@
+{
+  "dataContextVersion": "flow-fixture-20260917",
+  "dataRequests": [
+    {
+      "businessDomain": "流水概览",
+      "dataSourceId": "flow-overview",
+      "filters": [],
+      "groupBy": [
+        "scope"
+      ],
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "annual-total"
+        },
+        {
+          "kind": "metric",
+          "name": "year-over-year"
+        },
+        {
+          "kind": "metric",
+          "name": "current-month"
+        },
+        {
+          "kind": "metric",
+          "name": "month-over-month"
+        }
+      ],
+      "time": {
+        "end": "2026-02",
+        "granularity": "month",
+        "providedBy": "model",
+        "start": "2026-02"
+      }
+    },
+    {
+      "businessDomain": "客户增长样例",
+      "dataSourceId": "customer-growth",
+      "filters": [],
+      "groupBy": [
+        "customer-name",
+        "customer-type",
+        "customer-level"
+      ],
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "amount"
+        },
+        {
+          "kind": "metric",
+          "name": "change"
+        }
+      ],
+      "time": {
+        "end": "2026-02",
+        "granularity": "month",
+        "providedBy": "model",
+        "start": "2026-02"
+      }
+    },
+    {
+      "businessDomain": "赛道经营",
+      "dataSourceId": "track-target",
+      "filters": [],
+      "groupBy": [
+        "track-name"
+      ],
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "annual-target"
+        },
+        {
+          "kind": "metric",
+          "name": "annual-projection"
+        },
+        {
+          "kind": "metric",
+          "name": "flow-amount"
+        },
+        {
+          "kind": "metric",
+          "name": "current-month-amount"
+        }
+      ],
+      "time": {
+        "end": "2026-02",
+        "granularity": "month",
+        "providedBy": "model",
+        "start": "2026-02"
+      }
+    },
+    {
+      "businessDomain": "风险客户样例",
+      "dataSourceId": "customer-risk",
+      "filters": [],
+      "groupBy": [
+        "customer-name",
+        "customer-type",
+        "customer-level"
+      ],
+      "metrics": [
+        {
+          "kind": "metric",
+          "name": "january-amount"
+        },
+        {
+          "kind": "metric",
+          "name": "previous-month-amount"
+        },
+        {
+          "kind": "metric",
+          "name": "current-month-amount"
+        }
+      ],
+      "time": {
+        "end": "2026-02",
+        "granularity": "month",
+        "providedBy": "model",
+        "start": "2026-02"
+      }
+    }
+  ],
+  "question": "当前业务规模与变化如何？增长来自哪些对象？目标与当前或推演规模如何对照？哪些客户需要风险复核？",
+  "scene": "business-report",
+  "sections": [
+    {
+      "blocks": [
+        {
+          "component": "metricCard",
+          "fields": [
+            "annual-total",
+            "year-over-year",
+            "current-month",
+            "month-over-month"
+          ],
+          "id": "overview-total",
+          "match": {
+            "equals": "total",
+            "field": "scope"
+          },
+          "presentation": {
+            "kind": "metric-summary",
+            "metrics": [
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "total-card-0-0",
+                    "field": "year-over-year",
+                    "label": "同比"
+                  }
+                ],
+                "field": "annual-total",
+                "label": "年累计"
+              },
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "total-card-1-0",
+                    "field": "month-over-month",
+                    "label": "环比"
+                  }
+                ],
+                "field": "current-month",
+                "label": "本月"
+              }
+            ],
+            "variant": "compactStrip"
+          },
+          "purpose": "primary-value",
+          "source": "flow-overview",
+          "title": "整体流水",
+          "type": "data",
+          "width": "full"
+        },
+        {
+          "component": "metricCard",
+          "fields": [
+            "annual-total",
+            "year-over-year",
+            "current-month",
+            "month-over-month"
+          ],
+          "id": "overview-core",
+          "match": {
+            "equals": "core",
+            "field": "scope"
+          },
+          "presentation": {
+            "kind": "metric-summary",
+            "metrics": [
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "core-card-0-0",
+                    "field": "year-over-year",
+                    "label": "同比"
+                  }
+                ],
+                "field": "annual-total",
+                "label": "年累计"
+              },
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "core-card-1-0",
+                    "field": "month-over-month",
+                    "label": "环比"
+                  }
+                ],
+                "field": "current-month",
+                "label": "本月"
+              }
+            ]
+          },
+          "purpose": "primary-value",
+          "source": "flow-overview",
+          "title": "Core 流水",
+          "type": "data",
+          "width": "third"
+        },
+        {
+          "component": "metricCard",
+          "fields": [
+            "annual-total",
+            "year-over-year",
+            "current-month",
+            "month-over-month"
+          ],
+          "id": "overview-communication",
+          "match": {
+            "equals": "communication",
+            "field": "scope"
+          },
+          "presentation": {
+            "kind": "metric-summary",
+            "metrics": [
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "communication-card-0-0",
+                    "field": "year-over-year",
+                    "label": "同比"
+                  }
+                ],
+                "field": "annual-total",
+                "label": "年累计"
+              },
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "communication-card-1-0",
+                    "field": "month-over-month",
+                    "label": "环比"
+                  }
+                ],
+                "field": "current-month",
+                "label": "本月"
+              }
+            ]
+          },
+          "purpose": "primary-value",
+          "source": "flow-overview",
+          "title": "云通信流水",
+          "type": "data",
+          "width": "third"
+        },
+        {
+          "component": "metricCard",
+          "fields": [
+            "annual-total",
+            "year-over-year",
+            "current-month",
+            "month-over-month"
+          ],
+          "id": "overview-region",
+          "match": {
+            "equals": "public-region",
+            "field": "scope"
+          },
+          "presentation": {
+            "kind": "metric-summary",
+            "metrics": [
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "region-card-0-0",
+                    "field": "year-over-year",
+                    "label": "同比"
+                  }
+                ],
+                "field": "annual-total",
+                "label": "年累计"
+              },
+              {
+                "changes": [
+                  {
+                    "evidenceRef": "region-card-1-0",
+                    "field": "month-over-month",
+                    "label": "环比"
+                  }
+                ],
+                "field": "current-month",
+                "label": "本月"
+              }
+            ]
+          },
+          "purpose": "primary-value",
+          "source": "flow-overview",
+          "title": "公网 Region 流水",
+          "type": "data",
+          "width": "third"
+        }
+      ],
+      "businessObject": "整体流水及 Core、云通信、公网 Region 等范围",
+      "businessQuestion": "业务当前规模多大，年累计与本月相对各自基期如何变化？",
+      "container": "plain",
+      "distinctFrom": "只回答规模与变化，不解释增长来源，也不涉及目标对照与风险复核。",
+      "id": "overview",
+      "pattern": "overview-with-trend"
+    },
+    {
+      "blocks": [
+        {
+          "component": "barChart",
+          "fields": [
+            "track-name",
+            "annual-target",
+            "annual-projection"
+          ],
+          "id": "target-comparison",
+          "purpose": "comparison",
+          "source": "track-target",
+          "title": "各赛道年度目标与推演",
+          "type": "data",
+          "width": "full",
+          "presentation": {
+            "kind": "bar-comparison",
+            "horizontal": true,
+            "stacked": false
+          }
+        }
+      ],
+      "businessObject": "赛道（泛互联网、泛政企、车企、商业市场、海外）",
+      "businessQuestion": "各赛道的年目标与年推演流水、当前流水如何并列对照？",
+      "container": "plain",
+      "distinctFrom": "只做并列核对，不提供计算后的完成率，也不把较年初推演增长量当作目标差额。",
+      "id": "target-vs-projection",
+      "pattern": "comparison"
+    },
+    {
+      "id": "customer-focus",
+      "container": "plain",
+      "pattern": "focus-objects",
+      "businessQuestion": "哪些客户需要关注",
+      "businessObject": "两份独立入选名单",
+      "distinctFrom": "对象核对而非因果归因",
+      "blocks": [
+        {
+          "component": "table",
+          "fields": [
+            "customer-name",
+            "amount",
+            "change"
+          ],
+          "id": "growth-table",
+          "purpose": "reconciliation",
+          "source": "customer-growth",
+          "title": "增长客户观察",
+          "type": "data",
+          "width": "half",
+          "presentation": {
+            "kind": "record-list",
+            "density": "compact",
+            "subtitle": "仅含入选客户，不代表整体增长贡献。",
+            "columns": [
+              {
+                "field": "change",
+                "visual": "signed"
+              }
+            ]
+          }
+        },
+        {
+          "component": "table",
+          "fields": [
+            "customer-name",
+            "customer-type",
+            "current-month-amount"
+          ],
+          "id": "risk-table",
+          "purpose": "reconciliation",
+          "source": "customer-risk",
+          "title": "风险复核名单",
+          "type": "data",
+          "width": "half",
+          "presentation": {
+            "kind": "record-list",
+            "density": "compact",
+            "subtitle": "仅展示入选对象，不提供风险原因或等级判断。"
+          }
+        }
+      ]
+    },
+    {
+      "id": "reading-notes",
+      "container": "plain",
+      "pattern": "explanation",
+      "businessQuestion": "如何理解样例边界",
+      "businessObject": "来源与期间",
+      "distinctFrom": "避免跨源推断",
+      "blocks": [
+        {
+          "id": "reading-notes-text",
+          "type": "text",
+          "purpose": "explanation",
+          "title": "阅读说明",
+          "body": "非生产样例。各数据源独立，不跨源加总或对账；年度推演不是实际完成额。两份客户名单分别匿名化，同名不代表同一对象。风险来源的“1月”与“上月”口径待核对，不作为连续趋势展示。"
+        }
+      ]
+    }
+  ],
+  "version": "3"
+}

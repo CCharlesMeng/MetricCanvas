@@ -15,7 +15,7 @@ export function navigationHref(target: NavigationTarget, filters: FilterValues, 
     const value = binding.source === 'row' ? row[binding.field]
       : binding.source === 'param' ? params.get(binding.id)
       : filterPart(filters.get(binding.id), binding.part ?? 'value');
-    if (binding.source === 'param' && value && typeof value === 'object' && !Array.isArray(value) && 'start' in value && typeof value.start === 'string' && 'end' in value && typeof value.end === 'string') {
+    if (binding.source === 'param' && value && typeof value === 'object' && !Array.isArray(value) && !('granularity' in value) && 'start' in value && typeof value.start === 'string' && 'end' in value && typeof value.end === 'string') {
       query.set(key, serializePageParam({start: value.start, end: value.end}));
       continue;
     }

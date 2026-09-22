@@ -48,16 +48,18 @@ def create_production_content_server():
     )
 
 
-def create_production_unified_content_server(*, current_turns=None):
+def create_production_unified_content_server(*, current_turns=None, candidate_store=None, parameter_dependencies=None):
     """Candidate protocol 1.0 surface; without an injected turn provider it fails closed."""
     return create_unified_content_mcp_server(
         compose_page_dependencies(),
         current_turns,
         summary_config=environment.configure_summary_config(),
+        candidate_store=candidate_store,
+        parameter_dependencies=parameter_dependencies,
     )
 
 
-def create_deployment_content_server(deployment: Deployment, *, summary_config=None):
+def create_deployment_content_server(deployment: Deployment, *, summary_config=None, parameter_dependencies=None):
     """Candidate protocol 1.0 surface for a host that already verified its deployment."""
     system = deployment.system
     return create_unified_content_mcp_server(
@@ -65,6 +67,7 @@ def create_deployment_content_server(deployment: Deployment, *, summary_config=N
         system.current_turns if system else None,
         summary_config=summary_config,
         candidate_store=system.candidate_store if system else None,
+        parameter_dependencies=parameter_dependencies,
     )
 
 

@@ -1,0 +1,173 @@
+{
+  "schemaVersion": "6.11",
+  "id": "inline-params-values-page",
+  "layout": "report",
+  "params": {
+    "query": {
+      "dimensions": [
+        {
+          "id": "region",
+          "dim_name": "区域",
+          "dim_value_list": [
+            "中国区"
+          ]
+        },
+        {
+          "id": "regions",
+          "dim_name": "区域",
+          "dim_value_list": [
+            "中国区",
+            "欧洲区"
+          ],
+          "required": false
+        }
+      ],
+      "times": [
+        {
+          "id": "report-period",
+          "granularity": "month",
+          "start": "2026-01",
+          "end": "2026-06"
+        }
+      ]
+    },
+    "display": [
+      {
+        "id": "caption",
+        "type": "string",
+        "value": "说明"
+      },
+      {
+        "id": "count",
+        "type": "number",
+        "value": 1
+      },
+      {
+        "id": "enabled",
+        "type": "boolean",
+        "value": true
+      }
+    ]
+  },
+  "dataSources": {
+    "tokens": {
+      "fields": {
+        "tokens": {
+          "type": "number",
+          "role": "measure",
+          "queryField": "tokens"
+        }
+      },
+      "source": {
+        "type": "query",
+        "query": {
+          "language": "dqe",
+          "body": {
+            "dsl_list": [
+              {
+                "output_dims": [],
+                "output_metrics": [
+                  "tokens"
+                ],
+                "filter": {
+                  "dims": [
+                    {
+                      "dim_name": "区域",
+                      "dim_value_list": {
+                        "param": "region"
+                      }
+                    }
+                  ],
+                  "time": {
+                    "period": "month",
+                    "is_aggregate": true,
+                    "param": "report-period"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "components": [
+        {
+          "id": "region-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "region"
+            }
+          }
+        },
+        {
+          "id": "period-text",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "report-period"
+            }
+          }
+        },
+        {
+          "id": "caption",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "caption"
+            }
+          }
+        },
+        {
+          "id": "count",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "count"
+            }
+          }
+        },
+        {
+          "id": "enabled",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "enabled"
+            }
+          }
+        },
+        {
+          "id": "regions",
+          "type": "text",
+          "layout": {
+            "span": 12
+          },
+          "props": {
+            "body": {
+              "param": "regions"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

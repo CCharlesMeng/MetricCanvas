@@ -4,6 +4,1927 @@
   "trustBoundary": "Structure and relations only. Source context must already be authenticated; hashes, proof, permission, clocks, lease and atomic replay require trusted ports.",
   "cases": [
     {
+      "id": "inline-dimensions-and-time-range",
+      "definition": "Candidate",
+      "input": {
+        "ref": {
+          "candidateId": "candidate-1",
+          "candidateVersion": "version-a",
+          "source": {
+            "pageId": "tokens-report",
+            "revisionId": "draft-r1",
+            "resourceId": "resource-1"
+          }
+        },
+        "document": {
+          "schemaVersion": "6.11",
+          "id": "tokens-report",
+          "layout": "report",
+          "dataSources": {
+            "consumption": {
+              "fields": {
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "param": "report-period"
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "trend": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "月份"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "月份"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": false,
+                            "param": "report-period"
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "representatives": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "代表处"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "代表处"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "param": "report-period"
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "model-share": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "模型"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "模型"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "param": "report-period"
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "regional-model-detail": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "区域"
+                },
+                "dimension-1": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "模型"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "区域",
+                          "模型"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "is_aggregate": true,
+                            "param": "report-period"
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "sections": [
+            {
+              "id": "overview",
+              "components": [
+                {
+                  "id": "title",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": "Tokens 用量报告"
+                  }
+                },
+                {
+                  "id": "consumption-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "consumption"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "trend-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "trend"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "月份"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "representatives-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "representatives"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "代表处"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "model-share-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "model-share"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "模型"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "regional-model-detail-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "regional-model-detail"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "区域"
+                      },
+                      {
+                        "field": "dimension-1",
+                        "title": "模型"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "params": {
+            "query": {
+              "dimensions": [
+                {
+                  "id": "region",
+                  "dim_name": "区域"
+                }
+              ],
+              "times": [
+                {
+                  "id": "report-period",
+                  "granularity": "month"
+                }
+              ]
+            }
+          }
+        },
+        "contentHash": "document-hash",
+        "canonicalization": "trusted-document-v1",
+        "expiresAt": "2026-09-15T00:00:00Z",
+        "leaseId": "lease-1",
+        "leaseExpiresAt": "2026-09-15T00:00:00Z",
+        "diff": [],
+        "affectedDataSources": [
+          "consumption",
+          "trend",
+          "representatives",
+          "model-share",
+          "regional-model-detail"
+        ],
+        "parameterSummary": [
+          {
+            "parameterId": "region",
+            "label": "region",
+            "valueType": "string[]",
+            "selected": true,
+            "required": true,
+            "valueState": "missing",
+            "targets": [
+              {
+                "dataSourceId": "consumption",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "trend",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "representatives",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "model-share",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "regional-model-detail",
+                "queryField": "区域"
+              }
+            ],
+            "extractionKind": "dimension-in",
+            "sharing": "identical-values",
+            "originalValue": [
+              "中国区"
+            ],
+            "uncoveredQueries": []
+          },
+          {
+            "parameterId": "report-period",
+            "label": "report-period",
+            "valueType": "timeRange",
+            "selected": true,
+            "required": true,
+            "valueState": "missing",
+            "targets": [
+              {
+                "dataSourceId": "consumption",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "trend",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "representatives",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "model-share",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "regional-model-detail",
+                "queryField": "time"
+              }
+            ],
+            "extractionKind": "time-range",
+            "sharing": "identical-values",
+            "originalValue": {
+              "start": "2026-01",
+              "end": "2026-06",
+              "granularity": "month"
+            },
+            "uncoveredQueries": []
+          }
+        ],
+        "retainDimensionValues": false,
+        "validation": {
+          "valid": true,
+          "issues": []
+        },
+        "reviewHash": "review-hash",
+        "reviewCanonicalization": "trusted-review-v1"
+      },
+      "expected": {
+        "structure": true,
+        "relations": true
+      },
+      "context": {
+        "source": {
+          "ref": {
+            "pageId": "tokens-report",
+            "revisionId": "draft-r1",
+            "resourceId": "resource-1"
+          },
+          "document": {
+            "schemaVersion": "6.5",
+            "id": "tokens-report",
+            "layout": "report",
+            "dataSources": {
+              "consumption": {
+                "fields": {
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "trend": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "月份"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "月份"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": false
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "representatives": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "代表处"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "代表处"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "model-share": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "模型"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "模型"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "regional-model-detail": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "区域"
+                  },
+                  "dimension-1": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "模型"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "区域",
+                            "模型"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              }
+            },
+            "sections": [
+              {
+                "id": "overview",
+                "components": [
+                  {
+                    "id": "title",
+                    "type": "text",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "body": "Tokens 用量报告"
+                    }
+                  },
+                  {
+                    "id": "consumption-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "consumption"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "trend-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "trend"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "月份"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "representatives-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "representatives"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "代表处"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "model-share-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "model-share"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "模型"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "regional-model-detail-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "regional-model-detail"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "区域"
+                        },
+                        {
+                          "field": "dimension-1",
+                          "title": "模型"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "inline-template-cannot-retain-value",
+      "definition": "Candidate",
+      "input": {
+        "ref": {
+          "candidateId": "candidate-1",
+          "candidateVersion": "version-a",
+          "source": {
+            "pageId": "tokens-report",
+            "revisionId": "draft-r1",
+            "resourceId": "resource-1"
+          }
+        },
+        "document": {
+          "schemaVersion": "6.5",
+          "id": "tokens-report",
+          "layout": "report",
+          "dataSources": {
+            "consumption": {
+              "fields": {
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            },
+                            "is_aggregate": true
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "trend": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "月份"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "月份"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            },
+                            "is_aggregate": false
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "representatives": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "代表处"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "代表处"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            },
+                            "is_aggregate": true
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "model-share": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "模型"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "模型"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            },
+                            "is_aggregate": true
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "regional-model-detail": {
+              "fields": {
+                "dimension-0": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "区域"
+                },
+                "dimension-1": {
+                  "type": "string",
+                  "role": "dimension",
+                  "queryField": "模型"
+                },
+                "tokens": {
+                  "type": "number",
+                  "role": "measure",
+                  "queryField": "Tokens消耗量"
+                }
+              },
+              "source": {
+                "type": "query",
+                "query": {
+                  "language": "dqe",
+                  "body": {
+                    "dsl_list": [
+                      {
+                        "output_dims": [
+                          "区域",
+                          "模型"
+                        ],
+                        "output_metrics": [
+                          "Tokens消耗量"
+                        ],
+                        "filter": {
+                          "dims": [
+                            {
+                              "dim_name": "区域",
+                              "dim_value_list": {
+                                "param": "region"
+                              }
+                            }
+                          ],
+                          "time": {
+                            "period": "month",
+                            "start": {
+                              "param": "report-period",
+                              "part": "start"
+                            },
+                            "end": {
+                              "param": "report-period",
+                              "part": "end"
+                            },
+                            "is_aggregate": true
+                          }
+                        },
+                        "order": {
+                          "offset": 0,
+                          "limit": 20
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "sections": [
+            {
+              "id": "overview",
+              "components": [
+                {
+                  "id": "title",
+                  "type": "text",
+                  "layout": {
+                    "span": 12
+                  },
+                  "props": {
+                    "body": "Tokens 用量报告"
+                  }
+                },
+                {
+                  "id": "consumption-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "consumption"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "trend-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "trend"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "月份"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "representatives-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "representatives"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "代表处"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "model-share-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "model-share"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "模型"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                },
+                {
+                  "id": "regional-model-detail-table",
+                  "type": "table",
+                  "layout": {
+                    "span": 12
+                  },
+                  "data": {
+                    "main": "regional-model-detail"
+                  },
+                  "props": {
+                    "columns": [
+                      {
+                        "field": "dimension-0",
+                        "title": "区域"
+                      },
+                      {
+                        "field": "dimension-1",
+                        "title": "模型"
+                      },
+                      {
+                        "field": "tokens",
+                        "title": "Tokens"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "params": [
+            {
+              "id": "region",
+              "type": "dimension",
+              "value": "中国区"
+            },
+            {
+              "id": "report-period",
+              "type": "timeRange",
+              "granularity": "month"
+            }
+          ]
+        },
+        "contentHash": "document-hash",
+        "canonicalization": "trusted-document-v1",
+        "expiresAt": "2026-09-15T00:00:00Z",
+        "leaseId": "lease-1",
+        "leaseExpiresAt": "2026-09-15T00:00:00Z",
+        "diff": [],
+        "affectedDataSources": [
+          "consumption",
+          "trend",
+          "representatives",
+          "model-share",
+          "regional-model-detail"
+        ],
+        "parameterSummary": [
+          {
+            "parameterId": "region",
+            "label": "region",
+            "valueType": "string",
+            "selected": true,
+            "required": true,
+            "valueState": "missing",
+            "targets": [
+              {
+                "dataSourceId": "consumption",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "trend",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "representatives",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "model-share",
+                "queryField": "区域"
+              },
+              {
+                "dataSourceId": "regional-model-detail",
+                "queryField": "区域"
+              }
+            ],
+            "extractionKind": "dimension-eq",
+            "sharing": "identical-values",
+            "originalValue": "中国区",
+            "uncoveredQueries": []
+          },
+          {
+            "parameterId": "report-period",
+            "label": "report-period",
+            "valueType": "timeRange",
+            "selected": true,
+            "required": true,
+            "valueState": "missing",
+            "targets": [
+              {
+                "dataSourceId": "consumption",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "trend",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "representatives",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "model-share",
+                "queryField": "time"
+              },
+              {
+                "dataSourceId": "regional-model-detail",
+                "queryField": "time"
+              }
+            ],
+            "extractionKind": "time-range",
+            "sharing": "identical-values",
+            "originalValue": {
+              "start": "2026-01",
+              "end": "2026-06",
+              "granularity": "month"
+            },
+            "uncoveredQueries": []
+          }
+        ],
+        "retainDimensionValues": false,
+        "validation": {
+          "valid": true,
+          "issues": []
+        },
+        "reviewHash": "review-hash",
+        "reviewCanonicalization": "trusted-review-v1"
+      },
+      "expected": {
+        "structure": true,
+        "relations": false
+      },
+      "context": {
+        "source": {
+          "ref": {
+            "pageId": "tokens-report",
+            "revisionId": "draft-r1",
+            "resourceId": "resource-1"
+          },
+          "document": {
+            "schemaVersion": "6.5",
+            "id": "tokens-report",
+            "layout": "report",
+            "dataSources": {
+              "consumption": {
+                "fields": {
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "trend": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "月份"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "月份"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": false
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "representatives": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "代表处"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "代表处"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "model-share": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "模型"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "模型"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              },
+              "regional-model-detail": {
+                "fields": {
+                  "dimension-0": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "区域"
+                  },
+                  "dimension-1": {
+                    "type": "string",
+                    "role": "dimension",
+                    "queryField": "模型"
+                  },
+                  "tokens": {
+                    "type": "number",
+                    "role": "measure",
+                    "queryField": "Tokens消耗量"
+                  }
+                },
+                "source": {
+                  "type": "query",
+                  "query": {
+                    "language": "dqe",
+                    "body": {
+                      "dsl_list": [
+                        {
+                          "output_dims": [
+                            "区域",
+                            "模型"
+                          ],
+                          "output_metrics": [
+                            "Tokens消耗量"
+                          ],
+                          "filter": {
+                            "dims": [
+                              {
+                                "dim_name": "区域",
+                                "dim_value_list": [
+                                  "中国区"
+                                ]
+                              }
+                            ],
+                            "time": {
+                              "period": "month",
+                              "start": "2026-01",
+                              "end": "2026-06",
+                              "is_aggregate": true
+                            }
+                          },
+                          "order": {
+                            "offset": 0,
+                            "limit": 20
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  "initial": {
+                    "capturedAt": "2026-07-01T00:00:00Z",
+                    "rows": [],
+                    "totalCount": 0
+                  }
+                }
+              }
+            },
+            "sections": [
+              {
+                "id": "overview",
+                "components": [
+                  {
+                    "id": "title",
+                    "type": "text",
+                    "layout": {
+                      "span": 12
+                    },
+                    "props": {
+                      "body": "Tokens 用量报告"
+                    }
+                  },
+                  {
+                    "id": "consumption-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "consumption"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "trend-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "trend"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "月份"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "representatives-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "representatives"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "代表处"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "model-share-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "model-share"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "模型"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "id": "regional-model-detail-table",
+                    "type": "table",
+                    "layout": {
+                      "span": 12
+                    },
+                    "data": {
+                      "main": "regional-model-detail"
+                    },
+                    "props": {
+                      "columns": [
+                        {
+                          "field": "dimension-0",
+                          "title": "区域"
+                        },
+                        {
+                          "field": "dimension-1",
+                          "title": "模型"
+                        },
+                        {
+                          "field": "tokens",
+                          "title": "Tokens"
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
       "id": "valid-DraftRef-0",
       "definition": "DraftRef",
       "input": {
@@ -76,7 +1997,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -595,7 +2516,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -971,7 +2892,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -1370,7 +3291,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -1730,7 +3651,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -2102,7 +4023,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -2482,7 +4403,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -2858,7 +4779,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -3234,7 +5155,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -3610,7 +5531,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -3981,7 +5902,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -4357,7 +6278,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -4734,7 +6655,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -5110,7 +7031,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -5485,7 +7406,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -5867,7 +7788,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -6243,7 +8164,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6318,7 +8239,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "reference-text-page",
             "dataSources": {},
@@ -6369,7 +8290,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6451,7 +8372,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6526,7 +8447,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "reference-text-page",
             "dataSources": {},
@@ -6577,7 +8498,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6652,7 +8573,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "reference-text-page",
             "dataSources": {},
@@ -6703,7 +8624,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6766,7 +8687,7 @@
         "reviewCanonicalization": "trusted-review-v1"
       },
       "expected": {
-        "structure": false,
+        "structure": true,
         "relations": false
       },
       "context": {
@@ -6777,7 +8698,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "reference-text-page",
             "dataSources": {},
@@ -6828,7 +8749,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "reference-text-page",
           "dataSources": {},
@@ -6901,7 +8822,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "reference-text-page",
             "dataSources": {},
@@ -6983,7 +8904,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -7391,7 +9312,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -7799,7 +9720,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -8207,7 +10128,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -8615,7 +10536,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -9023,7 +10944,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -9431,7 +11352,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -9839,7 +11760,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -10267,7 +12188,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -10653,7 +12574,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -11043,7 +12964,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -11618,7 +13539,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -12018,7 +13939,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -12418,7 +14339,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -12824,7 +14745,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -13230,7 +15151,7 @@
             }
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -13722,7 +15643,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -14091,7 +16012,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -14401,7 +16322,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -14770,7 +16691,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -15076,7 +16997,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -15445,7 +17366,7 @@
             "resourceId": "resource-1"
           },
           "document": {
-            "schemaVersion": "6.2",
+            "schemaVersion": "6.5",
             "layout": "report",
             "id": "dimension-params-page",
             "dataSources": {
@@ -15755,7 +17676,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -16144,7 +18065,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {
@@ -16520,7 +18441,7 @@
           }
         },
         "document": {
-          "schemaVersion": "6.2",
+          "schemaVersion": "6.5",
           "layout": "report",
           "id": "dimension-params-page",
           "dataSources": {

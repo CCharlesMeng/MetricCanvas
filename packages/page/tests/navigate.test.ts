@@ -25,7 +25,7 @@ describe('源侧导航校验', () => {
     expect(result.errors.some(e=>e.path.endsWith('/query/code'+suffix))).toBe(true);
   });
   it('页面参数仅被导航消费也合法，且不会被文本物化替换', () => {
-    const doc = {schemaVersion:'6.0',id:'link-page',params:[{id:'code',type:'string',required:true}],dataSources:{},sections:[{id:'main',components:[{id:'link',type:'text',layout:{span:12},props:{links:[{label:'详情',href:'/detail',query:{code:{source:'param',id:'code'}}}]}}]}]};
+    const doc = {schemaVersion:'6.5',id:'link-page',params:[{id:'code',type:'string',required:true}],dataSources:{},sections:[{id:'main',components:[{id:'link',type:'text',layout:{span:12},props:{links:[{label:'详情',href:'/detail',query:{code:{source:'param',id:'code'}}}]}}]}]};
     const result = parsePage(doc);
     expect(result.errors).toEqual([]);
     if(result.ok) expect(result.page.sections[0]?.components[0]?.props).toEqual(doc.sections[0]!.components[0]!.props);

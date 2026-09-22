@@ -69,6 +69,7 @@ export function queryParamReferenceErrors(document: unknown): TypedError[] {
       for (const [key, child] of Object.entries(node)) visit(child, `${path}/${pointer(key)}`);
     }
     visit(query.body, root);
+    if (allowed.size && Object.keys(query.paramBindings ?? {}).length) error(root, '同一查询不得混用原位引用和paramBindings');
     if (allowed.size && (!page.params || Array.isArray(page.params))) error(root, '原位引用需要 6.6 分组参数声明');
   }
   return errors;

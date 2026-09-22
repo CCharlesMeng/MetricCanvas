@@ -15,7 +15,7 @@ import {
 
 function dashboardPage(): any {
   return structuredClone({
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'layout-probe',
     layoutForm: 'dashboard',
     dataSources: {
@@ -100,7 +100,7 @@ describe('页面布局形态', () => {
     if (parsedVisible.ok) expect(parsedVisible.page.dashboardToolbar).toBeUndefined();
 
     const hidden = dashboardPage();
-    hidden.schemaVersion = '6.0';
+    hidden.schemaVersion = '6.5';
     hidden.dashboardToolbar = 'hidden';
     expect(validate(hidden)).toEqual([]);
     expect(requiredMinorVersion(hidden)).toBe(0);
@@ -199,7 +199,7 @@ describe('分区受控列轨', () => {
     expect(validate(legacy)).toEqual([]);
 
     const weighted = dashboardPage();
-    weighted.schemaVersion = '6.0';
+    weighted.schemaVersion = '6.5';
     weighted.sections[0].columnTracks = [29, 29, 22];
     weighted.sections[0].components[1].layout.span = 1;
     expect(validate(weighted)).toEqual([]);
@@ -211,7 +211,7 @@ describe('分区受控列轨', () => {
   it('空数组、0、负数、小数和超过 12 条都由结构校验拒绝', () => {
     for (const tracks of [[], [1, 0], [1, -1], [1, 1.5], Array(13).fill(1)]) {
       const page = dashboardPage();
-      page.schemaVersion = '6.0';
+      page.schemaVersion = '6.5';
       page.sections[0].columnTracks = tracks;
       expect(
         validate(page).some((error) => error.path.startsWith('/sections/0/columnTracks')),
@@ -222,7 +222,7 @@ describe('分区受控列轨', () => {
 
   it('非 backdrop 顶层组件不得跨出轨数，backdrop 仍可保留 span 12', () => {
     const page = dashboardPage();
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.sections[0].columnTracks = [29, 29, 22];
     expect(validate(page)).toContainEqual(
       expect.objectContaining({ path: '/sections/0/components/1/layout/span' })

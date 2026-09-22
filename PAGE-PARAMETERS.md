@@ -1,8 +1,8 @@
 # 页面参数：维度与时间的现行方案
 
-本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.6**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
+本文是 MetricCanvas 页面参数的现行说明，面向产品、业务分析与开发人员。适用页面协议 **6.11**，描述已实现行为；不记录讨论过程或待实现方案。参数能力变化时，应同步更新本文、Schema 与验证用例。
 
-## 6.6 分层参数（新页面）
+## 当前分层参数（新页面）
 
 新结构为 `params: { query?: { dimensions?: [...], times?: [...] }, display?: [...] }`。分层依据是**消费位置**：`params.query` 下的输入落进 DQE 请求体，`params.display` 下的只被文本取值和导航消费，哪儿也不落。两层共享同一个 ID 空间，引用处只写 id，不写所在层。各层可省略，至少声明一个参数。
 
@@ -26,6 +26,8 @@
 维度在 `filter.dims[].dim_value_list` 上原位引用 `{param: id}`；`period` 与 `is_aggregate` 始终留在查询侧。引用不得与筛选绑定或旧 `paramBindings` 共同控制同一条件，也不得与查询体里的字面量起止并存。
 
 完整字段、引用、URL 与兼容规则见[正交化形状](docs/plan/2026-09-21-page-params-orthogonal-shape.md)，完整页面见[时间参数示例](packages/page/fixtures/contract-valid/grouped-params-page.json)。URL 里时间是纯文本——单点写 `?report-month=2026-03`，区间写 `?report-period=2026-01..2026-06`；维度仍使用重复键；显式非法输入不回退保存值。
+
+6.x 接受 6.5 兼容输入与当前 6.11；中间未使用版本不作为可读契约，5.0–5.4 的兼容读取保留。
 
 以下章节说明**兼容的旧参数数组与基准期窗口能力**。其中 default、multiple、paramBindings 和单值 time 的限制只适用于旧数组分支，不限制新 times 数组。
 
@@ -338,3 +340,15 @@ URL键就是参数 `id`。例如：`?report-month=2026-03`。
 版本边界：维度参数与初始化绑定由6.2引入；确定性时间参数与窗口绑定由6.3引入。6.4引入`yearToDate`与`monthToDate`，6.3的`toDate + unit`保留兼容。当前读取兼容5.0—5.4及6.0—6.6；5.x只走读取规范化，新文档仍写当前6.x版本。
 
 6.6 分组 times 已支持区间；历史讨论另见[时间区间参数提案](docs/archive/page-time-range-proposal/time-range-parameters.md)，不属于本文现行协议。
+
+## 程序化提取与填值
+
+`extractPageParams(page, context)` 只从已验证查询提取维度取值与固定时间区间。`context.baseline` 标识精确基线；同名维度不自动共享，跨查询合并依赖调用方提供的维度身份。候选不会自动改写页面。
+
+`applyPageParamSelection(extraction, selectedIds, textReplacements)` 在副本上生成当前分层参数与原位引用，并返回 `originalValues`。它检查原值回填后的 DQE 请求与来源等价，移除内嵌初始行；含原值的组合文本须显式提供替换，不能全局字符串替换。已由筛选绑定控制的维度不提取为固定参数；已有旧数组参数必须先显式迁移，不能在提取时覆盖。
+
+`resolvePageParams(page, suppliedValues)` 返回保留引用的填值文档 `document` 和用于执行的副本 `resolvedPage`。维度输入为字符串数组，时间输入为 `{start,end}`，精度来自声明；缺失、未知或非法显式值都拒绝执行。未填值模板结构合法不等于可执行。
+
+`migrateParamBindings(page)` 显式迁移旧数组和查询绑定，写出当前版本，并保留来源不变。窗口移至 `filter.time.window`；仍由筛选器控制的查询目标保留原绑定。可选查询参数或无法确定唯一维度字段的旧输入拒绝迁移。`filter.time.start/end` 下的 `{param,part}` 写法已退役，不作为兼容输入。
+
+这些 API 不保存或发布页面，不证明真实 DQE、Relay 或 Java 服务已完成接线。

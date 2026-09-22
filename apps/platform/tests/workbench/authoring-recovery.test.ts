@@ -8,7 +8,7 @@ import { AuthoringStorageConflict, type AuthoringStorage, type StoredRecord } fr
 const scope = { actorId: 'alice', workspaceId: 'w', pageId: 'p' };
 const base = { pageId: 'p', revisionId: 'r1', resourceId: 'resource' };
 function draft(title = 'offline') {
-  const result = createCanvasAuthoringDraft({ schemaVersion: '6.1', id: 'p', layout: 'report', dataSources: {}, sections: [{ id: 's', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: '' } }] }] });
+  const result = createCanvasAuthoringDraft({ schemaVersion: '6.5', id: 'p', layout: 'report', dataSources: {}, sections: [{ id: 's', components: [{ id: 't', type: 'text', layout: { span: 12 }, props: { title, body: '' } }] }] });
   if (!result.ok) throw Error(result.message); return result.draft;
 }
 function fixture(issued = true) {
@@ -62,7 +62,7 @@ it('restores empty authoring sections without changing the formal page or frozen
   raw.value.draft.authoringSections.push({ id: 'empty', componentIds: [] });
   const restored = validateAuthoringRecord(raw, scope);
   expect(restored.value.draft.authoringSections).toHaveLength(2); expect(restored.value.draft.pageDocument.sections).toHaveLength(1);
-  expect(restored.value.queue[0].command?.document.schemaVersion).toBe('6.1');
+  expect(restored.value.queue[0].command?.document.schemaVersion).toBe('6.5');
 });
 it.each(['AUTH_REQUIRED', 'VALIDATION_FAILED', 'REVISION_CONFLICT'])('restored %s stays paused and keeps content', async (code) => {
   const f = fixture(); f.value.queue[0].outcome = { status: 'rejected', operationId: 'original', code, message: code, retryable: true };

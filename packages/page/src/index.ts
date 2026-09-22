@@ -18,3 +18,6 @@ export { versionPolicy, supportedVersions } from './version';
 export { pageSchema } from './schema';
 export { componentCatalog } from './component-catalog';
 export { canonicalizeJson } from './canonical-json';
+export { resolvePageParams, type ResolvePageParamsResult } from './resolve-page-params';
+export { migrateParamBindings } from './migrate-param-bindings';
+export { extractPageParams, applyPageParamSelection, type ParameterCandidate, type ExtractionContext, type PageParamExtraction } from './extract-page-params';

@@ -15,7 +15,7 @@ import {
 
 function cardPage(): any {
   return structuredClone({
-    schemaVersion: '6.0',
+    schemaVersion: '6.5',
     id: 'composite-probe',
     dataSources: {
       tiers: {
@@ -110,7 +110,7 @@ describe('组合卡', () => {
 
   it('只接受受控的标题图标，不接受任意资源路径', () => {
     const page = cardPage();
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     card(page).props.titleIcon = 'opportunity';
     expect(parsePage(page).errors).toEqual([]);
 
@@ -273,7 +273,7 @@ describe('分类明细', () => {
 describe('地图图例与 tooltip 扩展字段', () => {
   function mapPage(): any {
     return structuredClone({
-      schemaVersion: '6.0',
+      schemaVersion: '6.5',
       id: 'map-probe',
       dataSources: {
         regions: {
@@ -338,7 +338,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 
   it('地域摘要按稳定维度值匹配，且所有绑定都经过字段契约校验', () => {
     const page = mapPage();
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.sections[0].components[0].props.variant = 'regionalOverview';
     page.sections[0].components[0].props.pinnedSummary = {
       matchField: 'name',
@@ -356,7 +356,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 
   it('地域摘要只属于 regionalOverview，匹配值类型与字段标签必须有效', () => {
     const page = mapPage();
-    page.schemaVersion = '6.0';
+    page.schemaVersion = '6.5';
     page.sections[0].components[0].props.pinnedSummary = {
       matchField: 'name',
       matchValue: '中国',
@@ -385,7 +385,7 @@ describe('地图图例与 tooltip 扩展字段', () => {
 describe('同批的字段级增量', () => {
   function panelPage(columns: unknown): any {
     return structuredClone({
-      schemaVersion: '6.0',
+      schemaVersion: '6.5',
       id: 'panel-probe',
       dataSources: {
         detail: {
@@ -419,7 +419,7 @@ describe('同批的字段级增量', () => {
 
   function ratioPage(scale: unknown): any {
     const page: any = {
-      schemaVersion: '6.0',
+      schemaVersion: '6.5',
       id: 'ratio-probe',
       dataSources: {
         pipeline: {

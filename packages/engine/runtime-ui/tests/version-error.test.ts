@@ -4,7 +4,7 @@ import { ERROR_TYPES } from '@metriccanvas/page/internal';
 import { runtimeVersionError } from '../src/version-error';
 
 describe('引擎协议版本能力检查', () => {
-  it.each(['4.0', '5.5', '6.12', '7.0'])('版本 %s 不在支持区间时给出独立事件', (schemaVersion) => {
+  it.each(['4.0', '5.5', '6.12', '7.0', '06.00'])('版本 %s 不在支持区间时给出独立事件', (schemaVersion) => {
     const error = runtimeVersionError({ schemaVersion });
     expect(error).toMatchObject({
       type: 'version-error',
@@ -23,7 +23,7 @@ describe('引擎协议版本能力检查', () => {
   });
 
   it('接受所有受支持版本并与协议数字版本判断保持一致', () => {
-    for (const schemaVersion of [...supportedVersions(), '06.00']) {
+    for (const schemaVersion of supportedVersions()) {
       expect(runtimeVersionError({ schemaVersion })).toBeUndefined();
     }
   });

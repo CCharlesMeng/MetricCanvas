@@ -15,7 +15,7 @@ def digest(value):
 
 
 def document():
-    return {'schemaVersion':'6.2','id':'lifecycle-page','layout':'report','meta':{'description':'private-business-value'},'dataSources':{},'sections':[{'id':'main','title':'Private section','components':[{'id':'text','type':'text','layout':{'span':12},'props':{'title':'Private title','body':'private-business-value'}}]}]}
+    return {'schemaVersion':'6.5','id':'lifecycle-page','layout':'report','meta':{'description':'private-business-value'},'dataSources':{},'sections':[{'id':'main','title':'Private section','components':[{'id':'text','type':'text','layout':{'span':12},'props':{'title':'Private title','body':'private-business-value'}}]}]}
 
 
 def save_command(operation='operation-1', base=None):

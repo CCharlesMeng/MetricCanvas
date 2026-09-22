@@ -1,4 +1,9 @@
-"""Internal publication boundaries frozen by T19; never provider HTTP definitions."""
+"""T19 compatibility boundaries, not current Java HTTP definitions.
+
+6.5 deterministic preparation uses parameter_preparation.ParameterProgram and
+the existing single-save coordinator. It must not assume these lookup/lease
+capabilities are implemented by a current Java deployment.
+"""
 from dataclasses import dataclass
 from typing import Protocol
 from .lifecycle_ports import LifecycleIdentity

@@ -3,6 +3,12 @@
   import { createAuthoringLanguageRecovery, type TrustedLanguageRecoveryPort } from './workbench/authoring-language-recovery';
   import { createAuthoringLanguage, type LanguagePort } from './workbench/authoring-language';
   import PublicationReview from './workbench/PublicationReview.svelte';
+  import InlineParameterReview from './workbench/InlineParameterReview.svelte';
+  import {canonicalizeJson} from '@metriccanvas/page';
+  import {createInlineParameterPublication,type ParameterSourcePort} from './workbench/inline-parameter-publication';
+  import {previewParameterPage} from './workbench/preview-parameter-page';
+  import { RuntimeView } from '@metriccanvas/engine/ui';
+  import {createParameterInstanceSession,type ParameterInstancePort} from './workbench/parameter-instance';
   import { createAuthoringPublication, unavailablePublicationPort, unavailableHumanConfirmation, type PublicationPort, type HumanConfirmationPort } from './workbench/authoring-publication';
   import AuthoringHistory from './workbench/AuthoringHistory.svelte';
   import { onMount, tick, untrack } from 'svelte';
@@ -27,7 +33,11 @@
   import { listenForApplyPage } from './workbench/apply-page';
   import { createIndexedAuthoringStorage } from './workbench/authoring-storage';
   import { unavailableStableSave, type StableSavePort, type DurableAuthoringState } from './workbench/authoring-sync';
-  let { dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = readAuthoringIntegration()?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+  let { parameterInstancePort, parameterContextRef, onParameterInstanceReady, parameterSourcePort, dialogueAdapter, readSavedDraft, authoringPort = pageAuthoringPort, stableSavePort = authoringPort === pageAuthoringPort ? pageSavePort : unavailableStableSave, languagePort = readAuthoringIntegration()?.language, onLanguageReady, languageRecoveryPort, onLanguageRecoveryReady, publicationPort = unavailablePublicationPort, humanConfirmation = unavailableHumanConfirmation }: {
+    parameterInstancePort?: ParameterInstancePort;
+    parameterContextRef?: () => string;
+    onParameterInstanceReady?: (api: ReturnType<typeof createParameterInstanceSession>) => void;
+    parameterSourcePort?: ParameterSourcePort;
     publicationPort?: PublicationPort; humanConfirmation?: HumanConfirmationPort;
     languageRecoveryPort?: TrustedLanguageRecoveryPort; onLanguageRecoveryReady?: (api: ReturnType<typeof createAuthoringLanguageRecovery>) => void;
     languagePort?: LanguagePort; onLanguageReady?: (api: ReturnType<typeof createAuthoringLanguage>) => void;
@@ -46,6 +56,10 @@
   }));
   let publication = $state<ReturnType<typeof createAuthoringPublication> | null>(null);
   let publicationOpen = $state(false);
+  let parameterReview = $state<ReturnType<typeof createInlineParameterPublication>|null>(null);
+  let parameterReviewOpen = $state(false);
+  let parameterInstance = $state<ReturnType<typeof createParameterInstanceSession> | null>(null);
+  let instanceState = $state<{document: import('@metriccanvas/page').PageDocument | null; error: string; loading: boolean}>({document:null,error:'',loading:false});
   let publicationBusy = $state(false);
   let language = $state<ReturnType<typeof createAuthoringLanguage> | null>(null);
   let languageState = $state<ReturnType<ReturnType<typeof createAuthoringLanguage>['snapshot']> | null>(null);
@@ -91,12 +105,28 @@
       onLanguageRecoveryReady?.(languageRecovery);
     } else void resume(pageId);
     coordinator.setOnline(navigator.onLine);
+    if (parameterInstancePort && parameterContextRef) {
+      parameterInstance = createParameterInstanceSession({port: parameterInstancePort, scope: () => {
+        const config=readRuntimeConfig(); const snapshot=coordinator.snapshot();
+        const instancePageId=snapshot.ref?.pageId??snapshot.draft?.pageDocument.id;
+        return {contextRef:parameterContextRef!(),actorId:config?.operatorId??'',workspaceId:config?.workspaceId??'',
+          pageId:typeof instancePageId==='string'?instancePageId:'',sourceKey:canonicalizeJson({scope:coordinator.scope(),ref:snapshot.ref,draft:snapshot.draft?.pageDocument})};
+      }});
+      parameterInstance.subscribe(value => {instanceState=value;});
+      onParameterInstanceReady?.(parameterInstance);
+    }
     const online = () => coordinator.setOnline(true);
     const offline = () => coordinator.setOnline(false);
     window.addEventListener('online', online); window.addEventListener('offline', offline);
     if (publicationPort.available) publication = createAuthoringPublication({ port: publicationPort, human: humanConfirmation, scope: coordinator.scope, synchronizedRef: coordinator.requireSynchronizedRef, identity: () => { const config = readRuntimeConfig(); return { actorId: config?.operatorId ?? '', workspaceId: config?.workspaceId ?? '' }; } });
+    if(parameterSourcePort) parameterReview=createInlineParameterPublication({
+      readVerifiedSource:baseline=>parameterSourcePort!.readVerifiedSource(baseline),
+      sourceKey:()=>canonicalizeJson({ref:coordinator.requireSynchronizedRef(),scope:coordinator.scope()}),
+      preview:(document,signal)=>{if(!dataGateway)throw Error('查询网关尚未接入');return previewParameterPage(document,dataGateway,signal);},
+      save:async(document,key,selected)=>{await coordinator.publishTemplate(document,key,selected);return {status:'queued'};}
+    });
     publication?.subscribe(value => { publicationBusy = value.phase === 'busy' || value.phase === 'unknown'; });
-    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); });
+    const unsubscribe = coordinator.subscribe((snapshot) => { authoring = snapshot; publication?.invalidate(); parameterReview?.invalidate(); parameterInstance?.invalidate(); });
     let disconnectAuthoring: void | (() => void);
     if (languagePort) {
       language = createAuthoringLanguage({ coordinator, port: languagePort, target: window,
@@ -150,7 +180,7 @@
       },
       onerror: (message) => { saveError = message; }
     });
-    return () => { disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); unsubscribe(); coordinator.dispose(); };
+    return () => { disconnectAuthoring?.(); window.removeEventListener('online', online); window.removeEventListener('offline', offline); stopApplyPage(); stop(); language?.dispose(); languageRecovery?.dispose(); publication?.dispose(); parameterReview?.dispose(); parameterInstance?.dispose(); unsubscribe(); coordinator.dispose(); };
   });
 
   const currentDocument = $derived(currentDraft?.pageDocument ?? null);
@@ -302,6 +332,7 @@
       {/if}
     </div>
     <div class="r" data-testid="document-actions">
+      {#if parameterReview}<button class="btn" disabled={saveBlocked||authoring.dirty} onclick={()=>parameterReviewOpen=!parameterReviewOpen}>参数模板评审</button>{/if}
       {#if publicationPort.available}<button class="btn" disabled={!authoring.ref || authoring.languageLocked} onclick={() => publicationOpen = !publicationOpen}>发布评审</button>
       {:else}<button class="btn" disabled={!authoring.ref || authoring.dirty || saveBlocked || authoring.sync?.phase === 'saving'} onclick={async () => { if (!window.confirm('发布当前页面？后续保存编辑会将当前记录改为草稿。')) return; try { await coordinator.publish(); } catch (error) { saveError = String(error); } }}>发布页面</button>{/if}
       <button class="btn" disabled={!authoring.sync?.canUndo || loading || savePending} onclick={async () => { try { await coordinator.undo(); editError = ''; } catch (error) { editError = String(error); } }}>撤销上一步</button>
@@ -375,12 +406,21 @@
     {#if editError}<p class="error" role="alert">{editError}</p>{/if}
 
     <div class="page-scroll">
-      {#if publicationOpen && publication}
+      {#if parameterReviewOpen && parameterReview}
+        <InlineParameterReview publication={parameterReview} {dataGateway}/>
+      {:else if publicationOpen && publication}
         <PublicationReview {publication} />
       {:else if previewOpen && previewRef}
         <p class="notice">正在预览已保存修订；再次点击“当前内容预览”返回工作副本。</p>
         <RevisionPreview pageId={previewRef.pageId} revisionId={previewRef.revisionId}
           readRevision={(_pageId, _revisionId, signal) => coordinator.preview(previewRef!, signal)} />
+      {:else if instanceState.document || instanceState.loading || instanceState.error}
+        <div aria-label="参数化页面临时运行">
+          <p>临时运行，不修改或保存当前页面。<button onclick={() => parameterInstance?.close()}>关闭运行预览</button></p>
+          {#if instanceState.error}<p role="alert">{instanceState.error}</p>
+          {:else if instanceState.loading}<p role="status">正在读取运行产物…</p>
+          {:else if instanceState.document}<RuntimeView document={instanceState.document} {dataGateway} />{/if}
+        </div>
       {:else if currentDocument}
         <MetricCanvas
           document={currentDocument}
