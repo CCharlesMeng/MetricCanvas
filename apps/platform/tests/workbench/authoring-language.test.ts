@@ -43,10 +43,12 @@ it('waits for synchronization, locks all manual writes, then accepts only exact 
   f.coordinator.replaceDraft(edit);
   let completeSave!: () => void; const save = f.authoringPort.saveRevision;
   f.authoringPort.saveRevision = async (...args) => { await new Promise<void>(resolve => completeSave = resolve); return save(...args); };
-  const running = f.language.start('change title'); await flush();
+  const running = f.language.start('change title');
+  await vi.waitFor(() => expect(completeSave).toBeTypeOf('function'));
   expect(f.port.run).not.toHaveBeenCalled(); expect(f.coordinator.snapshot().languageLocked).toBe(true);
-  completeSave(); await flush();
-  expect(f.port.run).toHaveBeenCalledTimes(1); expect(f.coordinator.snapshot().languageLocked).toBe(true);
+  completeSave();
+  await vi.waitFor(() => expect(f.port.run).toHaveBeenCalledTimes(1));
+  expect(f.coordinator.snapshot().languageLocked).toBe(true);
   expect(f.coordinator.replaceDraft(draft)).toBe(false); expect(await f.coordinator.save()).toBeNull();
   await f.coordinator.load('different'); expect(f.coordinator.snapshot().ref).toEqual(base);
   expect(() => f.coordinator.requireSynchronizedRef()).toThrow();
