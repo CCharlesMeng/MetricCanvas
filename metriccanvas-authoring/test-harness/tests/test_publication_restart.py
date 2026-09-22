@@ -11,7 +11,7 @@ from publish_stdio_server import PublicationProvider, PublicationSources, HumanE
 from lifecycle_stdio_server import Identities
 from metriccanvas_authoring.assets.lifecycle_publish import Publication
 from metriccanvas_authoring.assets.publish_ports import PublicationDependencies
-from metriccanvas_authoring.adapters.storage.sqlite_authoring_state import SqliteLifecyclePrograms
+from metriccanvas_authoring.adapters.storage.lifecycle_programs import SqliteLifecyclePrograms
 
 
 class PublicationRestartTest(unittest.IsolatedAsyncioTestCase):

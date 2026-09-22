@@ -10,6 +10,8 @@
 
 **现行结论:** 领域层不建模传统业务实体,只有聚合根**页面**(0052 以前称"看板页面");包按 DDD 分层围绕这个聚合根命名(领域包 `page`、应用层 `runtime`、基础设施适配器 `data-gateway` 等),端口按意图命名、适配器按系统命名,依赖方向全部指向 `page`。词汇表历史上出现过的"页面规格"一等术语已降级为普通词"页面文档",序列化形态不占领域词汇位置。
 
+**创作流程与版本术语硬切换([ADR-0090](../0090-authoring-flow-hard-cutover-and-version-vocabulary.md)):** 生产只保留一套平台页面创作流程和一套现行页面结构计划。结构计划、页面 Schema、Bundle 与外部 API 是不同版本序列；文档出现 v1/v2/v3 时必须标注所属序列。内容工具可提交平台草稿，Java 页面资产服务负责持久化与发布状态，Relay 负责会话检查点和产物交付；普通问数仍不自动落库。旧创作入口与候选提交链只能作为归档或迁移证据，不得作为生产 fallback。
+
 部署目标已由 ADR-0060 改为静态 Svelte SPA + 外部 Java 页面资产服务 + Relay Skill-Play + Python FastMCP Tool：Java 拥有页面资产，Python 拥有确定性页面装配算法，Relay 拥有内网模型、Skill 与分析会话，生产不运行 Node 服务端。`apps/platform` 已切换为 `adapter-static` 的纯前端 SPA，删除全部 `+server.ts`、server hook 与服务端生命周期/持久化依赖；页面资产客户端按 ADR-0070 直接消费提供方 `user-page-metadata` 接口。当前资产接线按 ADR-0080 使用单次保存和回执确认，历史精确读取不作为接入前置；真实部署载体及盘古接线仍需提供方验收。
 
 ADR-0061 冻结了不等待真实 Relay 仓库的迁移边界:仓根自包含创作 Bundle 是锁步发布容器,内部的 Skill 与 Python Tool 是两个平级 Module,只通过 MCP Tool Interface 协作;Authoring contracts 只拥有 Page Build Spec 等 Skill↔Tool 接口,产品中立契约则由仓根 `contracts/metriccanvas` 承载,Bundle 携带摘要锁定的只读快照。FastMCP 只作为入站 Adapter,Fake 与 fixture 只属于 Test Harness。TypeScript/Zod 在迁移期单向导出 Page Schema、组件能力目录、错误闭集与共享向量,Python 运行时不加载 Node。模型只形成 Page Build Spec,DQE 查询、字段契约、组件选择、布局与当前页面协议由 Python 确定性派生。

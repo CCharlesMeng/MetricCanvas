@@ -19,7 +19,6 @@ dependencies = [
 metriccanvas-authoring = "metriccanvas_authoring.entrypoints.compat.server:main"
 metriccanvas-content = "metriccanvas_authoring.entrypoints.compat.content_server:main"
 metriccanvas-platform-content = "metriccanvas_authoring.platform_server:main"
-metriccanvas-platform-content-v1 = "metriccanvas_authoring.entrypoints.compat.unified_content_server:main"
 metriccanvas-lifecycle = "metriccanvas_authoring.entrypoints.compat.lifecycle_server:main"
 
 [tool.hatch.build.targets.wheel]
@@ -49,7 +48,6 @@ include = [
 "../contract-snapshot/authoring/publication.schema.json" = "metriccanvas_authoring/_bundle/contract-snapshot/authoring/publication.schema.json"
 
 "../contracts/authored/authoring-turn.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-turn.schema.json"
-"../contracts/authored/authoring-candidate.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/authoring-candidate.schema.json"
 "../contracts/authored/source-description.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/source-description.schema.json"
 "../contracts/authored/add-data-component.schema.json" = "metriccanvas_authoring/_bundle/contracts/authored/add-data-component.schema.json"
 

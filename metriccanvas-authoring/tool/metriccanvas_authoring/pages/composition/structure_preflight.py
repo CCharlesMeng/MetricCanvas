@@ -2,7 +2,7 @@
 import json
 from collections import Counter
 from jsonschema import Draft202012Validator
-from metriccanvas_authoring.pages.composition.page_structure import V1_PLAN_SCHEMA, V2_PLAN_SCHEMA, V3_PLAN_SCHEMA
+from metriccanvas_authoring.pages.composition.page_structure import CURRENT_PLAN_SCHEMA
 from metriccanvas_authoring.pages.composition.structure_diagnostics import schema_issues
 from metriccanvas_authoring.pages.components.structure_presentation import PRESENTATION_COMPONENTS
 
@@ -24,7 +24,7 @@ def inspect_plan(plan):
         issues.append({'code': code, 'path': path, 'objectIds': list(ids), 'blocking': blocking,
                        'options': ['revise-reference', 'remove-block'] if blocking else ['keep-for-purpose', 'revise-content']})
     version = plan.get('version') if isinstance(plan, dict) else None
-    schema = {'1': V1_PLAN_SCHEMA, '2': V2_PLAN_SCHEMA, '3': V3_PLAN_SCHEMA}.get(version)
+    schema = CURRENT_PLAN_SCHEMA if version == '3' else None
     if schema is None:
         issue('STRUCTURE_PLAN_INVALID', '/version')
     else:

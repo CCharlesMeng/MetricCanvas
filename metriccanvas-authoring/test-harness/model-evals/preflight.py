@@ -11,10 +11,10 @@ from eval_evidence import injection_paths, sha, verify_hashes
 
 SURFACES = {
     'legacy-content': ('metriccanvas_authoring.entrypoints.compat.content_server', 'metriccanvas-content'),
-    'unified-content': ('metriccanvas_authoring.entrypoints.compat.unified_content_server', 'metriccanvas-platform-content'),
+    'unified-content': ('metriccanvas_authoring.platform_server', 'metriccanvas-platform-content'),
 }
 LEGACY_TOOLS = {'discover_data_context', 'compose_page', 'create_content_page', 'edit_page'}
-UNIFIED_TOOLS = LEGACY_TOOLS | {'read_page_context', 'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'}
+UNIFIED_TOOLS = {'read_page_context', 'discover_data_context', 'query_data', 'compose_page', 'edit_page', 'page_metadata_emit_preview', 'extract_page_parameters', 'apply_page_parameter_selection', 'resolve_page_parameters'}
 
 
 def client_configuration(root, surface='legacy-content'):
@@ -42,9 +42,9 @@ def surface_evidence(surface, definitions):
             'introspection':{'status':'fail' if errors else 'pass', 'errors':errors,
                              'scope':'Tool names and input schemas only; no content tool invoked'},
             'modelRunner':{'status':'blocked' if surface == 'unified-content' else 'not-run',
-                           'reason':'This introspection did not execute run_trusted_local.py or inject a current-turn provider; real model behavior unverified'
+                           'reason':'This introspection did not execute run_platform_v2.py or inject a current-turn provider; real model behavior unverified'
                            if surface == 'unified-content' else 'S1 legacy runner only; real model authorization required'},
-            'localHarness':{'runner':'run_trusted_local.py','support':'local-synthetic trusted port with shared scripted/http loop; not exercised by this preflight'},
+            'localHarness':{'runner':'run_platform_v2.py','support':'local-synthetic trusted port with shared scripted/http loop; not exercised by this preflight'},
             'trustedCurrentTurn':{'status':'blocked', 'reason':'No trusted provider injected by this preflight'},
             'writeReadiness':'blocked: listing tools does not prove usable write capability',
             'latest':'blocked: introspection does not verify provider latest semantics'}

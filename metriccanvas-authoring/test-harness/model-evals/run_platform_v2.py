@@ -17,7 +17,7 @@ sys.path[:0] = [str(HERE.parent/'tests'), str(HERE.parent), str(HERE.parents[1]/
 from fastmcp import Client
 from test_platform_v2 import Authorization, Identities, Service, Preview, query_request
 from test_authoring_turns import Turns
-from test_unified_content_mcp import dependencies
+from authoring_fixtures import dependencies
 from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
 from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
 from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState

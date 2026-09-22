@@ -24,7 +24,7 @@ async def revise_structure(parent, request, dependencies, *, current):
     revision = request['structureRevision']
     entries = [o['state'] for o in parent['operations'] if o.get('type') == 'structure_state']
     if not entries or entries[-1]['plan']['version'] != revision['planVersion']: return fail('STRUCTURE_PLAN_VERSION_MISMATCH')
-    if parent['candidateVersion'] != revision['parentVersion']: return fail('STRUCTURE_PARENT_VERSION_MISMATCH')
+    if parent['workVersion'] != revision['parentVersion']: return fail('STRUCTURE_PARENT_VERSION_MISMATCH')
     state = deepcopy(entries[-1]); plan = state['plan']; document = deepcopy(parent['document'])
     changed_blocks, changed_sources, scope_sections = set(), set(), set()
     def section(id): return next(s for s in plan['sections'] if s['id'] == id)
@@ -98,7 +98,7 @@ async def revise_structure(parent, request, dependencies, *, current):
                 pattern_changed=any(p['type']=='set-section' and p['sectionId']==s['id'] and 'pattern' in p['changes'] for p in revision['patches'])
                 if not width_changed and not pattern_changed: c['layout']=deepcopy(previous['layout'])
                 replaced=any(p['type']=='replace-block' and p['blockId']==c['id'] for p in revision['patches'])
-                if replaced and plan['version']=='3' and previous['type']==c['type']:
+                if replaced and previous['type']==c['type']:
                     from metriccanvas_authoring.pages.composition.page_structure import block_component
                     from metriccanvas_authoring.pages.components.structure_presentation import preserve_unedited
                     original=entries[-1]
@@ -113,18 +113,6 @@ async def revise_structure(parent, request, dependencies, *, current):
         document['dataSources'].update(result['document']['dataSources'])
         state['queries'].update(result['structureState']['queries']); state['relations'].update(result['structureState']['relations'])
         counts=result['queryCounts']; adjustments=result['appliedAdjustments']
-    from metriccanvas_authoring.pages.composition.page_structure import scope_notes
-    requests={r['dataSourceId']:r for r in plan['dataRequests']}
-    for sid in scope_sections:
-        if plan['version']=='3': continue
-        s=section(sid); dest=visible(sid); id='structure-scope-'+sid
-        notes=scope_notes(requests[b['source']] for b in s['blocks'] if b.get('source'))
-        existing=next((c for c in dest['components'] if c['id']==id),None)
-        if notes:
-            note={'id':id,'type':'text','layout':{'span':12},'props':{'body':'数据口径：\n'+'\n'.join(notes)}}
-            if existing: dest['components'][dest['components'].index(existing)]=note
-            else: dest['components'].append(note)
-        elif existing: dest['components'].remove(existing)
     # Retain sources referenced anywhere, including untouched manual nested components.
     def references(value):
         if isinstance(value,dict):

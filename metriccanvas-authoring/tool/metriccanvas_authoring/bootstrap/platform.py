@@ -13,11 +13,11 @@ from metriccanvas_authoring.work.state import Limits
 
 def create_platform_server(dependencies, *, current_turns=None, store=None, analysis_authorization=None,
         lifecycle_service=None, lifecycle_identities=None, relay_preview=None, limits=Limits(),
-        summary_config=None, semantic_catalog=None):
+        summary_config=None, semantic_catalog=None, parameter_dependencies=None):
     return create_platform_mcp_server(PlatformAuthoring(dependencies, current_turns, store,
         analysis_authorization=analysis_authorization, lifecycle_service=lifecycle_service,
         lifecycle_identities=lifecycle_identities, relay_preview=relay_preview, limits=limits,
-        summary_config=summary_config, semantic_catalog=semantic_catalog))
+        summary_config=summary_config, semantic_catalog=semantic_catalog, parameter_dependencies=parameter_dependencies))
 
 
 def create_production_platform_server():

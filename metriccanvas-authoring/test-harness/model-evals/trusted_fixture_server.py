@@ -13,12 +13,13 @@ ROOT = Path(__file__).resolve().parents[3]
 TESTS = ROOT/'metriccanvas-authoring/test-harness/tests'
 sys.path[:0] = [str(ROOT/'metriccanvas-authoring/tool'), str(TESTS)]
 from test_authoring_turns import Turns
-from test_authoring_candidates import MemoryCandidates
-from test_unified_content_mcp import dependencies
+from authoring_fixtures import dependencies
 from metriccanvas_authoring.work.authoring_turns import PreparedAuthoringTurn
 from metriccanvas_authoring.work.content_ports import ContentBaseline, ContentBaselineError
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
-from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.bootstrap.platform import create_platform_server
+from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from test_platform_v2 import Authorization, Identities, Service, Preview
 
 
 class LocalSyntheticTurns:
@@ -39,9 +40,9 @@ def fixture_server(state_path):
         from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
         deps = replace(deps, data_context=unconfigured_data_context('Local fixture intentionally unavailable'),
                        dqe=unconfigured_dqe('Local fixture intentionally unavailable'), source_description=None)
-    return create_unified_content_mcp_server(deps,
-        None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path),
-        candidate_store=None if state.get('candidateProvider') == 'unavailable' else MemoryCandidates())
+    return create_platform_server(deps, current_turns=None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path),
+        store=SqlitePlatformState(state_path.parent/'work.db'), analysis_authorization=Authorization(),
+        lifecycle_service=Service(), lifecycle_identities=Identities(), relay_preview=Preview())
 
 
 if __name__ == '__main__':

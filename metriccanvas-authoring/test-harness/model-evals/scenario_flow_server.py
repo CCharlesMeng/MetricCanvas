@@ -12,12 +12,13 @@ sys.path[:0] = [str(LIBRARY_ROOT / 'metriccanvas-authoring/tool'), str(LIBRARY_R
                str(LIBRARY_ROOT / 'metriccanvas-authoring/test-harness')]
 sys.path.insert(0, str(LIBRARY_ROOT / 'metriccanvas-authoring/test-harness/model-evals'))
 from trusted_fixture_server import LocalSyntheticTurns
-from test_authoring_candidates import MemoryCandidates
 from test_source_mapping import DescriptorFixture
 from adapters.fakes import FakeDataContextPort
 from metriccanvas_authoring.pages.composition.compose_page import ComposePageDependencies
 from metriccanvas_authoring.data.execution import DqeExecutionResult, DqeExecutionError
-from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from metriccanvas_authoring.bootstrap.platform import create_platform_server
+from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
+from test_platform_v2 import Authorization, Identities, Service, Preview
 
 # Refuse mixed-version imports before any paid model request can use this server.
 import metriccanvas_authoring
@@ -196,7 +197,9 @@ def dependencies(trace_path=None):
 
 def server(path):
     deps = dependencies(path.parent/'data-executions.jsonl')
-    return create_unified_content_mcp_server(deps,LocalSyntheticTurns(path),candidate_store=MemoryCandidates())
+    return create_platform_server(deps, current_turns=LocalSyntheticTurns(path),
+        store=SqlitePlatformState(path.parent/'work.db'), analysis_authorization=Authorization(),
+        lifecycle_service=Service(), lifecycle_identities=Identities(), relay_preview=Preview())
 
 if __name__=='__main__':
     from model_transport import deny_network

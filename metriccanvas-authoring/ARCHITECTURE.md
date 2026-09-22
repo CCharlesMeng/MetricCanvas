@@ -1,20 +1,19 @@
 # MetricCanvas 创作架构
 
-Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../docs/adr/0083-platform-evidence-work-and-internal-draft-save.md)，部署接口与状态约束见[平台协议](contracts/authored/platform-v2-protocol.md)。旧候选链仍供兼容消费者使用，见[历史 v1 架构](ARCHITECTURE-V1.md)。
+Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../docs/adr/0083-platform-evidence-work-and-internal-draft-save.md) 与 [ADR-0090](../docs/adr/0090-authoring-flow-hard-cutover-and-version-vocabulary.md)，部署接口与状态约束见[平台协议](contracts/authored/platform-v2-protocol.md)。生产只保留平台现行创作流程；历史候选链不属于生产入口。
 
 ## 入口与业务范围
 
 - `metriccanvas-platform-content` → `platform_server.create_platform_server`：读配置、发现、独立查询、创建、编辑，另保留 Relay 预览工具。compose/edit 内部保存平台草稿。
-- `metriccanvas-platform-content-v1` → `unified_content_server`：旧候选协议与兼容 Skill，既有记录不转换、不删除。不是 v2 缺依赖时的回退。
 - `metriccanvas-authoring` → `server`：普通问数/探索，临时页面态不自动保存；两工具 Skill 保持原协议。
 
-目标工具面固定六项：`read_page_context`、`discover_data_context`、`query_data`、`compose_page`、`edit_page`、`page_metadata_emit_preview`，另有 resource `metriccanvas://bundle-info`。请求体不另写模型，直接以 `WithJsonSchema` 投影领域侧的 `QUERY_SCHEMA`/`COMPOSE_SCHEMA`/`EDIT_RESULT_SCHEMA`；工具面消费契约，不拥有契约。返回恒为 `{ok, modelSummary, artifactEnvelope}`，模型只读 `modelSummary`，程序产物只在 mutation 时产出 `artifactEnvelope`；异常在此收成 `rejected`/`unavailable` 闭集，实现细节不外泄。
+目标工具面固定九项：`read_page_context`、`discover_data_context`、`query_data`、`compose_page`、`edit_page`、`page_metadata_emit_preview`、`extract_page_parameters`、`apply_page_parameter_selection`、`resolve_page_parameters`，另有 resource `metriccanvas://bundle-info`。请求体不另写模型，直接以 `WithJsonSchema` 投影领域侧的 `QUERY_SCHEMA`/`COMPOSE_SCHEMA`/`EDIT_RESULT_SCHEMA`；工具面消费契约，不拥有契约。返回恒为 `{ok, modelSummary, artifactEnvelope}`，模型只读 `modelSummary`，程序产物在内容修改或参数模板/实例准备时产出 `artifactEnvelope`；异常在此收成 `rejected`/`unavailable` 闭集，实现细节不外泄。
 
-入口模块只保留 CLI 委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。端口按消费方归属（`data/`、`assets/`、`work/` 各自声明，服务态身份在 `adapters/service_identity.py`），不再有汇总的 `application/ports.py`；`application/` 与 `domain/` 源码包已随能力归位删除。
+入口模块只保留 MCP/stdio 启动委托，装配住在 `bootstrap/`：`platform.py` 是目标组合根，`compatibility.py` 显式承载旧入口，两者从同一个 `environment.py` 取适配器。CLI 仅是受控部署启动方式，不能成为模型可见的第二入口。端口按消费方归属（`data/`、`assets/`、`work/` 各自声明，服务态身份在 `adapters/service_identity.py`），不再有汇总的 `application/ports.py`；`application/` 与 `domain/` 源码包已随能力归位删除。
 
 入站 MCP 是接入点而不是 Adapter：目标工具面在 `entrypoints/mcp/`，旧注册名的工具面与各自启动入口同处 `entrypoints/compat/`。出站按外部系统边界分组而不按方向分组：`adapters/firstparty/`（Lab Data Context、DQE、Java 页面资产、草稿生命周期、未接入的发布；不写作 `java/` 是因为 Lab 与 DQE 不是 Java 契约）、`adapters/relay/`（Relay 注入的只读输入与来自 MCP config 的服务态身份）、`adapters/storage/`（SQLite）。身份端口留在 `adapters/service_identity.py`，由全部出站适配器共用。`bootstrap/` 之外不 import 具体适配器。
 
-宿主通过同一次请求注入可信上下文和提供方。默认独立 CLI 不能凭模型输入制造身份、计划确认或保存权限；缺依赖明确不可用。
+宿主通过同一次请求注入可信上下文和提供方。Relay 通过受控 MCP stdio 子进程调用工具；默认独立启动不能凭模型输入制造身份、计划确认或保存权限；缺依赖明确不可用。
 
 ## 职责与依赖
 
@@ -27,8 +26,8 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 | `pages/referenced.py` | 消费结果引用后的章节装配与局部新增组件；不执行 DQE |
 | `pages/editing/operation_batch.py` | 同步/异步共用的批次、依赖、回滚和 partial/unchanged 规则 |
 | `pages/validation/` | 页面语义校验、分层参数与原位引用；TS 单向导出 Schema，Python 对等验证 |
-| `pages/parameters/` | 模板准备、实例填值与可信程序交付；取值算法由 TS 参数程序拥有 |
-| `pages/composition/page_structure.py` | v1/v2/v3 结构计划的唯一实现，配合 components 呈现规则与 editing 修订 |
+| `pages/parameters/` | 从工作稿/产物引用准备模板与临时实例，无候选存储或提交链；取值算法由 TS 参数程序拥有 |
+| `pages/composition/page_structure.py` | 仅接受结构计划 3；创建、编辑共用现行 Schema 与呈现规则 |
 | `pages/composition/page_building.py` | 消费取数单元装配整页与数据组件；产品可渲染与创作准入保持不同能力 |
 | `work/state.py` | 单份工作稿、版本竞争和跨调用预算 |
 | `assets/drafts.py` | 冻结提交、单次保存、回执核对、无需候选的恢复 |
@@ -58,7 +57,7 @@ Bundle 0.3.0 的平台入口使用 protocol 2.0。用户决策见 [ADR-0083](../
 
 wheel 与 sdist 都携带完整运行契约。`hatch_build.py` 仅在源码构建时收集契约；从 sdist 构建时消费已内嵌的 `_bundle`，不依赖仓外路径。
 
-普通问数尚未迁移到 v2 模型证据通道，因此其 Skill 不调用新 query_data。共用的是底层查询与页面构造规则；不复制平台保存和身份语义。
+普通问数尚未迁移到平台创作的模型证据通道，因此其 Skill 不调用平台 `query_data`。共用的是底层查询与页面构造规则；不复制平台保存和身份语义。这里的“v2”若出现在历史实现名中，指平台协议/工作稿实现序列，不指页面 Schema 或 Bundle 版本。
 
 ## 验证范围
 

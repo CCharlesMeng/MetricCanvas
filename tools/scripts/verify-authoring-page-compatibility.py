@@ -15,17 +15,19 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 BUNDLE = ROOT / 'metriccanvas-authoring'
 os.environ['METRICCANVAS_BUNDLE_ROOT'] = str(BUNDLE)
 sys.path[:0] = [str(BUNDLE / 'tool'), str(BUNDLE / 'test-harness'), str(BUNDLE / 'test-harness/tests')]
 from fastmcp import Client
-from test_unified_content_mcp import dependencies
+from authoring_fixtures import dependencies, plan
 from test_authoring_turns import Turns
-from test_authoring_candidates import MemoryCandidates
-from test_unified_composition import data_op, text_op
-from metriccanvas_authoring.entrypoints.compat.unified_content_mcp import create_unified_content_mcp_server
+from test_platform_v2 import Authorization, Identities, Service, Preview, query_request
+from metriccanvas_authoring.pages.platform_authoring import PlatformAuthoring
+from metriccanvas_authoring.entrypoints.mcp.platform_mcp import create_platform_mcp_server
+from metriccanvas_authoring.adapters.storage.platform_state import SqlitePlatformState
 from metriccanvas_authoring.pages.validation.page_validation import normalize_page_document, validate_page_document
 from metriccanvas_authoring.pages.editing.edit_page import document_sha256
 
@@ -58,15 +60,19 @@ async def verify(baseline: Path):
     records = []
     for layout in ('report', 'dashboard'):
         turns = Turns('new')
-        async with Client(create_unified_content_mcp_server(dependencies(), turns, candidate_store=MemoryCandidates())) as client:
-            result = (await client.call_tool('create_content_page', {
-                'context_ref': 'current-context', 'title': 'Compatibility page', 'layout': layout,
-                'request': {'operations': [data_op(), text_op(),
-                    {'id': 'span', 'type': 'set_component_layout', 'componentId': 'new-chart',
-                     'changes': {'span': 5}, 'dependsOn': ['data']}]}
-            })).structured_content
-            assert result['ok'], result
-            document = result['artifactEnvelope']['artifact']['document']
+        with tempfile.TemporaryDirectory() as temporary:
+            store = SqlitePlatformState(Path(temporary)/'state.db')
+            app = PlatformAuthoring(dependencies(), turns, store, analysis_authorization=Authorization(),
+                lifecycle_service=Service(), lifecycle_identities=Identities(), relay_preview=Preview())
+            async with Client(create_platform_mcp_server(app)) as client:
+                query = (await client.call_tool('query_data', {'context_ref': 'current-context',
+                    'request': query_request()})).structured_content['modelSummary']
+                result = (await client.call_tool('compose_page', {
+                    'context_ref': 'current-context', 'request': {'title': 'Compatibility page',
+                    'layout': layout, 'sources': {'result': query['results'][0]['resultRef']},
+                    'sections': plan()['sections']}})).structured_content
+                assert result['ok'], result
+                document = result['artifactEnvelope']['artifact']['document']
         operation = {'id': 'old-edit', 'type': 'set_title', 'componentId': 'page-header', 'title': 'Edited by old group'}
         env = dict(os.environ, PYTHONPATH=str(baseline / 'tool'), METRICCANVAS_BUNDLE_ROOT=str(baseline))
         completed = subprocess.run([sys.executable, '-c', OLD_READER], input=json.dumps({'document': document, 'operation': operation}),
@@ -83,17 +89,22 @@ async def verify(baseline: Path):
         # The new public tool consumes the old editor's result as a trusted baseline.
         next_turn = Turns()
         from dataclasses import replace
-        next_turn.baseline = replace(next_turn.baseline, document=returned, document_sha256=document_sha256(returned))
+        ref = {'pageId': returned['id'], 'revisionId': 'r1', 'resourceId': 'resource1'}
+        next_turn.baseline = replace(next_turn.baseline, ref=ref, document=returned, document_sha256=document_sha256(returned))
         next_turn.document_json = json.dumps(returned, ensure_ascii=False)
         next_turn.binding['documentSha256'] = hashlib.sha256(next_turn.document_json.encode()).hexdigest()
         next_turn.binding['selectedComponentId'] = None
         next_turn.binding['pageId'] = returned['id']
-        async with Client(create_unified_content_mcp_server(dependencies(), next_turn, candidate_store=MemoryCandidates())) as client:
-            edited = (await client.call_tool('edit_page', {'context_ref': 'current-context', 'request': {'operations': [
-                dict(operation, id='new-edit', title='Edited again by new group')
-            ]}})).structured_content
-            assert edited['ok'], edited
-            final = edited['artifactEnvelope']['artifact']['document']
+        next_turn.binding['baseRef'] = ref
+        next_turn.scope['pageId'] = returned['id']
+        with tempfile.TemporaryDirectory() as temporary:
+            app = PlatformAuthoring(dependencies(), next_turn, SqlitePlatformState(Path(temporary)/'state.db'),
+                lifecycle_service=Service(), lifecycle_identities=Identities())
+            async with Client(create_platform_mcp_server(app)) as client:
+                edited = (await client.call_tool('edit_page', {'context_ref': 'current-context', 'expected_version': 0,
+                    'request': {'operations': [dict(operation, id='new-edit', title='Edited again by new group')]}})).structured_content
+                assert edited['ok'], edited
+                final = edited['artifactEnvelope']['artifact']['document']
         final_expected = deepcopy(expected)
         for section in final_expected['sections']:
             for component in section['components']:

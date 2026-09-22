@@ -10,8 +10,13 @@ from metriccanvas_authoring.pages.editing.operation_batch import operation_batch
 from metriccanvas_authoring.pages.composition.section_layout import pack_section_spans
 
 SOURCE_REFS = {'type': 'object', 'propertyNames': ID, 'maxProperties': 6, 'additionalProperties': NAME}
+# Result-reference composition does not repeat the analysis plan's narrative fields.
+RESULT_SECTION = deepcopy(SECTION)
+RESULT_SECTION['required'] = ['id', 'pattern', 'blocks']
+for block_schema in RESULT_SECTION['properties']['blocks']['items']['oneOf']:
+    block_schema['required'] = [key for key in block_schema['required'] if key != 'purpose']
 COMPOSE_SCHEMA = obj({'title': TEXT, 'layout': {'enum': ['report', 'dashboard']}, 'sources': SOURCE_REFS,
-                      'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': SECTION}}, ['title', 'sources', 'sections'])
+                      'sections': {'type': 'array', 'minItems': 1, 'maxItems': 12, 'items': RESULT_SECTION}}, ['title', 'sources', 'sections'])
 RESULT_OPERATION = obj({'id': ID, 'type': {'const': 'add_result_component'}, 'sectionId': ID,
     'resultRef': NAME, 'block': DATA_BLOCK,
     'dependsOn': {'type': 'array', 'items': ID}}, ['id', 'type', 'sectionId', 'resultRef', 'block'])
@@ -52,7 +57,7 @@ def compose(prepared, request, records):
             {'id': 'header', 'container': 'plain', 'components': [{'id': 'page-header', 'type': 'reportHeader', 'layout': {'span': 12}, 'props': {'title': request['title']}}]}]}
     outcomes = []
     for section in sections:
-        target = {k: deepcopy(section[k]) for k in ('id', 'title')}
+        target = {k: deepcopy(section[k]) for k in ('id', 'title') if k in section}
         target.update(container=section.get('container', 'panel'), components=[])
         used = []
         for block in section['blocks']:

@@ -167,26 +167,7 @@ def score(case, folder, review=None):
         diff=None
     states=[]
     if unified:
-        try:
-            from run_trusted_local import admit_candidate
-            from metriccanvas_authoring.work.authoring_turns import SCOPE_KEYS
-            admitted={}
-            for index,turn in enumerate(turns,1):
-                state=json.loads((folder/f'trusted-turn-{index}.json').read_text());states.append(state)
-                binding=state['binding']
-                if turn['context']['context_ref']!=binding['contextRef'] or any(state['scope'][k]!=binding[k] for k in SCOPE_KEYS):raise ValueError('Scope mismatch')
-                doc=state['documentJson']
-                if doc is not None and hashlib.sha256(doc.encode()).hexdigest()!=binding['documentSha256']:raise ValueError('Baseline bytes mismatch')
-                for call in turn.get('calls',[]):
-                    for tool in call.get('tools',[]):
-                        path=(folder/tool['programFile']).resolve()
-                        if not path.is_relative_to(folder.resolve()):raise ValueError('Evidence path escapes run')
-                        output=json.loads(path.read_text())
-                        record=admit_candidate(output,state,admitted,tool['arguments'].get('candidate_ref'))
-                        if record is not None and record['documentSha256']!=tool.get('artifactSha256'):raise ValueError('Trace hash mismatch')
-            check('trustedCandidateEvidence',bool(states),'Trusted local turn bytes and production candidate records, not remote latest')
-        except (KeyError,ValueError,OSError,TypeError):
-            checks['trustedCandidateEvidence']={'status':'inconclusive','reason':'Trusted turn/candidate evidence missing or mismatched'}
+        checks['trustedCandidateEvidence']={'status':'inconclusive','reason':'Retired candidate traces are historical evidence only; evaluate current platform artifacts separately'}
     expected=case['expected']
     for name,value in expected.items():
         if name in ['semantic','explainLayoutImpact']:

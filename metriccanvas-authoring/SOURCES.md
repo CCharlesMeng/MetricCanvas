@@ -5,7 +5,7 @@
 | 页面协议、能力、校验与组件目录 | 根仓 `packages/page/src/` 与对应合法/非法夹具 | 根仓 `contracts/metriccanvas/`，本 Bundle `contract-snapshot/` | 根仓 `pnpm authoring:contracts` |
 | 产品参考语义、示例索引 | 根仓 `docs/page-metadata/` 与 `tools/scripts/page-reference.ts` | 产品 `page/reference/`、Bundle 快照与 page-builder Skill 参考 | 同一导出器；不得手改生成物 |
 | 创作输入与内部生命周期契约 | `contracts/authored/`，平台用例中的 Schema 定义 | `contracts/exported/`、产品 authoring 投影、MCP 参数 | 修改真源后运行导出器与实际注册 Schema 测试 |
-| 正式 Skill 工作流 | `skill/*/SKILL.md` 与非生成的 workflows/references | 安装 Skill，兼容入口位于 `skill-compat/` | 手工改工作流；生成参考由导出器更新 |
+| 正式 Skill 工作流 | `skill/*/SKILL.md` 与非生成的 workflows/references | 安装现行 Skill | 手工改工作流；生成参考由导出器更新 |
 | Bundle 版本、入口与分发规则 | `bundle.json` | `bundle.lock.json`、运行时 bundle-info、安装包 | 修改声明后导出；不手改 hash |
 | 产品快照来源锁 | 根仓产品契约 manifest | `contract-lock.json` 与 `contract-snapshot/manifest.json` | 同一导出器生成 |
 | 测试分类 | `test-harness/test-layers.json` | 全量及按层 runner | 必须覆盖每个测试文件且恰好一次 |
