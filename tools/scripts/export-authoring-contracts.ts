@@ -578,6 +578,7 @@ async function buildBundleLock(): Promise<string> {
   const artifactPaths = (await listFiles(bundleRoot)).filter(
     (file) =>
       file !== 'bundle.lock.json' &&
+      !file.startsWith('test-harness/model-evals/local-runs/') &&
       !file.includes('__pycache__') &&
       !file.endsWith('.pyc') &&
       !file.split('/').some((segment) => localOnlyDirectories.has(segment))

@@ -39,7 +39,7 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
       mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,
-        filter: (source) => !['node_modules', '__pycache__', '.venv', 'venv'].includes(path.basename(source))
+        filter: (source) => !['node_modules', '__pycache__', '.venv', 'venv', 'local-runs'].includes(path.basename(source))
       });
     }
     const referenceMap = JSON.parse(readFileSync(path.join(root, 'docs/page-metadata/reference-map.json'), 'utf8')) as { modules: Record<string, { sources: string[] }> };
@@ -64,6 +64,16 @@ describe.sequential('当前契约检查无需旧服务源码', () => {
     expect(clean.stderr, clean.stderr).toBe('');
     expect(clean.status).toBe(0);
     expect(clean.stdout).toContain('authoring contract export current');
+  }, scenarioTimeout);
+
+  it('本地模型评估产物不影响交付锁', () => {
+    const localRun = path.join(isolated, 'metriccanvas-authoring/test-harness/model-evals/local-runs/lock-regression');
+    mkdirSync(localRun, { recursive: true });
+    try {
+      writeFileSync(path.join(localRun, 'report.json'), '{"local":true}\n');
+      const checked = runExport();
+      expect(checked.status, checked.stderr).toBe(0);
+    } finally { rmSync(localRun, { recursive: true, force: true }); }
   }, scenarioTimeout);
 
   it('拒绝冻结历史向量篡改', () => {
