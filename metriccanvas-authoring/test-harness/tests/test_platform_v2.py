@@ -34,14 +34,26 @@ class Identities:
 
 class Service:
     capabilities = LifecycleCapabilities(single_save=True, current_read=True)
-    def __init__(self): self.calls = []; self.status = 'saved'
+    def __init__(self):
+        self.calls = []; self.status = 'saved'; self.reads = []
+        initial = Turns().baseline
+        self.remote = {'ref': deepcopy(initial.ref), 'document': deepcopy(initial.document)}
+
+    async def current_match(self, identity, ref):
+        from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
+        self.reads.append(deepcopy(ref))
+        if self.remote['ref'] != ref:
+            raise LifecycleError('CURRENT_PAGE_STALE')
+        return deepcopy(self.remote)
     async def save(self, identity, command):
         self.calls.append(deepcopy(command))
         if self.status == 'timeout': raise TimeoutError()
         if self.status != 'saved': return {'operationId': command['context']['operationId'], 'status': self.status, 'code': 'REVISION_CONFLICT'}
-        return {'status': 'saved', 'operationId': command['context']['operationId'], 'document': deepcopy(command['document']),
+        result = {'status': 'saved', 'operationId': command['context']['operationId'], 'document': deepcopy(command['document']),
                 'base': deepcopy(command['base']), 'assurance': 'provider-response', 'isDraft': True, 'revisionNumber': len(self.calls),
                 'ref': {'pageId': command['pageId'], 'resourceId': command['base']['resourceId'] if command['base'] else 'draft-1', 'revisionId': 'saved-' + str(len(self.calls))}}
+        self.remote = {'ref': deepcopy(result['ref']), 'document': deepcopy(result['document'])}
+        return result
 
 
 class Preview:
@@ -314,3 +326,48 @@ class PlatformV2Test(unittest.IsolatedAsyncioTestCase):
         summary, value = await self.app.mutate('compose','current-context',{'title':'Partial report','sources':sources,'sections':sections})
         self.assertEqual(summary['status'],'partial');self.assertEqual(summary['saveStatus'],'saved')
         self.assertIn('未生成', json.dumps(value['document'],ensure_ascii=False))
+
+
+class CurrentJavaBaselineTest(unittest.IsolatedAsyncioTestCase):
+    setUp = PlatformV2Test.setUp
+    make = PlatformV2Test.make
+    async def test_public_edit_requires_page_id_and_rejects_wrong_page_before_save(self):
+        self.turns = Turns(); self.app = self.make()
+        async with Client(create_platform_mcp_server(self.app)) as client:
+            tools = {t.name: t for t in await client.list_tools()}
+            self.assertIn('page_id', tools['edit_page'].inputSchema['required'])
+            result = (await client.call_tool('edit_page', {
+                'context_ref': 'current-context', 'page_id': 'wrong-page', 'expected_version': 0,
+                'request': {'operations': [title()]}})).structured_content
+        self.assertEqual(result['modelSummary']['issues'][0]['code'], 'CURRENT_TURN_PAGE_MISMATCH')
+        self.assertEqual(self.service.calls, [])
+        async with Client(create_platform_mcp_server(self.app)) as client:
+            result = (await client.call_tool('edit_page', {
+                'context_ref': 'current-context', 'page_id': self.turns.binding['pageId'],
+                'expected_version': 0, 'request': {'operations': [title()]}})).structured_content
+        self.assertEqual(result['modelSummary']['saveStatus'], 'saved')
+        self.assertEqual(len(self.service.reads), 1)
+        self.assertEqual(len(self.service.calls), 1)
+
+    async def test_java_revision_changed_after_read_prevents_edit(self):
+        self.turns = Turns(); self.app = self.make()
+        await self.app.read('current-context')
+        self.service.remote['ref']['revisionId'] = 'someone-elses-revision'
+        with self.assertRaisesRegex(ContentBaselineError, 'CURRENT_PAGE_STALE'):
+            await self.app.mutate('edit', 'current-context', {'operations': [title()]})
+        self.assertEqual(len(self.service.reads), 2)
+        self.assertEqual(self.service.calls, [])
+
+    async def test_same_revision_different_java_content_rejected(self):
+        self.turns = Turns(); self.app = self.make()
+        self.service.remote['document']['meta'] = {'title': 'remote modification'}
+        with self.assertRaisesRegex(ContentBaselineError, 'CURRENT_PAGE_STALE'):
+            await self.app.read('current-context')
+        self.assertEqual(self.service.calls, [])
+
+    async def test_missing_current_read_capability_fails_closed(self):
+        self.turns = Turns(); self.app = self.make()
+        self.service.capabilities = LifecycleCapabilities(single_save=True)
+        with self.assertRaisesRegex(ContentBaselineError, 'CURRENT_PAGE_UNAVAILABLE'):
+            await self.app.mutate('edit', 'current-context', {'operations': [title()]})
+        self.assertEqual(self.service.calls, [])

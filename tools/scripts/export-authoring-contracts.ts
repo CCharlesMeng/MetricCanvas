@@ -74,6 +74,8 @@ function manifestFiles(outputs: OutputMap): Array<{ file: string; sha256: string
 
 async function buildProductOutputs(): Promise<OutputMap> {
   const outputs: OutputMap = new Map();
+  outputs.set('data-context/rest-services-dataset-detail.yaml',
+    await readFile(path.join(repoRoot, 'service/dataset-detail-java.yaml'), 'utf8'));
   outputs.set('page/schema.json', json(pageSchema));
   outputs.set('authoring/publication.schema.json', json(buildPublicationSchema(pageSchema)));
   outputs.set('authoring/publication-conformance.json', await readFile(path.join(authoringContractRoot, 'authored/publication-conformance.json'), 'utf8'));
@@ -512,7 +514,21 @@ async function writeOutputs(
 }
 
 function referenceProjection(outputs: OutputMap): OutputMap {
-  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => [file.slice('page/reference/'.length), content]));
+  return new Map([...outputs].filter(([file]) => file.startsWith('page/reference/')).map(([file, content]) => {
+    const relative = file.slice('page/reference/'.length);
+    // Published authoring examples always target the current writer. Historical
+    // conformance vectors remain in the product contracts, not example recipes.
+    if (relative.startsWith('examples/') && relative.endsWith('.json')) {
+      const parsed = JSON.parse(content);
+      const normalized = normalizePageDocument({...parsed, schemaVersion: versionPolicy.current});
+      if (!normalized.ok) throw new Error(`Invalid current Skill example: ${relative}`);
+      const document = {...normalized.document, schemaVersion: versionPolicy.current};
+      const errors = validate(document);
+      if (errors.length) throw new Error(`Invalid current Skill example ${relative}: ${JSON.stringify(errors)}`);
+      return [relative, json(document)];
+    }
+    return [relative, content];
+  }));
 }
 
 /** Registry is a distribution index, not a Relay router or tool allowlist. */

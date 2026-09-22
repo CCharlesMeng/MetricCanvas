@@ -1,284 +1,85 @@
 {
-  "formatVersion": 1,
-  "executionStatus": "not_run",
-  "reason": "Real Relay/model evaluation environment and account budget not supplied",
+  "formatVersion": 2,
+  "skill": "metriccanvas-platform-authoring",
+  "scope": ["create", "edit"],
+  "injectionSources": [
+    "SKILL.md",
+    "references/tools.md",
+    "references/execution.md",
+    "references/scenarios.md",
+    "references/scenarios/usage-report.md",
+    "references/layouts/report.md",
+    "references/layouts/dashboard.md",
+    "workflows/create.md",
+    "workflows/edit.md",
+    "workflows/data-analysis.md"
+  ],
   "cases": [
     {
       "id": "create-report",
-      "group": "create",
-      "context": {
-        "entry": "platform",
-        "baseline": null
-      },
-      "turns": [
-        "新建一份月度经营分析报告，采用 report。"
-      ],
+      "workflow": "create",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/scenarios/usage-report.md", "references/layouts/report.md", "workflows/create.md", "workflows/data-analysis.md"],
+      "prompt": "新建一份 2026 年 8 月区域运营报告，采用 report，展示各区域 Tokens 请求量对比与明细。分析计划已经确认，请先取得证据再创建草稿并交付预览。",
+      "layout": "report",
+      "pageId": "main-flow-report",
       "expected": {
-        "skill": "metriccanvas-platform-create",
-        "layout": "report",
-        "creation": true
-      },
-      "status": "not_run"
+        "title": "2026年8月区域运营报告",
+        "metric": "Tokens请求量",
+        "unit": "次",
+        "period": "2026-08",
+        "rows": [{"区域": "华东", "Tokens请求量": 18}, {"区域": "华南", "Tokens请求量": 12}]
+      }
     },
     {
       "id": "create-dashboard",
-      "group": "create",
-      "context": {
-        "entry": "platform",
-        "baseline": null
-      },
-      "turns": [
-        "新建实时监控概览，采用 dashboard。"
-      ],
+      "workflow": "create",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "references/scenarios.md", "references/scenarios/usage-report.md", "references/layouts/dashboard.md", "workflows/create.md", "workflows/data-analysis.md"],
+      "prompt": "新建一份 2026 年 8 月区域运营概览，明确采用 dashboard，展示各区域 Tokens 请求量对比与明细。分析计划已经确认，请先取得证据再创建草稿并交付预览。",
+      "layout": "dashboard",
+      "pageId": "main-flow-dashboard",
       "expected": {
-        "skill": "metriccanvas-platform-create",
-        "layout": "dashboard",
-        "creation": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "create-user-choice",
-      "group": "create",
-      "context": {
-        "entry": "platform",
-        "baseline": null
-      },
-      "turns": [
-        "我做经营分析，但明确用 dashboard。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-create",
-        "layout": "dashboard",
-        "explicitChoiceWins": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "create-ambiguous",
-      "group": "create",
-      "context": {
-        "entry": "platform",
-        "baseline": null
-      },
-      "turns": [
-        "帮我新建一个页面。",
-        "用于每月阅读分析，选 report。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-create",
-        "clarifyBeforeCreation": true,
-        "layout": "report"
-      },
-      "status": "not_run"
+        "title": "2026年8月区域运营概览",
+        "metric": "Tokens请求量",
+        "unit": "次",
+        "period": "2026-08",
+        "rows": [{"区域": "华东", "Tokens请求量": 18}, {"区域": "华南", "Tokens请求量": 12}]
+      }
     },
     {
       "id": "edit-report",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "report"
-      },
-      "turns": [
-        "把 table 的标题改为地域明细。"
-      ],
+      "workflow": "edit",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "workflows/edit.md"],
+      "dependsOn": "create-report",
+      "prompt": "把当前 report 页头改为“2026年8月区域运营复盘”，其他内容保持不变。",
       "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "tool": "edit_page",
-        "target": "table",
-        "preserveExcept": [
-          "/sections/0/components/2/props/title"
-        ]
-      },
-      "status": "not_run"
+        "title": "2026年8月区域运营复盘",
+        "noDataQuery": true,
+        "preserveExcept": ["/sections/0/components/0/props/title"]
+      }
     },
     {
       "id": "edit-dashboard",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "dashboard",
-        "container": "panel"
-      },
-      "turns": [
-        "把 chart 的标题改为经营趋势。"
-      ],
+      "workflow": "edit",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "workflows/edit.md"],
+      "dependsOn": "create-dashboard",
+      "prompt": "把当前 dashboard 的区域对比图标题改为“区域请求量对比”，其他内容保持不变。",
       "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "tool": "edit_page",
-        "target": "chart",
-        "preserveExcept": [
-          "/sections/0/components/1/props/title"
-        ]
-      },
-      "status": "not_run"
+        "componentTitle": "区域请求量对比",
+        "noDataQuery": true
+      }
     },
     {
-      "id": "existing-add",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "dashboard"
-      },
-      "turns": [
-        "在当前页增加一段普通业务说明。"
-      ],
+      "id": "edit-add-data",
+      "workflow": "edit",
+      "injectionSources": ["SKILL.md", "references/tools.md", "references/execution.md", "workflows/edit.md", "workflows/data-analysis.md"],
+      "dependsOn": "edit-report",
+      "prompt": "在当前 report 增加一个标题严格为“华东区域请求量补充明细”的表格，只展示 2026 年 8 月华东区域 Tokens 请求量；保留已有内容。当前页现有数据源覆盖全部区域，不能替代这个筛选后的新口径。分析计划已经确认。",
       "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "tool": "edit_page",
-        "operation": "add_text",
-        "preserveExisting": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "missing-baseline",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": null,
-        "existingPage": true
-      },
-      "turns": [
-        "在这个已有页面增加一个图。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "awaitTrustedBaseline": true,
-        "forbiddenTools": [
-          "compose_page",
-          "create_content_page"
-        ]
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "ambiguous-target",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "report"
-      },
-      "turns": [
-        "把那个组件标题改一下。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "clarifyTarget": true,
-        "noEditUntilResolved": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "switch-dashboard",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "report",
-        "container": "panel"
-      },
-      "turns": [
-        "把已有页明确切成 dashboard，其他设置不动。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "operation": "set_page_layout",
-        "layout": "dashboard",
-        "preserveExcept": [
-          "/layout"
-        ],
-        "explainLayoutImpact": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "switch-report-backdrop",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "packages/page/fixtures/contract-valid/composite-page.json",
-        "layout": "dashboard"
-      },
-      "turns": [
-        "切换为 report，保留铺底与卡片。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "operation": "set_page_layout",
-        "layout": "report",
-        "preserveExcept": [
-          "/layout"
-        ],
-        "legalBackdropPreserved": true
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "manual-language-multiturn",
-      "group": "edit",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "report",
-        "manualChanges": {
-          "/sections/0/components/2/props/columns/0/width": 230
-        }
-      },
-      "turns": [
-        "把 header 标题改为本月经营。",
-        "再把 chart 的标题改为区域对比。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-edit",
-        "tool": "edit_page",
-        "freshBaselineEveryTurn": true,
-        "preserveManualColumnWidth": 230,
-        "targets": [
-          "header",
-          "chart"
-        ]
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "explicit-new-from-existing",
-      "group": "create",
-      "context": {
-        "entry": "platform",
-        "baseline": "test_page_editing.page",
-        "layout": "report"
-      },
-      "turns": [
-        "保留当前页，另外新建 dashboard 页面。"
-      ],
-      "expected": {
-        "skill": "metriccanvas-platform-create",
-        "newPageIdFromProgram": true,
-        "originalUntouched": true,
-        "layout": "dashboard"
-      },
-      "status": "not_run"
-    },
-    {
-      "id": "ordinary-ask",
-      "group": "regression",
-      "context": {
-        "entry": "ordinary-ask",
-        "baseline": null
-      },
-      "turns": [
-        "上个月各区域的请求量是多少？"
-      ],
-      "expected": {
-        "skill": "metriccanvas-page-builder",
-        "platformSkillsNotSelected": true
-      },
-      "status": "not_run"
+        "addedComponentTitle": "华东区域请求量补充明细",
+        "rows": [{"区域": "华东", "Tokens请求量": 18}],
+        "preserveExisting": true,
+        "requiresDataQuery": true
+      }
     }
   ]
 }

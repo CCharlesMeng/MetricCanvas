@@ -4,7 +4,7 @@
 
 ## 新建默认
 
-完整报告以[场景与结构](../scenarios.md)组织业务章节：页头在 plain 分区，章节容器由计划选择，默认 panel。同章可组合不同口径内容，用可见说明保留期间、粒度和筛选。快速 compose_page 保留口径分区，兼容 operations 新建沿用 main。组件标题属于 props.title，分区标题属于 section.title，各自保留。
+完整报告以[场景与结构](../scenarios.md)组织业务章节：页头在 plain 分区，章节容器由计划选择，默认 panel。同章可组合不同口径内容，用可见说明保留期间、粒度和筛选。compose_page 按计划保留业务章节与可见口径。组件标题属于 props.title，分区标题属于 section.title，各自保留。
 
 采用统一运行时的定宽居中（当前最大75rem），较窄集成应用内收缩。组件占位使用既有12轨道/span；数据构造器已有比例装配，不把像素尺寸写入文档。响应式由集成应用容器宽度驱动，当前760px断点转单列；显式columnTracks、connectPrevious、铺底安全区继续按共同协议处理。
 

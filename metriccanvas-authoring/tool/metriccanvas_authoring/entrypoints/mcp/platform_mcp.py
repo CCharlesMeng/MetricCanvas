@@ -1,4 +1,4 @@
-"""Target platform surface. Legacy candidate tools are registered separately."""
+"""Public platform authoring tools and their model-visible input schemas."""
 from typing import Annotated, Any, Literal
 from fastmcp import FastMCP
 from fastmcp.tools import ToolResult
@@ -6,6 +6,7 @@ from pydantic import Field, WithJsonSchema, BaseModel, ConfigDict
 from metriccanvas_authoring.data.results import QUERY_SCHEMA
 from metriccanvas_authoring.pages.referenced import COMPOSE_SCHEMA, EDIT_RESULT_SCHEMA
 from metriccanvas_authoring.work.content_ports import ContentBaselineError
+from metriccanvas_authoring.data.ports import DataContextError
 from metriccanvas_authoring.bundle_info import load_bundle_info
 
 QueryRequest = Annotated[dict[str, Any], WithJsonSchema(QUERY_SCHEMA)]
@@ -23,7 +24,7 @@ class ParameterTextChoice(BaseModel):
 
 def create_platform_mcp_server(application):
     mcp = FastMCP('metriccanvas-platform-content', instructions=(
-        'Platform v2: query approved analysis plans, compose/edit from result references and save drafts internally. '
+        'Platform authoring: query approved analysis plans, compose/edit from result references and save drafts internally. '
         'Read workVersion before editing. Only modelSummary enters the model channel; '
         'authorized bounded query evidence is model-visible. Relay retains artifactEnvelope. '
         'After saved, prepare the exact artifact with page_metadata_emit_preview; preserve Relay placeholders.'))
@@ -40,7 +41,7 @@ def create_platform_mcp_server(application):
                     envelope = {'kind': 'metriccanvas.platform-artifact', 'formatVersion': '2.0', 'artifact': value}
             output = {'ok': result.get('status') not in {'failed', 'rejected', 'unavailable'}, 'modelSummary': result, 'artifactEnvelope': envelope}
             return ToolResult(content=result, structured_content=output)
-        except ContentBaselineError as error:
+        except (ContentBaselineError, DataContextError) as error:
             summary = {'status': 'rejected', 'issues': [{'code': error.code, 'path': ''}]}
         except Exception:
             summary = {'status': 'unavailable', 'issues': [{'code': 'AUTHORING_PROVIDER_UNAVAILABLE', 'path': ''}]}
@@ -73,9 +74,9 @@ def create_platform_mcp_server(application):
         return await call(application.mutate, 'compose', context_ref, request, expected_version, mutation=True)
 
     @mcp.tool
-    async def edit_page(context_ref: str, request: EditRequest, expected_version: Annotated[int, Field(ge=0)]) -> ToolResult:
-        """Edit the current work and save valid changes, including partial. Data additions use resultRef."""
-        return await call(application.mutate, 'edit', context_ref, request, expected_version, mutation=True)
+    async def edit_page(context_ref: str, page_id: Annotated[str, Field(min_length=1)], request: EditRequest, expected_version: Annotated[int, Field(ge=0)]) -> ToolResult:
+        """Edit page_id after checking its trusted binding and Java current baseline; save valid changes."""
+        return await call(application.mutate, 'edit', context_ref, request, expected_version, page_id=page_id, mutation=True)
 
     @mcp.tool
     async def page_metadata_emit_preview(context_ref: str, artifact_ref: str) -> ToolResult:

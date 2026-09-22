@@ -36,6 +36,9 @@ from metriccanvas_authoring.adapters.firstparty.java_page_assets import (
     JavaPageAssetPort,
 )
 from metriccanvas_authoring.adapters.firstparty.lifecycle_http import KnownLifecycleHttp
+from metriccanvas_authoring.adapters.firstparty.dataset_metadata_http import (
+    JavaDatasetMetadataProvider, DATASET_DETAIL_BASE_URL_ENV, DATASET_IDS_ENV,
+)
 from metriccanvas_authoring.adapters.relay.lifecycle_spool import (
     FileLifecyclePrograms,
     InjectedLifecycleIdentity,
@@ -96,7 +99,16 @@ def configure_page_assets() -> PageAssetPort:
     return JavaPageAssetPort(base_url, EnvIdentityPort())
 
 
-def configure_data_context() -> DataContextPort:
+def configure_data_context(*, identities=None) -> DataContextPort:
+    java_base = (os.environ.get(DATASET_DETAIL_BASE_URL_ENV) or '').strip()
+    if java_base:
+        try:
+            config = (os.environ.get(PROJECTION_CONFIG_ENV) or '').strip()
+            return JavaDatasetMetadataProvider(java_base, identities or InjectedLifecycleIdentity(),
+                dataset_ids=json.loads(os.environ.get(DATASET_IDS_ENV, 'null')),
+                projection=load_projection_config(config) if config else None)
+        except (DataContextError, ValueError) as error:
+            return _UnconfiguredDataContextPort(str(error))
     values = {
         DATASETS_URL_TEMPLATE_ENV: (
             os.environ.get(DATASETS_URL_TEMPLATE_ENV) or ""

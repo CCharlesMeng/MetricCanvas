@@ -684,8 +684,13 @@
   }
   @container platform (max-width: 760px) {
     .workbench {
-      --analysis-rail-w: 480px;
-      grid-template-columns: var(--analysis-rail-w) minmax(0, 1fr);
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .chat {
+      display: none;
+    }
+    .canvas {
+      grid-column: 1;
     }
     .inspector-track {
       display: none;

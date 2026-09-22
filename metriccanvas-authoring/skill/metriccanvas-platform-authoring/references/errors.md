@@ -8,7 +8,16 @@
 - AUTHORING_BUDGET_EXHAUSTED / 相同无进展错误：终止对应分支，说明未完成部分。
 - WORK_VERSION_CONFLICT / WORK_BUSY：读取工作稿状态；并发或迟到结果不能覆盖新工作。
 - SAVE_RECONCILIATION_REQUIRED / unknown / pending：原写入可能已生效，停止提交；程序核对原冻结记录。
-- 保存 rejected：保留工作并报告原因；不能转兼容入口绕过。
+- 保存 rejected：保留工作并报告原因；不能换入口绕过。
 - PREVIEW_ARTIFACT_MISMATCH / RELAY_PREVIEW_UNAVAILABLE：保存与预览分别报告，只修复匹配产物交付。
 
 只作一次有依据的页面修复；依赖失败会 skipped，其他合法成功部分可保存。无变化不应报告生成了新修订。
+
+- CURRENT_TURN_PAGE_MISMATCH：page_id 与可信轮次不符，停止；不得修改 context_ref 来扩大范围。
+- CURRENT_PAGE_UNAVAILABLE：Java 当前读取未接通或不可达，停止编辑，不沿用缓存基线。
+- CURRENT_PAGE_STALE / CURRENT_PAGE_MISMATCH：当前修订或定义已改变，由集成程序重新读取并建立新轮次；不自动重放旧 operations。
+
+- DATA_CONTEXT_AUTH_REQUIRED / DATA_CONTEXT_FORBIDDEN / DATA_CONTEXT_SCOPE_MISMATCH：停止发现，交集成程序检查本轮身份与工作区，不切换服务账号。
+- DATASET_METADATA_FAILED / DATASET_METADATA_MISSING：对应数据集未成功读取，说明 partial 覆盖缺口；不将其解释为零指标。
+- DATA_CONTEXT_PARTIAL / DATA_CONTEXT_GOVERNANCE_REQUIRED：当前元数据不足以执行查询；补齐访问或治理配置，不猜单位与执行属性。
+- METRIC_DETAIL_STALE：指标所属模型已变化，重新发现取得新引用，不给旧指标补上新模型的数据。

@@ -7,7 +7,7 @@ format优先于字段defaultFormat；未设置时走组件/类型的既有格式
 text不执行HTML，日期格式只格式化日期值。语义HTML须用专用字段类型。
 
 
-## 按百万呈现（6.5）
+## 按百万呈现
 
 数值格式 `compact-million-0`、`compact-million-1`、`compact-million-2` 将原始值除以1,000,000，分别保留0、1、2位小数，使用千分位并附加“百万”。例如1,234,567分别显示“1百万”“1.2百万”“1.23百万”。仅改变展示，不改写数据源、查询或计算输入；小值仍按百万显示，不自动切回万/亿。空值显示“—”。
 
@@ -17,7 +17,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 { "data": "main", "field": "revenue", "format": "compact-million-2" }
 ```
 
-也可在结果字段声明 `defaultFormat: "compact-million-2"`，由支持字段默认格式的组件继承；显式 `format` 优先。数值参数的文本引用可写 `{ "param": "target", "format": "compact-million-2" }`。使用以上任一格式时，页面的 `schemaVersion` 至少为 `"6.5"`。
+也可在结果字段声明 `defaultFormat: "compact-million-2"`，由支持字段默认格式的组件继承；显式 `format` 优先。数值参数的文本引用可写 `{ "param": "target", "format": "compact-million-2" }`。当前 Schema 6.11 支持以上格式。
 
 原始值必须以基础单位提供：金额字段若存人民币元，1,234,567元显示“1.23百万”，货币含义由字段标签或标题说明。不要把已经换算为百万的数据再次应用该格式；`unit: "百万"` 只是单位描述，不执行换算。`cny-adaptive` 保持原有自适应规则。
 
@@ -26,7 +26,7 @@ text不执行HTML，日期格式只格式化日期值。语义HTML须用专用�
 字段和联合分支以本文件导出版本的生成结构表为准。完整页面示例用于结构/语义校验，渲染行为需结合对应浏览器证据。返回[模块索引](README.md)。
 
 
-页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `6b28ba0e717198c2963d957ea5c11e3177d05605f5bcc5e818f55f71e945e174`。字段表自动生成；可选不等于有默认值。
+页面协议 6.11。结构真源为本册[schema.json](schema.json)，SHA256 `508780df9e2561af9705f7ed2b0d07038e8f2d97027d66f0ae69b5a02a6cb75e`。字段表自动生成；可选不等于有默认值。
 
 ## 结构与分支（生成）
 
@@ -139,9 +139,9 @@ Schema位置：`#/definitions/fieldBinding/anyOf/1/properties/format`。
 | "number-grouped" | 千分位数值展示。 |
 | "compact-wan-0" | 按万缩放，0位小数。 |
 | "compact-wan-1" | 按万缩放，1位小数。 |
-| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀（6.5）。 |
-| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀（6.5）。 |
-| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀（6.5）。 |
+| "compact-million-0" | 按百万缩放，0位小数，附加百万后缀。 |
+| "compact-million-1" | 按百万缩放，1位小数，附加百万后缀。 |
+| "compact-million-2" | 按百万缩放，2位小数，附加百万后缀。 |
 | "compact-yi-1" | 按亿缩放，1位小数。 |
 | "cny-adaptive" | 按金额量级使用元/万/亿自适应展示。 |
 | "percent-0" | 原数值加百分号，0位小数。 |

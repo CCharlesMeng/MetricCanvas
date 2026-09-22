@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { readFile, readdir, access, cp, mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
 import { tmpdir } from 'node:os';
-import { pageSchema, componentCatalog, validate, versionPolicy } from '../packages/page/src/internal';
+import { pageSchema, componentCatalog, validate, versionPolicy, normalizePageDocument } from '../packages/page/src/internal';
 import { atPointer, buildPageReference, referenceNodes, validateReferenceLinks, type ReferenceMap } from '../tools/scripts/page-reference';
 
 const root = process.cwd();
@@ -108,7 +108,21 @@ describe('页面参考手册生成与分发', () => {
       }
     } finally { await rm(temp,{recursive:true,force:true}); }
   });
-  it('生成内容与产品、Bundle和独立Skill逐字一致' , async () => {
-    for (const [file, content] of reference) for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference',...skills.filter(skill=>skill.id === 'metriccanvas-page-builder').map(skill=>`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata`)]) expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
+  it('产品与Bundle参考逐字一致，Skill示例只发布当前作者版本', async () => {
+    for (const [file, content] of reference) {
+      for (const prefix of ['contracts/metriccanvas/page/reference','metriccanvas-authoring/contract-snapshot/page/reference']) {
+        expect(await readFile(`${prefix}/${file}`,'utf8'),`${prefix}/${file}`).toBe(content);
+      }
+      for (const skill of skills.filter(skill => skill.id === 'metriccanvas-page-builder')) {
+        const actual = await readFile(`metriccanvas-authoring/${path.dirname(skill.entrypoint)}/references/page-metadata/${file}`, 'utf8');
+        if (file.startsWith('examples/') && file.endsWith('.json')) {
+          const normalized = normalizePageDocument({...JSON.parse(content), schemaVersion: versionPolicy.current});
+          expect(normalized.ok, file).toBe(true);
+          if (!normalized.ok) throw new Error(file);
+          expect(JSON.parse(actual), file).toEqual({...normalized.document, schemaVersion: versionPolicy.current});
+          expect(validate(JSON.parse(actual)), file).toEqual([]);
+        } else expect(actual, file).toBe(content);
+      }
+    }
   });
 });

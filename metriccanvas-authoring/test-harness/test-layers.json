@@ -21,6 +21,7 @@
     "adapters": [
       "tests/test_content_baselines.py",
       "tests/test_data_context_http.py",
+      "tests/test_dataset_metadata_http.py",
       "tests/test_dqe_http.py",
       "tests/test_java_page_assets.py",
       "tests/test_lifecycle_http.py",
@@ -51,6 +52,7 @@
       "tests/test_page_parameters_mcp.py",
       "tests/test_parameter_preparation.py",
       "tests/test_platform_authoring_flows.py",
+      "tests/test_platform_main_flow.py",
       "tests/test_platform_v2.py",
       "tests/test_publication_restart.py",
       "tests/test_publish_stdio.py",

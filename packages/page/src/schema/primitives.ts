@@ -104,7 +104,7 @@ export const pageParamZ = z.union([z
   }).strict()])
   .meta({
     id: 'pageParam',
-    description: '页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取'
+    description: '页面参数：一次初始化确定的具名输入；查询参数与呈现参数按消费位置分层声明'
   });
 
 /** 6.6：参数按用途分层，实际值可省略以保存未填值模板。 */

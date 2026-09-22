@@ -28,7 +28,7 @@ class KnownLifecycleHttp:
         try:
             value = response.json()
             require(isinstance(value,dict) and value.get('retCode') in ('CBC.0000', '0'))
-            require({k:value.get(v) for k,v in [('pageId','page_id'),('revisionId','revision_id'),('resourceId','page_metadata_id')]} == ref)
+            require({k:value.get(v) for k,v in [('pageId','page_id'),('revisionId','revision_id'),('resourceId','page_metadata_id')]} == ref, 'CURRENT_PAGE_STALE')
             require(isinstance(value.get('page_metadata_definition'),str))
             document = json.loads(value['page_metadata_definition'])
             require(isinstance(document,dict) and document.get('id') == ref['pageId'])

@@ -1,21 +1,19 @@
-# 创作评测入口与证据边界
+# 创作主流程评测
 
-当前入口为 platform protocol 2.0，注册九个工具，使用工作稿与精确产物引用。旧候选流程的 runner 已删除，历史结果不作为当前平台验收。
+当前入口使用 Platform protocol 2.0 和现行 `metriccanvas-platform-authoring` Skill。范围只含创建页面与调整页面：report/dashboard 创建、纯配置调整，以及新增不同口径的数据组件。参数、发布、回退、删除、普通问数和 AI 总结不计入本轮通过率。
 
-| 目的 | 入口 | 证据范围 |
+所有命令从仓库根目录运行，Python 使用 `metriccanvas-authoring/tool/.venv/bin/python`；输出文件或目录必须是新路径。
+
+| 目的 | 命令 | 证据 |
 |---|---|---|
-| 无凭据核对工具与 Schema | `preflight.py --surface unified-content --output <new-file>` | 当前平台注册及分发配置，不调用模型 |
-| 本地确定性回归 | `../run_tests.py` | 现行结构、参数、工作稿、单次保存、失败恢复及模拟适配器 |
-| 结构装配样例 | `run_structure_acceptance.py --output <new-directory>` | 直接调用现行结构用例，不属于自主模型或公共 MCP 评测 |
-| 真实模型与本地夹具 | `run_platform_v2.py --output <new-directory>` | 会读取平台环境中的模型配置并调用真实模型；Java、Relay 和数据仍是本地替身 |
-| 历史证据检查 | `eval_evidence.py` | 保留原评分与 hash，退役候选协议不能计为当前通过 |
+| 无模型预检 | `metriccanvas-authoring/tool/.venv/bin/python metriccanvas-authoring/test-harness/model-evals/preflight.py --surface unified-content --output /tmp/main-flow-preflight.json` | 九工具 Schema、Skill 注入源与 hash；模型请求为 0 |
+| 确定性主流程 | `metriccanvas-authoring/tool/.venv/bin/python metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py --scripted --output /tmp/main-flow-scripted` | 五个 case 通过同一 stdio、正式工厂和 HTTP Adapter；模型请求为 0 |
+| 真实模型主流程 | `metriccanvas-authoring/tool/.venv/bin/python metriccanvas-authoring/test-harness/model-evals/run_platform_v2.py --output /tmp/main-flow-model` | 从 `apps/platform/.env` 读取已授权的 `deepseek-v4-flash` 配置，执行同一清单 |
+| 选择 case | 在 runner 命令中增加 `--cases edit-add-data` | 自动执行其依赖；report 区分 requestedCases、executedCases 和 notRun |
+| 保存后浏览器重开 | `node apps/platform/tests/workbench/main-flow-browser.mjs /tmp/main-flow-scripted/edit-report/artifact.json /tmp/main-flow-browser` | 真实 Platform 工作台从本地 Java 替身 GET 保存文档并重新请求 DQE，检查 1440/640 几何并截图 |
 
-从仓库根目录运行，Python 环境使用 `tool/.venv/bin/python`，导入路径包含 `tool`、`test-harness`、`test-harness/tests` 和本目录。输出路径必须全新。
+runner 每个 case 输出 `trajectory.json`、`artifact.json`、`document.json`、`result.json` 和脱敏 `http.jsonl`；根目录输出 `report.json`、完整 HTTP 日志、Skill hash 与场景 hash。脚本模式的 `evidenceKind` 是 deterministic，不能当作真实模型证据。首次失败输出应保留，修复后的运行写入新目录。
 
-真实模型运行与无凭据检查分开执行。`run_platform_v2.py` 当前只覆盖一个区域运营报告场景，不代表七类任务的完整质量门禁；参数端到端行为由本地参数回归覆盖。此次迁移不需要运行真实模型或浏览器。
+本地 HTTP 服务严格匹配受支持的语义、查询、身份和条件修订，页面资产在一次 runner 会话内跨 stdio 进程保存。只有 `modelSummary` 进入模型通道；物理 SQL、完整页面和预览留在程序通道。
 
-只有 `modelSummary` 进入模型消息；有界查询证据须经过计划确认和数据策略授权。完整页面、预览、参数模板与实例留在程序通道。参数模块的依赖未注入时返回明确不可用。
-
-`history/`、`evidence/` 和冻结 case/protocol 文件保留原始历史语义。历史五工具、candidate_ref、旧 Skill 与授权稿只说明当时的实验；不能据此调用已删除的 runner，也不能视为当前生产授权或验收。需要复现实验时使用对应 Git 历史版本。
-
-真实 Relay 身份注入、Java 权限与保存回执、前端消费及自主模型质量均需单独证据。本地测试通过不等于生产联调通过。
+这些结果证明本地受控链路和自主模型行为，不证明真实 Java 权限、生产 DQE、Relay 身份注入或生产发布联调。`history/` 与冻结证据保留历史语义，不能计为当前平台通过。

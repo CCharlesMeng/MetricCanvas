@@ -171,7 +171,7 @@ class LabDataContextHttpPort:
                 _required_string(detail, "id"): entries
                 for detail, entries in zip(details, values, strict=True)
             }
-        snapshot = _project_snapshot(
+        snapshot = project_lab_snapshot(
             subject_id=self._subject_id,
             details=details,
             projection=self._projection,
@@ -302,7 +302,7 @@ class LabDataContextHttpPort:
             return response.status_code, response.content
 
 
-def _project_snapshot(
+def project_lab_snapshot(
     *,
     subject_id: str,
     details: Sequence[Mapping[str, Any]],
@@ -428,7 +428,7 @@ def _project_metric(
         raw, governance, projection.defaults, "sensitive", dataset_id, name
     )
     description = (
-        _first_string(raw, "definition", "calculateLogic", "description") or name
+        _first_string(raw, "definition", "calculate_logic", "calculateLogic", "description") or name
     )
     result: dict[str, Any] = {
         "name": name,
@@ -437,7 +437,7 @@ def _project_metric(
         "additivity": additivity,
         "timeAggregation": time_aggregation,
         "isRatio": is_ratio,
-        "dimensions": _reference_names(raw.get("dimensions"), raw.get("timeDimensions")),
+        "dimensions": _reference_names(raw.get("dimensions"), raw.get("time_dimensions", raw.get("timeDimensions"))),
         "nullable": nullable,
         "sensitive": sensitive,
     }
@@ -463,7 +463,7 @@ def _project_dimension(
             f"dataset {dataset_id} has a dimension without name",
         )
     governance = _governance_for(projection.field_governance, dataset_id, name)
-    is_time = raw.get("dimensionType") == "strDateTypeDimension"
+    is_time = raw.get("dimension_type", raw.get("dimensionType")) == "strDateTypeDimension"
     field_type = _field_type(raw, governance, is_time)
     nullable = _required_bool_value(
         raw, governance, projection.defaults, "nullable", dataset_id, name
@@ -510,11 +510,11 @@ def _metric_additivity(
     if direct in {"可加", "半可加", "不可加"}:
         return str(direct)
     aggregator = str(raw.get("aggregator") or "").strip().upper()
-    if aggregator in {"SUM", "COUNT"} and raw.get("isAgg") is not False:
+    if aggregator in {"SUM", "COUNT"} and raw.get("is_agg", raw.get("isAgg")) is not False:
         return "可加"
     if aggregator in {"LAST", "LAST_VALUE"}:
         return "半可加"
-    if aggregator in {"AVG", "AVERAGE"} or raw.get("isAgg") is False:
+    if aggregator in {"AVG", "AVERAGE"} or raw.get("is_agg", raw.get("isAgg")) is False:
         return "不可加"
     raise DataContextError(
         "DATA_CONTEXT_GOVERNANCE_REQUIRED",
@@ -621,7 +621,7 @@ def _dimension_names(detail: Mapping[str, Any]) -> list[str]:
 
 def _aliases(raw: Mapping[str, Any]) -> list[str]:
     result: list[str] = []
-    for key in ("synonyms", "publicSynonyms"):
+    for key in ("synonyms", "public_synonyms", "publicSynonyms"):
         value = raw.get(key)
         entries = value if isinstance(value, list) else [value] if isinstance(value, str) else []
         for entry in entries:

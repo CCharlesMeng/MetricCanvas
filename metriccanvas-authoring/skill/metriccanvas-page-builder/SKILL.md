@@ -29,7 +29,7 @@ metadata:
 3. 安装 Relay Page Artifact Adapter，使其截获 `compose_page` 的完整页面构建产物、写入最新会话检查点，并仅向模型返回安全摘要。
 4. 接通真实 Data Context 与 DQE Adapter。未接通时工具会返回结构化失败，不得使用测试夹具或模型补造数据继续执行。
 
-发布时先在 `tool/` 构建 `metriccanvas_authoring-0.2.0.tar.gz`。Relay 通过 `uvx`
+发布时先在 `tool/` 构建 `metriccanvas_authoring-0.3.0.tar.gz`。Relay 通过 `uvx`
 从该 sdist 临时安装并启动可执行入口；将所有 `<...>` 替换为部署值：
 
 ```json
@@ -235,7 +235,7 @@ Relay 检查点保存 `entries`、`nextOrdinal`、`routedDomains`、`dataContext
 
 ## 持久化与安全
 
-6.5 协议能表达无值模板、value 与时间区间，但本 Skill 仍只调用现有两工具。模板提取/原值校验由已接通的可信程序完成，用户确认交平台；收到候选摘要仅报告已准备，不能自行遍历改写完整页面或声称已发布。召回填值与临时渲染编排由外部服务负责。
+当前页面输出使用 Schema 6.11，参数采用 params.query / params.display 分层结构；本 Skill 只调用上述两个问数工具。模板提取/原值校验由已接通的可信程序完成，用户确认交平台；收到候选摘要仅报告已准备，不能自行遍历改写完整页面或声称已发布。召回填值与临时渲染编排由外部服务负责。
 
 - 仅通过 Relay Interface 使用 `compose_page`。Page Artifact Adapter 将完整页面构建产物保存为最新会话检查点，仅将 `modelSummary` 返回模型。
 - 正式页面持久化只由平台响应用户显式发起的沉淀。禁止调用 Java 页面保存 Interface，也不得声称已经创建页面修订。

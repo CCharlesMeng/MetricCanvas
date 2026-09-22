@@ -1,4 +1,4 @@
-# v2 调用示例
+# 工具调用示例
 
 context_ref、resultRef 和 artifactRef 均来自当前可信上下文/工具；示例引用为占位值，不可直接复用。
 
@@ -17,7 +17,7 @@ context_ref、resultRef 和 artifactRef 均来自当前可信上下文/工具；
 纯标题修改不发现、不取数；版本先从 read_page_context 读取：
 
 ```json
-{"tool":"edit_page","arguments":{"context_ref":"current-context","expected_version":1,"request":{"operations":[{"id":"rename","type":"set_title","componentId":"table","title":"区域明细"}]}}}
+{"tool":"edit_page","arguments":{"context_ref":"current-context","page_id":"current-page","expected_version":1,"request":{"operations":[{"id":"rename","type":"set_title","componentId":"table","title":"区域明细"}]}}}
 ```
 
 保存成功后只准备匹配产物的预览：

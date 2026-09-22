@@ -4,11 +4,37 @@ from uuid import uuid4
 import asyncio
 from metriccanvas_authoring.assets.lifecycle import Lifecycle, VALIDATOR
 from metriccanvas_authoring.work.state import require, digest
+from metriccanvas_authoring.work.content_ports import ContentBaselineError
+from metriccanvas_authoring.assets.lifecycle_ports import LifecycleError
+from metriccanvas_authoring.bundle_info import load_bundle_info
 
 
 class DraftSaver:
     def __init__(self, store, service, identities):
         self.store, self.service, self.identities = store, service, identities
+
+    async def verify_current(self, prepared, base, document, current):
+        """Compare the work baseline to Java's current resource, never rebase silently."""
+        if base is None:
+            return
+        require(self.service is not None and self.identities is not None
+                and self.service.capabilities.current_read
+                and callable(getattr(self.service, 'current_match', None)), 'CURRENT_PAGE_UNAVAILABLE')
+        identity = self.identities.current()
+        require((identity.actor_id, identity.workspace_id) ==
+                (prepared.binding['actorId'], prepared.binding['workspaceId']), 'SAVE_IDENTITY_MISMATCH')
+        try:
+            result = await self.service.current_match(identity, deepcopy(base))
+        except LifecycleError as error:
+            raise ContentBaselineError(error.code) from None
+        except Exception:
+            raise ContentBaselineError('CURRENT_PAGE_UNAVAILABLE') from None
+        require(self.identities.current() == identity, 'SAVE_IDENTITY_MISMATCH')
+        await current()
+        from metriccanvas_authoring.delivery.preview import definition
+        require(isinstance(result, dict) and result.get('ref') == base
+                and isinstance(result.get('document'), dict), 'CURRENT_PAGE_MISMATCH')
+        require(definition(result['document']) == definition(document), 'CURRENT_PAGE_STALE')
 
     async def save(self, prepared, document, base, description, operation_id, current):
         require(self.service is not None and self.identities is not None and self.service.capabilities.single_save, 'SAVE_CAPABILITY_UNAVAILABLE')
@@ -18,7 +44,7 @@ class DraftSaver:
         require((identity.actor_id, identity.workspace_id) == (binding['actorId'], binding['workspaceId']), 'SAVE_IDENTITY_MISMATCH')
         command = {'kind': 'save', 'context': {'operationId': operation_id,
             'actorId': binding['actorId'], 'workspaceId': binding['workspaceId'],
-            'origin': {'kind': 'relay', 'skillVersion': 'metriccanvas-platform-authoring/2.0', 'runId': binding['runId']}},
+            'origin': {'kind': 'relay', 'skillVersion': 'metriccanvas-platform-authoring/' + load_bundle_info()['bundleVersion'], 'runId': binding['runId']}},
             'pageId': binding['pageId'], 'base': deepcopy(base), 'document': deepcopy(document),
             'description': description, 'retainDimensionValues': True}
         require(VALIDATOR.is_valid(command), 'SAVE_COMMAND_INVALID')

@@ -2,8 +2,9 @@
 
 | 内容 | 权威维护源 | 派生/消费位置 | 更新方式 |
 |---|---|---|---|
+| Java 数据集语义元数据接口 | 根仓 `service/dataset-detail-java.yaml`，由提供方 YAML 原文落盘 | 产品和 Bundle `data-context/rest-services-dataset-detail.yaml` | 原文更新后运行契约导出；不替换独立的页面管理服务 YAML |
 | 页面协议、能力、校验与组件目录 | 根仓 `packages/page/src/` 与对应合法/非法夹具 | 根仓 `contracts/metriccanvas/`，本 Bundle `contract-snapshot/` | 根仓 `pnpm authoring:contracts` |
-| 产品参考语义、示例索引 | 根仓 `docs/page-metadata/` 与 `tools/scripts/page-reference.ts` | 产品 `page/reference/`、Bundle 快照与 page-builder Skill 参考 | 同一导出器；不得手改生成物 |
+| 产品参考语义、示例索引 | 根仓 `docs/page-metadata/` 与 `tools/scripts/page-reference.ts` | 产品 `page/reference/`、Bundle 快照与 page-builder Skill 参考 | 同一导出器；Skill 的合法示例统一规范化到当前写出版本并重新校验，产品兼容向量保持原版本；不得手改生成物 |
 | 创作输入与内部生命周期契约 | `contracts/authored/`，平台用例中的 Schema 定义 | `contracts/exported/`、产品 authoring 投影、MCP 参数 | 修改真源后运行导出器与实际注册 Schema 测试 |
 | 正式 Skill 工作流 | `skill/*/SKILL.md` 与非生成的 workflows/references | 安装现行 Skill | 手工改工作流；生成参考由导出器更新 |
 | Bundle 版本、入口与分发规则 | `bundle.json` | `bundle.lock.json`、运行时 bundle-info、安装包 | 修改声明后导出；不手改 hash |

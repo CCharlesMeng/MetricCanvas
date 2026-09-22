@@ -1,0 +1,271 @@
+{
+  "dataset": {
+    "id": "operations-dataset",
+    "caption": "运营分析",
+    "description": "Tokens 服务运营分析",
+    "workspace_id": "w",
+    "update_date": 1788400000000,
+    "logical_schema": {
+      "field_schema": {
+        "dimensions": [
+          {
+            "name": "区域",
+            "description": "业务归属区域",
+            "synonyms": [
+              "大区"
+            ],
+            "dimension_type": "stringDimension"
+          },
+          {
+            "name": "统计周期",
+            "description": "按查询时间粒度展开的统计周期",
+            "hierarchies": [
+              {
+                "levels": [
+                  {
+                    "levelType": "yearLevel"
+                  },
+                  {
+                    "levelType": "monthLevel"
+                  },
+                  {
+                    "levelType": "dayLevel"
+                  }
+                ]
+              }
+            ],
+            "dimension_type": "strDateTypeDimension"
+          }
+        ],
+        "measures": [],
+        "metrics": [
+          {
+            "name": "Tokens请求量",
+            "code": "tokens_requests",
+            "synonyms": [
+              "调用次数"
+            ],
+            "publicSynonyms": "Tokens量,请求数",
+            "definition": "统计期内的模型调用请求次数",
+            "unit": "次",
+            "aggregator": "SUM",
+            "dimensions": [
+              {
+                "name": "区域"
+              }
+            ],
+            "timeDimensions": [
+              {
+                "name": "统计周期"
+              }
+            ],
+            "id": "metric-a",
+            "model_id": "operations-dataset",
+            "workspace_id": "w",
+            "is_agg": true
+          }
+        ]
+      }
+    },
+    "dataset_id": "operations-dataset",
+    "ret_code": "CBC.0000",
+    "physical_schema": {
+      "tables": [
+        {
+          "sql_text": "PRIVATE SQL MUST NOT REACH MODEL"
+        }
+      ]
+    }
+  },
+  "request": {
+    "dataSourceId": "result",
+    "businessDomain": "运营分析",
+    "metrics": [
+      {
+        "kind": "metric",
+        "name": "Tokens请求量"
+      }
+    ],
+    "groupBy": [
+      "区域"
+    ],
+    "filters": [],
+    "time": {
+      "granularity": "month",
+      "start": "2026-08",
+      "end": "2026-08",
+      "providedBy": "user"
+    }
+  },
+  "supplementRequest": {
+    "dataSourceId": "supplement",
+    "businessDomain": "运营分析",
+    "metrics": [
+      {
+        "kind": "metric",
+        "name": "Tokens请求量"
+      }
+    ],
+    "groupBy": [
+      "区域"
+    ],
+    "filters": [
+      {
+        "dimension": "区域",
+        "values": [
+          "华东"
+        ]
+      }
+    ],
+    "time": {
+      "granularity": "month",
+      "start": "2026-08",
+      "end": "2026-08",
+      "providedBy": "user"
+    }
+  },
+  "sections": [
+    {
+      "id": "business",
+      "title": "经营表现",
+      "pattern": "comparison",
+      "businessQuestion": "业务表现如何",
+      "businessObject": "区域",
+      "distinctFrom": "规模与明细",
+      "blocks": [
+        {
+          "id": "chart",
+          "type": "data",
+          "source": "result",
+          "component": "barChart",
+          "fields": [
+            "区域",
+            "Tokens请求量"
+          ],
+          "title": "区域 Tokens 请求量对比",
+          "purpose": "comparison"
+        },
+        {
+          "id": "details",
+          "type": "data",
+          "source": "result",
+          "component": "table",
+          "fields": [
+            "区域",
+            "Tokens请求量"
+          ],
+          "title": "区域 Tokens 请求量明细",
+          "purpose": "reconciliation"
+        }
+      ]
+    }
+  ],
+  "rows": [
+    {
+      "区域": "华东",
+      "Tokens请求量": 18
+    },
+    {
+      "区域": "华南",
+      "Tokens请求量": 12
+    }
+  ],
+  "projection": {
+    "environment": {
+      "id": "dqe-primary",
+      "name": "MetricCanvas DQE",
+      "endpointRef": "dqe-primary",
+      "constraints": {
+        "readOnly": true,
+        "maxRows": 1000,
+        "maxColumns": 20,
+        "maxQueriesPerBatch": 6,
+        "timeoutMs": 20000
+      },
+      "security": {"scope": "authoring-service-state"}
+    },
+    "defaults": {"nullable": false, "sensitive": false},
+    "metricGovernance": {
+      "operations-dataset": {"Tokens请求量": {"isRatio": false}}
+    }
+  },
+  "query": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "区域"
+        ],
+        "output_metrics": [
+          "Tokens请求量"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "2026-08",
+            "end": "2026-08"
+          },
+          "dims": [],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "supplementQuery": {
+    "dsl_list": [
+      {
+        "output_dims": [
+          "区域"
+        ],
+        "output_metrics": [
+          "Tokens请求量"
+        ],
+        "filter": {
+          "time": {
+            "period": "month",
+            "start": "2026-08",
+            "end": "2026-08"
+          },
+          "dims": [
+            {
+              "dim_name": "区域",
+              "dim_value_list": [
+                "华东"
+              ]
+            }
+          ],
+          "metrics": []
+        },
+        "order": {}
+      }
+    ]
+  },
+  "supplementRows": [
+    {
+      "区域": "华东",
+      "Tokens请求量": 18
+    }
+  ],
+  "fields": {
+    "区域": {
+      "logicalId": "region-dimension",
+      "projectionId": "operations-dataset",
+      "type": "string",
+      "role": "dimension",
+      "scale": "none",
+      "nullable": false,
+      "label": "区域"
+    },
+    "Tokens请求量": {
+      "logicalId": "metric-a",
+      "projectionId": "operations-dataset",
+      "type": "number",
+      "role": "measure",
+      "scale": "none",
+      "nullable": false,
+      "label": "Tokens请求量",
+      "unit": "次",
+      "defaultFormat": "number"
+    }
+  }
+}

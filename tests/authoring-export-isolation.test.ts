@@ -35,7 +35,7 @@ function withChangedFile(relative: string, content: string, verify: () => void, 
 
 describe.sequential('当前契约检查无需旧服务源码', () => {
   beforeAll(() => {
-    for (const relative of ['tools/scripts', 'docs/page-metadata', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
+    for (const relative of ['tools/scripts', 'docs/page-metadata', 'service', 'tools/fixtures/legacy-contracts', 'packages/page', 'packages/engine/widgets/src/components/map-chart/maps/china.json', 'packages/engine/widgets/src/components/map-chart/maps/world.json', 'contracts', 'metriccanvas-authoring']) {
       mkdirSync(path.dirname(path.join(isolated, relative)), { recursive: true });
       cpSync(path.join(root, relative), path.join(isolated, relative), {
         recursive: true,

@@ -42,11 +42,16 @@ class ScriptedTransport:
 
 class HttpTransport:
     evidence_kind = 'real-model-local-fixture'
-    def __init__(self, configuration, token_budget=600000, client_factory=None, message_auditor=audit_messages):
+    def __init__(self, configuration, token_budget=600000, client_factory=None,
+                 message_auditor=audit_messages, client=None,
+                 input_bytes_per_token=1):
         if not 4096 <= token_budget <= 600000: raise ValueError('Invalid token budget')
+        if input_bytes_per_token not in (1, 2): raise ValueError('Invalid input token estimate')
         self.configuration=configuration; self.token_budget=token_budget; self.tokens=0; self.calls=0
         self.client_factory=client_factory
         self.message_auditor=message_auditor
+        self.client=client
+        self.input_bytes_per_token=input_bytes_per_token
     def begin_turn(self): pass
     def prepare_request(self, request):
         return {'model':self.configuration['DEEPSEEK_MODEL'],**PARAMS,'messages':request['messages'],'tools':request['tools']}
@@ -57,13 +62,18 @@ class HttpTransport:
         if payload.get('model')!=cfg['DEEPSEEK_MODEL'] or any(payload.get(k)!=v for k,v in PARAMS.items()):
             raise ValueError('Request was not prepared with frozen model parameters')
         self.message_auditor(payload['messages'],cfg['DEEPSEEK_API_KEY'])
-        reserve=len(json.dumps(payload,ensure_ascii=False).encode())+8192+PARAMS['max_tokens']
+        input_bytes=len(json.dumps(payload,ensure_ascii=False).encode())
+        reserve=(input_bytes+self.input_bytes_per_token-1)//self.input_bytes_per_token+8192+PARAMS['max_tokens']
         if self.tokens+reserve>self.token_budget: raise RuntimeError('TOKEN_BUDGET_EXHAUSTED')
-        factory=self.client_factory or httpx.AsyncClient
         self.calls += 1
-        async with factory(timeout=120) as client:
-            response=await client.post(cfg['DEEPSEEK_BASE_URL'].rstrip('/')+'/chat/completions',
+        if self.client is not None:
+            response=await self.client.post(cfg['DEEPSEEK_BASE_URL'].rstrip('/')+'/chat/completions',
                 headers={'Authorization':'Bearer '+cfg['DEEPSEEK_API_KEY']},json=payload)
+        else:
+            factory=self.client_factory or httpx.AsyncClient
+            async with factory(timeout=120) as client:
+                response=await client.post(cfg['DEEPSEEK_BASE_URL'].rstrip('/')+'/chat/completions',
+                    headers={'Authorization':'Bearer '+cfg['DEEPSEEK_API_KEY']},json=payload)
         if response.status_code!=200: raise RuntimeError('MODEL_HTTP_ERROR')
         value=response.json()
         if cfg['DEEPSEEK_API_KEY'] in json.dumps(value): raise RuntimeError('CREDENTIAL_ECHO')
@@ -74,14 +84,15 @@ class HttpTransport:
         return value
 
 
-def deny_network():
+def deny_network(allowed=None):
     """Hard-stop IP networking in scripted parent and synthetic stdio child."""
     import socket
+    allowed = set(allowed or ())
     original_connect=socket.socket.connect
     original_connect_ex=socket.socket.connect_ex
     def checked(method):
         def call(sock, address):
-            if sock.family in (socket.AF_INET, socket.AF_INET6):
+            if sock.family in (socket.AF_INET, socket.AF_INET6) and address not in allowed:
                 raise RuntimeError('NETWORK_FORBIDDEN_IN_LOCAL_SYNTHETIC_RUN')
             return method(sock,address)
         return call

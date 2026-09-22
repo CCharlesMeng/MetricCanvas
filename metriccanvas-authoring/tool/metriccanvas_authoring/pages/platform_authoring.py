@@ -1,4 +1,4 @@
-"""Platform v2: one work document, internal single-save, referenced data only."""
+"""Platform authoring: one work document, internal single-save, referenced data only."""
 from copy import deepcopy
 from dataclasses import replace
 from uuid import uuid4
@@ -63,6 +63,9 @@ class PlatformAuthoring:
     async def read(self, context_ref, **options):
         prepared = await self.prepare(context_ref)
         _, work = await self.state.read(prepared)
+        require(work['active'] is None, 'WORK_BUSY')
+        require((work['lastResult'] or {}).get('saveStatus') not in {'unknown', 'pending', 'rejected'}, 'SAVE_RECONCILIATION_REQUIRED')
+        await self.saver.verify_current(prepared, work['base'], work['document'], self.current(prepared))
         document = work['document']
         projected = prepared
         if document is not None:
@@ -76,9 +79,10 @@ class PlatformAuthoring:
         await self.current(prepared)()
         return result
 
-    async def mutate(self, kind, context_ref, request, expected_version=0):
+    async def mutate(self, kind, context_ref, request, expected_version=0, *, page_id=None):
         request = deepcopy(request)
         prepared = await self.prepare(context_ref, write=True)
+        require(page_id is None or page_id == prepared.binding['pageId'], 'CURRENT_TURN_PAGE_MISMATCH')
         require(kind != 'compose' or prepared.binding['mode'] == 'new', 'CURRENT_TURN_MODE_MISMATCH')
         require(self.saver.service is not None and self.saver.identities is not None and self.saver.service.capabilities.single_save, 'SAVE_CAPABILITY_UNAVAILABLE')
         request_hash = digest([kind, request, expected_version])
@@ -87,6 +91,7 @@ class PlatformAuthoring:
             await self.current(prepared, True)()
             return cached, deepcopy(work['artifact']) if work['artifact'] and cached.get('artifactRef') == work['artifact']['artifactRef'] else None
         try:
+            await self.saver.verify_current(prepared, work['base'], work['document'], self.current(prepared, True))
             await self.state.consume(prepared, 'mutations')
             if kind == 'compose':
                 require(work['document'] is None, 'WORK_ALREADY_CREATED')

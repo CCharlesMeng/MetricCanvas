@@ -34,7 +34,7 @@ def main() -> int:
     if args.check:
         print("Test inventory current: " + ", ".join(f"{name}={len(files)} files" for name, files in inventory.items()))
         return 0
-    sys.path.insert(0, str(ROOT / "tests"))
+    sys.path[:0] = [str(ROOT / "tests"), str(ROOT), str(ROOT / "model-evals"), str(ROOT.parent / "tool")]
     chosen = args.layer or list(LAYERS)
     modules = [Path(file).stem for name in dict.fromkeys(chosen) for file in inventory[name]]
     suite = unittest.defaultTestLoader.loadTestsFromNames(modules)

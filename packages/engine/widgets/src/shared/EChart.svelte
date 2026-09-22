@@ -44,10 +44,18 @@
         onitemclick(params.dataIndex, typeof params.name === 'string' ? params.name : undefined)
       );
     }
-    const observer = new ResizeObserver(() => instance.resize());
+    let resizeFrame: number | undefined;
+    const observer = new ResizeObserver(() => {
+      if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        resizeFrame = undefined;
+        instance.resize();
+      });
+    });
     observer.observe(el);
     return () => {
       observer.disconnect();
+      if (resizeFrame !== undefined) cancelAnimationFrame(resizeFrame);
       instance.dispose();
     };
   });

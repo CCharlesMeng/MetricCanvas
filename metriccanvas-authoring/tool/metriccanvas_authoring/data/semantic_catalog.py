@@ -18,18 +18,24 @@ def decoded(value, default):
 
 
 def metric_card(model, metric):
-    reference = {'workspaceId': model.get('workspace_id'), 'modelId': model['id'], 'metricId': metric['id']}
+    def text(value, limit=256):
+        return value if isinstance(value, str) and value.strip() and len(value) <= limit else None
+    reference = {'workspaceId': model.get('workspace_id'), 'modelId': model['id'], 'metricId': metric['id'],
+                 'modelVersion': digest(model)}
     ref = 'metric-' + digest(reference)
     name = metric.get('name', '')
     description = decoded(metric.get('description'), {})
     description = description if isinstance(description, dict) else {}
-    definition = metric.get('definition')
+    definition = text(metric.get('definition'), 4096)
+    unit, frequency = text(metric.get('unit')), text(metric.get('frequency'))
     definition_known = isinstance(definition, str) and bool(definition.strip()) and definition != name
     dimensions = metric.get('dimensions')
-    formula = metric.get('formula')
+    dimensions = [d for d in dimensions if isinstance(d, dict)] if isinstance(dimensions, list) else []
+    formula = metric.get('formula') if isinstance(metric.get('formula'), str) else None
     configured = decoded(metric.get('calculate_conf'), {})
     synonyms = metric.get('synonyms') or []
     if isinstance(synonyms, str): synonyms = [s.strip() for s in synonyms.split(',') if s.strip()]
+    synonyms = [s for s in synonyms if text(s)] if isinstance(synonyms, list) else []
     conflicts = []
     requested = re.search(r'近(\d+)天', name)
     used = set(re.findall(r'(\d+)天前', formula or ''))
@@ -37,12 +43,12 @@ def metric_card(model, metric):
         conflicts.append({'code': 'DECLARED_TIME_FORMULA_CONFLICT', 'declaredDays': int(requested.group(1)), 'referencedDays': sorted(map(int, used))})
     return {'metricRef': ref, 'source': reference, 'name': name, 'aliases': synonyms[:10],
         'definition': {'status': 'source-known' if definition_known else 'unknown', 'value': definition if definition_known else None},
-        'unit': {'status': 'source-known' if metric.get('unit') else 'unknown', 'value': metric.get('unit')},
-        'frequency': {'status': 'source-known' if metric.get('frequency') else 'unknown', 'value': metric.get('frequency')},
+        'unit': {'status': 'source-known' if unit else 'unknown', 'value': unit},
+        'frequency': {'status': 'source-known' if frequency else 'unknown', 'value': frequency},
         'dimensions': {'status': 'source-known' if dimensions else 'unknown', 'values': [
-            {'id': d.get('column_id'), 'label': d.get('caption')} for d in dimensions or []]},
+            {'id': text(d.get('column_id', d.get('id'))), 'label': text(d.get('caption', d.get('name')))} for d in dimensions]},
         'executionDefinition': 'calculate_conf' if configured else 'formula' if formula else 'unknown',
-        'metricCode': description.get('metricCode'), 'conflicts': conflicts,
+        'metricCode': text(description.get('metricCode')), 'conflicts': conflicts,
         'status': 'conflict' if conflicts else 'source-known', 'detailRef': ref}
 
 
@@ -84,7 +90,14 @@ class SemanticCatalog:
                 detail = await self.provider.detail(deepcopy(binding), deepcopy(selected['card']['source']))
                 cached = {'status': 'unknown'}
                 if isinstance(detail, dict) and detail.get('source') == selected['card']['source']:
-                    cached = {'status': 'source-known', 'values': {k: deepcopy(detail[k]) for k in ('unit', 'frequency', 'definition', 'scale') if k in detail}}
+                    values = {k: deepcopy(detail[k]) for k in ('unit', 'frequency', 'definition', 'scale')
+                              if k in detail and detail[k] is not None and detail[k] != ''}
+                    if values:
+                        cached = {'status': 'source-known', 'values': values}
                 await self.store.compare_and_swap('metric-detail', key, 0, cached)
             details.append({'metricRef': ref, **cached})
-        return {'ok': True, 'dataContextVersion': version, 'matches': cards, 'details': details}
+        issues = deepcopy(value.get('issues', []))
+        status = 'partial' if issues and value['models'] else 'failed' if issues else 'ready'
+        return {'ok': status != 'failed', 'status': status, 'dataContextVersion': version,
+                'matches': cards, 'details': details, 'issues': issues,
+                **({'coverage': deepcopy(value['coverage'])} if 'coverage' in value else {})}

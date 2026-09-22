@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "layout": "report",
   "id": "grouped-fields-page",
   "meta": {
@@ -9,27 +9,53 @@
     "grouped": {
       "fields": {
         "dimensions": {
-          "customer": { "queryField": "customer_name", "type": "string", "label": "客户" }
+          "customer": {
+            "queryField": "customer_name",
+            "type": "string",
+            "label": "客户"
+          }
         },
         "measures": {
-          "revenue": { "queryField": "revenue", "type": "money", "currency": "CNY" },
-          "growth": { "queryField": "growth", "type": "number", "nullable": true }
+          "revenue": {
+            "queryField": "revenue",
+            "type": "money",
+            "currency": "CNY"
+          },
+          "growth": {
+            "queryField": "growth",
+            "type": "number",
+            "nullable": true
+          }
         }
       },
       "source": {
         "type": "query",
         "initial": {
           "capturedAt": "2026-08-01T00:00:00Z",
-          "rows": [{ "customer_name": "A", "revenue": 100, "growth": null }]
+          "rows": [
+            {
+              "customer_name": "A",
+              "revenue": 100,
+              "growth": null
+            }
+          ]
         },
         "query": {
           "language": "dqe",
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["customer_name"],
-                "output_metrics": ["revenue", "growth"],
-                "filter": { "dims": [], "metrics": [] },
+                "output_dims": [
+                  "customer_name"
+                ],
+                "output_metrics": [
+                  "revenue",
+                  "growth"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
                 "order": {}
               }
             ]
@@ -45,10 +71,24 @@
         {
           "id": "grouped-table",
           "type": "table",
-          "layout": { "span": 12 },
-          "data": { "main": "grouped" },
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "grouped"
+          },
           "props": {
-            "columns": [{ "field": "customer" }, { "field": "revenue" }, { "field": "growth" }]
+            "columns": [
+              {
+                "field": "customer"
+              },
+              {
+                "field": "revenue"
+              },
+              {
+                "field": "growth"
+              }
+            ]
           }
         }
       ]

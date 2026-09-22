@@ -34,13 +34,17 @@ class LocalSyntheticTurns:
 
 def fixture_server(state_path):
     state = json.loads(state_path.read_text())
+    turns = None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path)
+    if state.get('profile') == 'main-flow-http':
+        from main_flow_host import create_main_flow_server
+        return create_main_flow_server(state_path, turns)
     deps = dependencies()  # Existing explicitly synthetic Data Context/DQE/descriptor fixtures.
     if state.get('dataProvider') == 'missing-source': deps = replace(deps, source_description=None)
     if state.get('dataProvider') == 'unavailable':
         from metriccanvas_authoring.bootstrap.environment import unconfigured_data_context, unconfigured_dqe
         deps = replace(deps, data_context=unconfigured_data_context('Local fixture intentionally unavailable'),
                        dqe=unconfigured_dqe('Local fixture intentionally unavailable'), source_description=None)
-    return create_platform_server(deps, current_turns=None if state.get('turnProvider') == 'unavailable' else LocalSyntheticTurns(state_path),
+    return create_platform_server(deps, current_turns=turns,
         store=SqlitePlatformState(state_path.parent/'work.db'), analysis_authorization=Authorization(),
         lifecycle_service=Service(), lifecycle_identities=Identities(), relay_preview=Preview())
 
@@ -48,5 +52,12 @@ def fixture_server(state_path):
 if __name__ == '__main__':
     # No model or endpoint configuration is accepted by this process.
     from model_transport import deny_network
-    deny_network()
-    fixture_server(Path(sys.argv[1])).run()
+    state_path = Path(sys.argv[1])
+    state = json.loads(state_path.read_text())
+    allowed = []
+    if state.get('profile') == 'main-flow-http':
+        from urllib.parse import urlsplit
+        parsed = urlsplit(state['baseUrl'])
+        allowed.append((parsed.hostname, parsed.port))
+    deny_network(allowed)
+    fixture_server(state_path).run()

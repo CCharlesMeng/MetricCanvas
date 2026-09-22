@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "6.5",
+  "schemaVersion": "6.11",
   "layout": "report",
   "id": "compute-page",
   "meta": {
@@ -8,12 +8,34 @@
   "dataSources": {
     "targets": {
       "fields": {
-        "region": { "type": "string", "role": "dimension", "nullable": false },
-        "actual": { "type": "number", "role": "measure", "collapsible": true },
-        "target": { "type": "number", "role": "measure", "collapsible": true },
-        "rate": { "type": "number", "role": "measure" },
-        "gap": { "type": "number", "role": "measure" },
-        "row-kind": { "type": "string", "role": "dimension", "nullable": true }
+        "region": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": false
+        },
+        "actual": {
+          "type": "number",
+          "role": "measure",
+          "collapsible": true
+        },
+        "target": {
+          "type": "number",
+          "role": "measure",
+          "collapsible": true
+        },
+        "rate": {
+          "type": "number",
+          "role": "measure"
+        },
+        "gap": {
+          "type": "number",
+          "role": "measure"
+        },
+        "row-kind": {
+          "type": "string",
+          "role": "dimension",
+          "nullable": true
+        }
       },
       "compute": [
         {
@@ -24,46 +46,105 @@
           "onZeroDenominator": "null",
           "scale": 100
         },
-        { "op": "delta", "minuend": "actual", "subtrahend": "target", "output": "gap" },
+        {
+          "op": "delta",
+          "minuend": "actual",
+          "subtrahend": "target",
+          "output": "gap"
+        },
         {
           "op": "groupSubtotal",
           "groupBy": "region",
-          "measures": ["actual", "target"],
-          "rowKind": { "field": "row-kind", "value": "subtotal" },
+          "measures": [
+            "actual",
+            "target"
+          ],
+          "rowKind": {
+            "field": "row-kind",
+            "value": "subtotal"
+          },
           "labelSuffix": "小计"
         },
         {
           "op": "grandTotal",
-          "measures": ["actual", "target"],
-          "rowKind": { "field": "row-kind", "value": "total" },
-          "label": { "field": "region", "value": "合计" }
+          "measures": [
+            "actual",
+            "target"
+          ],
+          "rowKind": {
+            "field": "row-kind",
+            "value": "total"
+          },
+          "label": {
+            "field": "region",
+            "value": "合计"
+          }
         }
       ],
       "source": {
         "type": "inline",
         "rows": [
-          { "region": "华东", "actual": 120, "target": 100 },
-          { "region": "华北", "actual": 80, "target": 100 }
+          {
+            "region": "华东",
+            "actual": 120,
+            "target": 100
+          },
+          {
+            "region": "华北",
+            "actual": 80,
+            "target": 100
+          }
         ]
       }
     },
     "pivoted": {
       "fields": {
-        "quarter": { "queryField": "quarter", "type": "string", "role": "dimension" },
-        "category": { "queryField": "category", "type": "string", "role": "dimension" },
-        "value": { "queryField": "value", "type": "number", "role": "measure" },
-        "online": { "type": "number", "role": "measure" },
-        "offline": { "type": "number", "role": "measure" }
+        "quarter": {
+          "queryField": "quarter",
+          "type": "string",
+          "role": "dimension"
+        },
+        "category": {
+          "queryField": "category",
+          "type": "string",
+          "role": "dimension"
+        },
+        "value": {
+          "queryField": "value",
+          "type": "number",
+          "role": "measure"
+        },
+        "online": {
+          "type": "number",
+          "role": "measure"
+        },
+        "offline": {
+          "type": "number",
+          "role": "measure"
+        }
       },
       "compute": [
         {
           "op": "pivot",
           "categoryField": "category",
           "valueField": "value",
-          "keyFields": ["quarter"],
+          "keyFields": [
+            "quarter"
+          ],
           "columns": [
-            { "output": "online", "categories": ["线上"] },
-            { "output": "offline", "categories": ["线下", "门店"] }
+            {
+              "output": "online",
+              "categories": [
+                "线上"
+              ]
+            },
+            {
+              "output": "offline",
+              "categories": [
+                "线下",
+                "门店"
+              ]
+            }
           ]
         }
       ],
@@ -71,16 +152,30 @@
         "type": "query",
         "initial": {
           "capturedAt": "2026-08-01T08:00:00+08:00",
-          "rows": [{ "quarter": "Q1", "category": "线上", "value": 10 }]
+          "rows": [
+            {
+              "quarter": "Q1",
+              "category": "线上",
+              "value": 10
+            }
+          ]
         },
         "query": {
           "language": "dqe",
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["quarter", "category"],
-                "output_metrics": ["value"],
-                "filter": { "dims": [], "metrics": [] },
+                "output_dims": [
+                  "quarter",
+                  "category"
+                ],
+                "output_metrics": [
+                  "value"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
                 "order": {}
               }
             ]
@@ -90,19 +185,47 @@
     },
     "customers": {
       "fields": {
-        "name": { "queryField": "name", "type": "string", "role": "dimension" },
-        "score": { "queryField": "score", "type": "number", "role": "measure" },
-        "change": { "queryField": "change", "type": "number", "role": "measure" },
-        "tier": { "queryField": "tier", "type": "string", "role": "dimension" },
-        "note": { "queryField": "note", "type": "string", "role": "dimension" },
-        "reason": { "queryField": "reason", "type": "semanticHtml", "role": "detail" },
+        "name": {
+          "queryField": "name",
+          "type": "string",
+          "role": "dimension"
+        },
+        "score": {
+          "queryField": "score",
+          "type": "number",
+          "role": "measure"
+        },
+        "change": {
+          "queryField": "change",
+          "type": "number",
+          "role": "measure"
+        },
+        "tier": {
+          "queryField": "tier",
+          "type": "string",
+          "role": "dimension"
+        },
+        "note": {
+          "queryField": "note",
+          "type": "string",
+          "role": "dimension"
+        },
+        "reason": {
+          "queryField": "reason",
+          "type": "semanticHtml",
+          "role": "detail"
+        },
         "events": {
           "queryField": "events",
           "type": "recordList",
           "role": "detail",
           "items": {
             "fields": {
-              "title": { "queryField": "event_title", "type": "string", "role": "dimension" },
+              "title": {
+                "queryField": "event_title",
+                "type": "string",
+                "role": "dimension"
+              },
               "impact": {
                 "queryField": "event_impact",
                 "type": "number",
@@ -132,7 +255,12 @@
               "note": "稳定",
               "reason": "<p class=\"positive\">增长</p>",
               "events": [
-                { "event_title": "续约", "event_impact": 3, "event_desc": null, "extra": "dropped" }
+                {
+                  "event_title": "续约",
+                  "event_impact": 3,
+                  "event_desc": null,
+                  "extra": "dropped"
+                }
               ]
             }
           ]
@@ -142,9 +270,21 @@
           "body": {
             "dsl_list": [
               {
-                "output_dims": ["name", "tier", "note", "reason", "events"],
-                "output_metrics": ["score", "change"],
-                "filter": { "dims": [], "metrics": [] },
+                "output_dims": [
+                  "name",
+                  "tier",
+                  "note",
+                  "reason",
+                  "events"
+                ],
+                "output_metrics": [
+                  "score",
+                  "change"
+                ],
+                "filter": {
+                  "dims": [],
+                  "metrics": []
+                },
                 "order": {}
               }
             ]
@@ -160,45 +300,85 @@
         {
           "id": "targets-table",
           "type": "table",
-          "layout": { "span": 12 },
-          "data": { "main": "targets" },
+          "layout": {
+            "span": 12
+          },
+          "data": {
+            "main": "targets"
+          },
           "props": {
             "rowKindField": "row-kind",
             "mergeBy": "region",
             "columns": [
-              { "field": "region" },
-              { "field": "actual" },
-              { "field": "target" },
-              { "field": { "data": "main", "field": "rate", "format": "percent-1" } },
-              { "field": "gap" }
+              {
+                "field": "region"
+              },
+              {
+                "field": "actual"
+              },
+              {
+                "field": "target"
+              },
+              {
+                "field": {
+                  "data": "main",
+                  "field": "rate",
+                  "format": "percent-1"
+                }
+              },
+              {
+                "field": "gap"
+              }
             ]
           }
         },
         {
           "id": "pivot-table",
           "type": "table",
-          "layout": { "span": 6 },
-          "data": { "main": "pivoted" },
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "pivoted"
+          },
           "props": {
-            "columns": [{ "field": "quarter" }, { "field": "online" }, { "field": "offline" }]
+            "columns": [
+              {
+                "field": "quarter"
+              },
+              {
+                "field": "online"
+              },
+              {
+                "field": "offline"
+              }
+            ]
           }
         },
         {
           "id": "ranking",
           "type": "rankingDetailCard",
-          "layout": { "span": 6 },
-          "data": { "main": "customers" },
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customers"
+          },
           "props": {
             "nameField": "name",
             "valueField": "score",
             "changeField": "change",
-            "badgeFields": ["tier"],
+            "badgeFields": [
+              "tier"
+            ],
             "descriptionField": "note",
             "semanticDescriptionField": "reason",
             "details": {
               "field": "events",
               "titleField": "title",
-              "valueField": { "field": "impact" },
+              "valueField": {
+                "field": "impact"
+              },
               "descriptionField": "desc"
             }
           }
@@ -206,9 +386,15 @@
         {
           "id": "reason-text",
           "type": "fieldText",
-          "layout": { "span": 6 },
-          "data": { "main": "customers" },
-          "props": { "field": "reason" }
+          "layout": {
+            "span": 6
+          },
+          "data": {
+            "main": "customers"
+          },
+          "props": {
+            "field": "reason"
+          }
         }
       ]
     }

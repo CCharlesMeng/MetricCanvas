@@ -36,8 +36,15 @@ def surface_evidence(surface, definitions):
             properties = schema.get('properties', {})
             if 'context_ref' not in schema.get('required', []) or properties.get('context_ref', {}).get('type') != 'string':
                 errors.append(tool.name + ': required string context_ref missing')
-            if {'page_id', 'baseline_token', 'source_token'} & properties.keys():
+            if {'baseline_token', 'source_token', 'actor_id', 'auth_token'} & properties.keys():
                 errors.append(tool.name + ': legacy identity/token input exposed')
+            if tool.name == 'edit_page':
+                if 'page_id' not in schema.get('required', []) or properties.get('page_id', {}).get('type') != 'string':
+                    errors.append('edit_page: required string page_id missing')
+                if 'expected_version' not in schema.get('required', []) or properties.get('expected_version', {}).get('type') != 'integer':
+                    errors.append('edit_page: required integer expected_version missing')
+            elif 'page_id' in properties:
+                errors.append(tool.name + ': unexpected page_id input')
     return {'surface':surface, 'expectedServerName':name,
             'introspection':{'status':'fail' if errors else 'pass', 'errors':errors,
                              'scope':'Tool names and input schemas only; no content tool invoked'},
@@ -54,7 +61,7 @@ async def inspect(root, config_path=None, surface='legacy-content'):
     from run_local import config
     from fastmcp import Client
     folder=Path(__file__).parent
-    provenance=json.loads((folder/'history/first-round.provenance.json').read_text())
+    provenance=json.loads((folder/'history/first-round.provenance.json').read_text()) if surface == 'legacy-content' else {'rawEvidencePath':'.','rawFileHashes':{}}
     raw=Path(provenance['rawEvidencePath'])
     mismatches=verify_hashes(raw,provenance['rawFileHashes'])
     configuration='not-inspected: no model configuration requested'
@@ -62,17 +69,22 @@ async def inspect(root, config_path=None, surface='legacy-content'):
         configuration='available'
         try:config(config_path)
         except (OSError,ValueError):configuration='missing-or-incompatible'
-    suite=json.loads((folder/'unified-authoring.cases.json').read_text())
-    missing={arm:sorted({str(p.relative_to(root)) for c in suite['cases'] for p in injection_paths(root,c,arm) if not p.is_file()}) for arm in ['baseline','unified']}
+    suite_path = folder / ('platform-authoring.cases.json' if surface == 'unified-content' else 'unified-authoring.cases.json')
+    suite=json.loads(suite_path.read_text())
+    if surface == 'unified-content':
+        skill = root/'metriccanvas-authoring/skill/metriccanvas-platform-authoring'
+        missing = {'platform': [str((skill/p).relative_to(root)) for p in suite['injectionSources'] if not (skill/p).is_file()]}
+    else:
+        missing={arm:sorted({str(p.relative_to(root)) for c in suite['cases'] for p in injection_paths(root,c,arm) if not p.is_file()}) for arm in ['baseline','unified']}
     client_config=client_configuration(root, surface)
     async with Client(client_config) as client:
         definitions=await client.list_tools()
     return {'modelRequests':0,'configuration':configuration,
             'dependencies':{n:importlib.metadata.version(n) for n in ['fastmcp','httpx','jsonschema','pydantic']},
             'registeredTools':{t.name:hashlib.sha256(json.dumps(t.inputSchema,sort_keys=True).encode()).hexdigest() for t in definitions},
-            'suiteSha256':sha(folder/'unified-authoring.cases.json'), 'missingInjectionSources':missing,
+            'suiteSha256':sha(suite_path), 'missingInjectionSources':missing,
             'historicalRawFiles':len(provenance['rawFileHashes']), 'historicalHashMismatches':mismatches,
-            'historicalSourceHashes':{p.name:sha(p) for p in sorted((folder/'history').iterdir()) if p.is_file()},
+            'historicalSourceHashes':{p.name:sha(p) for p in sorted((folder/'history').iterdir()) if p.is_file()} if surface == 'legacy-content' else {},
             'routing':'blocked: local manual Skill assignment','latest':'blocked: local fixture baseline only',
             'dataServices':'blocked: not configured in isolated child environment',
             **surface_evidence(surface, definitions)}
@@ -83,5 +95,7 @@ async def main():
     report=await inspect(Path(__file__).resolve().parents[3],a.config,a.surface)
     with a.output.open('x') as f:json.dump(report,f,ensure_ascii=False,indent=2);f.write('\n')
     print(json.dumps({'modelRequests':0,'configuration':report['configuration'],'tools':list(report['registeredTools']),'historicalHashMismatches':report['historicalHashMismatches']}))
+    if report['introspection']['status'] != 'pass' or any(report['missingInjectionSources'].values()) or report['historicalHashMismatches']:
+        raise SystemExit(1)
 
 if __name__=='__main__':asyncio.run(main())

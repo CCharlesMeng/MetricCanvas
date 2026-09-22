@@ -23,6 +23,11 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
         self.calls=[]
         def handle(request):
             self.calls.append(request)
+            if request.method == 'GET':
+                ref = self.turns.binding['baseRef']
+                return httpx.Response(200, json={'retCode': 'CBC.0000', 'page_id': ref['pageId'],
+                    'revision_id': ref['revisionId'], 'page_metadata_id': ref['resourceId'],
+                    'page_metadata_definition': self.turns.document_json})
             if failure: raise httpx.ReadTimeout('lost acknowledgement')
             body=json.loads(request.content)
             return httpx.Response(200,json={'retCode':'CBC.0000','page_id':body['page_metadata_definition']['id'],
@@ -33,18 +38,18 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
         self.app=self.make()
         return self.app
 
-    async def test_existing_work_single_put_and_no_exact_get(self):
+    async def test_existing_work_current_get_then_single_conditional_put(self):
         app=await self.configured()
         request={'operations':[title(value='Changed')]}
         result, artifact=await app.mutate('edit','current-context',request)
         self.assertEqual(result['saveStatus'],'saved')
-        self.assertEqual([r.method for r in self.calls],['PUT'])
-        body=json.loads(self.calls[0].content)
+        self.assertEqual([r.method for r in self.calls],['GET','PUT'])
+        body=json.loads(self.calls[1].content)
         self.assertIs(body['is_draft'],True)
         self.assertEqual(body['base_revision_id'],self.turns.binding['baseRef']['revisionId'])
         self.assertNotIn('idempotencyKey',body)
         self.assertEqual(await self.make().mutate('edit','current-context',request),(result,artifact))
-        self.assertEqual(len(self.calls),1)
+        self.assertEqual(len(self.calls),2)
 
     async def test_new_work_single_post(self):
         app=await self.configured('new')
@@ -59,7 +64,7 @@ class JavaSingleSubmissionTest(unittest.IsolatedAsyncioTestCase):
         for app in [app,self.make(),self.make()]:
             result,_=await app.mutate('edit','current-context',request)
             self.assertEqual(result['saveStatus'],'unknown')
-        self.assertEqual(len(self.calls),1)
+        self.assertEqual(len(self.calls),2)
 
     async def test_wire_vectors_and_uncoordinated_tool_cannot_write(self):
         command=save_command()

@@ -425,7 +425,7 @@
           "additionalProperties": false
         }
       ],
-      "description": "页面参数：一次初始化确定的具名输入；6.5 以 value 承载本次实际值，旧 URL/default 路径兼容读取"
+      "description": "页面参数：一次初始化确定的具名输入；查询参数与呈现参数按消费位置分层声明"
     },
     "groupedPageParams": {
       "type": "object",

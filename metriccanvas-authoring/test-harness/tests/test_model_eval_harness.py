@@ -18,6 +18,14 @@ preflight=importlib.util.module_from_spec(spec);spec.loader.exec_module(prefligh
 
 
 class ModelEvalHarnessTest(unittest.TestCase):
+    def platform_definitions(self):
+        definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
+                     for name in preflight.UNIFIED_TOOLS]
+        edit = next(t for t in definitions if t.name == 'edit_page')
+        edit.inputSchema['properties'].update(page_id={'type':'string'}, expected_version={'type':'integer'})
+        edit.inputSchema['required'].extend(['page_id', 'expected_version'])
+        return definitions
+
     def test_nested_serialized_page_and_rows_rejected(self):
         for value in [{'rows':[]},{'schemaVersion':'6.5','dataSources':{},'sections':[]},{'artifactEnvelope':None}]:
             with self.assertRaises(ValueError):evidence.audit_messages([{'content':json.dumps(value)}])
@@ -83,8 +91,7 @@ class ModelEvalHarnessTest(unittest.TestCase):
         with self.assertRaises(KeyError):preflight.client_configuration(root,'unknown')
 
     def test_s2_tool_listing_never_marks_runner_or_latest_ready(self):
-        definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
-                     for name in preflight.UNIFIED_TOOLS]
+        definitions=self.platform_definitions()
         result=preflight.surface_evidence('unified-content',definitions)
         self.assertEqual(result['introspection']['status'],'pass')
         self.assertEqual(result['modelRunner']['status'],'blocked')
@@ -94,14 +101,20 @@ class ModelEvalHarnessTest(unittest.TestCase):
         self.assertEqual(result['expectedServerName'],'metriccanvas-platform-content')
 
     def test_s2_rejects_legacy_token_and_missing_current_context(self):
-        definitions=[SimpleNamespace(name=name,inputSchema={'properties':{'context_ref':{'type':'string'}},'required':['context_ref']})
-                     for name in preflight.UNIFIED_TOOLS]
-        for legacy_key in ['page_id','baseline_token','source_token']:
+        definitions=self.platform_definitions()
+        for legacy_key in ['baseline_token','source_token','actor_id','auth_token']:
             definitions[0].inputSchema['properties'][legacy_key]={'type':'string'}
             self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
             del definitions[0].inputSchema['properties'][legacy_key]
         definitions[0].inputSchema['required']=[]
         self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
+
+    def test_s2_requires_edit_page_identity_and_work_version(self):
+        for key in ['page_id', 'expected_version']:
+            definitions=self.platform_definitions()
+            edit=next(t for t in definitions if t.name == 'edit_page')
+            edit.inputSchema['required'].remove(key)
+            self.assertEqual(preflight.surface_evidence('unified-content',definitions)['introspection']['status'],'fail')
 
     def test_s2_requires_exact_five_tool_set(self):
         definitions=[SimpleNamespace(name=name,inputSchema={}) for name in preflight.LEGACY_TOOLS]

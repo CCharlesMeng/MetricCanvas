@@ -1,5 +1,7 @@
 # 页面参数与文本取值
 
+当前创作使用 Schema 6.11 的分层参数：params.query 定义查询输入，params.display 定义呈现输入；无值模板与填值实例共用页面协议。
+
 旧数组参数：页面参数是一次初始化的不可变取值；筛选器是页内可变状态。标量参数保留string/number/boolean；6.2的dimension单值使用非空string，multiple:true使用非空、无重复string[]。URL多值用重复键，不拆逗号。标量/维度参数的非法URL输入回退唯一default；必需参数缺值会阻止呈现和查数。
 
 文本取值引用为{param:id}，由声明取值并按可选format格式化；必需文本不能引用可能缺失的参数。initialParam只把实际参数用于筛选初值，不能与filter.default双默认；6.11起timePoint筛选器与层级维度筛选器同样可用，前者引用单点times参数，后者的初值落在defaultLevel那一层；paramBindings显式指定查询目标，后续筛选清空不会复活原值。受筛选控制的目标不同时写静态参数条件。
@@ -13,7 +15,7 @@
 可选参数缺失时，文本引用所在属性整体移除，数组位置按已有解析规则移除；必填文本只能引用必需参数。每个声明参数必须有消费者，6.2的查询初始化/筛选初值绑定也计入消费，既有conformance规则标识名保持兼容。参数格式要与类型相容；导航的`source:param`也是显式读取途径。
 
 
-## 6.3 确定性时间参数
+## 确定性时间参数
 
 时间参数声明 `type: "time"`、`granularity: "month" | "date"`，值分别为真实日历的 YYYY-MM / YYYY-MM-DD（0001—9999年）。仅未提供URL键时使用default；显式非法、空串或重复时间键阻止初始化，不回退默认月份。时间文本引用当前支持原值展示，不接受数值或日期格式预设。
 
@@ -23,7 +25,7 @@
 
 运行时仅改副本中的查询起止，保留period、is_aggregate及指标；无数据呈现空结果，不回退最新期。时间绑定查询不消费没有参数执行凭据的source.initial旧行；经过prepareExecution核验的执行回执仍是权威。累计、同比/环比、历史预测版本、结果按小时分组与物理分区路由不由此规则计算。
 
-## 6.6 分层参数与查询侧时间窗口
+## 分层参数与查询侧时间窗口
 
 params 增加对象分支，按消费位置分两层：params.query.{dimensions,times} 落进 DQE 请求体，params.display 只被文本取值与导航消费。三个数组均为可选非空数组，至少声明一个参数。dimensions 每项为 id、dim_name、可选 dim_value_list；times 每项为 id、granularity、可选且成对的 start/end；display 每项为 id、type 与可选 value。两层 ID 全局唯一，required 缺省 true，label 可选；新结构不接受 default。
 
