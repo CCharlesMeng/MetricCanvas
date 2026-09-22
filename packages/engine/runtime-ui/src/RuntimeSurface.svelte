@@ -238,7 +238,8 @@
     declarations = loaded.filters ?? [];
 
     const fromDeclarations = initialFilterValues(declarations);
-    const fromURL: FilterValues = capabilities.filters && !paramDeclarations.some(p => p.value !== undefined)
+    // 旧数组参数的显式 value 固定本次输入；分组参数仍允许 URL 参数与独立筛选初始化。
+    const fromURL: FilterValues = capabilities.filters && !paramDeclarations.some(p => !p.path && p.value !== undefined)
       ? parseFilterURL(search, declarations)
       : new Map();
     const state = createFilterState(bootstrap ? bootstrap.filters : new Map([...fromDeclarations, ...fromURL]));

@@ -64,3 +64,15 @@
 - 分层复核：`evaluation` 层 37/37 通过；其余非端口项全部通过，失败集合仅为上述 3 个需要本地监听的测试。
 - 尝试继续暂存时，沙箱内 `git add -n -u` 也无法创建 `.git/index.lock`；沙箱外 `git add -u` 再次被自动审批服务 HTTP 503 拒绝，未执行。当前未创建提交、推送或 PR。
 - 新增 [`tools/scripts/manual-authoring-merge.sh`](../../tools/scripts/manual-authoring-merge.sh)：默认按显式清单暂存并审计，保留 `ioc-data-dev/` 与 `packages/embed/single-option-check.mjs` 两个排除项；仅传 `--commit` 才创建 merge commit，脚本永不推送。
+
+
+## 无沙箱续跑与发布门禁（2026-09-22 15:35）
+
+- GitHub 凭据、`git fetch origin` 与推送 dry-run 均成功，未再遇到 503；当前环境不经过自动审批，不能据此宣称审批服务本身恢复。已有合并提交 `e495e3ab`，包含最新远端 main。
+- 页面文档 12/12；契约 509 product / 4 authoring / 1 interface；Bundle 1683 摘要检查；Python 完整 541/541（包括此前 3 项端口测试）通过。
+- Vitest 完整 167 文件、1508 通过 / 1 跳过（包括此前 14 项 HTTP 测试）。修复创作语言测试的固定 10ms 等待，改为等待保存入口与执行事件，保留同步锁断言。
+- `pnpm check`、`pnpm build`、`pnpm packages:check` 通过；浏览器修复后再运行 `pnpm check` 通过。
+- 嵌入浏览器发现并修复分组参数保存值错误屏蔽独立 URL 筛选的回归。保留旧数组显式 value 的优先级；分组参数按现行 URL 规则消费。旧示例升级到 6.11；维度参数测试改为列表，验证 URL 显式覆盖及无 URL 时保存值；指标卡白底断言与既有样式提交对齐；Tab 测量等待实际数据行。
+- 嵌入浏览器 52 项：修复后整套 51 项通过，剩余报告用例修正旧白底断言后单独复验 1/1 通过。搭建画布浏览器 10/10 通过。
+- 复用既有 PR #154，更新其最终范围与验证依据；远端 CI 与合入状态以 GitHub 为准。未跟踪的 `ioc-data-dev/`、`packages/embed/single-option-check.mjs` 继续保留在提交之外。
+- 真实 Lab/DQE/Relay/Java 接线仍未验收，本地 HTTP 夹具与浏览器回归不代表生产验收完成。

@@ -414,6 +414,7 @@ test('Tab 活动面板提供直接组件布局盒且自身不保存页面派生�
     document.querySelector<HTMLElement>('#dashboard')!.style.width = '900px';
     window.queryRuntime.update({ document: pageDocument, dataGateway: iocGateway() });
   }, analysisDocument);
+  await expect(page.locator('[data-component="opportunity-regions/opportunity-region-tabs"] .tab-panel tbody tr').first()).toBeVisible();
   const analysis = await page.evaluate(() => {
     const runtime = document
       .querySelector<HTMLElement>('[data-metriccanvas-runtime]')!
@@ -1382,7 +1383,7 @@ test('报告 AI 总结与指标卡共用摘要正文的浅紫描边样式', asyn
   await expect(positiveText).toHaveCSS('font-weight', '400');
   await expect(negativeText).toHaveCSS('font-weight', '400');
 
-  await expect(metricPanel).toHaveCSS('background-color', 'rgb(241, 244, 255)');
+  await expect(metricPanel).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(metricPanel).toHaveCSS('border-color', 'rgb(212, 213, 255)');
   await expect(metricPanel).toHaveCSS('border-style', 'solid');
   await expect(metricPanel).toHaveCSS('border-width', '1px');
@@ -2104,13 +2105,13 @@ test('流水分析报告在四档桌面宽度完整呈现并沿用统一状态',
   await expect(overviewMetricPanels.first()).toHaveCSS('border-radius', '12px');
   await expect(overviewMetricPanels.first()).toHaveCSS(
     'background-color',
-    'rgb(241, 244, 255)'
+    'rgb(255, 255, 255)'
   );
   await expect(reportMetricPanels).toHaveCount(11);
   await expect.poll(async () => reportMetricPanels.evaluateAll((panels) => panels.every((panel) => {
     const style = getComputedStyle(panel);
     return (
-      style.backgroundColor === 'rgb(241, 244, 255)' &&
+      style.backgroundColor === 'rgb(255, 255, 255)' &&
       style.borderTopColor === 'rgb(212, 213, 255)' &&
       style.borderTopStyle === 'solid' &&
       style.borderTopWidth === '1px' &&

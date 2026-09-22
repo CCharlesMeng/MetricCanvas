@@ -2,7 +2,7 @@ import {expect,test} from '@playwright/test';
 import {readFileSync} from 'node:fs';
 import {extractPageParams,applyPageParamSelection,resolvePageParams} from '@metriccanvas/page';
 
-test('6.5 Tokens: HTTP requests, authoritative values, missing inputs and empty periods',async({page})=>{
+test('Tokens grouped params: HTTP requests, URL overrides, missing inputs and empty periods',async({page})=>{
   const raw=JSON.parse(readFileSync(new URL('../../../page/fixtures/parameter-extraction/tokens-parameter-source.json',import.meta.url),'utf8'));
   const extraction=extractPageParams(raw,{baseline:'local-verified-fixture',dimensionIdentities:Object.fromEntries(Object.keys(raw.dataSources).map(id=>[id,{'区域':'region'}]))});
   if(!extraction.ok)throw Error(JSON.stringify(extraction.issues));
@@ -21,20 +21,20 @@ test('6.5 Tokens: HTTP requests, authoritative values, missing inputs and empty 
     })}});
   });
   await page.goto('/examples/inline.html');
-  const mount=async(document:any)=>page.evaluate(document=>{
+  const mount=async(document:any,initialSearch='')=>page.evaluate(({document,initialSearch})=>{
     window.runtime.destroy();
-    window.runtime=MetricCanvas.mount('#dashboard',{document,initialSearch:'region=URL错误值',dataGateway:MetricCanvas.createDqeGateway({endpoint:'/inline-fixture-dqe'})});
-  },document);
+    window.runtime=MetricCanvas.mount('#dashboard',{document,initialSearch,dataGateway:MetricCanvas.createDqeGateway({endpoint:'/inline-fixture-dqe'})});
+  },{document,initialSearch});
   const missing=structuredClone(template);missing.dataSources.consumption.source.initial={capturedAt:'2026-01-01T00:00:00Z',rows:[{'Tokens消耗量':999999}]};
   await mount(missing);await expect(page.getByText(/报告期间/).first()).toBeVisible();
   expect(requests).toHaveLength(0);await expect(page.getByText(/999,?999/)).toHaveCount(0);
-  const filled=resolvePageParams(template,{region:'中国区','report-period':{start:'2026-01',end:'2026-06',granularity:'month'}});if(!filled.ok)throw Error(JSON.stringify(filled.issues));
-  await mount(filled.document);await expect(page.getByRole('table')).toHaveCount(5);
+  const filled=resolvePageParams(template,{region:['中国区'],'report-period':{start:'2026-01',end:'2026-06',granularity:'month'}});if(!filled.ok)throw Error(JSON.stringify(filled.issues));
+  await mount(filled.document,'region=URL指定值');await expect(page.getByRole('table')).toHaveCount(5);
   await expect.poll(()=>requests.length).toBe(5);
   await expect(page.getByText('2026-01 至 2026-06',{exact:true})).toBeVisible();
   await expect(page.getByText('123456',{exact:true}).first()).toBeVisible();
-  for(const q of requests){expect(q.filter.dims).toEqual([{dim_name:'区域',dim_value_list:['中国区']}]);expect(q.filter.time).toMatchObject({start:'2026-01',end:'2026-06'});expect(JSON.stringify(q)).not.toContain('"param"');}
-  const empty=resolvePageParams(template,{region:'欧洲区','report-period':{start:'2026-07',end:'2026-12',granularity:'month'}});if(!empty.ok)throw Error('fixture');
+  for(const q of requests){expect(q.filter.dims).toEqual([{dim_name:'区域',dim_value_list:['URL指定值']}]);expect(q.filter.time).toMatchObject({start:'2026-01',end:'2026-06'});expect(JSON.stringify(q)).not.toContain('"param"');}
+  const empty=resolvePageParams(template,{region:['欧洲区'],'report-period':{start:'2026-07',end:'2026-12',granularity:'month'}});if(!empty.ok)throw Error('fixture');
   await mount(empty.document);await expect.poll(()=>requests.length).toBe(10);
   await expect(page.getByText('2026-07 至 2026-12',{exact:true})).toBeVisible();
   await expect(page.getByText('123456',{exact:true})).toHaveCount(0);
